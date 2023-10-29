@@ -85,7 +85,7 @@ class QChem(FileIOCalculator):
         self.fileiocalculator_kwargs = fileiocalculator_kwargs
 
         # Instantiate previous orbital coefficients
-        self.prev_orbital_coeffs = None
+        self._prev_orbital_coeffs = None
 
         if "directory" in self.fileiocalculator_kwargs:
             raise NotImplementedError("The directory kwarg is not supported.")
@@ -138,12 +138,12 @@ class QChem(FileIOCalculator):
             job_type=self.job_type,
             scf_algorithm=self.scf_algorithm,
             qchem_input_params=self.qchem_input_params,
-            prev_orbital_coeffs=self.prev_orbital_coeffs,
+            _prev_orbital_coeffs=self._prev_orbital_coeffs,
         )
 
     def read_results(self) -> None:
         """
-        Read the Q-Chem output files. Update the .results and .prev_orbital_coeffs
+        Read the Q-Chem output files. Update the .results and ._prev_orbital_coeffs
         attributes.
 
         Parameters
@@ -154,9 +154,9 @@ class QChem(FileIOCalculator):
         -------
         None
         """
-        results, prev_orbital_coeffs = read_qchem(job_type=self.job_type)
+        results, _prev_orbital_coeffs = read_qchem(job_type=self.job_type)
         self.results = results
-        self.prev_orbital_coeffs = prev_orbital_coeffs
+        self._prev_orbital_coeffs = _prev_orbital_coeffs
 
     def _manage_environment(self) -> str:
         """
