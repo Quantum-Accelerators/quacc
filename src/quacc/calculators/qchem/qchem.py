@@ -66,8 +66,7 @@ class QChem(FileIOCalculator):
 
         Returns
         -------
-        Atoms
-            The ASE Atoms object with attached Q-Chem calculator.
+        None
         """
 
         # Assign variables to self
@@ -141,7 +140,8 @@ class QChem(FileIOCalculator):
 
     def read_results(self) -> None:
         """
-        Read the Q-Chem output files.
+        Read the Q-Chem output files. Update the .results and .prev_orbital_coeffs
+        attributes.
 
         Parameters
         ----------
@@ -157,7 +157,7 @@ class QChem(FileIOCalculator):
 
     def _manage_environment(self) -> str:
         """
-        Manage the environment for the Q-Chem calculator.
+        Return the command to run the Q-Chem calculator via Custodian.
 
         Returns
         -------
@@ -171,6 +171,7 @@ class QChem(FileIOCalculator):
     def _cleanup_qchem_input_params(self) -> None:
         """
         Clean up q-chem input parameters for the Q-Chem calculator.
+        Modifies self.qchem_input_params in place.
 
         Parameters
         ----------
@@ -199,7 +200,7 @@ class QChem(FileIOCalculator):
     def _set_default_params(self) -> None:
         """
         Store the parameters that have been passed to the Q-Chem
-        calculator in FileIOCalculator's self.default_parameters
+        calculator in FileIOCalculator's self.default_parameters.
 
         Parameters
         ----------
