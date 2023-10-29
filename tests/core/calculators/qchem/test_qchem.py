@@ -166,7 +166,7 @@ def test_qchem_read_results_basic_and_write_53(tmpdir, test_atoms):
 
     assert calc.results["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
     assert calc.results["forces"][0][0] == pytest.approx(-1.3826330655069403)
-    assert calc.prev_orbital_coeffs is not None
+    assert calc._prev_orbital_coeffs is not None
 
     calc.write_input(test_atoms)
     assert Path(tmpdir, "53.0").exists()
@@ -190,7 +190,7 @@ def test_qchem_read_results_intermediate(tmpdir, test_atoms):
 
     assert calc.results["energy"] == pytest.approx(-605.6859554025 * units.Hartree)
     assert calc.results["forces"][0][0] == pytest.approx(-0.6955571014353796)
-    assert calc.prev_orbital_coeffs is not None
+    assert calc._prev_orbital_coeffs is not None
 
 
 def test_qchem_read_results_advanced(tmpdir, test_atoms):
@@ -202,7 +202,7 @@ def test_qchem_read_results_advanced(tmpdir, test_atoms):
 
     assert calc.results["energy"] == pytest.approx(-605.7310332390 * units.Hartree)
     assert calc.results["forces"][0][0] == pytest.approx(-0.4270884974249971)
-    assert calc.prev_orbital_coeffs is not None
+    assert calc._prev_orbital_coeffs is not None
     assert calc.results.get("hessian") is None
 
 
@@ -214,7 +214,7 @@ def test_qchem_read_results_freq(tmpdir, test_atoms):
 
     assert calc.results["energy"] == pytest.approx(-605.6859554025 * units.Hartree)
     assert calc.results.get("forces") is None
-    assert calc.prev_orbital_coeffs is not None
+    assert calc._prev_orbital_coeffs is not None
     assert len(calc.results["hessian"]) == 42
     assert len(calc.results["hessian"][0]) == 42
     assert calc.results["qc_output"]["frequencies"][0] == -340.2
