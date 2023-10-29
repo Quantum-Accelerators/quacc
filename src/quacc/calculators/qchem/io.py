@@ -85,10 +85,6 @@ def write_qchem(
     directory = Path(directory)
     FileIOCalculator.write_input(atoms, properties, system_changes)
 
-    atoms.charge = charge
-    atoms.spin_multiplicity = spin_multiplicity
-    mol = AseAtomsAdaptor.get_molecule(atoms)
-
     if prev_orbital_coeffs is not None:
         with Path(directory / "53.0").open(mode="wb") as file:
             for val in prev_orbital_coeffs:
@@ -101,15 +97,17 @@ def write_qchem(
         if "scf_guess" not in qchem_input_params["overwrite_inputs"]["rem"]:
             qchem_input_params["overwrite_inputs"]["rem"]["scf_guess"] = "read"
 
-    qcin = QChemDictSet(
+    atoms.charge = charge
+    atoms.spin_multiplicity = spin_multiplicity
+    mol = AseAtomsAdaptor.get_molecule(atoms)
+    QChemDictSet(
         mol,
         job_type,
         basis_set,
         scf_algorithm,
         qchem_version=6,
         **qchem_input_params,
-    )
-    qcin.write(directory / "mol.qin")
+    ).write(directory / "mol.qin")
 
 
 def read_qchem(
