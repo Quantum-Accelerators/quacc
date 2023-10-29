@@ -41,7 +41,7 @@ def write_qchem(
     charge: int = 0,
     spin_multiplicity: int = 1,
     basis_set: str = "def2-tzvpd",
-    job_type: Literal = ["sp", "force", "opt", "freq"],
+    job_type: Literal["sp", "force", "opt", "freq"] = "force",
     scf_algorithm: str = "diis",
     qchem_input_params: dict[str, Any] | None = None,
     prev_orbital_coeffs: list[float] | None = None,
@@ -109,7 +109,7 @@ def write_qchem(
 
 
 def read_qchem(
-    job_type: Literal = ["sp", "force", "opt", "freq"]
+    job_type: Literal["sp", "force", "opt", "freq"] = "force"
 ) -> tuple[Results, list[float]]:
     """
     Read Q-Chem log files.
