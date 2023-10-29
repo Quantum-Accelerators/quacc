@@ -1,6 +1,8 @@
 """
 I/O utilities for the Vasp calculator.
 """
+from __future__ import annotations
+
 from pathlib import Path
 
 from quacc.utils.files import load_yaml_calc
