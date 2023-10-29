@@ -319,7 +319,7 @@ def test_freq_job_v1(monkeypatch, tmpdir, test_atoms):
     assert output["parameters"]["charge"] == -1
     assert output["parameters"]["spin_multiplicity"] == 2
     assert output["results"]["energy"] == pytest.approx(-605.6859554019 * units.Hartree)
-    assert output["results"].get("hessian")
+    assert output["results"].get("hessian") is not None
     assert output["results"]["enthalpy"] == pytest.approx(
         output["results"]["qc_output"]["total_enthalpy"] * (units.kcal / units.mol)
     )
