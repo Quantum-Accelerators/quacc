@@ -135,7 +135,7 @@ def calc_swaps(
 
     if (
         auto_kpts
-        and auto_kpts.get("line_density", None)
+        and auto_kpts.get("line_density")
         and calc.int_params["ismear"] != 0
     ):
         logger.info(
@@ -329,7 +329,7 @@ def convert_auto_kpts(
     """
     struct = AseAtomsAdaptor.get_structure(input_atoms)
 
-    if auto_kpts.get("line_density", None):
+    if auto_kpts.get("line_density"):
         # TODO: Support methods other than latimer-munro
         kpath = HighSymmKpath(
             struct,
