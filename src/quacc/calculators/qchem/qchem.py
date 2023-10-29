@@ -65,104 +65,129 @@ class QChem(FileIOCalculator):
         **fileiocalculator_kwargs,
     ) -> None:
         """
-        Initialize the Q-Chem calculator.
+        Initialize the Q-Chem calculator. Most of the input parameters here
+        are meant to mimic those in `pymatgen.io.qchem.inputs.QCInput`. See
+        the documentation for that class for more information.
 
         Parameters
         ----------
         atoms
-            The Atoms object to be used for the calculation. "read" can be used in multi_job QChem input
-            files where the molecule is read in from the previous calculation.
+            The Atoms object to be used for the calculation. "read" can be used
+            in multi_job QChem input files where the molecule is read in from
+            the previous calculation.
         charge
             The total charge of the molecular system.
         spin_multiplicity
             The spin multiplicity of the molecular system.
         rem
-            A dictionary of all the input parameters for the rem section of QChem input file.
-            e.g. rem = {'method': 'rimp2', 'basis': '6-31*G++' ... }
+            A dictionary of all the input parameters for the rem section of
+            QChem input file. e.g. rem = {'method': 'rimp2', 'basis': '6-31*G++'
+            ... }
         opt
-            A dictionary of opt sections, where each opt section is a key and the corresponding
-            values are a list of strings. Strings must be formatted as instructed by the QChem manual.
-            The different opt sections are: CONSTRAINT, FIXED, DUMMY, and CONNECT
-            e.g. opt = {"CONSTRAINT": ["tors 2 3 4 5 25.0", "tors 2 5 7 9 80.0"], "FIXED": ["2 XY"]}
+            A dictionary of opt sections, where each opt section is a key and
+            the corresponding values are a list of strings. Strings must be
+            formatted as instructed by the QChem manual. The different opt
+            sections are: CONSTRAINT, FIXED, DUMMY, and CONNECT e.g. opt =
+            {"CONSTRAINT": ["tors 2 3 4 5 25.0", "tors 2 5 7 9 80.0"], "FIXED":
+            ["2 XY"]}
         pcm
-            A dictionary of the PCM section, defining behavior for use of the polarizable continuum model.
-            e.g. pcm = {"theory": "cpcm", "hpoints": 194}
+            A dictionary of the PCM section, defining behavior for use of the
+            polarizable continuum model. e.g. pcm = {"theory": "cpcm",
+            "hpoints": 194}
         solvent
-            A dictionary defining the solvent parameters used with PCM.
-            e.g. solvent = {"dielectric": 78.39, "temperature": 298.15}
+            A dictionary defining the solvent parameters used with PCM. e.g.
+            solvent = {"dielectric": 78.39, "temperature": 298.15}
         smx
-            A dictionary defining solvent parameters used with the SMD method, a solvent method that adds
-            short-range terms to PCM.
-            e.g. smx = {"solvent": "water"}
+            A dictionary defining solvent parameters used with the SMD method, a
+            solvent method that adds short-range terms to PCM. e.g. smx =
+            {"solvent": "water"}
         scan
-            A dictionary of scan variables. Because two constraints of the same type are allowed (for instance, two
-            torsions or two bond stretches), each TYPE of variable (stre, bend, tors) should be its own key in the
-            dict, rather than each variable. Note that the total number of variable (sum of lengths of all lists)
-            CANNOT be more than two.
-            e.g. scan = {"stre": ["3 6 1.5 1.9 0.1"], "tors": ["1 2 3 4 -180 180 15"]}
+            A dictionary of scan variables. Because two constraints of the same
+            type are allowed (for instance, two torsions or two bond stretches),
+            each TYPE of variable (stre, bend, tors) should be its own key in
+            the dict, rather than each variable. Note that the total number of
+            variable (sum of lengths of all lists) CANNOT be more than two. e.g.
+            scan = {"stre": ["3 6 1.5 1.9 0.1"], "tors": ["1 2 3 4 -180 180
+            15"]}
         van_der_waals
-            A dictionary of custom van der Waals radii to be used when constructing cavities for the PCM
-            model or when computing, e.g. Mulliken charges. They keys are strs whose meaning depends on
-            the value of vdw_mode, and the values are the custom radii in angstroms.
+            A dictionary of custom van der Waals radii to be used when
+            constructing cavities for the PCM model or when computing, e.g.
+            Mulliken charges. They keys are strs whose meaning depends on the
+            value of vdw_mode, and the values are the custom radii in angstroms.
         vdw_mode
-            Method of specifying custom van der Waals radii - 'atomic' or 'sequential'.
-            In 'atomic' mode (default), dict keys represent the atomic number associated with each
-            radius (e.g., 12 = carbon). In 'sequential' mode, dict keys represent the sequential
-            position of a single specific atom in the input structure.
+            Method of specifying custom van der Waals radii - 'atomic' or
+            'sequential'. In 'atomic' mode (default), dict keys represent the
+            atomic number associated with each radius (e.g., 12 = carbon). In
+            'sequential' mode, dict keys represent the sequential position of a
+            single specific atom in the input structure.
         plots
-            A dictionary of all the input parameters for the plots section of the QChem input file.
+            A dictionary of all the input parameters for the plots section of
+            the QChem input file.
         nbo
-            A dictionary of all the input parameters for the nbo section of the QChem input file.
+            A dictionary of all the input parameters for the nbo section of the
+            QChem input file.
         geom_opt
-            A dictionary of input parameters for the geom_opt section of the QChem input file.
-            This section is required when using the libopt3 geometry optimizer.
+            A dictionary of input parameters for the geom_opt section of the
+            QChem input file. This section is required when using the libopt3
+            geometry optimizer.
         cdft
-            A list of lists of dictionaries, where each dictionary represents a charge constraint in the
-            cdft section of the QChem input file.
-            Each entry in the main list represents one state (allowing for multi-configuration calculations
-            using constrained density functional theory - configuration interaction (CDFT-CI).
-            Each state is represented by a list, which itself contains some number of constraints
-            (dictionaries).
+            A list of lists of dictionaries, where each dictionary represents a
+            charge constraint in the cdft section of the QChem input file. Each
+            entry in the main list represents one state (allowing for
+            multi-configuration calculations using constrained density
+            functional theory - configuration interaction (CDFT-CI). Each state
+            is represented by a list, which itself contains some number of
+            constraints (dictionaries).
 
             1. For a single-state calculation with two constraints:
             cdft=[[
-                {"value": 1.0, "coefficients": [1.0], "first_atoms": [1], "last_atoms": [2], "types": [None]},
-                {"value": 2.0, "coefficients": [1.0, -1.0], "first_atoms": [1, 17], "last_atoms": [3, 19],
+                {"value": 1.0, "coefficients": [1.0], "first_atoms": [1],
+                "last_atoms": [2], "types": [None]}, {"value": 2.0,
+                "coefficients": [1.0, -1.0], "first_atoms": [1, 17],
+                "last_atoms": [3, 19],
                     "types": ["s"]}
             ]]
 
-            Note that a type of None will default to a charge constraint (which can also be accessed by
-            requesting a type of "c" or "charge".
+            Note that a type of None will default to a charge constraint (which
+            can also be accessed by requesting a type of "c" or "charge".
 
             2. For a multi-reference calculation:
             cdft=[
                 [
-                    {"value": 1.0, "coefficients": [1.0], "first_atoms": [1], "last_atoms": [27],
+                    {"value": 1.0, "coefficients": [1.0], "first_atoms": [1],
+                    "last_atoms": [27],
                         "types": ["c"]},
-                    {"value": 0.0, "coefficients": [1.0], "first_atoms": [1], "last_atoms": [27],
+                    {"value": 0.0, "coefficients": [1.0], "first_atoms": [1],
+                    "last_atoms": [27],
                         "types": ["s"]},
-                ],
-                [
-                    {"value": 0.0, "coefficients": [1.0], "first_atoms": [1], "last_atoms": [27],
+                ], [
+                    {"value": 0.0, "coefficients": [1.0], "first_atoms": [1],
+                    "last_atoms": [27],
                         "types": ["c"]},
-                    {"value": -1.0, "coefficients": [1.0], "first_atoms": [1], "last_atoms": [27],
+                    {"value": -1.0, "coefficients": [1.0], "first_atoms": [1],
+                    "last_atoms": [27],
                         "types": ["s"]},
                 ]
             ]
         almo_coupling
-            A list of lists of int 2-tuples used for calculations of diabatization and state coupling calculations
-                relying on the absolutely localized molecular orbitals (ALMO) methodology. Each entry in the main
-                list represents a single state (two states are included in an ALMO calculation). Within a single
-                state, each 2-tuple represents the charge and spin multiplicity of a single fragment.
+            A list of lists of int 2-tuples used for calculations of
+            diabatization and state coupling calculations
+                relying on the absolutely localized molecular orbitals (ALMO)
+                methodology. Each entry in the main list represents a single
+                state (two states are included in an ALMO calculation). Within a
+                single state, each 2-tuple represents the charge and spin
+                multiplicity of a single fragment.
             e.g. almo=[[(1, 2), (0, 1)], [(0, 1), (1, 2)]]
         svp
             TODO.
         pcm_nonels
             TODO.
         qchem_dict_set_kwargs
-            Arguments to be passed to `pymatgen.io.qchem.sets.QChemDictSet`, which will generate
-            a `QChemDictSet`. This can be used in place of the other kwargs to instantiate a custom
-            input set. If this is passed only the positional arguments (atoms, chareg, spin_multiplicity) will be used.
+            Arguments to be passed to `pymatgen.io.qchem.sets.QChemDictSet`,
+            which will generate a `QChemDictSet`. This can be used in place of
+            the other kwargs to instantiate a custom input set. If this is
+            passed only the positional arguments (atoms, chareg,
+            spin_multiplicity) will be used.
         **fileiocalculator_kwargs
             Additional arguments to be passed to
             `ase.calculators.calculator.FileIOCalculator`.
@@ -286,8 +311,8 @@ class QChem(FileIOCalculator):
 
     def read_results(self) -> None:
         """
-        Read the Q-Chem output files. Update the .results and ._prev_orbital_coeffs
-        attributes.
+        Read the Q-Chem output files. Update the .results and
+        ._prev_orbital_coeffs attributes.
 
         Parameters
         ----------
@@ -316,8 +341,8 @@ class QChem(FileIOCalculator):
 
     def _get_molecule(self) -> Molecule | list[Molecule] | Literal["read"]:
         """
-        Clean up q-chem input parameters for the Q-Chem calculator.
-        Modifies self.qchem_input_params in place.
+        Clean up q-chem input parameters for the Q-Chem calculator. Modifies
+        self.qchem_input_params in place.
 
         Parameters
         ----------
@@ -351,8 +376,8 @@ class QChem(FileIOCalculator):
 
     def _set_default_params(self) -> None:
         """
-        Store the parameters that have been passed to the Q-Chem
-        calculator in FileIOCalculator's self.default_parameters.
+        Store the parameters that have been passed to the Q-Chem calculator in
+        FileIOCalculator's self.default_parameters.
 
         Parameters
         ----------
