@@ -136,12 +136,12 @@ def read_qchem(
     qc_input = QCInput.from_file(directory / "mol.qin").as_dict()
     qc_output = QCOutput(directory / "mol.qout").data
 
-    results: Results = {}
-
-    results["energy"] = qc_output["final_energy"] * units.Hartree
-    results["qc_output"] = qc_output
-    results["qc_input"] = qc_input
-    results["custodian"] = _parse_custodian(Path.cwd())
+    results: Results = {
+        "energy": qc_output["final_energy"] * units.Hartree,
+        "qc_output": qc_output,
+        "qc_input": qc_input,
+        "custodian": _parse_custodian(Path.cwd()),
+    }
 
     if job_type in ["force", "opt"]:
         # Read the gradient scratch file in 8 byte chunks
