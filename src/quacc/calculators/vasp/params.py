@@ -131,11 +131,7 @@ def calc_swaps(
         )
         calc.set(ismear=0)
 
-    if (
-        auto_kpts
-        and auto_kpts.get("line_density")
-        and calc.int_params["ismear"] != 0
-    ):
+    if auto_kpts and auto_kpts.get("line_density") and calc.int_params["ismear"] != 0:
         logger.info(
             "Copilot: Setting ISMEAR = 0 and SIGMA = 0.01 because you are doing a line mode calculation.",
         )
