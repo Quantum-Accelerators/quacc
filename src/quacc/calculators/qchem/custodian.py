@@ -97,6 +97,6 @@ def run_custodian(
 
 
 if __name__ == "__main__":
-    run_custodian(qchem_cores=int(sys.argv[1])) if len(
+    run_custodian(qchem_cores=int(sys.argv[1])) if len( # skipcq: PYL-W0106
         sys.argv
     ) > 1 else run_custodian()
