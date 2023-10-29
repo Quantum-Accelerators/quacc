@@ -9,15 +9,12 @@ import numpy as np
 from ase import units
 from emmet.core.tasks import _parse_custodian
 from monty.io import zopen
-from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.qchem.inputs import QCInput
 from pymatgen.io.qchem.outputs import QCOutput
-from pymatgen.io.qchem.sets import QChemDictSet
 
 if TYPE_CHECKING:
     from typing import Any, Literal, TypedDict
 
-    from ase import Atoms
     from numpy.typing import NDArray
 
     class Results(TypedDict, total=False):
@@ -36,14 +33,8 @@ if TYPE_CHECKING:
 
 
 def write_qchem(
-    atoms: Atoms,
+    qc_input: QCInput,
     directory: Path | str = ".",
-    charge: int = 0,
-    spin_multiplicity: int = 1,
-    basis_set: str = "def2-tzvpd",
-    job_type: Literal["sp", "force", "opt", "freq"] = "force",
-    scf_algorithm: str = "diis",
-    qchem_input_params: dict[str, Any] | None = None,
     prev_orbital_coeffs: list[float] | None = None,
 ) -> None:
     """
@@ -51,25 +42,7 @@ def write_qchem(
 
     Parameters
     ----------
-    atoms
-        The Atoms object to be used for the calculation.
-    directory
-        The directory in which to write the Q-Chem input files.
-    charge
-        The total charge of the molecular system.
-    spin_multiplicity
-        The spin multiplicity of the molecular system.
-    basis_set
-        The basis set to use for the calculation.
-    job_type
-        The type of calculation to perform.
-    scf_algorithm
-        The SCF algorithm to use for the calculation.
-    qchem_input_params
-        Dictionary of Q-Chem input parameters to be passed to
-        `pymatgen.io.qchem.sets.DictSet`.
-    prev_orbital_coeffs
-        The orbital coefficients from a previous calculation.
+    TODO
 
     Returns
     -------
@@ -82,30 +55,11 @@ def write_qchem(
             for val in prev_orbital_coeffs:
                 data = struct.pack("d", val)
                 file.write(data)
-        if "overwrite_inputs" not in qchem_input_params:
-            qchem_input_params["overwrite_inputs"] = {}
-        if "rem" not in qchem_input_params["overwrite_inputs"]:
-            qchem_input_params["overwrite_inputs"]["rem"] = {}
-        if "scf_guess" not in qchem_input_params["overwrite_inputs"]["rem"]:
-            qchem_input_params["overwrite_inputs"]["rem"]["scf_guess"] = "read"
 
-    atoms.charge = charge
-    atoms.spin_multiplicity = spin_multiplicity
-    mol = AseAtomsAdaptor.get_molecule(atoms)
-    QChemDictSet(
-        mol,
-        job_type,
-        basis_set,
-        scf_algorithm,
-        qchem_version=6,
-        **qchem_input_params,
-    ).write(directory / "mol.qin")
+    qc_input.write_file(directory / "mol.qin")
 
 
-def read_qchem(
-    directory: Path | str = ".",
-    job_type: Literal["sp", "force", "opt", "freq"] = "force",
-) -> tuple[Results, list[float]]:
+def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float]]:
     """
     Read Q-Chem log files.
 
@@ -113,8 +67,6 @@ def read_qchem(
     ----------
     directory
         The directory in which the Q-Chem calculation was run.
-    job_type
-        The type of calculation to perform.
 
     Returns
     -------
@@ -123,20 +75,22 @@ def read_qchem(
         calculation.
     """
     directory = Path(directory)
-    qc_input = QCInput.from_file(directory / "mol.qin").as_dict()
-    qc_output = QCOutput(directory / "mol.qout").data
+
+    qc_input = QCInput.from_file(directory / "mol.qin")
+    qc_output = QCOutput(directory / "mol.qout")
 
     results: Results = {
         "energy": qc_output["final_energy"] * units.Hartree,
-        "qc_output": qc_output,
-        "qc_input": qc_input,
+        "qc_output": qc_output.data,
+        "qc_input": qc_input.as_dict(),
         "custodian": _parse_custodian(directory),
     }
 
-    if job_type in ["force", "opt"]:
-        # Read the gradient scratch file in 8 byte chunks
+    # Read the gradient scratch file in 8 byte chunks
+    grad_scratch = directory / "131.0"
+    if grad_scratch.exists() and grad_scratch.stat().st_size > 0:
         tmp_grad_data = []
-        with zopen(directory / "131.0", mode="rb") as file:
+        with zopen(grad_scratch, mode="rb") as file:
             binary = file.read()
         tmp_grad_data.extend(
             struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
@@ -168,8 +122,9 @@ def read_qchem(
         # Convert gradient to force + deal with units
         results["forces"] = gradient * (-units.Hartree / units.Bohr)
 
-    elif job_type == "freq":
-        # Read Hessian scratch file in 8 byte chunks
+    # Read Hessian scratch file in 8 byte chunks
+    freq_scratch = directory / "132.0"
+    if freq_scratch.exists() and freq_scratch.stat().st_size > 0:
         tmp_hess_data = []
         with zopen(directory / "132.0", mode="rb") as file:
             binary = file.read()

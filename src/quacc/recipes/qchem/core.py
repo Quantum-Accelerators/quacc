@@ -32,11 +32,7 @@ def static_job(
     spin_multiplicity: int,
     method: str = "wb97mv",
     basis: str = "def2-tzvpd",
-    scf_algorithm: str = "diis",
-    pcm_dielectric: str | None = None,
-    smd_solvent: str | None = None,
-    n_cores: int | None = None,
-    overwrite_inputs: dict | None = None,
+    calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
@@ -104,6 +100,11 @@ def static_job(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
+    defaults = {
+        "rem": {"method": method, "basis": basis},
+        "cores": multiprocessing.cpu_count(),
+        "opt":
+    }
     defaults = {
         "basis_set": basis,
         "scf_algorithm": scf_algorithm,
