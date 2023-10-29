@@ -21,6 +21,7 @@ if TYPE_CHECKING:
 
     from quacc.calculators.qchem.io import Results
 
+
 class QChemProfile:
     """
     Q-Chem profile
