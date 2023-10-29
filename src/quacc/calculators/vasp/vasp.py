@@ -14,8 +14,7 @@ from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.vasp import setups as ase_setups
 from ase.constraints import FixAtoms
 
-from quacc import SETTINGS
-from quacc.calculators.custodian import vasp as custodian_vasp
+from quacc.calculators.vasp import custodian
 from quacc.calculators.vasp.io import load_vasp_yaml_calc
 from quacc.calculators.vasp.params import (
     calc_swaps,
@@ -32,6 +31,7 @@ if TYPE_CHECKING:
 
 
 class Vasp(Vasp_):
+
     """
     This is a wrapper around the ASE Vasp calculator that adjusts INCAR
     parameters on-the-fly, allows for ASE to run VASP via Custodian, and
@@ -44,7 +44,7 @@ class Vasp(Vasp_):
     preset
         The name of a YAML file containing a list of INCAR parameters to use as
         a "preset" for the calculator. quacc will automatically look in the
-        `VASP_PRESET_DIR` (default: quacc/calculators/presets/vasp) for the
+        `VASP_PRESET_DIR` (default: quacc/calculators/vasp/presets) for the
         file, such that preset="BulkSet" is supported, for instance. The .yaml
         extension is not necessary. Any user-supplied calculator **kwargs will
         override any corresponding preset values.
@@ -122,6 +122,8 @@ class Vasp(Vasp_):
         auto_dipole: bool | None = None,
         **kwargs,
     ):
+        from quacc import SETTINGS
+
         # Set defaults
         use_custodian = (
             SETTINGS.VASP_USE_CUSTODIAN if use_custodian is None else use_custodian
@@ -250,6 +252,7 @@ class Vasp(Vasp_):
         str
             The command flag to pass to the Vasp calculator.
         """
+        from quacc import SETTINGS
 
         # Set the VASP pseudopotential directory
         if SETTINGS.VASP_PP_PATH:
@@ -265,7 +268,7 @@ class Vasp(Vasp_):
 
         # Return Custodian executable command
         if self.use_custodian:
-            run_vasp_custodian_file = Path(inspect.getfile(custodian_vasp)).resolve()
+            run_vasp_custodian_file = Path(inspect.getfile(custodian)).resolve()
             return f"python {run_vasp_custodian_file}"
 
         # Return vanilla ASE command

@@ -2,18 +2,15 @@
 Parameter-related utilities for the Vasp calculator.
 """
 import logging
-from typing import TYPE_CHECKING
 
 import numpy as np
+from ase import Atoms
 from ase.calculators.vasp import Vasp as Vasp_
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.vasp.inputs import Kpoints
 from pymatgen.symmetry.bandstructure import HighSymmKpath
 
 from quacc.atoms.core import check_is_metal
-
-if TYPE_CHECKING:
-    from ase import Atoms
 
 logger = logging.getLogger(__name__)
 
@@ -131,11 +128,7 @@ def calc_swaps(
         )
         calc.set(ismear=0)
 
-    if (
-        auto_kpts
-        and auto_kpts.get("line_density")
-        and calc.int_params["ismear"] != 0
-    ):
+    if auto_kpts and auto_kpts.get("line_density") and calc.int_params["ismear"] != 0:
         logger.info(
             "Copilot: Setting ISMEAR = 0 and SIGMA = 0.01 because you are doing a line mode calculation.",
         )

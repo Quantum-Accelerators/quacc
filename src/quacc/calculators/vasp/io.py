@@ -1,12 +1,9 @@
 """
 I/O utilities for the Vasp calculator.
 """
-from typing import TYPE_CHECKING
+from pathlib import Path
 
 from quacc.utils.files import load_yaml_calc
-
-if TYPE_CHECKING:
-    from pathlib import Path
 
 
 def load_vasp_yaml_calc(yaml_path: str | Path) -> dict:

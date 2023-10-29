@@ -12,7 +12,7 @@ from monty.json import MontyDecoder
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from quacc.calculators.presets import vasp as vasp_defaults
+from quacc.calculators.vasp import presets as vasp_presets
 
 installed_engine = "local"
 for wflow_engine in [
@@ -221,7 +221,7 @@ class QuaccSettings(BaseSettings):
         ),
     )
     VASP_PRESET_DIR: Path = Field(
-        resources.files(vasp_defaults),
+        resources.files(vasp_presets),
         description="Path to the VASP preset directory",
     )
 
