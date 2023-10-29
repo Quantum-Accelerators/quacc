@@ -78,7 +78,7 @@ class QChem(FileIOCalculator):
         self.job_type = job_type
         self.basis_set = basis_set
         self.scf_algorithm = scf_algorithm
-        self.qchem_input_params = qchem_input_params or {}
+        self.qchem_input_params = qchem_input_params if qchem_input_params is not None else {}
         self.fileiocalculator_kwargs = fileiocalculator_kwargs
 
         # Instantiate previous orbital coefficients
