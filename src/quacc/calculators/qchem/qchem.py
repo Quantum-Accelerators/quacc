@@ -46,7 +46,7 @@ class QChem(FileIOCalculator):
     ) -> None:
         """
         Q-Chem calculator.
-        
+
         Parameters
         ----------
         atoms
