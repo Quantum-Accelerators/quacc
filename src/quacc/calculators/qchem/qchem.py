@@ -88,9 +88,7 @@ class QChem(FileIOCalculator):
             raise NotImplementedError("The directory kwarg is not supported.")
 
         # Set parameters
-        self.qchem_input_params = self._cleanup_qchem_input_params(
-            self.qchem_input_params, method
-        )
+        self.qchem_input_params = self._cleanup_qchem_input_params()
         self.default_parameters = self._get_default_params(
             cores,
             charge,
