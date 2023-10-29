@@ -9,8 +9,8 @@ import numpy as np
 from ase import units
 from emmet.core.tasks import _parse_custodian
 from monty.io import zopen
-from pymatgen.io.qchem.inputs import QCInput
-from pymatgen.io.qchem.outputs import QCOutput
+from pymatgen.io.qchem2.inputs import QCInput
+from pymatgen.io.qchem2.outputs import QCOutput
 
 if TYPE_CHECKING:
     from typing import Any, Literal, TypedDict

@@ -10,7 +10,7 @@ from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.qchem.inputs import QCInput
 
 from quacc.calculators.qchem import custodian
-from quacc.calculators.qchem.io import read_qchem, write_qchem
+from quacc.calculators.qchem2.io import read_qchem, write_qchem
 
 if TYPE_CHECKING:
     from typing import ClassVar, Literal
