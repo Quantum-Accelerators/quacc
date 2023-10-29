@@ -104,7 +104,6 @@ def write_qchem(
 
 def read_qchem(
     directory: Path | str = ".",
-    job_type: Literal["sp", "force", "opt", "freq"] = "force",
 ) -> tuple[Results, list[float]]:
     """
     Read Q-Chem log files.
@@ -113,8 +112,6 @@ def read_qchem(
     ----------
     directory
         The directory in which the Q-Chem calculation was run.
-    job_type
-        The type of calculation to perform.
 
     Returns
     -------
@@ -133,10 +130,11 @@ def read_qchem(
         "custodian": _parse_custodian(directory),
     }
 
-    if job_type in ["force", "opt"]:
-        # Read the gradient scratch file in 8 byte chunks
+    # Read the gradient scratch file in 8 byte chunks
+    grad_scratch = directory / "131.0"
+    if grad_scratch.exists() and grad_scratch.stat().st_size > 0:
         tmp_grad_data = []
-        with zopen(directory / "131.0", mode="rb") as file:
+        with zopen(grad_scratch, mode="rb") as file:
             binary = file.read()
         tmp_grad_data.extend(
             struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
@@ -168,10 +166,11 @@ def read_qchem(
         # Convert gradient to force + deal with units
         results["forces"] = gradient * (-units.Hartree / units.Bohr)
 
-    elif job_type == "freq":
-        # Read Hessian scratch file in 8 byte chunks
+    # Read Hessian scratch file in 8 byte chunks
+    hessian_scratch = directory / "132.0"
+    if hessian_scratch.exists() and hessian_scratch.stat().st_size > 0:
         tmp_hess_data = []
-        with zopen(directory / "132.0", mode="rb") as file:
+        with zopen(hessian_scratch, mode="rb") as file:
             binary = file.read()
         tmp_hess_data.extend(
             struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
