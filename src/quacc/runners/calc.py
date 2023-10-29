@@ -68,9 +68,9 @@ def run_calc(
     # Run calculation via get_potential_energy()
     try:
         atoms.get_potential_energy()
-    except Exception:
+    except Exception as err:
         msg = f"Calculation failed. Check the logfiles at {Path.cwd()}"
-        raise RuntimeError(msg)
+        raise RuntimeError(msg) from err
 
     # Most ASE calculators do not update the atoms object in-place with a call
     # to .get_potential_energy(), which is important if an internal optimizer is
@@ -174,9 +174,9 @@ def run_ase_opt(
     with traj, optimizer(atoms, **optimizer_kwargs) as dyn:
         try:
             dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
-        except Exception:
+        except Exception as err:
             msg = f"Calculation failed. Check the logfiles at {Path.cwd()}"
-            raise RuntimeError(msg)
+            raise RuntimeError(msg) from err
 
     # Store the trajectory atoms
     dyn.traj_atoms = read(traj_filename, index=":")
@@ -224,9 +224,9 @@ def run_ase_vib(
     vib = Vibrations(atoms, name=str(tmpdir / "vib"), **vib_kwargs)
     try:
         vib.run()
-    except Exception:
+    except Exception as err:
         msg = f"Calculation failed. Check the logfiles at {Path.cwd()}"
-        raise RuntimeError(msg)
+        raise RuntimeError(msg) from err
 
     # Summarize run
     vib.summary(log=str(tmpdir / "vib_summary.log"))

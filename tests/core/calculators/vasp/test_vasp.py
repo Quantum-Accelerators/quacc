@@ -11,8 +11,7 @@ from ase.constraints import FixAtoms, FixBondLength
 from ase.io import read
 
 from quacc import SETTINGS
-from quacc.calculators.presets import vasp as v
-from quacc.calculators.vasp import Vasp
+from quacc.calculators.vasp import Vasp, presets
 from quacc.runners.prep import prep_next_run
 
 FILE_DIR = Path(__file__).resolve().parent
@@ -56,7 +55,7 @@ def test_vanilla_vasp():
 
 
 def test_presets():
-    default_calcs_dir = Path(v.__file__).resolve().parent
+    default_calcs_dir = Path(presets.__file__).resolve().parent
 
     atoms = bulk("Co") * (2, 2, 1)
     atoms[-1].symbol = "Fe"

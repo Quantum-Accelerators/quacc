@@ -18,7 +18,7 @@ from pymatgen.io.qchem.inputs import QCInput
 from pymatgen.io.qchem.outputs import QCOutput
 from pymatgen.io.qchem.sets import QChemDictSet
 
-from quacc.calculators.custodian import qchem as custodian_qchem
+from quacc.calculators.qchem import custodian
 
 logger = logging.getLogger(__name__)
 
@@ -170,7 +170,7 @@ class QChem(FileIOCalculator):
         """
 
         # Return the command flag
-        run_qchem_custodian_file = Path(inspect.getfile(custodian_qchem)).resolve()
+        run_qchem_custodian_file = Path(inspect.getfile(custodian)).resolve()
         return f"python {run_qchem_custodian_file} {self.cores}"
 
     def write_input(self, atoms, properties=None, system_changes=None):

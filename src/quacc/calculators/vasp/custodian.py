@@ -24,8 +24,6 @@ from custodian.vasp.handlers import (
 from custodian.vasp.jobs import VaspJob
 from custodian.vasp.validators import VaspFilesValidator, VasprunXMLValidator
 
-from quacc import SETTINGS
-
 
 def run_custodian(
     vasp_parallel_cmd: str | None = None,
@@ -76,6 +74,8 @@ def run_custodian(
     None
     """
     # Adapted from atomate2.vasp.run.run_vasp
+
+    from quacc import SETTINGS
 
     # Set defaults
     vasp_parallel_cmd = os.path.expandvars(
