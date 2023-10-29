@@ -2,65 +2,21 @@
 from __future__ import annotations
 
 import inspect
-import logging
-import struct
-from copy import deepcopy
 from pathlib import Path
-from typing import ClassVar
+from typing import TYPE_CHECKING
 
-import numpy as np
-from ase import Atoms, units
 from ase.calculators.calculator import FileIOCalculator
-from emmet.core.tasks import _parse_custodian
-from monty.io import zopen
-from pymatgen.io.ase import AseAtomsAdaptor
-from pymatgen.io.qchem.inputs import QCInput
-from pymatgen.io.qchem.outputs import QCOutput
-from pymatgen.io.qchem.sets import QChemDictSet
 
 from quacc.calculators.qchem import custodian
+from quacc.calculators.qchem.io import read_qchem, write_qchem
 
-logger = logging.getLogger(__name__)
+if TYPE_CHECKING:
+    from typing import Any, ClassVar, Literal
+
+    from ase import Atoms
 
 
-# TODO: Would be more consistent to convert the Hessian to ASE units if it's being
-# stored in the first-class results.
 class QChem(FileIOCalculator):
-    """
-
-    Parameters
-    ----------
-    atoms
-        The Atoms object to be used for the calculation.
-    cores
-        Number of cores to use for the Q-Chem calculation.
-    charge
-        The total charge of the molecular system.
-    spin_multiplicity
-        The spin multiplicity of the molecular system.
-    qchem_input_params
-        Dictionary of Q-Chem input parameters to be passed to
-        `pymatgen.io.qchem.sets.DictSet`.
-    **fileiocalculator_kwargs
-        Additional arguments to be passed to
-        `ase.calculators.calculator.FileIOCalculator`.
-
-    Returns
-    -------
-    Atoms
-        The ASE Atoms object with attached Q-Chem calculator. In calc.results,
-        the following properties are set:
-
-        - energy: electronic energy in eV
-        - forces: forces in eV/A
-        - hessian: Hessian in native Q-Chem units
-        - entropy: total enthalpy in eV
-        - enthalpy: total entropy in eV/K
-        - qc_output: Output from `pymatgen.io.qchem.outputs.QCOutput.data`
-        - qc_input: Input from `pymatgen.io.qchem.inputs.QCInput.as_dict()`
-        - custodian: custodian.json file metadata
-    """
-
     implemented_properties: ClassVar[list[str]] = [
         "energy",
         "forces",
@@ -79,12 +35,37 @@ class QChem(FileIOCalculator):
         spin_multiplicity: int = 1,
         method: str | None = None,
         basis_set: str = "def2-tzvpd",
-        job_type: str = "force",
+        job_type: Literal = ["sp", "force", "opt", "freq"],
         scf_algorithm: str = "diis",
         cores: int = 1,
-        qchem_input_params: dict | None = None,
+        qchem_input_params: dict[str, Any] | None = None,
         **fileiocalculator_kwargs,
-    ):
+    ) -> None:
+        """
+
+        Parameters
+        ----------
+        atoms
+            The Atoms object to be used for the calculation.
+        cores
+            Number of cores to use for the Q-Chem calculation.
+        charge
+            The total charge of the molecular system.
+        spin_multiplicity
+            The spin multiplicity of the molecular system.
+        qchem_input_params
+            Dictionary of Q-Chem input parameters to be passed to
+            `pymatgen.io.qchem.sets.DictSet`.
+        **fileiocalculator_kwargs
+            Additional arguments to be passed to
+            `ase.calculators.calculator.FileIOCalculator`.
+
+        Returns
+        -------
+        Atoms
+            The ASE Atoms object with attached Q-Chem calculator.
+        """
+
         # Assign variables to self
         self.atoms = atoms
         self.cores = cores
@@ -166,111 +147,59 @@ class QChem(FileIOCalculator):
         Returns
         -------
         str
-            The command flag to pass to the Q-Chem calculator.
+            The command flag to run Q-Chem with Custodian.
         """
 
-        # Return the command flag
-        run_qchem_custodian_file = Path(inspect.getfile(custodian)).resolve()
-        return f"python {run_qchem_custodian_file} {self.cores}"
+        qchem_custodian_script = Path(inspect.getfile(custodian)).resolve()
+        return f"python {qchem_custodian_script} {self.cores}"
 
-    def write_input(self, atoms, properties=None, system_changes=None):
-        FileIOCalculator.write_input(self, atoms, properties, system_changes)
-        atoms = deepcopy(atoms)
-        atoms.charge = self.charge
-        atoms.spin_multiplicity = self.spin_multiplicity
-        mol = AseAtomsAdaptor.get_molecule(atoms)
-        if self.prev_orbital_coeffs is not None:
-            with Path("53.0").open(mode="wb") as file:
-                for val in self.prev_orbital_coeffs:
-                    data = struct.pack("d", val)
-                    file.write(data)
-            if "overwrite_inputs" not in self.qchem_input_params:
-                self.qchem_input_params["overwrite_inputs"] = {}
-            if "rem" not in self.qchem_input_params["overwrite_inputs"]:
-                self.qchem_input_params["overwrite_inputs"]["rem"] = {}
-            if "scf_guess" not in self.qchem_input_params["overwrite_inputs"]["rem"]:
-                self.qchem_input_params["overwrite_inputs"]["rem"]["scf_guess"] = "read"
-        qcin = QChemDictSet(
-            mol,
-            self.job_type,
-            self.basis_set,
-            self.scf_algorithm,
-            qchem_version=6,
-            **self.qchem_input_params,
-        )
-        qcin.write("mol.qin")
+    def write_input(
+        self,
+        atoms: Atoms,
+        properties: list[str] | None = None,
+        system_changes: list[str] | None = None,
+    ) -> None:
+        """
+        Write the Q-Chem input files.
 
-    def read_results(self):
-        qc_input = QCInput.from_file("mol.qin").as_dict()
-        qc_output = QCOutput("mol.qout").data
-        self.results["qc_output"] = qc_output
-        self.results["qc_input"] = qc_input
-        self.results["custodian"] = _parse_custodian(Path.cwd())
+        Parameters
+        ----------
+        atoms
+            The Atoms object to be used for the calculation.
+        properties
+            List of properties to calculate.
+        system_changes
+            List of changes to the system since last calculation.
 
-        self.results["energy"] = qc_output["final_energy"] * units.Hartree
-
-        if self.job_type in ["force", "opt"]:
-            tmp_grad_data = []
-            # Read the gradient scratch file in 8 byte chunks
-            with zopen("131.0", mode="rb") as file:
-                binary = file.read()
-            tmp_grad_data.extend(
-                struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
-                for ii in range(len(binary) // 8)
-            )
-            grad = [
-                [
-                    float(tmp_grad_data[ii * 3]),
-                    float(tmp_grad_data[ii * 3 + 1]),
-                    float(tmp_grad_data[ii * 3 + 2]),
-                ]
-                for ii in range(len(tmp_grad_data) // 3)
-            ]
-            # Ensure that the scratch values match the correct values from the
-            # output file but with higher precision
-            if qc_output["pcm_gradients"] is not None:
-                gradient = qc_output["pcm_gradients"][0]
-            else:
-                gradient = qc_output["gradients"][0]
-            for ii, subgrad in enumerate(grad):
-                for jj, val in enumerate(subgrad):
-                    if abs(gradient[ii, jj] - val) > 1e-6:
-                        raise ValueError(
-                            "Difference between gradient value in scratch file vs. output file should not be this large."
-                        )
-                    gradient[ii, jj] = val
-            # Convert gradient to force + deal with units
-            self.results["forces"] = gradient * (-units.Hartree / units.Bohr)
-        else:
-            self.results["forces"] = None
-
-        # Read orbital coefficients scratch file in 8 byte chunks
-        self.prev_orbital_coeffs = []
-        with zopen("53.0", mode="rb") as file:
-            binary = file.read()
-        self.prev_orbital_coeffs.extend(
-            struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
-            for ii in range(len(binary) // 8)
+        Returns
+        -------
+        None
+        """
+        write_qchem(
+            atoms,
+            charge=self.charge,
+            spin_multiplicity=self.spin_multiplicity,
+            basis_set=self.basis_set,
+            job_type=self.job_type,
+            scf_algorithm=self.scf_algorithm,
+            qchem_input_params=self.qchem_input_params,
+            prev_orbital_coeffs=self.prev_orbital_coeffs,
+            properties=properties,
+            system_changes=system_changes,
         )
 
-        if self.job_type == "freq":
-            tmp_hess_data = []
-            # Read Hessian scratch file in 8 byte chunks
-            with zopen("132.0", mode="rb") as file:
-                binary = file.read()
-            tmp_hess_data.extend(
-                struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
-                for ii in range(len(binary) // 8)
-            )
-            self.results["hessian"] = np.reshape(
-                np.array(tmp_hess_data),
-                (len(qc_output["species"]) * 3, len(qc_output["species"]) * 3),
-            )
-            self.results["enthalpy"] = qc_output["total_enthalpy"] * (
-                units.kcal / units.mol
-            )
-            self.results["entropy"] = qc_output["total_entropy"] * (
-                0.001 * units.kcal / units.mol
-            )
-        else:
-            self.results["hessian"] = None
+    def read_results(self) -> None:
+        """
+        Read the Q-Chem output files.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+        results, prev_orbital_coeffs = read_qchem(self.job_type)
+        self.results = results
+        self.prev_orbital_coeffs = prev_orbital_coeffs
