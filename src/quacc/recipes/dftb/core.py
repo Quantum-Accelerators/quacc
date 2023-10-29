@@ -33,18 +33,16 @@ def static_job(
     """
     Carry out a single-point calculation.
 
-    ??? Note
+    Calculator defaults, which can be overriden by `calc_swaps`:
 
-        Calculator Defaults:
-
-        ```python
-        {
-            "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
-            "Hamiltonian_MaxSccIterations": 200,
-            "Hamiltonian_Method": method if "xtb" in method.lower() else None,
-            "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
-        }
-        ```
+    ```python
+    {
+        "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
+        "Hamiltonian_MaxSccIterations": 200,
+        "Hamiltonian_Method": method if "xtb" in method.lower() else None,
+        "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
+    }
+    ```
 
     Parameters
     ----------
@@ -55,8 +53,10 @@ def static_job(
     kpts
         k-point grid to use.
     calc_swaps
-        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely.
+        Dictionary of custom kwargs for the calculator that would override the
+        calculator defaults. Set a value to `None` to remove a pre-existing key
+        entirely. For a list of available keys, refer to the
+        `ase.calculators.dftb.Dftb` calculator.
     copy_files
         Files to copy to the runtime directory.
 
@@ -94,22 +94,19 @@ def relax_job(
     """
     Carry out a structure relaxation.
 
-    ??? Note
+    Calculator defaults, which can be overriden by `calc_swaps`:
 
-        Calculator Defaults:
-
-        ```python
-        {
-            "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
-            "Hamiltonian_MaxSccIterations": 200,
-            "Hamiltonian_Method": method if "xtb" in method.lower() else None,
-            "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
-            "Driver_": "GeometryOptimization",
-            "Driver_LatticeOpt": "Yes" if relax_cell else "No",
-            "Driver_AppendGeometries": "Yes",
-            "Driver_MaxSteps": 2000,
-        }
-        ```
+    ```python
+    {
+        "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
+        "Hamiltonian_MaxSccIterations": 200,
+        "Hamiltonian_Method": method if "xtb" in method.lower() else None,
+        "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
+        "Driver_": "GeometryOptimization",
+        "Driver_LatticeOpt": "Yes" if relax_cell else "No",
+        "Driver_AppendGeometries": "Yes", "Driver_MaxSteps": 2000,
+    }
+    ```
 
     Parameters
     ----------
@@ -123,8 +120,10 @@ def relax_job(
         Whether to relax the unit cell shape/volume in addition to the
         positions.
     calc_swaps
-        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely.
+        Dictionary of custom kwargs for the calculator that would override the
+        calculator defaults. Set a value to `None` to remove a pre-existing key
+        entirely. For a list of available keys, refer to the
+        `ase.calculators.dftb.Dftb` calculator.
     copy_files
         Files to copy to the runtime directory.
 
@@ -171,8 +170,10 @@ def _base_job(
     defaults
         The default calculator parameters to use.
     calc_swaps
-        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely.to override defaults.
+        Dictionary of custom kwargs for the calculator that would override the
+        calculator defaults. Set a value to `None` to remove a pre-existing key
+        entirely. For a list of available keys, refer to the
+        `ase.calculators.dftb.Dftb` calculator.
     additional_fields
         Any additional fields to supply to the summarizer.
     copy_files

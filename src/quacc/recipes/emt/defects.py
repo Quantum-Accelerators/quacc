@@ -57,7 +57,8 @@ def bulk_to_defects_flow(
     defect_charge
         Charge state of the defect
     make_defects_kwargs
-        Keyword arguments to pass to [quacc.atoms.defects.make_defects_from_bulk][]
+        Keyword arguments to pass to
+        [quacc.atoms.defects.make_defects_from_bulk][]
     run_static
         Whether to run the static calculation.
     defect_relax_kwargs
@@ -68,8 +69,8 @@ def bulk_to_defects_flow(
     Returns
     -------
     list[RunSchema | OptSchema]
-        List of dictionary of results from [quacc.schemas.ase.summarize_run][] or
-        [quacc.schemas.ase.summarize_opt_run][]
+        List of dictionary of results from [quacc.schemas.ase.summarize_run][]
+        or [quacc.schemas.ase.summarize_opt_run][]
     """
     defect_relax_kwargs = defect_relax_kwargs or {}
     defect_static_kwargs = defect_static_kwargs or {}
