@@ -61,7 +61,6 @@ class QChem(FileIOCalculator):
         almo_coupling: list[list[tuple[int, int]]] | None = None,
         svp: dict | None = None,
         pcm_nonels: dict | None = None,
-        cores: int = 1,
         qchem_dict_set_kwargs: dict[str, Any] | None = None,
         **fileiocalculator_kwargs,
     ) -> None:
@@ -72,8 +71,6 @@ class QChem(FileIOCalculator):
         ----------
         atoms
             The Atoms object to be used for the calculation.
-        cores
-            Number of cores to use for the Q-Chem calculation.
         charge
             The total charge of the molecular system.
         spin_multiplicity
@@ -107,7 +104,6 @@ class QChem(FileIOCalculator):
         self.almo_coupling = almo_coupling
         self.svp = svp
         self.pcm_nonels = pcm_nonels
-        self.cores = cores  # TODO: Move to settings.
         self.qchem_dict_set_kwargs = qchem_dict_set_kwargs or {}
         self.fileiocalculator_kwargs = fileiocalculator_kwargs
 
@@ -229,7 +225,7 @@ class QChem(FileIOCalculator):
         """
 
         qchem_custodian_script = Path(inspect.getfile(custodian)).resolve()
-        return f"python {qchem_custodian_script} {self.cores}"
+        return f"python {qchem_custodian_script}"
 
     def _get_molecule(self) -> Molecule | list[Molecule] | Literal["read"]:
         """
@@ -281,7 +277,6 @@ class QChem(FileIOCalculator):
         """
         self.default_parameters = remove_dict_nones(
             {
-                "cores": self.cores,
                 "charge": self.charge,
                 "spin_multiplicity": self.spin_multiplicity,
                 "rem": self.rem,
@@ -299,6 +294,5 @@ class QChem(FileIOCalculator):
                 "almo_coupling": self.almo_coupling,
                 "svp": self.svp,
                 "pcm_nonels": self.pcm_nonels,
-                "cores": self.cores,
             }
         )

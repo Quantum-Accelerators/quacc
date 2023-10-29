@@ -1,12 +1,11 @@
 """Core recipes for the Q-Chem"""
 from __future__ import annotations
 
-import multiprocessing
 from typing import TYPE_CHECKING
 
 from ase.optimize import FIRE
 
-from quacc import SETTINGS, job
+from quacc import job
 from quacc.calculators.qchem import QChem
 from quacc.runners.calc import run_ase_opt, run_calc
 from quacc.schemas.ase import summarize_opt_run, summarize_run
@@ -67,8 +66,7 @@ def static_job(
             "resp_charges": True,
             "symmetry": False,
             "sym_ignore": True,
-        },
-        "cores": multiprocessing.cpu_count(),
+        }
     }
 
     return _base_job(

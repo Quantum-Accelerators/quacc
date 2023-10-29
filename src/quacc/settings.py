@@ -1,6 +1,7 @@
 """Settings for quacc"""
 from __future__ import annotations
 
+import multiprocessing
 import os
 from importlib import import_module, resources
 from pathlib import Path
@@ -278,6 +279,10 @@ class QuaccSettings(BaseSettings):
     QCHEM_LOCAL_SCRATCH: Path = Field(
         Path("/tmp") if Path("/tmp").exists() else Path.cwd() / ".qchem_scratch",
         description="Compute-node local scratch directory in which Q-Chem should perform IO.",
+    )
+    QCHEM_NUM_CORES: int = Field(
+        multiprocessing.cpu_count(),
+        description="Number of cores to use for the Q-Chem calculation.",
     )
 
     # Q-Chem Settings: Custodian
