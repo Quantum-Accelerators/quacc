@@ -133,8 +133,8 @@ def read_qchem(
         calculation.
     """
     directory = Path(directory)
-    qc_input = QCInput.from_file(str(directory / "mol.qin")).as_dict()
-    qc_output = QCOutput(str(directory / "mol.qout")).data
+    qc_input = QCInput.from_file(directory / "mol.qin").as_dict()
+    qc_output = QCOutput(directory / "mol.qout").data
 
     results: Results = {}
 
