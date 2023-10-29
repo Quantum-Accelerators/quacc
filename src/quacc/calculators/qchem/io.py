@@ -59,7 +59,9 @@ def write_qchem(
     qc_input.write_file(directory / "mol.qin")
 
 
-def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float]]:
+def read_qchem(
+    directory: Path | str = ".",
+) -> tuple[Results, list[float]]:
     """
     Read Q-Chem log files.
 
@@ -123,10 +125,10 @@ def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float]]:
         results["forces"] = gradient * (-units.Hartree / units.Bohr)
 
     # Read Hessian scratch file in 8 byte chunks
-    freq_scratch = directory / "132.0"
-    if freq_scratch.exists() and freq_scratch.stat().st_size > 0:
+    hessian_scratch = directory / "132.0"
+    if hessian_scratch.exists() and hessian_scratch.stat().st_size > 0:
         tmp_hess_data = []
-        with zopen(directory / "132.0", mode="rb") as file:
+        with zopen(hessian_scratch, mode="rb") as file:
             binary = file.read()
         tmp_hess_data.extend(
             struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
