@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from ase import Atoms
     from numpy.typing import NDArray
 
-    class Results(TypedDict):
+    class Results(TypedDict, total=False):
         energy: float  # electronic energy in eV
         forces: NDArray  # forces in eV/A
         hessian: NDArray  # Hessian in native Q-Chem units
