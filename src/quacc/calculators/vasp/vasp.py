@@ -31,7 +31,11 @@ if TYPE_CHECKING:
 
 
 class Vasp(Vasp_):
-
+    """
+    This is a wrapper around the ASE Vasp calculator that adjusts INCAR
+    parameters on-the-fly, allows for ASE to run VASP via Custodian, and
+    supports several automatic k-point generation schemes from Pymatgen.
+    """
     def __init__(
         self,
         input_atoms: Atoms,
@@ -50,9 +54,7 @@ class Vasp(Vasp_):
         **kwargs,
     ) -> None:
         """
-        This is a wrapper around the ASE Vasp calculator that adjusts INCAR
-        parameters on-the-fly, allows for ASE to run VASP via Custodian, and
-        supports several automatic k-point generation schemes from Pymatgen.
+        Initialize the VASP calculator.
 
         Parameters
         ----------
