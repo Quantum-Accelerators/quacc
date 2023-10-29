@@ -130,7 +130,7 @@ def read_qchem(
         "energy": qc_output["final_energy"] * units.Hartree,
         "qc_output": qc_output,
         "qc_input": qc_input,
-        "custodian": _parse_custodian(Path.cwd()),
+        "custodian": _parse_custodian(directory),
     }
 
     if job_type in ["force", "opt"]:
