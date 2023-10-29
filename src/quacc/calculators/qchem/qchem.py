@@ -139,7 +139,7 @@ class QChem(FileIOCalculator):
             job_type=self.job_type,
             scf_algorithm=self.scf_algorithm,
             qchem_input_params=self.qchem_input_params,
-            _prev_orbital_coeffs=self._prev_orbital_coeffs,
+            prev_orbital_coeffs=self._prev_orbital_coeffs,
         )
 
     def read_results(self) -> None:
