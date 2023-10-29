@@ -24,7 +24,8 @@ if TYPE_CHECKING:
 # TODO: 
 # 1. How to get the `job_type` to pass to `read_qchem`?
 # 2. How to deal with updating self.prev_orbital_coeffs in `read_qchem`/`write_qchem`? 
-# 3. Update the units for the Hessian to be ASE units.
+# 3. Use `TypedDict` type hints for `dict[str,Any]` hints in Results
+# 4. Update the units for the Hessian to be ASE units.
 class QChemProfile:
     """
     Q-Chem profile
