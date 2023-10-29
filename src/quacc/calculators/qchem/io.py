@@ -27,8 +27,12 @@ if TYPE_CHECKING:
         hessian: NDArray  # Hessian in native Q-Chem units
         enthalpy: float  # total enthalpy in eV
         entropy: float  # total entropy in eV/K
-        qc_output: dict[str, Any]  # Output from `pymatgen.io.qchem.outputs.QCOutput.data`
-        qc_input: dict[str, Any]  # Input from `pymatgen.io.qchem.inputs.QCInput.as_dict()`
+        qc_output: dict[
+            str, Any
+        ]  # Output from `pymatgen.io.qchem.outputs.QCOutput.data`
+        qc_input: dict[
+            str, Any
+        ]  # Input from `pymatgen.io.qchem.inputs.QCInput.as_dict()`
         custodian: dict[str, Any]  # custodian.json file metadata
 
 
@@ -70,7 +74,7 @@ def write_qchem(
         List of properties to calculate.
     system_changes
         List of system changes to make.
-    
+
     Returns
     -------
     None
@@ -114,7 +118,7 @@ def read_qchem(
     ----------
     job_type
         The type of calculation to perform.
-    
+
     Returns
     -------
     tuple[Results, list[float]]
