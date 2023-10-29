@@ -36,6 +36,7 @@ class Vasp(Vasp_):
     parameters on-the-fly, allows for ASE to run VASP via Custodian, and
     supports several automatic k-point generation schemes from Pymatgen.
     """
+
     def __init__(
         self,
         input_atoms: Atoms,

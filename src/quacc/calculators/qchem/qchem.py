@@ -22,6 +22,7 @@ class QChem(FileIOCalculator):
     """
     Custom Q-Chem calculator built on Pymatgen and Custodian.
     """
+
     implemented_properties: ClassVar[list[str]] = [
         "energy",
         "forces",
