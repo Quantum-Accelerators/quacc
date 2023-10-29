@@ -1,7 +1,6 @@
 """Core recipes for the Q-Chem"""
 from __future__ import annotations
 
-import multiprocessing
 from typing import TYPE_CHECKING
 
 from ase.optimize import FIRE
@@ -35,7 +34,6 @@ def static_job(
     scf_algorithm: str = "diis",
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
-    n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
@@ -53,7 +51,6 @@ def static_job(
         "method": method,
         "charge": charge,
         "spin_multiplicity": spin_multiplicity,
-        "cores": n_cores or multiprocessing.cpu_count(),
         "qchem_input_params": {
             "pcm_dielectric": pcm_dielectric,
             "smd_solvent": smd_solvent,
@@ -89,9 +86,6 @@ def static_job(
         "water", "ethanol", "methanol", and "acetonitrile". Refer to the Q-Chem
         manual for a complete list of solvents available. Defaults to None, in
         which case SMD will not be employed.
-    n_cores
-        Number of cores to use for the Q-Chem calculation. Defaults to use all
-        cores available on a given node.
     overwrite_inputs
         Dictionary passed to `pymatgen.io.qchem.QChemDictSet` which can modify
         default values set therein as well as set additional Q-Chem parameters.
@@ -110,7 +104,6 @@ def static_job(
         "method": method,
         "charge": charge,
         "spin_multiplicity": spin_multiplicity,
-        "cores": n_cores or multiprocessing.cpu_count(),
         "qchem_input_params": {
             "pcm_dielectric": pcm_dielectric,
             "smd_solvent": smd_solvent,
@@ -140,7 +133,6 @@ def internal_relax_job(
     scf_algorithm: str = "diis",
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
-    n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
@@ -159,7 +151,6 @@ def internal_relax_job(
             "method": method,
             "charge": charge,
             "spin_multiplicity": spin_multiplicity,
-            "cores": n_cores or multiprocessing.cpu_count(),
             "qchem_input_params": {
                 "pcm_dielectric": pcm_dielectric,
                 "smd_solvent": smd_solvent,
@@ -194,9 +185,6 @@ def internal_relax_job(
         "water", "ethanol", "methanol", and "acetonitrile". Refer to the Q-Chem
         manual for a complete list of solvents available. Defaults to None, in
         which case SMD will not be employed.
-    n_cores
-        Number of cores to use for the Q-Chem calculation. Defaults to use all
-        cores available on a given node.
     overwrite_inputs
         Dictionary passed to `pymatgen.io.qchem.QChemDictSet` which can modify
         default values set therein as well as set additional Q-Chem parameters.
@@ -217,7 +205,6 @@ def internal_relax_job(
         "method": method,
         "charge": charge,
         "spin_multiplicity": spin_multiplicity,
-        "cores": n_cores or multiprocessing.cpu_count(),
         "qchem_input_params": {
             "pcm_dielectric": pcm_dielectric,
             "smd_solvent": smd_solvent,
@@ -245,7 +232,6 @@ def freq_job(
     scf_algorithm: str = "diis",
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
-    n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
@@ -264,7 +250,6 @@ def freq_job(
             "method": method,
             "charge": charge,
             "spin_multiplicity": spin_multiplicity,
-            "cores": n_cores or multiprocessing.cpu_count(),
             "qchem_input_params": {
                 "pcm_dielectric": pcm_dielectric,
                 "smd_solvent": smd_solvent,
@@ -299,9 +284,6 @@ def freq_job(
         "water", "ethanol", "methanol", and "acetonitrile". Refer to the Q-Chem
         manual for a complete list of solvents available. Defaults to None, in
         which case SMD will not be employed.
-    n_cores
-        Number of cores to use for the Q-Chem calculation. Defaults to use all
-        cores available on a given node.
     overwrite_inputs
         Dictionary passed to `pymatgen.io.qchem.QChemDictSet` which can modify
         default values set therein as well as set additional Q-Chem parameters.
@@ -322,7 +304,6 @@ def freq_job(
         "method": method,
         "charge": charge,
         "spin_multiplicity": spin_multiplicity,
-        "cores": n_cores or multiprocessing.cpu_count(),
         "qchem_input_params": {
             "pcm_dielectric": pcm_dielectric,
             "smd_solvent": smd_solvent,
@@ -350,7 +331,6 @@ def relax_job(
     scf_algorithm: str = "diis",
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
-    n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
     opt_swaps: dict | None = None,
     copy_files: list[str] | None = None,
@@ -369,7 +349,6 @@ def relax_job(
             "method": method,
             "charge": charge,
             "spin_multiplicity": spin_multiplicity,
-            "cores": n_cores or multiprocessing.cpu_count(),
             "qchem_input_params": {
                 "pcm_dielectric": pcm_dielectric,
                 "smd_solvent": smd_solvent,
@@ -410,9 +389,6 @@ def relax_job(
         "water", "ethanol", "methanol", and "acetonitrile". Refer to the Q-Chem
         manual for a complete list of solvents available. Defaults to None, in
         which case SMD will not be employed.
-    n_cores
-        Number of cores to use for the Q-Chem calculation. Defaults to use all
-        cores available on a given node.
     overwrite_inputs
         Dictionary passed to `pymatgen.io.qchem.QChemDictSet` which can modify
         default values set therein as well as set additional Q-Chem parameters.
@@ -434,7 +410,6 @@ def relax_job(
         "method": method,
         "charge": charge,
         "spin_multiplicity": spin_multiplicity,
-        "cores": n_cores or multiprocessing.cpu_count(),
         "qchem_input_params": {
             "pcm_dielectric": pcm_dielectric,
             "smd_solvent": smd_solvent,

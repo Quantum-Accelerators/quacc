@@ -1,7 +1,6 @@
 """Transition state recipes for the Q-Chem"""
 from __future__ import annotations
 
-import multiprocessing
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
@@ -39,7 +38,6 @@ def ts_job(
     scf_algorithm: str = "diis",
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
-    n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
     opt_swaps: dict | None = None,
     copy_files: list[str] | None = None,
@@ -58,7 +56,6 @@ def ts_job(
             "method": method,
             "charge": charge,
             "spin_multiplicity": spin_multiplicity,
-            "cores": n_cores or multiprocessing.cpu_count(),
             "qchem_input_params": {
                 "pcm_dielectric": pcm_dielectric,
                 "smd_solvent": smd_solvent,
@@ -99,9 +96,6 @@ def ts_job(
         "water", "ethanol", "methanol", and "acetonitrile". Refer to the Q-Chem
         manual for a complete list of solvents available. Defaults to None, in
         which case SMD will not be employed.
-    n_cores
-        Number of cores to use for the Q-Chem calculation. Defaults to use all
-        cores available on a given node.
     overwrite_inputs
         Dictionary passed to `pymatgen.io.qchem.QChemDictSet` which can modify
         default values set therein as well as set additional Q-Chem parameters.
@@ -123,7 +117,6 @@ def ts_job(
         "method": method,
         "charge": charge,
         "spin_multiplicity": spin_multiplicity,
-        "cores": n_cores or multiprocessing.cpu_count(),
         "qchem_input_params": {
             "pcm_dielectric": pcm_dielectric,
             "smd_solvent": smd_solvent,
@@ -168,7 +161,6 @@ def irc_job(
     scf_algorithm: str = "diis",
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
-    n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
     opt_swaps: dict | None = None,
     copy_files: list[str] | None = None,
@@ -187,7 +179,6 @@ def irc_job(
             "method": method,
             "charge": charge,
             "spin_multiplicity": spin_multiplicity,
-            "cores": n_cores or multiprocessing.cpu_count(),
             "qchem_input_params": {
                 "pcm_dielectric": pcm_dielectric,
                 "smd_solvent": smd_solvent,
@@ -230,9 +221,6 @@ def irc_job(
         "water", "ethanol", "methanol", and "acetonitrile". Refer to the Q-Chem
         manual for a complete list of solvents available. Defaults to None, in
         which case SMD will not be employed.
-    n_cores
-        Number of cores to use for the Q-Chem calculation. Defaults to use all
-        cores available on a given node.
     overwrite_inputs
         Dictionary passed to `pymatgen.io.qchem.QChemDictSet` which can modify
         default values set therein as well as set additional Q-Chem parameters.
@@ -254,7 +242,6 @@ def irc_job(
         "method": method,
         "charge": charge,
         "spin_multiplicity": spin_multiplicity,
-        "cores": n_cores or multiprocessing.cpu_count(),
         "qchem_input_params": {
             "pcm_dielectric": pcm_dielectric,
             "smd_solvent": smd_solvent,
@@ -299,7 +286,6 @@ def quasi_irc_job(
     scf_algorithm: str = "diis",
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
-    n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
     irc_opt_swaps: dict | None = None,
     relax_opt_swaps: dict | None = None,
@@ -364,7 +350,6 @@ def quasi_irc_job(
         scf_algorithm=scf_algorithm,
         pcm_dielectric=pcm_dielectric,
         smd_solvent=smd_solvent,
-        n_cores=n_cores,
         overwrite_inputs=overwrite_inputs,
         opt_swaps=irc_opt_swaps,
         copy_files=copy_files,
@@ -380,7 +365,6 @@ def quasi_irc_job(
         scf_algorithm=scf_algorithm,
         pcm_dielectric=pcm_dielectric,
         smd_solvent=smd_solvent,
-        n_cores=n_cores,
         overwrite_inputs=overwrite_inputs,
         opt_swaps=relax_opt_swaps,
     )
