@@ -31,7 +31,6 @@ if TYPE_CHECKING:
 
 
 class Vasp(Vasp_):
-
     def __init__(
         self,
         input_atoms: Atoms,
