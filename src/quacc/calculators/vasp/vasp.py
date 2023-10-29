@@ -248,6 +248,10 @@ class Vasp(Vasp_):
         """
         Manage the environment for the VASP calculator.
 
+        Parameters
+        ----------
+        None
+
         Returns
         -------
         str
