@@ -31,7 +31,6 @@ if TYPE_CHECKING:
 
 
 class Vasp(Vasp_):
-
     """
     This is a wrapper around the ASE Vasp calculator that adjusts INCAR
     parameters on-the-fly, allows for ASE to run VASP via Custodian, and
