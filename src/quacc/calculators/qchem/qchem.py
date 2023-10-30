@@ -13,6 +13,7 @@ from pymatgen.io.qchem.utils import lower_and_check_unique
 from quacc.calculators.qchem import custodian
 from quacc.calculators.qchem.io import read_qchem, write_qchem
 from quacc.calculators.qchem.params import get_molecule, get_rem_swaps
+from quacc.utils.dicts import merge_dicts
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Literal
@@ -381,7 +382,7 @@ class QChem(FileIOCalculator):
                 self.rem.get("scf_algorithm")
 
             # Make QChemDictSet
-            qc_dict_set_input = QChemDictSet(
+            qc_dict_set = QChemDictSet(
                 self._molecule,
                 job_type,
                 basis_set,
@@ -392,10 +393,7 @@ class QChem(FileIOCalculator):
 
             # Merge the parameters from both QCInput objects, taking
             # QCDictSet's parameters as priority
-            qc_input_as_dict = qc_input.as_dict()
-            for k, v in qc_dict_set_input.as_dict().items():
-                if v is not None:
-                    qc_input_as_dict()[k] = v
+            qc_input_as_dict = merge_dicts(qc_input.as_dict(), qc_dict_set.as_dict())
 
             # Make a new QCInput
             qc_input = QCInput.from_dict(qc_input_as_dict)
