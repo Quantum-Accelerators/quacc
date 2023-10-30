@@ -26,7 +26,7 @@ def get_param_swaps(
     user_calc_params: dict[str, Any],
     auto_kpts: dict[Literal["line_density", "kppvol", "kppa"], float],
     input_atoms: Atoms,
-    copilot_override: bool,
+    incar_copilot: Literal["off", "on", "aggressive"],
 ) -> dict[str, Any]:
     """
     Swaps out bad INCAR flags.
@@ -39,14 +39,15 @@ def get_param_swaps(
         The auto_kpts kwarg.
     input_atoms
         The input atoms.
-    copilot_override
-        Whether to force the use of copilot.
+    incar_copilot
+        INCAR copilot mode. See `quacc.calculators.vasp.vasp.Vasp` for more info.
 
     Returns
     -------
     dict
         The updated user-provided calculator parameters.
     """
+
     is_metal = check_is_metal(input_atoms)
     calc = Vasp_(**user_calc_params)
     max_Z = input_atoms.get_atomic_numbers().max()
@@ -55,14 +56,14 @@ def get_param_swaps(
         not calc.int_params["lmaxmix"] or calc.int_params["lmaxmix"] < 6
     ) and max_Z > 56:
         logger.info(
-            "Copilot: Setting LMAXMIX = 6 because you have f electrons.",
+            "Copilot: Recommending LMAXMIX = 6 because you have f electrons.",
         )
         calc.set(lmaxmix=6)
     elif (
         not calc.int_params["lmaxmix"] or calc.int_params["lmaxmix"] < 4
     ) and max_Z > 20:
         logger.info(
-            "Copilot: Setting LMAXMIX = 4 because you have d electrons.",
+            "Copilot: Recommending LMAXMIX = 4 because you have d electrons.",
         )
         calc.set(lmaxmix=4)
 
@@ -74,7 +75,7 @@ def get_param_swaps(
         or calc.string_params["metagga"]
     ) and not calc.bool_params["lasph"]:
         logger.info(
-            "Copilot: Setting LASPH = True because you have a +U, vdW, meta-GGA, or hybrid calculation.",
+            "Copilot: Recommending LASPH = True because you have a +U, vdW, meta-GGA, or hybrid calculation.",
         )
         calc.set(lasph=True)
 
@@ -82,7 +83,7 @@ def get_param_swaps(
         not calc.string_params["algo"] or calc.string_params["algo"].lower() != "all"
     ):
         logger.info(
-            "Copilot: Setting ALGO = All because you have a meta-GGA calculation.",
+            "Copilot: Recommending ALGO = All because you have a meta-GGA calculation.",
         )
         calc.set(algo="all")
 
@@ -91,7 +92,7 @@ def get_param_swaps(
         or calc.string_params["algo"].lower() not in ["all", "damped", "normal"]
     ):
         logger.info(
-            "Copilot: Setting ALGO = Normal because you have a hybrid calculation.",
+            "Copilot: Recommending ALGO = Normal because you have a hybrid calculation.",
         )
         calc.set(algo="normal")
 
@@ -114,7 +115,7 @@ def get_param_swaps(
         )
     ):
         logger.info(
-            "Copilot: Setting ISMEAR = -5 because you have a static calculation.",
+            "Copilot: Recommending ISMEAR = -5 because you have a static calculation.",
         )
         calc.set(ismear=-5)
 
@@ -124,7 +125,7 @@ def get_param_swaps(
         and calc.float_params["kspacing"] is None
     ):
         logger.info(
-            "Copilot: Setting ISMEAR = 0 because you don't have enough k-points for ISMEAR = -5.",
+            "Copilot: Recommending ISMEAR = 0 because you don't have enough k-points for ISMEAR = -5.",
         )
         calc.set(ismear=0)
 
@@ -140,7 +141,7 @@ def get_param_swaps(
 
     if auto_kpts and auto_kpts.get("line_density") and calc.int_params["ismear"] != 0:
         logger.info(
-            "Copilot: Setting ISMEAR = 0 and SIGMA = 0.01 because you are doing a line mode calculation.",
+            "Copilot: Recommending ISMEAR = 0 and SIGMA = 0.01 because you are doing a line mode calculation.",
         )
         calc.set(ismear=0, sigma=0.01)
 
@@ -148,7 +149,7 @@ def get_param_swaps(
         not calc.float_params["sigma"] or calc.float_params["sigma"] > 0.05
     ):
         logger.info(
-            "Copilot: Setting SIGMA = 0.05 because ISMEAR = 0 was requested with SIGMA > 0.05.",
+            "Copilot: Recommending SIGMA = 0.05 because ISMEAR = 0 was requested with SIGMA > 0.05.",
         )
         calc.set(sigma=0.05)
 
@@ -158,19 +159,19 @@ def get_param_swaps(
         and calc.bool_params["laechg"]
     ):
         logger.info(
-            "Copilot: Setting LAECHG = False because you have NSW > 0. LAECHG is not compatible with NSW > 0.",
+            "Copilot: Recommending LAECHG = False because you have NSW > 0. LAECHG is not compatible with NSW > 0.",
         )
         calc.set(laechg=False)
 
     if calc.int_params["ldauprint"] in (None, 0) and (
         calc.bool_params["ldau"] or calc.dict_params["ldau_luj"]
     ):
-        logger.info("Copilot: Setting LDAUPRINT = 1 because LDAU = True.")
+        logger.info("Copilot: Recommending LDAUPRINT = 1 because LDAU = True.")
         calc.set(ldauprint=1)
 
     if calc.special_params["lreal"] and len(input_atoms) < 30:
         logger.info(
-            "Copilot: Setting LREAL = False because you have a small system (< 30 atoms/cell).",
+            "Copilot: Recommending LREAL = False because you have a small system (< 30 atoms/cell).",
         )
         calc.set(lreal=False)
 
@@ -179,7 +180,7 @@ def get_param_swaps(
         or np.any(input_atoms.get_initial_magnetic_moments() != 0)
     ):
         logger.info(
-            "Copilot: Setting LORBIT = 11 because you have a spin-polarized calculation.",
+            "Copilot: Recommending LORBIT = 11 because you have a spin-polarized calculation.",
         )
         calc.set(lorbit=11)
 
@@ -193,7 +194,7 @@ def get_param_swaps(
         or calc.int_params["ibrion"] in [5, 6, 7, 8]
     ):
         logger.info(
-            "Copilot: Setting NCORE = 1 because NCORE/NPAR is not compatible with this job type.",
+            "Copilot: Recommending NCORE = 1 because NCORE/NPAR is not compatible with this job type.",
         )
         calc.set(ncore=1, npar=None)
 
@@ -203,19 +204,19 @@ def get_param_swaps(
         and calc.float_params["kspacing"] is None
     ):
         logger.info(
-            "Copilot: Setting KPAR = 1 because you have too few k-points to parallelize.",
+            "Copilot: Recommending KPAR = 1 because you have too few k-points to parallelize.",
         )
         calc.set(kpar=1)
 
     if calc.bool_params["lhfcalc"] is True and calc.int_params["isym"] in (1, 2):
         logger.info(
-            "Copilot: Setting ISYM = 3 because you are running a hybrid calculation.",
+            "Copilot: Recommending ISYM = 3 because you are running a hybrid calculation.",
         )
         calc.set(isym=3)
 
     if calc.bool_params["lsorbit"]:
         logger.info(
-            "Copilot: Setting ISYM = -1 because you are running an SOC calculation.",
+            "Copilot: Recommending ISYM = -1 because you are running an SOC calculation.",
         )
         calc.set(isym=-1)
 
@@ -224,15 +225,21 @@ def get_param_swaps(
         or (calc.int_params["npar"] and calc.int_params["npar"] > 1)
     ) and (calc.bool_params["lelf"] is True):
         logger.info(
-            "Copilot: Setting NPAR = 1 because NCORE/NPAR is not compatible with this job type.",
+            "Copilot: Recommending NPAR = 1 because NCORE/NPAR is not compatible with this job type.",
         )
         calc.set(npar=1, ncore=None)
 
     if not calc.string_params["efermi"]:
-        logger.info("Copilot: Setting EFERMI = MIDGAP per the VASP manual.")
+        logger.info("Copilot: Recommending EFERMI = MIDGAP per the VASP manual.")
         calc.set(efermi="midgap")
 
-    return calc.parameters if copilot_override else calc.parameters | user_calc_params
+    return (
+        calc.parameters
+        if incar_copilot == "aggressive"
+        else calc.parameters | user_calc_params
+        if incar_copilot == "on"
+        else user_calc_params
+    )
 
 
 def remove_unused_flags(user_calc_params: dict[str, Any]) -> dict[str, Any]:

@@ -16,13 +16,14 @@ from quacc.runners.prep import prep_next_run
 
 FILE_DIR = Path(__file__).resolve().parent
 
+DEFAULT_SETTINGS = SETTINGS.copy_model()
 
 def setup_module():
-    SETTINGS.VASP_COPILOT_OVERRIDE = True
+    SETTINGS.VASP_INCAR_COPILOT = "aggressive"
 
 
 def teardown_module():
-    SETTINGS.VASP_COPILOT_OVERRIDE = False
+    SETTINGS.VASP_INCAR_COPILOT = DEFAULT_SETTINGS.VASP_INCAR_COPILOT
 
 
 @pytest.fixture()
