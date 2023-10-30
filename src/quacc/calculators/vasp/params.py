@@ -22,14 +22,14 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-def calc_swaps(
+def param_swaps(
     user_calc_params: dict[str, Any],
     auto_kpts: dict[Literal["line_density", "kppvol", "kppa"], float],
     input_atoms: Atoms,
     force_copilot: bool,
 ) -> dict[str, Any]:
     """
-    Swaps Fout bad INCAR flags.
+    Swaps out bad INCAR flags.
 
     Parameters
     ----------

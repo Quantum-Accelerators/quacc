@@ -17,8 +17,8 @@ from ase.constraints import FixAtoms
 from quacc.calculators.vasp import custodian
 from quacc.calculators.vasp.io import load_vasp_yaml_calc
 from quacc.calculators.vasp.params import (
-    calc_swaps,
     convert_auto_kpts,
+    param_swaps,
     remove_unused_flags,
     set_auto_dipole,
 )
@@ -159,90 +159,20 @@ class Vasp(Vasp_):
         self.auto_dipole = auto_dipole
         self.kwargs = kwargs
 
-        # Check constraints
-        if (
-            use_custodian
-            and input_atoms.constraints
-            and not all(isinstance(c, FixAtoms) for c in input_atoms.constraints)
-        ):
-            msg = "Atoms object has a constraint that is not compatible with Custodian."
-            raise ValueError(msg)
+        # Initialize for later
+        self.user_calc_params = {}
 
-        # Get user-defined preset parameters for the calculator
-        if preset:
-            calc_preset = load_vasp_yaml_calc(SETTINGS.VASP_PRESET_DIR / preset)[
-                "inputs"
-            ]
-        else:
-            calc_preset = {}
-
-        # Collect all the calculator parameters and prioritize the kwargs in the
-        # case of duplicates.
-        self.user_calc_params = calc_preset | kwargs
-
-        # Allow the user to use setups='mysetups.yaml' to load in a custom
-        # setups from a YAML file
-        if (
-            isinstance(self.user_calc_params.get("setups"), (str, Path))
-            and self.user_calc_params["setups"] not in ase_setups.setups_defaults
-        ):
-            self.user_calc_params["setups"] = load_vasp_yaml_calc(
-                SETTINGS.VASP_PRESET_DIR / self.user_calc_params["setups"]
-            )["inputs"]["setups"]
-
-        # Handle special arguments in the user calc parameters that ASE does not
-        # natively support
-        if (
-            self.user_calc_params.get("elemental_magmoms")
-            and self.elemental_magmoms is None
-        ):
-            self.elemental_magmoms = self.user_calc_params["elemental_magmoms"]
-        if self.user_calc_params.get("auto_kpts") and self.auto_kpts is None:
-            self.auto_kpts = self.user_calc_params["auto_kpts"]
-        if self.user_calc_params.get("auto_dipole") and self.auto_dipole is None:
-            self.auto_dipole = self.user_calc_params["auto_dipole"]
-        for k in ["elemental_magmoms", "auto_kpts", "auto_dipole"]:
-            self.user_calc_params.pop(k, None)
-
-        # Make automatic k-point mesh
-        if self.auto_kpts and not self.user_calc_params.get("kpts"):
-            self.user_calc_params = convert_auto_kpts(
-                self.user_calc_params, self.auto_kpts, self.input_atoms
-            )
-
-        # Add dipole corrections if requested
-        if self.auto_dipole:
-            self.user_calc_params = set_auto_dipole(
-                self.user_calc_params, self.input_atoms
-            )
-
-        # Set magnetic moments
-        set_magmoms(
-            input_atoms,
-            elemental_mags_dict=self.elemental_magmoms,
-            copy_magmoms=copy_magmoms,
-            elemental_mags_default=preset_mag_default,
-            mag_cutoff=mag_cutoff,
-        )
-
-        # Handle INCAR swaps as needed
-        if incar_copilot:
-            self.user_calc_params = calc_swaps(
-                self.user_calc_params,
-                self.auto_kpts,
-                self.input_atoms,
-                self.force_copilot,
-            )
-
-        # Remove unused INCAR flags
-        self.user_calc_params = remove_unused_flags(self.user_calc_params)
+        # Cleanup parameters
+        self._cleanup_params()
 
         # Get VASP executable command, if necessary, and specify child
         # environment variables
         command = self._manage_environment()
 
         # Instantiate the calculator!
-        super().__init__(atoms=input_atoms, command=command, **self.user_calc_params)
+        super().__init__(
+            atoms=self.input_atoms, command=command, **self.user_calc_params
+        )
 
     def _manage_environment(self) -> str:
         """
@@ -284,3 +214,95 @@ class Vasp(Vasp_):
         )
 
         return f"{SETTINGS.VASP_PARALLEL_CMD} {vasp_cmd}"
+
+    def _cleanup_params(self) -> None:
+        """
+        Clean up various calculator attributes and parameters.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+        from quacc import SETTINGS
+
+        # Check constraints
+        if (
+            self.use_custodian
+            and self.input_atoms.constraints
+            and not all(isinstance(c, FixAtoms) for c in self.input_atoms.constraints)
+        ):
+            msg = "Atoms object has a constraint that is not compatible with Custodian."
+            raise ValueError(msg)
+
+        # Get user-defined preset parameters for the calculator
+        if self.preset:
+            calc_preset = load_vasp_yaml_calc(SETTINGS.VASP_PRESET_DIR / self.preset)[
+                "inputs"
+            ]
+        else:
+            calc_preset = {}
+
+        # Collect all the calculator parameters and prioritize the kwargs in the
+        # case of duplicates.
+        self.user_calc_params = calc_preset | self.kwargs
+
+        # Allow the user to use setups='mysetups.yaml' to load in a custom
+        # setups from a YAML file
+        if (
+            isinstance(self.user_calc_params.get("setups"), (str, Path))
+            and self.user_calc_params["setups"] not in ase_setups.setups_defaults
+        ):
+            self.user_calc_params["setups"] = load_vasp_yaml_calc(
+                SETTINGS.VASP_PRESET_DIR / self.user_calc_params["setups"]
+            )["inputs"]["setups"]
+
+        # Handle special arguments in the user calc parameters that ASE does not
+        # natively support
+        if (
+            self.user_calc_params.get("elemental_magmoms")
+            and self.elemental_magmoms is None
+        ):
+            self.elemental_magmoms = self.user_calc_params["elemental_magmoms"]
+        if self.user_calc_params.get("auto_kpts") and self.auto_kpts is None:
+            self.auto_kpts = self.user_calc_params["auto_kpts"]
+        if self.user_calc_params.get("auto_dipole") and self.auto_dipole is None:
+            self.auto_dipole = self.user_calc_params["auto_dipole"]
+        for k in ["elemental_magmoms", "auto_kpts", "auto_dipole"]:
+            self.user_calc_params.pop(k, None)
+
+        # Make automatic k-point mesh
+        if self.auto_kpts and not self.user_calc_params.get("kpts"):
+            self.user_calc_params = convert_auto_kpts(
+                self.user_calc_params, self.auto_kpts, self.input_atoms
+            )
+
+        # Add dipole corrections if requested
+        if self.auto_dipole:
+            self.user_calc_params = set_auto_dipole(
+                self.user_calc_params, self.input_atoms
+            )
+
+        # Set magnetic moments
+        self.input_atoms = set_magmoms(
+            self.input_atoms,
+            elemental_mags_dict=self.elemental_magmoms,
+            copy_magmoms=self.copy_magmoms,
+            elemental_mags_default=self.preset_mag_default,
+            mag_cutoff=self.mag_cutoff,
+        )
+
+        # Handle INCAR swaps as needed
+        if self.incar_copilot:
+            self.user_calc_params = param_swaps(
+                self.user_calc_params,
+                self.auto_kpts,
+                self.input_atoms,
+                self.force_copilot,
+            )
+
+        # Remove unused INCAR flags
+        self.user_calc_params = remove_unused_flags(self.user_calc_params)
