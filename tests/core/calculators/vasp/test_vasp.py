@@ -16,7 +16,7 @@ from quacc.runners.prep import prep_next_run
 
 FILE_DIR = Path(__file__).resolve().parent
 
-DEFAULT_SETTINGS = SETTINGS.copy_model()
+DEFAULT_SETTINGS = SETTINGS.copy()
 
 
 def setup_module():
