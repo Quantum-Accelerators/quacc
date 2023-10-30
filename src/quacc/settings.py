@@ -177,13 +177,6 @@ class QuaccSettings(BaseSettings):
     # VASP Settings: General
     VASP_INCAR_COPILOT: Literal["off", "on", "aggressive"] = Field(
         "on",
-        description=(
-            "Controls VASP co-pilot mode for automated INCAR parameter handling."
-            "off: Do not use co-pilot mode. INCAR parameters will be unmodified."
-            "on: Use co-pilot mode. This will only modify INCAR flags not already set by the user."
-            "aggressive: Use co-pilot mode in agressive mode. This will modify INCAR flags even if they are already set by the user."
-        ),
-    )
     VASP_BADER: bool = Field(
         bool(which("bader")),
         description=(
