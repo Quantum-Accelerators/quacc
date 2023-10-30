@@ -56,7 +56,7 @@ def get_molecule(
 
     Returns
     -------
-    molecule
+    Molecule | list[Molecule] | Literal["read"]
         The corresponding `molecule` kwarg to pass to QCInput.
     """
     adaptor = AseAtomsAdaptor()
