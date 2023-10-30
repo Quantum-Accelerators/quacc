@@ -33,16 +33,16 @@ def static_job(
     """
     Carry out a single-point calculation.
 
-    Calculator defaults, which can be overriden by `calc_swaps`:
+    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
 
-    ```python
-    {
-        "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
-        "Hamiltonian_MaxSccIterations": 200,
-        "Hamiltonian_Method": method if "xtb" in method.lower() else None,
-        "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
-    }
-    ```
+        ```python
+        {
+            "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
+            "Hamiltonian_MaxSccIterations": 200,
+            "Hamiltonian_Method": method if "xtb" in method.lower() else None,
+            "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
+        }
+        ```
 
     Parameters
     ----------
