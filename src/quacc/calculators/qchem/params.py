@@ -6,12 +6,13 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
+from ase import Atoms
+
 from quacc.atoms.core import atoms_to_pmg
 
 if TYPE_CHECKING:
     from typing import Any, Literal
 
-    from ase import Atoms
     from pymatgen.core.structure import Molecule
 
 logger = logging.getLogger(__name__)

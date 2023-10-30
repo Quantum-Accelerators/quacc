@@ -43,9 +43,9 @@ class QChem(FileIOCalculator):
     def __init__(
         self,
         atoms: Atoms | list[Atoms] | Literal["read"],
-        charge: int,
-        spin_multiplicity: int,
-        rem: dict,
+        charge: int = 0,
+        spin_multiplicity: int = 1,
+        rem: dict | None = None,
         opt: dict[str, list[str]] | None = None,
         pcm: dict | None = None,
         solvent: dict | None = None,
@@ -203,7 +203,7 @@ class QChem(FileIOCalculator):
         self.atoms = atoms
         self.charge = charge
         self.spin_multiplicity = spin_multiplicity
-        self.rem = rem
+        self.rem = rem or {}
         self.opt = opt
         self.pcm = pcm
         self.solvent = solvent
@@ -271,7 +271,7 @@ class QChem(FileIOCalculator):
         """
         FileIOCalculator.write_input(self, atoms, properties, system_changes)
 
-        qc_input = self._make_qc_input(self)
+        qc_input = self._make_qc_input()
 
         write_qchem(
             qc_input,
