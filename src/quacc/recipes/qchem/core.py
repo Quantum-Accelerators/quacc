@@ -20,6 +20,8 @@ except ImportError:
     has_sella = False
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase import Atoms
 
     from quacc.schemas.ase import OptSchema, RunSchema
@@ -36,7 +38,7 @@ def static_job(
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
     n_cores: int | None = None,
-    overwrite_inputs: dict | None = None,
+    overwrite_inputs: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
@@ -141,7 +143,7 @@ def internal_relax_job(
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
     n_cores: int | None = None,
-    overwrite_inputs: dict | None = None,
+    overwrite_inputs: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
@@ -246,7 +248,7 @@ def freq_job(
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
     n_cores: int | None = None,
-    overwrite_inputs: dict | None = None,
+    overwrite_inputs: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
@@ -351,8 +353,8 @@ def relax_job(
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
     n_cores: int | None = None,
-    overwrite_inputs: dict | None = None,
-    opt_swaps: dict | None = None,
+    overwrite_inputs: dict[str, Any] | None = None,
+    opt_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
     """
@@ -465,8 +467,8 @@ def _base_job(
     atoms: Atoms,
     charge: int,
     spin_multiplicity: int,
-    defaults: dict | None = None,
-    additional_fields: dict | None = None,
+    defaults: dict[str, Any] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
@@ -511,10 +513,10 @@ def _base_opt_job(
     atoms: Atoms,
     charge: int,
     spin_multiplicity: int,
-    qchem_defaults: dict | None = None,
-    opt_defaults: dict | None = None,
-    opt_swaps: dict | None = None,
-    additional_fields: dict | None = None,
+    qchem_defaults: dict[str, Any] | None = None,
+    opt_defaults: dict[str, Any] | None = None,
+    opt_swaps: dict[str, Any] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
     """

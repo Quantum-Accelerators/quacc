@@ -15,6 +15,8 @@ from pymatgen.io.ase import AseAtomsAdaptor
 from quacc.atoms.core import copy_atoms
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from pymatgen.core import Structure
 
 logger = logging.getLogger(__name__)
@@ -204,8 +206,8 @@ def make_adsorbate_structures(
     modes: list[str] | None = None,
     allowed_surface_symbols: list[str] | None = None,
     allowed_surface_indices: list[int] | None = None,
-    ads_site_finder_kwargs: dict | None = None,
-    find_ads_sites_kwargs: dict | None = None,
+    ads_site_finder_kwargs: dict[str, Any] | None = None,
+    find_ads_sites_kwargs: dict[str, Any] | None = None,
 ) -> list[Atoms]:
     """
     Add a single adsorbate to a structure for every requested adsorption mode

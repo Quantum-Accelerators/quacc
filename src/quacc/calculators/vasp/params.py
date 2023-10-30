@@ -15,16 +15,21 @@ from pymatgen.symmetry.bandstructure import HighSymmKpath
 from quacc.atoms.core import check_is_metal
 
 if TYPE_CHECKING:
+    from typing import Any, Literal
+
     from ase import Atoms
 
 logger = logging.getLogger(__name__)
 
 
 def calc_swaps(
-    user_calc_params: dict, auto_kpts: dict, input_atoms: Atoms, force_copilot: bool
-) -> dict:
+    user_calc_params: dict[str, Any],
+    auto_kpts: dict[Literal["line_density", "kppvol", "kppa"], float],
+    input_atoms: Atoms,
+    force_copilot: bool,
+) -> dict[str, Any]:
     """
-    Swaps out bad INCAR flags.
+    Swaps Fout bad INCAR flags.
 
     Parameters
     ----------
@@ -230,7 +235,7 @@ def calc_swaps(
     return calc.parameters if force_copilot else calc.parameters | user_calc_params
 
 
-def remove_unused_flags(user_calc_params: dict) -> dict:
+def remove_unused_flags(user_calc_params: dict[str, Any]) -> dict[str, Any]:
     """
     Removes unused flags in the INCAR, like EDIFFG if you are doing NSW = 0.
 
@@ -273,7 +278,9 @@ def remove_unused_flags(user_calc_params: dict) -> dict:
     return user_calc_params
 
 
-def set_auto_dipole(user_calc_params: dict, input_atoms: Atoms) -> dict:
+def set_auto_dipole(
+    user_calc_params: dict[str, Any], input_atoms: Atoms
+) -> dict[str, Any]:
     """
     Sets flags related to the auto_dipole kwarg.
 
@@ -302,10 +309,10 @@ def set_auto_dipole(user_calc_params: dict, input_atoms: Atoms) -> dict:
 
 
 def convert_auto_kpts(
-    user_calc_params: dict,
-    auto_kpts: dict,
+    user_calc_params: dict[str, Any],
+    auto_kpts: dict[Literal["line_density", "kppvol", "kppa"], float],
     input_atoms: Atoms,
-) -> dict:
+) -> dict[str, Any]:
     """
     Shortcuts for pymatgen k-point generation schemes.
 

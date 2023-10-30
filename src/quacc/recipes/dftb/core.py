@@ -12,7 +12,7 @@ from quacc.utils.dicts import merge_dicts
 from quacc.utils.files import check_logfile
 
 if TYPE_CHECKING:
-    from typing import Literal
+    from typing import Any, Literal
 
     from ase import Atoms
 
@@ -27,7 +27,7 @@ def static_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
     kpts: tuple | list[tuple] | dict | None = None,
-    calc_swaps: dict | None = None,
+    calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
@@ -88,7 +88,7 @@ def relax_job(
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
     kpts: tuple | list[tuple] | dict | None = None,
     relax_cell: bool = False,
-    calc_swaps: dict | None = None,
+    calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
@@ -155,9 +155,9 @@ def relax_job(
 
 def _base_job(
     atoms: Atoms,
-    defaults: dict | None = None,
-    calc_swaps: dict | None = None,
-    additional_fields: dict | None = None,
+    defaults: dict[str, Any] | None = None,
+    calc_swaps: dict[str, Any] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
