@@ -340,9 +340,7 @@ class QChem(FileIOCalculator):
             attr_val = lower_and_check_unique(getattr(self, attr))
             setattr(self, attr, attr_val)
 
-        self._molecule = get_molecule(
-            self.atoms, charge=self.charge, spin_multiplicity=self.spin_multiplicity
-        )
+        self._molecule = get_molecule(self.atoms, self.charge, self.spin_multiplicity)
         self._set_default_params()
 
     def _set_default_params(self) -> None:

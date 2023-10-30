@@ -5,8 +5,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pymatgen.io.qchem.utils import lower_and_check_unique
-
 from quacc.atoms.core import atoms_to_pmg
 
 if TYPE_CHECKING:
@@ -40,8 +38,8 @@ def get_rem_swaps(rem: dict[str, Any]) -> dict[str, Any]:
 
 def get_molecule(
     atoms: Atoms | list[Atoms] | Literal["read"],
-    charge: int = 0,
-    spin_multiplicity: int = 1,
+    charge: int,
+    spin_multiplicity: int,
 ) -> Molecule | list[Molecule] | Literal["read"]:
     """
     Convert ASE Atom(s) to Molecule(s) suitable for `QCInput`.
