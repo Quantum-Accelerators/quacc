@@ -45,7 +45,7 @@ def static_job(
         }
         ```
 
-    !!! Info "Option defaults, which can be overriden by `option_swaps`
+    !!! Info "Option defaults, which can be overriden by `option_swaps`"
 
         ```python
         {"dump every gulp.res": True}
