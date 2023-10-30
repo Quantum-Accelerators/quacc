@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import os
-from importlib import import_module, resources
+from importlib import resources, util
 from pathlib import Path
 from shutil import which
 from typing import TYPE_CHECKING, Literal, Optional, Union
@@ -25,12 +25,9 @@ for wflow_engine in [
     "redun",
     "jobflow",
 ]:
-    try:
-        import_module(wflow_engine)
+    if util.find_spec(wflow_engine):
         installed_engine = wflow_engine
         break
-    except ImportError:
-        continue
 
 _DEFAULT_CONFIG_FILE_PATH = Path("~", ".quacc.yaml").expanduser().resolve()
 
