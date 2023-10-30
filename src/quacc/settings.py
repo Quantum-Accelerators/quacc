@@ -1,8 +1,8 @@
 """Settings for quacc"""
 from __future__ import annotations
 
-from importlib import resources, util
 import os
+from importlib import resources, util
 from pathlib import Path
 from shutil import which
 from typing import TYPE_CHECKING, Literal, Optional, Union
