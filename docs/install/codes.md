@@ -1,6 +1,6 @@
 # Calculator Setup
 
-!!! Tip
+!!! Tip "Start Simple"
 
     Just getting started? Try using the EMT or LJ recipes before worrying about setting up one of the calculators below.
 
@@ -35,7 +35,7 @@ export QUACC_GULP_CMD="/path/to/gulp"
 export QUACC_GULP_LIB="/path/to/gulp-#.#.#/Libraries"
 ```
 
-!!! Note
+!!! Tip "Receive a Compilation Error?"
 
     If you receive an error upon compilation, refer to [this forum post](https://matsci.org/t/installing-gulp/43158/18?u=arosen).
 

@@ -6,13 +6,13 @@ In the previous examples, we have been running calculations on our local machine
 
     Out-of-the-box, Parsl will run on your local machine. However, in practice you will probably want to run your Parsl workflows on HPC machines.
 
-    !!! Note
+    !!! Note "Pilot Jobs"
 
         Unlike most other workflow engines, Parsl is built for the [pilot job model](https://en.wikipedia.org/wiki/Pilot_job) where the allocated nodes continually pull in new tasks to run. This makes it possible to avoid submitting a large number of small jobs to the scheduler, which can be inefficient from a queuing perspective.
 
     **Configuring Executors**
 
-    !!! Tip
+    !!! Tip "Example Configurations"
 
         To configure Parsl for the high-performance computing environment of your choice, refer to the executor [Configuration page in the Parsl documentation](https://parsl.readthedocs.io/en/stable/userguide/configuring.html) for many examples.
 
@@ -157,7 +157,7 @@ In the previous examples, we have been running calculations on our local machine
 
     **Configuring Executors**
 
-    !!! Tip
+    !!! Tip "Example Configurations"
 
         Refer to the [executor plugin documentation](https://docs.covalent.xyz/docs/plugin) for instructions on how to install and use the relevant plugins that allow Covalent to submit jobs on your desired machines.
 
@@ -236,7 +236,7 @@ In the previous examples, we have been running calculations on our local machine
 
     Out-of-the-box, Redun will run on your local machine. However, in practice, you will probably want to specify a dedicated executor.
 
-    !!! Tip
+    !!! Tip "Example Configurations"
 
         To configure Redun for the high-performance computing environment of your choice, refer to the [executors](https://insitro.github.io/redun/executors.html) page in the Redun documentation.
 

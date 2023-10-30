@@ -4,7 +4,7 @@ Materials Project-compatible recipes
 This set of recipes is meant to be compatible with the Materials Project
 Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
 
-!!! Note
+!!! Info
 
     The one true source of Materials Project workflows is
     [atomate2](https://github.com/materialsproject/atomate2).

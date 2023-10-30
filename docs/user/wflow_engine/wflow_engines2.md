@@ -430,6 +430,6 @@ graph LR
 
 === "Jobflow"
 
-    !!! Warning
+    !!! Warning "Limitations"
 
         Due to the difference in how Jobflow handles workflows (particularly dynamic ones) compared to other supported workflow engines, any quacc recipes that have been pre-defined with a `#!Python @flow` decorator (i.e. have `_flow` in the name) cannot be run directly with Jobflow. Rather, a Jobflow-specific `Flow` needs to be constructed by the user.
