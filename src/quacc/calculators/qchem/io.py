@@ -111,9 +111,9 @@ def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float]]:
             gradient = qc_output["pcm_gradients"][0]
         else:
             gradient = qc_output["gradients"][0]
+        tol = 1e-6
         for ii, subgrad in enumerate(grad):
             for jj, val in enumerate(subgrad):
-                tol = 1e-6
                 if abs(gradient[ii, jj] - val) > tol:
                     raise ValueError(
                         "Difference between gradient value in scratch file vs. output file should not be this large."

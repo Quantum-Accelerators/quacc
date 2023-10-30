@@ -58,11 +58,11 @@ def get_molecule(
     if isinstance(atoms, Atoms):
         return atoms_to_pmg(atoms, charge=charge, spin_multiplicity=spin_multiplicity)
     if isinstance(atoms, list):
-        molecules = []
-        for atoms_ in atoms:
-            molecules.append(
-                atoms_to_pmg(atoms_, charge=charge, spin_multiplicity=spin_multiplicity)
+        return [
+            atoms_to_pmg(
+                atoms_, charge=charge, spin_multiplicity=spin_multiplicity
             )
-        return molecules
+            for atoms_ in atoms
+        ]
     if isinstance(atoms, str):
         return atoms
