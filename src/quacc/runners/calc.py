@@ -28,6 +28,8 @@ except ImportError:
     Sella = None
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase import Atoms
     from ase.optimize.optimize import Optimizer
 
@@ -107,8 +109,8 @@ def run_ase_opt(
     fmax: float = 0.01,
     max_steps: int = 500,
     optimizer: Optimizer = FIRE,
-    optimizer_kwargs: dict | None = None,
-    run_kwargs: dict | None = None,
+    optimizer_kwargs: dict[str, Any] | None = None,
+    run_kwargs: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> Optimizer:
     """
@@ -188,7 +190,9 @@ def run_ase_opt(
 
 
 def run_ase_vib(
-    atoms: Atoms, vib_kwargs: dict | None = None, copy_files: list[str] | None = None
+    atoms: Atoms,
+    vib_kwargs: dict[str, Any] | None = None,
+    copy_files: list[str] | None = None,
 ) -> Vibrations:
     """
     Run an ASE-based vibration analysis in a scratch directory and copy the
@@ -339,7 +343,7 @@ def _calc_cleanup(tmpdir: str | Path, job_results_dir: str | Path) -> None:
 
 
 @requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
-def _set_sella_kwargs(atoms: Atoms, optimizer_kwargs: dict) -> None:
+def _set_sella_kwargs(atoms: Atoms, optimizer_kwargs: dict[str, Any]) -> None:
     """
     Modifies the `optimizer_kwargs` in-place to address various Sella-related
     parameters. This function does the following for the specified key/value

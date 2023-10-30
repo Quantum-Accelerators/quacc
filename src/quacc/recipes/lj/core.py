@@ -17,6 +17,8 @@ from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_an
 from quacc.utils.dicts import merge_dicts
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase import Atoms
 
     from quacc.schemas.ase import OptSchema, RunSchema, VibThermoSchema
@@ -25,26 +27,26 @@ if TYPE_CHECKING:
 @job
 def static_job(
     atoms: Atoms,
-    calc_swaps: dict | None = None,
+    calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
     Function to carry out a static calculation.
-
-    ??? Note
-
-        Calculator Defaults:
-
-        ```python
-        {}
-        ```
 
     Parameters
     ----------
     atoms
         Atoms object
     calc_swaps
-        Dictionary of custom kwargs for the LJ calculator.
+        Dictionary of custom kwargs for the LJ calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `ase.calculators.lj.LJ` calculator.
+
+        !!! Info "Calculator defaults"
+
+            ```python
+            {}
+            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -66,35 +68,37 @@ def static_job(
 @job
 def relax_job(
     atoms: Atoms,
-    calc_swaps: dict | None = None,
-    opt_swaps: dict | None = None,
+    calc_swaps: dict[str, Any] | None = None,
+    opt_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
     """
     Function to carry out a geometry optimization.
-
-    ??? Note
-
-        Calculator Defaults:
-
-        ```python
-        {}
-        ```
-
-        Optimizer Defaults:
-
-        ```python
-        {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
-        ```
 
     Parameters
     ----------
     atoms
         Atoms object
     calc_swaps
-        Dictionary of custom kwargs for the LJ calculator.
+        Dictionary of custom kwargs for the LJ calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `ase.calculators.lj.LJ` calculator.
+
+        !!! Info "Calculator defaults"
+
+            ```python
+            {}
+            ```
     opt_swaps
-        Dictionary of swaps for [quacc.runners.calc.run_ase_opt][].
+        Dictionary of custom kwargs for the optimization process. Set a value
+        to `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to [quacc.runners.calc.run_ase_opt][].
+
+        !!! Info "Optimizer defaults"
+
+            ```python
+            {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
+            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -120,26 +124,12 @@ def freq_job(
     energy: float = 0.0,
     temperature: float = 298.15,
     pressure: float = 1.0,
-    calc_swaps: dict | None = None,
-    vib_kwargs: dict | None = None,
+    calc_swaps: dict[str, Any] | None = None,
+    vib_kwargs: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> VibThermoSchema:
     """
     Run a frequency job and calculate thermochemistry.
-
-    ??? Note
-
-        Calculator Defaults:
-
-        ```python
-        {}
-        ```
-
-        Vibrations Defaults:
-
-        ```python
-        {}
-        ```
 
     Parameters
     ----------
@@ -152,9 +142,18 @@ def freq_job(
     pressure
         Pressure in bar.
     calc_swaps
-        dictionary of custom kwargs for the LJ calculator.
+        Dictionary of custom kwargs for the LJ calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `ase.calculators.lj.LJ` calculator.
+
+        !!! Info "Calculator defaults"
+
+            ```python
+            {}
+            ```
     vib_kwargs
-        dictionary of custom kwargs for the Vibrations object.
+        Dictionary of custom kwargs for the vibration analysis. Refer to
+        [quacc.runners.calc.run_ase_vib][].
     copy_files
         Files to copy to the runtime directory.
 

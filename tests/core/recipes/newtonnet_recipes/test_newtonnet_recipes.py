@@ -8,7 +8,7 @@ from quacc import SETTINGS
 from quacc.recipes.newtonnet.core import freq_job, relax_job, static_job
 from quacc.recipes.newtonnet.ts import irc_job, quasi_irc_job, ts_job
 
-DEFAULT_SETTINGS = SETTINGS.copy()
+DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 pytest.importorskip("sella")
 pytest.importorskip("newtonnet")

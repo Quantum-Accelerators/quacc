@@ -13,6 +13,8 @@ from quacc.schemas.ase import summarize_run
 from quacc.utils.dicts import merge_dicts
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase import Atoms
 
     from quacc.schemas.ase import RunSchema
@@ -29,29 +31,12 @@ def static_job(
     atoms: Atoms,
     use_gfnff: bool = True,
     library: str | None = None,
-    keyword_swaps: dict | None = None,
-    option_swaps: dict | None = None,
+    keyword_swaps: dict[str, Any] | None = None,
+    option_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
-
-    ??? Note
-
-        Keyword Defaults:
-
-        ```python
-        {
-            "gfnff": True if use_gfnff else None,
-            "gwolf": True if use_gfnff and atoms.pbc.any() else None,
-        }
-        ```
-
-        Option Defaultss:
-
-        ```python
-        {"dump every gulp.res": True}
-        ```
 
     Parameters
     ----------
@@ -62,9 +47,28 @@ def static_job(
     library
         Filename of the potential library file, if required.
     keyword_swaps
-        Dictionary of custom keyword swap kwargs for the calculator.
+        Dictionary of custom `keyword` kwargs for the GULP calculator. Set a
+        value to `None` to remove a pre-existing key entirely. For a list of
+        available keys, refer to the `ase.calculators.gulp.GULP` calculator.
+
+        !!! Info "Keyword defaults"
+
+            ```python
+            {
+                "gfnff": True if use_gfnff else None,
+                "gwolf": True if use_gfnff and atoms.pbc.any() else None,
+            }
+            ```
     option_swaps
-        Dictionary of custom option swap kwargs for the calculator.
+        Dictionary of custom `options` kwargs for the GULP calculator. Set a
+        value to `None` to remove a pre-existing key entirely. For a list of
+        available keys, refer to the `ase.calculators.gulp.GULP` calculator.
+
+        !!! Info "Option defaults"
+
+            ```python
+            {"dump every gulp.res": True}
+            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -98,32 +102,12 @@ def relax_job(
     use_gfnff: bool = True,
     library: str | None = None,
     relax_cell: bool = False,
-    keyword_swaps: dict | None = None,
-    option_swaps: dict | None = None,
+    keyword_swaps: dict[str, Any] | None = None,
+    option_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
     Carry out a structure relaxation.
-
-    ??? Note
-
-        Keyword Defaults:
-
-        ```python
-        {
-            "opti": True,
-            "gfnff": True if use_gfnff else None,
-            "gwolf": True if use_gfnff and atoms.pbc.any() else None,
-            "conp": True if relax_cell and atoms.pbc.any() else None,
-            "conv": None if relax_cell and atoms.pbc.any() else True,
-        }
-        ```
-
-        Option Defaults:
-
-        ```python
-        {"dump every gulp.res": True}
-        ```
 
     Parameters
     ----------
@@ -136,9 +120,31 @@ def relax_job(
     relax_cell
         True if the volume should be relaxed; False if not.
     keyword_swaps
-        Dictionary of custom keyword swap kwargs for the calculator.
+        Dictionary of custom `keyword` kwargs for the GULP calculator. Set a
+        value to `None` to remove a pre-existing key entirely. For a list of
+        available keys, refer to the `ase.calculators.gulp.GULP` calculator.
+
+        !!! Info "Keyword defaults"
+
+            ```python
+            {
+                "opti": True,
+                "gfnff": True if use_gfnff else None,
+                "gwolf": True if use_gfnff and atoms.pbc.any() else None,
+                "conp": True if relax_cell and atoms.pbc.any() else None,
+                "conv": None if relax_cell and atoms.pbc.any() else True,
+            }
+            ```
     option_swaps
-        Dictionary of custom option swap kwargs for the calculator.
+        Dictionary of custom `options` kwargs for the GULP calculator. Set a
+        value to `None` to remove a pre-existing key entirely. For a list of
+        available keys, refer to the `ase.calculators.gulp.GULP` calculator.
+
+        !!! Info "Option defaults"
+
+            ```python
+            {"dump every gulp.res": True}
+            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -172,11 +178,11 @@ def relax_job(
 def _base_job(
     atoms: Atoms,
     library: str | None = None,
-    keyword_defaults: dict | None = None,
-    option_defaults: dict | None = None,
-    keyword_swaps: dict | None = None,
-    option_swaps: dict | None = None,
-    additional_fields: dict | None = None,
+    keyword_defaults: dict[str, Any] | None = None,
+    option_defaults: dict[str, Any] | None = None,
+    keyword_swaps: dict[str, Any] | None = None,
+    option_swaps: dict[str, Any] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
@@ -189,13 +195,17 @@ def _base_job(
     library
         Filename of the potential library file, if required.
     keyword_defaults
-        Default keywords for calculator.
+        Default `keywords` for calculator.
     option_defaults
-        Default options for calculator.
+        Default `options` for calculator.
     keyword_swaps
-        Dictionary of custom keyword swap kwargs for the calculator.
+        Dictionary of custom `keyword` kwargs for the GULP calculator. Set a
+        value to `None` to remove a pre-existing key entirely. For a list of
+        available keys, refer to the `ase.calculators.gulp.GULP` calculator.
     option_swaps
-        Dictionary of custom option swap kwargs for the calculator.
+        Dictionary of custom `options` kwargs for the GULP calculator. Set a
+        value to `None` to remove a pre-existing key entirely. For a list of
+        available keys, refer to the `ase.calculators.gulp.GULP` calculator.
     additional_fields
         Additional field to supply to the summarizer.
     copy_files

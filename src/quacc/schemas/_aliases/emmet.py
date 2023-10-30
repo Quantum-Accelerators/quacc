@@ -113,11 +113,11 @@ class CalculationInput(TypedDict):
     potcar: list[str]
     potcar_spec: list[PotcarSpec]
     potcar_type: list[str]
-    parameters: dict
+    parameters: dict[str, Any]
     lattice_rec: Lattice
     structure: Structure
     is_hubbard: bool
-    hubbards: dict
+    hubbards: dict[str, float]
 
 
 class ElectronicStep(TypedDict):

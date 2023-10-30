@@ -21,7 +21,7 @@ pytest.importorskip("sella")
 FILE_DIR = Path(__file__).resolve().parent
 QCHEM_DIR = FILE_DIR / "qchem_examples"
 
-DEFAULT_SETTINGS = SETTINGS.copy()
+DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 
 @pytest.fixture()

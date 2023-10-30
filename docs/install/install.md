@@ -2,7 +2,7 @@
 
 ## Pre-Requisites
 
-!!! note
+!!! Tip "Using Windows?"
 
     If you are on a Windows machine, we recommend using the [Windows Subsystem for Linux (WSL)](https://ubuntu.com/wsl) to benefit from all the features of quacc.
 

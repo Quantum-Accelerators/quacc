@@ -21,7 +21,7 @@ CREATE_UNIQUE_WORKDIR: true # (2)!
 
 2. This would ensure that each job in your quacc workflow is run in a unique, isolated working directory. This is often useful when running workflows in parallel, although some workflow engines like Covalent have their own mechanisms for this.
 
-!!! Tip
+!!! Tip "Command-Line Interface"
 
     The quacc command-line interface (CLI) lets you update the YAML file from the terminal. You can run `quacc set PARAMETER value` to set a given parameter in the YAML file to the specified value. Similarly, you can run `quacc unset PARAMETER` to remove a parameter from the YAML file.
 

@@ -22,7 +22,7 @@ from quacc.utils.files import find_recent_logfile
 from quacc.wflow.db import results_to_db
 
 if TYPE_CHECKING:
-    from typing import Literal
+    from typing import Any, Literal
 
     from quacc.schemas._aliases.cclib import (
         PopAnalysisAttributes,
@@ -51,7 +51,7 @@ def cclib_summarize_run(
     | None = None,
     check_convergence: bool | None = None,
     prep_next_run: bool = True,
-    additional_fields: dict | None = None,
+    additional_fields: dict[str, Any] | None = None,
     store: Store | None = None,
 ) -> cclibSchema:
     """

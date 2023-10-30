@@ -9,9 +9,10 @@ from quacc.utils.files import load_yaml_calc
 
 if TYPE_CHECKING:
     from pathlib import Path
+    from typing import Any
 
 
-def load_vasp_yaml_calc(yaml_path: str | Path) -> dict:
+def load_vasp_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
     """
     Loads a YAML file containing calculator settings. Used for VASP calculations
     and can read quacc-formatted YAMLs that are of the following format:

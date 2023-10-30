@@ -13,6 +13,8 @@ from quacc.schemas.cclib import cclib_summarize_run
 from quacc.utils.dicts import merge_dicts
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase import Atoms
 
     from quacc.schemas.cclib import cclibSchema
@@ -29,37 +31,12 @@ def static_job(
     spin_multiplicity: int,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
-    input_swaps: dict | None = None,
-    block_swaps: dict | None = None,
+    input_swaps: dict[str, Any] | None = None,
+    block_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> cclibSchema:
     """
     Carry out a single-point calculation.
-
-    ??? Note
-
-        Input Defaults:
-
-        ```python
-        {
-            xc: True,
-            basis: True,
-            "sp": True,
-            "slowconv": True,
-            "normalprint": True,
-            "xyzfile": True,
-        }
-        ```
-
-        Block Defaults:
-
-        ```python
-        (
-            {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
-            if which("mpirun")
-            else {}
-        )
-        ```
 
     Parameters
     ----------
@@ -74,13 +51,38 @@ def static_job(
     basis
         Basis set
     input_swaps
-        Dictionary of orcasimpleinput swaps for the calculator. To enable new
+        Dictionary of `orcasimpleinput` swaps for the calculator. To enable new
         entries, set the value as True. To remove entries from the defaults, set
-        the value as None.
+        the value as None. For a list of available keys, refer to the
+        `ase.calculators.orca.ORCA` calculator.
+
+        !!! Info "Calculator `orcasimpleinput` defaults`"
+
+            ```python
+            {
+                xc: True,
+                basis: True,
+                "sp": True,
+                "slowconv": True,
+                "normalprint": True,
+                "xyzfile": True,
+            }
+            ```
     block_swaps
-        Dictionary of orcablock swaps for the calculator. To enable new entries,
+        Dictionary of `orcablock` swaps for the calculator. To enable new entries,
         set the value as True. To remove entries from the defaults, set the
-        value as None.
+        value as None. For a list of available keys, refer to the
+        `ase.calculators.orca.ORCA` calculator.
+
+        !!! Info "Calculator `orcablocks` defaults"
+
+            ```python
+            (
+                {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
+                if which("mpirun")
+                else {}
+            )
+            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -125,38 +127,12 @@ def relax_job(
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
     run_freq: bool = False,
-    input_swaps: dict | None = None,
-    block_swaps: dict | None = None,
+    input_swaps: dict[str, Any] | None = None,
+    block_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> cclibSchema:
     """
     Carry out a geometry optimization.
-
-    ??? Note
-
-        Input Defaults:
-
-        ```python
-        {
-            xc: True,
-            basis: True,
-            "opt": True,
-            "slowconv": True,
-            "normalprint": True,
-            "freq": True if run_freq else None,
-            "xyzfile": True,
-        }
-        ```
-
-        Block Defaults:
-
-        ```python
-        (
-            {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
-            if which("mpirun")
-            else {}
-        )
-        ```
 
     Parameters
     ----------
@@ -173,13 +149,39 @@ def relax_job(
     run_freq
         If a frequency calculation should be carried out.
     input_swaps
-        Dictionary of orcasimpleinput swaps for the calculator. To enable new
+        Dictionary of `orcasimpleinput` swaps for the calculator. To enable new
         entries, set the value as True. To remove entries from the defaults, set
-        the value as None.
+        the value as None. For a list of available keys, refer to the
+        `ase.calculators.orca.ORCA` calculator.
+
+        !!! Info "Calculator `orcasimpleinput` defaults"
+
+            ```python
+            {
+                xc: True,
+                basis: True,
+                "opt": True,
+                "slowconv": True,
+                "normalprint": True,
+                "freq": True if run_freq else None,
+                "xyzfile": True,
+            }
+            ```
     block_swaps
-        Dictionary of orcablock swaps for the calculator. To enable new entries,
+        Dictionary of `orcablock` swaps for the calculator. To enable new entries,
         set the value as True. To remove entries from the defaults, set the
-        value as None.
+        value as None. For a list of available keys, refer to the
+        `ase.calculators.orca.ORCA` calculator.
+
+        !!! Info "Calculator `orcablocks` defaults"
+
+            ```python
+            (
+                {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
+                if which("mpirun")
+                else {}
+            )
+            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -221,11 +223,11 @@ def _base_job(
     atoms: Atoms,
     charge: int,
     spin_multiplicity: int,
-    default_inputs: dict | None = None,
-    default_blocks: dict | None = None,
-    input_swaps: dict | None = None,
-    block_swaps: dict | None = None,
-    additional_fields: dict | None = None,
+    default_inputs: dict[str, Any] | None = None,
+    default_blocks: dict[str, Any] | None = None,
+    input_swaps: dict[str, Any] | None = None,
+    block_swaps: dict[str, Any] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> cclibSchema:
     """
