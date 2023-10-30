@@ -55,7 +55,7 @@ def static_job(
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.psi4.Psi4` calculator.
 
-        !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
+        !!! Info "Calculator defaults"
 
             ```python
             {
@@ -103,7 +103,7 @@ def _base_job(
     spin_multiplicity: int,
     defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
-    additional_fields: dict | None = None,
+    additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """

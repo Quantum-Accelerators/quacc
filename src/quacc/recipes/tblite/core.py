@@ -86,13 +86,13 @@ def relax_job(
     """
     Relax a structure.
 
-    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
+    !!! Info "Calculator defaults"
 
         ```python
         {"method": method}
         ```
 
-    !!! Info "Optimizer defaults, which can be overriden by `opt_swaps`"
+    !!! Info "Optimizer defaults"
 
         ```python
         {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
@@ -150,7 +150,7 @@ def freq_job(
     """
     Run a frequency job and calculate thermochemistry.
 
-    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
+    !!! Info "Calculator defaults"
 
         ```python
         {"method": method}

@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.3.12]
 
+### Changed
+
+- Internal refactoring of the Q-Chem and VASP calculators
+
 ### Fixed
 
 - All `Path`-based settings have `.expanduser()` applied
