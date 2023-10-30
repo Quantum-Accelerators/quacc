@@ -200,3 +200,32 @@ def check_charge_and_spin(
     )
 
     return mol.charge, mol.spin_multiplicity
+
+
+def atoms_to_pmg(
+    atoms: Atoms | list[Atoms],
+    charge: int | None = 0,
+    spin_multiplicity: int | None = 1,
+) -> Structure | Molecule:
+    """
+    Convert ASE Atoms object to pymatgen Structure/Molecule.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object(s)
+
+    Returns
+    -------
+    Structure | Molecule
+        The corresponding Structure or Molecule
+    """
+    adaptor = AseAtomsAdaptor()
+
+    if atoms.pbc.any():
+        structure = adaptor.get_structure(atoms)
+        return structure
+
+    molecule = adaptor.get_molecule(atoms)
+    molecule.set_charge_and_spin(charge, spin_multiplicity)
+    return molecule

@@ -6,20 +6,18 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ase.calculators.calculator import FileIOCalculator
-from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.qchem.inputs import QCInput
 from pymatgen.io.qchem.sets import QChemDictSet
 from pymatgen.io.qchem.utils import lower_and_check_unique
 
 from quacc.calculators.qchem import custodian
 from quacc.calculators.qchem.io import read_qchem, write_qchem
-from quacc.utils.dicts import remove_dict_nones
+from quacc.calculators.qchem.params import get_molecule, get_rem_swaps
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Literal
 
     from ase import Atoms
-    from pymatgen.core.structure import Molecule
 
     from quacc.calculators.qchem.io import Results
 
@@ -226,24 +224,7 @@ class QChem(FileIOCalculator):
             raise NotImplementedError("The directory kwarg is not supported.")
 
         # Clean up parameters
-        for attr in [
-            "rem",
-            "pcm",
-            "solvent",
-            "smx",
-            "scan",
-            "van_der_waals",
-            "plots",
-            "nbo",
-            "geom_opt",
-            "svp",
-            "pcm_nonels",
-        ]:
-            attr_val = lower_and_check_unique(getattr(self, attr))
-            setattr(self, attr, attr_val)
-
-        self._molecule = self._get_molecule()
-        self._set_default_params()
+        self._cleanup_attrs()
 
         # Get Q-Chem executable command
         self.command = self._manage_environment()
@@ -282,7 +263,6 @@ class QChem(FileIOCalculator):
         """
         FileIOCalculator.write_input(self, atoms, properties, system_changes)
 
-        # TODO: Merge both input sets if both are passed.
         if self.qchem_dict_set_kwargs:
             qc_input = QChemDictSet(self._molecule, **self.qchem_dict_set_kwargs)
         else:
@@ -339,40 +319,31 @@ class QChem(FileIOCalculator):
         qchem_custodian_script = Path(inspect.getfile(custodian)).resolve()
         return f"python {qchem_custodian_script}"
 
-    def _get_molecule(self) -> Molecule | list[Molecule] | Literal["read"]:
+    def _cleanup_attrs(self) -> None:
         """
-        Clean up q-chem input parameters for the Q-Chem calculator. Modifies
-        self.qchem_input_params in place.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
+        Clean up self attribute parameters.
         """
+        self.rem = get_rem_swaps(self.rem)
+        for attr in [
+            "rem",
+            "pcm",
+            "solvent",
+            "smx",
+            "scan",
+            "van_der_waals",
+            "plots",
+            "nbo",
+            "geom_opt",
+            "svp",
+            "pcm_nonels",
+        ]:
+            attr_val = lower_and_check_unique(getattr(self, attr))
+            setattr(self, attr, attr_val)
 
-        # TODO: We should probably not be setting this here...
-        if "scf_guess" not in self.rem:
-            self.rem["scf_guess"] = "read"
-
-        adaptor = AseAtomsAdaptor()
-
-        if isinstance(self.atoms, Atoms):
-            atoms_.charge = self.charge
-            atoms_.spin_multiplicity = self.spin_multiplicity
-            molecule = adaptor.get_molecule(self.atoms)
-            return molecule
-        if isinstance(self.atoms, list):
-            molecule = []
-            for atoms_ in self.atoms:
-                atoms_.charge = self.charge
-                atoms_.spin_multiplicity = self.spin_multiplicity
-                molecule.append(adaptor.get_molecule(atoms_))
-            return molecule
-        if isinstance(self.atoms, str):
-            return self.atoms
+        self._molecule = get_molecule(
+            self.atoms, charge=self.charge, spin_multiplicity=self.spin_multiplicity
+        )
+        self._set_default_params()
 
     def _set_default_params(self) -> None:
         """
@@ -387,24 +358,24 @@ class QChem(FileIOCalculator):
         -------
         None
         """
-        self.default_parameters = remove_dict_nones(
-            {
-                "charge": self.charge,
-                "spin_multiplicity": self.spin_multiplicity,
-                "rem": self.rem,
-                "opt": self.opt,
-                "pcm": self.pcm,
-                "solvent": self.solvent,
-                "smx": self.smx,
-                "scan": self.scan,
-                "van_der_waals": self.van_der_waals,
-                "vdw_mode": self.vdw_mode,
-                "plots": self.plots,
-                "nbo": self.nbo,
-                "geom_opt": self.geom_opt,
-                "cdft": self.cdft,
-                "almo_coupling": self.almo_coupling,
-                "svp": self.svp,
-                "pcm_nonels": self.pcm_nonels,
-            }
-        )
+        params = {
+            "charge": self.charge,
+            "spin_multiplicity": self.spin_multiplicity,
+            "rem": self.rem,
+            "opt": self.opt,
+            "pcm": self.pcm,
+            "solvent": self.solvent,
+            "smx": self.smx,
+            "scan": self.scan,
+            "van_der_waals": self.van_der_waals,
+            "vdw_mode": self.vdw_mode,
+            "plots": self.plots,
+            "nbo": self.nbo,
+            "geom_opt": self.geom_opt,
+            "cdft": self.cdft,
+            "almo_coupling": self.almo_coupling,
+            "svp": self.svp,
+            "pcm_nonels": self.pcm_nonels,
+        }
+
+        self.default_parameters = {k: v for k, v in params.items() if v is not None}
