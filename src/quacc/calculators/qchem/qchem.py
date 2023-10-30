@@ -79,8 +79,7 @@ class QChem(FileIOCalculator):
             The spin multiplicity of the molecular system.
         rem
             A dictionary of all the input parameters for the rem section of
-            QChem input file. e.g. rem = {'method': 'rimp2', 'basis': '6-31*G++'
-            ... }
+            QChem input file. e.g. rem = {'method': 'rimp2', 'basis': '6-31*G++'}
         opt
             A dictionary of opt sections, where each opt section is a key and
             the corresponding values are a list of strings. Strings must be
@@ -170,11 +169,11 @@ class QChem(FileIOCalculator):
         almo_coupling
             A list of lists of int 2-tuples used for calculations of
             diabatization and state coupling calculations
-                relying on the absolutely localized molecular orbitals (ALMO)
-                methodology. Each entry in the main list represents a single
-                state (two states are included in an ALMO calculation). Within a
-                single state, each 2-tuple represents the charge and spin
-                multiplicity of a single fragment.
+            relying on the absolutely localized molecular orbitals (ALMO)
+            methodology. Each entry in the main list represents a single
+            state (two states are included in an ALMO calculation). Within a
+            single state, each 2-tuple represents the charge and spin
+            multiplicity of a single fragment.
             e.g. almo=[[(1, 2), (0, 1)], [(0, 1), (1, 2)]]
         svp
             TODO.
@@ -366,7 +365,7 @@ class QChem(FileIOCalculator):
             job_type = qc_input.rem.get("job_type")
             basis_set = qc_input.rem.get("basis")
             scf_algorithm = qc_input.rem.get("scf_algorithm")
-            qchem_version = 6  # Note: this is hard-coded for now
+            qchem_version = 6  # TODO: Add as a setting when Q-Chem 7 is released.
 
             # Make QChemDictSet
             qc_dict_set_input = QChemDictSet(
@@ -421,6 +420,7 @@ class QChem(FileIOCalculator):
             "almo_coupling": self.almo_coupling,
             "svp": self.svp,
             "pcm_nonels": self.pcm_nonels,
+            "qchem_dict_set_kwargs": self.qchem_dict_set_kwargs,
         }
 
         self.default_parameters = {k: v for k, v in params.items() if v is not None}
