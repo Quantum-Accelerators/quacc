@@ -1,7 +1,7 @@
 """Settings for quacc"""
 from __future__ import annotations
 
-import importlib.util
+from importlib import resources, util
 import os
 from pathlib import Path
 from shutil import which
@@ -25,7 +25,7 @@ for wflow_engine in [
     "redun",
     "jobflow",
 ]:
-    if importlib.util.find_spec(wflow_engine):
+    if util.find_spec(wflow_engine):
         installed_engine = wflow_engine
         break
 
