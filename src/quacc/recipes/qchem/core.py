@@ -39,9 +39,7 @@ def static_job(
     """
     Carry out a single-point calculation.
 
-    ??? Note
-
-        Calculator Defaults:
+    !!! Info "Calculator defaults"
 
         ```python
 
