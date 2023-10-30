@@ -59,10 +59,9 @@ def get_molecule(
         return atoms_to_pmg(atoms, charge=charge, spin_multiplicity=spin_multiplicity)
     if isinstance(atoms, list):
         return [
-            atoms_to_pmg(
-                atoms_, charge=charge, spin_multiplicity=spin_multiplicity
-            )
+            atoms_to_pmg(atoms_, charge=charge, spin_multiplicity=spin_multiplicity)
             for atoms_ in atoms
         ]
     if isinstance(atoms, str):
         return atoms
+    raise TypeError(f"Invalid type for atoms: {type(atoms)}")

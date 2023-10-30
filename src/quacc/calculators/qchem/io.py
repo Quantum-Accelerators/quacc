@@ -13,7 +13,7 @@ from pymatgen.io.qchem.inputs import QCInput
 from pymatgen.io.qchem.outputs import QCOutput
 
 if TYPE_CHECKING:
-    from typing import Any, Literal, TypedDict
+    from typing import Any, TypedDict
 
     from numpy.typing import NDArray
 
