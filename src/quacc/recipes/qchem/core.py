@@ -34,6 +34,7 @@ def static_job(
     method: str = "wb97mv",
     basis: str = "def2-tzvpd",
     calc_swaps: dict[str, Any] | None = None,
+    dict_set_kwargs: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
@@ -75,340 +76,341 @@ def static_job(
         spin_multiplicity,
         defaults=defaults,
         calc_swaps=calc_swaps,
+        dict_set_kwargs=dict_set_kwargs,
         additional_fields={"name": "Q-Chem Static"},
         copy_files=copy_files,
     )
 
 
-@job
-def internal_relax_job(
-    atoms: Atoms,
-    charge: int,
-    spin_multiplicity: int,
-    method: str = "wb97mv",
-    basis: str = "def2-svpd",
-    scf_algorithm: str = "diis",
-    pcm_dielectric: str | None = None,
-    smd_solvent: str | None = None,
-    n_cores: int | None = None,
-    overwrite_inputs: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
-) -> RunSchema:
-    """
-    Optimize aka "relax" a molecular structure with Q-Chem optimizers.
+# @job
+# def internal_relax_job(
+#     atoms: Atoms,
+#     charge: int,
+#     spin_multiplicity: int,
+#     method: str = "wb97mv",
+#     basis: str = "def2-svpd",
+#     scf_algorithm: str = "diis",
+#     pcm_dielectric: str | None = None,
+#     smd_solvent: str | None = None,
+#     n_cores: int | None = None,
+#     overwrite_inputs: dict[str, Any] | None = None,
+#     copy_files: list[str] | None = None,
+# ) -> RunSchema:
+#     """
+#     Optimize aka "relax" a molecular structure with Q-Chem optimizers.
 
-    ??? Note
+#     ??? Note
 
-        Calculator Defaults:
+#         Calculator Defaults:
 
-        ```python
-        {
-            "job_type": "opt",
-            "basis_set": basis,
-            "scf_algorithm": scf_algorithm,
-            "method": method,
-            "charge": charge,
-            "spin_multiplicity": spin_multiplicity,
-            "cores": n_cores or multiprocessing.cpu_count(),
-            "qchem_input_params": {
-                "pcm_dielectric": pcm_dielectric,
-                "smd_solvent": smd_solvent,
-                "overwrite_inputs": overwrite_inputs,
-                "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
-            },
-        }
-        ```
+#         ```python
+#         {
+#             "job_type": "opt",
+#             "basis_set": basis,
+#             "scf_algorithm": scf_algorithm,
+#             "method": method,
+#             "charge": charge,
+#             "spin_multiplicity": spin_multiplicity,
+#             "cores": n_cores or multiprocessing.cpu_count(),
+#             "qchem_input_params": {
+#                 "pcm_dielectric": pcm_dielectric,
+#                 "smd_solvent": smd_solvent,
+#                 "overwrite_inputs": overwrite_inputs,
+#                 "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
+#             },
+#         }
+#         ```
 
-    Parameters
-    ----------
-    atoms
-        Atoms object
-    charge
-        Charge of the system.
-    spin_multiplicity
-        Multiplicity of the system.
-    method
-        DFT exchange-correlation functional or other electronic structure
-        method. Defaults to wB97M-V.
-    basis
-        Basis set. Defaults to def2-SVPD.
-    scf_algorithm
-        Algorithm used to converge the SCF. Defaults to "diis", but for
-        particularly difficult cases, "gdm" should be employed instead.
-    pcm_dielectric
-        Dielectric constant of the optional polarizable continuum impicit
-        solvation model. Defaults to None, in which case PCM will not be
-        employed.
-    smd_solvent
-        Solvent to use for SMD implicit solvation model. Examples include
-        "water", "ethanol", "methanol", and "acetonitrile". Refer to the Q-Chem
-        manual for a complete list of solvents available. Defaults to None, in
-        which case SMD will not be employed.
-    n_cores
-        Number of cores to use for the Q-Chem calculation. Defaults to use all
-        cores available on a given node.
-    overwrite_inputs
-        Dictionary passed to `pymatgen.io.qchem.QChemDictSet` which can modify
-        default values set therein as well as set additional Q-Chem parameters.
-        See QChemDictSet documentation for more details.
-    copy_files
-        Files to copy to the runtime directory.
+#     Parameters
+#     ----------
+#     atoms
+#         Atoms object
+#     charge
+#         Charge of the system.
+#     spin_multiplicity
+#         Multiplicity of the system.
+#     method
+#         DFT exchange-correlation functional or other electronic structure
+#         method. Defaults to wB97M-V.
+#     basis
+#         Basis set. Defaults to def2-SVPD.
+#     scf_algorithm
+#         Algorithm used to converge the SCF. Defaults to "diis", but for
+#         particularly difficult cases, "gdm" should be employed instead.
+#     pcm_dielectric
+#         Dielectric constant of the optional polarizable continuum impicit
+#         solvation model. Defaults to None, in which case PCM will not be
+#         employed.
+#     smd_solvent
+#         Solvent to use for SMD implicit solvation model. Examples include
+#         "water", "ethanol", "methanol", and "acetonitrile". Refer to the Q-Chem
+#         manual for a complete list of solvents available. Defaults to None, in
+#         which case SMD will not be employed.
+#     n_cores
+#         Number of cores to use for the Q-Chem calculation. Defaults to use all
+#         cores available on a given node.
+#     overwrite_inputs
+#         Dictionary passed to `pymatgen.io.qchem.QChemDictSet` which can modify
+#         default values set therein as well as set additional Q-Chem parameters.
+#         See QChemDictSet documentation for more details.
+#     copy_files
+#         Files to copy to the runtime directory.
 
-    Returns
-    -------
-    RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][]
-    """
+#     Returns
+#     -------
+#     RunSchema
+#         Dictionary of results from [quacc.schemas.ase.summarize_run][]
+#     """
 
-    defaults = {
-        "job_type": "opt",
-        "basis_set": basis,
-        "scf_algorithm": scf_algorithm,
-        "method": method,
-        "charge": charge,
-        "spin_multiplicity": spin_multiplicity,
-        "cores": n_cores or multiprocessing.cpu_count(),
-        "qchem_input_params": {
-            "pcm_dielectric": pcm_dielectric,
-            "smd_solvent": smd_solvent,
-            "overwrite_inputs": overwrite_inputs,
-            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
-        },
-    }
-    return _base_job(
-        atoms,
-        charge,
-        spin_multiplicity,
-        defaults=defaults,
-        additional_fields={"name": "Q-Chem Optimization (Internal)"},
-        copy_files=copy_files,
-    )
-
-
-@job
-def freq_job(
-    atoms: Atoms,
-    charge: int,
-    spin_multiplicity: int,
-    method: str = "wb97mv",
-    basis: str = "def2-svpd",
-    scf_algorithm: str = "diis",
-    pcm_dielectric: str | None = None,
-    smd_solvent: str | None = None,
-    n_cores: int | None = None,
-    overwrite_inputs: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
-) -> RunSchema:
-    """
-    Perform a frequency calculation on a molecular structure.
-
-    ??? Note
-
-        Calculator Defaults:
-
-        ```python
-        {
-            "job_type": "freq",
-            "basis_set": basis,
-            "scf_algorithm": scf_algorithm,
-            "method": method,
-            "charge": charge,
-            "spin_multiplicity": spin_multiplicity,
-            "cores": n_cores or multiprocessing.cpu_count(),
-            "qchem_input_params": {
-                "pcm_dielectric": pcm_dielectric,
-                "smd_solvent": smd_solvent,
-                "overwrite_inputs": overwrite_inputs,
-                "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
-            },
-        }
-        ```
-
-    Parameters
-    ----------
-    atoms
-        Atoms object
-    charge
-        Charge of the system.
-    spin_multiplicity
-        Multiplicity of the system.
-    method
-        DFT exchange-correlation functional or other electronic structure
-        method. Defaults to wB97M-V.
-    basis
-        Basis set. Defaults to def2-SVPD.
-    scf_algorithm
-        Algorithm used to converge the SCF. Defaults to "diis", but for
-        particularly difficult cases, "gdm" should be employed instead.
-    pcm_dielectric
-        Dielectric constant of the optional polarizable continuum impicit
-        solvation model. Defaults to None, in which case PCM will not be
-        employed.
-    smd_solvent
-        Solvent to use for SMD implicit solvation model. Examples include
-        "water", "ethanol", "methanol", and "acetonitrile". Refer to the Q-Chem
-        manual for a complete list of solvents available. Defaults to None, in
-        which case SMD will not be employed.
-    n_cores
-        Number of cores to use for the Q-Chem calculation. Defaults to use all
-        cores available on a given node.
-    overwrite_inputs
-        Dictionary passed to `pymatgen.io.qchem.QChemDictSet` which can modify
-        default values set therein as well as set additional Q-Chem parameters.
-        See QChemDictSet documentation for more details.
-    copy_files
-        Files to copy to the runtime directory.
-
-    Returns
-    -------
-    RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][]
-    """
-
-    defaults = {
-        "job_type": "freq",
-        "basis_set": basis,
-        "scf_algorithm": scf_algorithm,
-        "method": method,
-        "charge": charge,
-        "spin_multiplicity": spin_multiplicity,
-        "cores": n_cores or multiprocessing.cpu_count(),
-        "qchem_input_params": {
-            "pcm_dielectric": pcm_dielectric,
-            "smd_solvent": smd_solvent,
-            "overwrite_inputs": overwrite_inputs,
-            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
-        },
-    }
-    return _base_job(
-        atoms,
-        charge,
-        spin_multiplicity,
-        defaults=defaults,
-        copy_files=copy_files,
-        additional_fields={"name": "Q-Chem Frequency"},
-    )
+#     defaults = {
+#         "job_type": "opt",
+#         "basis_set": basis,
+#         "scf_algorithm": scf_algorithm,
+#         "method": method,
+#         "charge": charge,
+#         "spin_multiplicity": spin_multiplicity,
+#         "cores": n_cores or multiprocessing.cpu_count(),
+#         "qchem_input_params": {
+#             "pcm_dielectric": pcm_dielectric,
+#             "smd_solvent": smd_solvent,
+#             "overwrite_inputs": overwrite_inputs,
+#             "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
+#         },
+#     }
+#     return _base_job(
+#         atoms,
+#         charge,
+#         spin_multiplicity,
+#         defaults=defaults,
+#         additional_fields={"name": "Q-Chem Optimization (Internal)"},
+#         copy_files=copy_files,
+#     )
 
 
-@job
-def relax_job(
-    atoms: Atoms,
-    charge: int,
-    spin_multiplicity: int,
-    method: str = "wb97mv",
-    basis: str = "def2-svpd",
-    scf_algorithm: str = "diis",
-    pcm_dielectric: str | None = None,
-    smd_solvent: str | None = None,
-    n_cores: int | None = None,
-    overwrite_inputs: dict[str, Any] | None = None,
-    opt_swaps: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
-) -> OptSchema:
-    """
-    Optimize aka "relax" a molecular structure with an ASE optimizer.
+# @job
+# def freq_job(
+#     atoms: Atoms,
+#     charge: int,
+#     spin_multiplicity: int,
+#     method: str = "wb97mv",
+#     basis: str = "def2-svpd",
+#     scf_algorithm: str = "diis",
+#     pcm_dielectric: str | None = None,
+#     smd_solvent: str | None = None,
+#     n_cores: int | None = None,
+#     overwrite_inputs: dict[str, Any] | None = None,
+#     copy_files: list[str] | None = None,
+# ) -> RunSchema:
+#     """
+#     Perform a frequency calculation on a molecular structure.
 
-    ??? Note
+#     ??? Note
 
-        Calculator defaults:
+#         Calculator Defaults:
 
-        ```python
-        {
-            "basis_set": basis,
-            "scf_algorithm": scf_algorithm,
-            "method": method,
-            "charge": charge,
-            "spin_multiplicity": spin_multiplicity,
-            "cores": n_cores or multiprocessing.cpu_count(),
-            "qchem_input_params": {
-                "pcm_dielectric": pcm_dielectric,
-                "smd_solvent": smd_solvent,
-                "overwrite_inputs": overwrite_inputs,
-                "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
-            },
-        }
-        ```
+#         ```python
+#         {
+#             "job_type": "freq",
+#             "basis_set": basis,
+#             "scf_algorithm": scf_algorithm,
+#             "method": method,
+#             "charge": charge,
+#             "spin_multiplicity": spin_multiplicity,
+#             "cores": n_cores or multiprocessing.cpu_count(),
+#             "qchem_input_params": {
+#                 "pcm_dielectric": pcm_dielectric,
+#                 "smd_solvent": smd_solvent,
+#                 "overwrite_inputs": overwrite_inputs,
+#                 "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
+#             },
+#         }
+#         ```
 
-        Optimizer defaults:
+#     Parameters
+#     ----------
+#     atoms
+#         Atoms object
+#     charge
+#         Charge of the system.
+#     spin_multiplicity
+#         Multiplicity of the system.
+#     method
+#         DFT exchange-correlation functional or other electronic structure
+#         method. Defaults to wB97M-V.
+#     basis
+#         Basis set. Defaults to def2-SVPD.
+#     scf_algorithm
+#         Algorithm used to converge the SCF. Defaults to "diis", but for
+#         particularly difficult cases, "gdm" should be employed instead.
+#     pcm_dielectric
+#         Dielectric constant of the optional polarizable continuum impicit
+#         solvation model. Defaults to None, in which case PCM will not be
+#         employed.
+#     smd_solvent
+#         Solvent to use for SMD implicit solvation model. Examples include
+#         "water", "ethanol", "methanol", and "acetonitrile". Refer to the Q-Chem
+#         manual for a complete list of solvents available. Defaults to None, in
+#         which case SMD will not be employed.
+#     n_cores
+#         Number of cores to use for the Q-Chem calculation. Defaults to use all
+#         cores available on a given node.
+#     overwrite_inputs
+#         Dictionary passed to `pymatgen.io.qchem.QChemDictSet` which can modify
+#         default values set therein as well as set additional Q-Chem parameters.
+#         See QChemDictSet documentation for more details.
+#     copy_files
+#         Files to copy to the runtime directory.
 
-        ```python
-        {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella if has_sella else FIRE, "optimizer_kwargs": {"use_TRICs": False}}
-        ```
+#     Returns
+#     -------
+#     RunSchema
+#         Dictionary of results from [quacc.schemas.ase.summarize_run][]
+#     """
 
-    Parameters
-    ----------
-    atoms
-        Atoms object
-    charge
-        Charge of the system.
-    spin_multiplicity
-        Multiplicity of the system.
-    method
-        DFT exchange-correlation functional or other electronic structure
-        method. Defaults to wB97M-V.
-    basis
-        Basis set. Defaults to def2-SVPD.
-    scf_algorithm
-        Algorithm used to converge the SCF. Defaults to "diis", but for
-        particularly difficult cases, "gdm" should be employed instead.
-    pcm_dielectric
-        Dielectric constant of the optional polarizable continuum impicit
-        solvation model. Defaults to None, in which case PCM will not be
-        employed.
-    smd_solvent
-        Solvent to use for SMD implicit solvation model. Examples include
-        "water", "ethanol", "methanol", and "acetonitrile". Refer to the Q-Chem
-        manual for a complete list of solvents available. Defaults to None, in
-        which case SMD will not be employed.
-    n_cores
-        Number of cores to use for the Q-Chem calculation. Defaults to use all
-        cores available on a given node.
-    overwrite_inputs
-        Dictionary passed to `pymatgen.io.qchem.QChemDictSet` which can modify
-        default values set therein as well as set additional Q-Chem parameters.
-        See QChemDictSet documentation for more details.
-    opt_swaps
-        Dictionary of custom kwargs for [quacc.runners.calc.run_ase_opt][]
-    copy_files
-        Files to copy to the runtime directory.
+#     defaults = {
+#         "job_type": "freq",
+#         "basis_set": basis,
+#         "scf_algorithm": scf_algorithm,
+#         "method": method,
+#         "charge": charge,
+#         "spin_multiplicity": spin_multiplicity,
+#         "cores": n_cores or multiprocessing.cpu_count(),
+#         "qchem_input_params": {
+#             "pcm_dielectric": pcm_dielectric,
+#             "smd_solvent": smd_solvent,
+#             "overwrite_inputs": overwrite_inputs,
+#             "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
+#         },
+#     }
+#     return _base_job(
+#         atoms,
+#         charge,
+#         spin_multiplicity,
+#         defaults=defaults,
+#         copy_files=copy_files,
+#         additional_fields={"name": "Q-Chem Frequency"},
+#     )
 
-    Returns
-    -------
-    OptSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
-    """
 
-    qchem_defaults = {
-        "basis_set": basis,
-        "scf_algorithm": scf_algorithm,
-        "method": method,
-        "charge": charge,
-        "spin_multiplicity": spin_multiplicity,
-        "cores": n_cores or multiprocessing.cpu_count(),
-        "qchem_input_params": {
-            "pcm_dielectric": pcm_dielectric,
-            "smd_solvent": smd_solvent,
-            "overwrite_inputs": overwrite_inputs,
-            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
-        },
-    }
-    opt_defaults = {
-        "fmax": 0.01,
-        "max_steps": 1000,
-        "optimizer": Sella if has_sella else FIRE,
-        "optimizer_kwargs": {"use_TRICs": False},
-    }
+# @job
+# def relax_job(
+#     atoms: Atoms,
+#     charge: int,
+#     spin_multiplicity: int,
+#     method: str = "wb97mv",
+#     basis: str = "def2-svpd",
+#     scf_algorithm: str = "diis",
+#     pcm_dielectric: str | None = None,
+#     smd_solvent: str | None = None,
+#     n_cores: int | None = None,
+#     overwrite_inputs: dict[str, Any] | None = None,
+#     opt_swaps: dict[str, Any] | None = None,
+#     copy_files: list[str] | None = None,
+# ) -> OptSchema:
+#     """
+#     Optimize aka "relax" a molecular structure with an ASE optimizer.
 
-    return _base_opt_job(
-        atoms,
-        charge,
-        spin_multiplicity,
-        qchem_defaults=qchem_defaults,
-        opt_defaults=opt_defaults,
-        opt_swaps=opt_swaps,
-        additional_fields={"name": "Q-Chem Optimization"},
-        copy_files=copy_files,
-    )
+#     ??? Note
+
+#         Calculator defaults:
+
+#         ```python
+#         {
+#             "basis_set": basis,
+#             "scf_algorithm": scf_algorithm,
+#             "method": method,
+#             "charge": charge,
+#             "spin_multiplicity": spin_multiplicity,
+#             "cores": n_cores or multiprocessing.cpu_count(),
+#             "qchem_input_params": {
+#                 "pcm_dielectric": pcm_dielectric,
+#                 "smd_solvent": smd_solvent,
+#                 "overwrite_inputs": overwrite_inputs,
+#                 "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
+#             },
+#         }
+#         ```
+
+#         Optimizer defaults:
+
+#         ```python
+#         {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella if has_sella else FIRE, "optimizer_kwargs": {"use_TRICs": False}}
+#         ```
+
+#     Parameters
+#     ----------
+#     atoms
+#         Atoms object
+#     charge
+#         Charge of the system.
+#     spin_multiplicity
+#         Multiplicity of the system.
+#     method
+#         DFT exchange-correlation functional or other electronic structure
+#         method. Defaults to wB97M-V.
+#     basis
+#         Basis set. Defaults to def2-SVPD.
+#     scf_algorithm
+#         Algorithm used to converge the SCF. Defaults to "diis", but for
+#         particularly difficult cases, "gdm" should be employed instead.
+#     pcm_dielectric
+#         Dielectric constant of the optional polarizable continuum impicit
+#         solvation model. Defaults to None, in which case PCM will not be
+#         employed.
+#     smd_solvent
+#         Solvent to use for SMD implicit solvation model. Examples include
+#         "water", "ethanol", "methanol", and "acetonitrile". Refer to the Q-Chem
+#         manual for a complete list of solvents available. Defaults to None, in
+#         which case SMD will not be employed.
+#     n_cores
+#         Number of cores to use for the Q-Chem calculation. Defaults to use all
+#         cores available on a given node.
+#     overwrite_inputs
+#         Dictionary passed to `pymatgen.io.qchem.QChemDictSet` which can modify
+#         default values set therein as well as set additional Q-Chem parameters.
+#         See QChemDictSet documentation for more details.
+#     opt_swaps
+#         Dictionary of custom kwargs for [quacc.runners.calc.run_ase_opt][]
+#     copy_files
+#         Files to copy to the runtime directory.
+
+#     Returns
+#     -------
+#     OptSchema
+#         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
+#     """
+
+#     qchem_defaults = {
+#         "basis_set": basis,
+#         "scf_algorithm": scf_algorithm,
+#         "method": method,
+#         "charge": charge,
+#         "spin_multiplicity": spin_multiplicity,
+#         "cores": n_cores or multiprocessing.cpu_count(),
+#         "qchem_input_params": {
+#             "pcm_dielectric": pcm_dielectric,
+#             "smd_solvent": smd_solvent,
+#             "overwrite_inputs": overwrite_inputs,
+#             "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
+#         },
+#     }
+#     opt_defaults = {
+#         "fmax": 0.01,
+#         "max_steps": 1000,
+#         "optimizer": Sella if has_sella else FIRE,
+#         "optimizer_kwargs": {"use_TRICs": False},
+#     }
+
+#     return _base_opt_job(
+#         atoms,
+#         charge,
+#         spin_multiplicity,
+#         qchem_defaults=qchem_defaults,
+#         opt_defaults=opt_defaults,
+#         opt_swaps=opt_swaps,
+#         additional_fields={"name": "Q-Chem Optimization"},
+#         copy_files=copy_files,
+#     )
 
 
 def _base_job(
@@ -417,6 +419,7 @@ def _base_job(
     spin_multiplicity: int,
     defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
+    dict_set_kwargs: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
@@ -437,6 +440,10 @@ def _base_job(
     calc_swaps
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely.
+    dict_set_kwargs
+        Dictionary of kwargs to instantiate a [pymatgen.io.qchem.QChemDictSet][].
+        If specified, this will be used directly for writing the Q-Chem input, overriding
+        any other kwargs.
     additional_fields
         Any additional fields to set in the summary.
     copy_files
@@ -450,7 +457,7 @@ def _base_job(
 
     qchem_flags = merge_dicts(defaults, calc_swaps)
 
-    atoms.calc = QChem(atoms, **qchem_flags)
+    atoms.calc = QChem(atoms, qchem_dict_set_kwargs=dict_set_kwargs, **qchem_flags)
     final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(
@@ -461,52 +468,52 @@ def _base_job(
     )
 
 
-def _base_opt_job(
-    atoms: Atoms,
-    charge: int,
-    spin_multiplicity: int,
-    qchem_defaults: dict[str, Any] | None = None,
-    opt_defaults: dict[str, Any] | None = None,
-    opt_swaps: dict[str, Any] | None = None,
-    additional_fields: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
-) -> OptSchema:
-    """
-    Base function for Q-Chem recipes that involve ASE optimizers.
+# def _base_opt_job(
+#     atoms: Atoms,
+#     charge: int,
+#     spin_multiplicity: int,
+#     qchem_defaults: dict[str, Any] | None = None,
+#     opt_defaults: dict[str, Any] | None = None,
+#     opt_swaps: dict[str, Any] | None = None,
+#     additional_fields: dict[str, Any] | None = None,
+#     copy_files: list[str] | None = None,
+# ) -> OptSchema:
+#     """
+#     Base function for Q-Chem recipes that involve ASE optimizers.
 
-    Parameters
-    ----------
-    atoms
-        Atoms object
-    charge
-        Charge of the system.
-    spin_multiplicity
-        Multiplicity of the system.
-    qchem_defaults
-        Default arguments for the Q-Chem calculator.
-    opt_defaults
-        Default arguments for the ASE optimizer.
-    opt_swaps
-        Dictionary of custom kwargs for [quacc.runners.calc.run_ase_opt][]
-    copy_files
-        Files to copy to the runtime directory.
+#     Parameters
+#     ----------
+#     atoms
+#         Atoms object
+#     charge
+#         Charge of the system.
+#     spin_multiplicity
+#         Multiplicity of the system.
+#     qchem_defaults
+#         Default arguments for the Q-Chem calculator.
+#     opt_defaults
+#         Default arguments for the ASE optimizer.
+#     opt_swaps
+#         Dictionary of custom kwargs for [quacc.runners.calc.run_ase_opt][]
+#     copy_files
+#         Files to copy to the runtime directory.
 
-    Returns
-    -------
-    OptSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
-    """
-    # TODO:
-    #   - passing initial Hessian?
+#     Returns
+#     -------
+#     OptSchema
+#         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
+#     """
+#     # TODO:
+#     #   - passing initial Hessian?
 
-    qchem_flags = remove_dict_nones(qchem_defaults)
-    opt_flags = merge_dicts(opt_defaults, opt_swaps)
+#     qchem_flags = remove_dict_nones(qchem_defaults)
+#     opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
-    atoms.calc = QChem(atoms, **qchem_flags)
-    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
+#     atoms.calc = QChem(atoms, **qchem_flags)
+#     dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
 
-    return summarize_opt_run(
-        dyn,
-        charge_and_multiplicity=(charge, spin_multiplicity),
-        additional_fields=additional_fields,
-    )
+#     return summarize_opt_run(
+#         dyn,
+#         charge_and_multiplicity=(charge, spin_multiplicity),
+#         additional_fields=additional_fields,
+#     )

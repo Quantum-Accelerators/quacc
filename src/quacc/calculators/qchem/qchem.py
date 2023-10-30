@@ -182,10 +182,10 @@ class QChem(FileIOCalculator):
             TODO.
         qchem_dict_set_kwargs
             Arguments to be passed to `pymatgen.io.qchem.sets.QChemDictSet`,
-            which will generate a `QChemDictSet`. This can be used in place of
-            the other kwargs to instantiate a custom input set. If this is
-            passed only the positional arguments (atoms, chareg,
-            spin_multiplicity) will be used.
+            which will generate a `QCInput`. If specified, this will be used
+            directly to instantiate a custom input set, overriding any other
+            specified kwargs (atoms, charge, and spin_multiplicity will be used
+            as-provided).
         **fileiocalculator_kwargs
             Additional arguments to be passed to
             `ase.calculators.calculator.FileIOCalculator`.
