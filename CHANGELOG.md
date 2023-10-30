@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- Consolidated VASP INCAR co-pilot settings
 - Internal refactoring of the Q-Chem and VASP calculators
 
 ### Fixed
