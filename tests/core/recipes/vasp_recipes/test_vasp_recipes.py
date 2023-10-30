@@ -14,6 +14,7 @@ from quacc.recipes.vasp.slabs import (
 
 DEFAULT_SETTINGS = SETTINGS.copy_model()
 
+
 def test_static_job(tmpdir):
     tmpdir.chdir()
 

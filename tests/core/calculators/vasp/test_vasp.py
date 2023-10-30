@@ -18,6 +18,7 @@ FILE_DIR = Path(__file__).resolve().parent
 
 DEFAULT_SETTINGS = SETTINGS.copy_model()
 
+
 def setup_module():
     SETTINGS.VASP_INCAR_COPILOT = "aggressive"
 
