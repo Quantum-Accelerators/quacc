@@ -287,7 +287,7 @@ class Vasp(Vasp_):
             )
 
         # Set magnetic moments
-        set_magmoms(
+        self.input_atoms = set_magmoms(
             self.input_atoms,
             elemental_mags_dict=self.elemental_magmoms,
             copy_magmoms=self.copy_magmoms,
