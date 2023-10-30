@@ -362,10 +362,23 @@ class QChem(FileIOCalculator):
 
         if self.qchem_dict_set_kwargs:
             # Get minimal parameters needed to instantiate a QChemDictSet
-            job_type = qc_input.rem.get("job_type")
-            basis_set = qc_input.rem.get("basis")
-            scf_algorithm = qc_input.rem.get("scf_algorithm")
-            qchem_version = 6  # TODO: Add as a setting when Q-Chem 7 is released.
+            if "basis_set" in self.qchem_dict_set_kwargs:
+                basis_set = self.qchem_dict_set_kwargs["basis_set"]
+                self.qchem_dict_set_kwargs.pop("basis_set")
+            else:
+                basis_set = self.rem.get("basis")
+
+            if "job_type" in self.qchem_dict_set_kwargs:
+                job_type = self.qchem_dict_set_kwargs["job_type"]
+                self.qchem_dict_set_kwargs.pop("job_type")
+            else:
+                self.rem.get("job_type")
+
+            if "scf_algorithm" in self.qchem_dict_set_kwargs:
+                scf_algorithm = self.qchem_dict_set_kwargs["scf_algorithm"]
+                self.qchem_dict_set_kwargs.pop("scf_algorithm")
+            else:
+                self.rem.get("scf_algorithm")
 
             # Make QChemDictSet
             qc_dict_set_input = QChemDictSet(
@@ -373,7 +386,7 @@ class QChem(FileIOCalculator):
                 job_type,
                 basis_set,
                 scf_algorithm,
-                qchem_version=qchem_version,
+                qchem_version=6,  # NOTE: Hard-coded
                 **self.qchem_dict_set_kwargs,
             )
 

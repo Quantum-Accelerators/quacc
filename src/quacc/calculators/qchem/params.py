@@ -3,6 +3,7 @@ Parameter-related utilities for the Q-Chem calculator.
 """
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING
 
 from quacc.atoms.core import atoms_to_pmg
@@ -12,6 +13,8 @@ if TYPE_CHECKING:
 
     from ase import Atoms
     from pymatgen.core.structure import Molecule
+
+logger = logging.getLogger(__name__)
 
 
 def get_rem_swaps(rem: dict[str, Any]) -> dict[str, Any]:
@@ -29,8 +32,10 @@ def get_rem_swaps(rem: dict[str, Any]) -> dict[str, Any]:
         rem dictionary with swaps
     """
     if "scf_guess" not in rem:
+        logger.info("Copilot: Setting scf_guess in `rem` to 'read'")
         rem["scf_guess"] = "read"
     if "max_scf_cycles" not in rem and rem.get("scf_algorithm") == "gdm":
+        logger.info("Copilot: Setting max_scf_cycles in `rem` to 200")
         rem["max_scf_cycles"] = 200
 
     return rem
