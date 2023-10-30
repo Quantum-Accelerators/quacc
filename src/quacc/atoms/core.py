@@ -14,6 +14,7 @@ from pymatgen.io.ase import AseAtomsAdaptor
 
 if TYPE_CHECKING:
     from ase import Atoms
+    from pymatgen.core import Molecule, Structure
 
 logger = logging.getLogger(__name__)
 
@@ -223,9 +224,9 @@ def atoms_to_pmg(
     adaptor = AseAtomsAdaptor()
 
     if atoms.pbc.any():
-        structure = adaptor.get_structure(atoms)
-        return structure
+        pmg_obj = adaptor.get_structure(atoms)
+    else:
+        pmg_obj = adaptor.get_molecule(atoms)
+        pmg_obj.set_charge_and_spin(charge, spin_multiplicity)
 
-    molecule = adaptor.get_molecule(atoms)
-    molecule.set_charge_and_spin(charge, spin_multiplicity)
-    return molecule
+    return pmg_obj

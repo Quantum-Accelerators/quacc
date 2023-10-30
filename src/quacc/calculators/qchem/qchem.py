@@ -218,6 +218,7 @@ class QChem(FileIOCalculator):
         self.fileiocalculator_kwargs = fileiocalculator_kwargs
 
         # Instantiate previous orbital coefficients
+        self.default_parameters = None
         self._prev_orbital_coeffs = None
 
         if "directory" in self.fileiocalculator_kwargs:

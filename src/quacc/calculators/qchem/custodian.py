@@ -1,7 +1,6 @@
 """Custodian handlers for QChem"""
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
 from monty.dev import requires
