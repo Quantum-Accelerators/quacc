@@ -17,8 +17,8 @@ from ase.constraints import FixAtoms
 from quacc.calculators.vasp import custodian
 from quacc.calculators.vasp.io import load_vasp_yaml_calc
 from quacc.calculators.vasp.params import (
-    calc_swaps,
     convert_auto_kpts,
+    param_swaps,
     remove_unused_flags,
     set_auto_dipole,
 )
@@ -227,7 +227,7 @@ class Vasp(Vasp_):
 
         # Handle INCAR swaps as needed
         if incar_copilot:
-            self.user_calc_params = calc_swaps(
+            self.user_calc_params = param_swaps(
                 self.user_calc_params,
                 self.auto_kpts,
                 self.input_atoms,
