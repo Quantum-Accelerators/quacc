@@ -204,7 +204,7 @@ def check_charge_and_spin(
 
 
 def atoms_to_pmg(
-    atoms: Atoms | list[Atoms],
+    atoms: Atoms,
     charge: int | None = 0,
     spin_multiplicity: int | None = 1,
 ) -> Structure | Molecule:
