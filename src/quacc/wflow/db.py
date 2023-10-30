@@ -7,6 +7,8 @@ import warnings
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from maggma.core import Store
 
 
