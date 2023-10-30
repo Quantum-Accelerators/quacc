@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import multiprocessing
 import os
-from importlib import import_module, resources
+from importlib import resources, util
 from pathlib import Path
 from shutil import which
 from typing import TYPE_CHECKING, Literal, Optional, Union
@@ -26,12 +26,9 @@ for wflow_engine in [
     "redun",
     "jobflow",
 ]:
-    try:
-        import_module(wflow_engine)
+    if util.find_spec(wflow_engine):
         installed_engine = wflow_engine
         break
-    except ImportError:
-        continue
 
 _DEFAULT_CONFIG_FILE_PATH = Path("~", ".quacc.yaml").expanduser().resolve()
 
@@ -176,17 +173,13 @@ class QuaccSettings(BaseSettings):
     )
 
     # VASP Settings: General
-    VASP_INCAR_COPILOT: bool = Field(
-        True,
+    VASP_INCAR_COPILOT: Literal["off", "on", "aggressive"] = Field(
+        "on",
         description=(
-            "Whether co-pilot mode should be used for VASP INCAR handling."
-            "This will modify INCAR flags on-the-fly if they disobey the VASP manual."
-        ),
-    )
-    VASP_COPILOT_OVERRIDE: bool = Field(
-        False,
-        description=(
-            "Whether to force co-pilot swaps to override user-specified flags."
+            "Controls VASP co-pilot mode for automated INCAR parameter handling."
+            "off: Do not use co-pilot mode. INCAR parameters will be unmodified."
+            "on: Use co-pilot mode. This will only modify INCAR flags not already set by the user."
+            "aggressive: Use co-pilot mode in agressive mode. This will modify INCAR flags even if they are already set by the user."
         ),
     )
     VASP_BADER: bool = Field(
@@ -319,7 +312,8 @@ class QuaccSettings(BaseSettings):
     @classmethod
     def resolve_and_make_paths(cls, v):
         v = Path(os.path.expandvars(v)).expanduser().resolve()
-        os.makedirs(v, exist_ok=True)
+        if not v.exists():
+            os.makedirs(v)
         return v
 
     @field_validator(

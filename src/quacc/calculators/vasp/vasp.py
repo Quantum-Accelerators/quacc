@@ -42,8 +42,7 @@ class Vasp(Vasp_):
         input_atoms: Atoms,
         preset: None | str = None,
         use_custodian: bool | None = None,
-        incar_copilot: bool | None = None,
-        copilot_override: bool | None = None,
+        incar_copilot: Literal["off", "on", "aggressive"] | None = None,
         copy_magmoms: bool | None = None,
         preset_mag_default: float | None = None,
         mag_cutoff: None | float = None,
@@ -71,8 +70,11 @@ class Vasp(Vasp_):
         use_custodian
             Whether to use Custodian to run VASP. Default is True in settings.
         incar_copilot
-            If True, the INCAR parameters will be adjusted if they go against the
-            VASP manual. Default is True in settings.
+            Controls VASP co-pilot mode for automated INCAR parameter handling.
+            Options include:
+            off: Do not use co-pilot mode. INCAR parameters will be unmodified.
+            on: Use co-pilot mode. This will only modify INCAR flags not already set by the user.
+            aggressive: Use co-pilot mode in agressive mode. This will modify INCAR flags even if they are already set by the user.
         copilot_override
             If False, INCAR swaps enabled by the INCAR co-pilot will not override
             the user's chosen value. It will only override values that aren't set.
@@ -133,11 +135,6 @@ class Vasp(Vasp_):
         incar_copilot = (
             SETTINGS.VASP_INCAR_COPILOT if incar_copilot is None else incar_copilot
         )
-        copilot_override = (
-            SETTINGS.VASP_COPILOT_OVERRIDE
-            if copilot_override is None
-            else copilot_override
-        )
         copy_magmoms = (
             SETTINGS.VASP_COPY_MAGMOMS if copy_magmoms is None else copy_magmoms
         )
@@ -153,7 +150,6 @@ class Vasp(Vasp_):
         self.preset = preset
         self.use_custodian = use_custodian
         self.incar_copilot = incar_copilot
-        self.copilot_override = copilot_override
         self.copy_magmoms = copy_magmoms
         self.preset_mag_default = preset_mag_default
         self.mag_cutoff = mag_cutoff
@@ -298,14 +294,13 @@ class Vasp(Vasp_):
             mag_cutoff=self.mag_cutoff,
         )
 
-        # Handle INCAR swaps as needed
-        if self.incar_copilot:
-            self.user_calc_params = get_param_swaps(
-                self.user_calc_params,
-                self.auto_kpts,
-                self.input_atoms,
-                self.copilot_override,
-            )
+        # Handle INCAR swaps
+        self.user_calc_params = get_param_swaps(
+            self.user_calc_params,
+            self.auto_kpts,
+            self.input_atoms,
+            self.incar_copilot,
+        )
 
         # Remove unused INCAR flags
         self.user_calc_params = remove_unused_flags(self.user_calc_params)
