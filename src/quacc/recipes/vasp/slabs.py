@@ -221,8 +221,13 @@ def slab_to_ads_flow(
     slab_static_kwargs: dict | None = None,
 ) -> list[VaspSchema]:
     """
-    Workflow consisting of: 1. Slab-adsorbate generation 2. Slab-adsorbate
-    relaxations 3. Slab-adsorbate statics (optional)
+    Workflow consisting of:
+
+    1. Slab-adsorbate generation
+
+    2. Slab-adsorbate relaxations
+
+    3. Slab-adsorbate statics (optional)
 
     Parameters
     ----------
