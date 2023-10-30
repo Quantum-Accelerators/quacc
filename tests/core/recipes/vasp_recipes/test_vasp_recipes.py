@@ -55,12 +55,12 @@ def test_static_job(tmpdir):
     assert "efermi" not in output["parameters"]
 
 
-def test_static_job_force_copilot(tmpdir):
+def test_static_job_copilot_override(tmpdir):
     tmpdir.chdir()
 
     atoms = bulk("Cu") * (2, 2, 2)
 
-    SETTINGS.VASP_FORCE_COPILOT = True
+    SETTINGS.VASP_COPILOT_OVERRIDE = True
     output = static_job(
         atoms,
         calc_swaps={
@@ -76,7 +76,7 @@ def test_static_job_force_copilot(tmpdir):
     assert "prec" not in output["parameters"]
     assert "lwave" not in output["parameters"]
     assert output["parameters"]["efermi"] == "midgap"
-    SETTINGS.VASP_FORCE_COPILOT = False
+    SETTINGS.VASP_COPILOT_OVERRIDE = False
 
 
 def test_relax_job(tmpdir):

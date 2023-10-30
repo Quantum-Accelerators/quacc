@@ -18,11 +18,11 @@ FILE_DIR = Path(__file__).resolve().parent
 
 
 def setup_module():
-    SETTINGS.VASP_FORCE_COPILOT = True
+    SETTINGS.VASP_COPILOT_OVERRIDE = True
 
 
 def teardown_module():
-    SETTINGS.VASP_FORCE_COPILOT = False
+    SETTINGS.VASP_COPILOT_OVERRIDE = False
 
 
 @pytest.fixture()

@@ -22,11 +22,11 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-def param_swaps(
+def get_param_swaps(
     user_calc_params: dict[str, Any],
     auto_kpts: dict[Literal["line_density", "kppvol", "kppa"], float],
     input_atoms: Atoms,
-    force_copilot: bool,
+    copilot_override: bool,
 ) -> dict[str, Any]:
     """
     Swaps out bad INCAR flags.
@@ -39,7 +39,7 @@ def param_swaps(
         The auto_kpts kwarg.
     input_atoms
         The input atoms.
-    force_copilot
+    copilot_override
         Whether to force the use of copilot.
 
     Returns
@@ -232,7 +232,7 @@ def param_swaps(
         logger.info("Copilot: Setting EFERMI = MIDGAP per the VASP manual.")
         calc.set(efermi="midgap")
 
-    return calc.parameters if force_copilot else calc.parameters | user_calc_params
+    return calc.parameters if copilot_override else calc.parameters | user_calc_params
 
 
 def remove_unused_flags(user_calc_params: dict[str, Any]) -> dict[str, Any]:
