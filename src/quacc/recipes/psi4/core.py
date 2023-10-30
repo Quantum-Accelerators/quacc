@@ -103,7 +103,7 @@ def _base_job(
     spin_multiplicity: int,
     defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
-    additional_fields: dict | None = None,
+    additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
