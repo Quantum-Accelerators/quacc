@@ -7,8 +7,7 @@ import logging
 from typing import TYPE_CHECKING
 
 from ase import Atoms
-
-from quacc.atoms.core import atoms_to_pmg
+from pymatgen.io.ase import AseAtomsAdaptor
 
 if TYPE_CHECKING:
     from typing import Any, Literal
@@ -60,14 +59,22 @@ def get_molecule(
     molecule
         The corresponding `molecule` kwarg to pass to QCInput.
     """
+    adaptor = AseAtomsAdaptor()
 
     if isinstance(atoms, Atoms):
-        return atoms_to_pmg(atoms, charge=charge, spin_multiplicity=spin_multiplicity)
+        pmg_obj = adaptor.get_molecule(atoms)
+        pmg_obj.set_charge_and_spin(charge, spin_multiplicity)
+        return pmg_obj
+
     if isinstance(atoms, list):
-        return [
-            atoms_to_pmg(atoms_, charge=charge, spin_multiplicity=spin_multiplicity)
-            for atoms_ in atoms
-        ]
+        molecules = []
+        for atoms_ in atoms:
+            pmg_obj = adaptor.get_molecule(atoms_)
+            pmg_obj.set_charge_and_spin(charge, spin_multiplicity)
+            molecules.append(pmg_obj)
+        return molecules
+
     if isinstance(atoms, str):
         return atoms
+
     raise TypeError(f"Invalid type for atoms: {type(atoms)}")
