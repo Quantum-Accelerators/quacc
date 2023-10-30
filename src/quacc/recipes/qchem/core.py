@@ -77,10 +77,6 @@ def static_job(
                 }
             }
             ```
-    dict_set_kwargs
-        Dictionary of kwargs to instantiate a [pymatgen.io.qchem.QChemDictSet][]. If
-        specified, this will be used to generate a `QCInput` object, and any overlapping
-        kwargs with those specified elsewhere will be overwritten.
     copy_files
         Files to copy to the runtime directory.
 
@@ -111,7 +107,6 @@ def static_job(
         spin_multiplicity,
         defaults=defaults,
         calc_swaps=calc_swaps,
-        dict_set_kwargs=dict_set_kwargs,
         additional_fields={"name": "Q-Chem Static"},
         copy_files=copy_files,
     )
@@ -474,11 +469,8 @@ def _base_job(
         The default parameters for the recipe.
     calc_swaps
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely.
-    dict_set_kwargs
-        Dictionary of kwargs to instantiate a [pymatgen.io.qchem.QChemDictSet][]. If
-        specified, this will be used to generate a `QCInput` object, and any overlapping
-        kwargs with those specified elsewhere will be overwritten.
+        a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
+        details.
     additional_fields
         Any additional fields to set in the summary.
     copy_files
@@ -492,7 +484,7 @@ def _base_job(
 
     qchem_flags = merge_dicts(defaults, calc_swaps)
 
-    atoms.calc = QChem(atoms, qchem_dict_set_kwargs=dict_set_kwargs, **qchem_flags)
+    atoms.calc = QChem(atoms, **qchem_flags)
     final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(

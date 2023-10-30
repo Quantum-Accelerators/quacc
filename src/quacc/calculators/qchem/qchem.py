@@ -60,12 +60,12 @@ class QChem(FileIOCalculator):
         almo_coupling: list[list[tuple[int, int]]] | None = None,
         svp: dict | None = None,
         pcm_nonels: dict | None = None,
-        qchem_dict_set_kwargs: dict[str, Any] | None = None,
+        qchem_dict_set_params: dict[str, Any] | None = None,
         **fileiocalculator_kwargs,
     ) -> None:
         """
         Initialize the Q-Chem calculator. Most of the input parameters here
-        are meant to mimic those in `pymatgen.io.qchem.inputs.QCInput`. See
+        are used to create a `pymatgen.io.qchem.inputs.QCInput` object. See
         the documentation for that class for more information.
 
         Parameters
@@ -180,13 +180,16 @@ class QChem(FileIOCalculator):
             TODO.
         pcm_nonels
             TODO.
-        qchem_dict_set_kwargs
-            Arguments to be passed to `pymatgen.io.qchem.sets.QChemDictSet`,
-            which will generate a `QCInput`. The input parameters obtained by
-            instantiating a `QCInput` object from the `QChem` calculator kwargs
-            will be merged with the input parameters obtained by instantiating a
-            `QCInput` object from the `QChemDictSet`, with the latter taking
-            precedence.
+        qchem_dict_set_params
+            Keyword arguments to be passed to `pymatgen.io.qchem.sets.QChemDictSet`,
+            which will generate a `QCInput`. If `qchem_dict_set_params` is specified,
+            the resulting `QCInput` will be merged with the `QCInput` generated from
+            the `QChem` calculator kwargs, with the former taking priority. Accepts
+            all arguments that `pymatgen.io.qchem.sets.QChemDictSet` accepts, except
+            for `molecule`, which will always be generated from `atoms`. By default,
+            `job_type`, `basis_set`, and `scf_algorithm` will be pulled from the `rem`
+            kwarg if not specified in `qchem_dict_set_params`. `qchem_version` will
+            default to 6 if not specified in `qchem_dict_set_params`.
         **fileiocalculator_kwargs
             Additional arguments to be passed to
             `ase.calculators.calculator.FileIOCalculator`.
@@ -215,7 +218,7 @@ class QChem(FileIOCalculator):
         self.almo_coupling = almo_coupling
         self.svp = svp
         self.pcm_nonels = pcm_nonels
-        self.qchem_dict_set_kwargs = qchem_dict_set_kwargs or {}
+        self.qchem_dict_set_params = qchem_dict_set_params or {}
         self.fileiocalculator_kwargs = fileiocalculator_kwargs
 
         # Instantiate previous orbital coefficients
@@ -224,6 +227,9 @@ class QChem(FileIOCalculator):
 
         if "directory" in self.fileiocalculator_kwargs:
             raise NotImplementedError("The directory kwarg is not supported.")
+
+        # Apply input swaps
+        self.rem = get_rem_swaps(self.rem)
 
         # Clean up parameters
         self._cleanup_attrs()
@@ -306,7 +312,6 @@ class QChem(FileIOCalculator):
         """
         Clean up self attribute parameters.
         """
-        self.rem = get_rem_swaps(self.rem)
         for attr in [
             "rem",
             "pcm",
@@ -329,7 +334,7 @@ class QChem(FileIOCalculator):
     def _make_qc_input(self) -> QCInput:
         """
         Make a QCInput object. It will, by default, create a QCInput from
-        the QChem calculator kwargs. If `self.qchem_dict_set_kwargs` is
+        the QChem calculator kwargs. If `self.qchem_dict_set_params` is
         specified, it will create a QCInput from a QChemDictSet, merging
         the two QCInput objects and taking the latter as higher priority.
 
@@ -361,34 +366,26 @@ class QChem(FileIOCalculator):
             pcm_nonels=self.pcm_nonels,
         )
 
-        if self.qchem_dict_set_kwargs:
+        if self.qchem_dict_set_params:
             # Get minimal parameters needed to instantiate a QChemDictSet
-            if "basis_set" in self.qchem_dict_set_kwargs:
-                basis_set = self.qchem_dict_set_kwargs["basis_set"]
-                self.qchem_dict_set_kwargs.pop("basis_set")
-            else:
-                basis_set = self.rem.get("basis")
-
-            if "job_type" in self.qchem_dict_set_kwargs:
-                job_type = self.qchem_dict_set_kwargs["job_type"]
-                self.qchem_dict_set_kwargs.pop("job_type")
-            else:
-                self.rem.get("job_type")
-
-            if "scf_algorithm" in self.qchem_dict_set_kwargs:
-                scf_algorithm = self.qchem_dict_set_kwargs["scf_algorithm"]
-                self.qchem_dict_set_kwargs.pop("scf_algorithm")
-            else:
-                self.rem.get("scf_algorithm")
+            if "molecule" in self.qchem_dict_set_params:
+                msg = "Do not specify `molecule` in `qchem_dict_set_params`"
+                raise ValueError(msg)
+            if "job_type" not in self.qchem_dict_set_params:
+                self.qchem_dict_set_params["job_type"] = self.rem.get("job_type")
+            if "basis_set" not in self.qchem_dict_set_params:
+                self.qchem_dict_set_params["basis_set"] = self.rem.get("basis")
+            if "scf_algorithm" not in self.qchem_dict_set_params:
+                self.qchem_dict_set_params["scf_algorithm"] = self.rem.get(
+                    "scf_algorithm"
+                )
+            if "qchem_version" not in self.qchem_dict_set_params:
+                self.qchem_dict_set_params["qchem_version"] = 6
 
             # Make QChemDictSet
             qc_dict_set = QChemDictSet(
                 self._molecule,
-                job_type,
-                basis_set,
-                scf_algorithm,
-                qchem_version=6,  # NOTE: Hard-coded
-                **self.qchem_dict_set_kwargs,
+                **self.qchem_dict_set_params,
             )
 
             # Merge the parameters from both QCInput objects, taking
@@ -431,7 +428,7 @@ class QChem(FileIOCalculator):
             "almo_coupling": self.almo_coupling,
             "svp": self.svp,
             "pcm_nonels": self.pcm_nonels,
-            "qchem_dict_set_kwargs": self.qchem_dict_set_kwargs,
+            "qchem_dict_set_params": self.qchem_dict_set_params,
         }
 
         self.default_parameters = {k: v for k, v in params.items() if v is not None}
