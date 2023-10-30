@@ -55,7 +55,7 @@ def static_job(
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.psi4.Psi4` calculator.
 
-        !!! Info "Calculator defaults
+        !!! Info "Calculator defaults"
 
             ```python
             {
