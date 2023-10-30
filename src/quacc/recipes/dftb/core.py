@@ -33,17 +33,6 @@ def static_job(
     """
     Carry out a single-point calculation.
 
-    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
-
-        ```python
-        {
-            "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
-            "Hamiltonian_MaxSccIterations": 200,
-            "Hamiltonian_Method": method if "xtb" in method.lower() else None,
-            "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
-        }
-        ```
-
     Parameters
     ----------
     atoms
@@ -57,6 +46,17 @@ def static_job(
         calculator defaults. Set a value to `None` to remove a pre-existing key
         entirely. For a list of available keys, refer to the
         `ase.calculators.dftb.Dftb` calculator.
+
+        !!! Info "Calculator defaults"
+
+            ```python
+            {
+                "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
+                "Hamiltonian_MaxSccIterations": 200,
+                "Hamiltonian_Method": method if "xtb" in method.lower() else None,
+                "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
+            }
+            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -94,20 +94,6 @@ def relax_job(
     """
     Carry out a structure relaxation.
 
-    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
-
-        ```python
-        {
-            "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
-            "Hamiltonian_MaxSccIterations": 200,
-            "Hamiltonian_Method": method if "xtb" in method.lower() else None,
-            "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
-            "Driver_": "GeometryOptimization",
-            "Driver_LatticeOpt": "Yes" if relax_cell else "No",
-            "Driver_AppendGeometries": "Yes", "Driver_MaxSteps": 2000,
-        }
-        ```
-
     Parameters
     ----------
     atoms
@@ -124,6 +110,20 @@ def relax_job(
         calculator defaults. Set a value to `None` to remove a pre-existing key
         entirely. For a list of available keys, refer to the
         `ase.calculators.dftb.Dftb` calculator.
+
+        !!! Info "Calculator defaults"
+
+            ```python
+            {
+                "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
+                "Hamiltonian_MaxSccIterations": 200,
+                "Hamiltonian_Method": method if "xtb" in method.lower() else None,
+                "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
+                "Driver_": "GeometryOptimization",
+                "Driver_LatticeOpt": "Yes" if relax_cell else "No",
+                "Driver_AppendGeometries": "Yes", "Driver_MaxSteps": 2000,
+            }
+            ```
     copy_files
         Files to copy to the runtime directory.
 
