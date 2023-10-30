@@ -4,7 +4,7 @@ from __future__ import annotations
 from importlib.metadata import version
 from typing import TYPE_CHECKING
 
-from ase import Atoms
+from ase.atoms import Atoms
 from ase.io.jsonio import decode, encode
 
 from quacc.settings import QuaccSettings
