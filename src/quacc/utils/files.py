@@ -11,11 +11,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 from random import randint
 from shutil import copy
+from typing import TYPE_CHECKING
 
 import yaml
 from monty.io import zopen
 from monty.os.path import zpath
 from monty.shutil import decompress_file
+
+if TYPE_CHECKING:
+    from typing import Any
 
 
 def check_logfile(logfile: str, check_str: str) -> bool:
@@ -90,7 +94,7 @@ def make_unique_dir(base_path: str | None = None) -> Path:
     return job_dir
 
 
-def load_yaml_calc(yaml_path: str | Path) -> dict:
+def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
     """
     Loads a YAML file containing calculator settings. This YAML loader looks for
     a special flag "parent" in the YAML file. If this flag is present, the YAML

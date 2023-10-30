@@ -124,7 +124,7 @@ def test_freq_job(tmpdir):
 
 
 def test_unique_workdir(tmpdir):
-    DEFAULT_SETTINGS = SETTINGS.copy()
+    DEFAULT_SETTINGS = SETTINGS.model_copy()
 
     SETTINGS.CREATE_UNIQUE_WORKDIR = True
     test_static_job(tmpdir)

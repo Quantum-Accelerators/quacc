@@ -12,6 +12,8 @@ from quacc.schemas.cclib import cclib_summarize_run
 from quacc.utils.dicts import merge_dicts
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase import Atoms
 
     from quacc.schemas.cclib import cclibSchema
@@ -28,32 +30,11 @@ def static_job(
     spin_multiplicity: int,
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
-    calc_swaps: dict | None = None,
+    calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> cclibSchema:
     """
     Carry out a single-point calculation.
-
-    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
-
-        ```python
-        {
-            "mem": "16GB",
-            "chk": "Gaussian.chk",
-            "nprocshared": multiprocessing.cpu_count(),
-            "xc": xc,
-            "basis": basis,
-            "charge": charge,
-            "mult": spin_multiplicity,
-            "sp": "",
-            "scf": ["maxcycle=250", "xqc"],
-            "integral": "ultrafine",
-            "nosymmetry": "",
-            "pop": "CM5",
-            "gfinput": "",
-            "ioplist": ["6/7=3", "2/9=2000"],
-        }
-        ```
 
     Parameters
     ----------
@@ -71,6 +52,27 @@ def static_job(
         Dictionary of custom kwargs for the Gaussian calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.gaussian.Gaussian` calculator.
+
+        !!! Info "Calculator defaults"
+
+            ```python
+            {
+                "mem": "16GB",
+                "chk": "Gaussian.chk",
+                "nprocshared": multiprocessing.cpu_count(),
+                "xc": xc,
+                "basis": basis,
+                "charge": charge,
+                "mult": spin_multiplicity,
+                "sp": "",
+                "scf": ["maxcycle=250", "xqc"],
+                "integral": "ultrafine",
+                "nosymmetry": "",
+                "pop": "CM5",
+                "gfinput": "",
+                "ioplist": ["6/7=3", "2/9=2000"],
+            }
+            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -114,32 +116,11 @@ def relax_job(
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
     freq: bool = False,
-    calc_swaps: dict | None = None,
+    calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> cclibSchema:
     """
     Carry out a geometry optimization.
-
-    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
-
-        ```python
-        {
-            "mem": "16GB",
-            "chk": "Gaussian.chk",
-            "nprocshared": multiprocessing.cpu_count(),
-            "xc": xc,
-            "basis": basis,
-            "charge": charge,
-            "mult": spin_multiplicity,
-            "opt": "",
-            "pop": "CM5",
-            "scf": ["maxcycle=250", "xqc"],
-            "integral": "ultrafine",
-            "nosymmetry": "",
-            "freq": "" if freq else None,
-            "ioplist": ["2/9=2000"],
-        }
-        ```
 
     Parameters
     ----------
@@ -159,6 +140,27 @@ def relax_job(
         Dictionary of custom kwargs for the Gaussian calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.gaussian.Gaussian` calculator.
+
+        !!! Info "Calculator defaults"
+
+            ```python
+            {
+                "mem": "16GB",
+                "chk": "Gaussian.chk",
+                "nprocshared": multiprocessing.cpu_count(),
+                "xc": xc,
+                "basis": basis,
+                "charge": charge,
+                "mult": spin_multiplicity,
+                "opt": "",
+                "pop": "CM5",
+                "scf": ["maxcycle=250", "xqc"],
+                "integral": "ultrafine",
+                "nosymmetry": "",
+                "freq": "" if freq else None,
+                "ioplist": ["2/9=2000"],
+            }
+            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -196,9 +198,9 @@ def relax_job(
 
 def _base_job(
     atoms: Atoms,
-    defaults: dict | None = None,
-    calc_swaps: dict | None = None,
-    additional_fields: dict | None = None,
+    defaults: dict[str, Any] | None = None,
+    calc_swaps: dict[str, Any] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> cclibSchema:
     """

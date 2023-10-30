@@ -18,7 +18,7 @@ except ImportError:
     TBLite = None
 
 if TYPE_CHECKING:
-    from typing import Literal
+    from typing import Any, Literal
 
     from ase import Atoms
 
@@ -30,17 +30,11 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
-    calc_swaps: dict | None = None,
+    calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
-
-    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
-
-        ```python
-        {"method": method}
-        ```
 
     Parameters
     ----------
@@ -52,6 +46,12 @@ def static_job(
         Dictionary of custom kwargs for the EMT calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `tblite.ase.TBLite` calculator.
+
+        !!! Info "Calculator defaults"
+
+            ```python
+            {"method": method}
+            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -79,8 +79,8 @@ def relax_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
     relax_cell: bool = False,
-    calc_swaps: dict | None = None,
-    opt_swaps: dict | None = None,
+    calc_swaps: dict[str, Any] | None = None,
+    opt_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
     """
@@ -143,8 +143,8 @@ def freq_job(
     energy: float = 0.0,
     temperature: float = 298.15,
     pressure: float = 1.0,
-    calc_swaps: dict | None = None,
-    vib_kwargs: dict | None = None,
+    calc_swaps: dict[str, Any] | None = None,
+    vib_kwargs: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> VibThermoSchema:
     """

@@ -8,6 +8,8 @@ from quacc.atoms.slabs import make_adsorbate_structures, make_slabs_from_bulk
 from quacc.recipes.vasp.core import _base_job
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase import Atoms
 
     from quacc.schemas.vasp import VaspSchema
@@ -17,27 +19,11 @@ if TYPE_CHECKING:
 def slab_static_job(
     atoms: Atoms,
     preset: str | None = "SlabSet",
-    calc_swaps: dict | None = None,
+    calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
     """
     Function to carry out a single-point calculation on a slab.
-
-    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
-
-        ```python
-        {
-            "auto_dipole": True,
-            "ismear": -5,
-            "laechg": True,
-            "lcharg": True,
-            "lreal": False,
-            "lvhar": True,
-            "lwave": True,
-            "nedos": 5001,
-            "nsw": 0,
-        }
-        ```
 
     Parameters
     ----------
@@ -49,6 +35,22 @@ def slab_static_job(
         Dictionary of custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
+
+        !!! Info "Calculator defaults"
+
+            ```python
+            {
+                "auto_dipole": True,
+                "ismear": -5,
+                "laechg": True,
+                "lcharg": True,
+                "lreal": False,
+                "lvhar": True,
+                "lwave": True,
+                "nedos": 5001,
+                "nsw": 0,
+            }
+            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -83,27 +85,11 @@ def slab_static_job(
 def slab_relax_job(
     atoms: Atoms,
     preset: str | None = "SlabSet",
-    calc_swaps: dict | None = None,
+    calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
     """
     Function to relax a slab.
-
-    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
-
-        ```python
-        {
-            "auto_dipole": True,
-            "ediffg": -0.02,
-            "isif": 2,
-            "ibrion": 2,
-            "isym": 0,
-            "lcharg": False,
-            "lwave": False,
-            "nsw": 200,
-            "symprec": 1e-8,
-        }
-        ```
 
     Parameters
     ----------
@@ -115,6 +101,22 @@ def slab_relax_job(
         Dictionary of custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
+
+        !!! Info "Calculator defaults"
+
+            ```python
+            {
+                "auto_dipole": True,
+                "ediffg": -0.02,
+                "isif": 2,
+                "ibrion": 2,
+                "isym": 0,
+                "lcharg": False,
+                "lwave": False,
+                "nsw": 200,
+                "symprec": 1e-8,
+            }
+            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -148,10 +150,10 @@ def slab_relax_job(
 @flow
 def bulk_to_slabs_flow(
     atoms: Atoms,
-    make_slabs_kwargs: dict | None = None,
+    make_slabs_kwargs: dict[str, Any] | None = None,
     run_static: bool = True,
-    slab_relax_kwargs: dict | None = None,
-    slab_static_kwargs: dict | None = None,
+    slab_relax_kwargs: dict[str, Any] | None = None,
+    slab_static_kwargs: dict[str, Any] | None = None,
 ) -> list[VaspSchema]:
     """
     Workflow consisting of:
@@ -215,10 +217,10 @@ def bulk_to_slabs_flow(
 def slab_to_ads_flow(
     slab: Atoms,
     adsorbate: Atoms,
-    make_ads_kwargs: dict | None = None,
+    make_ads_kwargs: dict[str, Any] | None = None,
     run_static: bool = True,
-    slab_relax_kwargs: dict | None = None,
-    slab_static_kwargs: dict | None = None,
+    slab_relax_kwargs: dict[str, Any] | None = None,
+    slab_static_kwargs: dict[str, Any] | None = None,
 ) -> list[VaspSchema]:
     """
     Workflow consisting of:

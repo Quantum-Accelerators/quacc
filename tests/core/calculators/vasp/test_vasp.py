@@ -716,7 +716,7 @@ def test_constraints():
 
 
 def test_envvars():
-    DEFAULT_SETTINGS = SETTINGS.copy()
+    DEFAULT_SETTINGS = SETTINGS.model_copy()
     SETTINGS.VASP_PP_PATH = "/path/to/pseudos"
     SETTINGS.VASP_VDW = "/path/to/kernel"
 

@@ -18,6 +18,8 @@ from quacc.utils.files import get_uri
 from quacc.wflow.db import results_to_db
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase import Atoms
     from ase.io import Trajectory
     from ase.optimize.optimize import Optimizer
@@ -39,7 +41,7 @@ def summarize_run(
     input_atoms: Atoms | None = None,
     charge_and_multiplicity: tuple[int, int] | None = None,
     prep_next_run: bool = True,
-    additional_fields: dict | None = None,
+    additional_fields: dict[str, Any] | None = None,
     store: Store | bool | None = None,
 ) -> RunSchema:
     """
@@ -117,7 +119,7 @@ def summarize_opt_run(
     check_convergence: bool | None = None,
     charge_and_multiplicity: tuple[int, int] | None = None,
     prep_next_run: bool = True,
-    additional_fields: dict | None = None,
+    additional_fields: dict[str, Any] | None = None,
     store: Store | bool | None = None,
 ) -> OptSchema:
     """
@@ -211,7 +213,7 @@ def summarize_opt_run(
 def summarize_vib_run(
     vib: Vibrations,
     charge_and_multiplicity: tuple[int, int] | None = None,
-    additional_fields: dict | None = None,
+    additional_fields: dict[str, Any] | None = None,
     store: Store | bool | None = None,
 ) -> VibSchema:
     """
@@ -324,7 +326,7 @@ def summarize_ideal_gas_thermo(
     temperature: float = 298.15,
     pressure: float = 1.0,
     charge_and_multiplicity: tuple[int, int] | None = None,
-    additional_fields: dict | None = None,
+    additional_fields: dict[str, Any] | None = None,
     store: Store | bool | None = None,
 ) -> ThermoSchema:
     """
@@ -409,7 +411,7 @@ def summarize_vib_and_thermo(
     temperature: float = 298.15,
     pressure: float = 1.0,
     charge_and_multiplicity: tuple[int, int] | None = None,
-    additional_fields: dict | None = None,
+    additional_fields: dict[str, Any] | None = None,
     store: Store | bool | None = None,
 ) -> VibThermoSchema:
     """

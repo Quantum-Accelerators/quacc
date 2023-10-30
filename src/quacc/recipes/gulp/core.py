@@ -13,6 +13,8 @@ from quacc.schemas.ase import summarize_run
 from quacc.utils.dicts import merge_dicts
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase import Atoms
 
     from quacc.schemas.ase import RunSchema
@@ -29,27 +31,12 @@ def static_job(
     atoms: Atoms,
     use_gfnff: bool = True,
     library: str | None = None,
-    keyword_swaps: dict | None = None,
-    option_swaps: dict | None = None,
+    keyword_swaps: dict[str, Any] | None = None,
+    option_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
-
-    !!! Info "Keyword defaults, which can be overriden by `keyword_swaps`"
-
-        ```python
-        {
-            "gfnff": True if use_gfnff else None,
-            "gwolf": True if use_gfnff and atoms.pbc.any() else None,
-        }
-        ```
-
-    !!! Info "Option defaults, which can be overriden by `option_swaps`"
-
-        ```python
-        {"dump every gulp.res": True}
-        ```
 
     Parameters
     ----------
@@ -63,10 +50,25 @@ def static_job(
         Dictionary of custom `keyword` kwargs for the GULP calculator. Set a
         value to `None` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
+
+        !!! Info "Keyword defaults"
+
+            ```python
+            {
+                "gfnff": True if use_gfnff else None,
+                "gwolf": True if use_gfnff and atoms.pbc.any() else None,
+            }
+            ```
     option_swaps
         Dictionary of custom `options` kwargs for the GULP calculator. Set a
         value to `None` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
+
+        !!! Info "Option defaults"
+
+            ```python
+            {"dump every gulp.res": True}
+            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -100,30 +102,12 @@ def relax_job(
     use_gfnff: bool = True,
     library: str | None = None,
     relax_cell: bool = False,
-    keyword_swaps: dict | None = None,
-    option_swaps: dict | None = None,
+    keyword_swaps: dict[str, Any] | None = None,
+    option_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
     Carry out a structure relaxation.
-
-    !!! Info "Keyword defaults, which can be overriden by `keyword_swaps`"
-
-        ```python
-        {
-            "opti": True,
-            "gfnff": True if use_gfnff else None,
-            "gwolf": True if use_gfnff and atoms.pbc.any() else None,
-            "conp": True if relax_cell and atoms.pbc.any() else None,
-            "conv": None if relax_cell and atoms.pbc.any() else True,
-        }
-        ```
-
-    !!! Info "Option defaults, which can be overriden by `option_swaps`"
-
-        ```python
-        {"dump every gulp.res": True}
-        ```
 
     Parameters
     ----------
@@ -139,10 +123,28 @@ def relax_job(
         Dictionary of custom `keyword` kwargs for the GULP calculator. Set a
         value to `None` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
+
+        !!! Info "Keyword defaults"
+
+            ```python
+            {
+                "opti": True,
+                "gfnff": True if use_gfnff else None,
+                "gwolf": True if use_gfnff and atoms.pbc.any() else None,
+                "conp": True if relax_cell and atoms.pbc.any() else None,
+                "conv": None if relax_cell and atoms.pbc.any() else True,
+            }
+            ```
     option_swaps
         Dictionary of custom `options` kwargs for the GULP calculator. Set a
         value to `None` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
+
+        !!! Info "Option defaults"
+
+            ```python
+            {"dump every gulp.res": True}
+            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -176,11 +178,11 @@ def relax_job(
 def _base_job(
     atoms: Atoms,
     library: str | None = None,
-    keyword_defaults: dict | None = None,
-    option_defaults: dict | None = None,
-    keyword_swaps: dict | None = None,
-    option_swaps: dict | None = None,
-    additional_fields: dict | None = None,
+    keyword_defaults: dict[str, Any] | None = None,
+    option_defaults: dict[str, Any] | None = None,
+    keyword_swaps: dict[str, Any] | None = None,
+    option_swaps: dict[str, Any] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """

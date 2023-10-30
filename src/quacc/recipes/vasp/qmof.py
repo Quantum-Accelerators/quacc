@@ -18,6 +18,8 @@ from quacc.schemas.ase import summarize_opt_run
 from quacc.utils.dicts import merge_dicts
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase import Atoms
 
     from quacc.schemas.ase import OptSchema
@@ -36,7 +38,7 @@ def qmof_relax_job(
     preset: str | None = "QMOFSet",
     relax_cell: bool = True,
     run_prerelax: bool = True,
-    calc_swaps: dict | None = None,
+    calc_swaps: dict[str, Any] | None = None,
 ) -> QMOFRelaxSchema:
     """
     Relax a structure in a multi-step process for increased computational
@@ -109,7 +111,7 @@ def qmof_relax_job(
 def _prerelax(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
-    calc_swaps: dict | None = None,
+    calc_swaps: dict[str, Any] | None = None,
     fmax: float = 5.0,
 ) -> OptSchema:
     """
@@ -153,7 +155,7 @@ def _prerelax(
 def _loose_relax_positions(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
-    calc_swaps: dict | None = None,
+    calc_swaps: dict[str, Any] | None = None,
 ) -> VaspSchema:
     """
     Position relaxation with default ENCUT and coarse k-point grid.
@@ -198,7 +200,7 @@ def _loose_relax_positions(
 def _loose_relax_cell(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
-    calc_swaps: dict | None = None,
+    calc_swaps: dict[str, Any] | None = None,
 ) -> VaspSchema:
     """
     Volume relaxation with coarse k-point grid.
@@ -242,7 +244,7 @@ def _loose_relax_cell(
 def _double_relax(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
-    calc_swaps: dict | None = None,
+    calc_swaps: dict[str, Any] | None = None,
     relax_cell: bool = True,
 ) -> list[VaspSchema]:
     """
@@ -306,7 +308,7 @@ def _double_relax(
 def _static(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
-    calc_swaps: dict | None = None,
+    calc_swaps: dict[str, Any] | None = None,
 ) -> VaspSchema:
     """
     Static calculation using production-quality settings.

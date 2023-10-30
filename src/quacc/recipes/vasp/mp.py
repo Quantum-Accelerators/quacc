@@ -23,6 +23,8 @@ from quacc import flow, job
 from quacc.recipes.vasp.core import _base_job
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase import Atoms
 
     from quacc.schemas.vasp import VaspSchema
@@ -36,18 +38,12 @@ def mp_prerelax_job(
     atoms: Atoms,
     preset: str | None = "MPScanSet",
     bandgap: float | None = None,
-    calc_swaps: dict | None = None,
+    calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
     """
     Function to pre-relax a structure with Materials Project settings. By
     default, this uses a PBEsol pre-relax step.
-
-    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
-
-        ```python
-        {"ediffg": -0.05, "xc": "pbesol", "lwave": True, "lcharg": True} | _get_bandgap_swaps(bandgap)
-        ```
 
     Parameters
     ----------
@@ -61,6 +57,12 @@ def mp_prerelax_job(
         Dictionary of custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
+
+        !!! Info "Calculator defaults"
+
+            ```python
+            {"ediffg": -0.05, "xc": "pbesol", "lwave": True, "lcharg": True} | _get_bandgap_swaps(bandgap)
+            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -92,18 +94,12 @@ def mp_relax_job(
     atoms: Atoms,
     preset: str | None = "MPScanSet",
     bandgap: float | None = None,
-    calc_swaps: dict | None = None,
+    calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
     """
     Function to relax a structure with Materials Project settings. By default,
     this uses an r2SCAN relax step.
-
-    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
-
-        ```python
-        {"lcharg": True, "lwave": True} | _get_bandgap_swaps(bandgap)
-        ```
 
     Parameters
     ----------
@@ -117,6 +113,12 @@ def mp_relax_job(
         Dictionary of custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
+
+        !!! Info "Calculator defaults"
+
+            ```python
+            {"lcharg": True, "lwave": True} | _get_bandgap_swaps(bandgap)
+            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -140,8 +142,8 @@ def mp_relax_job(
 @flow
 def mp_relax_flow(
     atoms: Atoms,
-    prerelax_job_kwargs: dict | None = None,
-    relax_job_kwargs: dict | None = None,
+    prerelax_job_kwargs: dict[str, Any] | None = None,
+    relax_job_kwargs: dict[str, Any] | None = None,
 ) -> MPRelaxFlowSchema:
     """
     Workflow consisting of:
@@ -182,7 +184,7 @@ def mp_relax_flow(
     return relax_results
 
 
-def _get_bandgap_swaps(bandgap: float | None = None) -> dict:
+def _get_bandgap_swaps(bandgap: float | None = None) -> dict[str, float]:
     """
     Get bandgap-related swaps.
 

@@ -10,6 +10,8 @@ from quacc.atoms.defects import make_defects_from_bulk
 from quacc.recipes.emt.core import relax_job, static_job
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase import Atoms
     from pymatgen.analysis.defects.generators import (
         AntiSiteGenerator,
@@ -34,10 +36,10 @@ def bulk_to_defects_flow(
         | VoronoiInterstitialGenerator
     ) = VacancyGenerator,
     defect_charge: int = 0,
-    make_defects_kwargs: dict | None = None,
+    make_defects_kwargs: dict[str, Any] | None = None,
     run_static: bool = True,
-    defect_relax_kwargs: dict | None = None,
-    defect_static_kwargs: dict | None = None,
+    defect_relax_kwargs: dict[str, Any] | None = None,
+    defect_static_kwargs: dict[str, Any] | None = None,
 ) -> list[RunSchema | OptSchema]:
     """
     Workflow consisting of:

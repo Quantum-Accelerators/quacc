@@ -5,7 +5,7 @@ import os
 from importlib import import_module, resources
 from pathlib import Path
 from shutil import which
-from typing import Literal, Optional, Union
+from typing import TYPE_CHECKING, Literal, Optional, Union
 
 from maggma.core import Store
 from monty.json import MontyDecoder
@@ -13,6 +13,9 @@ from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from quacc.calculators.vasp import presets as vasp_presets
+
+if TYPE_CHECKING:
+    from typing import Any
 
 installed_engine = "local"
 for wflow_engine in [
@@ -329,7 +332,7 @@ class QuaccSettings(BaseSettings):
 
     @model_validator(mode="before")
     @classmethod
-    def load_default_settings(cls, values: dict) -> dict:
+    def load_default_settings(cls, values: dict[str, Any]) -> dict[str, Any]:
         """
         Loads settings from a root file if available and uses that as defaults
         in place of built in defaults.

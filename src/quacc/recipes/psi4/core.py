@@ -17,6 +17,8 @@ except ImportError:
     psi4 = None
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase import Atoms
 
     from quacc.schemas.ase import RunSchema
@@ -30,25 +32,11 @@ def static_job(
     spin_multiplicity: int,
     method: str = "wb97x-v",
     basis: str = "def2-tzvp",
-    calc_swaps: dict | None = None,
+    calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
     Function to carry out a single-point calculation.
-
-    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
-
-        ```python
-        {
-            "mem": "16GB",
-            "num_threads": "max",
-            "method": method,
-            "basis": basis,
-            "charge": charge,
-            "multiplicity": spin_multiplicity,
-            "reference": "uks" if spin_multiplicity > 1 else "rks",
-        }
-        ```
 
     Parameters
     ----------
@@ -66,6 +54,20 @@ def static_job(
         Dictionary of custom kwargs for the Psi4 calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.psi4.Psi4` calculator.
+
+        !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
+
+            ```python
+            {
+                "mem": "16GB",
+                "num_threads": "max",
+                "method": method,
+                "basis": basis,
+                "charge": charge,
+                "multiplicity": spin_multiplicity,
+                "reference": "uks" if spin_multiplicity > 1 else "rks",
+            }
+            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -99,8 +101,8 @@ def _base_job(
     atoms: Atoms,
     charge: int,
     spin_multiplicity: int,
-    defaults: dict | None = None,
-    calc_swaps: dict | None = None,
+    defaults: dict[str, Any] | None = None,
+    calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:

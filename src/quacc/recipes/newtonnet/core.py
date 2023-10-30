@@ -31,6 +31,8 @@ except ImportError:
     NewtonNet = None
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase import Atoms
 
     from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
@@ -44,20 +46,11 @@ if TYPE_CHECKING:
 @requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
 def static_job(
     atoms: Atoms,
-    calc_swaps: dict | None = None,
+    calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
-
-    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
-
-        ```python
-        {
-            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-        }
-        ```
 
     Parameters
     ----------
@@ -67,6 +60,15 @@ def static_job(
         Dictionary of custom kwargs for the EMT calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
+
+        !!! Info "Calculator defaults"
+
+            ```python
+            {
+                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+            }
+            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -96,27 +98,12 @@ def static_job(
 @requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
 def relax_job(
     atoms: Atoms,
-    calc_swaps: dict | None = None,
-    opt_swaps: dict | None = None,
+    calc_swaps: dict[str, Any] | None = None,
+    opt_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
     """
     Relax a structure.
-
-    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
-
-        ```python
-        {
-            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-        }
-        ```
-
-    !!! Info "Optimizer defaults, which can be overriden by `opt_swaps`"
-
-        ```python
-        {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella or FIRE}
-        ```
 
     Parameters
     ----------
@@ -126,10 +113,25 @@ def relax_job(
         Dictionary of custom kwargs for the EMT calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
+
+        !!! Info "Calculator defaults"
+
+            ```python
+            {
+                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+            }
+            ```
     opt_swaps
         Dictionary of custom kwargs for the optimization process. Set a value
         to `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.calc.run_ase_opt][].
+
+        !!! Info "Optimizer defaults"
+
+            ```python
+            {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella or FIRE}
+            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -162,20 +164,11 @@ def freq_job(
     atoms: Atoms,
     temperature: float = 298.15,
     pressure: float = 1.0,
-    calc_swaps: dict | None = None,
+    calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> FreqSchema:
     """
     Perform a frequency calculation using the given atoms object.
-
-    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
-
-        ```python
-        {
-            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-        }
-        ```
 
     Parameters
     ----------
@@ -189,6 +182,15 @@ def freq_job(
         Dictionary of custom kwargs for the EMT calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
+
+        !!! Info "Calculator defaults"
+
+            ```python
+            {
+                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+            }
+            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -232,7 +234,7 @@ def freq_job(
     return summary
 
 
-def _add_stdev_and_hess(summary: dict) -> dict:
+def _add_stdev_and_hess(summary: dict[str, Any]) -> dict[str, Any]:
     """
     Calculate and add standard deviation values and Hessians to the summary.
 
