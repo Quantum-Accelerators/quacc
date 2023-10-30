@@ -182,10 +182,11 @@ class QChem(FileIOCalculator):
             TODO.
         qchem_dict_set_kwargs
             Arguments to be passed to `pymatgen.io.qchem.sets.QChemDictSet`,
-            which will generate a `QCInput`. If specified, this will be used
-            directly to instantiate a custom input set, overriding any other
-            specified kwargs (atoms, charge, and spin_multiplicity will be used
-            as-provided).
+            which will generate a `QCInput`. The input parameters obtained by
+            instantiating a `QCInput` object from the `QChem` calculator kwargs
+            will be merged with the input parameters obtained by instantiating a
+            `QCInput` object from the `QChemDictSet`, with the latter taking
+            precedence.
         **fileiocalculator_kwargs
             Additional arguments to be passed to
             `ase.calculators.calculator.FileIOCalculator`.
@@ -264,27 +265,8 @@ class QChem(FileIOCalculator):
         """
         FileIOCalculator.write_input(self, atoms, properties, system_changes)
 
-        if self.qchem_dict_set_kwargs:
-            qc_input = QChemDictSet(self._molecule, **self.qchem_dict_set_kwargs)
-        else:
-            qc_input = QCInput(
-                self._molecule,
-                self.rem,
-                opt=self.opt,
-                pcm=self.pcm,
-                solvent=self.solvent,
-                smx=self.smx,
-                scan=self.scan,
-                van_der_waals=self.van_der_waals,
-                vdw_mode=self.vdw_mode,
-                plots=self.plots,
-                nbo=self.nbo,
-                geom_opt=self.geom_opt,
-                cdft=self.cdft,
-                almo_coupling=self.almo_coupling,
-                svp=self.svp,
-                pcm_nonels=self.pcm_nonels,
-            )
+        qc_input = self._make_qc_input(self)
+
         write_qchem(
             qc_input,
             prev_orbital_coeffs=self._prev_orbital_coeffs,
@@ -343,6 +325,70 @@ class QChem(FileIOCalculator):
 
         self._molecule = get_molecule(self.atoms, self.charge, self.spin_multiplicity)
         self._set_default_params()
+
+    def _make_qc_input(self) -> QCInput:
+        """
+        Make a QCInput object. It will, by default, create a QCInput from
+        the QChem calculator kwargs. If `self.qchem_dict_set_kwargs` is
+        specified, it will create a QCInput from a QChemDictSet, merging
+        the two QCInput objects and taking the latter as higher priority.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        QCInput
+            The QCInput object.
+        """
+        qc_input = QCInput(
+            self._molecule,
+            self.rem,
+            opt=self.opt,
+            pcm=self.pcm,
+            solvent=self.solvent,
+            smx=self.smx,
+            scan=self.scan,
+            van_der_waals=self.van_der_waals,
+            vdw_mode=self.vdw_mode,
+            plots=self.plots,
+            nbo=self.nbo,
+            geom_opt=self.geom_opt,
+            cdft=self.cdft,
+            almo_coupling=self.almo_coupling,
+            svp=self.svp,
+            pcm_nonels=self.pcm_nonels,
+        )
+
+        if self.qchem_dict_set_kwargs:
+            # Get minimal parameters needed to instantiate a QChemDictSet
+            job_type = qc_input.rem.get("job_type")
+            basis_set = qc_input.rem.get("basis")
+            scf_algorithm = qc_input.rem.get("scf_algorithm")
+            qchem_version = 6  # Note: this is hard-coded for now
+
+            # Make QChemDictSet
+            qc_dict_set_input = QChemDictSet(
+                self._molecule,
+                job_type,
+                basis_set,
+                scf_algorithm,
+                qchem_version=qchem_version,
+                **self.qchem_dict_set_kwargs,
+            )
+
+            # Merge the parameters from both QCInput objects, taking
+            # QCDictSet's parameters as priority
+            qc_input_as_dict = qc_input.as_dict()
+            for k, v in qc_dict_set_input.as_dict().items():
+                if v is not None:
+                    qc_input_as_dict()[k] = v
+
+            # Make a new QCInput
+            qc_input = QCInput.from_dict(qc_input_as_dict)
+
+        return qc_input
 
     def _set_default_params(self) -> None:
         """

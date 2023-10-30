@@ -31,8 +31,8 @@ def static_job(
     atoms: Atoms,
     charge: int,
     spin_multiplicity: int,
-    method: str = "wb97mv",
-    basis: str = "def2-tzvpd",
+    method: str | None = "wb97mv",
+    basis: str | None = "def2-tzvpd",
     calc_swaps: dict[str, Any] | None = None,
     dict_set_kwargs: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
@@ -40,14 +40,49 @@ def static_job(
     """
     Carry out a single-point calculation.
 
-    !!! Info "Calculator defaults"
-
-        ```python
-
-        ```
-
     Parameters
     ----------
+    atoms
+        Atoms object
+    charge
+        Total charge of the system.
+    spin_multiplicity
+        Multiplicity of the system.
+    method
+        DFT exchange-correlation functional or other electronic structure
+        method.
+    basis
+        Basis set.
+    calc_swaps
+        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
+        a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
+        details.
+
+        !!! Info "Calculator defaults"
+
+            ```python
+            {
+                "rem": {
+                    "job_type": "force",
+                    "method": method,
+                    "basis": basis,
+                    "gen_scfman": True,
+                    "xc_grid": 3,
+                    "thresh": 14,
+                    "s2thresh": 16,
+                    "scf_algorithm": "diis",
+                    "resp_charges": True,
+                    "symmetry": False,
+                    "sym_ignore": True,
+                }
+            }
+            ```
+    dict_set_kwargs
+        Dictionary of kwargs to instantiate a [pymatgen.io.qchem.QChemDictSet][]. If
+        specified, this will be used to generate a `QCInput` object, and any overlapping
+        kwargs with those specified elsewhere will be overwritten.
+    copy_files
+        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -441,9 +476,9 @@ def _base_job(
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely.
     dict_set_kwargs
-        Dictionary of kwargs to instantiate a [pymatgen.io.qchem.QChemDictSet][].
-        If specified, this will be used directly for writing the Q-Chem input, overriding
-        any other kwargs.
+        Dictionary of kwargs to instantiate a [pymatgen.io.qchem.QChemDictSet][]. If
+        specified, this will be used to generate a `QCInput` object, and any overlapping
+        kwargs with those specified elsewhere will be overwritten.
     additional_fields
         Any additional fields to set in the summary.
     copy_files
