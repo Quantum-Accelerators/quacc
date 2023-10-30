@@ -58,9 +58,7 @@ def ts_job(
     """
     Perform a transition state (TS) job using the given atoms object.
 
-    ??? Note
-
-        Calculator Defaults:
+    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
 
         ```python
         {
@@ -69,7 +67,7 @@ def ts_job(
         }
         ```
 
-        Optimizer Defaults:
+    !!! Info "Optimizer defaults, which can be overriden by `opt_swaps`"
 
         ```python
         {
@@ -93,9 +91,13 @@ def ts_job(
     freq_job_kwargs
         Keyword arguments to use for the `freq_job`.
     calc_swaps
-        Optional swaps for the NewtonNet calculator.
+        Dictionary of custom kwargs for the EMT calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
     opt_swaps
-        Optional swaps for the optimization parameters.
+        Dictionary of custom kwargs for the optimization process. Set a value
+        to `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to [quacc.runners.calc.run_ase_opt][].
     copy_files
         Files to copy to the runtime directory.
 
@@ -163,9 +165,7 @@ def irc_job(
     Perform an intrinsic reaction coordinate (IRC) job using the given atoms
     object.
 
-    ??? Note
-
-        Calculator Defaults:
+    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
 
         ```python
         {
@@ -174,7 +174,7 @@ def irc_job(
         }
         ```
 
-        IRC Defaults:
+    !!! Info "Optimizer defaults, which can be overriden by `opt_swaps`"
 
         ```python
         {
@@ -193,12 +193,6 @@ def irc_job(
         }
         ```
 
-        Optimizer Defaults:
-
-        ```python
-        {}
-        ```
-
     Parameters
     ----------
     atoms
@@ -210,9 +204,13 @@ def irc_job(
     freq_job_kwargs
         Keyword arguments for the `freq_job`.
     calc_swaps
-        Optional swaps for the calculator.
+        Dictionary of custom kwargs for the EMT calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
     opt_swaps
-        Optional swaps for the optimization parameters.
+        Dictionary of custom kwargs for the optimization process. Set a value
+        to `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to [quacc.runners.calc.run_ase_opt][].
     copy_files
         Files to copy to the runtime directory.
 
@@ -283,21 +281,8 @@ def quasi_irc_job(
     copy_files: list[str] | None = None,
 ) -> QuasiIRCSchema:
     """
-    Perform a quasi-IRC job using the given atoms object.
-
-    ??? Note
-
-        IRC Defaults:
-
-        ```python
-        {"max_steps": 5}
-        ```
-
-        Optimizer Defaults:
-
-        ```python
-        {}
-        ```
+    Perform a quasi-IRC job using the given atoms object. The initial
+    IRC job by default is run with `max_steps: 5`.
 
     Parameters
     ----------

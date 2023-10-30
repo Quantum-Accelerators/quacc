@@ -36,9 +36,7 @@ def static_job(
     """
     Function to carry out a single-point calculation.
 
-    ??? Note
-
-        Calculator Defaults:
+    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
 
         ```python
         {
@@ -65,8 +63,9 @@ def static_job(
     basis
         Basis set
     calc_swaps
-        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely.
+        Dictionary of custom kwargs for the Psi4 calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `ase.calculators.psi4.Psi4` calculator.
     copy_files
         Files to copy to the runtime directory.
 
@@ -119,8 +118,9 @@ def _base_job(
     defaults
         The default calculator parameters.
     calc_swaps
-        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely.
+        Dictionary of custom kwargs for the EMT calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `ase.calculators.psi4.Psi4` calculator.
     additional_fields
         Any additional fields to supply to the summarizer.
     copy_files

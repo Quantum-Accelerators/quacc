@@ -34,26 +34,26 @@ def static_job(
     """
     Carry out a single-point calculation.
 
-    Calculator defaults, which can be overriden by `calc_swaps`:
+    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
 
-    ```python
-    {
-        "mem": "16GB",
-        "chk": "Gaussian.chk",
-        "nprocshared": multiprocessing.cpu_count(),
-        "xc": xc,
-        "basis": basis,
-        "charge": charge,
-        "mult": spin_multiplicity,
-        "sp": "",
-        "scf": ["maxcycle=250", "xqc"],
-        "integral": "ultrafine",
-        "nosymmetry": "",
-        "pop": "CM5",
-        "gfinput": "",
-        "ioplist": ["6/7=3", "2/9=2000"],
-    }
-    ```
+        ```python
+        {
+            "mem": "16GB",
+            "chk": "Gaussian.chk",
+            "nprocshared": multiprocessing.cpu_count(),
+            "xc": xc,
+            "basis": basis,
+            "charge": charge,
+            "mult": spin_multiplicity,
+            "sp": "",
+            "scf": ["maxcycle=250", "xqc"],
+            "integral": "ultrafine",
+            "nosymmetry": "",
+            "pop": "CM5",
+            "gfinput": "",
+            "ioplist": ["6/7=3", "2/9=2000"],
+        }
+        ```
 
     Parameters
     ----------
@@ -120,26 +120,26 @@ def relax_job(
     """
     Carry out a geometry optimization.
 
-    Calculator defaults, which can be overriden by `calc_swaps`:
+    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
 
-    ```python
-    {
-        "mem": "16GB",
-        "chk": "Gaussian.chk",
-        "nprocshared": multiprocessing.cpu_count(),
-        "xc": xc,
-        "basis": basis,
-        "charge": charge,
-        "mult": spin_multiplicity,
-        "opt": "",
-        "pop": "CM5",
-        "scf": ["maxcycle=250", "xqc"],
-        "integral": "ultrafine",
-        "nosymmetry": "",
-        "freq": "" if freq else None,
-        "ioplist": ["2/9=2000"],
-    }
-    ```
+        ```python
+        {
+            "mem": "16GB",
+            "chk": "Gaussian.chk",
+            "nprocshared": multiprocessing.cpu_count(),
+            "xc": xc,
+            "basis": basis,
+            "charge": charge,
+            "mult": spin_multiplicity,
+            "opt": "",
+            "pop": "CM5",
+            "scf": ["maxcycle=250", "xqc"],
+            "integral": "ultrafine",
+            "nosymmetry": "",
+            "freq": "" if freq else None,
+            "ioplist": ["2/9=2000"],
+        }
+        ```
 
     Parameters
     ----------

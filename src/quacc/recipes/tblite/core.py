@@ -36,9 +36,7 @@ def static_job(
     """
     Carry out a single-point calculation.
 
-    ??? Note
-
-        Calculator Defaults:
+    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
 
         ```python
         {"method": method}
@@ -51,7 +49,9 @@ def static_job(
     method
         GFN1-xTB, GFN2-xTB, and IPEA1-xTB.
     calc_swaps
-        Dictionary of custom kwargs for the tblite calculator.
+        Dictionary of custom kwargs for the EMT calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `tblite.ase.TBLite` calculator.
     copy_files
         Files to copy to the runtime directory.
 
@@ -86,15 +86,13 @@ def relax_job(
     """
     Relax a structure.
 
-    ??? Note
-
-        Calculator Defaults:
+    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
 
         ```python
         {"method": method}
         ```
 
-        Optimizer Defaults:
+    !!! Info "Optimizer defaults, which can be overriden by `opt_swaps`"
 
         ```python
         {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
@@ -109,9 +107,13 @@ def relax_job(
     relax_cell
         Whether to relax the cell.
     calc_swaps
-        Dictionary of custom kwargs for the tblite calculator.
+        Dictionary of custom kwargs for the tblite calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `tblite.ase.TBLite` calculator.
     opt_swaps
-        Dictionary of custom kwargs for [quacc.runners.calc.run_ase_opt][].
+        Dictionary of custom kwargs for the optimization process. Set a value
+        to `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to [quacc.runners.calc.run_ase_opt][].
     copy_files
         Files to copy to the runtime directory.
 
@@ -148,18 +150,10 @@ def freq_job(
     """
     Run a frequency job and calculate thermochemistry.
 
-    ??? Note
-
-        Calculator Defaults:
+    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
 
         ```python
         {"method": method}
-        ```
-
-        Vibrations Defaults:
-
-        ```python
-        {}
         ```
 
     Parameters
@@ -175,9 +169,12 @@ def freq_job(
     pressure
         Pressure in bar.
     calc_swaps
-        dictionary of custom kwargs for the tblite calculator.
+        Dictionary of custom kwargs for the tblite calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `tblite.ase.TBLite` calculator.
     vib_kwargs
-        dictionary of custom kwargs for the Vibrations object.
+        Dictionary of custom kwargs for the vibration analysis. Refer to
+        [quacc.runners.calc.run_ase_vib][].
     copy_files
         Files to copy to the runtime directory.
 

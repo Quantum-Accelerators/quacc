@@ -23,9 +23,7 @@ def slab_static_job(
     """
     Function to carry out a single-point calculation on a slab.
 
-    ??? Note
-
-        Calculator Defaults:
+    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
 
         ```python
         {
@@ -48,8 +46,9 @@ def slab_static_job(
     preset
         Preset to use from `quacc.calculators.presets.vasp`.
     calc_swaps
-        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely.
+        Dictionary of custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
     copy_files
         Files to copy to the runtime directory.
 
@@ -90,9 +89,7 @@ def slab_relax_job(
     """
     Function to relax a slab.
 
-    ??? Note
-
-        Calculator Parameters:
+    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
 
         ```python
         {
@@ -115,8 +112,9 @@ def slab_relax_job(
     preset
         Preset to use from `quacc.calculators.presets.vasp`.
     calc_swaps
-        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely.
+        Dictionary of custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
     copy_files
         Files to copy to the runtime directory.
 

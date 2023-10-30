@@ -36,9 +36,7 @@ def static_job(
     """
     Carry out a single-point calculation.
 
-    ??? Note
-
-        Input Defaults:
+    !!! Info "Calculator `orcasimpleinput` defaults, which can be overriden by `input_swaps`"
 
         ```python
         {
@@ -51,7 +49,7 @@ def static_job(
         }
         ```
 
-        Block Defaults:
+    !!! Info "Calculator `orcablocks` defaults, which can be overriden by `block_swaps`"
 
         ```python
         (
@@ -74,13 +72,15 @@ def static_job(
     basis
         Basis set
     input_swaps
-        Dictionary of orcasimpleinput swaps for the calculator. To enable new
+        Dictionary of `orcasimpleinput` swaps for the calculator. To enable new
         entries, set the value as True. To remove entries from the defaults, set
-        the value as None.
+        the value as None. For a list of available keys, refer to the
+        `ase.calculators.orca.ORCA` calculator.
     block_swaps
-        Dictionary of orcablock swaps for the calculator. To enable new entries,
+        Dictionary of `orcablock` swaps for the calculator. To enable new entries,
         set the value as True. To remove entries from the defaults, set the
-        value as None.
+        value as None. For a list of available keys, refer to the
+        `ase.calculators.orca.ORCA` calculator.
     copy_files
         Files to copy to the runtime directory.
 
@@ -132,9 +132,7 @@ def relax_job(
     """
     Carry out a geometry optimization.
 
-    ??? Note
-
-        Input Defaults:
+    !!! Info "Calculator `orcasimpleinput` defaults, which can be overriden by `input_swaps`"
 
         ```python
         {
@@ -148,7 +146,7 @@ def relax_job(
         }
         ```
 
-        Block Defaults:
+    !!! Info "Calculator `orcablocks` defaults, which can be overriden by `block_swaps`"
 
         ```python
         (
@@ -173,13 +171,15 @@ def relax_job(
     run_freq
         If a frequency calculation should be carried out.
     input_swaps
-        Dictionary of orcasimpleinput swaps for the calculator. To enable new
+        Dictionary of `orcasimpleinput` swaps for the calculator. To enable new
         entries, set the value as True. To remove entries from the defaults, set
-        the value as None.
+        the value as None. For a list of available keys, refer to the
+        `ase.calculators.orca.ORCA` calculator.
     block_swaps
-        Dictionary of orcablock swaps for the calculator. To enable new entries,
+        Dictionary of `orcablock` swaps for the calculator. To enable new entries,
         set the value as True. To remove entries from the defaults, set the
-        value as None.
+        value as None. For a list of available keys, refer to the
+        `ase.calculators.orca.ORCA` calculator.
     copy_files
         Files to copy to the runtime directory.
 

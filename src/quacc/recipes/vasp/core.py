@@ -28,9 +28,7 @@ def static_job(
     """
     Carry out a single-point calculation.
 
-    ??? Note
-
-        Calculator Defaults:
+    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
 
         ```python
         {
@@ -51,8 +49,9 @@ def static_job(
     preset
         Preset to use from `quacc.calculators.presets.vasp`.
     calc_swaps
-        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely.
+        Dictionary of custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
     copy_files
         Files to copy to the runtime directory.
 
@@ -92,9 +91,7 @@ def relax_job(
     """
     Relax a structure.
 
-    ??? Note
-
-        Calculator Defaults:
+    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
 
         ```python
         {
@@ -119,8 +116,9 @@ def relax_job(
         True if a volume relaxation (ISIF = 3) should be performed. False if
         only the positions (ISIF = 2) should be updated.
     calc_swaps
-        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely.
+        Dictionary of custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
     copy_files
         Files to copy to the runtime directory.
 
@@ -235,8 +233,9 @@ def _base_job(
     defaults
         Default parameters for the recipe.
     calc_swaps
-        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely.
+        Dictionary of custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
     additional_fields
         Additional fields to supply to the summarizer.
     copy_files

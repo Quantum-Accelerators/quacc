@@ -43,9 +43,7 @@ def mp_prerelax_job(
     Function to pre-relax a structure with Materials Project settings. By
     default, this uses a PBEsol pre-relax step.
 
-    ??? Note
-
-        Calculator Defaults:
+    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
 
         ```python
         {"ediffg": -0.05, "xc": "pbesol", "lwave": True, "lcharg": True} | _get_bandgap_swaps(bandgap)
@@ -60,8 +58,9 @@ def mp_prerelax_job(
     bandgap
         Estimate for the bandgap in eV.
     calc_swaps
-        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely.
+        Dictionary of custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
     copy_files
         Files to copy to the runtime directory.
 
@@ -100,9 +99,7 @@ def mp_relax_job(
     Function to relax a structure with Materials Project settings. By default,
     this uses an r2SCAN relax step.
 
-    ??? Note
-
-        Calculator Defaults:
+    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
 
         ```python
         {"lcharg": True, "lwave": True} | _get_bandgap_swaps(bandgap)
@@ -117,8 +114,9 @@ def mp_relax_job(
     bandgap
         Estimate for the bandgap in eV.
     calc_swaps
-        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely.
+        Dictionary of custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
     copy_files
         Files to copy to the runtime directory.
 

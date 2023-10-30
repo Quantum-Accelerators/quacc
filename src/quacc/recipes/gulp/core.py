@@ -36,20 +36,20 @@ def static_job(
     """
     Carry out a single-point calculation.
 
-    Keyword defaults, which can be overriden by `keyword_swaps`:
+    !!! Info "Keyword defaults, which can be overriden by `keyword_swaps`"
 
-    ```python
-    {
-        "gfnff": True if use_gfnff else None,
-        "gwolf": True if use_gfnff and atoms.pbc.any() else None,
-    }
+        ```python
+        {
+            "gfnff": True if use_gfnff else None,
+            "gwolf": True if use_gfnff and atoms.pbc.any() else None,
+        }
         ```
 
-    Option defaults, which can be overriden by `option_swaps`:
+    !!! Info "Option defaults, which can be overriden by `option_swaps`
 
-    ```python
-    {"dump every gulp.res": True}
-    ```
+        ```python
+        {"dump every gulp.res": True}
+        ```
 
     Parameters
     ----------
@@ -107,23 +107,23 @@ def relax_job(
     """
     Carry out a structure relaxation.
 
-    Keyword defaults, which can be overriden by `keyword_swaps`:
+    !!! Info "Keyword defaults, which can be overriden by `keyword_swaps`"
 
-    ```python
-    {
-        "opti": True,
-        "gfnff": True if use_gfnff else None,
-        "gwolf": True if use_gfnff and atoms.pbc.any() else None,
-        "conp": True if relax_cell and atoms.pbc.any() else None,
-        "conv": None if relax_cell and atoms.pbc.any() else True,
-    }
-    ```
+        ```python
+        {
+            "opti": True,
+            "gfnff": True if use_gfnff else None,
+            "gwolf": True if use_gfnff and atoms.pbc.any() else None,
+            "conp": True if relax_cell and atoms.pbc.any() else None,
+            "conv": None if relax_cell and atoms.pbc.any() else True,
+        }
+        ```
 
-    Option defaults, which can be overriden by `option_swaps`:
+    !!! Info "Option defaults, which can be overriden by `option_swaps`"
 
-    ```python
-    {"dump every gulp.res": True}
-    ```
+        ```python
+        {"dump every gulp.res": True}
+        ```
 
     Parameters
     ----------

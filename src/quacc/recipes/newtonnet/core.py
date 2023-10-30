@@ -50,9 +50,7 @@ def static_job(
     """
     Carry out a single-point calculation.
 
-    ??? Note
-
-        Calculator Defaults:
+    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
 
         ```python
         {
@@ -66,7 +64,9 @@ def static_job(
     atoms
         Atoms object
     calc_swaps
-        Dictionary of custom kwargs for the newtonnet calculator.
+        Dictionary of custom kwargs for the EMT calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
     copy_files
         Files to copy to the runtime directory.
 
@@ -103,9 +103,7 @@ def relax_job(
     """
     Relax a structure.
 
-    ??? Note
-
-        Calculator Defaults:
+    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
 
         ```python
         {
@@ -114,7 +112,7 @@ def relax_job(
         }
         ```
 
-        Optimizer Defaults:
+    !!! Info "Optimizer defaults, which can be overriden by `opt_swaps`"
 
         ```python
         {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella or FIRE}
@@ -125,9 +123,13 @@ def relax_job(
     atoms
         Atoms object
     calc_swaps
-        Dictionary of custom kwargs for the newtonnet calculator.
+        Dictionary of custom kwargs for the EMT calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
     opt_swaps
-        Optional swaps for the optimization parameters.
+        Dictionary of custom kwargs for the optimization process. Set a value
+        to `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to [quacc.runners.calc.run_ase_opt][].
     copy_files
         Files to copy to the runtime directory.
 
@@ -166,9 +168,7 @@ def freq_job(
     """
     Perform a frequency calculation using the given atoms object.
 
-    ??? Note
-
-        Calculator Defaults:
+    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
 
         ```python
         {
@@ -186,7 +186,9 @@ def freq_job(
     pressure
         The pressure for the thermodynamic analysis.
     calc_swaps
-        Optional swaps for the calculator.
+        Dictionary of custom kwargs for the EMT calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
     copy_files
         Files to copy to the runtime directory.
 

@@ -30,9 +30,11 @@ def static_job(
     """
     Carry out a static calculation.
 
-    Calculator defaults, which can be overriden by `calc_swaps`:
+    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
 
-    ```python {} ```
+        ```python
+        {}
+        ```
 
     Parameters
     ----------
@@ -73,17 +75,17 @@ def relax_job(
     """
     Carry out a geometry optimization.
 
-    Calculator defaults, which can be overriden by `calc_swaps`:
+    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
 
-    ```python
-    {}
-    ```
+        ```python
+        {}
+        ```
 
-    Optimizer defaults, which can be overriden by `opt_swaps`:
+    !!! Info "Optimizer defaults, which can be overriden by `opt_swaps`"
 
-    ```python
-    {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
-    ```
+        ```python
+        {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
+        ```
 
     Parameters
     ----------

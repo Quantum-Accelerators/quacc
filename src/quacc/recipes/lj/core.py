@@ -31,9 +31,7 @@ def static_job(
     """
     Function to carry out a static calculation.
 
-    ??? Note
-
-        Calculator Defaults:
+    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
 
         ```python
         {}
@@ -44,7 +42,9 @@ def static_job(
     atoms
         Atoms object
     calc_swaps
-        Dictionary of custom kwargs for the LJ calculator.
+        Dictionary of custom kwargs for the LJ calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `ase.calculators.lj.LJ` calculator.
     copy_files
         Files to copy to the runtime directory.
 
@@ -73,15 +73,13 @@ def relax_job(
     """
     Function to carry out a geometry optimization.
 
-    ??? Note
-
-        Calculator Defaults:
+    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
 
         ```python
         {}
         ```
 
-        Optimizer Defaults:
+    !!! Info "Optimizer defaults, which can be overriden by `opt_swaps`"
 
         ```python
         {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
@@ -92,9 +90,13 @@ def relax_job(
     atoms
         Atoms object
     calc_swaps
-        Dictionary of custom kwargs for the LJ calculator.
+        Dictionary of custom kwargs for the LJ calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `ase.calculators.lj.LJ` calculator.
     opt_swaps
-        Dictionary of swaps for [quacc.runners.calc.run_ase_opt][].
+        Dictionary of custom kwargs for the optimization process. Set a value
+        to `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to [quacc.runners.calc.run_ase_opt][].
     copy_files
         Files to copy to the runtime directory.
 
@@ -127,15 +129,7 @@ def freq_job(
     """
     Run a frequency job and calculate thermochemistry.
 
-    ??? Note
-
-        Calculator Defaults:
-
-        ```python
-        {}
-        ```
-
-        Vibrations Defaults:
+    !!! Info "Calculator defaults, which can be overriden by `calc_swaps`"
 
         ```python
         {}
@@ -152,9 +146,12 @@ def freq_job(
     pressure
         Pressure in bar.
     calc_swaps
-        dictionary of custom kwargs for the LJ calculator.
+        Dictionary of custom kwargs for the LJ calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `ase.calculators.lj.LJ` calculator.
     vib_kwargs
-        dictionary of custom kwargs for the Vibrations object.
+        Dictionary of custom kwargs for the vibration analysis. Refer to
+        [quacc.runners.calc.run_ase_vib][].
     copy_files
         Files to copy to the runtime directory.
 
