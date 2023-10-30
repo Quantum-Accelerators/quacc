@@ -12,7 +12,7 @@ from quacc.recipes.vasp.slabs import (
     slab_to_ads_flow,
 )
 
-DEFAULT_SETTINGS = SETTINGS.copy_model()
+DEFAULT_SETTINGS = SETTINGS.copy()
 
 
 def test_static_job(tmpdir):
