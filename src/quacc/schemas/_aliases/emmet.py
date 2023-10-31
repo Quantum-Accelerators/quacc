@@ -136,8 +136,7 @@ class IonicStep(TypedDict):
 
 
 class FrequencyDependentDielectric(TypedDict):
-    """Type hint associated with
-    emmet.core.vasp.calculation.FrequencyDependentDielectric."""
+    """Type hint associated with emmet.core.vasp.calculation.FrequencyDependentDielectric."""
 
     real: list[list[float]]
     imaginary: list[list[float]]
