@@ -1,4 +1,4 @@
-"""Recipes for slabs."""
+"""Recipes for slabs"""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -22,7 +22,8 @@ def slab_static_job(
     calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
-    """Function to carry out a single-point calculation on a slab.
+    """
+    Function to carry out a single-point calculation on a slab.
 
     Parameters
     ----------
@@ -87,7 +88,8 @@ def slab_relax_job(
     calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
-    """Function to relax a slab.
+    """
+    Function to relax a slab.
 
     Parameters
     ----------

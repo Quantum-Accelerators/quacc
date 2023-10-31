@@ -1,4 +1,6 @@
-"""Utility functions for thermochemistry."""
+"""
+Utility functions for thermochemistry
+"""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -19,10 +21,11 @@ def build_ideal_gas(
     energy: float = 0.0,
     spin_multiplicity: int | None = None,
 ) -> IdealGasThermo:
-    """Create an IdealGasThermo object for a molecule from a given vibrational analysis.
-    This is for free gases only and will not be valid for solids or adsorbates on
-    surfaces. Any imaginary vibrational modes after the 3N-5/3N-6 cut will simply be
-    ignored.
+    """
+    Create an IdealGasThermo object for a molecule from a given vibrational
+    analysis. This is for free gases only and will not be valid for solids or
+    adsorbates on surfaces. Any imaginary vibrational modes after the 3N-5/3N-6
+    cut will simply be ignored.
 
     Parameters
     ----------

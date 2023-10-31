@@ -1,4 +1,4 @@
-"""Core recipes for the tblite code."""
+"""Core recipes for the tblite code"""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -33,7 +33,8 @@ def static_job(
     calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
-    """Carry out a single-point calculation.
+    """
+    Carry out a single-point calculation.
 
     Parameters
     ----------
@@ -82,7 +83,8 @@ def relax_job(
     opt_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
-    """Relax a structure.
+    """
+    Relax a structure.
 
     !!! Info "Calculator defaults"
 
@@ -145,7 +147,8 @@ def freq_job(
     vib_kwargs: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> VibThermoSchema:
-    """Run a frequency job and calculate thermochemistry.
+    """
+    Run a frequency job and calculate thermochemistry.
 
     !!! Info "Calculator defaults"
 

@@ -1,4 +1,6 @@
-"""I/O utilities for the Vasp calculator."""
+"""
+I/O utilities for the Vasp calculator.
+"""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

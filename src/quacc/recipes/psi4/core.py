@@ -1,4 +1,4 @@
-"""Core recipes for Psi4."""
+"""Core recipes for Psi4"""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -35,7 +35,8 @@ def static_job(
     calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
-    """Function to carry out a single-point calculation.
+    """
+    Function to carry out a single-point calculation.
 
     Parameters
     ----------
@@ -105,7 +106,8 @@ def _base_job(
     additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
-    """Base function to carry out Psi4 recipes.
+    """
+    Base function to carry out Psi4 recipes.
 
     Parameters
     ----------

@@ -1,4 +1,6 @@
-"""Utility functions for dealing with Atoms."""
+"""
+Utility functions for dealing with Atoms
+"""
 from __future__ import annotations
 
 import logging
@@ -17,7 +19,8 @@ logger = logging.getLogger(__name__)
 def prep_next_run(
     atoms: Atoms, assign_id: bool = True, move_magmoms: bool = True
 ) -> Atoms:
-    """Prepares the Atoms object for a new run.
+    """
+    Prepares the Atoms object for a new run.
 
     Depending on the arguments, this function will:
         - Move the converged magnetic moments to the initial magnetic moments.
@@ -91,7 +94,8 @@ def set_magmoms(
     copy_magmoms: bool = True,
     mag_cutoff: float | None = 0.05,
 ) -> Atoms:  # sourcery skip
-    """Sets the initial magnetic moments in the Atoms object.
+    """
+    Sets the initial magnetic moments in the Atoms object.
 
     This function deserves particular attention. The following logic is applied:
     - If there is a converged set of magnetic moments, those are moved to the

@@ -1,4 +1,4 @@
-"""Core recipes for GULP."""
+"""Core recipes for GULP"""
 from __future__ import annotations
 
 import logging
@@ -35,7 +35,8 @@ def static_job(
     option_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
-    """Carry out a single-point calculation.
+    """
+    Carry out a single-point calculation.
 
     Parameters
     ----------
@@ -105,7 +106,8 @@ def relax_job(
     option_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
-    """Carry out a structure relaxation.
+    """
+    Carry out a structure relaxation.
 
     Parameters
     ----------
@@ -183,7 +185,8 @@ def _base_job(
     additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
-    """Base job function for GULP recipes.
+    """
+    Base job function for GULP recipes.
 
     Parameters
     ----------

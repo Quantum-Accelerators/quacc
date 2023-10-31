@@ -1,4 +1,4 @@
-"""Q-Chem calculator IO."""
+"""Q-Chem calculator IO"""
 from __future__ import annotations
 
 import struct
@@ -46,7 +46,8 @@ def write_qchem(
     qchem_input_params: dict[str, Any] | None = None,
     prev_orbital_coeffs: list[float] | None = None,
 ) -> None:
-    """Write the Q-Chem input files.
+    """
+    Write the Q-Chem input files.
 
     Parameters
     ----------
@@ -102,7 +103,8 @@ def write_qchem(
 
 
 def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float]]:
-    """Read Q-Chem log files.
+    """
+    Read Q-Chem log files.
 
     Parameters
     ----------

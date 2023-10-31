@@ -1,4 +1,4 @@
-"""Slab recipes for EMT."""
+"""Slab recipes for EMT"""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

@@ -1,4 +1,4 @@
-"""Core recipes for ORCA."""
+"""Core recipes for ORCA"""
 from __future__ import annotations
 
 import multiprocessing
@@ -35,7 +35,8 @@ def static_job(
     block_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> cclibSchema:
-    """Carry out a single-point calculation.
+    """
+    Carry out a single-point calculation.
 
     Parameters
     ----------
@@ -130,7 +131,8 @@ def relax_job(
     block_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> cclibSchema:
-    """Carry out a geometry optimization.
+    """
+    Carry out a geometry optimization.
 
     Parameters
     ----------
@@ -228,7 +230,8 @@ def _base_job(
     additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> cclibSchema:
-    """Base job function for ORCA recipes.
+    """
+    Base job function for ORCA recipes.
 
     Parameters
     ----------

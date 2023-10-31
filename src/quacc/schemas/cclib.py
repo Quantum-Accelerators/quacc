@@ -1,4 +1,4 @@
-"""Schemas for molecular DFT codes parsed by cclib."""
+"""Schemas for molecular DFT codes parsed by cclib"""
 from __future__ import annotations
 
 import logging
@@ -54,8 +54,10 @@ def cclib_summarize_run(
     additional_fields: dict[str, Any] | None = None,
     store: Store | None = None,
 ) -> cclibSchema:
-    """Get tabulated results from a molecular DFT run and store them in a database-
-    friendly format. This is meant to be a general parser built on top of cclib.
+    """
+    Get tabulated results from a molecular DFT run and store them in a
+    database-friendly format. This is meant to be a general parser built on top
+    of cclib.
 
     Parameters
     ----------
@@ -151,7 +153,8 @@ def _make_cclib_schema(
     analysis: str | list[str] | None = None,
     proatom_dir: Path | str | None = None,
 ) -> cclibBaseSchema:
-    """Create a TaskDocument from a log file.
+    """
+    Create a TaskDocument from a log file.
 
     For a full description of each field, see
     https://cclib.github.io/data.html.
@@ -276,7 +279,8 @@ def _cclib_calculate(
     cube_file: Path | str | None = None,
     proatom_dir: Path | str | None = None,
 ) -> PopAnalysisAttributes | None:
-    """Run a cclib population analysis.
+    """
+    Run a cclib population analysis.
 
     Parameters
     ----------
@@ -370,7 +374,8 @@ def _cclib_calculate(
 def _get_homos_lumos(
     moenergies: list[list[float]], homo_indices: list[int]
 ) -> tuple[list[float], list[float], list[float]] | tuple[list[float], None, None]:
-    """Calculate the HOMO, LUMO, and HOMO-LUMO gap energies in eV.
+    """
+    Calculate the HOMO, LUMO, and HOMO-LUMO gap energies in eV.
 
     Parameters
     ----------

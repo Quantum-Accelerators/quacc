@@ -1,4 +1,4 @@
-"""Core recipes for VASP."""
+"""Core recipes for VASP"""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -27,7 +27,8 @@ def static_job(
     calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
-    """Carry out a single-point calculation.
+    """
+    Carry out a single-point calculation.
 
     Parameters
     ----------
@@ -89,7 +90,8 @@ def relax_job(
     calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
-    """Relax a structure.
+    """
+    Relax a structure.
 
     Parameters
     ----------
@@ -157,7 +159,8 @@ def double_relax_job(
     calc_swaps2: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> DoubleRelaxSchema:
-    """Double-relax a structure. This is particularly useful for a few reasons:
+    """
+    Double-relax a structure. This is particularly useful for a few reasons:
 
     1. To carry out a cheaper pre-relaxation before the high-quality run.
 
@@ -219,7 +222,9 @@ def _base_job(
     additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
-    """Base job function for VASP recipes.
+    """
+    Base job function for VASP recipes.
+
 
     Parameters
     ----------
