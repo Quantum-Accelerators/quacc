@@ -11,7 +11,7 @@ from ase.optimize import BFGS, BFGSLineSearch
 from quacc import SETTINGS
 from quacc.runners.calc import run_ase_opt, run_ase_vib, run_calc
 
-DEFAULT_SETTINGS = SETTINGS.copy()
+DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 
 def prep_files():

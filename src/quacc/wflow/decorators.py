@@ -39,7 +39,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
 
     ... is the same as doing
 
-    === "Covalent⭐"
+    === "Covalent"
 
         ```python
         import covalent as ct
@@ -51,7 +51,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
         add(1, 2)
         ```
 
-    === "Parsl⭐"
+    === "Parsl"
 
         ```python
         from parsl import python_app
@@ -113,7 +113,9 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     """
 
     @functools.wraps(_func)
-    def _inner(*f_args, decorator_kwargs: dict | None = None, **f_kwargs) -> Any:
+    def _inner(
+        *f_args, decorator_kwargs: dict[str, Any] | None = None, **f_kwargs
+    ) -> Any:
         """
         This function is used for handling workflow engines that require some action
         beyond just decoration. It also patches the parent function `_func` to takke
@@ -206,7 +208,7 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
 
     ... is the same as doing
 
-    === "Covalent⭐"
+    === "Covalent"
 
         ```python
         import covalent as ct
@@ -222,7 +224,7 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
         workflow(1, 2, 3)
         ```
 
-    === "Parsl⭐"
+    === "Parsl"
 
         ```python
         from parsl import python_app
@@ -346,7 +348,7 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
 
     ... is the same as doing
 
-    === "Covalent⭐"
+    === "Covalent"
 
         ```python
         import random
@@ -374,7 +376,7 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
         workflow(1, 2, 3)
         ```
 
-    === "Parsl⭐"
+    === "Parsl"
 
         ```python
         import random

@@ -47,11 +47,11 @@ class Attributes(TypedDict, total=False):
     aonames: list[str]
     aooverlaps: NDArray
     atombasis: list[list[int]]
-    atomcharges: dict[NDArray]
+    atomcharges: dict[str, NDArray]
     atomcoords: NDArray
     atommasses: NDArray
     atomnos: NDArray
-    atomspins: dict[NDArray]
+    atomspins: dict[str, NDArray]
     ccenergies: NDArray
     charge: int
     coreelectrons: NDArray
@@ -77,7 +77,7 @@ class Attributes(TypedDict, total=False):
     grads: NDArray
     hessian: NDArray
     homos: NDArray
-    metadata: dict
+    metadata: dict[str, Any]
     mocoeffs: list[NDArray]
     moenergies: list[NDArray]
     moments: list[NDArray]

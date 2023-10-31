@@ -6,7 +6,7 @@ from maggma.stores import MemoryStore
 from quacc import SETTINGS
 from quacc.recipes.lj.core import freq_job, relax_job, static_job
 
-DEFAULT_SETTINGS = SETTINGS.copy()
+DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 
 def setup_module():

@@ -2,18 +2,20 @@
 from __future__ import annotations
 
 from importlib.metadata import version
+from typing import TYPE_CHECKING
 
-from ase import Atoms
-from ase import __version__ as ase_version
+from ase.atoms import Atoms
 from ase.io.jsonio import decode, encode
 
 from quacc.settings import QuaccSettings
 from quacc.wflow.decorators import flow, job, subflow
 
+if TYPE_CHECKING:
+    from typing import Any
 __all__ = ["flow", "job", "subflow"]
 
 
-def atoms_as_dict(s: Atoms) -> dict:
+def atoms_as_dict(s: Atoms) -> dict[str, Any]:
     # Uses Monty's MSONable spec
     # Normally, we would want to this to be a wrapper around atoms.todict() with @module and
     # @class key-value pairs inserted. However, atoms.todict()/atoms.fromdict() does not currently
@@ -21,7 +23,7 @@ def atoms_as_dict(s: Atoms) -> dict:
     return {"@module": "ase.atoms", "@class": "Atoms", "atoms_json": encode(s)}
 
 
-def atoms_from_dict(d: dict) -> Atoms:
+def atoms_from_dict(d: dict[str, Any]) -> Atoms:
     # Uses Monty's MSONable spec
     # Normally, we would want to have this be a wrapper around atoms.fromdict()
     # that just ignores the @module/@class key-value pairs. However, atoms.todict()/atoms.fromdict()
@@ -31,11 +33,6 @@ def atoms_from_dict(d: dict) -> Atoms:
 
 # Load the quacc version
 __version__ = version("quacc")
-
-if tuple(ase_version) <= tuple("3.22.1"):
-    raise ImportError(
-        f"Your ASE version ({ase_version}) is <= 3.22.1. Please upgrade your ASE version: pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip",
-    )
 
 # Make Atoms MSONable
 Atoms.as_dict = atoms_as_dict

@@ -21,7 +21,7 @@ pytest.importorskip("sella")
 FILE_DIR = Path(__file__).resolve().parent
 QCHEM_DIR = FILE_DIR / "qchem_examples"
 
-DEFAULT_SETTINGS = SETTINGS.copy()
+DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 
 @pytest.fixture()
@@ -319,7 +319,7 @@ def test_freq_job_v1(monkeypatch, tmpdir, test_atoms):
     assert output["parameters"]["charge"] == -1
     assert output["parameters"]["spin_multiplicity"] == 2
     assert output["results"]["energy"] == pytest.approx(-605.6859554019 * units.Hartree)
-    assert output["results"]["hessian"] is not None
+    assert output["results"].get("hessian") is not None
     assert output["results"]["enthalpy"] == pytest.approx(
         output["results"]["qc_output"]["total_enthalpy"] * (units.kcal / units.mol)
     )
@@ -501,7 +501,7 @@ def test_irc_job_v1(monkeypatch, tmpdir, test_atoms):
 
 def test_irc_job_v2(tmpdir, test_atoms):
     tmpdir.chdir()
-    with pytest.raises(ValueError):
+    with pytest.raises(RuntimeError):
         irc_job(test_atoms, 0, 1, "straight")
 
     with pytest.raises(ValueError):

@@ -12,6 +12,8 @@ from quacc.recipes.vasp.slabs import (
     slab_to_ads_flow,
 )
 
+DEFAULT_SETTINGS = SETTINGS.copy()
+
 
 def test_static_job(tmpdir):
     tmpdir.chdir()
@@ -55,12 +57,12 @@ def test_static_job(tmpdir):
     assert "efermi" not in output["parameters"]
 
 
-def test_static_job_force_copilot(tmpdir):
+def test_static_job_incar_copilot_aggressive(tmpdir):
     tmpdir.chdir()
 
     atoms = bulk("Cu") * (2, 2, 2)
 
-    SETTINGS.VASP_FORCE_COPILOT = True
+    SETTINGS.VASP_INCAR_COPILOT = "aggressive"
     output = static_job(
         atoms,
         calc_swaps={
@@ -76,7 +78,7 @@ def test_static_job_force_copilot(tmpdir):
     assert "prec" not in output["parameters"]
     assert "lwave" not in output["parameters"]
     assert output["parameters"]["efermi"] == "midgap"
-    SETTINGS.VASP_FORCE_COPILOT = False
+    SETTINGS.VASP_INCAR_COPILOT = DEFAULT_SETTINGS.VASP_INCAR_COPILOT
 
 
 def test_relax_job(tmpdir):

@@ -2,7 +2,7 @@
 
 [Atomate2](https://github.com/materialsproject/atomate2) is a computational materials science workflow program that shares many similarities with quacc. If you wish to combine workflows from quacc with those from Atomate2, that is possible through the use of Jobflow.
 
-!!! Tip
+!!! Tip "Jobflow Help"
 
     Refer to the [Using a Workflow Engine](../wflow_engine/wflow_engines1.md) guide for more information on how to use Jobflow with quacc.
 

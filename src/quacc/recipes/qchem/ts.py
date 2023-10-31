@@ -18,7 +18,7 @@ except ImportError:
     has_sella = False
 
 if TYPE_CHECKING:
-    from typing import Literal
+    from typing import Any, Literal
 
     from ase import Atoms
 
@@ -40,8 +40,8 @@ def ts_job(
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
     n_cores: int | None = None,
-    overwrite_inputs: dict | None = None,
-    opt_swaps: dict | None = None,
+    overwrite_inputs: dict[str, Any] | None = None,
+    opt_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
     """
@@ -169,8 +169,8 @@ def irc_job(
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
     n_cores: int | None = None,
-    overwrite_inputs: dict | None = None,
-    opt_swaps: dict | None = None,
+    overwrite_inputs: dict[str, Any] | None = None,
+    opt_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
     """
@@ -300,9 +300,9 @@ def quasi_irc_job(
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
     n_cores: int | None = None,
-    overwrite_inputs: dict | None = None,
-    irc_opt_swaps: dict | None = None,
-    relax_opt_swaps: dict | None = None,
+    overwrite_inputs: dict[str, Any] | None = None,
+    irc_opt_swaps: dict[str, Any] | None = None,
+    relax_opt_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
     """
@@ -348,7 +348,7 @@ def quasi_irc_job(
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
 
-    default_settings = SETTINGS.copy()
+    default_settings = SETTINGS.model_copy()
 
     irc_opt_swaps_defaults = {"fmax": 100, "max_steps": 10}
     irc_opt_swaps = merge_dicts(irc_opt_swaps_defaults, irc_opt_swaps)

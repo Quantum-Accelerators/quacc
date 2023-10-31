@@ -37,7 +37,7 @@ result = relax_job(atoms)
 print(result)
 ```
 
-??? Info
+??? Info "Printed Output"
 
     ```python
     {'atoms': Atoms(symbols='Cu', pbc=True, cell=[[0.0, 1.805, 1.805], [1.805, 0.0, 1.805], [1.805, 1.805, 0.0]], initial_magmoms=...),
@@ -186,7 +186,7 @@ result2 = static_job(result1["atoms"], method="GFN2-xTB")
 print(result2)
 ```
 
-??? Info
+??? Info "Printed Output"
 
     ```python
     {'atoms': Atoms(symbols='Cu', pbc=True, cell=[[0.0, 1.805, 1.805], [1.805, 0.0, 1.805], [1.805, 1.805, 0.0]], initial_magmoms=...),

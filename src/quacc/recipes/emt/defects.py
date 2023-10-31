@@ -10,6 +10,8 @@ from quacc.atoms.defects import make_defects_from_bulk
 from quacc.recipes.emt.core import relax_job, static_job
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase import Atoms
     from pymatgen.analysis.defects.generators import (
         AntiSiteGenerator,
@@ -34,10 +36,10 @@ def bulk_to_defects_flow(
         | VoronoiInterstitialGenerator
     ) = VacancyGenerator,
     defect_charge: int = 0,
-    make_defects_kwargs: dict | None = None,
+    make_defects_kwargs: dict[str, Any] | None = None,
     run_static: bool = True,
-    defect_relax_kwargs: dict | None = None,
-    defect_static_kwargs: dict | None = None,
+    defect_relax_kwargs: dict[str, Any] | None = None,
+    defect_static_kwargs: dict[str, Any] | None = None,
 ) -> list[RunSchema | OptSchema]:
     """
     Workflow consisting of:
@@ -57,7 +59,8 @@ def bulk_to_defects_flow(
     defect_charge
         Charge state of the defect
     make_defects_kwargs
-        Keyword arguments to pass to [quacc.atoms.defects.make_defects_from_bulk][]
+        Keyword arguments to pass to
+        [quacc.atoms.defects.make_defects_from_bulk][]
     run_static
         Whether to run the static calculation.
     defect_relax_kwargs
@@ -68,8 +71,8 @@ def bulk_to_defects_flow(
     Returns
     -------
     list[RunSchema | OptSchema]
-        List of dictionary of results from [quacc.schemas.ase.summarize_run][] or
-        [quacc.schemas.ase.summarize_opt_run][]
+        List of dictionary of results from [quacc.schemas.ase.summarize_run][]
+        or [quacc.schemas.ase.summarize_opt_run][]
     """
     defect_relax_kwargs = defect_relax_kwargs or {}
     defect_static_kwargs = defect_static_kwargs or {}

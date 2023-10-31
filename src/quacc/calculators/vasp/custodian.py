@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import os
 import shlex
+from typing import TYPE_CHECKING
 
 from custodian import Custodian
 from custodian.vasp.handlers import (
@@ -24,7 +25,8 @@ from custodian.vasp.handlers import (
 from custodian.vasp.jobs import VaspJob
 from custodian.vasp.validators import VaspFilesValidator, VasprunXMLValidator
 
-from quacc import SETTINGS
+if TYPE_CHECKING:
+    from typing import Any
 
 
 def run_custodian(
@@ -37,8 +39,8 @@ def run_custodian(
     vasp_custodian_handlers: list[str] | None = None,
     vasp_custodian_validators: list[str] | None = None,
     scratch_dir: str | None = None,
-    vasp_job_kwargs: dict | None = None,
-    custodian_kwargs: dict | None = None,
+    vasp_job_kwargs: dict[str, Any] | None = None,
+    custodian_kwargs: dict[str, Any] | None = None,
 ) -> None:
     """
     Function to run VASP Custodian
@@ -76,6 +78,8 @@ def run_custodian(
     None
     """
     # Adapted from atomate2.vasp.run.run_vasp
+
+    from quacc import SETTINGS
 
     # Set defaults
     vasp_parallel_cmd = os.path.expandvars(

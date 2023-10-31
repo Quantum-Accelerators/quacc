@@ -4,6 +4,46 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.12]
+
+### Changed
+
+- Consolidated VASP INCAR co-pilot settings
+- Internal refactoring of the Q-Chem and VASP calculators
+
+### Fixed
+
+- All `Path`-based settings have `.expanduser()` applied
+
+## [0.3.11]
+
+### Changed
+
+- Improved error handling
+
+## [0.3.10]
+
+### Changed
+
+- DFTB+ `MaxSccIterations` set to 200 by default
+- SCC errors in DFTB+ relaxations will be reported with higher priority than a relaxation error
+
+## [0.3.9]
+
+### Changed
+
+- Changed prefix of scratch directories to have the datetime in it for easier debugging
+
+### Fixed
+
+- DFTB+ recipes now won't crash when `kpts=None` for structures with PBCs
+
+## [0.3.8]
+
+### Changed
+
+- Changed minimum version of Parsl
+
 ## [0.3.7]
 
 ### Added

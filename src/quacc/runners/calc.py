@@ -1,7 +1,8 @@
 """Utility functions for running ASE calculators"""
 from __future__ import annotations
 
-import os, time
+import os
+from datetime import datetime, timezone
 from pathlib import Path
 from shutil import rmtree
 from tempfile import mkdtemp
@@ -27,6 +28,8 @@ except ImportError:
     Sella = None
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase import Atoms
     from ase.optimize.optimize import Optimizer
 
@@ -67,7 +70,11 @@ def run_calc(
     t1 = time.time()
 
     # Run calculation via get_potential_energy()
-    atoms.get_potential_energy()
+    try:
+        atoms.get_potential_energy()
+    except Exception as err:
+        msg = f"Calculation failed. Check the logfiles at {Path.cwd()}"
+        raise RuntimeError(msg) from err
 
     elapsed_time = time.time()-t1
 
@@ -108,8 +115,8 @@ def run_ase_opt(
     fmax: float = 0.01,
     max_steps: int = 500,
     optimizer: Optimizer = FIRE,
-    optimizer_kwargs: dict | None = None,
-    run_kwargs: dict | None = None,
+    optimizer_kwargs: dict[str, Any] | None = None,
+    run_kwargs: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> Optimizer:
     """
@@ -173,8 +180,11 @@ def run_ase_opt(
 
     # Run calculation
     with traj, optimizer(atoms, **optimizer_kwargs) as dyn:
-        #dyn.info['your_property_name'] = 10
-        dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
+        try:
+            dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
+        except Exception as err:
+            msg = f"Calculation failed. Check the logfiles at {Path.cwd()}"
+            raise RuntimeError(msg) from err
 
     # Store the trajectory atoms
     dyn.traj_atoms = read(traj_filename, index=":")
@@ -186,7 +196,9 @@ def run_ase_opt(
 
 
 def run_ase_vib(
-    atoms: Atoms, vib_kwargs: dict | None = None, copy_files: list[str] | None = None
+    atoms: Atoms,
+    vib_kwargs: dict[str, Any] | None = None,
+    copy_files: list[str] | None = None,
 ) -> Vibrations:
     """
     Run an ASE-based vibration analysis in a scratch directory and copy the
@@ -220,7 +232,13 @@ def run_ase_vib(
 
     # Run calculation
     vib = Vibrations(atoms, name=str(tmpdir / "vib"), **vib_kwargs)
-    vib.run()
+    try:
+        vib.run()
+    except Exception as err:
+        msg = f"Calculation failed. Check the logfiles at {Path.cwd()}"
+        raise RuntimeError(msg) from err
+
+    # Summarize run
     vib.summary(log=str(tmpdir / "vib_summary.log"))
 
     # Perform cleanup operations
@@ -272,7 +290,10 @@ def _calc_setup(
     )
 
     # Create a tmpdir for the calculation within the scratch_dir
-    tmpdir = Path(mkdtemp(prefix="quacc-tmp-", dir=SETTINGS.SCRATCH_DIR)).resolve()
+    time_now = datetime.now(timezone.utc).strftime("%Y-%m-%d-%H-%M-%S-%f")
+    tmpdir = Path(
+        mkdtemp(prefix=f"quacc-tmp-{time_now}-", dir=SETTINGS.SCRATCH_DIR)
+    ).resolve()
 
     # Create a symlink to the tmpdir in the results_dir
     if os.name != "nt" and SETTINGS.SCRATCH_DIR != SETTINGS.RESULTS_DIR:
@@ -328,7 +349,7 @@ def _calc_cleanup(tmpdir: str | Path, job_results_dir: str | Path) -> None:
 
 
 @requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
-def _set_sella_kwargs(atoms: Atoms, optimizer_kwargs: dict) -> None:
+def _set_sella_kwargs(atoms: Atoms, optimizer_kwargs: dict[str, Any]) -> None:
     """
     Modifies the `optimizer_kwargs` in-place to address various Sella-related
     parameters. This function does the following for the specified key/value

@@ -3,10 +3,17 @@ Utility functions for dealing with dictionaries
 """
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Any
+
 
 def merge_dicts(
-    dict1: dict | None, dict2: dict | None, remove_nones: bool = True
-) -> dict:
+    dict1: dict[str, Any] | None,
+    dict2: dict[str, Any] | None,
+    remove_nones: bool = True,
+) -> dict[str, Any]:
     """
     Recursively merges two dictionaries. If one the inputs are `None`, then
     it is treated as `{}`.
@@ -44,7 +51,7 @@ def merge_dicts(
     return merged
 
 
-def remove_dict_nones(start_dict: dict) -> dict:
+def remove_dict_nones(start_dict: dict[str, Any]) -> dict[str, Any]:
     """
     For a given dictionary, recursively remove all items that are None
 
@@ -68,7 +75,7 @@ def remove_dict_nones(start_dict: dict) -> dict:
     )
 
 
-def sort_dict(start_dict: dict) -> dict:
+def sort_dict(start_dict: dict[str, Any]) -> dict[str, Any]:
     """
     For a given dictionary, recursively sort all entries alphabetically by key.
 

@@ -2,7 +2,7 @@
 
 Using a workflow engine is a crucial component for scaling up quacc calculations in a high-throughput setting. We describe the necessary installation steps here for the workflow manager of your choosing.
 
-!!! Tip
+!!! Tip "Picking a Workflow Engine"
 
     For a comparison of the different compatible workflow engines, refer to the [Workflow Engines Overview](../user/basics/wflow_overview.md) section.
 
@@ -40,7 +40,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
         Once you start scaling up your calculations, we recommend hosting the Covalent server on a dedicated machine or using [Covalent Cloud](https://www.covalent.xyz/cloud/). Refer to the [Covalent Deployment Guide](https://docs.covalent.xyz/docs/user-documentation/server-deployment) for details.
 
-    !!! Note
+    !!! Note "For NERSC Users"
 
         If you are using Perlmutter at NERSC, you will need to adjust the Covalent configuration directory because the home directory does not support file locking:
 
@@ -72,7 +72,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     Jobflow and FireWorks both require the use of a database (most commonly a MongoDB instance) to store calculation results.
 
-    !!! Note
+    !!! Tip
 
         If it is not possible to use MongoDB, you can use a variety of other data store options available within the [maggma package](https://github.com/materialsproject/maggma), including a [`MontyStore`](https://materialsproject.github.io/maggma/reference/stores/#maggma.stores.mongolike.MontyStore) that solely relies on the local filesystem.
 
@@ -92,7 +92,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
         collection_name: <collection name>
     ```
 
-    !!! Note
+    !!! Note "MongoDB Atlas"
 
         If you are using a URI (as is common with MongoDB Atlas), then you will instead have a `jobflow.yaml` file that looks like the example below. Here, you will put the full URI in the `host` field. The `username` and `password` are part of the URI and so should not be included elsewhere in the YAML file.
 
@@ -165,7 +165,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     wf_user_indices: []
     ```
 
-    !!! Note
+    !!! Note "MongoDB Atlas"
 
         If you are accessing your MongoDB via a URI (e.g. as with MongoDB Atlas), then you will use the following `my_launchpad.yaml` template instead.
 
@@ -202,7 +202,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     **Database Initialization**
 
-    !!! Warning
+    !!! Danger
 
         Running `lpad reset` will clear your FireWorks launchpad, so only use this command if you are a new user.
 

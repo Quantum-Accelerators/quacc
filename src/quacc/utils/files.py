@@ -7,15 +7,19 @@ import contextlib
 import os
 import socket
 import warnings
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from random import randint
 from shutil import copy
+from typing import TYPE_CHECKING
 
 import yaml
 from monty.io import zopen
 from monty.os.path import zpath
 from monty.shutil import decompress_file
+
+if TYPE_CHECKING:
+    from typing import Any
 
 
 def check_logfile(logfile: str, check_str: str) -> bool:
@@ -81,7 +85,7 @@ def make_unique_dir(base_path: str | None = None) -> Path:
     Path
         Path to the job directory.
     """
-    time_now = datetime.utcnow().strftime("%Y-%m-%d-%H-%M-%S-%f")
+    time_now = datetime.now(timezone.utc).strftime("%Y-%m-%d-%H-%M-%S-%f")
     job_dir = Path(f"quacc-{time_now}-{randint(10000, 99999)}")
     if base_path:
         job_dir = Path(base_path, job_dir)
@@ -90,7 +94,7 @@ def make_unique_dir(base_path: str | None = None) -> Path:
     return job_dir
 
 
-def load_yaml_calc(yaml_path: str | Path) -> dict:
+def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
     """
     Loads a YAML file containing calculator settings. This YAML loader looks for
     a special flag "parent" in the YAML file. If this flag is present, the YAML
@@ -112,7 +116,7 @@ def load_yaml_calc(yaml_path: str | Path) -> dict:
 
     if not yaml_path.exists():
         msg = f"Cannot find {yaml_path}"
-        raise ValueError(msg)
+        raise FileNotFoundError(msg)
 
     # Load YAML file
     with yaml_path.open() as stream:

@@ -8,7 +8,7 @@ from quacc import SETTINGS
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.settings import QuaccSettings
 
-DEFAULT_SETTINGS = SETTINGS.copy()
+DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 
 FILE_DIR = Path(__file__).resolve().parent
