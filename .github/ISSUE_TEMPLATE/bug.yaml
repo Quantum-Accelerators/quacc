@@ -9,8 +9,6 @@ body:
       description: For the version of quacc, you can find it by doing `print(quacc.__version__)`.
       value: |
         - **quacc version**:
-        - **Python version**:
-        - **Operating system**:
         - **Workflow engine** (if applicable):
     validations:
       required: true
