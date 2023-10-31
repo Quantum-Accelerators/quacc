@@ -1,4 +1,4 @@
-"""Core recipes for Psi4"""
+"""Core recipes for Psi4."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

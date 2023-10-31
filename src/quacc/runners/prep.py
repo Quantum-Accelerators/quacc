@@ -1,6 +1,4 @@
-"""
-Utility functions for dealing with Atoms
-"""
+"""Utility functions for dealing with Atoms."""
 from __future__ import annotations
 
 import logging

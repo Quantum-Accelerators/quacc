@@ -1,4 +1,4 @@
-"""Aliases for type hinting for emmet"""
+"""Aliases for type hinting for emmet."""
 from datetime import datetime
 from typing import Any, Literal, TypedDict
 
@@ -17,9 +17,7 @@ from pymatgen.io.vasp.inputs import Incar, Kpoints, Poscar, Potcar
 
 
 class SymmetryData(TypedDict):
-    """
-    Type hint associated with `emmet.core.symmetry.SymmetryData`
-    """
+    """Type hint associated with `emmet.core.symmetry.SymmetryData`"""
 
     crystal_system: CrystalSystem
     symbol: str
@@ -30,9 +28,7 @@ class SymmetryData(TypedDict):
 
 
 class PointGroupData(TypedDict):
-    """
-    Type hint associated with `emmet.core.symmetry.PointGroupData`
-    """
+    """Type hint associated with `emmet.core.symmetry.PointGroupData`"""
 
     point_group: str
     rotation_number: float
@@ -43,9 +39,7 @@ class PointGroupData(TypedDict):
 
 
 class EmmetBase(TypedDict):
-    """
-    Type hint associated with `emmet.core.base.EmmetBaseModel`.
-    """
+    """Type hint associated with `emmet.core.base.EmmetBaseModel`."""
 
     emmet_version: str
     pymatgen_version: str
@@ -56,9 +50,7 @@ class EmmetBase(TypedDict):
 
 
 class StructureMetadata(EmmetBase):
-    """
-    Type hint associated with `emmet.core.structure.StructureMetadata`
-    """
+    """Type hint associated with `emmet.core.structure.StructureMetadata`"""
 
     nsites: int
     elements: list[Element]
@@ -74,9 +66,7 @@ class StructureMetadata(EmmetBase):
 
 
 class MoleculeMetadata(EmmetBase):
-    """
-    Type hint associated with `emmet.core.structure.MoleculeMetadata`
-    """
+    """Type hint associated with `emmet.core.structure.MoleculeMetadata`"""
 
     charge: int
     spin_multiplicity: int
@@ -94,18 +84,14 @@ class MoleculeMetadata(EmmetBase):
 
 
 class PotcarSpec(TypedDict):
-    """
-    Type hint associated with emmet.core.vasp.calculation.PotcarSpec
-    """
+    """Type hint associated with emmet.core.vasp.calculation.PotcarSpec."""
 
     titel: str
     hash: str
 
 
 class CalculationInput(TypedDict):
-    """
-    Type hint associated with emmet.core.vasp.calculation.CalculationInput
-    """
+    """Type hint associated with emmet.core.vasp.calculation.CalculationInput."""
 
     incar: dict[str, Any]
     kpoints: dict[str, Any]
@@ -121,9 +107,7 @@ class CalculationInput(TypedDict):
 
 
 class ElectronicStep(TypedDict):
-    """
-    Type hint associated with emmet.core.vasp.calculation.ElectronicStep
-    """
+    """Type hint associated with emmet.core.vasp.calculation.ElectronicStep."""
 
     alphaZ: float
     ewald: float
@@ -140,9 +124,7 @@ class ElectronicStep(TypedDict):
 
 
 class IonicStep(TypedDict):
-    """
-    Type hint associated with emmet.core.vasp.calculation.IonicStep
-    """
+    """Type hint associated with emmet.core.vasp.calculation.IonicStep."""
 
     e_fr_energy: float
     e_wo_entrp: float
@@ -154,9 +136,7 @@ class IonicStep(TypedDict):
 
 
 class FrequencyDependentDielectric(TypedDict):
-    """
-    Type hint associated with emmet.core.vasp.calculation.FrequencyDependentDielectric
-    """
+    """Type hint associated with emmet.core.vasp.calculation.FrequencyDependentDielectric."""
 
     real: list[list[float]]
     imaginary: list[list[float]]
@@ -164,18 +144,14 @@ class FrequencyDependentDielectric(TypedDict):
 
 
 class ElectronPhononDisplacedStructures(TypedDict):
-    """
-    Type hint associated with emmet.core.vasp.calculation.ElectronPhononDisplacedStructures
-    """
+    """Type hint associated with emmet.core.vasp.calculation.ElectronPhononDisplacedStructures."""
 
     temperatures: list[float]
     structures: list[Structure]
 
 
 class RunStatistics(TypedDict):
-    """
-    Type hint associated with emmet.core.vasp.calculation.RunStatistics
-    """
+    """Type hint associated with emmet.core.vasp.calculation.RunStatistics."""
 
     average_memory: float
     max_memory: float
@@ -187,9 +163,7 @@ class RunStatistics(TypedDict):
 
 
 class CalculationOutput(TypedDict, total=False):
-    """
-    Type hint associated with emmet.core.vasp.calculation.CalculationOutput
-    """
+    """Type hint associated with emmet.core.vasp.calculation.CalculationOutput."""
 
     energy: float
     energy_per_atom: float
@@ -220,9 +194,7 @@ class CalculationOutput(TypedDict, total=False):
 
 
 class Calculation(TypedDict):
-    """
-    Type hint associated with emmet.core.vasp.calculation.Calculation
-    """
+    """Type hint associated with emmet.core.vasp.calculation.Calculation."""
 
     dir_name: str
     vasp_version: str
@@ -239,9 +211,7 @@ class Calculation(TypedDict):
 
 
 class OrigInputs(TypedDict):
-    """
-    Type hint associated with emmet.core.tasks.OrigInputs
-    """
+    """Type hint associated with emmet.core.tasks.OrigInputs."""
 
     incar: Incar
     poscar: Poscar
@@ -250,9 +220,7 @@ class OrigInputs(TypedDict):
 
 
 class OutputDoc(TypedDict):
-    """
-    Type hint associated with emmet.core.tasks.OutputDoc
-    """
+    """Type hint associated with emmet.core.tasks.OutputDoc."""
 
     structure: Structure
     density: float
@@ -264,18 +232,14 @@ class OutputDoc(TypedDict):
 
 
 class CustodianDoc(TypedDict):
-    """
-    Type hint associated with emmet.core.tasks.CustodianDoc
-    """
+    """Type hint associated with emmet.core.tasks.CustodianDoc."""
 
     corrections: list[Any]
     job: dict
 
 
 class AnalysisDoc(TypedDict):
-    """
-    Type hint associated with emmet.core.tasks.AnalysisDoc
-    """
+    """Type hint associated with emmet.core.tasks.AnalysisDoc."""
 
     delta_volume: float
     delta_volume_percent: float
@@ -285,9 +249,7 @@ class AnalysisDoc(TypedDict):
 
 
 class TaskDoc(StructureMetadata):
-    """
-    Type hint associated with emmet.core.tasks.TaskDoc
-    """
+    """Type hint associated with emmet.core.tasks.TaskDoc."""
 
     tags: list[str] | None
     dir_name: str

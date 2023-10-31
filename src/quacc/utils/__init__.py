@@ -1,4 +1,4 @@
-"""Miscellaneous utility functions"""
+"""Miscellaneous utility functions."""
 
 from quacc.atoms.core import check_charge_and_spin
 

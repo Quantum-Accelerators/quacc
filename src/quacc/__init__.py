@@ -1,4 +1,4 @@
-"""Init data for quacc"""
+"""Init data for quacc."""
 from __future__ import annotations
 
 from importlib.metadata import version

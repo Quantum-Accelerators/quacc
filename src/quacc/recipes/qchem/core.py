@@ -1,4 +1,4 @@
-"""Core recipes for the Q-Chem"""
+"""Core recipes for the Q-Chem."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -453,8 +453,8 @@ def _base_job(
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
-    Base job function used for Q-Chem recipes that don't rely on ASE optimizers
-    or other ASE dynamics classes.
+    Base job function used for Q-Chem recipes that don't rely on ASE optimizers or other
+    ASE dynamics classes.
 
     Parameters
     ----------

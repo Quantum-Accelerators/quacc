@@ -1,1 +1,1 @@
-"""Recipes for NewtonNet"""
+"""Recipes for NewtonNet."""

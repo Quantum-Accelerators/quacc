@@ -1,4 +1,4 @@
-"""Core recipes for VASP"""
+"""Core recipes for VASP."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -224,7 +224,6 @@ def _base_job(
 ) -> VaspSchema:
     """
     Base job function for VASP recipes.
-
 
     Parameters
     ----------

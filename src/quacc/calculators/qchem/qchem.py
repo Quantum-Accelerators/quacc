@@ -1,4 +1,4 @@
-"""A Q-Chem calculator built on Pymatgen and Custodian functionality"""
+"""A Q-Chem calculator built on Pymatgen and Custodian functionality."""
 from __future__ import annotations
 
 import inspect
@@ -24,9 +24,7 @@ if TYPE_CHECKING:
 
 
 class QChem(FileIOCalculator):
-    """
-    Custom Q-Chem calculator built on Pymatgen and Custodian.
-    """
+    """Custom Q-Chem calculator built on Pymatgen and Custodian."""
 
     implemented_properties: ClassVar[list[str]] = [
         "energy",

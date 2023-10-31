@@ -1,6 +1,4 @@
-"""
-Utility functions for dealing with Atoms
-"""
+"""Utility functions for dealing with Atoms."""
 from __future__ import annotations
 
 import hashlib
@@ -20,8 +18,8 @@ logger = logging.getLogger(__name__)
 
 def get_atoms_id(atoms: Atoms) -> str:
     """
-    Returns a unique ID for the Atoms object. Note: The .info dict and
-    calculator is excluded from the hash generation.
+    Returns a unique ID for the Atoms object. Note: The .info dict and calculator is
+    excluded from the hash generation.
 
     Parameters
     ----------
@@ -147,7 +145,6 @@ def check_charge_and_spin(
     Returns
     -------
     charge, multiplicity
-
     """
 
     charge = (

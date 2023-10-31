@@ -1,4 +1,4 @@
-"""Core recipes for GULP"""
+"""Core recipes for GULP."""
 from __future__ import annotations
 
 import logging

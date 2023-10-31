@@ -1,6 +1,4 @@
-"""
-Parameter-related utilities for the Vasp calculator.
-"""
+"""Parameter-related utilities for the Vasp calculator."""
 from __future__ import annotations
 
 import logging

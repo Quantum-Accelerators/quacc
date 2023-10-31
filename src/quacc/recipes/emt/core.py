@@ -1,5 +1,5 @@
 """
-Core recipes for EMT
+Core recipes for EMT.
 
 NOTE: This set of minimal recipes is mainly for demonstration purposes.
 """

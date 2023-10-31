@@ -1,1 +1,1 @@
-"""Presets for the Vasp calculator"""
+"""Presets for the Vasp calculator."""
