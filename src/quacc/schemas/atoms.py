@@ -1,4 +1,4 @@
-"""Schemas for storing metadata about Atoms objects"""
+"""Schemas for storing metadata about Atoms objects."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -25,8 +25,7 @@ def atoms_to_metadata(
     store_pmg: bool = True,
     additional_fields: dict[str, Any] | None = None,
 ) -> AtomsSchema:
-    """
-    Convert an ASE Atoms object to a dict suitable for storage in MongoDB.
+    """Convert an ASE Atoms object to a dict suitable for storage in MongoDB.
 
     Parameters
     ----------
@@ -90,8 +89,7 @@ def atoms_to_metadata(
 
 
 def _quacc_sanitize(obj: Any) -> Any:
-    """
-    Sanitizes an object for storage in MongoDB.
+    """Sanitizes an object for storage in MongoDB.
 
     This is an analogue of monty's jsanitize function but meant to serialize
     Atom/Atoms objects as well.

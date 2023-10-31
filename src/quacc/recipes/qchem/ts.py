@@ -1,4 +1,4 @@
-"""Transition state recipes for the Q-Chem"""
+"""Transition state recipes for the Q-Chem."""
 from __future__ import annotations
 
 import multiprocessing
@@ -44,8 +44,7 @@ def ts_job(
     opt_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
-    """
-    TS optimize a molecular structure.
+    """TS optimize a molecular structure.
 
     ??? Note
 
@@ -173,8 +172,7 @@ def irc_job(
     opt_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
-    """
-    IRC optimize a molecular structure.
+    """IRC optimize a molecular structure.
 
     ??? Note
 
@@ -305,9 +303,8 @@ def quasi_irc_job(
     relax_opt_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
-    """
-    Quasi-IRC optimize a molecular structure. Runs `irc_job` for
-    10 steps (default) followed by `relax_job`.
+    """Quasi-IRC optimize a molecular structure. Runs `irc_job` for 10 steps (default)
+    followed by `relax_job`.
 
     Parameters
     ----------

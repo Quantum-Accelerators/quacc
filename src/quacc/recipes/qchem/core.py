@@ -1,4 +1,4 @@
-"""Core recipes for the Q-Chem"""
+"""Core recipes for the Q-Chem."""
 from __future__ import annotations
 
 import multiprocessing
@@ -41,8 +41,7 @@ def static_job(
     overwrite_inputs: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
-    """
-    Carry out a single-point calculation.
+    """Carry out a single-point calculation.
 
     ??? Note
 
@@ -146,8 +145,7 @@ def internal_relax_job(
     overwrite_inputs: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
-    """
-    Optimize aka "relax" a molecular structure with Q-Chem optimizers.
+    """Optimize aka "relax" a molecular structure with Q-Chem optimizers.
 
     ??? Note
 
@@ -251,8 +249,7 @@ def freq_job(
     overwrite_inputs: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
-    """
-    Perform a frequency calculation on a molecular structure.
+    """Perform a frequency calculation on a molecular structure.
 
     ??? Note
 
@@ -357,8 +354,7 @@ def relax_job(
     opt_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
-    """
-    Optimize aka "relax" a molecular structure with an ASE optimizer.
+    """Optimize aka "relax" a molecular structure with an ASE optimizer.
 
     ??? Note
 
@@ -471,9 +467,8 @@ def _base_job(
     additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
-    """
-    Base job function used for Q-Chem recipes that don't rely on ASE optimizers
-    or other ASE dynamics classes.
+    """Base job function used for Q-Chem recipes that don't rely on ASE optimizers or
+    other ASE dynamics classes.
 
     Parameters
     ----------
@@ -519,8 +514,7 @@ def _base_opt_job(
     additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
-    """
-    Base function for Q-Chem recipes that involve ASE optimizers.
+    """Base function for Q-Chem recipes that involve ASE optimizers.
 
     Parameters
     ----------

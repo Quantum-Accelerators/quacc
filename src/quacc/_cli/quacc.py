@@ -18,8 +18,7 @@ app = typer.Typer()
 
 
 def callback(value: bool) -> None:
-    """
-    Set up the callback for the quacc version reporting.
+    """Set up the callback for the quacc version reporting.
 
     Parameters
     ----------
@@ -46,8 +45,7 @@ def main(
         is_eager=True,
     )
 ) -> None:
-    """
-    The main CLI interface, with an option to return the version.
+    """The main CLI interface, with an option to return the version.
 
     Parameters
     ----------
@@ -62,9 +60,8 @@ def main(
 
 @app.command("set")
 def set_(parameter: str, new_value) -> None:
-    """
-    Set the specified quacc parameter in the quacc configuration file. This
-    command will not override any environment variables.
+    """Set the specified quacc parameter in the quacc configuration file. This command
+    will not override any environment variables.
 
     Parameters
     ----------
@@ -94,9 +91,8 @@ def set_(parameter: str, new_value) -> None:
 
 @app.command()
 def unset(parameter: str) -> None:
-    """
-    Unset the specified quacc parameter in the quacc configuration file. This
-    command will not override any environment variables.
+    """Unset the specified quacc parameter in the quacc configuration file. This command
+    will not override any environment variables.
 
     Parameters
     ---------
@@ -123,8 +119,7 @@ def unset(parameter: str) -> None:
 
 
 def _delete_setting(key: str, config_file: Path) -> None:
-    """
-    Remove the quacc setting from the configuration file.
+    """Remove the quacc setting from the configuration file.
 
     Parameters
     ----------
@@ -148,8 +143,7 @@ def _delete_setting(key: str, config_file: Path) -> None:
 
 
 def _update_setting(key: str, value: Any, config_file: Path) -> None:
-    """
-    Update the quacc setting from the configuration file.
+    """Update the quacc setting from the configuration file.
 
     Parameters
     ----------

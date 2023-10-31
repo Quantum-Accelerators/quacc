@@ -1,4 +1,4 @@
-"""Workflow decorators"""
+"""Workflow decorators."""
 from __future__ import annotations
 
 import functools
@@ -13,9 +13,9 @@ if TYPE_CHECKING:
 
 
 def job(_func: Callable | None = None, **kwargs) -> Job:
-    """
-    Decorator for individual compute jobs. This is a `#!Python @job` decorator. Think
-    of each `#!Python @job`-decorated function as an individual SLURM job, if that helps.
+    """Decorator for individual compute jobs. This is a `#!Python @job` decorator. Think
+    of each `#!Python @job`-decorated function as an individual SLURM job, if that
+    helps.
 
     | Quacc | Covalent      | Parsl        | Prefect | Redun  | Jobflow |
     | ----- | ------------- | ------------ | ------- | ------ | ------- |
@@ -116,11 +116,10 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     def _inner(
         *f_args, decorator_kwargs: dict[str, Any] | None = None, **f_kwargs
     ) -> Any:
-        """
-        This function is used for handling workflow engines that require some action
-        beyond just decoration. It also patches the parent function `_func` to takke
-        an additional keyword argument, `deocrator_kwargs`, that is a dictionary of
-        keyword arguments to pass during the decorator construction.
+        """This function is used for handling workflow engines that require some action
+        beyond just decoration. It also patches the parent function `_func` to take an
+        additional keyword argument, `deocrator_kwargs`, that is a dictionary of keyword
+        arguments to pass during the decorator construction.
 
         Parameters
         ----------
@@ -181,9 +180,8 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
 
 
 def flow(_func: Callable | None = None, **kwargs) -> Flow:
-    """
-    Decorator for workflows, which consist of at least one compute job. This is
-    a `#!Python @flow` decorator.
+    """Decorator for workflows, which consist of at least one compute job. This is a
+    `#!Python @flow` decorator.
 
     | Quacc  | Covalent     | Parsl     | Prefect | Redun  | Jobflow   |
     | ------ | ------------ | --------- | ------- | ------ | --------- |
@@ -311,8 +309,7 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
 
 
 def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
-    """
-    Decorator for (dynamic) sub-workflows. This is a `#!Python @subflow` decorator.
+    """Decorator for (dynamic) sub-workflows. This is a `#!Python @subflow` decorator.
 
     | Quacc     | Covalent                  | Parsl      | Prefect | Redun  | Jobflow   |
     | --------- | ------------------------- | ---------- | ------- | ------ | --------- |

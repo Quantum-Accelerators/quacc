@@ -1,5 +1,4 @@
-"""
-QMOF-compatible recipes
+"""QMOF-compatible recipes.
 
 This set of recipes is meant to be compatible with the QMOF Database workflow.
 Reference: https://doi.org/10.1016/j.matt.2021.02.015
@@ -40,10 +39,9 @@ def qmof_relax_job(
     run_prerelax: bool = True,
     calc_swaps: dict[str, Any] | None = None,
 ) -> QMOFRelaxSchema:
-    """
-    Relax a structure in a multi-step process for increased computational
-    efficiency. This is all done in a single compute job. Settings are such that
-    they are compatible with the QMOF Database.
+    """Relax a structure in a multi-step process for increased computational efficiency.
+    This is all done in a single compute job. Settings are such that they are compatible
+    with the QMOF Database.
 
     1. A "pre-relaxation" with BFGSLineSearch to resolve very high forces.
 
@@ -114,8 +112,7 @@ def _prerelax(
     calc_swaps: dict[str, Any] | None = None,
     fmax: float = 5.0,
 ) -> OptSchema:
-    """
-    A "pre-relaxation" with BFGSLineSearch to resolve very high forces.
+    """A "pre-relaxation" with BFGSLineSearch to resolve very high forces.
 
     Parameters
     ----------
@@ -157,8 +154,7 @@ def _loose_relax_positions(
     preset: str | None = "QMOFSet",
     calc_swaps: dict[str, Any] | None = None,
 ) -> VaspSchema:
-    """
-    Position relaxation with default ENCUT and coarse k-point grid.
+    """Position relaxation with default ENCUT and coarse k-point grid.
 
     Parameters
     ----------
@@ -202,8 +198,7 @@ def _loose_relax_cell(
     preset: str | None = "QMOFSet",
     calc_swaps: dict[str, Any] | None = None,
 ) -> VaspSchema:
-    """
-    Volume relaxation with coarse k-point grid.
+    """Volume relaxation with coarse k-point grid.
 
     Parameters
     ----------
@@ -247,8 +242,7 @@ def _double_relax(
     calc_swaps: dict[str, Any] | None = None,
     relax_cell: bool = True,
 ) -> list[VaspSchema]:
-    """
-    Double relaxation using production-quality settings.
+    """Double relaxation using production-quality settings.
 
     Parameters
     ----------
@@ -310,8 +304,7 @@ def _static(
     preset: str | None = "QMOFSet",
     calc_swaps: dict[str, Any] | None = None,
 ) -> VaspSchema:
-    """
-    Static calculation using production-quality settings.
+    """Static calculation using production-quality settings.
 
     Parameters
     ----------

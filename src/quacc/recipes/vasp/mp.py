@@ -1,5 +1,4 @@
-"""
-Materials Project-compatible recipes
+"""Materials Project-compatible recipes.
 
 This set of recipes is meant to be compatible with the Materials Project
 Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
@@ -41,9 +40,8 @@ def mp_prerelax_job(
     calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
-    """
-    Function to pre-relax a structure with Materials Project settings. By
-    default, this uses a PBEsol pre-relax step.
+    """Function to pre-relax a structure with Materials Project settings. By default,
+    this uses a PBEsol pre-relax step.
 
     Parameters
     ----------
@@ -97,9 +95,8 @@ def mp_relax_job(
     calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
-    """
-    Function to relax a structure with Materials Project settings. By default,
-    this uses an r2SCAN relax step.
+    """Function to relax a structure with Materials Project settings. By default, this
+    uses an r2SCAN relax step.
 
     Parameters
     ----------
@@ -185,8 +182,7 @@ def mp_relax_flow(
 
 
 def _get_bandgap_swaps(bandgap: float | None = None) -> dict[str, float]:
-    """
-    Get bandgap-related swaps.
+    """Get bandgap-related swaps.
 
     Paramters
     ---------

@@ -1,6 +1,4 @@
-"""
-Utility functions for dealing with defects
-"""
+"""Utility functions for dealing with defects."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -44,8 +42,7 @@ def make_defects_from_bulk(
     force_diagonal: bool = False,
     **defect_gen_kwargs,
 ) -> list[Atoms]:
-    """
-    Function to make defects from a bulk atoms object.
+    """Function to make defects from a bulk atoms object.
 
     Parameters
     ----------
@@ -131,8 +128,7 @@ def _get_defect_entry_from_defect(
     defect_supercell: Structure,
     defect_charge: int,
 ) -> DefectEntry:
-    """
-    Function to generate DefectEntry object from Defect object
+    """Function to generate DefectEntry object from Defect object.
 
     Parameters
     ----------

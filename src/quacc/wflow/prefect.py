@@ -32,8 +32,7 @@ def make_prefect_runner(
     client_kwargs: dict[str, Any] | None = None,
     temporary: bool = False,
 ) -> DaskTaskRunner:
-    """
-    Make a `DaskTaskRunner` for use with Prefect workflows.
+    """Make a `DaskTaskRunner` for use with Prefect workflows.
 
     Parameters
     ----------
@@ -84,8 +83,7 @@ def make_prefect_runner(
 def _make_dask_cluster(
     cluster_class: Callable, cluster_kwargs: dict[str, Any], verbose=False
 ) -> DaskJob:
-    """
-    Make a Dask cluster for use with Prefect workflows.
+    """Make a Dask cluster for use with Prefect workflows.
 
     Parameters
     ----------

@@ -1,7 +1,5 @@
-"""
-A wrapper around ASE's Vasp calculator that makes it better suited for
-high-throughput DFT.
-"""
+"""A wrapper around ASE's Vasp calculator that makes it better suited for high-
+throughput DFT."""
 from __future__ import annotations
 
 import inspect
@@ -31,11 +29,9 @@ if TYPE_CHECKING:
 
 
 class Vasp(Vasp_):
-    """
-    This is a wrapper around the ASE Vasp calculator that adjusts INCAR
-    parameters on-the-fly, allows for ASE to run VASP via Custodian, and
-    supports several automatic k-point generation schemes from Pymatgen.
-    """
+    """This is a wrapper around the ASE Vasp calculator that adjusts INCAR parameters
+    on-the-fly, allows for ASE to run VASP via Custodian, and supports several automatic
+    k-point generation schemes from Pymatgen."""
 
     def __init__(
         self,
@@ -53,8 +49,7 @@ class Vasp(Vasp_):
         auto_dipole: bool | None = None,
         **kwargs,
     ) -> None:
-        """
-        Initialize the VASP calculator.
+        """Initialize the VASP calculator.
 
         Parameters
         ----------
@@ -174,8 +169,7 @@ class Vasp(Vasp_):
         )
 
     def _manage_environment(self) -> str:
-        """
-        Manage the environment for the VASP calculator.
+        """Manage the environment for the VASP calculator.
 
         Parameters
         ----------
@@ -215,8 +209,7 @@ class Vasp(Vasp_):
         return f"{SETTINGS.VASP_PARALLEL_CMD} {vasp_cmd}"
 
     def _cleanup_params(self) -> None:
-        """
-        Clean up various calculator attributes and parameters.
+        """Clean up various calculator attributes and parameters.
 
         Parameters
         ----------

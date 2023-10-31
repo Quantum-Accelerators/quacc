@@ -1,5 +1,4 @@
-"""
-Core recipes for Lennard-Jones Potential
+"""Core recipes for Lennard-Jones Potential.
 
 NOTE: This set of minimal recipes is mainly for demonstration purposes
 """
@@ -30,8 +29,7 @@ def static_job(
     calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
-    """
-    Function to carry out a static calculation.
+    """Function to carry out a static calculation.
 
     Parameters
     ----------
@@ -72,8 +70,7 @@ def relax_job(
     opt_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
-    """
-    Function to carry out a geometry optimization.
+    """Function to carry out a geometry optimization.
 
     Parameters
     ----------
@@ -128,8 +125,7 @@ def freq_job(
     vib_kwargs: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> VibThermoSchema:
-    """
-    Run a frequency job and calculate thermochemistry.
+    """Run a frequency job and calculate thermochemistry.
 
     Parameters
     ----------
