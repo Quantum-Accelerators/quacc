@@ -1,4 +1,4 @@
-"""Schemas for storing ASE-based data"""
+"""Schemas for storing ASE-based data."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -44,10 +44,8 @@ def summarize_run(
     additional_fields: dict[str, Any] | None = None,
     store: Store | bool | None = None,
 ) -> RunSchema:
-    """
-    Get tabulated results from an Atoms object and calculator and store them in
-    a database-friendly format. This is meant to be compatible with all
-    calculator types.
+    """Get tabulated results from an Atoms object and calculator and store them in a
+    database-friendly format. This is meant to be compatible with all calculator types.
 
     Parameters
     ----------
@@ -122,10 +120,8 @@ def summarize_opt_run(
     additional_fields: dict[str, Any] | None = None,
     store: Store | bool | None = None,
 ) -> OptSchema:
-    """
-    Get tabulated results from an ASE Atoms trajectory and store them in a
-    database-friendly format. This is meant to be compatible with all calculator
-    types.
+    """Get tabulated results from an ASE Atoms trajectory and store them in a database-
+    friendly format. This is meant to be compatible with all calculator types.
 
     Parameters
     ----------
@@ -216,9 +212,8 @@ def summarize_vib_run(
     additional_fields: dict[str, Any] | None = None,
     store: Store | bool | None = None,
 ) -> VibSchema:
-    """
-    Get tabulated results from an ASE Vibrations object and store them in a
-    database-friendly format.
+    """Get tabulated results from an ASE Vibrations object and store them in a database-
+    friendly format.
 
     Parameters
     ----------
@@ -329,8 +324,7 @@ def summarize_ideal_gas_thermo(
     additional_fields: dict[str, Any] | None = None,
     store: Store | bool | None = None,
 ) -> ThermoSchema:
-    """
-    Get tabulated results from an ASE IdealGasThermo object and store them in a
+    """Get tabulated results from an ASE IdealGasThermo object and store them in a
     database-friendly format.
 
     Parameters
@@ -414,8 +408,7 @@ def summarize_vib_and_thermo(
     additional_fields: dict[str, Any] | None = None,
     store: Store | bool | None = None,
 ) -> VibThermoSchema:
-    """
-    Get tabulated results from an ASE Vibrations run and ASE IdealGasThermo object
+    """Get tabulated results from an ASE Vibrations run and ASE IdealGasThermo object
     and store them in a database-friendly format.
 
     Parameters

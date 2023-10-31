@@ -1,6 +1,4 @@
-"""
-Utility functions for dealing with Atoms
-"""
+"""Utility functions for dealing with Atoms."""
 from __future__ import annotations
 
 import hashlib
@@ -19,9 +17,8 @@ logger = logging.getLogger(__name__)
 
 
 def get_atoms_id(atoms: Atoms) -> str:
-    """
-    Returns a unique ID for the Atoms object. Note: The .info dict and
-    calculator is excluded from the hash generation.
+    """Returns a unique ID for the Atoms object. Note: The .info dict and calculator is
+    excluded from the hash generation.
 
     Parameters
     ----------
@@ -51,8 +48,7 @@ def get_atoms_id(atoms: Atoms) -> str:
 
 
 def check_is_metal(atoms: Atoms) -> bool:
-    """
-    Checks if a structure is a likely metal.
+    """Checks if a structure is a likely metal.
 
     Parameters
     ----------
@@ -73,8 +69,7 @@ def check_is_metal(atoms: Atoms) -> bool:
 
 
 def copy_atoms(atoms: Atoms) -> Atoms:
-    """
-    Simple function to copy an atoms object to prevent mutability.
+    """Simple function to copy an atoms object to prevent mutability.
 
     Parameters
     ----------
@@ -102,10 +97,9 @@ def check_charge_and_spin(
     charge: int | None = None,
     spin_multiplicity: int | None = None,
 ) -> tuple[int, int]:
-    """
-    Check the validity of a given `charge` and `multiplicity`. If they are `None`, then
-    set the charge and/or spin multiplicity of a molecule using the following routine,
-    raising a `ValueError` if there is an incompatibility.
+    """Check the validity of a given `charge` and `multiplicity`. If they are `None`,
+    then set the charge and/or spin multiplicity of a molecule using the following
+    routine, raising a `ValueError` if there is an incompatibility.
 
     Charges:
 
@@ -147,7 +141,6 @@ def check_charge_and_spin(
     Returns
     -------
     charge, multiplicity
-
     """
 
     charge = (

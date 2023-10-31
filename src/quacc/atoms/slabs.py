@@ -1,6 +1,4 @@
-"""
-Utility functions for dealing with slabs
-"""
+"""Utility functions for dealing with slabs."""
 from __future__ import annotations
 
 import logging
@@ -25,8 +23,7 @@ logger = logging.getLogger(__name__)
 def flip_atoms(
     atoms: Atoms | Structure | Slab, return_struct: bool = False
 ) -> Atoms | Structure | Slab:
-    """
-    Convenience function for vertically flipping periodic atoms or structures
+    """Convenience function for vertically flipping periodic atoms or structures.
 
     Parameters
     ----------
@@ -67,8 +64,7 @@ def make_slabs_from_bulk(
     allowed_surface_symbols: list[str] | None = None,
     **slabgen_kwargs,
 ) -> list[Atoms]:
-    """
-    Function to make slabs from a bulk atoms object.
+    """Function to make slabs from a bulk atoms object.
 
     Parameters
     ----------
@@ -209,8 +205,7 @@ def make_adsorbate_structures(
     ads_site_finder_kwargs: dict[str, Any] | None = None,
     find_ads_sites_kwargs: dict[str, Any] | None = None,
 ) -> list[Atoms]:
-    """
-    Add a single adsorbate to a structure for every requested adsorption mode
+    """Add a single adsorbate to a structure for every requested adsorption mode.
 
     Parameters
     ----------
@@ -244,7 +239,6 @@ def make_adsorbate_structures(
     --------
     list[Atoms]
         The structures with adsorbates
-
     """
     atoms = copy_atoms(atoms)
 
@@ -351,10 +345,8 @@ def make_adsorbate_structures(
 def get_surface_energy(
     bulk: Atoms, slab: Atoms, bulk_energy: float, slab_energy: float
 ) -> np.floating:
-    """
-    Calculate the surface energy to form a given surface slab from a bulk
-    structure. For asymmetric slabs, this is better thought of as the cleavage
-    energy.
+    """Calculate the surface energy to form a given surface slab from a bulk structure.
+    For asymmetric slabs, this is better thought of as the cleavage energy.
 
     Parameters
     -----------

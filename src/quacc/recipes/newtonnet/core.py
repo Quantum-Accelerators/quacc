@@ -1,6 +1,4 @@
-"""
-Core recipes for the NewtonNet code
-"""
+"""Core recipes for the NewtonNet code."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -49,8 +47,7 @@ def static_job(
     calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
-    """
-    Carry out a single-point calculation.
+    """Carry out a single-point calculation.
 
     Parameters
     ----------
@@ -102,8 +99,7 @@ def relax_job(
     opt_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
-    """
-    Relax a structure.
+    """Relax a structure.
 
     Parameters
     ----------
@@ -167,8 +163,7 @@ def freq_job(
     calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> FreqSchema:
-    """
-    Perform a frequency calculation using the given atoms object.
+    """Perform a frequency calculation using the given atoms object.
 
     Parameters
     ----------
@@ -235,8 +230,7 @@ def freq_job(
 
 
 def _add_stdev_and_hess(summary: dict[str, Any]) -> dict[str, Any]:
-    """
-    Calculate and add standard deviation values and Hessians to the summary.
+    """Calculate and add standard deviation values and Hessians to the summary.
 
     This function takes a summary dictionary containing information about a
     molecular trajectory and calculates the standard deviation of various

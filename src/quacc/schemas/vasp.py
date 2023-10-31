@@ -1,4 +1,4 @@
-"""Schemas for VASP"""
+"""Schemas for VASP."""
 from __future__ import annotations
 
 import logging
@@ -37,8 +37,7 @@ def vasp_summarize_run(
     additional_fields: dict[str, Any] | None = None,
     store: Store | None = None,
 ) -> VaspSchema:
-    """
-    Get tabulated results from a VASP run and store them in a database-friendly
+    """Get tabulated results from a VASP run and store them in a database-friendly
     format.
 
     Parameters

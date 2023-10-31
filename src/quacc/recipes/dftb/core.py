@@ -30,8 +30,7 @@ def static_job(
     calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
-    """
-    Carry out a single-point calculation.
+    """Carry out a single-point calculation.
 
     Parameters
     ----------
@@ -91,8 +90,7 @@ def relax_job(
     calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
-    """
-    Carry out a structure relaxation.
+    """Carry out a structure relaxation.
 
     Parameters
     ----------
@@ -160,8 +158,7 @@ def _base_job(
     additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
-    """
-    Base job function for DFTB+ recipes.
+    """Base job function for DFTB+ recipes.
 
     Parameters
     ----------

@@ -1,6 +1,4 @@
-"""
-Utility functions for file and path handling
-"""
+"""Utility functions for file and path handling."""
 from __future__ import annotations
 
 import contextlib
@@ -23,8 +21,7 @@ if TYPE_CHECKING:
 
 
 def check_logfile(logfile: str, check_str: str) -> bool:
-    """
-    Check if a logfile has a given string (case-insensitive).
+    """Check if a logfile has a given string (case-insensitive).
 
     Parameters
     ----------
@@ -48,8 +45,7 @@ def check_logfile(logfile: str, check_str: str) -> bool:
 
 
 def copy_decompress(source_files: list[str | Path], destination: str | Path) -> None:
-    """
-    Copy and decompress files from source to destination.
+    """Copy and decompress files from source to destination.
 
     Parameters
     ----------
@@ -72,8 +68,7 @@ def copy_decompress(source_files: list[str | Path], destination: str | Path) -> 
 
 
 def make_unique_dir(base_path: str | None = None) -> Path:
-    """
-    Make a directory with a unique name. Uses the same format as Jobflow.
+    """Make a directory with a unique name. Uses the same format as Jobflow.
 
     Parameters
     ----------
@@ -95,11 +90,10 @@ def make_unique_dir(base_path: str | None = None) -> Path:
 
 
 def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
-    """
-    Loads a YAML file containing calculator settings. This YAML loader looks for
-    a special flag "parent" in the YAML file. If this flag is present, the YAML
-    file specified in the "parent" flag is loaded and its contents are inherited
-    by the child YAML file.
+    """Loads a YAML file containing calculator settings. This YAML loader looks for a
+    special flag "parent" in the YAML file. If this flag is present, the YAML file
+    specified in the "parent" flag is loaded and its contents are inherited by the child
+    YAML file.
 
     Parameters
     ----------
@@ -144,8 +138,7 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
 
 
 def find_recent_logfile(dir_name: Path | str, logfile_extensions: str | list[str]):
-    """
-    Find the most recent logfile in a given directory.
+    """Find the most recent logfile in a given directory.
 
     Parameters
     ----------
@@ -174,8 +167,7 @@ def find_recent_logfile(dir_name: Path | str, logfile_extensions: str | list[str
 
 
 def get_uri(dir_name: str | Path) -> str:
-    """
-    Return the URI path for a directory.
+    """Return the URI path for a directory.
 
     This allows files hosted on different file servers to have distinct
     locations.

@@ -1,4 +1,4 @@
-"""Utility functions for interfacing with databases"""
+"""Utility functions for interfacing with databases."""
 from __future__ import annotations
 
 import os
@@ -15,8 +15,7 @@ if TYPE_CHECKING:
 def covalent_to_db(
     store: Store, dispatch_ids: list[str] | None = None, results_dir: str | None = None
 ) -> None:
-    """
-    Store the results of a Covalent database in a user-specified Maggma Store
+    """Store the results of a Covalent database in a user-specified Maggma Store.
 
     Parameters
     ----------
@@ -67,9 +66,8 @@ def covalent_to_db(
 
 
 def results_to_db(store: Store, results: dict[str, Any] | list[dict]) -> None:
-    """
-    Store the results of a quacc recipe in a user-specified Maggma Store. A UUID
-    will be generated for each entry.
+    """Store the results of a quacc recipe in a user-specified Maggma Store. A UUID will
+    be generated for each entry.
 
     Parameters
     ----------

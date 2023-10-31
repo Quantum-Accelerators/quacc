@@ -1,4 +1,4 @@
-"""A Q-Chem calculator built on Pymatgen and Custodian functionality"""
+"""A Q-Chem calculator built on Pymatgen and Custodian functionality."""
 from __future__ import annotations
 
 import inspect
@@ -19,9 +19,7 @@ if TYPE_CHECKING:
 
 
 class QChem(FileIOCalculator):
-    """
-    Custom Q-Chem calculator built on Pymatgen and Custodian.
-    """
+    """Custom Q-Chem calculator built on Pymatgen and Custodian."""
 
     implemented_properties: ClassVar[list[str]] = [
         "energy",
@@ -48,8 +46,7 @@ class QChem(FileIOCalculator):
         qchem_input_params: dict[str, Any] | None = None,
         **fileiocalculator_kwargs,
     ) -> None:
-        """
-        Initialize the Q-Chem calculator.
+        """Initialize the Q-Chem calculator.
 
         Parameters
         ----------
@@ -124,8 +121,7 @@ class QChem(FileIOCalculator):
         properties: list[str] | None = None,
         system_changes: list[str] | None = None,
     ) -> None:
-        """
-        Write the Q-Chem input files.
+        """Write the Q-Chem input files.
 
         Parameters
         ----------
@@ -153,8 +149,7 @@ class QChem(FileIOCalculator):
         )
 
     def read_results(self) -> None:
-        """
-        Read the Q-Chem output files. Update the .results and ._prev_orbital_coeffs
+        """Read the Q-Chem output files. Update the .results and ._prev_orbital_coeffs
         attributes.
 
         Parameters
@@ -170,8 +165,7 @@ class QChem(FileIOCalculator):
         self._prev_orbital_coeffs = _prev_orbital_coeffs
 
     def _manage_environment(self) -> str:
-        """
-        Return the command to run the Q-Chem calculator via Custodian.
+        """Return the command to run the Q-Chem calculator via Custodian.
 
         Returns
         -------
@@ -183,9 +177,8 @@ class QChem(FileIOCalculator):
         return f"python {qchem_custodian_script} {self.cores}"
 
     def _cleanup_qchem_input_params(self) -> None:
-        """
-        Clean up q-chem input parameters for the Q-Chem calculator.
-        Modifies self.qchem_input_params in place.
+        """Clean up q-chem input parameters for the Q-Chem calculator. Modifies
+        self.qchem_input_params in place.
 
         Parameters
         ----------
@@ -212,9 +205,8 @@ class QChem(FileIOCalculator):
             self.qchem_input_params["overwrite_inputs"]["rem"]["method"] = self.method
 
     def _set_default_params(self) -> None:
-        """
-        Store the parameters that have been passed to the Q-Chem
-        calculator in FileIOCalculator's self.default_parameters.
+        """Store the parameters that have been passed to the Q-Chem calculator in
+        FileIOCalculator's self.default_parameters.
 
         Parameters
         ----------

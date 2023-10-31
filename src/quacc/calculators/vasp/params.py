@@ -1,6 +1,4 @@
-"""
-Parameter-related utilities for the Vasp calculator.
-"""
+"""Parameter-related utilities for the Vasp calculator."""
 from __future__ import annotations
 
 import logging
@@ -28,8 +26,7 @@ def get_param_swaps(
     input_atoms: Atoms,
     incar_copilot: Literal["off", "on", "aggressive"],
 ) -> dict[str, Any]:
-    """
-    Swaps out bad INCAR flags.
+    """Swaps out bad INCAR flags.
 
     Parameters
     ----------
@@ -243,8 +240,7 @@ def get_param_swaps(
 
 
 def remove_unused_flags(user_calc_params: dict[str, Any]) -> dict[str, Any]:
-    """
-    Removes unused flags in the INCAR, like EDIFFG if you are doing NSW = 0.
+    """Removes unused flags in the INCAR, like EDIFFG if you are doing NSW = 0.
 
     Parameters
     -------
@@ -288,8 +284,7 @@ def remove_unused_flags(user_calc_params: dict[str, Any]) -> dict[str, Any]:
 def set_auto_dipole(
     user_calc_params: dict[str, Any], input_atoms: Atoms
 ) -> dict[str, Any]:
-    """
-    Sets flags related to the auto_dipole kwarg.
+    """Sets flags related to the auto_dipole kwarg.
 
     Parameters
     ----------
@@ -320,8 +315,7 @@ def convert_auto_kpts(
     auto_kpts: dict[Literal["line_density", "kppvol", "kppa"], float],
     input_atoms: Atoms,
 ) -> dict[str, Any]:
-    """
-    Shortcuts for pymatgen k-point generation schemes.
+    """Shortcuts for pymatgen k-point generation schemes.
 
     Parameters
     ----------
