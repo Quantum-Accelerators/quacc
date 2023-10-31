@@ -67,18 +67,12 @@ def run_calc(
     # Perform staging operations
     atoms, tmpdir, job_results_dir = _calc_setup(atoms, copy_files=copy_files)
 
-    t1 = time.time()
-
     # Run calculation via get_potential_energy()
     try:
         atoms.get_potential_energy()
     except Exception as err:
         msg = f"Calculation failed. Check the logfiles at {Path.cwd()}"
         raise RuntimeError(msg) from err
-
-    elapsed_time = time.time()-t1
-
-    atoms.calc.results['elapsed_time'] = elapsed_time
 
     # Most ASE calculators do not update the atoms object in-place with a call
     # to .get_potential_energy(), which is important if an internal optimizer is
