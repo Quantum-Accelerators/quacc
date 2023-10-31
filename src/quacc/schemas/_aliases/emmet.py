@@ -145,8 +145,7 @@ class FrequencyDependentDielectric(TypedDict):
 
 
 class ElectronPhononDisplacedStructures(TypedDict):
-    """Type hint associated with
-    emmet.core.vasp.calculation.ElectronPhononDisplacedStructures."""
+    """Type hint associated with emmet.core.vasp.calculation.ElectronPhononDisplacedStructures."""
 
     temperatures: list[float]
     structures: list[Structure]
