@@ -1,5 +1,5 @@
 """
-QMOF-compatible recipes
+QMOF-compatible recipes.
 
 This set of recipes is meant to be compatible with the QMOF Database workflow.
 Reference: https://doi.org/10.1016/j.matt.2021.02.015
@@ -41,9 +41,9 @@ def qmof_relax_job(
     calc_swaps: dict[str, Any] | None = None,
 ) -> QMOFRelaxSchema:
     """
-    Relax a structure in a multi-step process for increased computational
-    efficiency. This is all done in a single compute job. Settings are such that
-    they are compatible with the QMOF Database.
+    Relax a structure in a multi-step process for increased computational efficiency.
+    This is all done in a single compute job. Settings are such that they are compatible
+    with the QMOF Database.
 
     1. A "pre-relaxation" with BFGSLineSearch to resolve very high forces.
 

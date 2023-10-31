@@ -1,4 +1,4 @@
-"""Enhanced versions of the ASE Vasp calculator"""
+"""Enhanced versions of the ASE Vasp calculator."""
 
 from quacc.calculators.vasp.vasp import Vasp
 

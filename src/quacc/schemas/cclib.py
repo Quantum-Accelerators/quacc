@@ -1,4 +1,4 @@
-"""Schemas for molecular DFT codes parsed by cclib"""
+"""Schemas for molecular DFT codes parsed by cclib."""
 from __future__ import annotations
 
 import logging
@@ -55,9 +55,8 @@ def cclib_summarize_run(
     store: Store | None = None,
 ) -> cclibSchema:
     """
-    Get tabulated results from a molecular DFT run and store them in a
-    database-friendly format. This is meant to be a general parser built on top
-    of cclib.
+    Get tabulated results from a molecular DFT run and store them in a database-friendly
+    format. This is meant to be a general parser built on top of cclib.
 
     Parameters
     ----------

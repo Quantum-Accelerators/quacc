@@ -1,4 +1,4 @@
-"""Utility functions for running ASE calculators"""
+"""Utility functions for running ASE calculators."""
 from __future__ import annotations
 
 import os
@@ -38,9 +38,9 @@ def run_calc(
     atoms: Atoms, geom_file: str | None = None, copy_files: list[str] | None = None
 ) -> Atoms:
     """
-    Run a calculation in a scratch directory and copy the results back to the
-    original directory. This can be useful if file I/O is slow in the working
-    directory, so long as file transfer speeds are reasonable.
+    Run a calculation in a scratch directory and copy the results back to the original
+    directory. This can be useful if file I/O is slow in the working directory, so long
+    as file transfer speeds are reasonable.
 
     This is a wrapper around atoms.get_potential_energy(). Note: This function
     does not modify the atoms object in-place.
@@ -114,9 +114,9 @@ def run_ase_opt(
     copy_files: list[str] | None = None,
 ) -> Optimizer:
     """
-    Run an ASE-based optimization in a scratch directory and copy the results
-    back to the original directory. This can be useful if file I/O is slow in
-    the working directory, so long as file transfer speeds are reasonable.
+    Run an ASE-based optimization in a scratch directory and copy the results back to
+    the original directory. This can be useful if file I/O is slow in the working
+    directory, so long as file transfer speeds are reasonable.
 
     This is a wrapper around the optimizers in ASE. Note: This function does not
     modify the atoms object in-place.
@@ -195,10 +195,9 @@ def run_ase_vib(
     copy_files: list[str] | None = None,
 ) -> Vibrations:
     """
-    Run an ASE-based vibration analysis in a scratch directory and copy the
-    results back to the original directory. This can be useful if file I/O is
-    slow in the working directory, so long as file transfer speeds are
-    reasonable.
+    Run an ASE-based vibration analysis in a scratch directory and copy the results back
+    to the original directory. This can be useful if file I/O is slow in the working
+    directory, so long as file transfer speeds are reasonable.
 
     This is a wrapper around the vibrations module in ASE. Note: This function
     does not modify the atoms object in-place.
@@ -245,9 +244,9 @@ def _calc_setup(
     atoms: Atoms, copy_files: list[str | Path] | None = None
 ) -> tuple[Atoms, Path, Path]:
     """
-    Perform staging operations for a calculation, including copying files to the
-    scratch directory, setting the calculator's directory, decompressing files,
-    and creating a symlink to the scratch directory.
+    Perform staging operations for a calculation, including copying files to the scratch
+    directory, setting the calculator's directory, decompressing files, and creating a
+    symlink to the scratch directory.
 
     Parameters
     ----------
@@ -306,8 +305,8 @@ def _calc_setup(
 
 def _calc_cleanup(tmpdir: str | Path, job_results_dir: str | Path) -> None:
     """
-    Perform cleanup operations for a calculation, including gzipping files,
-    copying files back to the original directory, and removing the tmpdir.
+    Perform cleanup operations for a calculation, including gzipping files, copying
+    files back to the original directory, and removing the tmpdir.
 
     Parameters
     ----------
@@ -346,8 +345,8 @@ def _calc_cleanup(tmpdir: str | Path, job_results_dir: str | Path) -> None:
 def _set_sella_kwargs(atoms: Atoms, optimizer_kwargs: dict[str, Any]) -> None:
     """
     Modifies the `optimizer_kwargs` in-place to address various Sella-related
-    parameters. This function does the following for the specified key/value
-    pairs in `optimizer_kwargs`:
+    parameters. This function does the following for the specified key/value pairs in
+    `optimizer_kwargs`:
 
     1. Sets `order = 0` if not specified (i.e. minimization rather than TS
     by default).

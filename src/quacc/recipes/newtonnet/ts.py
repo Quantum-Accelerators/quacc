@@ -1,6 +1,4 @@
-"""
-Transition state recipes for the NewtonNet code
-"""
+"""Transition state recipes for the NewtonNet code."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -162,8 +160,7 @@ def irc_job(
     copy_files: list[str] | None = None,
 ) -> IRCSchema:
     """
-    Perform an intrinsic reaction coordinate (IRC) job using the given atoms
-    object.
+    Perform an intrinsic reaction coordinate (IRC) job using the given atoms object.
 
     Parameters
     ----------
@@ -281,8 +278,8 @@ def quasi_irc_job(
     copy_files: list[str] | None = None,
 ) -> QuasiIRCSchema:
     """
-    Perform a quasi-IRC job using the given atoms object. The initial
-    IRC job by default is run with `max_steps: 5`.
+    Perform a quasi-IRC job using the given atoms object. The initial IRC job by default
+    is run with `max_steps: 5`.
 
     Parameters
     ----------
@@ -339,8 +336,7 @@ def quasi_irc_job(
 
 def _get_hessian(atoms: Atoms) -> NDArray:
     """
-    Calculate and retrieve the Hessian matrix for the given molecular
-    configuration.
+    Calculate and retrieve the Hessian matrix for the given molecular configuration.
 
     This function takes an ASE Atoms object representing a molecular
     configuration and uses the NewtonNet machine learning calculator to

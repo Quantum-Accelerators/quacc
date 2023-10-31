@@ -1,6 +1,4 @@
-"""
-Custodian handlers for VASP
-"""
+"""Custodian handlers for VASP."""
 from __future__ import annotations
 
 import os
@@ -43,7 +41,7 @@ def run_custodian(
     custodian_kwargs: dict[str, Any] | None = None,
 ) -> None:
     """
-    Function to run VASP Custodian
+    Function to run VASP Custodian.
 
     Parameters
     ----------

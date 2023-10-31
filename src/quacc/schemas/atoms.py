@@ -1,4 +1,4 @@
-"""Schemas for storing metadata about Atoms objects"""
+"""Schemas for storing metadata about Atoms objects."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

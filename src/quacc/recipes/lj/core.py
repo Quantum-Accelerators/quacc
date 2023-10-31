@@ -1,5 +1,5 @@
 """
-Core recipes for Lennard-Jones Potential
+Core recipes for Lennard-Jones Potential.
 
 NOTE: This set of minimal recipes is mainly for demonstration purposes
 """

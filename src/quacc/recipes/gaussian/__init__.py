@@ -1,1 +1,1 @@
-"""Recipes for Gaussian"""
+"""Recipes for Gaussian."""

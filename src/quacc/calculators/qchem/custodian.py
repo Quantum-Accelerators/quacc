@@ -1,4 +1,4 @@
-"""Custodian handlers for QChem"""
+"""Custodian handlers for QChem."""
 from __future__ import annotations
 
 import sys
@@ -27,7 +27,7 @@ def run_custodian(
     qchem_nbo_exe: str | Path | None = None,
 ) -> None:
     """
-    Function to run QChem Custodian
+    Function to run QChem Custodian.
 
     Parameters
     ----------

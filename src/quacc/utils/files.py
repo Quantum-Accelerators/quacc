@@ -1,6 +1,4 @@
-"""
-Utility functions for file and path handling
-"""
+"""Utility functions for file and path handling."""
 from __future__ import annotations
 
 import contextlib
@@ -96,10 +94,10 @@ def make_unique_dir(base_path: str | None = None) -> Path:
 
 def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
     """
-    Loads a YAML file containing calculator settings. This YAML loader looks for
-    a special flag "parent" in the YAML file. If this flag is present, the YAML
-    file specified in the "parent" flag is loaded and its contents are inherited
-    by the child YAML file.
+    Loads a YAML file containing calculator settings. This YAML loader looks for a
+    special flag "parent" in the YAML file. If this flag is present, the YAML file
+    specified in the "parent" flag is loaded and its contents are inherited by the child
+    YAML file.
 
     Parameters
     ----------
