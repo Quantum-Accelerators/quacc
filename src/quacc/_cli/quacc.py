@@ -1,12 +1,15 @@
 """Quacc CLI module."""
 from __future__ import annotations
 
-from pathlib import Path
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Optional
 
 import typer
 
 app = typer.Typer()
+
+if TYPE_CHECKING:
+    from pathlib import Path
+    from typing import Any
 
 
 def callback(value: bool) -> None:
