@@ -157,9 +157,9 @@ def mp_relax_flow(
     atoms
         Atoms object for the structure.
     prerelax_job_kwargs
-        Additional keyword arguments to pass to the pre-relaxation calculation.
+        Additional keyword arguments to pass to [quacc.recipes.vasp.mp.mp_prerelax_job][].
     relax_job_kwargs
-        Additional keyword arguments to pass to the relaxation calculation.
+        Additional keyword arguments to pass to [quacc.recipes.vasp.mp.mp_relax_job][].
 
     Returns
     -------

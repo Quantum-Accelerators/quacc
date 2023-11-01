@@ -21,6 +21,7 @@ if TYPE_CHECKING:
 
     from ase import Atoms
 
+    from quacc.runners.calc import VibKwargs
     from quacc.schemas.ase import OptSchema, RunSchema, VibThermoSchema
 
 
@@ -125,7 +126,7 @@ def freq_job(
     temperature: float = 298.15,
     pressure: float = 1.0,
     calc_swaps: dict[str, Any] | None = None,
-    vib_kwargs: dict[str, Any] | None = None,
+    vib_kwargs: VibKwargs | None = None,
     copy_files: list[str] | None = None,
 ) -> VibThermoSchema:
     """

@@ -2,10 +2,10 @@ from copy import deepcopy
 
 import numpy as np
 import pytest
-from ase.build import molecule
+from ase.build import bulk, molecule
 
 from quacc import SETTINGS
-from quacc.recipes.tblite.core import freq_job, relax_job, static_job
+from quacc.recipes.tblite.core import freq_job, phonon_job, relax_job, static_job
 
 pytest.importorskip("tblite.ase")
 
@@ -121,6 +121,19 @@ def test_freq_job(tmpdir):
     assert "dir_name" in output
     assert "nid" in output
     assert "dir_name" in output
+
+
+def test_phonon_job(tmpdir):
+    tmpdir.chdir()
+
+    atoms = bulk("Al", "fcc", a=4.05)
+    output = phonon_job(atoms)
+    assert output["atoms"] == atoms
+    # assert output["results"]["energy"] == 0.0
+    # assert "nid" in output
+    # assert "dir_name" in output
+    # assert "nid" in output
+    # assert "dir_name" in output
 
 
 def test_unique_workdir(tmpdir):
