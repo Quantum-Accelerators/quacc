@@ -11,7 +11,7 @@ from ase.calculators.emt import EMT
 from ase.optimize import FIRE
 
 from quacc import job
-from quacc.runners.calc import run_ase_opt, run_calc
+from quacc.runners.calc import run_ase_calc, run_ase_opt
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import merge_dicts
 
@@ -57,7 +57,7 @@ def static_job(
     calc_swaps = calc_swaps or {}
 
     atoms.calc = EMT(**calc_swaps)
-    final_atoms = run_calc(atoms, copy_files=copy_files)
+    final_atoms = run_ase_calc(atoms, copy_files=copy_files)
 
     return summarize_run(
         final_atoms,

@@ -56,7 +56,7 @@ if TYPE_CHECKING:
         born: bool  # default = False
 
 
-def run_calc(
+def run_ase_calc(
     atoms: Atoms, geom_file: str | None = None, copy_files: list[str] | None = None
 ) -> Atoms:
     """

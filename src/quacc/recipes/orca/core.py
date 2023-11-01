@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 from ase.calculators.orca import ORCA, OrcaProfile
 
 from quacc import SETTINGS, job
-from quacc.runners.calc import run_calc
+from quacc.runners.calc import run_ase_calc
 from quacc.schemas.cclib import cclib_summarize_run
 from quacc.utils.dicts import merge_dicts
 
@@ -275,7 +275,7 @@ def _base_job(
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )
-    atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
+    atoms = run_ase_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
 
     return cclib_summarize_run(
         atoms,

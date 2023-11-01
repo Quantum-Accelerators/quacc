@@ -119,8 +119,6 @@ def test_freq_job(tmpdir):
     assert output["results"]["gibbs_energy"] == pytest.approx(-11.100020872176652)
     assert "nid" in output
     assert "dir_name" in output
-    assert "nid" in output
-    assert "dir_name" in output
 
 
 def test_phonon_job(tmpdir):
@@ -129,11 +127,12 @@ def test_phonon_job(tmpdir):
     atoms = bulk("Al", "fcc", a=4.05)
     output = phonon_job(atoms)
     assert output["atoms"] == atoms
-    # assert output["results"]["energy"] == 0.0
-    # assert "nid" in output
-    # assert "dir_name" in output
-    # assert "nid" in output
-    # assert "dir_name" in output
+    assert output["results"]["energy"] == -21.948664056966074
+    assert output["results"]["force_constant"] == np.array(
+        [[[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]]
+    )
+    assert "nid" in output
+    assert "dir_name" in output
 
 
 def test_unique_workdir(tmpdir):
