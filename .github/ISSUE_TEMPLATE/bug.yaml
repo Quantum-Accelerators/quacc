@@ -5,11 +5,12 @@ labels: ["bug"]
 body:
   - type: textarea
     attributes:
-      label: Environment
-      description: For the version of quacc, you can find it by doing `print(quacc.__version__)`.
+      label: Details about the quacc environment
+      description: Please run `quacc info` and paste the output below.
       value: |
         - **quacc version**:
-        - **Workflow engine** (if applicable):
+        - **Python version**:
+        - **quacc settings**:
     validations:
       required: true
 
@@ -22,7 +23,11 @@ body:
 
   - type: textarea
     attributes:
-      label: How can we reproduce the issue?
-      description: Provide a [minimal working example](https://stackoverflow.com/help/minimal-reproducible-example) of code to reproduce the issue. This is critical. Please do not try to "save time" by omitting it.
+      label: How can we easily reproduce the issue?
+      description: Provide a [minimal reproducible example](https://stackoverflow.com/help/minimal-reproducible-example) of code to reproduce the issue. This is critical. Please do not try to "save time" by omitting it.
     validations:
       required: true
+    value: |
+      ```python
+      # Paste your *minimal* example code here
+      ```
