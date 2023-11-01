@@ -71,7 +71,7 @@ def run_calc(
     try:
         atoms.get_potential_energy()
     except Exception as err:
-        msg = f"Calculation failed. Read the traceback above and then the logfiles at {Path.cwd()}"
+        msg = f"Calculation failed. Read the full traceback above. If needed, the logfiles are at {Path.cwd()}"
         raise RuntimeError(msg) from err
 
     # Most ASE calculators do not update the atoms object in-place with a call
@@ -177,7 +177,7 @@ def run_ase_opt(
         try:
             dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
         except Exception as err:
-            msg = f"Calculation failed. Read the traceback above and then the logfiles at {Path.cwd()}"
+            msg = f"Calculation failed. Read the full traceback above. If needed, the logfiles are at {Path.cwd()}"
             raise RuntimeError(msg) from err
 
     # Store the trajectory atoms
@@ -228,7 +228,7 @@ def run_ase_vib(
     try:
         vib.run()
     except Exception as err:
-        msg = f"Calculation failed. Read the traceback above and then the logfiles at {Path.cwd()}"
+        msg = f"Calculation failed. Read the full traceback above. If needed, the logfiles are at {Path.cwd()}"
         raise RuntimeError(msg) from err
 
     # Summarize run
