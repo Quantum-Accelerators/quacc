@@ -9,7 +9,7 @@ from monty.dev import requires
 
 from quacc import SETTINGS, job
 from quacc.builders.thermo import build_ideal_gas
-from quacc.runners.calc import run_ase_opt, run_calc
+from quacc.runners.calc import run_ase_calc, run_ase_opt
 from quacc.schemas.ase import (
     summarize_ideal_gas_thermo,
     summarize_opt_run,
@@ -83,7 +83,7 @@ def static_job(
     flags = merge_dicts(defaults, calc_swaps)
 
     atoms.calc = NewtonNet(**flags)
-    final_atoms = run_calc(atoms, copy_files=copy_files)
+    final_atoms = run_ase_calc(atoms, copy_files=copy_files)
 
     return summarize_run(
         final_atoms,
@@ -206,7 +206,7 @@ def freq_job(
 
     ml_calculator = NewtonNet(**flags)
     atoms.calc = ml_calculator
-    final_atoms = run_calc(atoms, copy_files=copy_files)
+    final_atoms = run_ase_calc(atoms, copy_files=copy_files)
 
     summary = summarize_run(
         final_atoms,
@@ -261,7 +261,7 @@ def _add_stdev_and_hess(summary: dict[str, Any]) -> dict[str, Any]:
         )
         atoms = conf["atoms"]
         atoms.calc = ml_calculator
-        results = run_calc(atoms).calc.results
+        results = run_ase_calc(atoms).calc.results
         conf["hessian"] = results["hessian"]
         conf["energy_std"] = results["energy_disagreement"]
         conf["forces_std"] = results["forces_disagreement"]

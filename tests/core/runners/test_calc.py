@@ -9,7 +9,7 @@ from ase.calculators.lj import LennardJones
 from ase.optimize import BFGS, BFGSLineSearch
 
 from quacc import SETTINGS
-from quacc.runners.calc import run_ase_opt, run_ase_phonons, run_ase_vib, run_calc
+from quacc.runners.calc import run_ase_calc, run_ase_opt, run_ase_phonons, run_ase_vib
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 
@@ -30,7 +30,7 @@ def teardown_function():
             os.remove(os.path.join(SETTINGS.RESULTS_DIR, f))
 
 
-def test_run_calc(tmpdir):
+def test_run_ase_calc(tmpdir):
     tmpdir.chdir()
     prep_files()
 
@@ -38,7 +38,7 @@ def test_run_calc(tmpdir):
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
-    new_atoms = run_calc(atoms, copy_files=["test_file.txt"])
+    new_atoms = run_ase_calc(atoms, copy_files=["test_file.txt"])
     assert atoms.calc.results is not None
     assert new_atoms.calc.results is not None
     assert not os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, "test_file.txt"))
@@ -47,7 +47,7 @@ def test_run_calc(tmpdir):
     assert np.array_equal(new_atoms.cell.array, atoms.cell.array) is True
 
 
-def test_run_calc_no_gzip(tmpdir):
+def test_run_ase_calc_no_gzip(tmpdir):
     tmpdir.chdir()
     prep_files()
 
@@ -57,7 +57,7 @@ def test_run_calc_no_gzip(tmpdir):
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
-    new_atoms = run_calc(atoms, copy_files=["test_file.txt"])
+    new_atoms = run_ase_calc(atoms, copy_files=["test_file.txt"])
     assert atoms.calc.results is not None
     assert new_atoms.calc.results is not None
     assert os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, "test_file.txt"))
@@ -144,7 +144,7 @@ def test_bad_runs(tmpdir):
 
     # No file
     with pytest.warns(UserWarning):
-        run_calc(atoms, copy_files=["test_file.txt"])
+        run_ase_calc(atoms, copy_files=["test_file.txt"])
 
     # No file again
     with pytest.warns(UserWarning):
@@ -172,7 +172,7 @@ def test_unique_workdir(tmpdir):
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
-    run_calc(atoms, copy_files=["test_file.txt"])
+    run_ase_calc(atoms, copy_files=["test_file.txt"])
     assert atoms.calc.results is not None
 
     # Opt

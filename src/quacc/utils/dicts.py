@@ -7,6 +7,29 @@ if TYPE_CHECKING:
     from typing import Any
 
 
+def recursive_merge_dicts(*args, remove_nones: bool = True) -> dict[str, Any]:
+    """
+    Recursively merge dictionaries, taking the latter in the list as higher preference.
+
+    Parameters
+    ----------
+    *args
+        Dictionaries to merge
+    remove_nones
+        If True, remove empty lists and dictionaries
+
+    Returns
+    -------
+    dict
+        Merged dictionary
+    """
+    old_dict = args[0]
+    for i in range(len(args) - 1):
+        merged = merge_dicts(old_dict, args[i + 1], remove_nones=remove_nones)
+        old_dict = merged.copy()
+    return merged
+
+
 def merge_dicts(
     dict1: dict[str, Any] | None,
     dict2: dict[str, Any] | None,

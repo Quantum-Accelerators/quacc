@@ -7,7 +7,7 @@ from ase.calculators.psi4 import Psi4
 from monty.dev import requires
 
 from quacc import job
-from quacc.runners.calc import run_calc
+from quacc.runners.calc import run_ase_calc
 from quacc.schemas.ase import summarize_run
 from quacc.utils.dicts import merge_dicts
 
@@ -136,7 +136,7 @@ def _base_job(
     flags = merge_dicts(defaults, calc_swaps)
 
     atoms.calc = Psi4(**flags)
-    final_atoms = run_calc(atoms, copy_files=copy_files)
+    final_atoms = run_ase_calc(atoms, copy_files=copy_files)
 
     return summarize_run(
         final_atoms,

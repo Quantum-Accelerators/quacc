@@ -13,7 +13,7 @@ from ase.vibrations.data import VibrationsData
 from quacc import SETTINGS
 from quacc.runners.prep import prep_next_run as prep_next_run_
 from quacc.schemas.atoms import atoms_to_metadata
-from quacc.utils.dicts import merge_dicts, remove_dict_nones, sort_dict
+from quacc.utils.dicts import recursive_merge_dicts, sort_dict
 from quacc.utils.files import get_uri
 from quacc.wflow.db import results_to_db
 
@@ -105,8 +105,10 @@ def summarize_run(
         atoms_to_store, charge_and_multiplicity=charge_and_multiplicity
     )
 
-    unsorted_task_doc = final_atoms_metadata | inputs | results | additional_fields
-    task_doc = sort_dict(remove_dict_nones(unsorted_task_doc))
+    unsorted_task_doc = recursive_merge_dicts(
+        final_atoms_metadata, inputs, results, additional_fields
+    )
+    task_doc = sort_dict(unsorted_task_doc)
 
     if store:
         results_to_db(store, task_doc)
@@ -201,8 +203,10 @@ def summarize_opt_run(
     }
 
     # Create a dictionary of the inputs/outputs
-    unsorted_task_doc = base_task_doc | opt_fields | additional_fields
-    task_doc = sort_dict(remove_dict_nones(unsorted_task_doc))
+    unsorted_task_doc = recursive_merge_dicts(
+        base_task_doc, opt_fields, additional_fields
+    )
+    task_doc = sort_dict(unsorted_task_doc)
 
     if store:
         results_to_db(store, task_doc)
@@ -312,8 +316,10 @@ def summarize_vib_run(
         }
     }
 
-    unsorted_task_doc = atoms_metadata | inputs | results | additional_fields
-    task_doc = sort_dict(remove_dict_nones(unsorted_task_doc))
+    unsorted_task_doc = recursive_merge_dicts(
+        atoms_metadata, inputs, results, additional_fields
+    )
+    task_doc = sort_dict(unsorted_task_doc)
 
     if store:
         results_to_db(store, task_doc)
@@ -352,15 +358,22 @@ def summarize_phonon_run(
     additional_fields = additional_fields or {}
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
-    # do stuff with phonons
+    # Create an atoms object with calculator results
     atoms = phonons.atoms
-    atoms_metadata = atoms_to_metadata(
-        atoms, charge_and_multiplicity=charge_and_multiplicity
+    atoms.calc = phonons.calc
+
+    # Base task doc
+    base_task_doc = summarize_run(
+        atoms,
+        charge_and_multiplicity=charge_and_multiplicity,
+        store=False,
     )
 
-    # store more stuff
-    unsorted_task_doc = atoms_metadata | additional_fields
-    task_doc = sort_dict(remove_dict_nones(unsorted_task_doc))
+    # TODO: Store more specific properties from the phonons object
+    results = {"results": {"force_constant": phonons.get_force_constant()}}
+
+    unsorted_task_doc = recursive_merge_dicts(base_task_doc, results, additional_fields)
+    task_doc = sort_dict(unsorted_task_doc)
 
     if store:
         results_to_db(store, task_doc)
@@ -443,8 +456,10 @@ def summarize_ideal_gas_thermo(
         igt.atoms, charge_and_multiplicity=charge_and_multiplicity
     )
 
-    unsorted_task_doc = atoms_metadata | inputs | results | additional_fields
-    task_doc = sort_dict(remove_dict_nones(unsorted_task_doc))
+    unsorted_task_doc = recursive_merge_dicts(
+        atoms_metadata, inputs, results, additional_fields
+    )
+    task_doc = sort_dict(unsorted_task_doc)
 
     if store:
         results_to_db(store, task_doc)
@@ -505,8 +520,10 @@ def summarize_vib_and_thermo(
         store=False,
     )
 
-    unsorted_task_doc = merge_dicts(vib_task_doc, thermo_task_doc) | additional_fields
-    task_doc = sort_dict(remove_dict_nones(unsorted_task_doc))
+    unsorted_task_doc = recursive_merge_dicts(
+        vib_task_doc, thermo_task_doc, additional_fields
+    )
+    task_doc = sort_dict(unsorted_task_doc)
 
     if store:
         results_to_db(store, task_doc)

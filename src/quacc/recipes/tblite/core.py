@@ -8,7 +8,7 @@ from monty.dev import requires
 
 from quacc import job
 from quacc.builders.thermo import build_ideal_gas
-from quacc.runners.calc import run_ase_opt, run_ase_phonons, run_ase_vib, run_calc
+from quacc.runners.calc import run_ase_calc, run_ase_opt, run_ase_phonons, run_ase_vib
 from quacc.schemas.ase import (
     summarize_opt_run,
     summarize_phonon_run,
@@ -76,7 +76,7 @@ def static_job(
     flags = merge_dicts(defaults, calc_swaps)
     atoms.calc = TBLite(**flags)
 
-    final_atoms = run_calc(atoms, copy_files=copy_files)
+    final_atoms = run_ase_calc(atoms, copy_files=copy_files)
     return summarize_run(
         final_atoms,
         input_atoms=atoms,

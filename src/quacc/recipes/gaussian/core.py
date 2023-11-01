@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from ase.calculators.gaussian import Gaussian
 
 from quacc import SETTINGS, job
-from quacc.runners.calc import run_calc
+from quacc.runners.calc import run_ase_calc
 from quacc.schemas.cclib import cclib_summarize_run
 from quacc.utils.dicts import merge_dicts
 
@@ -230,6 +230,6 @@ def _base_job(
     flags = merge_dicts(defaults, calc_swaps)
 
     atoms.calc = Gaussian(command=GAUSSIAN_CMD, **flags)
-    atoms = run_calc(atoms, geom_file=LOG_FILE, copy_files=copy_files)
+    atoms = run_ase_calc(atoms, geom_file=LOG_FILE, copy_files=copy_files)
 
     return cclib_summarize_run(atoms, LOG_FILE, additional_fields=additional_fields)
