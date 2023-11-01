@@ -55,7 +55,7 @@ def main(
 
 
 @app.command("set")
-def set_(parameter: str, new_value) -> None:
+def set_(parameter: str, new_value: Any) -> None:
     """
     Set the specified quacc parameter in the quacc configuration file. This command will
     not override any environment variables.
@@ -162,6 +162,8 @@ def _delete_setting(key: str, config_file: Path) -> None:
     ----------
     key
         The key in the YAML file to unset.
+    config_file
+        The path to the configuration file.
 
     Returns
     -------
@@ -191,6 +193,8 @@ def _update_setting(key: str, value: Any, config_file: Path) -> None:
         The key in the YAML file to (re)set.
     value
         The value to set.
+    config_file
+        The path to the configuration file.
 
     Returns
     -------
