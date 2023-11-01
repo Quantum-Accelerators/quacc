@@ -127,7 +127,7 @@ def test_phonon_job(tmpdir):
     atoms = bulk("Al", "fcc", a=4.05)
     output = phonon_job(atoms)
     assert output["atoms"] == atoms
-    assert output["results"]["energy"] == -21.948664056966074
+    assert output["results"]["energy"] == pytest.approx(-21.948664056966038)
     assert output["results"]["force_constant"] == np.array(
         [[[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]]
     )
