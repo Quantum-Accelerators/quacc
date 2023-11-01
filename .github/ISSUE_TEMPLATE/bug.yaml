@@ -10,7 +10,7 @@ body:
       value: |
         - **quacc version**:
         - **Python version**:
-        - **quacc settings (minimal)**:
+        - **quacc settings**:
     validations:
       required: true
 
