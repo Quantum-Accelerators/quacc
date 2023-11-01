@@ -55,7 +55,7 @@ def main(
 
 
 @app.command("set")
-def set_(parameter: str, new_value: Any) -> None:
+def set_(parameter: str, new_value) -> None:
     """
     Set the specified quacc parameter in the quacc configuration file. This command will
     not override any environment variables.
