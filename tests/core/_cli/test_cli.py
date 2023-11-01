@@ -83,7 +83,7 @@ def test_unset(runner):
 
 
 def test_info(runner):
-    response = runner.invoke(app)
+    response = runner.invoke(app, ["info"])
     assert response.exit_code == 0
     assert __version__ in response.stdout
     assert platform.python_version() in response.stdout
