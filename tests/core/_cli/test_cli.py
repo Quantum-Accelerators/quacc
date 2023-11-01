@@ -82,6 +82,13 @@ def test_unset(runner):
     assert "WORKFLOW_ENGINE" not in lines
 
 
+def test_info(runner):
+    response = runner.invoke(app)
+    assert response.exit_code == 0
+    assert __version__ in response.stdout
+    assert platform.python_version() in response.stdout
+
+
 def test_bad(runner):
     response = runner.invoke(app, ["set", "CONFIG_FILE", "here"])
     assert response.exit_code != 0
@@ -91,10 +98,3 @@ def test_bad(runner):
     assert response.exit_code != 0
     response = runner.invoke(app, ["unset", "CONFIG_FILE"])
     assert response.exit_code != 0
-
-
-def test_info(runner):
-    response = runner.invoke(app)
-    assert response.exit_code != 0
-    assert __version__ in response.stdout
-    assert platform.python_version() in response.stdout
