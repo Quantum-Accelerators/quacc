@@ -13,9 +13,26 @@ from pymatgen.io.ase import AseAtomsAdaptor
 from quacc.atoms.core import copy_atoms
 
 if TYPE_CHECKING:
-    from typing import Any
+    from typing import Literal, TypedDict
 
+    from numpy.typing import ArrayLike
     from pymatgen.core import Structure
+
+    class AdsSiteFinderKwargs(TypedDict, total=False):
+        selective_dynamics: bool  # defualt = False
+        height: float  # default = 0.9
+        mi_vec: ArrayLike | None  # default = None
+
+    class FindAdsSitesKwargs(TypedDict, total=False):
+        distance: float  # default = 2.0
+        put_inside: True  # default = True
+        symm_reduce: float  # default = 1e-2
+        near_reduce: float  # default = 1e-2
+        positions: list[
+            Literal["ontop", "bridge", "hollow", "subsurface"]
+        ]  # default: ["ontop", "bridge", "hollow"]
+        no_obtuse_hollow: bool  # default = True
+
 
 logger = logging.getLogger(__name__)
 
@@ -204,8 +221,8 @@ def make_adsorbate_structures(
     modes: list[str] | None = None,
     allowed_surface_symbols: list[str] | None = None,
     allowed_surface_indices: list[int] | None = None,
-    ads_site_finder_kwargs: dict[str, Any] | None = None,
-    find_ads_sites_kwargs: dict[str, Any] | None = None,
+    ads_site_finder_kwargs: AdsSiteFinderKwargs | None = None,
+    find_ads_sites_kwargs: FindAdsSitesKwargs | None = None,
 ) -> list[Atoms]:
     """
     Add a single adsorbate to a structure for every requested adsorption mode.

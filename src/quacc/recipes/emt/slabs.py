@@ -42,9 +42,9 @@ def bulk_to_slabs_flow(
     run_static
         Whether to run the static calculation.
     slab_relax_kwargs
-        Additional keyword arguments to pass to the relaxation calculation.
+        Additional keyword arguments to pass to [quacc.recipes.emt.core.relax_job][].
     slab_static_kwargs
-        Additional keyword arguments to pass to the static calculation.
+        Additional keyword arguments to pass to [quacc.recipes.emt.core.static_job][].
 
     Returns
     -------

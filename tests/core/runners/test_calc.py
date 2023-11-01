@@ -126,11 +126,6 @@ def test_bad_runs(tmpdir):
     tmpdir.chdir()
 
     atoms = bulk("Cu")
-
-    # No calculator
-    with pytest.raises(ValueError):
-        run_calc(atoms)
-
     atoms.calc = EMT()
 
     # No file

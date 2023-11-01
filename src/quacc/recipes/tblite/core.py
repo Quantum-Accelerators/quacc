@@ -8,7 +8,7 @@ from monty.dev import requires
 
 from quacc import job
 from quacc.builders.thermo import build_ideal_gas
-from quacc.runners.calc import run_ase_opt, run_ase_vib, run_calc
+from quacc.runners.calc import run_ase_opt, run_ase_phonons, run_ase_vib, run_calc
 from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
 from quacc.utils.dicts import merge_dicts
 
@@ -22,6 +22,7 @@ if TYPE_CHECKING:
 
     from ase import Atoms
 
+    from quacc.runners.calc import PhononKwargs, PhononReadKwargs, VibKwargs
     from quacc.schemas.ase import OptSchema, RunSchema, VibThermoSchema
 
 
@@ -144,7 +145,7 @@ def freq_job(
     temperature: float = 298.15,
     pressure: float = 1.0,
     calc_swaps: dict[str, Any] | None = None,
-    vib_kwargs: dict[str, Any] | None = None,
+    vib_kwargs: VibKwargs | None = None,
     copy_files: list[str] | None = None,
 ) -> VibThermoSchema:
     """
@@ -199,3 +200,53 @@ def freq_job(
         pressure=pressure,
         additional_fields={"name": "TBLite Frequency and Thermo"},
     )
+
+
+@job
+@requires(TBLite, "tblite must be installed. Refer to the quacc documentation.")
+def phonon_job(
+    atoms: Atoms,
+    method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
+    calc_swaps: dict[str, Any] | None = None,
+    phonon_kwargs: PhononKwargs | PhononReadKwargs | None = None,
+    copy_files: list[str] | None = None,
+) -> OptSchema:
+    """
+    Relax a structure.
+
+    !!! Info "Calculator defaults"
+
+        ```python
+        {"method": method}
+        ```
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+    method
+        GFN0-xTB, GFN1-xTB, GFN2-xTB.
+    relax_cell
+        Whether to relax the cell.
+    calc_swaps
+        Dictionary of custom kwargs for the tblite calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `tblite.ase.TBLite` calculator.
+    phonon_kwargs
+        Dictionary of custom kwargs for [quacc.runners.calc.run_ase_vib][]
+    copy_files
+        Files to copy to the runtime directory.
+
+    Returns
+    -------
+    PhononSchema
+        Dictionary of results from [quacc.schemas.ase.summarize_phonon_run][]
+    """
+
+    defaults = {"method": method}
+    flags = merge_dicts(defaults, calc_swaps)
+    atoms.calc = TBLite(**flags)
+
+    dyn = run_ase_phonons(atoms, copy_files=copy_files, **phonon_kwargs)
+
+    return summarize_phonon_run(dyn, additional_fields={"name": "TBLite Phonons"})

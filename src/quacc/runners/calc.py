@@ -12,6 +12,7 @@ import numpy as np
 from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read
 from ase.optimize import FIRE
+from ase.phonons import Phonons
 from ase.vibrations import Vibrations
 from monty.dev import requires
 from monty.os.path import zpath
@@ -28,10 +29,31 @@ except ImportError:
     Sella = None
 
 if TYPE_CHECKING:
-    from typing import Any
+    from typing import Any, Literal, Optional, TypedDict
 
     from ase import Atoms
     from ase.optimize.optimize import Optimizer
+
+    class OptimizerKwargs(TypedDict, total=False):
+        restart: Optional[str]  # default = None
+        append_trajectory: bool  # default = False
+
+    class VibKwargs(TypedDict, total=False):
+        indices: list[int] | None  # default = None
+        delta: float  # default = 0.01
+        nfree: int  # default = 2
+
+    class PhononKwargs(TypedDict, total=False):
+        supercell: tuple[int]  # default = (1,1,1)
+        delta: float  # default = 0.01
+        center_refcell: bool  # default = False
+
+    class PhononReadKwargs(TypedDict, total=False):
+        method: Literal["standard", "frederiksen"]  # default = "frederiksen"
+        symmetrize: int  # default = 3
+        acoustic: bool  # default = True
+        cutoff: float | None  # default = None
+        born: bool  # default = False
 
 
 def run_calc(
@@ -109,7 +131,7 @@ def run_ase_opt(
     fmax: float = 0.01,
     max_steps: int = 500,
     optimizer: Optimizer = FIRE,
-    optimizer_kwargs: dict[str, Any] | None = None,
+    optimizer_kwargs: OptimizerKwargs | None = None,
     run_kwargs: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> Optimizer:
@@ -191,7 +213,7 @@ def run_ase_opt(
 
 def run_ase_vib(
     atoms: Atoms,
-    vib_kwargs: dict[str, Any] | None = None,
+    vib_kwargs: VibKwargs | None = None,
     copy_files: list[str] | None = None,
 ) -> Vibrations:
     """
@@ -207,7 +229,7 @@ def run_ase_vib(
     atoms
         The Atoms object to run the calculation on.
     vib_kwargs
-        Dictionary of kwargs for the vibration analysis.
+        Dictionary of kwargs for the `ase.vibrations.Vibrations` class.
     copy_files
         Filenames to copy from source to scratch directory.
 
@@ -240,6 +262,65 @@ def run_ase_vib(
     return vib
 
 
+def run_ase_phonons(
+    atoms: Atoms,
+    phonon_kwargs: PhononKwargs | None = None,
+    phonon_read_kwargs: PhononReadKwargs | None = None,
+    copy_files: list[str] | None = None,
+) -> Phonons:
+    """
+    Run an ASE-based vibration analysis in a scratch directory and copy the results back
+    to the original directory. This can be useful if file I/O is slow in the working
+    directory, so long as file transfer speeds are reasonable.
+
+    This is a wrapper around the vibrations module in ASE. Note: This function
+    does not modify the atoms object in-place.
+
+    Parameters
+    ----------
+    atoms
+        The Atoms object to run the calculation on.
+    phonon_kwargs
+        Dictionary of kwargs for the `ase.phonons.Phonons()` class.
+    phonon_read_kwargs
+        Dictionary of kwargs for the `ase.phonons.Phonons.read()` method.
+    copy_files
+        Filenames to copy from source to scratch directory.
+
+    Returns
+    -------
+    Phonons
+        The updated Phonons module
+    """
+
+    # Set defaults
+    phonon_kwargs = phonon_kwargs or {}
+    phonon_read_kwargs = phonon_read_kwargs or {}
+
+    # Strip calculator
+    calc = atoms.calc
+    atoms.calc = None
+
+    # Perform staging operations
+    atoms, tmpdir, job_results_dir = _calc_setup(atoms, copy_files=copy_files)
+
+    # Run calculation
+    phonons = Phonons(atoms, calc, name=str(tmpdir / "phonon"), **phonon_kwargs)
+    try:
+        phonons.run()
+    except Exception as err:
+        msg = f"Calculation failed. Read the full traceback above. If needed, the logfiles are at {Path.cwd()}"
+        raise RuntimeError(msg) from err
+
+    # Summarize run
+    phonons.read(**phonon_read_kwargs)
+
+    # Perform cleanup operations
+    _calc_cleanup(tmpdir, job_results_dir)
+
+    return phonons
+
+
 def _calc_setup(
     atoms: Atoms, copy_files: list[str | Path] | None = None
 ) -> tuple[Atoms, Path, Path]:
@@ -251,14 +332,14 @@ def _calc_setup(
     Parameters
     ----------
     atoms
-        The Atoms object to run the calculation on with calculator attached.
+        The Atoms object to run the calculation on.
     copy_files
         Filenames to copy from source to scratch directory.
 
     Returns
     -------
     Atoms
-        Copy of the Atoms object with the calculator's directory set.
+        The input Atoms object.
     Path
         The path to the tmpdir, where the calculation will be run. It will be
         deleted after the calculation is complete.
@@ -267,10 +348,6 @@ def _calc_setup(
         A symlink to the tmpdir will be made here during the calculation for
         convenience.
     """
-
-    if atoms.calc is None:
-        msg = "Atoms object must have attached calculator."
-        raise ValueError(msg)
 
     # Don't modify the original atoms object
     atoms = copy_atoms(atoms)

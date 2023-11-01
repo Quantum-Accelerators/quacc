@@ -65,7 +65,7 @@ def ts_job(
     run_freq
         Whether to run the frequency job.
     freq_job_kwargs
-        Keyword arguments to use for the `freq_job`.
+        Keyword arguments to use for the [quacc.recipes.newtonnet.ts.freq_job][]
     calc_swaps
         Dictionary of custom kwargs for the NewtonNet calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -171,7 +171,7 @@ def irc_job(
     run_freq
         Whether to run the frequency analysis.
     freq_job_kwargs
-        Keyword arguments for the `freq_job`.
+        Keyword arguments to use for the [quacc.recipes.newtonnet.ts.freq_job][]
     calc_swaps
         Dictionary of custom kwargs for the NewtonNet calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -284,17 +284,17 @@ def quasi_irc_job(
     Parameters
     ----------
     atoms
-        The atoms object representing the system.
+        The atoms object representing the system
     direction
-        The direction of the IRC calculation ("forward" or "reverse").
+        The direction of the IRC calculation
     run_freq
-        Whether to run the frequency analysis.
+        Whether to run the frequency analysis
     irc_job_kwargs
-        Keyword arguments for `irc_job`
+        Keyword arguments to use for the [quacc.recipes.newtonnet.ts.irc_job][]
     relax_job_kwargs
-        Keyword arguments for `relax_job`
+        Keyword arguments to use for the [quacc.recipes.newtonnet.core.relax_job][]
     freq_job_kwargs
-        Keyword arguments for `freq_job`.
+        Keyword arguments to use for the [quacc.recipes.newtonnet.ts.freq_job][]
     copy_files
         Files to copy to the runtime directory.
 

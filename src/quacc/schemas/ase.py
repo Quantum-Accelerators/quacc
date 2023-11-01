@@ -23,6 +23,7 @@ if TYPE_CHECKING:
     from ase import Atoms
     from ase.io import Trajectory
     from ase.optimize.optimize import Optimizer
+    from ase.phonons import Phonons
     from ase.thermochemistry import IdealGasThermo
     from ase.vibrations import Vibrations
     from maggma.core import Store
@@ -311,6 +312,53 @@ def summarize_vib_run(
     }
 
     unsorted_task_doc = atoms_metadata | inputs | results | additional_fields
+    task_doc = sort_dict(remove_dict_nones(unsorted_task_doc))
+
+    if store:
+        results_to_db(store, task_doc)
+
+    return task_doc
+
+
+def summarize_phonon_run(
+    phonons: Phonons,
+    charge_and_multiplicity: tuple[int, int] | None = None,
+    additional_fields: dict[str, Any] | None = None,
+    store: Store | bool | None = None,
+) -> PhononSchema:
+    """
+    Get tabulated results from an ASE Phonons object and store them in a database-
+    friendly format.
+
+    Parameters
+    ----------
+    phonons
+        ASE Phonons object.
+    charge_and_multiplicity
+        Charge and spin multiplicity of the Atoms object, only used for Molecule
+        metadata.
+    additional_fields
+        Additional fields to add to the task document.
+    store
+        Maggma Store object to store the results in. If None,
+        `SETTINGS.PRIMARY_STORE` will be used.
+
+    Returns
+    -------
+    PhononSchema
+        Dictionary representation of the task document
+    """
+    additional_fields = additional_fields or {}
+    store = SETTINGS.PRIMARY_STORE if store is None else store
+
+    # do stuff with phonons
+    atoms = phonons.atoms
+    atoms_metadata = atoms_to_metadata(
+        atoms, charge_and_multiplicity=charge_and_multiplicity
+    )
+
+    # store more stuff
+    unsorted_task_doc = atoms_metadata | additional_fields
     task_doc = sort_dict(remove_dict_nones(unsorted_task_doc))
 
     if store:

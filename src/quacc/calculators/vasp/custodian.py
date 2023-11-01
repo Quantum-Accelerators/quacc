@@ -24,7 +24,30 @@ from custodian.vasp.jobs import VaspJob
 from custodian.vasp.validators import VaspFilesValidator, VasprunXMLValidator
 
 if TYPE_CHECKING:
-    from typing import Any
+    from typing import Any, Callable, TypedDict
+
+    class VaspJobKwargs(TypedDict, total=False):
+        output_file: str  # default = "vasp.out"
+        stderr_file: str  # default = "std_err.txt"
+        suffix: str  # default = ""
+        final: bool  # default = True
+        backup: bool  # default = True
+        auto_npar: bool  # default = False
+        auto_gamma: bool  # default = True
+        settings_override: dict | None  # default = None
+        copy_magmom: bool  # default = False
+        auto_continue: bool  # default = False
+
+
+class CustodianKwargs(TypedDict, total=False):
+    max_errors_per_job: int | None  # default = None
+    polling_time_step: int  # default = 10
+    monitor_freq: int  # default = 10
+    skip_over_errors: bool  # default = False
+    gzipped_output: bool  # default = False
+    checkpoint: bool  # default = False
+    terminate_func: Callable | None  # default = None
+    terminate_on_nonzero_returncode: bool  # default = False
 
 
 def run_custodian(
@@ -37,8 +60,8 @@ def run_custodian(
     vasp_custodian_handlers: list[str] | None = None,
     vasp_custodian_validators: list[str] | None = None,
     scratch_dir: str | None = None,
-    vasp_job_kwargs: dict[str, Any] | None = None,
-    custodian_kwargs: dict[str, Any] | None = None,
+    vasp_job_kwargs: VaspJobKwargs | None = None,
+    custodian_kwargs: CustodianKwargs | None = None,
 ) -> None:
     """
     Function to run VASP Custodian.
