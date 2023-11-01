@@ -30,6 +30,7 @@ if TYPE_CHECKING:
 
     from quacc.schemas._aliases.ase import (
         OptSchema,
+        PhononSchema,
         RunSchema,
         ThermoSchema,
         VibSchema,

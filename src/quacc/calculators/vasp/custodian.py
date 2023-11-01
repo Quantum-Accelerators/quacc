@@ -24,7 +24,7 @@ from custodian.vasp.jobs import VaspJob
 from custodian.vasp.validators import VaspFilesValidator, VasprunXMLValidator
 
 if TYPE_CHECKING:
-    from typing import Any, Callable, TypedDict
+    from typing import Callable, TypedDict
 
     class VaspJobKwargs(TypedDict, total=False):
         output_file: str  # default = "vasp.out"
@@ -38,16 +38,15 @@ if TYPE_CHECKING:
         copy_magmom: bool  # default = False
         auto_continue: bool  # default = False
 
-
-class CustodianKwargs(TypedDict, total=False):
-    max_errors_per_job: int | None  # default = None
-    polling_time_step: int  # default = 10
-    monitor_freq: int  # default = 10
-    skip_over_errors: bool  # default = False
-    gzipped_output: bool  # default = False
-    checkpoint: bool  # default = False
-    terminate_func: Callable | None  # default = None
-    terminate_on_nonzero_returncode: bool  # default = False
+    class CustodianKwargs(TypedDict, total=False):
+        max_errors_per_job: int | None  # default = None
+        polling_time_step: int  # default = 10
+        monitor_freq: int  # default = 10
+        skip_over_errors: bool  # default = False
+        gzipped_output: bool  # default = False
+        checkpoint: bool  # default = False
+        terminate_func: Callable | None  # default = None
+        terminate_on_nonzero_returncode: bool  # default = False
 
 
 def run_custodian(

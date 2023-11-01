@@ -9,7 +9,12 @@ from monty.dev import requires
 from quacc import job
 from quacc.builders.thermo import build_ideal_gas
 from quacc.runners.calc import run_ase_opt, run_ase_phonons, run_ase_vib, run_calc
-from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
+from quacc.schemas.ase import (
+    summarize_opt_run,
+    summarize_phonon_run,
+    summarize_run,
+    summarize_vib_and_thermo,
+)
 from quacc.utils.dicts import merge_dicts
 
 try:
@@ -23,7 +28,12 @@ if TYPE_CHECKING:
     from ase import Atoms
 
     from quacc.runners.calc import PhononKwargs, PhononReadKwargs, VibKwargs
-    from quacc.schemas.ase import OptSchema, RunSchema, VibThermoSchema
+    from quacc.schemas._aliases.ase import (
+        OptSchema,
+        PhononSchema,
+        RunSchema,
+        VibThermoSchema,
+    )
 
 
 @job
@@ -210,7 +220,7 @@ def phonon_job(
     calc_swaps: dict[str, Any] | None = None,
     phonon_kwargs: PhononKwargs | PhononReadKwargs | None = None,
     copy_files: list[str] | None = None,
-) -> OptSchema:
+) -> PhononSchema:
     """
     Relax a structure.
 
@@ -242,6 +252,7 @@ def phonon_job(
     PhononSchema
         Dictionary of results from [quacc.schemas.ase.summarize_phonon_run][]
     """
+    phonon_kwargs = phonon_kwargs or {}
 
     defaults = {"method": method}
     flags = merge_dicts(defaults, calc_swaps)

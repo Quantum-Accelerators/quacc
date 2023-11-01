@@ -55,6 +55,10 @@ class VibSchema(AtomsSchema):
     results: VibResults
 
 
+class PhononSchema(AtomsSchema):
+    """Schema for `quacc.schemas.ase.summarize_phonon_run`"""
+
+
 class ParametersThermo(TypedDict):
     temperature: float
     pressure: float
