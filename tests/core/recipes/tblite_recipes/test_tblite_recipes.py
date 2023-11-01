@@ -3,6 +3,7 @@ from copy import deepcopy
 import numpy as np
 import pytest
 from ase.build import bulk, molecule
+from numpy.testing import assert_array_equal
 
 from quacc import SETTINGS
 from quacc.recipes.tblite.core import freq_job, phonon_job, relax_job, static_job
@@ -128,8 +129,9 @@ def test_phonon_job(tmpdir):
     output = phonon_job(atoms)
     assert output["atoms"] == atoms
     assert output["results"]["energy"] == pytest.approx(-21.948664056966038)
-    assert output["results"]["force_constant"] == np.array(
-        [[[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]]
+    assert_array_equal(
+        output["results"]["force_constant"],
+        np.array([[[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]]),
     )
     assert "nid" in output
     assert "dir_name" in output
