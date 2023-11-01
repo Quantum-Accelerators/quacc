@@ -25,9 +25,9 @@ body:
     attributes:
       label: How can we easily reproduce the issue?
       description: Provide a [minimal reproducible example](https://stackoverflow.com/help/minimal-reproducible-example) of code to reproduce the issue. This is critical. Please do not try to "save time" by omitting it.
+      value: |
+        ```python
+        # Paste your *minimal* example code here
+        ```
     validations:
       required: true
-    value: |
-      ```python
-      # Paste your *minimal* example code here
-      ```
