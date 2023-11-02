@@ -12,7 +12,6 @@ import numpy as np
 from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read
 from ase.optimize import FIRE
-from ase.phonons import Phonons
 from ase.vibrations import Vibrations
 from monty.dev import requires
 from monty.os.path import zpath
