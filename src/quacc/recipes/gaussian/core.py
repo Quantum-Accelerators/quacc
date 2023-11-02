@@ -19,8 +19,8 @@ if TYPE_CHECKING:
     from quacc.schemas.cclib import cclibSchema
 
 _LABEL = "Gaussian"
-_LOG_FILE = f"{LABEL}.log"
-_GAUSSIAN_CMD = f"{SETTINGS.GAUSSIAN_CMD} < {LABEL}.com > {_LOG_FILE}"
+_LOG_FILE = f"{_LABEL}.log"
+_GAUSSIAN_CMD = f"{SETTINGS.GAUSSIAN_CMD} < {_LABEL}.com > {_LOG_FILE}"
 
 
 @job
