@@ -19,8 +19,8 @@ if TYPE_CHECKING:
     from quacc.schemas.cclib import cclibSchema
 
 _LABEL = "Gaussian"
-_LOG_FILE = f"{_LABEL}.log"
-_GAUSSIAN_CMD = f"{SETTINGS.GAUSSIAN_CMD} < {_LABEL}.com > {_LOG_FILE}"
+LOG_FILE = f"{_LABEL}.log"
+GAUSSIAN_CMD = f"{SETTINGS.GAUSSIAN_CMD} < {_LABEL}.com > {LOG_FILE}"
 
 
 @job
@@ -229,7 +229,7 @@ def _base_job(
     """
     flags = merge_dicts(defaults, calc_swaps)
 
-    atoms.calc = Gaussian(command=_GAUSSIAN_CMD, label=_LABEL, **flags)
-    atoms = run_ase_calc(atoms, geom_file=_LOG_FILE, copy_files=copy_files)
+    atoms.calc = Gaussian(command=GAUSSIAN_CMD, label=_LABEL, **flags)
+    atoms = run_ase_calc(atoms, geom_file=LOG_FILE, copy_files=copy_files)
 
-    return cclib_summarize_run(atoms, _LOG_FILE, additional_fields=additional_fields)
+    return cclib_summarize_run(atoms, LOG_FILE, additional_fields=additional_fields)
