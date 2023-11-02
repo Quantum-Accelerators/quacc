@@ -29,13 +29,13 @@ except ImportError:
     Sella = None
 
 if TYPE_CHECKING:
-    from typing import Any, Literal, Optional, TypedDict
+    from typing import Any, Literal, TypedDict
 
     from ase import Atoms
     from ase.optimize.optimize import Optimizer
 
     class OptimizerKwargs(TypedDict, total=False):
-        restart: Optional[str]  # default = None
+        restart: str | None  # default = None
         append_trajectory: bool  # default = False
 
     class VibKwargs(TypedDict, total=False):
