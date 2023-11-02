@@ -8,8 +8,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- Added a basic phonon runner in `quacc.runners.calc.phonons`
-- Added a TBLite phonon recipe `phonon_job`
 - Added more type hints for input keyword arguments
 - Added the `quacc info` command-line argument for error reporting
 
