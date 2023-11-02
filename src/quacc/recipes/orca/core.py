@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
     from quacc.schemas.cclib import cclibSchema
 
-_LABEL = OrcaTemplate()._label  # skipqc: PYL-W0212
+_LABEL = OrcaTemplate()._label  # skipcq: PYL-W0212
 LOG_FILE = f"{_LABEL}.out"
 GEOM_FILE = f"{_LABEL}.xyz"
 
