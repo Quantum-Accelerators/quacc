@@ -6,7 +6,7 @@ from ase.build import bulk, molecule
 from numpy.testing import assert_array_equal
 
 from quacc import SETTINGS
-from quacc.recipes.tblite.core import freq_job, phonon_job, relax_job, static_job
+from quacc.recipes.tblite.core import freq_job, relax_job, static_job
 
 pytest.importorskip("tblite.ase")
 
