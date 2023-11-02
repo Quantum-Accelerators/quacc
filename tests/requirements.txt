@@ -1,4 +1,4 @@
-https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
+git+https://gitlab.com/ase/ase.git@7b70eddd026154d636faf404cc2f8c7b08d89667
 cclib==1.8
 custodian==2023.10.9
 emmet-core==0.71.2

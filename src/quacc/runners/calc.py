@@ -12,7 +12,6 @@ import numpy as np
 from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read
 from ase.optimize import FIRE
-from ase.phonons import Phonons
 from ase.vibrations import Vibrations
 from monty.dev import requires
 from monty.os.path import zpath
@@ -42,18 +41,6 @@ if TYPE_CHECKING:
         indices: list[int] | None  # default = None
         delta: float  # default = 0.01
         nfree: int  # default = 2
-
-    class PhononKwargs(TypedDict, total=False):
-        supercell: tuple[int]  # default = (1,1,1)
-        delta: float  # default = 0.01
-        center_refcell: bool  # default = False
-
-    class PhononReadKwargs(TypedDict, total=False):
-        method: Literal["standard", "frederiksen"]  # default = "frederiksen"
-        symmetrize: int  # default = 3
-        acoustic: bool  # default = True
-        cutoff: float | None  # default = None
-        born: bool  # default = False
 
 
 def run_ase_calc(
@@ -260,65 +247,6 @@ def run_ase_vib(
     _calc_cleanup(tmpdir, job_results_dir)
 
     return vib
-
-
-def run_ase_phonons(
-    atoms: Atoms,
-    phonon_kwargs: PhononKwargs | None = None,
-    phonon_read_kwargs: PhononReadKwargs | None = None,
-    copy_files: list[str] | None = None,
-) -> Phonons:
-    """
-    Run an ASE-based vibration analysis in a scratch directory and copy the results back
-    to the original directory. This can be useful if file I/O is slow in the working
-    directory, so long as file transfer speeds are reasonable.
-
-    This is a wrapper around the vibrations module in ASE. Note: This function
-    does not modify the atoms object in-place.
-
-    Parameters
-    ----------
-    atoms
-        The Atoms object to run the calculation on.
-    phonon_kwargs
-        Dictionary of kwargs for the `ase.phonons.Phonons()` class.
-    phonon_read_kwargs
-        Dictionary of kwargs for the `ase.phonons.Phonons.read()` method.
-    copy_files
-        Filenames to copy from source to scratch directory.
-
-    Returns
-    -------
-    Phonons
-        The updated Phonons module
-    """
-
-    # Set defaults
-    phonon_kwargs = phonon_kwargs or {}
-    phonon_read_kwargs = phonon_read_kwargs or {}
-
-    # Strip calculator
-    calc = atoms.calc
-    atoms.calc = None
-
-    # Perform staging operations
-    atoms, tmpdir, job_results_dir = _calc_setup(atoms, copy_files=copy_files)
-
-    # Run calculation
-    phonons = Phonons(atoms, calc, name=str(tmpdir / "phonon"), **phonon_kwargs)
-    try:
-        phonons.run()
-    except Exception as err:
-        msg = f"Calculation failed. Read the full traceback above. If needed, the logfiles are at {Path.cwd()}"
-        raise RuntimeError(msg) from err
-
-    # Summarize run
-    phonons.read(**phonon_read_kwargs)
-
-    # Perform cleanup operations
-    _calc_cleanup(tmpdir, job_results_dir)
-
-    return phonons
 
 
 def _calc_setup(

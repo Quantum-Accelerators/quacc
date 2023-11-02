@@ -9,7 +9,7 @@ from ase.calculators.lj import LennardJones
 from ase.optimize import BFGS, BFGSLineSearch
 
 from quacc import SETTINGS
-from quacc.runners.calc import run_ase_calc, run_ase_opt, run_ase_phonons, run_ase_vib
+from quacc.runners.calc import run_ase_calc, run_ase_opt, run_ase_vib
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 
@@ -120,20 +120,6 @@ def test_run_ase_vib(tmpdir):
     assert np.array_equal(vib.atoms.get_positions(), o2.get_positions()) is True
     assert not os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, "test_file.txt"))
     assert os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, "test_file.txt.gz"))
-
-
-def test_run_ase_phonons(tmpdir):
-    tmpdir.chdir()
-    prep_files()
-    atoms = bulk("Al", "fcc", a=4.05)
-    atoms.calc = EMT()
-    phonons = run_ase_phonons(
-        atoms, phonon_kwargs={"supercell": (7, 7, 7), "delta": 0.05}
-    )
-    assert phonons
-    path = atoms.cell.bandpath("GXULGK", npoints=100)
-    bs = phonons.get_band_structure(path)
-    assert bs
 
 
 def test_bad_runs(tmpdir):
