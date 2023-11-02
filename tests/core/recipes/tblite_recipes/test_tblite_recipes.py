@@ -2,8 +2,7 @@ from copy import deepcopy
 
 import numpy as np
 import pytest
-from ase.build import bulk, molecule
-from numpy.testing import assert_array_equal
+from ase.build import molecule
 
 from quacc import SETTINGS
 from quacc.recipes.tblite.core import freq_job, relax_job, static_job
