@@ -17,11 +17,12 @@ if TYPE_CHECKING:
 
     from quacc.calculators.qchem.io import Results
 
+_LABEL = "mol"
 
 class QChem(FileIOCalculator):
     """Custom Q-Chem calculator built on Pymatgen and Custodian."""
 
-    name: str = "mol"
+    name: str = "QChem"
 
     implemented_properties: ClassVar[list[str]] = [
         "energy",
@@ -113,7 +114,7 @@ class QChem(FileIOCalculator):
             self,
             restart=None,
             ignore_bad_restart_file=FileIOCalculator._deprecated,
-            label=None,
+            label=_LABEL,
             atoms=self.atoms,
             **self.fileiocalculator_kwargs,
         )
