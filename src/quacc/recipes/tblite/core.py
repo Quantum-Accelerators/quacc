@@ -28,11 +28,7 @@ if TYPE_CHECKING:
     from ase import Atoms
 
     from quacc.runners.calc import VibKwargs
-    from quacc.schemas._aliases.ase import (
-        OptSchema,
-        RunSchema,
-        VibThermoSchema,
-    )
+    from quacc.schemas._aliases.ase import OptSchema, RunSchema, VibThermoSchema
 
 
 @job
@@ -209,4 +205,3 @@ def freq_job(
         pressure=pressure,
         additional_fields={"name": "TBLite Frequency and Thermo"},
     )
-
