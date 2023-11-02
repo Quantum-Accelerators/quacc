@@ -20,8 +20,8 @@ if TYPE_CHECKING:
     from quacc.schemas.cclib import cclibSchema
 
 
-LOG_FILE = f"{ORCA().name}.out"
-GEOM_FILE = f"{ORCA().name}.xyz"
+LOG_FILE = f"{OrcaTemplate()._label}.out"
+GEOM_FILE = f"{OrcaTemplate()._label}.xyz"
 
 
 @job
