@@ -17,13 +17,9 @@ if TYPE_CHECKING:
 
     from quacc.calculators.qchem.io import Results
 
-_LABEL = "mol"
-
 
 class QChem(FileIOCalculator):
     """Custom Q-Chem calculator built on Pymatgen and Custodian."""
-
-    name: str = "QChem"
 
     implemented_properties: ClassVar[list[str]] = [
         "energy",
