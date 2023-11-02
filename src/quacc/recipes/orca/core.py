@@ -19,9 +19,9 @@ if TYPE_CHECKING:
 
     from quacc.schemas.cclib import cclibSchema
 
-label = OrcaTemplate()._label
-LOG_FILE = f"{label}.out"
-GEOM_FILE = f"{label}.xyz"
+_LABEL = OrcaTemplate()._label
+LOG_FILE = f"{_LABEL}.out"
+GEOM_FILE = f"{_LABEL}.xyz"
 
 
 @job
