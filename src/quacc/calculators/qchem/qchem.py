@@ -111,7 +111,7 @@ class QChem(FileIOCalculator):
             self,
             restart=None,
             ignore_bad_restart_file=FileIOCalculator._deprecated,
-            label=_LABEL,
+            label=None,
             atoms=self.atoms,
             **self.fileiocalculator_kwargs,
         )
