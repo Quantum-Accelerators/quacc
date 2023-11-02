@@ -9,11 +9,7 @@ from monty.dev import requires
 from quacc import job
 from quacc.builders.thermo import build_ideal_gas
 from quacc.runners.calc import run_ase_calc, run_ase_opt, run_ase_vib
-from quacc.schemas.ase import (
-    summarize_opt_run,
-    summarize_run,
-    summarize_vib_and_thermo,
-)
+from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
 from quacc.utils.dicts import merge_dicts
 
 try:
