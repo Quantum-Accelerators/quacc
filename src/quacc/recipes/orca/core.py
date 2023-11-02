@@ -5,7 +5,7 @@ import multiprocessing
 from shutil import which
 from typing import TYPE_CHECKING
 
-from ase.calculators.orca import ORCA, OrcaProfile
+from ase.calculators.orca import ORCA, OrcaProfile, OrcaTemplate
 
 from quacc import SETTINGS, job
 from quacc.runners.calc import run_ase_calc
@@ -19,9 +19,9 @@ if TYPE_CHECKING:
 
     from quacc.schemas.cclib import cclibSchema
 
-
-LOG_FILE = f"{OrcaTemplate()._label}.out"
-GEOM_FILE = f"{OrcaTemplate()._label}.xyz"
+label = OrcaTemplate()._label
+LOG_FILE = f"{label}.out"
+GEOM_FILE = f"{label}.xyz"
 
 
 @job
