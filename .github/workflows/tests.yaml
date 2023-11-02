@@ -100,7 +100,7 @@ jobs:
       fail-fast: true
       matrix:
         python-version: ["3.11"]
-        wflow_engine: [parsl, redun, jobflow]
+        wflow_engine: [parsl, prefect, redun, jobflow]
 
     defaults:
       run:
