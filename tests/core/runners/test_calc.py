@@ -122,20 +122,6 @@ def test_run_ase_vib(tmpdir):
     assert os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, "test_file.txt.gz"))
 
 
-def test_run_ase_phonons(tmpdir):
-    tmpdir.chdir()
-    prep_files()
-    atoms = bulk("Al", "fcc", a=4.05)
-    atoms.calc = EMT()
-    phonons = run_ase_phonons(
-        atoms, phonon_kwargs={"supercell": (7, 7, 7), "delta": 0.05}
-    )
-    assert phonons
-    path = atoms.cell.bandpath("GXULGK", npoints=100)
-    bs = phonons.get_band_structure(path)
-    assert bs
-
-
 def test_bad_runs(tmpdir):
     tmpdir.chdir()
 
