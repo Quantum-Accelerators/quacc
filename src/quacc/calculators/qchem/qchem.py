@@ -19,6 +19,7 @@ if TYPE_CHECKING:
 
 _LABEL = "mol"
 
+
 class QChem(FileIOCalculator):
     """Custom Q-Chem calculator built on Pymatgen and Custodian."""
 
