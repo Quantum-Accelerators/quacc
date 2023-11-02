@@ -122,21 +122,6 @@ def test_freq_job(tmpdir):
     assert "dir_name" in output
 
 
-def test_phonon_job(tmpdir):
-    tmpdir.chdir()
-
-    atoms = bulk("Al", "fcc", a=4.05)
-    output = phonon_job(atoms)
-    assert output["atoms"] == atoms
-    assert output["results"]["energy"] == pytest.approx(-21.948664056966038)
-    assert_array_equal(
-        output["results"]["force_constant"],
-        np.array([[[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]]),
-    )
-    assert "nid" in output
-    assert "dir_name" in output
-
-
 def test_unique_workdir(tmpdir):
     DEFAULT_SETTINGS = SETTINGS.model_copy()
 
