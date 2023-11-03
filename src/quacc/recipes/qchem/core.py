@@ -34,7 +34,7 @@ def static_job(
     method: str | None = "wb97mv",
     basis: str | None = "def2-tzvpd",
     qc_input_swaps: dict[str, Any] | None = None,
-    qchem_dict_set_klwargs: dict | None = None,
+    qchem_dict_set_kwargs: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
