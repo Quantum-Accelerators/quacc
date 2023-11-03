@@ -3,7 +3,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import phonopy
 from monty.dev import requires
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.phonopy import get_phonopy_structure, get_pmg_structure
@@ -21,8 +20,6 @@ if TYPE_CHECKING:
     from numpy.typing import ArrayLike
     from phonopy import Phonopy
     from phonopy.structure.atoms import PhonopyAtoms
-
-    from quacc.recipes.common.core import force_job
 
 
 @requires(phonopy, "Phonopy must be installed. Run `pip install quacc[phonons]`")
