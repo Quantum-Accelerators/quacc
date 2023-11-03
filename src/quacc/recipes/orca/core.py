@@ -269,7 +269,7 @@ def _base_job(
     orcablocks = " ".join(list(blocks.keys()))
 
     atoms.calc = ORCA(
-        profile=OrcaProfile([SETTINGS.ORCA_CMD]),
+        profile=OrcaProfile(SETTINGS.ORCA_CMD),
         charge=charge,
         mult=spin_multiplicity,
         orcasimpleinput=orcasimpleinput,
