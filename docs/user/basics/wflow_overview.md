@@ -26,7 +26,6 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     - The number of different terms can be slightly overwhelming to those less familiar with HPC
     - Understanding the various configuration options for your HPC setup can be an initial hurdle
     - Monitoring job progress is more challenging and less detailed than other solutions
-    - The concept of always returning a "future" can be confusing for new users
 
 === "Covalent"
 

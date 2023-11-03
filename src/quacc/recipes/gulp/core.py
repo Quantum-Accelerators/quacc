@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 from ase.calculators.gulp import GULP
 
 from quacc import SETTINGS, job
-from quacc.runners.calc import run_calc
+from quacc.runners.calc import run_ase_calc
 from quacc.schemas.ase import summarize_run
 from quacc.utils.dicts import merge_dicts
 
@@ -246,7 +246,7 @@ def _base_job(
         options=gulp_options,
         library=library,
     )
-    final_atoms = run_calc(
+    final_atoms = run_ase_calc(
         atoms,
         geom_file=GEOM_FILE_PBC if atoms.pbc.any() else GEOM_FILE_NOPBC,
         copy_files=copy_files,

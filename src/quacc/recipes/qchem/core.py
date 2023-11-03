@@ -7,7 +7,7 @@ from ase.optimize import FIRE
 
 from quacc import job
 from quacc.calculators.qchem import QChem
-from quacc.runners.calc import run_ase_opt, run_calc
+from quacc.runners.calc import run_ase_calc, run_ase_opt
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import merge_dicts, remove_dict_nones
 
@@ -484,7 +484,7 @@ def _base_job(
     qchem_flags = merge_dicts(defaults, calc_swaps)
 
     atoms.calc = QChem(atoms, **qchem_flags)
-    final_atoms = run_calc(atoms, copy_files=copy_files)
+    final_atoms = run_ase_calc(atoms, copy_files=copy_files)
 
     return summarize_run(
         final_atoms,

@@ -50,7 +50,7 @@ def run_custodian(
     -------
     None
     """
-    # Adapted from atomate.qchem.firetasks.run_calc
+    # Adapted from atomate.qchem.firetasks.run_ase_calc
     from custodian import Custodian
     from custodian.qchem.handlers import QChemErrorHandler
     from custodian.qchem.jobs import QCJob

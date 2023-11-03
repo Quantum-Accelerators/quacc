@@ -5,10 +5,10 @@ import multiprocessing
 from shutil import which
 from typing import TYPE_CHECKING
 
-from ase.calculators.orca import ORCA, OrcaProfile
+from ase.calculators.orca import ORCA, OrcaProfile, OrcaTemplate
 
 from quacc import SETTINGS, job
-from quacc.runners.calc import run_calc
+from quacc.runners.calc import run_ase_calc
 from quacc.schemas.cclib import cclib_summarize_run
 from quacc.utils.dicts import merge_dicts
 
@@ -19,9 +19,9 @@ if TYPE_CHECKING:
 
     from quacc.schemas.cclib import cclibSchema
 
-
-LOG_FILE = f"{ORCA().name}.out"
-GEOM_FILE = f"{ORCA().name}.xyz"
+_LABEL = OrcaTemplate()._label  # skipcq: PYL-W0212
+LOG_FILE = f"{_LABEL}.out"
+GEOM_FILE = f"{_LABEL}.xyz"
 
 
 @job
@@ -269,13 +269,13 @@ def _base_job(
     orcablocks = " ".join(list(blocks.keys()))
 
     atoms.calc = ORCA(
-        profile=OrcaProfile([SETTINGS.ORCA_CMD]),
+        profile=OrcaProfile(SETTINGS.ORCA_CMD),
         charge=charge,
         mult=spin_multiplicity,
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )
-    atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
+    atoms = run_ase_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
 
     return cclib_summarize_run(
         atoms,

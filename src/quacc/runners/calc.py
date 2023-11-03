@@ -28,13 +28,22 @@ except ImportError:
     Sella = None
 
 if TYPE_CHECKING:
-    from typing import Any
+    from typing import Any, Literal, TypedDict
 
     from ase import Atoms
     from ase.optimize.optimize import Optimizer
 
+    class OptimizerKwargs(TypedDict, total=False):
+        restart: str | None  # default = None
+        append_trajectory: bool  # default = False
 
-def run_calc(
+    class VibKwargs(TypedDict, total=False):
+        indices: list[int] | None  # default = None
+        delta: float  # default = 0.01
+        nfree: int  # default = 2
+
+
+def run_ase_calc(
     atoms: Atoms, geom_file: str | None = None, copy_files: list[str] | None = None
 ) -> Atoms:
     """
@@ -71,7 +80,7 @@ def run_calc(
     try:
         atoms.get_potential_energy()
     except Exception as err:
-        msg = f"Calculation failed. Check the logfiles at {Path.cwd()}"
+        msg = f"Calculation failed. Read the full traceback above. If needed, the logfiles are at {Path.cwd()}"
         raise RuntimeError(msg) from err
 
     # Most ASE calculators do not update the atoms object in-place with a call
@@ -109,7 +118,7 @@ def run_ase_opt(
     fmax: float = 0.01,
     max_steps: int = 500,
     optimizer: Optimizer = FIRE,
-    optimizer_kwargs: dict[str, Any] | None = None,
+    optimizer_kwargs: OptimizerKwargs | None = None,
     run_kwargs: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> Optimizer:
@@ -177,7 +186,7 @@ def run_ase_opt(
         try:
             dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
         except Exception as err:
-            msg = f"Calculation failed. Check the logfiles at {Path.cwd()}"
+            msg = f"Calculation failed. Read the full traceback above. If needed, the logfiles are at {Path.cwd()}"
             raise RuntimeError(msg) from err
 
     # Store the trajectory atoms
@@ -191,7 +200,7 @@ def run_ase_opt(
 
 def run_ase_vib(
     atoms: Atoms,
-    vib_kwargs: dict[str, Any] | None = None,
+    vib_kwargs: VibKwargs | None = None,
     copy_files: list[str] | None = None,
 ) -> Vibrations:
     """
@@ -207,7 +216,7 @@ def run_ase_vib(
     atoms
         The Atoms object to run the calculation on.
     vib_kwargs
-        Dictionary of kwargs for the vibration analysis.
+        Dictionary of kwargs for the `ase.vibrations.Vibrations` class.
     copy_files
         Filenames to copy from source to scratch directory.
 
@@ -228,7 +237,7 @@ def run_ase_vib(
     try:
         vib.run()
     except Exception as err:
-        msg = f"Calculation failed. Check the logfiles at {Path.cwd()}"
+        msg = f"Calculation failed. Read the full traceback above. If needed, the logfiles are at {Path.cwd()}"
         raise RuntimeError(msg) from err
 
     # Summarize run
@@ -251,14 +260,14 @@ def _calc_setup(
     Parameters
     ----------
     atoms
-        The Atoms object to run the calculation on with calculator attached.
+        The Atoms object to run the calculation on.
     copy_files
         Filenames to copy from source to scratch directory.
 
     Returns
     -------
     Atoms
-        Copy of the Atoms object with the calculator's directory set.
+        The input Atoms object.
     Path
         The path to the tmpdir, where the calculation will be run. It will be
         deleted after the calculation is complete.
@@ -267,10 +276,6 @@ def _calc_setup(
         A symlink to the tmpdir will be made here during the calculation for
         convenience.
     """
-
-    if atoms.calc is None:
-        msg = "Atoms object must have attached calculator."
-        raise ValueError(msg)
 
     # Don't modify the original atoms object
     atoms = copy_atoms(atoms)

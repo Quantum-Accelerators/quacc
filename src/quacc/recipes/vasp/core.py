@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from quacc import job
 from quacc.calculators.vasp import Vasp
-from quacc.runners.calc import run_calc
+from quacc.runners.calc import run_ase_calc
 from quacc.schemas.vasp import vasp_summarize_run
 from quacc.utils.dicts import merge_dicts
 
@@ -250,6 +250,6 @@ def _base_job(
     flags = merge_dicts(defaults, calc_swaps, remove_nones=False)
 
     atoms.calc = Vasp(atoms, preset=preset, **flags)
-    atoms = run_calc(atoms, copy_files=copy_files)
+    atoms = run_ase_calc(atoms, copy_files=copy_files)
 
     return vasp_summarize_run(atoms, additional_fields=additional_fields)

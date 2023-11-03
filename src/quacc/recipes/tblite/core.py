@@ -8,7 +8,7 @@ from monty.dev import requires
 
 from quacc import job
 from quacc.builders.thermo import build_ideal_gas
-from quacc.runners.calc import run_ase_opt, run_ase_vib, run_calc
+from quacc.runners.calc import run_ase_calc, run_ase_opt, run_ase_vib
 from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
 from quacc.utils.dicts import merge_dicts
 
@@ -22,7 +22,8 @@ if TYPE_CHECKING:
 
     from ase import Atoms
 
-    from quacc.schemas.ase import OptSchema, RunSchema, VibThermoSchema
+    from quacc.runners.calc import VibKwargs
+    from quacc.schemas._aliases.ase import OptSchema, RunSchema, VibThermoSchema
 
 
 @job
@@ -65,7 +66,7 @@ def static_job(
     flags = merge_dicts(defaults, calc_swaps)
     atoms.calc = TBLite(**flags)
 
-    final_atoms = run_calc(atoms, copy_files=copy_files)
+    final_atoms = run_ase_calc(atoms, copy_files=copy_files)
     return summarize_run(
         final_atoms,
         input_atoms=atoms,
@@ -144,7 +145,7 @@ def freq_job(
     temperature: float = 298.15,
     pressure: float = 1.0,
     calc_swaps: dict[str, Any] | None = None,
-    vib_kwargs: dict[str, Any] | None = None,
+    vib_kwargs: VibKwargs | None = None,
     copy_files: list[str] | None = None,
 ) -> VibThermoSchema:
     """
