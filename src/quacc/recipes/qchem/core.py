@@ -34,7 +34,6 @@ def static_job(
     method: str | None = "wb97mv",
     basis: str | None = "def2-tzvpd",
     calc_swaps: dict[str, Any] | None = None,
-    dict_set_kwargs: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
