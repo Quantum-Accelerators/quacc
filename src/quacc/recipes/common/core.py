@@ -1,3 +1,4 @@
+"""Core common workflows"""
 from typing import TYPE_CHECKING
 
 from quacc import job
