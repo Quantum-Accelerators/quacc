@@ -275,7 +275,5 @@ def slab_to_ads_flow(
         ]
 
     return (
-        _relax_and_static_distributed(slab)
-        if run_static
-        else _relax_distributed(slab)
+        _relax_and_static_distributed(slab) if run_static else _relax_distributed(slab)
     )
