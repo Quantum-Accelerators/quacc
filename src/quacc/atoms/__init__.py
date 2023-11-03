@@ -1,1 +1,1 @@
-"""Tools for handling and manipulating Atoms objects"""
+"""Tools for handling and manipulating Atoms objects."""

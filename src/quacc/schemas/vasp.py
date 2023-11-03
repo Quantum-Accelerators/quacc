@@ -1,4 +1,4 @@
-"""Schemas for VASP"""
+"""Schemas for VASP."""
 from __future__ import annotations
 
 import logging
@@ -17,6 +17,8 @@ from quacc.utils.dicts import remove_dict_nones, sort_dict
 from quacc.wflow.db import results_to_db
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase import Atoms
     from pymatgen.core import Structure
 
@@ -32,12 +34,11 @@ def vasp_summarize_run(
     run_bader: bool | None = None,
     run_chargemol: bool | None = None,
     check_convergence: bool = True,
-    additional_fields: dict | None = None,
+    additional_fields: dict[str, Any] | None = None,
     store: Store | None = None,
 ) -> VaspSchema:
     """
-    Get tabulated results from a VASP run and store them in a database-friendly
-    format.
+    Get tabulated results from a VASP run and store them in a database-friendly format.
 
     Parameters
     ----------

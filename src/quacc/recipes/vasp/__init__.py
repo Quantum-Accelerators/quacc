@@ -1,1 +1,1 @@
-"""Recipes for VASP"""
+"""Recipes for VASP."""

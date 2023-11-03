@@ -1,18 +1,21 @@
-"""Settings for quacc"""
+"""Settings for quacc."""
 from __future__ import annotations
 
 import os
-from importlib import import_module, resources
+from importlib import resources, util
 from pathlib import Path
 from shutil import which
-from typing import Literal, Optional, Union
+from typing import TYPE_CHECKING, Literal, Optional, Union
 
 from maggma.core import Store
 from monty.json import MontyDecoder
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from quacc.calculators.presets import vasp as vasp_defaults
+from quacc.calculators.vasp import presets as vasp_presets
+
+if TYPE_CHECKING:
+    from typing import Any
 
 installed_engine = "local"
 for wflow_engine in [
@@ -22,12 +25,9 @@ for wflow_engine in [
     "redun",
     "jobflow",
 ]:
-    try:
-        import_module(wflow_engine)
+    if util.find_spec(wflow_engine):
         installed_engine = wflow_engine
         break
-    except ImportError:
-        continue
 
 _DEFAULT_CONFIG_FILE_PATH = Path("~", ".quacc.yaml").expanduser().resolve()
 
@@ -36,13 +36,13 @@ class QuaccSettings(BaseSettings):
     """
     Settings for quacc.
 
-    The default way to modify these is to make a ~/.quacc.yaml file.
-    Alternatively, the environment variable QUACC_CONFIG_FILE can be set to
-    point to a custom yaml file with quacc settings. The quacc CLI offers a
-    `quacc set <setting> <value>` option to do this as well.
+    The default way to modify these is to make a ~/.quacc.yaml file. Alternatively, the
+    environment variable QUACC_CONFIG_FILE can be set to point to a custom yaml file
+    with quacc settings. The quacc CLI offers a `quacc set <setting> <value>` option to
+    do this as well.
 
-    The variables can also be modified individually though environment variables
-    by using the "QUACC" prefix. e.g. QUACC_SCRATCH_DIR=/path/to/scratch.
+    The variables can also be modified individually though environment variables by
+    using the "QUACC" prefix. e.g. QUACC_SCRATCH_DIR=/path/to/scratch.
     """
 
     CONFIG_FILE: Path = Field(
@@ -172,17 +172,13 @@ class QuaccSettings(BaseSettings):
     )
 
     # VASP Settings: General
-    VASP_INCAR_COPILOT: bool = Field(
-        True,
+    VASP_INCAR_COPILOT: Literal["off", "on", "aggressive"] = Field(
+        "on",
         description=(
-            "Whether co-pilot mode should be used for VASP INCAR handling."
-            "This will modify INCAR flags on-the-fly if they disobey the VASP manual."
-        ),
-    )
-    VASP_FORCE_COPILOT: bool = Field(
-        False,
-        description=(
-            "Whether to force co-pilot swaps to override user-specified flags."
+            "Controls VASP co-pilot mode for automated INCAR parameter handling."
+            "off: Do not use co-pilot mode. INCAR parameters will be unmodified."
+            "on: Use co-pilot mode. This will only modify INCAR flags not already set by the user."
+            "aggressive: Use co-pilot mode in agressive mode. This will modify INCAR flags even if they are already set by the user."
         ),
     )
     VASP_BADER: bool = Field(
@@ -221,7 +217,7 @@ class QuaccSettings(BaseSettings):
         ),
     )
     VASP_PRESET_DIR: Path = Field(
-        resources.files(vasp_defaults),
+        resources.files(vasp_presets),
         description="Path to the VASP preset directory",
     )
 
@@ -311,7 +307,8 @@ class QuaccSettings(BaseSettings):
     @classmethod
     def resolve_and_make_paths(cls, v):
         v = Path(os.path.expandvars(v)).expanduser().resolve()
-        os.makedirs(v, exist_ok=True)
+        if not v.exists():
+            os.makedirs(v)
         return v
 
     @field_validator(
@@ -329,10 +326,10 @@ class QuaccSettings(BaseSettings):
 
     @model_validator(mode="before")
     @classmethod
-    def load_default_settings(cls, values: dict) -> dict:
+    def load_default_settings(cls, values: dict[str, Any]) -> dict[str, Any]:
         """
-        Loads settings from a root file if available and uses that as defaults
-        in place of built in defaults.
+        Loads settings from a root file if available and uses that as defaults in place
+        of built in defaults.
 
         Parameters
         ----------

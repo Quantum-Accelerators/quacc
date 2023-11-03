@@ -19,17 +19,17 @@ except ImportError:
     dask_deps = False
 
 if TYPE_CHECKING:
-    from typing import Callable
+    from typing import Any, Callable
 
     from dask_jobqueue.core import Job as DaskJob
 
 
 @requires(prefect_deps and dask_deps, "Need quacc[prefect] dependencies")
 def make_prefect_runner(
-    cluster_kwargs: dict,
+    cluster_kwargs: dict[str, Any],
     cluster_class: Callable | None = None,
     adapt_kwargs: dict[str, int | None] | None = None,
-    client_kwargs: dict | None = None,
+    client_kwargs: dict[str, Any] | None = None,
     temporary: bool = False,
 ) -> DaskTaskRunner:
     """
@@ -82,7 +82,7 @@ def make_prefect_runner(
 
 @requires(dask_deps, "Need quacc[prefect] dependencies")
 def _make_dask_cluster(
-    cluster_class: Callable, cluster_kwargs: dict, verbose=False
+    cluster_class: Callable, cluster_kwargs: dict[str, Any], verbose=False
 ) -> DaskJob:
     """
     Make a Dask cluster for use with Prefect workflows.

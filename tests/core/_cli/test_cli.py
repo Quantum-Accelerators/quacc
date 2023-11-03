@@ -1,4 +1,5 @@
 import os
+import platform
 from pathlib import Path
 
 import pytest
@@ -8,7 +9,7 @@ from quacc import SETTINGS, __version__
 from quacc._cli.quacc import app
 
 TEST_YAML = Path.cwd() / "test_quacc.yaml"
-DEFAULT_SETTINGS = SETTINGS.copy()
+DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 
 def setup_module():
@@ -79,6 +80,13 @@ def test_unset(runner):
         for _ in f:
             lines += ""
     assert "WORKFLOW_ENGINE" not in lines
+
+
+def test_info(runner):
+    response = runner.invoke(app, ["info"])
+    assert response.exit_code == 0
+    assert __version__ in response.stdout
+    assert platform.python_version() in response.stdout
 
 
 def test_bad(runner):

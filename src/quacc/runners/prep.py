@@ -1,6 +1,4 @@
-"""
-Utility functions for dealing with Atoms
-"""
+"""Utility functions for dealing with Atoms."""
 from __future__ import annotations
 
 import logging
@@ -89,7 +87,7 @@ def prep_next_run(
 
 def set_magmoms(
     atoms: Atoms,
-    elemental_mags_dict: dict | None = None,
+    elemental_mags_dict: dict[str, float] | None = None,
     elemental_mags_default: float = 1.0,
     copy_magmoms: bool = True,
     mag_cutoff: float | None = 0.05,

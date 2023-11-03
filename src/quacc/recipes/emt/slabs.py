@@ -1,4 +1,4 @@
-"""Slab recipes for EMT"""
+"""Slab recipes for EMT."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -8,6 +8,8 @@ from quacc.atoms.slabs import make_slabs_from_bulk
 from quacc.recipes.emt.core import relax_job, static_job
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase import Atoms
 
     from quacc.schemas.ase import OptSchema, RunSchema
@@ -16,10 +18,10 @@ if TYPE_CHECKING:
 @flow
 def bulk_to_slabs_flow(
     atoms: Atoms,
-    make_slabs_kwargs: dict | None = None,
+    make_slabs_kwargs: dict[str, Any] | None = None,
     run_static: bool = True,
-    slab_relax_kwargs: dict | None = None,
-    slab_static_kwargs: dict | None = None,
+    slab_relax_kwargs: dict[str, Any] | None = None,
+    slab_static_kwargs: dict[str, Any] | None = None,
 ) -> list[RunSchema | OptSchema]:
     """
     Workflow consisting of:
@@ -40,9 +42,9 @@ def bulk_to_slabs_flow(
     run_static
         Whether to run the static calculation.
     slab_relax_kwargs
-        Additional keyword arguments to pass to the relaxation calculation.
+        Additional keyword arguments to pass to [quacc.recipes.emt.core.relax_job][].
     slab_static_kwargs
-        Additional keyword arguments to pass to the static calculation.
+        Additional keyword arguments to pass to [quacc.recipes.emt.core.static_job][].
 
     Returns
     -------

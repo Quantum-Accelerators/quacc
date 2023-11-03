@@ -1,4 +1,4 @@
-"""Type hints for quacc.schemas.cclib"""
+"""Type hints for quacc.schemas.cclib."""
 from typing import Any, TypedDict
 
 from numpy.typing import NDArray
@@ -22,9 +22,7 @@ class AdditionalAttributes(TypedDict, total=False):
 
 
 class PopAnalysisAttributes(TypedDict, total=False):
-    """
-    Type hints associated with cclib population analysis attribubtes.
-    """
+    """Type hints associated with cclib population analysis attribubtes."""
 
     aoresults: Any
     fragresults: Any
@@ -47,11 +45,11 @@ class Attributes(TypedDict, total=False):
     aonames: list[str]
     aooverlaps: NDArray
     atombasis: list[list[int]]
-    atomcharges: dict[NDArray]
+    atomcharges: dict[str, NDArray]
     atomcoords: NDArray
     atommasses: NDArray
     atomnos: NDArray
-    atomspins: dict[NDArray]
+    atomspins: dict[str, NDArray]
     ccenergies: NDArray
     charge: int
     coreelectrons: NDArray
@@ -77,7 +75,7 @@ class Attributes(TypedDict, total=False):
     grads: NDArray
     hessian: NDArray
     homos: NDArray
-    metadata: dict
+    metadata: dict[str, Any]
     mocoeffs: list[NDArray]
     moenergies: list[NDArray]
     moments: list[NDArray]
@@ -120,15 +118,11 @@ class Attributes(TypedDict, total=False):
 
 
 class AllAttributes(Attributes, AdditionalAttributes):
-    """
-    Type hint of all cclib attributes
-    """
+    """Type hint of all cclib attributes."""
 
 
 class cclibBaseSchema(TypedDict):
-    """
-    Type hint associated with quacc.schemas.cclib._make_cclib_schema
-    """
+    """Type hint associated with quacc.schemas.cclib._make_cclib_schema."""
 
     logfile: str
     attributes: AllAttributes
@@ -137,6 +131,4 @@ class cclibBaseSchema(TypedDict):
 
 
 class cclibSchema(cclibBaseSchema, RunSchema):
-    """
-    Type hint associated with quacc.schemas.cclib.cclib_summarize_run
-    """
+    """Type hint associated with quacc.schemas.cclib.cclib_summarize_run."""

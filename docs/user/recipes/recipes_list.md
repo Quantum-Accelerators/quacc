@@ -2,7 +2,7 @@
 
 ## DFTB+
 
-!!! Note
+!!! Info
 
     [DFTB+](https://dftbplus.org/) is especially useful for periodic GFN-xTB calculations and the DFTB+ method based on Slater-Koster parameters.
 
@@ -17,7 +17,7 @@
 
 ## EMT
 
-!!! Note
+!!! Info
 
     [Effective medium theory (EMT)](https://doi.org/10.1016/0039-6028(96)00816-3) is a semi-empirical method for modeling solids that is predominantly used for prototyping workflows. Because it is solely for demonstration purposes, it only supports the following metals: Al, Ni, Cu, Pd, Ag, Pt, and Au.
 
@@ -34,7 +34,7 @@
 
 ## Gaussian
 
-!!! Note
+!!! Info
 
     [Gaussian](https://gaussian.com/) is an extremely popular molecular DFT code that is quite robust and easy to use.
 
@@ -49,7 +49,7 @@
 
 ## GULP
 
-!!! Note
+!!! Info
 
     [GULP](https://gulp.curtin.edu.au/) is especially useful for periodic GFN-FF calculations and force field methods. GULP can be downloaded and installed [here](https://gulp.curtin.edu.au/download.html).
 
@@ -64,7 +64,7 @@
 
 ## Lennard-Jones Potential
 
-!!! Note
+!!! Info
 
     [Lennard Jones (LJ)](https://en.wikipedia.org/wiki/Lennard-Jones_potential) is an empirical potential that is predominantly used for prototyping workflows for molecules.
 
@@ -80,7 +80,7 @@
 
 ## NewtonNet
 
-!!! Note
+!!! Info
 
     [NewtonNet](https://github.com/ericyuan00000/NewtonNet) is a message passing network for deep learning of interatomic potentials and forces, as described [here](https://pubs.rsc.org/en/content/articlehtml/2022/dd/d2dd00008c).
 
@@ -99,7 +99,7 @@
 
 ## ORCA
 
-!!! Note
+!!! Info
 
     [ORCA](https://orcaforum.kofo.mpg.de/app.php/portal) is a free code that is especially useful for molecular DFT calculations with recently developed methods. ORCA can be downloaded and installed [here](https://orcaforum.kofo.mpg.de/app.php/dlext/).
 
@@ -114,7 +114,7 @@
 
 ## Psi4
 
-!!! Note
+!!! Info
 
     [Psi4](https://github.com/psi4/psi4) is an open-source quantum chemistry electronic structure package.
 
@@ -128,7 +128,7 @@
 
 ## Q-Chem
 
-!!! Note
+!!! Info
 
     [Q-Chem](https://www.q-chem.com/) is a powerful, general-purpose molecular DFT code with a variety of features.
 
@@ -148,7 +148,7 @@
 
 ## TBLite
 
-!!! Note
+!!! Info
 
     [tblite](https://github.com/tblite/tblite) is a code that interfaces with the xtb package for running GFN-xTB calculations.
 
@@ -164,7 +164,7 @@
 
 ## VASP
 
-!!! Note
+!!! Info
 
     [VASP](https://www.vasp.at/) is a very widely used code for plane-wave, periodic DFT calculations. Quacc has built-in support for automatically fixing failed VASP jobs via [Custodian](https://github.com/materialsproject/custodian).
 

@@ -8,7 +8,7 @@ Quacc was designed and developed by [**Andrew S. Rosen**](https://cbe.princeton.
 
 Additional contributions were made by the individuals listed [here](https://github.com/quantum-accelerators/quacc/graphs/contributors). Their contributions are summarized below.
 
-!!! Note
+!!! Note "Add Your Name!"
 
     Don't see your name and want to update the list? Submit a PR and update this documentation page!
 

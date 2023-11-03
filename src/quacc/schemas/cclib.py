@@ -1,4 +1,4 @@
-"""Schemas for molecular DFT codes parsed by cclib"""
+"""Schemas for molecular DFT codes parsed by cclib."""
 from __future__ import annotations
 
 import logging
@@ -24,7 +24,7 @@ from quacc.utils.files import find_recent_logfile
 from quacc.wflow.db import results_to_db
 
 if TYPE_CHECKING:
-    from typing import Literal
+    from typing import Any, Literal
 
     from cclib.parser.data import ccData
 
@@ -55,13 +55,12 @@ def cclib_summarize_run(
     | None = None,
     check_convergence: bool | None = None,
     prep_next_run: bool = True,
-    additional_fields: dict | None = None,
+    additional_fields: dict[str, Any] | None = None,
     store: Store | None = None,
 ) -> cclibSchema:
     """
-    Get tabulated results from a molecular DFT run and store them in a
-    database-friendly format. This is meant to be a general parser built on top
-    of cclib.
+    Get tabulated results from a molecular DFT run and store them in a database-friendly
+    format. This is meant to be a general parser built on top of cclib.
 
     Parameters
     ----------

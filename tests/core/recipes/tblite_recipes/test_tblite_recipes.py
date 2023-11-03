@@ -119,12 +119,10 @@ def test_freq_job(tmpdir):
     assert output["results"]["gibbs_energy"] == pytest.approx(-11.100020872176652)
     assert "nid" in output
     assert "dir_name" in output
-    assert "nid" in output
-    assert "dir_name" in output
 
 
 def test_unique_workdir(tmpdir):
-    DEFAULT_SETTINGS = SETTINGS.copy()
+    DEFAULT_SETTINGS = SETTINGS.model_copy()
 
     SETTINGS.CREATE_UNIQUE_WORKDIR = True
     test_static_job(tmpdir)

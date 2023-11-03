@@ -1,1 +1,1 @@
-"""Recipes for Psi4"""
+"""Recipes for Psi4."""

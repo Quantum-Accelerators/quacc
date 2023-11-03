@@ -11,19 +11,20 @@ from ase.constraints import FixAtoms, FixBondLength
 from ase.io import read
 
 from quacc import SETTINGS
-from quacc.calculators.presets import vasp as v
-from quacc.calculators.vasp import Vasp
+from quacc.calculators.vasp import Vasp, presets
 from quacc.runners.prep import prep_next_run
 
 FILE_DIR = Path(__file__).resolve().parent
 
+DEFAULT_SETTINGS = SETTINGS.copy()
+
 
 def setup_module():
-    SETTINGS.VASP_FORCE_COPILOT = True
+    SETTINGS.VASP_INCAR_COPILOT = "aggressive"
 
 
 def teardown_module():
-    SETTINGS.VASP_FORCE_COPILOT = False
+    SETTINGS.VASP_INCAR_COPILOT = DEFAULT_SETTINGS.VASP_INCAR_COPILOT
 
 
 @pytest.fixture()
@@ -56,7 +57,7 @@ def test_vanilla_vasp():
 
 
 def test_presets():
-    default_calcs_dir = Path(v.__file__).resolve().parent
+    default_calcs_dir = Path(presets.__file__).resolve().parent
 
     atoms = bulk("Co") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
@@ -717,7 +718,7 @@ def test_constraints():
 
 
 def test_envvars():
-    DEFAULT_SETTINGS = SETTINGS.copy()
+    DEFAULT_SETTINGS = SETTINGS.model_copy()
     SETTINGS.VASP_PP_PATH = "/path/to/pseudos"
     SETTINGS.VASP_VDW = "/path/to/kernel"
 

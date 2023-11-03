@@ -1,4 +1,4 @@
-"""Schemas for storing ASE-based data"""
+"""Schemas for storing ASE-based data."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -13,11 +13,13 @@ from ase.vibrations.data import VibrationsData
 from quacc import SETTINGS
 from quacc.runners.prep import prep_next_run as prep_next_run_
 from quacc.schemas.atoms import atoms_to_metadata
-from quacc.utils.dicts import merge_dicts, remove_dict_nones, sort_dict
+from quacc.utils.dicts import recursive_merge_dicts, sort_dict
 from quacc.utils.files import get_uri
 from quacc.wflow.db import results_to_db
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase import Atoms
     from ase.io import Trajectory
     from ase.optimize.optimize import Optimizer
@@ -39,13 +41,12 @@ def summarize_run(
     input_atoms: Atoms | None = None,
     charge_and_multiplicity: tuple[int, int] | None = None,
     prep_next_run: bool = True,
-    additional_fields: dict | None = None,
+    additional_fields: dict[str, Any] | None = None,
     store: Store | bool | None = None,
 ) -> RunSchema:
     """
-    Get tabulated results from an Atoms object and calculator and store them in
-    a database-friendly format. This is meant to be compatible with all
-    calculator types.
+    Get tabulated results from an Atoms object and calculator and store them in a
+    database-friendly format. This is meant to be compatible with all calculator types.
 
     Parameters
     ----------
@@ -102,8 +103,10 @@ def summarize_run(
         atoms_to_store, charge_and_multiplicity=charge_and_multiplicity
     )
 
-    unsorted_task_doc = final_atoms_metadata | inputs | results | additional_fields
-    task_doc = sort_dict(remove_dict_nones(unsorted_task_doc))
+    unsorted_task_doc = recursive_merge_dicts(
+        final_atoms_metadata, inputs, results, additional_fields
+    )
+    task_doc = sort_dict(unsorted_task_doc)
 
     if store:
         results_to_db(store, task_doc)
@@ -117,13 +120,12 @@ def summarize_opt_run(
     check_convergence: bool | None = None,
     charge_and_multiplicity: tuple[int, int] | None = None,
     prep_next_run: bool = True,
-    additional_fields: dict | None = None,
+    additional_fields: dict[str, Any] | None = None,
     store: Store | bool | None = None,
 ) -> OptSchema:
     """
-    Get tabulated results from an ASE Atoms trajectory and store them in a
-    database-friendly format. This is meant to be compatible with all calculator
-    types.
+    Get tabulated results from an ASE Atoms trajectory and store them in a database-
+    friendly format. This is meant to be compatible with all calculator types.
 
     Parameters
     ----------
@@ -199,8 +201,10 @@ def summarize_opt_run(
     }
 
     # Create a dictionary of the inputs/outputs
-    unsorted_task_doc = base_task_doc | opt_fields | additional_fields
-    task_doc = sort_dict(remove_dict_nones(unsorted_task_doc))
+    unsorted_task_doc = recursive_merge_dicts(
+        base_task_doc, opt_fields, additional_fields
+    )
+    task_doc = sort_dict(unsorted_task_doc)
 
     if store:
         results_to_db(store, task_doc)
@@ -211,12 +215,12 @@ def summarize_opt_run(
 def summarize_vib_run(
     vib: Vibrations,
     charge_and_multiplicity: tuple[int, int] | None = None,
-    additional_fields: dict | None = None,
+    additional_fields: dict[str, Any] | None = None,
     store: Store | bool | None = None,
 ) -> VibSchema:
     """
-    Get tabulated results from an ASE Vibrations object and store them in a
-    database-friendly format.
+    Get tabulated results from an ASE Vibrations object and store them in a database-
+    friendly format.
 
     Parameters
     ----------
@@ -310,8 +314,10 @@ def summarize_vib_run(
         }
     }
 
-    unsorted_task_doc = atoms_metadata | inputs | results | additional_fields
-    task_doc = sort_dict(remove_dict_nones(unsorted_task_doc))
+    unsorted_task_doc = recursive_merge_dicts(
+        atoms_metadata, inputs, results, additional_fields
+    )
+    task_doc = sort_dict(unsorted_task_doc)
 
     if store:
         results_to_db(store, task_doc)
@@ -324,7 +330,7 @@ def summarize_ideal_gas_thermo(
     temperature: float = 298.15,
     pressure: float = 1.0,
     charge_and_multiplicity: tuple[int, int] | None = None,
-    additional_fields: dict | None = None,
+    additional_fields: dict[str, Any] | None = None,
     store: Store | bool | None = None,
 ) -> ThermoSchema:
     """
@@ -394,8 +400,10 @@ def summarize_ideal_gas_thermo(
         igt.atoms, charge_and_multiplicity=charge_and_multiplicity
     )
 
-    unsorted_task_doc = atoms_metadata | inputs | results | additional_fields
-    task_doc = sort_dict(remove_dict_nones(unsorted_task_doc))
+    unsorted_task_doc = recursive_merge_dicts(
+        atoms_metadata, inputs, results, additional_fields
+    )
+    task_doc = sort_dict(unsorted_task_doc)
 
     if store:
         results_to_db(store, task_doc)
@@ -409,12 +417,12 @@ def summarize_vib_and_thermo(
     temperature: float = 298.15,
     pressure: float = 1.0,
     charge_and_multiplicity: tuple[int, int] | None = None,
-    additional_fields: dict | None = None,
+    additional_fields: dict[str, Any] | None = None,
     store: Store | bool | None = None,
 ) -> VibThermoSchema:
     """
-    Get tabulated results from an ASE Vibrations run and ASE IdealGasThermo object
-    and store them in a database-friendly format.
+    Get tabulated results from an ASE Vibrations run and ASE IdealGasThermo object and
+    store them in a database-friendly format.
 
     Parameters
     ----------
@@ -456,8 +464,10 @@ def summarize_vib_and_thermo(
         store=False,
     )
 
-    unsorted_task_doc = merge_dicts(vib_task_doc, thermo_task_doc) | additional_fields
-    task_doc = sort_dict(remove_dict_nones(unsorted_task_doc))
+    unsorted_task_doc = recursive_merge_dicts(
+        vib_task_doc, thermo_task_doc, additional_fields
+    )
+    task_doc = sort_dict(unsorted_task_doc)
 
     if store:
         results_to_db(store, task_doc)

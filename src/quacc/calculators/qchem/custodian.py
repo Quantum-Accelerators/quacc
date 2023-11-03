@@ -1,4 +1,4 @@
-"""Custodian handlers for QChem"""
+"""Custodian handlers for QChem."""
 from __future__ import annotations
 
 import sys
@@ -27,7 +27,7 @@ def run_custodian(
     qchem_nbo_exe: str | Path | None = None,
 ) -> None:
     """
-    Function to run QChem Custodian
+    Function to run QChem Custodian.
 
     Parameters
     ----------
@@ -50,7 +50,7 @@ def run_custodian(
     -------
     None
     """
-    # Adapted from atomate.qchem.firetasks.run_calc
+    # Adapted from atomate.qchem.firetasks.run_ase_calc
     from custodian import Custodian
     from custodian.qchem.handlers import QChemErrorHandler
     from custodian.qchem.jobs import QCJob
@@ -97,6 +97,6 @@ def run_custodian(
 
 
 if __name__ == "__main__":
-    run_custodian(qchem_cores=int(sys.argv[1])) if len(
+    run_custodian(qchem_cores=int(sys.argv[1])) if len(  # skipcq: PYL-W0106
         sys.argv
     ) > 1 else run_custodian()

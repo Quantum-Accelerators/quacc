@@ -4,7 +4,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
 ## Summary
 
-!!! Tip
+!!! Tip "Recommendations"
 
     If you are new to workflow engines, we recommend trying either **Parsl** or **Covalent**. If you have a need for speed and appreciate flexibility, Parsl is the choice for you. If you are looking for a visual dashboard with an emphasis on distributed compute resources, Covalent may be worth considering.
 
@@ -26,7 +26,6 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     - The number of different terms can be slightly overwhelming to those less familiar with HPC
     - Understanding the various configuration options for your HPC setup can be an initial hurdle
     - Monitoring job progress is more challenging and less detailed than other solutions
-    - The concept of always returning a "future" can be confusing for new users
 
 === "Covalent"
 

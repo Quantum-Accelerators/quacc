@@ -1,4 +1,4 @@
-"""Schemas for storing metadata about Atoms objects"""
+"""Schemas for storing metadata about Atoms objects."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -23,7 +23,7 @@ def atoms_to_metadata(
     charge_and_multiplicity: tuple[int, int] | None = None,
     get_metadata: bool = True,
     store_pmg: bool = True,
-    additional_fields: dict | None = None,
+    additional_fields: dict[str, Any] | None = None,
 ) -> AtomsSchema:
     """
     Convert an ASE Atoms object to a dict suitable for storage in MongoDB.

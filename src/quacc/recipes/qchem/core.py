@@ -1,4 +1,4 @@
-"""Core recipes for the Q-Chem"""
+"""Core recipes for the Q-Chem."""
 from __future__ import annotations
 
 import multiprocessing
@@ -8,7 +8,7 @@ from ase.optimize import FIRE
 
 from quacc import SETTINGS, job
 from quacc.calculators.qchem import QChem
-from quacc.runners.calc import run_ase_opt, run_calc
+from quacc.runners.calc import run_ase_calc, run_ase_opt
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import merge_dicts, remove_dict_nones
 
@@ -20,6 +20,8 @@ except ImportError:
     has_sella = False
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase import Atoms
 
     from quacc.schemas.ase import OptSchema, RunSchema
@@ -36,7 +38,7 @@ def static_job(
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
     n_cores: int | None = None,
-    overwrite_inputs: dict | None = None,
+    overwrite_inputs: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
@@ -141,7 +143,7 @@ def internal_relax_job(
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
     n_cores: int | None = None,
-    overwrite_inputs: dict | None = None,
+    overwrite_inputs: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
@@ -246,7 +248,7 @@ def freq_job(
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
     n_cores: int | None = None,
-    overwrite_inputs: dict | None = None,
+    overwrite_inputs: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
@@ -351,8 +353,8 @@ def relax_job(
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
     n_cores: int | None = None,
-    overwrite_inputs: dict | None = None,
-    opt_swaps: dict | None = None,
+    overwrite_inputs: dict[str, Any] | None = None,
+    opt_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
     """
@@ -465,13 +467,13 @@ def _base_job(
     atoms: Atoms,
     charge: int,
     spin_multiplicity: int,
-    defaults: dict | None = None,
-    additional_fields: dict | None = None,
+    defaults: dict[str, Any] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
-    Base job function used for Q-Chem recipes that don't rely on ASE optimizers
-    or other ASE dynamics classes.
+    Base job function used for Q-Chem recipes that don't rely on ASE optimizers or other
+    ASE dynamics classes.
 
     Parameters
     ----------
@@ -497,7 +499,7 @@ def _base_job(
     qchem_flags = remove_dict_nones(defaults)
 
     atoms.calc = QChem(atoms, **qchem_flags)
-    final_atoms = run_calc(atoms, copy_files=copy_files)
+    final_atoms = run_ase_calc(atoms, copy_files=copy_files)
 
     return summarize_run(
         final_atoms,
@@ -511,10 +513,10 @@ def _base_opt_job(
     atoms: Atoms,
     charge: int,
     spin_multiplicity: int,
-    qchem_defaults: dict | None = None,
-    opt_defaults: dict | None = None,
-    opt_swaps: dict | None = None,
-    additional_fields: dict | None = None,
+    qchem_defaults: dict[str, Any] | None = None,
+    opt_defaults: dict[str, Any] | None = None,
+    opt_swaps: dict[str, Any] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
     """

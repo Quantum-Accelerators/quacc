@@ -1,1 +1,1 @@
-"""Schemas for type hinting"""
+"""Schemas for type hinting."""

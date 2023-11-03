@@ -1,6 +1,4 @@
-"""
-Core recipes for the NewtonNet code
-"""
+"""Core recipes for the NewtonNet code."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -11,7 +9,7 @@ from monty.dev import requires
 
 from quacc import SETTINGS, job
 from quacc.builders.thermo import build_ideal_gas
-from quacc.runners.calc import run_ase_opt, run_calc
+from quacc.runners.calc import run_ase_calc, run_ase_opt
 from quacc.schemas.ase import (
     summarize_ideal_gas_thermo,
     summarize_opt_run,
@@ -31,6 +29,8 @@ except ImportError:
     NewtonNet = None
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase import Atoms
 
     from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
@@ -44,29 +44,29 @@ if TYPE_CHECKING:
 @requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
 def static_job(
     atoms: Atoms,
-    calc_swaps: dict | None = None,
+    calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
-
-    ??? Note
-
-        Calculator Defaults:
-
-        ```python
-        {
-            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-        }
-        ```
 
     Parameters
     ----------
     atoms
         Atoms object
     calc_swaps
-        Dictionary of custom kwargs for the newtonnet calculator.
+        Dictionary of custom kwargs for the EMT calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
+
+        !!! Info "Calculator defaults"
+
+            ```python
+            {
+                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+            }
+            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -83,7 +83,7 @@ def static_job(
     flags = merge_dicts(defaults, calc_swaps)
 
     atoms.calc = NewtonNet(**flags)
-    final_atoms = run_calc(atoms, copy_files=copy_files)
+    final_atoms = run_ase_calc(atoms, copy_files=copy_files)
 
     return summarize_run(
         final_atoms,
@@ -96,38 +96,40 @@ def static_job(
 @requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
 def relax_job(
     atoms: Atoms,
-    calc_swaps: dict | None = None,
-    opt_swaps: dict | None = None,
+    calc_swaps: dict[str, Any] | None = None,
+    opt_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
     """
     Relax a structure.
-
-    ??? Note
-
-        Calculator Defaults:
-
-        ```python
-        {
-            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-        }
-        ```
-
-        Optimizer Defaults:
-
-        ```python
-        {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella or FIRE}
-        ```
 
     Parameters
     ----------
     atoms
         Atoms object
     calc_swaps
-        Dictionary of custom kwargs for the newtonnet calculator.
+        Dictionary of custom kwargs for the EMT calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
+
+        !!! Info "Calculator defaults"
+
+            ```python
+            {
+                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+            }
+            ```
     opt_swaps
-        Optional swaps for the optimization parameters.
+        Dictionary of custom kwargs for the optimization process. Set a value
+        to `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to [quacc.runners.calc.run_ase_opt][].
+
+        !!! Info "Optimizer defaults"
+
+            ```python
+            {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella or FIRE}
+            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -160,22 +162,11 @@ def freq_job(
     atoms: Atoms,
     temperature: float = 298.15,
     pressure: float = 1.0,
-    calc_swaps: dict | None = None,
+    calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> FreqSchema:
     """
     Perform a frequency calculation using the given atoms object.
-
-    ??? Note
-
-        Calculator Defaults:
-
-        ```python
-        {
-            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-        }
-        ```
 
     Parameters
     ----------
@@ -186,7 +177,18 @@ def freq_job(
     pressure
         The pressure for the thermodynamic analysis.
     calc_swaps
-        Optional swaps for the calculator.
+        Dictionary of custom kwargs for the EMT calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
+
+        !!! Info "Calculator defaults"
+
+            ```python
+            {
+                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+            }
+            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -204,7 +206,7 @@ def freq_job(
 
     ml_calculator = NewtonNet(**flags)
     atoms.calc = ml_calculator
-    final_atoms = run_calc(atoms, copy_files=copy_files)
+    final_atoms = run_ase_calc(atoms, copy_files=copy_files)
 
     summary = summarize_run(
         final_atoms,
@@ -230,7 +232,7 @@ def freq_job(
     return summary
 
 
-def _add_stdev_and_hess(summary: dict) -> dict:
+def _add_stdev_and_hess(summary: dict[str, Any]) -> dict[str, Any]:
     """
     Calculate and add standard deviation values and Hessians to the summary.
 
@@ -259,7 +261,7 @@ def _add_stdev_and_hess(summary: dict) -> dict:
         )
         atoms = conf["atoms"]
         atoms.calc = ml_calculator
-        results = run_calc(atoms).calc.results
+        results = run_ase_calc(atoms).calc.results
         conf["hessian"] = results["hessian"]
         conf["energy_std"] = results["energy_disagreement"]
         conf["forces_std"] = results["forces_disagreement"]

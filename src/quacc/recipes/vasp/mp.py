@@ -1,10 +1,10 @@
 """
-Materials Project-compatible recipes
+Materials Project-compatible recipes.
 
 This set of recipes is meant to be compatible with the Materials Project
 Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
 
-!!! Note
+!!! Info
 
     The one true source of Materials Project workflows is
     [atomate2](https://github.com/materialsproject/atomate2).
@@ -23,6 +23,8 @@ from quacc import flow, job
 from quacc.recipes.vasp.core import _base_job
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase import Atoms
 
     from quacc.schemas.vasp import VaspSchema
@@ -36,20 +38,12 @@ def mp_prerelax_job(
     atoms: Atoms,
     preset: str | None = "MPScanSet",
     bandgap: float | None = None,
-    calc_swaps: dict | None = None,
+    calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
     """
-    Function to pre-relax a structure with Materials Project settings. By
-    default, this uses a PBEsol pre-relax step.
-
-    ??? Note
-
-        Calculator Defaults:
-
-        ```python
-        {"ediffg": -0.05, "xc": "pbesol", "lwave": True, "lcharg": True} | _get_bandgap_swaps(bandgap)
-        ```
+    Function to pre-relax a structure with Materials Project settings. By default, this
+    uses a PBEsol pre-relax step.
 
     Parameters
     ----------
@@ -60,8 +54,15 @@ def mp_prerelax_job(
     bandgap
         Estimate for the bandgap in eV.
     calc_swaps
-        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely.
+        Dictionary of custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
+
+        !!! Info "Calculator defaults"
+
+            ```python
+            {"ediffg": -0.05, "xc": "pbesol", "lwave": True, "lcharg": True} | _get_bandgap_swaps(bandgap)
+            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -93,20 +94,12 @@ def mp_relax_job(
     atoms: Atoms,
     preset: str | None = "MPScanSet",
     bandgap: float | None = None,
-    calc_swaps: dict | None = None,
+    calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
     """
-    Function to relax a structure with Materials Project settings. By default,
-    this uses an r2SCAN relax step.
-
-    ??? Note
-
-        Calculator Defaults:
-
-        ```python
-        {"lcharg": True, "lwave": True} | _get_bandgap_swaps(bandgap)
-        ```
+    Function to relax a structure with Materials Project settings. By default, this uses
+    an r2SCAN relax step.
 
     Parameters
     ----------
@@ -117,8 +110,15 @@ def mp_relax_job(
     bandgap
         Estimate for the bandgap in eV.
     calc_swaps
-        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely.
+        Dictionary of custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
+
+        !!! Info "Calculator defaults"
+
+            ```python
+            {"lcharg": True, "lwave": True} | _get_bandgap_swaps(bandgap)
+            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -142,8 +142,8 @@ def mp_relax_job(
 @flow
 def mp_relax_flow(
     atoms: Atoms,
-    prerelax_job_kwargs: dict | None = None,
-    relax_job_kwargs: dict | None = None,
+    prerelax_job_kwargs: dict[str, Any] | None = None,
+    relax_job_kwargs: dict[str, Any] | None = None,
 ) -> MPRelaxFlowSchema:
     """
     Workflow consisting of:
@@ -157,9 +157,9 @@ def mp_relax_flow(
     atoms
         Atoms object for the structure.
     prerelax_job_kwargs
-        Additional keyword arguments to pass to the pre-relaxation calculation.
+        Additional keyword arguments to pass to [quacc.recipes.vasp.mp.mp_prerelax_job][].
     relax_job_kwargs
-        Additional keyword arguments to pass to the relaxation calculation.
+        Additional keyword arguments to pass to [quacc.recipes.vasp.mp.mp_relax_job][].
 
     Returns
     -------
@@ -184,7 +184,7 @@ def mp_relax_flow(
     return relax_results
 
 
-def _get_bandgap_swaps(bandgap: float | None = None) -> dict:
+def _get_bandgap_swaps(bandgap: float | None = None) -> dict[str, float]:
     """
     Get bandgap-related swaps.
 
