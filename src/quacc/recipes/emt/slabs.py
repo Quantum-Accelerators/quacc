@@ -59,16 +59,14 @@ def bulk_to_slabs_flow(
     if "relax_cell" not in slab_relax_kwargs:
         slab_relax_kwargs["relax_cell"] = False
 
-    @job
-    def _make_slabs(atoms):
-        return make_slabs_from_bulk(atoms, **make_slabs_kwargs)
-
     @subflow
-    def _relax_distributed(slabs):
+    def _relax_distributed(atoms):
+        slabs = make_slabs_from_bulk(atoms, **make_slabs_kwargs)
         return [relax_job(slab, **slab_relax_kwargs) for slab in slabs]
 
     @subflow
-    def _relax_and_static_distributed(slabs):
+    def _relax_and_static_distributed(atoms):
+        slabs = make_slabs_from_bulk(atoms, **make_slabs_kwargs)
         return [
             static_job(
                 relax_job(slab, **slab_relax_kwargs)["atoms"],
@@ -77,10 +75,8 @@ def bulk_to_slabs_flow(
             for slab in slabs
         ]
 
-    slabs = _make_slabs(atoms)
-
     return (
-        _relax_and_static_distributed(slabs)
+        _relax_and_static_distributed(atoms)
         if run_static
-        else _relax_distributed(slabs)
+        else _relax_distributed(atoms)
     )
