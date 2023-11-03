@@ -17,23 +17,12 @@ except ImportError:
     phonopy = None
 
 if TYPE_CHECKING:
-    from typing import TypedDict
-
     from ase.atoms import Atoms
-    from numpy.typing import ArrayLike, NDArray
+    from numpy.typing import ArrayLike
+    from phonopy import Phonopy
     from phonopy.structure.atoms import PhonopyAtoms
 
     from quacc.recipes.common.core import force_job
-
-    class ThermalProperties(TypedDict):
-        temperatures: NDArray
-        free_energy: NDArray
-        entropy: NDArray
-        heat_capacity: NDArray
-
-    class PhononSchema(TypedDict):
-        phonon: phonopy.Phonopy
-        thermal_properties: ThermalProperties
 
 
 @requires(phonopy, "Phonopy must be installed. Run `pip install quacc[phonons]`")
@@ -42,9 +31,9 @@ def run_phonons(
     supercell_matrix: ArrayLike = ((2, 0, 0), (0, 2, 0), (0, 0, 2)),
     atom_disp: float = 0.015,
     t_step: float = 10,
-    t_max: float = 1000,
     t_min: float = 0,
-) -> PhononSchema:
+    t_max: float = 1000,
+) -> Phonopy:
     """
     Calculate phonon properties.
 
@@ -62,19 +51,19 @@ def run_phonons(
         Atomic displacement
     t_step
         Temperature step.
-    t_max
-        Max temperature.
     t_min
         Min temperature.
+    t_max
+        Max temperature.
 
     Returns
     -------
-    PhononSchema
-        Dictionary of results
+    phonon.Phonopy
+        The Phonopy object with thermal properties added.
     """
 
     @subflow
-    def _calc_phonons_distributed(atoms: Atoms) -> PhononSchema:
+    def _calc_phonons_distributed(atoms: Atoms) -> phonopy.Phonopy:
         calculator = atoms.calc
         structure = AseAtomsAdaptor().get_structure(atoms)
 
@@ -91,11 +80,7 @@ def run_phonons(
         phonon.produce_force_constants()
         phonon.run_mesh()
         phonon.run_thermal_properties(t_step=t_step, t_max=t_max, t_min=t_min)
-
-        return {
-            "phonon": phonon,
-            "thermal_properties": phonon.get_thermal_properties_dict(),
-        }
+        return phonon
 
     return _calc_phonons_distributed(atoms)
 
