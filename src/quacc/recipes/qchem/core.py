@@ -33,7 +33,8 @@ def static_job(
     spin_multiplicity: int,
     method: str | None = "wb97mv",
     basis: str | None = "def2-tzvpd",
-    calc_swaps: dict[str, Any] | None = None,
+    qc_input_swaps: dict[str, Any] | None = None,
+    qchem_dict_set_klwargs: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
