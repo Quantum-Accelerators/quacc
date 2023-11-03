@@ -11,13 +11,21 @@ from quacc.utils.files import get_uri
 from quacc.wflow.db import results_to_db
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase import Atoms
+    from maggma.core import Store
     from phonopy import Phonopy
 
     from quacc.schemas._aliases.phonopy import PhononSchema
 
 
-def summarize_phonopy(phonon: Phonopy, input_atoms: Atoms = None) -> PhononSchema:
+def summarize_phonopy(
+    phonon: Phonopy,
+    input_atoms: Atoms = None,
+    additional_fields: dict[str, Any] | None = None,
+    store: Store | bool | None = None,
+) -> PhononSchema:
     """
     Summarize a Phonopy object.
 
@@ -25,6 +33,10 @@ def summarize_phonopy(phonon: Phonopy, input_atoms: Atoms = None) -> PhononSchem
         Phonopy object
     input_atoms
         Input atoms object
+    additional_fields
+        Additional fields to add to the document.
+    store
+        Whether to store the document in the database.
 
     Returns
     -------
