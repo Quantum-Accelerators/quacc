@@ -1,4 +1,4 @@
-"""Utility functions for running ASE calculators."""
+"""Utility functions for running ASE calculators with ASE-based methods."""
 from __future__ import annotations
 
 import os
@@ -28,7 +28,7 @@ except ImportError:
     Sella = None
 
 if TYPE_CHECKING:
-    from typing import Any, Literal, TypedDict
+    from typing import Any, TypedDict
 
     from ase import Atoms
     from ase.optimize.optimize import Optimizer
