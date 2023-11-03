@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from pymatgen.analysis.defects.generators import VacancyGenerator
 
-from quacc import flow, job, subflow
+from quacc import flow, subflow
 from quacc.atoms.defects import make_defects_from_bulk
 from quacc.recipes.emt.core import relax_job, static_job
 
