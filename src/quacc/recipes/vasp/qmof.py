@@ -13,7 +13,7 @@ from ase.optimize import BFGSLineSearch
 from quacc import job
 from quacc.calculators.vasp import Vasp
 from quacc.recipes.vasp.core import _base_job
-from quacc.runners.calc import run_ase_opt
+from quacc.runners.ase import run_opt
 from quacc.schemas.ase import summarize_opt_run
 from quacc.utils.dicts import merge_dicts
 
@@ -147,7 +147,7 @@ def _prerelax(
     }
     flags = merge_dicts(defaults, calc_swaps, remove_nones=False)
     atoms.calc = Vasp(atoms, preset=preset, **flags)
-    dyn = run_ase_opt(atoms, fmax=fmax, optimizer=BFGSLineSearch)
+    dyn = run_opt(atoms, fmax=fmax, optimizer=BFGSLineSearch)
 
     return summarize_opt_run(dyn, additional_fields={"name": "QMOF Prerelax"})
 

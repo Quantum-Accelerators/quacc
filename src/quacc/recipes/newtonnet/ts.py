@@ -7,7 +7,7 @@ from monty.dev import requires
 
 from quacc import SETTINGS, job
 from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
-from quacc.runners.calc import run_ase_opt
+from quacc.runners.ase import run_opt
 from quacc.schemas.ase import summarize_opt_run
 from quacc.utils.dicts import merge_dicts
 
@@ -82,7 +82,7 @@ def ts_job(
     opt_swaps
         Dictionary of custom kwargs for the optimization process. Set a value
         to `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [quacc.runners.calc.run_ase_opt][].
+        keys, refer to [quacc.runners.ase.run_opt][].
 
         !!! Info "Optimizer defaults"
 
@@ -131,7 +131,7 @@ def ts_job(
     atoms.calc = ml_calculator
 
     # Run the TS optimization
-    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
+    dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
     opt_ts_summary = _add_stdev_and_hess(
         summarize_opt_run(dyn, additional_fields={"name": "NewtonNet TS"})
     )
@@ -188,7 +188,7 @@ def irc_job(
     opt_swaps
         Dictionary of custom kwargs for the optimization process. Set a value
         to `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [quacc.runners.calc.run_ase_opt][].
+        keys, refer to [quacc.runners.ase.run_opt][].
 
         !!! Info "Optimizer defaults"
 
@@ -246,7 +246,7 @@ def irc_job(
 
     # Run IRC
     SETTINGS.CHECK_CONVERGENCE = False
-    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
+    dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
     opt_irc_summary = _add_stdev_and_hess(
         summarize_opt_run(
             dyn, additional_fields={"name": f"NewtonNet IRC: {direction}"}

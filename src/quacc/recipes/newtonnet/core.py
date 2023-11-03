@@ -9,7 +9,7 @@ from monty.dev import requires
 
 from quacc import SETTINGS, job
 from quacc.builders.thermo import build_ideal_gas
-from quacc.runners.calc import run_ase_calc, run_ase_opt
+from quacc.runners.ase import run_calc, run_opt
 from quacc.schemas.ase import (
     summarize_ideal_gas_thermo,
     summarize_opt_run,
@@ -83,7 +83,7 @@ def static_job(
     flags = merge_dicts(defaults, calc_swaps)
 
     atoms.calc = NewtonNet(**flags)
-    final_atoms = run_ase_calc(atoms, copy_files=copy_files)
+    final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(
         final_atoms,
@@ -123,7 +123,7 @@ def relax_job(
     opt_swaps
         Dictionary of custom kwargs for the optimization process. Set a value
         to `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [quacc.runners.calc.run_ase_opt][].
+        keys, refer to [quacc.runners.ase.run_opt][].
 
         !!! Info "Optimizer defaults"
 
@@ -149,7 +149,7 @@ def relax_job(
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
     atoms.calc = NewtonNet(**flags)
-    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
+    dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
 
     return _add_stdev_and_hess(
         summarize_opt_run(dyn, additional_fields={"name": "NewtonNet Relax"})
@@ -206,7 +206,7 @@ def freq_job(
 
     ml_calculator = NewtonNet(**flags)
     atoms.calc = ml_calculator
-    final_atoms = run_ase_calc(atoms, copy_files=copy_files)
+    final_atoms = run_calc(atoms, copy_files=copy_files)
 
     summary = summarize_run(
         final_atoms,
@@ -261,7 +261,7 @@ def _add_stdev_and_hess(summary: dict[str, Any]) -> dict[str, Any]:
         )
         atoms = conf["atoms"]
         atoms.calc = ml_calculator
-        results = run_ase_calc(atoms).calc.results
+        results = run_calc(atoms).calc.results
         conf["hessian"] = results["hessian"]
         conf["energy_std"] = results["energy_disagreement"]
         conf["forces_std"] = results["forces_disagreement"]

@@ -11,7 +11,7 @@ from ase.calculators.emt import EMT
 from ase.optimize import FIRE
 
 from quacc import job
-from quacc.runners.calc import run_ase_calc, run_ase_opt
+from quacc.runners.ase import run_calc, run_opt
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import merge_dicts
 
@@ -57,7 +57,7 @@ def static_job(
     calc_swaps = calc_swaps or {}
 
     atoms.calc = EMT(**calc_swaps)
-    final_atoms = run_ase_calc(atoms, copy_files=copy_files)
+    final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(
         final_atoms,
@@ -96,7 +96,7 @@ def relax_job(
     opt_swaps
         Dictionary of custom kwargs for the optimization process. Set a value
         to `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [quacc.runners.calc.run_ase_opt][].
+        keys, refer to [quacc.runners.ase.run_opt][].
 
         !!! Info "Optimizer defaults"
 
@@ -119,6 +119,6 @@ def relax_job(
 
     atoms.calc = EMT(**calc_swaps)
 
-    dyn = run_ase_opt(atoms, relax_cell=relax_cell, copy_files=copy_files, **opt_flags)
+    dyn = run_opt(atoms, relax_cell=relax_cell, copy_files=copy_files, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields={"name": "EMT Relax"})
