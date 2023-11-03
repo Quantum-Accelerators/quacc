@@ -8,7 +8,7 @@ from ase.optimize import FIRE
 
 from quacc import SETTINGS, job
 from quacc.calculators.qchem import QChem
-from quacc.runners.calc import run_ase_calc, run_ase_opt
+from quacc.runners.ase import run_calc, run_opt
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import merge_dicts, remove_dict_nones
 
@@ -420,7 +420,7 @@ def relax_job(
         default values set therein as well as set additional Q-Chem parameters.
         See QChemDictSet documentation for more details.
     opt_swaps
-        Dictionary of custom kwargs for [quacc.runners.calc.run_ase_opt][]
+        Dictionary of custom kwargs for [quacc.runners.ase.run_opt][]
     copy_files
         Files to copy to the runtime directory.
 
@@ -499,7 +499,7 @@ def _base_job(
     qchem_flags = remove_dict_nones(defaults)
 
     atoms.calc = QChem(atoms, **qchem_flags)
-    final_atoms = run_ase_calc(atoms, copy_files=copy_files)
+    final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(
         final_atoms,
@@ -535,7 +535,7 @@ def _base_opt_job(
     opt_defaults
         Default arguments for the ASE optimizer.
     opt_swaps
-        Dictionary of custom kwargs for [quacc.runners.calc.run_ase_opt][]
+        Dictionary of custom kwargs for [quacc.runners.ase.run_opt][]
     copy_files
         Files to copy to the runtime directory.
 
@@ -551,7 +551,7 @@ def _base_opt_job(
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
     atoms.calc = QChem(atoms, **qchem_flags)
-    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
+    dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
 
     return summarize_opt_run(
         dyn,

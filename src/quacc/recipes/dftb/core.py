@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from ase.calculators.dftb import Dftb
 
 from quacc import SETTINGS, job
-from quacc.runners.calc import run_ase_calc
+from quacc.runners.ase import run_calc
 from quacc.schemas.ase import summarize_run
 from quacc.utils.dicts import merge_dicts
 from quacc.utils.files import check_logfile
@@ -188,7 +188,7 @@ def _base_job(
     flags = merge_dicts(defaults, calc_swaps)
 
     atoms.calc = Dftb(**flags)
-    final_atoms = run_ase_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
+    final_atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
 
     if SETTINGS.CHECK_CONVERGENCE:
         if check_logfile(LOG_FILE, "SCC is NOT converged"):
