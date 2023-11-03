@@ -13,5 +13,20 @@ if TYPE_CHECKING:
 
 @job
 def force_job(atoms: Atoms, calculator: Calculator) -> NDArray:
+    """
+    Calculate the forces.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+    calculator
+        Calculator to use.
+
+    Returns
+    -------
+    NDArray
+        Forces
+    """
     atoms.calc = calculator
     return run_calc(atoms).get_forces()
