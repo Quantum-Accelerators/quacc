@@ -186,17 +186,17 @@ def bulk_to_slabs_flow(
     slab_static_kwargs = slab_static_kwargs or {}
     make_slabs_kwargs = make_slabs_kwargs or {}
 
-    def _make_slabs():
+    def _make_slabs(atoms):
         return make_slabs_from_bulk(atoms, **make_slabs_kwargs)
 
     @subflow
-    def _relax_distributed():
-        slabs = _make_slabs()
+    def _relax_distributed(atoms):
+        slabs = _make_slabs(atoms)
         return [slab_relax_job(slab, **slab_relax_kwargs) for slab in slabs]
 
     @subflow
-    def _relax_and_static_distributed():
-        slabs = _make_slabs()
+    def _relax_and_static_distributed(atoms):
+        slabs = _make_slabs(atoms)
         return [
             slab_static_job(
                 slab_relax_job(slab, **slab_relax_kwargs)["atoms"],
@@ -205,7 +205,11 @@ def bulk_to_slabs_flow(
             for slab in slabs
         ]
 
-    return _relax_and_static_distributed() if run_static else _relax_distributed()
+    return (
+        _relax_and_static_distributed(atoms)
+        if run_static
+        else _relax_distributed(atoms)
+    )
 
 
 @flow
@@ -251,17 +255,17 @@ def slab_to_ads_flow(
     slab_static_kwargs = slab_static_kwargs or {}
     make_ads_kwargs = make_ads_kwargs or {}
 
-    def _make_ads_slabs():
+    def _make_ads_slabs(slab):
         return make_adsorbate_structures(slab, adsorbate, **make_ads_kwargs)
 
     @subflow
-    def _relax_distributed():
-        slabs = _make_ads_slabs()
+    def _relax_distributed(slab):
+        slabs = _make_ads_slabs(slab)
         return [slab_relax_job(slab, **slab_relax_kwargs) for slab in slabs]
 
     @subflow
-    def _relax_and_static_distributed():
-        slabs = _make_ads_slabs()
+    def _relax_and_static_distributed(slab):
+        slabs = _make_ads_slabs(slab)
         return [
             slab_static_job(
                 slab_relax_job(slab, **slab_relax_kwargs)["atoms"],
@@ -270,4 +274,8 @@ def slab_to_ads_flow(
             for slab in slabs
         ]
 
-    return _relax_and_static_distributed() if run_static else _relax_distributed()
+    return (
+        _relax_and_static_distributed(slab)
+        if run_static
+        else _relax_distributed(slab)
+    )
