@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from quacc import flow, job, subflow
+from quacc import flow, subflow
 from quacc.atoms.slabs import make_slabs_from_bulk
 from quacc.recipes.emt.core import relax_job, static_job
 
@@ -59,16 +59,17 @@ def bulk_to_slabs_flow(
     if "relax_cell" not in slab_relax_kwargs:
         slab_relax_kwargs["relax_cell"] = False
 
-    @job
-    def _make_slabs(atoms):
+    def _make_slabs():
         return make_slabs_from_bulk(atoms, **make_slabs_kwargs)
 
     @subflow
-    def _relax_distributed(slabs):
+    def _relax_distributed():
+        slabs = _make_slabs()
         return [relax_job(slab, **slab_relax_kwargs) for slab in slabs]
 
     @subflow
-    def _relax_and_static_distributed(slabs):
+    def _relax_and_static_distributed():
+        slabs = _make_slabs()
         return [
             static_job(
                 relax_job(slab, **slab_relax_kwargs)["atoms"],
@@ -77,10 +78,4 @@ def bulk_to_slabs_flow(
             for slab in slabs
         ]
 
-    slabs = _make_slabs(atoms)
-
-    return (
-        _relax_and_static_distributed(slabs)
-        if run_static
-        else _relax_distributed(slabs)
-    )
+    return _relax_and_static_distributed() if run_static else _relax_distributed()
