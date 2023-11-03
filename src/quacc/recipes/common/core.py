@@ -3,6 +3,7 @@
 from typing import TYPE_CHECKING
 
 from quacc import job
+
 =======
 from __future__ import annotations
 
@@ -10,6 +11,7 @@ from typing import TYPE_CHECKING
 
 from quacc import job
 from quacc.runners.ase import run_calc
+
 >>>>>>> Stashed changes
 
 if TYPE_CHECKING:

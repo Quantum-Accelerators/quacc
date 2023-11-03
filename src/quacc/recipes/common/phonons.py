@@ -9,15 +9,18 @@ from typing import TYPE_CHECKING
 import phonopy
 from monty.dev import requires
 from pymatgen.io.ase import AseAtomsAdaptor
+
 <<<<<<< Updated upstream
 from pymatgen.io.phonopy import get_phonopy_structure
 
 from quacc import flow
+
 =======
 from pymatgen.io.phonopy import get_phonopy_structure, get_pmg_structure
 
 from quacc import flow, subflow
 from quacc.recipes.common.core import force_job
+
 >>>>>>> Stashed changes
 
 try:
