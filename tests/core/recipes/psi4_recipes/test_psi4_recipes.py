@@ -10,7 +10,7 @@ def test_static(tmpdir):
     tmpdir.chdir()
 
     atoms = molecule("H2")
-    output = static_job(atoms, 0, 1)
+    output = static_job(atoms, charge=0, spin_multiplicity=1)
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["multiplicity"] == 1
@@ -22,8 +22,8 @@ def test_static(tmpdir):
 
     output = static_job(
         atoms,
-        -2,
-        3,
+        charge=-2,
+        spin_multiplicity=3,
         method="pbe",
         basis="def2-svp",
         num_threads=1,
@@ -35,8 +35,8 @@ def test_static(tmpdir):
     assert output["parameters"]["multiplicity"] == 3
     assert output["parameters"]["method"] == "pbe"
     assert output["parameters"]["basis"] == "def2-svp"
-    assert output["parameters"]["num_threads"] == 1
     assert output["parameters"]["pop"] == "regular"
+    assert output["parameters"]["num_threads"] == 1
     assert "mem" not in output["parameters"]
     assert output["spin_multiplicity"] == 3
     assert output["charge"] == -2
