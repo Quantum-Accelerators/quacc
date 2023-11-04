@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from ase.calculators.emt import EMT
 
 from quacc import flow
-from quacc.recipes.common.phonons import phonon_flow
+from quacc.recipes.common.phonons import phonon_flow as common_phonon_flow
 from quacc.schemas.phonopy import summarize_phonopy
 
 if TYPE_CHECKING:
@@ -57,7 +57,7 @@ def phonon_flow(
     calc_swaps = calc_swaps or {}
     calc = EMT(**calc_swaps)
 
-    return phonon_flow(
+    return common_phonon_flow(
         atoms,
         calc,
         supercell_matrix=supercell_matrix,
