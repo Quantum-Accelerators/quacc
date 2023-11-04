@@ -49,6 +49,7 @@ If you plan to use NewtonNet with Quacc, you will need to install it prior to us
 
 ```bash
 pip install git+https://github.com/ericyuan00000/NewtonNet.git
+pip install quacc[newtonnet]
 ```
 
 ## ORCA
