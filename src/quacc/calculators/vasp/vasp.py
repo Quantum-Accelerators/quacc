@@ -19,7 +19,7 @@ from quacc.calculators.vasp.params import (
     remove_unused_flags,
     set_auto_dipole,
 )
-from quacc.runners.prep import set_magmoms
+from quacc.schemas.prep import set_magmoms
 
 if TYPE_CHECKING:
     from typing import Literal
