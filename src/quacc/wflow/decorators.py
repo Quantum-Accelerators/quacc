@@ -302,7 +302,6 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
     if wflow_engine == "prefect":
         from prefect import flow as prefect_flow
 
-        kwargs["validate_parameters"] = False
         return prefect_flow(_func, **kwargs)
     if wflow_engine == "redun":
         from redun import task as redun_task
