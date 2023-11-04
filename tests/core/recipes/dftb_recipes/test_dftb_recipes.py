@@ -80,7 +80,7 @@ def test_static_errors(tmpdir):
 
     with pytest.raises(RuntimeError):
         atoms = molecule("H2O")
-        static_job(atoms, calc_swaps={"Hamiltonian_MaxSccIterations": 1})
+        static_job(atoms, Hamiltonian_MaxSccIterations=1)
 
 
 def test_relax_job_water(tmpdir):
@@ -105,9 +105,7 @@ def test_relax_job_cu_supercell(tmpdir):
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
 
-    output = relax_job(
-        atoms, kpts=(3, 3, 3), calc_swaps={"Hamiltonian_MaxSccIterations": 100}
-    )
+    output = relax_job(atoms, kpts=(3, 3, 3), Hamiltonian_MaxSccIterations=100)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
@@ -159,7 +157,8 @@ def test_relax_job_cu_supercell_errors(tmpdir):
         relax_job(
             atoms,
             kpts=(3, 3, 3),
-            calc_swaps={"MaxSteps": 1, "Hamiltonian_MaxSccIterations": 100},
+            MaxSteps=1,
+            Hamiltonian_MaxSccIterations=100,
         )
 
 
