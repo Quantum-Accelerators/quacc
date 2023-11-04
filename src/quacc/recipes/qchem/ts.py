@@ -41,7 +41,7 @@ def ts_job(
     smd_solvent: str | None = None,
     n_cores: int | None = None,
     overwrite_inputs: dict[str, Any] | None = None,
-    opt_swaps: dict[str, Any] | None = None,
+    opt_params: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
     """
@@ -106,7 +106,7 @@ def ts_job(
         Dictionary passed to `pymatgen.io.qchem.QChemDictSet` which can modify
         default values set therein as well as set additional Q-Chem parameters.
         See QChemDictSet documentation for more details.
-    opt_swaps
+    opt_params
         Dictionary of custom kwargs for [quacc.runners.ase.run_opt][]
     copy_files
         Files to copy to the runtime directory.
@@ -138,7 +138,7 @@ def ts_job(
         "optimizer_kwargs": {"order": 1, "use_TRICs": False},
     }
 
-    if opt_swaps and opt_swaps.get("optimizer", Sella) is not Sella:
+    if opt_params and opt_params.get("optimizer", Sella) is not Sella:
         raise ValueError("Only Sella should be used for TS optimization.")
 
     return _base_opt_job(
@@ -147,7 +147,7 @@ def ts_job(
         spin_multiplicity,
         qchem_defaults=qchem_defaults,
         opt_defaults=opt_defaults,
-        opt_swaps=opt_swaps,
+        opt_params=opt_params,
         additional_fields={"name": "Q-Chem TS"},
         copy_files=copy_files,
     )
@@ -170,7 +170,7 @@ def irc_job(
     smd_solvent: str | None = None,
     n_cores: int | None = None,
     overwrite_inputs: dict[str, Any] | None = None,
-    opt_swaps: dict[str, Any] | None = None,
+    opt_params: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
     """
@@ -237,7 +237,7 @@ def irc_job(
         Dictionary passed to `pymatgen.io.qchem.QChemDictSet` which can modify
         default values set therein as well as set additional Q-Chem parameters.
         See QChemDictSet documentation for more details.
-    opt_swaps
+    opt_params
         Dictionary of custom kwargs for [quacc.runners.ase.run_opt][]
     copy_files
         Files to copy to the runtime directory.
@@ -269,7 +269,7 @@ def irc_job(
         "optimizer_kwargs": {"keep_going": True},
         "run_kwargs": {"direction": direction},
     }
-    if opt_swaps and opt_swaps.get("optimizer", IRC) is not IRC:
+    if opt_params and opt_params.get("optimizer", IRC) is not IRC:
         raise ValueError("Only Sella's IRC should be used for IRC optimization.")
 
     return _base_opt_job(
@@ -278,7 +278,7 @@ def irc_job(
         spin_multiplicity,
         qchem_defaults=qchem_defaults,
         opt_defaults=opt_defaults,
-        opt_swaps=opt_swaps,
+        opt_params=opt_params,
         additional_fields={"name": "Q-Chem IRC"},
         copy_files=copy_files,
     )
@@ -301,8 +301,8 @@ def quasi_irc_job(
     smd_solvent: str | None = None,
     n_cores: int | None = None,
     overwrite_inputs: dict[str, Any] | None = None,
-    irc_opt_swaps: dict[str, Any] | None = None,
-    relax_opt_swaps: dict[str, Any] | None = None,
+    irc_opt_params: dict[str, Any] | None = None,
+    relax_opt_params: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
     """
@@ -319,8 +319,8 @@ def quasi_irc_job(
         Multiplicity of the system.
     direction
         Direction of the IRC. Should be "forward" or "reverse".
-    irc_opt_swaps
-        Dictionary of opt_swaps kwargs for the irc_job.
+    irc_opt_params
+        Dictionary of opt_params kwargs for the irc_job.
 
         ??? Note
 
@@ -329,8 +329,8 @@ def quasi_irc_job(
             ```python
             {"fmax": 100, "max_steps": 10}
             ```
-    relax_opt_swaps
-        Dictionary of opt_swaps kwargs for the relax_job.
+    relax_opt_params
+        Dictionary of opt_params kwargs for the relax_job.
 
         ??? Note
 
@@ -350,8 +350,8 @@ def quasi_irc_job(
 
     default_settings = SETTINGS.model_copy()
 
-    irc_opt_swaps_defaults = {"fmax": 100, "max_steps": 10}
-    irc_opt_swaps = merge_dicts(irc_opt_swaps_defaults, irc_opt_swaps)
+    irc_opt_params_defaults = {"fmax": 100, "max_steps": 10}
+    irc_opt_params = merge_dicts(irc_opt_params_defaults, irc_opt_params)
 
     SETTINGS.CHECK_CONVERGENCE = False
     irc_summary = irc_job.__wrapped__(
@@ -366,7 +366,7 @@ def quasi_irc_job(
         smd_solvent=smd_solvent,
         n_cores=n_cores,
         overwrite_inputs=overwrite_inputs,
-        opt_swaps=irc_opt_swaps,
+        opt_params=irc_opt_params,
         copy_files=copy_files,
     )
 
@@ -382,7 +382,7 @@ def quasi_irc_job(
         smd_solvent=smd_solvent,
         n_cores=n_cores,
         overwrite_inputs=overwrite_inputs,
-        opt_swaps=relax_opt_swaps,
+        opt_params=relax_opt_params,
     )
 
     relax_summary["initial_irc"] = irc_summary

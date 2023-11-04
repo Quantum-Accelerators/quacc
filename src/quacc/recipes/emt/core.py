@@ -62,7 +62,7 @@ def static_job(atoms: Atoms, **kwargs) -> RunSchema:
 def relax_job(
     atoms: Atoms,
     relax_cell: bool = False,
-    opt_swaps: dict[str, Any] | None = None,
+    opt_params: dict[str, Any] | None = None,
     **kwargs,
 ) -> OptSchema:
     """
@@ -74,7 +74,7 @@ def relax_job(
         Atoms object
     relax_cell
         Whether to relax the cell
-    opt_swaps
+    opt_params
         Dictionary of custom kwargs for the optimization process. Set a value
         to `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
@@ -102,7 +102,7 @@ def relax_job(
         [quacc.schemas.ase.summarize_opt_run][]
     """
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
-    opt_flags = merge_dicts(opt_defaults, opt_swaps)
+    opt_flags = merge_dicts(opt_defaults, opt_params)
 
     atoms.calc = EMT(**kwargs)
 

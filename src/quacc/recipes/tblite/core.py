@@ -76,7 +76,7 @@ def relax_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
     relax_cell: bool = False,
-    opt_swaps: dict[str, Any] | None = None,
+    opt_params: dict[str, Any] | None = None,
     **kwargs,
 ) -> OptSchema:
     """
@@ -90,7 +90,7 @@ def relax_job(
         GFN0-xTB, GFN1-xTB, GFN2-xTB.
     relax_cell
         Whether to relax the cell.
-    opt_swaps
+    opt_params
         Dictionary of custom kwargs for the optimization process. Set a value
         to `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
@@ -121,7 +121,7 @@ def relax_job(
     atoms.calc = TBLite(**flags)
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
-    opt_flags = merge_dicts(opt_defaults, opt_swaps)
+    opt_flags = merge_dicts(opt_defaults, opt_params)
 
     dyn = run_opt(atoms, relax_cell=relax_cell, **opt_flags)
 

@@ -94,7 +94,7 @@ def static_job(
 @requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
 def relax_job(
     atoms: Atoms,
-    opt_swaps: dict[str, Any] | None = None,
+    opt_params: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
     **kwargs,
 ) -> OptSchema:
@@ -105,7 +105,7 @@ def relax_job(
     ----------
     atoms
         Atoms object
-    opt_swaps
+    opt_params
         Dictionary of custom kwargs for the optimization process. Set a value
         to `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
@@ -144,7 +144,7 @@ def relax_job(
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella or FIRE}
 
     flags = merge_dicts(defaults, kwargs)
-    opt_flags = merge_dicts(opt_defaults, opt_swaps)
+    opt_flags = merge_dicts(opt_defaults, opt_params)
 
     atoms.calc = NewtonNet(**flags)
     dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)

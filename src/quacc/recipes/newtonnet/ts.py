@@ -49,7 +49,7 @@ def ts_job(
     use_custom_hessian: bool = False,
     run_freq: bool = True,
     freq_job_kwargs: dict[str, Any] | None = None,
-    opt_swaps: dict[str, Any] | None = None,
+    opt_params: dict[str, Any] | None = None,
     **kwargs,
 ) -> TSSchema:
     """
@@ -65,7 +65,7 @@ def ts_job(
         Whether to run the frequency job.
     freq_job_kwargs
         Keyword arguments to use for the [quacc.recipes.newtonnet.ts.freq_job][]
-    opt_swaps
+    opt_params
         Dictionary of custom kwargs for the optimization process. Set a value
         to `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
@@ -117,7 +117,7 @@ def ts_job(
     }
 
     flags = merge_dicts(defaults, kwargs)
-    opt_flags = merge_dicts(opt_defaults, opt_swaps)
+    opt_flags = merge_dicts(opt_defaults, opt_params)
 
     atoms.calc = NewtonNet(**flags)
 
@@ -152,7 +152,7 @@ def irc_job(
     direction: Literal["forward", "reverse"] = "forward",
     run_freq: bool = True,
     freq_job_kwargs: dict[str, Any] | None = None,
-    opt_swaps: dict[str, Any] | None = None,
+    opt_params: dict[str, Any] | None = None,
     **kwargs,
 ) -> IRCSchema:
     """
@@ -168,7 +168,7 @@ def irc_job(
         Whether to run the frequency analysis.
     freq_job_kwargs
         Keyword arguments to use for the [quacc.recipes.newtonnet.ts.freq_job][]
-    opt_swaps
+    opt_params
         Dictionary of custom kwargs for the optimization process. Set a value
         to `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
@@ -233,7 +233,7 @@ def irc_job(
     }
 
     flags = merge_dicts(defaults, kwargs)
-    opt_flags = merge_dicts(opt_defaults, opt_swaps)
+    opt_flags = merge_dicts(opt_defaults, opt_params)
 
     # Define calculator
     atoms.calc = NewtonNet(**flags)
@@ -298,7 +298,7 @@ def quasi_irc_job(
     relax_job_kwargs = relax_job_kwargs or {}
     freq_job_kwargs = freq_job_kwargs or {}
 
-    irc_job_defaults = {"calc_swaps": {"max_steps": 5}}
+    irc_job_defaults = {"max_steps": 5}
     irc_job_kwargs = merge_dicts(irc_job_defaults, irc_job_kwargs)
 
     # Run IRC

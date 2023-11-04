@@ -354,7 +354,7 @@ def relax_job(
     smd_solvent: str | None = None,
     n_cores: int | None = None,
     overwrite_inputs: dict[str, Any] | None = None,
-    opt_swaps: dict[str, Any] | None = None,
+    opt_params: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
     """
@@ -419,7 +419,7 @@ def relax_job(
         Dictionary passed to `pymatgen.io.qchem.QChemDictSet` which can modify
         default values set therein as well as set additional Q-Chem parameters.
         See QChemDictSet documentation for more details.
-    opt_swaps
+    opt_params
         Dictionary of custom kwargs for [quacc.runners.ase.run_opt][]
     copy_files
         Files to copy to the runtime directory.
@@ -457,7 +457,7 @@ def relax_job(
         spin_multiplicity=spin_multiplicity,
         qchem_defaults=qchem_defaults,
         opt_defaults=opt_defaults,
-        opt_swaps=opt_swaps,
+        opt_params=opt_params,
         additional_fields={"name": "Q-Chem Optimization"},
         copy_files=copy_files,
     )
@@ -515,7 +515,7 @@ def _base_opt_job(
     spin_multiplicity: int = 1,
     qchem_defaults: dict[str, Any] | None = None,
     opt_defaults: dict[str, Any] | None = None,
-    opt_swaps: dict[str, Any] | None = None,
+    opt_params: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
@@ -534,7 +534,7 @@ def _base_opt_job(
         Default arguments for the Q-Chem calculator.
     opt_defaults
         Default arguments for the ASE optimizer.
-    opt_swaps
+    opt_params
         Dictionary of custom kwargs for [quacc.runners.ase.run_opt][]
     copy_files
         Files to copy to the runtime directory.
@@ -548,7 +548,7 @@ def _base_opt_job(
     #   - passing initial Hessian?
 
     qchem_flags = remove_dict_nones(qchem_defaults)
-    opt_flags = merge_dicts(opt_defaults, opt_swaps)
+    opt_flags = merge_dicts(opt_defaults, opt_params)
 
     atoms.calc = QChem(atoms, **qchem_flags)
     dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
