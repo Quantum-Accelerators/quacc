@@ -1,3 +1,2 @@
-tblite[ase]==0.3.0
 pymatgen-analysis-defects==2023.10.19
 shakenbreak==3.2.3
