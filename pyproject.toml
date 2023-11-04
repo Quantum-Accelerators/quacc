@@ -154,6 +154,7 @@ exclude = []
 flake8-unused-arguments.ignore-variadic-names = true
 extend-exclude = ["tests", "src/quacc/settings.py", "src/quacc/schemas/cclib.py"]
 pydocstyle.convention = "numpy"
+isort.required-imports = ["from __future__ import annotations"]
 isort.known-first-party = ["quacc"]
 
 [tool.docformatter]

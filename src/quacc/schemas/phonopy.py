@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from typing import Any
 
     from ase import Atoms
+    from ase.calculators.calculator import Calculator
     from maggma.core import Store
     from phonopy import Phonopy
 
@@ -22,17 +23,22 @@ if TYPE_CHECKING:
 
 def summarize_phonopy(
     phonon: Phonopy,
-    input_atoms: Atoms = None,
+    calculator: Calculator,
+    input_atoms: Atoms | None = None,
     additional_fields: dict[str, Any] | None = None,
     store: Store | bool | None = None,
 ) -> PhononSchema:
     """
     Summarize a Phonopy object.
 
+    Parameters
+    ----------
     phonon
         Phonopy object
     input_atoms
         Input atoms object
+    calculator
+        Calculator used to generate the phonon object.
     additional_fields
         Additional fields to add to the document.
     store
@@ -49,7 +55,8 @@ def summarize_phonopy(
     uri = get_uri(Path.cwd())
 
     inputs = {
-        "parameters": {"version": phonon.version},
+        "parameters": calculator.parameters,
+        "phonopy_metadata": {"version": phonon.version},
         "nid": uri.split(":")[0],
         "dir_name": ":".join(uri.split(":")[1:]),
     }
