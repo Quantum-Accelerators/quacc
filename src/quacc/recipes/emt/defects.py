@@ -23,20 +23,18 @@ if TYPE_CHECKING:
 
     from quacc.schemas.ase import OptSchema, RunSchema
 
-    _DefectGen = (
+
+@flow
+def bulk_to_defects_flow(
+    atoms: Atoms,
+    defect_gen: (
         AntiSiteGenerator
         | ChargeInterstitialGenerator
         | InterstitialGenerator
         | SubstitutionGenerator
         | VacancyGenerator
         | VoronoiInterstitialGenerator
-    )
-
-
-@flow
-def bulk_to_defects_flow(
-    atoms: Atoms,
-    defect_gen: _DefectGen = VacancyGenerator,
+    ) = VacancyGenerator,
     defect_charge: int = 0,
     make_defects_kwargs: dict[str, Any] | None = None,
     run_static: bool = True,
