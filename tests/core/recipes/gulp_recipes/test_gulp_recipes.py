@@ -21,7 +21,7 @@ def test_static_job(tmpdir):
     assert "output xyz gulp.xyz" in output["parameters"]["options"]
     assert "output cif gulp.cif" not in output["parameters"]["options"]
 
-    output = static_job(atoms, keyword_swaps={"gwolf": True})
+    output = static_job(atoms, keywords={"gwolf": True})
     assert output["natoms"] == len(atoms)
     assert "gfnff" in output["parameters"]["keywords"]
     assert "gwolf" in output["parameters"]["keywords"]
@@ -46,7 +46,7 @@ def test_static_job(tmpdir):
     assert "output xyz gulp.xyz" not in output["parameters"]["options"]
     assert "output cif gulp.cif" in output["parameters"]["options"]
 
-    output = static_job(atoms, keyword_swaps={"gwolf": None})
+    output = static_job(atoms, keywords={"gwolf": None})
     assert output["nsites"] == len(atoms)
     assert "gfnff" in output["parameters"]["keywords"]
     assert "gwolf" not in output["parameters"]["keywords"]
@@ -79,7 +79,7 @@ def test_relax_job(tmpdir):
     assert "output xyz gulp.xyz" in output["parameters"]["options"]
     assert "output cif gulp.cif" not in output["parameters"]["options"]
 
-    output = relax_job(atoms, keyword_swaps={"gwolf": True})
+    output = relax_job(atoms, keywords={"gwolf": True})
     assert output["natoms"] == len(atoms)
     assert "gfnff" in output["parameters"]["keywords"]
     assert "opti" in output["parameters"]["keywords"]
@@ -113,7 +113,7 @@ def test_relax_job(tmpdir):
     assert "output xyz gulp.xyz" not in output["parameters"]["options"]
     assert "output cif gulp.cif" in output["parameters"]["options"]
 
-    output = relax_job(atoms, keyword_swaps={"gwolf": True})
+    output = relax_job(atoms, keywords={"gwolf": True})
     assert output["nsites"] == len(atoms)
     assert "gfnff" in output["parameters"]["keywords"]
     assert "opti" in output["parameters"]["keywords"]

@@ -30,9 +30,9 @@ GULP_CMD = f"{SETTINGS.GULP_CMD} < gulp.gin > gulp.got"
 def static_job(
     atoms: Atoms,
     use_gfnff: bool = True,
+    keywords: dict[str, Any] | None = None,
+    options: dict[str, Any] | None = None,
     library: str | None = None,
-    keyword_swaps: dict[str, Any] | None = None,
-    option_swaps: dict[str, Any] | None = None,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -43,9 +43,7 @@ def static_job(
         Atoms object
     use_gfnff
         True if (p)GFN-FF should be used; False if not.
-    library
-        Filename of the potential library file, if required.
-    keyword_swaps
+    keywords
         Dictionary of custom `keyword` kwargs for the GULP calculator. Set a
         value to `None` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
@@ -58,7 +56,7 @@ def static_job(
                 "gwolf": True if use_gfnff and atoms.pbc.any() else None,
             }
             ```
-    option_swaps
+    options
         Dictionary of custom `options` kwargs for the GULP calculator. Set a
         value to `None` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
@@ -68,6 +66,8 @@ def static_job(
             ```python
             {"dump every gulp.res": True}
             ```
+    library
+        Filename of the potential library file, if required.
 
     Returns
     -------
@@ -86,8 +86,8 @@ def static_job(
         library=library,
         keyword_defaults=keyword_defaults,
         option_defaults=option_defaults,
-        keyword_swaps=keyword_swaps,
-        option_swaps=option_swaps,
+        keyword_swaps=keywords,
+        option_swaps=options,
         additional_fields={"name": "GULP Static"},
     )
 
@@ -96,10 +96,10 @@ def static_job(
 def relax_job(
     atoms: Atoms,
     use_gfnff: bool = True,
-    library: str | None = None,
     relax_cell: bool = False,
-    keyword_swaps: dict[str, Any] | None = None,
-    option_swaps: dict[str, Any] | None = None,
+    keywords: dict[str, Any] | None = None,
+    options: dict[str, Any] | None = None,
+    library: str | None = None,
 ) -> RunSchema:
     """
     Carry out a structure relaxation.
@@ -110,11 +110,9 @@ def relax_job(
         Atoms object
     use_gfnff
         True if (p)GFN-FF should be used; False if not.
-    library
-        Filename of the potential library file, if required.
     relax_cell
         True if the volume should be relaxed; False if not.
-    keyword_swaps
+    keywords
         Dictionary of custom `keyword` kwargs for the GULP calculator. Set a
         value to `None` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
@@ -130,7 +128,7 @@ def relax_job(
                 "conv": None if relax_cell and atoms.pbc.any() else True,
             }
             ```
-    option_swaps
+    options
         Dictionary of custom `options` kwargs for the GULP calculator. Set a
         value to `None` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
@@ -140,6 +138,8 @@ def relax_job(
             ```python
             {"dump every gulp.res": True}
             ```
+    library
+        Filename of the potential library file, if required.
 
     Returns
     -------
@@ -161,8 +161,8 @@ def relax_job(
         library=library,
         keyword_defaults=keyword_defaults,
         option_defaults=option_defaults,
-        keyword_swaps=keyword_swaps,
-        option_swaps=option_swaps,
+        keyword_swaps=keywords,
+        option_swaps=options,
         additional_fields={"name": "GULP Relax"},
     )
 
