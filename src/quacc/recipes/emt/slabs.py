@@ -61,12 +61,12 @@ def bulk_to_slabs_flow(
 
     @subflow
     def _relax_distributed(atoms: Atoms) -> list[OptSchema]:
-        slabs = _make_slabs(atoms, make_slabs_kwargs)
+        slabs = make_slabs_from_bulk(atoms, **make_slabs_kwargs)
         return [relax_job(slab, **slab_relax_kwargs) for slab in slabs]
 
     @subflow
     def _relax_and_static_distributed(atoms: Atoms) -> list[OptSchema]:
-        slabs = _make_slabs(atoms, make_slabs_kwargs)
+        slabs = make_slabs_from_bulk(atoms, **make_slabs_kwargs)
         return [
             static_job(
                 relax_job(slab, **slab_relax_kwargs)["atoms"],
@@ -80,23 +80,3 @@ def bulk_to_slabs_flow(
         if run_static
         else _relax_distributed(atoms)
     )
-
-
-def _make_slabs(atoms: Atoms, make_slabs_kwargs: dict) -> list[Atoms]:
-    """
-    Make slabs.
-
-    Parameters
-    ----------
-    atoms
-        Atoms object
-    make_slabs_kwargs
-        Additional keyword arguments to pass to
-        [quacc.atoms.slabs.make_slabs_from_bulk][]
-
-    Returns
-    -------
-    list[Atoms]
-        List of slab structures.
-    """
-    return make_slabs_from_bulk(atoms, **make_slabs_kwargs)
