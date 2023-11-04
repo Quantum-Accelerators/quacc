@@ -49,9 +49,8 @@ def ts_job(
     use_custom_hessian: bool = False,
     run_freq: bool = True,
     freq_job_kwargs: dict[str, Any] | None = None,
-    calc_swaps: dict[str, Any] | None = None,
     opt_swaps: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
+    **kwargs,
 ) -> TSSchema:
     """
     Perform a transition state (TS) job using the given atoms object.
@@ -66,19 +65,6 @@ def ts_job(
         Whether to run the frequency job.
     freq_job_kwargs
         Keyword arguments to use for the [quacc.recipes.newtonnet.ts.freq_job][]
-    calc_swaps
-        Dictionary of custom kwargs for the NewtonNet calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
-
-        !!! Info "Calculator defaults"
-
-            ```python
-            {
-                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-            }
-            ```
     opt_swaps
         Dictionary of custom kwargs for the optimization process. Set a value
         to `None` to remove a pre-existing key entirely. For a list of available
@@ -96,8 +82,19 @@ def ts_job(
                 else {"order": 1},
             }
             ```
-    copy_files
-        Files to copy to the runtime directory.
+    **kwargs
+        Dictionary of custom kwargs for the NewtonNet calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
+
+        !!! Info "Calculator defaults"
+
+            ```python
+            {
+                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+            }
+            ```
 
     Returns
     -------
@@ -119,7 +116,7 @@ def ts_job(
         else {"order": 1},
     }
 
-    flags = merge_dicts(defaults, calc_swaps)
+    flags = merge_dicts(defaults, kwargs)
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
     atoms.calc = NewtonNet(**flags)
@@ -131,7 +128,7 @@ def ts_job(
     atoms.calc = ml_calculator
 
     # Run the TS optimization
-    dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
+    dyn = run_opt(atoms, **opt_flags)
     opt_ts_summary = _add_stdev_and_hess(
         summarize_opt_run(dyn, additional_fields={"name": "NewtonNet TS"})
     )
@@ -155,9 +152,8 @@ def irc_job(
     direction: Literal["forward", "reverse"] = "forward",
     run_freq: bool = True,
     freq_job_kwargs: dict[str, Any] | None = None,
-    calc_swaps: dict[str, Any] | None = None,
     opt_swaps: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
+    **kwargs,
 ) -> IRCSchema:
     """
     Perform an intrinsic reaction coordinate (IRC) job using the given atoms object.
@@ -172,19 +168,6 @@ def irc_job(
         Whether to run the frequency analysis.
     freq_job_kwargs
         Keyword arguments to use for the [quacc.recipes.newtonnet.ts.freq_job][]
-    calc_swaps
-        Dictionary of custom kwargs for the NewtonNet calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
-
-        !!! Info "Calculator defaults"
-
-            ```python
-            {
-                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-            }
-            ```
     opt_swaps
         Dictionary of custom kwargs for the optimization process. Set a value
         to `None` to remove a pre-existing key entirely. For a list of available
@@ -208,8 +191,19 @@ def irc_job(
                 },
             }
             ```
-    copy_files
-        Files to copy to the runtime directory.
+    **kwargs
+        Custom kwargs for the NewtonNet calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
+
+        !!! Info "Calculator defaults"
+
+            ```python
+            {
+                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+            }
+            ```
 
     Returns
     -------
@@ -238,7 +232,7 @@ def irc_job(
         },
     }
 
-    flags = merge_dicts(defaults, calc_swaps)
+    flags = merge_dicts(defaults, kwargs)
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
     # Define calculator
@@ -246,7 +240,7 @@ def irc_job(
 
     # Run IRC
     SETTINGS.CHECK_CONVERGENCE = False
-    dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
+    dyn = run_opt(atoms, **opt_flags)
     opt_irc_summary = _add_stdev_and_hess(
         summarize_opt_run(
             dyn, additional_fields={"name": f"NewtonNet IRC: {direction}"}
@@ -275,7 +269,6 @@ def quasi_irc_job(
     irc_job_kwargs: dict[str, Any] | None = None,
     relax_job_kwargs: dict[str, Any] | None = None,
     freq_job_kwargs: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
 ) -> QuasiIRCSchema:
     """
     Perform a quasi-IRC job using the given atoms object. The initial IRC job by default
@@ -295,8 +288,6 @@ def quasi_irc_job(
         Keyword arguments to use for the [quacc.recipes.newtonnet.core.relax_job][]
     freq_job_kwargs
         Keyword arguments to use for the [quacc.recipes.newtonnet.ts.freq_job][]
-    copy_files
-        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -315,7 +306,6 @@ def quasi_irc_job(
         atoms,
         direction=direction,
         run_freq=False,
-        copy_files=copy_files,
         **irc_job_kwargs,
     )
 

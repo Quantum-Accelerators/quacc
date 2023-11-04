@@ -26,7 +26,9 @@ def test_static(tmpdir):
         3,
         method="pbe",
         basis="def2-svp",
-        calc_swaps={"num_threads": 1, "mem": None, "pop": "regular"},
+        num_threads=1,
+        mem=None,
+        pop="regular",
     )
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2

@@ -28,7 +28,7 @@ def test_static_job(tmpdir):
         3,
         xc="m06l",
         basis="def2-svp",
-        calc_swaps={"integral": "superfinegrid"},
+        integra="superfinegrid",
     )
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2
@@ -68,7 +68,7 @@ def test_relax_job(tmpdir):
         xc="m06l",
         basis="def2-svp",
         freq=True,
-        calc_swaps={"integral": "superfinegrid"},
+        integral="superfinegrid",
     )
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2

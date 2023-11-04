@@ -32,8 +32,8 @@ def static_job(
     spin_multiplicity: int,
     method: str = "wb97x-v",
     basis: str = "def2-tzvp",
-    calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
+    **kwargs,
 ) -> RunSchema:
     """
     Function to carry out a single-point calculation.
@@ -50,8 +50,10 @@ def static_job(
         The level of theory to use.
     basis
         Basis set
-    calc_swaps
-        Dictionary of custom kwargs for the Psi4 calculator. Set a value to
+    copy_files
+        Files to copy to the runtime directory.
+    **kwargs
+        Custom kwargs for the Psi4 calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.psi4.Psi4` calculator.
 
@@ -68,8 +70,6 @@ def static_job(
                 "reference": "uks" if spin_multiplicity > 1 else "rks",
             }
             ```
-    copy_files
-        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -91,7 +91,7 @@ def static_job(
         charge,
         spin_multiplicity,
         defaults=defaults,
-        calc_swaps=calc_swaps,
+        calc_swaps=kwargs,
         additional_fields={"name": "Psi4 Static"},
         copy_files=copy_files,
     )
@@ -102,9 +102,9 @@ def _base_job(
     charge: int,
     spin_multiplicity: int,
     defaults: dict[str, Any] | None = None,
-    calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
+    **kwargs,
 ) -> RunSchema:
     """
     Base function to carry out Psi4 recipes.
@@ -119,21 +119,21 @@ def _base_job(
         Multiplicity of the system.
     defaults
         The default calculator parameters.
-    calc_swaps
-        Dictionary of custom kwargs for the EMT calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.psi4.Psi4` calculator.
     additional_fields
         Any additional fields to supply to the summarizer.
     copy_files
         Files to copy to the runtime directory.
+    **kwargs
+        Custom kwargs for the Psi4 calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `ase.calculators.psi4.Psi4` calculator.
 
     Returns
     -------
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    flags = merge_dicts(defaults, calc_swaps)
+    flags = merge_dicts(defaults, kwargs)
 
     atoms.calc = Psi4(**flags)
     final_atoms = run_calc(atoms, copy_files=copy_files)

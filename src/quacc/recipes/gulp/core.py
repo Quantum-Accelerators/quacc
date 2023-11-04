@@ -33,7 +33,6 @@ def static_job(
     library: str | None = None,
     keyword_swaps: dict[str, Any] | None = None,
     option_swaps: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -69,8 +68,6 @@ def static_job(
             ```python
             {"dump every gulp.res": True}
             ```
-    copy_files
-        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -92,7 +89,6 @@ def static_job(
         keyword_swaps=keyword_swaps,
         option_swaps=option_swaps,
         additional_fields={"name": "GULP Static"},
-        copy_files=copy_files,
     )
 
 
@@ -104,7 +100,6 @@ def relax_job(
     relax_cell: bool = False,
     keyword_swaps: dict[str, Any] | None = None,
     option_swaps: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
     Carry out a structure relaxation.
@@ -145,8 +140,6 @@ def relax_job(
             ```python
             {"dump every gulp.res": True}
             ```
-    copy_files
-        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -171,7 +164,6 @@ def relax_job(
         keyword_swaps=keyword_swaps,
         option_swaps=option_swaps,
         additional_fields={"name": "GULP Relax"},
-        copy_files=copy_files,
     )
 
 
@@ -183,7 +175,6 @@ def _base_job(
     keyword_swaps: dict[str, Any] | None = None,
     option_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
     Base job function for GULP recipes.
@@ -208,8 +199,6 @@ def _base_job(
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
     additional_fields
         Additional field to supply to the summarizer.
-    copy_files
-        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -247,9 +236,7 @@ def _base_job(
         library=library,
     )
     final_atoms = run_calc(
-        atoms,
-        geom_file=GEOM_FILE_PBC if atoms.pbc.any() else GEOM_FILE_NOPBC,
-        copy_files=copy_files,
+        atoms, geom_file=GEOM_FILE_PBC if atoms.pbc.any() else GEOM_FILE_NOPBC
     )
 
     if (

@@ -43,9 +43,7 @@ if TYPE_CHECKING:
 @job
 @requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
 def static_job(
-    atoms: Atoms,
-    calc_swaps: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
+    atoms: Atoms, copy_files: list[str] | None = None, **kwargs
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -54,8 +52,10 @@ def static_job(
     ----------
     atoms
         Atoms object
-    calc_swaps
-        Dictionary of custom kwargs for the EMT calculator. Set a value to
+    copy_files
+        Files to copy to the runtime directory.
+    **kwargs
+        Custom kwargs for the EMT calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
 
@@ -67,8 +67,6 @@ def static_job(
                 "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
             }
             ```
-    copy_files
-        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -80,7 +78,7 @@ def static_job(
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
     }
-    flags = merge_dicts(defaults, calc_swaps)
+    flags = merge_dicts(defaults, kwargs)
 
     atoms.calc = NewtonNet(**flags)
     final_atoms = run_calc(atoms, copy_files=copy_files)
@@ -96,9 +94,9 @@ def static_job(
 @requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
 def relax_job(
     atoms: Atoms,
-    calc_swaps: dict[str, Any] | None = None,
     opt_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
+    **kwargs,
 ) -> OptSchema:
     """
     Relax a structure.
@@ -107,19 +105,6 @@ def relax_job(
     ----------
     atoms
         Atoms object
-    calc_swaps
-        Dictionary of custom kwargs for the EMT calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
-
-        !!! Info "Calculator defaults"
-
-            ```python
-            {
-                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-            }
-            ```
     opt_swaps
         Dictionary of custom kwargs for the optimization process. Set a value
         to `None` to remove a pre-existing key entirely. For a list of available
@@ -132,6 +117,19 @@ def relax_job(
             ```
     copy_files
         Files to copy to the runtime directory.
+    **kwargs
+        Dictionary of custom kwargs for the EMT calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
+
+        !!! Info "Calculator defaults"
+
+            ```python
+            {
+                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+            }
+            ```
 
     Returns
     -------
@@ -162,8 +160,8 @@ def freq_job(
     atoms: Atoms,
     temperature: float = 298.15,
     pressure: float = 1.0,
-    calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
+    **kwargs,
 ) -> FreqSchema:
     """
     Perform a frequency calculation using the given atoms object.
@@ -176,8 +174,10 @@ def freq_job(
         The temperature for the thermodynamic analysis.
     pressure
         The pressure for the thermodynamic analysis.
-    calc_swaps
-        Dictionary of custom kwargs for the EMT calculator. Set a value to
+    copy_files
+        Files to copy to the runtime directory.
+    **kwargs
+        Custom kwargs for the EMT calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
 
@@ -189,8 +189,6 @@ def freq_job(
                 "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
             }
             ```
-    copy_files
-        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -202,7 +200,7 @@ def freq_job(
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
     }
-    flags = merge_dicts(defaults, calc_swaps)
+    flags = merge_dicts(defaults, kwargs)
 
     ml_calculator = NewtonNet(**flags)
     atoms.calc = ml_calculator

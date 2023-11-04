@@ -24,11 +24,7 @@ if TYPE_CHECKING:
 
 
 @job
-def static_job(
-    atoms: Atoms,
-    calc_swaps: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
-) -> RunSchema:
+def static_job(atoms: Atoms, **kwargs) -> RunSchema:
     """
     Carry out a static calculation.
 
@@ -36,8 +32,8 @@ def static_job(
     ----------
     atoms
         Atoms object
-    calc_swaps
-        Dictionary of custom kwargs for the EMT calculator. Set a value to
+    **kwargs
+        Custom kwargs for the EMT calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.emt.EMT` calculator.
 
@@ -46,18 +42,14 @@ def static_job(
             ```python
             {}
             ```
-    copy_files
-        Files to copy to the runtime directory.
 
     Returns
     -------
     RunSchema
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
-    calc_swaps = calc_swaps or {}
-
-    atoms.calc = EMT(**calc_swaps)
-    final_atoms = run_calc(atoms, copy_files=copy_files)
+    atoms.calc = EMT(**kwargs)
+    final_atoms = run_calc(atoms)
 
     return summarize_run(
         final_atoms,
@@ -70,9 +62,8 @@ def static_job(
 def relax_job(
     atoms: Atoms,
     relax_cell: bool = False,
-    calc_swaps: dict[str, Any] | None = None,
     opt_swaps: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
+    **kwargs,
 ) -> OptSchema:
     """
     Carry out a geometry optimization.
@@ -83,16 +74,6 @@ def relax_job(
         Atoms object
     relax_cell
         Whether to relax the cell
-    calc_swaps
-        Dictionary of custom kwargs for the EMT calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.emt.EMT` calculator.
-
-        !!! Info "Calculator defaults"
-
-            ```python
-            {}
-            ```
     opt_swaps
         Dictionary of custom kwargs for the optimization process. Set a value
         to `None` to remove a pre-existing key entirely. For a list of available
@@ -103,8 +84,16 @@ def relax_job(
             ```python
             {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
             ```
-    copy_files
-        Files to copy to the runtime directory.
+    **kwargs
+        Custom kwargs for the EMT calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `ase.calculators.emt.EMT` calculator.
+
+        !!! Info "Calculator defaults"
+
+            ```python
+            {}
+            ```
 
     Returns
     -------
@@ -112,13 +101,11 @@ def relax_job(
         Dictionary of results, specified in
         [quacc.schemas.ase.summarize_opt_run][]
     """
-    calc_swaps = calc_swaps or {}
-
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
-    atoms.calc = EMT(**calc_swaps)
+    atoms.calc = EMT(**kwargs)
 
-    dyn = run_opt(atoms, relax_cell=relax_cell, copy_files=copy_files, **opt_flags)
+    dyn = run_opt(atoms, relax_cell=relax_cell, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields={"name": "EMT Relax"})

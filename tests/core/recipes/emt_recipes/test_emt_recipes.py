@@ -18,7 +18,7 @@ def test_static_job(tmpdir):
     assert output["parameters"]["asap_cutoff"] is False
     assert output["results"]["energy"] == pytest.approx(0.07001766638245854)
 
-    output = static_job(atoms, calc_swaps={"asap_cutoff": True})
+    output = static_job(atoms, asap_cutoff=True)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] is True
     assert output["results"]["energy"] == pytest.approx(0.11074520235398744)
@@ -64,7 +64,7 @@ def test_relax_job(tmpdir):
     output = relax_job(
         atoms,
         opt_swaps={"fmax": 0.03},
-        calc_swaps={"asap_cutoff": True},
+        asap_cutoff=True,
     )
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] is True
@@ -78,7 +78,7 @@ def test_relax_job(tmpdir):
     output = relax_job(
         atoms,
         opt_swaps={"fmax": 0.03},
-        calc_swaps={"asap_cutoff": True},
+        asap_cutoff=True,
     )
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] is True
