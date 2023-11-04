@@ -55,7 +55,7 @@ def static_job(
     copy_files
         Files to copy to the runtime directory.
     **kwargs
-        Custom kwargs for the EMT calculator. Set a value to
+        Custom kwargs for the NewtonNet calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
 
@@ -118,7 +118,7 @@ def relax_job(
     copy_files
         Files to copy to the runtime directory.
     **kwargs
-        Dictionary of custom kwargs for the EMT calculator. Set a value to
+        Dictionary of custom kwargs for the NewtonNet calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
 
@@ -177,7 +177,7 @@ def freq_job(
     copy_files
         Files to copy to the runtime directory.
     **kwargs
-        Custom kwargs for the EMT calculator. Set a value to
+        Custom kwargs for the NewtonNet calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
 
