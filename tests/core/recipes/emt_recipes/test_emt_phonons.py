@@ -10,4 +10,4 @@ def test_phonon_flow(tmpdir):
     tmpdir.chdir()
     atoms = bulk("Cu")
     output = phonon_flow(atoms)
-    assert output["thermal_properties"]["temperatures"].shape == (101,)
+    assert output["results"]["thermal_properties"]["temperatures"].shape == (101,)
