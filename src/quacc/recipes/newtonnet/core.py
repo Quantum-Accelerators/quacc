@@ -143,7 +143,7 @@ def relax_job(
     }
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella or FIRE}
 
-    flags = merge_dicts(defaults, calc_swaps)
+    flags = merge_dicts(defaults, kwargs)
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
     atoms.calc = NewtonNet(**flags)
