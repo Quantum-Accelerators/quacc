@@ -18,7 +18,6 @@ from quacc.schemas.ase import summarize_opt_run
 from quacc.utils.dicts import merge_dicts
 
 if TYPE_CHECKING:
-
     from ase import Atoms
 
     from quacc.schemas.ase import OptSchema
