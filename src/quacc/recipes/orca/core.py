@@ -27,8 +27,8 @@ GEOM_FILE = f"{_LABEL}.xyz"
 @job
 def static_job(
     atoms: Atoms,
-    charge: int,
-    spin_multiplicity: int,
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
     input_swaps: dict[str, Any] | None = None,
@@ -208,8 +208,8 @@ def relax_job(
 
     return _base_job(
         atoms,
-        charge,
-        spin_multiplicity,
+        charge=charge,
+        spin_multiplicity=spin_multiplicity,
         default_inputs=default_inputs,
         default_blocks=default_blocks,
         input_swaps=input_swaps,
@@ -221,8 +221,8 @@ def relax_job(
 
 def _base_job(
     atoms: Atoms,
-    charge: int,
-    spin_multiplicity: int,
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     default_inputs: dict[str, Any] | None = None,
     default_blocks: dict[str, Any] | None = None,
     input_swaps: dict[str, Any] | None = None,

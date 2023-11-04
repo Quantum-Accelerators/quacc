@@ -30,8 +30,8 @@ if TYPE_CHECKING:
 @job
 def static_job(
     atoms: Atoms,
-    charge: int,
-    spin_multiplicity: int,
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     method: str = "wb97mv",
     basis: str = "def2-tzvpd",
     scf_algorithm: str = "diis",
@@ -135,8 +135,8 @@ def static_job(
 @job
 def internal_relax_job(
     atoms: Atoms,
-    charge: int,
-    spin_multiplicity: int,
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     method: str = "wb97mv",
     basis: str = "def2-svpd",
     scf_algorithm: str = "diis",
@@ -240,8 +240,8 @@ def internal_relax_job(
 @job
 def freq_job(
     atoms: Atoms,
-    charge: int,
-    spin_multiplicity: int,
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     method: str = "wb97mv",
     basis: str = "def2-svpd",
     scf_algorithm: str = "diis",
@@ -334,8 +334,8 @@ def freq_job(
     }
     return _base_job(
         atoms,
-        charge,
-        spin_multiplicity,
+        charge=charge,
+        spin_multiplicity=spin_multiplicity,
         defaults=defaults,
         copy_files=copy_files,
         additional_fields={"name": "Q-Chem Frequency"},
@@ -345,8 +345,8 @@ def freq_job(
 @job
 def relax_job(
     atoms: Atoms,
-    charge: int,
-    spin_multiplicity: int,
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     method: str = "wb97mv",
     basis: str = "def2-svpd",
     scf_algorithm: str = "diis",
@@ -453,8 +453,8 @@ def relax_job(
 
     return _base_opt_job(
         atoms,
-        charge,
-        spin_multiplicity,
+        charge=charge,
+        spin_multiplicity=spin_multiplicity,
         qchem_defaults=qchem_defaults,
         opt_defaults=opt_defaults,
         opt_swaps=opt_swaps,
@@ -465,8 +465,8 @@ def relax_job(
 
 def _base_job(
     atoms: Atoms,
-    charge: int,
-    spin_multiplicity: int,
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     defaults: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
@@ -511,8 +511,8 @@ def _base_job(
 
 def _base_opt_job(
     atoms: Atoms,
-    charge: int,
-    spin_multiplicity: int,
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     qchem_defaults: dict[str, Any] | None = None,
     opt_defaults: dict[str, Any] | None = None,
     opt_swaps: dict[str, Any] | None = None,

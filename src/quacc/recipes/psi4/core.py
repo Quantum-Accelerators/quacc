@@ -28,8 +28,8 @@ if TYPE_CHECKING:
 @requires(psi4, "Psi4 not installed. Try conda install -c psi4 psi4")
 def static_job(
     atoms: Atoms,
-    charge: int,
-    spin_multiplicity: int,
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     method: str = "wb97x-v",
     basis: str = "def2-tzvp",
     copy_files: list[str] | None = None,
@@ -88,8 +88,8 @@ def static_job(
     }
     return _base_job(
         atoms,
-        charge,
-        spin_multiplicity,
+        charge=charge,
+        spin_multiplicity=spin_multiplicity,
         defaults=defaults,
         calc_swaps=kwargs,
         additional_fields={"name": "Psi4 Static"},
@@ -99,8 +99,8 @@ def static_job(
 
 def _base_job(
     atoms: Atoms,
-    charge: int,
-    spin_multiplicity: int,
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     defaults: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
