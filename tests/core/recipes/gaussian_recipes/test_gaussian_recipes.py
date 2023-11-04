@@ -28,7 +28,7 @@ def test_static_job(tmpdir):
         3,
         xc="m06l",
         basis="def2-svp",
-        integra="superfinegrid",
+        integral="superfinegrid",
     )
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2
