@@ -191,6 +191,8 @@ def double_relax_job(
     DoubleRelaxSchema
         Dictionary of results
     """
+    relax1_kwargs = relax1_kwargs or {}
+    relax2_kwargs = relax2_kwargs or {}
 
     # Run first relaxation
     summary1 = relax_job.__wrapped__(

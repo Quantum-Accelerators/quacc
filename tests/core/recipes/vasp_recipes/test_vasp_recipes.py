@@ -233,7 +233,7 @@ def test_slab_dynamic_jobs(tmpdir):
 
     outputs = bulk_to_slabs_flow(
         atoms,
-        slab_relax_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
+        slab_relax_kwargs={"preset": "SlabSet", "nelmin": 6},
         run_static=False,
     )
     assert len(outputs) == 4
@@ -247,7 +247,7 @@ def test_slab_dynamic_jobs(tmpdir):
 
     outputs = bulk_to_slabs_flow(
         atoms,
-        slab_static_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
+        slab_static_kwargs={"preset": "SlabSet", "nelmin": 6},
     )
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
@@ -274,7 +274,7 @@ def test_slab_dynamic_jobs(tmpdir):
     outputs = slab_to_ads_flow(
         atoms,
         adsorbate,
-        slab_relax_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
+        slab_relax_kwargs={"preset": "SlabSet", "nelmin": 6},
         run_static=False,
     )
 
@@ -286,7 +286,7 @@ def test_slab_dynamic_jobs(tmpdir):
     outputs = slab_to_ads_flow(
         atoms,
         adsorbate,
-        slab_static_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
+        slab_static_kwargs={"preset": "SlabSet", "nelmin": 6},
     )
 
     assert [output["nsites"] == 82 for output in outputs]
