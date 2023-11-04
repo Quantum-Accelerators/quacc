@@ -62,6 +62,7 @@ def summarize_phonopy(
     }
 
     results = {"results": {"thermal_properties": phonon.get_thermal_properties_dict()}}
+    phonon.save(settings={"force_constants": True})
 
     atoms_metadata = atoms_to_metadata(input_atoms) if input_atoms else {}
     unsorted_task_doc = recursive_merge_dicts(
