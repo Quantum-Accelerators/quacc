@@ -102,9 +102,9 @@ def _base_job(
     charge: int = 0,
     spin_multiplicity: int = 1,
     defaults: dict[str, Any] | None = None,
+    calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
-    **kwargs,
 ) -> RunSchema:
     """
     Base function to carry out Psi4 recipes.
@@ -119,14 +119,14 @@ def _base_job(
         Multiplicity of the system.
     defaults
         The default calculator parameters.
+    calc_swaps
+        Custom kwargs for the Psi4 calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `ase.calculators.psi4.Psi4` calculator.
     additional_fields
         Any additional fields to supply to the summarizer.
     copy_files
         Files to copy to the runtime directory.
-    **kwargs
-        Custom kwargs for the Psi4 calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.psi4.Psi4` calculator.
 
     Returns
     -------
