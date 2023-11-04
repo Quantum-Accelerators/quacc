@@ -1,3 +1,5 @@
+import contextlib
+
 import pytest
 from ase.build import bulk
 
@@ -5,8 +7,6 @@ parsl = pytest.importorskip("parsl")
 
 
 def setup_module():
-    import contextlib
-
     with contextlib.suppress(Exception):
         parsl.load()
 
