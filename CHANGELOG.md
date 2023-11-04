@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.14]
+
+### Changed
+
+- The use of `calc_swaps` has been replaced with `**kwargs`. This means in recipes you can do `scf = "diis", max_steps=100` instead of `calc_swaps={"scf":"diis", "max_steps":100}`, for instance.
+
 ## [0.3.13]
 
 ### Fixed

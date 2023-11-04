@@ -96,12 +96,10 @@ def relax_job(
     OptSchema
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
-    calc_swaps = calc_swaps or {}
-
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
-    atoms.calc = LennardJones(**calc_swaps)
+    atoms.calc = LennardJones(**kwargs)
     dyn = run_opt(atoms, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields={"name": "LJ Relax"})
