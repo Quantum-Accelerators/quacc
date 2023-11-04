@@ -99,7 +99,7 @@ def qmof_relax_job(
     atoms = summary4[1]["atoms"]
 
     # 5. Static Calculation
-    summary5 = _static(atoms, preset, kwargs)
+    summary5 = _static(atoms, preset, **kwargs)
     summary5["prerelax_lowacc"] = summary1 if run_prerelax else None
     summary5["position_relax_lowacc"] = summary2
     summary5["volume_relax_lowacc"] = summary3 if relax_cell else None
@@ -324,7 +324,7 @@ def _static(atoms: Atoms, preset: str | None = "QMOFSet", **kwargs) -> VaspSchem
         atoms,
         preset=preset,
         defaults=defaults,
-        calc_swaps=calc_swaps,
+        calc_swaps=kwargs,
         additional_fields={"name": "QMOF Static"},
         copy_files=["WAVECAR"],
     )
