@@ -49,7 +49,6 @@ If you plan to use NewtonNet with Quacc, you will need to install it prior to us
 
 ```bash
 pip install git+https://github.com/ericyuan00000/NewtonNet.git
-pip install quacc[newtonnet,sella]
 ```
 
 ## ORCA
@@ -66,11 +65,10 @@ If you plan to use Psi4 with quacc, you will need to install it prior to use. Th
 
 ## Q-Chem
 
-If you plan to use Q-Chem with Quacc, you will need to install `openbabel` and `sella` (recommended) prior to use. This can be done as follows:
+If you plan to use Q-Chem with Quacc, you will need to install `openbabel`. This can be done as follows:
 
 ```bash
 conda install -c conda-forge openbabel
-pip install quacc[sella]
 ```
 
 ## tblite
