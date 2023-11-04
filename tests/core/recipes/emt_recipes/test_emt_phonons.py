@@ -6,7 +6,7 @@ pytest.importorskip("phonopy")
 from quacc.recipes.emt.phonons import phonon_flow
 
 
-def test_bulk_to_defects_flow(tmpdir):
+def test_phonon_flow(tmpdir):
     tmpdir.chdir()
     atoms = bulk("Cu")
     output = phonon_flow(atoms)
