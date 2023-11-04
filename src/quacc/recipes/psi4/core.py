@@ -133,7 +133,7 @@ def _base_job(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    flags = merge_dicts(defaults, kwargs)
+    flags = merge_dicts(defaults, calc_swaps)
 
     atoms.calc = Psi4(**flags)
     final_atoms = run_calc(atoms, copy_files=copy_files)
