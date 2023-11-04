@@ -134,7 +134,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Renamed `[optimizers]` extras to `[sella]`
 - Moved `quacc.utils.wflows` into `quacc.wflow.decorators` and `quacc.wflow.prefect`
 - Moved `quacc.utils.db` into `quacc.wflow.db`
-- Moved `quacc.utils.calc` to `quacc.runners.calc`
+- Moved `quacc.utils.calc` to `quacc.runners.ase`
 - Moved `quacc.presets` to `quacc.calculators.presets`
 
 ### Fixed

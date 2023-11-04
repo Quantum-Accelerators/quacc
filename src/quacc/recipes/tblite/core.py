@@ -8,7 +8,7 @@ from monty.dev import requires
 
 from quacc import job
 from quacc.builders.thermo import build_ideal_gas
-from quacc.runners.calc import run_ase_calc, run_ase_opt, run_ase_vib
+from quacc.runners.ase import run_calc, run_opt, run_vib
 from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
 from quacc.utils.dicts import merge_dicts
 
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
     from ase import Atoms
 
-    from quacc.runners.calc import VibKwargs
+    from quacc.runners.ase import VibKwargs
     from quacc.schemas._aliases.ase import OptSchema, RunSchema, VibThermoSchema
 
 
@@ -66,7 +66,7 @@ def static_job(
     flags = merge_dicts(defaults, calc_swaps)
     atoms.calc = TBLite(**flags)
 
-    final_atoms = run_ase_calc(atoms, copy_files=copy_files)
+    final_atoms = run_calc(atoms, copy_files=copy_files)
     return summarize_run(
         final_atoms,
         input_atoms=atoms,
@@ -114,7 +114,7 @@ def relax_job(
     opt_swaps
         Dictionary of custom kwargs for the optimization process. Set a value
         to `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [quacc.runners.calc.run_ase_opt][].
+        keys, refer to [quacc.runners.ase.run_opt][].
     copy_files
         Files to copy to the runtime directory.
 
@@ -131,7 +131,7 @@ def relax_job(
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
-    dyn = run_ase_opt(atoms, relax_cell=relax_cell, copy_files=copy_files, **opt_flags)
+    dyn = run_opt(atoms, relax_cell=relax_cell, copy_files=copy_files, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields={"name": "TBLite Relax"})
 
@@ -175,7 +175,7 @@ def freq_job(
         keys, refer to the `tblite.ase.TBLite` calculator.
     vib_kwargs
         Dictionary of custom kwargs for the vibration analysis. Refer to
-        [quacc.runners.calc.run_ase_vib][].
+        [quacc.runners.ase.run_vib][].
     copy_files
         Files to copy to the runtime directory.
 
@@ -190,7 +190,7 @@ def freq_job(
     flags = merge_dicts(defaults, calc_swaps)
     atoms.calc = TBLite(**flags)
 
-    vibrations = run_ase_vib(atoms, vib_kwargs=vib_kwargs, copy_files=copy_files)
+    vibrations = run_vib(atoms, vib_kwargs=vib_kwargs, copy_files=copy_files)
     igt = build_ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)
 
     return summarize_vib_and_thermo(

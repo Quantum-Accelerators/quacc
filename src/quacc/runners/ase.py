@@ -1,4 +1,4 @@
-"""Utility functions for running ASE calculators."""
+"""Utility functions for running ASE calculators with ASE-based methods."""
 from __future__ import annotations
 
 import os
@@ -28,7 +28,7 @@ except ImportError:
     Sella = None
 
 if TYPE_CHECKING:
-    from typing import Any, Literal, TypedDict
+    from typing import Any, TypedDict
 
     from ase import Atoms
     from ase.optimize.optimize import Optimizer
@@ -43,7 +43,7 @@ if TYPE_CHECKING:
         nfree: int  # default = 2
 
 
-def run_ase_calc(
+def run_calc(
     atoms: Atoms, geom_file: str | None = None, copy_files: list[str] | None = None
 ) -> Atoms:
     """
@@ -112,7 +112,7 @@ def run_ase_calc(
     return atoms
 
 
-def run_ase_opt(
+def run_opt(
     atoms: Atoms,
     relax_cell: bool = False,
     fmax: float = 0.01,
@@ -198,7 +198,7 @@ def run_ase_opt(
     return dyn
 
 
-def run_ase_vib(
+def run_vib(
     atoms: Atoms,
     vib_kwargs: VibKwargs | None = None,
     copy_files: list[str] | None = None,
