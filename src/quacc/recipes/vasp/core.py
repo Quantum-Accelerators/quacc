@@ -157,7 +157,6 @@ def double_relax_job(
     relax_cell: bool = True,
     relax1_kwargs: dict[str, Any] | None = None,
     relax2_kwargs: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
 ) -> DoubleRelaxSchema:
     """
     Double-relax a structure. This is particularly useful for a few reasons:
@@ -183,8 +182,6 @@ def double_relax_job(
         Dictionary of custom kwargs for the first relaxation.
     relax2_kwargs
         Dictionary of custom kwargs for the second relaxation.
-    copy_files
-        Files to copy to the (first) runtime directory.
 
     Returns
     -------
@@ -199,7 +196,6 @@ def double_relax_job(
         atoms,
         preset=preset,
         relax_cell=relax_cell,
-        copy_files=copy_files,
         **relax1_kwargs,
     )
 
