@@ -161,8 +161,7 @@ def freq_job(
     pressure
         Pressure in bar.
     vib_kwargs
-        Dictionary of custom kwargs for the vibration analysis. Refer to
-        [quacc.runners.ase.run_vib][].
+        Dictionary of kwargs for the `ase.vibrations.Vibrations` class.
     **kwargs
         Custom kwargs for the tblite calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
