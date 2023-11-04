@@ -125,7 +125,7 @@ def test_doublerelax_job(tmpdir):
     assert output["relax1"]["parameters"]["encut"] == 520
     assert output["parameters"]["encut"] == 520
 
-    output = double_relax_job(atoms, calc_swaps2={"nelmin": 6})
+    output = double_relax_job(atoms, relax2_kwargs={"nelmin": 6})
     assert output["relax1"]["nsites"] == len(atoms)
     assert output["relax1"]["parameters"]["isym"] == 0
     assert output["relax1"]["parameters"]["nsw"] > 0
@@ -154,7 +154,7 @@ def test_doublerelax_job(tmpdir):
     assert output["relax1"]["parameters"]["isif"] == 2
     assert output["parameters"]["isif"] == 2
 
-    double_relax_job(atoms, calc_swaps1={"kpts": [1, 1, 1]})
+    double_relax_job(atoms, relax1_kwargs={"kpts": [1, 1, 1]})
 
 
 def test_slab_static_job(tmpdir):
