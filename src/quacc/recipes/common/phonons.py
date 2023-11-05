@@ -8,6 +8,7 @@ from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.phonopy import get_phonopy_structure, get_pmg_structure
 
 from quacc import flow, job, subflow
+from quacc.atoms.phonons import atoms_to_phonopy, phonopy_atoms_to_ase_atoms
 from quacc.recipes.common.core import force_job
 from quacc.schemas.phonopy import summarize_phonopy
 
@@ -23,7 +24,6 @@ if TYPE_CHECKING:
     from ase.calculators.calculator import Calculator
     from numpy.typing import ArrayLike, NDArray
     from phonopy import Phonopy
-    from phonopy.structure.atoms import PhonopyAtoms
 
     from quacc.schemas._aliases.phonopy import PhononSchema
 
@@ -95,58 +95,12 @@ def phonon_flow(
         )
 
     def _run_phonons(atoms: Atoms) -> PhononSchema:
-        phonon = _atoms_to_phonopy(atoms, supercell_matrix, atom_disp)
+        phonon = atoms_to_phonopy(atoms, supercell_matrix, atom_disp)
         supercells = [
-            _phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
+            phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
         ]
         forces = _force_job_distributed(supercells)
 
         return _thermo_job(phonon, forces, atoms)
 
     return _run_phonons(atoms)
-
-
-def _atoms_to_phonopy(
-    atoms: Atoms, supercell_matrix: ArrayLike, atom_disp: float
-) -> Phonopy:
-    """
-    Convert an ASE atoms object to a phonopy object with displacements
-    generated.
-
-    Parameters
-    ----------
-    atoms
-        ASE atoms object
-    supercell_matrix
-        Supercell matrix to use.
-    atom_disp
-        Atomic displacement (A).
-
-    Returns
-    -------
-    Phonopy
-        Phonopy object
-    """
-    structure = AseAtomsAdaptor().get_structure(atoms)
-    phonopy_atoms = get_phonopy_structure(structure)
-    phonon = phonopy.Phonopy(phonopy_atoms, supercell_matrix)
-    phonon.generate_displacements(distance=atom_disp)
-    return phonon
-
-
-def _phonopy_atoms_to_ase_atoms(phonpy_atoms: PhonopyAtoms) -> Atoms:
-    """
-    Convert a phonopy atoms object to an ASE atoms object.
-
-    Parameters
-    ----------
-    phonpy_atoms
-        Phonopy atoms object
-
-    Returns
-    -------
-    Atoms
-        ASE atoms object
-    """
-    pmg_structure = get_pmg_structure(phonpy_atoms)
-    return AseAtomsAdaptor().get_atoms(pmg_structure)
