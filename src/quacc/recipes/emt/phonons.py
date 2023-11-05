@@ -25,7 +25,7 @@ def phonon_flow(
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
-    calc_swaps: dict[str, Any] | None = None,
+    **kwargs,
 ) -> PhononSchema:
     """
     Carry out a phonon calculation.
@@ -34,8 +34,18 @@ def phonon_flow(
     ----------
     atoms
         Atoms object
-    calc_swaps
-        Dictionary of custom kwargs for the EMT calculator. Set a value to
+    supercell_matrix
+        Supercell matrix to use. Defaults to 2x2x2 supercell.
+    atom_disp
+        Atomic displacement (A).
+    t_step
+        Temperature step (K).
+    t_min
+        Min temperature (K).
+    t_max
+        Max temperature (K).
+    **kwargs
+        Custom kwargs for the EMT calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.emt.EMT` calculator.
 
@@ -44,8 +54,6 @@ def phonon_flow(
             ```python
             {}
             ```
-    copy_files
-        Files to copy to the runtime directory.
 
     Returns
     -------
