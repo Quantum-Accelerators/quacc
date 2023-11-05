@@ -27,7 +27,7 @@ def force_job(atoms: Atoms, calculator: Calculator) -> NDArray:
     Returns
     -------
     NDArray
-        Forces
+        Forces in eV/A.
     """
     atoms.calc = calculator
     return run_calc(atoms).get_forces()
