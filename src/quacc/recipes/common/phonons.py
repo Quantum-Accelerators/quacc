@@ -73,8 +73,8 @@ def phonon_flow(
     def _force_job_distributed(atoms: Atoms) -> list[NDArray]:
         phonon = atoms_to_phonopy(atoms, supercell_matrix, atom_disp)
         supercells = [
-        phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
-    ]
+            phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
+        ]
         return [
             force_job(supercell, calculator)
             for supercell in supercells
