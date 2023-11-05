@@ -1,4 +1,6 @@
 """Aliases for type hinting `quacc.schemas.ase`"""
+from __future__ import annotations
+
 from typing import Any, TypedDict
 
 from numpy.typing import NDArray

@@ -10,7 +10,7 @@ from ase.io import read
 
 from quacc.atoms.core import check_charge_and_spin, check_is_metal, get_atoms_id
 from quacc.calculators.vasp import Vasp
-from quacc.runners.prep import prep_next_run
+from quacc.schemas.prep import prep_next_run
 
 FILE_DIR = Path(__file__).resolve().parent
 

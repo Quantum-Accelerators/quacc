@@ -28,12 +28,12 @@ if TYPE_CHECKING:
 @requires(psi4, "Psi4 not installed. Try conda install -c psi4 psi4")
 def static_job(
     atoms: Atoms,
-    charge: int,
-    spin_multiplicity: int,
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     method: str = "wb97x-v",
     basis: str = "def2-tzvp",
-    calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
+    **kwargs,
 ) -> RunSchema:
     """
     Function to carry out a single-point calculation.
@@ -50,8 +50,10 @@ def static_job(
         The level of theory to use.
     basis
         Basis set
-    calc_swaps
-        Dictionary of custom kwargs for the Psi4 calculator. Set a value to
+    copy_files
+        Files to copy to the runtime directory.
+    **kwargs
+        Custom kwargs for the Psi4 calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.psi4.Psi4` calculator.
 
@@ -68,8 +70,6 @@ def static_job(
                 "reference": "uks" if spin_multiplicity > 1 else "rks",
             }
             ```
-    copy_files
-        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -88,10 +88,10 @@ def static_job(
     }
     return _base_job(
         atoms,
-        charge,
-        spin_multiplicity,
+        charge=charge,
+        spin_multiplicity=spin_multiplicity,
         defaults=defaults,
-        calc_swaps=calc_swaps,
+        calc_swaps=kwargs,
         additional_fields={"name": "Psi4 Static"},
         copy_files=copy_files,
     )
@@ -99,8 +99,8 @@ def static_job(
 
 def _base_job(
     atoms: Atoms,
-    charge: int,
-    spin_multiplicity: int,
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
@@ -120,7 +120,7 @@ def _base_job(
     defaults
         The default calculator parameters.
     calc_swaps
-        Dictionary of custom kwargs for the EMT calculator. Set a value to
+        Custom kwargs for the Psi4 calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.psi4.Psi4` calculator.
     additional_fields

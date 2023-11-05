@@ -1,2 +1,3 @@
 covalent==0.227.0rc0
 covalent-hpc-plugin==0.0.7
+phonopy==2.20.0

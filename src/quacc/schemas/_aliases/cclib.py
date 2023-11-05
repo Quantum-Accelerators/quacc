@@ -1,4 +1,6 @@
 """Type hints for quacc.schemas.cclib."""
+from __future__ import annotations
+
 from typing import Any, TypedDict
 
 from numpy.typing import NDArray
