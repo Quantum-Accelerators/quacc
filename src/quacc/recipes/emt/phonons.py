@@ -61,8 +61,7 @@ def phonon_flow(
         Dictionary of results from [quacc.schemas.phonopy.summarize_phonopy][]
     """
 
-    calc_swaps = calc_swaps or {}
-    calc = EMT(**calc_swaps)
+    calc = EMT(**kwargs)
 
     return common_phonon_flow(
         atoms,
