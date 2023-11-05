@@ -1,4 +1,6 @@
 """Type hints for quacc.schemas.vasp."""
+from __future__ import annotations
+
 from typing import TypedDict
 
 from quacc.schemas._aliases.ase import RunSchema

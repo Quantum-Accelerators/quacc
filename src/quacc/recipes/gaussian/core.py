@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from ase.calculators.gaussian import Gaussian
 
 from quacc import SETTINGS, job
-from quacc.runners.calc import run_ase_calc
+from quacc.runners.ase import run_calc
 from quacc.schemas.cclib import cclib_summarize_run
 from quacc.utils.dicts import merge_dicts
 
@@ -26,12 +26,12 @@ GAUSSIAN_CMD = f"{SETTINGS.GAUSSIAN_CMD} < {_LABEL}.com > {LOG_FILE}"
 @job
 def static_job(
     atoms: Atoms,
-    charge: int,
-    spin_multiplicity: int,
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
-    calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
+    **kwargs,
 ) -> cclibSchema:
     """
     Carry out a single-point calculation.
@@ -48,8 +48,10 @@ def static_job(
         Exchange-correlation functional
     basis
         Basis set
-    calc_swaps
-        Dictionary of custom kwargs for the Gaussian calculator. Set a value to
+    copy_files
+        Files to copy to the runtime directory.
+    **kwargs
+        Custom kwargs for the Gaussian calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.gaussian.Gaussian` calculator.
 
@@ -73,8 +75,6 @@ def static_job(
                 "ioplist": ["6/7=3", "2/9=2000"],
             }
             ```
-    copy_files
-        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -102,7 +102,7 @@ def static_job(
     return _base_job(
         atoms,
         defaults=defaults,
-        calc_swaps=calc_swaps,
+        calc_swaps=kwargs,
         additional_fields={"name": "Gaussian Static"},
         copy_files=copy_files,
     )
@@ -116,8 +116,8 @@ def relax_job(
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
     freq: bool = False,
-    calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
+    **kwargs,
 ) -> cclibSchema:
     """
     Carry out a geometry optimization.
@@ -136,8 +136,10 @@ def relax_job(
         Basis set
     freq
         If a frequency calculation should be carried out.
-    calc_swaps
-        Dictionary of custom kwargs for the Gaussian calculator. Set a value to
+    copy_files
+        Files to copy to the runtime directory.
+    **kwargs
+        Custom kwargs for the Gaussian calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.gaussian.Gaussian` calculator.
 
@@ -161,8 +163,6 @@ def relax_job(
                 "ioplist": ["2/9=2000"],
             }
             ```
-    copy_files
-        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -190,7 +190,7 @@ def relax_job(
     return _base_job(
         atoms,
         defaults=defaults,
-        calc_swaps=calc_swaps,
+        calc_swaps=kwargs,
         additional_fields={"name": "Gaussian Relax"},
         copy_files=copy_files,
     )
@@ -230,6 +230,6 @@ def _base_job(
     flags = merge_dicts(defaults, calc_swaps)
 
     atoms.calc = Gaussian(command=GAUSSIAN_CMD, label=_LABEL, **flags)
-    atoms = run_ase_calc(atoms, geom_file=LOG_FILE, copy_files=copy_files)
+    atoms = run_calc(atoms, geom_file=LOG_FILE, copy_files=copy_files)
 
     return cclib_summarize_run(atoms, LOG_FILE, additional_fields=additional_fields)

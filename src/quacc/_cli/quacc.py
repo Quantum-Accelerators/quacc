@@ -146,7 +146,7 @@ def info() -> None:
         "CHECK_CONVERGENCE",
     ]
     settings_subset = {k: v for k, v in settings.items() if k in reported_settings}
-    print(
+    print(  # noqa: T201
         f"""
 quacc version: {__version__}
 

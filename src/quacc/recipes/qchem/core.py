@@ -7,7 +7,7 @@ from ase.optimize import FIRE
 
 from quacc import job
 from quacc.calculators.qchem import QChem
-from quacc.runners.calc import run_ase_calc, run_ase_opt
+from quacc.runners.ase import run_calc, run_opt
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import merge_dicts, remove_dict_nones
 
@@ -29,8 +29,8 @@ if TYPE_CHECKING:
 @job
 def static_job(
     atoms: Atoms,
-    charge: int,
-    spin_multiplicity: int,
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     method: str | None = "wb97mv",
     basis: str | None = "def2-tzvpd",
     qc_input_swaps: dict[str, Any] | None = None,
@@ -115,8 +115,8 @@ def static_job(
 @job
 def internal_relax_job(
     atoms: Atoms,
-    charge: int,
-    spin_multiplicity: int,
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     method: str = "wb97mv",
     basis: str = "def2-svpd",
     scf_algorithm: str = "diis",
@@ -220,8 +220,8 @@ def internal_relax_job(
 @job
 def freq_job(
     atoms: Atoms,
-    charge: int,
-    spin_multiplicity: int,
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     method: str = "wb97mv",
     basis: str = "def2-svpd",
     scf_algorithm: str = "diis",
@@ -314,8 +314,8 @@ def freq_job(
     }
     return _base_job(
         atoms,
-        charge,
-        spin_multiplicity,
+        charge=charge,
+        spin_multiplicity=spin_multiplicity,
         defaults=defaults,
         copy_files=copy_files,
         additional_fields={"name": "Q-Chem Frequency"},
@@ -325,8 +325,8 @@ def freq_job(
 @job
 def relax_job(
     atoms: Atoms,
-    charge: int,
-    spin_multiplicity: int,
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     method: str = "wb97mv",
     basis: str = "def2-svpd",
     scf_algorithm: str = "diis",
@@ -334,7 +334,7 @@ def relax_job(
     smd_solvent: str | None = None,
     n_cores: int | None = None,
     overwrite_inputs: dict[str, Any] | None = None,
-    opt_swaps: dict[str, Any] | None = None,
+    opt_params: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
     """
@@ -399,8 +399,8 @@ def relax_job(
         Dictionary passed to `pymatgen.io.qchem.QChemDictSet` which can modify
         default values set therein as well as set additional Q-Chem parameters.
         See QChemDictSet documentation for more details.
-    opt_swaps
-        Dictionary of custom kwargs for [quacc.runners.calc.run_ase_opt][]
+    opt_params
+        Dictionary of custom kwargs for [quacc.runners.ase.run_opt][]
     copy_files
         Files to copy to the runtime directory.
 
@@ -433,11 +433,11 @@ def relax_job(
 
     return _base_opt_job(
         atoms,
-        charge,
-        spin_multiplicity,
+        charge=charge,
+        spin_multiplicity=spin_multiplicity,
         qchem_defaults=qchem_defaults,
         opt_defaults=opt_defaults,
-        opt_swaps=opt_swaps,
+        opt_params=opt_params,
         additional_fields={"name": "Q-Chem Optimization"},
         copy_files=copy_files,
     )
@@ -445,8 +445,8 @@ def relax_job(
 
 def _base_job(
     atoms: Atoms,
-    charge: int,
-    spin_multiplicity: int,
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
@@ -484,7 +484,7 @@ def _base_job(
     qchem_flags = merge_dicts(defaults, calc_swaps)
 
     atoms.calc = QChem(atoms, **qchem_flags)
-    final_atoms = run_ase_calc(atoms, copy_files=copy_files)
+    final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(
         final_atoms,
@@ -496,11 +496,11 @@ def _base_job(
 
 def _base_opt_job(
     atoms: Atoms,
-    charge: int,
-    spin_multiplicity: int,
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     qchem_defaults: dict[str, Any] | None = None,
     opt_defaults: dict[str, Any] | None = None,
-    opt_swaps: dict[str, Any] | None = None,
+    opt_params: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
@@ -519,8 +519,8 @@ def _base_opt_job(
         Default arguments for the Q-Chem calculator.
     opt_defaults
         Default arguments for the ASE optimizer.
-    opt_swaps
-        Dictionary of custom kwargs for [quacc.runners.calc.run_ase_opt][]
+    opt_params
+        Dictionary of custom kwargs for [quacc.runners.ase.run_opt][]
     copy_files
         Files to copy to the runtime directory.
 
@@ -533,10 +533,10 @@ def _base_opt_job(
     #   - passing initial Hessian?
 
     qchem_flags = remove_dict_nones(qchem_defaults)
-    opt_flags = merge_dicts(opt_defaults, opt_swaps)
+    opt_flags = merge_dicts(opt_defaults, opt_params)
 
     atoms.calc = QChem(atoms, **qchem_flags)
-    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
+    dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
 
     return summarize_opt_run(
         dyn,

@@ -12,7 +12,7 @@ from ase.optimize import FIRE
 
 from quacc import job
 from quacc.builders.thermo import build_ideal_gas
-from quacc.runners.calc import run_ase_calc, run_ase_opt, run_ase_vib
+from quacc.runners.ase import run_calc, run_opt, run_vib
 from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
 from quacc.utils.dicts import merge_dicts
 
@@ -21,16 +21,12 @@ if TYPE_CHECKING:
 
     from ase import Atoms
 
-    from quacc.runners.calc import VibKwargs
+    from quacc.runners.ase import VibKwargs
     from quacc.schemas.ase import OptSchema, RunSchema, VibThermoSchema
 
 
 @job
-def static_job(
-    atoms: Atoms,
-    calc_swaps: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
-) -> RunSchema:
+def static_job(atoms: Atoms, **kwargs) -> RunSchema:
     """
     Function to carry out a static calculation.
 
@@ -38,7 +34,7 @@ def static_job(
     ----------
     atoms
         Atoms object
-    calc_swaps
+    **kwargs
         Dictionary of custom kwargs for the LJ calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.lj.LJ` calculator.
@@ -48,18 +44,15 @@ def static_job(
             ```python
             {}
             ```
-    copy_files
-        Files to copy to the runtime directory.
 
     Returns
     -------
     RunSchema
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
-    calc_swaps = calc_swaps or {}
 
-    atoms.calc = LennardJones(**calc_swaps)
-    final_atoms = run_ase_calc(atoms, copy_files=copy_files)
+    atoms.calc = LennardJones(**kwargs)
+    final_atoms = run_calc(atoms)
 
     return summarize_run(
         final_atoms, input_atoms=atoms, additional_fields={"name": "LJ Static"}
@@ -68,10 +61,7 @@ def static_job(
 
 @job
 def relax_job(
-    atoms: Atoms,
-    calc_swaps: dict[str, Any] | None = None,
-    opt_swaps: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
+    atoms: Atoms, opt_params: dict[str, Any] | None = None, **kwargs
 ) -> OptSchema:
     """
     Function to carry out a geometry optimization.
@@ -80,8 +70,18 @@ def relax_job(
     ----------
     atoms
         Atoms object
-    calc_swaps
-        Dictionary of custom kwargs for the LJ calculator. Set a value to
+    opt_params
+        Dictionary of custom kwargs for the optimization process. Set a value
+        to `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to [quacc.runners.ase.run_opt][].
+
+        !!! Info "Optimizer defaults"
+
+            ```python
+            {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
+            ```
+    **kwargs
+        Custom kwargs for the LJ calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.lj.LJ` calculator.
 
@@ -90,31 +90,17 @@ def relax_job(
             ```python
             {}
             ```
-    opt_swaps
-        Dictionary of custom kwargs for the optimization process. Set a value
-        to `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [quacc.runners.calc.run_ase_opt][].
-
-        !!! Info "Optimizer defaults"
-
-            ```python
-            {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
-            ```
-    copy_files
-        Files to copy to the runtime directory.
 
     Returns
     -------
     OptSchema
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
-    calc_swaps = calc_swaps or {}
-
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
-    opt_flags = merge_dicts(opt_defaults, opt_swaps)
+    opt_flags = merge_dicts(opt_defaults, opt_params)
 
-    atoms.calc = LennardJones(**calc_swaps)
-    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
+    atoms.calc = LennardJones(**kwargs)
+    dyn = run_opt(atoms, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields={"name": "LJ Relax"})
 
@@ -125,9 +111,8 @@ def freq_job(
     energy: float = 0.0,
     temperature: float = 298.15,
     pressure: float = 1.0,
-    calc_swaps: dict[str, Any] | None = None,
     vib_kwargs: VibKwargs | None = None,
-    copy_files: list[str] | None = None,
+    **kwargs,
 ) -> VibThermoSchema:
     """
     Run a frequency job and calculate thermochemistry.
@@ -142,7 +127,9 @@ def freq_job(
         Temperature in Kelvins.
     pressure
         Pressure in bar.
-    calc_swaps
+    vib_kwargs
+        Dictionary of kwargs for the `ase.vibrations.Vibrations` class.
+    **kwargs
         Dictionary of custom kwargs for the LJ calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.lj.LJ` calculator.
@@ -152,22 +139,16 @@ def freq_job(
             ```python
             {}
             ```
-    vib_kwargs
-        Dictionary of custom kwargs for the vibration analysis. Refer to
-        [quacc.runners.calc.run_ase_vib][].
-    copy_files
-        Files to copy to the runtime directory.
 
     Returns
     -------
     VibThermoSchema
         Dictionary of results, specified in [quacc.schemas.ase.summarize_vib_and_thermo][]
     """
-    calc_swaps = calc_swaps or {}
     vib_kwargs = vib_kwargs or {}
 
-    atoms.calc = LennardJones(**calc_swaps)
-    vibrations = run_ase_vib(atoms, vib_kwargs=vib_kwargs, copy_files=copy_files)
+    atoms.calc = LennardJones(**kwargs)
+    vibrations = run_vib(atoms, vib_kwargs=vib_kwargs)
     igt = build_ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)
 
     return summarize_vib_and_thermo(

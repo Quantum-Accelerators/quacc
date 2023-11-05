@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from pymatgen.analysis.defects.generators import VacancyGenerator
 
-from quacc import flow, job, subflow
+from quacc import flow, subflow
 from quacc.atoms.defects import make_defects_from_bulk
 from quacc.recipes.emt.core import relax_job, static_job
 
@@ -81,21 +81,24 @@ def bulk_to_defects_flow(
     if "relax_cell" not in defect_relax_kwargs:
         defect_relax_kwargs["relax_cell"] = False
 
-    @job
-    def _make_defects(atoms):
-        return make_defects_from_bulk(
+    @subflow
+    def _relax_job_distributed(atoms: Atoms) -> list[OptSchema]:
+        defects = make_defects_from_bulk(
             atoms,
             defect_gen=defect_gen,
             defect_charge=defect_charge,
             **make_defects_kwargs,
         )
-
-    @subflow
-    def _relax_distributed(defects):
         return [relax_job(defect, **defect_relax_kwargs) for defect in defects]
 
     @subflow
-    def _relax_and_static_distributed(defects):
+    def _relax_and_static_job_distributed(atoms: Atoms) -> list[RunSchema]:
+        defects = make_defects_from_bulk(
+            atoms,
+            defect_gen=defect_gen,
+            defect_charge=defect_charge,
+            **make_defects_kwargs,
+        )
         return [
             static_job(
                 relax_job(defect, **defect_relax_kwargs)["atoms"],
@@ -104,10 +107,8 @@ def bulk_to_defects_flow(
             for defect in defects
         ]
 
-    defects = _make_defects(atoms)
-
     return (
-        _relax_and_static_distributed(defects)
+        _relax_and_static_job_distributed(atoms)
         if run_static
-        else _relax_distributed(defects)
+        else _relax_job_distributed(atoms)
     )

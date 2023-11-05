@@ -39,7 +39,7 @@ def mock_dynrun(atoms, **kwargs):
 
 @pytest.fixture(autouse=True)
 def patch_dynrun(monkeypatch):
-    monkeypatch.setattr("quacc.recipes.vasp.qmof.run_ase_opt", mock_dynrun)
+    monkeypatch.setattr("quacc.recipes.vasp.qmof.run_opt", mock_dynrun)
 
 
 def mock_summarize_run(atoms, **kwargs):
