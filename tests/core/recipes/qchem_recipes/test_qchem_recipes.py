@@ -217,7 +217,7 @@ def test_relax_job_v1(monkeypatch, tmpdir, test_atoms):
         charge,
         spin_multiplicity,
         basis="def2-tzvpd",
-        opt_swaps={"max_steps": 1},
+        opt_params={"max_steps": 1},
     )
 
     assert output["atoms"] != test_atoms
@@ -246,7 +246,7 @@ def test_relax_job_v2(monkeypatch, tmpdir, test_atoms):
         spin_multiplicity,
         method="b97mv",
         pcm_dielectric="3.0",
-        opt_swaps={"max_steps": 1},
+        opt_params={"max_steps": 1},
     )
 
     assert output["atoms"] != test_atoms
@@ -278,7 +278,7 @@ def test_relax_job_v3(monkeypatch, tmpdir, test_atoms):
         scf_algorithm="gdm",
         overwrite_inputs=overwrite_inputs,
         basis="def2-tzvpd",
-        opt_swaps={"max_steps": 1},
+        opt_params={"max_steps": 1},
     )
 
     assert output["atoms"] != test_atoms
@@ -342,7 +342,7 @@ def test_ts_job_v1(monkeypatch, tmpdir, test_atoms):
         charge,
         spin_multiplicity,
         basis="def2-tzvpd",
-        opt_swaps={"max_steps": 1},
+        opt_params={"max_steps": 1},
     )
 
     assert output["atoms"] != test_atoms
@@ -370,7 +370,7 @@ def test_ts_job_v2(monkeypatch, tmpdir, test_atoms):
         spin_multiplicity,
         method="b97mv",
         pcm_dielectric="3.0",
-        opt_swaps={"max_steps": 1},
+        opt_params={"max_steps": 1},
     )
 
     assert output["atoms"] != test_atoms
@@ -402,7 +402,7 @@ def test_ts_job_v3(monkeypatch, tmpdir, test_atoms):
         scf_algorithm="gdm",
         overwrite_inputs=overwrite_inputs,
         basis="def2-tzvpd",
-        opt_swaps={"max_steps": 1},
+        opt_params={"max_steps": 1},
     )
 
     assert output["atoms"] != test_atoms
@@ -428,7 +428,7 @@ def test_ts_job_v4(tmpdir, test_atoms):
             1,
             pcm_dielectric="3.0",
             smd_solvent="water",
-            opt_swaps={"optimizer": FIRE},
+            opt_params={"optimizer": FIRE},
         )
 
 
@@ -445,7 +445,7 @@ def test_irc_job_v1(monkeypatch, tmpdir, test_atoms):
         spin_multiplicity,
         "forward",
         basis="def2-tzvpd",
-        opt_swaps={"max_steps": 1},
+        opt_params={"max_steps": 1},
     )
 
     assert output["atoms"] != test_atoms
@@ -469,7 +469,7 @@ def test_irc_job_v1(monkeypatch, tmpdir, test_atoms):
         spin_multiplicity,
         "reverse",
         basis="def2-tzvpd",
-        opt_swaps={"max_steps": 1},
+        opt_params={"max_steps": 1},
     )
 
     qcin = QCInput.from_file("mol.qin.gz")
@@ -487,7 +487,7 @@ def test_irc_job_v1(monkeypatch, tmpdir, test_atoms):
         scf_algorithm="gdm",
         overwrite_inputs=overwrite_inputs,
         basis="def2-tzvpd",
-        opt_swaps={"max_steps": 1},
+        opt_params={"max_steps": 1},
     )
 
     assert output["atoms"] != test_atoms
@@ -522,7 +522,7 @@ def test_irc_job_v2(tmpdir, test_atoms):
             "forward",
             pcm_dielectric="3.0",
             smd_solvent="water",
-            opt_swaps={"optimizer": FIRE},
+            opt_params={"optimizer": FIRE},
         )
 
 
@@ -532,7 +532,7 @@ def test_quasi_irc_job(monkeypatch, tmpdir, test_atoms):
     monkeypatch.setattr(QChem, "read_results", mock_read)
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
 
-    relax_opt_swaps = {"max_steps": 5}
+    relax_opt_params = {"max_steps": 5}
 
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
     output = quasi_irc_job(
@@ -541,7 +541,7 @@ def test_quasi_irc_job(monkeypatch, tmpdir, test_atoms):
         spin_multiplicity,
         "forward",
         basis="def2-tzvpd",
-        relax_opt_swaps=relax_opt_swaps,
+        relax_opt_params=relax_opt_params,
     )
 
     assert output["atoms"] != test_atoms
@@ -556,8 +556,8 @@ def test_quasi_irc_job(monkeypatch, tmpdir, test_atoms):
     ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.basic.quasi_irc_forward"))
     qcinput_nearly_equal(qcin, ref_qcin)
 
-    irc_opt_swaps = {"max_steps": 6}
-    relax_opt_swaps = {"max_steps": 6}
+    irc_opt_params = {"max_steps": 6}
+    relax_opt_params = {"max_steps": 6}
 
     output = quasi_irc_job(
         test_atoms,
@@ -566,8 +566,8 @@ def test_quasi_irc_job(monkeypatch, tmpdir, test_atoms):
         "reverse",
         basis="def2-svpd",
         scf_algorithm="gdm",
-        irc_opt_swaps=irc_opt_swaps,
-        relax_opt_swaps=relax_opt_swaps,
+        irc_opt_params=irc_opt_params,
+        relax_opt_params=relax_opt_params,
     )
 
     assert output["atoms"] != test_atoms

@@ -128,12 +128,12 @@ def test_ts_job_with_custom_hessian(tmpdir):
     # Define test inputs
     atoms = molecule("H2O")
     use_custom_hessian = True
-    opt_swaps = {"max_steps": 4}
+    opt_params = {"max_steps": 4}
     # Call the function
     output = ts_job(
         atoms,
         use_custom_hessian=use_custom_hessian,
-        opt_swaps=opt_swaps,
+        opt_params=opt_params,
     )
 
     # Perform assertions on the result
@@ -174,7 +174,7 @@ def test_irc_job_with_custom_fmax(tmpdir):
     fmax = 0.001
 
     # Call the function
-    output = irc_job(atoms, opt_swaps={"fmax": fmax})
+    output = irc_job(atoms, opt_params={"fmax": fmax})
 
     # Perform assertions on the result
     assert isinstance(output, dict)
@@ -192,7 +192,7 @@ def test_irc_job_with_custom_max_steps(tmpdir):
     max_steps = 500
 
     # Call the function
-    output = irc_job(atoms, opt_swaps={"max_steps": max_steps})
+    output = irc_job(atoms, opt_params={"max_steps": max_steps})
 
     # Perform assertions on the result
     assert isinstance(output, dict)
@@ -224,14 +224,14 @@ def test_irc_job_with_custom_temperature_and_pressure(tmpdir):
     )
 
 
-def test_irc_job_with_custom_opt_swaps(tmpdir):
+def test_irc_job_with_custom_opt_params(tmpdir):
     tmpdir.chdir()
     # Define test inputs
     atoms = molecule("H2O")
-    opt_swaps = {"run_kwargs": {"direction": "reverse"}}
+    opt_params = {"run_kwargs": {"direction": "reverse"}}
 
     # Call the function
-    output = irc_job(atoms, opt_swaps=opt_swaps)
+    output = irc_job(atoms, opt_params=opt_params)
 
     # Perform assertions on the result
     assert isinstance(output, dict)
@@ -308,7 +308,7 @@ def test_quasi_irc_job_with_custom_irc_swaps(tmpdir):
     tmpdir.chdir()
     # Define test inputs
     atoms = molecule("H2O")
-    irc_job_kwargs = {"calc_swaps": {"run_kwargs": {"direction": "reverse"}}}
+    irc_job_kwargs = {"run_kwargs": {"direction": "reverse"}}
 
     # Call the function
     output = quasi_irc_job(atoms, irc_job_kwargs=irc_job_kwargs)

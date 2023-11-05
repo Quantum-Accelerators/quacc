@@ -28,27 +28,23 @@ def test_static_job(tmpdir):
     assert output["parameters"]["encut"] == 520
     assert output["parameters"]["efermi"] == "midgap"
 
-    output = static_job(atoms, calc_swaps={"ncore": 2, "kpar": 4})
+    output = static_job(atoms, ncore=2, kpar=4)
     assert output["parameters"]["encut"] == 520
     assert output["parameters"]["ncore"] == 2
     assert output["parameters"]["kpar"] == 4
 
-    output = static_job(
-        atoms, preset="QMOFSet", calc_swaps={"ismear": 0, "sigma": 0.01, "nedos": None}
-    )
+    output = static_job(atoms, preset="QMOFSet", ismear=0, sigma=0.01, nedos=None)
     assert output["parameters"]["encut"] == 520
     assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["sigma"] == 0.01
 
     output = static_job(
         atoms,
-        calc_swaps={
-            "ivdw": 13,
-            "lasph": False,
-            "prec": None,
-            "lwave": None,
-            "efermi": None,
-        },
+        ivdw=13,
+        lasph=False,
+        prec=None,
+        lwave=None,
+        efermi=None,
     )
     assert output["parameters"]["ivdw"] == 13
     assert output["parameters"]["lasph"] is False
@@ -65,13 +61,11 @@ def test_static_job_incar_copilot_aggressive(tmpdir):
     SETTINGS.VASP_INCAR_COPILOT = "aggressive"
     output = static_job(
         atoms,
-        calc_swaps={
-            "ivdw": 13,
-            "lasph": False,
-            "prec": None,
-            "lwave": None,
-            "efermi": None,
-        },
+        ivdw=13,
+        lasph=False,
+        prec=None,
+        lwave=None,
+        efermi=None,
     )
     assert output["parameters"]["ivdw"] == 13
     assert output["parameters"]["lasph"] is False
@@ -94,7 +88,7 @@ def test_relax_job(tmpdir):
     assert output["parameters"]["lwave"] is False
     assert output["parameters"]["encut"] == 520
 
-    output = relax_job(atoms, calc_swaps={"nelmin": 6})
+    output = relax_job(atoms, nelmin=6)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["isym"] == 0
     assert output["parameters"]["nsw"] > 0
@@ -131,7 +125,7 @@ def test_doublerelax_job(tmpdir):
     assert output["relax1"]["parameters"]["encut"] == 520
     assert output["parameters"]["encut"] == 520
 
-    output = double_relax_job(atoms, calc_swaps2={"nelmin": 6})
+    output = double_relax_job(atoms, relax2_kwargs={"nelmin": 6})
     assert output["relax1"]["nsites"] == len(atoms)
     assert output["relax1"]["parameters"]["isym"] == 0
     assert output["relax1"]["parameters"]["nsw"] > 0
@@ -160,7 +154,7 @@ def test_doublerelax_job(tmpdir):
     assert output["relax1"]["parameters"]["isif"] == 2
     assert output["parameters"]["isif"] == 2
 
-    double_relax_job(atoms, calc_swaps1={"kpts": [1, 1, 1]})
+    double_relax_job(atoms, relax1_kwargs={"kpts": [1, 1, 1]})
 
 
 def test_slab_static_job(tmpdir):
@@ -175,7 +169,7 @@ def test_slab_static_job(tmpdir):
     assert output["parameters"]["lvhar"] is True
     assert output["parameters"]["encut"] == 450
 
-    output = slab_static_job(atoms, calc_swaps={"nelmin": 6})
+    output = slab_static_job(atoms, nelmin=6)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["idipol"] == 3
     assert output["parameters"]["nsw"] == 0
@@ -183,7 +177,7 @@ def test_slab_static_job(tmpdir):
     assert output["parameters"]["encut"] == 450
     assert output["parameters"]["nelmin"] == 6
 
-    output = slab_static_job(atoms, calc_swaps={"encut": None})
+    output = slab_static_job(atoms, encut=None)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["idipol"] == 3
     assert output["parameters"]["nsw"] == 0
@@ -204,7 +198,7 @@ def test_slab_relax_job(tmpdir):
     assert output["parameters"]["lwave"] is False
     assert output["parameters"]["encut"] == 450
 
-    output = slab_relax_job(atoms, calc_swaps={"nelmin": 6})
+    output = slab_relax_job(atoms, nelmin=6)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["isif"] == 2
     assert output["parameters"]["nsw"] > 0
@@ -239,7 +233,7 @@ def test_slab_dynamic_jobs(tmpdir):
 
     outputs = bulk_to_slabs_flow(
         atoms,
-        slab_relax_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
+        slab_relax_kwargs={"preset": "SlabSet", "nelmin": 6},
         run_static=False,
     )
     assert len(outputs) == 4
@@ -253,7 +247,7 @@ def test_slab_dynamic_jobs(tmpdir):
 
     outputs = bulk_to_slabs_flow(
         atoms,
-        slab_static_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
+        slab_static_kwargs={"preset": "SlabSet", "nelmin": 6},
     )
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
@@ -280,7 +274,7 @@ def test_slab_dynamic_jobs(tmpdir):
     outputs = slab_to_ads_flow(
         atoms,
         adsorbate,
-        slab_relax_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
+        slab_relax_kwargs={"preset": "SlabSet", "nelmin": 6},
         run_static=False,
     )
 
@@ -292,7 +286,7 @@ def test_slab_dynamic_jobs(tmpdir):
     outputs = slab_to_ads_flow(
         atoms,
         adsorbate,
-        slab_static_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
+        slab_static_kwargs={"preset": "SlabSet", "nelmin": 6},
     )
 
     assert [output["nsites"] == 82 for output in outputs]
@@ -356,7 +350,7 @@ def test_qmof(tmpdir):
     output = qmof_relax_job(atoms, run_prerelax=False)
     assert output["prerelax_lowacc"] is None
 
-    output = qmof_relax_job(atoms, preset="BulkSet", calc_swaps={"nelmin": 6})
+    output = qmof_relax_job(atoms, preset="BulkSet", nelmin=6)
     assert output["double_relax"][0]["parameters"]["encut"] == 520
     assert output["double_relax"][0]["parameters"]["nelmin"] == 6
     assert output["double_relax"][0]["parameters"]["sigma"] == 0.05
