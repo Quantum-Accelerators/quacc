@@ -92,13 +92,10 @@ def phonon_flow(
             additional_fields=fields_to_store,
         )
 
-    def _run_phonons(atoms: Atoms) -> PhononSchema:
-        phonon = atoms_to_phonopy(atoms, supercell_matrix, atom_disp)
-        supercells = [
-            phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
-        ]
-        forces = _force_job_distributed(supercells)
+    phonon = atoms_to_phonopy(atoms, supercell_matrix, atom_disp)
+    supercells = [
+        phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
+    ]
+    forces = _force_job_distributed(supercells)
 
-        return _thermo_job(phonon, forces, atoms)
-
-    return _run_phonons(atoms)
+    return _thermo_job(phonon, forces, atoms)
