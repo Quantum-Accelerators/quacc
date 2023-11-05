@@ -200,7 +200,6 @@ def double_relax_job(
     )
 
     # Run second relaxation
-    relax_job.copy_files = 
     summary2 = relax_job.__wrapped__(
         summary1["atoms"],
         preset=preset,
