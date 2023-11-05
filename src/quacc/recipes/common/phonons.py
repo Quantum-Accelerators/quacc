@@ -4,8 +4,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
-from pymatgen.io.ase import AseAtomsAdaptor
-from pymatgen.io.phonopy import get_phonopy_structure, get_pmg_structure
 
 from quacc import flow, job, subflow
 from quacc.atoms.phonons import atoms_to_phonopy, phonopy_atoms_to_ase_atoms
