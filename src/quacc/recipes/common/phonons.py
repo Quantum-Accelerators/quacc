@@ -67,6 +67,7 @@ def phonon_flow(
     PhononSchema
         Dictionary of results from [quacc.schemas.phonopy.summarize_phonopy][]
     """
+    fields_to_store = fields_to_store or {}
 
     @subflow
     def _force_job_distributed(supercells: list[Atoms]) -> list[NDArray]:
