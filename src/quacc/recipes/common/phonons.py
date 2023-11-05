@@ -79,7 +79,7 @@ def phonon_flow(
 
     @job
     def _thermo_job(
-        phonon: Phonopy, forces: list[NDArray], input_atoms
+        phonon: Phonopy, forces: list[NDArray], input_atoms: Atoms
     ) -> PhononSchema:
         phonon.forces = forces
         phonon.produce_force_constants()
