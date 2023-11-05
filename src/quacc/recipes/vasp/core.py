@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from quacc import job
 from quacc.calculators.vasp import Vasp
-from quacc.runners.calc import run_ase_calc
+from quacc.runners.ase import run_calc
 from quacc.schemas.vasp import vasp_summarize_run
 from quacc.utils.dicts import merge_dicts
 
@@ -24,8 +24,8 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms,
     preset: str | None = "BulkSet",
-    calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
+    **kwargs,
 ) -> VaspSchema:
     """
     Carry out a single-point calculation.
@@ -36,8 +36,10 @@ def static_job(
         Atoms object
     preset
         Preset to use from `quacc.calculators.presets.vasp`.
-    calc_swaps
-        Dictionary of custom kwargs for the Vasp calculator. Set a value to
+    copy_files
+        Files to copy to the runtime directory.
+    **kwargs
+        Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
 
@@ -54,8 +56,6 @@ def static_job(
                 "nsw": 0,
             }
             ```
-    copy_files
-        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -76,7 +76,7 @@ def static_job(
         atoms,
         preset=preset,
         defaults=defaults,
-        calc_swaps=calc_swaps,
+        calc_swaps=kwargs,
         additional_fields={"name": "VASP Static"},
         copy_files=copy_files,
     )
@@ -87,8 +87,8 @@ def relax_job(
     atoms: Atoms,
     preset: str | None = "BulkSet",
     relax_cell: bool = True,
-    calc_swaps: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
+    **kwargs,
 ) -> VaspSchema:
     """
     Relax a structure.
@@ -102,8 +102,10 @@ def relax_job(
     relax_cell
         True if a volume relaxation (ISIF = 3) should be performed. False if
         only the positions (ISIF = 2) should be updated.
-    calc_swaps
-        Dictionary of custom kwargs for the Vasp calculator. Set a value to
+    copy_files
+        Files to copy to the runtime directory.
+    **kwargs
+        Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
 
@@ -121,8 +123,6 @@ def relax_job(
                 "symprec": 1e-8,
             }
             ```
-    copy_files
-        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -144,7 +144,7 @@ def relax_job(
         atoms,
         preset=preset,
         defaults=defaults,
-        calc_swaps=calc_swaps,
+        calc_swaps=kwargs,
         additional_fields={"name": "VASP Relax"},
         copy_files=copy_files,
     )
@@ -155,9 +155,8 @@ def double_relax_job(
     atoms: Atoms,
     preset: str | None = "BulkSet",
     relax_cell: bool = True,
-    calc_swaps1: dict[str, Any] | None = None,
-    calc_swaps2: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
+    relax1_kwargs: dict[str, Any] | None = None,
+    relax2_kwargs: dict[str, Any] | None = None,
 ) -> DoubleRelaxSchema:
     """
     Double-relax a structure. This is particularly useful for a few reasons:
@@ -179,26 +178,25 @@ def double_relax_job(
     relax_cell
         True if a volume relaxation (ISIF = 3) should be performed. False if
         only the positions (ISIF = 2) should be updated.
-    calc_swaps1
+    relax1_kwargs
         Dictionary of custom kwargs for the first relaxation.
-    calc_swaps2
+    relax2_kwargs
         Dictionary of custom kwargs for the second relaxation.
-    copy_files
-        Files to copy to the (first) runtime directory.
 
     Returns
     -------
     DoubleRelaxSchema
         Dictionary of results
     """
+    relax1_kwargs = relax1_kwargs or {}
+    relax2_kwargs = relax2_kwargs or {}
 
     # Run first relaxation
     summary1 = relax_job.__wrapped__(
         atoms,
         preset=preset,
         relax_cell=relax_cell,
-        calc_swaps=calc_swaps1,
-        copy_files=copy_files,
+        **relax1_kwargs,
     )
 
     # Run second relaxation
@@ -206,8 +204,8 @@ def double_relax_job(
         summary1["atoms"],
         preset=preset,
         relax_cell=relax_cell,
-        calc_swaps=calc_swaps2,
         copy_files=["WAVECAR"],
+        **relax2_kwargs,
     )
     summary2["relax1"] = summary1
 
@@ -250,6 +248,6 @@ def _base_job(
     flags = merge_dicts(defaults, calc_swaps, remove_nones=False)
 
     atoms.calc = Vasp(atoms, preset=preset, **flags)
-    atoms = run_ase_calc(atoms, copy_files=copy_files)
+    atoms = run_calc(atoms, copy_files=copy_files)
 
     return vasp_summarize_run(atoms, additional_fields=additional_fields)

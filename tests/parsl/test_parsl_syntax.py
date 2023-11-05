@@ -1,3 +1,5 @@
+import contextlib
+
 import pytest
 
 from quacc import flow, job, subflow
@@ -6,8 +8,6 @@ parsl = pytest.importorskip("parsl")
 
 
 def setup_module():
-    import contextlib
-
     with contextlib.suppress(Exception):
         parsl.load()
 

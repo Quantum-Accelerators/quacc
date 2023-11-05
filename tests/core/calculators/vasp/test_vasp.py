@@ -12,7 +12,7 @@ from ase.io import read
 
 from quacc import SETTINGS
 from quacc.calculators.vasp import Vasp, presets
-from quacc.runners.prep import prep_next_run
+from quacc.schemas.prep import prep_next_run
 
 FILE_DIR = Path(__file__).resolve().parent
 
