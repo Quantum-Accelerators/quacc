@@ -169,12 +169,13 @@ def mp_relax_flow(
 
     # Run the prerelax
     prerelax_results = mp_prerelax_job(atoms, **prerelax_job_kwargs)
+    prerelax_dir = prerelax_results["directory"]
 
     # Run the relax
     relax_results = mp_relax_job(
         prerelax_results["atoms"],
         bandgap=prerelax_results["output"]["bandgap"],
-        copy_files=["CHGCAR", "WAVECAR"],
+        copy_files=[prerelax_dir / "CHGCAR", prerelax_dir / "WAVECAR"],
         **relax_job_kwargs,
     )
     relax_results["prerelax"] = prerelax_results

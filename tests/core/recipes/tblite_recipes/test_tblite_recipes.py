@@ -118,7 +118,7 @@ def test_freq_job(tmpdir):
     assert output["results"]["entropy"] == pytest.approx(0.0023506788982171896)
     assert output["results"]["gibbs_energy"] == pytest.approx(-11.100020872176652)
     assert "nid" in output
-    assert "dir_name" in output
+    assert "directory" in output
 
 
 def test_unique_workdir(tmpdir):

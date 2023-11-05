@@ -191,7 +191,7 @@ When deploying calculations for the first time, it's important to start simple, 
         print(
             task_doc["formula_pretty"],
             task_doc["results"]["gibbs_energy"],
-            task_doc["dir_name"],
+            task_doc["directory"],
         )
     ```
 

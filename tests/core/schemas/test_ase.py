@@ -107,7 +107,7 @@ def test_summarize_opt_run(tmpdir):
     assert len(results["trajectory_results"]) == len(traj)
     assert results["trajectory_results"][-1]["energy"] == results["results"]["energy"]
     assert "nid" in results
-    assert "dir_name" in results
+    assert "directory" in results
     assert "pymatgen_version" in results["builder_meta"]
     assert results["fmax"] == dyn.fmax
     assert results["parameters_opt"]["max_steps"] == 100
@@ -176,7 +176,7 @@ def test_summarize_vib_run(tmpdir):
     assert results["parameters_vib"]["ndof"] == 6
     assert results["parameters_vib"]["nfree"] == 2
     assert "nid" in results
-    assert "dir_name" in results
+    assert "directory" in results
     assert "pymatgen_version" in results["builder_meta"]
     assert len(results["results"]["vib_freqs_raw"]) == 6
     assert results["results"]["vib_freqs_raw"][0] == pytest.approx(
@@ -326,7 +326,7 @@ def test_summarize_ideal_gas_thermo(tmpdir):
     assert results["parameters_thermo"]["sigma"] == 6
     assert results["parameters_thermo"]["spin_multiplicity"] == 2
     assert "nid" in results
-    assert "dir_name" in results
+    assert "directory" in results
 
     # test document can be jsanitized and decoded
     d = jsanitize(results, strict=True, enum_values=True)

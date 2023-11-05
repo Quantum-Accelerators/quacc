@@ -200,11 +200,12 @@ def double_relax_job(
     )
 
     # Run second relaxation
+    relax_job.copy_files = 
     summary2 = relax_job.__wrapped__(
         summary1["atoms"],
         preset=preset,
         relax_cell=relax_cell,
-        copy_files=["WAVECAR"],
+        copy_files=[summary1["directory"] / "WAVECAR"],
         **relax2_kwargs,
     )
     summary2["relax1"] = summary1

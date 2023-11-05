@@ -147,7 +147,7 @@ def cclib_summarize_run(
 
 
 def _make_cclib_schema(
-    dir_name: str | Path,
+    directory: str | Path,
     logfile_extensions: str | list[str],
     analysis: str | list[str] | None = None,
     proatom_dir: Path | str | None = None,
@@ -160,7 +160,7 @@ def _make_cclib_schema(
 
     Parameters
     ----------
-    dir_name
+    directory
         The path to the folder containing the calculation outputs.
     logfile_extensions
         Possible extensions of the log file (e.g. ".log", ".out", ".txt",
@@ -171,7 +171,7 @@ def _make_cclib_schema(
     analysis
         The name(s) of any cclib post-processing analysis to run. Note that
         for bader, ddec6, and hirshfeld, a cube file (.cube, .cub) must be
-        in dir_name. Supports: cpsa, mpa, lpa, bickelhaupt, density, mbo,
+        in directory. Supports: cpsa, mpa, lpa, bickelhaupt, density, mbo,
         bader, ddec6, hirshfeld.
     proatom_dir
         The path to the proatom directory if ddec6 or hirshfeld analysis are
@@ -188,9 +188,9 @@ def _make_cclib_schema(
 
     # Find the most recent log file with the given extension in the
     # specified directory.
-    logfile = find_recent_logfile(dir_name, logfile_extensions)
+    logfile = find_recent_logfile(directory, logfile_extensions)
     if not logfile:
-        msg = f"Could not find file with extension {logfile_extensions} in {dir_name}"
+        msg = f"Could not find file with extension {logfile_extensions} in {directory}"
         raise FileNotFoundError(msg)
 
     # Let's parse the log file with cclib
@@ -254,7 +254,7 @@ def _make_cclib_schema(
         analysis = [a.lower() for a in analysis]
 
         # Look for .cube or .cub files
-        cubefile_path = find_recent_logfile(dir_name, [".cube", ".cub"])
+        cubefile_path = find_recent_logfile(directory, [".cube", ".cub"])
 
         for analysis_name in analysis:
             if calc_attributes := _cclib_calculate(

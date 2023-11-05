@@ -92,7 +92,7 @@ def summarize_run(
     inputs = {
         "parameters": atoms.calc.parameters,
         "nid": uri.split(":")[0],
-        "dir_name": ":".join(uri.split(":")[1:]),
+        "directory": Path(":".join(uri.split(":")[1:])),
         "input_atoms": input_atoms_metadata,
     }
 
@@ -272,7 +272,7 @@ def summarize_vib_run(
             "nfree": vib.nfree,
         },
         "nid": uri.split(":")[0],
-        "dir_name": ":".join(uri.split(":")[1:]),
+        "directory": Path(":".join(uri.split(":")[1:])),
     }
 
     atoms_metadata = atoms_to_metadata(
@@ -377,7 +377,7 @@ def summarize_ideal_gas_thermo(
             "n_imag": igt.n_imag,
         },
         "nid": uri.split(":")[0],
-        "dir_name": ":".join(uri.split(":")[1:]),
+        "directory": Path(":".join(uri.split(":")[1:])),
     }
 
     results = {

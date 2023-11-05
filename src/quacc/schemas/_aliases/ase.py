@@ -1,4 +1,5 @@
 """Aliases for type hinting `quacc.schemas.ase`"""
+from pathlib import Path
 from typing import Any, TypedDict
 
 from numpy.typing import NDArray
@@ -14,7 +15,7 @@ class RunSchema(AtomsSchema):
 
     input_atoms: AtomsSchema | None
     nid: str
-    dir_name: str
+    directory: Path
     parameters: parameters
     results: results
 
@@ -51,7 +52,7 @@ class VibSchema(AtomsSchema):
     """Schema for `quacc.schemas.ase.summarize_vib_run`"""
 
     nid: str
-    dir_name: str
+    directory: str
     parameters: parameters | None
     parameters_vib: ParametersVib | None
     results: VibResults
@@ -83,7 +84,7 @@ class ThermoResults(TypedDict):
 
 class ThermoSchema(AtomsSchema):
     nid: str
-    dir_name: str
+    directory: str
     parameters_thermo: ParametersThermo
     results: ThermoResults
 

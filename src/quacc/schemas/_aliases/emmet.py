@@ -196,7 +196,7 @@ class CalculationOutput(TypedDict, total=False):
 class Calculation(TypedDict):
     """Type hint associated with emmet.core.vasp.calculation.Calculation."""
 
-    dir_name: str
+    directory: str
     vasp_version: str
     has_vasp_completed: TaskState | bool
     input: CalculationInput
@@ -252,7 +252,7 @@ class TaskDoc(StructureMetadata):
     """Type hint associated with emmet.core.tasks.TaskDoc."""
 
     tags: list[str] | None
-    dir_name: str
+    directory: str
     state: TaskState
     calcs_reversed: list[Calculation]
     structure: Structure
