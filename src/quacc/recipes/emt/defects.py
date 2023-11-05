@@ -82,7 +82,7 @@ def bulk_to_defects_flow(
         defect_relax_kwargs["relax_cell"] = False
 
     @subflow
-    def _relax_distributed(atoms: Atoms) -> list[OptSchema]:
+    def _relax_job_distributed(atoms: Atoms) -> list[OptSchema]:
         defects = make_defects_from_bulk(
             atoms,
             defect_gen=defect_gen,
@@ -92,7 +92,7 @@ def bulk_to_defects_flow(
         return [relax_job(defect, **defect_relax_kwargs) for defect in defects]
 
     @subflow
-    def _relax_and_static_distributed(atoms: Atoms) -> list[RunSchema]:
+    def _relax_and_static_job_distributed(atoms: Atoms) -> list[RunSchema]:
         defects = make_defects_from_bulk(
             atoms,
             defect_gen=defect_gen,
@@ -108,7 +108,7 @@ def bulk_to_defects_flow(
         ]
 
     return (
-        _relax_and_static_distributed(atoms)
+        _relax_and_static_job_distributed(atoms)
         if run_static
-        else _relax_distributed(atoms)
+        else _relax_job_distributed(atoms)
     )

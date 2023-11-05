@@ -192,9 +192,6 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
     All `#!Python @flow`-decorated functions are transformed into their corresponding
     decorator.
 
-    The wrapped function can also be stripped of its decorator by calling the
-    `#!Python .__wrapped__` attribute.
-
     ```python
     from quacc import flow, job
 
@@ -313,9 +310,6 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
     else:
         decorated = _func
 
-    if not hasattr(decorated, "__wrapped__"):
-        decorated.__wrapped__ = _func
-
     return decorated
 
 
@@ -329,9 +323,6 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
 
     All `#!Python @subflow`-decorated functions are transformed into their corresponding
     decorator.
-
-    The wrapped function can also be stripped of its decorator by calling the
-    `#!Python .__wrapped__` attribute.
 
     ```python
     import random
@@ -511,8 +502,5 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
         decorated = redun_task(_func, **kwargs)
     else:
         decorated = _func
-
-    if not hasattr(decorated, "__wrapped__"):
-        decorated.__wrapped__ = _func
 
     return decorated
