@@ -35,6 +35,9 @@ def test_decorators(tmpdir):
     assert workflow(1, 2, 3) == 9
     assert dynamic_workflow(1, 2, 3) == [6, 6, 6]
 
+    assert add.__wrapped__(1, 2) == 3
+    assert mult.__wrapped__(1, 2) == 2
+
 
 def test_decorators_v2(tmpdir):
     tmpdir.chdir()

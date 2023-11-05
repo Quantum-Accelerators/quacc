@@ -188,12 +188,12 @@ def bulk_to_slabs_flow(
         return make_slabs_from_bulk(atoms, **make_slabs_kwargs)
 
     @subflow
-    def _relax_distributed(atoms: Atoms) -> list[VaspSchema]:
+    def _relax_job_distributed(atoms: Atoms) -> list[VaspSchema]:
         slabs = _make_slabs(atoms)
         return [slab_relax_job(slab, **slab_relax_kwargs) for slab in slabs]
 
     @subflow
-    def _relax_and_static_distributed(atoms: Atoms) -> list[VaspSchema]:
+    def _relax_and_static_job_distributed(atoms: Atoms) -> list[VaspSchema]:
         slabs = _make_slabs(atoms)
         return [
             slab_static_job(
@@ -204,9 +204,9 @@ def bulk_to_slabs_flow(
         ]
 
     return (
-        _relax_and_static_distributed(atoms)
+        _relax_and_static_job_distributed(atoms)
         if run_static
-        else _relax_distributed(atoms)
+        else _relax_job_distributed(atoms)
     )
 
 
@@ -257,12 +257,12 @@ def slab_to_ads_flow(
         return make_adsorbate_structures(slab, adsorbate, **make_ads_kwargs)
 
     @subflow
-    def _relax_distributed(slab: Atoms) -> list[VaspSchema]:
+    def _relax_job_distributed(slab: Atoms) -> list[VaspSchema]:
         slabs = _make_ads_slabs(slab)
         return [slab_relax_job(slab, **slab_relax_kwargs) for slab in slabs]
 
     @subflow
-    def _relax_and_static_distributed(slab: Atoms) -> list[VaspSchema]:
+    def _relax_and_static_job_distributed(slab: Atoms) -> list[VaspSchema]:
         slabs = _make_ads_slabs(slab)
         return [
             slab_static_job(
@@ -273,5 +273,7 @@ def slab_to_ads_flow(
         ]
 
     return (
-        _relax_and_static_distributed(slab) if run_static else _relax_distributed(slab)
+        _relax_and_static_job_distributed(slab)
+        if run_static
+        else _relax_job_distributed(slab)
     )

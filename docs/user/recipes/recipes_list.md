@@ -1,5 +1,7 @@
 # List of Recipes
 
+The list of available quacc recipes is shown below. The "Req'd Extras" column specifies any additional recipe-specific dependencies that must be installed beyond those mentioned in ["Calculator Setup"](../../install/codes.md).
+
 ## DFTB+
 
 !!! Info
@@ -8,10 +10,10 @@
 
 <center>
 
-| Name         | Decorator       | Documentation                          |
-| ------------ | --------------- | -------------------------------------- |
-| DFTB+ Static | `#!Python @job` | [quacc.recipes.dftb.core.static_job][] |
-| DFTB+ Relax  | `#!Python @job` | [quacc.recipes.dftb.core.relax_job][]  |
+| Name         | Decorator       | Documentation                          | Req'd Extras |
+| ------------ | --------------- | -------------------------------------- | ------------ |
+| DFTB+ Static | `#!Python @job` | [quacc.recipes.dftb.core.static_job][] |              |
+| DFTB+ Relax  | `#!Python @job` | [quacc.recipes.dftb.core.relax_job][]  |              |
 
 </center>
 
@@ -23,12 +25,13 @@
 
 <center>
 
-| Name                | Decorator        | Documentation                                      |
-| ------------------- | ---------------- | -------------------------------------------------- |
-| EMT Static          | `#!Python @job`  | [quacc.recipes.emt.core.static_job][]              |
-| EMT Relax           | `#!Python @job`  | [quacc.recipes.emt.core.relax_job][]               |
-| EMT Bulk to Defects | `#!Python @flow` | [quacc.recipes.emt.defects.bulk_to_defects_flow][] |
-| EMT Bulk to Slabs   | `#!Python @flow` | [quacc.recipes.emt.slabs.bulk_to_slabs_flow][]     |
+| Name                | Decorator        | Documentation                                      | Req'd Extras     |
+| ------------------- | ---------------- | -------------------------------------------------- | ---------------- |
+| EMT Static          | `#!Python @job`  | [quacc.recipes.emt.core.static_job][]              |                  |
+| EMT Relax           | `#!Python @job`  | [quacc.recipes.emt.core.relax_job][]               |                  |
+| EMT Bulk to Defects | `#!Python @flow` | [quacc.recipes.emt.defects.bulk_to_defects_flow][] | `quacc[defects]` |
+| EMT Bulk to Slabs   | `#!Python @flow` | [quacc.recipes.emt.slabs.bulk_to_slabs_flow][]     |                  |
+| EMT Phonons         | `#!Python @flow` | [quacc.recipes.emt.phonons.phonons_flow][]         | `quacc[phonons]` |
 
 </center>
 
@@ -40,10 +43,10 @@
 
 <center>
 
-| Name            | Decorator       | Documentation                              |
-| --------------- | --------------- | ------------------------------------------ |
-| Gaussian Static | `#!Python @job` | [quacc.recipes.gaussian.core.static_job][] |
-| Gaussian Relax  | `#!Python @job` | [quacc.recipes.gaussian.core.relax_job][]  |
+| Name            | Decorator       | Documentation                              | Req'd Extras |
+| --------------- | --------------- | ------------------------------------------ | ------------ |
+| Gaussian Static | `#!Python @job` | [quacc.recipes.gaussian.core.static_job][] |              |
+| Gaussian Relax  | `#!Python @job` | [quacc.recipes.gaussian.core.relax_job][]  |              |
 
 </center>
 
@@ -55,10 +58,10 @@
 
 <center>
 
-| Name        | Decorator       | Documentation                          |
-| ----------- | --------------- | -------------------------------------- |
-| GULP Static | `#!Python @job` | [quacc.recipes.gulp.core.static_job][] |
-| GULP Relax  | `#!Python @job` | [quacc.recipes.gulp.core.relax_job][]  |
+| Name        | Decorator       | Documentation                          | Req'd Extras |
+| ----------- | --------------- | -------------------------------------- | ------------ |
+| GULP Static | `#!Python @job` | [quacc.recipes.gulp.core.static_job][] |              |
+| GULP Relax  | `#!Python @job` | [quacc.recipes.gulp.core.relax_job][]  |              |
 
 </center>
 
@@ -70,11 +73,11 @@
 
 <center>
 
-| Name         | Decorator       | Documentation                        |
-| ------------ | --------------- | ------------------------------------ |
-| LJ Static    | `#!Python @job` | [quacc.recipes.lj.core.static_job][] |
-| LJ Relax     | `#!Python @job` | [quacc.recipes.lj.core.relax_job][]  |
-| LJ Frequency | `#!Python @job` | [quacc.recipes.lj.core.freq_job][]   |
+| Name         | Decorator       | Documentation                        | Req'd Extras |
+| ------------ | --------------- | ------------------------------------ | ------------ |
+| LJ Static    | `#!Python @job` | [quacc.recipes.lj.core.static_job][] |              |
+| LJ Relax     | `#!Python @job` | [quacc.recipes.lj.core.relax_job][]  |              |
+| LJ Frequency | `#!Python @job` | [quacc.recipes.lj.core.freq_job][]   |              |
 
 </center>
 
@@ -86,14 +89,14 @@
 
 <center>
 
-| Name                | Decorator       | Documentation                                |
-| ------------------- | --------------- | -------------------------------------------- |
-| NewtonNet Static    | `#!Python @job` | [quacc.recipes.newtonnet.core.static_job][]  |
-| NewtonNet Relax     | `#!Python @job` | [quacc.recipes.newtonnet.core.relax_job][]   |
-| NewtonNet Frequency | `#!Python @job` | [quacc.recipes.newtonnet.core.freq_job][]    |
-| NewtonNet TS        | `#!Python @job` | [quacc.recipes.newtonnet.ts.ts_job][]        |
-| NewtonNet IRC       | `#!Python @job` | [quacc.recipes.newtonnet.ts.irc_job][]       |
-| NewtonNet Quasi IRC | `#!Python @job` | [quacc.recipes.newtonnet.ts.quasi_irc_job][] |
+| Name                | Decorator       | Documentation                                | Req'd Extras   |
+| ------------------- | --------------- | -------------------------------------------- | -------------- |
+| NewtonNet Static    | `#!Python @job` | [quacc.recipes.newtonnet.core.static_job][]  |                |
+| NewtonNet Relax     | `#!Python @job` | [quacc.recipes.newtonnet.core.relax_job][]   |                |
+| NewtonNet Frequency | `#!Python @job` | [quacc.recipes.newtonnet.core.freq_job][]    |                |
+| NewtonNet TS        | `#!Python @job` | [quacc.recipes.newtonnet.ts.ts_job][]        | `quacc[sella]` |
+| NewtonNet IRC       | `#!Python @job` | [quacc.recipes.newtonnet.ts.irc_job][]       | `quacc[sella]` |
+| NewtonNet Quasi IRC | `#!Python @job` | [quacc.recipes.newtonnet.ts.quasi_irc_job][] | `quacc[sella]` |
 
 </center>
 
@@ -105,10 +108,10 @@
 
 <center>
 
-| Name        | Decorator       | Documentation                          |
-| ----------- | --------------- | -------------------------------------- |
-| ORCA Static | `#!Python @job` | [quacc.recipes.orca.core.static_job][] |
-| ORCA Relax  | `#!Python @job` | [quacc.recipes.orca.core.relax_job][]  |
+| Name        | Decorator       | Documentation                          | Req'd Extras |
+| ----------- | --------------- | -------------------------------------- | ------------ |
+| ORCA Static | `#!Python @job` | [quacc.recipes.orca.core.static_job][] |              |
+| ORCA Relax  | `#!Python @job` | [quacc.recipes.orca.core.relax_job][]  |              |
 
 </center>
 
@@ -120,9 +123,9 @@
 
 <center>
 
-| Name        | Decorator       | Documentation                          |
-| ----------- | --------------- | -------------------------------------- |
-| Psi4 Static | `#!Python @job` | [quacc.recipes.psi4.core.static_job][] |
+| Name        | Decorator       | Documentation                          | Req'd Extras |
+| ----------- | --------------- | -------------------------------------- | ------------ |
+| Psi4 Static | `#!Python @job` | [quacc.recipes.psi4.core.static_job][] |              |
 
 </center>
 
@@ -134,15 +137,15 @@
 
 <center>
 
-| Name                  | Decorator       | Documentation                                   |
-| --------------------- | --------------- | ----------------------------------------------- |
-| Q-Chem Static         | `#!Python @job` | [quacc.recipes.qchem.core.static_job][]         |
-| Q-Chem Relax          | `#!Python @job` | [quacc.recipes.qchem.core.relax_job][]          |
-| Q-Chem Internal Relax | `#!Python @job` | [quacc.recipes.qchem.core.internal_relax_job][] |
-| Q-Chem Frequency      | `#!Python @job` | [quacc.recipes.qchem.core.freq_job][]           |
-| Q-Chem TS             | `#!Python @job` | [quacc.recipes.qchem.ts.ts_job][]               |
-| Q-Chem IRC            | `#!Python @job` | [quacc.recipes.qchem.ts.irc_job][]              |
-| Q-Chem Quasi IRC      | `#!Python @job` | [quacc.recipes.qchem.ts.quasi_irc_job][]        |
+| Name                  | Decorator       | Documentation                                   | Req'd Extras   |
+| --------------------- | --------------- | ----------------------------------------------- | -------------- |
+| Q-Chem Static         | `#!Python @job` | [quacc.recipes.qchem.core.static_job][]         |                |
+| Q-Chem Relax          | `#!Python @job` | [quacc.recipes.qchem.core.relax_job][]          |                |
+| Q-Chem Internal Relax | `#!Python @job` | [quacc.recipes.qchem.core.internal_relax_job][] |                |
+| Q-Chem Frequency      | `#!Python @job` | [quacc.recipes.qchem.core.freq_job][]           |                |
+| Q-Chem TS             | `#!Python @job` | [quacc.recipes.qchem.ts.ts_job][]               | `quacc[sella]` |
+| Q-Chem IRC            | `#!Python @job` | [quacc.recipes.qchem.ts.irc_job][]              | `quacc[sella]` |
+| Q-Chem Quasi IRC      | `#!Python @job` | [quacc.recipes.qchem.ts.quasi_irc_job][]        | `quacc[sella]` |
 
 </center>
 
@@ -154,11 +157,11 @@
 
 <center>
 
-| Name             | Decorator       | Documentation                            |
-| ---------------- | --------------- | ---------------------------------------- |
-| TBLite Static    | `#!Python @job` | [quacc.recipes.tblite.core.static_job][] |
-| TBLite Relax     | `#!Python @job` | [quacc.recipes.tblite.core.relax_job][]  |
-| TBLite Frequency | `#!Python @job` | [quacc.recipes.tblite.core.freq_job][]   |
+| Name             | Decorator       | Documentation                            | Req'd Extras |
+| ---------------- | --------------- | ---------------------------------------- | ------------ |
+| TBLite Static    | `#!Python @job` | [quacc.recipes.tblite.core.static_job][] |              |
+| TBLite Relax     | `#!Python @job` | [quacc.recipes.tblite.core.relax_job][]  |              |
+| TBLite Frequency | `#!Python @job` | [quacc.recipes.tblite.core.freq_job][]   |              |
 
 </center>
 
@@ -170,18 +173,18 @@
 
 <center>
 
-| Name                    | Decorator        | Documentation                                   |
-| ----------------------- | ---------------- | ----------------------------------------------- |
-| VASP Static             | `#!Python @job`  | [quacc.recipes.vasp.core.static_job][]          |
-| VASP Relax              | `#!Python @job`  | [quacc.recipes.vasp.core.relax_job][]           |
-| VASP Double Relax       | `#!Python @job`  | [quacc.recipes.vasp.core.double_relax_job][]    |
-| VASP Slab Static        | `#!Python @job`  | [quacc.recipes.vasp.slabs.slab_static_job][]    |
-| VASP Slab Relax         | `#!Python @job`  | [quacc.recipes.vasp.slabs.slab_relax_job][]     |
-| VASP Bulk to Slabs      | `#!Python @flow` | [quacc.recipes.vasp.slabs.bulk_to_slabs_flow][] |
-| VASP Slab to Adsorbates | `#!Python @flow` | [quacc.recipes.vasp.slabs.slab_to_ads_flow][]   |
-| VASP MP Prerelax        | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_relax_job][]          |
-| VASP MP Relax           | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_relax_job][]          |
-| VASP MP Relax Workflow  | `#!Python @flow` | [quacc.recipes.vasp.mp.mp_relax_flow][]         |
-| VASP QMOF Relax         | `#!Python @job`  | [quacc.recipes.vasp.qmof.qmof_relax_job][]      |
+| Name                    | Decorator        | Documentation                                   | Req'd Extras |
+| ----------------------- | ---------------- | ----------------------------------------------- | ------------ |
+| VASP Static             | `#!Python @job`  | [quacc.recipes.vasp.core.static_job][]          |              |
+| VASP Relax              | `#!Python @job`  | [quacc.recipes.vasp.core.relax_job][]           |              |
+| VASP Double Relax       | `#!Python @job`  | [quacc.recipes.vasp.core.double_relax_job][]    |              |
+| VASP Slab Static        | `#!Python @job`  | [quacc.recipes.vasp.slabs.slab_static_job][]    |              |
+| VASP Slab Relax         | `#!Python @job`  | [quacc.recipes.vasp.slabs.slab_relax_job][]     |              |
+| VASP Bulk to Slabs      | `#!Python @flow` | [quacc.recipes.vasp.slabs.bulk_to_slabs_flow][] |              |
+| VASP Slab to Adsorbates | `#!Python @flow` | [quacc.recipes.vasp.slabs.slab_to_ads_flow][]   |              |
+| VASP MP Prerelax        | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_relax_job][]          |              |
+| VASP MP Relax           | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_relax_job][]          |              |
+| VASP MP Relax Workflow  | `#!Python @flow` | [quacc.recipes.vasp.mp.mp_relax_flow][]         |              |
+| VASP QMOF Relax         | `#!Python @job`  | [quacc.recipes.vasp.qmof.qmof_relax_job][]      |              |
 
 </center>

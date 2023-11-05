@@ -6,9 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.4.0]
 
+### Added
+
+- Added `quacc.recipes.common`, including `quacc.recipes.common.core` and `quacc.recipes.common.phonons`
+- Added phonopy schema in `quacc.schemas.phonopy`
+- Added EMT phonon workflow
+
 ### Changed
 
 - The method for specifying swaps to the default calculator arguments in recipes has been overhauled. In place of the previous `calc_swaps: dict` approach, additional parameters can be specified via the `**kwargs`. In practice, this means in recipes you can do `scf = "diis", max_steps=100` instead of `calc_swaps={"scf":"diis", "max_steps":100}`, for instance.
+- Moved `quacc.runners.calc` to `quacc.runners.ase`
+- Moved `quacc.runners.prep` to `quacc.schemas.prep`
 
 ## [0.3.13]
 

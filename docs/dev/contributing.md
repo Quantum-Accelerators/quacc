@@ -52,6 +52,8 @@ If contributing new recipes, please abide by the following guidelines:
 
 - Decorate your individual compute jobs with a `#!Python @job` decorator or your flow with a `#!Python @flow` decorator and name them accordingly.
 
+In general, the easiest way to develop a new recipe is to first make one for a cheap-to-run calculator (e.g. EMT for solids, LJ for molecules), which you can then basically copy and paste for your more expensive calculator of choice.
+
 ### Style
 
 In general, please try to keep the code style consistent when possible, particularly:
