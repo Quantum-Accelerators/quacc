@@ -85,7 +85,7 @@ def phonon_flow(
     def _thermo_job(
         dataset: tuple[Phonopy, list[NDArray]], input_atoms: Atoms
     ) -> PhononSchema:
-        phonon, forces, input_atoms = dataset
+        phonon, forces = dataset
         phonon.forces = forces
         phonon.produce_force_constants()
         phonon.run_mesh()
