@@ -7,7 +7,7 @@ from numpy.testing import assert_allclose
 
 from quacc.recipes.orca.core import relax_job, static_job
 
-orca_path = which("orca")
+orca_path = which(SETTINGS.ORCA_CMD)
 
 if orca_path and os.path.getsize(orca_path) > 1024 * 1024:
     has_orca = True
