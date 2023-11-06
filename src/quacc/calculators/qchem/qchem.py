@@ -107,8 +107,7 @@ class QChem(FileIOCalculator):
         self.command = self._manage_environment()
 
         # Instantiate the calculator
-        FileIOCalculator.__init__(
-            self,
+        super().__init__(
             restart=None,
             ignore_bad_restart_file=FileIOCalculator._deprecated,
             label=None,
