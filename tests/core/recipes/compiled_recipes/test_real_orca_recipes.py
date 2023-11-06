@@ -1,4 +1,5 @@
 from shutil import which
+import os
 
 import pytest
 from ase.build import molecule
@@ -6,7 +7,12 @@ from numpy.testing import assert_allclose
 
 from quacc.recipes.orca.core import relax_job, static_job
 
-has_orca = bool(which("orca"))
+orca_path = which("orca")
+
+if orca_path and os.path.getsize(orca_path) > 1024 * 1024:
+    has_orca = True
+else:
+    has_orca = False
 
 pytestmark = pytest.mark.skipif(
     not has_orca,
