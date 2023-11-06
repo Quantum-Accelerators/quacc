@@ -1,5 +1,5 @@
-from shutil import which
 import os
+from shutil import which
 
 import pytest
 from ase.build import molecule
