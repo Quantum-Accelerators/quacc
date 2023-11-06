@@ -70,7 +70,7 @@ def phonon_flow(
     fields_to_store = fields_to_store or {}
 
     @subflow
-    def _force_job_distributed(atoms: Atoms) -> tuple[Phonopy, list[NDArray], Atoms]:
+    def _force_job_distributed(atoms: Atoms) -> tuple[Phonopy, list[NDArray]]:
         phonon = atoms_to_phonopy(atoms, supercell_matrix, atom_disp)
         supercells = [
             phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
@@ -79,11 +79,11 @@ def phonon_flow(
             force_job(supercell, calculator)
             for supercell in supercells
             if supercell is not None
-        ],atoms
+        ]
 
     @job
     def _thermo_job(
-        dataset: ForceReturn
+        dataset: tuple[Phonopy, list[NDArray]], input_atoms: Atoms
     ) -> PhononSchema:
         phonon, forces, input_atoms = dataset
         phonon.forces = forces
@@ -100,4 +100,4 @@ def phonon_flow(
 
     dataset = _force_job_distributed(atoms)
 
-    return _thermo_job(dataset)
+    return _thermo_job(dataset, atoms)
