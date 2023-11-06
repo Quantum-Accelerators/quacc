@@ -1,3 +1,4 @@
+from quacc import SETTINGS
 from shutil import which
 import os
 
