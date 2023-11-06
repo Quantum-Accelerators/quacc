@@ -16,7 +16,7 @@ except ImportError:
     phonopy = None
 
 if TYPE_CHECKING:
-    from typing import Any
+    from typing import Any, TypedDict
 
     from ase.atoms import Atoms
     from ase.calculators.calculator import Calculator
@@ -24,6 +24,10 @@ if TYPE_CHECKING:
     from phonopy import Phonopy
 
     from quacc.schemas._aliases.phonopy import PhononSchema
+
+    class ForceReturn(TypedDict):
+        phonon: Phonopy
+        forces: list[NDArray]
 
 
 @flow
@@ -70,23 +74,21 @@ def phonon_flow(
     fields_to_store = fields_to_store or {}
 
     @subflow
-    def _force_job_distributed(atoms: Atoms) -> tuple[Phonopy, list[NDArray]]:
+    def _force_job_distributed(atoms: Atoms) -> ForceReturn:
         phonon = atoms_to_phonopy(atoms, supercell_matrix, atom_disp)
         supercells = [
             phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
         ]
-        return phonon, [
+        return {"phonon": phonon, "forces": [
             force_job(supercell, calculator)
             for supercell in supercells
             if supercell is not None
-        ]
+        ]}
 
     @job
-    def _thermo_job(
-        dataset: tuple[Phonopy, list[NDArray]], input_atoms: Atoms
-    ) -> PhononSchema:
-        phonon, forces = dataset
-        phonon.forces = forces
+    def _thermo_job(force_return: ForceReturn, input_atoms: Atoms) -> PhononSchema:
+        phonon = force_return["phonon"]
+        phonon.forces = force_return["forces"]
         phonon.produce_force_constants()
         phonon.run_mesh()
         phonon.run_thermal_properties(t_step=t_step, t_max=t_max, t_min=t_min)
@@ -98,6 +100,6 @@ def phonon_flow(
             additional_fields=fields_to_store,
         )
 
-    dataset = _force_job_distributed(atoms)
+    force_return = _force_job_distributed(atoms)
 
-    return _thermo_job(dataset, atoms)
+    return _thermo_job(force_return, atoms)
