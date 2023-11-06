@@ -75,7 +75,7 @@ def phonon_flow(
         supercells = [
             phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
         ]
-        return phonon, "forces": [
+        return phonon, [
             force_job(supercell, calculator)
             for supercell in supercells
             if supercell is not None
