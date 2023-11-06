@@ -79,11 +79,14 @@ def phonon_flow(
         supercells = [
             phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
         ]
-        return {"phonon": phonon, "forces": [
-            force_job(supercell, calculator)
-            for supercell in supercells
-            if supercell is not None
-        ]}
+        return {
+            "phonon": phonon,
+            "forces": [
+                force_job(supercell, calculator)
+                for supercell in supercells
+                if supercell is not None
+            ],
+        }
 
     @job
     def _thermo_job(force_return: ForceReturn, input_atoms: Atoms) -> PhononSchema:
