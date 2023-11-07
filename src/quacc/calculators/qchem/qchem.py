@@ -104,16 +104,16 @@ class QChem(FileIOCalculator):
         self._set_default_params()
 
         # Get Q-Chem executable command
-        self.command = self._manage_environment()
+        command = self._manage_environment()
 
         # Instantiate the calculator
-        FileIOCalculator.__init__(
-            self,
+        super().__init__(
             restart=None,
             ignore_bad_restart_file=FileIOCalculator._deprecated,
             label=None,
             atoms=self.atoms,
-            command=self.command,
+            command=command,
+            profile=None,
             **self.fileiocalculator_kwargs,
         )
 
