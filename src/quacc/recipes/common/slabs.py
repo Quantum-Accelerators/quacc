@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from quacc import flow, subflow
+from quacc import subflow
 from quacc.atoms.slabs import make_slabs_from_bulk
 
 if TYPE_CHECKING:
@@ -56,9 +56,6 @@ def common_bulk_to_slabs_flow(
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}
     make_slabs_kwargs = make_slabs_kwargs or {}
-
-    if "relax_cell" not in slab_relax_kwargs:
-        slab_relax_kwargs["relax_cell"] = False
 
     @subflow
     def _relax_job_distributed(atoms: Atoms) -> list:
