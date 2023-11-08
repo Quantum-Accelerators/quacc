@@ -72,7 +72,7 @@ def phonon_flow(
     def _force_job(atoms: Atoms, calculator: Calculator) -> NDArray:
         atoms.calc = calculator
         return run_calc(atoms).get_forces()
-    
+
     @subflow
     def _force_job_distributed(supercells: list[Atoms]) -> list[NDArray]:
         return [
