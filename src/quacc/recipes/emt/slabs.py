@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc import flow
-from quacc.recipes.common.slabs import bulk_to_slabs_flow
+from quacc.recipes.common.slabs import common_bulk_to_slabs_flow
 from quacc.recipes.emt.core import relax_job, static_job
 
 if TYPE_CHECKING:
@@ -59,7 +59,7 @@ def bulk_to_slabs_flow(
     if "relax_cell" not in slab_relax_kwargs:
         slab_relax_kwargs["relax_cell"] = False
 
-    return bulk_to_slabs_flow(
+    return common_bulk_to_slabs_flow(
         atoms,
         relax_job,
         static_job if run_static else None,

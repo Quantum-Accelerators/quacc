@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from quacc.schemas.ase import OptSchema, RunSchema
 
 
-def bulk_to_slabs_flow(
+def common_bulk_to_slabs_flow(
     atoms: Atoms,
     relax_job: Callable,
     static_job: Callable | None,

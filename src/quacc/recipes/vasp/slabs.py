@@ -4,7 +4,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc import flow, job, subflow
-from quacc.atoms.slabs import make_adsorbate_structures, make_slabs_from_bulk
+from quacc.atoms.slabs import make_adsorbate_structures
+from quacc.recipes.common.slabs import common_bulk_to_slabs_flow
 from quacc.recipes.vasp.core import _base_job
 
 if TYPE_CHECKING:
@@ -184,7 +185,7 @@ def bulk_to_slabs_flow(
     slab_static_kwargs = slab_static_kwargs or {}
     make_slabs_kwargs = make_slabs_kwargs or {}
 
-    return bulk_to_slabs_flow(
+    return common_bulk_to_slabs_flow(
         atoms,
         slab_relax_job,
         slab_static_job if run_static else None,
