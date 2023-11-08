@@ -67,11 +67,6 @@ def common_phonon_flow(
     """
     fields_to_store = fields_to_store or {}
 
-    @job
-    def _force_job(atoms: Atoms, calculator: Calculator) -> NDArray:
-        atoms.calc = calculator
-        return run_calc(atoms).get_forces()
-
     @subflow
     def _force_job_distributed(supercells: list[Atoms]) -> list[NDArray]:
         return [
@@ -79,6 +74,11 @@ def common_phonon_flow(
             for supercell in supercells
             if supercell is not None
         ]
+
+    @job
+    def _force_job(atoms: Atoms, calculator: Calculator) -> NDArray:
+        atoms.calc = calculator
+        return run_calc(atoms).get_forces()
 
     @job
     def _phonon_job(atoms: Atoms) -> PhononSchema:
