@@ -184,26 +184,13 @@ def bulk_to_slabs_flow(
     slab_static_kwargs = slab_static_kwargs or {}
     make_slabs_kwargs = make_slabs_kwargs or {}
 
-    @subflow
-    def _relax_job_distributed(atoms: Atoms) -> list[VaspSchema]:
-        slabs = make_slabs_from_bulk(atoms, **make_slabs_kwargs)
-        return [slab_relax_job(slab, **slab_relax_kwargs) for slab in slabs]
-
-    @subflow
-    def _relax_and_static_job_distributed(atoms: Atoms) -> list[VaspSchema]:
-        slabs = make_slabs_from_bulk(atoms, **make_slabs_kwargs)
-        return [
-            slab_static_job(
-                slab_relax_job(slab, **slab_relax_kwargs)["atoms"],
-                **slab_static_kwargs,
-            )
-            for slab in slabs
-        ]
-
-    return (
-        _relax_and_static_job_distributed(atoms)
-        if run_static
-        else _relax_job_distributed(atoms)
+    return bulk_to_slabs_flow(
+        atoms,
+        slab_relax_job,
+        slab_static_job if run_static else None,
+        make_slabs_kwargs=make_slabs_kwargs,
+        slab_relax_kwargs=slab_relax_kwargs,
+        slab_static_kwargs=slab_static_kwargs,
     )
 
 
