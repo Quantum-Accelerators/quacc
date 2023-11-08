@@ -7,7 +7,7 @@ from monty.dev import requires
 
 from quacc import job, subflow
 from quacc.atoms.phonons import atoms_to_phonopy, phonopy_atoms_to_ase_atoms
-from quacc.recipes.common.core import force_job
+from quacc.runners.ase import run_calc
 from quacc.schemas.phonopy import summarize_phonopy
 
 try:
@@ -68,10 +68,15 @@ def phonon_flow(
     """
     fields_to_store = fields_to_store or {}
 
+    @job
+    def _force_job(atoms: Atoms, calculator: Calculator) -> NDArray:
+        atoms.calc = calculator
+        return run_calc(atoms).get_forces()
+    
     @subflow
     def _force_job_distributed(supercells: list[Atoms]) -> list[NDArray]:
         return [
-            force_job(supercell, calculator)
+            _force_job(supercell, calculator)
             for supercell in supercells
             if supercell is not None
         ]
