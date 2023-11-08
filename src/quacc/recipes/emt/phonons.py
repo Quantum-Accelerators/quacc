@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from ase.calculators.emt import EMT
 
 from quacc import flow
-from quacc.recipes.common.phonons import phonon_flow as common_phonon_flow
+from quacc.recipes.common.phonons import common_phonon_flow
 
 if TYPE_CHECKING:
     from typing import Any

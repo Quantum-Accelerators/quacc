@@ -5,9 +5,9 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
-from quacc import flow, job, subflow
+from quacc import job, subflow
 from quacc.atoms.phonons import atoms_to_phonopy, phonopy_atoms_to_ase_atoms
-from quacc.recipes.common.core import force_job
+from quacc.runners.ase import run_calc
 from quacc.schemas.phonopy import summarize_phonopy
 
 try:
@@ -26,9 +26,8 @@ if TYPE_CHECKING:
     from quacc.schemas._aliases.phonopy import PhononSchema
 
 
-@flow
 @requires(phonopy, "Phonopy must be installed. Run `pip install quacc[phonons]`")
-def phonon_flow(
+def common_phonon_flow(
     atoms: Atoms,
     calculator: Calculator,
     supercell_matrix: ArrayLike = ((2, 0, 0), (0, 2, 0), (0, 0, 2)),
@@ -69,10 +68,15 @@ def phonon_flow(
     """
     fields_to_store = fields_to_store or {}
 
+    @job
+    def _force_job(atoms: Atoms, calculator: Calculator) -> NDArray:
+        atoms.calc = calculator
+        return run_calc(atoms).get_forces()
+
     @subflow
     def _force_job_distributed(supercells: list[Atoms]) -> list[NDArray]:
         return [
-            force_job(supercell, calculator)
+            _force_job(supercell, calculator)
             for supercell in supercells
             if supercell is not None
         ]
