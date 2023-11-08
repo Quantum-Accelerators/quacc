@@ -3,6 +3,8 @@ import contextlib
 import pytest
 from ase.build import bulk
 
+parsl = pytest.importorskip("parsl")
+
 from quacc.recipes.emt.core import relax_job
 
 
