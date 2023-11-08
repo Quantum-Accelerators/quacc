@@ -35,7 +35,6 @@ def common_bulk_to_defects_flow(
     ) = VacancyGenerator,
     defect_charge: int = 0,
     make_defects_kwargs: dict[str, Any] | None = None,
-    run_static: bool = True,
     defect_relax_kwargs: dict[str, Any] | None = None,
     defect_static_kwargs: dict[str, Any] | None = None,
 ) -> list:
@@ -52,6 +51,10 @@ def common_bulk_to_defects_flow(
     ----------
     atoms
         Atoms object for the structure.
+    relax_job
+        The relaxation function.
+    static_job
+        The static function.
     defect_gen
         Defect generator
     defect_charge
@@ -59,8 +62,6 @@ def common_bulk_to_defects_flow(
     make_defects_kwargs
         Keyword arguments to pass to
         [quacc.atoms.defects.make_defects_from_bulk][]
-    run_static
-        Whether to run the static calculation.
     defect_relax_kwargs
         Additional keyword arguments to pass to [quacc.recipes.emt.core.relax_job][].
     defect_static_kwargs
@@ -103,6 +104,6 @@ def common_bulk_to_defects_flow(
 
     return (
         _relax_and_static_job_distributed(atoms)
-        if run_static
+        if static_job
         else _relax_job_distributed(atoms)
     )
