@@ -1,7 +1,4 @@
-"""
-A wrapper around ASE's Vasp calculator that makes it better suited for
-high-throughput DFT.
-"""
+"""A wrapper around ASE's Vasp calculator that makes it better suited for high-throughput DFT."""
 from __future__ import annotations
 
 import inspect
@@ -22,7 +19,7 @@ from quacc.calculators.vasp.params import (
     remove_unused_flags,
     set_auto_dipole,
 )
-from quacc.runners.prep import set_magmoms
+from quacc.schemas.prep import set_magmoms
 
 if TYPE_CHECKING:
     from typing import Literal
@@ -32,9 +29,9 @@ if TYPE_CHECKING:
 
 class Vasp(Vasp_):
     """
-    This is a wrapper around the ASE Vasp calculator that adjusts INCAR
-    parameters on-the-fly, allows for ASE to run VASP via Custodian, and
-    supports several automatic k-point generation schemes from Pymatgen.
+    This is a wrapper around the ASE Vasp calculator that adjusts INCAR parameters
+    on-the-fly, allows for ASE to run VASP via Custodian, and supports several automatic
+    k-point generation schemes from Pymatgen.
     """
 
     def __init__(

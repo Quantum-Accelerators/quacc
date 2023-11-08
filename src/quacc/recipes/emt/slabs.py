@@ -1,9 +1,9 @@
-"""Slab recipes for EMT"""
+"""Slab recipes for EMT."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from quacc import flow, job, subflow
+from quacc import flow, subflow
 from quacc.atoms.slabs import make_slabs_from_bulk
 from quacc.recipes.emt.core import relax_job, static_job
 
@@ -42,9 +42,9 @@ def bulk_to_slabs_flow(
     run_static
         Whether to run the static calculation.
     slab_relax_kwargs
-        Additional keyword arguments to pass to the relaxation calculation.
+        Additional keyword arguments to pass to [quacc.recipes.emt.core.relax_job][].
     slab_static_kwargs
-        Additional keyword arguments to pass to the static calculation.
+        Additional keyword arguments to pass to [quacc.recipes.emt.core.static_job][].
 
     Returns
     -------
@@ -59,16 +59,14 @@ def bulk_to_slabs_flow(
     if "relax_cell" not in slab_relax_kwargs:
         slab_relax_kwargs["relax_cell"] = False
 
-    @job
-    def _make_slabs(atoms):
-        return make_slabs_from_bulk(atoms, **make_slabs_kwargs)
-
     @subflow
-    def _relax_distributed(slabs):
+    def _relax_job_distributed(atoms: Atoms) -> list[OptSchema]:
+        slabs = make_slabs_from_bulk(atoms, **make_slabs_kwargs)
         return [relax_job(slab, **slab_relax_kwargs) for slab in slabs]
 
     @subflow
-    def _relax_and_static_distributed(slabs):
+    def _relax_and_static_job_distributed(atoms: Atoms) -> list[OptSchema]:
+        slabs = make_slabs_from_bulk(atoms, **make_slabs_kwargs)
         return [
             static_job(
                 relax_job(slab, **slab_relax_kwargs)["atoms"],
@@ -77,10 +75,8 @@ def bulk_to_slabs_flow(
             for slab in slabs
         ]
 
-    slabs = _make_slabs(atoms)
-
     return (
-        _relax_and_static_distributed(slabs)
+        _relax_and_static_job_distributed(atoms)
         if run_static
-        else _relax_distributed(slabs)
+        else _relax_job_distributed(atoms)
     )

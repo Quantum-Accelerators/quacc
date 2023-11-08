@@ -1,5 +1,9 @@
 """Aliases for type hinting `quacc.schemas.ase`"""
+from __future__ import annotations
+
 from typing import Any, TypedDict
+
+from numpy.typing import NDArray
 
 from quacc.schemas._aliases.atoms import AtomsSchema
 
@@ -53,6 +57,12 @@ class VibSchema(AtomsSchema):
     parameters: parameters | None
     parameters_vib: ParametersVib | None
     results: VibResults
+
+
+class PhononSchema(RunSchema):
+    """Schema for `quacc.schemas.ase.summarize_phonon_run`"""
+
+    force_constant: NDArray
 
 
 class ParametersThermo(TypedDict):

@@ -1,4 +1,4 @@
-"""Settings for quacc"""
+"""Settings for quacc."""
 from __future__ import annotations
 
 import os
@@ -36,13 +36,13 @@ class QuaccSettings(BaseSettings):
     """
     Settings for quacc.
 
-    The default way to modify these is to make a ~/.quacc.yaml file.
-    Alternatively, the environment variable QUACC_CONFIG_FILE can be set to
-    point to a custom yaml file with quacc settings. The quacc CLI offers a
-    `quacc set <setting> <value>` option to do this as well.
+    The default way to modify these is to make a ~/.quacc.yaml file. Alternatively, the
+    environment variable QUACC_CONFIG_FILE can be set to point to a custom yaml file
+    with quacc settings. The quacc CLI offers a `quacc set <setting> <value>` option to
+    do this as well.
 
-    The variables can also be modified individually though environment variables
-    by using the "QUACC" prefix. e.g. QUACC_SCRATCH_DIR=/path/to/scratch.
+    The variables can also be modified individually though environment variables by
+    using the "QUACC" prefix. e.g. QUACC_SCRATCH_DIR=/path/to/scratch.
     """
 
     CONFIG_FILE: Path = Field(
@@ -328,8 +328,8 @@ class QuaccSettings(BaseSettings):
     @classmethod
     def load_default_settings(cls, values: dict[str, Any]) -> dict[str, Any]:
         """
-        Loads settings from a root file if available and uses that as defaults
-        in place of built in defaults.
+        Loads settings from a root file if available and uses that as defaults in place
+        of built in defaults.
 
         Parameters
         ----------

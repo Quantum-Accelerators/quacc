@@ -43,8 +43,8 @@ def test_static_job(tmpdir):
         atoms,
         -2,
         3,
-        input_swaps={"def2-svp": True, "def2-tzvp": None},
-        block_swaps={"%scf maxiter 300 end": True},
+        orcasimpleinput={"def2-svp": True, "def2-tzvp": None},
+        orcablocks={"%scf maxiter 300 end": True},
     )
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2
@@ -76,13 +76,13 @@ def test_relax_job(tmpdir):
         atoms,
         -2,
         3,
-        input_swaps={
+        orcasimpleinput={
             "hf": True,
             "wb97x-d3bj": None,
             "def2-svp": True,
             "def2-tzvp": None,
         },
-        block_swaps={"%scf maxiter 300 end": True},
+        orcablocks={"%scf maxiter 300 end": True},
     )
     assert output["natoms"] == len(atoms)
     assert (

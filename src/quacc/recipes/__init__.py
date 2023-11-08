@@ -1,1 +1,1 @@
-"""Premade recipes for various codes"""
+"""Premade recipes for various codes."""

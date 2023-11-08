@@ -1,6 +1,4 @@
-"""
-Utility functions for dealing with defects
-"""
+"""Utility functions for dealing with defects."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -132,7 +130,7 @@ def _get_defect_entry_from_defect(
     defect_charge: int,
 ) -> DefectEntry:
     """
-    Function to generate DefectEntry object from Defect object
+    Function to generate DefectEntry object from Defect object.
 
     Parameters
     ----------

@@ -1,4 +1,6 @@
 """Aliases for type hinting `quacc.schemas.atoms`"""
+from __future__ import annotations
+
 from typing import Any
 
 from ase import Atoms
@@ -8,9 +10,7 @@ from quacc.schemas._aliases.emmet import MoleculeMetadata, StructureMetadata
 
 
 class AtomsSchema(StructureMetadata, MoleculeMetadata):
-    """
-    Type hint associated with `quacc.schemas.atoms.atoms_to_metadata`
-    """
+    """Type hint associated with `quacc.schemas.atoms.atoms_to_metadata`"""
 
     atoms: Atoms
     atoms_info: dict[str, Any]  # from atoms.info

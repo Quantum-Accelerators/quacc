@@ -1,4 +1,4 @@
-"""Q-Chem ASE calculator built around Custodian"""
+"""Q-Chem ASE calculator built around Custodian."""
 
 from quacc.calculators.qchem.qchem import QChem
 

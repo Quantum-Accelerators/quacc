@@ -1,1 +1,1 @@
-"""Recipes for ORCA"""
+"""Recipes for ORCA."""

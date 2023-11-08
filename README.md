@@ -18,10 +18,10 @@
 
 - `quacc` gives you the freedom of choice. Through a single, unified interface to several [supported workflow management solutions](https://quantum-accelerators.github.io/quacc/user/basics/wflow_overview.html), `quacc` lets you use what best suits your unique computing needs.
 
-## Documentation
+## Documentation 📖
 
 <p align="center">
-  📖 <a href="https://quantum-accelerators.github.io/quacc/"><b><i>Learn More Here!</i></b></a> 📖
+     <a href="https://quantum-accelerators.github.io/quacc/"><b><i>Learn More Here!</i></b></a> 
 </p>
 
 ... or skip straight to one of the following sections:
@@ -36,7 +36,7 @@
 
 ![](https://github.com/Quantum-Accelerators/quacc/blob/main/docs/images/start/start.gif)
 
-## Citation
+## Citation 📝
 
 If you use `quacc` in your work, please cite it as follows:
 

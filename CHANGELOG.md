@@ -4,7 +4,32 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0]
+
+### Added
+
+- Added `quacc.recipes.common`, including `quacc.recipes.common.core` and `quacc.recipes.common.phonons`
+- Added phonopy schema in `quacc.schemas.phonopy`
+- Added EMT phonon workflow
+
+### Changed
+
+- The method for specifying swaps to the default calculator arguments in recipes has been overhauled. In place of the previous `calc_swaps: dict` approach, additional parameters can be specified via the `**kwargs`. In practice, this means in recipes you can do `scf = "diis", max_steps=100` instead of `calc_swaps={"scf":"diis", "max_steps":100}`, for instance.
+- Moved `quacc.runners.calc` to `quacc.runners.ase`
+- Moved `quacc.runners.prep` to `quacc.schemas.prep`
+
+## [0.3.13]
+
+### Fixed
+
+- Fixed support for the most recent version of ASE as of 11/2/2023
+
 ## [0.3.12]
+
+### Added
+
+- Added more type hints for input keyword arguments
+- Added the `quacc info` command-line argument for error reporting
 
 ### Changed
 
@@ -123,7 +148,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Renamed `[optimizers]` extras to `[sella]`
 - Moved `quacc.utils.wflows` into `quacc.wflow.decorators` and `quacc.wflow.prefect`
 - Moved `quacc.utils.db` into `quacc.wflow.db`
-- Moved `quacc.utils.calc` to `quacc.runners.calc`
+- Moved `quacc.utils.calc` to `quacc.runners.ase`
 - Moved `quacc.presets` to `quacc.calculators.presets`
 
 ### Fixed

@@ -1,4 +1,6 @@
-"""Type hints for quacc.schemas.cclib"""
+"""Type hints for quacc.schemas.cclib."""
+from __future__ import annotations
+
 from typing import Any, TypedDict
 
 from numpy.typing import NDArray
@@ -22,9 +24,7 @@ class AdditionalAttributes(TypedDict, total=False):
 
 
 class PopAnalysisAttributes(TypedDict, total=False):
-    """
-    Type hints associated with cclib population analysis attribubtes.
-    """
+    """Type hints associated with cclib population analysis attribubtes."""
 
     aoresults: Any
     fragresults: Any
@@ -120,15 +120,11 @@ class Attributes(TypedDict, total=False):
 
 
 class AllAttributes(Attributes, AdditionalAttributes):
-    """
-    Type hint of all cclib attributes
-    """
+    """Type hint of all cclib attributes."""
 
 
 class cclibBaseSchema(TypedDict):
-    """
-    Type hint associated with quacc.schemas.cclib._make_cclib_schema
-    """
+    """Type hint associated with quacc.schemas.cclib._make_cclib_schema."""
 
     logfile: str
     attributes: AllAttributes
@@ -137,6 +133,4 @@ class cclibBaseSchema(TypedDict):
 
 
 class cclibSchema(cclibBaseSchema, RunSchema):
-    """
-    Type hint associated with quacc.schemas.cclib.cclib_summarize_run
-    """
+    """Type hint associated with quacc.schemas.cclib.cclib_summarize_run."""

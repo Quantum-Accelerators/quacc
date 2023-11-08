@@ -1,14 +1,14 @@
-"""Core recipes for ORCA"""
+"""Core recipes for ORCA."""
 from __future__ import annotations
 
 import multiprocessing
 from shutil import which
 from typing import TYPE_CHECKING
 
-from ase.calculators.orca import ORCA, OrcaProfile
+from ase.calculators.orca import ORCA, OrcaProfile, OrcaTemplate
 
 from quacc import SETTINGS, job
-from quacc.runners.calc import run_calc
+from quacc.runners.ase import run_calc
 from quacc.schemas.cclib import cclib_summarize_run
 from quacc.utils.dicts import merge_dicts
 
@@ -19,20 +19,20 @@ if TYPE_CHECKING:
 
     from quacc.schemas.cclib import cclibSchema
 
-
-LOG_FILE = f"{ORCA().name}.out"
-GEOM_FILE = f"{ORCA().name}.xyz"
+_LABEL = OrcaTemplate()._label  # skipcq: PYL-W0212
+LOG_FILE = f"{_LABEL}.out"
+GEOM_FILE = f"{_LABEL}.xyz"
 
 
 @job
 def static_job(
     atoms: Atoms,
-    charge: int,
-    spin_multiplicity: int,
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
-    input_swaps: dict[str, Any] | None = None,
-    block_swaps: dict[str, Any] | None = None,
+    orcasimpleinput: dict[str, Any] | None = None,
+    orcablocks: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> cclibSchema:
     """
@@ -50,7 +50,7 @@ def static_job(
         Exchange-correlation functional
     basis
         Basis set
-    input_swaps
+    orcasimpleinput
         Dictionary of `orcasimpleinput` swaps for the calculator. To enable new
         entries, set the value as True. To remove entries from the defaults, set
         the value as None. For a list of available keys, refer to the
@@ -68,8 +68,8 @@ def static_job(
                 "xyzfile": True,
             }
             ```
-    block_swaps
-        Dictionary of `orcablock` swaps for the calculator. To enable new entries,
+    orcablock
+        Dictionary of `orcablocks` swaps for the calculator. To enable new entries,
         set the value as True. To remove entries from the defaults, set the
         value as None. For a list of available keys, refer to the
         `ase.calculators.orca.ORCA` calculator.
@@ -112,8 +112,8 @@ def static_job(
         spin_multiplicity,
         default_inputs=default_inputs,
         default_blocks=default_blocks,
-        input_swaps=input_swaps,
-        block_swaps=block_swaps,
+        input_swaps=orcasimpleinput,
+        block_swaps=orcablocks,
         additional_fields={"name": "ORCA Static"},
         copy_files=copy_files,
     )
@@ -127,8 +127,8 @@ def relax_job(
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
     run_freq: bool = False,
-    input_swaps: dict[str, Any] | None = None,
-    block_swaps: dict[str, Any] | None = None,
+    orcasimpleinput: dict[str, Any] | None = None,
+    orcablocks: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> cclibSchema:
     """
@@ -148,7 +148,7 @@ def relax_job(
         Basis set
     run_freq
         If a frequency calculation should be carried out.
-    input_swaps
+    orcasimpleinput
         Dictionary of `orcasimpleinput` swaps for the calculator. To enable new
         entries, set the value as True. To remove entries from the defaults, set
         the value as None. For a list of available keys, refer to the
@@ -167,8 +167,8 @@ def relax_job(
                 "xyzfile": True,
             }
             ```
-    block_swaps
-        Dictionary of `orcablock` swaps for the calculator. To enable new entries,
+    orcablocks
+        Dictionary of `orcablocks` swaps for the calculator. To enable new entries,
         set the value as True. To remove entries from the defaults, set the
         value as None. For a list of available keys, refer to the
         `ase.calculators.orca.ORCA` calculator.
@@ -208,12 +208,12 @@ def relax_job(
 
     return _base_job(
         atoms,
-        charge,
-        spin_multiplicity,
+        charge=charge,
+        spin_multiplicity=spin_multiplicity,
         default_inputs=default_inputs,
         default_blocks=default_blocks,
-        input_swaps=input_swaps,
-        block_swaps=block_swaps,
+        input_swaps=orcasimpleinput,
+        block_swaps=orcablocks,
         additional_fields={"name": "ORCA Relax"},
         copy_files=copy_files,
     )
@@ -221,8 +221,8 @@ def relax_job(
 
 def _base_job(
     atoms: Atoms,
-    charge: int,
-    spin_multiplicity: int,
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     default_inputs: dict[str, Any] | None = None,
     default_blocks: dict[str, Any] | None = None,
     input_swaps: dict[str, Any] | None = None,
@@ -269,7 +269,7 @@ def _base_job(
     orcablocks = " ".join(list(blocks.keys()))
 
     atoms.calc = ORCA(
-        profile=OrcaProfile([SETTINGS.ORCA_CMD]),
+        profile=OrcaProfile(SETTINGS.ORCA_CMD),
         charge=charge,
         mult=spin_multiplicity,
         orcasimpleinput=orcasimpleinput,

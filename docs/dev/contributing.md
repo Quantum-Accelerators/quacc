@@ -52,6 +52,8 @@ If contributing new recipes, please abide by the following guidelines:
 
 - Decorate your individual compute jobs with a `#!Python @job` decorator or your flow with a `#!Python @flow` decorator and name them accordingly.
 
+In general, the easiest way to develop a new recipe is to first make one for a cheap-to-run calculator (e.g. EMT for solids, LJ for molecules), which you can then basically copy and paste for your more expensive calculator of choice.
+
 ### Style
 
 In general, please try to keep the code style consistent when possible, particularly:
@@ -77,6 +79,10 @@ If you wish to test the behavior of a given workflow engine, run `pytest tests/W
 ### Coverage
 
 Each PR will report the coverage once your tests pass, but if you'd like to generate a coverage report locally, you can use [pytest-cov](https://pytest-cov.readthedocs.io/en/latest/), such as by doing `pytest --cov=quacc .`.
+
+!!! Note
+
+    The codecov check on pull requests update as each unit test finishes, so don't be surprised to see an "X" if tests are still running.
 
 ### Adding New Recipes
 

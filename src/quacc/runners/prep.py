@@ -1,176 +1,115 @@
-"""
-Utility functions for dealing with Atoms
-"""
+"""Prepration for runners"""
 from __future__ import annotations
 
-import logging
+import os
+from datetime import datetime, timezone
+from pathlib import Path
+from shutil import rmtree
+from tempfile import mkdtemp
 from typing import TYPE_CHECKING
 
-import numpy as np
+from monty.shutil import copy_r, gzip_dir
 
-from quacc.atoms.core import copy_atoms, get_atoms_id
+from quacc import SETTINGS
+from quacc.atoms.core import copy_atoms
+from quacc.utils.files import copy_decompress, make_unique_dir
 
 if TYPE_CHECKING:
     from ase import Atoms
 
-logger = logging.getLogger(__name__)
 
-
-def prep_next_run(
-    atoms: Atoms, assign_id: bool = True, move_magmoms: bool = True
-) -> Atoms:
+def calc_setup(
+    atoms: Atoms, copy_files: list[str | Path] | None = None
+) -> tuple[Atoms, Path, Path]:
     """
-    Prepares the Atoms object for a new run.
-
-    Depending on the arguments, this function will:
-        - Move the converged magnetic moments to the initial magnetic moments.
-        - Assign a unique ID to the Atoms object in atoms.info["_id"]. Any
-          existing IDs will be moved to atoms.info["_old_ids"].
-
-    In all cases, the calculator will be reset so new jobs can be run.
+    Perform staging operations for a calculation, including copying files to the scratch
+    directory, setting the calculator's directory, decompressing files, and creating a
+    symlink to the scratch directory.
 
     Parameters
     ----------
     atoms
-        Atoms object
-    assign_id
-        Whether to assign a unique ID to the Atoms object in atoms.info["_id"].
-        Any existing IDs will be moved to atoms.info["_old_ids"].
-    move_magmoms
-        If True, move atoms.calc.results["magmoms"] to
-        atoms.get_initial_magnetic_moments()
+        The Atoms object to run the calculation on.
+    copy_files
+        Filenames to copy from source to scratch directory.
 
     Returns
     -------
     Atoms
-        Updated Atoms object.
+        The input Atoms object.
+    Path
+        The path to the tmpdir, where the calculation will be run. It will be
+        deleted after the calculation is complete.
+    Path
+        The path to the results_dir, where the files will ultimately be stored.
+        A symlink to the tmpdir will be made here during the calculation for
+        convenience.
     """
+
+    # Don't modify the original atoms object
     atoms = copy_atoms(atoms)
 
-    if (
-        move_magmoms
-        and hasattr(atoms, "calc")
-        and getattr(atoms.calc, "results", None) is not None
-    ):
-        # If there are initial magmoms set, then we should see what the final
-        # magmoms are. If they are present, move them to initial. If they are
-        # not present, it means the calculator doesn't support the "magmoms"
-        # property so we have to retain the initial magmoms given no further
-        # info.
-        if atoms.has("initial_magmoms"):
-            atoms.set_initial_magnetic_moments(
-                atoms.calc.results.get("magmoms", atoms.get_initial_magnetic_moments())
-            )
-        # If there are no initial magmoms set, just check the results and set
-        # everything to 0.0 if there is nothing there.
-        else:
-            atoms.set_initial_magnetic_moments(
-                atoms.calc.results.get("magmoms", [0.0] * len(atoms))
-            )
+    # Set where to store the results
+    job_results_dir = (
+        make_unique_dir(base_path=SETTINGS.RESULTS_DIR)
+        if SETTINGS.CREATE_UNIQUE_WORKDIR
+        else SETTINGS.RESULTS_DIR
+    )
 
-    # Clear off the calculator so we can run a new job. If we don't do this,
-    # then something like atoms *= (2,2,2) still has a calculator attached,
-    # which is a bit confusing.
-    atoms.calc = None
+    # Create a tmpdir for the calculation within the scratch_dir
+    time_now = datetime.now(timezone.utc).strftime("%Y-%m-%d-%H-%M-%S-%f")
+    tmpdir = Path(
+        mkdtemp(prefix=f"quacc-tmp-{time_now}-", dir=SETTINGS.SCRATCH_DIR)
+    ).resolve()
 
-    # Give the Atoms object a unique ID. This will be helpful for querying
-    # later. Also store any old IDs somewhere else for future reference. Note:
-    # Keep this at the end of the function so that the ID is assigned based on
-    # the returned Atoms object.
-    if assign_id:
-        if atoms.info.get("_id", None) is not None:
-            if atoms.info.get("_old_ids") is None:
-                atoms.info["_old_ids"] = []
-            atoms.info["_old_ids"].append(atoms.info["_id"])
-        atoms.info["_id"] = get_atoms_id(atoms)
+    # Create a symlink to the tmpdir in the results_dir
+    if os.name != "nt" and SETTINGS.SCRATCH_DIR != SETTINGS.RESULTS_DIR:
+        symlink = job_results_dir / f"{tmpdir.name}-symlink"
+        symlink.unlink(missing_ok=True)
+        symlink.symlink_to(tmpdir, target_is_directory=True)
 
-    return atoms
+    # Copy files to tmpdir and decompress them if needed
+    if copy_files:
+        copy_decompress(copy_files, tmpdir)
+
+    os.chdir(tmpdir)
+
+    return atoms, tmpdir, job_results_dir
 
 
-def set_magmoms(
-    atoms: Atoms,
-    elemental_mags_dict: dict[str, float] | None = None,
-    elemental_mags_default: float = 1.0,
-    copy_magmoms: bool = True,
-    mag_cutoff: float | None = 0.05,
-) -> Atoms:  # sourcery skip
+def calc_cleanup(tmpdir: str | Path, job_results_dir: str | Path) -> None:
     """
-    Sets the initial magnetic moments in the Atoms object.
-
-    This function deserves particular attention. The following logic is applied:
-    - If there is a converged set of magnetic moments, those are moved to the
-    initial magmoms if copy_magmoms is True. - If there is no converged set of
-    magnetic moments but the user has set initial magmoms, those are simply used
-    as is. - If there are no converged magnetic moments or initial magnetic
-    moments, then the default magnetic moments from the preset
-    elemental_mags_dict (if specified) are set as the initial magnetic moments.
-    - For any of the above scenarios, if mag_cutoff is not None, the newly set
-    initial magnetic moments are checked. If all have a magnitude below
-    mag_cutoff, then they are all set to 0 (no spin polarization).
+    Perform cleanup operations for a calculation, including gzipping files, copying
+    files back to the original directory, and removing the tmpdir.
 
     Parameters
     ----------
-    atoms
-        Atoms object
-    elemental_mags_dict
-        Dictionary of elemental symbols and their corresponding magnetic moments
-        to set. If None, no default values will be used.
-    elemental_mags_default
-        Default magnetic moment on an element if no magnetic moment is specified
-        in the elemental_mags_dict. Only used if elemental_mags_dict is not
-        None. This kwarg is mainly a convenience so that you don't need to list
-        every single element in the elemental_mags_dict.
-    copy_magmoms
-        Whether to copy the magnetic moments from the converged set of magnetic
-        moments to the initial magnetic moments.
-    mag_cutoff
-        Magnitude below which the magnetic moments are considered to be zero. If
-        None, no cutoff will be applied
+    tmpdir
+        The path to the tmpdir, where the calculation will be run. It will be
+        deleted after the calculation is complete.
+    job_results_dir
+        The path to the job_results_dir, where the files will ultimately be
+        stored. A symlink to the tmpdir will be made here during the calculation
+        for convenience.
 
     Returns
     -------
-    Atoms
-        Atoms object
+    None
     """
 
-    # Handle the magnetic moments Check if a prior job was run and pull the
-    # prior magmoms
-    if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None) is not None:
-        mags = atoms.calc.results.get("magmoms", [0.0] * len(atoms))
-        # Note: It is important that we set mags to 0.0 here rather than None if
-        # the calculator has no magmoms because: 1) ispin=1 might be set, and 2)
-        # we do not want the preset magmoms to be used.
-    else:
-        mags = None
+    # Change to the results directory
+    os.chdir(job_results_dir)
 
-    # Check if the user has set any initial magmoms
-    has_initial_mags = atoms.has("initial_magmoms")
+    # Gzip files in tmpdir
+    if SETTINGS.GZIP_FILES:
+        gzip_dir(tmpdir)
 
-    # If there are no initial magmoms set and this is not a follow-up job, we
-    # may need to add some from the preset yaml.
-    if mags is None:
-        if not has_initial_mags:
-            # If the preset dictionary has default magmoms, set those by
-            # element. If the element isn't in the magmoms dict then set it to
-            # mag_default.
-            if elemental_mags_dict:
-                initial_mags = np.array(
-                    [
-                        elemental_mags_dict.get(atom.symbol, elemental_mags_default)
-                        for atom in atoms
-                    ]
-                )
-                atoms.set_initial_magnetic_moments(initial_mags)
-        else:
-            pass
-    elif copy_magmoms:
-        atoms.set_initial_magnetic_moments(mags)
+    # Copy files back to job_results_dir
+    copy_r(tmpdir, job_results_dir)
 
-    # If all the set mags are below mag_cutoff, set them to 0
-    if mag_cutoff:
-        has_new_initial_mags = atoms.has("initial_magmoms")
-        new_initial_mags = atoms.get_initial_magnetic_moments()
-        if has_new_initial_mags and np.all(np.abs(new_initial_mags) < mag_cutoff):
-            atoms.set_initial_magnetic_moments([0.0] * len(atoms))
+    # Remove symlink to tmpdir
+    symlink_path = job_results_dir / f"{tmpdir.name}-symlink"
+    symlink_path.unlink(missing_ok=True)
 
-    return atoms
+    # Remove the tmpdir
+    rmtree(tmpdir, ignore_errors=True)

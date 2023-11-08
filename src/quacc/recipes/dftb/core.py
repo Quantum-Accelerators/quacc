@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from ase.calculators.dftb import Dftb
 
 from quacc import SETTINGS, job
-from quacc.runners.calc import run_calc
+from quacc.runners.ase import run_calc
 from quacc.schemas.ase import summarize_run
 from quacc.utils.dicts import merge_dicts
 from quacc.utils.files import check_logfile
@@ -27,8 +27,7 @@ def static_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
     kpts: tuple | list[tuple] | dict | None = None,
-    calc_swaps: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
+    **kwargs,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -41,8 +40,10 @@ def static_job(
         Method to use.
     kpts
         k-point grid to use.
-    calc_swaps
-        Dictionary of custom kwargs for the calculator that would override the
+    copy_files
+        Files to copy to the runtime directory.
+    **kwargs
+        Custom kwargs for the calculator that would override the
         calculator defaults. Set a value to `None` to remove a pre-existing key
         entirely. For a list of available keys, refer to the
         `ase.calculators.dftb.Dftb` calculator.
@@ -57,8 +58,6 @@ def static_job(
                 "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
             }
             ```
-    copy_files
-        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -76,9 +75,8 @@ def static_job(
     return _base_job(
         atoms,
         defaults=defaults,
-        calc_swaps=calc_swaps,
+        calc_swaps=kwargs,
         additional_fields={"name": "DFTB+ Static"},
-        copy_files=copy_files,
     )
 
 
@@ -88,8 +86,7 @@ def relax_job(
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
     kpts: tuple | list[tuple] | dict | None = None,
     relax_cell: bool = False,
-    calc_swaps: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
+    **kwargs,
 ) -> RunSchema:
     """
     Carry out a structure relaxation.
@@ -105,8 +102,8 @@ def relax_job(
     relax_cell
         Whether to relax the unit cell shape/volume in addition to the
         positions.
-    calc_swaps
-        Dictionary of custom kwargs for the calculator that would override the
+    **kwargs
+        Custom kwargs for the calculator that would override the
         calculator defaults. Set a value to `None` to remove a pre-existing key
         entirely. For a list of available keys, refer to the
         `ase.calculators.dftb.Dftb` calculator.
@@ -124,8 +121,6 @@ def relax_job(
                 "Driver_AppendGeometries": "Yes", "Driver_MaxSteps": 2000,
             }
             ```
-    copy_files
-        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -147,9 +142,8 @@ def relax_job(
     return _base_job(
         atoms,
         defaults=defaults,
-        calc_swaps=calc_swaps,
+        calc_swaps=kwargs,
         additional_fields={"name": "DFTB+ Relax"},
-        copy_files=copy_files,
     )
 
 

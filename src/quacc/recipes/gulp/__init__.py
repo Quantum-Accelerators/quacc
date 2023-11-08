@@ -1,1 +1,1 @@
-"""Recipes for GULP"""
+"""Recipes for GULP."""

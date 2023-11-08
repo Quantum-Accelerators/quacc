@@ -1,6 +1,4 @@
-"""
-Utility functions for dealing with dictionaries
-"""
+"""Utility functions for dealing with dictionaries."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -9,14 +7,37 @@ if TYPE_CHECKING:
     from typing import Any
 
 
+def recursive_merge_dicts(*args, remove_nones: bool = True) -> dict[str, Any]:
+    """
+    Recursively merge dictionaries, taking the latter in the list as higher preference.
+
+    Parameters
+    ----------
+    *args
+        Dictionaries to merge
+    remove_nones
+        If True, remove empty lists and dictionaries
+
+    Returns
+    -------
+    dict
+        Merged dictionary
+    """
+    old_dict = args[0]
+    for i in range(len(args) - 1):
+        merged = merge_dicts(old_dict, args[i + 1], remove_nones=remove_nones)
+        old_dict = merged.copy()
+    return merged
+
+
 def merge_dicts(
     dict1: dict[str, Any] | None,
     dict2: dict[str, Any] | None,
     remove_nones: bool = True,
 ) -> dict[str, Any]:
     """
-    Recursively merges two dictionaries. If one the inputs are `None`, then
-    it is treated as `{}`.
+    Recursively merges two dictionaries. If one the inputs are `None`, then it is
+    treated as `{}`.
 
     Parameters
     ----------
@@ -53,7 +74,7 @@ def merge_dicts(
 
 def remove_dict_nones(start_dict: dict[str, Any]) -> dict[str, Any]:
     """
-    For a given dictionary, recursively remove all items that are None
+    For a given dictionary, recursively remove all items that are None.
 
     Parameters
     ----------

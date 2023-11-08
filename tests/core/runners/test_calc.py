@@ -9,7 +9,7 @@ from ase.calculators.lj import LennardJones
 from ase.optimize import BFGS, BFGSLineSearch
 
 from quacc import SETTINGS
-from quacc.runners.calc import run_ase_opt, run_ase_vib, run_calc
+from quacc.runners.ase import run_calc, run_opt, run_vib
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 
@@ -67,7 +67,7 @@ def test_run_calc_no_gzip(tmpdir):
     SETTINGS.GZIP_FILES = DEFAULT_SETTINGS.GZIP_FILES
 
 
-def test_run_ase_opt1(tmpdir):
+def test_run_opt1(tmpdir):
     tmpdir.chdir()
     prep_files()
 
@@ -75,7 +75,7 @@ def test_run_ase_opt1(tmpdir):
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
-    dyn = run_ase_opt(atoms, copy_files=["test_file.txt"])
+    dyn = run_opt(atoms, copy_files=["test_file.txt"])
     traj = dyn.traj_atoms
     assert traj[-1].calc.results is not None
     assert not os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, "test_file.txt"))
@@ -84,13 +84,13 @@ def test_run_ase_opt1(tmpdir):
     assert np.array_equal(traj[-1].cell.array, atoms.cell.array) is True
 
 
-def test_run_ase_opt2(tmpdir):
+def test_run_opt2(tmpdir):
     tmpdir.chdir()
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
-    dyn = run_ase_opt(
+    dyn = run_opt(
         atoms,
         optimizer=BFGS,
         copy_files=["test_file.txt"],
@@ -99,7 +99,7 @@ def test_run_ase_opt2(tmpdir):
     traj = dyn.traj_atoms
     assert traj[-1].calc.results is not None
 
-    dyn = run_ase_opt(
+    dyn = run_opt(
         traj[-1],
         optimizer=BFGSLineSearch,
         copy_files=["test_file.txt"],
@@ -109,13 +109,13 @@ def test_run_ase_opt2(tmpdir):
     assert traj[-1].calc.results is not None
 
 
-def test_run_ase_vib(tmpdir):
+def test_run_vib(tmpdir):
     tmpdir.chdir()
     prep_files()
 
     o2 = molecule("O2")
     o2.calc = LennardJones()
-    vib = run_ase_vib(o2, copy_files=["test_file.txt"])
+    vib = run_vib(o2, copy_files=["test_file.txt"])
     assert np.real(vib.get_frequencies()[-1]) == pytest.approx(255.6863883406967)
     assert np.array_equal(vib.atoms.get_positions(), o2.get_positions()) is True
     assert not os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, "test_file.txt"))
@@ -126,11 +126,6 @@ def test_bad_runs(tmpdir):
     tmpdir.chdir()
 
     atoms = bulk("Cu")
-
-    # No calculator
-    with pytest.raises(ValueError):
-        run_calc(atoms)
-
     atoms.calc = EMT()
 
     # No file
@@ -139,11 +134,11 @@ def test_bad_runs(tmpdir):
 
     # No file again
     with pytest.warns(UserWarning):
-        run_ase_opt(atoms, copy_files=["test_file.txt"])
+        run_opt(atoms, copy_files=["test_file.txt"])
 
     # No trajectory kwarg
     with pytest.raises(ValueError):
-        run_ase_opt(
+        run_opt(
             atoms,
             optimizer=BFGSLineSearch,
             optimizer_kwargs={
@@ -171,7 +166,7 @@ def test_unique_workdir(tmpdir):
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
-    dyn = run_ase_opt(atoms, copy_files=["test_file.txt"])
+    dyn = run_opt(atoms, copy_files=["test_file.txt"])
     traj = dyn.traj_atoms
     assert traj[-1].calc.results is not None
     assert np.array_equal(traj[-1].get_positions(), atoms.get_positions()) is False
@@ -180,7 +175,7 @@ def test_unique_workdir(tmpdir):
     # Vib
     o2 = molecule("O2")
     o2.calc = LennardJones()
-    vib = run_ase_vib(o2)
+    vib = run_vib(o2)
     assert np.real(vib.get_frequencies()[-1]) == pytest.approx(255.6863883406967)
     assert np.array_equal(vib.atoms.get_positions(), o2.get_positions()) is True
 

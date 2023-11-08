@@ -1,4 +1,4 @@
-"""A Q-Chem calculator built on Pymatgen and Custodian functionality"""
+"""A Q-Chem calculator built on Pymatgen and Custodian functionality."""
 from __future__ import annotations
 
 import inspect
@@ -19,9 +19,7 @@ if TYPE_CHECKING:
 
 
 class QChem(FileIOCalculator):
-    """
-    Custom Q-Chem calculator built on Pymatgen and Custodian.
-    """
+    """Custom Q-Chem calculator built on Pymatgen and Custodian."""
 
     implemented_properties: ClassVar[list[str]] = [
         "energy",
@@ -106,15 +104,16 @@ class QChem(FileIOCalculator):
         self._set_default_params()
 
         # Get Q-Chem executable command
-        self.command = self._manage_environment()
+        command = self._manage_environment()
 
         # Instantiate the calculator
-        FileIOCalculator.__init__(
-            self,
+        super().__init__(
             restart=None,
             ignore_bad_restart_file=FileIOCalculator._deprecated,
             label=None,
             atoms=self.atoms,
+            command=command,
+            profile=None,
             **self.fileiocalculator_kwargs,
         )
 
@@ -184,8 +183,8 @@ class QChem(FileIOCalculator):
 
     def _cleanup_qchem_input_params(self) -> None:
         """
-        Clean up q-chem input parameters for the Q-Chem calculator.
-        Modifies self.qchem_input_params in place.
+        Clean up q-chem input parameters for the Q-Chem calculator. Modifies
+        self.qchem_input_params in place.
 
         Parameters
         ----------
@@ -213,8 +212,8 @@ class QChem(FileIOCalculator):
 
     def _set_default_params(self) -> None:
         """
-        Store the parameters that have been passed to the Q-Chem
-        calculator in FileIOCalculator's self.default_parameters.
+        Store the parameters that have been passed to the Q-Chem calculator in
+        FileIOCalculator's self.default_parameters.
 
         Parameters
         ----------

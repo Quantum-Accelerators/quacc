@@ -1,1 +1,1 @@
-"""Recipes for EMT"""
+"""Recipes for EMT."""

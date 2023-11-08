@@ -1,4 +1,5 @@
 import os
+import platform
 from pathlib import Path
 
 import pytest
@@ -79,6 +80,13 @@ def test_unset(runner):
         for _ in f:
             lines += ""
     assert "WORKFLOW_ENGINE" not in lines
+
+
+def test_info(runner):
+    response = runner.invoke(app, ["info"])
+    assert response.exit_code == 0
+    assert __version__ in response.stdout
+    assert platform.python_version() in response.stdout
 
 
 def test_bad(runner):

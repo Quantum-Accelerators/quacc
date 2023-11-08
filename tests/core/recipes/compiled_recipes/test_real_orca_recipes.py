@@ -1,13 +1,17 @@
+import os
 from shutil import which
 
 import pytest
 from ase.build import molecule
 from numpy.testing import assert_allclose
 
+from quacc import SETTINGS
 from quacc.recipes.orca.core import relax_job, static_job
 
 #has_orca = bool(which("orca"))
 has_orca = False
+
+has_orca = bool(orca_path and os.path.getsize(orca_path) > 1024 * 1024)
 
 pytestmark = pytest.mark.skipif(
     not has_orca,
@@ -35,8 +39,8 @@ def test_static_job(tmpdir):
         atoms,
         -2,
         3,
-        input_swaps={"def2-svp": True, "def2-tzvp": None},
-        block_swaps={"%scf maxiter 300 end": True},
+        orcasimpleinput={"def2-svp": True, "def2-tzvp": None},
+        orcablocks={"%scf maxiter 300 end": True},
     )
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2
@@ -66,13 +70,13 @@ def test_relax_job(tmpdir):
         atoms,
         -2,
         3,
-        input_swaps={
+        orcasimpleinput={
             "hf": True,
             "wb97x-d3bj": None,
             "def2-svp": True,
             "def2-tzvp": None,
         },
-        block_swaps={"%scf maxiter 300 end": True},
+        orcablocks={"%scf maxiter 300 end": True},
     )
     assert output["natoms"] == len(atoms)
     assert (
