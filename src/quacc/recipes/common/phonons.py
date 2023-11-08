@@ -21,7 +21,6 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from ase.calculators.calculator import Calculator
     from numpy.typing import ArrayLike, NDArray
-    from phonopy import Phonopy
 
     from quacc.schemas._aliases.phonopy import PhononSchema
 
