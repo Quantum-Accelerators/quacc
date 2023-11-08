@@ -184,12 +184,10 @@ def bulk_to_slabs_flow(
     slab_static_kwargs = slab_static_kwargs or {}
     make_slabs_kwargs = make_slabs_kwargs or {}
 
-    def _make_slabs(atoms: Atoms) -> list[Atoms]:
-        return make_slabs_from_bulk(atoms, **make_slabs_kwargs)
 
     @subflow
     def _relax_job_distributed(atoms: Atoms) -> list[VaspSchema]:
-        slabs = _make_slabs(atoms)
+        slabs = make_slabs_from_bulk(atoms, **make_slabs_kwargs)
         return [slab_relax_job(slab, **slab_relax_kwargs) for slab in slabs]
 
     @subflow
@@ -253,12 +251,10 @@ def slab_to_ads_flow(
     slab_static_kwargs = slab_static_kwargs or {}
     make_ads_kwargs = make_ads_kwargs or {}
 
-    def _make_ads_slabs(slab: Atoms) -> list[Atoms]:
-        return make_adsorbate_structures(slab, adsorbate, **make_ads_kwargs)
 
     @subflow
     def _relax_job_distributed(slab: Atoms) -> list[VaspSchema]:
-        slabs = _make_ads_slabs(slab)
+        slabs = make_adsorbate_structures(slab, adsorbate, **make_ads_kwargs)
         return [slab_relax_job(slab, **slab_relax_kwargs) for slab in slabs]
 
     @subflow
