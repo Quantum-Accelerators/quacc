@@ -86,7 +86,6 @@ def bulk_to_defects_flow(
         defect_gen=defect_gen,
         defect_charge=defect_charge,
         make_defects_kwargs=make_defects_kwargs,
-        run_static=run_static,
         defect_relax_kwargs=defect_relax_kwargs,
         defect_static_kwargs=defect_static_kwargs,
     )
