@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
     from ase import Atoms
 
-    from quacc.schemas.cclib import cclibSchema
+    from quacc.schemas._aliases.cclib import cclibSchema
 
 _LABEL = OrcaTemplate()._label  # skipcq: PYL-W0212
 LOG_FILE = f"{_LABEL}.out"
