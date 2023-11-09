@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from pymatgen.analysis.defects.generators import VacancyGenerator
 
-from quacc import subflow
+from quacc import flow, subflow
 from quacc.atoms.defects import make_defects_from_bulk
 
 if TYPE_CHECKING:
@@ -21,6 +21,7 @@ if TYPE_CHECKING:
     )
 
 
+@flow
 def common_bulk_to_defects_flow(
     atoms: Atoms,
     relax_job: Callable,
