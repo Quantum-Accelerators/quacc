@@ -72,7 +72,7 @@ All changes you make to quacc should be accompanied by unit tests and should not
 
 ### Running Locally
 
-To run the core test suite locally, run `pytest tests/core` (which is the same as doing `pytest` without any extra arguments).
+To run the core test suite locally, run `pytest tests/local` (which is the same as doing `pytest` without any extra arguments).
 
 If you wish to test the behavior of a given workflow engine, run `pytest tests/WORKFLOW_ENGINE` where `WORKFLOW_ENGINE` is the name of your workflow engine.
 
