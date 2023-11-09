@@ -38,6 +38,7 @@ nav:
           - recipes/jobs.md
           - recipes/flows.md
           - recipes/futures.md
+          - recipes/testing.md
   - About 📜:
       - about/faq.md
       - about/contributors.md
