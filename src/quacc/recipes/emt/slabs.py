@@ -53,6 +53,7 @@ def bulk_to_slabs_flow(
         [OptSchema][quacc.schemas.ase.summarize_opt_run] for each slab.
     """
 
+    slab_relax_kwargs = slab_relax_kwargs or {}
     if "relax_cell" not in slab_relax_kwargs:
         slab_relax_kwargs["relax_cell"] = False
 
