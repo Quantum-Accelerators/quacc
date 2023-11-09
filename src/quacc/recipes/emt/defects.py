@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from pymatgen.analysis.defects.generators import VacancyGenerator
 
 from quacc import flow
-from quacc.recipes.common.slabs import common_bulk_to_defects_flow
+from quacc.recipes.common.defects import common_bulk_to_defects_flow
 from quacc.recipes.emt.core import relax_job, static_job
 
 if TYPE_CHECKING:
