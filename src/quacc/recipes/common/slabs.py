@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from quacc import subflow
+from quacc import flow, subflow
 from quacc.atoms.slabs import make_slabs_from_bulk
 
 if TYPE_CHECKING:
@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from quacc.schemas._aliases.ase import OptSchema, RunSchema
 
 
+@flow
 def common_bulk_to_slabs_flow(
     atoms: Atoms,
     relax_job: Callable,
