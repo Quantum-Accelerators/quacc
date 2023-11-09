@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 
     from ase import Atoms
 
-    from quacc.schemas.ase import OptSchema, RunSchema
+    from quacc.schemas._aliases.ase import OptSchema, RunSchema
 
 
 @job

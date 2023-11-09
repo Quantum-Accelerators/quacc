@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
     from ase import Atoms
 
-    from quacc.schemas.ase import RunSchema
+    from quacc.schemas._aliases.ase import RunSchema
 
 LOG_FILE = "dftb.out"
 GEOM_FILE = "geo_end.gen"

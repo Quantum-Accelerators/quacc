@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
     from ase import Atoms
 
-    from quacc.schemas.vasp import VaspSchema
+    from quacc.schemas._aliases.vasp import VaspSchema
 
 
 @job
