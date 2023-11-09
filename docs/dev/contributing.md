@@ -1,4 +1,4 @@
-# Contributing
+# Contributing Guide
 
 We welcome all contributions, big or small (provided they come with unit tests!). Here are some general guidelines and tips. Note that it is never too early to open a PR if you're looking for input or feedback!
 
