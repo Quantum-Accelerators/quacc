@@ -83,7 +83,7 @@ minversion = "6.0"
 addopts = ["-p no:warnings", "--import-mode=importlib"]
 xfail_strict = true
 log_cli_level = "warn"
-testpaths = ["tests/core"]
+testpaths = ["tests/local"]
 
 [tool.black]
 exclude = '''
