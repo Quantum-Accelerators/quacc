@@ -181,9 +181,6 @@ def bulk_to_slabs_flow(
     list[VaspSchema]
         List of dictionary results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
-    slab_relax_kwargs = slab_relax_kwargs or {}
-    slab_static_kwargs = slab_static_kwargs or {}
-    make_slabs_kwargs = make_slabs_kwargs or {}
 
     return common_bulk_to_slabs_flow(
         atoms,
