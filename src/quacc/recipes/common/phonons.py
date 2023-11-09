@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
-from quacc import job, subflow
+from quacc import flow, job, subflow
 from quacc.atoms.phonons import atoms_to_phonopy, phonopy_atoms_to_ase_atoms
 from quacc.runners.ase import run_calc
 from quacc.schemas.phonopy import summarize_phonopy
@@ -26,6 +26,7 @@ if TYPE_CHECKING:
     from quacc.schemas._aliases.phonopy import PhononSchema
 
 
+@flow
 @requires(phonopy, "Phonopy must be installed. Run `pip install quacc[phonons]`")
 def common_phonon_flow(
     atoms: Atoms,
