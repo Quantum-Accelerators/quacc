@@ -74,7 +74,11 @@ def common_phonon_flow(
         return run_calc(atoms).get_forces()
 
     @subflow
-    def _force_job_distributed(supercells: list[Atoms]) -> list[NDArray]:
+    def _force_job_distributed(atoms: Atoms) -> list[NDArray]:
+        phonon = atoms_to_phonopy(atoms, supercell_matrix, atom_disp)
+        supercells = [
+            phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
+        ]
         return [
             _force_job(supercell, calculator)
             for supercell in supercells
@@ -82,9 +86,8 @@ def common_phonon_flow(
         ]
 
     @job
-    def _thermal_properties_job(
-        phonon: Phonopy, forces: list[NDArray], input_atoms: Atoms
-    ) -> Phonopy:
+    def _thermal_properties_job(input_atoms: Atoms, forces: list[NDArray]) -> Phonopy:
+        phonon = atoms_to_phonopy(atoms, supercell_matrix, atom_disp)
         phonon.forces = forces
         phonon.produce_force_constants()
         phonon.run_mesh()
@@ -97,13 +100,5 @@ def common_phonon_flow(
             additional_fields=fields_to_store,
         )
 
-    @job
-    def _phonopy_job(atoms: Atoms) -> PhononSchema:
-        phonon = atoms_to_phonopy(atoms, supercell_matrix, atom_disp)
-        supercells = [
-            phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
-        ]
-        forces = _force_job_distributed(supercells)
-        return _thermal_properties_job(phonon, forces, atoms)
-
-    return _phonopy_job(atoms)
+    forces = _force_job_distributed(atoms)
+    return _thermal_properties_job(atoms, forces)
