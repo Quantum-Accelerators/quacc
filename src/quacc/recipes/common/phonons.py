@@ -21,7 +21,6 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from ase.calculators.calculator import Calculator
     from numpy.typing import ArrayLike, NDArray
-    from phonopy import Phonopy
 
     from quacc.schemas._aliases.phonopy import PhononSchema
 
@@ -86,7 +85,9 @@ def common_phonon_flow(
         ]
 
     @job
-    def _thermal_properties_job(input_atoms: Atoms, forces: list[NDArray]) -> Phonopy:
+    def _thermal_properties_job(
+        input_atoms: Atoms, forces: list[NDArray]
+    ) -> PhononSchema:
         phonon = atoms_to_phonopy(atoms, supercell_matrix, atom_disp)
         phonon.forces = forces
         phonon.produce_force_constants()
