@@ -75,6 +75,7 @@ def bulk_to_defects_flow(
         or [quacc.schemas.ase.summarize_opt_run][]
     """
 
+    defect_relax_kwargs = defect_relax_kwargs or {}
     if "relax_cell" not in defect_relax_kwargs:
         defect_relax_kwargs["relax_cell"] = False
 
