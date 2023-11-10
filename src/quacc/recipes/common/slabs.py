@@ -54,8 +54,8 @@ def bulk_to_slabs_subflow(
         [RunSchema][quacc.schemas.ase.summarize_run] or
         [OptSchema][quacc.schemas.ase.summarize_opt_run] for each slab.
     """
-    relax_job_kwargs = relax_job_kwargs or {}
-    static_job_kwargs = static_job_kwargs or {}
+    slab_relax_kwargs = slab_relax_kwargs or {}
+    slab_static_kwargs = slab_static_kwargs or {}
     make_slabs_kwargs = make_slabs_kwargs or {}
 
     slabs = make_slabs_from_bulk(atoms, **make_slabs_kwargs)
