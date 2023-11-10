@@ -97,6 +97,6 @@ def common_phonon_flow(
     supercells = [
         phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
     ]
-    forces = _force_job_distributed(supercells)
+    forces = _static_job_distributed(supercells)
 
     return _thermo_job(phonon, forces, atoms)
