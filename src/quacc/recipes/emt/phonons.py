@@ -9,8 +9,6 @@ from quacc import flow
 from quacc.recipes.common.phonons import common_phonon_flow
 
 if TYPE_CHECKING:
-    from typing import Any
-
     from ase import Atoms
     from numpy.typing import ArrayLike
 
