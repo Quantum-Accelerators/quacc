@@ -12,7 +12,7 @@ For a representative job involving a code that uses an internal geometry optimiz
 
 ## Requirements and Recommendations
 
-In quacc, jobs are defined as Python functions that are decorated with `@job`.
+In quacc, jobs are defined as Python functions that are decorated with `#!Python @job`.
 
 The following are requirements for jobs:
 
