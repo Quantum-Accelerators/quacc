@@ -95,8 +95,8 @@ def phonon_flow(
 
         return summarize_phonopy(
             phonon,
-            calculator,
             input_atoms=atoms,
+            parameters=output["parameters"],
             additional_fields=fields_to_store,
         )
 
