@@ -61,7 +61,7 @@ def bulk_to_slabs_subflow(
     for slab in slabs:
         result = slab_relax_job(slab, **slab_relax_kwargs)
 
-        if static_job:
+        if slab_static_job:
             result = slab_static_job(result["atoms"], **slab_static_kwargs)
 
         results.append(result)
@@ -121,7 +121,7 @@ def slab_to_ads_subflow(
     for slab in slabs:
         result = slab_relax_job(slab, **slab_relax_kwargs)
 
-        if static_job:
+        if slab_static_job:
             result = slab_static_job(result["atoms"], **slab_static_kwargs)
 
         results.append(result)
