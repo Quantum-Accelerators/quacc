@@ -69,8 +69,8 @@ def common_phonon_flow(
     PhononSchema
         Dictionary of results from [quacc.schemas.phonopy.summarize_phonopy][]
     """
-    fields_to_store = fields_to_store or {}
     static_job_kwargs = static_job_kwargs or {}
+    fields_to_store = fields_to_store or {}
 
     @subflow
     def _static_job_distributed(supercells: list[Atoms]) -> list[NDArray]:
