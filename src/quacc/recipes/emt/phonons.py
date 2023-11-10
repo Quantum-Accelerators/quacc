@@ -24,7 +24,7 @@ def phonon_flow(
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
-    static_job_kwargs: dict[str, Any] |None = None,
+    static_job_kwargs: dict[str, Any] | None = None,
 ) -> PhononSchema:
     """
     Carry out a phonon calculation.
