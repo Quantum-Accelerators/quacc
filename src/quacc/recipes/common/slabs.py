@@ -11,9 +11,6 @@ if TYPE_CHECKING:
 
     from ase import Atoms
 
-    from quacc.schemas._aliases.ase import OptSchema, RunSchema
-
-
 @subflow
 def bulk_to_slabs_subflow(
     atoms: Atoms,
@@ -22,7 +19,7 @@ def bulk_to_slabs_subflow(
     make_slabs_kwargs: dict[str, Any] | None = None,
     slab_relax_kwargs: dict[str, Any] | None = None,
     slab_static_kwargs: dict[str, Any] | None = None,
-) -> list[RunSchema | OptSchema]:
+) -> list:
     """
     Workflow consisting of:
 
@@ -50,9 +47,8 @@ def bulk_to_slabs_subflow(
 
     Returns
     -------
-    list[RunSchema | OptSchema]
-        [RunSchema][quacc.schemas.ase.summarize_run] or
-        [OptSchema][quacc.schemas.ase.summarize_opt_run] for each slab.
+    list
+        List of schemas.
     """
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}
