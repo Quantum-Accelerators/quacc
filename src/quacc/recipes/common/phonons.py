@@ -7,7 +7,6 @@ from monty.dev import requires
 
 from quacc import flow, job, subflow
 from quacc.atoms.phonons import atoms_to_phonopy, phonopy_atoms_to_ase_atoms
-from quacc.runners.ase import run_calc
 from quacc.schemas.phonopy import summarize_phonopy
 
 try:
