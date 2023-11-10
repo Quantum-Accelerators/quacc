@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
 
 @subflow
-def common_bulk_to_defects_flow(
+def bulk_to_defects_subflow(
     atoms: Atoms,
     relax_job: Callable,
     static_job: Callable | None,

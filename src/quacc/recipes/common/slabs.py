@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 @subflow
-def common_bulk_to_slabs_flow(
+def bulk_to_slabs_subflow(
     atoms: Atoms,
     relax_job: Callable,
     static_job: Callable | None,
