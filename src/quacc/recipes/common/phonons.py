@@ -79,7 +79,7 @@ def phonon_flow(
             phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
         ]
         return [
-            static_job(supercell, **static_job_kwargs)["forces"]
+            static_job(supercell, **static_job_kwargs)["results"]["forces"]
             for supercell in supercells
             if supercell is not None
         ]
