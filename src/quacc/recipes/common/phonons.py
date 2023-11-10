@@ -101,6 +101,5 @@ def phonon_flow(
             additional_fields=fields_to_store,
         )
 
-
-    forces = _phonopy_forces_subflow(atoms  )
+    forces = _phonopy_forces_subflow(atoms)
     return _phonopy_thermo_job(phonon, forces, atoms)
