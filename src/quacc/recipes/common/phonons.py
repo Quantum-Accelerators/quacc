@@ -47,8 +47,10 @@ def common_phonon_flow(
     ----------
     atoms
         Atoms object with calculator attached.
-    calculator
-        Calculator to use.
+    static_job
+        The static job to calculate the forces.
+    static_job_kwargs
+        The kwargs for `static_job`.
     supercell_matrix
         Supercell matrix to use. Defaults to 2x2x2 supercell.
     atom_disp
@@ -68,6 +70,7 @@ def common_phonon_flow(
         Dictionary of results from [quacc.schemas.phonopy.summarize_phonopy][]
     """
     fields_to_store = fields_to_store or {}
+    static_job_kwargs = static_job_kwargs or {}
 
     @subflow
     def _static_job_distributed(supercells: list[Atoms]) -> list[NDArray]:
