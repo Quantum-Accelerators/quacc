@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from pymatgen.analysis.defects.generators import VacancyGenerator
 
-from quacc import flow, subflow
+from quacc import subflow
 from quacc.atoms.defects import make_defects_from_bulk
 
 if TYPE_CHECKING:
@@ -21,8 +21,8 @@ if TYPE_CHECKING:
     )
 
 
-@flow
-def common_bulk_to_defects_flow(
+@subflow
+def bulk_to_defects_subflow(
     atoms: Atoms,
     relax_job: Callable,
     static_job: Callable | None,
@@ -38,7 +38,7 @@ def common_bulk_to_defects_flow(
     make_defects_kwargs: dict[str, Any] | None = None,
     defect_relax_kwargs: dict[str, Any] | None = None,
     defect_static_kwargs: dict[str, Any] | None = None,
-) -> list:
+) -> list[dict]:
     """
     Workflow consisting of:
 
@@ -70,41 +70,27 @@ def common_bulk_to_defects_flow(
 
     Returns
     -------
-    list
+    list[dict]
         List of dictionary of results
     """
     defect_relax_kwargs = defect_relax_kwargs or {}
     defect_static_kwargs = defect_static_kwargs or {}
     make_defects_kwargs = make_defects_kwargs or {}
 
-    @subflow
-    def _relax_job_distributed(atoms: Atoms) -> list:
-        defects = make_defects_from_bulk(
-            atoms,
-            defect_gen=defect_gen,
-            defect_charge=defect_charge,
-            **make_defects_kwargs,
-        )
-        return [relax_job(defect, **defect_relax_kwargs) for defect in defects]
-
-    @subflow
-    def _relax_and_static_job_distributed(atoms: Atoms) -> list:
-        defects = make_defects_from_bulk(
-            atoms,
-            defect_gen=defect_gen,
-            defect_charge=defect_charge,
-            **make_defects_kwargs,
-        )
-        return [
-            static_job(
-                relax_job(defect, **defect_relax_kwargs)["atoms"],
-                **defect_static_kwargs,
-            )
-            for defect in defects
-        ]
-
-    return (
-        _relax_and_static_job_distributed(atoms)
-        if static_job
-        else _relax_job_distributed(atoms)
+    defects = make_defects_from_bulk(
+        atoms,
+        defect_gen=defect_gen,
+        defect_charge=defect_charge,
+        **make_defects_kwargs,
     )
+
+    results = []
+    for defect in defects:
+        result = relax_job(defect, **defect_relax_kwargs)
+
+        if static_job:
+            result = static_job(defect, **defect_static_kwargs)
+
+        results.append(result)
+
+    return results
