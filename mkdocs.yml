@@ -35,9 +35,9 @@ nav:
       - dev/contributing.md
       - dev/docs.md
       - Writing New Recipes:
-          - recipes/jobs.md
-          - recipes/flows.md
-          - recipes/testing.md
+          - dev/recipes/jobs.md
+          - dev/recipes/flows.md
+          - dev/recipes/testing.md
   - About 📜:
       - about/faq.md
       - about/contributors.md
