@@ -26,4 +26,4 @@ This flow is "dynamic" because the number of slabs is not known until the pre-re
 
     To prevent code duplication, we put common recipes that are code-agnostic in `quacc.recipes.common`. These recipes are not meant to be run directly, but rather called by other recipes.
 
-    For instance, [quacc.recipes.emt.slabs.bulk_to_slabs_flow][] and [quacc.recipes.vasp.slabs.bulk_to_slabs_flow][] both call the same [quacc.recipes.common.slabs.bulk_to_slabs_flow][].
+    For instance, [quacc.recipes.emt.slabs.bulk_to_slabs_flow][] and [quacc.recipes.vasp.slabs.bulk_to_slabs_flow][] both call the same [quacc.recipes.common.slabs.bulk_to_slabs_subflow][].
