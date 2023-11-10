@@ -32,7 +32,7 @@ Three of the most common runners are summarized below:
 
 1. [quacc.runners.ase.run_calc][]: Runs a calculation using an ASE calculator. This is the most common runner.
 
-2. [quacc.runners.ase.run_ase_opt][]: Runs a geometry optimization using an ASE optimizer. Use [quacc.runners.ase.run_calc] if an internal optimizer is desired.
+2. [quacc.runners.ase.run_opt][]: Runs a geometry optimization using an ASE optimizer. Use [quacc.runners.ase.run_calc] if an internal optimizer is desired.
 
 3. [quacc.runners.ase.run_vib][]: Runs a vibrational analysis using ASE's `Vibrations` module. Use [quacc.runners.ase.run_calc] if the vibrational analysis is performed by the electronic structure package.
 
