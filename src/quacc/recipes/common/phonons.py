@@ -27,8 +27,7 @@ if TYPE_CHECKING:
 
 @flow
 @requires(phonopy, "Phonopy must be installed. Run `pip install quacc[phonons]`")
-def common_phonon_flow(
-    atoms: Atoms,
+def phonon_flow(atoms: Atoms,
     static_job: static_job,
     static_job_kwargs: dict[str, Any] | None = None,
     supercell_matrix: ArrayLike = ((2, 0, 0), (0, 2, 0), (0, 0, 2)),
@@ -36,8 +35,7 @@ def common_phonon_flow(
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
-    fields_to_store: dict[str, Any] = None,
-) -> PhononSchema:
+    fields_to_store: dict[str, Any] = None) -> PhononSchema:
     """
     Calculate phonon properties.
 
@@ -69,37 +67,45 @@ def common_phonon_flow(
     PhononSchema
         Dictionary of results from [quacc.schemas.phonopy.summarize_phonopy][]
     """
+
+    forces = _phonopy_forces_subflow(atoms,supercell_matrix, atom_disp, static_job, static_job_kwargs=static_job_kwargs)
+    return _phonopy_thermo_job(phonon, forces, atoms)
+
+@subflow
+def _phonopy_forces_subflow(
+    atoms: Atoms,
+    supercell_matrix: ArrayLike,
+    atom_disp: float,
+    static_job: static_job,
+    static_job_kwargs: dict[str, Any] | None = None,
+) -> PhononSchema:
+
     static_job_kwargs = static_job_kwargs or {}
-    fields_to_store = fields_to_store or {}
-
-    @subflow
-    def _static_job_distributed(supercells: list[Atoms]) -> list[NDArray]:
-        return [
-            static_job(supercell, **static_job_kwargs)
-            for supercell in supercells
-            if supercell is not None
-        ]
-
-    @job
-    def _thermo_job(
-        phonon: Phonopy, forces: list[NDArray], input_atoms: Atoms
-    ) -> PhononSchema:
-        phonon.forces = forces
-        phonon.produce_force_constants()
-        phonon.run_mesh()
-        phonon.run_thermal_properties(t_step=t_step, t_max=t_max, t_min=t_min)
-
-        return summarize_phonopy(
-            phonon,
-            calculator,
-            input_atoms=input_atoms,
-            additional_fields=fields_to_store,
-        )
 
     phonon = atoms_to_phonopy(atoms, supercell_matrix, atom_disp)
     supercells = [
         phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
     ]
     forces = _static_job_distributed(supercells)
+    return [
+                static_job(supercell, **static_job_kwargs)
+                for supercell in supercells
+                if supercell is not None
+            ]
 
-    return _thermo_job(phonon, forces, atoms)
+@job
+def _phonopy_thermo_job(
+    phonon: Phonopy, forces: list[NDArray], input_atoms: Atoms
+) -> PhononSchema:
+
+    phonon.forces = forces
+    phonon.produce_force_constants()
+    phonon.run_mesh()
+    phonon.run_thermal_properties(t_step=t_step, t_max=t_max, t_min=t_min)
+
+    return summarize_phonopy(
+        phonon,
+        calculator,
+        input_atoms=input_atoms,
+        additional_fields=fields_to_store,
+    )

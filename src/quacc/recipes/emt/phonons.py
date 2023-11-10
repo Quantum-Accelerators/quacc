@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc import flow
-from quacc.recipes.common.phonons import common_phonon_flow
+from quacc.recipes.common.phonons import phonon_flow as _phonon_flow
 from quacc.recipes.emt.core import static_job
 
 if TYPE_CHECKING:
@@ -53,7 +53,7 @@ def phonon_flow(
         Dictionary of results from [quacc.schemas.phonopy.summarize_phonopy][]
     """
 
-    return common_phonon_flow(
+    return _phonon_flow(
         atoms,
         static_job,
         static_job_kwargs,
