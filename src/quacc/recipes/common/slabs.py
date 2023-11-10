@@ -11,6 +11,7 @@ if TYPE_CHECKING:
 
     from ase import Atoms
 
+
 @subflow
 def bulk_to_slabs_subflow(
     atoms: Atoms,
