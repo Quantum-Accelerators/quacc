@@ -15,7 +15,7 @@ except ImportError:
     phonopy = None
 
 if TYPE_CHECKING:
-    from typing import Any
+    from typing import Any, Callable
 
     from ase.atoms import Atoms
     from numpy.typing import ArrayLike
@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 @requires(phonopy, "Phonopy must be installed. Run `pip install quacc[phonons]`")
 def phonon_flow(
     atoms: Atoms,
-    static_job: static_job,
+    static_job: Callable,
     static_job_kwargs: dict[str, Any] | None = None,
     supercell_matrix: ArrayLike = ((2, 0, 0), (0, 2, 0), (0, 0, 2)),
     atom_disp: float = 0.015,
@@ -96,7 +96,7 @@ def phonon_flow(
         return summarize_phonopy(
             phonon,
             calculator,
-            input_atoms=input_atoms,
+            input_atoms=atoms,
             additional_fields=fields_to_store,
         )
 
