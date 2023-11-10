@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from ase import Atoms
 
     from quacc.runners.ase import VibKwargs
-    from quacc.schemas.ase import OptSchema, RunSchema, VibThermoSchema
+    from quacc.schemas._aliases.ase import OptSchema, RunSchema, VibThermoSchema
 
 
 @job

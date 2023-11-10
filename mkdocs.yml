@@ -34,6 +34,10 @@ nav:
   - Developer Guide 🤝:
       - dev/contributing.md
       - dev/docs.md
+      - Writing New Recipes:
+          - recipes/jobs.md
+          - recipes/flows.md
+          - recipes/testing.md
   - About 📜:
       - about/faq.md
       - about/contributors.md

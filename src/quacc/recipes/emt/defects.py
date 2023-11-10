@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from pymatgen.analysis.defects.generators import VacancyGenerator
 
 from quacc import flow
-from quacc.recipes.common.defects import common_bulk_to_defects_flow
+from quacc.recipes.common.defects import bulk_to_defects_subflow
 from quacc.recipes.emt.core import relax_job, static_job
 
 if TYPE_CHECKING:
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
         VoronoiInterstitialGenerator,
     )
 
-    from quacc.schemas.ase import OptSchema, RunSchema
+    from quacc.schemas._aliases.ase import OptSchema, RunSchema
 
 
 @flow
@@ -79,7 +79,7 @@ def bulk_to_defects_flow(
     if "relax_cell" not in defect_relax_kwargs:
         defect_relax_kwargs["relax_cell"] = False
 
-    return common_bulk_to_defects_flow(
+    return bulk_to_defects_subflow(
         atoms,
         relax_job,
         static_job if run_static else None,

@@ -4,24 +4,23 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc import subflow
-from quacc.atoms.slabs import make_slabs_from_bulk
+from quacc.atoms.slabs import make_adsorbate_structures, make_slabs_from_bulk
 
 if TYPE_CHECKING:
     from typing import Any, Callable
 
     from ase import Atoms
 
-    from quacc.schemas.ase import OptSchema, RunSchema
 
-
-def common_bulk_to_slabs_flow(
+@subflow
+def bulk_to_slabs_subflow(
     atoms: Atoms,
-    relax_job: Callable,
-    static_job: Callable | None,
+    slab_relax_job: Callable,
+    slab_static_job: Callable | None,
     make_slabs_kwargs: dict[str, Any] | None = None,
     slab_relax_kwargs: dict[str, Any] | None = None,
     slab_static_kwargs: dict[str, Any] | None = None,
-) -> list[RunSchema | OptSchema]:
+) -> list[dict]:
     """
     Workflow consisting of:
 
@@ -35,9 +34,9 @@ def common_bulk_to_slabs_flow(
     ----------
     atoms
         Atoms object
-    relax_job
+    slab_relax_job
         The relaxation function.
-    static_job
+    slab_static_job
         The static function.
     make_slabs_kwargs
         Additional keyword arguments to pass to
@@ -49,32 +48,82 @@ def common_bulk_to_slabs_flow(
 
     Returns
     -------
-    list[RunSchema | OptSchema]
-        [RunSchema][quacc.schemas.ase.summarize_run] or
-        [OptSchema][quacc.schemas.ase.summarize_opt_run] for each slab.
+    list[dict]
+        List of schemas.
     """
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}
     make_slabs_kwargs = make_slabs_kwargs or {}
 
-    @subflow
-    def _relax_job_distributed(atoms: Atoms) -> list:
-        slabs = make_slabs_from_bulk(atoms, **make_slabs_kwargs)
-        return [relax_job(slab, **slab_relax_kwargs) for slab in slabs]
+    slabs = make_slabs_from_bulk(atoms, **make_slabs_kwargs)
 
-    @subflow
-    def _relax_and_static_job_distributed(atoms: Atoms) -> list:
-        slabs = make_slabs_from_bulk(atoms, **make_slabs_kwargs)
-        return [
-            static_job(
-                relax_job(slab, **slab_relax_kwargs)["atoms"],
-                **slab_static_kwargs,
-            )
-            for slab in slabs
-        ]
+    results = []
+    for slab in slabs:
+        result = slab_relax_job(slab, **slab_relax_kwargs)
 
-    return (
-        _relax_and_static_job_distributed(atoms)
-        if static_job
-        else _relax_job_distributed(atoms)
-    )
+        if slab_static_job:
+            result = slab_static_job(result["atoms"], **slab_static_kwargs)
+
+        results.append(result)
+
+    return results
+
+
+@subflow
+def slab_to_ads_subflow(
+    atoms: Atoms,
+    adsorbate: Atoms,
+    slab_relax_job: Callable,
+    slab_static_job: Callable | None,
+    make_ads_kwargs: dict[str, Any] | None = None,
+    slab_relax_kwargs: dict[str, Any] | None = None,
+    slab_static_kwargs: dict[str, Any] | None = None,
+) -> list[dict]:
+    """
+    Workflow consisting of:
+
+    1. Slab-adsorbate generation
+
+    2. Slab-adsorbate relaxations
+
+    3. Slab-adsorbate statics (optional)
+
+    Parameters
+    ----------
+    atoms
+        Atoms object for the slab structure.
+    adsorbate
+        Atoms object for the adsorbate.
+    slab_relax_job
+        The slab releaxation job.
+    slab_static_job
+        The slab static job.
+    make_ads_kwargs
+        Additional keyword arguments to pass to [quacc.atoms.slabs.make_adsorbate_structures][]
+    slab_relax_kwargs
+        Additional keyword arguments to pass to [quacc.recipes.vasp.slabs.relax_job][].
+    slab_static_kwargs
+        Additional keyword arguments to pass to [quacc.recipes.vasp.slabs.static_job][].
+
+    Returns
+    -------
+    list[dict]
+        List of schemas.
+    """
+
+    slab_relax_kwargs = slab_relax_kwargs or {}
+    slab_static_kwargs = slab_static_kwargs or {}
+    make_ads_kwargs = make_ads_kwargs or {}
+
+    slabs = make_adsorbate_structures(atoms, adsorbate, **make_ads_kwargs)
+
+    results = []
+    for slab in slabs:
+        result = slab_relax_job(slab, **slab_relax_kwargs)
+
+        if slab_static_job:
+            result = slab_static_job(result["atoms"], **slab_static_kwargs)
+
+        results.append(result)
+
+    return results

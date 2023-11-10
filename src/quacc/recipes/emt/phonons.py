@@ -3,10 +3,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ase.calculators.emt import EMT
-
 from quacc import flow
-from quacc.recipes.common.phonons import common_phonon_flow
+from quacc.recipes.common.phonons import phonon_flow as _phonon_flow
+from quacc.recipes.emt.core import static_job
 
 if TYPE_CHECKING:
     from typing import Any
@@ -25,7 +24,7 @@ def phonon_flow(
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
-    **kwargs,
+    static_job_kwargs: dict[str, Any] | None = None,
 ) -> PhononSchema:
     """
     Carry out a phonon calculation.
@@ -44,16 +43,9 @@ def phonon_flow(
         Min temperature (K).
     t_max
         Max temperature (K).
-    **kwargs
-        Custom kwargs for the EMT calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.emt.EMT` calculator.
-
-        !!! Info "Calculator defaults"
-
-            ```python
-            {}
-            ```
+    static_job_kwargs
+        Additional keyword arguments for [quacc.recipes.emt.core.static_job][]
+        for the force calculations.
 
     Returns
     -------
@@ -61,11 +53,10 @@ def phonon_flow(
         Dictionary of results from [quacc.schemas.phonopy.summarize_phonopy][]
     """
 
-    calc = EMT(**kwargs)
-
-    return common_phonon_flow(
+    return _phonon_flow(
         atoms,
-        calc,
+        static_job,
+        static_job_kwargs,
         supercell_matrix=supercell_matrix,
         atom_disp=atom_disp,
         t_step=t_step,

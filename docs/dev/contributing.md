@@ -1,4 +1,4 @@
-# Contributing
+# Contributing Guide
 
 We welcome all contributions, big or small (provided they come with unit tests!). Here are some general guidelines and tips. Note that it is never too early to open a PR if you're looking for input or feedback!
 
@@ -52,6 +52,8 @@ If contributing new recipes, please abide by the following guidelines:
 
 - Decorate your individual compute jobs with a `#!Python @job` decorator or your flow with a `#!Python @flow` decorator and name them accordingly.
 
+- Add your recipe to the [List of Recipes](../user/recipes/recipes_list.md).
+
 In general, the easiest way to develop a new recipe is to first make one for a cheap-to-run calculator (e.g. EMT for solids, LJ for molecules), which you can then basically copy and paste for your more expensive calculator of choice.
 
 ### Style
@@ -72,7 +74,7 @@ All changes you make to quacc should be accompanied by unit tests and should not
 
 ### Running Locally
 
-To run the core test suite locally, run `pytest tests/core` (which is the same as doing `pytest` without any extra arguments).
+To run the core test suite locally, run `pytest tests/local` (which is the same as doing `pytest` without any extra arguments).
 
 If you wish to test the behavior of a given workflow engine, run `pytest tests/WORKFLOW_ENGINE` where `WORKFLOW_ENGINE` is the name of your workflow engine.
 
