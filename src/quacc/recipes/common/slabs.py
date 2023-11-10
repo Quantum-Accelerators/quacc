@@ -20,7 +20,7 @@ def bulk_to_slabs_subflow(
     make_slabs_kwargs: dict[str, Any] | None = None,
     slab_relax_kwargs: dict[str, Any] | None = None,
     slab_static_kwargs: dict[str, Any] | None = None,
-) -> list:
+) -> list[dict]:
     """
     Workflow consisting of:
 
@@ -48,7 +48,7 @@ def bulk_to_slabs_subflow(
 
     Returns
     -------
-    list
+    list[dict]
         List of schemas.
     """
     slab_relax_kwargs = slab_relax_kwargs or {}
