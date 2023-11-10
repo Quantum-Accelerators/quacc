@@ -86,9 +86,7 @@ def phonon_flow(
         ]
 
     @job
-    def _phonopy_thermo_job(
-        atoms: atoms, forces: list[NDArray]
-    ) -> PhononSchema:
+    def _phonopy_thermo_job(atoms: atoms, forces: list[NDArray]) -> PhononSchema:
         phonon = atoms_to_phonopy(atoms, supercell_matrix, atom_disp)
         phonon.forces = forces
         phonon.produce_force_constants()
@@ -102,6 +100,5 @@ def phonon_flow(
             additional_fields=fields_to_store,
         )
 
-
-    forces = _phonopy_forces_subflow(atoms  )
+    forces = _phonopy_forces_subflow(atoms)
     return _phonopy_thermo_job(atoms, forces)
