@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
-    from numpy.typing import ArrayLike, NDArray
+    from numpy.typing import ArrayLike
     from phonopy import Phonopy
 
     from quacc.schemas._aliases.phonopy import PhononSchema
