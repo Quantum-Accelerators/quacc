@@ -5,9 +5,8 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
-from quacc import job, subflow
+from quacc import flow, job, subflow
 from quacc.atoms.phonons import atoms_to_phonopy, phonopy_atoms_to_ase_atoms
-from quacc.runners.ase import run_calc
 from quacc.schemas.phonopy import summarize_phonopy
 
 try:
@@ -16,19 +15,21 @@ except ImportError:
     phonopy = None
 
 if TYPE_CHECKING:
-    from typing import Any
+    from typing import Any, Callable
 
     from ase.atoms import Atoms
-    from ase.calculators.calculator import Calculator
-    from numpy.typing import ArrayLike, NDArray
+    from numpy.typing import ArrayLike
+    from phonopy import Phonopy
 
     from quacc.schemas._aliases.phonopy import PhononSchema
 
 
+@flow
 @requires(phonopy, "Phonopy must be installed. Run `pip install quacc[phonons]`")
-def common_phonon_flow(
+def phonon_flow(
     atoms: Atoms,
-    calculator: Calculator,
+    static_job: Callable,
+    static_job_kwargs: dict[str, Any] | None = None,
     supercell_matrix: ArrayLike = ((2, 0, 0), (0, 2, 0), (0, 0, 2)),
     atom_disp: float = 0.015,
     t_step: float = 10,
@@ -45,8 +46,10 @@ def common_phonon_flow(
     ----------
     atoms
         Atoms object with calculator attached.
-    calculator
-        Calculator to use.
+    static_job
+        The static job to calculate the forces.
+    static_job_kwargs
+        The kwargs for `static_job`.
     supercell_matrix
         Supercell matrix to use. Defaults to 2x2x2 supercell.
     atom_disp
@@ -65,30 +68,28 @@ def common_phonon_flow(
     PhononSchema
         Dictionary of results from [quacc.schemas.phonopy.summarize_phonopy][]
     """
-    fields_to_store = fields_to_store or {}
 
-    @job
-    def _force_job(atoms: Atoms, calculator: Calculator) -> NDArray:
-        atoms.calc = calculator
-        return run_calc(atoms).get_forces()
+    static_job_kwargs = static_job_kwargs or {}
 
     @subflow
-    def _force_job_distributed(atoms: Atoms) -> list[NDArray]:
+    def _phonopy_forces_subflow(atoms: Atoms) -> list[dict]:
         phonon = atoms_to_phonopy(atoms, supercell_matrix, atom_disp)
         supercells = [
             phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
         ]
         return [
-            _force_job(supercell, calculator)
+            static_job(supercell, **static_job_kwargs)
             for supercell in supercells
             if supercell is not None
         ]
 
     @job
-    def _thermal_properties_job(
-        input_atoms: Atoms, forces: list[NDArray]
+    def _phonopy_thermo_job(
+        atoms: Atoms, force_job_results: list[dict]
     ) -> PhononSchema:
         phonon = atoms_to_phonopy(atoms, supercell_matrix, atom_disp)
+        parameters = force_job_results[-1].get("parameters")
+        forces = [output["results"]["forces"] for output in force_job_results]
         phonon.forces = forces
         phonon.produce_force_constants()
         phonon.run_mesh()
@@ -96,10 +97,10 @@ def common_phonon_flow(
 
         return summarize_phonopy(
             phonon,
-            calculator,
-            input_atoms=input_atoms,
+            input_atoms=atoms,
+            parameters=parameters,
             additional_fields=fields_to_store,
         )
 
-    forces = _force_job_distributed(atoms)
-    return _thermal_properties_job(atoms, forces)
+    force_job_results = _phonopy_forces_subflow(atoms)
+    return _phonopy_thermo_job(atoms, force_job_results)
