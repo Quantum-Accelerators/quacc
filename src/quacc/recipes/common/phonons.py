@@ -70,6 +70,38 @@ def phonon_flow(
         Dictionary of results from [quacc.schemas.phonopy.summarize_phonopy][]
     """
 
+    static_job_kwargs = static_job_kwargs or {}
+
+    @subflow
+    def _phonopy_forces_subflow( atoms: Atoms    ) -> PhononSchema:
+        phonon = atoms_to_phonopy(atoms, supercell_matrix, atom_disp)
+        supercells = [
+            phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
+        ]
+        forces = _static_job_distributed(supercells)
+        return [
+            static_job(supercell, **static_job_kwargs)
+            for supercell in supercells
+            if supercell is not None
+        ]
+
+    @job
+    def _phonopy_thermo_job(
+        phonon: Phonopy, forces: list[NDArray], input_atoms: Atoms
+    ) -> PhononSchema:
+        phonon.forces = forces
+        phonon.produce_force_constants()
+        phonon.run_mesh()
+        phonon.run_thermal_properties(t_step=t_step, t_max=t_max, t_min=t_min)
+
+        return summarize_phonopy(
+            phonon,
+            calculator,
+            input_atoms=input_atoms,
+            additional_fields=fields_to_store,
+        )
+
+
     forces = _phonopy_forces_subflow(
         atoms,
         supercell_matrix,
@@ -78,42 +110,3 @@ def phonon_flow(
         static_job_kwargs=static_job_kwargs,
     )
     return _phonopy_thermo_job(phonon, forces, atoms)
-
-
-@subflow
-def _phonopy_forces_subflow(
-    atoms: Atoms,
-    supercell_matrix: ArrayLike,
-    atom_disp: float,
-    static_job: static_job,
-    static_job_kwargs: dict[str, Any] | None = None,
-) -> PhononSchema:
-    static_job_kwargs = static_job_kwargs or {}
-
-    phonon = atoms_to_phonopy(atoms, supercell_matrix, atom_disp)
-    supercells = [
-        phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
-    ]
-    forces = _static_job_distributed(supercells)
-    return [
-        static_job(supercell, **static_job_kwargs)
-        for supercell in supercells
-        if supercell is not None
-    ]
-
-
-@job
-def _phonopy_thermo_job(
-    phonon: Phonopy, forces: list[NDArray], input_atoms: Atoms
-) -> PhononSchema:
-    phonon.forces = forces
-    phonon.produce_force_constants()
-    phonon.run_mesh()
-    phonon.run_thermal_properties(t_step=t_step, t_max=t_max, t_min=t_min)
-
-    return summarize_phonopy(
-        phonon,
-        calculator,
-        input_atoms=input_atoms,
-        additional_fields=fields_to_store,
-    )
