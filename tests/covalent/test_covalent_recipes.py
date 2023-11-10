@@ -27,7 +27,9 @@ def test_phonon_flow_multistep(tmpdir):
     tmpdir.chdir()
     atoms = bulk("Cu")
     relaxed = relax_job(atoms)
-    output = phonon_flow(relaxed["atoms"])
+    dispatch_id = ct.dispatch(phonon_flow)(relaxed["atoms"])
+    output = ct.get_result(dispatch_id, wait=True)
+    assert output.status == "COMPLETED"
     assert output.result["results"]["thermal_properties"]["temperatures"].shape == (
         101,
     )
