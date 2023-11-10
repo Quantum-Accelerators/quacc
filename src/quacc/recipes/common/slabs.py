@@ -71,7 +71,7 @@ def bulk_to_slabs_subflow(
 
 @subflow
 def slab_to_ads_subflow(
-    slab: Atoms,
+    atoms: Atoms,
     adsorbate: Atoms,
     slab_relax_job: Callable,
     slab_static_job: Callable | None,
@@ -90,7 +90,7 @@ def slab_to_ads_subflow(
 
     Parameters
     ----------
-    slab
+    atoms
         Atoms object for the slab structure.
     adsorbate
         Atoms object for the adsorbate.
@@ -115,7 +115,7 @@ def slab_to_ads_subflow(
     slab_static_kwargs = slab_static_kwargs or {}
     make_ads_kwargs = make_ads_kwargs or {}
 
-    slabs = make_adsorbate_structures(slab, adsorbate, **make_ads_kwargs)
+    slabs = make_adsorbate_structures(atoms, adsorbate, **make_ads_kwargs)
 
     results = []
     for slab in slabs:
