@@ -20,8 +20,8 @@ def bulk_to_slabs_subflow(
     relax_job: Callable,
     static_job: Callable | None,
     make_slabs_kwargs: dict[str, Any] | None = None,
-    relax_job_kwargs: dict[str, Any] | None = None,
-    static_job_kwargs: dict[str, Any] | None = None,
+    slab_relax_kwargs: dict[str, Any] | None = None,
+    slab_static_kwargs: dict[str, Any] | None = None,
 ) -> list[RunSchema | OptSchema]:
     """
     Workflow consisting of:
@@ -43,9 +43,9 @@ def bulk_to_slabs_subflow(
     make_slabs_kwargs
         Additional keyword arguments to pass to
         [quacc.atoms.slabs.make_slabs_from_bulk][]
-    relax_job_kwargs
+    slab_relax_kwargs
         Additional keyword arguments to pass to [quacc.recipes.emt.core.relax_job][].
-    static_job_kwargs
+    slab_static_kwargs
         Additional keyword arguments to pass to [quacc.recipes.emt.core.static_job][].
 
     Returns
@@ -62,10 +62,10 @@ def bulk_to_slabs_subflow(
 
     results = []
     for slab in slabs:
-        result = relax_job(slab, **relax_job_kwargs)
+        result = relax_job(slab, **slab_relax_kwargs)
 
         if static_job:
-            result = static_job(result["atoms"], **static_job_kwargs)
+            result = static_job(result["atoms"], **slab_static_kwargs)
 
         results.append(result)
 
