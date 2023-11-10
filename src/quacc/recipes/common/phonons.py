@@ -27,7 +27,8 @@ if TYPE_CHECKING:
 
 @flow
 @requires(phonopy, "Phonopy must be installed. Run `pip install quacc[phonons]`")
-def phonon_flow(atoms: Atoms,
+def phonon_flow(
+    atoms: Atoms,
     static_job: static_job,
     static_job_kwargs: dict[str, Any] | None = None,
     supercell_matrix: ArrayLike = ((2, 0, 0), (0, 2, 0), (0, 0, 2)),
@@ -35,7 +36,8 @@ def phonon_flow(atoms: Atoms,
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
-    fields_to_store: dict[str, Any] = None) -> PhononSchema:
+    fields_to_store: dict[str, Any] = None,
+) -> PhononSchema:
     """
     Calculate phonon properties.
 
@@ -68,8 +70,15 @@ def phonon_flow(atoms: Atoms,
         Dictionary of results from [quacc.schemas.phonopy.summarize_phonopy][]
     """
 
-    forces = _phonopy_forces_subflow(atoms,supercell_matrix, atom_disp, static_job, static_job_kwargs=static_job_kwargs)
+    forces = _phonopy_forces_subflow(
+        atoms,
+        supercell_matrix,
+        atom_disp,
+        static_job,
+        static_job_kwargs=static_job_kwargs,
+    )
     return _phonopy_thermo_job(phonon, forces, atoms)
+
 
 @subflow
 def _phonopy_forces_subflow(
@@ -79,7 +88,6 @@ def _phonopy_forces_subflow(
     static_job: static_job,
     static_job_kwargs: dict[str, Any] | None = None,
 ) -> PhononSchema:
-
     static_job_kwargs = static_job_kwargs or {}
 
     phonon = atoms_to_phonopy(atoms, supercell_matrix, atom_disp)
@@ -88,16 +96,16 @@ def _phonopy_forces_subflow(
     ]
     forces = _static_job_distributed(supercells)
     return [
-                static_job(supercell, **static_job_kwargs)
-                for supercell in supercells
-                if supercell is not None
-            ]
+        static_job(supercell, **static_job_kwargs)
+        for supercell in supercells
+        if supercell is not None
+    ]
+
 
 @job
 def _phonopy_thermo_job(
     phonon: Phonopy, forces: list[NDArray], input_atoms: Atoms
 ) -> PhononSchema:
-
     phonon.forces = forces
     phonon.produce_force_constants()
     phonon.run_mesh()
