@@ -73,21 +73,21 @@ def phonon_flow(
     static_job_kwargs = static_job_kwargs or {}
 
     @subflow
-    def _phonopy_forces_subflow(atoms: Atoms) -> list["NDArray"]:
+    def _phonopy_forces_subflow(atoms: Atoms) -> list[dict]:
         phonon = atoms_to_phonopy(atoms, supercell_matrix, atom_disp)
         supercells = [
             phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
         ]
         return [
-            static_job(supercell, **static_job_kwargs)["results"]["forces"]
+            static_job(supercell, **static_job_kwargs)
             for supercell in supercells
             if supercell is not None
         ]
 
     @job
-    def _phonopy_thermo_job(atoms: Atoms, forces: list["NDArray"]) -> PhononSchema:
+    def _phonopy_thermo_job(atoms: Atoms, force_job_results: list[dict]) -> PhononSchema:
         phonon = atoms_to_phonopy(atoms, supercell_matrix, atom_disp)
-        phonon.forces = forces
+        phonon.forces = [output["results"]["forces"] for output in force_job_results]
         phonon.produce_force_constants()
         phonon.run_mesh()
         phonon.run_thermal_properties(t_step=t_step, t_max=t_max, t_min=t_min)
@@ -99,5 +99,5 @@ def phonon_flow(
             additional_fields=fields_to_store,
         )
 
-    forces = _phonopy_forces_subflow(atoms)
-    return _phonopy_thermo_job(atoms, forces)
+    force_job_results = _phonopy_forces_subflow(atoms)
+    return _phonopy_thermo_job(atoms, force_job_results)
