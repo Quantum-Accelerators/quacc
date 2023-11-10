@@ -85,7 +85,9 @@ def phonon_flow(
         ]
 
     @job
-    def _phonopy_thermo_job(atoms: Atoms, force_job_results: list[dict]) -> PhononSchema:
+    def _phonopy_thermo_job(
+        atoms: Atoms, force_job_results: list[dict]
+    ) -> PhononSchema:
         phonon = atoms_to_phonopy(atoms, supercell_matrix, atom_disp)
         phonon.forces = [output["results"]["forces"] for output in force_job_results]
         phonon.produce_force_constants()
