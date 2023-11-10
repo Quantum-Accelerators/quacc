@@ -19,7 +19,6 @@ if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
-    from ase.calculators.calculator import Calculator
     from numpy.typing import ArrayLike, NDArray
     from phonopy import Phonopy
 
@@ -30,7 +29,8 @@ if TYPE_CHECKING:
 @requires(phonopy, "Phonopy must be installed. Run `pip install quacc[phonons]`")
 def common_phonon_flow(
     atoms: Atoms,
-    calculator: Calculator,
+    static_job: static_job,
+    static_job_kwargs: dict[str, Any] | None = None,
     supercell_matrix: ArrayLike = ((2, 0, 0), (0, 2, 0), (0, 0, 2)),
     atom_disp: float = 0.015,
     t_step: float = 10,
@@ -69,15 +69,10 @@ def common_phonon_flow(
     """
     fields_to_store = fields_to_store or {}
 
-    @job
-    def _force_job(atoms: Atoms, calculator: Calculator) -> NDArray:
-        atoms.calc = calculator
-        return run_calc(atoms).get_forces()
-
     @subflow
-    def _force_job_distributed(supercells: list[Atoms]) -> list[NDArray]:
+    def _static_job_distributed(supercells: list[Atoms]) -> list[NDArray]:
         return [
-            _force_job(supercell, calculator)
+            static_job(supercell, **static_job_kwargs)
             for supercell in supercells
             if supercell is not None
         ]
