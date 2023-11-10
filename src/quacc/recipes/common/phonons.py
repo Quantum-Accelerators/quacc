@@ -73,13 +73,13 @@ def phonon_flow(
     static_job_kwargs = static_job_kwargs or {}
 
     @subflow
-    def _phonopy_forces_subflow(atoms: Atoms) -> list:
+    def _phonopy_forces_subflow(atoms: Atoms) -> list["NDArray"]:
         phonon = atoms_to_phonopy(atoms, supercell_matrix, atom_disp)
         supercells = [
             phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
         ]
         return [
-            static_job(supercell, **static_job_kwargs)
+            static_job(supercell, **static_job_kwargs)["forces"]
             for supercell in supercells
             if supercell is not None
         ]
