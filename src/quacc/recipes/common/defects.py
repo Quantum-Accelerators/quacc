@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from pymatgen.analysis.defects.generators import VacancyGenerator
 
-from quacc import flow, subflow
+from quacc import subflow
 from quacc.atoms.defects import make_defects_from_bulk
 
 if TYPE_CHECKING:
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     )
 
 
-@flow
+@subflow
 def common_bulk_to_defects_flow(
     atoms: Atoms,
     relax_job: Callable,
@@ -77,34 +77,20 @@ def common_bulk_to_defects_flow(
     defect_static_kwargs = defect_static_kwargs or {}
     make_defects_kwargs = make_defects_kwargs or {}
 
-    @subflow
-    def _relax_job_distributed(atoms: Atoms) -> list:
-        defects = make_defects_from_bulk(
-            atoms,
-            defect_gen=defect_gen,
-            defect_charge=defect_charge,
-            **make_defects_kwargs,
-        )
-        return [relax_job(defect, **defect_relax_kwargs) for defect in defects]
-
-    @subflow
-    def _relax_and_static_job_distributed(atoms: Atoms) -> list:
-        defects = make_defects_from_bulk(
-            atoms,
-            defect_gen=defect_gen,
-            defect_charge=defect_charge,
-            **make_defects_kwargs,
-        )
-        return [
-            static_job(
-                relax_job(defect, **defect_relax_kwargs)["atoms"],
-                **defect_static_kwargs,
-            )
-            for defect in defects
-        ]
-
-    return (
-        _relax_and_static_job_distributed(atoms)
-        if static_job
-        else _relax_job_distributed(atoms)
+    defects = make_defects_from_bulk(
+        atoms,
+        defect_gen=defect_gen,
+        defect_charge=defect_charge,
+        **make_defects_kwargs,
     )
+
+    results = []
+    for defect in defects:
+        result = relax_job(defect, **defect_relax_kwargs)
+
+        if static_job:
+            result = static_job(defect, **defect_static_kwargs)
+
+        results.append(result)
+
+    return results

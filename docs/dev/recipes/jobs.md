@@ -4,7 +4,7 @@
 
 Individual compute tasks are called jobs. You can think of these as distinct calculations you would submit to the job scheduler (e.g. Slurm). Refer to [](../user/basics/wflow_syntax.md) for more information on the syntax of jobs.
 
-## Example
+## Examples
 
 For an example job using an ASE optimizer, refer to [quacc.recipes.tblite.core.relax_job][].
 

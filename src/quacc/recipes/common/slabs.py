@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from quacc import flow, subflow
+from quacc import subflow
 from quacc.atoms.slabs import make_slabs_from_bulk
 
 if TYPE_CHECKING:
@@ -14,14 +14,14 @@ if TYPE_CHECKING:
     from quacc.schemas._aliases.ase import OptSchema, RunSchema
 
 
-@flow
+@subflow
 def common_bulk_to_slabs_flow(
     atoms: Atoms,
     relax_job: Callable,
     static_job: Callable | None,
     make_slabs_kwargs: dict[str, Any] | None = None,
-    slab_relax_kwargs: dict[str, Any] | None = None,
-    slab_static_kwargs: dict[str, Any] | None = None,
+    relax_job_kwargs: dict[str, Any] | None = None,
+    static_job_kwargs: dict[str, Any] | None = None,
 ) -> list[RunSchema | OptSchema]:
     """
     Workflow consisting of:
@@ -43,9 +43,9 @@ def common_bulk_to_slabs_flow(
     make_slabs_kwargs
         Additional keyword arguments to pass to
         [quacc.atoms.slabs.make_slabs_from_bulk][]
-    slab_relax_kwargs
+    relax_job_kwargs
         Additional keyword arguments to pass to [quacc.recipes.emt.core.relax_job][].
-    slab_static_kwargs
+    static_job_kwargs
         Additional keyword arguments to pass to [quacc.recipes.emt.core.static_job][].
 
     Returns
@@ -54,28 +54,19 @@ def common_bulk_to_slabs_flow(
         [RunSchema][quacc.schemas.ase.summarize_run] or
         [OptSchema][quacc.schemas.ase.summarize_opt_run] for each slab.
     """
-    slab_relax_kwargs = slab_relax_kwargs or {}
-    slab_static_kwargs = slab_static_kwargs or {}
+    relax_job_kwargs = relax_job_kwargs or {}
+    static_job_kwargs = static_job_kwargs or {}
     make_slabs_kwargs = make_slabs_kwargs or {}
 
-    @subflow
-    def _relax_job_distributed(atoms: Atoms) -> list:
-        slabs = make_slabs_from_bulk(atoms, **make_slabs_kwargs)
-        return [relax_job(slab, **slab_relax_kwargs) for slab in slabs]
+    slabs = make_slabs_from_bulk(atoms, **make_slabs_kwargs)
 
-    @subflow
-    def _relax_and_static_job_distributed(atoms: Atoms) -> list:
-        slabs = make_slabs_from_bulk(atoms, **make_slabs_kwargs)
-        return [
-            static_job(
-                relax_job(slab, **slab_relax_kwargs)["atoms"],
-                **slab_static_kwargs,
-            )
-            for slab in slabs
-        ]
+    results = []
+    for slab in slabs:
+        result = relax_job(slab, **relax_job_kwargs)
 
-    return (
-        _relax_and_static_job_distributed(atoms)
-        if static_job
-        else _relax_job_distributed(atoms)
-    )
+        if static_job:
+            result = static_job(result["atoms"], **static_job_kwargs)
+
+        results.append(result)
+
+    return results
