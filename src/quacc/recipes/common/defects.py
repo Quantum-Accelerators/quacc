@@ -38,7 +38,7 @@ def bulk_to_defects_subflow(
     make_defects_kwargs: dict[str, Any] | None = None,
     defect_relax_kwargs: dict[str, Any] | None = None,
     defect_static_kwargs: dict[str, Any] | None = None,
-) -> list:
+) -> list[dict]:
     """
     Workflow consisting of:
 
@@ -70,7 +70,7 @@ def bulk_to_defects_subflow(
 
     Returns
     -------
-    list
+    list[dict]
         List of dictionary of results
     """
     defect_relax_kwargs = defect_relax_kwargs or {}

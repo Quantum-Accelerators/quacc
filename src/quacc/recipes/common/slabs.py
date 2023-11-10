@@ -78,7 +78,7 @@ def slab_to_ads_subflow(
     make_ads_kwargs: dict[str, Any] | None = None,
     slab_relax_kwargs: dict[str, Any] | None = None,
     slab_static_kwargs: dict[str, Any] | None = None,
-) -> list:
+) -> list[dict]:
     """
     Workflow consisting of:
 
@@ -107,7 +107,7 @@ def slab_to_ads_subflow(
 
     Returns
     -------
-    list
+    list[dict]
         List of schemas.
     """
 
