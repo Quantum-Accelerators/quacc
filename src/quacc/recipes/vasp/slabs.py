@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from quacc import flow, job, subflow
 from quacc.atoms.slabs import make_adsorbate_structures
-from quacc.recipes.common.slabs import common_bulk_to_slabs_flow
+from quacc.recipes.common.slabs import bulk_to_slabs_subflow
 from quacc.recipes.vasp.core import _base_job
 
 if TYPE_CHECKING:
@@ -182,7 +182,7 @@ def bulk_to_slabs_flow(
         List of dictionary results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
 
-    return common_bulk_to_slabs_flow(
+    return bulk_to_slabs_subflow(
         atoms,
         slab_relax_job,
         slab_static_job if run_static else None,
