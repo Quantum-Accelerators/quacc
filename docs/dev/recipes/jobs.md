@@ -14,33 +14,17 @@ For a representative job involving a code that uses an internal geometry optimiz
 
 In quacc, jobs are defined as Python functions that are decorated with `#!Python @job`.
 
-The following are requirements for jobs:
+The following are typical guidelines for jobs:
 
 - The function inputs and outputs must be serializable with [pickle](https://docs.python.org/3/library/pickle.html).
 
-- The function outputs must be JSON serializable.
+- The function generally should take an `Atoms` object as the input, along with any other keyword arguments needed to set calculator parameters and define the logic flow.
 
-!!! Tip
-
-    To check if an output is suitable for quacc, run the following and make sure it doesn't crash:
-
-    ```python
-    from monty.json import MontyDecoder, jsanitize
-
-    output = {...} # your calculation output
-    data = jsanitize(output, struct=True, enum_values=True)
-    MontyDecoder().process_decoded(data)
-    ```
-
-The following are generally recommended for jobs:
-
-- The function should take an `Atoms` object as the input, along with any other keyword arguments needed to set calculator parameters and define the logic flow.
-
-- The returned object should be a dictionary of results, as defined in `quacc.schemas`.
+- The returned object should typically be a dictionary of results, as defined in `quacc.schemas`.
 
 - Calculations should be executed using a runner from `quacc.runners`.
 
-- When given the choice between using an ASE optimizer and the electronic structure package's built-in optimizer, use the latter.
+- When given the choice between using an ASE optimizer and the electronic structure package's built-in optimizer, you should typically use the latter.
 
 ## Runners
 
