@@ -68,6 +68,7 @@ def bulk_to_slabs_subflow(
 
     return results
 
+
 @subflow
 def slab_to_ads_subflow(
     slab: Atoms,
