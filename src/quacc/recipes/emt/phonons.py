@@ -8,6 +8,8 @@ from quacc.recipes.common.phonons import common_phonon_flow
 from quacc.recipes.emt.core import static_job
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase import Atoms
     from numpy.typing import ArrayLike
 
@@ -22,7 +24,7 @@ def phonon_flow(
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
-    **kwargs,
+    static_job_kwargs: dict[str, Any] |None = None,
 ) -> PhononSchema:
     """
     Carry out a phonon calculation.
