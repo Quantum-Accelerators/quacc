@@ -1,7 +1,7 @@
 import pytest
 from custodian import Custodian
 
-from quacc.calculators.qchem.custodian import run_custodian
+from quacc.calculators.qchem.qchem_custodian import run_custodian
 
 pytest.importorskip("openbabel")
 
