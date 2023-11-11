@@ -4,13 +4,13 @@
 
 ### Overview
 
-A flow is a Python function decorated by `#!Python @flow` that contains a collection of jobs. Refer to [](../user/basics/wflow_syntax.md) for more information on the syntax of flows.
+A flow is a Python function decorated by `#!Python @flow` that contains a collection of jobs. Refer to [](../../user/basics/wflow_syntax.md) for more information on the syntax of flows.
 
 The flow itself does not contain computationally intensive tasks. It simply calls other jobs (and/or flows) and defines the workflow logic.
 
 ### Examples
 
-A simple, representative flow can be found in [quacc.recipes.vasp.mp.mp_relax_flow][]. More complex flows will be discused after introducing [subflows](subflows.md).
+A simple, representative flow can be found in [quacc.recipes.vasp.mp.mp_relax_flow][].
 
 ## Dynamic Flows
 

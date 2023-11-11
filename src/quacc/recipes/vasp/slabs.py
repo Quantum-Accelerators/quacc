@@ -171,9 +171,9 @@ def bulk_to_slabs_flow(
     run_static
         Whether to run the static calculation.
     slab_relax_kwargs
-        Additional keyword arguments to pass to [quacc.recipes.vasp.slabs.relax_job][].
+        Additional keyword arguments to pass to [quacc.recipes.vasp.slabs.slab_relax_job][].
     slab_static_kwargs
-        Additional keyword arguments to pass to [quacc.recipes.vasp.slabs.static_job][].
+        Additional keyword arguments to pass to [quacc.recipes.vasp.slabs.slab_static_job][].
 
     Returns
     -------
@@ -220,9 +220,9 @@ def slab_to_ads_flow(
     run_static
         Whether to run the static calculation.
     slab_relax_kwargs
-        Additional keyword arguments to pass to [quacc.recipes.vasp.slabs.relax_job][].
+        Additional keyword arguments to pass to [quacc.recipes.vasp.slabs.slab_relax_job][].
     slab_static_kwargs
-        Additional keyword arguments to pass to [quacc.recipes.vasp.slabs.static_job][].
+        Additional keyword arguments to pass to [quacc.recipes.vasp.slabs.slab_static_job][].
 
     Returns
     -------

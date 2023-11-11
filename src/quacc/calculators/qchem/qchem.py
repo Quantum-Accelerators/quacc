@@ -156,10 +156,6 @@ class QChem(FileIOCalculator):
         Read the Q-Chem output files. Update the .results and ._prev_orbital_coeffs
         attributes.
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         None

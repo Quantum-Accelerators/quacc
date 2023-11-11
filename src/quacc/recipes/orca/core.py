@@ -68,7 +68,7 @@ def static_job(
                 "xyzfile": True,
             }
             ```
-    orcablock
+    orcablocks
         Dictionary of `orcablocks` swaps for the calculator. To enable new entries,
         set the value as True. To remove entries from the defaults, set the
         value as None. For a list of available keys, refer to the

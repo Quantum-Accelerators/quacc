@@ -64,9 +64,9 @@ def bulk_to_defects_subflow(
         Keyword arguments to pass to
         [quacc.atoms.defects.make_defects_from_bulk][]
     defect_relax_kwargs
-        Additional keyword arguments to pass to [quacc.recipes.emt.core.relax_job][].
+        Additional keyword arguments to pass to `relax_job`.
     defect_static_kwargs
-        Additional keyword arguments to pass to [quacc.recipes.emt.core.static_job][].
+        Additional keyword arguments to pass to `static_job`.
 
     Returns
     -------
