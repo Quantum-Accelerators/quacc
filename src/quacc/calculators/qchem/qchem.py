@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 from ase.calculators.calculator import FileIOCalculator
 
-from quacc.calculators.qchem import custodian
+from quacc.calculators.qchem import qchem_custodian
 from quacc.calculators.qchem.io import read_qchem, write_qchem
 
 if TYPE_CHECKING:
@@ -174,7 +174,7 @@ class QChem(FileIOCalculator):
             The command flag to run Q-Chem with Custodian.
         """
 
-        qchem_custodian_script = Path(inspect.getfile(custodian)).resolve()
+        qchem_custodian_script = Path(inspect.getfile(qchem_custodian)).resolve()
         return f"python {qchem_custodian_script} {self.cores}"
 
     def _cleanup_qchem_input_params(self) -> None:
