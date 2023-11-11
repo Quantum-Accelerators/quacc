@@ -11,7 +11,7 @@ from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.vasp import setups as ase_setups
 from ase.constraints import FixAtoms
 
-from quacc.calculators.vasp import custodian
+from quacc.calculators.vasp import vasp_custodian
 from quacc.calculators.vasp.io import load_vasp_yaml_calc
 from quacc.calculators.vasp.params import (
     convert_auto_kpts,
@@ -195,7 +195,7 @@ class Vasp(Vasp_):
 
         # Return Custodian executable command
         if self.use_custodian:
-            run_vasp_custodian_file = Path(inspect.getfile(custodian)).resolve()
+            run_vasp_custodian_file = Path(inspect.getfile(vasp_custodian)).resolve()
             return f"python {run_vasp_custodian_file}"
 
         # Return vanilla ASE command
