@@ -42,9 +42,9 @@ def bulk_to_slabs_subflow(
         Additional keyword arguments to pass to
         [quacc.atoms.slabs.make_slabs_from_bulk][]
     slab_relax_kwargs
-        Additional keyword arguments to pass to [quacc.recipes.emt.core.relax_job][].
+        Additional keyword arguments to pass to `slab_relax_job`
     slab_static_kwargs
-        Additional keyword arguments to pass to [quacc.recipes.emt.core.static_job][].
+        Additional keyword arguments to pass to `slab_static_job`.
 
     Returns
     -------
@@ -101,9 +101,9 @@ def slab_to_ads_subflow(
     make_ads_kwargs
         Additional keyword arguments to pass to [quacc.atoms.slabs.make_adsorbate_structures][]
     slab_relax_kwargs
-        Additional keyword arguments to pass to [quacc.recipes.vasp.slabs.relax_job][].
+        Additional keyword arguments to pass to `slab_relax_job`.
     slab_static_kwargs
-        Additional keyword arguments to pass to [quacc.recipes.vasp.slabs.static_job][].
+        Additional keyword arguments to pass to `slab_static_job`.
 
     Returns
     -------

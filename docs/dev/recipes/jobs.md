@@ -2,7 +2,7 @@
 
 ## Overview
 
-Individual compute tasks are called jobs. You can think of these as distinct calculations you would submit to the job scheduler (e.g. Slurm). Refer to [](../user/basics/wflow_syntax.md) for more information on the syntax of jobs.
+Individual compute tasks are called jobs. You can think of these as distinct calculations you would submit to the job scheduler (e.g. Slurm). Refer to [](../../user/basics/wflow_syntax.md) for more information on the syntax of jobs.
 
 ## Examples
 
