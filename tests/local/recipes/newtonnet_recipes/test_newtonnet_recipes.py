@@ -132,7 +132,6 @@ def test_ts_job_with_custom_hessian(tmpdir):
     output = ts_job(
         atoms,
         use_custom_hessian=use_custom_hessian,
-        opt_params=opt_params,
     )
 
     # Perform assertions on the result
