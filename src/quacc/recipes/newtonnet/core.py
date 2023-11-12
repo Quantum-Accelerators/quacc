@@ -65,6 +65,7 @@ def static_job(
             {
                 "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
                 "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+                "hess_method": "autograd",
             }
             ```
 
@@ -77,6 +78,7 @@ def static_job(
     defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        "hess_method": "autograd",
     }
     flags = merge_dicts(defaults, kwargs)
 
@@ -128,6 +130,7 @@ def relax_job(
             {
                 "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
                 "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+                "hess_method": "autograd",
             }
             ```
 
@@ -140,6 +143,7 @@ def relax_job(
     defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        "hess_method": "autograd",
     }
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella or FIRE}
 
@@ -187,6 +191,7 @@ def freq_job(
             {
                 "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
                 "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+                "hess_method": "autograd",
             }
             ```
 
@@ -199,6 +204,7 @@ def freq_job(
     defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        "hess_method": "autograd",
     }
     flags = merge_dicts(defaults, kwargs)
 
