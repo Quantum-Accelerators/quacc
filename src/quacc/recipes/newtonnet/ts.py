@@ -93,7 +93,7 @@ def ts_job(
             {
                 "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
                 "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-                "hess_method": None if use_custom_hessian else "autograd",
+                "hess_method": "autograd",
             }
             ```
 
@@ -107,7 +107,7 @@ def ts_job(
     defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-        "hess_method": None if use_custom_hessian else "autograd",
+        "hess_method": "autograd",
     }
     opt_defaults = {
         "fmax": 0.01,
