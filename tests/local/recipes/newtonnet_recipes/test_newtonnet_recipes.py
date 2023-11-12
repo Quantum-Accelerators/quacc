@@ -128,12 +128,10 @@ def test_ts_job_with_custom_hessian(tmpdir):
     # Define test inputs
     atoms = molecule("H2O")
     use_custom_hessian = True
-    opt_params = {"max_steps": 4}
     # Call the function
     output = ts_job(
         atoms,
         use_custom_hessian=use_custom_hessian,
-        opt_params=opt_params,
     )
 
     # Perform assertions on the result
