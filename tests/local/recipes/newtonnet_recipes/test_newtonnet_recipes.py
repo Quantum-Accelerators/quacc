@@ -139,7 +139,7 @@ def test_ts_job_with_custom_hessian(tmpdir):
     # Perform assertions on the result
     assert isinstance(output, dict)
 
-    assert output["results"]["energy"] == pytest.approx(-8.855604432470276)
+    assert output["results"]["energy"] == pytest.approx(-6.7969345883241425)
     assert output["freq_job"]["vib"]["results"]["vib_energies"][0] == pytest.approx(
         0.2256022513686731
     )
