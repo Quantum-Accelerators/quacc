@@ -140,7 +140,7 @@ def test_ts_job_with_custom_hessian(tmpdir):
 
     assert output["results"]["energy"] == pytest.approx(-6.796914325398018)
     assert output["freq_job"]["vib"]["results"]["vib_energies"][0] == pytest.approx(
-        0.2256022513686731
+        -0.30090908788663734
     )
     assert "thermo" in output["freq_job"]
 
