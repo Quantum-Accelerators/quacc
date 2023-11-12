@@ -204,7 +204,6 @@ def irc_job(
             {
                 "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
                 "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-                "hess_method": None if use_custom_hessian else "autograd",
             }
             ```
 
@@ -219,7 +218,6 @@ def irc_job(
     defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-        "hess_method": None if use_custom_hessian else "autograd",
     }
     opt_defaults = {
         "fmax": 0.01,
