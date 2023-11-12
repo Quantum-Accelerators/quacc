@@ -8,11 +8,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- Added support for PyPi version of NewtonNet (1.1).
+- Switched to using the PyPi release of NewtonNet (1.1).
+- NewtonNet recipes don't run a Hessian calculation by default unless needed
 
 ### Fixed
 
 - Fixed circular import issue when running Q-Chem calculations.
+
+### Removed
+
+- Removed unsupported `qchem_internal_relax_job`
 
 ## [0.4.0]
 
