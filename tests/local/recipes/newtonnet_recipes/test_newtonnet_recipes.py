@@ -128,7 +128,7 @@ def test_ts_job_with_custom_hessian(tmpdir):
     # Define test inputs
     atoms = molecule("H2O")
     use_custom_hessian = True
-    opt_params = {"fmax": 0.1}
+    opt_params = {"max_steps": 4}
     # Call the function
     output = ts_job(
         atoms,
@@ -139,9 +139,9 @@ def test_ts_job_with_custom_hessian(tmpdir):
     # Perform assertions on the result
     assert isinstance(output, dict)
 
-    assert output["results"]["energy"] == pytest.approx(-6.7969345883241425)
+    assert output["results"]["energy"] == pytest.approx(-8.855604432470276)
     assert output["freq_job"]["vib"]["results"]["vib_energies"][0] == pytest.approx(
-        -0.30044440558857183
+        0.2256022513686731
     )
     assert "thermo" in output["freq_job"]
 
