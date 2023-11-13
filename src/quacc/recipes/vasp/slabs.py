@@ -3,8 +3,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from quacc import flow, job, subflow
-from quacc.atoms.slabs import make_adsorbate_structures, make_slabs_from_bulk
+from quacc import flow, job
+from quacc.recipes.common.slabs import bulk_to_slabs_subflow, slab_to_ads_subflow
 from quacc.recipes.vasp.core import _base_job
 
 if TYPE_CHECKING:
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
     from ase import Atoms
 
-    from quacc.schemas.vasp import VaspSchema
+    from quacc.schemas._aliases.vasp import VaspSchema
 
 
 @job
@@ -171,39 +171,23 @@ def bulk_to_slabs_flow(
     run_static
         Whether to run the static calculation.
     slab_relax_kwargs
-        Additional keyword arguments to pass to [quacc.recipes.vasp.slabs.relax_job][].
+        Additional keyword arguments to pass to [quacc.recipes.vasp.slabs.slab_relax_job][].
     slab_static_kwargs
-        Additional keyword arguments to pass to [quacc.recipes.vasp.slabs.static_job][].
+        Additional keyword arguments to pass to [quacc.recipes.vasp.slabs.slab_static_job][].
 
     Returns
     -------
     list[VaspSchema]
         List of dictionary results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
-    slab_relax_kwargs = slab_relax_kwargs or {}
-    slab_static_kwargs = slab_static_kwargs or {}
-    make_slabs_kwargs = make_slabs_kwargs or {}
 
-    @subflow
-    def _relax_job_distributed(atoms: Atoms) -> list[VaspSchema]:
-        slabs = make_slabs_from_bulk(atoms, **make_slabs_kwargs)
-        return [slab_relax_job(slab, **slab_relax_kwargs) for slab in slabs]
-
-    @subflow
-    def _relax_and_static_job_distributed(atoms: Atoms) -> list[VaspSchema]:
-        slabs = make_slabs_from_bulk(atoms, **make_slabs_kwargs)
-        return [
-            slab_static_job(
-                slab_relax_job(slab, **slab_relax_kwargs)["atoms"],
-                **slab_static_kwargs,
-            )
-            for slab in slabs
-        ]
-
-    return (
-        _relax_and_static_job_distributed(atoms)
-        if run_static
-        else _relax_job_distributed(atoms)
+    return bulk_to_slabs_subflow(
+        atoms,
+        slab_relax_job,
+        slab_static_job if run_static else None,
+        make_slabs_kwargs=make_slabs_kwargs,
+        slab_relax_kwargs=slab_relax_kwargs,
+        slab_static_kwargs=slab_static_kwargs,
     )
 
 
@@ -236,9 +220,9 @@ def slab_to_ads_flow(
     run_static
         Whether to run the static calculation.
     slab_relax_kwargs
-        Additional keyword arguments to pass to [quacc.recipes.vasp.slabs.relax_job][].
+        Additional keyword arguments to pass to [quacc.recipes.vasp.slabs.slab_relax_job][].
     slab_static_kwargs
-        Additional keyword arguments to pass to [quacc.recipes.vasp.slabs.static_job][].
+        Additional keyword arguments to pass to [quacc.recipes.vasp.slabs.slab_static_job][].
 
     Returns
     -------
@@ -246,28 +230,12 @@ def slab_to_ads_flow(
         List of dictionaries of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
 
-    slab_relax_kwargs = slab_relax_kwargs or {}
-    slab_static_kwargs = slab_static_kwargs or {}
-    make_ads_kwargs = make_ads_kwargs or {}
-
-    @subflow
-    def _relax_job_distributed(slab: Atoms) -> list[VaspSchema]:
-        slabs = make_adsorbate_structures(slab, adsorbate, **make_ads_kwargs)
-        return [slab_relax_job(slab, **slab_relax_kwargs) for slab in slabs]
-
-    @subflow
-    def _relax_and_static_job_distributed(slab: Atoms) -> list[VaspSchema]:
-        slabs = make_adsorbate_structures(slab, adsorbate, **make_ads_kwargs)
-        return [
-            slab_static_job(
-                slab_relax_job(slab, **slab_relax_kwargs)["atoms"],
-                **slab_static_kwargs,
-            )
-            for slab in slabs
-        ]
-
-    return (
-        _relax_and_static_job_distributed(slab)
-        if run_static
-        else _relax_job_distributed(slab)
+    return slab_to_ads_subflow(
+        slab,
+        adsorbate,
+        slab_relax_job,
+        slab_static_job if run_static else None,
+        make_ads_kwargs=make_ads_kwargs,
+        slab_relax_kwargs=slab_relax_kwargs,
+        slab_static_kwargs=slab_static_kwargs,
     )

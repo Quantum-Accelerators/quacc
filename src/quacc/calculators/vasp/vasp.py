@@ -11,7 +11,7 @@ from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.vasp import setups as ase_setups
 from ase.constraints import FixAtoms
 
-from quacc.calculators.vasp import custodian
+from quacc.calculators.vasp import vasp_custodian
 from quacc.calculators.vasp.io import load_vasp_yaml_calc
 from quacc.calculators.vasp.params import (
     convert_auto_kpts,
@@ -72,10 +72,6 @@ class Vasp(Vasp_):
             off: Do not use co-pilot mode. INCAR parameters will be unmodified.
             on: Use co-pilot mode. This will only modify INCAR flags not already set by the user.
             aggressive: Use co-pilot mode in agressive mode. This will modify INCAR flags even if they are already set by the user.
-        copilot_override
-            If False, INCAR swaps enabled by the INCAR co-pilot will not override
-            the user's chosen value. It will only override values that aren't set.
-            Default is False in settings.
         copy_magmoms
             If True, any pre-existing `atoms.get_magnetic_moments()` will be set in
             `atoms.set_initial_magnetic_moments()`. Set this to False if you want to
@@ -89,7 +85,7 @@ class Vasp(Vasp_):
             Default is 0.05 in settings.
         elemental_magmoms
             A dictionary of elemental initial magnetic moments to pass to
-            [quacc.runners.prep.set_magmoms][], e.g. `{"Fe": 5, "Ni": 4}`.
+            [quacc.schemas.prep.set_magmoms][], e.g. `{"Fe": 5, "Ni": 4}`.
         auto_kpts
             An automatic k-point generation scheme from Pymatgen. Options include:
 
@@ -199,7 +195,7 @@ class Vasp(Vasp_):
 
         # Return Custodian executable command
         if self.use_custodian:
-            run_vasp_custodian_file = Path(inspect.getfile(custodian)).resolve()
+            run_vasp_custodian_file = Path(inspect.getfile(vasp_custodian)).resolve()
             return f"python {run_vasp_custodian_file}"
 
         # Return vanilla ASE command

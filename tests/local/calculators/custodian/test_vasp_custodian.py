@@ -1,7 +1,7 @@
 import pytest
 from custodian import Custodian
 
-from quacc.calculators.vasp.custodian import run_custodian
+from quacc.calculators.vasp.vasp_custodian import run_custodian
 
 
 def mock_custodian_run(*args, **kwargs):
