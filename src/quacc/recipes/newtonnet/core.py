@@ -1,12 +1,13 @@
 """Core recipes for the NewtonNet code."""
 from __future__ import annotations
 
+import time
 from typing import TYPE_CHECKING
 
 from ase.optimize import FIRE
 from ase.vibrations.data import VibrationsData
 from monty.dev import requires
-import time
+
 from quacc import SETTINGS, job
 from quacc.builders.thermo import build_ideal_gas
 from quacc.runners.ase import run_calc, run_opt
@@ -148,15 +149,14 @@ def relax_job(
 
     atoms.calc = NewtonNet(**flags)
     t1 = time.time()
-    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
+    dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
     elapsed_time = time.time() - t1
 
     return _add_stdev_and_hess(
-        summarize_opt_run(dyn,
-                          additional_fields={
-                              "name": "NewtonNet Relax",
-                              "elapsed_time": elapsed_time
-                          })
+        summarize_opt_run(
+            dyn,
+            additional_fields={"name": "NewtonNet Relax", "elapsed_time": elapsed_time},
+        )
     )
 
 

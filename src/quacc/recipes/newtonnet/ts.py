@@ -1,10 +1,11 @@
 """Transition state recipes for the NewtonNet code."""
 from __future__ import annotations
 
+import time
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
-import time
+
 from quacc import SETTINGS, job
 from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
 from quacc.runners.ase import run_opt
@@ -129,16 +130,18 @@ def ts_job(
 
     t1 = time.time()
     # Run the TS optimization
-    # dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
+    # dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
     dyn = run_opt(atoms, **opt_flags)
     elapsed_time = time.time() - t1
 
     opt_ts_summary = _add_stdev_and_hess(
-        summarize_opt_run(dyn,
-                          additional_fields={
-                              "name": "NewtonNet TS",
-                              "elapsed_time": elapsed_time,
-                          })
+        summarize_opt_run(
+            dyn,
+            additional_fields={
+                "name": "NewtonNet TS",
+                "elapsed_time": elapsed_time,
+            },
+        )
     )
 
     # Run a frequency calculation
@@ -250,7 +253,7 @@ def irc_job(
     SETTINGS.CHECK_CONVERGENCE = False
 
     t1 = time.time()
-    # dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
+    # dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
     dyn = run_opt(atoms, **opt_flags)
     elapsed_time = time.time() - t1
 
@@ -260,7 +263,7 @@ def irc_job(
             additional_fields={
                 "name": f"NewtonNet IRC: {direction}",
                 "elapsed_time": elapsed_time,
-            }
+            },
         )
     )
     SETTINGS.CHECK_CONVERGENCE = default_settings.CHECK_CONVERGENCE
