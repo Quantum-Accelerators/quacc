@@ -1,4 +1,4 @@
-# Documentation
+# Updating the Docs
 
 To install the dependencies to build the documentation, run `pip install -e .[docs]`.
 

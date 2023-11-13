@@ -23,8 +23,8 @@ if TYPE_CHECKING:
 
 def summarize_phonopy(
     phonon: Phonopy,
-    calculator: Calculator,
     input_atoms: Atoms | None = None,
+    parameters: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     store: Store | bool | None = None,
 ) -> PhononSchema:
@@ -37,8 +37,8 @@ def summarize_phonopy(
         Phonopy object
     input_atoms
         Input atoms object
-    calculator
-        Calculator used to generate the phonon object.
+    parameters
+        Calculator parameters used to generate the phonon object.
     additional_fields
         Additional fields to add to the document.
     store
@@ -55,7 +55,7 @@ def summarize_phonopy(
     uri = get_uri(Path.cwd())
 
     inputs = {
-        "parameters": calculator.parameters,
+        "parameters": parameters,
         "phonopy_metadata": {"version": phonon.version},
         "nid": uri.split(":")[0],
         "dir_name": ":".join(uri.split(":")[1:]),

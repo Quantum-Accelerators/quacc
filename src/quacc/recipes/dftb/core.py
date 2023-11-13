@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
     from ase import Atoms
 
-    from quacc.schemas.ase import RunSchema
+    from quacc.schemas._aliases.ase import RunSchema
 
 LOG_FILE = "dftb.out"
 GEOM_FILE = "geo_end.gen"
@@ -40,8 +40,6 @@ def static_job(
         Method to use.
     kpts
         k-point grid to use.
-    copy_files
-        Files to copy to the runtime directory.
     **kwargs
         Custom kwargs for the calculator that would override the
         calculator defaults. Set a value to `None` to remove a pre-existing key

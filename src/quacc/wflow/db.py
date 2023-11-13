@@ -84,7 +84,7 @@ def results_to_db(store: Store, results: dict[str, Any] | list[dict]) -> None:
     None
     """
 
-    if isinstance(results, dict):
+    if not isinstance(results, list):
         results = [results]
 
     for result in results:

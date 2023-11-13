@@ -10,7 +10,7 @@ from pymatgen.io.qchem.inputs import QCInput
 from pymatgen.io.qchem.sets import QChemDictSet
 from pymatgen.io.qchem.utils import lower_and_check_unique
 
-from quacc.calculators.qchem import custodian
+from quacc.calculators.qchem import qchem_custodian
 from quacc.calculators.qchem.io import read_qchem, write_qchem
 from quacc.calculators.qchem.params import get_molecule, get_rem_swaps
 from quacc.utils.dicts import merge_dicts
@@ -233,16 +233,16 @@ class QChem(FileIOCalculator):
         self._cleanup_attrs()
 
         # Get Q-Chem executable command
-        self.command = self._manage_environment()
+        command = self._manage_environment()
 
         # Instantiate the calculator
-        FileIOCalculator.__init__(
-            self,
+        super().__init__(
             restart=None,
             ignore_bad_restart_file=FileIOCalculator._deprecated,
             label=None,
             atoms=self.atoms,
-            command=self.command,
+            command=command,
+            profile=None,
             **self.fileiocalculator_kwargs,
         )
 
@@ -282,10 +282,6 @@ class QChem(FileIOCalculator):
         Read the Q-Chem output files. Update the .results and
         ._prev_orbital_coeffs attributes.
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         None
@@ -304,7 +300,7 @@ class QChem(FileIOCalculator):
             The command flag to run Q-Chem with Custodian.
         """
 
-        qchem_custodian_script = Path(inspect.getfile(custodian)).resolve()
+        qchem_custodian_script = Path(inspect.getfile(qchem_custodian)).resolve()
         return f"python {qchem_custodian_script}"
 
     def _cleanup_attrs(self) -> None:
