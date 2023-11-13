@@ -4,7 +4,7 @@ custodian==2023.10.9
 emmet-core==0.72.8
 maggma==0.57.8
 monty==2023.11.3
-numpy==1.26.1
+numpy==1.26.2
 pydantic==2.4.2
 pydantic-settings==2.0.3
 pymatgen==2023.10.11
