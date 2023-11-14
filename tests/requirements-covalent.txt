@@ -1,3 +1,3 @@
-covalent==0.220.0.post2
+covalent==0.228.0rc0
 covalent-hpc-plugin==0.0.7
 phonopy==2.20.0
