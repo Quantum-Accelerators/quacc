@@ -71,6 +71,7 @@ def slab_to_ads_subflow(
     adsorbate: Atoms,
     slab_relax_job: Callable,
     slab_static_job: Callable | None,
+    make_ads_kwargs: dict[str, Any] | None = None,
 ) -> list[dict]:
     """
     Workflow consisting of:
