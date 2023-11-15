@@ -1,6 +1,7 @@
 """Phonon recipes for EMT"""
 from __future__ import annotations
 
+from functools import partial
 from typing import TYPE_CHECKING
 
 from quacc import flow
@@ -52,11 +53,12 @@ def phonon_flow(
     PhononSchema
         Dictionary of results from [quacc.schemas.phonopy.summarize_phonopy][]
     """
+    static_job_kwargs = static_job_kwargs or {}
+    static_fn = partial(static_job, **static_job_kwargs)
 
     return _phonon_flow(
         atoms,
-        static_job,
-        static_job_kwargs,
+        static_fn,
         supercell_matrix=supercell_matrix,
         atom_disp=atom_disp,
         t_step=t_step,
