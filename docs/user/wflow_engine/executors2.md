@@ -230,7 +230,7 @@ When deploying calculations for the first time, it's important to start simple, 
     )
 
 
-    @flow(executor=executor, workflow_executor=executor)  # (1)!
+    @flow(executor=executor) 
     def workflow(atoms):
         relax_output = relax_job(atoms)
         return static_job(relax_output["atoms"])
@@ -241,8 +241,6 @@ When deploying calculations for the first time, it's important to start simple, 
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
     ```
-
-    1. Until [Issue 1024](https://github.com/Quantum-Accelerators/quacc/issues/1024) is resolved, you need to directly set the `workflow_executor` keyword argument in the `#!Python @flow` decorator to the same value as that used for `executor` otherwise a post-processing error will occur.
 
     !!! Tip "Debugging"
 
@@ -369,10 +367,8 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
             "project_name": account,
             "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
         },
-        pre_launch_cmds=[
-            f"export QUACC_VASP_PARALLEL_CMD='srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'",
-            "module load vasp/6.4.1-cpu",
-        ],  # (1)!
+        pre_launch_cmds=["module load vasp/6.4.1-cpu"],
+        environment={"QUACC_VASP_PARALLEL_CMD": f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"},
         remote_conda_env="quacc",
         remote_workdir="$SCRATCH/quacc",
         create_unique_workdir=True,
@@ -380,7 +376,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     )
 
 
-    @flow(executor=executor, workflow_executor=executor)  # (2)!
+    @flow(executor=executor)
     def workflow(atoms):
         relax_output = relax_job(atoms)
         return static_job(relax_output["atoms"])
@@ -392,9 +388,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     print(result)
     ```
 
-    1. Until [this issue](https://github.com/ExaWorks/psij-python/issues/423) is resolved, environment variables should be specified in `pre_launch_cmds`. Once it's resolved, it can be specified as `#!Python environment={"QUACC_VASP_PARALLEL_CMD": f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"}` instead.
-
-    2. Until [Issue 1024](https://github.com/Quantum-Accelerators/quacc/issues/1024) is resolved, you need to directly set the `workflow_executor` keyword argument in the `#!Python @flow` decorator to the same value as that used for `executor` otherwise a post-processing error will occur.
+    1. Until [this issue](https://github.com/ExaWorks/psij-python/issues/423) is resolved, environment variables should be specified in `pre_launch_cmds`. Once it's resolved, it can be specified as `#!Python ` instead.
 
 === "Jobflow"
 
