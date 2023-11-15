@@ -230,7 +230,7 @@ When deploying calculations for the first time, it's important to start simple, 
     )
 
 
-    @flow(executor=executor) 
+    @flow(executor=executor)
     def workflow(atoms):
         relax_output = relax_job(atoms)
         return static_job(relax_output["atoms"])
