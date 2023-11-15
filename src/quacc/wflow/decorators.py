@@ -4,12 +4,12 @@ from __future__ import annotations
 import functools
 from typing import TYPE_CHECKING
 
+Job = TypeVar("Job")
+Flow = TypeVar("Flow")
+Subflow = TypeVar("Subflow")
+
 if TYPE_CHECKING:
     from typing import Any, Callable, TypeVar
-
-    Job = TypeVar("Job")
-    Flow = TypeVar("Flow")
-    Subflow = TypeVar("Subflow")
 
 
 def job(_func: Callable | None = None, **kwargs) -> Job:
