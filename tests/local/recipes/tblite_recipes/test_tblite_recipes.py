@@ -44,7 +44,7 @@ def test_relax_job(tmpdir):
 
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += [0.1, 0.1, 0.1]
-    output = relax_job(atoms, method="GFN1-xTB", relax_cell=True))
+    output = relax_job(atoms, method="GFN1-xTB", relax_cell=True)
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["method"] == "GFN1-xTB"
     assert not np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
