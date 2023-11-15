@@ -60,9 +60,12 @@ def bulk_to_slabs_flow(
     slab_static_kwargs = slab_static_kwargs or {}
 
     relax_job = partial(relax_job, **slab_relax_kwargs)
-    static_job = partial(static_job, **slab_static_kwargs) if run_static else None
+    static_job = partial(static_job, **slab_static_kwargs)
     make_slabs_fn = partial(make_slabs_from_bulk, **make_slabs_kwargs)
 
     return bulk_to_slabs_subflow(
-        atoms, relax_job, static_job=static_job, make_slabs_fn=make_slabs_fn
+        atoms,
+        relax_job,
+        static_job=static_job if run_static else None,
+        make_slabs_fn=make_slabs_fn,
     )

@@ -188,11 +188,14 @@ def bulk_to_slabs_flow(
     slab_static_kwargs = slab_static_kwargs or {}
 
     relax_job = partial(slab_relax_job, **slab_relax_kwargs)
-    static_job = partial(slab_static_job, **slab_static_kwargs) if run_static else None
+    static_job = partial(slab_static_job, **slab_static_kwargs)
     make_slabs_fn = partial(make_slabs_from_bulk, **make_slabs_kwargs)
 
     return bulk_to_slabs_subflow(
-        atoms, relax_job, static_job=static_job, make_slabs_fn=make_slabs_fn
+        atoms,
+        relax_job,
+        static_job=static_job if run_static else None,
+        make_slabs_fn=make_slabs_fn,
     )
 
 
@@ -238,15 +241,17 @@ def slab_to_ads_flow(
     relax_job = partial(
         slab_relax_job, **slab_relax_kwargs if slab_relax_kwargs else {}
     )
-    static_job = (
-        partial(slab_static_job, **slab_static_kwargs if slab_static_kwargs else {})
-        if run_static
-        else None
+    static_job = partial(
+        slab_static_job, **slab_static_kwargs if slab_static_kwargs else {}
     )
     make_ads_fn = partial(
         make_adsorbate_structures, **make_ads_kwargs if make_ads_kwargs else {}
     )
 
     return slab_to_ads_subflow(
-        slab, adsorbate, relax_job, static_job=static_job, make_ads_fn=make_ads_fn
+        slab,
+        adsorbate,
+        relax_job,
+        static_job=static_job if run_static else None,
+        make_ads_fn=make_ads_fn,
     )
