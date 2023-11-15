@@ -77,17 +77,17 @@ def bulk_to_defects_flow(
         or [quacc.schemas.ase.summarize_opt_run][]
     """
 
-    defect_relax_kwargs = defect_relax_kwargs or {}
-    defect_static_kwargs = defect_static_kwargs or {}
-    make_defects_kwargs = make_defects_kwargs or {}
-
-    relax_fn = partial(relax_job, **defect_relax_kwargs)
-    static_fn = partial(static_job, **defect_static_kwargs) if run_static else None
+    relax_fn = partial(relax_job, **defect_relax_kwargs if defect_relax_kwargs else {})
+    static_fn = (
+        partial(static_job, **defect_static_kwargs if defect_static_kwargs else {})
+        if run_static
+        else None
+    )
     make_defects_fn = partial(
         make_defects_from_bulk,
         defect_gen=defect_gen,
         defect_charge=defect_charge,
-        **make_defects_kwargs,
+        **make_defects_kwargs if make_defects_kwargs else {},
     )
 
     return bulk_to_defects_subflow(

@@ -183,13 +183,15 @@ def bulk_to_slabs_flow(
         List of dictionary results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
 
-    make_slabs_kwargs = make_slabs_kwargs or {}
-    slab_relax_kwargs = slab_relax_kwargs or {}
-    slab_static_kwargs = slab_static_kwargs or {}
-
-    relax_fn = partial(slab_relax_job, **slab_relax_kwargs)
-    static_fn = partial(slab_static_job, **slab_static_kwargs) if run_static else None
-    make_slabs_fn = partial(make_slabs_from_bulk, **make_slabs_kwargs)
+    relax_fn = partial(slab_relax_job, **slab_relax_kwargs if slab_relax_kwargs else {})
+    static_fn = (
+        partial(slab_static_job, **slab_static_kwargs if slab_static_kwargs else {})
+        if run_static
+        else None
+    )
+    make_slabs_fn = partial(
+        make_slabs_from_bulk, **make_slabs_kwargs if make_slabs_kwargs else {}
+    )
 
     return bulk_to_slabs_subflow(
         atoms, relax_fn, static_fn=static_fn, make_slabs_fn=make_slabs_fn
@@ -235,13 +237,15 @@ def slab_to_ads_flow(
         List of dictionaries of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
 
-    make_ads_kwargs = make_ads_kwargs or {}
-    slab_relax_kwargs = slab_relax_kwargs or {}
-    slab_static_kwargs = slab_static_kwargs or {}
-
-    relax_fn = partial(slab_relax_job, **slab_relax_kwargs)
-    static_fn = partial(slab_static_job, **slab_static_kwargs) if run_static else None
-    make_ads_fn = partial(make_adsorbate_structures, **make_ads_kwargs)
+    relax_fn = partial(slab_relax_job, **slab_relax_kwargs if slab_relax_kwargs else {})
+    static_fn = (
+        partial(slab_static_job, **slab_static_kwargs if slab_static_kwargs else {})
+        if run_static
+        else None
+    )
+    make_ads_fn = partial(
+        make_adsorbate_structures, **make_ads_kwargs if make_ads_kwargs else {}
+    )
 
     return slab_to_ads_subflow(
         slab, adsorbate, relax_fn, static_fn=static_fn, make_ads_fn=make_ads_fn

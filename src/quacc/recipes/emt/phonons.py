@@ -53,8 +53,8 @@ def phonon_flow(
     PhononSchema
         Dictionary of results from [quacc.schemas.phonopy.summarize_phonopy][]
     """
-    static_job_kwargs = static_job_kwargs or {}
-    static_fn = partial(static_job, **static_job_kwargs)
+
+    static_fn = partial(static_job, **static_job_kwargs if static_job_kwargs else {})
 
     return _phonon_flow(
         atoms,
