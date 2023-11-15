@@ -40,7 +40,7 @@ def test_relax_job(tmpdir):
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
 
 
-def test_relax_job(tmpdir):
+def test_relax_job_cell(tmpdir):
     tmpdir.chdir()
 
     atoms = bulk("Cu") * (2, 2, 2)
