@@ -36,8 +36,6 @@ def bulk_to_defects_subflow(
     ) = VacancyGenerator,
     defect_charge: int = 0,
     make_defects_kwargs: dict[str, Any] | None = None,
-    defect_relax_kwargs: dict[str, Any] | None = None,
-    defect_static_kwargs: dict[str, Any] | None = None,
 ) -> list[dict]:
     """
     Workflow consisting of:
@@ -63,18 +61,12 @@ def bulk_to_defects_subflow(
     make_defects_kwargs
         Keyword arguments to pass to
         [quacc.atoms.defects.make_defects_from_bulk][]
-    defect_relax_kwargs
-        Additional keyword arguments to pass to `relax_job`.
-    defect_static_kwargs
-        Additional keyword arguments to pass to `static_job`.
 
     Returns
     -------
     list[dict]
         List of dictionary of results
     """
-    defect_relax_kwargs = defect_relax_kwargs or {}
-    defect_static_kwargs = defect_static_kwargs or {}
     make_defects_kwargs = make_defects_kwargs or {}
 
     defects = make_defects_from_bulk(
@@ -86,10 +78,10 @@ def bulk_to_defects_subflow(
 
     results = []
     for defect in defects:
-        result = relax_job(defect, **defect_relax_kwargs)
+        result = relax_job(defect)
 
         if static_job:
-            result = static_job(defect, **defect_static_kwargs)
+            result = static_job(defect)
 
         results.append(result)
 

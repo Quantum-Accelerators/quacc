@@ -19,7 +19,6 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
     from numpy.typing import ArrayLike
-    from phonopy import Phonopy
 
     from quacc.schemas._aliases.phonopy import PhononSchema
 
@@ -29,7 +28,6 @@ if TYPE_CHECKING:
 def phonon_flow(
     atoms: Atoms,
     static_job: Callable,
-    static_job_kwargs: dict[str, Any] | None = None,
     supercell_matrix: ArrayLike = ((2, 0, 0), (0, 2, 0), (0, 0, 2)),
     atom_disp: float = 0.015,
     t_step: float = 10,
@@ -48,8 +46,6 @@ def phonon_flow(
         Atoms object with calculator attached.
     static_job
         The static job to calculate the forces.
-    static_job_kwargs
-        The kwargs for `static_job`.
     supercell_matrix
         Supercell matrix to use. Defaults to 2x2x2 supercell.
     atom_disp
@@ -69,8 +65,6 @@ def phonon_flow(
         Dictionary of results from [quacc.schemas.phonopy.summarize_phonopy][]
     """
 
-    static_job_kwargs = static_job_kwargs or {}
-
     @subflow
     def _phonopy_forces_subflow(atoms: Atoms) -> list[dict]:
         phonon = atoms_to_phonopy(atoms, supercell_matrix, atom_disp)
@@ -78,9 +72,7 @@ def phonon_flow(
             phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
         ]
         return [
-            static_job(supercell, **static_job_kwargs)
-            for supercell in supercells
-            if supercell is not None
+            static_job(supercell) for supercell in supercells if supercell is not None
         ]
 
     @job

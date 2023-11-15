@@ -180,11 +180,13 @@ def bulk_to_slabs_flow(
     list[VaspSchema]
         List of dictionary results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
+    slab_relax_kwargs = slab_relax_kwargs or {}
+    slab_static_kwargs = slab_static_kwargs or {}
 
     return bulk_to_slabs_subflow(
         atoms,
-        slab_relax_job,
-        slab_static_job if run_static else None,
+        lambda: slab_relax_job(**slab_relax_kwargs),
+        lambda: slab_static_job(**slab_static_kwargs) if run_static else None,
         make_slabs_kwargs=make_slabs_kwargs,
         slab_relax_kwargs=slab_relax_kwargs,
         slab_static_kwargs=slab_static_kwargs,
@@ -229,12 +231,14 @@ def slab_to_ads_flow(
     list[VaspSchema]
         List of dictionaries of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
+    slab_relax_kwargs = slab_relax_kwargs or {}
+    slab_static_kwargs = slab_static_kwargs or {}
 
     return slab_to_ads_subflow(
         slab,
         adsorbate,
-        slab_relax_job,
-        slab_static_job if run_static else None,
+        lambda: slab_relax_job(**slab_relax_kwargs),
+        lambda: slab_static_job(**slab_static_kwargs) if run_static else None,
         make_ads_kwargs=make_ads_kwargs,
         slab_relax_kwargs=slab_relax_kwargs,
         slab_static_kwargs=slab_static_kwargs,

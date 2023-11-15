@@ -54,13 +54,15 @@ def bulk_to_slabs_flow(
     """
 
     slab_relax_kwargs = slab_relax_kwargs or {}
+    slab_static_kwargs = slab_static_kwargs or {}
+
     if "relax_cell" not in slab_relax_kwargs:
         slab_relax_kwargs["relax_cell"] = False
 
     return bulk_to_slabs_subflow(
         atoms,
-        relax_job,
-        static_job if run_static else None,
+        lambda: relax_job(**slab_relax_kwargs),
+        lambda: static_job(**slab_static_kwargs) if run_static else None,
         make_slabs_kwargs=make_slabs_kwargs,
         slab_relax_kwargs=slab_relax_kwargs,
         slab_static_kwargs=slab_static_kwargs,

@@ -52,11 +52,11 @@ def phonon_flow(
     PhononSchema
         Dictionary of results from [quacc.schemas.phonopy.summarize_phonopy][]
     """
+    static_job_kwargs = static_job_kwargs or {}
 
     return _phonon_flow(
         atoms,
-        static_job,
-        static_job_kwargs,
+        lambda: static_job(**static_job_kwargs),
         supercell_matrix=supercell_matrix,
         atom_disp=atom_disp,
         t_step=t_step,

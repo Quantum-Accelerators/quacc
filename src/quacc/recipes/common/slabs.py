@@ -18,8 +18,6 @@ def bulk_to_slabs_subflow(
     slab_relax_job: Callable,
     slab_static_job: Callable | None,
     make_slabs_kwargs: dict[str, Any] | None = None,
-    slab_relax_kwargs: dict[str, Any] | None = None,
-    slab_static_kwargs: dict[str, Any] | None = None,
 ) -> list[dict]:
     """
     Workflow consisting of:
@@ -51,18 +49,16 @@ def bulk_to_slabs_subflow(
     list[dict]
         List of schemas.
     """
-    slab_relax_kwargs = slab_relax_kwargs or {}
-    slab_static_kwargs = slab_static_kwargs or {}
     make_slabs_kwargs = make_slabs_kwargs or {}
 
     slabs = make_slabs_from_bulk(atoms, **make_slabs_kwargs)
 
     results = []
     for slab in slabs:
-        result = slab_relax_job(slab, **slab_relax_kwargs)
+        result = slab_relax_job(slab)
 
         if slab_static_job:
-            result = slab_static_job(result["atoms"], **slab_static_kwargs)
+            result = slab_static_job(result["atoms"])
 
         results.append(result)
 
@@ -75,9 +71,6 @@ def slab_to_ads_subflow(
     adsorbate: Atoms,
     slab_relax_job: Callable,
     slab_static_job: Callable | None,
-    make_ads_kwargs: dict[str, Any] | None = None,
-    slab_relax_kwargs: dict[str, Any] | None = None,
-    slab_static_kwargs: dict[str, Any] | None = None,
 ) -> list[dict]:
     """
     Workflow consisting of:
@@ -100,10 +93,6 @@ def slab_to_ads_subflow(
         The slab static job.
     make_ads_kwargs
         Additional keyword arguments to pass to [quacc.atoms.slabs.make_adsorbate_structures][]
-    slab_relax_kwargs
-        Additional keyword arguments to pass to `slab_relax_job`.
-    slab_static_kwargs
-        Additional keyword arguments to pass to `slab_static_job`.
 
     Returns
     -------
@@ -111,18 +100,16 @@ def slab_to_ads_subflow(
         List of schemas.
     """
 
-    slab_relax_kwargs = slab_relax_kwargs or {}
-    slab_static_kwargs = slab_static_kwargs or {}
     make_ads_kwargs = make_ads_kwargs or {}
 
     slabs = make_adsorbate_structures(atoms, adsorbate, **make_ads_kwargs)
 
     results = []
     for slab in slabs:
-        result = slab_relax_job(slab, **slab_relax_kwargs)
+        result = slab_relax_job(slab)
 
         if slab_static_job:
-            result = slab_static_job(result["atoms"], **slab_static_kwargs)
+            result = slab_static_job(result["atoms"])
 
         results.append(result)
 

@@ -76,16 +76,16 @@ def bulk_to_defects_flow(
     """
 
     defect_relax_kwargs = defect_relax_kwargs or {}
+    defect_static_kwargs = defect_static_kwargs or {}
+
     if "relax_cell" not in defect_relax_kwargs:
         defect_relax_kwargs["relax_cell"] = False
 
     return bulk_to_defects_subflow(
         atoms,
-        relax_job,
-        static_job if run_static else None,
+        lambda: relax_job(**defect_relax_kwargs),
+        lambda: static_job(**defect_static_kwargs) if run_static else None,
         defect_gen=defect_gen,
         defect_charge=defect_charge,
         make_defects_kwargs=make_defects_kwargs,
-        defect_relax_kwargs=defect_relax_kwargs,
-        defect_static_kwargs=defect_static_kwargs,
     )
