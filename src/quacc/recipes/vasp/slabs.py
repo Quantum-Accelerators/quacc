@@ -238,15 +238,13 @@ def slab_to_ads_flow(
         List of dictionaries of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
 
-    relax_job = partial(
-        slab_relax_job, **slab_relax_kwargs if slab_relax_kwargs else {}
-    )
-    static_job = partial(
-        slab_static_job, **slab_static_kwargs if slab_static_kwargs else {}
-    )
-    make_ads_fn = partial(
-        make_adsorbate_structures, **make_ads_kwargs if make_ads_kwargs else {}
-    )
+    make_ads_kwargs = make_ads_kwargs or {}
+    slab_relax_kwargs = slab_relax_kwargs or {}
+    slab_static_kwargs = slab_static_kwargs or {}
+
+    relax_job = partial(slab_relax_job, **slab_relax_kwargs)
+    static_job = partial(slab_static_job, **slab_static_kwargs)
+    make_ads_fn = partial(make_adsorbate_structures, **make_ads_kwargs)
 
     return slab_to_ads_subflow(
         slab,
