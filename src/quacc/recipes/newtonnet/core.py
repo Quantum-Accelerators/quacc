@@ -187,6 +187,7 @@ def freq_job(
             {
                 "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
                 "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+                "hess_method": "autograd",
             }
             ```
 
@@ -199,6 +200,7 @@ def freq_job(
     defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        "hess_method": "autograd",
     }
     flags = merge_dicts(defaults, kwargs)
 
