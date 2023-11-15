@@ -12,6 +12,7 @@ from quacc.wflow.decorators import Flow, Job, Subflow, flow, job, subflow
 
 if TYPE_CHECKING:
     from typing import Any
+
 __all__ = ["flow", "job", "subflow", "Flow", "Job", "Subflow"]
 
 

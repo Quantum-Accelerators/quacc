@@ -2,14 +2,14 @@
 from __future__ import annotations
 
 import functools
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeVar
 
 Job = TypeVar("Job")
 Flow = TypeVar("Flow")
 Subflow = TypeVar("Subflow")
 
 if TYPE_CHECKING:
-    from typing import Any, Callable, TypeVar
+    from typing import Any, Callable
 
 
 def job(_func: Callable | None = None, **kwargs) -> Job:
