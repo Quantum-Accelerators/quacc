@@ -242,14 +242,12 @@ def slab_to_ads_flow(
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}
 
-    relax_job = partial(slab_relax_job, **slab_relax_kwargs)
-    static_job = partial(slab_static_job, **slab_static_kwargs)
-    make_ads_fn = partial(make_adsorbate_structures, **make_ads_kwargs)
-
     return slab_to_ads_subflow(
         slab,
         adsorbate,
-        relax_job,
-        static_job=static_job if run_static else None,
-        make_ads_fn=make_ads_fn,
+        partial(slab_relax_job, **slab_relax_kwargs),
+        static_job=partial(slab_static_job, **slab_static_kwargs)
+        if run_static
+        else None,
+        make_ads_fn=partial(make_adsorbate_structures, **make_ads_kwargs),
     )

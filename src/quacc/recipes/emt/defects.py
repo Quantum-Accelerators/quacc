@@ -80,18 +80,14 @@ def bulk_to_defects_flow(
     defect_relax_kwargs = defect_relax_kwargs or {}
     defect_static_kwargs = defect_static_kwargs or {}
 
-    relax_job = partial(relax_job, **defect_relax_kwargs)
-    static_job = partial(static_job, **defect_static_kwargs)
-    make_defects_fn = partial(
-        make_defects_from_bulk,
-        defect_gen=defect_gen,
-        defect_charge=defect_charge,
-        **make_defects_kwargs,
-    )
-
     return bulk_to_defects_subflow(
         atoms,
-        relax_job,
-        static_job=static_job if run_static else None,
-        make_defects_fn=make_defects_fn,
+        partial(relax_job, **defect_relax_kwargs),
+        static_job=partial(static_job, **defect_static_kwargs) if run_static else None,
+        make_defects_fn=partial(
+            make_defects_from_bulk,
+            defect_gen=defect_gen,
+            defect_charge=defect_charge,
+            **make_defects_kwargs,
+        ),
     )
