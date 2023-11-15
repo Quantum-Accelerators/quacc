@@ -55,16 +55,14 @@ def bulk_to_slabs_flow(
         [OptSchema][quacc.schemas.ase.summarize_opt_run] for each slab.
     """
 
-    relax_fn = partial(relax_job, **slab_relax_kwargs if slab_relax_kwargs else {})
-    static_fn = (
-        partial(static_job, **slab_static_kwargs if slab_static_kwargs else {})
-        if run_static
-        else None
-    )
-    make_slabs_fn = partial(
-        make_slabs_from_bulk, **make_slabs_kwargs if make_slabs_kwargs else {}
-    )
+    make_slabs_kwargs = make_slabs_kwargs or {}
+    slab_relax_kwargs = slab_relax_kwargs or {}
+    slab_static_kwargs = slab_static_kwargs or {}
+
+    relax_job = partial(relax_job, **slab_relax_kwargs)
+    static_job = partial(static_job, **slab_static_kwargs) if run_static else None
+    make_slabs_fn = partial(make_slabs_from_bulk, **make_slabs_kwargs)
 
     return bulk_to_slabs_subflow(
-        atoms, relax_fn, static_fn=static_fn, make_slabs_fn=make_slabs_fn
+        atoms, relax_job, static_job=static_job, make_slabs_fn=make_slabs_fn
     )

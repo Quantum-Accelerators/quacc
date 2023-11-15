@@ -11,12 +11,14 @@ if TYPE_CHECKING:
 
     from ase import Atoms
 
+    from quacc import Job
+
 
 @subflow
 def bulk_to_slabs_subflow(
     atoms: Atoms,
-    relax_fn: Callable,
-    static_fn: Callable | None = None,
+    relax_job: Job,
+    static_job: Job | None = None,
     make_slabs_fn: Callable = make_slabs_from_bulk,
 ) -> list[dict]:
     """
@@ -32,9 +34,9 @@ def bulk_to_slabs_subflow(
     ----------
     atoms
         Atoms object
-    relax_fn
+    relax_job
         The relaxation function.
-    static_fn
+    static_job
         The static function.
     make_slabs_fn
         The function for generating slabs.
@@ -49,10 +51,10 @@ def bulk_to_slabs_subflow(
 
     results = []
     for slab in slabs:
-        result = relax_fn(slab)
+        result = relax_job(slab)
 
-        if static_fn:
-            result = static_fn(result["atoms"])
+        if static_job:
+            result = static_job(result["atoms"])
 
         results.append(result)
 
@@ -63,8 +65,8 @@ def bulk_to_slabs_subflow(
 def slab_to_ads_subflow(
     atoms: Atoms,
     adsorbate: Atoms,
-    relax_fn: Callable,
-    static_fn: Callable | None,
+    relax_job: Job,
+    static_job: Job | None,
     make_ads_fn: Callable = make_adsorbate_structures,
 ) -> list[dict]:
     """
@@ -82,9 +84,9 @@ def slab_to_ads_subflow(
         Atoms object for the slab structure.
     adsorbate
         Atoms object for the adsorbate.
-    relax_fn
+    relax_job
         The slab releaxation job.
-    static_fn
+    static_job
         The slab static job.
     make_ads_fn
         The function to generate slab-adsorbate structures.
@@ -99,10 +101,10 @@ def slab_to_ads_subflow(
 
     results = []
     for slab in slabs:
-        result = relax_fn(slab)
+        result = relax_job(slab)
 
-        if static_fn:
-            result = static_fn(result["atoms"])
+        if static_job:
+            result = static_job(result["atoms"])
 
         results.append(result)
 

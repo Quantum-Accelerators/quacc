@@ -10,13 +10,14 @@ if TYPE_CHECKING:
     from typing import Callable
 
     from ase import Atoms
+    from qucac import Job
 
 
 @subflow
 def bulk_to_defects_subflow(
     atoms: Atoms,
-    relax_fn: Callable,
-    static_fn: Callable | None = None,
+    relax_job: Job,
+    static_job: Job | None = None,
     make_defects_fn: Callable = make_defects_from_bulk,
 ) -> list[dict]:
     """
@@ -32,9 +33,9 @@ def bulk_to_defects_subflow(
     ----------
     atoms
         Atoms object for the structure.
-    relax_fn
+    relax_job
         The relaxation function.
-    static_fn
+    static_job
         The static function.
     make_defects_fn
         The function for generating defects.
@@ -49,10 +50,10 @@ def bulk_to_defects_subflow(
 
     results = []
     for defect in defects:
-        result = relax_fn(defect)
+        result = relax_job(defect)
 
-        if static_fn:
-            result = static_fn(result["atoms"])
+        if static_job:
+            result = static_job(result["atoms"])
 
         results.append(result)
 
