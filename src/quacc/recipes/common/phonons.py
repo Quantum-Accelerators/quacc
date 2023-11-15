@@ -35,7 +35,7 @@ def phonon_flow(
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
-    fields_to_store: dict[str, Any] = None,
+    additional_fields: dict[str, Any] = None,
 ) -> PhononSchema:
     """
     Calculate phonon properties.
@@ -60,8 +60,8 @@ def phonon_flow(
         Min temperature (K).
     t_max
         Max temperature (K).
-    fields_to_store
-        Fields to store in the database.
+    additional_fields
+        Additional fields to store in the database.
 
     Returns
     -------
@@ -99,7 +99,7 @@ def phonon_flow(
             phonon,
             input_atoms=atoms,
             parameters=parameters,
-            additional_fields=fields_to_store,
+            additional_fields=additional_fields,
         )
 
     force_job_results = _phonopy_forces_subflow(atoms)
