@@ -39,6 +39,7 @@ def test_relax_job(tmpdir):
     assert not np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
 
+
 def test_relax_job(tmpdir):
     tmpdir.chdir()
 
@@ -49,6 +50,7 @@ def test_relax_job(tmpdir):
     assert output["parameters"]["method"] == "GFN1-xTB"
     assert not np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
+
 
 def test_freq_job(tmpdir):
     tmpdir.chdir()
