@@ -1,11 +1,13 @@
 """Defect recipes for EMT."""
 from __future__ import annotations
 
+from functools import partial
 from typing import TYPE_CHECKING
 
 from pymatgen.analysis.defects.generators import VacancyGenerator
 
 from quacc import flow
+from quacc.atoms.defects import make_defects_from_bulk
 from quacc.recipes.common.defects import bulk_to_defects_subflow
 from quacc.recipes.emt.core import relax_job, static_job
 
@@ -74,18 +76,18 @@ def bulk_to_defects_flow(
         List of dictionary of results from [quacc.schemas.ase.summarize_run][]
         or [quacc.schemas.ase.summarize_opt_run][]
     """
-
+    make_defects_kwargs = make_defects_kwargs or {}
     defect_relax_kwargs = defect_relax_kwargs or {}
-    if "relax_cell" not in defect_relax_kwargs:
-        defect_relax_kwargs["relax_cell"] = False
+    defect_static_kwargs = defect_static_kwargs or {}
 
     return bulk_to_defects_subflow(
         atoms,
-        relax_job,
-        static_job if run_static else None,
-        defect_gen=defect_gen,
-        defect_charge=defect_charge,
-        make_defects_kwargs=make_defects_kwargs,
-        defect_relax_kwargs=defect_relax_kwargs,
-        defect_static_kwargs=defect_static_kwargs,
+        partial(relax_job, **defect_relax_kwargs),
+        static_job=partial(static_job, **defect_static_kwargs) if run_static else None,
+        make_defects_fn=partial(
+            make_defects_from_bulk,
+            defect_gen=defect_gen,
+            defect_charge=defect_charge,
+            **make_defects_kwargs,
+        ),
     )
