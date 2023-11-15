@@ -79,6 +79,7 @@ def bulk_to_defects_flow(
 
     defect_relax_kwargs = defect_relax_kwargs or {}
     defect_static_kwargs = defect_static_kwargs or {}
+    make_defects_kwargs = make_defects_kwargs or {}
 
     relax_fn = partial(relax_job, **defect_relax_kwargs)
     static_fn = partial(static_job, **defect_static_kwargs) if run_static else None
