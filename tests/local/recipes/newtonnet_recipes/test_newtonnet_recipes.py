@@ -126,7 +126,7 @@ def test_ts_job_with_default_args(tmpdir):
 def test_ts_job_with_custom_hessian(tmpdir):
     tmpdir.chdir()
     # Define test inputs
-    symbols = ['C', 'O', 'C', 'O', 'H', 'H', 'H', 'H']
+    symbols = ["C", "O", "C", "O", "H", "H", "H", "H"]
     positions = [
         [0.87589219, -0.13926227, 0.10160247],
         [-0.07821864, -1.06257641, 0.39840308],
@@ -135,7 +135,7 @@ def test_ts_job_with_custom_hessian(tmpdir):
         [0.46675900, 0.87142023, 0.48210765],
         [1.06360062, -0.03733460, -0.95079003],
         [1.80266010, -0.30212484, 0.61902953],
-        [0.92072327, -2.76503751, 1.36753343]
+        [0.92072327, -2.76503751, 1.36753343],
     ]
     atoms = Atoms(symbols=symbols, positions=positions)
     use_custom_hessian = True
