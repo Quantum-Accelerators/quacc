@@ -30,7 +30,7 @@ def phonon_flow(
     atoms: Atoms,
     static_job: Job,
     supercell_matrix: ArrayLike = ((2, 0, 0), (0, 2, 0), (0, 0, 2)),
-    atom_disp: float = 0.015,
+    atom_disp: float = 0.01,
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
