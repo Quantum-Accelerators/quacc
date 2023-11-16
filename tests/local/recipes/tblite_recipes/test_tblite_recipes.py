@@ -47,7 +47,10 @@ def test_relax_job_cell(tmpdir):
     output = relax_job(atoms, method="GFN1-xTB", relax_cell=True)
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["method"] == "GFN1-xTB"
-    assert output["trajectory_results"][-1]["energy"] == pytest.approx(-130.46825759490588)
+    assert output["trajectory_results"][-1]["energy"] == pytest.approx(
+        -130.46825759490588
+    )
+
 
 def test_freq_job(tmpdir):
     tmpdir.chdir()
