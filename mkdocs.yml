@@ -29,7 +29,6 @@ nav:
       - Advanced:
           - user/advanced/database.md
           - user/advanced/file_transfers.md
-          - user/advanced/atomate2.md
   - Code Documentation 📖: reference/
   - Developer Guide 🤝:
       - dev/contributing.md

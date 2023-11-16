@@ -46,8 +46,6 @@ A: Atomate2 is a fantastic code that can be used to run libraries of computation
 
 - Atomate2 is developed and supported by the [Materials Project](http://materialsproject.org/) team at Lawrence Berkeley National Laboratory. Quacc is developed and maintained by the [Rosen Research Group](https://rosen.cbe.princeton.edu/) at Princeton University.
 
-Despite these differences, quacc and Atomate2 are largely interoperable! Feel free to [stitch together workflows](../user/advanced/atomate2.md) from both codes as you see fit using Jobflow!
-
 **Q: I want to contribute a new recipe to quacc, but it will require additional dependencies. Is that a problem?**
 
 A: Absolutely not a problem! Simply make your dependencies optional in the `pyproject.toml` file and use a `monty.dev.requires` decorator to ensure your recipes and tests only run if your necessary dependencies are installed. Refer to [quacc.recipes.tblite.core][] and the `[tblite]` extras in the `pyproject.toml` file for an example.
