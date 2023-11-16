@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from maggma.core import Store
     from phonopy import Phonopy
 
-    from quacc.schemas._aliases.phonopy import PhononSchema
+    from quacc.schemas._aliases.phonons import PhononSchema
 
 
 def summarize_phonopy(

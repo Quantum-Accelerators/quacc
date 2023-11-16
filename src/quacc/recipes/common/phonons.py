@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from numpy.typing import ArrayLike
     from qucac import Job
 
-    from quacc.schemas._aliases.phonopy import PhononSchema
+    from quacc.schemas._aliases.phonons import PhononSchema
 
 
 @flow
