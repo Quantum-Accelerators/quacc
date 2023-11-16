@@ -15,6 +15,7 @@ Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
 """
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -174,7 +175,10 @@ def mp_relax_flow(
     relax_results = mp_relax_job(
         prerelax_results["atoms"],
         bandgap=prerelax_results["output"]["bandgap"],
-        copy_files=["CHGCAR", "WAVECAR"],
+        copy_files=[
+            Path(prerelax_results["dir_name"]) / "CHGCAR",
+            Path(prerelax_results["dir_name"]) / "WAVECAR",
+        ],
         **relax_job_kwargs,
     )
     relax_results["prerelax"] = prerelax_results
