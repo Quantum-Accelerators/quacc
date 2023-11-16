@@ -162,8 +162,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Changed default `SCRATCH_DIR` from `/tmp` to `Path.cwd() / .scratch`
 - Refactored decorator handling to be more concise
 - Renamed `[optimizers]` extras to `[sella]`
-- Moved `quacc.utils.wflows` into `quacc.wflow.decorators` and `quacc.wflow.prefect`
-- Moved `quacc.utils.db` into `quacc.wflow.db`
+- Moved `quacc.utils.wflows` into `quacc.wflow_tools.decorators` and `quacc.wflow_tools.prefect`
+- Moved `quacc.utils.db` into `quacc.wflow_tools.db`
 - Moved `quacc.utils.calc` to `quacc.runners.ase`
 - Moved `quacc.presets` to `quacc.calculators.presets`
 
@@ -332,7 +332,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - Added support for Prefect.
-- Added `quacc.wflow` module.
+- Added `quacc.wflow_tools` module.
 
 ### Changed
 

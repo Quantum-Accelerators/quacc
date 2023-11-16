@@ -8,7 +8,7 @@ from ase.atoms import Atoms
 from ase.io.jsonio import decode, encode
 
 from quacc.settings import QuaccSettings
-from quacc.wflow.decorators import Flow, Job, Subflow, flow, job, subflow
+from quacc.wflow_tools.decorators import Flow, Job, Subflow, flow, job, subflow
 
 if TYPE_CHECKING:
     from typing import Any

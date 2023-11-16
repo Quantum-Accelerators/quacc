@@ -1,6 +1,6 @@
 import pytest
 
-from quacc.wflow.prefect import _make_dask_cluster, make_prefect_runner
+from quacc.wflow_tools.prefect import _make_dask_cluster, make_prefect_runner
 
 pytest.importorskip("dask_jobqueue")
 pytest.importorskip("prefect_dask")
