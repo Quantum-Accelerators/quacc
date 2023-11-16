@@ -9,7 +9,7 @@ from monty.dev import requires
 
 from quacc import SETTINGS, job
 from quacc.runners.ase import run_calc, run_opt
-from quacc.runners.thermo import run_ideal_gas
+from quacc.runners.thermo import run_ideal_gas_thermo
 from quacc.schemas.ase import (
     summarize_ideal_gas_thermo,
     summarize_opt_run,
@@ -221,7 +221,7 @@ def freq_job(
         vib, additional_fields={"name": "ASE Vibrations Analysis"}
     )
 
-    igt = run_ideal_gas(final_atoms, vib.get_frequencies(), energy=energy)
+    igt = run_ideal_gas_thermo(final_atoms, vib.get_frequencies(), energy=energy)
     summary["thermo"] = summarize_ideal_gas_thermo(
         igt,
         temperature=temperature,
