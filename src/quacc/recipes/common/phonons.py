@@ -34,7 +34,7 @@ def phonon_flow(
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
-    additional_fields: dict[str, Any] = None,
+    additional_fields: dict[str, Any] | None = None,
 ) -> PhononSchema:
     """
     Calculate phonon properties.

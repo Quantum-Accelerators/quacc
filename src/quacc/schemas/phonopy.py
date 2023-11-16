@@ -14,7 +14,6 @@ if TYPE_CHECKING:
     from typing import Any
 
     from ase import Atoms
-    from ase.calculators.calculator import Calculator
     from maggma.core import Store
     from phonopy import Phonopy
 
