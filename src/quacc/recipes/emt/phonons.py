@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 def phonon_flow(
     atoms: Atoms,
     supercell_matrix: ArrayLike = ((2, 0, 0), (0, 2, 0), (0, 0, 2)),
-    atom_disp: float = 0.015,
+    atom_disp: float = 0.01,
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
@@ -51,7 +51,7 @@ def phonon_flow(
     Returns
     -------
     PhononSchema
-        Dictionary of results from [quacc.schemas.phonopy.summarize_phonopy][]
+        Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][]
     """
     static_job_kwargs = static_job_kwargs or {}
 

@@ -7,7 +7,7 @@ from monty.dev import requires
 
 from quacc import flow, job, subflow
 from quacc.atoms.phonons import atoms_to_phonopy, phonopy_atoms_to_ase_atoms
-from quacc.schemas.phonopy import summarize_phonopy
+from quacc.schemas.phonons import summarize_phonopy
 
 try:
     import phonopy
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from numpy.typing import ArrayLike
     from qucac import Job
 
-    from quacc.schemas._aliases.phonopy import PhononSchema
+    from quacc.schemas._aliases.phonons import PhononSchema
 
 
 @flow
@@ -30,11 +30,11 @@ def phonon_flow(
     atoms: Atoms,
     static_job: Job,
     supercell_matrix: ArrayLike = ((2, 0, 0), (0, 2, 0), (0, 0, 2)),
-    atom_disp: float = 0.015,
+    atom_disp: float = 0.01,
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
-    additional_fields: dict[str, Any] = None,
+    additional_fields: dict[str, Any] | None = None,
 ) -> PhononSchema:
     """
     Calculate phonon properties.
@@ -63,7 +63,7 @@ def phonon_flow(
     Returns
     -------
     PhononSchema
-        Dictionary of results from [quacc.schemas.phonopy.summarize_phonopy][]
+        Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][]
     """
 
     @subflow

@@ -8,17 +8,16 @@ from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.utils.dicts import recursive_merge_dicts, sort_dict
 from quacc.utils.files import get_uri
-from quacc.wflow.db import results_to_db
+from quacc.wflow_tools.db import results_to_db
 
 if TYPE_CHECKING:
     from typing import Any
 
     from ase import Atoms
-    from ase.calculators.calculator import Calculator
     from maggma.core import Store
     from phonopy import Phonopy
 
-    from quacc.schemas._aliases.phonopy import PhononSchema
+    from quacc.schemas._aliases.phonons import PhononSchema
 
 
 def summarize_phonopy(

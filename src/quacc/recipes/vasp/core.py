@@ -1,6 +1,7 @@
 """Core recipes for VASP."""
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from quacc import job
@@ -204,7 +205,7 @@ def double_relax_job(
         summary1["atoms"],
         preset=preset,
         relax_cell=relax_cell,
-        copy_files=["WAVECAR"],
+        copy_files=[Path(summary1["dir_name"]) / "WAVECAR"],
         **relax2_kwargs,
     )
     summary2["relax1"] = summary1
