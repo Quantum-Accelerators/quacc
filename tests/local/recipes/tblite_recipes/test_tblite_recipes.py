@@ -43,7 +43,7 @@ def test_relax_job(tmpdir):
 def test_relax_job_cell(tmpdir):
     tmpdir.chdir()
 
-    atoms = bulk("Cu") * (2, 2, 2)
+    atoms = bulk("Cu")
     output = relax_job(atoms, method="GFN1-xTB", relax_cell=True)
     assert output["parameters"]["method"] == "GFN1-xTB"
     assert output["trajectory_results"][-1]["energy"] == pytest.approx(
