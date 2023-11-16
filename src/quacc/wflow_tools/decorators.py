@@ -180,7 +180,9 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     return decorated
 
 
-def flow(_func: Callable | None = None, **kwargs) -> Flow:
+def flow(
+    _func: Callable | None = None, **kwargs
+) -> Flow:  # sourcery skip: lift-return-into-if, switch
     """
     Decorator for workflows, which consist of at least one compute job. This is a
     `#!Python @flow` decorator.
@@ -313,7 +315,9 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
     return decorated
 
 
-def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
+def subflow(
+    _func: Callable | None = None, **kwargs
+) -> Subflow:  # sourcery skip: lift-return-into-if, switch
     """
     Decorator for (dynamic) sub-workflows. This is a `#!Python @subflow` decorator.
 

@@ -1,4 +1,5 @@
 """Generate the code reference pages and navigation."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -23,11 +24,7 @@ for path in sorted(Path("src").rglob("*.py")):
         "_aliases",
         "presets",
     ]
-    skip = False
-    for p in parts:
-        if p in ignore:
-            skip = True
-            break
+    skip = any(p in ignore for p in parts)
     if skip:
         continue
 
