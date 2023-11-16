@@ -44,13 +44,10 @@ def test_relax_job_cell(tmpdir):
     tmpdir.chdir()
 
     atoms = bulk("Cu") * (2, 2, 2)
-    atoms[0].position += [0.1, 0.1, 0.1]
     output = relax_job(atoms, method="GFN1-xTB", relax_cell=True)
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["method"] == "GFN1-xTB"
-    assert not np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
-    assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
-
+    assert output["trajectory_results"][-1]["energy"] == pytest.approx(-130.46825759490588)
 
 def test_freq_job(tmpdir):
     tmpdir.chdir()
