@@ -7,7 +7,7 @@ from monty.dev import requires
 
 from quacc import flow, job, subflow
 from quacc.atoms.phonons import atoms_to_phonopy, phonopy_atoms_to_ase_atoms
-from quacc.schemas.phonopy import summarize_phonopy
+from quacc.schemas.phonons import summarize_phonopy
 
 try:
     import phonopy
@@ -63,7 +63,7 @@ def phonon_flow(
     Returns
     -------
     PhononSchema
-        Dictionary of results from [quacc.schemas.phonopy.summarize_phonopy][]
+        Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][]
     """
 
     @subflow

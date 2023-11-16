@@ -16,7 +16,7 @@ class ThermalProperties(TypedDict):
 
 
 class PhononSchema(TypedDict):
-    """Type hint associated with `quacc.schemas.phonopy.summarize_phonopy`"""
+    """Type hint associated with `quacc.schemas.phonons.summarize_phonopy`"""
 
     phonon: Phonopy
     thermal_properties: ThermalProperties

@@ -24,7 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - Added `quacc.recipes.common`, including `quacc.recipes.common.slabs`, `quacc.recipes.common.defects`, and `quacc.recipes.common.phonons`
-- Added phonopy schema in `quacc.schemas.phonopy`
+- Added phonopy schema in `quacc.schemas.phonons`
 - Added EMT phonon workflow
 
 ### Changed
