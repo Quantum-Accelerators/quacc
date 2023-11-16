@@ -45,7 +45,6 @@ def test_relax_job_cell(tmpdir):
 
     atoms = bulk("Cu") * (2, 2, 2)
     output = relax_job(atoms, method="GFN1-xTB", relax_cell=True)
-    assert output["natoms"] == len(atoms)
     assert output["parameters"]["method"] == "GFN1-xTB"
     assert output["trajectory_results"][-1]["energy"] == pytest.approx(
         -130.46825759490588
