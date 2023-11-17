@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TypedDict
 
 from numpy.typing import NDArray
-from phonopy import Phonopy
 
 
 class ThermalProperties(TypedDict):
