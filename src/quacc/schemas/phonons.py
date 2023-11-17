@@ -65,6 +65,7 @@ def summarize_phonopy(
             "phonon": phonon,
             "thermal_properties": phonon.get_thermal_properties_dict(),
             "mesh_properties": phonon.get_mesh_dict(),
+            "force_constants": phonon.force_constants,
         }
     }
     phonon.save(settings={"force_constants": True})

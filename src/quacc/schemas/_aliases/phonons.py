@@ -31,3 +31,4 @@ class PhononSchema(TypedDict):
     phonon: Phonopy
     thermal_properties: ThermalProperties
     mesh_properties: MeshProperties
+    force_constants: NDArray
