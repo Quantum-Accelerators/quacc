@@ -60,7 +60,7 @@ def summarize_phonopy(
         "dir_name": ":".join(uri.split(":")[1:]),
     }
 
-    results = {"results": {"thermal_properties": phonon.get_thermal_properties_dict()}}
+    results = {"results": {"thermal_properties": phonon.get_thermal_properties_dict(), "mesh_properties": phonon.get_mesh_dict()}}
     phonon.save(settings={"force_constants": True})
 
     atoms_metadata = atoms_to_metadata(input_atoms) if input_atoms else {}
