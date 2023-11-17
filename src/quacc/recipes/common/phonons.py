@@ -86,6 +86,7 @@ def phonon_flow(
         phonon.forces = forces
         phonon.produce_force_constants()
         phonon.run_mesh()
+        phonon.save(settings={'force_constants': True})
         phonon.run_thermal_properties(t_step=t_step, t_max=t_max, t_min=t_min)
 
         return summarize_phonopy(
