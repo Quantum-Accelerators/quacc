@@ -28,7 +28,7 @@ class MeshProperties(TypedDict):
 class PhononSchema(TypedDict):
     """Type hint associated with `quacc.schemas.phonons.summarize_phonopy`"""
 
-    phonon: Phonopy
+    phonopy: Phonopy
     thermal_properties: ThermalProperties
     mesh_properties: MeshProperties
     force_constants: NDArray
