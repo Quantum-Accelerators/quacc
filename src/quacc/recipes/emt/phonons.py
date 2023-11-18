@@ -5,7 +5,7 @@ from functools import partial
 from typing import TYPE_CHECKING
 
 from quacc import flow
-from quacc.recipes.common.phonons import phonon_flow as _phonon_flow
+from quacc.recipes.common.phonons import phonon_flow as phonon_flow_
 from quacc.recipes.emt.core import static_job
 
 if TYPE_CHECKING:
@@ -55,7 +55,7 @@ def phonon_flow(
     """
     static_job_kwargs = static_job_kwargs or {}
 
-    return _phonon_flow(
+    return phonon_flow_(
         atoms,
         partial(static_job, **static_job_kwargs),
         supercell_matrix=supercell_matrix,
