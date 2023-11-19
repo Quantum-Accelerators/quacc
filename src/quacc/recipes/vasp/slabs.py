@@ -22,7 +22,7 @@ def slab_static_job(
     atoms: Atoms,
     preset: str | None = "SlabSet",
     copy_files: list[str] | None = None,
-    **kwargs,
+    **calc_kwargs,
 ) -> VaspSchema:
     """
     Function to carry out a single-point calculation on a slab.
@@ -35,7 +35,7 @@ def slab_static_job(
         Preset to use from `quacc.calculators.presets.vasp`.
     copy_files
         Files to copy to the runtime directory.
-    **kwargs
+    **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
@@ -76,7 +76,7 @@ def slab_static_job(
         atoms,
         preset=preset,
         defaults=defaults,
-        calc_swaps=kwargs,
+        calc_swaps=calc_kwargs,
         additional_fields={"name": "VASP Slab Static"},
         copy_files=copy_files,
     )
@@ -87,7 +87,7 @@ def slab_relax_job(
     atoms: Atoms,
     preset: str | None = "SlabSet",
     copy_files: list[str] | None = None,
-    **kwargs,
+    **calc_kwargs,
 ) -> VaspSchema:
     """
     Function to relax a slab.
@@ -100,7 +100,7 @@ def slab_relax_job(
         Preset to use from `quacc.calculators.presets.vasp`.
     copy_files
         Files to copy to the runtime directory.
-    **kwargs
+    **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
@@ -141,7 +141,7 @@ def slab_relax_job(
         atoms,
         preset=preset,
         defaults=defaults,
-        calc_swaps=kwargs,
+        calc_swaps=calc_kwargs,
         additional_fields={"name": "VASP Slab Relax"},
         copy_files=copy_files,
     )
