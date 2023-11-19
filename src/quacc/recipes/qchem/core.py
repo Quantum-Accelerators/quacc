@@ -33,9 +33,9 @@ def static_job(
     spin_multiplicity: int = 1,
     method: str | None = "wb97mv",
     basis: str | None = "def2-tzvpd",
-    qc_input_swaps: dict[str, Any] | None = None,
     qchem_dict_set_kwargs: dict | None = None,
     copy_files: list[str] | None = None,
+    **kwargs,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -53,8 +53,10 @@ def static_job(
         method.
     basis
         Basis set.
-    calc_swaps
-        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
+    copy_files
+        Files to copy to the runtime directory.
+    **kwargs
+       Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
         details.
 
@@ -77,8 +79,6 @@ def static_job(
                 }
             }
             ```
-    copy_files
-        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -106,7 +106,7 @@ def static_job(
         charge,
         spin_multiplicity,
         defaults=defaults,
-        calc_swaps=calc_swaps,
+        calc_swaps=kwargs,
         additional_fields={"name": "Q-Chem Static"},
         copy_files=copy_files,
     )
