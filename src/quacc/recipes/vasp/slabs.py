@@ -1,9 +1,11 @@
 """Recipes for slabs."""
 from __future__ import annotations
 
+from functools import partial
 from typing import TYPE_CHECKING
 
 from quacc import flow, job
+from quacc.atoms.slabs import make_adsorbate_structures, make_slabs_from_bulk
 from quacc.recipes.common.slabs import bulk_to_slabs_subflow, slab_to_ads_subflow
 from quacc.recipes.vasp.core import _base_job
 
@@ -181,13 +183,19 @@ def bulk_to_slabs_flow(
         List of dictionary results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
 
+    make_slabs_kwargs = make_slabs_kwargs or {}
+    slab_relax_kwargs = slab_relax_kwargs or {}
+    slab_static_kwargs = slab_static_kwargs or {}
+
+    relax_job = partial(slab_relax_job, **slab_relax_kwargs)
+    static_job = partial(slab_static_job, **slab_static_kwargs)
+    make_slabs_fn = partial(make_slabs_from_bulk, **make_slabs_kwargs)
+
     return bulk_to_slabs_subflow(
         atoms,
-        slab_relax_job,
-        slab_static_job if run_static else None,
-        make_slabs_kwargs=make_slabs_kwargs,
-        slab_relax_kwargs=slab_relax_kwargs,
-        slab_static_kwargs=slab_static_kwargs,
+        relax_job,
+        static_job=static_job if run_static else None,
+        make_slabs_fn=make_slabs_fn,
     )
 
 
@@ -230,12 +238,16 @@ def slab_to_ads_flow(
         List of dictionaries of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
 
+    make_ads_kwargs = make_ads_kwargs or {}
+    slab_relax_kwargs = slab_relax_kwargs or {}
+    slab_static_kwargs = slab_static_kwargs or {}
+
     return slab_to_ads_subflow(
         slab,
         adsorbate,
-        slab_relax_job,
-        slab_static_job if run_static else None,
-        make_ads_kwargs=make_ads_kwargs,
-        slab_relax_kwargs=slab_relax_kwargs,
-        slab_static_kwargs=slab_static_kwargs,
+        partial(slab_relax_job, **slab_relax_kwargs),
+        static_job=partial(slab_static_job, **slab_static_kwargs)
+        if run_static
+        else None,
+        make_ads_fn=partial(make_adsorbate_structures, **make_ads_kwargs),
     )

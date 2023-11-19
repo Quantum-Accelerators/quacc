@@ -8,8 +8,8 @@ from ase.vibrations.data import VibrationsData
 from monty.dev import requires
 
 from quacc import SETTINGS, job
-from quacc.builders.thermo import build_ideal_gas
 from quacc.runners.ase import run_calc, run_opt
+from quacc.runners.thermo import run_ideal_gas
 from quacc.schemas.ase import (
     summarize_ideal_gas_thermo,
     summarize_opt_run,
@@ -187,6 +187,7 @@ def freq_job(
             {
                 "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
                 "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+                "hess_method": "autograd",
             }
             ```
 
@@ -199,6 +200,7 @@ def freq_job(
     defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        "hess_method": "autograd",
     }
     flags = merge_dicts(defaults, kwargs)
 
@@ -219,7 +221,7 @@ def freq_job(
         vib, additional_fields={"name": "ASE Vibrations Analysis"}
     )
 
-    igt = build_ideal_gas(final_atoms, vib.get_frequencies(), energy=energy)
+    igt = run_ideal_gas(final_atoms, vib.get_frequencies(), energy=energy)
     summary["thermo"] = summarize_ideal_gas_thermo(
         igt,
         temperature=temperature,

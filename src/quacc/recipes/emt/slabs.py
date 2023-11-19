@@ -1,9 +1,11 @@
 """Slab recipes for EMT."""
 from __future__ import annotations
 
+from functools import partial
 from typing import TYPE_CHECKING
 
 from quacc import flow
+from quacc.atoms.slabs import make_slabs_from_bulk
 from quacc.recipes.common.slabs import bulk_to_slabs_subflow
 from quacc.recipes.emt.core import relax_job, static_job
 
@@ -53,15 +55,13 @@ def bulk_to_slabs_flow(
         [OptSchema][quacc.schemas.ase.summarize_opt_run] for each slab.
     """
 
+    make_slabs_kwargs = make_slabs_kwargs or {}
     slab_relax_kwargs = slab_relax_kwargs or {}
-    if "relax_cell" not in slab_relax_kwargs:
-        slab_relax_kwargs["relax_cell"] = False
+    slab_static_kwargs = slab_static_kwargs or {}
 
     return bulk_to_slabs_subflow(
         atoms,
-        relax_job,
-        static_job if run_static else None,
-        make_slabs_kwargs=make_slabs_kwargs,
-        slab_relax_kwargs=slab_relax_kwargs,
-        slab_static_kwargs=slab_static_kwargs,
+        partial(relax_job, **slab_relax_kwargs),
+        static_job=partial(static_job, **slab_static_kwargs) if run_static else None,
+        make_slabs_fn=partial(make_slabs_from_bulk, **make_slabs_kwargs),
     )

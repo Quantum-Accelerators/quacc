@@ -19,7 +19,7 @@ from quacc.schemas.ase import summarize_run
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.utils.dicts import remove_dict_nones, sort_dict
 from quacc.utils.files import find_recent_logfile
-from quacc.wflow.db import results_to_db
+from quacc.wflow_tools.db import results_to_db
 
 if TYPE_CHECKING:
     from typing import Any, Literal

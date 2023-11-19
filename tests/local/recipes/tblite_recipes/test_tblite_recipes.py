@@ -2,7 +2,7 @@ from copy import deepcopy
 
 import numpy as np
 import pytest
-from ase.build import molecule
+from ase.build import bulk, molecule
 
 from quacc import SETTINGS
 from quacc.recipes.tblite.core import freq_job, relax_job, static_job
@@ -38,6 +38,17 @@ def test_relax_job(tmpdir):
     assert output["results"]["energy"] == pytest.approx(-137.97654191396492)
     assert not np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
+
+
+def test_relax_job_cell(tmpdir):
+    tmpdir.chdir()
+
+    atoms = bulk("Cu")
+    output = relax_job(atoms, method="GFN1-xTB", relax_cell=True)
+    assert output["parameters"]["method"] == "GFN1-xTB"
+    assert output["trajectory_results"][-1]["energy"] == pytest.approx(
+        -130.46825759490588
+    )
 
 
 def test_freq_job(tmpdir):

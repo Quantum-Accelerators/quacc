@@ -7,7 +7,7 @@ from monty.dev import requires
 
 from quacc import flow, job, subflow
 from quacc.atoms.phonons import atoms_to_phonopy, phonopy_atoms_to_ase_atoms
-from quacc.schemas.phonopy import summarize_phonopy
+from quacc.schemas.phonons import summarize_phonopy
 
 try:
     import phonopy
@@ -15,27 +15,26 @@ except ImportError:
     phonopy = None
 
 if TYPE_CHECKING:
-    from typing import Any, Callable
+    from typing import Any
 
     from ase.atoms import Atoms
     from numpy.typing import ArrayLike
-    from phonopy import Phonopy
+    from qucac import Job
 
-    from quacc.schemas._aliases.phonopy import PhononSchema
+    from quacc.schemas._aliases.phonons import PhononSchema
 
 
 @flow
 @requires(phonopy, "Phonopy must be installed. Run `pip install quacc[phonons]`")
 def phonon_flow(
     atoms: Atoms,
-    static_job: Callable,
-    static_job_kwargs: dict[str, Any] | None = None,
+    static_job: Job,
     supercell_matrix: ArrayLike = ((2, 0, 0), (0, 2, 0), (0, 0, 2)),
-    atom_disp: float = 0.015,
+    atom_disp: float = 0.01,
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
-    fields_to_store: dict[str, Any] = None,
+    additional_fields: dict[str, Any] | None = None,
 ) -> PhononSchema:
     """
     Calculate phonon properties.
@@ -48,8 +47,6 @@ def phonon_flow(
         Atoms object with calculator attached.
     static_job
         The static job to calculate the forces.
-    static_job_kwargs
-        The kwargs for `static_job`.
     supercell_matrix
         Supercell matrix to use. Defaults to 2x2x2 supercell.
     atom_disp
@@ -60,16 +57,14 @@ def phonon_flow(
         Min temperature (K).
     t_max
         Max temperature (K).
-    fields_to_store
-        Fields to store in the database.
+    additional_fields
+        Additional fields to store in the database.
 
     Returns
     -------
     PhononSchema
-        Dictionary of results from [quacc.schemas.phonopy.summarize_phonopy][]
+        Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][]
     """
-
-    static_job_kwargs = static_job_kwargs or {}
 
     @subflow
     def _phonopy_forces_subflow(atoms: Atoms) -> list[dict]:
@@ -78,9 +73,7 @@ def phonon_flow(
             phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
         ]
         return [
-            static_job(supercell, **static_job_kwargs)
-            for supercell in supercells
-            if supercell is not None
+            static_job(supercell) for supercell in supercells if supercell is not None
         ]
 
     @job
@@ -99,7 +92,7 @@ def phonon_flow(
             phonon,
             input_atoms=atoms,
             parameters=parameters,
-            additional_fields=fields_to_store,
+            additional_fields=additional_fields,
         )
 
     force_job_results = _phonopy_forces_subflow(atoms)

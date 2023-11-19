@@ -1,4 +1,5 @@
 """Settings for quacc."""
+
 from __future__ import annotations
 
 import multiprocessing
@@ -18,18 +19,20 @@ from quacc.calculators.vasp import presets as vasp_presets
 if TYPE_CHECKING:
     from typing import Any
 
-installed_engine = "local"
-for wflow_engine in [
-    "parsl",
-    "covalent",
-    "prefect",
-    "redun",
-    "jobflow",
-]:
-    if util.find_spec(wflow_engine):
-        installed_engine = wflow_engine
-        break
-
+installed_engine = next(
+    (
+        wflow_engine
+        for wflow_engine in [
+            "parsl",
+            "covalent",
+            "prefect",
+            "redun",
+            "jobflow",
+        ]
+        if util.find_spec(wflow_engine)
+    ),
+    "local",
+)
 _DEFAULT_CONFIG_FILE_PATH = Path("~", ".quacc.yaml").expanduser().resolve()
 
 

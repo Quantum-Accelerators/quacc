@@ -41,7 +41,7 @@ def atoms_to_phonopy(
     """
     structure = AseAtomsAdaptor().get_structure(atoms)
     phonopy_atoms = get_phonopy_structure(structure)
-    phonon = phonopy.Phonopy(phonopy_atoms, supercell_matrix)
+    phonon = phonopy.Phonopy(phonopy_atoms, supercell_matrix=supercell_matrix)
     phonon.generate_displacements(distance=atom_disp)
     return phonon
 

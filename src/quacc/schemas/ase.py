@@ -15,7 +15,7 @@ from quacc.schemas.atoms import atoms_to_metadata
 from quacc.schemas.prep import prep_next_run as prep_next_run_
 from quacc.utils.dicts import recursive_merge_dicts, sort_dict
 from quacc.utils.files import get_uri
-from quacc.wflow.db import results_to_db
+from quacc.wflow_tools.db import results_to_db
 
 if TYPE_CHECKING:
     from typing import Any

@@ -8,11 +8,12 @@ from ase.atoms import Atoms
 from ase.io.jsonio import decode, encode
 
 from quacc.settings import QuaccSettings
-from quacc.wflow.decorators import flow, job, subflow
+from quacc.wflow_tools.decorators import Flow, Job, Subflow, flow, job, subflow
 
 if TYPE_CHECKING:
     from typing import Any
-__all__ = ["flow", "job", "subflow"]
+
+__all__ = ["flow", "job", "subflow", "Flow", "Job", "Subflow"]
 
 
 def atoms_as_dict(s: Atoms) -> dict[str, Any]:
