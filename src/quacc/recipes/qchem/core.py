@@ -9,7 +9,7 @@ from quacc import job
 from quacc.calculators.qchem import QChem
 from quacc.runners.ase import run_calc, run_opt
 from quacc.schemas.ase import summarize_opt_run, summarize_run
-from quacc.utils.dicts import merge_dicts, remove_dict_nones
+from quacc.utils.dicts import merge_dicts
 
 try:
     from sella import Sella
@@ -97,7 +97,7 @@ def static_job(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    defaults = _BASE_SET.copy() | {
+    defaults = _BASE_SET | {
         "job_type": "force",
         "method": method,
         "basis": basis,
@@ -204,7 +204,7 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
 
-    defaults = _BASE_SET.copy() | {
+    defaults = _BASE_SET | {
         "job_type": "force",
         "method": method,
         "basis": basis,
@@ -292,7 +292,7 @@ def freq_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
-    defaults = _BASE_SET.copy() | {
+    defaults = _BASE_SET | {
         "job_type": "freq",
         "method": method,
         "basis": basis,
