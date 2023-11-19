@@ -128,34 +128,6 @@ def relax_job(
     """
     Optimize aka "relax" a molecular structure with an ASE optimizer.
 
-    ??? Note
-
-        Calculator defaults:
-
-        ```python
-        {
-            "rem": {
-                "job_type": "force",
-                "method": method,
-                "basis": basis,
-                "gen_scfman": True,
-                "xc_grid": 3,
-                "thresh": 14,
-                "s2thresh": 16,
-                "scf_algorithm": "diis",
-                "resp_charges": True,
-                "symmetry": False,
-                "sym_ignore": True,
-            }
-        }
-        ```
-
-        Optimizer defaults:
-
-        ```python
-        {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella if has_sella else FIRE}
-        ```
-
     Parameters
     ----------
     atoms
@@ -170,7 +142,15 @@ def relax_job(
     basis
         Basis set. Defaults to def2-SVPD.
     opt_params
-        Dictionary of custom kwargs for [quacc.runners.ase.run_opt][]
+        Dictionary of custom kwargs for the optimization process. Set a value
+        to `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to [quacc.runners.ase.run_opt][].
+
+        !!! Info "Optimizer defaults"
+
+            ```python
+            {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella if has_sella else FIRE}
+            ```
     copy_files
         Files to copy to the runtime directory.
     **kwargs
@@ -181,21 +161,11 @@ def relax_job(
         !!! Info "Calculator defaults"
 
             ```python
-            {
-                "rem": {
+            _BASE_SET | {
                     "job_type": "force",
                     "method": method,
                     "basis": basis,
-                    "gen_scfman": True,
-                    "xc_grid": 3,
-                    "thresh": 14,
-                    "s2thresh": 16,
-                    "scf_algorithm": "diis",
-                    "resp_charges": True,
-                    "symmetry": False,
-                    "sym_ignore": True,
                 }
-            }
             ```
 
     Returns
@@ -204,7 +174,7 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
 
-    defaults = _BASE_SET | {
+    calc_defaults = _BASE_SET | {
         "job_type": "force",
         "method": method,
         "basis": basis,
@@ -220,7 +190,7 @@ def relax_job(
         atoms,
         charge=charge,
         spin_multiplicity=spin_multiplicity,
-        qchem_defaults=defaults,
+        calc_defaults=calc_defaults,
         calc_swaps=kwargs,
         opt_defaults=opt_defaults,
         opt_params=opt_params,
@@ -242,28 +212,6 @@ def freq_job(
     """
     Perform a frequency calculation on a molecular structure.
 
-    ??? Note
-
-        Calculator Defaults:
-
-        ```python
-        {
-            "rem": {
-                "job_type": "freq",
-                "method": method,
-                "basis": basis,
-                "gen_scfman": True,
-                "xc_grid": 3,
-                "thresh": 14,
-                "s2thresh": 16,
-                "scf_algorithm": "diis",
-                "resp_charges": True,
-                "symmetry": False,
-                "sym_ignore": True,
-            }
-        }
-        ```
-
     Parameters
     ----------
     atoms
@@ -285,6 +233,14 @@ def freq_job(
         details.
 
         !!! Info "Calculator defaults"
+
+            ```python
+            _BASE_SET | {
+                    "job_type": "freq",
+                    "method": method,
+                    "basis": basis,
+                }
+            ```
 
     Returns
     -------
@@ -364,7 +320,7 @@ def _base_opt_job(
     atoms: Atoms,
     charge: int = 0,
     spin_multiplicity: int = 1,
-    qchem_defaults: dict[str, Any] | None = None,
+    calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     opt_defaults: dict[str, Any] | None = None,
     opt_params: dict[str, Any] | None = None,
@@ -382,7 +338,7 @@ def _base_opt_job(
         Charge of the system.
     spin_multiplicity
         Multiplicity of the system.
-    qchem_defaults
+    calc_defaults
         Default arguments for the Q-Chem calculator.
     calc_swaps
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
@@ -403,7 +359,7 @@ def _base_opt_job(
     # TODO:
     #   - passing initial Hessian?
 
-    qchem_flags = merge_dicts(qchem_defaults, calc_swaps)
+    qchem_flags = merge_dicts(calc_defaults, calc_swaps)
     opt_flags = merge_dicts(opt_defaults, opt_params)
 
     atoms.calc = QChem(atoms, **qchem_flags)
