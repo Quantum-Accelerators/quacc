@@ -37,7 +37,7 @@ def ts_job(
     basis: str = "def2-svpd",
     opt_params: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
-    **kwargs,
+    **calc_kwargs,
 ) -> OptSchema:
     """
     TS optimize a molecular structure.
@@ -73,7 +73,7 @@ def ts_job(
             ```
     copy_files
         Files to copy to the runtime directory.
-    **kwargs
+    **calc_kwargs
         Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
         details.
@@ -114,7 +114,7 @@ def ts_job(
         charge,
         spin_multiplicity,
         calc_defaults=calc_defaults,
-        calc_swaps=kwargs,
+        calc_swaps=calc_kwargs,
         opt_defaults=opt_defaults,
         opt_params=opt_params,
         additional_fields={"name": "Q-Chem TS"},
@@ -136,7 +136,7 @@ def irc_job(
     basis: str = "def2-svpd",
     opt_params: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
-    **kwargs,
+    **calc_kwargs,
 ) -> OptSchema:
     """
     IRC optimize a molecular structure.
@@ -174,7 +174,7 @@ def irc_job(
             ```
     copy_files
         Files to copy to the runtime directory.
-    **kwargs
+    **calc_kwargs
         Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
         details.
@@ -215,7 +215,7 @@ def irc_job(
         charge,
         spin_multiplicity,
         calc_defaults=calc_defaults,
-        calc_swaps=kwargs,
+        calc_swaps=calc_kwargs,
         opt_defaults=opt_defaults,
         opt_params=opt_params,
         additional_fields={"name": "Q-Chem IRC"},

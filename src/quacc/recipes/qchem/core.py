@@ -47,7 +47,7 @@ def static_job(
     method: str | None = "wb97mv",
     basis: str | None = "def2-tzvpd",
     copy_files: list[str] | None = None,
-    **kwargs,
+    **calc_kwargs,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -67,7 +67,7 @@ def static_job(
         Basis set.
     copy_files
         Files to copy to the runtime directory.
-    **kwargs
+    **calc_kwargs
         Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
         details.
@@ -108,7 +108,7 @@ def static_job(
         charge,
         spin_multiplicity,
         defaults=defaults,
-        calc_swaps=kwargs,
+        calc_swaps=calc_kwargs,
         additional_fields={"name": "Q-Chem Static"},
         copy_files=copy_files,
     )
@@ -123,7 +123,7 @@ def relax_job(
     basis: str = "def2-svpd",
     opt_params: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
-    **kwargs,
+    **calc_kwargs,
 ) -> OptSchema:
     """
     Optimize aka "relax" a molecular structure with an ASE optimizer.
@@ -153,7 +153,7 @@ def relax_job(
             ```
     copy_files
         Files to copy to the runtime directory.
-    **kwargs
+    **calc_kwargs
         Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
         details.
@@ -191,7 +191,7 @@ def relax_job(
         charge=charge,
         spin_multiplicity=spin_multiplicity,
         calc_defaults=calc_defaults,
-        calc_swaps=kwargs,
+        calc_swaps=calc_kwargs,
         opt_defaults=opt_defaults,
         opt_params=opt_params,
         additional_fields={"name": "Q-Chem Optimization"},
@@ -207,7 +207,7 @@ def freq_job(
     method: str = "wb97mv",
     basis: str = "def2-svpd",
     copy_files: list[str] | None = None,
-    **kwargs,
+    **calc_kwargs,
 ) -> RunSchema:
     """
     Perform a frequency calculation on a molecular structure.
@@ -227,7 +227,7 @@ def freq_job(
         Basis set. Defaults to def2-SVPD.
     copy_files
         Files to copy to the runtime directory.
-    **kwargs
+    **calc_kwargs
         Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
         details.
@@ -259,7 +259,7 @@ def freq_job(
         charge=charge,
         spin_multiplicity=spin_multiplicity,
         defaults=defaults,
-        calc_swaps=kwargs,
+        calc_swaps=calc_kwargs,
         copy_files=copy_files,
         additional_fields={"name": "Q-Chem Frequency"},
     )
