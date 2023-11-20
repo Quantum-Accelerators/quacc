@@ -61,7 +61,7 @@ def slab_static_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
 
-    defaults = {
+    calc_defaults = {
         "auto_dipole": True,
         "ismear": -5,
         "laechg": True,
@@ -75,7 +75,7 @@ def slab_static_job(
     return _base_job(
         atoms,
         preset=preset,
-        defaults=defaults,
+        calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "VASP Slab Static"},
         copy_files=copy_files,
@@ -126,7 +126,7 @@ def slab_relax_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
 
-    defaults = {
+    calc_defaults = {
         "auto_dipole": True,
         "ediffg": -0.02,
         "isif": 2,
@@ -140,7 +140,7 @@ def slab_relax_job(
     return _base_job(
         atoms,
         preset=preset,
-        defaults=defaults,
+        calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "VASP Slab Relax"},
         copy_files=copy_files,
