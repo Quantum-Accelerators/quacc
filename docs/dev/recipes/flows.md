@@ -4,7 +4,7 @@
 
 ### Overview
 
-A flow is a Python function decorated by `#!Python @flow` that contains a collection of jobs. Refer to [](../../user/basics/wflow_syntax.md) for more information on the syntax of flows.
+A flow is a Python function decorated by `#!Python @flow` that contains a collection of jobs. Refer to [Workflow Syntax](../../user/basics/wflow_syntax.md) page for more information on the syntax of flows.
 
 The flow itself does not contain computationally intensive tasks. It simply calls other jobs (and/or flows) and defines the workflow logic.
 
