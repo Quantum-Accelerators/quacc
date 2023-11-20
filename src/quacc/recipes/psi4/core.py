@@ -77,7 +77,7 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
-    defaults = {
+    calc_defaults = {
         "mem": "16GB",
         "num_threads": "max",
         "method": method,
@@ -90,7 +90,7 @@ def static_job(
         atoms,
         charge=charge,
         spin_multiplicity=spin_multiplicity,
-        defaults=defaults,
+        calc_defaults=calc_defaults,
         calc_swaps=kwargs,
         additional_fields={"name": "Psi4 Static"},
         copy_files=copy_files,
@@ -101,7 +101,7 @@ def _base_job(
     atoms: Atoms,
     charge: int = 0,
     spin_multiplicity: int = 1,
-    defaults: dict[str, Any] | None = None,
+    calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
@@ -117,7 +117,7 @@ def _base_job(
         Charge of the system.
     spin_multiplicity
         Multiplicity of the system.
-    defaults
+    calc_defaults
         The default calculator parameters.
     calc_swaps
         Custom kwargs for the Psi4 calculator. Set a value to
@@ -133,7 +133,7 @@ def _base_job(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    flags = merge_dicts(defaults, calc_swaps)
+    flags = merge_dicts(calc_defaults, calc_swaps)
 
     atoms.calc = Psi4(**flags)
     final_atoms = run_calc(atoms, copy_files=copy_files)
