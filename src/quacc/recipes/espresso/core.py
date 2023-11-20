@@ -99,9 +99,18 @@ def _base_job(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
+
+    # No reason to type pseudopotentials=pseudopotentials everywhere
+    # if something like this is possible?
+    pseudopotentials = atoms.info.get("pseudopotentials", None)
+    # No reason to add a env variable, pseudo path is already
+    # managed by $ESPRESSO_PSEUDO.
+
     flags = merge_dicts(calc_defaults, calc_swaps)
     profile = EspressoProfile(argv=ESPRESSO_CMD.split())
-    atoms.calc = Espresso(profile = profile, **flags)
+    atoms.calc = Espresso(profile = profile,
+                          pseudopotentials=pseudopotentials,
+                          **flags)
     final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(
