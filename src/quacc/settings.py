@@ -129,6 +129,14 @@ class QuaccSettings(BaseSettings):
     )
 
     # ---------------------------
+    # ESPRESSO Settings
+    # ---------------------------
+    ESPRESSO_CMD: Path = Field(
+        Path("pw.x"),
+        description=("Path to the espresso executable."),
+    )
+
+    # ---------------------------
     # Gaussian Settings
     # ---------------------------
     GAUSSIAN_CMD: Path = Field(
