@@ -31,7 +31,7 @@ def static_job(
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
     copy_files: list[str] | None = None,
-    **kwargs,
+    **calc_kwargs,
 ) -> cclibSchema:
     """
     Carry out a single-point calculation.
@@ -50,7 +50,7 @@ def static_job(
         Basis set
     copy_files
         Files to copy to the runtime directory.
-    **kwargs
+    **calc_kwargs
         Custom kwargs for the Gaussian calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.gaussian.Gaussian` calculator.
@@ -83,7 +83,7 @@ def static_job(
         [quacc.schemas.cclib.cclib_summarize_run][]
     """
 
-    defaults = {
+    calc_defaults = {
         "mem": "16GB",
         "chk": "Gaussian.chk",
         "nprocshared": multiprocessing.cpu_count(),
@@ -101,8 +101,8 @@ def static_job(
     }
     return _base_job(
         atoms,
-        defaults=defaults,
-        calc_swaps=kwargs,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
         additional_fields={"name": "Gaussian Static"},
         copy_files=copy_files,
     )
@@ -117,7 +117,7 @@ def relax_job(
     basis: str = "def2-tzvp",
     freq: bool = False,
     copy_files: list[str] | None = None,
-    **kwargs,
+    **calc_kwargs,
 ) -> cclibSchema:
     """
     Carry out a geometry optimization.
@@ -138,7 +138,7 @@ def relax_job(
         If a frequency calculation should be carried out.
     copy_files
         Files to copy to the runtime directory.
-    **kwargs
+    **calc_kwargs
         Custom kwargs for the Gaussian calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.gaussian.Gaussian` calculator.
@@ -171,7 +171,7 @@ def relax_job(
         [quacc.schemas.cclib.cclib_summarize_run][]
     """
 
-    defaults = {
+    calc_defaults = {
         "mem": "16GB",
         "chk": "Gaussian.chk",
         "nprocshared": multiprocessing.cpu_count(),
@@ -189,8 +189,8 @@ def relax_job(
     }
     return _base_job(
         atoms,
-        defaults=defaults,
-        calc_swaps=kwargs,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
         additional_fields={"name": "Gaussian Relax"},
         copy_files=copy_files,
     )
@@ -198,7 +198,7 @@ def relax_job(
 
 def _base_job(
     atoms: Atoms,
-    defaults: dict[str, Any] | None = None,
+    calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
@@ -210,7 +210,7 @@ def _base_job(
     ----------
     atoms
         Atoms object
-    defaults
+    calc_defaults
         Default parameters for the calculator.
     calc_swaps
         Dictionary of custom kwargs for the Gaussian calculator. Set a value to
@@ -227,7 +227,7 @@ def _base_job(
         Dictionary of results, as specified in
         [quacc.schemas.cclib.cclib_summarize_run][]
     """
-    flags = merge_dicts(defaults, calc_swaps)
+    flags = merge_dicts(calc_defaults, calc_swaps)
 
     atoms.calc = Gaussian(command=GAUSSIAN_CMD, label=_LABEL, **flags)
     atoms = run_calc(atoms, geom_file=LOG_FILE, copy_files=copy_files)

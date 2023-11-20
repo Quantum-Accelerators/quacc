@@ -1,7 +1,6 @@
 """Utility functions for running ASE calculators with ASE-based methods."""
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -70,11 +69,7 @@ def run_calc(
     atoms, tmpdir, job_results_dir = calc_setup(atoms, copy_files=copy_files)
 
     # Run calculation via get_potential_energy()
-    try:
-        atoms.get_potential_energy()
-    except Exception as err:
-        msg = f"Calculation failed. Read the full traceback above. If needed, the logfiles are at {Path.cwd()}"
-        raise RuntimeError(msg) from err
+    atoms.get_potential_energy()
 
     # Most ASE calculators do not update the atoms object in-place with a call
     # to .get_potential_energy(), which is important if an internal optimizer is
@@ -176,11 +171,7 @@ def run_opt(
 
     # Run calculation
     with traj, optimizer(atoms, **optimizer_kwargs) as dyn:
-        try:
-            dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
-        except Exception as err:
-            msg = f"Calculation failed. Read the full traceback above. If needed, the logfiles are at {Path.cwd()}"
-            raise RuntimeError(msg) from err
+        dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
 
     # Store the trajectory atoms
     dyn.traj_atoms = read(traj_filename, index=":")
@@ -227,11 +218,7 @@ def run_vib(
 
     # Run calculation
     vib = Vibrations(atoms, name=str(tmpdir / "vib"), **vib_kwargs)
-    try:
-        vib.run()
-    except Exception as err:
-        msg = f"Calculation failed. Read the full traceback above. If needed, the logfiles are at {Path.cwd()}"
-        raise RuntimeError(msg) from err
+    vib.run()
 
     # Summarize run
     vib.summary(log=str(tmpdir / "vib_summary.log"))

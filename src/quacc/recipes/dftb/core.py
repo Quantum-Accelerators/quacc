@@ -27,7 +27,7 @@ def static_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
     kpts: tuple | list[tuple] | dict | None = None,
-    **kwargs,
+    **calc_kwargs,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -40,7 +40,7 @@ def static_job(
         Method to use.
     kpts
         k-point grid to use.
-    **kwargs
+    **calc_kwargs
         Custom kwargs for the calculator that would override the
         calculator defaults. Set a value to `None` to remove a pre-existing key
         entirely. For a list of available keys, refer to the
@@ -63,7 +63,7 @@ def static_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
 
-    defaults = {
+    calc_defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
         "Hamiltonian_MaxSccIterations": 200,
         "Hamiltonian_Method": method if "xtb" in method.lower() else None,
@@ -72,8 +72,8 @@ def static_job(
 
     return _base_job(
         atoms,
-        defaults=defaults,
-        calc_swaps=kwargs,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
         additional_fields={"name": "DFTB+ Static"},
     )
 
@@ -84,7 +84,7 @@ def relax_job(
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
     kpts: tuple | list[tuple] | dict | None = None,
     relax_cell: bool = False,
-    **kwargs,
+    **calc_kwargs,
 ) -> RunSchema:
     """
     Carry out a structure relaxation.
@@ -100,7 +100,7 @@ def relax_job(
     relax_cell
         Whether to relax the unit cell shape/volume in addition to the
         positions.
-    **kwargs
+    **calc_kwargs
         Custom kwargs for the calculator that would override the
         calculator defaults. Set a value to `None` to remove a pre-existing key
         entirely. For a list of available keys, refer to the
@@ -126,7 +126,7 @@ def relax_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
 
-    defaults = {
+    calc_defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
         "Hamiltonian_MaxSccIterations": 200,
         "Hamiltonian_Method": method if "xtb" in method.lower() else None,
@@ -139,15 +139,15 @@ def relax_job(
 
     return _base_job(
         atoms,
-        defaults=defaults,
-        calc_swaps=kwargs,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
         additional_fields={"name": "DFTB+ Relax"},
     )
 
 
 def _base_job(
     atoms: Atoms,
-    defaults: dict[str, Any] | None = None,
+    calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
@@ -159,7 +159,7 @@ def _base_job(
     ----------
     atoms
         Atoms object
-    defaults
+    calc_defaults
         The default calculator parameters to use.
     calc_swaps
         Dictionary of custom kwargs for the calculator that would override the
@@ -177,7 +177,7 @@ def _base_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
 
-    flags = merge_dicts(defaults, calc_swaps)
+    flags = merge_dicts(calc_defaults, calc_swaps)
 
     atoms.calc = Dftb(**flags)
     final_atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
