@@ -51,7 +51,7 @@ def mp_prerelax_job(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.presets.vasp`.
+        Preset to use from `quacc.calculators.vasp.presets`.
     bandgap
         Estimate for the bandgap in eV.
     copy_files
@@ -106,7 +106,7 @@ def mp_relax_job(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.presets.vasp`.
+        Preset to use from `quacc.calculators.vasp.presets`.
     bandgap
         Estimate for the bandgap in eV.
     copy_files

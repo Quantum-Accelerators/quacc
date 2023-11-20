@@ -58,7 +58,7 @@ def qmof_relax_job(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.presets.vasp`. Applies for all jobs.
+        Preset to use from `quacc.calculators.vasp.presets`. Applies for all jobs.
     relax_cell
         True if a volume relaxation should be performed. False if only the
         positions should be updated.
@@ -117,7 +117,7 @@ def _prerelax(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.presets.vasp`.
+        Preset to use from `quacc.calculators.vasp.presets`.
     fmax
         Maximum force in eV/A.
     **kwargs
@@ -157,7 +157,7 @@ def _loose_relax_positions(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.presets.vasp`.
+        Preset to use from `quacc.calculators.vasp.presets`.
     **kwargs
         Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely.
@@ -200,7 +200,7 @@ def _loose_relax_cell(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.presets.vasp`.
+        Preset to use from `quacc.calculators.vasp.presets`.
     **kwargs
         Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely.
@@ -242,7 +242,7 @@ def _double_relax(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.presets.vasp`.
+        Preset to use from `quacc.calculators.vasp.presets`.
     relax_cell
         True if a volume relaxation should be performed.
     **kwargs
@@ -300,7 +300,7 @@ def _static(atoms: Atoms, preset: str | None = "QMOFSet", **kwargs) -> VaspSchem
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.presets.vasp`.
+        Preset to use from `quacc.calculators.vasp.presets`.
     **kwargs
         Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely.
