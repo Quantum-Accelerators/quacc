@@ -111,7 +111,7 @@ In the previous examples, we have been running calculations on our local machine
     from quacc.recipes.emt.core import relax_job, static_job
 
 
-    @flow(executor="local")
+    @flow(executor="local")  # (1)!
     def workflow(atoms):
         result1 = relax_job(atoms)
         result2 = static_job(result1["atoms"])
@@ -124,6 +124,8 @@ In the previous examples, we have been running calculations on our local machine
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
     ```
+
+    1. This was merely for demonstration purposes. There is never really a need to use the "local" executor since the "dask" executor runs locally and is faster.
 
     **Setting Executors for Individual Jobs**
 
