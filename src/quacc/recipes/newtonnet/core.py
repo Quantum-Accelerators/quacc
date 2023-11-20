@@ -43,7 +43,7 @@ if TYPE_CHECKING:
 @job
 @requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
 def static_job(
-    atoms: Atoms, copy_files: list[str] | None = None, **kwargs
+    atoms: Atoms, copy_files: list[str] | None = None, **calc_kwargs
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -54,7 +54,7 @@ def static_job(
         Atoms object
     copy_files
         Files to copy to the runtime directory.
-    **kwargs
+    **calc_kwargs
         Custom kwargs for the NewtonNet calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
@@ -78,7 +78,7 @@ def static_job(
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
     }
-    flags = merge_dicts(defaults, kwargs)
+    flags = merge_dicts(defaults, calc_kwargs)
 
     atoms.calc = NewtonNet(**flags)
     final_atoms = run_calc(atoms, copy_files=copy_files)
@@ -96,7 +96,7 @@ def relax_job(
     atoms: Atoms,
     opt_params: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
-    **kwargs,
+    **calc_kwargs,
 ) -> OptSchema:
     """
     Relax a structure.
@@ -117,7 +117,7 @@ def relax_job(
             ```
     copy_files
         Files to copy to the runtime directory.
-    **kwargs
+    **calc_kwargs
         Dictionary of custom kwargs for the NewtonNet calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
@@ -137,13 +137,13 @@ def relax_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_opt_run][]
     """
 
-    defaults = {
+    calc_defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
     }
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella or FIRE}
 
-    flags = merge_dicts(defaults, kwargs)
+    flags = merge_dicts(calc_defaults, calc_kwargs)
     opt_flags = merge_dicts(opt_defaults, opt_params)
 
     atoms.calc = NewtonNet(**flags)
@@ -161,7 +161,7 @@ def freq_job(
     temperature: float = 298.15,
     pressure: float = 1.0,
     copy_files: list[str] | None = None,
-    **kwargs,
+    **calc_kwargs,
 ) -> FreqSchema:
     """
     Perform a frequency calculation using the given atoms object.
@@ -176,7 +176,7 @@ def freq_job(
         The pressure for the thermodynamic analysis.
     copy_files
         Files to copy to the runtime directory.
-    **kwargs
+    **calc_kwargs
         Custom kwargs for the NewtonNet calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
@@ -202,7 +202,7 @@ def freq_job(
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
         "hess_method": "autograd",
     }
-    flags = merge_dicts(defaults, kwargs)
+    flags = merge_dicts(defaults, calc_kwargs)
 
     ml_calculator = NewtonNet(**flags)
     atoms.calc = ml_calculator
