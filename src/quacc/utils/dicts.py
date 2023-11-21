@@ -53,9 +53,9 @@ def merge_dicts(
     return merged
 
 
-def merge_multiple_dicts(*args, remove_nones: bool = True) -> dict[str, Any]:
+def merge_several_dicts(*args, remove_nones: bool = True) -> dict[str, Any]:
     """
-    Recursively merge dictionaries, taking the latter in the list as higher preference.
+    Recursively merge several dictionaries, taking the latter in the list as higher preference.
 
     Parameters
     ----------
