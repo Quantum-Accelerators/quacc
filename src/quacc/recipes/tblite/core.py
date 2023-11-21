@@ -41,7 +41,7 @@ def static_job(
     atoms
         Atoms object
     method
-        GFN1-xTB, GFN2-xTB, and IPEA1-xTB.
+        xTB method to use
     **calc_kwargs
         Custom kwargs for the TBLite calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -80,7 +80,7 @@ def relax_job(
     atoms
         Atoms object
     method
-        GFN0-xTB, GFN1-xTB, GFN2-xTB.
+        xTB method to use
     relax_cell
         Whether to relax the cell.
     opt_params
@@ -129,7 +129,7 @@ def freq_job(
     atoms
         Atoms object
     method
-        GFN0-xTB, GFN1-xTB, GFN2-xTB, GFN-FF.
+        xTB method to use
     energy
         Potential energy in eV. If 0, then the output is just the correction.
     temperature
