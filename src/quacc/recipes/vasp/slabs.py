@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from quacc import flow, job
 from quacc.atoms.slabs import make_adsorbate_structures, make_slabs_from_bulk
 from quacc.recipes.common.slabs import bulk_to_slabs_subflow, slab_to_ads_subflow
-from quacc.recipes.vasp.core import _base_job
+from quacc.recipes.vasp._base import base_job
 
 if TYPE_CHECKING:
     from typing import Any
@@ -57,7 +57,7 @@ def slab_static_job(
         "nedos": 5001,
         "nsw": 0,
     }
-    return _base_job(
+    return base_job(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
@@ -107,7 +107,7 @@ def slab_relax_job(
         "nsw": 200,
         "symprec": 1e-8,
     }
-    return _base_job(
+    return base_job(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,

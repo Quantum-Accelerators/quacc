@@ -7,13 +7,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ase.calculators.emt import EMT
 from ase.optimize import FIRE
 
 from quacc import job
-from quacc.runners.ase import run_calc, run_opt
-from quacc.schemas.ase import summarize_opt_run, summarize_run
-from quacc.utils.dicts import merge_dicts
+from quacc.recipes.emt._base import base_job, base_opt_job
 
 if TYPE_CHECKING:
     from typing import Any
@@ -42,11 +39,13 @@ def static_job(atoms: Atoms, **calc_kwargs) -> RunSchema:
     RunSchema
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
-    atoms.calc = EMT(**calc_kwargs)
-    final_atoms = run_calc(atoms)
+    calc_defaults = {}
 
-    return summarize_run(
-        final_atoms, input_atoms=atoms, additional_fields={"name": "EMT Static"}
+    return base_job(
+        atoms,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        additional_fields={"EMT Static"},
     )
 
 
@@ -81,11 +80,15 @@ def relax_job(
         Dictionary of results, specified in
         [quacc.schemas.ase.summarize_opt_run][]
     """
+    calc_defaults = {}
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
-    opt_flags = merge_dicts(opt_defaults, opt_params)
 
-    atoms.calc = EMT(**calc_kwargs)
-
-    dyn = run_opt(atoms, relax_cell=relax_cell, **opt_flags)
-
-    return summarize_opt_run(dyn, additional_fields={"name": "EMT Relax"})
+    return base_opt_job(
+        atoms,
+        relax_cell=relax_cell,
+        opt_defaults=opt_defaults,
+        opt_swaps=opt_params,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        additional_fields={"name": "EMT Relax"},
+    )

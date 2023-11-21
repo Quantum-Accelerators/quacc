@@ -43,3 +43,24 @@ class VaspSchema(RunSchema, TaskDoc):
 
     bader: BaderSchema
     chargemol: ChargemolSchema
+
+
+class DoubleRelaxSchema(VaspSchema):
+    """Type hint associated with a double relax run"""
+
+    relax1: VaspSchema
+
+
+class MPRelaxFlowSchema(VaspSchema):
+    """Type hint associated with a Materials Project relax run"""
+
+    prerelax: VaspSchema
+
+
+class QMOFRelaxSchema(VaspSchema):
+    """Type hint associated with a QMOF relax run"""
+
+    prerelax_lowacc: VaspSchema | None
+    position_relax_lowacc: VaspSchema
+    volume_relax_lowacc: VaspSchema | None
+    double_relax: VaspSchema
