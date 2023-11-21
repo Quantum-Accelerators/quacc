@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import multiprocessing
-from shutil import which
 from typing import TYPE_CHECKING
 
 from ase.calculators.orca import ORCA, OrcaProfile, OrcaTemplate
@@ -77,11 +76,7 @@ def static_job(
         "normalprint": True,
         "xyzfile": True,
     }
-    default_blocks = (
-        {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
-        if which("mpirun")
-        else {}
-    )
+    default_blocks = {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
 
     return _base_job(
         atoms,
@@ -153,11 +148,7 @@ def relax_job(
         "freq": True if run_freq else None,
         "xyzfile": True,
     }
-    default_blocks = (
-        {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
-        if which("mpirun")
-        else {}
-    )
+    default_blocks = {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
 
     return _base_job(
         atoms,
