@@ -44,33 +44,6 @@ def ts_job(
     """
     TS optimize a molecular structure.
 
-    ??? Note
-
-        Calculator Defaults:
-
-        ```python
-        {
-            "basis_set": basis,
-            "scf_algorithm": scf_algorithm,
-            "method": method,
-            "charge": charge,
-            "spin_multiplicity": spin_multiplicity,
-            "cores": n_cores or multiprocessing.cpu_count(),
-            "qchem_input_params": {
-                "pcm_dielectric": pcm_dielectric,
-                "smd_solvent": smd_solvent,
-                "overwrite_inputs": overwrite_inputs,
-                "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
-            },
-        }
-        ```
-
-        Optimizer Defaults:
-
-        ```python
-        {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella, "optimizer_kwargs": {"use_TRICs": False}}
-        ```
-
     Parameters
     ----------
     atoms
@@ -169,33 +142,6 @@ def irc_job(
 ) -> OptSchema:
     """
     IRC optimize a molecular structure.
-
-    ??? Note
-
-        Calculator Defaults:
-
-        ```python
-        {
-            "basis_set": basis,
-            "scf_algorithm": scf_algorithm,
-            "method": method,
-            "charge": charge,
-            "spin_multiplicity": spin_multiplicity,
-            "cores": n_cores or multiprocessing.cpu_count(),
-            "qchem_input_params": {
-                "pcm_dielectric": pcm_dielectric,
-                "smd_solvent": smd_solvent,
-                "overwrite_inputs": overwrite_inputs,
-                "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
-            },
-        }
-        ```
-
-        Optimizer Defaults:
-
-        ```python
-        {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
-        ```
 
     Parameters
     ----------
@@ -312,24 +258,8 @@ def quasi_irc_job(
         Direction of the IRC. Should be "forward" or "reverse".
     irc_opt_params
         Dictionary of opt_params kwargs for the irc_job.
-
-        ??? Note
-
-             Uses the following defaults:
-
-            ```python
-            {"fmax": 100, "max_steps": 10}
-            ```
     relax_opt_params
         Dictionary of opt_params kwargs for the relax_job.
-
-        ??? Note
-
-            Uses the following defaults:
-
-            ```python
-            {}
-            ```
     copy_files
         Files to copy to the runtime directory.
 
