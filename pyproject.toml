@@ -92,6 +92,7 @@ exclude = '''
   | \.tox
 )/
 '''
+skip-magic-trailing-comma = true
 
 [tool.isort]
 profile = 'black'

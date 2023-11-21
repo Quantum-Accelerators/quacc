@@ -69,33 +69,10 @@ def ts_job(
         Dictionary of custom kwargs for the optimization process. Set a value
         to `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
-
-        !!! Info "Optimizer defaults"
-
-            ```python
-            {
-                "fmax": 0.01,
-                "max_steps": 1000,
-                "optimizer": Sella,
-                "optimizer_kwargs": {"diag_every_n": 0, "order": 1}
-                if use_custom_hessian
-                else {"order": 1},
-            }
-            ```
     **calc_kwargs
         Dictionary of custom kwargs for the NewtonNet calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
-
-        !!! Info "Calculator defaults"
-
-            ```python
-            {
-                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-                "hess_method": "autograd",
-            }
-            ```
 
     Returns
     -------
@@ -174,38 +151,10 @@ def irc_job(
         Dictionary of custom kwargs for the optimization process. Set a value
         to `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
-
-        !!! Info "Optimizer defaults"
-
-            ```python
-            {
-                "fmax": 0.01,
-                "max_steps": 1000,
-                "optimizer": IRC,
-                "optimizer_kwargs": {
-                    "dx": 0.1,
-                    "eta": 1e-4,
-                    "gamma": 0.4,
-                    "keep_going": True,
-                },
-                "run_kwargs": {
-                    "direction": direction,
-                },
-            }
-            ```
     **calc_kwargs
         Custom kwargs for the NewtonNet calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
-
-        !!! Info "Calculator defaults"
-
-            ```python
-            {
-                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-            }
-            ```
 
     Returns
     -------
@@ -223,15 +172,8 @@ def irc_job(
         "fmax": 0.01,
         "max_steps": 1000,
         "optimizer": IRC,
-        "optimizer_kwargs": {
-            "dx": 0.1,
-            "eta": 1e-4,
-            "gamma": 0.4,
-            "keep_going": True,
-        },
-        "run_kwargs": {
-            "direction": direction,
-        },
+        "optimizer_kwargs": {"dx": 0.1, "eta": 1e-4, "gamma": 0.4, "keep_going": True},
+        "run_kwargs": {"direction": direction},
     }
 
     flags = merge_dicts(calc_defaults, calc_kwargs)
@@ -305,10 +247,7 @@ def quasi_irc_job(
 
     # Run IRC
     irc_summary = irc_job.__wrapped__(
-        atoms,
-        direction=direction,
-        run_freq=False,
-        **irc_job_kwargs,
+        atoms, direction=direction, run_freq=False, **irc_job_kwargs
     )
 
     # Run opt

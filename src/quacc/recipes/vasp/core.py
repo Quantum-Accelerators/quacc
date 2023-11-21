@@ -44,20 +44,6 @@ def static_job(
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
 
-        !!! Info "Calculator defaults"
-
-            ```python
-            {
-                "ismear": -5,
-                "laechg": True,
-                "lcharg": True,
-                "lreal": False,
-                "lwave": True,
-                "nedos": 5001,
-                "nsw": 0,
-            }
-            ```
-
     Returns
     -------
     VaspSchema
@@ -109,21 +95,6 @@ def relax_job(
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
-
-        !!! Info "Calculator defaults"
-
-            ```python
-            {
-                "ediffg": -0.02,
-                "isif": 3 if relax_cell else 2,
-                "ibrion": 2,
-                "isym": 0,
-                "lcharg": False,
-                "lwave": False,
-                "nsw": 200,
-                "symprec": 1e-8,
-            }
-            ```
 
     Returns
     -------
@@ -194,10 +165,7 @@ def double_relax_job(
 
     # Run first relaxation
     summary1 = relax_job.__wrapped__(
-        atoms,
-        preset=preset,
-        relax_cell=relax_cell,
-        **relax1_kwargs,
+        atoms, preset=preset, relax_cell=relax_cell, **relax1_kwargs
     )
 
     # Run second relaxation

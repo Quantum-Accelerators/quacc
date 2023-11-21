@@ -55,27 +55,6 @@ def static_job(
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.gaussian.Gaussian` calculator.
 
-        !!! Info "Calculator defaults"
-
-            ```python
-            {
-                "mem": "16GB",
-                "chk": "Gaussian.chk",
-                "nprocshared": multiprocessing.cpu_count(),
-                "xc": xc,
-                "basis": basis,
-                "charge": charge,
-                "mult": spin_multiplicity,
-                "sp": "",
-                "scf": ["maxcycle=250", "xqc"],
-                "integral": "ultrafine",
-                "nosymmetry": "",
-                "pop": "CM5",
-                "gfinput": "",
-                "ioplist": ["6/7=3", "2/9=2000"],
-            }
-            ```
-
     Returns
     -------
     cclibSchema
@@ -142,27 +121,6 @@ def relax_job(
         Custom kwargs for the Gaussian calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.gaussian.Gaussian` calculator.
-
-        !!! Info "Calculator defaults"
-
-            ```python
-            {
-                "mem": "16GB",
-                "chk": "Gaussian.chk",
-                "nprocshared": multiprocessing.cpu_count(),
-                "xc": xc,
-                "basis": basis,
-                "charge": charge,
-                "mult": spin_multiplicity,
-                "opt": "",
-                "pop": "CM5",
-                "scf": ["maxcycle=250", "xqc"],
-                "integral": "ultrafine",
-                "nosymmetry": "",
-                "freq": "" if freq else None,
-                "ioplist": ["2/9=2000"],
-            }
-            ```
 
     Returns
     -------

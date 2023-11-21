@@ -47,25 +47,10 @@ def static_job(
         Dictionary of custom `keyword` kwargs for the GULP calculator. Set a
         value to `None` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
-
-        !!! Info "Keyword defaults"
-
-            ```python
-            {
-                "gfnff": True if use_gfnff else None,
-                "gwolf": True if use_gfnff and atoms.pbc.any() else None,
-            }
-            ```
     options
         Dictionary of custom `options` kwargs for the GULP calculator. Set a
         value to `None` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
-
-        !!! Info "Option defaults"
-
-            ```python
-            {"dump every gulp.res": True}
-            ```
     library
         Filename of the potential library file, if required.
 
@@ -116,28 +101,10 @@ def relax_job(
         Dictionary of custom `keyword` kwargs for the GULP calculator. Set a
         value to `None` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
-
-        !!! Info "Keyword defaults"
-
-            ```python
-            {
-                "opti": True,
-                "gfnff": True if use_gfnff else None,
-                "gwolf": True if use_gfnff and atoms.pbc.any() else None,
-                "conp": True if relax_cell and atoms.pbc.any() else None,
-                "conv": None if relax_cell and atoms.pbc.any() else True,
-            }
-            ```
     options
         Dictionary of custom `options` kwargs for the GULP calculator. Set a
         value to `None` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
-
-        !!! Info "Option defaults"
-
-            ```python
-            {"dump every gulp.res": True}
-            ```
     library
         Filename of the potential library file, if required.
 
@@ -230,10 +197,7 @@ def _base_job(
     if SETTINGS.GULP_LIB:
         os.environ["GULP_LIB"] = str(SETTINGS.GULP_LIB)
     atoms.calc = GULP(
-        command=GULP_CMD,
-        keywords=gulp_keywords,
-        options=gulp_options,
-        library=library,
+        command=GULP_CMD, keywords=gulp_keywords, options=gulp_options, library=library
     )
     final_atoms = run_calc(
         atoms, geom_file=GEOM_FILE_PBC if atoms.pbc.any() else GEOM_FILE_NOPBC
@@ -248,7 +212,5 @@ def _base_job(
         raise RuntimeError(msg)
 
     return summarize_run(
-        final_atoms,
-        input_atoms=atoms,
-        additional_fields=additional_fields,
+        final_atoms, input_atoms=atoms, additional_fields=additional_fields
     )

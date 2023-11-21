@@ -131,8 +131,7 @@ def vasp_summarize_run(
 
 
 def _bader_runner(
-    path: str | None = None,
-    structure: Structure = None,
+    path: str | None = None, structure: Structure = None
 ) -> tuple[BaderSchema, Structure | None]:
     """
     Runs a Bader partial charge and spin moment analysis using the VASP output
@@ -236,8 +235,7 @@ def _chargemol_runner(
 
     # Run Chargemol analysis
     chargemol_stats = ChargemolAnalysis(
-        path=path,
-        atomic_densities_path=atomic_densities_path,
+        path=path, atomic_densities_path=atomic_densities_path
     )
 
     # Attach the Chargemol charges and spins to the structure

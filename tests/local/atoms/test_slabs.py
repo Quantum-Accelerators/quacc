@@ -196,10 +196,7 @@ def test_errors():
         )
     with pytest.raises(ValueError):
         make_adsorbate_structures(
-            atoms,
-            h2o,
-            modes=["ontop"],
-            find_ads_sites_kwargs={"positions": ["ontop"]},
+            atoms, h2o, modes=["ontop"], find_ads_sites_kwargs={"positions": ["ontop"]}
         )
     with pytest.raises(ValueError):
         make_adsorbate_structures(atoms, h2o, allowed_surface_indices=[100])

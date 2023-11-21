@@ -46,17 +46,6 @@ def static_job(
         entirely. For a list of available keys, refer to the
         `ase.calculators.dftb.Dftb` calculator.
 
-        !!! Info "Calculator defaults"
-
-            ```python
-            {
-                "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
-                "Hamiltonian_MaxSccIterations": 200,
-                "Hamiltonian_Method": method if "xtb" in method.lower() else None,
-                "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
-            }
-            ```
-
     Returns
     -------
     RunSchema
@@ -105,20 +94,6 @@ def relax_job(
         calculator defaults. Set a value to `None` to remove a pre-existing key
         entirely. For a list of available keys, refer to the
         `ase.calculators.dftb.Dftb` calculator.
-
-        !!! Info "Calculator defaults"
-
-            ```python
-            {
-                "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
-                "Hamiltonian_MaxSccIterations": 200,
-                "Hamiltonian_Method": method if "xtb" in method.lower() else None,
-                "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
-                "Driver_": "GeometryOptimization",
-                "Driver_LatticeOpt": "Yes" if relax_cell else "No",
-                "Driver_AppendGeometries": "Yes", "Driver_MaxSteps": 2000,
-            }
-            ```
 
     Returns
     -------
@@ -193,7 +168,5 @@ def _base_job(
             raise RuntimeError(msg)
 
     return summarize_run(
-        final_atoms,
-        input_atoms=atoms,
-        additional_fields=additional_fields,
+        final_atoms, input_atoms=atoms, additional_fields=additional_fields
     )

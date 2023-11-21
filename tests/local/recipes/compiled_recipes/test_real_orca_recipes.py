@@ -12,10 +12,7 @@ orca_path = which(SETTINGS.ORCA_CMD)
 
 has_orca = bool(orca_path and os.path.getsize(orca_path) > 1024 * 1024)
 
-pytestmark = pytest.mark.skipif(
-    not has_orca,
-    reason="Needs ORCA",
-)
+pytestmark = pytest.mark.skipif(not has_orca, reason="Needs ORCA")
 
 
 def test_static_job(tmpdir):

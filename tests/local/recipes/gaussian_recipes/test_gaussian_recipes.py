@@ -23,12 +23,7 @@ def test_static_job(tmpdir):
     ]  # see ASE issue #660
 
     output = static_job(
-        atoms,
-        -2,
-        3,
-        xc="m06l",
-        basis="def2-svp",
-        integral="superfinegrid",
+        atoms, -2, 3, xc="m06l", basis="def2-svp", integral="superfinegrid"
     )
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2
@@ -62,13 +57,7 @@ def test_relax_job(tmpdir):
     assert "sp" not in output["parameters"]
 
     output = relax_job(
-        atoms,
-        -2,
-        3,
-        xc="m06l",
-        basis="def2-svp",
-        freq=True,
-        integral="superfinegrid",
+        atoms, -2, 3, xc="m06l", basis="def2-svp", freq=True, integral="superfinegrid"
     )
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2

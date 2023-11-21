@@ -40,21 +40,6 @@ def slab_static_job(
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
 
-        !!! Info "Calculator defaults"
-
-            ```python
-            {
-                "auto_dipole": True,
-                "ismear": -5,
-                "laechg": True,
-                "lcharg": True,
-                "lreal": False,
-                "lvhar": True,
-                "lwave": True,
-                "nedos": 5001,
-                "nsw": 0,
-            }
-            ```
     Returns
     -------
     VaspSchema
@@ -105,21 +90,6 @@ def slab_relax_job(
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
 
-        !!! Info "Calculator defaults"
-
-            ```python
-            {
-                "auto_dipole": True,
-                "ediffg": -0.02,
-                "isif": 2,
-                "ibrion": 2,
-                "isym": 0,
-                "lcharg": False,
-                "lwave": False,
-                "nsw": 200,
-                "symprec": 1e-8,
-            }
-            ```
     Returns
     -------
     VaspSchema

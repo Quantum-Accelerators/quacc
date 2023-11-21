@@ -125,9 +125,7 @@ def make_defects_from_bulk(
 
 
 def _get_defect_entry_from_defect(
-    defect: Defect,
-    defect_supercell: Structure,
-    defect_charge: int,
+    defect: Defect, defect_supercell: Structure, defect_charge: int
 ) -> DefectEntry:
     """
     Function to generate DefectEntry object from Defect object.
@@ -156,8 +154,7 @@ def _get_defect_entry_from_defect(
     defect_supercell.remove(dummy_site)
 
     computed_structure_entry = ComputedStructureEntry(
-        structure=defect_supercell,
-        energy=0.0,  # needs to be set, so set to 0.0
+        structure=defect_supercell, energy=0.0  # needs to be set, so set to 0.0
     )
 
     return DefectEntry(

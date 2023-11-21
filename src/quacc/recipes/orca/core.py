@@ -55,34 +55,11 @@ def static_job(
         entries, set the value as True. To remove entries from the defaults, set
         the value as None. For a list of available keys, refer to the
         `ase.calculators.orca.ORCA` calculator.
-
-        !!! Info "Calculator `orcasimpleinput` defaults`"
-
-            ```python
-            {
-                xc: True,
-                basis: True,
-                "sp": True,
-                "slowconv": True,
-                "normalprint": True,
-                "xyzfile": True,
-            }
-            ```
     orcablocks
         Dictionary of `orcablocks` swaps for the calculator. To enable new entries,
         set the value as True. To remove entries from the defaults, set the
         value as None. For a list of available keys, refer to the
         `ase.calculators.orca.ORCA` calculator.
-
-        !!! Info "Calculator `orcablocks` defaults"
-
-            ```python
-            (
-                {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
-                if which("mpirun")
-                else {}
-            )
-            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -153,35 +130,11 @@ def relax_job(
         entries, set the value as True. To remove entries from the defaults, set
         the value as None. For a list of available keys, refer to the
         `ase.calculators.orca.ORCA` calculator.
-
-        !!! Info "Calculator `orcasimpleinput` defaults"
-
-            ```python
-            {
-                xc: True,
-                basis: True,
-                "opt": True,
-                "slowconv": True,
-                "normalprint": True,
-                "freq": True if run_freq else None,
-                "xyzfile": True,
-            }
-            ```
     orcablocks
         Dictionary of `orcablocks` swaps for the calculator. To enable new entries,
         set the value as True. To remove entries from the defaults, set the
         value as None. For a list of available keys, refer to the
         `ase.calculators.orca.ORCA` calculator.
-
-        !!! Info "Calculator `orcablocks` defaults"
-
-            ```python
-            (
-                {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
-                if which("mpirun")
-                else {}
-            )
-            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -277,8 +230,4 @@ def _base_job(
     )
     atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
 
-    return cclib_summarize_run(
-        atoms,
-        LOG_FILE,
-        additional_fields=additional_fields,
-    )
+    return cclib_summarize_run(atoms, LOG_FILE, additional_fields=additional_fields)

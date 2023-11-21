@@ -61,11 +61,6 @@ def mp_prerelax_job(
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
 
-        !!! Info "Calculator defaults"
-
-            ```python
-            {"ediffg": -0.05, "xc": "pbesol", "lwave": True, "lcharg": True} | _get_bandgap_swaps(bandgap)
-            ```
     Returns
     -------
     VaspSchema
@@ -116,11 +111,6 @@ def mp_relax_job(
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
 
-        !!! Info "Calculator defaults"
-
-            ```python
-            {"lcharg": True, "lwave": True} | _get_bandgap_swaps(bandgap)
-            ```
     Returns
     -------
     VaspSchema
@@ -207,8 +197,4 @@ def _get_bandgap_swaps(bandgap: float | None = None) -> dict[str, float]:
         return {"kspacing": 0.22, "ismear": 2, "sigma": 0.2}
     rmin = max(1.5, 25.22 - 2.87 * bandgap)
     kspacing = 2 * np.pi * 1.0265 / (rmin - 1.0183)
-    return {
-        "kspacing": min(kspacing, 0.44),
-        "ismear": -5,
-        "sigma": 0.05,
-    }
+    return {"kspacing": min(kspacing, 0.44), "ismear": -5, "sigma": 0.05}
