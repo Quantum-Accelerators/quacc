@@ -30,9 +30,7 @@ def mock_chargemol_analysis(*args, **kwargs):
             "rcubed_moments": [1.0],
             "rfourth_moments": [1.0],
         },
-        "cm5": {
-            "partial_charges": [1.0],
-        },
+        "cm5": {"partial_charges": [1.0]},
     }
 
 
@@ -40,13 +38,9 @@ def mock_chargemol_analysis(*args, **kwargs):
 def patch_pop_analyses(monkeypatch):
     # Monkeypatch the Bader and Chargemol analyses so they don't run via pytest
     monkeypatch.setattr(
-        "quacc.schemas.vasp.bader_analysis_from_path",
-        mock_bader_analysis,
+        "quacc.schemas.vasp.bader_analysis_from_path", mock_bader_analysis
     )
-    monkeypatch.setattr(
-        "quacc.schemas.vasp.ChargemolAnalysis",
-        mock_chargemol_analysis,
-    )
+    monkeypatch.setattr("quacc.schemas.vasp.ChargemolAnalysis", mock_chargemol_analysis)
 
 
 def prep_files():

@@ -223,15 +223,8 @@ def irc_job(
         "fmax": 0.01,
         "max_steps": 1000,
         "optimizer": IRC,
-        "optimizer_kwargs": {
-            "dx": 0.1,
-            "eta": 1e-4,
-            "gamma": 0.4,
-            "keep_going": True,
-        },
-        "run_kwargs": {
-            "direction": direction,
-        },
+        "optimizer_kwargs": {"dx": 0.1, "eta": 1e-4, "gamma": 0.4, "keep_going": True},
+        "run_kwargs": {"direction": direction},
     }
 
     flags = merge_dicts(calc_defaults, calc_kwargs)
@@ -305,10 +298,7 @@ def quasi_irc_job(
 
     # Run IRC
     irc_summary = irc_job.__wrapped__(
-        atoms,
-        direction=direction,
-        run_freq=False,
-        **irc_job_kwargs,
+        atoms, direction=direction, run_freq=False, **irc_job_kwargs
     )
 
     # Run opt

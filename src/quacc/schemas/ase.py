@@ -452,9 +452,7 @@ def summarize_vib_and_thermo(
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
     vib_task_doc = summarize_vib_run(
-        vib,
-        charge_and_multiplicity=charge_and_multiplicity,
-        store=False,
+        vib, charge_and_multiplicity=charge_and_multiplicity, store=False
     )
     thermo_task_doc = summarize_ideal_gas_thermo(
         igt,

@@ -38,14 +38,7 @@ def test_static_job(tmpdir):
     assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["sigma"] == 0.01
 
-    output = static_job(
-        atoms,
-        ivdw=13,
-        lasph=False,
-        prec=None,
-        lwave=None,
-        efermi=None,
-    )
+    output = static_job(atoms, ivdw=13, lasph=False, prec=None, lwave=None, efermi=None)
     assert output["parameters"]["ivdw"] == 13
     assert output["parameters"]["lasph"] is False
     assert "prec" not in output["parameters"]
@@ -59,14 +52,7 @@ def test_static_job_incar_copilot_aggressive(tmpdir):
     atoms = bulk("Cu") * (2, 2, 2)
 
     SETTINGS.VASP_INCAR_COPILOT = "aggressive"
-    output = static_job(
-        atoms,
-        ivdw=13,
-        lasph=False,
-        prec=None,
-        lwave=None,
-        efermi=None,
-    )
+    output = static_job(atoms, ivdw=13, lasph=False, prec=None, lwave=None, efermi=None)
     assert output["parameters"]["ivdw"] == 13
     assert output["parameters"]["lasph"] is False
     assert "prec" not in output["parameters"]
@@ -232,9 +218,7 @@ def test_slab_dynamic_jobs(tmpdir):
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
     outputs = bulk_to_slabs_flow(
-        atoms,
-        slab_relax_kwargs={"preset": "SlabSet", "nelmin": 6},
-        run_static=False,
+        atoms, slab_relax_kwargs={"preset": "SlabSet", "nelmin": 6}, run_static=False
     )
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
@@ -246,8 +230,7 @@ def test_slab_dynamic_jobs(tmpdir):
     assert [output["parameters"]["encut"] == 450 for output in outputs]
 
     outputs = bulk_to_slabs_flow(
-        atoms,
-        slab_static_kwargs={"preset": "SlabSet", "nelmin": 6},
+        atoms, slab_static_kwargs={"preset": "SlabSet", "nelmin": 6}
     )
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
@@ -284,9 +267,7 @@ def test_slab_dynamic_jobs(tmpdir):
     assert [output["parameters"]["encut"] == 450 for output in outputs]
 
     outputs = slab_to_ads_flow(
-        atoms,
-        adsorbate,
-        slab_static_kwargs={"preset": "SlabSet", "nelmin": 6},
+        atoms, adsorbate, slab_static_kwargs={"preset": "SlabSet", "nelmin": 6}
     )
 
     assert [output["nsites"] == 82 for output in outputs]

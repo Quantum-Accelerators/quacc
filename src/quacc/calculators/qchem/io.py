@@ -93,12 +93,7 @@ def write_qchem(
     atoms.spin_multiplicity = spin_multiplicity
     mol = AseAtomsAdaptor.get_molecule(atoms)
     QChemDictSet(
-        mol,
-        job_type,
-        basis_set,
-        scf_algorithm,
-        qchem_version=6,
-        **qchem_input_params,
+        mol, job_type, basis_set, scf_algorithm, qchem_version=6, **qchem_input_params
     ).write(directory / "mol.qin")
 
 
