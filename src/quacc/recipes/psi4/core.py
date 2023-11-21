@@ -57,20 +57,6 @@ def static_job(
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.psi4.Psi4` calculator.
 
-        !!! Info "Calculator defaults"
-
-            ```python
-            {
-                "mem": "16GB",
-                "num_threads": "max",
-                "method": method,
-                "basis": basis,
-                "charge": charge,
-                "multiplicity": spin_multiplicity,
-                "reference": "uks" if spin_multiplicity > 1 else "rks",
-            }
-            ```
-
     Returns
     -------
     RunSchema
