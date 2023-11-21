@@ -25,11 +25,15 @@ def os_atoms():
 def test_qchem_write_input_basic(tmpdir, test_atoms):
     tmpdir.chdir()
     calc = QChem(
-        test_atoms, rem={"method": "wb97xv", "basis": "def2-svp", "scf_guess": None}
+        test_atoms, rem={"job_type": "sp", "method": "wb97xv", "basis": "def2-svp"}
     )
     assert calc.parameters["charge"] == 0
     assert calc.parameters["spin_multiplicity"] == 1
-    assert calc.parameters["rem"] == {"method": "wb97xv", "basis": "def2-svp"}
+    assert calc.parameters["rem"] == {
+        "job_type": "sp",
+        "method": "wb97xv",
+        "basis": "def2-svp",
+    }
     calc.write_input(test_atoms)
     qcinp = QCInput.from_file("mol.qin")
     ref_qcinp = QCInput.from_file(str(FILE_DIR / "examples" / "basic" / "mol.qin"))
