@@ -47,25 +47,10 @@ def static_job(
         Dictionary of custom `keyword` kwargs for the GULP calculator. Set a
         value to `None` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
-
-        !!! Info "Keyword defaults"
-
-            ```python
-            {
-                "gfnff": True if use_gfnff else None,
-                "gwolf": True if use_gfnff and atoms.pbc.any() else None,
-            }
-            ```
     options
         Dictionary of custom `options` kwargs for the GULP calculator. Set a
         value to `None` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
-
-        !!! Info "Option defaults"
-
-            ```python
-            {"dump every gulp.res": True}
-            ```
     library
         Filename of the potential library file, if required.
 
@@ -116,28 +101,10 @@ def relax_job(
         Dictionary of custom `keyword` kwargs for the GULP calculator. Set a
         value to `None` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
-
-        !!! Info "Keyword defaults"
-
-            ```python
-            {
-                "opti": True,
-                "gfnff": True if use_gfnff else None,
-                "gwolf": True if use_gfnff and atoms.pbc.any() else None,
-                "conp": True if relax_cell and atoms.pbc.any() else None,
-                "conv": None if relax_cell and atoms.pbc.any() else True,
-            }
-            ```
     options
         Dictionary of custom `options` kwargs for the GULP calculator. Set a
         value to `None` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
-
-        !!! Info "Option defaults"
-
-            ```python
-            {"dump every gulp.res": True}
-            ```
     library
         Filename of the potential library file, if required.
 

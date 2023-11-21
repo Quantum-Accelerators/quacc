@@ -46,12 +46,6 @@ def static_job(
         Custom kwargs for the TBLite calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `tblite.ase.TBLite` calculator.
-
-        !!! Info "Calculator defaults"
-
-            ```python
-            {"method": method}
-            ```
     Returns
     -------
     RunSchema
@@ -94,22 +88,11 @@ def relax_job(
         Dictionary of custom kwargs for the optimization process. Set a value
         to `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
-
-        !!! Info "Optimizer defaults"
-
-            ```python
-            {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
-            ```
     **calc_kwargs
         Custom kwargs for the tblite calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `tblite.ase.TBLite` calculator.
 
-        !!! Info "Calculator defaults"
-
-            ```python
-            {"method": method}
-            ```
     Returns
     -------
     OptSchema
