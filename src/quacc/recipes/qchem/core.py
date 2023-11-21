@@ -79,7 +79,7 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
     defaults = merge_dicts(
-        _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
+        _BASE_SET, {"rem": {"jobtype": "sp", "method": method, "basis": basis}}
     )
 
     return _base_job(
@@ -138,7 +138,7 @@ def relax_job(
     """
 
     calc_defaults = merge_dicts(
-        _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
+        _BASE_SET, {"rem": {"jobtype": "force", "method": method, "basis": basis}}
     )
 
     opt_defaults = {
@@ -200,7 +200,7 @@ def freq_job(
     """
 
     defaults = merge_dicts(
-        _BASE_SET, {"rem": {"job_type": "freq", "method": method, "basis": basis}}
+        _BASE_SET, {"rem": {"jobtype": "freq", "method": method, "basis": basis}}
     )
 
     return _base_job(
