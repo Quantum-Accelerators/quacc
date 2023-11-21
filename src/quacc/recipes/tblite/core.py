@@ -41,11 +41,12 @@ def static_job(
     atoms
         Atoms object
     method
-        GFN1-xTB, GFN2-xTB, and IPEA1-xTB.
+        xTB method to use
     **calc_kwargs
         Custom kwargs for the TBLite calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `tblite.ase.TBLite` calculator.
+        keys, refer to the `tblite.ase.TBLite` calculator
+
     Returns
     -------
     RunSchema
@@ -79,7 +80,7 @@ def relax_job(
     atoms
         Atoms object
     method
-        GFN0-xTB, GFN1-xTB, GFN2-xTB.
+        xTB method to use
     relax_cell
         Whether to relax the cell.
     opt_params
@@ -123,18 +124,12 @@ def freq_job(
     """
     Run a frequency job and calculate thermochemistry.
 
-    !!! Info "Calculator defaults"
-
-        ```python
-        {"method": method}
-        ```
-
     Parameters
     ----------
     atoms
         Atoms object
     method
-        GFN0-xTB, GFN1-xTB, GFN2-xTB, GFN-FF.
+        xTB method to use
     energy
         Potential energy in eV. If 0, then the output is just the correction.
     temperature
@@ -142,7 +137,7 @@ def freq_job(
     pressure
         Pressure in bar.
     vib_kwargs
-        Dictionary of kwargs for the `ase.vibrations.Vibrations` class.
+        Dictionary of kwargs for [quacc.runners.ase.run_vib][].
     **calc_kwargs
         Custom kwargs for the tblite calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
