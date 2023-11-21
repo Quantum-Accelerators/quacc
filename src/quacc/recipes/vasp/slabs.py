@@ -32,7 +32,7 @@ def slab_static_job(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.presets.vasp`.
+        Preset to use from `quacc.calculators.vasp.presets`.
     copy_files
         Files to copy to the runtime directory.
     **calc_kwargs
@@ -97,7 +97,7 @@ def slab_relax_job(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.presets.vasp`.
+        Preset to use from `quacc.calculators.vasp.presets`.
     copy_files
         Files to copy to the runtime directory.
     **calc_kwargs

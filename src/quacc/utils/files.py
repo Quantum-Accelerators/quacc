@@ -182,7 +182,7 @@ def get_uri(dir_name: str | Path) -> str:
 
     Parameters
     ----------
-    dir_name : str
+    dir_name
         A directory name.
 
     Returns
