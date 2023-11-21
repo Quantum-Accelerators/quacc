@@ -94,11 +94,9 @@ def ts_job(
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
 
-    calc_defaults = _BASE_SET | {
-        "job_type": "force",
-        "method": method,
-        "basis_set": basis,
-    }
+    calc_defaults = merge_dicts(
+        _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis_set": basis}}
+    )
     opt_defaults = {
         "fmax": 0.01,
         "max_steps": 1000,
@@ -195,11 +193,9 @@ def irc_job(
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
 
-    calc_defaults = _BASE_SET | {
-        "job_type": "force",
-        "method": method,
-        "basis_set": basis,
-    }
+    calc_defaults = merge_dicts(
+        _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis_set": basis}}
+    )
     opt_defaults = {
         "fmax": 0.01,
         "max_steps": 1000,

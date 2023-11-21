@@ -270,7 +270,7 @@ class QChem(FileIOCalculator):
         """
         FileIOCalculator.write_input(self, atoms, properties, system_changes)
 
-        qc_input = self._make_qc_input(self)
+        qc_input = self._make_qc_input()
 
         write_qchem(
             qc_input,

@@ -218,7 +218,7 @@ def test_relax_job_v1(monkeypatch, tmpdir, test_atoms):
     output = relax_job(
         test_atoms,
         charge=charge,
-        charge=spin_multiplicity,
+        spin_multiplicity=spin_multiplicity,
         basis="def2-tzvpd",
         opt_params={"max_steps": 1},
     )

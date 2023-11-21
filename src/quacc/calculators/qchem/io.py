@@ -77,11 +77,11 @@ def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float]]:
     directory = Path(directory)
 
     qc_input = QCInput.from_file(directory / "mol.qin")
-    qc_output = QCOutput(directory / "mol.qout")
+    qc_output = QCOutput(directory / "mol.qout").data
 
     results: Results = {
         "energy": qc_output["final_energy"] * units.Hartree,
-        "qc_output": qc_output.data,
+        "qc_output": qc_output,
         "qc_input": qc_input.as_dict(),
         "custodian": _parse_custodian(directory),
     }

@@ -75,21 +75,11 @@ def static_job(
         !!! Info "Calculator defaults"
 
             ```python
-            {
-                "rem": {
+            _BASE_SET | {
                     "job_type": "force",
                     "method": method,
                     "basis": basis,
-                    "gen_scfman": True,
-                    "xc_grid": 3,
-                    "thresh": 14,
-                    "s2thresh": 16,
-                    "scf_algorithm": "diis",
-                    "resp_charges": True,
-                    "symmetry": False,
-                    "sym_ignore": True,
                 }
-            }
             ```
 
     Returns
@@ -97,11 +87,9 @@ def static_job(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    defaults = _BASE_SET | {
-        "job_type": "force",
-        "method": method,
-        "basis": basis,
-    }
+    defaults = merge_dicts(
+        _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
+    )
 
     return _base_job(
         atoms,
@@ -174,11 +162,9 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
 
-    calc_defaults = _BASE_SET | {
-        "job_type": "force",
-        "method": method,
-        "basis": basis,
-    }
+    calc_defaults = merge_dicts(
+        _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
+    )
 
     opt_defaults = {
         "fmax": 0.01,
@@ -248,11 +234,9 @@ def freq_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
-    defaults = _BASE_SET | {
-        "job_type": "freq",
-        "method": method,
-        "basis": basis,
-    }
+    defaults = merge_dicts(
+        _BASE_SET, {"rem": {"job_type": "freq", "method": method, "basis": basis}}
+    )
 
     return _base_job(
         atoms,
