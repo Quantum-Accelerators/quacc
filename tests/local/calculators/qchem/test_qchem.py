@@ -49,19 +49,18 @@ def test_qchem_write_input_intermediate(tmpdir, test_atoms):
     params = {"dft_rung": 3, "pcm_dielectric": "3.0"}
     calc = QChem(
         test_atoms,
-        basis_set="def2-svpd",
-        cores=40,
+        rem={"basis": "def2-svpd"},
         charge=-1,
         spin_multiplicity=2,
         qchem_input_params=params,
     )
-    assert calc.parameters["cores"] == 40
     assert calc.parameters["charge"] == -1
     assert calc.parameters["spin_multiplicity"] == 2
-    assert calc.parameters["dft_rung"] == 3
-    assert calc.parameters["basis_set"] == "def2-svpd"
-    assert calc.parameters["pcm_dielectric"] == "3.0"
-    assert calc.parameters["scf_algorithm"] == "diis"
+    assert calc.parameters["qchem_input_params"] == {
+        "dft_rung": 3,
+        "pcm_dielectric": "3.0",
+    }
+    assert calc.parameters["rem"] == {"basis": "def2-svpd"}
     calc.write_input(test_atoms)
     qcinp = QCInput.from_file("mol.qin")
     ref_qcinp = QCInput.from_file(
@@ -78,22 +77,18 @@ def test_qchem_write_input_advanced(tmpdir, test_atoms):
     }
     calc = QChem(
         test_atoms,
-        basis_set="def2-svpd",
-        scf_algorithm="gdm",
-        cores=40,
+        rem={"basis": "def2-svpd", "scf_algorithm": "gdm"},
         charge=-1,
         spin_multiplicity=2,
         qchem_input_params=params,
     )
-    assert calc.parameters["cores"] == 40
     assert calc.parameters["charge"] == -1
     assert calc.parameters["spin_multiplicity"] == 2
-    assert calc.parameters["scf_algorithm"] == "gdm"
-    assert calc.parameters["basis_set"] == "def2-svpd"
-    assert calc.parameters["smd_solvent"] == "water"
-    assert calc.parameters["overwrite_rem_method"] == "b97mv"
-    assert calc.parameters["overwrite_rem_mem_total"] == "170000"
-    assert "method" not in calc.parameters
+    assert calc.parameters["rem"] == {"basis": "def2-svpd", "scf_algorithm": "gdm"}
+    assert calc.parameters["qchem_dict_set_params"] == {
+        "smd_solvent": "water",
+        "overwrite_inputs": {"rem": {"method": "b97mv", "mem_total": "170000"}},
+    }
     calc.write_input(test_atoms)
     qcinp = QCInput.from_file("mol.qin")
     ref_qcinp = QCInput.from_file(str(FILE_DIR / "examples" / "advanced" / "mol.qin"))
@@ -102,8 +97,7 @@ def test_qchem_write_input_advanced(tmpdir, test_atoms):
 
 def test_qchem_write_input_open_shell_and_different_charges(tmpdir, os_atoms):
     tmpdir.chdir()
-    calc = QChem(os_atoms, spin_multiplicity=2, cores=40)
-    assert calc.parameters["cores"] == 40
+    calc = QChem(os_atoms, spin_multiplicity=2)
     assert calc.parameters["charge"] == 0
     assert calc.parameters["spin_multiplicity"] == 2
     calc.write_input(os_atoms)
@@ -111,8 +105,7 @@ def test_qchem_write_input_open_shell_and_different_charges(tmpdir, os_atoms):
     ref_qcinp = QCInput.from_file(str(FILE_DIR / "examples" / "OSDC1.qin"))
     assert qcinp.as_dict() == ref_qcinp.as_dict()
 
-    calc = QChem(os_atoms, cores=40, charge=0, spin_multiplicity=4)
-    assert calc.parameters["cores"] == 40
+    calc = QChem(os_atoms, charge=0, spin_multiplicity=4)
     assert calc.parameters["charge"] == 0
     assert calc.parameters["spin_multiplicity"] == 4
     calc.write_input(os_atoms)
@@ -120,8 +113,7 @@ def test_qchem_write_input_open_shell_and_different_charges(tmpdir, os_atoms):
     ref_qcinp = QCInput.from_file(str(FILE_DIR / "examples" / "OSDC2.qin"))
     assert qcinp.as_dict() == ref_qcinp.as_dict()
 
-    calc = QChem(os_atoms, cores=40, charge=1)
-    assert calc.parameters["cores"] == 40
+    calc = QChem(os_atoms, charge=1)
     assert calc.parameters["charge"] == 1
     assert calc.parameters["spin_multiplicity"] == 1
     calc.write_input(os_atoms)
@@ -129,8 +121,7 @@ def test_qchem_write_input_open_shell_and_different_charges(tmpdir, os_atoms):
     ref_qcinp = QCInput.from_file(str(FILE_DIR / "examples" / "OSDC3.qin"))
     assert qcinp.as_dict() == ref_qcinp.as_dict()
 
-    calc = QChem(os_atoms, cores=40, charge=1, spin_multiplicity=3)
-    assert calc.parameters["cores"] == 40
+    calc = QChem(os_atoms, charge=1, spin_multiplicity=3)
     assert calc.parameters["charge"] == 1
     assert calc.parameters["spin_multiplicity"] == 3
     calc.write_input(os_atoms)
@@ -144,20 +135,18 @@ def test_qchem_write_input_freq(tmpdir, test_atoms):
     params = {"dft_rung": 3, "pcm_dielectric": "3.0"}
     calc = QChem(
         test_atoms,
-        job_type="freq",
-        basis_set="def2-svpd",
-        cores=40,
+        rem={"job_type": "freq", "basis": "def2-svpd"},
         charge=-1,
         spin_multiplicity=2,
-        qchem_input_params=params,
+        qchem_dict_set_params=params,
     )
-    assert calc.parameters["cores"] == 40
     assert calc.parameters["charge"] == -1
     assert calc.parameters["spin_multiplicity"] == 2
-    assert calc.parameters["dft_rung"] == 3
-    assert calc.parameters["basis_set"] == "def2-svpd"
-    assert calc.parameters["pcm_dielectric"] == "3.0"
-    assert calc.parameters["scf_algorithm"] == "diis"
+    assert calc.parameters["rem"] == {"job_type": "freq", "basis": "def2-svpd"}
+    assert calc.parameters["qchem_dict_set_params"] == {
+        "dft_rung": 3,
+        "pcm_dielectric": "3.0",
+    }
     calc.write_input(test_atoms)
     qcinp = QCInput.from_file("mol.qin")
     ref_qcinp = QCInput.from_file(str(FILE_DIR / "examples" / "freq" / "mol.qin"))
@@ -165,7 +154,7 @@ def test_qchem_write_input_freq(tmpdir, test_atoms):
 
 
 def test_qchem_read_results_basic_and_write_53(tmpdir, test_atoms):
-    calc = QChem(test_atoms, cores=40)
+    calc = QChem(test_atoms)
     os.chdir(FILE_DIR / "examples" / "basic")
     calc.read_results()
     tmpdir.chdir()
@@ -189,7 +178,7 @@ def test_qchem_read_results_basic_and_write_53(tmpdir, test_atoms):
 
 def test_qchem_read_results_intermediate(tmpdir, test_atoms):
     tmpdir.chdir()
-    calc = QChem(test_atoms, cores=40)
+    calc = QChem(test_atoms)
     os.chdir(FILE_DIR / "examples" / "intermediate")
     calc.read_results()
     tmpdir.chdir()
@@ -201,7 +190,7 @@ def test_qchem_read_results_intermediate(tmpdir, test_atoms):
 
 def test_qchem_read_results_advanced(tmpdir, test_atoms):
     tmpdir.chdir()
-    calc = QChem(test_atoms, cores=40)
+    calc = QChem(test_atoms)
     os.chdir(FILE_DIR / "examples" / "advanced")
     calc.read_results()
     tmpdir.chdir()
@@ -213,7 +202,7 @@ def test_qchem_read_results_advanced(tmpdir, test_atoms):
 
 
 def test_qchem_read_results_freq(tmpdir, test_atoms):
-    calc = QChem(test_atoms, job_type="freq", cores=40)
+    calc = QChem(test_atoms, rem={"job_type": "freq"})
     os.chdir(FILE_DIR / "examples" / "freq")
     calc.read_results()
     tmpdir.chdir()

@@ -378,10 +378,7 @@ class QChem(FileIOCalculator):
                 self.qchem_dict_set_params["qchem_version"] = 6
 
             # Make QChemDictSet
-            qc_dict_set = QChemDictSet(
-                self._molecule,
-                **self.qchem_dict_set_params,
-            )
+            qc_dict_set = QChemDictSet(self._molecule, **self.qchem_dict_set_params)
 
             # Merge the parameters from both QCInput objects, taking
             # QCDictSet's parameters as priority
