@@ -45,7 +45,8 @@ def static_job(
     **calc_kwargs
         Custom kwargs for the TBLite calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `tblite.ase.TBLite` calculator.
+        keys, refer to the `tblite.ase.TBLite` calculator
+
     Returns
     -------
     RunSchema
