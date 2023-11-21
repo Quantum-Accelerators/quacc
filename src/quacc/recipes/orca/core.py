@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import multiprocessing
-from shutil import which
 from typing import TYPE_CHECKING
 
 from ase.calculators.orca import ORCA, OrcaProfile, OrcaTemplate
