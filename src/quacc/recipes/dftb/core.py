@@ -193,7 +193,5 @@ def _base_job(
             raise RuntimeError(msg)
 
     return summarize_run(
-        final_atoms,
-        input_atoms=atoms,
-        additional_fields=additional_fields,
+        final_atoms, input_atoms=atoms, additional_fields=additional_fields
     )

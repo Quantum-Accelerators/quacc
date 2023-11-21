@@ -25,10 +25,7 @@ if TYPE_CHECKING:
 
 
 @job
-@requires(
-    has_sella,
-    "Sella must be installed. Refer to the quacc documentation.",
-)
+@requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def ts_job(
     atoms: Atoms,
     charge: int,
@@ -111,10 +108,7 @@ def ts_job(
 
 
 @job
-@requires(
-    has_sella,
-    "Sella must be installed. Refer to the quacc documentation.",
-)
+@requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def irc_job(
     atoms: Atoms,
     charge: int,
@@ -188,10 +182,7 @@ def irc_job(
 
 
 @job
-@requires(
-    has_sella,
-    "Sella must be installed. Refer to the quacc documentation.",
-)
+@requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def quasi_irc_job(
     atoms: Atoms,
     charge: int,

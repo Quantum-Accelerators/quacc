@@ -624,19 +624,11 @@ def test_setups():
     assert calc.parameters["setups"]["Cu"] == "_pv"
 
     atoms = bulk("Cu")
-    calc = Vasp(
-        atoms,
-        setups=FILE_DIR / "test_setups.yaml",
-        preset="BulkSet",
-    )
+    calc = Vasp(atoms, setups=FILE_DIR / "test_setups.yaml", preset="BulkSet")
     assert calc.parameters["setups"]["Cu"] == "_sv"
 
     atoms = bulk("Cu")
-    calc = Vasp(
-        atoms,
-        setups="setups_pbe54.yaml",
-        preset="BulkSet",
-    )
+    calc = Vasp(atoms, setups="setups_pbe54.yaml", preset="BulkSet")
     assert calc.parameters["setups"]["Cu"] == ""
 
     atoms = bulk("Cu")
@@ -667,12 +659,7 @@ def test_kpoint_schemes():
     assert calc.input_params["gamma"] is True
 
     atoms = bulk("Cu")
-    calc = Vasp(
-        atoms,
-        preset="BulkSet",
-        auto_kpts={"kppa": 1000},
-        gamma=False,
-    )
+    calc = Vasp(atoms, preset="BulkSet", auto_kpts={"kppa": 1000}, gamma=False)
     assert calc.kpts == [10, 10, 10]
     assert calc.input_params["gamma"] is False
 

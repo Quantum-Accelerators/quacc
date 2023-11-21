@@ -230,10 +230,7 @@ def _base_job(
     if SETTINGS.GULP_LIB:
         os.environ["GULP_LIB"] = str(SETTINGS.GULP_LIB)
     atoms.calc = GULP(
-        command=GULP_CMD,
-        keywords=gulp_keywords,
-        options=gulp_options,
-        library=library,
+        command=GULP_CMD, keywords=gulp_keywords, options=gulp_options, library=library
     )
     final_atoms = run_calc(
         atoms, geom_file=GEOM_FILE_PBC if atoms.pbc.any() else GEOM_FILE_NOPBC
@@ -248,7 +245,5 @@ def _base_job(
         raise RuntimeError(msg)
 
     return summarize_run(
-        final_atoms,
-        input_atoms=atoms,
-        additional_fields=additional_fields,
+        final_atoms, input_atoms=atoms, additional_fields=additional_fields
     )

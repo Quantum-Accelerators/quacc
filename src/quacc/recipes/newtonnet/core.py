@@ -84,9 +84,7 @@ def static_job(
     final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(
-        final_atoms,
-        input_atoms=atoms,
-        additional_fields={"name": "NewtonNet Static"},
+        final_atoms, input_atoms=atoms, additional_fields={"name": "NewtonNet Static"}
     )
 
 
@@ -209,9 +207,7 @@ def freq_job(
     final_atoms = run_calc(atoms, copy_files=copy_files)
 
     summary = summarize_run(
-        final_atoms,
-        input_atoms=atoms,
-        additional_fields={"name": "NewtonNet Hessian"},
+        final_atoms, input_atoms=atoms, additional_fields={"name": "NewtonNet Hessian"}
     )
     energy = summary["results"]["energy"]
     hessian = summary["results"]["hessian"]

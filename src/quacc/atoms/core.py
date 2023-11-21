@@ -96,9 +96,7 @@ def copy_atoms(atoms: Atoms) -> Atoms:
 
 
 def check_charge_and_spin(
-    atoms: Atoms,
-    charge: int | None = None,
-    spin_multiplicity: int | None = None,
+    atoms: Atoms, charge: int | None = None, spin_multiplicity: int | None = None
 ) -> tuple[int, int]:
     """
     Check the validity of a given `charge` and `multiplicity`. If they are `None`, then

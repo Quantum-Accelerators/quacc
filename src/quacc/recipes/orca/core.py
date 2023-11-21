@@ -277,8 +277,4 @@ def _base_job(
     )
     atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
 
-    return cclib_summarize_run(
-        atoms,
-        LOG_FILE,
-        additional_fields=additional_fields,
-    )
+    return cclib_summarize_run(atoms, LOG_FILE, additional_fields=additional_fields)

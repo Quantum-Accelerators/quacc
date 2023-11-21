@@ -207,8 +207,4 @@ def _get_bandgap_swaps(bandgap: float | None = None) -> dict[str, float]:
         return {"kspacing": 0.22, "ismear": 2, "sigma": 0.2}
     rmin = max(1.5, 25.22 - 2.87 * bandgap)
     kspacing = 2 * np.pi * 1.0265 / (rmin - 1.0183)
-    return {
-        "kspacing": min(kspacing, 0.44),
-        "ismear": -5,
-        "sigma": 0.05,
-    }
+    return {"kspacing": min(kspacing, 0.44), "ismear": -5, "sigma": 0.05}
