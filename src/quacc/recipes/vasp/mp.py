@@ -61,11 +61,6 @@ def mp_prerelax_job(
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
 
-        !!! Info "Calculator defaults"
-
-            ```python
-            {"ediffg": -0.05, "xc": "pbesol", "lwave": True, "lcharg": True} | _get_bandgap_swaps(bandgap)
-            ```
     Returns
     -------
     VaspSchema
@@ -116,11 +111,6 @@ def mp_relax_job(
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
 
-        !!! Info "Calculator defaults"
-
-            ```python
-            {"lcharg": True, "lwave": True} | _get_bandgap_swaps(bandgap)
-            ```
     Returns
     -------
     VaspSchema

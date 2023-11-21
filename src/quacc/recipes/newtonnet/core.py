@@ -59,15 +59,6 @@ def static_job(
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
 
-        !!! Info "Calculator defaults"
-
-            ```python
-            {
-                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-            }
-            ```
-
     Returns
     -------
     RunSchema
@@ -107,27 +98,12 @@ def relax_job(
         Dictionary of custom kwargs for the optimization process. Set a value
         to `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
-
-        !!! Info "Optimizer defaults"
-
-            ```python
-            {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella or FIRE}
-            ```
     copy_files
         Files to copy to the runtime directory.
     **calc_kwargs
         Dictionary of custom kwargs for the NewtonNet calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
-
-        !!! Info "Calculator defaults"
-
-            ```python
-            {
-                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-            }
-            ```
 
     Returns
     -------
@@ -178,16 +154,6 @@ def freq_job(
         Custom kwargs for the NewtonNet calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
-
-        !!! Info "Calculator defaults"
-
-            ```python
-            {
-                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-                "hess_method": "autograd",
-            }
-            ```
 
     Returns
     -------
