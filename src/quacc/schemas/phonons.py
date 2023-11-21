@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
-from quacc.utils.dicts import recursive_merge_dicts, sort_dict
+from quacc.utils.dicts import merge_multiple_dicts, sort_dict
 from quacc.utils.files import get_uri
 from quacc.wflow_tools.db import results_to_db
 
@@ -70,7 +70,7 @@ def summarize_phonopy(
     phonon.save(settings={"force_constants": True})
 
     atoms_metadata = atoms_to_metadata(input_atoms) if input_atoms else {}
-    unsorted_task_doc = recursive_merge_dicts(
+    unsorted_task_doc = merge_multiple_dicts(
         atoms_metadata, inputs, results, additional_fields
     )
     task_doc = sort_dict(unsorted_task_doc)
