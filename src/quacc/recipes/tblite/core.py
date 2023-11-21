@@ -123,12 +123,6 @@ def freq_job(
     """
     Run a frequency job and calculate thermochemistry.
 
-    !!! Info "Calculator defaults"
-
-        ```python
-        {"method": method}
-        ```
-
     Parameters
     ----------
     atoms

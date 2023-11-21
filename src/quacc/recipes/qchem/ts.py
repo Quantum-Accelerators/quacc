@@ -39,7 +39,6 @@ def ts_job(
     """
     TS optimize a molecular structure.
 
-
     Parameters
     ----------
     atoms
