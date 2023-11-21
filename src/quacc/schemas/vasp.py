@@ -14,7 +14,7 @@ from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
 from quacc import SETTINGS
 from quacc.schemas.ase import summarize_run
 from quacc.utils.dicts import remove_dict_nones, sort_dict
-from quacc.wflow.db import results_to_db
+from quacc.wflow_tools.db import results_to_db
 
 if TYPE_CHECKING:
     from typing import Any
@@ -81,7 +81,7 @@ def vasp_summarize_run(
 
     # Fetch all tabulated results from VASP outputs files. Fortunately, emmet
     # already has a handy function for this
-    vasp_task_doc = TaskDoc.from_directory(dir_path).dict()
+    vasp_task_doc = TaskDoc.from_directory(dir_path).model_dump()
     struct = vasp_task_doc["output"]["structure"]
 
     # Check for calculation convergence
