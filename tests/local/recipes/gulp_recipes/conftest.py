@@ -24,10 +24,7 @@ def mock_get_potential_energy(self, **kwargs):
     # works because the real atoms.get_potential_energy() takes one argument
     # (i.e. self) and that self object is the atoms object.
     e = -1.0
-    self.calc.results = {
-        "energy": e,
-        "forces": np.array([[0.0, 0.0, 0.0]] * len(self)),
-    }
+    self.calc.results = {"energy": e, "forces": np.array([[0.0, 0.0, 0.0]] * len(self))}
     for f in os.listdir(GULP_DIR):
         copy(os.path.join(GULP_DIR, f), f)
     return e

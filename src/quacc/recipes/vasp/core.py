@@ -194,10 +194,7 @@ def double_relax_job(
 
     # Run first relaxation
     summary1 = relax_job.__wrapped__(
-        atoms,
-        preset=preset,
-        relax_cell=relax_cell,
-        **relax1_kwargs,
+        atoms, preset=preset, relax_cell=relax_cell, **relax1_kwargs
     )
 
     # Run second relaxation

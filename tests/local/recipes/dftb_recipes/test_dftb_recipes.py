@@ -8,10 +8,7 @@ from quacc.recipes.dftb.core import relax_job, static_job
 
 DFTBPLUS_EXISTS = bool(which("dftb+"))
 
-pytestmark = pytest.mark.skipif(
-    not DFTBPLUS_EXISTS,
-    reason="Needs DFTB+",
-)
+pytestmark = pytest.mark.skipif(not DFTBPLUS_EXISTS, reason="Needs DFTB+")
 
 
 def test_static_job_water(tmpdir):
@@ -154,12 +151,7 @@ def test_relax_job_cu_supercell_errors(tmpdir):
     with pytest.raises(RuntimeError):
         atoms = bulk("Cu") * (2, 1, 1)
         atoms[0].position += 0.5
-        relax_job(
-            atoms,
-            kpts=(3, 3, 3),
-            MaxSteps=1,
-            Hamiltonian_MaxSccIterations=100,
-        )
+        relax_job(atoms, kpts=(3, 3, 3), MaxSteps=1, Hamiltonian_MaxSccIterations=100)
 
 
 def test_child_errors(tmpdir):
