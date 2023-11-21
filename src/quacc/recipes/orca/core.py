@@ -77,11 +77,7 @@ def static_job(
         "normalprint": True,
         "xyzfile": True,
     }
-    default_blocks = (
-        {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
-        if which("mpirun")
-        else {}
-    )
+    default_blocks = {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
 
     return _base_job(
         atoms,
@@ -153,11 +149,7 @@ def relax_job(
         "freq": True if run_freq else None,
         "xyzfile": True,
     }
-    default_blocks = (
-        {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
-        if which("mpirun")
-        else {}
-    )
+    default_blocks = {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
 
     return _base_job(
         atoms,
