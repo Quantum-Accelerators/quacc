@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-def get_rem_swaps(rem: dict[str, Any]) -> dict[str, Any]:
+def get_rem_swaps(rem: dict[str, Any], restart: bool = False) -> dict[str, Any]:
     """
     Automatic swaps for the rem dictionary.
 
@@ -25,16 +25,18 @@ def get_rem_swaps(rem: dict[str, Any]) -> dict[str, Any]:
     ----------
     rem
         rem dictionary
+    restart
+        Whether or not this is a restart calculation.
 
     Returns
     -------
     dict
         rem dictionary with swaps
     """
-    if "scf_guess" not in rem:
+    if restart and "scf_guess" not in rem:
         logger.info("Copilot: Setting scf_guess in `rem` to 'read'")
         rem["scf_guess"] = "read"
-    if "max_scf_cycles" not in rem and rem.get("scf_algorithm") == "gdm":
+    if rem.get("scf_algorithm") == "gdm" and rem.get("scf_guess", 50) < 200:
         logger.info("Copilot: Setting max_scf_cycles in `rem` to 200")
         rem["max_scf_cycles"] = 200
 

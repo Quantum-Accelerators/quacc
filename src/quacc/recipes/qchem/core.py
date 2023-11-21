@@ -32,6 +32,7 @@ _BASE_SET = {
         "thresh": 14,
         "s2thresh": 16,
         "scf_algorithm": "diis",
+        "max_scf_cycles": 100,
         "resp_charges": True,
         "symmetry": False,
         "sym_ignore": True,
@@ -71,16 +72,6 @@ def static_job(
         Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
         details.
-
-        !!! Info "Calculator defaults"
-
-            ```python
-            _BASE_SET | {
-                    "job_type": "force",
-                    "method": method,
-                    "basis": basis,
-                }
-            ```
 
     Returns
     -------
@@ -133,28 +124,12 @@ def relax_job(
         Dictionary of custom kwargs for the optimization process. Set a value
         to `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
-
-        !!! Info "Optimizer defaults"
-
-            ```python
-            {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella if has_sella else FIRE}
-            ```
     copy_files
         Files to copy to the runtime directory.
     **calc_kwargs
         Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
         details.
-
-        !!! Info "Calculator defaults"
-
-            ```python
-            _BASE_SET | {
-                    "job_type": "force",
-                    "method": method,
-                    "basis": basis,
-                }
-            ```
 
     Returns
     -------
@@ -217,16 +192,6 @@ def freq_job(
         Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
         details.
-
-        !!! Info "Calculator defaults"
-
-            ```python
-            _BASE_SET | {
-                    "job_type": "freq",
-                    "method": method,
-                    "basis": basis,
-                }
-            ```
 
     Returns
     -------

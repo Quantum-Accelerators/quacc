@@ -227,7 +227,7 @@ class QChem(FileIOCalculator):
             raise NotImplementedError("The directory kwarg is not supported.")
 
         # Apply input swaps
-        self.rem = get_rem_swaps(self.rem)
+        self.rem = get_rem_swaps(self.rem, restart=bool(self._prev_orbital_coeffs))
 
         # Clean up parameters
         self._cleanup_attrs()

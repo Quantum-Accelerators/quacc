@@ -78,16 +78,6 @@ def ts_job(
         a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
         details.
 
-        !!! Info "Calculator defaults"
-
-            ```python
-            _BASE_SET | {
-                    "job_type": "force",
-                    "method": method,
-                    "basis": basis,
-                }
-            ```
-
     Returns
     -------
     OptSchema
@@ -158,34 +148,12 @@ def irc_job(
         Dictionary of custom kwargs for the optimization process. Set a value
         to `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
-
-        !!! Info "Optimizer defaults"
-
-            ```python
-            {
-                "fmax": 0.01,
-                "max_steps": 1000,
-                "optimizer": IRC,
-                "optimizer_kwargs": {"keep_going": True},
-                "run_kwargs": {"direction": direction},
-            }
-            ```
     copy_files
         Files to copy to the runtime directory.
     **calc_kwargs
         Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
         details.
-
-        !!! Info "Calculator defaults"
-
-            ```python
-            _BASE_SET | {
-                    "job_type": "force",
-                    "method": method,
-                    "basis": basis,
-                }
-            ```
 
     Returns
     -------
@@ -251,35 +219,8 @@ def quasi_irc_job(
         Direction of the IRC. Should be "forward" or "reverse".
     irc_job_kwargs
         Dictionary of kwargs for the `irc_job`.
-
-        !!! Info "IRC defaults"
-
-            ```python
-            {
-                "charge": charge,
-                "spin_multiplicity": spin_multiplicity,
-                "direction": direction,
-                "method": method,
-                "basis": basis,
-                "opt_params": {"fmax": 100, "max_steps": 10},
-                "copy_files": copy_files,
-            }
-            ```
     relax_job_kwargs
         Dictionary of kwargs for the `relax_job`.
-
-        !!! Info "Relax defaults"
-
-            Uses the following defaults:
-
-            ```python
-            {
-                "charge": charge,
-                "spin_multiplicity": spin_multiplicity,
-                "method": method,
-                "basis": basis,
-            }
-            ```
     copy_files
         Files to copy to the runtime directory.
 
