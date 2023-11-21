@@ -44,9 +44,7 @@ def get_rem_swaps(rem: dict[str, Any], restart: bool = False) -> dict[str, Any]:
 
 
 def get_molecule(
-    atoms: Atoms | list[Atoms] | Literal["read"],
-    charge: int,
-    spin_multiplicity: int,
+    atoms: Atoms | list[Atoms] | Literal["read"], charge: int, spin_multiplicity: int
 ) -> Molecule | list[Molecule] | Literal["read"]:
     """
     Convert ASE Atom(s) to Molecule(s) suitable for `QCInput`.

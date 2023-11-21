@@ -272,10 +272,7 @@ class QChem(FileIOCalculator):
 
         qc_input = self._make_qc_input()
 
-        write_qchem(
-            qc_input,
-            prev_orbital_coeffs=self._prev_orbital_coeffs,
-        )
+        write_qchem(qc_input, prev_orbital_coeffs=self._prev_orbital_coeffs)
 
     def read_results(self) -> None:
         """
