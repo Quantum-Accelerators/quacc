@@ -43,19 +43,14 @@ def mock_chargemol_analysis(*args, **kwargs):
             "rcubed_moments": [1.0] * 16,
             "rfourth_moments": [1.0] * 16,
         },
-        "cm5": {
-            "partial_charges": [1.0] * 16,
-        },
+        "cm5": {"partial_charges": [1.0] * 16},
     }
 
 
 def test_vasp_summarize_run(run1):
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
     calc = atoms.calc
-    results = vasp_summarize_run(
-        atoms,
-        dir_path=run1,
-    )
+    results = vasp_summarize_run(atoms, dir_path=run1)
     assert results["nsites"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["output"]["energy"] == -33.15807349
@@ -123,8 +118,7 @@ def test_vasp_summarize_run(run1):
 
 def test_summarize_bader_run(monkeypatch, run1, tmpdir):
     monkeypatch.setattr(
-        "quacc.schemas.vasp.bader_analysis_from_path",
-        mock_bader_analysis,
+        "quacc.schemas.vasp.bader_analysis_from_path", mock_bader_analysis
     )
     tmpdir.chdir()
 
@@ -146,10 +140,7 @@ def test_summarize_bader_run(monkeypatch, run1, tmpdir):
 
 
 def test_summarize_chargemol_run(monkeypatch, run1, tmpdir):
-    monkeypatch.setattr(
-        "quacc.schemas.vasp.ChargemolAnalysis",
-        mock_chargemol_analysis,
-    )
+    monkeypatch.setattr("quacc.schemas.vasp.ChargemolAnalysis", mock_chargemol_analysis)
     monkeypatch.setenv("DDEC6_ATOMIC_DENSITIES_DIR", "test")
     tmpdir.chdir()
 
@@ -173,13 +164,9 @@ def test_summarize_chargemol_run(monkeypatch, run1, tmpdir):
 
 def test_summarize_bader_and_chargemol_run(monkeypatch, run1, tmpdir):
     monkeypatch.setattr(
-        "quacc.schemas.vasp.bader_analysis_from_path",
-        mock_bader_analysis,
+        "quacc.schemas.vasp.bader_analysis_from_path", mock_bader_analysis
     )
-    monkeypatch.setattr(
-        "quacc.schemas.vasp.ChargemolAnalysis",
-        mock_chargemol_analysis,
-    )
+    monkeypatch.setattr("quacc.schemas.vasp.ChargemolAnalysis", mock_chargemol_analysis)
     monkeypatch.setenv("DDEC6_ATOMIC_DENSITIES_DIR", "test")
     tmpdir.chdir()
 

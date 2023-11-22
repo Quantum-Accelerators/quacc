@@ -37,12 +37,6 @@ def static_job(atoms: Atoms, **calc_kwargs) -> RunSchema:
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.emt.EMT` calculator.
 
-        !!! Info "Calculator defaults"
-
-            ```python
-            {}
-            ```
-
     Returns
     -------
     RunSchema
@@ -52,9 +46,7 @@ def static_job(atoms: Atoms, **calc_kwargs) -> RunSchema:
     final_atoms = run_calc(atoms)
 
     return summarize_run(
-        final_atoms,
-        input_atoms=atoms,
-        additional_fields={"name": "EMT Static"},
+        final_atoms, input_atoms=atoms, additional_fields={"name": "EMT Static"}
     )
 
 
@@ -78,22 +70,10 @@ def relax_job(
         Dictionary of custom kwargs for the optimization process. Set a value
         to `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
-
-        !!! Info "Optimizer defaults"
-
-            ```python
-            {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
-            ```
     **calc_kwargs
         Custom kwargs for the EMT calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.emt.EMT` calculator.
-
-        !!! Info "Calculator defaults"
-
-            ```python
-            {}
-            ```
 
     Returns
     -------

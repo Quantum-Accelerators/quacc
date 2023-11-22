@@ -11,10 +11,7 @@ has_gulp = bool(
     and os.environ.get("GULP_LIB")
 )
 
-pytestmark = pytest.mark.skipif(
-    not has_gulp,
-    reason="Needs GULP",
-)
+pytestmark = pytest.mark.skipif(not has_gulp, reason="Needs GULP")
 
 
 def test_static_job(tmpdir):

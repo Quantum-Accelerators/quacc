@@ -21,17 +21,14 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 from quacc import flow, job
-from quacc.recipes.vasp.core import _base_job
+from quacc.recipes.vasp._base import base_fn
 
 if TYPE_CHECKING:
     from typing import Any
 
     from ase import Atoms
 
-    from quacc.schemas._aliases.vasp import VaspSchema
-
-    class MPRelaxFlowSchema(VaspSchema):
-        prerelax: VaspSchema
+    from quacc.schemas._aliases.vasp import MPRelaxFlowSchema, VaspSchema
 
 
 @job
@@ -51,7 +48,7 @@ def mp_prerelax_job(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.presets.vasp`.
+        Preset to use from `quacc.calculators.vasp.presets`.
     bandgap
         Estimate for the bandgap in eV.
     copy_files
@@ -61,11 +58,6 @@ def mp_prerelax_job(
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
 
-        !!! Info "Calculator defaults"
-
-            ```python
-            {"ediffg": -0.05, "xc": "pbesol", "lwave": True, "lcharg": True} | _get_bandgap_swaps(bandgap)
-            ```
     Returns
     -------
     VaspSchema
@@ -79,7 +71,7 @@ def mp_prerelax_job(
         "lcharg": True,
     } | _get_bandgap_swaps(bandgap)
 
-    return _base_job(
+    return base_fn(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
@@ -106,7 +98,7 @@ def mp_relax_job(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.presets.vasp`.
+        Preset to use from `quacc.calculators.vasp.presets`.
     bandgap
         Estimate for the bandgap in eV.
     copy_files
@@ -116,11 +108,6 @@ def mp_relax_job(
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
 
-        !!! Info "Calculator defaults"
-
-            ```python
-            {"lcharg": True, "lwave": True} | _get_bandgap_swaps(bandgap)
-            ```
     Returns
     -------
     VaspSchema
@@ -128,7 +115,7 @@ def mp_relax_job(
     """
 
     calc_defaults = {"lcharg": True, "lwave": True} | _get_bandgap_swaps(bandgap)
-    return _base_job(
+    return base_fn(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
@@ -207,8 +194,4 @@ def _get_bandgap_swaps(bandgap: float | None = None) -> dict[str, float]:
         return {"kspacing": 0.22, "ismear": 2, "sigma": 0.2}
     rmin = max(1.5, 25.22 - 2.87 * bandgap)
     kspacing = 2 * np.pi * 1.0265 / (rmin - 1.0183)
-    return {
-        "kspacing": min(kspacing, 0.44),
-        "ismear": -5,
-        "sigma": 0.05,
-    }
+    return {"kspacing": min(kspacing, 0.44), "ismear": -5, "sigma": 0.05}

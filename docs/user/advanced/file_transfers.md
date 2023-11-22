@@ -4,7 +4,7 @@
 
 ### Transfers from a Known File Location
 
-Sometimes, you may want to transfer files between jobs. Every recipe within quacc takes an optional keyword argument `copy_files` that is a list of absolute filepaths to files you wish to have copied to the directory where the calculation is ultimately run.
+Sometimes, you may want to transfer files between jobs. Many recipes within quacc takes an optional keyword argument, `copy_files`, that is a list of absolute filepaths to files you wish to have copied to the directory where the calculation is ultimately run.
 
 For instance, if you have a file `WAVECAR` stored in `/path/to/my/file/stage`, then you could ensure that is present in the calculation's working directory:
 
