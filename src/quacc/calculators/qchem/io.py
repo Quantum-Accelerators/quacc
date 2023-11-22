@@ -18,7 +18,6 @@ if TYPE_CHECKING:
     from typing import Any, Literal
 
     from ase import Atoms
-    from numpy.typing import NDArray
 
     from quacc.calculators.qchem.qchem import Results
 
