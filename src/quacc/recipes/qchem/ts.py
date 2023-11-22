@@ -7,7 +7,8 @@ from typing import TYPE_CHECKING
 from monty.dev import requires
 
 from quacc import SETTINGS, job
-from quacc.recipes.qchem.core import _base_opt_job, relax_job
+from quacc.recipes.qchem._base import base_opt_job
+from quacc.recipes.qchem.core import relax_job
 from quacc.utils.dicts import merge_dicts
 
 try:
@@ -111,7 +112,7 @@ def ts_job(
     if opt_params and opt_params.get("optimizer", Sella) is not Sella:
         raise ValueError("Only Sella should be used for TS optimization.")
 
-    return _base_opt_job(
+    return base_opt_job(
         atoms,
         charge,
         spin_multiplicity,
