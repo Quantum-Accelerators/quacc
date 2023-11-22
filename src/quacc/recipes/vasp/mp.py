@@ -21,17 +21,14 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 from quacc import flow, job
-from quacc.recipes.vasp.core import _base_job
+from quacc.recipes.vasp._base import base_fn
 
 if TYPE_CHECKING:
     from typing import Any
 
     from ase import Atoms
 
-    from quacc.schemas._aliases.vasp import VaspSchema
-
-    class MPRelaxFlowSchema(VaspSchema):
-        prerelax: VaspSchema
+    from quacc.schemas._aliases.vasp import MPRelaxFlowSchema, VaspSchema
 
 
 @job
@@ -74,7 +71,7 @@ def mp_prerelax_job(
         "lcharg": True,
     } | _get_bandgap_swaps(bandgap)
 
-    return _base_job(
+    return base_fn(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
@@ -118,7 +115,7 @@ def mp_relax_job(
     """
 
     calc_defaults = {"lcharg": True, "lwave": True} | _get_bandgap_swaps(bandgap)
-    return _base_job(
+    return base_fn(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
