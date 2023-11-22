@@ -19,6 +19,7 @@ if TYPE_CHECKING:
 
     from ase import Atoms
     from numpy.typing import NDArray
+
     from quacc.calculators.qchem.qchem import Results
 
 
