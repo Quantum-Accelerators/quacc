@@ -11,7 +11,7 @@ from quacc.calculators.qchem import qchem_custodian
 from quacc.calculators.qchem.io import read_qchem, write_qchem
 
 if TYPE_CHECKING:
-    from typing import Any, ClassVar, Literal
+    from typing import Any, ClassVar, Literal, TypedDict
 
     from ase import Atoms
 
