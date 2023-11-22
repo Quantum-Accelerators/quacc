@@ -12,7 +12,7 @@ from ase.optimize import BFGSLineSearch
 
 from quacc import job
 from quacc.calculators.vasp import Vasp
-from quacc.recipes.vasp._base import base_job
+from quacc.recipes.vasp._base import base_fn
 from quacc.runners.ase import run_opt
 from quacc.schemas.ase import summarize_opt_run
 from quacc.utils.dicts import merge_dicts
@@ -174,7 +174,7 @@ def _loose_relax_positions(
         "lwave": True,
         "nsw": 250,
     }
-    return base_job(
+    return base_fn(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
@@ -215,7 +215,7 @@ def _loose_relax_cell(
         "lwave": True,
         "nsw": 500,
     }
-    return base_job(
+    return base_fn(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
@@ -258,7 +258,7 @@ def _double_relax(
         "lwave": True,
         "nsw": 500 if relax_cell else 250,
     }
-    summary1 = base_job(
+    summary1 = base_fn(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
@@ -274,7 +274,7 @@ def _double_relax(
     del calc_defaults["lreal"]
 
     # Run second relaxation
-    summary2 = base_job(
+    summary2 = base_fn(
         summary1["atoms"],
         preset=preset,
         calc_defaults=calc_defaults,
@@ -312,7 +312,7 @@ def _static(atoms: Atoms, preset: str | None = "QMOFSet", **calc_kwargs) -> Vasp
         "lwave": True,
         "nsw": 0,
     }
-    return base_job(
+    return base_fn(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,

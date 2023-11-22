@@ -22,7 +22,7 @@ LOG_FILE = f"{_LABEL}.out"
 GEOM_FILE = f"{_LABEL}.xyz"
 
 
-def base_job(
+def base_fn(
     atoms: Atoms,
     charge: int = 0,
     spin_multiplicity: int = 1,

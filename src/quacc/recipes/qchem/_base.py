@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from quacc.schemas._aliases.ase import OptSchema, RunSchema
 
 
-def base_job(
+def base_fn(
     atoms: Atoms,
     charge: int = 0,
     spin_multiplicity: int = 1,
@@ -69,7 +69,7 @@ def base_job(
     )
 
 
-def base_opt_job(
+def base_opt_fn(
     atoms: Atoms,
     charge: int = 0,
     spin_multiplicity: int = 1,

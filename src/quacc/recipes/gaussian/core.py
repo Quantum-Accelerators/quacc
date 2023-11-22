@@ -5,7 +5,7 @@ import multiprocessing
 from typing import TYPE_CHECKING
 
 from quacc import job
-from quacc.recipes.gaussian._base import base_job
+from quacc.recipes.gaussian._base import base_fn
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -68,7 +68,7 @@ def static_job(
         "gfinput": "",
         "ioplist": ["6/7=3", "2/9=2000"],  # see ASE issue #660
     }
-    return base_job(
+    return base_fn(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -135,7 +135,7 @@ def relax_job(
         "freq": "" if freq else None,
         "ioplist": ["2/9=2000"],  # ASE issue #660
     }
-    return base_job(
+    return base_fn(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,

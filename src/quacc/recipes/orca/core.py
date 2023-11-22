@@ -5,7 +5,7 @@ import multiprocessing
 from typing import TYPE_CHECKING
 
 from quacc import job
-from quacc.recipes.orca._base import base_job
+from quacc.recipes.orca._base import base_fn
 
 if TYPE_CHECKING:
     from typing import Any
@@ -70,7 +70,7 @@ def static_job(
     }
     default_blocks = {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
 
-    return base_job(
+    return base_fn(
         atoms,
         charge,
         spin_multiplicity,
@@ -142,7 +142,7 @@ def relax_job(
     }
     default_blocks = {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
 
-    return base_job(
+    return base_fn(
         atoms,
         charge=charge,
         spin_multiplicity=spin_multiplicity,

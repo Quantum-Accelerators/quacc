@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from quacc.schemas._aliases.ase import RunSchema
 
 
-def base_job(
+def base_fn(
     atoms: Atoms,
     charge: int = 0,
     spin_multiplicity: int = 1,

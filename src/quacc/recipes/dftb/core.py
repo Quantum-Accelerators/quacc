@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc import job
-from quacc.recipes.dftb._base import base_job
+from quacc.recipes.dftb._base import base_fn
 
 if TYPE_CHECKING:
     from typing import Literal
@@ -51,7 +51,7 @@ def static_job(
         "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
     }
 
-    return base_job(
+    return base_fn(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -104,7 +104,7 @@ def relax_job(
         "Driver_MaxSteps": 2000,
     }
 
-    return base_job(
+    return base_fn(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,

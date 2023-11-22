@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from quacc.schemas._aliases.vasp import VaspSchema
 
 
-def base_job(
+def base_fn(
     atoms: Atoms,
     preset: str | None = None,
     calc_defaults: dict[str, Any] | None = None,

@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from quacc import job
-from quacc.recipes.vasp._base import base_job
+from quacc.recipes.vasp._base import base_fn
 
 if TYPE_CHECKING:
     from typing import Any
@@ -53,7 +53,7 @@ def static_job(
         "nedos": 5001,
         "nsw": 0,
     }
-    return base_job(
+    return base_fn(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
@@ -106,7 +106,7 @@ def relax_job(
         "nsw": 200,
         "symprec": 1e-8,
     }
-    return base_job(
+    return base_fn(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,

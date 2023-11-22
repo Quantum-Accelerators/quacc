@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from ase.optimize import FIRE
 
 from quacc import SETTINGS, job
-from quacc.recipes.qchem._base import base_job, base_opt_job
+from quacc.recipes.qchem._base import base_fn, base_opt_fn
 
 try:
     from sella import Sella
@@ -97,7 +97,7 @@ def static_job(
         },
     }
 
-    return base_job(
+    return base_fn(
         atoms,
         charge,
         spin_multiplicity,
@@ -180,7 +180,7 @@ def freq_job(
             "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
         },
     }
-    return base_job(
+    return base_fn(
         atoms,
         charge=charge,
         spin_multiplicity=spin_multiplicity,
@@ -272,7 +272,7 @@ def relax_job(
         "optimizer_kwargs": {"use_TRICs": False},
     }
 
-    return base_opt_job(
+    return base_opt_fn(
         atoms,
         charge=charge,
         spin_multiplicity=spin_multiplicity,
