@@ -1,6 +1,7 @@
 """Utility functions for dealing with dictionaries."""
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -36,7 +37,7 @@ def merge_dicts(
     """
     dict1 = dict1 or {}
     dict2 = dict2 or {}
-    merged = dict1.copy()
+    merged = deepcopy(dict1)
 
     for key, value in dict2.items():
         if key in merged:
@@ -72,7 +73,7 @@ def merge_several_dicts(*args, remove_nones: bool = True) -> dict[str, Any]:
     old_dict = args[0]
     for i in range(len(args) - 1):
         merged = merge_dicts(old_dict, args[i + 1], remove_nones=remove_nones)
-        old_dict = merged.copy()
+        old_dict = deepcopy(merged)
     return merged
 
 
