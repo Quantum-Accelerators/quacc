@@ -213,7 +213,7 @@ def irc_job(
     if opt_params and opt_params.get("optimizer", IRC) is not IRC:
         raise ValueError("Only Sella's IRC should be used for IRC optimization.")
 
-    return _base_opt_job(
+    return base_opt_job(
         atoms,
         charge,
         spin_multiplicity,
