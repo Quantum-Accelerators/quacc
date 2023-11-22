@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from typing import Any, ClassVar, Literal, TypedDict
 
     from ase import Atoms
+    from numpy.typing import NDArray
 
     class Results(TypedDict, total=False):
         energy: float  # electronic energy in eV
