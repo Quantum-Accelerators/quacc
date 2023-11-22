@@ -1,4 +1,5 @@
 """Settings for quacc."""
+
 from __future__ import annotations
 
 import os
@@ -17,18 +18,14 @@ from quacc.calculators.vasp import presets as vasp_presets
 if TYPE_CHECKING:
     from typing import Any
 
-installed_engine = "local"
-for wflow_engine in [
-    "parsl",
-    "covalent",
-    "prefect",
-    "redun",
-    "jobflow",
-]:
-    if util.find_spec(wflow_engine):
-        installed_engine = wflow_engine
-        break
-
+installed_engine = next(
+    (
+        wflow_engine
+        for wflow_engine in ["parsl", "covalent", "prefect", "redun", "jobflow"]
+        if util.find_spec(wflow_engine)
+    ),
+    "local",
+)
 _DEFAULT_CONFIG_FILE_PATH = Path("~", ".quacc.yaml").expanduser().resolve()
 
 
@@ -84,8 +81,7 @@ class QuaccSettings(BaseSettings):
         ),
     )
     SCRATCH_DIR: Path = Field(
-        Path("~/.scratch"),
-        description="Scratch directory for calculations.",
+        Path("~/.scratch"), description="Scratch directory for calculations."
     )
     CREATE_UNIQUE_WORKDIR: bool = Field(
         False,
@@ -129,17 +125,13 @@ class QuaccSettings(BaseSettings):
     # Gaussian Settings
     # ---------------------------
     GAUSSIAN_CMD: Path = Field(
-        Path("g16"),
-        description=("Path to the Gaussian executable."),
+        Path("g16"), description=("Path to the Gaussian executable.")
     )
 
     # ---------------------------
     # GULP Settings
     # ---------------------------
-    GULP_CMD: Path = Field(
-        Path("gulp"),
-        description=("Path to the GULP executable."),
-    )
+    GULP_CMD: Path = Field(Path("gulp"), description=("Path to the GULP executable."))
     GULP_LIB: Optional[Path] = Field(
         None, description=("Path to the GULP force field library.")
     )
@@ -217,8 +209,7 @@ class QuaccSettings(BaseSettings):
         ),
     )
     VASP_PRESET_DIR: Path = Field(
-        resources.files(vasp_presets),
-        description="Path to the VASP preset directory",
+        resources.files(vasp_presets), description="Path to the VASP preset directory"
     )
 
     # VASP Settings: Custodian

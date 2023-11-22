@@ -6,19 +6,18 @@ from typing import TYPE_CHECKING
 
 from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
-from quacc.utils.dicts import recursive_merge_dicts, sort_dict
+from quacc.utils.dicts import merge_several_dicts, sort_dict
 from quacc.utils.files import get_uri
-from quacc.wflow.db import results_to_db
+from quacc.wflow_tools.db import results_to_db
 
 if TYPE_CHECKING:
     from typing import Any
 
     from ase import Atoms
-    from ase.calculators.calculator import Calculator
     from maggma.core import Store
     from phonopy import Phonopy
 
-    from quacc.schemas._aliases.phonopy import PhononSchema
+    from quacc.schemas._aliases.phonons import PhononSchema
 
 
 def summarize_phonopy(
@@ -61,11 +60,17 @@ def summarize_phonopy(
         "dir_name": ":".join(uri.split(":")[1:]),
     }
 
-    results = {"results": {"thermal_properties": phonon.get_thermal_properties_dict()}}
+    results = {
+        "results": {
+            "thermal_properties": phonon.get_thermal_properties_dict(),
+            "mesh_properties": phonon.get_mesh_dict(),
+            "force_constants": phonon.force_constants,
+        }
+    }
     phonon.save(settings={"force_constants": True})
 
     atoms_metadata = atoms_to_metadata(input_atoms) if input_atoms else {}
-    unsorted_task_doc = recursive_merge_dicts(
+    unsorted_task_doc = merge_several_dicts(
         atoms_metadata, inputs, results, additional_fields
     )
     task_doc = sort_dict(unsorted_task_doc)

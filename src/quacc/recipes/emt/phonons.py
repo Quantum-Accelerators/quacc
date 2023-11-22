@@ -1,10 +1,11 @@
 """Phonon recipes for EMT"""
 from __future__ import annotations
 
+from functools import partial
 from typing import TYPE_CHECKING
 
 from quacc import flow
-from quacc.recipes.common.phonons import phonon_flow as _phonon_flow
+from quacc.recipes.common.phonons import phonon_flow as phonon_flow_
 from quacc.recipes.emt.core import static_job
 
 if TYPE_CHECKING:
@@ -20,7 +21,7 @@ if TYPE_CHECKING:
 def phonon_flow(
     atoms: Atoms,
     supercell_matrix: ArrayLike = ((2, 0, 0), (0, 2, 0), (0, 0, 2)),
-    atom_disp: float = 0.015,
+    atom_disp: float = 0.01,
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
@@ -50,17 +51,17 @@ def phonon_flow(
     Returns
     -------
     PhononSchema
-        Dictionary of results from [quacc.schemas.phonopy.summarize_phonopy][]
+        Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][]
     """
+    static_job_kwargs = static_job_kwargs or {}
 
-    return _phonon_flow(
+    return phonon_flow_(
         atoms,
-        static_job,
-        static_job_kwargs,
+        partial(static_job, **static_job_kwargs),
         supercell_matrix=supercell_matrix,
         atom_disp=atom_disp,
         t_step=t_step,
         t_min=t_min,
         t_max=t_max,
-        fields_to_store={"name": "EMT Phonons"},
+        additional_fields={"name": "EMT Phonons"},
     )

@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 
 
 @job
-def static_job(atoms: Atoms, **kwargs) -> RunSchema:
+def static_job(atoms: Atoms, **calc_kwargs) -> RunSchema:
     """
     Carry out a static calculation.
 
@@ -32,29 +32,21 @@ def static_job(atoms: Atoms, **kwargs) -> RunSchema:
     ----------
     atoms
         Atoms object
-    **kwargs
+    **calc_kwargs
         Custom kwargs for the EMT calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.emt.EMT` calculator.
-
-        !!! Info "Calculator defaults"
-
-            ```python
-            {}
-            ```
 
     Returns
     -------
     RunSchema
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
-    atoms.calc = EMT(**kwargs)
+    atoms.calc = EMT(**calc_kwargs)
     final_atoms = run_calc(atoms)
 
     return summarize_run(
-        final_atoms,
-        input_atoms=atoms,
-        additional_fields={"name": "EMT Static"},
+        final_atoms, input_atoms=atoms, additional_fields={"name": "EMT Static"}
     )
 
 
@@ -63,7 +55,7 @@ def relax_job(
     atoms: Atoms,
     relax_cell: bool = False,
     opt_params: dict[str, Any] | None = None,
-    **kwargs,
+    **calc_kwargs,
 ) -> OptSchema:
     """
     Carry out a geometry optimization.
@@ -78,22 +70,10 @@ def relax_job(
         Dictionary of custom kwargs for the optimization process. Set a value
         to `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
-
-        !!! Info "Optimizer defaults"
-
-            ```python
-            {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
-            ```
-    **kwargs
+    **calc_kwargs
         Custom kwargs for the EMT calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.emt.EMT` calculator.
-
-        !!! Info "Calculator defaults"
-
-            ```python
-            {}
-            ```
 
     Returns
     -------
@@ -104,7 +84,7 @@ def relax_job(
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
     opt_flags = merge_dicts(opt_defaults, opt_params)
 
-    atoms.calc = EMT(**kwargs)
+    atoms.calc = EMT(**calc_kwargs)
 
     dyn = run_opt(atoms, relax_cell=relax_cell, **opt_flags)
 

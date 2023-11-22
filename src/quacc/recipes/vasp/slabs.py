@@ -1,11 +1,13 @@
 """Recipes for slabs."""
 from __future__ import annotations
 
+from functools import partial
 from typing import TYPE_CHECKING
 
 from quacc import flow, job
+from quacc.atoms.slabs import make_adsorbate_structures, make_slabs_from_bulk
 from quacc.recipes.common.slabs import bulk_to_slabs_subflow, slab_to_ads_subflow
-from quacc.recipes.vasp.core import _base_job
+from quacc.recipes.vasp._base import base_fn
 
 if TYPE_CHECKING:
     from typing import Any
@@ -20,7 +22,7 @@ def slab_static_job(
     atoms: Atoms,
     preset: str | None = "SlabSet",
     copy_files: list[str] | None = None,
-    **kwargs,
+    **calc_kwargs,
 ) -> VaspSchema:
     """
     Function to carry out a single-point calculation on a slab.
@@ -30,36 +32,21 @@ def slab_static_job(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.presets.vasp`.
+        Preset to use from `quacc.calculators.vasp.presets`.
     copy_files
         Files to copy to the runtime directory.
-    **kwargs
+    **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
 
-        !!! Info "Calculator defaults"
-
-            ```python
-            {
-                "auto_dipole": True,
-                "ismear": -5,
-                "laechg": True,
-                "lcharg": True,
-                "lreal": False,
-                "lvhar": True,
-                "lwave": True,
-                "nedos": 5001,
-                "nsw": 0,
-            }
-            ```
     Returns
     -------
     VaspSchema
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
 
-    defaults = {
+    calc_defaults = {
         "auto_dipole": True,
         "ismear": -5,
         "laechg": True,
@@ -70,11 +57,11 @@ def slab_static_job(
         "nedos": 5001,
         "nsw": 0,
     }
-    return _base_job(
+    return base_fn(
         atoms,
         preset=preset,
-        defaults=defaults,
-        calc_swaps=kwargs,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
         additional_fields={"name": "VASP Slab Static"},
         copy_files=copy_files,
     )
@@ -85,7 +72,7 @@ def slab_relax_job(
     atoms: Atoms,
     preset: str | None = "SlabSet",
     copy_files: list[str] | None = None,
-    **kwargs,
+    **calc_kwargs,
 ) -> VaspSchema:
     """
     Function to relax a slab.
@@ -95,36 +82,21 @@ def slab_relax_job(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.presets.vasp`.
+        Preset to use from `quacc.calculators.vasp.presets`.
     copy_files
         Files to copy to the runtime directory.
-    **kwargs
+    **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
 
-        !!! Info "Calculator defaults"
-
-            ```python
-            {
-                "auto_dipole": True,
-                "ediffg": -0.02,
-                "isif": 2,
-                "ibrion": 2,
-                "isym": 0,
-                "lcharg": False,
-                "lwave": False,
-                "nsw": 200,
-                "symprec": 1e-8,
-            }
-            ```
     Returns
     -------
     VaspSchema
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
 
-    defaults = {
+    calc_defaults = {
         "auto_dipole": True,
         "ediffg": -0.02,
         "isif": 2,
@@ -135,11 +107,11 @@ def slab_relax_job(
         "nsw": 200,
         "symprec": 1e-8,
     }
-    return _base_job(
+    return base_fn(
         atoms,
         preset=preset,
-        defaults=defaults,
-        calc_swaps=kwargs,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
         additional_fields={"name": "VASP Slab Relax"},
         copy_files=copy_files,
     )
@@ -181,13 +153,19 @@ def bulk_to_slabs_flow(
         List of dictionary results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
 
+    make_slabs_kwargs = make_slabs_kwargs or {}
+    slab_relax_kwargs = slab_relax_kwargs or {}
+    slab_static_kwargs = slab_static_kwargs or {}
+
+    relax_job = partial(slab_relax_job, **slab_relax_kwargs)
+    static_job = partial(slab_static_job, **slab_static_kwargs)
+    make_slabs_fn = partial(make_slabs_from_bulk, **make_slabs_kwargs)
+
     return bulk_to_slabs_subflow(
         atoms,
-        slab_relax_job,
-        slab_static_job if run_static else None,
-        make_slabs_kwargs=make_slabs_kwargs,
-        slab_relax_kwargs=slab_relax_kwargs,
-        slab_static_kwargs=slab_static_kwargs,
+        relax_job,
+        static_job=static_job if run_static else None,
+        make_slabs_fn=make_slabs_fn,
     )
 
 
@@ -230,12 +208,16 @@ def slab_to_ads_flow(
         List of dictionaries of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
 
+    make_ads_kwargs = make_ads_kwargs or {}
+    slab_relax_kwargs = slab_relax_kwargs or {}
+    slab_static_kwargs = slab_static_kwargs or {}
+
     return slab_to_ads_subflow(
         slab,
         adsorbate,
-        slab_relax_job,
-        slab_static_job if run_static else None,
-        make_ads_kwargs=make_ads_kwargs,
-        slab_relax_kwargs=slab_relax_kwargs,
-        slab_static_kwargs=slab_static_kwargs,
+        partial(slab_relax_job, **slab_relax_kwargs),
+        static_job=partial(slab_static_job, **slab_static_kwargs)
+        if run_static
+        else None,
+        make_ads_fn=partial(make_adsorbate_structures, **make_ads_kwargs),
     )

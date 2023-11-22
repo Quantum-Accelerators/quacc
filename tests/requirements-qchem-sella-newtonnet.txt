@@ -1,4 +1,2 @@
-git+https://github.com/ericyuan00000/NewtonNet.git@e9f67bfd7e0f3591b9dc3bdb340d6587aa9e592e
-torch==2.1.0
-scikit-learn==1.3.2
+newtonnet==1.1.1
 sella==2.3.2

@@ -15,24 +15,11 @@ from pymatgen.io.qchem.outputs import QCOutput
 from pymatgen.io.qchem.sets import QChemDictSet
 
 if TYPE_CHECKING:
-    from typing import Any, Literal, TypedDict
+    from typing import Any, Literal
 
     from ase import Atoms
-    from numpy.typing import NDArray
 
-    class Results(TypedDict, total=False):
-        energy: float  # electronic energy in eV
-        forces: NDArray  # forces in eV/A
-        hessian: NDArray  # Hessian in native Q-Chem units
-        enthalpy: float  # total enthalpy in eV
-        entropy: float  # total entropy in eV/K
-        qc_output: dict[
-            str, Any
-        ]  # Output from `pymatgen.io.qchem.outputs.QCOutput.data`
-        qc_input: dict[
-            str, Any
-        ]  # Input from `pymatgen.io.qchem.inputs.QCInput.as_dict()`
-        custodian: dict[str, Any]  # custodian.json file metadata
+    from quacc.calculators.qchem.qchem import Results
 
 
 def write_qchem(
@@ -93,12 +80,7 @@ def write_qchem(
     atoms.spin_multiplicity = spin_multiplicity
     mol = AseAtomsAdaptor.get_molecule(atoms)
     QChemDictSet(
-        mol,
-        job_type,
-        basis_set,
-        scf_algorithm,
-        qchem_version=6,
-        **qchem_input_params,
+        mol, job_type, basis_set, scf_algorithm, qchem_version=6, **qchem_input_params
     ).write(directory / "mol.qin")
 
 
@@ -174,11 +156,11 @@ def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float]]:
             struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
             for ii in range(len(binary) // 8)
         )
-
-        results["hessian"] = np.reshape(
+        reshaped_hess = np.reshape(
             np.array(tmp_hess_data),
             (len(qc_output["species"]) * 3, len(qc_output["species"]) * 3),
         )
+        results["hessian"] = reshaped_hess * (units.Hartree / units.Bohr**2)
         results["enthalpy"] = qc_output["total_enthalpy"] * (units.kcal / units.mol)
         results["entropy"] = qc_output["total_entropy"] * (
             0.001 * units.kcal / units.mol

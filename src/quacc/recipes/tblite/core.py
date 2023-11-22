@@ -7,8 +7,8 @@ from ase.optimize import FIRE
 from monty.dev import requires
 
 from quacc import job
-from quacc.builders.thermo import build_ideal_gas
 from quacc.runners.ase import run_calc, run_opt, run_vib
+from quacc.runners.thermo import run_ideal_gas
 from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
 from quacc.utils.dicts import merge_dicts
 
@@ -31,7 +31,7 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
-    **kwargs,
+    **calc_kwargs,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -41,32 +41,25 @@ def static_job(
     atoms
         Atoms object
     method
-        GFN1-xTB, GFN2-xTB, and IPEA1-xTB.
-    **kwargs
+        xTB method to use
+    **calc_kwargs
         Custom kwargs for the TBLite calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `tblite.ase.TBLite` calculator.
+        keys, refer to the `tblite.ase.TBLite` calculator
 
-        !!! Info "Calculator defaults"
-
-            ```python
-            {"method": method}
-            ```
     Returns
     -------
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
-    defaults = {"method": method}
-    flags = merge_dicts(defaults, kwargs)
+    calc_defaults = {"method": method}
+    flags = merge_dicts(calc_defaults, calc_kwargs)
     atoms.calc = TBLite(**flags)
 
     final_atoms = run_calc(atoms)
     return summarize_run(
-        final_atoms,
-        input_atoms=atoms,
-        additional_fields={"name": "TBLite Static"},
+        final_atoms, input_atoms=atoms, additional_fields={"name": "TBLite Static"}
     )
 
 
@@ -77,7 +70,7 @@ def relax_job(
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
     relax_cell: bool = False,
     opt_params: dict[str, Any] | None = None,
-    **kwargs,
+    **calc_kwargs,
 ) -> OptSchema:
     """
     Relax a structure.
@@ -87,29 +80,18 @@ def relax_job(
     atoms
         Atoms object
     method
-        GFN0-xTB, GFN1-xTB, GFN2-xTB.
+        xTB method to use
     relax_cell
         Whether to relax the cell.
     opt_params
         Dictionary of custom kwargs for the optimization process. Set a value
         to `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
-
-        !!! Info "Optimizer defaults"
-
-            ```python
-            {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
-            ```
-    **kwargs
+    **calc_kwargs
         Custom kwargs for the tblite calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `tblite.ase.TBLite` calculator.
 
-        !!! Info "Calculator defaults"
-
-            ```python
-            {"method": method}
-            ```
     Returns
     -------
     OptSchema
@@ -117,7 +99,7 @@ def relax_job(
     """
 
     defaults = {"method": method}
-    flags = merge_dicts(defaults, kwargs)
+    flags = merge_dicts(defaults, calc_kwargs)
     atoms.calc = TBLite(**flags)
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
@@ -137,23 +119,17 @@ def freq_job(
     temperature: float = 298.15,
     pressure: float = 1.0,
     vib_kwargs: VibKwargs | None = None,
-    **kwargs,
+    **calc_kwargs,
 ) -> VibThermoSchema:
     """
     Run a frequency job and calculate thermochemistry.
-
-    !!! Info "Calculator defaults"
-
-        ```python
-        {"method": method}
-        ```
 
     Parameters
     ----------
     atoms
         Atoms object
     method
-        GFN0-xTB, GFN1-xTB, GFN2-xTB, GFN-FF.
+        xTB method to use
     energy
         Potential energy in eV. If 0, then the output is just the correction.
     temperature
@@ -161,8 +137,8 @@ def freq_job(
     pressure
         Pressure in bar.
     vib_kwargs
-        Dictionary of kwargs for the `ase.vibrations.Vibrations` class.
-    **kwargs
+        Dictionary of kwargs for [quacc.runners.ase.run_vib][].
+    **calc_kwargs
         Custom kwargs for the tblite calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `tblite.ase.TBLite` calculator.
@@ -175,11 +151,11 @@ def freq_job(
     vib_kwargs = vib_kwargs or {}
 
     defaults = {"method": method}
-    flags = merge_dicts(defaults, kwargs)
+    flags = merge_dicts(defaults, calc_kwargs)
     atoms.calc = TBLite(**flags)
 
     vibrations = run_vib(atoms, vib_kwargs=vib_kwargs)
-    igt = build_ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)
+    igt = run_ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)
 
     return summarize_vib_and_thermo(
         vibrations,

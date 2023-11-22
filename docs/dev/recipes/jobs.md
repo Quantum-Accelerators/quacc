@@ -2,7 +2,7 @@
 
 ## Overview
 
-Individual compute tasks are called jobs. You can think of these as distinct calculations you would submit to the job scheduler (e.g. Slurm). Refer to [](../../user/basics/wflow_syntax.md) for more information on the syntax of jobs.
+Individual compute tasks are called jobs. You can think of these as distinct calculations you would submit to the job scheduler (e.g. Slurm). Refer to the [Workflow Syntax](../../user/basics/wflow_syntax.md) page for more information on the syntax of jobs.
 
 ## Examples
 
@@ -32,9 +32,9 @@ Three of the most common runners are summarized below:
 
 1. [quacc.runners.ase.run_calc][]: Runs a calculation using an ASE calculator. This is the most common runner.
 
-2. [quacc.runners.ase.run_opt][]: Runs a geometry optimization using an ASE optimizer. Use [quacc.runners.ase.run_calc][] if an internal optimizer is desired.
+2. [quacc.runners.ase.run_opt][]: Runs a geometry optimization using an ASE optimizer.
 
-3. [quacc.runners.ase.run_vib][]: Runs a vibrational analysis using ASE's `Vibrations` module. Use [quacc.runners.ase.run_calc][] if the vibrational analysis is performed by the electronic structure package.
+3. [quacc.runners.ase.run_vib][]: Runs a vibrational analysis using ASE's `Vibrations` module.
 
 ## Schemas
 

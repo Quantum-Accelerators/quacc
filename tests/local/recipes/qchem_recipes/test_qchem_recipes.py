@@ -501,18 +501,11 @@ def test_irc_job_v1(monkeypatch, tmpdir, test_atoms):
 
 def test_irc_job_v2(tmpdir, test_atoms):
     tmpdir.chdir()
-    with pytest.raises(RuntimeError):
+    with pytest.raises(ValueError):
         irc_job(test_atoms, 0, 1, "straight")
 
     with pytest.raises(ValueError):
-        irc_job(
-            test_atoms,
-            0,
-            1,
-            "forward",
-            pcm_dielectric="3.0",
-            smd_solvent="water",
-        )
+        irc_job(test_atoms, 0, 1, "forward", pcm_dielectric="3.0", smd_solvent="water")
 
     with pytest.raises(ValueError):
         irc_job(

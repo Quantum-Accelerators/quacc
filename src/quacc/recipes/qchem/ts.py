@@ -7,7 +7,8 @@ from typing import TYPE_CHECKING
 from monty.dev import requires
 
 from quacc import SETTINGS, job
-from quacc.recipes.qchem.core import _base_opt_job, relax_job
+from quacc.recipes.qchem._base import base_opt_fn
+from quacc.recipes.qchem.core import relax_job
 from quacc.utils.dicts import merge_dicts
 
 try:
@@ -26,10 +27,7 @@ if TYPE_CHECKING:
 
 
 @job
-@requires(
-    has_sella,
-    "Sella must be installed. Refer to the quacc documentation.",
-)
+@requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def ts_job(
     atoms: Atoms,
     charge: int,
@@ -46,33 +44,6 @@ def ts_job(
 ) -> OptSchema:
     """
     TS optimize a molecular structure.
-
-    ??? Note
-
-        Calculator Defaults:
-
-        ```python
-        {
-            "basis_set": basis,
-            "scf_algorithm": scf_algorithm,
-            "method": method,
-            "charge": charge,
-            "spin_multiplicity": spin_multiplicity,
-            "cores": n_cores or multiprocessing.cpu_count(),
-            "qchem_input_params": {
-                "pcm_dielectric": pcm_dielectric,
-                "smd_solvent": smd_solvent,
-                "overwrite_inputs": overwrite_inputs,
-                "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
-            },
-        }
-        ```
-
-        Optimizer Defaults:
-
-        ```python
-        {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella, "optimizer_kwargs": {"use_TRICs": False}}
-        ```
 
     Parameters
     ----------
@@ -117,7 +88,7 @@ def ts_job(
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
 
-    qchem_defaults = {
+    calc_defaults = {
         "basis_set": basis,
         "scf_algorithm": scf_algorithm,
         "method": method,
@@ -141,11 +112,11 @@ def ts_job(
     if opt_params and opt_params.get("optimizer", Sella) is not Sella:
         raise ValueError("Only Sella should be used for TS optimization.")
 
-    return _base_opt_job(
+    return base_opt_fn(
         atoms,
         charge,
         spin_multiplicity,
-        qchem_defaults=qchem_defaults,
+        calc_defaults=calc_defaults,
         opt_defaults=opt_defaults,
         opt_params=opt_params,
         additional_fields={"name": "Q-Chem TS"},
@@ -154,10 +125,7 @@ def ts_job(
 
 
 @job
-@requires(
-    has_sella,
-    "Sella must be installed. Refer to the quacc documentation.",
-)
+@requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def irc_job(
     atoms: Atoms,
     charge: int,
@@ -175,33 +143,6 @@ def irc_job(
 ) -> OptSchema:
     """
     IRC optimize a molecular structure.
-
-    ??? Note
-
-        Calculator Defaults:
-
-        ```python
-        {
-            "basis_set": basis,
-            "scf_algorithm": scf_algorithm,
-            "method": method,
-            "charge": charge,
-            "spin_multiplicity": spin_multiplicity,
-            "cores": n_cores or multiprocessing.cpu_count(),
-            "qchem_input_params": {
-                "pcm_dielectric": pcm_dielectric,
-                "smd_solvent": smd_solvent,
-                "overwrite_inputs": overwrite_inputs,
-                "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
-            },
-        }
-        ```
-
-        Optimizer Defaults:
-
-        ```python
-        {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
-        ```
 
     Parameters
     ----------
@@ -248,7 +189,7 @@ def irc_job(
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
 
-    qchem_defaults = {
+    calc_defaults = {
         "basis_set": basis,
         "scf_algorithm": scf_algorithm,
         "method": method,
@@ -272,11 +213,11 @@ def irc_job(
     if opt_params and opt_params.get("optimizer", IRC) is not IRC:
         raise ValueError("Only Sella's IRC should be used for IRC optimization.")
 
-    return _base_opt_job(
+    return base_opt_fn(
         atoms,
         charge,
         spin_multiplicity,
-        qchem_defaults=qchem_defaults,
+        calc_defaults=calc_defaults,
         opt_defaults=opt_defaults,
         opt_params=opt_params,
         additional_fields={"name": "Q-Chem IRC"},
@@ -285,10 +226,7 @@ def irc_job(
 
 
 @job
-@requires(
-    has_sella,
-    "Sella must be installed. Refer to the quacc documentation.",
-)
+@requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def quasi_irc_job(
     atoms: Atoms,
     charge: int,
@@ -321,24 +259,8 @@ def quasi_irc_job(
         Direction of the IRC. Should be "forward" or "reverse".
     irc_opt_params
         Dictionary of opt_params kwargs for the irc_job.
-
-        ??? Note
-
-             Uses the following defaults:
-
-            ```python
-            {"fmax": 100, "max_steps": 10}
-            ```
     relax_opt_params
         Dictionary of opt_params kwargs for the relax_job.
-
-        ??? Note
-
-            Uses the following defaults:
-
-            ```python
-            {}
-            ```
     copy_files
         Files to copy to the runtime directory.
 

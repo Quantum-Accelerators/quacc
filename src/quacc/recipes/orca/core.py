@@ -2,15 +2,10 @@
 from __future__ import annotations
 
 import multiprocessing
-from shutil import which
 from typing import TYPE_CHECKING
 
-from ase.calculators.orca import ORCA, OrcaProfile, OrcaTemplate
-
-from quacc import SETTINGS, job
-from quacc.runners.ase import run_calc
-from quacc.schemas.cclib import cclib_summarize_run
-from quacc.utils.dicts import merge_dicts
+from quacc import job
+from quacc.recipes.orca._base import base_fn
 
 if TYPE_CHECKING:
     from typing import Any
@@ -18,10 +13,6 @@ if TYPE_CHECKING:
     from ase import Atoms
 
     from quacc.schemas._aliases.cclib import cclibSchema
-
-_LABEL = OrcaTemplate()._label  # skipcq: PYL-W0212
-LOG_FILE = f"{_LABEL}.out"
-GEOM_FILE = f"{_LABEL}.xyz"
 
 
 @job
@@ -55,34 +46,11 @@ def static_job(
         entries, set the value as True. To remove entries from the defaults, set
         the value as None. For a list of available keys, refer to the
         `ase.calculators.orca.ORCA` calculator.
-
-        !!! Info "Calculator `orcasimpleinput` defaults`"
-
-            ```python
-            {
-                xc: True,
-                basis: True,
-                "sp": True,
-                "slowconv": True,
-                "normalprint": True,
-                "xyzfile": True,
-            }
-            ```
     orcablocks
         Dictionary of `orcablocks` swaps for the calculator. To enable new entries,
         set the value as True. To remove entries from the defaults, set the
         value as None. For a list of available keys, refer to the
         `ase.calculators.orca.ORCA` calculator.
-
-        !!! Info "Calculator `orcablocks` defaults"
-
-            ```python
-            (
-                {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
-                if which("mpirun")
-                else {}
-            )
-            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -100,13 +68,9 @@ def static_job(
         "normalprint": True,
         "xyzfile": True,
     }
-    default_blocks = (
-        {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
-        if which("mpirun")
-        else {}
-    )
+    default_blocks = {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
 
-    return _base_job(
+    return base_fn(
         atoms,
         charge,
         spin_multiplicity,
@@ -153,35 +117,11 @@ def relax_job(
         entries, set the value as True. To remove entries from the defaults, set
         the value as None. For a list of available keys, refer to the
         `ase.calculators.orca.ORCA` calculator.
-
-        !!! Info "Calculator `orcasimpleinput` defaults"
-
-            ```python
-            {
-                xc: True,
-                basis: True,
-                "opt": True,
-                "slowconv": True,
-                "normalprint": True,
-                "freq": True if run_freq else None,
-                "xyzfile": True,
-            }
-            ```
     orcablocks
         Dictionary of `orcablocks` swaps for the calculator. To enable new entries,
         set the value as True. To remove entries from the defaults, set the
         value as None. For a list of available keys, refer to the
         `ase.calculators.orca.ORCA` calculator.
-
-        !!! Info "Calculator `orcablocks` defaults"
-
-            ```python
-            (
-                {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
-                if which("mpirun")
-                else {}
-            )
-            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -200,13 +140,9 @@ def relax_job(
         "freq": True if run_freq else None,
         "xyzfile": True,
     }
-    default_blocks = (
-        {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
-        if which("mpirun")
-        else {}
-    )
+    default_blocks = {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
 
-    return _base_job(
+    return base_fn(
         atoms,
         charge=charge,
         spin_multiplicity=spin_multiplicity,
@@ -216,69 +152,4 @@ def relax_job(
         block_swaps=orcablocks,
         additional_fields={"name": "ORCA Relax"},
         copy_files=copy_files,
-    )
-
-
-def _base_job(
-    atoms: Atoms,
-    charge: int = 0,
-    spin_multiplicity: int = 1,
-    default_inputs: dict[str, Any] | None = None,
-    default_blocks: dict[str, Any] | None = None,
-    input_swaps: dict[str, Any] | None = None,
-    block_swaps: dict[str, Any] | None = None,
-    additional_fields: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
-) -> cclibSchema:
-    """
-    Base job function for ORCA recipes.
-
-    Parameters
-    ----------
-    atoms
-        Atoms object
-    charge
-        Charge of the system.
-    spin_multiplicity
-        Multiplicity of the system.
-    default_inputs
-        Default input parameters.
-    default_blocks
-        Default block input parameters.
-    input_swaps
-        Dictionary of orcasimpleinput swaps for the calculator. To enable new
-        entries, set the value as True. To remove entries from the defaults, set
-        the value as None.
-    block_swaps
-        Dictionary of orcablock swaps for the calculator. To enable new entries,
-        set the value as True. To remove entries from the defaults, set the
-        value as None.
-    additional_fields
-        Any additional fields to supply to the summarizer.
-    copy_files
-        Files to copy to the runtime directory.
-
-    Returns
-    -------
-    cclibSchema
-        Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][]
-    """
-    inputs = merge_dicts(default_inputs, input_swaps)
-    blocks = merge_dicts(default_blocks, block_swaps)
-    orcasimpleinput = " ".join(list(inputs.keys()))
-    orcablocks = " ".join(list(blocks.keys()))
-
-    atoms.calc = ORCA(
-        profile=OrcaProfile(SETTINGS.ORCA_CMD),
-        charge=charge,
-        mult=spin_multiplicity,
-        orcasimpleinput=orcasimpleinput,
-        orcablocks=orcablocks,
-    )
-    atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
-
-    return cclib_summarize_run(
-        atoms,
-        LOG_FILE,
-        additional_fields=additional_fields,
     )

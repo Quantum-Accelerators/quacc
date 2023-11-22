@@ -4,12 +4,27 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1]
+
+### Changed
+
+- Switched to using the PyPi release of NewtonNet (1.1).
+- NewtonNet recipes don't run a Hessian calculation by default unless needed
+
+### Fixed
+
+- Fixed circular import issue when running Q-Chem calculations.
+
+### Removed
+
+- Removed unsupported `qchem_internal_relax_job`
+
 ## [0.4.0]
 
 ### Added
 
 - Added `quacc.recipes.common`, including `quacc.recipes.common.slabs`, `quacc.recipes.common.defects`, and `quacc.recipes.common.phonons`
-- Added phonopy schema in `quacc.schemas.phonopy`
+- Added phonopy schema in `quacc.schemas.phonons`
 - Added EMT phonon workflow
 
 ### Changed
@@ -137,7 +152,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Pydantic field type validation has been improved.
 - Moved `quacc.utils.atoms`/`.slabs`/`.defects` into `quacc.atoms.core`/`.slabs`/`.defects`
 - Moved `quacc.custodian` to `quacc.calculators.custodian`
-- Moved `quacc.utils.thermo.ideal_gas` to `quacc.builders.thermo.build_ideal_gas`
+- Moved `quacc.utils.thermo.ideal_gas` to `quacc.builders.thermo.run_ideal_gas`
 - Renamed `quacc.schemas.ase.summarize_thermo` to `quacc.schemas.ase.summarize_ideal_gas_thermo`
 
 ## [0.3.0]
@@ -147,8 +162,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Changed default `SCRATCH_DIR` from `/tmp` to `Path.cwd() / .scratch`
 - Refactored decorator handling to be more concise
 - Renamed `[optimizers]` extras to `[sella]`
-- Moved `quacc.utils.wflows` into `quacc.wflow.decorators` and `quacc.wflow.prefect`
-- Moved `quacc.utils.db` into `quacc.wflow.db`
+- Moved `quacc.utils.wflows` into `quacc.wflow_tools.decorators` and `quacc.wflow_tools.prefect`
+- Moved `quacc.utils.db` into `quacc.wflow_tools.db`
 - Moved `quacc.utils.calc` to `quacc.runners.ase`
 - Moved `quacc.presets` to `quacc.calculators.presets`
 
@@ -317,7 +332,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - Added support for Prefect.
-- Added `quacc.wflow` module.
+- Added `quacc.wflow_tools` module.
 
 ### Changed
 

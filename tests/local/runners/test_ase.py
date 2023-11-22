@@ -141,10 +141,7 @@ def test_bad_runs(tmpdir):
         run_opt(
             atoms,
             optimizer=BFGSLineSearch,
-            optimizer_kwargs={
-                "restart": None,
-                "trajectory": "test.traj",
-            },
+            optimizer_kwargs={"restart": None, "trajectory": "test.traj"},
         )
 
 

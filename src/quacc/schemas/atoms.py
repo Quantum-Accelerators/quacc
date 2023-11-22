@@ -66,12 +66,12 @@ def atoms_to_metadata(
     if get_metadata:
         if atoms.pbc.any():
             struct = AseAtomsAdaptor().get_structure(atoms)
-            metadata = StructureMetadata().from_structure(struct).dict()
+            metadata = StructureMetadata().from_structure(struct).model_dump()
             if store_pmg:
                 results["structure"] = struct
         else:
             mol = AseAtomsAdaptor().get_molecule(atoms, charge_spin_check=False)
-            metadata = MoleculeMetadata().from_molecule(mol).dict()
+            metadata = MoleculeMetadata().from_molecule(mol).model_dump()
             if store_pmg:
                 results["molecule"] = mol
     else:

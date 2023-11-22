@@ -44,11 +44,7 @@ def test_covalent_decorators(tmpdir):
     ]
     assert ct.get_result(
         ct.dispatch(flow(add_distributed))([1, 1, 1], 2), wait=True
-    ).result == [
-        3,
-        3,
-        3,
-    ]
+    ).result == [3, 3, 3]
 
 
 def test_covalent_decorators_args(tmpdir):
