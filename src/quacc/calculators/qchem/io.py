@@ -15,7 +15,7 @@ from pymatgen.io.qchem.outputs import QCOutput
 from pymatgen.io.qchem.sets import QChemDictSet
 
 if TYPE_CHECKING:
-    from typing import Any, Literal, TypedDict
+    from typing import Any, Literal
 
     from ase import Atoms
     from numpy.typing import NDArray
