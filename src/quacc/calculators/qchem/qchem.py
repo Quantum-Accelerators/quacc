@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     class Results(TypedDict, total=False):
         energy: float  # electronic energy in eV
         forces: NDArray  # forces in eV/A
-        hessian: NDArray  # Hessian in Hartree/bohr^2/amu
+        hessian: NDArray  # Hessian in eV/A^2/amu
         enthalpy: float  # total enthalpy in eV
         entropy: float  # total entropy in eV/K
         qc_output: dict[
