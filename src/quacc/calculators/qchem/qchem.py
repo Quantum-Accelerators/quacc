@@ -15,8 +15,19 @@ if TYPE_CHECKING:
 
     from ase import Atoms
 
-    from quacc.calculators.qchem.io import Results
-
+    class Results(TypedDict, total=False):
+        energy: float  # electronic energy in eV
+        forces: NDArray  # forces in eV/A
+        hessian: NDArray  # Hessian in Hartree/bohr^2/amu
+        enthalpy: float  # total enthalpy in eV
+        entropy: float  # total entropy in eV/K
+        qc_output: dict[
+            str, Any
+        ]  # Output from `pymatgen.io.qchem.outputs.QCOutput.data`
+        qc_input: dict[
+            str, Any
+        ]  # Input from `pymatgen.io.qchem.inputs.QCInput.as_dict()`
+        custodian: dict[str, Any]  # custodian.json file metadata
 
 class QChem(FileIOCalculator):
     """Custom Q-Chem calculator built on Pymatgen and Custodian."""
