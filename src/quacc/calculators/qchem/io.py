@@ -156,11 +156,11 @@ def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float]]:
             struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
             for ii in range(len(binary) // 8)
         )
-
-        results["hessian"] = np.reshape(
+        reshaped_hess = np.reshape(
             np.array(tmp_hess_data),
             (len(qc_output["species"]) * 3, len(qc_output["species"]) * 3),
-        ) * (units.Hartree / units.Bohr**2)
+        )
+        results["hessian"] = reshaped_hess * (units.Hartree / units.Bohr**2)
         results["enthalpy"] = qc_output["total_enthalpy"] * (units.kcal / units.mol)
         results["entropy"] = qc_output["total_entropy"] * (
             0.001 * units.kcal / units.mol
