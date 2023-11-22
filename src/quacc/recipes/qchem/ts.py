@@ -88,7 +88,7 @@ def ts_job(
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
 
-    qchem_defaults = {
+    calc_defaults = {
         "basis_set": basis,
         "scf_algorithm": scf_algorithm,
         "method": method,
@@ -116,7 +116,7 @@ def ts_job(
         atoms,
         charge,
         spin_multiplicity,
-        qchem_defaults=qchem_defaults,
+        calc_defaults=calc_defaults,
         opt_defaults=opt_defaults,
         opt_params=opt_params,
         additional_fields={"name": "Q-Chem TS"},
@@ -189,7 +189,7 @@ def irc_job(
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
 
-    qchem_defaults = {
+    calc_defaults = {
         "basis_set": basis,
         "scf_algorithm": scf_algorithm,
         "method": method,
@@ -217,7 +217,7 @@ def irc_job(
         atoms,
         charge,
         spin_multiplicity,
-        qchem_defaults=qchem_defaults,
+        calc_defaults=calc_defaults,
         opt_defaults=opt_defaults,
         opt_params=opt_params,
         additional_fields={"name": "Q-Chem IRC"},

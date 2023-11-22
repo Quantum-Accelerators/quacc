@@ -251,7 +251,7 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
 
-    qchem_defaults = {
+    calc_defaults = {
         "basis_set": basis,
         "scf_algorithm": scf_algorithm,
         "method": method,
@@ -276,7 +276,7 @@ def relax_job(
         atoms,
         charge=charge,
         spin_multiplicity=spin_multiplicity,
-        qchem_defaults=qchem_defaults,
+        calc_defaults=calc_defaults,
         opt_defaults=opt_defaults,
         opt_params=opt_params,
         additional_fields={"name": "Q-Chem Optimization"},

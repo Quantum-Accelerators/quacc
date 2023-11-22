@@ -73,7 +73,7 @@ def base_opt_job(
     atoms: Atoms,
     charge: int = 0,
     spin_multiplicity: int = 1,
-    qchem_defaults: dict[str, Any] | None = None,
+    calc_defaults: dict[str, Any] | None = None,
     opt_defaults: dict[str, Any] | None = None,
     opt_params: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
@@ -90,7 +90,7 @@ def base_opt_job(
         Charge of the system.
     spin_multiplicity
         Multiplicity of the system.
-    qchem_defaults
+    calc_defaults
         Default arguments for the Q-Chem calculator.
     opt_defaults
         Default arguments for the ASE optimizer.
@@ -107,7 +107,7 @@ def base_opt_job(
     # TODO:
     #   - passing initial Hessian?
 
-    qchem_flags = remove_dict_nones(qchem_defaults)
+    qchem_flags = remove_dict_nones(calc_defaults)
     opt_flags = merge_dicts(opt_defaults, opt_params)
 
     atoms.calc = QChem(atoms, **qchem_flags)
