@@ -3,15 +3,19 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ase.calculators.espresso import (Espresso,
-                                      EspressoProfile)
+from ase.calculators.espresso import Espresso, EspressoProfile
+from ase.io.espresso import construct_namelist
 
 from quacc import SETTINGS, job
 from quacc.runners.ase import run_calc
 from quacc.schemas.ase import summarize_run
 from quacc.utils.dicts import merge_dicts
+from quacc.utils.files import load_yaml_calc
+from quacc.calculators.espresso.io import parse_pp_and_cutoff
 
 ESPRESSO_CMD = f"{SETTINGS.ESPRESSO_CMD}"
+ESPRESSO_PP_PATH = f"{SETTINGS.ESPRESSO_PP_PATH}"
+ESPRESSO_PRESET_PATH = f"{SETTINGS.ESPRESSO_PRESET_PATH}"
 
 if TYPE_CHECKING:
     from typing import Any
@@ -24,6 +28,7 @@ if TYPE_CHECKING:
 @job
 def static_job(
     atoms: Atoms,
+    preset: str | None = None,
     copy_files: list[str] | None = None,
     **kwargs,
 ) -> RunSchema:
@@ -71,6 +76,7 @@ def static_job(
 
 def _base_job(
     atoms: Atoms,
+    preset: str | None = None,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
@@ -99,17 +105,24 @@ def _base_job(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
+    preset = preset or "default"
 
-    # No reason to type pseudopotentials=pseudopotentials everywhere
-    # if something like this is possible?
-    pseudopotentials = atoms.info.get("pseudopotentials", None)
-    # No reason to add a env variable, pseudo path is already
-    # managed by $ESPRESSO_PSEUDO.
+    # This will be useful if we add presets...
+    input_data = calc_swaps.get("input_data", {})
+    input_data = construct_namelist(input_data)
+    input_data = {k: dict(v) for k, v in input_data.items()}
+    input_data['control']['pseudo_dir'] = ESPRESSO_PP_PATH
 
+    if preset:
+        config = load_yaml_calc(ESPRESSO_PRESET_PATH / f"{preset}")
+        preset_pp = parse_pp_and_cutoff
+
+
+    calc_swaps["input_data"] = input_data
     flags = merge_dicts(calc_defaults, calc_swaps)
+
     profile = EspressoProfile(argv=ESPRESSO_CMD.split())
     atoms.calc = Espresso(profile = profile,
-                          pseudopotentials=pseudopotentials,
                           **flags)
     final_atoms = run_calc(atoms, copy_files=copy_files)
 

@@ -14,6 +14,7 @@ from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from quacc.calculators.vasp import presets as vasp_presets
+from quacc.calculators.espresso import presets as espresso_presets
 
 if TYPE_CHECKING:
     from typing import Any
@@ -134,6 +135,34 @@ class QuaccSettings(BaseSettings):
     ESPRESSO_CMD: Path = Field(
         Path("pw.x"),
         description=("Path to the espresso executable."),
+    )
+    ESPRESSO_PP_PATH: Path = Field(
+        None,
+        description=("Path to a pseudopotential library for espresso."),
+    )
+    ESPRESSO_PRESET_DIR: Path = Field(
+        resources.files(espresso_presets),
+        description="Path to the espresso preset directory",
+    )
+    ESPRESSO_PH_CMD: Path = Field(
+        Path("ph.x"),
+        description=("Path to the espresso ph.x executable."),
+    )
+    ESPRESSO_NEB_CMD: Path = Field(
+        Path("neb.x"),
+        description=("Path to the espresso neb.x executable."),
+    )
+    ESPRESSO_Q2R_CMD: Path = Field(
+        Path("q2r.x"),
+        description=("Path to the espresso q2r.x executable."),
+    )
+    ESPRESSO_MATDYN_CMD: Path = Field(
+        Path("matdyn.x"),
+        description=("Path to the espresso matdyn.x executable."),
+    )
+    ESPRESSO_DYNMAT_CMD: Path = Field(
+        Path("dynmat.x"),
+        description=("Path to the espresso dynmat.x executable."),
     )
 
     # ---------------------------

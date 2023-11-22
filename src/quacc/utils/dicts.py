@@ -55,6 +55,7 @@ def merge_dicts(
     """
     dict1 = dict1 or {}
     dict2 = dict2 or {}
+    # Isn't deepcopy needed here?
     merged = dict1.copy()
 
     for key, value in dict2.items():
