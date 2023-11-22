@@ -29,6 +29,7 @@ if TYPE_CHECKING:
         ]  # Input from `pymatgen.io.qchem.inputs.QCInput.as_dict()`
         custodian: dict[str, Any]  # custodian.json file metadata
 
+
 class QChem(FileIOCalculator):
     """Custom Q-Chem calculator built on Pymatgen and Custodian."""
 
