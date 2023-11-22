@@ -6,14 +6,10 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ase.calculators.calculator import FileIOCalculator
-from pymatgen.io.qchem.inputs import QCInput
-from pymatgen.io.qchem.sets import QChemDictSet
-from pymatgen.io.qchem.utils import lower_and_check_unique
 
 from quacc.calculators.qchem import qchem_custodian
 from quacc.calculators.qchem.io import read_qchem, write_qchem
-from quacc.calculators.qchem.params import get_molecule, get_rem_swaps
-from quacc.utils.dicts import merge_dicts
+from quacc.calculators.qchem.params import cleanup_attrs, make_qc_input
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Literal
@@ -226,11 +222,11 @@ class QChem(FileIOCalculator):
         if "directory" in self.fileiocalculator_kwargs:
             raise NotImplementedError("The directory kwarg is not supported.")
 
-        # Apply input swaps
-        self.rem = get_rem_swaps(self.rem, restart=bool(self._prev_orbital_coeffs))
-
         # Clean up parameters
-        self._cleanup_attrs()
+        cleanup_attrs(self)
+
+        # Set default params
+        self._set_default_params()
 
         # Get Q-Chem executable command
         command = self._manage_environment()
@@ -270,7 +266,7 @@ class QChem(FileIOCalculator):
         """
         FileIOCalculator.write_input(self, atoms, properties, system_changes)
 
-        qc_input = self._make_qc_input()
+        qc_input = make_qc_input(self)
 
         write_qchem(qc_input, prev_orbital_coeffs=self._prev_orbital_coeffs)
 
@@ -299,92 +295,6 @@ class QChem(FileIOCalculator):
 
         qchem_custodian_script = Path(inspect.getfile(qchem_custodian)).resolve()
         return f"python {qchem_custodian_script}"
-
-    def _cleanup_attrs(self) -> None:
-        """
-        Clean up self attribute parameters.
-        """
-        for attr in [
-            "rem",
-            "pcm",
-            "solvent",
-            "smx",
-            "scan",
-            "van_der_waals",
-            "plots",
-            "nbo",
-            "geom_opt",
-            "svp",
-            "pcm_nonels",
-        ]:
-            attr_val = lower_and_check_unique(getattr(self, attr))
-            setattr(self, attr, attr_val)
-
-        self._molecule = get_molecule(self.atoms, self.charge, self.spin_multiplicity)
-        self._set_default_params()
-
-    def _make_qc_input(self) -> QCInput:
-        """
-        Make a QCInput object. It will, by default, create a QCInput from
-        the QChem calculator kwargs. If `self.qchem_dict_set_params` is
-        specified, it will create a QCInput from a QChemDictSet, merging
-        the two QCInput objects and taking the latter as higher priority.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        QCInput
-            The QCInput object.
-        """
-        qc_input = QCInput(
-            self._molecule,
-            self.rem,
-            opt=self.opt,
-            pcm=self.pcm,
-            solvent=self.solvent,
-            smx=self.smx,
-            scan=self.scan,
-            van_der_waals=self.van_der_waals,
-            vdw_mode=self.vdw_mode,
-            plots=self.plots,
-            nbo=self.nbo,
-            geom_opt=self.geom_opt,
-            cdft=self.cdft,
-            almo_coupling=self.almo_coupling,
-            svp=self.svp,
-            pcm_nonels=self.pcm_nonels,
-        )
-
-        if self.qchem_dict_set_params:
-            # Get minimal parameters needed to instantiate a QChemDictSet
-            if "molecule" in self.qchem_dict_set_params:
-                msg = "Do not specify `molecule` in `qchem_dict_set_params`"
-                raise ValueError(msg)
-            if "job_type" not in self.qchem_dict_set_params:
-                self.qchem_dict_set_params["job_type"] = self.rem.get("job_type")
-            if "basis_set" not in self.qchem_dict_set_params:
-                self.qchem_dict_set_params["basis_set"] = self.rem.get("basis")
-            if "scf_algorithm" not in self.qchem_dict_set_params:
-                self.qchem_dict_set_params["scf_algorithm"] = self.rem.get(
-                    "scf_algorithm"
-                )
-            if "qchem_version" not in self.qchem_dict_set_params:
-                self.qchem_dict_set_params["qchem_version"] = 6
-
-            # Make QChemDictSet
-            qc_dict_set = QChemDictSet(self._molecule, **self.qchem_dict_set_params)
-
-            # Merge the parameters from both QCInput objects, taking
-            # QCDictSet's parameters as priority
-            qc_input_as_dict = merge_dicts(qc_input.as_dict(), qc_dict_set.as_dict())
-
-            # Make a new QCInput
-            qc_input = QCInput.from_dict(qc_input_as_dict)
-
-        return qc_input
 
     def _set_default_params(self) -> None:
         """
