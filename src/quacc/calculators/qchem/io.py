@@ -161,7 +161,7 @@ def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float]]:
         results["hessian"] = np.reshape(
             np.array(tmp_hess_data),
             (len(qc_output["species"]) * 3, len(qc_output["species"]) * 3),
-        )
+        ) * (units.Hartree / units.Bohr**2 / units.amu)
         results["enthalpy"] = qc_output["total_enthalpy"] * (units.kcal / units.mol)
         results["entropy"] = qc_output["total_entropy"] * (
             0.001 * units.kcal / units.mol
