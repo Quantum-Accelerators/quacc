@@ -73,8 +73,10 @@ def test_qchem_write_input_advanced(tmpdir, test_atoms):
     calc = QChem(
         test_atoms,
         qchem_dict_set_params={
+            "job_type": "force",
             "basis_set": "def2-svpd",
             "scf_algorithm": "gdm",
+            "max_scf_cycles": 100,
             "smd_solvent": "water",
             "overwrite_inputs": {"rem": {"method": "b97mv", "mem_total": "170000"}},
         },

@@ -155,7 +155,7 @@ def get_rem_swaps(rem: dict[str, Any], restart: bool = False) -> dict[str, Any]:
     if restart and "scf_guess" not in rem:
         logger.info("Copilot: Setting scf_guess in `rem` to 'read'")
         rem["scf_guess"] = "read"
-    if rem.get("scf_algorithm") == "gdm" and rem.get("scf_guess", 50) < 200:
+    if rem.get("scf_algorithm") == "gdm" and "max_scf_cycles" not in rem:
         logger.info("Copilot: Setting max_scf_cycles in `rem` to 200")
         rem["max_scf_cycles"] = 200
 
