@@ -94,7 +94,15 @@ def test_qchem_write_input_advanced(tmpdir, test_atoms):
 
 def test_qchem_write_input_open_shell_and_different_charges(tmpdir, os_atoms):
     tmpdir.chdir()
-    calc = QChem(os_atoms, spin_multiplicity=2)
+    calc = QChem(
+        os_atoms,
+        spin_multiplicity=2,
+        qchem_dict_set_params={
+            "basis_set": "def2-tzvpd",
+            "job_type": "force",
+            "scf_algorithm": "diis",
+        },
+    )
     assert calc.parameters["charge"] == 0
     assert calc.parameters["spin_multiplicity"] == 2
     calc.write_input(os_atoms)
@@ -102,7 +110,16 @@ def test_qchem_write_input_open_shell_and_different_charges(tmpdir, os_atoms):
     ref_qcinp = QCInput.from_file(str(FILE_DIR / "examples" / "OSDC1.qin"))
     assert qcinp.as_dict() == ref_qcinp.as_dict()
 
-    calc = QChem(os_atoms, charge=0, spin_multiplicity=4)
+    calc = QChem(
+        os_atoms,
+        charge=0,
+        spin_multiplicity=4,
+        qchem_dict_set_params={
+            "basis_set": "def2-tzvpd",
+            "job_type": "force",
+            "scf_algorithm": "diis",
+        },
+    )
     assert calc.parameters["charge"] == 0
     assert calc.parameters["spin_multiplicity"] == 4
     calc.write_input(os_atoms)
@@ -110,7 +127,15 @@ def test_qchem_write_input_open_shell_and_different_charges(tmpdir, os_atoms):
     ref_qcinp = QCInput.from_file(str(FILE_DIR / "examples" / "OSDC2.qin"))
     assert qcinp.as_dict() == ref_qcinp.as_dict()
 
-    calc = QChem(os_atoms, charge=1)
+    calc = QChem(
+        os_atoms,
+        charge=1,
+        qchem_dict_set_params={
+            "basis_set": "def2-tzvpd",
+            "job_type": "force",
+            "scf_algorithm": "diis",
+        },
+    )
     assert calc.parameters["charge"] == 1
     assert calc.parameters["spin_multiplicity"] == 1
     calc.write_input(os_atoms)
@@ -118,7 +143,16 @@ def test_qchem_write_input_open_shell_and_different_charges(tmpdir, os_atoms):
     ref_qcinp = QCInput.from_file(str(FILE_DIR / "examples" / "OSDC3.qin"))
     assert qcinp.as_dict() == ref_qcinp.as_dict()
 
-    calc = QChem(os_atoms, charge=1, spin_multiplicity=3)
+    calc = QChem(
+        os_atoms,
+        charge=1,
+        spin_multiplicity=3,
+        qchem_dict_set_params={
+            "basis_set": "def2-tzvpd",
+            "job_type": "force",
+            "scf_algorithm": "diis",
+        },
+    )
     assert calc.parameters["charge"] == 1
     assert calc.parameters["spin_multiplicity"] == 3
     calc.write_input(os_atoms)

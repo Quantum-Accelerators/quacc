@@ -172,6 +172,10 @@ def get_molecule(
     ----------
     atoms
         Input `atoms` kwarg to the calculator.
+    charge
+        Charge on the molecule.
+    spin_multiplicity
+        Spin multiplicity of the molecule.
 
     Returns
     -------
@@ -181,15 +185,15 @@ def get_molecule(
     adaptor = AseAtomsAdaptor()
 
     if isinstance(atoms, Atoms):
+        atoms.charge = charge
+        atoms.spin_multiplicity = spin_multiplicity
         pmg_obj = adaptor.get_molecule(atoms)
-        pmg_obj.set_charge_and_spin(charge, spin_multiplicity)
         return pmg_obj
 
     if isinstance(atoms, list):
         molecules = []
         for atoms_ in atoms:
             pmg_obj = adaptor.get_molecule(atoms_)
-            pmg_obj.set_charge_and_spin(charge, spin_multiplicity)
             molecules.append(pmg_obj)
         return molecules
 
