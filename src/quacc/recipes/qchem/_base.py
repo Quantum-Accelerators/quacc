@@ -27,7 +27,8 @@ def base_fn(
     atoms: Atoms,
     charge: int = 0,
     spin_multiplicity: int = 1,
-    defaults: dict[str, Any] | None = None,
+    calc_defaults: dict[str, Any] | None = None,
+    calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
@@ -43,8 +44,12 @@ def base_fn(
         Charge of the system.
     spin_multiplicity
         Multiplicity of the system.
-    defaults
+    calc_defaults
         The default parameters for the recipe.
+    calc_swaps
+        Dictionary of custom kwargs for the Q-Chem calculator. Set a value to `None` to
+        remove a pre-existing key entirely. For a list of available keys, refer to the
+        `quacc.calculators.qchem.qchem.QChem` calculator.
     additional_fields
         Any additional fields to set in the summary.
     copy_files
@@ -56,8 +61,7 @@ def base_fn(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
-    qchem_flags = remove_dict_nones(defaults)
-
+    qchem_flags = merge_dicts(calc_defaults, calc_swaps)
     atoms.calc = QChem(
         atoms, charge=charge, spin_multiplicity=spin_multiplicity, **qchem_flags
     )
@@ -76,6 +80,7 @@ def base_opt_fn(
     charge: int = 0,
     spin_multiplicity: int = 1,
     calc_defaults: dict[str, Any] | None = None,
+    calc_swaps: dict[str, Any] | None = None,
     opt_defaults: dict[str, Any] | None = None,
     opt_params: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
@@ -94,6 +99,10 @@ def base_opt_fn(
         Multiplicity of the system.
     calc_defaults
         Default arguments for the Q-Chem calculator.
+    calc_swaps
+        Dictionary of custom kwargs for the Q-Chem calculator. Set a value to `None` to
+        remove a pre-existing key entirely. For a list of available keys, refer to the
+        `quacc.calculators.qchem.qchem.QChem` calculator.
     opt_defaults
         Default arguments for the ASE optimizer.
     opt_params
@@ -109,7 +118,7 @@ def base_opt_fn(
     # TODO:
     #   - passing initial Hessian?
 
-    qchem_flags = remove_dict_nones(calc_defaults)
+    qchem_flags = merge_dicts(calc_defaults, calc_swaps)
     opt_flags = merge_dicts(opt_defaults, opt_params)
 
     atoms.calc = QChem(
