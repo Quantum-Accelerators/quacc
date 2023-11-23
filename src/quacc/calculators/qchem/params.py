@@ -75,11 +75,11 @@ def make_qc_input(qchem: QChem) -> QCInput:
         ]:
             prop1 = getattr(qchem, prop)
             prop2 = getattr(qc_dict_set, prop)
-            if prop2:
+            if prop2 and not prop1:
                 setattr(qchem, prop, merge_dicts(prop1, prop2))
         for prop in ["vdw_mode", "cdft", "almo_coupling"]:
             prop2 = getattr(qc_dict_set, prop)
-            if prop2:
+            if prop2 and not prop1:
                 setattr(qchem, prop, prop2)
 
     qchem.rem = get_rem_swaps(qchem.rem, restart=qchem._prev_orbital_coeffs is not None)
