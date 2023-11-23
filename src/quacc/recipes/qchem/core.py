@@ -79,7 +79,7 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
     defaults = merge_dicts(
-        _BASE_SET, {"rem": {"job_type": "sp", "method": method, "basis": basis}}
+        _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
 
     return _base_job(
@@ -254,7 +254,9 @@ def _base_job(
 
     qchem_flags = merge_dicts(defaults, calc_swaps)
 
-    atoms.calc = QChem(atoms, **qchem_flags)
+    atoms.calc = QChem(
+        atoms, charge=charge, spin_multiplicity=spin_multiplicity, **qchem_flags
+    )
     final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(
@@ -311,7 +313,9 @@ def _base_opt_job(
     qchem_flags = merge_dicts(calc_defaults, calc_swaps)
     opt_flags = merge_dicts(opt_defaults, opt_params)
 
-    atoms.calc = QChem(atoms, **qchem_flags)
+    atoms.calc = QChem(
+        atoms, charge=charge, spin_multiplicity=spin_multiplicity, **qchem_flags
+    )
     dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
 
     return summarize_opt_run(
