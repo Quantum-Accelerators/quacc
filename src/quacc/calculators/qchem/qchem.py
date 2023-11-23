@@ -296,7 +296,8 @@ class QChem(FileIOCalculator):
         self.results = results
         self._prev_orbital_coeffs = prev_orbital_coeffs
 
-    def _manage_environment(self) -> str:
+    @staticmethod
+    def _manage_environment() -> str:
         """
         Return the command to run the Q-Chem calculator via Custodian.
 

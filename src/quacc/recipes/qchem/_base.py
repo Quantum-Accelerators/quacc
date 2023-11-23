@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from quacc.calculators.qchem import QChem
 from quacc.runners.ase import run_calc, run_opt
 from quacc.schemas.ase import summarize_opt_run, summarize_run
-from quacc.utils.dicts import merge_dicts, remove_dict_nones
+from quacc.utils.dicts import merge_dicts
 
 try:
     from sella import Sella
