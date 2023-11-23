@@ -45,7 +45,7 @@ def teardown_module():
     #{'method': 'cnt_diff', 'grad_precision': 1e-5},
     #{'method': 'cnt_diff', 'grad_precision': 1e-5, 'disagreement': 'values'},
 ])
-def calc_swaps(request):
+def calc_kwargs(request):
     return request.param
 
 
@@ -59,7 +59,7 @@ def calc_swaps(request):
     {'optimizer': Sella},
     {'optimizer': IRC},
 ])
-def opt_swaps(request):
+def opt_params(request):
     return request.param
 
 
@@ -157,33 +157,38 @@ def atoms():
     return atoms
 
 
-@pytest.mark.parametrize("use_custom_hessian, opt_swaps", [
-    (True, None),
-    (True, {"max_steps": 4}),
-    (False, None),
-    (False, {"max_steps": 4})
+@pytest.mark.parametrize("use_custom_hessian", [
+    (True),
+    (True),
+    (False),
+    (False)
 ])
-def test_ts_job(tmpdir, atoms, use_custom_hessian, opt_swaps):
+def test_ts_job(tmpdir, atoms, use_custom_hessian, opt_params, calc_kwargs):
     tmpdir.chdir()
 
-    output = ts_job(atoms, use_custom_hessian=use_custom_hessian, opt_swaps=opt_swaps)
+    output = ts_job(
+        atoms,
+        use_custom_hessian=use_custom_hessian,
+        opt_params=opt_params,
+        **calc_kwargs
+    )
 
     assert isinstance(output, dict)
     assert "freq_job" in output
     assert "thermo" in output["freq_job"]
 
     if use_custom_hessian:
-        if opt_swaps is None:
+        if opt_params is None:
             assert output["results"]["energy"] == pytest.approx(-30.91756742496904)
             assert output["freq_job"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.012395738446304833)
-        elif "max_steps" in opt_swaps and opt_swaps["max_steps"] == 4:
+        elif "max_steps" in opt_params and opt_params["max_steps"] == 4:
             assert output["results"]["energy"] == pytest.approx(-29.83567172077247)
             assert output["freq_job"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.024218215485424726)
     else:
-        if opt_swaps is None:
+        if opt_params is None:
             assert output["results"]["energy"] == pytest.approx(-30.917585898315)
             assert output["freq_job"]["vib"]["results"]["imag_vib_freqs"][0] == pytest.approx(-1676.5015763982956)
-        elif "max_steps" in opt_swaps and opt_swaps["max_steps"] == 4:
+        elif "max_steps" in opt_params and opt_params["max_steps"] == 4:
             assert output["results"]["energy"] == pytest.approx(-29.831788105843444)
             assert output["freq_job"]["vib"]["results"]["imag_vib_freqs"][0] == pytest.approx(-1460.3321973013199)
 
