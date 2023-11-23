@@ -32,7 +32,6 @@ _BASE_SET = {
         "thresh": 14,
         "s2thresh": 16,
         "scf_algorithm": "diis",
-        "max_scf_cycles": 100,
         "resp_charges": True,
         "symmetry": False,
         "sym_ignore": True,

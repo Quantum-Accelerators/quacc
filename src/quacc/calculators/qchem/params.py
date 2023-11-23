@@ -75,8 +75,8 @@ def make_qc_input(qchem: QChem) -> QCInput:
         ]:
             prop1 = getattr(qchem, prop)
             prop2 = getattr(qc_dict_set, prop)
-            if prop2 and not prop1:
-                setattr(qchem, prop, merge_dicts(prop1, prop2))
+            if prop2:
+                setattr(qchem, prop, merge_dicts(prop2, prop1))
         for prop in ["vdw_mode", "cdft", "almo_coupling"]:
             prop2 = getattr(qc_dict_set, prop)
             if prop2 and not prop1:
@@ -155,9 +155,14 @@ def get_rem_swaps(rem: dict[str, Any], restart: bool = False) -> dict[str, Any]:
     if restart and "scf_guess" not in rem:
         logger.info("Copilot: Setting scf_guess in `rem` to 'read'")
         rem["scf_guess"] = "read"
-    if rem.get("scf_algorithm") == "gdm" and "max_scf_cycles" not in rem:
-        logger.info("Copilot: Setting max_scf_cycles in `rem` to 200")
-        rem["max_scf_cycles"] = 200
+    if "max_scf_cycles" not in rem:
+        if rem.get("scf_algorithm") == "gdm":
+            rem["max_scf_cycles"] = 200
+        else:
+            rem["max_scf_cycles"] = 100
+        logger.info(
+            f"Copilot: Setting max_scf_cycles in `rem` to {rem['max_scf_cycles']}"
+        )
 
     return rem
 

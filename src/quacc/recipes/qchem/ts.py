@@ -81,7 +81,7 @@ def ts_job(
     """
 
     calc_defaults = merge_dicts(
-        _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis_set": basis}}
+        _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
     opt_defaults = {
         "fmax": 0.01,
@@ -155,7 +155,7 @@ def irc_job(
     """
 
     calc_defaults = merge_dicts(
-        _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis_set": basis}}
+        _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
     opt_defaults = {
         "fmax": 0.01,
