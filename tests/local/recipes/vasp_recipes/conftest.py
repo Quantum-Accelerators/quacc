@@ -14,10 +14,7 @@ def mock_get_potential_energy(self, **kwargs):
     # works because the real atoms.get_potential_energy() takes one argument
     # (i.e. self) and that self object is the atoms object.
     e = -1.0
-    self.calc.results = {
-        "energy": e,
-        "forces": np.array([[0.0, 0.0, 0.0]] * len(self)),
-    }
+    self.calc.results = {"energy": e, "forces": np.array([[0.0, 0.0, 0.0]] * len(self))}
     return e
 
 
@@ -64,5 +61,5 @@ def patch_summarize_run(monkeypatch):
     # Monkeypatch the summarize_run() function so that we aren't relying on real
     # VASP files to be in the working directory during the test.
     monkeypatch.setattr(
-        "quacc.recipes.vasp.core.vasp_summarize_run", mock_summarize_run
+        "quacc.recipes.vasp._base.vasp_summarize_run", mock_summarize_run
     )

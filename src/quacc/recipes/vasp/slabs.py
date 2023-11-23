@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from quacc import flow, job
 from quacc.atoms.slabs import make_adsorbate_structures, make_slabs_from_bulk
 from quacc.recipes.common.slabs import bulk_to_slabs_subflow, slab_to_ads_subflow
-from quacc.recipes.vasp.core import _base_job
+from quacc.recipes.vasp._base import base_fn
 
 if TYPE_CHECKING:
     from typing import Any
@@ -32,7 +32,7 @@ def slab_static_job(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.presets.vasp`.
+        Preset to use from `quacc.calculators.vasp.presets`.
     copy_files
         Files to copy to the runtime directory.
     **calc_kwargs
@@ -40,21 +40,6 @@ def slab_static_job(
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
 
-        !!! Info "Calculator defaults"
-
-            ```python
-            {
-                "auto_dipole": True,
-                "ismear": -5,
-                "laechg": True,
-                "lcharg": True,
-                "lreal": False,
-                "lvhar": True,
-                "lwave": True,
-                "nedos": 5001,
-                "nsw": 0,
-            }
-            ```
     Returns
     -------
     VaspSchema
@@ -72,7 +57,7 @@ def slab_static_job(
         "nedos": 5001,
         "nsw": 0,
     }
-    return _base_job(
+    return base_fn(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
@@ -97,7 +82,7 @@ def slab_relax_job(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.presets.vasp`.
+        Preset to use from `quacc.calculators.vasp.presets`.
     copy_files
         Files to copy to the runtime directory.
     **calc_kwargs
@@ -105,21 +90,6 @@ def slab_relax_job(
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
 
-        !!! Info "Calculator defaults"
-
-            ```python
-            {
-                "auto_dipole": True,
-                "ediffg": -0.02,
-                "isif": 2,
-                "ibrion": 2,
-                "isym": 0,
-                "lcharg": False,
-                "lwave": False,
-                "nsw": 200,
-                "symprec": 1e-8,
-            }
-            ```
     Returns
     -------
     VaspSchema
@@ -137,7 +107,7 @@ def slab_relax_job(
         "nsw": 200,
         "symprec": 1e-8,
     }
-    return _base_job(
+    return base_fn(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,

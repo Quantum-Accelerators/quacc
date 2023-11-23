@@ -61,11 +61,7 @@ def test_relax_job(tmpdir):
 
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += [0.1, 0.1, 0.1]
-    output = relax_job(
-        atoms,
-        opt_params={"fmax": 0.03},
-        asap_cutoff=True,
-    )
+    output = relax_job(atoms, opt_params={"fmax": 0.03}, asap_cutoff=True)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] is True
     assert output["results"]["energy"] == pytest.approx(-0.004528885890177747)
@@ -75,11 +71,7 @@ def test_relax_job(tmpdir):
     atoms[0].position += [0.1, 0.1, 0.1]
     c = FixAtoms(indices=[0, 1])
     atoms.set_constraint(c)
-    output = relax_job(
-        atoms,
-        opt_params={"fmax": 0.03},
-        asap_cutoff=True,
-    )
+    output = relax_job(atoms, opt_params={"fmax": 0.03}, asap_cutoff=True)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] is True
     assert output["results"]["energy"] == pytest.approx(0.04996032884581858)

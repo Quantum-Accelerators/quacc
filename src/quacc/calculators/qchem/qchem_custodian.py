@@ -14,10 +14,7 @@ except ImportError:
     ob = None
 
 
-@requires(
-    ob,
-    "Openbabel must be installed. Try conda install -c conda-forge openbabel",
-)
+@requires(ob, "Openbabel must be installed. Try conda install -c conda-forge openbabel")
 def run_custodian(
     qchem_cores: int = 1,
     qchem_cmd: str | None = None,
@@ -87,11 +84,7 @@ def run_custodian(
         )
     ]
 
-    c = Custodian(
-        handlers,
-        jobs,
-        max_errors=qchem_custodian_max_errors,
-    )
+    c = Custodian(handlers, jobs, max_errors=qchem_custodian_max_errors)
 
     c.run()
 

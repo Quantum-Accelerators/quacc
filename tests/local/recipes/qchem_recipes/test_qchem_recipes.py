@@ -505,14 +505,7 @@ def test_irc_job_v2(tmpdir, test_atoms):
         irc_job(test_atoms, 0, 1, "straight")
 
     with pytest.raises(ValueError):
-        irc_job(
-            test_atoms,
-            0,
-            1,
-            "forward",
-            pcm_dielectric="3.0",
-            smd_solvent="water",
-        )
+        irc_job(test_atoms, 0, 1, "forward", pcm_dielectric="3.0", smd_solvent="water")
 
     with pytest.raises(ValueError):
         irc_job(

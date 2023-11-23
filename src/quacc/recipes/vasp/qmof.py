@@ -12,7 +12,7 @@ from ase.optimize import BFGSLineSearch
 
 from quacc import job
 from quacc.calculators.vasp import Vasp
-from quacc.recipes.vasp.core import _base_job
+from quacc.recipes.vasp._base import base_fn
 from quacc.runners.ase import run_opt
 from quacc.schemas.ase import summarize_opt_run
 from quacc.utils.dicts import merge_dicts
@@ -21,13 +21,7 @@ if TYPE_CHECKING:
     from ase import Atoms
 
     from quacc.schemas._aliases.ase import OptSchema
-    from quacc.schemas._aliases.vasp import VaspSchema
-
-    class QMOFRelaxSchema(VaspSchema):
-        prerelax_lowacc: VaspSchema | None
-        position_relax_lowacc: VaspSchema
-        volume_relax_lowacc: VaspSchema | None
-        double_relax: VaspSchema
+    from quacc.schemas._aliases.vasp import QMOFRelaxSchema, VaspSchema
 
 
 @job
@@ -58,7 +52,7 @@ def qmof_relax_job(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.presets.vasp`. Applies for all jobs.
+        Preset to use from `quacc.calculators.vasp.presets`. Applies for all jobs.
     relax_cell
         True if a volume relaxation should be performed. False if only the
         positions should be updated.
@@ -117,7 +111,7 @@ def _prerelax(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.presets.vasp`.
+        Preset to use from `quacc.calculators.vasp.presets`.
     fmax
         Maximum force in eV/A.
     **kwargs
@@ -157,7 +151,7 @@ def _loose_relax_positions(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.presets.vasp`.
+        Preset to use from `quacc.calculators.vasp.presets`.
     **kwargs
         Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely.
@@ -180,7 +174,7 @@ def _loose_relax_positions(
         "lwave": True,
         "nsw": 250,
     }
-    return _base_job(
+    return base_fn(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
@@ -200,7 +194,7 @@ def _loose_relax_cell(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.presets.vasp`.
+        Preset to use from `quacc.calculators.vasp.presets`.
     **calc_kwargs
         Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely.
@@ -221,7 +215,7 @@ def _loose_relax_cell(
         "lwave": True,
         "nsw": 500,
     }
-    return _base_job(
+    return base_fn(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
@@ -242,7 +236,7 @@ def _double_relax(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.presets.vasp`.
+        Preset to use from `quacc.calculators.vasp.presets`.
     relax_cell
         True if a volume relaxation should be performed.
     **calc_kwargs
@@ -264,7 +258,7 @@ def _double_relax(
         "lwave": True,
         "nsw": 500 if relax_cell else 250,
     }
-    summary1 = _base_job(
+    summary1 = base_fn(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
@@ -280,7 +274,7 @@ def _double_relax(
     del calc_defaults["lreal"]
 
     # Run second relaxation
-    summary2 = _base_job(
+    summary2 = base_fn(
         summary1["atoms"],
         preset=preset,
         calc_defaults=calc_defaults,
@@ -301,7 +295,7 @@ def _static(atoms: Atoms, preset: str | None = "QMOFSet", **calc_kwargs) -> Vasp
         Atoms object
     preset
         Preset to use from `quacc.calculators.presets.vasp`.
-    **calc_kwargs
+    **kwargs
         Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely.
 
@@ -318,7 +312,7 @@ def _static(atoms: Atoms, preset: str | None = "QMOFSet", **calc_kwargs) -> Vasp
         "lwave": True,
         "nsw": 0,
     }
-    return _base_job(
+    return base_fn(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,

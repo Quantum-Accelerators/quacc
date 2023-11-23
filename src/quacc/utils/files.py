@@ -26,9 +26,9 @@ def check_logfile(logfile: str, check_str: str) -> bool:
 
     Parameters
     ----------
-    logfile : str
+    logfile
         Path to the logfile.
-    check_str : str
+    check_str
         String to check for.
 
     Returns
@@ -182,7 +182,7 @@ def get_uri(dir_name: str | Path) -> str:
 
     Parameters
     ----------
-    dir_name : str
+    dir_name
         A directory name.
 
     Returns
