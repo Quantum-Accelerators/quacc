@@ -196,7 +196,7 @@ def freq_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
-    defaults = merge_dicts(
+    calc_defaults = merge_dicts(
         _BASE_SET, {"rem": {"job_type": "freq", "method": method, "basis": basis}}
     )
 
