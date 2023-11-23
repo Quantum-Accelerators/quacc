@@ -275,8 +275,8 @@ def test_relax_job_v3(monkeypatch, tmpdir, test_atoms):
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
     output = relax_job(
         test_atoms,
-        charge,
-        spin_multiplicity,
+        charge=charge,
+        spin_multiplicity=spin_multiplicity,
         rem={"scf_algorithm": "gdm", "mem_total": 170000},
         basis="def2-tzvpd",
         opt_params={"max_steps": 1},
