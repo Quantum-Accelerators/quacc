@@ -136,7 +136,7 @@ class QuaccSettings(BaseSettings):
         Path("pw.x"),
         description=("Path to the espresso executable."),
     )
-    ESPRESSO_PP_PATH: Path = Field(
+    ESPRESSO_PP_PATH: Optional[Path] = Field(
         None,
         description=("Path to a pseudopotential library for espresso."),
     )
@@ -352,7 +352,8 @@ class QuaccSettings(BaseSettings):
         return v
 
     @field_validator(
-        "GAUSSIAN_CMD", "ORCA_CMD", "QCHEM_LOCAL_SCRATCH", "VASP_PRESET_DIR"
+        "GAUSSIAN_CMD", "ORCA_CMD", "QCHEM_LOCAL_SCRATCH", "VASP_PRESET_DIR",
+        "ESPRESSO_CMD"
     )
     @classmethod
     def expand_paths(cls, v):

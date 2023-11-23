@@ -7,11 +7,10 @@ from ase.calculators.espresso import Espresso, EspressoProfile
 from ase.io.espresso import construct_namelist
 
 from quacc import SETTINGS, job
+from quacc.calculators.espresso.io import parse_pp_and_cutoff
 from quacc.runners.ase import run_calc
 from quacc.schemas.ase import summarize_run
-from quacc.utils.dicts import merge_dicts
 from quacc.utils.files import load_yaml_calc
-from quacc.calculators.espresso.io import parse_pp_and_cutoff
 
 ESPRESSO_CMD = f"{SETTINGS.ESPRESSO_CMD}"
 ESPRESSO_PP_PATH = f"{SETTINGS.ESPRESSO_PP_PATH}"
@@ -50,7 +49,6 @@ def static_job(
             {
                 "ecutwfc": 40,
                 "ecutrho": 160,
-                "nspin": 1,
             }
             ```
 
@@ -59,17 +57,12 @@ def static_job(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-
-    calc_defaults = {
-        "ecutwfc": 40,
-        "ecutrho": 160,
-        "nspin": 1,
-    }
+    
     return _base_job(
         atoms,
-        calc_defaults=calc_defaults,
+        preset=preset,
         calc_swaps=kwargs,
-        additional_fields={"name": "espresso Static"},
+        additional_fields={"name": "pw.x static"},
         copy_files=copy_files,
     )
 
@@ -77,7 +70,6 @@ def static_job(
 def _base_job(
     atoms: Atoms,
     preset: str | None = None,
-    calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
@@ -89,6 +81,8 @@ def _base_job(
     ----------
     atoms
         Atoms object
+    preset
+        Name of the preset to use
     calc_defaults
         The default calculator parameters.
     calc_swaps
@@ -105,25 +99,30 @@ def _base_job(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    preset = preset or "default"
+    # Not happy with this mess currently
 
-    # This will be useful if we add presets...
-    input_data = calc_swaps.get("input_data", {})
+    # This is needed because there are two ways
+    # of defining the input_data dict, either as a
+    # nested dict with each namelist a parent dict or as a flat dict
+    # if flat dict, then construct_namelist will convert
+    # it to a nested dict, we have to choose one or the other
+    # and stick with it, which will be the nested dict here.
+    input_data = calc_swaps['input_data']
     input_data = construct_namelist(input_data)
-    input_data = {k: dict(v) for k, v in input_data.items()}
     input_data['control']['pseudo_dir'] = ESPRESSO_PP_PATH
 
     if preset:
         config = load_yaml_calc(ESPRESSO_PRESET_PATH / f"{preset}")
-        preset_pp = parse_pp_and_cutoff
-
+        preset_pp = parse_pp_and_cutoff(config, atoms)
+        input_data = input_data | preset_pp['input_data']
+        calc_swaps = calc_swaps | preset_pp['pseudopotentials']
 
     calc_swaps["input_data"] = input_data
-    flags = merge_dicts(calc_defaults, calc_swaps)
 
     profile = EspressoProfile(argv=ESPRESSO_CMD.split())
     atoms.calc = Espresso(profile = profile,
-                          **flags)
+                          **calc_swaps)
+    
     final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(

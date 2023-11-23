@@ -15,9 +15,15 @@ if TYPE_CHECKING:
 
 def _write(filename, parameters, *, format, **kwargs):
     lines = write_namelist(filename, parameters)
-
+    specific_lines = func_dict[format][1](**kwargs)
+    lines += specific_lines
     with open(filename, 'w') as fd:
         fd.write(''.join(lines))
+
+def _read(filename, *, format, **kwargs):
+    with open(filename, 'r') as fd:
+        lines = fd.readlines()
+    return func_dict[format][0](lines, **kwargs)
 
 def write_namelist(filename: str | Path, parameters: dict):
     # This function aim to write basic input keywords to a file
@@ -33,11 +39,17 @@ def write_namelist(filename: str | Path, parameters: dict):
             elif value is False:
                 pwi.append('   {0:16} = .false.\n'.format(key))
             else:
-                # repr format to get quotes around strings
                 pwi.append('   {0:16} = {1!r:}\n'.format(key, value))
         pwi.append('/\n')  # terminate section
     pwi.append('\n')
     return pwi
 
 def write_ph_specifics():
-    pass
+    return ''
+
+def read_ph_specifics():
+    return ''
+
+func_dict = {
+    'ph': (read_ph_specifics, write_ph_specifics),
+}
