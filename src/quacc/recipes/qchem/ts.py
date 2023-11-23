@@ -7,6 +7,7 @@ from monty.dev import requires
 
 from quacc import SETTINGS, job
 from quacc.recipes.qchem.core import _BASE_SET, _base_opt_job, relax_job
+from quacc.recipes.qchem._base import base_opt_fn
 from quacc.utils.dicts import merge_dicts
 
 try:
@@ -93,7 +94,7 @@ def ts_job(
     if opt_params and opt_params.get("optimizer", Sella) is not Sella:
         raise ValueError("Only Sella should be used for TS optimization.")
 
-    return _base_opt_job(
+    return base_opt_fn(
         atoms,
         charge,
         spin_multiplicity,
@@ -157,6 +158,20 @@ def irc_job(
     calc_defaults = merge_dicts(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
+    calc_defaults = {
+        "basis_set": basis,
+        "scf_algorithm": scf_algorithm,
+        "method": method,
+        "charge": charge,
+        "spin_multiplicity": spin_multiplicity,
+        "cores": n_cores or multiprocessing.cpu_count(),
+        "qchem_input_params": {
+            "pcm_dielectric": pcm_dielectric,
+            "smd_solvent": smd_solvent,
+            "overwrite_inputs": overwrite_inputs,
+            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
+        },
+    }
     opt_defaults = {
         "fmax": 0.01,
         "max_steps": 1000,
@@ -167,7 +182,7 @@ def irc_job(
     if opt_params and opt_params.get("optimizer", IRC) is not IRC:
         raise ValueError("Only Sella's IRC should be used for IRC optimization.")
 
-    return _base_opt_job(
+    return base_opt_fn(
         atoms,
         charge,
         spin_multiplicity,

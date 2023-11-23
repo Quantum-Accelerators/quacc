@@ -12,11 +12,24 @@ from quacc.calculators.qchem.io import read_qchem, write_qchem
 from quacc.calculators.qchem.params import cleanup_attrs, make_qc_input
 
 if TYPE_CHECKING:
-    from typing import Any, ClassVar, Literal
+    from typing import Any, ClassVar, Literal, TypedDict
 
     from ase import Atoms
+    from numpy.typing import NDArray
 
-    from quacc.calculators.qchem.io import Results
+    class Results(TypedDict, total=False):
+        energy: float  # electronic energy in eV
+        forces: NDArray  # forces in eV/A
+        hessian: NDArray  # Hessian in eV/A^2/amu
+        enthalpy: float  # total enthalpy in eV
+        entropy: float  # total entropy in eV/K
+        qc_output: dict[
+            str, Any
+        ]  # Output from `pymatgen.io.qchem.outputs.QCOutput.data`
+        qc_input: dict[
+            str, Any
+        ]  # Input from `pymatgen.io.qchem.inputs.QCInput.as_dict()`
+        custodian: dict[str, Any]  # custodian.json file metadata
 
 
 class QChem(FileIOCalculator):
