@@ -58,7 +58,9 @@ def base_fn(
 
     qchem_flags = remove_dict_nones(defaults)
 
-    atoms.calc = QChem(atoms, charge=charge, spin_multiplicity=spin_multiplicity, **qchem_flags)
+    atoms.calc = QChem(
+        atoms, charge=charge, spin_multiplicity=spin_multiplicity, **qchem_flags
+    )
     final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(
@@ -110,7 +112,9 @@ def base_opt_fn(
     qchem_flags = remove_dict_nones(calc_defaults)
     opt_flags = merge_dicts(opt_defaults, opt_params)
 
-    atoms.calc = QChem(atoms, charge=charge, spin_multiplicity=spin_multiplicity, **qchem_flags)
+    atoms.calc = QChem(
+        atoms, charge=charge, spin_multiplicity=spin_multiplicity, **qchem_flags
+    )
     dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
 
     return summarize_opt_run(
