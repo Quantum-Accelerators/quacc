@@ -75,7 +75,7 @@ def static_job(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    defaults = merge_dicts(
+    calc_defaults = merge_dicts(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
 
@@ -83,7 +83,7 @@ def static_job(
         atoms,
         charge=charge,
         spin_multiplicity=spin_multiplicity,
-        defaults=defaults,
+        calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "Q-Chem Static"},
         copy_files=copy_files,
@@ -204,7 +204,7 @@ def freq_job(
         atoms,
         charge=charge,
         spin_multiplicity=spin_multiplicity,
-        defaults=defaults,
+        calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         copy_files=copy_files,
         additional_fields={"name": "Q-Chem Frequency"},
