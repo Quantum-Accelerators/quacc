@@ -7,7 +7,7 @@ from monty.dev import requires
 
 from quacc import SETTINGS, job
 from quacc.recipes.qchem._base import base_opt_fn
-from quacc.recipes.qchem.core import _BASE_SET, _base_opt_job, relax_job
+from quacc.recipes.qchem.core import _BASE_SET, relax_job
 from quacc.utils.dicts import merge_dicts
 
 try:
@@ -158,20 +158,6 @@ def irc_job(
     calc_defaults = merge_dicts(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
-    calc_defaults = {
-        "basis_set": basis,
-        "scf_algorithm": scf_algorithm,
-        "method": method,
-        "charge": charge,
-        "spin_multiplicity": spin_multiplicity,
-        "cores": n_cores or multiprocessing.cpu_count(),
-        "qchem_input_params": {
-            "pcm_dielectric": pcm_dielectric,
-            "smd_solvent": smd_solvent,
-            "overwrite_inputs": overwrite_inputs,
-            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
-        },
-    }
     opt_defaults = {
         "fmax": 0.01,
         "max_steps": 1000,
