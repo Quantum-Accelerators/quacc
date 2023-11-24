@@ -196,6 +196,8 @@ def get_molecule(
     if isinstance(atoms, list):
         molecules = []
         for atoms_ in atoms:
+            atoms_.charge = charge
+            atoms_.spin_multiplicity = spin_multiplicity
             pmg_obj = adaptor.get_molecule(atoms_)
             molecules.append(pmg_obj)
         return molecules
