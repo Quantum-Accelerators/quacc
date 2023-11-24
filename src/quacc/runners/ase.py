@@ -68,7 +68,7 @@ def run_calc(
 
     # Copy atoms so we don't modify it in-place
     atoms = copy_atoms(atoms)
-    
+
     # Perform staging operations
     tmpdir, job_results_dir = calc_setup(copy_files=copy_files)
 
