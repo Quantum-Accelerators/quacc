@@ -85,7 +85,7 @@ def make_qc_input(qchem: QChem) -> QCInput:
                 setattr(qchem, prop, prop2)
 
     qchem.rem = sort_dict(
-        get_rem_swaps(qchem.rem, restart=qchem._prev_orbital_coeffs is not None)
+        get_rem_swaps(qchem.rem, restart=qchem.prev_orbital_coeffs is not None)
     )
 
     return QCInput(
