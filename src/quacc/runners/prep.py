@@ -11,7 +11,6 @@ from typing import TYPE_CHECKING
 from monty.shutil import copy_r, gzip_dir
 
 from quacc import SETTINGS
-from quacc.atoms.core import copy_atoms
 from quacc.utils.files import copy_decompress, make_unique_dir
 
 
