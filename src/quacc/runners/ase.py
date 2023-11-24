@@ -66,7 +66,7 @@ def run_calc(
     """
 
     # Perform staging operations
-    atoms, tmpdir, job_results_dir = calc_setup(atoms, copy_files=copy_files)
+    tmpdir, job_results_dir = calc_setup(copy_files=copy_files)
 
     # Run calculation via get_potential_energy()
     atoms.get_potential_energy()
@@ -153,7 +153,7 @@ def run_opt(
         raise ValueError(msg)
 
     # Perform staging operations
-    atoms, tmpdir, job_results_dir = calc_setup(atoms, copy_files=copy_files)
+    tmpdir, job_results_dir = calc_setup(copy_files=copy_files)
 
     # Set Sella kwargs
     if optimizer.__name__ == "Sella":
@@ -214,7 +214,7 @@ def run_vib(
     vib_kwargs = vib_kwargs or {}
 
     # Perform staging operations
-    atoms, tmpdir, job_results_dir = calc_setup(atoms, copy_files=copy_files)
+    tmpdir, job_results_dir = calc_setup(copy_files=copy_files)
 
     # Run calculation
     vib = Vibrations(atoms, name=str(tmpdir / "vib"), **vib_kwargs)
