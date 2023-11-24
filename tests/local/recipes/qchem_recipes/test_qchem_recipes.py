@@ -564,9 +564,14 @@ def test_quasi_irc_job(monkeypatch, tmpdir, test_atoms):
         spin_multiplicity=2,
         direction="reverse",
         basis="def2-svpd",
-        rem={"scf_algorithm": "gdm"},
-        irc_job_kwargs={"opt_params": {"max_steps": 6}},
-        relax_job_kwargs={"opt_params": {"max_steps": 6}},
+        irc_job_kwargs={
+            "rem": {"scf_algorithm": "gdm"},
+            "opt_params": {"max_steps": 6},
+        },
+        relax_job_kwargs={
+            "rem": {"scf_algorithm": "gdm"},
+            "opt_params": {"max_steps": 6},
+        },
     )
 
     assert output["atoms"] != test_atoms
