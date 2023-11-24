@@ -61,9 +61,9 @@ def base_fn(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
-    qchem_flags = merge_dicts(calc_defaults, calc_swaps)
+    calc_flags = merge_dicts(calc_defaults, calc_swaps)
     atoms.calc = QChem(
-        atoms, charge=charge, spin_multiplicity=spin_multiplicity, **qchem_flags
+        atoms, charge=charge, spin_multiplicity=spin_multiplicity, **calc_flags
     )
     final_atoms = run_calc(atoms, copy_files=copy_files)
 
@@ -118,11 +118,11 @@ def base_opt_fn(
     # TODO:
     #   - passing initial Hessian?
 
-    qchem_flags = merge_dicts(calc_defaults, calc_swaps)
+    calc_flags = merge_dicts(calc_defaults, calc_swaps)
     opt_flags = merge_dicts(opt_defaults, opt_params)
 
     atoms.calc = QChem(
-        atoms, charge=charge, spin_multiplicity=spin_multiplicity, **qchem_flags
+        atoms, charge=charge, spin_multiplicity=spin_multiplicity, **calc_flags
     )
     dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
 
