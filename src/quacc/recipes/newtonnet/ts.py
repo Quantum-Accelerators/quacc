@@ -103,7 +103,7 @@ def ts_job(
     if use_custom_hessian:
         opt_flags["optimizer_kwargs"]["hessian_function"] = _get_hessian
 
-    ml_calculator = NewtonNet(**flags)
+    ml_calculator = NewtonNet(**calc_flags)
     atoms.calc = ml_calculator
 
     # Run the TS optimization
