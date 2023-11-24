@@ -278,7 +278,7 @@ class QChem(FileIOCalculator):
         """
         FileIOCalculator.write_input(self, atoms, properties, system_changes)
 
-        qc_input = make_qc_input(self)
+        qc_input = make_qc_input(self, atoms)
 
         write_qchem(qc_input, prev_orbital_coeffs=self.prev_orbital_coeffs)
 
