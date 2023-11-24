@@ -11,6 +11,7 @@ from ase.vibrations import Vibrations
 from monty.dev import requires
 from monty.os.path import zpath
 
+from quacc.atoms.core import copy_atoms
 from quacc.runners.prep import calc_cleanup, calc_setup
 
 try:
@@ -65,6 +66,9 @@ def run_calc(
         The updated Atoms object.
     """
 
+    # Copy atoms so we don't modify it in-place
+    atoms = copy_atoms(atoms)
+    
     # Perform staging operations
     tmpdir, job_results_dir = calc_setup(copy_files=copy_files)
 
