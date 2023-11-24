@@ -133,8 +133,6 @@ def cleanup_attrs(qchem: QChem) -> None:
         attr_val = lower_and_check_unique(getattr(qchem, attr))
         setattr(qchem, attr, attr_val)
 
-    qchem._molecule = get_molecule(qchem.atoms, qchem.charge, qchem.spin_multiplicity)
-
 
 def get_rem_swaps(rem: dict[str, Any], restart: bool = False) -> dict[str, Any]:
     """

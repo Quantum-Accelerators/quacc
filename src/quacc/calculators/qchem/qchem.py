@@ -9,7 +9,7 @@ from ase.calculators.calculator import FileIOCalculator
 
 from quacc.calculators.qchem import qchem_custodian
 from quacc.calculators.qchem.io import read_qchem, write_qchem
-from quacc.calculators.qchem.params import cleanup_attrs, make_qc_input
+from quacc.calculators.qchem.params import cleanup_attrs, get_molecule, make_qc_input
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Literal, TypedDict
@@ -227,6 +227,9 @@ class QChem(FileIOCalculator):
         self.pcm_nonels = pcm_nonels
         self.qchem_dict_set_params = qchem_dict_set_params or {}
         self.fileiocalculator_kwargs = fileiocalculator_kwargs
+
+        # Define molecule
+        self._molecule = get_molecule(self.atoms, self.charge, self.spin_multiplicity)
 
         # Instantiate previous orbital coefficients
         self.default_parameters = None
