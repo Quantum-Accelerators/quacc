@@ -147,6 +147,9 @@ def run_opt(
         The ASE Optimizer object.
     """
 
+    # Copy atoms so we don't modify it in-place
+    atoms = copy_atoms(atoms)
+
     # Set defaults
     optimizer_kwargs = optimizer_kwargs or {}
     run_kwargs = run_kwargs or {}
@@ -213,6 +216,9 @@ def run_vib(
     Vibrations
         The updated Vibrations module
     """
+
+    # Copy atoms so we don't modify it in-place
+    atoms = copy_atoms(atoms)
 
     # Set defaults
     vib_kwargs = vib_kwargs or {}
