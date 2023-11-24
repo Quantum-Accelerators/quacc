@@ -14,13 +14,9 @@ from quacc import SETTINGS
 from quacc.atoms.core import copy_atoms
 from quacc.utils.files import copy_decompress, make_unique_dir
 
-if TYPE_CHECKING:
-    from ase import Atoms
 
-
-def calc_setup(
-    atoms: Atoms, copy_files: list[str | Path] | None = None
-) -> tuple[Atoms, Path, Path]:
+def calc_setup(copy_files: list[str | Path] | None = None
+) -> tuple[Path, Path]:
     """
     Perform staging operations for a calculation, including copying files to the scratch
     directory, setting the calculator's directory, decompressing files, and creating a
@@ -28,8 +24,6 @@ def calc_setup(
 
     Parameters
     ----------
-    atoms
-        The Atoms object to run the calculation on.
     copy_files
         Filenames to copy from source to scratch directory.
 
@@ -45,9 +39,6 @@ def calc_setup(
         A symlink to the tmpdir will be made here during the calculation for
         convenience.
     """
-
-    # Don't modify the original atoms object
-    atoms = copy_atoms(atoms)
 
     # Set where to store the results
     job_results_dir = (
@@ -74,7 +65,7 @@ def calc_setup(
 
     os.chdir(tmpdir)
 
-    return atoms, tmpdir, job_results_dir
+    return tmpdir, job_results_dir
 
 
 def calc_cleanup(tmpdir: str | Path, job_results_dir: str | Path) -> None:
