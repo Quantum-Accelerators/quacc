@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-def make_qc_input(qchem: QChem) -> QCInput:
+def make_qc_input(qchem: QChem, atoms: Atoms) -> QCInput:
     """
     Make a QCInput object. It will, by default, create a QCInput from
     the QChem calculator kwargs. If `qchem.qchem_dict_set_params` is
@@ -41,7 +41,7 @@ def make_qc_input(qchem: QChem) -> QCInput:
     QCInput
         The QCInput object.
     """
-    molecule = get_molecule(qchem.atoms, qchem.charge, qchem.spin_multiplicity)
+    molecule = _get_molecule(qchem.atoms, qchem.charge, qchem.spin_multiplicity)
 
     if qchem.qchem_dict_set_params:
         # Get minimal parameters needed to instantiate a QChemDictSet
@@ -169,7 +169,7 @@ def get_rem_swaps(rem: dict[str, Any], restart: bool = False) -> dict[str, Any]:
     return rem
 
 
-def get_molecule(
+def _get_molecule(
     atoms: Atoms | list[Atoms] | Literal["read"], charge: int, spin_multiplicity: int
 ) -> Molecule | list[Molecule] | Literal["read"]:
     """
