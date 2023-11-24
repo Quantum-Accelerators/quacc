@@ -54,16 +54,16 @@ def base_fn(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
 
-    flags = merge_dicts(calc_defaults, calc_swaps)
+    calc_flags = merge_dicts(calc_defaults, calc_swaps)
 
-    atoms.calc = Dftb(**flags)
+    atoms.calc = Dftb(**calc_flags)
     final_atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
 
     if SETTINGS.CHECK_CONVERGENCE:
         if check_logfile(LOG_FILE, "SCC is NOT converged"):
             msg = f"SCC is not converged in {LOG_FILE}"
             raise RuntimeError(msg)
-        if flags.get("Driver_") == "GeometryOptimization" and not check_logfile(
+        if calc_flags.get("Driver_") == "GeometryOptimization" and not check_logfile(
             LOG_FILE, "Geometry converged"
         ):
             msg = f"Geometry optimization did not complete in {LOG_FILE}"
