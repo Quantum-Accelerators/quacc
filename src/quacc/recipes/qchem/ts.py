@@ -218,7 +218,7 @@ def quasi_irc_job(
         "direction": direction,
         "method": method,
         "basis": basis,
-        "opt_params": {"fmax": 100, "max_steps": 10},
+        "opt_params": {"max_steps": 10},
         "copy_files": copy_files,
     }
     relax_job_defaults = {
