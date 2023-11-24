@@ -229,7 +229,6 @@ class QChem(FileIOCalculator):
         self.fileiocalculator_kwargs = fileiocalculator_kwargs
 
         # Instantiate previous orbital coefficients
-        self.default_parameters = None
         self.prev_orbital_coeffs = None
 
         if "directory" in self.fileiocalculator_kwargs:
@@ -314,10 +313,6 @@ class QChem(FileIOCalculator):
         """
         Store the parameters that have been passed to the Q-Chem calculator in
         FileIOCalculator's self.default_parameters.
-
-        Parameters
-        ----------
-        None
 
         Returns
         -------
