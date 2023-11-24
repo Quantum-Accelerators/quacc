@@ -12,7 +12,7 @@ from pymatgen.io.qchem.inputs import QCInput
 from pymatgen.io.qchem.sets import QChemDictSet
 from pymatgen.io.qchem.utils import lower_and_check_unique
 
-from quacc.utils.dicts import merge_dicts
+from quacc.utils.dicts import merge_dicts, sort_dict
 
 if TYPE_CHECKING:
     from typing import Any, Literal
@@ -82,7 +82,9 @@ def make_qc_input(qchem: QChem) -> QCInput:
             if prop2 and not prop1:
                 setattr(qchem, prop, prop2)
 
-    qchem.rem = get_rem_swaps(qchem.rem, restart=qchem._prev_orbital_coeffs is not None)
+    qchem.rem = sort_dict(
+        get_rem_swaps(qchem.rem, restart=qchem._prev_orbital_coeffs is not None)
+    )
 
     return QCInput(
         qchem._molecule,
