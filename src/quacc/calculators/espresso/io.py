@@ -6,19 +6,26 @@
 # 2. use sys.modules[__name__] and getattr
 # 3. keep track of all functions in a dictionary
 
-def write(filename, parameters, *, format, **kwargs):
-    lines = write_namelist(filename, parameters)
-    specific_lines = func_dict[format][1](**kwargs)
-    lines += specific_lines
-    with open(filename, 'w') as fd:
-        fd.write(''.join(lines))
+def write(filename,
+          atoms,
+          format = 'espresso-in',
+          properties = None,
+          **kwargs):
+    pass
+    #lines = write_namelist(filename, parameters)
+    #specific_lines = func_dict[format][1](**kwargs)
+    #lines += specific_lines
+    #with open(filename, 'w') as fd:
+    #    fd.write(''.join(lines))
 
-def read(filename, *, format, **kwargs):
-    with open(filename, 'r') as fd:
-        lines = fd.readlines()
-    return func_dict[format][0](lines, **kwargs)
+def read(filename,
+         format = 'espresso-out'):
+    pass
+    #with open(filename, 'r') as fd:
+    #    lines = fd.readlines()
+    #return func_dict[format][0](lines, **kwargs)
 
-def write_namelist(filename, parameters):
+def write_namelist(parameters):
     # This function aim to write basic input keywords to a file
     # For additional cards (binary specifics) this is down in the child class
     # Stolen from ase.io.espresso, maybe this could be made to a function "write_namelist"
