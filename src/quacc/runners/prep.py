@@ -15,8 +15,7 @@ from quacc.atoms.core import copy_atoms
 from quacc.utils.files import copy_decompress, make_unique_dir
 
 
-def calc_setup(copy_files: list[str | Path] | None = None
-) -> tuple[Path, Path]:
+def calc_setup(copy_files: list[str | Path] | None = None) -> tuple[Path, Path]:
     """
     Perform staging operations for a calculation, including copying files to the scratch
     directory, setting the calculator's directory, decompressing files, and creating a
