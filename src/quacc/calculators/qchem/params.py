@@ -206,7 +206,4 @@ def get_molecule(
             molecules.append(pmg_obj)
         return molecules
 
-    if isinstance(atoms, str):
-        return atoms
-
-    raise TypeError(f"Invalid type for atoms: {type(atoms)}")
+    return atoms
