@@ -57,17 +57,6 @@ def ts_job(
         Dictionary of custom kwargs for the optimization process. Set a value
         to `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
-
-        !!! Info "Optimizer defaults"
-
-            ```python
-            {
-                "fmax": 0.01,
-                "max_steps": 1000,
-                "optimizer": Sella,
-                "optimizer_kwargs": {"order": 1},
-            }
-            ```
     copy_files
         Files to copy to the runtime directory.
     **calc_kwargs
