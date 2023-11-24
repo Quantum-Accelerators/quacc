@@ -3,17 +3,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from quacc import SETTINGS
-
-from ase.calculators.espresso import Espresso, EspressoProfile
-from ase.io.espresso import construct_namelist
+from quacc.calculators.espresso import Espresso
 
 from quacc import job
-from quacc.calculators.espresso.utils import parse_pp_and_cutoff
 from quacc.runners.ase import run_calc
 from quacc.schemas.ase import summarize_run
-from quacc.utils.files import load_yaml_calc
-from quacc.utils.dicts import merge_dicts
 
 if TYPE_CHECKING:
     from typing import Any
@@ -107,17 +101,8 @@ def _base_job(
     # it to a nested dict, we have to choose one or the other
     # and stick with it, which will be the nested dict here.
 
-    calc_swaps['input_data'] = construct_namelist(calc_swaps['input_data'])
-
-    if preset:
-        config = load_yaml_calc(
-            SETTINGS.ESPRESSO_PRESET_DIR / f"{preset}"
-        )
-        preset_pp = parse_pp_and_cutoff(config, atoms)
-        calc_swaps = merge_dicts(preset_pp, calc_swaps)
-
-    profile = EspressoProfile(argv=str(SETTINGS.ESPRESSO_CMD).split())
-    atoms.calc = Espresso(profile = profile,
+    atoms.calc = Espresso(input_atoms = atoms,
+                          preset = preset,
                           **calc_swaps)
     
     final_atoms = run_calc(atoms, copy_files=copy_files)

@@ -6,14 +6,14 @@
 # 2. use sys.modules[__name__] and getattr
 # 3. keep track of all functions in a dictionary
 
-def _write(filename, parameters, *, format, **kwargs):
+def write(filename, parameters, *, format, **kwargs):
     lines = write_namelist(filename, parameters)
     specific_lines = func_dict[format][1](**kwargs)
     lines += specific_lines
     with open(filename, 'w') as fd:
         fd.write(''.join(lines))
 
-def _read(filename, *, format, **kwargs):
+def read(filename, *, format, **kwargs):
     with open(filename, 'r') as fd:
         lines = fd.readlines()
     return func_dict[format][0](lines, **kwargs)
