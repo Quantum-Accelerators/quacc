@@ -41,6 +41,8 @@ def make_qc_input(qchem: QChem) -> QCInput:
     QCInput
         The QCInput object.
     """
+    molecule = get_molecule(qchem.atoms, qchem.charge, qchem.spin_multiplicity)
+
     if qchem.qchem_dict_set_params:
         # Get minimal parameters needed to instantiate a QChemDictSet
         if "molecule" in qchem.qchem_dict_set_params:
@@ -58,7 +60,7 @@ def make_qc_input(qchem: QChem) -> QCInput:
             qchem.qchem_dict_set_params["qchem_version"] = 6
 
         # Make QChemDictSet
-        qc_dict_set = QChemDictSet(qchem._molecule, **qchem.qchem_dict_set_params)
+        qc_dict_set = QChemDictSet(molecule, **qchem.qchem_dict_set_params)
         for prop in [
             "rem",
             "opt",
@@ -87,7 +89,7 @@ def make_qc_input(qchem: QChem) -> QCInput:
     )
 
     return QCInput(
-        qchem._molecule,
+        molecule,
         qchem.rem,
         opt=qchem.opt,
         pcm=qchem.pcm,
