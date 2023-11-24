@@ -27,8 +27,6 @@ def calc_setup(copy_files: list[str | Path] | None = None) -> tuple[Path, Path]:
 
     Returns
     -------
-    Atoms
-        The input Atoms object.
     Path
         The path to the tmpdir, where the calculation will be run. It will be
         deleted after the calculation is complete.
