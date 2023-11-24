@@ -41,7 +41,13 @@ def test_qchem_write_input_basic(tmpdir, test_atoms):
     assert not Path(FILE_DIR / "53.0").exists()
 
     with pytest.raises(NotImplementedError):
-        QChem(test_atoms, cores=40, directory="notsupported")
+        QChem(test_atoms, directory="notsupported")
+
+    with pytest.raises(NotImplementedError):
+        calc = QChem(
+            test_atoms, job_type="freq", qchem_dict_set_params={"molecule": "test"}
+        )
+        calc.write_input(test_atoms)
 
 
 def test_qchem_write_input_intermediate(tmpdir, test_atoms):

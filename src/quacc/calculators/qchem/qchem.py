@@ -49,7 +49,7 @@ class QChem(FileIOCalculator):
 
     def __init__(
         self,
-        atoms: Atoms | list[Atoms] | Literal["read"],
+        atoms: Atoms,
         charge: int = 0,
         spin_multiplicity: int = 1,
         rem: dict | None = None,
@@ -78,9 +78,7 @@ class QChem(FileIOCalculator):
         Parameters
         ----------
         atoms
-            The Atoms object to be used for the calculation. "read" can be used
-            in multi_job QChem input files where the molecule is read in from
-            the previous calculation.
+            The Atoms object to be used for the calculation.
         charge
             The total charge of the molecular system.
         spin_multiplicity

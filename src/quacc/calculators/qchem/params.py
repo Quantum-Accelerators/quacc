@@ -15,9 +15,7 @@ from pymatgen.io.qchem.utils import lower_and_check_unique
 from quacc.utils.dicts import merge_dicts, sort_dict
 
 if TYPE_CHECKING:
-    from typing import Any, Literal
-
-    from pymatgen.core.structure import Molecule
+    from typing import Any
 
     from quacc.calculators.qchem.qchem import QChem
 
@@ -41,13 +39,16 @@ def make_qc_input(qchem: QChem, atoms: Atoms) -> QCInput:
     QCInput
         The QCInput object.
     """
-    molecule = _get_molecule(atoms, qchem.charge, qchem.spin_multiplicity)
+
+    atoms.charge = qchem.charge
+    atoms.spin_multiplicity = qchem.spin_multiplicity
+    molecule = AseAtomsAdaptor().get_molecule(atoms)
 
     if qchem.qchem_dict_set_params:
         # Get minimal parameters needed to instantiate a QChemDictSet
         if "molecule" in qchem.qchem_dict_set_params:
             msg = "Do not specify `molecule` in `qchem_dict_set_params`"
-            raise ValueError(msg)
+            raise NotImplementedError(msg)
         if "job_type" not in qchem.qchem_dict_set_params and qchem.rem.get("job_type"):
             qchem.qchem_dict_set_params["job_type"] = qchem.rem["job_type"]
         if "basis_set" not in qchem.qchem_dict_set_params and qchem.rem.get("basis"):
@@ -167,43 +168,3 @@ def get_rem_swaps(rem: dict[str, Any], restart: bool = False) -> dict[str, Any]:
         )
 
     return rem
-
-
-def _get_molecule(
-    atoms: Atoms | list[Atoms] | Literal["read"], charge: int, spin_multiplicity: int
-) -> Molecule | list[Molecule] | Literal["read"]:
-    """
-    Convert ASE Atom(s) to Molecule(s) suitable for `QCInput`.
-
-    Parameters
-    ----------
-    atoms
-        Input `atoms` kwarg to the calculator.
-    charge
-        Charge on the molecule.
-    spin_multiplicity
-        Spin multiplicity of the molecule.
-
-    Returns
-    -------
-    Molecule | list[Molecule] | Literal["read"]
-        The corresponding `molecule` kwarg to pass to QCInput.
-    """
-    adaptor = AseAtomsAdaptor()
-
-    if isinstance(atoms, Atoms):
-        atoms.charge = charge
-        atoms.spin_multiplicity = spin_multiplicity
-        pmg_obj = adaptor.get_molecule(atoms)
-        return pmg_obj
-
-    if isinstance(atoms, list):
-        molecules = []
-        for atoms_ in atoms:
-            atoms_.charge = charge
-            atoms_.spin_multiplicity = spin_multiplicity
-            pmg_obj = adaptor.get_molecule(atoms_)
-            molecules.append(pmg_obj)
-        return molecules
-
-    return atoms
