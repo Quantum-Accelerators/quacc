@@ -137,7 +137,6 @@ def relax_job(
     calc_defaults = merge_dicts(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
-
     opt_defaults = {
         "fmax": 0.01,
         "max_steps": 1000,

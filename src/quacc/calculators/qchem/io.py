@@ -13,10 +13,6 @@ from pymatgen.io.qchem.inputs import QCInput
 from pymatgen.io.qchem.outputs import QCOutput
 
 if TYPE_CHECKING:
-    from typing import Any, Literal
-
-    from ase import Atoms
-
     from quacc.calculators.qchem.qchem import Results
 
 
@@ -30,7 +26,12 @@ def write_qchem(
 
     Parameters
     ----------
-    TODO
+    qc_input
+        The QCInput object.
+    directory
+        The directory in which to write the files.
+    prev_orbital_coeffs
+        The orbital coefficients from a previous calculation.
 
     Returns
     -------
@@ -38,7 +39,7 @@ def write_qchem(
     """
     directory = Path(directory)
 
-    if prev_orbital_coeffs is not None:
+    if prev_orbital_coeffs:
         with Path(directory / "53.0").open(mode="wb") as file:
             for val in prev_orbital_coeffs:
                 data = struct.pack("d", val)
