@@ -30,7 +30,6 @@ if TYPE_CHECKING:
 
 @job
 def neb_job(
-    atoms_list: list[Atoms],
     neb_input_data: dict[str, Any],
     pw_input_data: dict[int, Any],
     preset: str | None = None,

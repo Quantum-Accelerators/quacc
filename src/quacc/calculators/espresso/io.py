@@ -1,12 +1,5 @@
 """I/O utilities for the espresso calculator."""
 
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from pathlib import Path
-    from typing import Any
-
-
 # Three ways to call a function based on a string:
 
 # 1. use the globals() dictionary
@@ -25,7 +18,7 @@ def _read(filename, *, format, **kwargs):
         lines = fd.readlines()
     return func_dict[format][0](lines, **kwargs)
 
-def write_namelist(filename: str | Path, parameters: dict):
+def write_namelist(filename, parameters):
     # This function aim to write basic input keywords to a file
     # For additional cards (binary specifics) this is down in the child class
     # Stolen from ase.io.espresso, maybe this could be made to a function "write_namelist"

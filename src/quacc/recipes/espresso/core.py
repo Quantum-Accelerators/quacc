@@ -3,18 +3,17 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from quacc import SETTINGS
+
 from ase.calculators.espresso import Espresso, EspressoProfile
 from ase.io.espresso import construct_namelist
 
-from quacc import SETTINGS, job
-from quacc.calculators.espresso.io import parse_pp_and_cutoff
+from quacc import job
+from quacc.calculators.espresso.utils import parse_pp_and_cutoff
 from quacc.runners.ase import run_calc
 from quacc.schemas.ase import summarize_run
 from quacc.utils.files import load_yaml_calc
-
-ESPRESSO_CMD = f"{SETTINGS.ESPRESSO_CMD}"
-ESPRESSO_PP_PATH = f"{SETTINGS.ESPRESSO_PP_PATH}"
-ESPRESSO_PRESET_PATH = f"{SETTINGS.ESPRESSO_PRESET_PATH}"
+from quacc.utils.dicts import merge_dicts
 
 if TYPE_CHECKING:
     from typing import Any
@@ -107,19 +106,17 @@ def _base_job(
     # if flat dict, then construct_namelist will convert
     # it to a nested dict, we have to choose one or the other
     # and stick with it, which will be the nested dict here.
-    input_data = calc_swaps['input_data']
-    input_data = construct_namelist(input_data)
-    input_data['control']['pseudo_dir'] = ESPRESSO_PP_PATH
+
+    calc_swaps['input_data'] = construct_namelist(calc_swaps['input_data'])
 
     if preset:
-        config = load_yaml_calc(ESPRESSO_PRESET_PATH / f"{preset}")
+        config = load_yaml_calc(
+            SETTINGS.ESPRESSO_PRESET_DIR / f"{preset}"
+        )
         preset_pp = parse_pp_and_cutoff(config, atoms)
-        input_data = input_data | preset_pp['input_data']
-        calc_swaps = calc_swaps | preset_pp['pseudopotentials']
+        calc_swaps = merge_dicts(preset_pp, calc_swaps)
 
-    calc_swaps["input_data"] = input_data
-
-    profile = EspressoProfile(argv=ESPRESSO_CMD.split())
+    profile = EspressoProfile(argv=str(SETTINGS.ESPRESSO_CMD).split())
     atoms.calc = Espresso(profile = profile,
                           **calc_swaps)
     
