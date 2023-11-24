@@ -41,7 +41,7 @@ def make_qc_input(qchem: QChem, atoms: Atoms) -> QCInput:
     QCInput
         The QCInput object.
     """
-    molecule = _get_molecule(qchem.atoms, qchem.charge, qchem.spin_multiplicity)
+    molecule = _get_molecule(atoms, qchem.charge, qchem.spin_multiplicity)
 
     if qchem.qchem_dict_set_params:
         # Get minimal parameters needed to instantiate a QChemDictSet
