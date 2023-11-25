@@ -1,3 +1,4 @@
 covalent==0.229.0rc0
 covalent-hpc-plugin==0.0.8
+numpy==1.24.0
 phonopy==2.20.0
