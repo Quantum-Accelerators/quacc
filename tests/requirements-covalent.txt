@@ -1,4 +1,4 @@
 covalent==0.229.0rc0
 covalent-hpc-plugin==0.0.8
-numpy==1.23.5
+git+https://github.com/PennyLaneAI/pennylane.git
 phonopy==2.20.0
