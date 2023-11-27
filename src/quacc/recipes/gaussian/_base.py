@@ -53,9 +53,9 @@ def base_fn(
         Dictionary of results, as specified in
         [quacc.schemas.cclib.cclib_summarize_run][]
     """
-    flags = merge_dicts(calc_defaults, calc_swaps)
+    calc_flags = merge_dicts(calc_defaults, calc_swaps)
 
-    atoms.calc = Gaussian(command=GAUSSIAN_CMD, label=_LABEL, **flags)
+    atoms.calc = Gaussian(command=GAUSSIAN_CMD, label=_LABEL, **calc_flags)
     atoms = run_calc(atoms, geom_file=LOG_FILE, copy_files=copy_files)
 
     return cclib_summarize_run(atoms, LOG_FILE, additional_fields=additional_fields)

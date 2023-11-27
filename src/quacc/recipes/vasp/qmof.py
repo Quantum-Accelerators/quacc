@@ -133,8 +133,8 @@ def _prerelax(
         "nelm": 225,
         "nsw": 0,
     }
-    flags = merge_dicts(calc_defaults, calc_kwargs, remove_nones=False)
-    atoms.calc = Vasp(atoms, preset=preset, **flags)
+    calc_flags = merge_dicts(calc_defaults, calc_kwargs, remove_nones=False)
+    atoms.calc = Vasp(atoms, preset=preset, **calc_flags)
     dyn = run_opt(atoms, fmax=fmax, optimizer=BFGSLineSearch)
 
     return summarize_opt_run(dyn, additional_fields={"name": "QMOF Prerelax"})

@@ -70,9 +70,9 @@ def static_job(
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
     }
-    flags = merge_dicts(defaults, calc_kwargs)
+    calc_flags = merge_dicts(defaults, calc_kwargs)
 
-    atoms.calc = NewtonNet(**flags)
+    atoms.calc = NewtonNet(**calc_flags)
     final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(
@@ -118,7 +118,7 @@ def relax_job(
     }
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella or FIRE}
 
-    flags = merge_dicts(calc_defaults, calc_kwargs)
+    calc_flags = merge_dicts(calc_defaults, calc_kwargs)
     opt_flags = merge_dicts(opt_defaults, opt_params)
 
     atoms.calc = NewtonNet(**flags)
@@ -172,9 +172,9 @@ def freq_job(
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
         "hess_method": "autograd",
     }
-    flags = merge_dicts(defaults, calc_kwargs)
+    calc_flags = merge_dicts(defaults, calc_kwargs)
 
-    ml_calculator = NewtonNet(**flags)
+    ml_calculator = NewtonNet(**calc_flags)
     atoms.calc = ml_calculator
     final_atoms = run_calc(atoms, copy_files=copy_files)
 
