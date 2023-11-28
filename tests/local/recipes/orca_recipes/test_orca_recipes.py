@@ -65,8 +65,8 @@ def test_relax_job(tmpdir):
 
     output = relax_job(
         atoms,
-        -2,
-        3,
+        charge=-2,
+        spin_multiplicity=3,
         orcasimpleinput={
             "hf": True,
             "wb97x-d3bj": None,
