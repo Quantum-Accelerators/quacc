@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 
-import psutil
 import pytest
 from ase.build import molecule
 
