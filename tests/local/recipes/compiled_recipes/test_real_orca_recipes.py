@@ -9,7 +9,7 @@ from quacc.recipes.orca.core import relax_job, static_job
 
 orca_path = SETTINGS.ORCA_CMD
 
-has_orca = bool(orca_path and os.path.getsize(orca_path) > 1024 * 1024)
+has_orca = bool(orca_path.exists() and os.path.getsize(orca_path) > 1024 * 1024)
 
 pytestmark = pytest.mark.skipif(not has_orca, reason="Needs ORCA")
 
