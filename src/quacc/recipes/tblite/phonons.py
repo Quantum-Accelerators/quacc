@@ -57,8 +57,7 @@ def phonon_flow(
     PhononSchema
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][]
     """
-    static_job_default_kwargs = {"fmax": 1e-8}
-    static_job_kwargs = merge_dicts(static_job_kwargs, static_job_default_kwargs)
+    static_job_kwargs = static_job_kwargs or {}
 
     return phonon_flow_(
         atoms,
