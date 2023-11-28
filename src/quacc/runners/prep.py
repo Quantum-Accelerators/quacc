@@ -97,6 +97,6 @@ def calc_cleanup(tmpdir: str | Path, job_results_dir: str | Path) -> None:
     # Remove symlink to tmpdir
     symlink_path = job_results_dir / f"{tmpdir.name}-symlink"
     symlink_path.unlink(missing_ok=True)
-
+    print("\n\n\n\n\n\n\n\nprinted inside the cleanup function\n\n\n\n\n\n\n\n\n\n")
     # Remove the tmpdir
     rmtree(tmpdir, ignore_errors=True)

@@ -198,11 +198,9 @@ def test_ts_job(
     assert "thermo" in output["freq_job"]
 
     if use_custom_hessian:
-        print('\n\n\n\n\n\n\n0a\n\n\n\n\n\n\n\n')
         assert output["results"]["energy"] == pytest.approx(-30.91756742496904)
         assert output["freq_job"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.012395738446304833)
     else:
-        print('\n\n\n\n\n\n\n0b\n\n\n\n\n\n\n\n')
         assert output["results"]["energy"] == pytest.approx(-30.917585898315)
         assert output["freq_job"]["vib"]["results"]["imag_vib_freqs"][0] == pytest.approx(-1676.5015763982956)
 
