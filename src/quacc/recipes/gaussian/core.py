@@ -1,8 +1,9 @@
 """Core recipes for Gaussian."""
 from __future__ import annotations
 
-import multiprocessing
 from typing import TYPE_CHECKING
+
+import psutil
 
 from quacc import job
 from quacc.recipes.gaussian._base import base_fn
@@ -18,8 +19,8 @@ def static_job(
     atoms: Atoms,
     charge: int = 0,
     spin_multiplicity: int = 1,
-    xc: str = "wb97x-d",
-    basis: str = "def2-tzvp",
+    xc: str = "wb97xd",
+    basis: str = "def2tzvp",
     copy_files: list[str] | None = None,
     **calc_kwargs,
 ) -> cclibSchema:
@@ -55,7 +56,7 @@ def static_job(
     calc_defaults = {
         "mem": "16GB",
         "chk": "Gaussian.chk",
-        "nprocshared": multiprocessing.cpu_count(),
+        "nprocshared": psutil.cpu_count(logical=False),
         "xc": xc,
         "basis": basis,
         "charge": charge,
@@ -82,8 +83,8 @@ def relax_job(
     atoms: Atoms,
     charge: int,
     spin_multiplicity: int,
-    xc: str = "wb97x-d",
-    basis: str = "def2-tzvp",
+    xc: str = "wb97xd",
+    basis: str = "def2tzvp",
     freq: bool = False,
     copy_files: list[str] | None = None,
     **calc_kwargs,
@@ -122,7 +123,7 @@ def relax_job(
     calc_defaults = {
         "mem": "16GB",
         "chk": "Gaussian.chk",
-        "nprocshared": multiprocessing.cpu_count(),
+        "nprocshared": psutil.cpu_count(logical=False),
         "xc": xc,
         "basis": basis,
         "charge": charge,

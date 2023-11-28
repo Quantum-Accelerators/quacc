@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import psutil
 from ase.optimize import FIRE
 
 from quacc import job
@@ -75,6 +76,7 @@ def static_job(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
+
     calc_defaults = merge_dicts(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
@@ -141,7 +143,6 @@ def relax_job(
         "fmax": 0.01,
         "max_steps": 1000,
         "optimizer": Sella if has_sella else FIRE,
-    }
 
     return base_opt_fn(
         atoms,

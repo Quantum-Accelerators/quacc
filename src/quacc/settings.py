@@ -115,7 +115,7 @@ class QuaccSettings(BaseSettings):
     # ORCA Settings
     # ---------------------------
     ORCA_CMD: Path = Field(
-        Path("orca"),
+        Path(which("orca") or "orca"),
         description=(
             "Path to the ORCA executable. This must be the full, absolute path "
             "for parallel calculations to work."

@@ -1,8 +1,9 @@
 """Core recipes for ORCA."""
 from __future__ import annotations
 
-import multiprocessing
 from typing import TYPE_CHECKING
+
+import psutil
 
 from quacc import job
 from quacc.recipes.orca._base import base_fn
@@ -68,7 +69,7 @@ def static_job(
         "normalprint": True,
         "xyzfile": True,
     }
-    default_blocks = {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
+    default_blocks = {f"%pal nprocs {psutil.cpu_count(logical=False)} end": True}
 
     return base_fn(
         atoms,
@@ -140,7 +141,7 @@ def relax_job(
         "freq": True if run_freq else None,
         "xyzfile": True,
     }
-    default_blocks = {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
+    default_blocks = {f"%pal nprocs {psutil.cpu_count(logical=False)} end": True}
 
     return base_fn(
         atoms,
