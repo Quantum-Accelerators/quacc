@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 from quacc import flow
 from quacc.recipes.common.phonons import phonon_flow as phonon_flow_
 from quacc.recipes.tblite.core import static_job
-from quacc.utils.dicts import merge_dicts
 
 if TYPE_CHECKING:
     from typing import Any
