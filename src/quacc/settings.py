@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 import os
-import psutil
 from importlib import resources, util
 from pathlib import Path
 from shutil import which
 from typing import TYPE_CHECKING, Literal, Optional, Union
 
+import psutil
 from maggma.core import Store
 from monty.json import MontyDecoder
 from pydantic import Field, field_validator, model_validator
