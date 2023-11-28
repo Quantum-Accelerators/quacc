@@ -1,8 +1,9 @@
 """Core recipes for Gaussian."""
 from __future__ import annotations
 
-import multiprocessing
 from typing import TYPE_CHECKING
+
+import psutil
 
 from quacc import job
 from quacc.recipes.gaussian._base import base_fn
@@ -55,7 +56,7 @@ def static_job(
     calc_defaults = {
         "mem": "16GB",
         "chk": "Gaussian.chk",
-        "nprocshared": multiprocessing.cpu_count(),
+        "nprocshared": psutil.cpu_count(logical=False),
         "xc": xc,
         "basis": basis,
         "charge": charge,
@@ -122,7 +123,7 @@ def relax_job(
     calc_defaults = {
         "mem": "16GB",
         "chk": "Gaussian.chk",
-        "nprocshared": multiprocessing.cpu_count(),
+        "nprocshared": psutil.cpu_count(logical=False),
         "xc": xc,
         "basis": basis,
         "charge": charge,

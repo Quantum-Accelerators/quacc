@@ -1,7 +1,7 @@
-import multiprocessing
 import os
 from pathlib import Path
 
+import psutil
 import pytest
 from ase.build import molecule
 
@@ -102,9 +102,9 @@ def test_mpi_run(tmpdir, monkeypatch):
 
     atoms = molecule("H2")
     output = static_job(atoms, 0, 1)
-    nprocs = multiprocessing.cpu_count()
+    nprocs = psutil.cpu_count(logical=False)
     assert f"%pal nprocs {nprocs} end" in output["parameters"]["orcablocks"]
 
     output = relax_job(atoms, 0, 1)
-    nprocs = multiprocessing.cpu_count()
+    nprocs = psutil.cpu_count(logical=False)
     assert f"%pal nprocs {nprocs} end" in output["parameters"]["orcablocks"]
