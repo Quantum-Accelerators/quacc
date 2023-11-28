@@ -1,4 +1,4 @@
-"""Phonon recipes for EMT"""
+"""Phonon recipes for TBLite"""
 from __future__ import annotations
 
 from functools import partial
@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from quacc import flow
 from quacc.recipes.common.phonons import phonon_flow as phonon_flow_
-from quacc.recipes.emt.core import static_job
+from quacc.recipes.tblite.core import static_job
 
 if TYPE_CHECKING:
     from typing import Any
@@ -45,7 +45,7 @@ def phonon_flow(
     t_max
         Max temperature (K).
     static_job_kwargs
-        Additional keyword arguments for [quacc.recipes.emt.core.static_job][]
+        Additional keyword arguments for [quacc.recipes.tblite.core.static_job][]
         for the force calculations.
 
     Returns
@@ -63,5 +63,5 @@ def phonon_flow(
         t_step=t_step,
         t_min=t_min,
         t_max=t_max,
-        additional_fields={"name": "EMT Phonons"},
+        additional_fields={"name": "TBLite Phonons"},
     )
