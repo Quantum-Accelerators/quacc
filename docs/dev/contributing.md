@@ -90,4 +90,4 @@ Each PR will report the coverage once your tests pass, but if you'd like to gene
 
 If you are adding recipes based on a code that can be readily installed via `pip` or `conda` (e.g. tblite, DFTB+, Psi4), then you can run these codes directly in the test suite. Preferably, you should use a small molecule or solid and cheap method so the unit tests run quickly.
 
-If the recipes you're adding are proprietary or not available via `pip` or `conda` (e.g. Gaussian, GULP), then you will need to [monkeypatch](https://docs.pytest.org/en/7.1.x/how-to/monkeypatch.html) certain functions to change their behavior during testing.
+If the recipes you're adding are proprietary or not available via `pip` or `conda` (e.g. Gaussian, GULP), then you will need to define a `conftest.py` file to monkeypatch their behavior during testing. Tests with `conftest.py` files can be run locally without applying the monkeypatches by using the `--noconftest` pytest flag.
