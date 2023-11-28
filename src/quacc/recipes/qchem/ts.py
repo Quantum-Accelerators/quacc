@@ -2,8 +2,6 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
-
-import psutil
 from monty.dev import requires
 
 from quacc import SETTINGS, job
