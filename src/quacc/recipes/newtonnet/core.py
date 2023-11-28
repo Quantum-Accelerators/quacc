@@ -121,7 +121,7 @@ def relax_job(
     calc_flags = merge_dicts(calc_defaults, calc_kwargs)
     opt_flags = merge_dicts(opt_defaults, opt_params)
 
-    atoms.calc = NewtonNet(**flags)
+    atoms.calc = NewtonNet(**calc_flags)
     t1 = time.time()
     dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
     elapsed_time = time.time() - t1

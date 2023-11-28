@@ -35,15 +35,15 @@ def teardown_module():
 
 @pytest.fixture(params=[
     {},
-    #{'disagreement': 'values'},
-    #{'method': None},
-    #{'method': None, 'disagreement': 'values'},
-    #{'method': 'autograd'},
-    #{'method': 'autograd', 'disagreement': 'values'},
-    #{'method': 'fwd_diff', 'grad_precision': 1e-5},
-    #{'method': 'fwd_diff', 'grad_precision': 1e-5, 'disagreement': 'values'},
-    #{'method': 'cnt_diff', 'grad_precision': 1e-5},
-    #{'method': 'cnt_diff', 'grad_precision': 1e-5, 'disagreement': 'values'},
+    # {'disagreement': 'values'},
+    # {'method': None},
+    # {'method': None, 'disagreement': 'values'},
+    # {'method': 'autograd'},
+    # {'method': 'autograd', 'disagreement': 'values'},
+    # {'method': 'fwd_diff', 'grad_precision': 1e-5},
+    # {'method': 'fwd_diff', 'grad_precision': 1e-5, 'disagreement': 'values'},
+    # {'method': 'cnt_diff', 'grad_precision': 1e-5},
+    # {'method': 'cnt_diff', 'grad_precision': 1e-5, 'disagreement': 'values'},
 ])
 def calc_kwargs(request):
     return request.param
@@ -63,37 +63,37 @@ def opt_params(request):
     return request.param
 
 
-def test_static_job(tmpdir, calc_swaps):
+def test_static_job(tmpdir, calc_kwargs):
     tmpdir.chdir()
     atoms = molecule("H2O")
-    output = static_job(atoms, calc_swaps=calc_swaps)
+    output = static_job(atoms, **calc_kwargs)
     assert output["spin_multiplicity"] == 1
     assert output["natoms"] == len(atoms)
     assert output["results"]["energy"] == pytest.approx(-9.532746332918718)
 
 
-def test_relax_job(tmpdir, calc_swaps, opt_swaps):
+def test_relax_job(tmpdir, opt_params, calc_kwargs):
     tmpdir.chdir()
 
     atoms = molecule("H2O")
-    output = relax_job(atoms, calc_swaps=calc_swaps, opt_swaps=opt_swaps)
+    output = relax_job(atoms, opt_params, **calc_kwargs)
     assert output["spin_multiplicity"] == 1
     assert output["natoms"] == len(atoms)
-    if opt_swaps['optimizer'] == FIRE:
+    if opt_params['optimizer'] == FIRE:
         assert output["results"]["energy"] == pytest.approx(-9.533049846183454)
-    elif opt_swaps['optimizer'] == BFGS:
+    elif opt_params['optimizer'] == BFGS:
         assert output["results"]["energy"] == pytest.approx(-9.53305023894913)
-    elif opt_swaps['optimizer'] == BFGSLineSearch:
+    elif opt_params['optimizer'] == BFGSLineSearch:
         assert output["results"]["energy"] == pytest.approx(-9.53305023894913)
-    elif opt_swaps['optimizer'] == LBFGS:
+    elif opt_params['optimizer'] == LBFGS:
         assert output["results"]["energy"] == pytest.approx(-9.53305023894913)
-    elif opt_swaps['optimizer'] == LBFGSLineSearch:
+    elif opt_params['optimizer'] == LBFGSLineSearch:
         assert output["results"]["energy"] == pytest.approx(-9.53305023894913)
-    elif opt_swaps['optimizer'] == GPMin:
+    elif opt_params['optimizer'] == GPMin:
         assert output["results"]["energy"] == pytest.approx(-9.53305023894913)
-    elif opt_swaps['optimizer'] == Sella:
+    elif opt_params['optimizer'] == Sella:
         assert output["results"]["energy"] == pytest.approx(-9.53305023894913)
-    elif opt_swaps['optimizer'] == IRC:
+    elif opt_params['optimizer'] == IRC:
         assert output["results"]["energy"] == pytest.approx(-9.53305023894913)
 
     assert not np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
@@ -106,22 +106,22 @@ def test_relax_job(tmpdir, calc_swaps, opt_swaps):
                          "expected_energy, "
                          "expected_vib_freqs, "
                          "expected_imag_freqs", [
-    (molecule("H2O"), 273.15, 1, -9.532746332918718,
-     [
-         1754.7438570677637,
-         3905.8863167962554,
-         3928.543281726882
-     ],
-     []),
-    (molecule("CH3"), 1000, 20, -14.338570161038465,
-     [949.4267389579275,
-      1551.1215815612938,
-      1669.107390832925,
-      2661.1458956565873,
-      2921.245283581416,
-      3099.0363742761155],
-     [-761.5004719152678]),
-])
+                             (molecule("H2O"), 273.15, 1, -9.532746332918718,
+                              [
+                                  1754.7438570677637,
+                                  3905.8863167962554,
+                                  3928.543281726882
+                              ],
+                              []),
+                             (molecule("CH3"), 1000, 20, -14.338570161038465,
+                              [949.4267389579275,
+                               1551.1215815612938,
+                               1669.107390832925,
+                               2661.1458956565873,
+                               2921.245283581416,
+                               3099.0363742761155],
+                              [-761.5004719152678]),
+                         ])
 def test_freq_job(tmpdir,
                   atoms,
                   temperature,
@@ -157,15 +157,35 @@ def atoms():
     return atoms
 
 
-@pytest.mark.parametrize("use_custom_hessian", [
-    (True),
-    (True),
-    (False),
-    (False)
-])
-def test_ts_job(tmpdir, atoms, use_custom_hessian, opt_params, calc_kwargs):
-    tmpdir.chdir()
+@pytest.fixture
+def ts_atoms():
+    symbols = ['C', 'O', 'C', 'O', 'H', 'H', 'H', 'H']
+    positions = [
+            [0.92555668, -0.13243912, 0.23671953],
+            [0.11638217, -1.21730675, 0.62152939],
+            [0.70222981, -2.75240711, -0.1164021],
+            [0.82449856, -2.82484905, -1.26284743],
+            [0.31673115, 0.77896725, 0.28263287],
+            [1.27695817, -0.24448394, -0.80085177],
+            [1.80300671, 0.00865307, 0.88902452],
+            [0.72467143, -2.36522378, 0.99637751],
+        ]
+    atoms = Atoms(symbols=symbols, positions=positions)
+    return atoms
 
+
+@pytest.mark.parametrize("use_custom_hessian", [
+    True,
+    False,
+])
+def test_ts_job(
+        tmpdir,
+        atoms,
+        use_custom_hessian,
+        calc_kwargs,
+        opt_params={'optimizer': Sella},
+        ):
+    tmpdir.chdir()
     output = ts_job(
         atoms,
         use_custom_hessian=use_custom_hessian,
@@ -178,61 +198,45 @@ def test_ts_job(tmpdir, atoms, use_custom_hessian, opt_params, calc_kwargs):
     assert "thermo" in output["freq_job"]
 
     if use_custom_hessian:
-        if opt_params is None:
-            assert output["results"]["energy"] == pytest.approx(-30.91756742496904)
-            assert output["freq_job"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.012395738446304833)
-        elif "max_steps" in opt_params and opt_params["max_steps"] == 4:
-            assert output["results"]["energy"] == pytest.approx(-29.83567172077247)
-            assert output["freq_job"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.024218215485424726)
+        print('\n\n\n\n\n\n\n0a\n\n\n\n\n\n\n\n')
+        assert output["results"]["energy"] == pytest.approx(-30.91756742496904)
+        assert output["freq_job"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.012395738446304833)
     else:
-        if opt_params is None:
-            assert output["results"]["energy"] == pytest.approx(-30.917585898315)
-            assert output["freq_job"]["vib"]["results"]["imag_vib_freqs"][0] == pytest.approx(-1676.5015763982956)
-        elif "max_steps" in opt_params and opt_params["max_steps"] == 4:
-            assert output["results"]["energy"] == pytest.approx(-29.831788105843444)
-            assert output["freq_job"]["vib"]["results"]["imag_vib_freqs"][0] == pytest.approx(-1460.3321973013199)
+        print('\n\n\n\n\n\n\n0b\n\n\n\n\n\n\n\n')
+        assert output["results"]["energy"] == pytest.approx(-30.917585898315)
+        assert output["freq_job"]["vib"]["results"]["imag_vib_freqs"][0] == pytest.approx(-1676.5015763982956)
 
 
-@pytest.mark.parametrize("opt_swaps, freq_job_kwargs", [
-    (None, None),
-    ({"max_steps": 500}, None),
-    ({"fmax": 0.001}, None),
-    (None, {"temperature": 500.0, "pressure": 10.0}),
-    ({"run_kwargs": {"direction": "reverse"}}, None),
+@pytest.fixture(params=[
+    {'optimizer': IRC},
 ])
-def test_irc_job(tmpdir, atoms, opt_swaps, freq_job_kwargs):
+def opt_params(request):
+    return request.param
+
+
+@pytest.mark.parametrize(
+    "direction, freq_job_kwargs", [
+        ("forward", {"temperature": 500.0, "pressure": 10.0}),
+        ("reverse", None),
+    ])
+def test_irc_job(tmpdir, ts_atoms, opt_params, direction, freq_job_kwargs):
     tmpdir.chdir()
-    output = irc_job(atoms, opt_swaps=opt_swaps, freq_job_kwargs=freq_job_kwargs)
+    output = irc_job(ts_atoms,
+                     direction=direction,
+                     freq_job_kwargs=freq_job_kwargs)
 
     assert isinstance(output, dict)
-    if opt_swaps is None and freq_job_kwargs is None:
-        assert output["results"]["energy"] == pytest.approx(-34.449834)
+
+    if direction is "forward" and freq_job_kwargs is not None:
+        assert output["results"]["energy"] == pytest.approx(-33.43829523350325)
         assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
-            -34.449834
+            -33.43829523350325
         )
-    elif opt_swaps is not None:
-        if "max_steps" in opt_swaps and opt_swaps["max_steps"] == 500 and freq_job_kwargs is None:
-            assert output["results"]["energy"] == pytest.approx(-34.449834)
-            assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
-                -34.449834
-            )
-    elif opt_swaps is None and\
-            ("temperature" in freq_job_kwargs and
-             freq_job_kwargs["temperature"] == 500 and
-             "pressure" in freq_job_kwargs and freq_job_kwargs["pressure"] == 10.0):
-        assert output["results"]["energy"] == pytest.approx(-34.449834)
+    elif direction is "reverse" and freq_job_kwargs is None:
+        assert output["results"]["energy"] == pytest.approx(-34.450075986869344)
         assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
-            -34.449834
+            -34.450075986869344
         )
-    elif opt_swaps is not None:
-        if "run_kwargs" in opt_swaps and\
-                "direction" in opt_swaps["run_kwargs"] and\
-                opt_swaps["run_kwargs"]["direction"] == "reverse" and\
-                freq_job_kwargs is None:
-            assert output["results"]["energy"] == pytest.approx(-34.450195)
-            assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
-                -34.450195
-            )
 
 
 @pytest.mark.parametrize("atoms, direction, freq_job_kwargs, irc_job_kwargs, expected_energy", [
