@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 from quacc import flow
 from quacc.recipes.common.phonons import phonon_flow as phonon_flow_
 from quacc.recipes.tblite.core import static_job
+from quacc.utils.dicts import merge_dicts
 
 if TYPE_CHECKING:
     from typing import Any
@@ -22,6 +23,7 @@ def phonon_flow(
     atoms: Atoms,
     supercell_matrix: ArrayLike = ((2, 0, 0), (0, 2, 0), (0, 0, 2)),
     atom_disp: float = 0.01,
+    symprec: float = 1e-5,
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
@@ -38,6 +40,8 @@ def phonon_flow(
         Supercell matrix to use. Defaults to 2x2x2 supercell.
     atom_disp
         Atomic displacement (A).
+    symprec
+        Precision for symmetry detection.
     t_step
         Temperature step (K).
     t_min
@@ -45,7 +49,7 @@ def phonon_flow(
     t_max
         Max temperature (K).
     static_job_kwargs
-        Additional keyword arguments for [quacc.recipes.tblite.core.static_job][]
+        Keyword arguments for [quacc.recipes.tblite.core.static_job][]
         for the force calculations.
 
     Returns
@@ -53,7 +57,8 @@ def phonon_flow(
     PhononSchema
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][]
     """
-    static_job_kwargs = static_job_kwargs or {}
+    static_job_default_kwargs = {"fmax": 1e-8}
+    static_job_kwargs = merge_dicts(static_job_kwargs, static_job_default_kwargs)
 
     return phonon_flow_(
         atoms,
@@ -63,5 +68,6 @@ def phonon_flow(
         t_step=t_step,
         t_min=t_min,
         t_max=t_max,
+        phonopy_kwargs={"symprec": symprec},
         additional_fields={"name": "TBLite Phonons"},
     )

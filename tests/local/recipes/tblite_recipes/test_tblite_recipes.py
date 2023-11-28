@@ -6,6 +6,7 @@ from ase.build import bulk, molecule
 
 from quacc import SETTINGS
 from quacc.recipes.tblite.core import freq_job, relax_job, static_job
+from quacc.recipes.tblite.phonons import phonon_flow
 
 pytest.importorskip("tblite.ase")
 
@@ -130,6 +131,14 @@ def test_freq_job(tmpdir):
     assert output["results"]["gibbs_energy"] == pytest.approx(-11.100020872176652)
     assert "nid" in output
     assert "dir_name" in output
+
+
+def test_phonon_flow(tmpdir):
+    tmpdir.chdir()
+    atoms = bulk("Cu")
+    output = phonon_flow(atoms, static_job_kwargs={"method": "GFN1-xTB"})
+    assert output["results"]["force_constants"].shape == (8, 8, 3, 3)
+    assert len(output["results"]["thermal_properties"]["temperatures"]) == 101
 
 
 def test_unique_workdir(tmpdir):

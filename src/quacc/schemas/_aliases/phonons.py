@@ -24,9 +24,13 @@ class MeshProperties(TypedDict):
     group_velocities: NDArray
 
 
-class PhononSchema(TypedDict):
-    """Type hint associated with `quacc.schemas.phonons.summarize_phonopy`"""
-
+class PhononResults(TypedDict):
     thermal_properties: ThermalProperties
     mesh_properties: MeshProperties
     force_constants: NDArray
+
+
+class PhononSchema(TypedDict):
+    """Type hint associated with `quacc.schemas.phonons.summarize_phonopy`"""
+
+    results: PhononResults
