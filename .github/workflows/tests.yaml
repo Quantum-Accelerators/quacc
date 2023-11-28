@@ -156,7 +156,7 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Set up conda
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v3
         with:
           python-version: ${{ matrix.python-version }}
           activate-environment: quacc-env
@@ -201,7 +201,7 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Set up conda
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v3
         with:
           python-version: ${{ matrix.python-version }}
           activate-environment: quacc-env
@@ -242,7 +242,7 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Set up conda
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v3
         with:
           python-version: ${{ matrix.python-version }}
           activate-environment: quacc-env
@@ -286,7 +286,7 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Set up conda
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v3
         with:
           python-version: ${{ matrix.python-version }}
           activate-environment: quacc-env
