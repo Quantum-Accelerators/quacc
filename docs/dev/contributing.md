@@ -38,54 +38,60 @@ Please abide by the following guidelines when contributing code to quacc:
 
 - Only define multi-step workflows if they go beyond simply stitching together existing functions or if they are widely used in other recipes. Otherwise, just define the individual functions.
 
-- Use absolute paths where possible and avoid using `os.chdir`. This helps ensure that quacc can be run in a multi-threading mode.
+- Use absolute paths where possible and avoid using `os.chdir`. This helps ensure that quacc can be run in multi-threading mode.
 
 - `gzip` large test files to save space.
 
-### New Recipes
+### Writing New Recipes
+
+!!! Tip
+
+    In general, the easiest way to develop a new recipe is to first make one for a cheap-to-run calculator (e.g. EMT for solids, LJ for molecules), which you can then basically copy and paste for your more expensive calculator of choice.
 
 If contributing new recipes, please abide by the following guidelines:
 
 - Please mimic one of the other recipes as a general template for internal consistency.
 
-- Decorate your individual compute jobs with a `#!Python @job` decorator or your flow with a `#!Python @flow` decorator and name them accordingly.
+- Decorate your individual compute jobs with a `#!Python @job` decorator and your flows with a `#!Python @flow` decorator. Name them accordingly.
 
-- Add your recipe to the [List of Recipes](../user/recipes/recipes_list.md).
+- Add your new recipe to the [List of Recipes](../user/recipes/recipes_list.md).
 
-In general, the easiest way to develop a new recipe is to first make one for a cheap-to-run calculator (e.g. EMT for solids, LJ for molecules), which you can then basically copy and paste for your more expensive calculator of choice.
+- In general, your tests for new recipes should use a small molecule/solid (and cheap settings, where possible) to ensure that the unit tests run quickly.
 
 ### Style
 
 In general, please try to keep the code style consistent when possible, particularly:
 
-1. Use NumPy-style Docstrings.
+1. Use NumPy-style docstrings.
 
-2. Address any relevant style issues raised by the "Deepsource: Python," if present.
+2. Address any relevant issues raised by the "Deepsource: Python" runner shown via GitHub Actions.
 
-3. All Python code should be formatted with [isort](https://github.com/PyCQA/isort), [black](https://github.com/psf/black), and [ruff](https://github.com/astral-sh/ruff), although this will be corrected automatically when merged.
+3. All Python code should be formatted with [isort](https://github.com/PyCQA/isort) (`isort .`), [black](https://github.com/psf/black) (`black .`), and [ruff](https://github.com/astral-sh/ruff) (`ruff . --fix`), although this will be corrected automatically when merged.
 
 ## Unit Tests
 
 ### General
 
-All changes you make to quacc should be accompanied by unit tests and should not break existing tests. The full test suite will run on automatically via GitHub actions.
+All changes you make to quacc should be accompanied by unit tests and should not break existing tests. The full test suite will run automatically via GitHub actions.
 
 ### Running Locally
 
-To run the core test suite locally, run `pytest tests/local` (which is the same as doing `pytest` without any extra arguments).
+To run the core test suite locally, run `pytest tests/local` (which is the same as doing `pytest` in the base directory without any extra arguments).
 
 If you wish to test the behavior of a given workflow engine, run `pytest tests/WORKFLOW_ENGINE` where `WORKFLOW_ENGINE` is the name of your workflow engine.
 
 ### Coverage
 
-Each PR will report the coverage once your tests pass, but if you'd like to generate a coverage report locally, you can use [pytest-cov](https://pytest-cov.readthedocs.io/en/latest/), such as by doing `pytest --cov=quacc .`.
+Each PR will report the code coverage once your tests pass, but if you'd like to generate a coverage report locally, you can use [pytest-cov](https://pytest-cov.readthedocs.io/en/latest/), such as by doing `pytest --cov=quacc .`.
 
 !!! Note
 
-    The codecov check on pull requests update as each unit test finishes, so don't be surprised to see an "X" if tests are still running.
+    The codecov check on PRs updates as each unit test finishes, so don't be surprised to see an "X" if tests are still running.
 
-### Adding New Recipes
+### Monkeypatching
 
-If you are adding recipes based on a code that can be readily installed via `pip` or `conda` (e.g. tblite, DFTB+, Psi4), then you can run these codes directly in the test suite. Preferably, you should use a small molecule or solid and cheap method so the unit tests run quickly.
+For recipes that involve a calculation that cannot be easily run in the test suite (e.g. the underlying calculator cannot be installed via `pip` or `conda`), you will need to make a `conftest.py` file in the recipe directory that monkeypatches the relevant functions (refer to the Gaussian recipe tests for an example). To run the test on your own machine without the `conftest.py` file applied, you can use the `--noconftest` flag in `pytest`.
 
-If the recipes you're adding are proprietary or not available via `pip` or `conda` (e.g. Gaussian, GULP), then you will need to define a `conftest.py` file to monkeypatch their behavior during testing. Tests with `conftest.py` files can be run locally without applying the monkeypatches by using the `--noconftest` pytest flag.
+### Jenkins
+
+The maintainers have a [Jenkins server](https://www.jenkins.io/) on the [Adroit cluster](https://researchcomputing.princeton.edu/systems/adroit) at Princeton that will automatically run the test suite nightly without relying on monkeypatching via `conftest.py` files. If you are adding recipes for a calculator that is not yet part of quacc and cannot be installed via `pip` or `conda`, we will add the necessary executables to the Jenkins build so that production-quality tests will be run automatically (provided we have a license for it). This is an important reason for why the unit tests should be done with a small molecule/solid.
