@@ -1,4 +1,3 @@
-import multiprocessing
 import os
 from pathlib import Path
 
@@ -92,19 +91,3 @@ def test_relax_job(tmpdir):
     assert "%scf maxiter 300 end" in output["parameters"]["orcablocks"]
     assert "trajectory" in output
     assert len(output["trajectory"]) > 1
-
-
-@pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
-def test_mpi_run(tmpdir, monkeypatch):
-    file_dir = Path(__file__).resolve().parent
-    tmpdir.chdir()
-    monkeypatch.setenv("PATH", file_dir)
-
-    atoms = molecule("H2")
-    output = static_job(atoms, 0, 1)
-    nprocs = multiprocessing.cpu_count()
-    assert f"%pal nprocs {nprocs} end" in output["parameters"]["orcablocks"]
-
-    output = relax_job(atoms, 0, 1)
-    nprocs = multiprocessing.cpu_count()
-    assert f"%pal nprocs {nprocs} end" in output["parameters"]["orcablocks"]

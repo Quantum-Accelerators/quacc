@@ -1,9 +1,9 @@
 """Core recipes for the Q-Chem."""
 from __future__ import annotations
 
-import multiprocessing
 from typing import TYPE_CHECKING
 
+import psutil
 from ase.optimize import FIRE
 
 from quacc import SETTINGS, job
@@ -87,7 +87,7 @@ def static_job(
         "method": method,
         "charge": charge,
         "spin_multiplicity": spin_multiplicity,
-        "cores": n_cores or multiprocessing.cpu_count(),
+        "cores": n_cores or psutil.cpu_count(logical=False),
         "qchem_input_params": {
             "pcm_dielectric": pcm_dielectric,
             "smd_solvent": smd_solvent,
@@ -172,7 +172,7 @@ def freq_job(
         "method": method,
         "charge": charge,
         "spin_multiplicity": spin_multiplicity,
-        "cores": n_cores or multiprocessing.cpu_count(),
+        "cores": n_cores or psutil.cpu_count(logical=False),
         "qchem_input_params": {
             "pcm_dielectric": pcm_dielectric,
             "smd_solvent": smd_solvent,
@@ -257,7 +257,7 @@ def relax_job(
         "method": method,
         "charge": charge,
         "spin_multiplicity": spin_multiplicity,
-        "cores": n_cores or multiprocessing.cpu_count(),
+        "cores": n_cores or psutil.cpu_count(logical=False),
         "qchem_input_params": {
             "pcm_dielectric": pcm_dielectric,
             "smd_solvent": smd_solvent,
