@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 
 from quacc import job
 from quacc.recipes.dftb._base import base_fn
-from quacc.utils.dicts import merge_dicts
 
 if TYPE_CHECKING:
     from typing import Literal
@@ -13,12 +12,6 @@ if TYPE_CHECKING:
     from ase import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
-
-_BASE_CALC_DEFAULTS = {
-    "Analysis_CalculateForces": "Yes",
-    "Hamiltonian_MaxSccIterations": 200,
-    "Options_WriteResultsTag": "Yes",
-}
 
 
 @job
@@ -51,14 +44,12 @@ def static_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
 
-    calc_defaults = merge_dicts(
-        _BASE_CALC_DEFAULTS,
-        {
-            "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
-            "Hamiltonian_Method": method if "xtb" in method.lower() else None,
-            "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
-        },
-    )
+    calc_defaults = {
+        "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
+        "Hamiltonian_MaxSccIterations": 200,
+        "Hamiltonian_Method": method if "xtb" in method.lower() else None,
+        "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
+    }
 
     return base_fn(
         atoms,
@@ -102,18 +93,15 @@ def relax_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
 
-    calc_defaults = merge_dicts(
-        _BASE_CALC_DEFAULTS,
-        {
-            "Driver_": "GeometryOptimization",
-            "Driver_LatticeOpt": "Yes" if relax_cell else "No",
-            "Driver_AppendGeometries": "Yes",
-            "Driver_MaxSteps": 2000,
-            "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
-            "Hamiltonian_Method": method if "xtb" in method.lower() else None,
-            "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
-        },
-    )
+    calc_defaults = {
+        "Driver_": "GeometryOptimization",
+        "Driver_AppendGeometries": "Yes",
+        "Driver_LatticeOpt": "Yes" if relax_cell else "No",
+        "Driver_MaxSteps": 2000,
+        "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
+        "Hamiltonian_Method": method if "xtb" in method.lower() else None,
+        "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
+    }
 
     return base_fn(
         atoms,
