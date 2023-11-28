@@ -25,7 +25,7 @@ def static_job(
     basis: str = "def2-tzvp",
     orcasimpleinput: dict[str, Any] | None = None,
     orcablocks: dict[str, Any] | None = None,
-    ncores: int | None = None,
+    nprocs: int | None = None,
     copy_files: list[str] | None = None,
 ) -> cclibSchema:
     """
