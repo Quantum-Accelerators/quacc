@@ -40,8 +40,6 @@ Please abide by the following guidelines when contributing code to quacc:
 
 - Use absolute paths where possible and avoid using `os.chdir`. This helps ensure that quacc can be run in a multi-threading mode.
 
-- Put your imports inside each function in your test suite
-
 - `gzip` large test files to save space.
 
 ### New Recipes
