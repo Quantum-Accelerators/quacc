@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import multiprocessing
 import os
+import psutil
 from importlib import resources, util
 from pathlib import Path
 from shutil import which
@@ -268,7 +268,7 @@ class QuaccSettings(BaseSettings):
         description="Compute-node local scratch directory in which Q-Chem should perform IO.",
     )
     QCHEM_NUM_CORES: int = Field(
-        multiprocessing.cpu_count(),
+        psutil.cpu_count(logical=False),
         description="Number of cores to use for the Q-Chem calculation.",
     )
 
