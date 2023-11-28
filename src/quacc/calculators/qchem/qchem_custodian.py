@@ -30,8 +30,7 @@ def run_custodian(
     qchem_cmd
         Q-Chem command. Defaults to "qchem" in settings.
     qchem_cores
-        Number of cores to use for the Q-Chem calculation. Defaults to multiprocess.cpu_count()
-        in settings.
+        Number of cores to use for the Q-Chem calculation.
     qchem_local_scratch
         Compute-node local scratch directory in which Q-Chem should perform IO.
         Defaults to /tmp in settings.
