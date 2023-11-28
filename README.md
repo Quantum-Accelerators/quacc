@@ -5,7 +5,7 @@
 # `quacc` – The Quantum Accelerator 🦆
 
 ![tests](https://github.com/quantum-accelerators/quacc/actions/workflows/tests.yaml/badge.svg)
-[![Jenkins](https://jenkins.princeton.edu/buildStatus/icon?job=rosen_group%2Fquacc&subject=Jenkins)](https://jenkins.princeton.edu/job/rosen_group/job/quacc/)
+[![Jenkins](https://jenkins.princeton.edu/buildStatus/icon?job=rosen_group%2Fquacc&subject=nightly%20prod)](https://jenkins.princeton.edu/job/rosen_group/job/quacc/)
 [![DeepSource](https://app.deepsource.com/gh/Quantum-Accelerators/quacc.svg/?label=active+issues&token=Y1NxOLIuFFEqWdjawIYnJNde)](https://app.deepsource.com/gh/Quantum-Accelerators/quacc/?ref=repository-badge)
 ![PyPI - Version](https://img.shields.io/pypi/v/quacc?color=blue)
 ![Python - Version](https://img.shields.io/pypi/pyversions/quacc)
