@@ -15,9 +15,9 @@ if TYPE_CHECKING:
     from quacc.schemas._aliases.ase import RunSchema
 
 _BASE_CALC_DEFAULTS = {
-    "Analysis_": {"CalculateForces": "Yes"},
+    "Analysis_CalculateForces": "Yes",
     "Hamiltonian_MaxSccIterations": 200,
-    "Options_": {"WriteResultsTag": "Yes"},
+    "Options_WriteResultsTag": "Yes",
 }
 
 
