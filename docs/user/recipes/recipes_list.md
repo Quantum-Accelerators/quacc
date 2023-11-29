@@ -157,11 +157,12 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 
 <center>
 
-| Name             | Decorator       | Documentation                            | Req'd Extras |
-| ---------------- | --------------- | ---------------------------------------- | ------------ |
-| TBLite Static    | `#!Python @job` | [quacc.recipes.tblite.core.static_job][] |              |
-| TBLite Relax     | `#!Python @job` | [quacc.recipes.tblite.core.relax_job][]  |              |
-| TBLite Frequency | `#!Python @job` | [quacc.recipes.tblite.core.freq_job][]   |              |
+| Name             | Decorator        | Documentation                                | Req'd Extras     |
+| ---------------- | ---------------- | -------------------------------------------- | ---------------- |
+| TBLite Static    | `#!Python @job`  | [quacc.recipes.tblite.core.static_job][]     |                  |
+| TBLite Relax     | `#!Python @job`  | [quacc.recipes.tblite.core.relax_job][]      |                  |
+| TBLite Frequency | `#!Python @job`  | [quacc.recipes.tblite.core.freq_job][]       |                  |
+| TBLite Phonons   | `#!Python @flow` | [quacc.recipes.tblite.phonons.phonon_flow][] | `quacc[phonons]` |
 
 </center>
 

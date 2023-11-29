@@ -19,7 +19,10 @@ if TYPE_CHECKING:
 
 
 def atoms_to_phonopy(
-    atoms: Atoms, supercell_matrix: ArrayLike, atom_disp: float
+    atoms: Atoms,
+    supercell_matrix: ArrayLike,
+    atom_disp: float,
+    phonopy_kwargs: dict | None = None,
 ) -> Phonopy:
     """
     Convert an ASE atoms object to a phonopy object with displacements
@@ -33,15 +36,20 @@ def atoms_to_phonopy(
         Supercell matrix to use.
     atom_disp
         Atomic displacement (A).
+    phonopy_kwargs
+        Additional kwargs to pass to the Phonopy class.
 
     Returns
     -------
     Phonopy
         Phonopy object
     """
+    phonopy_kwargs = phonopy_kwargs or {}
     structure = AseAtomsAdaptor().get_structure(atoms)
     phonopy_atoms = get_phonopy_structure(structure)
-    phonon = phonopy.Phonopy(phonopy_atoms, supercell_matrix=supercell_matrix)
+    phonon = phonopy.Phonopy(
+        phonopy_atoms, supercell_matrix=supercell_matrix, **phonopy_kwargs
+    )
     phonon.generate_displacements(distance=atom_disp)
     return phonon
 

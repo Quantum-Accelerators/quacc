@@ -74,6 +74,7 @@ def test_relax_job(tmpdir):
             "def2-tzvp": None,
         },
         orcablocks={"%scf maxiter 300 end": True},
+        nprocs=2,
     )
     assert output["natoms"] == len(atoms)
     assert (
