@@ -38,8 +38,8 @@ def test_static_job(tmpdir):
     assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["sigma"] == 0.01
 
-    output = static_job(atoms, ivdw=13, lasph=False, prec=None, lwave=None, efermi=None)
-    assert output["parameters"]["ivdw"] == 13
+    output = static_job(atoms, ivdw=11, lasph=False, prec=None, lwave=None, efermi=None)
+    assert output["parameters"]["ivdw"] == 11
     assert output["parameters"]["lasph"] is False
     assert "prec" not in output["parameters"]
     assert "lwave" not in output["parameters"]
@@ -52,8 +52,8 @@ def test_static_job_incar_copilot_aggressive(tmpdir):
     atoms = bulk("Cu") * (2, 2, 2)
 
     SETTINGS.VASP_INCAR_COPILOT = "aggressive"
-    output = static_job(atoms, ivdw=13, lasph=False, prec=None, lwave=None, efermi=None)
-    assert output["parameters"]["ivdw"] == 13
+    output = static_job(atoms, ivdw=11, lasph=False, prec=None, lwave=None, efermi=None)
+    assert output["parameters"]["ivdw"] == 11
     assert output["parameters"]["lasph"] is False
     assert "prec" not in output["parameters"]
     assert "lwave" not in output["parameters"]
