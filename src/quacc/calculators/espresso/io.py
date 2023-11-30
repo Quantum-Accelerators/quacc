@@ -42,8 +42,19 @@ def write_espresso_io(fd, **kwargs):
     fd.write(''.join(pwi))
 
 def write_espresso_ph(fd, **kwargs):
-    pwi = namelist_to_string(kwargs['input_data'])
+    input_data = kwargs.get('input_data', None)
+    qpts = kwargs.get('qpts', None)
+    pwi = namelist_to_string(input_data)
     fd.write(''.join(pwi))
+    qplot = input_data['inputph'].get('qplot', False)
+    ldisp = input_data['inputph'].get('ldisp', False)
+    if qplot:
+        fd.write(f'{len(qpts)}\n')
+        for qpt in qpts:
+            fd.write('{0:8.4f} {1:8.4f} {2:8.4f}\n'.format(*qpt))
+    elif not ldisp:
+        fd.write('0.0 0.0 0.0\n')
+
 
 def read_espresso_ph(fd):
 
