@@ -74,8 +74,8 @@ def static_job(
 
     return _base_job(
         atoms,
-        template,
         preset=preset,
+        template=template,
         calc_defaults=calc_defaults,
         calc_swaps=kwargs,
         additional_fields={"name": "pw.x static"},
