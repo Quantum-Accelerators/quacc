@@ -13,7 +13,7 @@ from ase.units import Bohr
 from quacc.calculators.espresso.utils import namelist_to_string
 
 # Three ways to call a function based on a string:
-
+freg = re.compile(r"-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+\-]?\d+)?")
 
 def write(filename,
           atoms,
@@ -38,12 +38,12 @@ def write_espresso_io(filename, **kwargs):
     with open(filename, 'w') as fd:
         fd.write(''.join(pwi))
 
-def write_espresso_ph(filename, atoms = None, properties = None, **kwargs):
+def write_espresso_ph(filename, **kwargs):
     pwi = namelist_to_string(kwargs['input_data'])
+    with open(filename, 'w') as fd:
+        fd.write(''.join(pwi))
 
 def read_espresso_ph(fd):
-
-    freg = re.compile(r"-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+\-]?\d+)?")
 
     QPOINTS = r'(?i)^\s*Calculation\s*of\s*q'
     NKPTS = r'(?i)^\s*number\s*of\s*k\s*points\s*'
