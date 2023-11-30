@@ -123,3 +123,23 @@ def parse_pp_and_cutoff(config, atoms):
         return {}
     tmp_input_data = {'system': {'ecutwfc': wfc_cutoff, 'ecutrho': rho_cutoff}}
     return {'pseudopotentials': pseudopotentials, 'input_data': tmp_input_data}
+
+
+def namelist_to_string(parameters):
+    # This function aim to write basic input keywords to a file
+    # For additional cards (binary specifics) this is down in the child class
+    # Stolen from ase.io.espresso, maybe this could be made to a function "write_namelist"
+    # and imported here? See with the ASE gods.
+    pwi = []
+    for section in parameters:
+        pwi.append('&{0}\n'.format(section.upper()))
+        for key, value in parameters[section].items():
+            if value is True:
+                pwi.append('   {0:16} = .true.\n'.format(key))
+            elif value is False:
+                pwi.append('   {0:16} = .false.\n'.format(key))
+            else:
+                pwi.append('   {0:16} = {1!r:}\n'.format(key, value))
+        pwi.append('/\n')  # terminate section
+    pwi.append('\n')
+    return pwi
