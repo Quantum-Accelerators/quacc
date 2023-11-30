@@ -38,31 +38,28 @@ class Espresso(_Espresso):
     def __init__(self,
                  input_atoms = None,
                  preset = None,
-                 template = EspressoTemplate('pw'),
+                 template = None,
+                 profile = None,
                  calc_defaults = None,
                  **kwargs):
 
         self.preset = preset
         self.input_atoms = input_atoms
         self.calc_defaults = calc_defaults
-
+        #input_data = kwargs.pop('input_data', None)
+        #pseudopotentials = kwargs.pop('pseudopotentials', None)
+        #kpts = kwargs.pop('kpts', None)
+        
+        template = template or EspressoTemplate('pw')
+        profile = profile or EspressoProfile(argv=
+                                str(SETTINGS.ESPRESSO_CMD).split())
+        
         kwargs = self._kwargs_handler(template.binary, **kwargs)
-
-        input_data = kwargs.pop('input_data', None)
-        profile = kwargs.pop('profile',
-                             EspressoProfile(argv=
-                             str(SETTINGS.ESPRESSO_CMD).split()))
-        pseudopotentials = kwargs.pop('pseudopotentials', None)
-        kpts = kwargs.pop('kpts', None)
         
         super().__init__(
             profile = profile,
-            input_data = input_data,
-            pseudopotentials = pseudopotentials,
-            kpts = kpts, 
             **kwargs)
-    
-        # By default we fall back on ase.espresso.EspressoTemplate
+
         self.template = template
 
     def _kwargs_handler(self, binary, **kwargs):

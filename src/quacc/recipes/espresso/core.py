@@ -6,7 +6,8 @@ from typing import TYPE_CHECKING
 from ase import Atoms
 
 from quacc import SETTINGS, job
-from quacc.calculators.espresso.espresso import Espresso, EspressoTemplate
+from quacc.calculators.espresso.espresso import (Espresso, EspressoProfile,
+                                                 EspressoTemplate)
 from quacc.runners.ase import run_calc
 from quacc.schemas.ase import summarize_run
 
@@ -129,11 +130,13 @@ def ph_job(
     }
     
     template = EspressoTemplate('ph')
+    profile = EspressoProfile(argv=str(SETTINGS.ESPRESSO_PH_CMD).split())
 
     return _base_job(
         Atoms(),
-        template,
-        preset=preset,
+        preset = preset,
+        template = template,
+        profile = profile,
         calc_defaults=calc_defaults,
         calc_swaps=kwargs,
         additional_fields={"name": "ph.x static"},
@@ -142,8 +145,9 @@ def ph_job(
 
 def _base_job(
     atoms: Atoms,
-    template: EspressoTemplate,
     preset: str | None = None,
+    template: EspressoTemplate | None = None,
+    profile: EspressoProfile | None = None,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
@@ -184,8 +188,9 @@ def _base_job(
     # and stick with it, which will be the nested dict here.
 
     atoms.calc = Espresso(input_atoms = atoms,
-                          template = template,
                           preset = preset,
+                          template = template,
+                          profile = profile,
                           calc_defaults = calc_defaults,
                           **calc_swaps)
     
