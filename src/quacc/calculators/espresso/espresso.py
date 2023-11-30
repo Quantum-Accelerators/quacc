@@ -74,12 +74,11 @@ class Espresso(_Espresso):
         # Would be nice to change the merge_dict function so that
         # it is fully compatible with the Namelist class. I believe
         # changing 'dict or {}' would do.
-        kwargs['input_data'] = merge_dicts(
-                        self.calc_defaults['input_data'],
-                        kwargs['input_data'])
         if self.preset:
             config = load_yaml_calc(
                 SETTINGS.ESPRESSO_PRESET_DIR / f"{self.preset}"
             )
             preset_pp = parse_pp_and_cutoff(config, self.input_atoms)
-            return merge_dicts(preset_pp, kwargs)
+            kwargs = merge_dicts(preset_pp, kwargs)
+        kwargs = merge_dicts(self.calc_defaults, kwargs)
+        return kwargs
