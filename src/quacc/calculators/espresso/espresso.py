@@ -1,14 +1,14 @@
 from ase.calculators.espresso import Espresso as _Espresso
-from ase.calculators.espresso import EspressoTemplate as _EspressoTemplate
 from ase.calculators.espresso import EspressoProfile
-from quacc.calculators.espresso.utils import construct_namelist
-from quacc.calculators.espresso.keys import ALL_KEYS
+from ase.calculators.espresso import EspressoTemplate as _EspressoTemplate
 
 from quacc import SETTINGS
-from quacc.calculators.espresso.utils import parse_pp_and_cutoff
+from quacc.calculators.espresso.io import read, write
+from quacc.calculators.espresso.keys import ALL_KEYS
+from quacc.calculators.espresso.utils import (construct_namelist,
+                                              parse_pp_and_cutoff)
 from quacc.utils.dicts import merge_dicts
 from quacc.utils.files import load_yaml_calc
-from quacc.calculators.espresso.io import write, read
 
 
 class EspressoTemplate(_EspressoTemplate):

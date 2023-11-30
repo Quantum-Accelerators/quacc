@@ -1,5 +1,8 @@
-from ase.io.espresso import Namelist
 import warnings
+
+from ase.io.espresso import Namelist
+
+
 # Stolen from ase.io.espresso and modified to add a parameter 'keys',
 # Maybe there is a better way of doing this?
 def construct_namelist(parameters=None, keys = None, warn=False, **kwargs):

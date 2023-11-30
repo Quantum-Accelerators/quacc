@@ -3,11 +3,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from quacc import SETTINGS
-
+from quacc import SETTINGS, job
 from quacc.calculators.espresso.espresso import Espresso, EspressoTemplate
-
-from quacc import job
 from quacc.runners.ase import run_calc
 from quacc.schemas.ase import summarize_run
 
