@@ -83,7 +83,6 @@ def static_job(
 
 @job
 def ph_job(
-    atoms: Atoms,
     preset: str | None = None,
     copy_files: list[str] | None = None,
     **kwargs,
@@ -132,7 +131,7 @@ def ph_job(
     template = EspressoTemplate('ph')
 
     return _base_job(
-        atoms,
+        Atoms(),
         template,
         preset=preset,
         calc_defaults=calc_defaults,
