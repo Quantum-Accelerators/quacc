@@ -1,6 +1,6 @@
 # Installation
 
-## Pre-Requisites 
+## Pre-Requisites
 
 !!! Tip "Using Windows?"
 
