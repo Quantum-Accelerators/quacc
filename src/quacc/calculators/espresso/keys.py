@@ -3,9 +3,8 @@
 
 from ase.io.espresso import Namelist
 
-PH_KEYS = Namelist([
-    ('input_ph', [
-        'amass',
+PH_KEYS = Namelist({'INPUTPH':
+        ['amass',
         'outdir',
         'prefix',
         'niter_ph',
@@ -73,11 +72,10 @@ PH_KEYS = Namelist([
         'start_q',
         'last_q',
         'dvscf_star',
-        'drho_star',]
-    )])
+        'drho_star']})
 
-NEB_KEYS = Namelist([
-    ('path', [
+NEB_KEYS = Namelist({
+    'PATH': [
         'string_method',
         'restart_mode',
         'nstep_path',
@@ -97,18 +95,19 @@ NEB_KEYS = Namelist([
         'fcp_mu',
         'fcp_thr',
         'fcp_scheme']
-    )])
+    })
 
-Q2R_KEYS = Namelist([('input', [
+Q2R_KEYS = Namelist(
+    {'INPUT': [
         'fildyn',
         'flfrc',
         'zasr',
         'loto_2d',
         'write_lr']
-    )])
+    })
 
-MATDYN_KEYS = Namelist([
-    ('&input', [
+MATDYN_KEYS = Namelist({
+    'INPUT': [
         'flfrc',
         'asr',
         'huang',
@@ -143,10 +142,10 @@ MATDYN_KEYS = Namelist([
         'loto_disable',
         'read_lr',
         'write_frc']
-    )])
+    })
 
-DYNMAT_KEYS = Namelist([
-    ('&input', [
+DYNMAT_KEYS = Namelist({
+    'INPUT': [
         'fildyn',
         'q',
         'amass',
@@ -162,7 +161,7 @@ DYNMAT_KEYS = Namelist([
         'loto_2d',
         'el_ph_nsig',
         'el_ph_sigma']
-    )])
+    })
 
 
 # Updated pw.x keys from my own branch

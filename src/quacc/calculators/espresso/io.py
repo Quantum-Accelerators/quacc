@@ -21,7 +21,10 @@ def write(filename,
           properties = None,
           **kwargs):
     with open(filename, 'w') as fd:
-        write_espresso_dict[format](fd, atoms, properties, **kwargs)
+        write_espresso_dict[format](fd,
+                                    atoms = atoms,
+                                    properties = properties,
+                                    **kwargs)
     #lines = write_namelist(filename, parameters)
     #specific_lines = func_dict[format][1](**kwargs)
     #lines += specific_lines
@@ -30,18 +33,17 @@ def write(filename,
 
 def read(filename,
          format = 'pw'):
-    return read_espresso_dict[format](filename)
+    with open(filename, 'r') as fd:
+        return read_espresso_dict[format](fd)
 
-def write_espresso_io(filename, **kwargs):
+def write_espresso_io(fd, **kwargs):
     "For simple binaries, this is enough."
     pwi = namelist_to_string(kwargs['input_data'])
-    with open(filename, 'w') as fd:
-        fd.write(''.join(pwi))
+    fd.write(''.join(pwi))
 
-def write_espresso_ph(filename, **kwargs):
+def write_espresso_ph(fd, **kwargs):
     pwi = namelist_to_string(kwargs['input_data'])
-    with open(filename, 'w') as fd:
-        fd.write(''.join(pwi))
+    fd.write(''.join(pwi))
 
 def read_espresso_ph(fd):
 
