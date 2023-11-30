@@ -15,8 +15,8 @@ class EspressoTemplate(_EspressoTemplate):
 
     def __init__(self, binary):
         super().__init__()
-        self.input_file = f'{binary}.in'
-        self.output_file = f'{binary}.out'
+        self.inputname = f'{binary}.in'
+        self.outputname = f'{binary}.out'
         self.binary = binary
 
     def write_input(self, directory, atoms, parameters, properties):
