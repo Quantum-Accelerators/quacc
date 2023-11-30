@@ -37,7 +37,7 @@ class Espresso(_Espresso):
     def __init__(self,
                  input_atoms = None,
                  preset = None,
-                 template = EspressoTemplate(),
+                 template = _EspressoTemplate(),
                  **kwargs):
 
         self.preset = preset
