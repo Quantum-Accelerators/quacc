@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from quacc import SETTINGS
+
 from quacc.calculators.espresso.espresso import Espresso, EspressoTemplate
 
 from quacc import job
@@ -50,6 +52,25 @@ def static_job(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
+
+    calc_defaults = {
+        'input_data': {
+            'control': {
+                'calculation': 'scf',
+                'restart_mode': 'from_scratch',
+                'pseudo_dir': SETTINGS.ESPRESSO_PP_PATH,
+            },
+            'system': {
+                "ecutwfc": 60,
+                "ecutrho": 240,
+            },
+            'electrons': {
+                'conv_thr': 1e-8,
+                'mixing_mode': 'plain',
+                'mixing_beta': 0.7
+            }
+        }
+    }
     
     template = EspressoTemplate('pw')
 
@@ -57,6 +78,7 @@ def static_job(
         atoms,
         template,
         preset=preset,
+        calc_defaults=calc_defaults,
         calc_swaps=kwargs,
         additional_fields={"name": "pw.x static"},
         copy_files=copy_files,
@@ -95,6 +117,20 @@ def ph_job(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
+    # Default is phonon at gamma, with tight convergence
+    # and a lower alphamix(1) as it is very very often
+    # recommended in the QE mailing list...
+    calc_defaults = {
+        'input_data': {
+            'inputph': {
+                'tr2_ph': 1e-16,
+                'alpha_mix(1)': 0.1,
+                'nmix_ph': 12,
+                'verbosity': 'high',
+
+            }
+        }
+    }
     
     template = EspressoTemplate('ph')
 
@@ -102,17 +138,17 @@ def ph_job(
         atoms,
         template,
         preset=preset,
+        calc_defaults=calc_defaults,
         calc_swaps=kwargs,
         additional_fields={"name": "ph.x static"},
         copy_files=copy_files,
     )
 
-
-
 def _base_job(
     atoms: Atoms,
     template: EspressoTemplate,
     preset: str | None = None,
+    calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
@@ -154,6 +190,7 @@ def _base_job(
     atoms.calc = Espresso(input_atoms = atoms,
                           template = template,
                           preset = preset,
+                          calc_defaults = calc_defaults,
                           **calc_swaps)
     
     final_atoms = run_calc(atoms, copy_files=copy_files)

@@ -39,10 +39,12 @@ class Espresso(_Espresso):
                  input_atoms = None,
                  preset = None,
                  template = EspressoTemplate('pw'),
+                 calc_defaults = None,
                  **kwargs):
 
         self.preset = preset
         self.input_atoms = input_atoms
+        self.calc_defaults = calc_defaults
 
         kwargs = self._kwargs_handler(template.binary, **kwargs)
 
@@ -67,6 +69,14 @@ class Espresso(_Espresso):
         keys = ALL_KEYS[binary]
         kwargs['input_data'] = construct_namelist(
             kwargs.get('input_data', None), keys=keys)
+        self.calc_defaults['input_data'] = construct_namelist(
+            self.calc_defaults['input_data'], keys=keys)
+        # Would be nice to change the merge_dict function so that
+        # it is fully compatible with the Namelist class. I believe
+        # changing 'dict or {}' would do.
+        kwargs['input_data'] = merge_dicts(
+                        self.calc_defaults['input_data'],
+                        kwargs['input_data'])
         if self.preset:
             config = load_yaml_calc(
                 SETTINGS.ESPRESSO_PRESET_DIR / f"{self.preset}"
