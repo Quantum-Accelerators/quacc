@@ -1,7 +1,8 @@
 from ase.calculators.espresso import Espresso as _Espresso
 from ase.calculators.espresso import EspressoTemplate as _EspressoTemplate
-from ase.calculators.espresso import EspressoProfile, EspressoTemplate
-from ase.io.espresso import construct_namelist
+from ase.calculators.espresso import EspressoProfile
+from quacc.calculators.espresso.utils import construct_namelist
+from quacc.calculators.espresso.keys import ALL_KEYS
 
 from quacc import SETTINGS
 from quacc.calculators.espresso.utils import parse_pp_and_cutoff
@@ -37,13 +38,13 @@ class Espresso(_Espresso):
     def __init__(self,
                  input_atoms = None,
                  preset = None,
-                 template = _EspressoTemplate(),
+                 template = EspressoTemplate('pw'),
                  **kwargs):
 
         self.preset = preset
         self.input_atoms = input_atoms
 
-        kwargs = self._kwargs_handler(**kwargs)
+        kwargs = self._kwargs_handler(template.binary, **kwargs)
 
         input_data = kwargs.pop('input_data', None)
         profile = kwargs.pop('profile',
@@ -51,7 +52,7 @@ class Espresso(_Espresso):
                              str(SETTINGS.ESPRESSO_CMD).split()))
         pseudopotentials = kwargs.pop('pseudopotentials', None)
         kpts = kwargs.pop('kpts', None)
-
+        
         super().__init__(
             profile = profile,
             input_data = input_data,
@@ -62,9 +63,10 @@ class Espresso(_Espresso):
         # By default we fall back on ase.espresso.EspressoTemplate
         self.template = template
 
-    def _kwargs_handler(self, **kwargs):
+    def _kwargs_handler(self, binary, **kwargs):
+        keys = ALL_KEYS[binary]
         kwargs['input_data'] = construct_namelist(
-            kwargs.get('input_data', None))
+            kwargs.get('input_data', None), keys=keys)
         if self.preset:
             config = load_yaml_calc(
                 SETTINGS.ESPRESSO_PRESET_DIR / f"{self.preset}"
