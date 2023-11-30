@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from ase import Atoms
+
 from quacc import SETTINGS, job
 from quacc.calculators.espresso.espresso import Espresso, EspressoTemplate
 from quacc.runners.ase import run_calc
@@ -10,8 +12,6 @@ from quacc.schemas.ase import summarize_run
 
 if TYPE_CHECKING:
     from typing import Any
-
-    from ase import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
 
