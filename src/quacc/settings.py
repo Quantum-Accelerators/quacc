@@ -207,7 +207,8 @@ class QuaccSettings(BaseSettings):
         ),
     )
     VASP_PRESET_DIR: Path = Field(
-        Path(__file__) /".."/"calculators"/"vasp"/"presets", description="Path to the VASP preset directory"
+        Path(__file__) / ".." / "calculators" / "vasp" / "presets",
+        description="Path to the VASP preset directory",
     )
 
     # VASP Settings: Custodian
