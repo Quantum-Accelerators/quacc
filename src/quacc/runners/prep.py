@@ -57,10 +57,16 @@ def calc_setup(
     )
 
     # Create a tmpdir for the calculation within the scratch_dir
-    time_now = datetime.now(timezone.utc).strftime("%Y-%m-%d-%H-%M-%S-%f")
-    tmpdir = Path(
-        mkdtemp(prefix=f"quacc-tmp-{time_now}-", dir=SETTINGS.SCRATCH_DIR)
-    ).resolve()
+    # Just a test to see if we can avoid heavy io
+    if SETTINGS.COMMON_TMPDIR:
+        prefix = f"quacc-tmp-common-{SETTINGS.COMMON_TMPDIR}"
+        tmpdir = Path(SETTINGS.SCRATCH_DIR / prefix)
+        tmpdir.mkdir(parents=True, exist_ok=True)
+    else:
+        time_now = datetime.now(timezone.utc).strftime("%Y-%m-%d-%H-%M-%S-%f")
+        tmpdir = Path(
+            mkdtemp(prefix=f"quacc-tmp-{time_now}-", dir=SETTINGS.SCRATCH_DIR)
+        ).resolve()
 
     # Create a symlink to the tmpdir in the results_dir
     if os.name != "nt" and SETTINGS.SCRATCH_DIR != SETTINGS.RESULTS_DIR:

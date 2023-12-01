@@ -8,7 +8,7 @@ import warnings
 from datetime import datetime, timezone
 from pathlib import Path
 from random import randint
-from shutil import copy
+from shutil import copy, copytree
 from typing import TYPE_CHECKING
 
 import yaml
@@ -61,16 +61,18 @@ def copy_decompress(source_files: list[str | Path], destination: str | Path) -> 
     None
     """
     for f in source_files:
-        z_path = Path(zpath(f))
-        if z_path.exists():
-            if len(z_path.parts) == 1:
-                copy(z_path, Path(destination, z_path.name))
-            else:
-                Path(destination, z_path.parent).mkdir(parents=True, exist_ok=True)
-                copy(z_path, Path(destination, z_path))
-            decompress_file(Path(destination, z_path))
+        #z_path = Path(zpath(f))
+        if f.is_dir():
+            for file in f.iterdir():
+                if file.is_file():
+                    copy(file, Path(destination, file.name))
+                    decompress_file(Path(destination, z_path))
+                elif f.is_dir():
+                    copytree([file], Path(destination, file.name))
+                elif f.is_symlink():
+                    pass
         else:
-            warnings.warn(f"Cannot find file: {z_path}", UserWarning)
+            warnings.warn(f"Cannot find file: {f}", UserWarning)
 
 
 

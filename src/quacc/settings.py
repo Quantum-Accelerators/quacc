@@ -91,6 +91,14 @@ class QuaccSettings(BaseSettings):
             "Some workflow engines have an option to do this for you already."
         ),
     )
+    COMMON_TMPDIR: str | None = Field(
+        None,
+        description=(
+            "Whether to use a common temporary directory for all jobs."
+            "This is useful for parallel workflows where the same files are needed "
+            "by multiple jobs. Should be a string."
+        ),
+    )
     GZIP_FILES: bool = Field(
         True, description="Whether generated files should be gzip'd."
     )
