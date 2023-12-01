@@ -49,16 +49,20 @@ class Espresso(_Espresso):
         self.preset = preset
         self.input_atoms = input_atoms
         self.calc_defaults = calc_defaults
+
         # input_data = kwargs.pop('input_data', None)
         # pseudopotentials = kwargs.pop('pseudopotentials', None)
         # kpts = kwargs.pop('kpts', None)
-
         template = template or EspressoTemplate('pw')
-        profile = profile or EspressoProfile(
-            binary=str(SETTINGS.ESPRESSO_CMD),
-            pseudo_path=str(SETTINGS.ESPRESSO_PP_PATH))
 
         kwargs = self._kwargs_handler(template.binary, **kwargs)
+
+        pseudo_path = kwargs['input_data']['control'].get(
+            'pseudo_dir', str(SETTINGS.ESPRESSO_PP_PATH))
+        
+        profile = profile or EspressoProfile(
+            binary=str(SETTINGS.ESPRESSO_CMD),
+            pseudo_path=pseudo_path)
 
         super().__init__(
             profile=profile,
