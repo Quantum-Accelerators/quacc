@@ -52,7 +52,8 @@ class Espresso(_Espresso):
 
         template = template or EspressoTemplate('pw')
         profile = profile or EspressoProfile(
-            argv=str(SETTINGS.ESPRESSO_CMD).split())
+            binary=str(SETTINGS.ESPRESSO_CMD),
+            pseudo_path=str(SETTINGS.ESPRESSO_PP_PATH))
 
         kwargs = self._kwargs_handler(template.binary, **kwargs)
 

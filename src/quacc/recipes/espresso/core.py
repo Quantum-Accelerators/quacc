@@ -134,7 +134,10 @@ def ph_job(
     }
     
     template = EspressoTemplate('ph')
-    profile = EspressoProfile(argv=str(SETTINGS.ESPRESSO_PH_CMD).split())
+    profile = EspressoProfile(
+        binary=str(SETTINGS.ESPRESSO_PH_CMD),
+        pseudo_path=None
+        )
 
     return _base_job(
         Atoms(),
