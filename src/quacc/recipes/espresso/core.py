@@ -22,6 +22,7 @@ def static_job(
     atoms: Atoms,
     preset: str | None = None,
     copy_files: list[str] | None = None,
+    calc_clean: bool = True,
     **kwargs,
 ) -> RunSchema:
     """
@@ -80,12 +81,14 @@ def static_job(
         calc_swaps=kwargs,
         additional_fields={"name": "pw.x static"},
         copy_files=copy_files,
+        calc_clean=calc_clean
     )
 
 @job
 def ph_job(
     preset: str | None = None,
     copy_files: list[str] | None = None,
+    calc_clean: bool = True,
     **kwargs,
 ) -> RunSchema:
     """
@@ -142,6 +145,7 @@ def ph_job(
         calc_swaps=kwargs,
         additional_fields={"name": "ph.x static"},
         copy_files=copy_files,
+        calc_clean = calc_clean
     )
 
 def _base_job(
@@ -153,6 +157,7 @@ def _base_job(
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
+    calc_clean: bool = True
 ) -> RunSchema:
     """
     Base function to carry out espresso recipes.
@@ -195,7 +200,9 @@ def _base_job(
                           calc_defaults = calc_defaults,
                           **calc_swaps)
     
-    final_atoms = run_calc(atoms, copy_files=copy_files)
+    final_atoms = run_calc(atoms,
+                           copy_files=copy_files,
+                           calc_clean=calc_clean)
 
     return summarize_run(
         final_atoms,

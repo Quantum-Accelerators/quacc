@@ -36,7 +36,10 @@ if TYPE_CHECKING:
 
 
 def run_calc(
-    atoms: Atoms, geom_file: str | None = None, copy_files: list[str] | None = None
+    atoms: Atoms,
+    geom_file: str | None = None,
+    copy_files: list[str] | None = None,
+    calc_clean: bool = True,
 ) -> Atoms:
     """
     Run a calculation in a scratch directory and copy the results back to the original
@@ -95,7 +98,8 @@ def run_calc(
         atoms.cell = atoms_new.cell
 
     # Perform cleanup operations
-    calc_cleanup(tmpdir, job_results_dir)
+    if calc_clean:
+        calc_cleanup(tmpdir, job_results_dir)
 
     return atoms
 
