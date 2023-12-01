@@ -5,7 +5,7 @@ from quacc import SETTINGS
 
 
 def pytest_sessionstart():
-    file_dir = Path(__file__).resolve().parent
+    file_dir = Path(__file__).parent
     test_results_dir = file_dir / ".test_results"
     test_scratch_dir = file_dir / ".test_scratch"
     SETTINGS.WORKFLOW_ENGINE = "parsl"

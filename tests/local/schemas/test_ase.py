@@ -20,7 +20,7 @@ from quacc.schemas.ase import (
     summarize_vib_run,
 )
 
-FILE_DIR = Path(__file__).resolve().parent
+FILE_DIR = Path(__file__).parent
 
 RUN1 = FILE_DIR / "vasp_run1"
 

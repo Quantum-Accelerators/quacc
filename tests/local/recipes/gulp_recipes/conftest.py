@@ -8,7 +8,7 @@ import pytest
 from ase import Atoms
 from ase.calculators.gulp import GULP
 
-FILE_DIR = Path(__file__).resolve().parent
+FILE_DIR = Path(__file__).parent
 GULP_DIR = os.path.join(FILE_DIR, "gulp_run")
 
 

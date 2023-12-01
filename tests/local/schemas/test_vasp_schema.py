@@ -14,7 +14,7 @@ from quacc.schemas.vasp import vasp_summarize_run
 def run1():
     from pathlib import Path
 
-    FILE_DIR = Path(__file__).resolve().parent
+    FILE_DIR = Path(__file__).parent
 
     return FILE_DIR / "vasp_run1"
 

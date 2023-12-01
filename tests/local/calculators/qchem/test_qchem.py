@@ -9,7 +9,7 @@ from pymatgen.io.qchem.inputs import QCInput
 
 from quacc.calculators.qchem import QChem
 
-FILE_DIR = Path(__file__).resolve().parent
+FILE_DIR = Path(__file__).parent
 
 
 @pytest.fixture()
