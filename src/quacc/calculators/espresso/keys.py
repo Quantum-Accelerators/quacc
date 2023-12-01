@@ -1,6 +1,3 @@
-# We work ase.io.espresso style, but we need to add the namelist keys for each binary.
-# !!! For now this is GPT3.5 generated, must be checked !!!
-
 from ase.io.espresso import Namelist
 
 PH_KEYS = Namelist({'INPUTPH':
@@ -384,5 +381,4 @@ PW_KEYS = Namelist((('CONTROL',
                    'laue_wall_sigma',
                    'laue_wall_lj6'])))
 
-# Is this cleaner to import?
 ALL_KEYS = {'pw': PW_KEYS, 'ph': PH_KEYS, 'neb': NEB_KEYS, 'q2r': Q2R_KEYS, 'dynmat': DYNMAT_KEYS}

@@ -63,10 +63,15 @@ def copy_decompress(source_files: list[str | Path], destination: str | Path) -> 
     for f in source_files:
         z_path = Path(zpath(f))
         if z_path.exists():
-            copy(z_path, Path(destination, z_path.name))
-            decompress_file(Path(destination, z_path.name))
+            if len(z_path.parts) == 1:
+                copy(z_path, Path(destination, z_path.name))
+            else:
+                Path(destination, z_path.parent).mkdir(parents=True, exist_ok=True)
+                copy(z_path, Path(destination, z_path))
+            decompress_file(Path(destination, z_path))
         else:
             warnings.warn(f"Cannot find file: {z_path}", UserWarning)
+
 
 
 def make_unique_dir(base_path: str | None = None) -> Path:

@@ -129,6 +129,13 @@ def ph_job(
         },
         'qpts': [(0, 0, 0)]
     }
+
+    copy_files = copy_files or \
+        ['pwscf.xml',
+         'pwscf.save/data-file-schema.xml',
+         'pwscf.save/charge-density.dat.gz',
+         'paw.txt'
+         ]
     
     template = EspressoTemplate('ph')
     profile = EspressoProfile(argv=str(SETTINGS.ESPRESSO_PH_CMD).split())
