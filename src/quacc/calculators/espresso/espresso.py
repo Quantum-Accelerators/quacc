@@ -19,18 +19,21 @@ class EspressoTemplate(_EspressoTemplate):
         self.outputname = f'{binary}.out'
         self.binary = binary
 
-    def write_input(self, directory, atoms, parameters, properties):
+    def write_input(self, profile, directory,
+                    atoms, parameters, properties):
         dst = directory / self.inputname
         write(dst,
               atoms,
               format=self.binary,
               properties=properties,
+              pseudo_dir=str(profile.pseudo_path),
               **parameters)
 
     def read_results(self, directory):
         path = directory / self.outputname
         atoms = read(path, format=self.binary)
         return dict(atoms.calc.properties())
+
 
 
 class Espresso(_Espresso):
