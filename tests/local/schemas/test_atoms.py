@@ -12,7 +12,7 @@ from quacc.schemas.atoms import atoms_to_metadata
 
 @pytest.fixture()
 def test_cifs():
-    file_dir = Path(__file__).resolve().parent
+    file_dir = Path(__file__).parent
 
     return file_dir / "test_files"
 

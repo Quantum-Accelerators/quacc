@@ -17,7 +17,7 @@ from quacc.schemas.cclib import (
     cclib_summarize_run,
 )
 
-FILE_DIR = Path(__file__).resolve().parent
+FILE_DIR = Path(__file__).parent
 
 run1 = FILE_DIR / "gaussian_run1"
 log1 = run1 / "Gaussian.log"

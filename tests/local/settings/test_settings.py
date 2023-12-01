@@ -11,7 +11,7 @@ from quacc.settings import QuaccSettings
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 
-FILE_DIR = Path(__file__).resolve().parent
+FILE_DIR = Path(__file__).parent
 
 
 def setup_function():

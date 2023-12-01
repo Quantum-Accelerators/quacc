@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import os
-from importlib import resources, util
+from importlib import util
 from pathlib import Path
 from shutil import which
 from typing import TYPE_CHECKING, Literal, Optional, Union
@@ -12,8 +12,6 @@ from maggma.core import Store
 from monty.json import MontyDecoder
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
-from quacc.calculators.vasp import presets as vasp_presets
 
 if TYPE_CHECKING:
     from typing import Any
@@ -209,7 +207,7 @@ class QuaccSettings(BaseSettings):
         ),
     )
     VASP_PRESET_DIR: Path = Field(
-        resources.files(vasp_presets), description="Path to the VASP preset directory"
+        Path(__file__) /".."/"calculators"/"vasp"/"presets", description="Path to the VASP preset directory"
     )
 
     # VASP Settings: Custodian

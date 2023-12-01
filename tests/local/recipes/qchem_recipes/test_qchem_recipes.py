@@ -18,7 +18,7 @@ from quacc.recipes.qchem.ts import irc_job, quasi_irc_job, ts_job
 
 pytest.importorskip("sella")
 
-FILE_DIR = Path(__file__).resolve().parent
+FILE_DIR = Path(__file__).parent
 QCHEM_DIR = FILE_DIR / "qchem_examples"
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
