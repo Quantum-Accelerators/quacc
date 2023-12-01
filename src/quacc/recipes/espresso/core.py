@@ -184,14 +184,6 @@ def _base_job(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    # Not happy with this mess currently
-
-    # This is needed because there are two ways
-    # of defining the input_data dict, either as a
-    # nested dict with each namelist a parent dict or as a flat dict
-    # if flat dict, then construct_namelist will convert
-    # it to a nested dict, we have to choose one or the other
-    # and stick with it, which will be the nested dict here.
 
     atoms.calc = Espresso(input_atoms = atoms,
                           preset = preset,
