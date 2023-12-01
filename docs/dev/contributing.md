@@ -30,8 +30,6 @@ Please abide by the following guidelines when contributing code to quacc:
 
 - All code should include type hints and have internally consistent documentation for the inputs and outputs.
 
-- Only define multi-step workflows if they go beyond simply stitching together existing functions or if they are widely used in other recipes. Otherwise, just define the individual functions.
-
 - Use absolute paths where possible and avoid using `os.chdir`. This helps ensure that quacc can be run in multi-threading mode.
 
 - `gzip` large test files to save space.
