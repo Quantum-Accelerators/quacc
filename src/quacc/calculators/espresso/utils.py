@@ -4,8 +4,8 @@ from ase.io.espresso import Namelist
 
 
 # Stolen from ase.io.espresso and modified to add a parameter 'keys',
-# Maybe there is a better way of doing this?
-def construct_namelist(parameters=None, keys = None, warn=False, **kwargs):
+#  Maybe there is a better way of doing this?
+def construct_namelist(parameters=None, keys=None, warn=False, **kwargs):
     """
     Construct an ordered Namelist containing all the parameters given (as
     a dictionary or kwargs). Keys will be inserted into their appropriate
@@ -124,14 +124,20 @@ def parse_pp_and_cutoff(config, atoms):
                 pp_dict[element]['filename']
     else:
         return {}
-    tmp_input_data = {'system': {'ecutwfc': wfc_cutoff, 'ecutrho': rho_cutoff}}
-    return {'pseudopotentials': pseudopotentials, 'input_data': tmp_input_data}
+    tmp_input_data = {
+        'system': {
+            'ecutwfc': wfc_cutoff,
+            'ecutrho': rho_cutoff}}
+    return {
+        'pseudopotentials': pseudopotentials,
+        'input_data': tmp_input_data}
 
 
 def namelist_to_string(parameters):
     # This function aim to write basic input keywords to a file
     # For additional cards (binary specifics) this is down in the child class
-    # Stolen from ase.io.espresso, maybe this could be made to a function "write_namelist"
+    # Stolen from ase.io.espresso,
+    # maybe this could be made to a function "write_namelist"
     # and imported here? See with the ASE gods.
     pwi = []
     for section in parameters:

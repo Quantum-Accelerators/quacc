@@ -15,36 +15,40 @@ from quacc.calculators.espresso.utils import namelist_to_string
 # Three ways to call a function based on a string:
 freg = re.compile(r"-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+\-]?\d+)?")
 
+
 def write(filename,
           atoms,
-          format = 'pw',
-          properties = None,
+          format='pw',
+          properties=None,
           **kwargs):
     with open(filename, 'w') as fd:
         write_espresso_dict[format](fd,
-                                    atoms = atoms,
-                                    properties = properties,
+                                    atoms=atoms,
+                                    properties=properties,
                                     **kwargs)
-    #lines = write_namelist(filename, parameters)
-    #specific_lines = func_dict[format][1](**kwargs)
-    #lines += specific_lines
-    #with open(filename, 'w') as fd:
+    # lines = write_namelist(filename, parameters)
+    # specific_lines = func_dict[format][1](**kwargs)
+    # lines += specific_lines
+    # with open(filename, 'w') as fd:
     #    fd.write(''.join(lines))
 
+
 def read(filename,
-         format = 'pw'):
+         format='pw'):
     with open(filename, 'r') as fd:
         return read_espresso_dict[format](fd)
+
 
 def write_espresso_io(fd, **kwargs):
     "For simple binaries, this is enough."
     pwi = namelist_to_string(kwargs['input_data'])
     fd.write(''.join(pwi))
 
+
 def write_espresso_ph(fd, **kwargs):
     input_data = kwargs.get('input_data', None)
     qpts = kwargs.get('qpts', None)
-    pwi = namelist_to_string(input_data)
+    pwi = namelist_to_string(input_data)[:-1]
     fd.write(''.join(pwi))
     qplot = input_data['inputph'].get('qplot', False)
     ldisp = input_data['inputph'].get('ldisp', False)
@@ -304,8 +308,14 @@ def read_espresso_ph(fd):
 def read_espresso_pw(filename):
     return _read(filename, format='espresso-out')
 
+
 def write_espresso_pw(filename, atoms, properties, **kwargs):
-    _write(filename, atoms, format='espresso-in', properties=properties, **kwargs)
+    _write(
+        filename,
+        atoms,
+        format='espresso-in',
+        properties=properties,
+        **kwargs)
 
 
 read_espresso_dict = {

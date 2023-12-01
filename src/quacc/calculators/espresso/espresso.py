@@ -28,36 +28,36 @@ class EspressoTemplate(_EspressoTemplate):
               **parameters)
 
     def read_results(self, directory):
-            path = directory / self.outputname
-            atoms = read(path, format=self.binary)
-            return dict(atoms.calc.properties())
+        path = directory / self.outputname
+        atoms = read(path, format=self.binary)
+        return dict(atoms.calc.properties())
 
 
 class Espresso(_Espresso):
 
     def __init__(self,
-                 input_atoms = None,
-                 preset = None,
-                 template = None,
-                 profile = None,
-                 calc_defaults = None,
+                 input_atoms=None,
+                 preset=None,
+                 template=None,
+                 profile=None,
+                 calc_defaults=None,
                  **kwargs):
 
         self.preset = preset
         self.input_atoms = input_atoms
         self.calc_defaults = calc_defaults
-        #input_data = kwargs.pop('input_data', None)
-        #pseudopotentials = kwargs.pop('pseudopotentials', None)
-        #kpts = kwargs.pop('kpts', None)
-        
+        # input_data = kwargs.pop('input_data', None)
+        # pseudopotentials = kwargs.pop('pseudopotentials', None)
+        # kpts = kwargs.pop('kpts', None)
+
         template = template or EspressoTemplate('pw')
-        profile = profile or EspressoProfile(argv=
-                                str(SETTINGS.ESPRESSO_CMD).split())
-        
+        profile = profile or EspressoProfile(
+            argv=str(SETTINGS.ESPRESSO_CMD).split())
+
         kwargs = self._kwargs_handler(template.binary, **kwargs)
-        
+
         super().__init__(
-            profile = profile,
+            profile=profile,
             **kwargs)
 
         self.template = template
