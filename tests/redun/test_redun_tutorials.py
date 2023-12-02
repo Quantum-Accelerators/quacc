@@ -11,7 +11,6 @@ pytestmark = pytest.mark.skipif(
     reason="This test requires the Redun workflow engine",
 )
 
-
 @pytest.fixture()
 def scheduler():
     return redun.Scheduler()
