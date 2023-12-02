@@ -9,7 +9,7 @@ from quacc.atoms.slabs import make_adsorbate_structures, make_slabs_from_bulk
 if TYPE_CHECKING:
     from typing import Callable
 
-    from ase import Atoms
+    from ase.atoms import Atoms
 
     from quacc import Job
 

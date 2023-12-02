@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 from ase import Atoms
 
-FILE_DIR = Path(__file__).resolve().parent
+FILE_DIR = Path(__file__).parent
 ORCA_DIR = os.path.join(FILE_DIR, "orca_run")
 
 

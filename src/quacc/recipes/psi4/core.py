@@ -14,7 +14,7 @@ except ImportError:
     psi4 = None
 
 if TYPE_CHECKING:
-    from ase import Atoms
+    from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
 

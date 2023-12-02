@@ -8,17 +8,10 @@ from quacc.runners.ase import run_calc, run_opt
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import merge_dicts
 
-try:
-    from sella import Sella
-
-    has_sella = True
-except ImportError:
-    has_sella = False
-
 if TYPE_CHECKING:
     from typing import Any
 
-    from ase import Atoms
+    from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import OptSchema, RunSchema
 

@@ -13,12 +13,12 @@ from quacc.atoms.slabs import (
     make_slabs_from_bulk,
 )
 
-FILE_DIR = Path(__file__).resolve().parent
+FILE_DIR = Path(__file__).parent
 
 
 @pytest.fixture()
 def atoms_mag():
-    FILE_DIR = Path(__file__).resolve().parent
+    FILE_DIR = Path(__file__).parent
 
     return read(FILE_DIR / ".." / "calculators" / "vasp" / "OUTCAR_mag.gz")
 

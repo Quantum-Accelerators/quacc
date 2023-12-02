@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.2]
+
+### Added
+
+- Added a Jenkins-based test suite that runs tests on HPC resources without mocking
+- Added a TBLite phonon recipe
+
+### Fixed
+
+- Fixed functional and basis set strings in Gaussian recipes
+- Uses number of physical cores instead of logical cores as default for molecular DFT recipes
+
 ## [0.4.1]
 
 ### Changed

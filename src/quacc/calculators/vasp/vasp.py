@@ -24,7 +24,7 @@ from quacc.schemas.prep import set_magmoms
 if TYPE_CHECKING:
     from typing import Literal
 
-    from ase import Atoms
+    from ase.atoms import Atoms
 
 
 class Vasp(Vasp_):

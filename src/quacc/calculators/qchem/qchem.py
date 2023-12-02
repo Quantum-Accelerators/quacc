@@ -14,7 +14,7 @@ from quacc.calculators.qchem.params import cleanup_attrs, make_qc_input
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Literal, TypedDict
 
-    from ase import Atoms
+    from ase.atoms import Atoms
     from numpy.typing import NDArray
 
     class Results(TypedDict, total=False):

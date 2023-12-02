@@ -7,8 +7,8 @@ pytest.importorskip("tblite.ase")
 pytest.importorskip("phonopy")
 
 
-def test_phonon_flow(tmpdir):
-    tmpdir.chdir()
+def test_phonon_flow(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
     output = phonon_flow(atoms, static_job_kwargs={"method": "GFN1-xTB"})
     assert output["results"]["force_constants"].shape == (8, 8, 3, 3)

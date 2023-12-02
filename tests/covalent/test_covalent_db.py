@@ -7,11 +7,6 @@ from quacc.wflow_tools.db import covalent_to_db
 
 ct = pytest.importorskip("covalent")
 
-pytestmark = pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False,
-    reason="This test is only meant to be run on GitHub Actions with Covalent",
-)
-
 
 def test_covalent_to_db():
     @ct.electron

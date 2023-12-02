@@ -19,7 +19,7 @@ from quacc.utils.dicts import merge_dicts
 if TYPE_CHECKING:
     from typing import Any
 
-    from ase import Atoms
+    from ase.atoms import Atoms
 
     from quacc.runners.ase import VibKwargs
     from quacc.schemas._aliases.ase import OptSchema, RunSchema, VibThermoSchema

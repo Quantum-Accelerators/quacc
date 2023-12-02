@@ -11,7 +11,7 @@ from quacc.recipes.tblite.core import static_job
 if TYPE_CHECKING:
     from typing import Any
 
-    from ase import Atoms
+    from ase.atoms import Atoms
     from numpy.typing import ArrayLike
 
     from quacc.schemas._aliases.phonons import PhononSchema

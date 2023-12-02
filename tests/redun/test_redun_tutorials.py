@@ -1,11 +1,15 @@
 import pytest
 from ase.build import bulk, molecule
 
-from quacc import flow
+from quacc import SETTINGS, flow
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 redun = pytest.importorskip("redun")
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "redun",
+    reason="This test requires the Redun workflow engine",
+)
 
 
 @pytest.fixture()
@@ -13,8 +17,8 @@ def scheduler():
     return redun.Scheduler()
 
 
-def test_tutorial1a(tmpdir, scheduler):
-    tmpdir.chdir()
+def test_tutorial1a(tmp_path, monkeypatch, scheduler):
+    monkeypatch.chdir(tmp_path)
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -23,8 +27,8 @@ def test_tutorial1a(tmpdir, scheduler):
     assert "atoms" in scheduler.run(relax_job(atoms))
 
 
-def test_tutorial1b(tmpdir, scheduler):
-    tmpdir.chdir()
+def test_tutorial1b(tmp_path, monkeypatch, scheduler):
+    monkeypatch.chdir(tmp_path)
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -33,8 +37,8 @@ def test_tutorial1b(tmpdir, scheduler):
     assert len(scheduler.run(bulk_to_slabs_flow(atoms))) == 4
 
 
-def test_tutorial2a(tmpdir, scheduler):
-    tmpdir.chdir()
+def test_tutorial2a(tmp_path, monkeypatch, scheduler):
+    monkeypatch.chdir(tmp_path)
 
     @flow
     def workflow(atoms):
@@ -47,8 +51,8 @@ def test_tutorial2a(tmpdir, scheduler):
     assert "atoms" in scheduler.run(workflow(atoms))
 
 
-def test_tutorial2b(tmpdir, scheduler):
-    tmpdir.chdir()
+def test_tutorial2b(tmp_path, monkeypatch, scheduler):
+    monkeypatch.chdir(tmp_path)
 
     # Define workflow
     @flow
@@ -67,8 +71,8 @@ def test_tutorial2b(tmpdir, scheduler):
     assert "atoms" in scheduler.run(workflow(atoms1, atoms2))["result1"]
 
 
-def test_tutorial2c(tmpdir, scheduler):
-    tmpdir.chdir()
+def test_tutorial2c(tmp_path, monkeypatch, scheduler):
+    monkeypatch.chdir(tmp_path)
 
     # Define the workflow
     @flow

@@ -14,7 +14,7 @@ from quacc.utils.files import check_logfile
 if TYPE_CHECKING:
     from typing import Any
 
-    from ase import Atoms
+    from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
 

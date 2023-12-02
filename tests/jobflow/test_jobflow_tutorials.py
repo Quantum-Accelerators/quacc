@@ -1,14 +1,18 @@
 import pytest
 from ase.build import bulk, molecule
 
-from quacc import job
+from quacc import SETTINGS, job
 from quacc.recipes.emt.core import relax_job, static_job
 
 jf = pytest.importorskip("jobflow")
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "jobflow",
+    reason="This test requires the Jobflow workflow engine",
+)
 
 
-def test_tutorial1a(tmpdir):
-    tmpdir.chdir()
+def test_tutorial1a(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -20,8 +24,8 @@ def test_tutorial1a(tmpdir):
     jf.run_locally(job, create_folders=True, ensure_success=True)
 
 
-def test_tutorial2a(tmpdir):
-    tmpdir.chdir()
+def test_tutorial2a(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -39,8 +43,8 @@ def test_tutorial2a(tmpdir):
     jf.run_locally(workflow, create_folders=True, ensure_success=True)
 
 
-def test_tutorial2b(tmpdir):
-    tmpdir.chdir()
+def test_tutorial2b(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Define two Atoms objects
     atoms1 = bulk("Cu")
@@ -57,8 +61,8 @@ def test_tutorial2b(tmpdir):
     jf.run_locally(workflow, create_folders=True, ensure_success=True)
 
 
-def test_comparison1(tmpdir):
-    tmpdir.chdir()
+def test_comparison1(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     @job  # (1)!
     def add(a, b):
@@ -76,8 +80,8 @@ def test_comparison1(tmpdir):
     assert responses[job2.uuid][1].output == 9
 
 
-def test_comparison2(tmpdir):
-    tmpdir.chdir()
+def test_comparison2(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     @jf.job
     def add(a, b):
@@ -104,8 +108,8 @@ def test_comparison2(tmpdir):
     jf.run_locally(flow, ensure_success=True)  # [6, 6, 6] in final 3 jobs
 
 
-def test_comparison3(tmpdir):
-    tmpdir.chdir()
+def test_comparison3(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     @job  #  (1)!
     def add(a, b):
@@ -122,8 +126,8 @@ def test_comparison3(tmpdir):
     jf.run_locally(flow, ensure_success=True)
 
 
-def test_comparison4(tmpdir):
-    tmpdir.chdir()
+def test_comparison4(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     @job
     def add(a, b):

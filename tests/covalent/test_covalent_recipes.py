@@ -1,16 +1,21 @@
 import pytest
 from ase.build import bulk
 
+from quacc import SETTINGS
 from quacc.recipes.emt.core import relax_job
 
 ct = pytest.importorskip("covalent")
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "covalent",
+    reason="This test requires the Covalent workflow engine",
+)
 
 
-def test_phonon_flow(tmpdir):
+def test_phonon_flow(tmp_path, monkeypatch):
     pytest.importorskip("phonopy")
     from quacc.recipes.emt.phonons import phonon_flow
 
-    tmpdir.chdir()
+    monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
     dispatch_id = ct.dispatch(phonon_flow)(atoms)
     output = ct.get_result(dispatch_id, wait=True)
@@ -20,11 +25,11 @@ def test_phonon_flow(tmpdir):
     )
 
 
-def test_phonon_flow_multistep(tmpdir):
+def test_phonon_flow_multistep(tmp_path, monkeypatch):
     pytest.importorskip("phonopy")
     from quacc.recipes.emt.phonons import phonon_flow
 
-    tmpdir.chdir()
+    monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
     relaxed = relax_job(atoms)
     dispatch_id = ct.dispatch(phonon_flow)(relaxed["atoms"])
