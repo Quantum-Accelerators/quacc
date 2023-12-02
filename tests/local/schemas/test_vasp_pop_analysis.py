@@ -57,7 +57,7 @@ def prep_files(monkeypatch):
 
 def test_run_bader(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    prep_files()
+    prep_files(monkeypatch)
 
     bader_stats = _bader_runner()[0]
     assert bader_stats["min_dist"] == [1.0]
@@ -80,7 +80,7 @@ def test_bader_erorr(tmp_path, monkeypatch):
 
 def test_run_chargemol(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    prep_files()
+    prep_files(monkeypatch)
 
     chargemol_stats = _chargemol_runner(path=".", atomic_densities_path=".")[0]
     assert chargemol_stats["ddec"]["partial_charges"] == [1.0]
@@ -89,7 +89,7 @@ def test_run_chargemol(tmp_path, monkeypatch):
 
 def test_chargemol_erorr(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    prep_files()
+    prep_files(monkeypatch)
 
     with pytest.raises(OSError):
         _chargemol_runner()
