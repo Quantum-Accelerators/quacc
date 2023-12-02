@@ -19,8 +19,8 @@ def teardown_module():
     SETTINGS.PRIMARY_STORE = DEFAULT_SETTINGS.PRIMARY_STORE
 
 
-def test_static_job(tmp_path):
-    os.chdir(tmp_path)
+def test_static_job(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     atoms = molecule("H2O")
 
@@ -41,8 +41,8 @@ def test_static_job(tmp_path):
     assert output["results"]["energy"] == pytest.approx(0.0)
 
 
-def test_relax_job(tmp_path):
-    os.chdir(tmp_path)
+def test_relax_job(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     atoms = molecule("H2O")
 
@@ -65,8 +65,8 @@ def test_relax_job(tmp_path):
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.03
 
 
-def test_freq_job(tmp_path):
-    os.chdir(tmp_path)
+def test_freq_job(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     atoms = molecule("H2O")
 

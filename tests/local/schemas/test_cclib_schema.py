@@ -51,8 +51,8 @@ def bad_mock_cclib_calculate(*args, **kwargs):
     raise ValueError(msg)
 
 
-def test_cclib_summarize_run(tmp_path):
-    os.chdir(tmp_path)
+def test_cclib_summarize_run(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     # Make sure metadata is made
     atoms = read(log1)
@@ -106,9 +106,9 @@ def test_cclib_summarize_run(tmp_path):
 
     # Make sure default dir works
     cwd = os.getcwd()
-    os.chdir(run1)
+    monkeypatch.chdir(run1)
     cclib_summarize_run(atoms, ".log")
-    os.chdir(cwd)
+    monkeypatch.chdir(cwd)
 
     # Test DB
     atoms = read(log1)
@@ -160,8 +160,8 @@ def test_errors():
         cclib_summarize_run(atoms, ".log", dir_path=run1)
 
 
-def test_cclib_taskdoc(tmp_path):
-    os.chdir(tmp_path)
+def test_cclib_taskdoc(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     p = FILE_DIR / "cclib_data"
 
@@ -201,7 +201,7 @@ def test_cclib_taskdoc(tmp_path):
 
 
 def test_cclib_calculate(tmp_path, cclib_obj):
-    os.chdir(tmp_path)
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     with pytest.raises(ValueError):
         _cclib_calculate(cclib_obj, method="fakemethod")
@@ -237,7 +237,7 @@ def test_cclib_calculate(tmp_path, cclib_obj):
 
 
 def test_monkeypatches(tmp_path, monkeypatch, cclib_obj):
-    os.chdir(tmp_path)
+    monkeypatch.chdir(tmp_path, monkeypatch
     monkeypatch.setenv("PROATOM_DIR", str(FILE_DIR / "cclib_data" / "proatomdata"))
     with pytest.raises(FileNotFoundError):
         _cclib_calculate(

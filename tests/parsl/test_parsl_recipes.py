@@ -23,11 +23,11 @@ def teardown_module():
     parsl.clear()
 
 
-def test_phonon_flow(tmp_path):
+def test_phonon_flow(tmp_path, monkeypatch:
     pytest.importorskip("phonopy")
     from quacc.recipes.emt.phonons import phonon_flow
 
-    os.chdir(tmp_path)
+    monkeypatch.chdir(tmp_path, monkeypatch
     atoms = bulk("Cu")
     output = phonon_flow(atoms)
     assert output.result()["results"]["thermal_properties"]["temperatures"].shape == (
@@ -35,11 +35,11 @@ def test_phonon_flow(tmp_path):
     )
 
 
-def test_phonon_flow_multistep(tmp_path):
+def test_phonon_flow_multistep(tmp_path, monkeypatch:
     pytest.importorskip("phonopy")
     from quacc.recipes.emt.phonons import phonon_flow
 
-    os.chdir(tmp_path)
+    monkeypatch.chdir(tmp_path, monkeypatch
     atoms = bulk("Cu")
     relaxed = relax_job(atoms)
     output = phonon_flow(relaxed["atoms"])

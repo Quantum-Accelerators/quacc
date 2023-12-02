@@ -12,8 +12,8 @@ sella = pytest.importorskip("sella")
 from sella import Sella
 
 
-def test_sella(tmp_path):
-    os.chdir(tmp_path)
+def test_sella(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
@@ -31,8 +31,8 @@ def test_sella(tmp_path):
     assert dyn.user_internal is True
 
 
-def test_TRICs(tmp_path):
-    os.chdir(tmp_path)
+def test_TRICs(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
     atoms = molecule("C2H6")
     atoms.calc = LennardJones()
     dyn = run_opt(

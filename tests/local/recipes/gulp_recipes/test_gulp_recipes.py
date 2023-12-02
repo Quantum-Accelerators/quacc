@@ -8,8 +8,8 @@ from quacc.recipes.gulp.core import relax_job, static_job
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 
-def test_static_job(tmp_path):
-    os.chdir(tmp_path)
+def test_static_job(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     atoms = molecule("H2O")
 
@@ -63,8 +63,8 @@ def test_static_job(tmp_path):
     assert "output cif gulp.cif" in output["parameters"]["options"]
 
 
-def test_relax_job(tmp_path):
-    os.chdir(tmp_path)
+def test_relax_job(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     atoms = molecule("H2O")
 
@@ -136,8 +136,8 @@ def test_relax_job(tmp_path):
     assert "output cif gulp.cif" in output["parameters"]["options"]
 
 
-def test_envvars(tmp_path):
-    os.chdir(tmp_path)
+def test_envvars(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     atoms = molecule("H2O")
 

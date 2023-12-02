@@ -20,7 +20,7 @@ def scheduler():
 
 
 def test_tutorial1a(tmp_path, scheduler):
-    os.chdir(tmp_path)
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -30,7 +30,7 @@ def test_tutorial1a(tmp_path, scheduler):
 
 
 def test_tutorial1b(tmp_path, scheduler):
-    os.chdir(tmp_path)
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -40,7 +40,7 @@ def test_tutorial1b(tmp_path, scheduler):
 
 
 def test_tutorial2a(tmp_path, scheduler):
-    os.chdir(tmp_path)
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     @flow
     def workflow(atoms):
@@ -54,7 +54,7 @@ def test_tutorial2a(tmp_path, scheduler):
 
 
 def test_tutorial2b(tmp_path, scheduler):
-    os.chdir(tmp_path)
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     # Define workflow
     @flow
@@ -74,7 +74,7 @@ def test_tutorial2b(tmp_path, scheduler):
 
 
 def test_tutorial2c(tmp_path, scheduler):
-    os.chdir(tmp_path)
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     # Define the workflow
     @flow

@@ -24,8 +24,8 @@ def teardown_module():
     parsl.clear()
 
 
-def test_tutorial1a(tmp_path):
-    os.chdir(tmp_path)
+def test_tutorial1a(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -37,8 +37,8 @@ def test_tutorial1a(tmp_path):
     assert "atoms" in future.result()  # (2)!
 
 
-def test_tutorial1b(tmp_path):
-    os.chdir(tmp_path)
+def test_tutorial1b(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -59,8 +59,8 @@ def test_tutorial1b(tmp_path):
     assert "atoms" in future.result()[0]  # (2)!
 
 
-def test_tutorial2a(tmp_path):
-    os.chdir(tmp_path)
+def test_tutorial2a(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     # Define the workflow
     def workflow(atoms):
@@ -81,8 +81,8 @@ def test_tutorial2a(tmp_path):
     assert "atoms" in result
 
 
-def test_tutorial2b(tmp_path):
-    os.chdir(tmp_path)
+def test_tutorial2b(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     # Define workflow
     def workflow(atoms1, atoms2):
@@ -108,8 +108,8 @@ def test_tutorial2b(tmp_path):
     assert "atoms" in result2
 
 
-def test_tutorial2c(tmp_path):
-    os.chdir(tmp_path)
+def test_tutorial2c(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     # Define the workflow
     def workflow(atoms):
@@ -129,8 +129,8 @@ def test_tutorial2c(tmp_path):
     assert len(result) == 4
 
 
-def test_comparison1(tmp_path):
-    os.chdir(tmp_path)
+def test_comparison1(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     @job  #  (1)!
     def add(a, b):
@@ -147,8 +147,8 @@ def test_comparison1(tmp_path):
     assert result == 9
 
 
-def test_comparison2(tmp_path):
-    os.chdir(tmp_path)
+def test_comparison2(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     @job
     def add(a, b):
@@ -169,8 +169,8 @@ def test_comparison2(tmp_path):
     assert future3.result() == [6, 6, 6]
 
 
-def test_comparison3(tmp_path):
-    os.chdir(tmp_path)
+def test_comparison3(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     @job  #  (1)!
     def add(a, b):
@@ -186,8 +186,8 @@ def test_comparison3(tmp_path):
     assert future2.result() == 9
 
 
-def test_comparison4(tmp_path):
-    os.chdir(tmp_path)
+def test_comparison4(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     @job
     def add(a, b):

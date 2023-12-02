@@ -11,8 +11,8 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-def test_covalent_decorators(tmp_path):
-    os.chdir(tmp_path)
+def test_covalent_decorators(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     @job
     def add(a, b):
@@ -53,8 +53,8 @@ def test_covalent_decorators(tmp_path):
     ).result == [3, 3, 3]
 
 
-def test_covalent_decorators_args(tmp_path):
-    os.chdir(tmp_path)
+def test_covalent_decorators_args(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     @job(executor="local")
     def add(a, b):

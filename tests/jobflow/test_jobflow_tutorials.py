@@ -13,8 +13,8 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-def test_tutorial1a(tmp_path):
-    os.chdir(tmp_path)
+def test_tutorial1a(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -26,8 +26,8 @@ def test_tutorial1a(tmp_path):
     jf.run_locally(job, create_folders=True, ensure_success=True)
 
 
-def test_tutorial2a(tmp_path):
-    os.chdir(tmp_path)
+def test_tutorial2a(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -45,8 +45,8 @@ def test_tutorial2a(tmp_path):
     jf.run_locally(workflow, create_folders=True, ensure_success=True)
 
 
-def test_tutorial2b(tmp_path):
-    os.chdir(tmp_path)
+def test_tutorial2b(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     # Define two Atoms objects
     atoms1 = bulk("Cu")
@@ -63,8 +63,8 @@ def test_tutorial2b(tmp_path):
     jf.run_locally(workflow, create_folders=True, ensure_success=True)
 
 
-def test_comparison1(tmp_path):
-    os.chdir(tmp_path)
+def test_comparison1(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     @job  # (1)!
     def add(a, b):
@@ -82,8 +82,8 @@ def test_comparison1(tmp_path):
     assert responses[job2.uuid][1].output == 9
 
 
-def test_comparison2(tmp_path):
-    os.chdir(tmp_path)
+def test_comparison2(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     @jf.job
     def add(a, b):
@@ -110,8 +110,8 @@ def test_comparison2(tmp_path):
     jf.run_locally(flow, ensure_success=True)  # [6, 6, 6] in final 3 jobs
 
 
-def test_comparison3(tmp_path):
-    os.chdir(tmp_path)
+def test_comparison3(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     @job  #  (1)!
     def add(a, b):
@@ -128,8 +128,8 @@ def test_comparison3(tmp_path):
     jf.run_locally(flow, ensure_success=True)
 
 
-def test_comparison4(tmp_path):
-    os.chdir(tmp_path)
+def test_comparison4(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     @job
     def add(a, b):

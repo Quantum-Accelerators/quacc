@@ -17,8 +17,8 @@ from quacc.recipes.vasp.slabs import (
 DEFAULT_SETTINGS = SETTINGS.copy()
 
 
-def test_static_job(tmp_path):
-    os.chdir(tmp_path)
+def test_static_job(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     atoms = bulk("Cu") * (2, 2, 2)
 
@@ -48,8 +48,8 @@ def test_static_job(tmp_path):
     assert "efermi" not in output["parameters"]
 
 
-def test_static_job_incar_copilot_aggressive(tmp_path):
-    os.chdir(tmp_path)
+def test_static_job_incar_copilot_aggressive(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     atoms = bulk("Cu") * (2, 2, 2)
 
@@ -63,8 +63,8 @@ def test_static_job_incar_copilot_aggressive(tmp_path):
     SETTINGS.VASP_INCAR_COPILOT = DEFAULT_SETTINGS.VASP_INCAR_COPILOT
 
 
-def test_relax_job(tmp_path):
-    os.chdir(tmp_path)
+def test_relax_job(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     atoms = bulk("Cu") * (2, 2, 2)
 
@@ -94,8 +94,8 @@ def test_relax_job(tmp_path):
     assert output["parameters"]["isif"] == 2
 
 
-def test_doublerelax_job(tmp_path):
-    os.chdir(tmp_path)
+def test_doublerelax_job(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     atoms = bulk("Cu") * (2, 2, 2)
 
@@ -145,8 +145,8 @@ def test_doublerelax_job(tmp_path):
     double_relax_job(atoms, relax1_kwargs={"kpts": [1, 1, 1]})
 
 
-def test_slab_static_job(tmp_path):
-    os.chdir(tmp_path)
+def test_slab_static_job(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     atoms = bulk("Cu") * (2, 2, 2)
 
@@ -173,8 +173,8 @@ def test_slab_static_job(tmp_path):
     assert "encut" not in output["parameters"]
 
 
-def test_slab_relax_job(tmp_path):
-    os.chdir(tmp_path)
+def test_slab_relax_job(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     atoms = bulk("Cu") * (2, 2, 2)
 
@@ -196,8 +196,8 @@ def test_slab_relax_job(tmp_path):
     assert output["parameters"]["nelmin"] == 6
 
 
-def test_slab_dynamic_jobs(tmp_path):
-    os.chdir(tmp_path)
+def test_slab_dynamic_jobs(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     atoms = bulk("Cu")
 
@@ -284,8 +284,8 @@ def test_slab_dynamic_jobs(tmp_path):
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
 
-def test_qmof(tmp_path):
-    os.chdir(tmp_path)
+def test_qmof(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     atoms = bulk("Cu")
     output = qmof_relax_job(atoms)
@@ -356,8 +356,8 @@ def test_qmof(tmp_path):
     output = qmof_relax_job(atoms)
 
 
-def test_mp_prerelax_job(tmp_path):
-    os.chdir(tmp_path)
+def test_mp_prerelax_job(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     atoms = bulk("Cu")
     output = mp_prerelax_job(atoms)
@@ -388,8 +388,8 @@ def test_mp_prerelax_job(tmp_path):
     assert output["parameters"]["sigma"] == 0.05
 
 
-def test_mp_relax_job(tmp_path):
-    os.chdir(tmp_path)
+def test_mp_relax_job(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     atoms = bulk("Cu")
 
@@ -421,8 +421,8 @@ def test_mp_relax_job(tmp_path):
     assert output["parameters"]["sigma"] == 0.05
 
 
-def test_mp_relax_flow(tmp_path):
-    os.chdir(tmp_path)
+def test_mp_relax_flow(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     atoms = bulk("Cu")
 

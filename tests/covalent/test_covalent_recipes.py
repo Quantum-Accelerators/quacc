@@ -13,11 +13,11 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-def test_phonon_flow(tmp_path):
+def test_phonon_flow(tmp_path, monkeypatch:
     pytest.importorskip("phonopy")
     from quacc.recipes.emt.phonons import phonon_flow
 
-    os.chdir(tmp_path)
+    monkeypatch.chdir(tmp_path, monkeypatch
     atoms = bulk("Cu")
     dispatch_id = ct.dispatch(phonon_flow)(atoms)
     output = ct.get_result(dispatch_id, wait=True)
@@ -27,11 +27,11 @@ def test_phonon_flow(tmp_path):
     )
 
 
-def test_phonon_flow_multistep(tmp_path):
+def test_phonon_flow_multistep(tmp_path, monkeypatch:
     pytest.importorskip("phonopy")
     from quacc.recipes.emt.phonons import phonon_flow
 
-    os.chdir(tmp_path)
+    monkeypatch.chdir(tmp_path, monkeypatch
     atoms = bulk("Cu")
     relaxed = relax_job(atoms)
     dispatch_id = ct.dispatch(phonon_flow)(relaxed["atoms"])

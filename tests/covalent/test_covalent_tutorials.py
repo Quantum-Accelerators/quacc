@@ -14,8 +14,8 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-def test_quickstart(tmp_path):
-    os.chdir(tmp_path)
+def test_quickstart(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     # Define the Atoms object
     atoms = bulk("Cu")
@@ -28,8 +28,8 @@ def test_quickstart(tmp_path):
     assert result.status == "COMPLETED"
 
 
-def test_tutorial1a(tmp_path):
-    os.chdir(tmp_path)
+def test_tutorial1a(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -46,8 +46,8 @@ def test_tutorial1a(tmp_path):
     assert result.status == "COMPLETED"
 
 
-def test_tutorial1b(tmp_path):
-    os.chdir(tmp_path)
+def test_tutorial1b(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     atoms = bulk("Cu")
     dispatch_id = ct.dispatch(bulk_to_slabs_flow)(atoms)  # (1)!
@@ -55,8 +55,8 @@ def test_tutorial1b(tmp_path):
     assert result.status == "COMPLETED"
 
 
-def test_tutorial2a(tmp_path):
-    os.chdir(tmp_path)
+def test_tutorial2a(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     # Define the workflow
     @flow  # (1)!
@@ -79,8 +79,8 @@ def test_tutorial2a(tmp_path):
     assert result.status == "COMPLETED"
 
 
-def test_tutorial2b(tmp_path):
-    os.chdir(tmp_path)
+def test_tutorial2b(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     # Define workflow
     @flow
@@ -103,8 +103,8 @@ def test_tutorial2b(tmp_path):
     assert result.status == "COMPLETED"
 
 
-def test_tutorial2c(tmp_path):
-    os.chdir(tmp_path)
+def test_tutorial2c(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     @flow
     def workflow(atoms):
@@ -117,8 +117,8 @@ def test_tutorial2c(tmp_path):
     assert result.status == "COMPLETED"
 
 
-def test_tutorial_excecutor1(tmp_path):
-    os.chdir(tmp_path)
+def test_tutorial_excecutor1(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     @flow(executor="local")
     def workflow4(atoms):
@@ -131,8 +131,8 @@ def test_tutorial_excecutor1(tmp_path):
     assert result.status == "COMPLETED"
 
 
-def test_tutorial_excecutor2(tmp_path):
-    os.chdir(tmp_path)
+def test_tutorial_excecutor2(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     relax_job.electron_object.executor = "dask"
     static_job.electron_object.executor = "local"
@@ -148,8 +148,8 @@ def test_tutorial_excecutor2(tmp_path):
     assert result.status == "COMPLETED"
 
 
-def test_comparison1(tmp_path):
-    os.chdir(tmp_path)
+def test_comparison1(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     @job  # (1)!
     def add(a, b):
@@ -172,8 +172,8 @@ def test_comparison1(tmp_path):
     assert result.status == "COMPLETED"
 
 
-def test_comparison2(tmp_path):
-    os.chdir(tmp_path)
+def test_comparison2(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     @job
     def add(a, b):
@@ -203,8 +203,8 @@ def test_comparison2(tmp_path):
     assert result.status == "COMPLETED"
 
 
-def test_comparison3(tmp_path):
-    os.chdir(tmp_path)
+def test_comparison3(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     @job  #  (1)!
     def add(a, b):
@@ -223,8 +223,8 @@ def test_comparison3(tmp_path):
     assert result.status == "COMPLETED"
 
 
-def test_comparison4(tmp_path):
-    os.chdir(tmp_path)
+def test_comparison4(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     @job
     def add(a, b):

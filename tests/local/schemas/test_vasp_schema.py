@@ -57,9 +57,9 @@ def test_vasp_summarize_run(run1):
 
     # Make sure default dir works
     cwd = os.getcwd()
-    os.chdir(run1)
+    monkeypatch.chdir(run1)
     vasp_summarize_run(atoms)
-    os.chdir(cwd)
+    monkeypatch.chdir(cwd)
 
     # Test DB
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
@@ -116,11 +116,11 @@ def test_vasp_summarize_run(run1):
     MontyDecoder().process_decoded(d)
 
 
-def test_summarize_bader_run(monkeypatch, run1, tmp_path):
+def test_summarize_bader_run(monkeypatch, run1, tmp_path, monkeypatch:
     monkeypatch.setattr(
         "quacc.schemas.vasp.bader_analysis_from_path", mock_bader_analysis
     )
-    os.chdir(tmp_path)
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     p = tmp_path / "vasp_run"
     copytree(run1, p)
@@ -139,10 +139,10 @@ def test_summarize_bader_run(monkeypatch, run1, tmp_path):
     assert struct.site_properties["bader_spin"] == [0.0] * len(atoms)
 
 
-def test_summarize_chargemol_run(monkeypatch, run1, tmp_path):
+def test_summarize_chargemol_run(monkeypatch, run1, tmp_path, monkeypatch:
     monkeypatch.setattr("quacc.schemas.vasp.ChargemolAnalysis", mock_chargemol_analysis)
     monkeypatch.setenv("DDEC6_ATOMIC_DENSITIES_DIR", "test")
-    os.chdir(tmp_path)
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     p = tmp_path / "vasp_run"
     copytree(run1, p)
@@ -162,13 +162,13 @@ def test_summarize_chargemol_run(monkeypatch, run1, tmp_path):
     assert struct.site_properties["ddec6_spin"] == [0.0] * len(atoms)
 
 
-def test_summarize_bader_and_chargemol_run(monkeypatch, run1, tmp_path):
+def test_summarize_bader_and_chargemol_run(monkeypatch, run1, tmp_path, monkeypatch:
     monkeypatch.setattr(
         "quacc.schemas.vasp.bader_analysis_from_path", mock_bader_analysis
     )
     monkeypatch.setattr("quacc.schemas.vasp.ChargemolAnalysis", mock_chargemol_analysis)
     monkeypatch.setenv("DDEC6_ATOMIC_DENSITIES_DIR", "test")
-    os.chdir(tmp_path)
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     p = tmp_path / "vasp_run"
     copytree(run1, p)
@@ -190,16 +190,16 @@ def test_summarize_bader_and_chargemol_run(monkeypatch, run1, tmp_path):
     assert struct.site_properties["bader_spin"] == [0.0] * len(atoms)
 
 
-def test_no_bader(run1, tmp_path):
-    os.chdir(tmp_path)
+def test_no_bader(run1, tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     atoms = read(run1 / "OUTCAR.gz")
     with pytest.warns(UserWarning):
         vasp_summarize_run(atoms, dir_path=run1, run_bader=True, run_chargemol=False)
 
 
-def test_no_chargemol(run1, tmp_path):
-    os.chdir(tmp_path)
+def test_no_chargemol(run1, tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     atoms = read(run1 / "OUTCAR.gz")
     with pytest.warns(UserWarning):

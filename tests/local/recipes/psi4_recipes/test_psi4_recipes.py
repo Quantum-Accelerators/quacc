@@ -8,8 +8,8 @@ from quacc.recipes.psi4.core import static_job
 pytest.importorskip("psi4")
 
 
-def test_static(tmp_path):
-    os.chdir(tmp_path)
+def test_static(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     atoms = molecule("H2")
     output = static_job(atoms, charge=0, spin_multiplicity=1)

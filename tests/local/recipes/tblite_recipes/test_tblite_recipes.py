@@ -11,8 +11,8 @@ from quacc.recipes.tblite.core import freq_job, relax_job, static_job
 pytest.importorskip("tblite.ase")
 
 
-def test_static_job(tmp_path):
-    os.chdir(tmp_path)
+def test_static_job(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     atoms = molecule("H2O")
     output = static_job(atoms)
@@ -28,8 +28,8 @@ def test_static_job(tmp_path):
     assert np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
 
 
-def test_relax_job(tmp_path):
-    os.chdir(tmp_path)
+def test_relax_job(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     atoms = molecule("H2O")
     output = relax_job(atoms)
@@ -41,8 +41,8 @@ def test_relax_job(tmp_path):
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
 
 
-def test_relax_job_cell(tmp_path):
-    os.chdir(tmp_path)
+def test_relax_job_cell(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     atoms = bulk("Cu")
     output = relax_job(atoms, method="GFN1-xTB", relax_cell=True)
@@ -52,8 +52,8 @@ def test_relax_job_cell(tmp_path):
     )
 
 
-def test_freq_job(tmp_path):
-    os.chdir(tmp_path)
+def test_freq_job(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     atoms = molecule("H2O")
     output = freq_job(atoms)
@@ -133,10 +133,10 @@ def test_freq_job(tmp_path):
     assert "dir_name" in output
 
 
-def test_unique_workdir(tmp_path):
+def test_unique_workdir(tmp_path, monkeypatch:
     DEFAULT_SETTINGS = SETTINGS.model_copy()
 
     SETTINGS.CREATE_UNIQUE_WORKDIR = True
-    test_static_job(tmp_path)
-    test_relax_job(tmp_path)
+    test_static_job(tmp_path, monkeypatch
+    test_relax_job(tmp_path, monkeypatch
     SETTINGS.CREATE_UNIQUE_WORKDIR = DEFAULT_SETTINGS.CREATE_UNIQUE_WORKDIR

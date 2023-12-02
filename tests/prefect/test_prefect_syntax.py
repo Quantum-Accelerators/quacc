@@ -18,8 +18,8 @@ def prefect_test_fixture():
         yield
 
 
-def test_prefect_decorators(tmp_path):
-    os.chdir(tmp_path)
+def test_prefect_decorators(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     @job
     def add(a, b):

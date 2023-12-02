@@ -46,7 +46,7 @@ def patch_pop_analyses(monkeypatch):
 def prep_files():
     if not os.path.exists("rundir"):
         os.mkdir("rundir")
-    os.chdir("rundir")
+    monkeypatch.chdir("rundir")
     for f in ["CHGCAR", "POTCAR"]:
         with open(f, "w") as w:
             w.write("test")
@@ -55,8 +55,8 @@ def prep_files():
             gf.write(b"test")
 
 
-def test_run_bader(tmp_path):
-    os.chdir(tmp_path)
+def test_run_bader(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
     prep_files()
 
     bader_stats = _bader_runner()[0]
@@ -69,8 +69,8 @@ def test_run_bader(tmp_path):
     assert bader_stats.get("magmom") is None
 
 
-def test_bader_erorr(tmp_path):
-    os.chdir(tmp_path)
+def test_bader_erorr(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     with pytest.raises(FileNotFoundError):
         _bader_runner()
@@ -78,8 +78,8 @@ def test_bader_erorr(tmp_path):
         w.write("test")
 
 
-def test_run_chargemol(tmp_path):
-    os.chdir(tmp_path)
+def test_run_chargemol(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
     prep_files()
 
     chargemol_stats = _chargemol_runner(path=".", atomic_densities_path=".")[0]
@@ -87,8 +87,8 @@ def test_run_chargemol(tmp_path):
     assert chargemol_stats["ddec"]["spin_moments"] == [0.0]
 
 
-def test_chargemol_erorr(tmp_path):
-    os.chdir(tmp_path)
+def test_chargemol_erorr(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
     prep_files()
 
     with pytest.raises(OSError):

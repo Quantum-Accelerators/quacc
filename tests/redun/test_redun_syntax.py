@@ -17,7 +17,7 @@ def scheduler():
 
 
 def test_redun_decorators(tmp_path, scheduler):
-    os.chdir(tmp_path)
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     @job
     def add(a, b):

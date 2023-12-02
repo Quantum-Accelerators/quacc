@@ -26,8 +26,8 @@ def teardown_function():
     SETTINGS.CREATE_UNIQUE_WORKDIR = DEFAULT_SETTINGS.CREATE_UNIQUE_WORKDIR
 
 
-def test_file(monkeypatch, tmp_path):
-    os.chdir(tmp_path)
+def test_file(monkeypatch, tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     assert QuaccSettings().GZIP_FILES is True
 
@@ -41,15 +41,15 @@ def test_file(monkeypatch, tmp_path):
     os.remove("quacc_test.yaml")
 
 
-def test_store(tmp_path):
-    os.chdir(tmp_path)
+def test_store(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
     SETTINGS.PRIMARY_STORE = MemoryStore()
     atoms = bulk("Cu")
     static_job(atoms)
 
 
-def test_results_dir(tmp_path):
-    os.chdir(tmp_path)
+def test_results_dir(tmp_path, monkeypatch:
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     atoms = bulk("Cu")
     relax_job(atoms)
@@ -68,7 +68,7 @@ def test_env_var(monkeypatch):
 
 
 def test_yaml(tmp_path, monkeypatch):
-    os.chdir(tmp_path)
+    monkeypatch.chdir(tmp_path, monkeypatch
 
     p = FILE_DIR / "my/new/scratch/dir"
     with open("quacc_test.yaml", "w") as f:
