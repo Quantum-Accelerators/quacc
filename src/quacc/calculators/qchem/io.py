@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from typing import Any, Literal
 
     from ase.atoms import Atoms
-
+    from quacc.calculators.qchem.qchem import Results
 
 def write_qchem(
     qc_input: QCInput,
