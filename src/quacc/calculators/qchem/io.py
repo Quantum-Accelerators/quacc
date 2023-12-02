@@ -115,6 +115,14 @@ def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float] | None
         "custodian": _parse_custodian(directory),
     }
 
+    # Parse thermo properties
+    if "total_enthalpy" in qc_output:
+        results["enthalpy"] = qc_output["total_enthalpy"] * (units.kcal / units.mol)
+    if "total_entropy" in qc_output:
+        results["entropy"] = qc_output["total_entropy"] * (
+            0.001 * units.kcal / units.mol
+        )
+
     # Read the gradient scratch file in 8 byte chunks
     grad_scratch = directory / "131.0"
     if grad_scratch.exists() and grad_scratch.stat().st_size > 0:
@@ -127,14 +135,6 @@ def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float] | None
     if hessian_scratch.exists() and hessian_scratch.stat().st_size > 0:
         parse_hessian(hessian_scratch, natoms = len(qc_output["species"])
         results["hessian"] = reshaped_hess * (units.Hartree / units.Bohr**2)
-
-    # Parse thermo properties
-    if "total_enthalpy" in qc_output:
-        results["enthalpy"] = qc_output["total_enthalpy"] * (units.kcal / units.mol)
-    if "total_entropy" in qc_output:
-        results["entropy"] = qc_output["total_entropy"] * (
-            0.001 * units.kcal / units.mol
-        )
 
     # Read orbital coefficients scratch file in 8 byte chunks
     orb_scratch = directory / "53.0"
