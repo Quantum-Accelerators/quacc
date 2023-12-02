@@ -19,7 +19,9 @@ if TYPE_CHECKING:
 
 
 def calc_setup(
-    atoms: Atoms, copy_files: list[str | Path] | None = None
+    atoms: Atoms,
+    tmpdir: str | None = None,
+    copy_files: list[str | Path] | None = None
 ) -> tuple[Atoms, Path, Path]:
     """
     Perform staging operations for a calculation, including copying files to the scratch
@@ -58,8 +60,8 @@ def calc_setup(
 
     # Create a tmpdir for the calculation within the scratch_dir
     # Just a test to see if we can avoid heavy io
-    if SETTINGS.COMMON_TMPDIR:
-        prefix = f"quacc-tmp-common-{SETTINGS.COMMON_TMPDIR}"
+    if tmpdir:
+        prefix = f"quacc-tmp-common-{tmpdir}"
         tmpdir = Path(SETTINGS.SCRATCH_DIR / prefix)
         tmpdir.mkdir(parents=True, exist_ok=True)
     else:

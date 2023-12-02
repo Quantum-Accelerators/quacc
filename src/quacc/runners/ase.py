@@ -39,6 +39,7 @@ def run_calc(
     atoms: Atoms,
     geom_file: str | None = None,
     copy_files: list[str] | None = None,
+    tmpdir: str | None = None,
     calc_clean: bool = True,
 ) -> Atoms:
     """
@@ -69,7 +70,9 @@ def run_calc(
     """
 
     # Perform staging operations
-    atoms, tmpdir, job_results_dir = calc_setup(atoms, copy_files=copy_files)
+    atoms, tmpdir, job_results_dir = calc_setup(atoms,
+                                                tmpdir=tmpdir,
+                                                copy_files=copy_files)
 
     # Run calculation via get_potential_energy()
     atoms.get_potential_energy()

@@ -61,12 +61,11 @@ def copy_decompress(source_files: list[str | Path], destination: str | Path) -> 
     None
     """
     for f in source_files:
-        #z_path = Path(zpath(f))
         if f.is_dir():
             for file in f.iterdir():
                 if file.is_file():
                     copy(file, Path(destination, file.name))
-                    decompress_file(Path(destination, z_path))
+                    decompress_file(Path(destination, file.name))
                 elif f.is_dir():
                     copytree([file], Path(destination, file.name))
                 elif f.is_symlink():
