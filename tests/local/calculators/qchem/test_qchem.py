@@ -222,7 +222,6 @@ def test_qchem_read_results_intermediate(tmp_path, monkeypatch, test_atoms):
     calc = QChem(test_atoms)
     monkeypatch.chdir(FILE_DIR / "examples" / "intermediate")
     calc.read_results()
-    monkeypatch.chdir(tmp_path)
 
     assert calc.results["energy"] == pytest.approx(-605.6859554025 * units.Hartree)
     assert calc.results["forces"][0][0] == pytest.approx(-0.6955571014353796)
@@ -234,7 +233,6 @@ def test_qchem_read_results_advanced(tmp_path, monkeypatch, test_atoms):
     calc = QChem(test_atoms)
     monkeypatch.chdir(FILE_DIR / "examples" / "advanced")
     calc.read_results()
-    monkeypatch.chdir(tmp_path)
 
     assert calc.results["energy"] == pytest.approx(-605.7310332390 * units.Hartree)
     assert calc.results["forces"][0][0] == pytest.approx(-0.4270884974249971)
@@ -242,11 +240,10 @@ def test_qchem_read_results_advanced(tmp_path, monkeypatch, test_atoms):
     assert calc.results.get("hessian") is None
 
 
-def test_qchem_read_results_freq(tmp_path, test_atoms):
+def test_qchem_read_results_freq(tmp_path, monkeypatch, test_atoms):
     calc = QChem(test_atoms, job_type="freq")
     monkeypatch.chdir(FILE_DIR / "examples" / "freq")
     calc.read_results()
-    monkeypatch.chdir(tmp_path)
 
     assert calc.results["energy"] == pytest.approx(-605.6859554025 * units.Hartree)
     assert calc.results.get("forces") is None
