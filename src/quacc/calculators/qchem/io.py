@@ -138,9 +138,8 @@ def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float] | None
 
     # Read orbital coefficients scratch file in 8 byte chunks
     orb_scratch = directory / "53.0"
+    prev_orbital_coeffs = None
     if orb_scratch.exists() and orb_scratch.stat().st_size > 0:
         prev_orbital_coeffs = orbital_coeffs_parser(orb_scratch)
-    else:
-        prev_orbital_coeffs = None
 
     return results, prev_orbital_coeffs
