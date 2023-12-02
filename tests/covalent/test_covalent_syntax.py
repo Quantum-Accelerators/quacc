@@ -86,7 +86,7 @@ def test_covalent_decorators_args(tmpdir):
     ]
 
 
-def test_settings(tmpdir):
+def test_covalent_settings(tmpdir):
     tmpdir.chdir()
 
     @job
