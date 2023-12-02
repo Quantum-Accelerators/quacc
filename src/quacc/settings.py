@@ -13,9 +13,6 @@ from monty.json import MontyDecoder
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from quacc.calculators.vasp import presets as vasp_presets
-from quacc.calculators.espresso import presets as espresso_presets
-
 if TYPE_CHECKING:
     from typing import Any
 
@@ -142,7 +139,7 @@ class QuaccSettings(BaseSettings):
         description=("Path to a pseudopotential library for espresso."),
     )
     ESPRESSO_PRESET_DIR: Path = Field(
-        resources.files(espresso_presets),
+        Path(__file__).parent / "calculators" / "espresso" / "presets",
         description="Path to the espresso preset directory",
     )
     ESPRESSO_PH_CMD: Path = Field(
@@ -254,7 +251,8 @@ class QuaccSettings(BaseSettings):
         ),
     )
     VASP_PRESET_DIR: Path = Field(
-        resources.files(vasp_presets), description="Path to the VASP preset directory"
+        Path(__file__).parent / "calculators" / "vasp" / "presets",
+        description="Path to the VASP preset directory",
     )
 
     # VASP Settings: Custodian
@@ -349,7 +347,7 @@ class QuaccSettings(BaseSettings):
 
     @field_validator(
         "GAUSSIAN_CMD", "ORCA_CMD", "QCHEM_LOCAL_SCRATCH", "VASP_PRESET_DIR",
-        "ESPRESSO_CMD"
+        "ESPRESSO_CMD", "ESPRESSO_PRESET_DIR",
     )
     @classmethod
     def expand_paths(cls, v):
