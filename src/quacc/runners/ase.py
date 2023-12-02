@@ -23,7 +23,7 @@ except ImportError:
 if TYPE_CHECKING:
     from typing import Any, TypedDict
 
-    from ase import Atoms
+    from ase.atoms import Atoms
     from ase.optimize.optimize import Optimizer
 
     class OptimizerKwargs(TypedDict, total=False):

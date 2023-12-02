@@ -15,7 +15,7 @@ from quacc.atoms.core import check_is_metal
 if TYPE_CHECKING:
     from typing import Any, Literal
 
-    from ase import Atoms
+    from ase.atoms import Atoms
 
 logger = logging.getLogger(__name__)
 

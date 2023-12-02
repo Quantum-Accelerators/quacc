@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from ase import Atoms
+from ase.atoms import Atoms
 from pymatgen.core import Molecule, Structure
 
 from quacc.schemas._aliases.emmet import MoleculeMetadata, StructureMetadata

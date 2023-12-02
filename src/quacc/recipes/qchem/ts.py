@@ -21,7 +21,7 @@ except ImportError:
 if TYPE_CHECKING:
     from typing import Any, Literal
 
-    from ase import Atoms
+    from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import OptSchema
 

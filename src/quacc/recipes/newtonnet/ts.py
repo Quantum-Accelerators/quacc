@@ -24,7 +24,7 @@ except ImportError:
 if TYPE_CHECKING:
     from typing import Any, Literal
 
-    from ase import Atoms
+    from ase.atoms import Atoms
     from numpy.typing import NDArray
 
     from quacc.recipes.newtonnet.core import FreqSchema

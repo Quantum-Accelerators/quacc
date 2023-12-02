@@ -11,7 +11,7 @@ from quacc.utils.dicts import merge_dicts, remove_dict_nones
 if TYPE_CHECKING:
     from typing import Any
 
-    from ase import Atoms
+    from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import OptSchema, RunSchema
 
