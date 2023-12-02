@@ -1,3 +1,5 @@
+import os
+
 import pytest
 from ase.build import bulk, molecule
 
@@ -21,7 +23,7 @@ def prefect_test_fixture():
 
 
 def test_tutorial1a(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -40,7 +42,7 @@ def test_tutorial1a(tmp_path):
 
 
 def test_tutorial1b(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     # Define the Atoms object
     atoms = bulk("Cu")
@@ -55,7 +57,7 @@ def test_tutorial1b(tmp_path):
 
 
 def test_tutorial2a(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     # Define the workflow
     @flow
@@ -75,7 +77,7 @@ def test_tutorial2a(tmp_path):
 
 
 def test_tutorial2b(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     # Define workflow
     @flow
@@ -101,7 +103,7 @@ def test_tutorial2b(tmp_path):
 
 
 def test_tutorial2c(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     # Define the workflow
     @flow
@@ -120,7 +122,7 @@ def test_tutorial2c(tmp_path):
 
 
 def test_comparison(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     @job  #  (1)!
     def add(a, b):

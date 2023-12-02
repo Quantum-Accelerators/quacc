@@ -1,3 +1,5 @@
+import os
+
 import pytest
 from ase.build import bulk, molecule
 
@@ -16,7 +18,7 @@ DEFAULT_SETTINGS = SETTINGS.copy()
 
 
 def test_static_job(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = bulk("Cu") * (2, 2, 2)
 
@@ -47,7 +49,7 @@ def test_static_job(tmp_path):
 
 
 def test_static_job_incar_copilot_aggressive(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = bulk("Cu") * (2, 2, 2)
 
@@ -62,7 +64,7 @@ def test_static_job_incar_copilot_aggressive(tmp_path):
 
 
 def test_relax_job(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = bulk("Cu") * (2, 2, 2)
 
@@ -93,7 +95,7 @@ def test_relax_job(tmp_path):
 
 
 def test_doublerelax_job(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = bulk("Cu") * (2, 2, 2)
 
@@ -144,7 +146,7 @@ def test_doublerelax_job(tmp_path):
 
 
 def test_slab_static_job(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = bulk("Cu") * (2, 2, 2)
 
@@ -172,7 +174,7 @@ def test_slab_static_job(tmp_path):
 
 
 def test_slab_relax_job(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = bulk("Cu") * (2, 2, 2)
 
@@ -195,7 +197,7 @@ def test_slab_relax_job(tmp_path):
 
 
 def test_slab_dynamic_jobs(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = bulk("Cu")
 
@@ -283,7 +285,7 @@ def test_slab_dynamic_jobs(tmp_path):
 
 
 def test_qmof(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = bulk("Cu")
     output = qmof_relax_job(atoms)
@@ -355,7 +357,7 @@ def test_qmof(tmp_path):
 
 
 def test_mp_prerelax_job(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = bulk("Cu")
     output = mp_prerelax_job(atoms)
@@ -387,7 +389,7 @@ def test_mp_prerelax_job(tmp_path):
 
 
 def test_mp_relax_job(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = bulk("Cu")
 
@@ -420,7 +422,7 @@ def test_mp_relax_job(tmp_path):
 
 
 def test_mp_relax_flow(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = bulk("Cu")
 

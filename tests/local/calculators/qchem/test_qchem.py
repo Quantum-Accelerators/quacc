@@ -23,7 +23,7 @@ def os_atoms():
 
 
 def test_qchem_write_input_basic(tmp_path, test_atoms):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     calc = QChem(test_atoms, cores=40)
     assert calc.parameters["cores"] == 40
     assert calc.parameters["charge"] == 0
@@ -39,7 +39,7 @@ def test_qchem_write_input_basic(tmp_path, test_atoms):
 
 
 def test_qchem_write_input_intermediate(tmp_path, test_atoms):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     params = {"dft_rung": 3, "pcm_dielectric": "3.0"}
     calc = QChem(
         test_atoms,
@@ -65,7 +65,7 @@ def test_qchem_write_input_intermediate(tmp_path, test_atoms):
 
 
 def test_qchem_write_input_advanced(tmp_path, test_atoms):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     params = {
         "smd_solvent": "water",
         "overwrite_inputs": {"rem": {"method": "b97mv", "mem_total": "170000"}},
@@ -95,7 +95,7 @@ def test_qchem_write_input_advanced(tmp_path, test_atoms):
 
 
 def test_qchem_write_input_open_shell_and_different_charges(tmp_path, os_atoms):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     calc = QChem(os_atoms, spin_multiplicity=2, cores=40)
     assert calc.parameters["cores"] == 40
     assert calc.parameters["charge"] == 0
@@ -134,7 +134,7 @@ def test_qchem_write_input_open_shell_and_different_charges(tmp_path, os_atoms):
 
 
 def test_qchem_write_input_freq(tmp_path, test_atoms):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     params = {"dft_rung": 3, "pcm_dielectric": "3.0"}
     calc = QChem(
         test_atoms,
@@ -162,7 +162,7 @@ def test_qchem_read_results_basic_and_write_53(tmp_path, test_atoms):
     calc = QChem(test_atoms, cores=40)
     os.chdir(FILE_DIR / "examples" / "basic")
     calc.read_results()
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     assert calc.results["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
     assert calc.results["forces"][0][0] == pytest.approx(-1.3826330655069403)
@@ -182,11 +182,11 @@ def test_qchem_read_results_basic_and_write_53(tmp_path, test_atoms):
 
 
 def test_qchem_read_results_intermediate(tmp_path, test_atoms):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     calc = QChem(test_atoms, cores=40)
     os.chdir(FILE_DIR / "examples" / "intermediate")
     calc.read_results()
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     assert calc.results["energy"] == pytest.approx(-605.6859554025 * units.Hartree)
     assert calc.results["forces"][0][0] == pytest.approx(-0.6955571014353796)
@@ -194,11 +194,11 @@ def test_qchem_read_results_intermediate(tmp_path, test_atoms):
 
 
 def test_qchem_read_results_advanced(tmp_path, test_atoms):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     calc = QChem(test_atoms, cores=40)
     os.chdir(FILE_DIR / "examples" / "advanced")
     calc.read_results()
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     assert calc.results["energy"] == pytest.approx(-605.7310332390 * units.Hartree)
     assert calc.results["forces"][0][0] == pytest.approx(-0.4270884974249971)
@@ -210,7 +210,7 @@ def test_qchem_read_results_freq(tmp_path, test_atoms):
     calc = QChem(test_atoms, job_type="freq", cores=40)
     os.chdir(FILE_DIR / "examples" / "freq")
     calc.read_results()
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     assert calc.results["energy"] == pytest.approx(-605.6859554025 * units.Hartree)
     assert calc.results.get("forces") is None

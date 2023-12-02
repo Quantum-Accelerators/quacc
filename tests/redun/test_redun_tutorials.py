@@ -1,3 +1,5 @@
+import os
+
 import pytest
 from ase.build import bulk, molecule
 
@@ -18,7 +20,7 @@ def scheduler():
 
 
 def test_tutorial1a(tmp_path, scheduler):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -28,7 +30,7 @@ def test_tutorial1a(tmp_path, scheduler):
 
 
 def test_tutorial1b(tmp_path, scheduler):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -38,7 +40,7 @@ def test_tutorial1b(tmp_path, scheduler):
 
 
 def test_tutorial2a(tmp_path, scheduler):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     @flow
     def workflow(atoms):
@@ -52,7 +54,7 @@ def test_tutorial2a(tmp_path, scheduler):
 
 
 def test_tutorial2b(tmp_path, scheduler):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     # Define workflow
     @flow
@@ -72,7 +74,7 @@ def test_tutorial2b(tmp_path, scheduler):
 
 
 def test_tutorial2c(tmp_path, scheduler):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     # Define the workflow
     @flow

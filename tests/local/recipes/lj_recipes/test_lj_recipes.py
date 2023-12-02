@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import pytest
 from ase.build import molecule
@@ -18,7 +20,7 @@ def teardown_module():
 
 
 def test_static_job(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = molecule("H2O")
 
@@ -40,7 +42,7 @@ def test_static_job(tmp_path):
 
 
 def test_relax_job(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = molecule("H2O")
 
@@ -64,7 +66,7 @@ def test_relax_job(tmp_path):
 
 
 def test_freq_job(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = molecule("H2O")
 

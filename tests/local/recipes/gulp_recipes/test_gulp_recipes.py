@@ -9,7 +9,7 @@ DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 
 def test_static_job(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = molecule("H2O")
 
@@ -64,7 +64,7 @@ def test_static_job(tmp_path):
 
 
 def test_relax_job(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = molecule("H2O")
 
@@ -137,7 +137,7 @@ def test_relax_job(tmp_path):
 
 
 def test_envvars(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = molecule("H2O")
 

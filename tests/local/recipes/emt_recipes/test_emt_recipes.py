@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import pytest
 from ase.build import bulk, molecule
@@ -8,7 +10,7 @@ from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 
 def test_static_job(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += [0.1, 0.1, 0.1]
@@ -25,7 +27,7 @@ def test_static_job(tmp_path):
 
 
 def test_relax_job(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += [0.1, 0.1, 0.1]
@@ -78,7 +80,7 @@ def test_relax_job(tmp_path):
 
 
 def test_slab_dynamic_jobs(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = bulk("Cu")
 

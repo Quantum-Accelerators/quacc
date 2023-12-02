@@ -26,7 +26,7 @@ RUN1 = FILE_DIR / "vasp_run1"
 
 
 def test_summarize_run(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     # Make sure metadata is made
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
@@ -89,7 +89,7 @@ def test_summarize_run(tmp_path):
 
 
 def test_summarize_opt_run(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     # Make sure metadata is made
     atoms = bulk("Cu") * (2, 2, 1)
@@ -158,7 +158,7 @@ def test_summarize_opt_run(tmp_path):
 
 
 def test_summarize_vib_run(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     # Make sure metadata is made
     atoms = molecule("N2")
@@ -242,7 +242,7 @@ def test_summarize_vib_run(tmp_path):
 
 
 def test_summarize_ideal_gas_thermo(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     # Make sure metadata is made
     atoms = molecule("N2")
@@ -337,7 +337,7 @@ def test_summarize_ideal_gas_thermo(tmp_path):
 
 
 def test_errors(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = bulk("Cu")
     with pytest.raises(ValueError):

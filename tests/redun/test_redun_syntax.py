@@ -1,3 +1,5 @@
+import os
+
 import pytest
 
 from quacc import SETTINGS, flow, job, subflow
@@ -15,7 +17,7 @@ def scheduler():
 
 
 def test_redun_decorators(tmp_path, scheduler):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     @job
     def add(a, b):

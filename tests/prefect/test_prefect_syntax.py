@@ -1,3 +1,5 @@
+import os
+
 import pytest
 
 from quacc import SETTINGS, flow, job, subflow
@@ -17,7 +19,7 @@ def prefect_test_fixture():
 
 
 def test_prefect_decorators(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     @job
     def add(a, b):

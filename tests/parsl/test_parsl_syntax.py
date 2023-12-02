@@ -1,4 +1,5 @@
 import contextlib
+import os
 
 import pytest
 
@@ -21,7 +22,7 @@ def teardown_module():
 
 
 def test_parsl_decorators(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     @job
     def add(a, b):
@@ -56,7 +57,7 @@ def test_parsl_decorators(tmp_path):
 
 
 def test_parsl_decorators_args(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     @job()
     def add(a, b):

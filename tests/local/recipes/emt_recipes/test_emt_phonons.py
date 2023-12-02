@@ -1,3 +1,5 @@
+import os
+
 import pytest
 from ase.build import bulk
 
@@ -7,7 +9,7 @@ from quacc.recipes.emt.phonons import phonon_flow
 
 
 def test_phonon_flow(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     atoms = bulk("Cu")
     output = phonon_flow(atoms)
     assert output["results"]["thermal_properties"]["temperatures"].shape == (101,)

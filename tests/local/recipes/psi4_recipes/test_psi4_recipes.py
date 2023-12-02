@@ -1,3 +1,5 @@
+import os
+
 import pytest
 from ase.build import molecule
 
@@ -7,7 +9,7 @@ pytest.importorskip("psi4")
 
 
 def test_static(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = molecule("H2")
     output = static_job(atoms, charge=0, spin_multiplicity=1)

@@ -1,3 +1,5 @@
+import os
+
 import pytest
 from ase.build import bulk
 
@@ -7,7 +9,7 @@ from quacc.recipes.emt.defects import bulk_to_defects_flow
 
 
 def test_bulk_to_defects_flow(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     atoms = bulk("Cu")
     output = bulk_to_defects_flow(
         atoms, defect_relax_kwargs={"opt_params": {"fmax": 5}}

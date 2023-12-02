@@ -1,3 +1,5 @@
+import os
+
 import pytest
 from ase.build import molecule
 from ase.calculators.emt import EMT

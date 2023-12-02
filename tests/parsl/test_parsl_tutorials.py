@@ -1,4 +1,5 @@
 import contextlib
+import os
 
 import pytest
 from ase.build import bulk, molecule
@@ -24,7 +25,7 @@ def teardown_module():
 
 
 def test_tutorial1a(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -37,7 +38,7 @@ def test_tutorial1a(tmp_path):
 
 
 def test_tutorial1b(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -59,7 +60,7 @@ def test_tutorial1b(tmp_path):
 
 
 def test_tutorial2a(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     # Define the workflow
     def workflow(atoms):
@@ -81,7 +82,7 @@ def test_tutorial2a(tmp_path):
 
 
 def test_tutorial2b(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     # Define workflow
     def workflow(atoms1, atoms2):
@@ -108,7 +109,7 @@ def test_tutorial2b(tmp_path):
 
 
 def test_tutorial2c(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     # Define the workflow
     def workflow(atoms):
@@ -129,7 +130,7 @@ def test_tutorial2c(tmp_path):
 
 
 def test_comparison1(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     @job  #  (1)!
     def add(a, b):
@@ -147,7 +148,7 @@ def test_comparison1(tmp_path):
 
 
 def test_comparison2(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     @job
     def add(a, b):
@@ -169,7 +170,7 @@ def test_comparison2(tmp_path):
 
 
 def test_comparison3(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     @job  #  (1)!
     def add(a, b):
@@ -186,7 +187,7 @@ def test_comparison3(tmp_path):
 
 
 def test_comparison4(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     @job
     def add(a, b):

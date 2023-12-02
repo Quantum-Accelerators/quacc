@@ -1,3 +1,4 @@
+import os
 from copy import deepcopy
 
 import numpy as np
@@ -11,7 +12,7 @@ pytest.importorskip("tblite.ase")
 
 
 def test_static_job(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = molecule("H2O")
     output = static_job(atoms)
@@ -28,7 +29,7 @@ def test_static_job(tmp_path):
 
 
 def test_relax_job(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = molecule("H2O")
     output = relax_job(atoms)
@@ -41,7 +42,7 @@ def test_relax_job(tmp_path):
 
 
 def test_relax_job_cell(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = bulk("Cu")
     output = relax_job(atoms, method="GFN1-xTB", relax_cell=True)
@@ -52,7 +53,7 @@ def test_relax_job_cell(tmp_path):
 
 
 def test_freq_job(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = molecule("H2O")
     output = freq_job(atoms)

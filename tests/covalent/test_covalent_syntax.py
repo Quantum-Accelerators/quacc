@@ -1,3 +1,5 @@
+import os
+
 import pytest
 
 from quacc import SETTINGS, flow, job, subflow
@@ -10,7 +12,7 @@ pytestmark = pytest.mark.skipif(
 
 
 def test_covalent_decorators(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     @job
     def add(a, b):
@@ -52,7 +54,7 @@ def test_covalent_decorators(tmp_path):
 
 
 def test_covalent_decorators_args(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     @job(executor="local")
     def add(a, b):

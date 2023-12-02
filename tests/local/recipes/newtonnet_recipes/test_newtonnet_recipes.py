@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import numpy as np
@@ -29,7 +30,7 @@ def teardown_module():
 
 
 def test_static_job(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = molecule("H2O")
     output = static_job(atoms)
@@ -40,7 +41,7 @@ def test_static_job(tmp_path):
 
 
 def test_relax_job(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = molecule("H2O")
     output = relax_job(atoms)
@@ -52,7 +53,7 @@ def test_relax_job(tmp_path):
 
 
 def test_freq_job(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     atoms = molecule("H2O")
     output = freq_job(atoms)
     assert output["atoms"] == molecule("H2O")
@@ -104,7 +105,7 @@ def test_freq_job(tmp_path):
 
 
 def test_ts_job_with_default_args(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     # Define test inputs
     atoms = molecule("H2O")
@@ -124,7 +125,7 @@ def test_ts_job_with_default_args(tmp_path):
 
 
 def test_ts_job_with_custom_hessian(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     # Define test inputs
     atoms = molecule("H2O")
     use_custom_hessian = True
@@ -143,7 +144,7 @@ def test_ts_job_with_custom_hessian(tmp_path):
 
 
 def test_irc_job_with_default_args(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     # Define test inputs
     atoms = molecule("H2O")
 
@@ -164,7 +165,7 @@ def test_irc_job_with_custom_fmax(tmp_path):
 
     from quacc.recipes.newtonnet.ts import irc_job
 
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     # Define test inputs
     atoms = molecule("H2O")
     fmax = 0.001
@@ -182,7 +183,7 @@ def test_irc_job_with_custom_fmax(tmp_path):
 
 
 def test_irc_job_with_custom_max_steps(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     # Define test inputs
     atoms = molecule("H2O")
     max_steps = 500
@@ -200,7 +201,7 @@ def test_irc_job_with_custom_max_steps(tmp_path):
 
 
 def test_irc_job_with_custom_temperature_and_pressure(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     # Define test inputs
     atoms = molecule("H2O")
     temperature = 500.0
@@ -221,7 +222,7 @@ def test_irc_job_with_custom_temperature_and_pressure(tmp_path):
 
 
 def test_irc_job_with_custom_opt_params(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     # Define test inputs
     atoms = molecule("H2O")
     opt_params = {"run_kwargs": {"direction": "reverse"}}
@@ -239,7 +240,7 @@ def test_irc_job_with_custom_opt_params(tmp_path):
 
 
 def test_quasi_irc_job_with_default_args(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     # Define test inputs
     atoms = molecule("H2O")
 
@@ -257,7 +258,7 @@ def test_quasi_irc_job_with_default_args(tmp_path):
 
 
 def test_quasi_irc_job_with_custom_direction(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     # Define test inputs
     atoms = molecule("H2O")
     direction = "reverse"
@@ -278,7 +279,7 @@ def test_quasi_irc_job_with_custom_direction(tmp_path):
 
 
 def test_quasi_irc_job_with_custom_temperature_and_pressure(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     # Define test inputs
     atoms = molecule("H2O")
     temperature = 500.0
@@ -301,7 +302,7 @@ def test_quasi_irc_job_with_custom_temperature_and_pressure(tmp_path):
 
 
 def test_quasi_irc_job_with_custom_irc_swaps(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     # Define test inputs
     atoms = molecule("H2O")
     irc_job_kwargs = {"run_kwargs": {"direction": "reverse"}}

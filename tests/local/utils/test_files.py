@@ -4,7 +4,7 @@ from quacc.utils.files import make_unique_dir
 
 
 def test_make_unique_dir(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     jobdir = make_unique_dir()
     assert os.path.exists(jobdir)

@@ -27,7 +27,7 @@ def teardown_function():
 
 
 def test_file(monkeypatch, tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     assert QuaccSettings().GZIP_FILES is True
 
@@ -42,14 +42,14 @@ def test_file(monkeypatch, tmp_path):
 
 
 def test_store(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     SETTINGS.PRIMARY_STORE = MemoryStore()
     atoms = bulk("Cu")
     static_job(atoms)
 
 
 def test_results_dir(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = bulk("Cu")
     relax_job(atoms)
@@ -68,7 +68,7 @@ def test_env_var(monkeypatch):
 
 
 def test_yaml(tmp_path, monkeypatch):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     p = FILE_DIR / "my/new/scratch/dir"
     with open("quacc_test.yaml", "w") as f:

@@ -1,3 +1,5 @@
+import os
+
 import pytest
 from ase.build import bulk, molecule
 
@@ -12,7 +14,7 @@ pytestmark = pytest.mark.skipif(
 
 
 def test_tutorial1a(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -25,7 +27,7 @@ def test_tutorial1a(tmp_path):
 
 
 def test_tutorial2a(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -44,7 +46,7 @@ def test_tutorial2a(tmp_path):
 
 
 def test_tutorial2b(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     # Define two Atoms objects
     atoms1 = bulk("Cu")
@@ -62,7 +64,7 @@ def test_tutorial2b(tmp_path):
 
 
 def test_comparison1(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     @job  # (1)!
     def add(a, b):
@@ -81,7 +83,7 @@ def test_comparison1(tmp_path):
 
 
 def test_comparison2(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     @jf.job
     def add(a, b):
@@ -109,7 +111,7 @@ def test_comparison2(tmp_path):
 
 
 def test_comparison3(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     @job  #  (1)!
     def add(a, b):
@@ -127,7 +129,7 @@ def test_comparison3(tmp_path):
 
 
 def test_comparison4(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     @job
     def add(a, b):

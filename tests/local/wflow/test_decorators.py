@@ -1,8 +1,10 @@
+import os
+
 from quacc import flow, job, subflow
 
 
 def test_decorators(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     @job
     def add(a, b):
@@ -40,7 +42,7 @@ def test_decorators(tmp_path):
 
 
 def test_decorators_v2(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     @job()
     def add(a, b):
@@ -75,7 +77,7 @@ def test_decorators_v2(tmp_path):
 
 
 def test_decorators_v3(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     def add(a, b):
         return a + b

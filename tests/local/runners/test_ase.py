@@ -31,7 +31,7 @@ def teardown_function():
 
 
 def test_run_calc(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     prep_files()
 
     atoms = bulk("Cu") * (2, 1, 1)
@@ -48,7 +48,7 @@ def test_run_calc(tmp_path):
 
 
 def test_run_calc_no_gzip(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     prep_files()
 
     SETTINGS.GZIP_FILES = False
@@ -68,7 +68,7 @@ def test_run_calc_no_gzip(tmp_path):
 
 
 def test_run_opt1(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     prep_files()
 
     atoms = bulk("Cu") * (2, 1, 1)
@@ -85,7 +85,7 @@ def test_run_opt1(tmp_path):
 
 
 def test_run_opt2(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
     atoms.calc = EMT()
@@ -110,7 +110,7 @@ def test_run_opt2(tmp_path):
 
 
 def test_run_vib(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     prep_files()
 
     o2 = molecule("O2")
@@ -123,7 +123,7 @@ def test_run_vib(tmp_path):
 
 
 def test_bad_runs(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     atoms = bulk("Cu")
     atoms.calc = EMT()
@@ -147,7 +147,7 @@ def test_bad_runs(tmp_path):
 
 def test_unique_workdir(tmp_path):
     SETTINGS.CREATE_UNIQUE_WORKDIR = True
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     prep_files()
 
     # Static

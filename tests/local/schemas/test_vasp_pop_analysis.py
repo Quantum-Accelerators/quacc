@@ -56,7 +56,7 @@ def prep_files():
 
 
 def test_run_bader(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     prep_files()
 
     bader_stats = _bader_runner()[0]
@@ -70,7 +70,7 @@ def test_run_bader(tmp_path):
 
 
 def test_bader_erorr(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
 
     with pytest.raises(FileNotFoundError):
         _bader_runner()
@@ -79,7 +79,7 @@ def test_bader_erorr(tmp_path):
 
 
 def test_run_chargemol(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     prep_files()
 
     chargemol_stats = _chargemol_runner(path=".", atomic_densities_path=".")[0]
@@ -88,7 +88,7 @@ def test_run_chargemol(tmp_path):
 
 
 def test_chargemol_erorr(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     prep_files()
 
     with pytest.raises(OSError):

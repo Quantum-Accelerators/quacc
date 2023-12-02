@@ -1,3 +1,5 @@
+import os
+
 import pytest
 from ase.build import bulk
 
@@ -8,7 +10,7 @@ pytest.importorskip("phonopy")
 
 
 def test_phonon_flow(tmp_path):
-    tmp_path.chdir()
+    os.chdir(tmp_path)
     atoms = bulk("Cu")
     output = phonon_flow(atoms, static_job_kwargs={"method": "GFN1-xTB"})
     assert output["results"]["force_constants"].shape == (8, 8, 3, 3)
