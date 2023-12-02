@@ -86,7 +86,7 @@ def test_covalent_decorators_args(tmpdir):
     ]
 
 
-def test_covalent_settings(tmpdir):
+def test_settings(tmpdir):
     tmpdir.chdir()
 
     @job
@@ -100,6 +100,6 @@ def test_covalent_settings(tmpdir):
         SETTINGS.GAUSSIAN_CMD = "test"
         return test_job()
 
-    dispatch_id = ct.dispatch(workflow)
+    dispatch_id = ct.dispatch(workflow)()
     result = ct.get_result(dispatch_id, wait=True)
     assert result.result == "test"
