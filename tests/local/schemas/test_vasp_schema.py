@@ -116,13 +116,13 @@ def test_vasp_summarize_run(run1):
     MontyDecoder().process_decoded(d)
 
 
-def test_summarize_bader_run(monkeypatch, run1, tmpdir):
+def test_summarize_bader_run(monkeypatch, run1, tmp_path):
     monkeypatch.setattr(
         "quacc.schemas.vasp.bader_analysis_from_path", mock_bader_analysis
     )
-    tmpdir.chdir()
+    tmp_path.chdir()
 
-    p = tmpdir / "vasp_run"
+    p = tmp_path / "vasp_run"
     copytree(run1, p)
 
     move(p / "garbled_pot", p / "POTCAR")
@@ -139,12 +139,12 @@ def test_summarize_bader_run(monkeypatch, run1, tmpdir):
     assert struct.site_properties["bader_spin"] == [0.0] * len(atoms)
 
 
-def test_summarize_chargemol_run(monkeypatch, run1, tmpdir):
+def test_summarize_chargemol_run(monkeypatch, run1, tmp_path):
     monkeypatch.setattr("quacc.schemas.vasp.ChargemolAnalysis", mock_chargemol_analysis)
     monkeypatch.setenv("DDEC6_ATOMIC_DENSITIES_DIR", "test")
-    tmpdir.chdir()
+    tmp_path.chdir()
 
-    p = tmpdir / "vasp_run"
+    p = tmp_path / "vasp_run"
     copytree(run1, p)
 
     move(p / "garbled_pot", p / "POTCAR")
@@ -162,15 +162,15 @@ def test_summarize_chargemol_run(monkeypatch, run1, tmpdir):
     assert struct.site_properties["ddec6_spin"] == [0.0] * len(atoms)
 
 
-def test_summarize_bader_and_chargemol_run(monkeypatch, run1, tmpdir):
+def test_summarize_bader_and_chargemol_run(monkeypatch, run1, tmp_path):
     monkeypatch.setattr(
         "quacc.schemas.vasp.bader_analysis_from_path", mock_bader_analysis
     )
     monkeypatch.setattr("quacc.schemas.vasp.ChargemolAnalysis", mock_chargemol_analysis)
     monkeypatch.setenv("DDEC6_ATOMIC_DENSITIES_DIR", "test")
-    tmpdir.chdir()
+    tmp_path.chdir()
 
-    p = tmpdir / "vasp_run"
+    p = tmp_path / "vasp_run"
     copytree(run1, p)
 
     move(p / "garbled_pot", p / "POTCAR")
@@ -190,16 +190,16 @@ def test_summarize_bader_and_chargemol_run(monkeypatch, run1, tmpdir):
     assert struct.site_properties["bader_spin"] == [0.0] * len(atoms)
 
 
-def test_no_bader(run1, tmpdir):
-    tmpdir.chdir()
+def test_no_bader(run1, tmp_path):
+    tmp_path.chdir()
 
     atoms = read(run1 / "OUTCAR.gz")
     with pytest.warns(UserWarning):
         vasp_summarize_run(atoms, dir_path=run1, run_bader=True, run_chargemol=False)
 
 
-def test_no_chargemol(run1, tmpdir):
-    tmpdir.chdir()
+def test_no_chargemol(run1, tmp_path):
+    tmp_path.chdir()
 
     atoms = read(run1 / "OUTCAR.gz")
     with pytest.warns(UserWarning):

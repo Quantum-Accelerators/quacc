@@ -11,11 +11,11 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-def test_phonon_flow(tmpdir):
+def test_phonon_flow(tmp_path):
     pytest.importorskip("phonopy")
     from quacc.recipes.emt.phonons import phonon_flow
 
-    tmpdir.chdir()
+    tmp_path.chdir()
     atoms = bulk("Cu")
     dispatch_id = ct.dispatch(phonon_flow)(atoms)
     output = ct.get_result(dispatch_id, wait=True)
@@ -25,11 +25,11 @@ def test_phonon_flow(tmpdir):
     )
 
 
-def test_phonon_flow_multistep(tmpdir):
+def test_phonon_flow_multistep(tmp_path):
     pytest.importorskip("phonopy")
     from quacc.recipes.emt.phonons import phonon_flow
 
-    tmpdir.chdir()
+    tmp_path.chdir()
     atoms = bulk("Cu")
     relaxed = relax_job(atoms)
     dispatch_id = ct.dispatch(phonon_flow)(relaxed["atoms"])

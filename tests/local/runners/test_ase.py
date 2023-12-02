@@ -30,8 +30,8 @@ def teardown_function():
             os.remove(os.path.join(SETTINGS.RESULTS_DIR, f))
 
 
-def test_run_calc(tmpdir):
-    tmpdir.chdir()
+def test_run_calc(tmp_path):
+    tmp_path.chdir()
     prep_files()
 
     atoms = bulk("Cu") * (2, 1, 1)
@@ -47,8 +47,8 @@ def test_run_calc(tmpdir):
     assert np.array_equal(new_atoms.cell.array, atoms.cell.array) is True
 
 
-def test_run_calc_no_gzip(tmpdir):
-    tmpdir.chdir()
+def test_run_calc_no_gzip(tmp_path):
+    tmp_path.chdir()
     prep_files()
 
     SETTINGS.GZIP_FILES = False
@@ -67,8 +67,8 @@ def test_run_calc_no_gzip(tmpdir):
     SETTINGS.GZIP_FILES = DEFAULT_SETTINGS.GZIP_FILES
 
 
-def test_run_opt1(tmpdir):
-    tmpdir.chdir()
+def test_run_opt1(tmp_path):
+    tmp_path.chdir()
     prep_files()
 
     atoms = bulk("Cu") * (2, 1, 1)
@@ -84,8 +84,8 @@ def test_run_opt1(tmpdir):
     assert np.array_equal(traj[-1].cell.array, atoms.cell.array) is True
 
 
-def test_run_opt2(tmpdir):
-    tmpdir.chdir()
+def test_run_opt2(tmp_path):
+    tmp_path.chdir()
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
     atoms.calc = EMT()
@@ -109,8 +109,8 @@ def test_run_opt2(tmpdir):
     assert traj[-1].calc.results is not None
 
 
-def test_run_vib(tmpdir):
-    tmpdir.chdir()
+def test_run_vib(tmp_path):
+    tmp_path.chdir()
     prep_files()
 
     o2 = molecule("O2")
@@ -122,8 +122,8 @@ def test_run_vib(tmpdir):
     assert os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, "test_file.txt.gz"))
 
 
-def test_bad_runs(tmpdir):
-    tmpdir.chdir()
+def test_bad_runs(tmp_path):
+    tmp_path.chdir()
 
     atoms = bulk("Cu")
     atoms.calc = EMT()
@@ -145,9 +145,9 @@ def test_bad_runs(tmpdir):
         )
 
 
-def test_unique_workdir(tmpdir):
+def test_unique_workdir(tmp_path):
     SETTINGS.CREATE_UNIQUE_WORKDIR = True
-    tmpdir.chdir()
+    tmp_path.chdir()
     prep_files()
 
     # Static

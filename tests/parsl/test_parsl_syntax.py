@@ -20,8 +20,8 @@ def teardown_module():
     parsl.clear()
 
 
-def test_parsl_decorators(tmpdir):
-    tmpdir.chdir()
+def test_parsl_decorators(tmp_path):
+    tmp_path.chdir()
 
     @job
     def add(a, b):
@@ -55,8 +55,8 @@ def test_parsl_decorators(tmpdir):
     assert dynamic_workflow(1, 2, 3).result() == [6, 6, 6]
 
 
-def test_parsl_decorators_args(tmpdir):
-    tmpdir.chdir()
+def test_parsl_decorators_args(tmp_path):
+    tmp_path.chdir()
 
     @job()
     def add(a, b):

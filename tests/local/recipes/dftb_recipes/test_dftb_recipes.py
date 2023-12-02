@@ -11,8 +11,8 @@ DFTBPLUS_EXISTS = bool(which("dftb+"))
 pytestmark = pytest.mark.skipif(not DFTBPLUS_EXISTS, reason="Needs DFTB+")
 
 
-def test_static_job_water(tmpdir):
-    tmpdir.chdir()
+def test_static_job_water(tmp_path):
+    tmp_path.chdir()
 
     atoms = molecule("H2O")
     output = static_job(atoms)
@@ -26,8 +26,8 @@ def test_static_job_water(tmpdir):
     )
 
 
-def test_static_job_cu_supercell(tmpdir):
-    tmpdir.chdir()
+def test_static_job_cu_supercell(tmp_path):
+    tmp_path.chdir()
 
     atoms = bulk("Cu") * (3, 3, 3)
     output = static_job(atoms)
@@ -49,8 +49,8 @@ def test_static_job_cu_supercell(tmpdir):
     assert np.array_equal(output["atoms"].cell.array, atoms.cell.array) is True
 
 
-def test_static_job_cu_kpts(tmpdir):
-    tmpdir.chdir()
+def test_static_job_cu_kpts(tmp_path):
+    tmp_path.chdir()
 
     atoms = bulk("Cu")
     output = static_job(atoms, kpts=(3, 3, 3))
@@ -72,16 +72,16 @@ def test_static_job_cu_kpts(tmpdir):
     assert np.array_equal(output["atoms"].cell.array, atoms.cell.array) is True
 
 
-def test_static_errors(tmpdir):
-    tmpdir.chdir()
+def test_static_errors(tmp_path):
+    tmp_path.chdir()
 
     with pytest.raises(RuntimeError):
         atoms = molecule("H2O")
         static_job(atoms, Hamiltonian_MaxSccIterations=1)
 
 
-def test_relax_job_water(tmpdir):
-    tmpdir.chdir()
+def test_relax_job_water(tmp_path):
+    tmp_path.chdir()
 
     atoms = molecule("H2O")
 
@@ -97,8 +97,8 @@ def test_relax_job_water(tmpdir):
     assert np.array_equal(output["atoms"].cell.array, atoms.cell.array) is True
 
 
-def test_relax_job_cu_supercell(tmpdir):
-    tmpdir.chdir()
+def test_relax_job_cu_supercell(tmp_path):
+    tmp_path.chdir()
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
 
@@ -122,8 +122,8 @@ def test_relax_job_cu_supercell(tmpdir):
     assert np.array_equal(output["atoms"].cell.array, atoms.cell.array) is True
 
 
-def test_relax_job_cu_supercell_cell_relax(tmpdir):
-    tmpdir.chdir()
+def test_relax_job_cu_supercell_cell_relax(tmp_path):
+    tmp_path.chdir()
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
     output = relax_job(atoms, method="GFN1-xTB", kpts=(3, 3, 3), relax_cell=True)
@@ -146,16 +146,16 @@ def test_relax_job_cu_supercell_cell_relax(tmpdir):
     assert np.array_equal(output["atoms"].cell.array, atoms.cell.array) is False
 
 
-def test_relax_job_cu_supercell_errors(tmpdir):
-    tmpdir.chdir()
+def test_relax_job_cu_supercell_errors(tmp_path):
+    tmp_path.chdir()
     with pytest.raises(RuntimeError):
         atoms = bulk("Cu") * (2, 1, 1)
         atoms[0].position += 0.5
         relax_job(atoms, kpts=(3, 3, 3), MaxSteps=1, Hamiltonian_MaxSccIterations=100)
 
 
-def test_child_errors(tmpdir):
-    tmpdir.chdir()
+def test_child_errors(tmp_path):
+    tmp_path.chdir()
     with pytest.raises(RuntimeError):
         atoms = bulk("Cu")
         static_job(atoms)

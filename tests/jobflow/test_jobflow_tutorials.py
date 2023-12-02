@@ -11,8 +11,8 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-def test_tutorial1a(tmpdir):
-    tmpdir.chdir()
+def test_tutorial1a(tmp_path):
+    tmp_path.chdir()
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -24,8 +24,8 @@ def test_tutorial1a(tmpdir):
     jf.run_locally(job, create_folders=True, ensure_success=True)
 
 
-def test_tutorial2a(tmpdir):
-    tmpdir.chdir()
+def test_tutorial2a(tmp_path):
+    tmp_path.chdir()
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -43,8 +43,8 @@ def test_tutorial2a(tmpdir):
     jf.run_locally(workflow, create_folders=True, ensure_success=True)
 
 
-def test_tutorial2b(tmpdir):
-    tmpdir.chdir()
+def test_tutorial2b(tmp_path):
+    tmp_path.chdir()
 
     # Define two Atoms objects
     atoms1 = bulk("Cu")
@@ -61,8 +61,8 @@ def test_tutorial2b(tmpdir):
     jf.run_locally(workflow, create_folders=True, ensure_success=True)
 
 
-def test_comparison1(tmpdir):
-    tmpdir.chdir()
+def test_comparison1(tmp_path):
+    tmp_path.chdir()
 
     @job  # (1)!
     def add(a, b):
@@ -80,8 +80,8 @@ def test_comparison1(tmpdir):
     assert responses[job2.uuid][1].output == 9
 
 
-def test_comparison2(tmpdir):
-    tmpdir.chdir()
+def test_comparison2(tmp_path):
+    tmp_path.chdir()
 
     @jf.job
     def add(a, b):
@@ -108,8 +108,8 @@ def test_comparison2(tmpdir):
     jf.run_locally(flow, ensure_success=True)  # [6, 6, 6] in final 3 jobs
 
 
-def test_comparison3(tmpdir):
-    tmpdir.chdir()
+def test_comparison3(tmp_path):
+    tmp_path.chdir()
 
     @job  #  (1)!
     def add(a, b):
@@ -126,8 +126,8 @@ def test_comparison3(tmpdir):
     jf.run_locally(flow, ensure_success=True)
 
 
-def test_comparison4(tmpdir):
-    tmpdir.chdir()
+def test_comparison4(tmp_path):
+    tmp_path.chdir()
 
     @job
     def add(a, b):

@@ -6,8 +6,8 @@ pytest.importorskip("pymatgen.analysis.defects")
 from quacc.recipes.emt.defects import bulk_to_defects_flow
 
 
-def test_bulk_to_defects_flow(tmpdir):
-    tmpdir.chdir()
+def test_bulk_to_defects_flow(tmp_path):
+    tmp_path.chdir()
     atoms = bulk("Cu")
     output = bulk_to_defects_flow(
         atoms, defect_relax_kwargs={"opt_params": {"fmax": 5}}

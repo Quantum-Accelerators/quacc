@@ -6,8 +6,8 @@ from ase.build import molecule
 from quacc.recipes.orca.core import relax_job, static_job
 
 
-def test_static_job(tmpdir):
-    tmpdir.chdir()
+def test_static_job(tmp_path):
+    tmp_path.chdir()
 
     atoms = molecule("H2")
 
@@ -24,8 +24,8 @@ def test_static_job(tmpdir):
 
 
 @pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
-def test_static_job_parallel(tmpdir):
-    tmpdir.chdir()
+def test_static_job_parallel(tmp_path):
+    tmp_path.chdir()
 
     atoms = molecule("H2")
 
@@ -48,8 +48,8 @@ def test_static_job_parallel(tmpdir):
 
 
 @pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
-def test_relax_job(tmpdir):
-    tmpdir.chdir()
+def test_relax_job(tmp_path):
+    tmp_path.chdir()
 
     atoms = molecule("H2")
 

@@ -16,8 +16,8 @@ def prefect_test_fixture():
         yield
 
 
-def test_prefect_decorators(tmpdir):
-    tmpdir.chdir()
+def test_prefect_decorators(tmp_path):
+    tmp_path.chdir()
 
     @job
     def add(a, b):

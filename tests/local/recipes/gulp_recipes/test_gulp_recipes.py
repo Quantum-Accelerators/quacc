@@ -8,8 +8,8 @@ from quacc.recipes.gulp.core import relax_job, static_job
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 
-def test_static_job(tmpdir):
-    tmpdir.chdir()
+def test_static_job(tmp_path):
+    tmp_path.chdir()
 
     atoms = molecule("H2O")
 
@@ -63,8 +63,8 @@ def test_static_job(tmpdir):
     assert "output cif gulp.cif" in output["parameters"]["options"]
 
 
-def test_relax_job(tmpdir):
-    tmpdir.chdir()
+def test_relax_job(tmp_path):
+    tmp_path.chdir()
 
     atoms = molecule("H2O")
 
@@ -136,8 +136,8 @@ def test_relax_job(tmpdir):
     assert "output cif gulp.cif" in output["parameters"]["options"]
 
 
-def test_envvars(tmpdir):
-    tmpdir.chdir()
+def test_envvars(tmp_path):
+    tmp_path.chdir()
 
     atoms = molecule("H2O")
 

@@ -25,8 +25,8 @@ FILE_DIR = Path(__file__).parent
 RUN1 = FILE_DIR / "vasp_run1"
 
 
-def test_summarize_run(tmpdir):
-    tmpdir.chdir()
+def test_summarize_run(tmp_path):
+    tmp_path.chdir()
 
     # Make sure metadata is made
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
@@ -88,8 +88,8 @@ def test_summarize_run(tmpdir):
     MontyDecoder().process_decoded(d)
 
 
-def test_summarize_opt_run(tmpdir):
-    tmpdir.chdir()
+def test_summarize_opt_run(tmp_path):
+    tmp_path.chdir()
 
     # Make sure metadata is made
     atoms = bulk("Cu") * (2, 2, 1)
@@ -157,8 +157,8 @@ def test_summarize_opt_run(tmpdir):
         summarize_opt_run(dyn)
 
 
-def test_summarize_vib_run(tmpdir):
-    tmpdir.chdir()
+def test_summarize_vib_run(tmp_path):
+    tmp_path.chdir()
 
     # Make sure metadata is made
     atoms = molecule("N2")
@@ -241,8 +241,8 @@ def test_summarize_vib_run(tmpdir):
     assert len(results["results"]["vib_energies"]) == 6
 
 
-def test_summarize_ideal_gas_thermo(tmpdir):
-    tmpdir.chdir()
+def test_summarize_ideal_gas_thermo(tmp_path):
+    tmp_path.chdir()
 
     # Make sure metadata is made
     atoms = molecule("N2")
@@ -336,8 +336,8 @@ def test_summarize_ideal_gas_thermo(tmpdir):
         summarize_ideal_gas_thermo(igt, charge_and_multiplicity=[0, 1])
 
 
-def test_errors(tmpdir):
-    tmpdir.chdir()
+def test_errors(tmp_path):
+    tmp_path.chdir()
 
     atoms = bulk("Cu")
     with pytest.raises(ValueError):

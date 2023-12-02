@@ -51,8 +51,8 @@ def bad_mock_cclib_calculate(*args, **kwargs):
     raise ValueError(msg)
 
 
-def test_cclib_summarize_run(tmpdir):
-    tmpdir.chdir()
+def test_cclib_summarize_run(tmp_path):
+    tmp_path.chdir()
 
     # Make sure metadata is made
     atoms = read(log1)
@@ -160,8 +160,8 @@ def test_errors():
         cclib_summarize_run(atoms, ".log", dir_path=run1)
 
 
-def test_cclib_taskdoc(tmpdir):
-    tmpdir.chdir()
+def test_cclib_taskdoc(tmp_path):
+    tmp_path.chdir()
 
     p = FILE_DIR / "cclib_data"
 
@@ -200,8 +200,8 @@ def test_cclib_taskdoc(tmpdir):
     MontyDecoder().process_decoded(d)
 
 
-def test_cclib_calculate(tmpdir, cclib_obj):
-    tmpdir.chdir()
+def test_cclib_calculate(tmp_path, cclib_obj):
+    tmp_path.chdir()
 
     with pytest.raises(ValueError):
         _cclib_calculate(cclib_obj, method="fakemethod")
@@ -236,8 +236,8 @@ def test_cclib_calculate(tmpdir, cclib_obj):
         )
 
 
-def test_monkeypatches(tmpdir, monkeypatch, cclib_obj):
-    tmpdir.chdir()
+def test_monkeypatches(tmp_path, monkeypatch, cclib_obj):
+    tmp_path.chdir()
     monkeypatch.setenv("PROATOM_DIR", str(FILE_DIR / "cclib_data" / "proatomdata"))
     with pytest.raises(FileNotFoundError):
         _cclib_calculate(
