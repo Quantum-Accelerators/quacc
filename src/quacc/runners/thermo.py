@@ -10,7 +10,7 @@ from ase.thermochemistry import IdealGasThermo
 from quacc.schemas.atoms import atoms_to_metadata
 
 if TYPE_CHECKING:
-    from ase import Atoms
+    from ase.atoms import Atoms
 
 
 def run_ideal_gas(

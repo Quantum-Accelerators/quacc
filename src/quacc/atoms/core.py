@@ -11,7 +11,7 @@ from ase.io.jsonio import encode
 from pymatgen.io.ase import AseAtomsAdaptor
 
 if TYPE_CHECKING:
-    from ase import Atoms
+    from ase.atoms import Atoms
 
 logger = logging.getLogger(__name__)
 

@@ -12,7 +12,7 @@ except ImportError:
     phonopy = None
 
 if TYPE_CHECKING:
-    from ase import Atoms
+    from ase.atoms import Atoms
     from numpy.typing import ArrayLike
     from phonopy import Phonopy
     from phonopy.structure.atoms import PhonopyAtoms
