@@ -1,9 +1,12 @@
 import pytest
 
-from quacc import flow, job, subflow
+from quacc import flow, job, subflow, SETTINGS
 
 redun = pytest.importorskip("redun")
-
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "redun",
+    reason="This test requires the Redun workflow engine",
+)
 
 @pytest.fixture()
 def scheduler():

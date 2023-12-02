@@ -1,8 +1,12 @@
 import pytest
 
-from quacc import flow, job, subflow
+from quacc import flow, job, subflow, SETTINGS
 
 prefect = pytest.importorskip("prefect")
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "prefect",
+    reason="This test requires the Prefect workflow engine",
+)
 from prefect.testing.utilities import prefect_test_harness
 
 
