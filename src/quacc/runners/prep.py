@@ -6,7 +6,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 from shutil import rmtree
 from tempfile import mkdtemp
-from typing import TYPE_CHECKING
 
 from monty.shutil import copy_r, gzip_dir
 
