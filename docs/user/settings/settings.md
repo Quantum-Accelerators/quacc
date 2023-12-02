@@ -28,17 +28,3 @@ CREATE_UNIQUE_WORKDIR: true # (2)!
 ### Using Environment Variables
 
 If you want to define quacc settings without writing them to a YAML file, you can instead modify the desired settings by defining individual environment variables with `QUACC` as the prefix. For instance, to modify the `SCRATCH_DIR` setting to be `$SCRATCH`, simply define `QUACC_SCRATCH_DIR=$SCRATCH` as a new environment variable. This approach is ideal when you want to modify the quacc settings for a subset of jobs, as the environment variable can be included in the job's submission script.
-
-### Modifying the Global Settings in a Script
-
-If you want to define quacc settings on-the-fly without writing them to a YAML file or using environment variables, you can do so within your script by modifying the `SETTINGS` object. This approach is ideal when you want to dynamically change a setting within a given Python process or if you're debugging in a Jupyter Notebook.
-
-```python
-from quacc import SETTINGS
-
-SETTINGS.CREATE_UNIQUE_WORKDIR = True
-```
-
-!!! Warning
-
-    This approach should not be used with the `WORKFLOW_ENGINE` variable.
