@@ -1,6 +1,6 @@
 import pytest
 
-from quacc import flow, job, subflow, SETTINGS
+from quacc import SETTINGS, flow, job, subflow
 
 ct = pytest.importorskip("covalent")
 
@@ -85,11 +85,14 @@ def test_covalent_decorators_args(tmpdir):
         6,
     ]
 
+
 def test_settings(tmpdir):
     tmpdir.chdir()
+
     @job
     def job():
         from quacc import SETTINGS
+
         return SETTINGS.GAUSSIAN_CMD
 
     @flow
@@ -100,4 +103,3 @@ def test_settings(tmpdir):
     dispatch_id = ct.dipatch(workflow)
     result = ct.get_result(dispatch_id, wait=True)
     assert result.result == "test"
-    
