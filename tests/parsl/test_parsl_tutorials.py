@@ -3,11 +3,15 @@ import contextlib
 import pytest
 from ase.build import bulk, molecule
 
-from quacc import job, subflow
+from quacc import SETTINGS, job, subflow
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 parsl = pytest.importorskip("parsl")
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "parsl",
+    reason="This test requires the Parsl workflow engine",
+)
 
 
 def setup_module():

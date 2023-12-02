@@ -3,9 +3,14 @@ import contextlib
 import pytest
 from ase.build import bulk
 
-parsl = pytest.importorskip("parsl")
-
+from quacc import SETTINGS
 from quacc.recipes.emt.core import relax_job
+
+parsl = pytest.importorskip("parsl")
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "parsl",
+    reason="This test requires the Parsl workflow engine",
+)
 
 
 def setup_module():
