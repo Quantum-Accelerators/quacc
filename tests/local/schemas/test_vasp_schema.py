@@ -120,7 +120,7 @@ def test_summarize_bader_run(monkeypatch, run1, tmpdir):
     monkeypatch.setattr(
         "quacc.schemas.vasp.bader_analysis_from_path", mock_bader_analysis
     )
-    tmpdir.chdir()
+    monkeypatch.chdir(tmp_path)
 
     p = tmpdir / "vasp_run"
     copytree(run1, p)
@@ -142,7 +142,7 @@ def test_summarize_bader_run(monkeypatch, run1, tmpdir):
 def test_summarize_chargemol_run(monkeypatch, run1, tmpdir):
     monkeypatch.setattr("quacc.schemas.vasp.ChargemolAnalysis", mock_chargemol_analysis)
     monkeypatch.setenv("DDEC6_ATOMIC_DENSITIES_DIR", "test")
-    tmpdir.chdir()
+    monkeypatch.chdir(tmp_path)
 
     p = tmpdir / "vasp_run"
     copytree(run1, p)
@@ -168,7 +168,7 @@ def test_summarize_bader_and_chargemol_run(monkeypatch, run1, tmpdir):
     )
     monkeypatch.setattr("quacc.schemas.vasp.ChargemolAnalysis", mock_chargemol_analysis)
     monkeypatch.setenv("DDEC6_ATOMIC_DENSITIES_DIR", "test")
-    tmpdir.chdir()
+    monkeypatch.chdir(tmp_path)
 
     p = tmpdir / "vasp_run"
     copytree(run1, p)
@@ -191,7 +191,7 @@ def test_summarize_bader_and_chargemol_run(monkeypatch, run1, tmpdir):
 
 
 def test_no_bader(run1, tmpdir):
-    tmpdir.chdir()
+    monkeypatch.chdir(tmp_path)
 
     atoms = read(run1 / "OUTCAR.gz")
     with pytest.warns(UserWarning):
@@ -199,7 +199,7 @@ def test_no_bader(run1, tmpdir):
 
 
 def test_no_chargemol(run1, tmpdir):
-    tmpdir.chdir()
+    monkeypatch.chdir(tmp_path)
 
     atoms = read(run1 / "OUTCAR.gz")
     with pytest.warns(UserWarning):

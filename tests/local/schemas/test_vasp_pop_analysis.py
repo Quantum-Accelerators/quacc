@@ -55,8 +55,8 @@ def prep_files():
             gf.write(b"test")
 
 
-def test_run_bader(tmpdir):
-    tmpdir.chdir()
+def test_run_bader(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
     prep_files()
 
     bader_stats = _bader_runner()[0]
@@ -69,8 +69,8 @@ def test_run_bader(tmpdir):
     assert bader_stats.get("magmom") is None
 
 
-def test_bader_erorr(tmpdir):
-    tmpdir.chdir()
+def test_bader_erorr(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     with pytest.raises(FileNotFoundError):
         _bader_runner()
@@ -78,8 +78,8 @@ def test_bader_erorr(tmpdir):
         w.write("test")
 
 
-def test_run_chargemol(tmpdir):
-    tmpdir.chdir()
+def test_run_chargemol(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
     prep_files()
 
     chargemol_stats = _chargemol_runner(path=".", atomic_densities_path=".")[0]
@@ -87,8 +87,8 @@ def test_run_chargemol(tmpdir):
     assert chargemol_stats["ddec"]["spin_moments"] == [0.0]
 
 
-def test_chargemol_erorr(tmpdir):
-    tmpdir.chdir()
+def test_chargemol_erorr(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
     prep_files()
 
     with pytest.raises(OSError):
