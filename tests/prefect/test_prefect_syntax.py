@@ -1,6 +1,6 @@
 import pytest
 
-from quacc import flow, job, subflow, SETTINGS
+from quacc import SETTINGS, flow, job, subflow
 
 prefect = pytest.importorskip("prefect")
 pytestmark = pytest.mark.skipif(

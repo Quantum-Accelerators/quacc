@@ -1,5 +1,6 @@
 import pytest
 from ase.build import bulk
+
 from quacc import SETTINGS
 from quacc.recipes.emt.core import relax_job
 
@@ -8,6 +9,7 @@ pytestmark = pytest.mark.skipif(
     SETTINGS.WORKFLOW_ENGINE != "covalent",
     reason="This test requires the Covalent workflow engine",
 )
+
 
 def test_phonon_flow(tmpdir):
     pytest.importorskip("phonopy")

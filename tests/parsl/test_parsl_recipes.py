@@ -2,8 +2,9 @@ import contextlib
 
 import pytest
 from ase.build import bulk
-from quacc.recipes.emt.core import relax_job
+
 from quacc import SETTINGS
+from quacc.recipes.emt.core import relax_job
 
 parsl = pytest.importorskip("parsl")
 pytestmark = pytest.mark.skipif(
