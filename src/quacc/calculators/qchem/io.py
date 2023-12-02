@@ -11,7 +11,7 @@ from emmet.core.tasks import _parse_custodian
 from monty.io import zopen
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.qchem.inputs import QCInput
-from pymatgen.io.qchem.outputs import QCOutput
+from pymatgen.io.qchem.outputs import QCOutput, gradient_parser, hessian_parser, orbital_coeffs_parser
 from pymatgen.io.qchem.sets import QChemDictSet
 
 if TYPE_CHECKING:
@@ -84,7 +84,7 @@ def write_qchem(
     ).write(directory / "mol.qin")
 
 
-def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float]]:
+def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float] | None]:
     """
     Read Q-Chem log files.
 
@@ -95,7 +95,7 @@ def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float]]:
 
     Returns
     -------
-    tuple[Results, list[float]]
+    tuple[Results, list[float] | None]
         The results of the calculation and the orbital coefficients from a previous
         calculation.
     """
@@ -113,53 +113,14 @@ def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float]]:
     # Read the gradient scratch file in 8 byte chunks
     grad_scratch = directory / "131.0"
     if grad_scratch.exists() and grad_scratch.stat().st_size > 0:
-        tmp_grad_data = []
-        with zopen(grad_scratch, mode="rb") as file:
-            binary = file.read()
-        tmp_grad_data.extend(
-            struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
-            for ii in range(len(binary) // 8)
-        )
-        grad = [
-            [
-                float(tmp_grad_data[ii * 3]),
-                float(tmp_grad_data[ii * 3 + 1]),
-                float(tmp_grad_data[ii * 3 + 2]),
-            ]
-            for ii in range(len(tmp_grad_data) // 3)
-        ]
+        grad = parse_gradient(directory / "131.0")
 
-        # Ensure that the scratch values match the correct values from the
-        # output file but with higher precision
-        if qc_output["pcm_gradients"] is not None:
-            gradient = qc_output["pcm_gradients"][0]
-        else:
-            gradient = qc_output["gradients"][0]
-        for ii, subgrad in enumerate(grad):
-            for jj, val in enumerate(subgrad):
-                if abs(gradient[ii, jj] - val) > 1e-6:
-                    raise ValueError(
-                        "Difference between gradient value in scratch file vs. output file should not be this large."
-                    )
-                gradient[ii, jj] = val
-
-        # Convert gradient to force + deal with units
         results["forces"] = gradient * (-units.Hartree / units.Bohr)
 
     # Read Hessian scratch file in 8 byte chunks
     hessian_scratch = directory / "132.0"
     if hessian_scratch.exists() and hessian_scratch.stat().st_size > 0:
-        tmp_hess_data = []
-        with zopen(hessian_scratch, mode="rb") as file:
-            binary = file.read()
-        tmp_hess_data.extend(
-            struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
-            for ii in range(len(binary) // 8)
-        )
-        reshaped_hess = np.reshape(
-            np.array(tmp_hess_data),
-            (len(qc_output["species"]) * 3, len(qc_output["species"]) * 3),
-        )
+        parse_hessian(hessian_scratch, natoms = len(qc_output["species"])
         results["hessian"] = reshaped_hess * (units.Hartree / units.Bohr**2)
         results["enthalpy"] = qc_output["total_enthalpy"] * (units.kcal / units.mol)
         results["entropy"] = qc_output["total_entropy"] * (
@@ -167,12 +128,10 @@ def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float]]:
         )
 
     # Read orbital coefficients scratch file in 8 byte chunks
-    prev_orbital_coeffs = []
-    with zopen(directory / "53.0", mode="rb") as file:
-        binary = file.read()
-    prev_orbital_coeffs.extend(
-        struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
-        for ii in range(len(binary) // 8)
-    )
+    orb_scratch = directory / "53.0"
+    if orb_scratch.exists() and orb_scratch.stat().st_size > 0:
+        prev_orbital_coeffs = orbital_coeffs_parser(orb_scratch)
+    else:
+        prev_orbital_coeffs = None
 
     return results, prev_orbital_coeffs
