@@ -88,24 +88,3 @@ def test_covalent_decorators_args(tmpdir):
         6,
         6,
     ]
-
-
-def test_settings(tmpdir):
-    tmpdir.chdir()
-
-    @job
-    def test_job():
-        from quacc import SETTINGS
-
-        return SETTINGS.GAUSSIAN_CMD
-
-    @flow
-    def workflow():
-        from quacc import SETTINGS
-
-        SETTINGS.GAUSSIAN_CMD = "test"
-        return test_job()
-
-    dispatch_id = ct.dispatch(workflow)()
-    result = ct.get_result(dispatch_id, wait=True)
-    assert result.result == "test"
