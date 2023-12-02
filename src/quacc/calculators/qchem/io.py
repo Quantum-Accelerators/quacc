@@ -133,7 +133,7 @@ def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float] | None
     # Read Hessian scratch file in 8 byte chunks
     hessian_scratch = directory / "132.0"
     if hessian_scratch.exists() and hessian_scratch.stat().st_size > 0:
-        parse_hessian(hessian_scratch, natoms = len(qc_output["species"])
+        parse_hessian(hessian_scratch, n_atoms = len(qc_output["species"])
         results["hessian"] = reshaped_hess * (units.Hartree / units.Bohr**2)
 
     # Read orbital coefficients scratch file in 8 byte chunks
