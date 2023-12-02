@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
     class FindAdsSitesKwargs(TypedDict, total=False):
         distance: float  # default = 2.0
-        put_inside: True  # default = True
+        put_inside: bool  # default = True
         symm_reduce: float  # default = 1e-2
         near_reduce: float  # default = 1e-2
         positions: list[

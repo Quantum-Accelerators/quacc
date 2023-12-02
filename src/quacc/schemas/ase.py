@@ -20,7 +20,7 @@ from quacc.wflow_tools.db import results_to_db
 if TYPE_CHECKING:
     from typing import Any
 
-    from ase import Atoms
+    from ase.atoms import Atoms
     from ase.io import Trajectory
     from ase.optimize.optimize import Optimizer
     from ase.thermochemistry import IdealGasThermo
