@@ -16,7 +16,7 @@ from quacc.schemas.prep import prep_next_run
 
 FILE_DIR = Path(__file__).parent
 
-DEFAULT_SETTINGS = SETTINGS.copy()
+DEFAULT_SETTINGS = SETTINGS.model_dump()
 
 
 def setup_module():
