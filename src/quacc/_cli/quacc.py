@@ -139,20 +139,13 @@ def info() -> None:
     from quacc import SETTINGS, __version__
 
     settings = SETTINGS.model_dump()
-    reported_settings = [
-        "WORKFLOW_ENGINE",
-        "CREATE_UNIQUE_WORKDIR",
-        "GZIP_FILES",
-        "CHECK_CONVERGENCE",
-    ]
-    settings_subset = {k: v for k, v in settings.items() if k in reported_settings}
     print(  # noqa: T201
         f"""
 quacc version: {__version__}
 
 Python version: {platform.python_version()}
 
-quacc settings (minimal): {settings_subset}
+quacc settings: {settings}
 """
     )
 

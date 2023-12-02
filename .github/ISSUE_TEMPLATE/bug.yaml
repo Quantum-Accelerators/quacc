@@ -6,11 +6,10 @@ body:
   - type: textarea
     attributes:
       label: Details about the quacc environment
-      description: Please run `quacc info` and paste the output below.
+      description: If unsure of the quacc version, please run `print(quacc.__version__)`.
       value: |
         - **quacc version**:
         - **Python version**:
-        - **quacc settings**:
     validations:
       required: true
 
