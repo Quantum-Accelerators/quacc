@@ -43,10 +43,10 @@ def patch_pop_analyses(monkeypatch):
     monkeypatch.setattr("quacc.schemas.vasp.ChargemolAnalysis", mock_chargemol_analysis)
 
 
-def prep_files():
+def prep_files(monkeypatch):
     if not os.path.exists("rundir"):
         os.mkdir("rundir")
-    os.chdir("rundir")
+    monkeypatch.chdir("rundir")
     for f in ["CHGCAR", "POTCAR"]:
         with open(f, "w") as w:
             w.write("test")

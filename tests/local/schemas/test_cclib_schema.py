@@ -106,9 +106,8 @@ def test_cclib_summarize_run(tmp_path, monkeypatch):
 
     # Make sure default dir works
     cwd = os.getcwd()
-    os.chdir(run1)
+    monkeypatch.chdir(run1)
     cclib_summarize_run(atoms, ".log")
-    os.chdir(cwd)
 
     # Test DB
     atoms = read(log1)

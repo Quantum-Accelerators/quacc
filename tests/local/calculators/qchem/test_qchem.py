@@ -162,7 +162,7 @@ def test_qchem_write_input_freq(tmp_path, monkeypatch, test_atoms):
 
 def test_qchem_read_results_basic_and_write_53(tmp_path, monkeypatch, test_atoms):
     calc = QChem(test_atoms, cores=40)
-    os.chdir(FILE_DIR / "examples" / "basic")
+    monkeypatch.chdir(FILE_DIR / "examples" / "basic")
     calc.read_results()
     monkeypatch.chdir(tmp_path)
 
@@ -171,7 +171,7 @@ def test_qchem_read_results_basic_and_write_53(tmp_path, monkeypatch, test_atoms
     assert calc._prev_orbital_coeffs is not None
 
     calc.write_input(test_atoms)
-    assert Path(tmp_path, monkeypatch, "53.0").exists()
+    assert Path(tmp_path, "53.0").exists()
     with zopen("53.0", mode="rb") as new_file:
         new_binary = new_file.read()
         with zopen(
@@ -186,7 +186,7 @@ def test_qchem_read_results_basic_and_write_53(tmp_path, monkeypatch, test_atoms
 def test_qchem_read_results_intermediate(tmp_path, monkeypatch, test_atoms):
     monkeypatch.chdir(tmp_path)
     calc = QChem(test_atoms, cores=40)
-    os.chdir(FILE_DIR / "examples" / "intermediate")
+    monkeypatch.chdir(FILE_DIR / "examples" / "intermediate")
     calc.read_results()
     monkeypatch.chdir(tmp_path)
 
@@ -198,7 +198,7 @@ def test_qchem_read_results_intermediate(tmp_path, monkeypatch, test_atoms):
 def test_qchem_read_results_advanced(tmp_path, monkeypatch, test_atoms):
     monkeypatch.chdir(tmp_path)
     calc = QChem(test_atoms, cores=40)
-    os.chdir(FILE_DIR / "examples" / "advanced")
+    monkeypatch.chdir(FILE_DIR / "examples" / "advanced")
     calc.read_results()
     monkeypatch.chdir(tmp_path)
 
@@ -210,7 +210,7 @@ def test_qchem_read_results_advanced(tmp_path, monkeypatch, test_atoms):
 
 def test_qchem_read_results_freq(tmp_path, monkeypatch, test_atoms):
     calc = QChem(test_atoms, job_type="freq", cores=40)
-    os.chdir(FILE_DIR / "examples" / "freq")
+    monkeypatch.chdir(FILE_DIR / "examples" / "freq")
     calc.read_results()
     monkeypatch.chdir(tmp_path)
 
