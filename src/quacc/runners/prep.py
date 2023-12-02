@@ -52,20 +52,18 @@ def calc_setup(copy_files: list[str | Path] | None = None) -> tuple[Path, Path]:
     if os.name != "nt" and SETTINGS.SCRATCH_DIR != SETTINGS.RESULTS_DIR:
         symlink = job_results_dir / f"{tmpdir.name}-symlink"
         symlink.unlink(missing_ok=True)
-        symlink.symlink_to(tmp_path, monkeypatch, target_is_directory=True)
+        symlink.symlink_to(tmpdir, target_is_directory=True)
 
     # Copy files to tmpdir and decompress them if needed
     if copy_files:
         copy_decompress(copy_files, tmpdir)
 
-    os.chdir(tmp_path, monkeypatch)
+    os.chdir(tmpdir)
 
     return tmpdir, job_results_dir
 
 
-def calc_cleanup(
-    tmp_path, monkeypatch: str | Path, job_results_dir: str | Path
-) -> None:
+def calc_cleanup(tmpdir: str | Path, job_results_dir: str | Path) -> None:
     """
     Perform cleanup operations for a calculation, including gzipping files, copying
     files back to the original directory, and removing the tmpdir.
@@ -90,14 +88,14 @@ def calc_cleanup(
 
     # Gzip files in tmpdir
     if SETTINGS.GZIP_FILES:
-        gzip_dir(tmp_path, monkeypatch)
+        gzip_dir(tmpdir)
 
     # Copy files back to job_results_dir
-    copy_r(tmp_path, monkeypatch, job_results_dir)
+    copy_r(tmpdir, job_results_dir)
 
     # Remove symlink to tmpdir
     symlink_path = job_results_dir / f"{tmpdir.name}-symlink"
     symlink_path.unlink(missing_ok=True)
 
     # Remove the tmpdir
-    rmtree(tmp_path, monkeypatch, ignore_errors=True)
+    rmtree(tmpdir, ignore_errors=True)

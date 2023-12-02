@@ -83,7 +83,7 @@ def run_calc(
         # Note: We have to be careful to make sure we don't lose the converged
         # magnetic moments, if present. That's why we simply update the
         # positions and cell in-place.
-        atoms_new = read(zpath(tmp_path, monkeypatch / geom_file))
+        atoms_new = read(zpath(tmpdir / geom_file))
         if isinstance(atoms_new, list):
             atoms_new = atoms_new[-1]
 
@@ -99,7 +99,7 @@ def run_calc(
         atoms.cell = atoms_new.cell
 
     # Perform cleanup operations
-    calc_cleanup(tmp_path, monkeypatch, job_results_dir)
+    calc_cleanup(tmpdir, job_results_dir)
 
     return atoms
 
@@ -184,7 +184,7 @@ def run_opt(
     dyn.traj_atoms = read(traj_filename, index=":")
 
     # Perform cleanup operations
-    calc_cleanup(tmp_path, monkeypatch, job_results_dir)
+    calc_cleanup(tmpdir, job_results_dir)
 
     return dyn
 
@@ -227,14 +227,14 @@ def run_vib(
     tmpdir, job_results_dir = calc_setup(copy_files=copy_files)
 
     # Run calculation
-    vib = Vibrations(atoms, name=str(tmp_path, monkeypatch / "vib"), **vib_kwargs)
+    vib = Vibrations(atoms, name=str(tmpdir / "vib"), **vib_kwargs)
     vib.run()
 
     # Summarize run
-    vib.summary(log=str(tmp_path, monkeypatch / "vib_summary.log"))
+    vib.summary(log=str(tmpdir / "vib_summary.log"))
 
     # Perform cleanup operations
-    calc_cleanup(tmp_path, monkeypatch, job_results_dir)
+    calc_cleanup(tmpdir, job_results_dir)
 
     return vib
 
