@@ -11,7 +11,12 @@ from emmet.core.tasks import _parse_custodian
 from monty.io import zopen
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.qchem.inputs import QCInput
-from pymatgen.io.qchem.outputs import QCOutput, gradient_parser, hessian_parser, orbital_coeffs_parser
+from pymatgen.io.qchem.outputs import (
+    QCOutput,
+    gradient_parser,
+    hessian_parser,
+    orbital_coeffs_parser,
+)
 from pymatgen.io.qchem.sets import QChemDictSet
 
 if TYPE_CHECKING:
