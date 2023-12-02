@@ -3,8 +3,8 @@ from ase.build import molecule
 from quacc.recipes.gaussian.core import relax_job, static_job
 
 
-def test_static_job(tmpdir):
-    tmpdir.chdir()
+def test_static_job(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     atoms = molecule("H2")
 
@@ -40,8 +40,8 @@ def test_static_job(tmpdir):
     assert "opt" not in output["parameters"]
 
 
-def test_relax_job(tmpdir):
-    tmpdir.chdir()
+def test_relax_job(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     atoms = molecule("H2")
 

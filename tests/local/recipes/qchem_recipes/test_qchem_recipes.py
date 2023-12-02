@@ -111,8 +111,8 @@ def mock_read(self, **kwargs):
         raise RuntimeError("Results should not be None here.")
 
 
-def test_static_job_v1(monkeypatch, tmpdir, test_atoms):
-    tmpdir.chdir()
+def test_static_job_v1(monkeypatch, tmp_path, test_atoms):
+    monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
     output = static_job(test_atoms, charge, spin_multiplicity)
@@ -133,8 +133,8 @@ def test_static_job_v1(monkeypatch, tmpdir, test_atoms):
     qcinput_nearly_equal(ref_qcin, QCInput.from_dict(output["results"]["qc_input"]))
 
 
-def test_static_job_v2(monkeypatch, tmpdir, test_atoms):
-    tmpdir.chdir()
+def test_static_job_v2(monkeypatch, tmp_path, test_atoms):
+    monkeypatch.chdir(tmp_path)
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms, charge=-1)
@@ -163,8 +163,8 @@ def test_static_job_v2(monkeypatch, tmpdir, test_atoms):
     qcinput_nearly_equal(ref_qcin, QCInput.from_dict(output["results"]["qc_input"]))
 
 
-def test_static_job_v3(monkeypatch, tmpdir, test_atoms):
-    tmpdir.chdir()
+def test_static_job_v3(monkeypatch, tmp_path, test_atoms):
+    monkeypatch.chdir(tmp_path)
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
     overwrite_inputs = {"rem": {"mem_total": "170000"}}
@@ -192,23 +192,23 @@ def test_static_job_v3(monkeypatch, tmpdir, test_atoms):
     qcinput_nearly_equal(ref_qcin, QCInput.from_dict(output["results"]["qc_input"]))
 
 
-def test_static_job_v4(monkeypatch, tmpdir, os_atoms):
-    tmpdir.chdir()
+def test_static_job_v4(monkeypatch, tmp_path, os_atoms):
+    monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(QChem, "read_results", mock_read)
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
     charge, spin_multiplicity = check_charge_and_spin(os_atoms)
     assert static_job(os_atoms, charge, spin_multiplicity)
 
 
-def test_static_job_v5(tmpdir, test_atoms):
-    tmpdir.chdir()
+def test_static_job_v5(tmp_path, monkeypatch, test_atoms):
+    monkeypatch.chdir(tmp_path)
 
     with pytest.raises(ValueError):
         static_job(test_atoms, 0, 1, pcm_dielectric="3.0", smd_solvent="water")
 
 
-def test_relax_job_v1(monkeypatch, tmpdir, test_atoms):
-    tmpdir.chdir()
+def test_relax_job_v1(monkeypatch, tmp_path, test_atoms):
+    monkeypatch.chdir(tmp_path)
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
@@ -236,8 +236,8 @@ def test_relax_job_v1(monkeypatch, tmpdir, test_atoms):
     assert len(output["results"]["qc_input"]) > 1
 
 
-def test_relax_job_v2(monkeypatch, tmpdir, test_atoms):
-    tmpdir.chdir()
+def test_relax_job_v2(monkeypatch, tmp_path, test_atoms):
+    monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms, charge=-1)
     output = relax_job(
@@ -266,8 +266,8 @@ def test_relax_job_v2(monkeypatch, tmpdir, test_atoms):
     qcinput_nearly_equal(qcin, ref_qcin)
 
 
-def test_relax_job_v3(monkeypatch, tmpdir, test_atoms):
-    tmpdir.chdir()
+def test_relax_job_v3(monkeypatch, tmp_path, test_atoms):
+    monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
     overwrite_inputs = {"rem": {"mem_total": "170000"}}
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
@@ -292,14 +292,14 @@ def test_relax_job_v3(monkeypatch, tmpdir, test_atoms):
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826311086011256)
 
 
-def test_relax_job_v4(tmpdir, test_atoms):
-    tmpdir.chdir()
+def test_relax_job_v4(tmp_path, monkeypatch, test_atoms):
+    monkeypatch.chdir(tmp_path)
     with pytest.raises(ValueError):
         relax_job(test_atoms, 0, 1, pcm_dielectric="3.0", smd_solvent="water")
 
 
-def test_freq_job_v1(monkeypatch, tmpdir, test_atoms):
-    tmpdir.chdir()
+def test_freq_job_v1(monkeypatch, tmp_path, test_atoms):
+    monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute5)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms, charge=-1)
     output = freq_job(
@@ -332,8 +332,8 @@ def test_freq_job_v1(monkeypatch, tmpdir, test_atoms):
     )
 
 
-def test_ts_job_v1(monkeypatch, tmpdir, test_atoms):
-    tmpdir.chdir()
+def test_ts_job_v1(monkeypatch, tmp_path, test_atoms):
+    monkeypatch.chdir(tmp_path)
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
@@ -360,8 +360,8 @@ def test_ts_job_v1(monkeypatch, tmpdir, test_atoms):
     qcinput_nearly_equal(qcin, ref_qcin)
 
 
-def test_ts_job_v2(monkeypatch, tmpdir, test_atoms):
-    tmpdir.chdir()
+def test_ts_job_v2(monkeypatch, tmp_path, test_atoms):
+    monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms, charge=-1)
     output = ts_job(
@@ -390,8 +390,8 @@ def test_ts_job_v2(monkeypatch, tmpdir, test_atoms):
     qcinput_nearly_equal(qcin, ref_qcin)
 
 
-def test_ts_job_v3(monkeypatch, tmpdir, test_atoms):
-    tmpdir.chdir()
+def test_ts_job_v3(monkeypatch, tmp_path, test_atoms):
+    monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
     overwrite_inputs = {"rem": {"mem_total": "170000"}}
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
@@ -416,8 +416,8 @@ def test_ts_job_v3(monkeypatch, tmpdir, test_atoms):
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826311086011256)
 
 
-def test_ts_job_v4(tmpdir, test_atoms):
-    tmpdir.chdir()
+def test_ts_job_v4(tmp_path, monkeypatch, test_atoms):
+    monkeypatch.chdir(tmp_path)
     with pytest.raises(ValueError):
         ts_job(test_atoms, 0, 1, pcm_dielectric="3.0", smd_solvent="water")
 
@@ -432,8 +432,8 @@ def test_ts_job_v4(tmpdir, test_atoms):
         )
 
 
-def test_irc_job_v1(monkeypatch, tmpdir, test_atoms):
-    tmpdir.chdir()
+def test_irc_job_v1(monkeypatch, tmp_path, test_atoms):
+    monkeypatch.chdir(tmp_path)
 
     monkeypatch.setattr(QChem, "read_results", mock_read)
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
@@ -499,8 +499,8 @@ def test_irc_job_v1(monkeypatch, tmpdir, test_atoms):
     assert output["parameters"]["spin_multiplicity"] == 1
 
 
-def test_irc_job_v2(tmpdir, test_atoms):
-    tmpdir.chdir()
+def test_irc_job_v2(tmp_path, monkeypatch, test_atoms):
+    monkeypatch.chdir(tmp_path)
     with pytest.raises(ValueError):
         irc_job(test_atoms, 0, 1, "straight")
 
@@ -519,8 +519,8 @@ def test_irc_job_v2(tmpdir, test_atoms):
         )
 
 
-def test_quasi_irc_job(monkeypatch, tmpdir, test_atoms):
-    tmpdir.chdir()
+def test_quasi_irc_job(monkeypatch, tmp_path, test_atoms):
+    monkeypatch.chdir(tmp_path)
 
     monkeypatch.setattr(QChem, "read_results", mock_read)
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
