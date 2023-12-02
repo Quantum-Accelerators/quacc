@@ -236,7 +236,7 @@ def test_cclib_calculate(tmp_path, monkeypatch, cclib_obj):
         )
 
 
-def test_monkeypatches(tmp_path, monkeypatch, monkeypatch, cclib_obj):
+def test_monkeypatches(tmp_path, monkeypatch, cclib_obj):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("PROATOM_DIR", str(FILE_DIR / "cclib_data" / "proatomdata"))
     with pytest.raises(FileNotFoundError):
