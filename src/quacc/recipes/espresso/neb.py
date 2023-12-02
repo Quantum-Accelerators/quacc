@@ -34,7 +34,7 @@ def neb_job(
     pw_input_data: dict[int, Any],
     preset: str | None = None,
     copy_files: list[str] | None = None,
-    **kwargs,
+    **calc_kwargs,
 ) -> RunSchema:
     """
     Function to carry out a single-point calculation.
@@ -43,19 +43,10 @@ def neb_job(
     ----------
     atoms
         Atoms object
-    **kwargs
+    **calc_kwargs
         Custom kwargs for the espresso calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.espresso.Espresso` calculator.
-
-        !!! Info "Calculator defaults"
-
-            ```python
-            {
-                "ecutwfc": 40,
-                "ecutrho": 160,
-            }
-            ```
 
     Returns
     -------
@@ -71,15 +62,15 @@ def neb_job(
     # we do that for now
     _, tmpdir, job_results_dir = calc_setup(Atoms(), copy_files=copy_files)
 
-    neb_calc.execute(preset=preset, **kwargs)
-    results = neb_calc.read_results(**kwargs)
+    neb_calc.execute(preset=preset, **calc_kwargs)
+    results = neb_calc.read_results(**calc_kwargs)
 
     calc_cleanup(tmpdir, job_results_dir)
     return _base_job(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
-        calc_swaps=kwargs,
+        calc_swaps=calc_kwargs,
         additional_fields={"name": "pw.x static"},
         copy_files=copy_files,
     )

@@ -24,7 +24,7 @@ def static_job(
     copy_files: list[str] | None = None,
     tmpdir: str | None = None,
     calc_clean: bool = True,
-    **kwargs,
+    **calc_kwargs,
 ) -> RunSchema:
     """
     Function to carry out a single-point calculation.
@@ -33,19 +33,10 @@ def static_job(
     ----------
     atoms
         Atoms object
-    **kwargs
+    **calc_kwargs
         Custom kwargs for the espresso calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.espresso.Espresso` calculator.
-
-        !!! Info "Calculator defaults"
-
-            ```python
-            {
-                "ecutwfc": 40,
-                "ecutrho": 160,
-            }
-            ```
 
     Returns
     -------
@@ -79,7 +70,7 @@ def static_job(
         preset=preset,
         template=template,
         calc_defaults=calc_defaults,
-        calc_swaps=kwargs,
+        calc_swaps=calc_kwargs,
         additional_fields={"name": "pw.x static"},
         copy_files=copy_files,
         tmpdir=tmpdir,
@@ -92,7 +83,7 @@ def ph_job(
     copy_files: list[str] | None = None,
     tmpdir: str | None = None,
     calc_clean: bool = True,
-    **kwargs,
+    **calc_kwargs,
 ) -> RunSchema:
     """
     Function to carry out a single-point calculation.
@@ -101,19 +92,10 @@ def ph_job(
     ----------
     atoms
         Atoms object
-    **kwargs
+    **calc_kwargs
         Custom kwargs for the espresso calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.espresso.Espresso` calculator.
-
-        !!! Info "Calculator defaults"
-
-            ```python
-            {
-                "ecutwfc": 40,
-                "ecutrho": 160,
-            }
-            ```
 
     Returns
     -------
@@ -148,7 +130,7 @@ def ph_job(
         template = template,
         profile = profile,
         calc_defaults=calc_defaults,
-        calc_swaps=kwargs,
+        calc_swaps=calc_kwargs,
         additional_fields={"name": "ph.x static"},
         copy_files=copy_files,
         tmpdir=tmpdir,
