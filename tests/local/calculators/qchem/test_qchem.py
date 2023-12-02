@@ -98,7 +98,9 @@ def test_qchem_write_input_advanced(tmp_path, monkeypatch, test_atoms):
     assert qcinp.as_dict() == ref_qcinp.as_dict()
 
 
-def test_qchem_write_input_open_shell_and_different_charges(tmp_path, monkeypatch, os_atoms):
+def test_qchem_write_input_open_shell_and_different_charges(
+    tmp_path, monkeypatch, os_atoms
+):
     monkeypatch.chdir(tmp_path)
     calc = QChem(
         os_atoms,
