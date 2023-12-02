@@ -100,6 +100,6 @@ def test_settings(tmpdir):
         SETTINGS.GAUSSIAN_CMD = "test"
         return test_job()
 
-    dispatch_id = ct.dipatch(workflow)
+    dispatch_id = ct.dispatch(workflow)
     result = ct.get_result(dispatch_id, wait=True)
     assert result.result == "test"
