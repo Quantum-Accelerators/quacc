@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from typing import Callable
 
     from ase.atoms import Atoms
-    from qucac import Job
+    from quacc import Job
 
 
 @subflow
