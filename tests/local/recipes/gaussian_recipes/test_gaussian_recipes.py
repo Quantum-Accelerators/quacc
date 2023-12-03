@@ -8,7 +8,7 @@ def test_static_job(tmp_path, monkeypatch):
 
     atoms = molecule("H2")
 
-    output = static_job(atoms, 0, 1)
+    output = static_job()
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
