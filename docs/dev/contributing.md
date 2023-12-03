@@ -84,8 +84,8 @@ Each PR will report the code coverage once your tests pass, but if you'd like to
 
 For recipes that involve a calculation that cannot be easily run in the test suite (e.g. the underlying calculator cannot be installed via `pip` or `conda`), you will need to make a `conftest.py` file in the recipe directory that monkeypatches the relevant functions (refer to the Gaussian recipe tests for an example). The tests should be written in such a way that they would also pass if the executable were actually available and the `conftest.py` file were not applied. To run the test on your own machine without the `conftest.py` file applied, you can use the `--noconftest` flag when calling `pytest`.
 
-### Jenkins
+### Running a PR on an HPC Machine
 
-To trigger the test suite on an actual HPC machine where the licensed executables are run without monkeypatching via `conftest.py` files, simply comment "Run Jenkins" in a PR. This is strongly encouraged for all PRs that touch any code related to calculators or recipes.
+When opening a PR, it is possible to trigger the test suite on a Princeton-hosted HPC machine where the licensed executables are run without monkeypatching. To do so, simply comment "Run Jenkins" in a PR. This is strongly encouraged for all PRs that touch any code related to calculators or recipes.
 
 If you are adding recipes for a calculator that is not yet part of quacc and cannot be installed via `pip` or `conda`, we will add the necessary executables to the [HPC build pipeline](https://github.com/Quantum-Accelerators/quacc/tree/main/tests/jenkins) so that production-quality tests will be run automatically (provided we have a license for it). This is an important reason for why the unit tests should be done with a small molecule/solid.
