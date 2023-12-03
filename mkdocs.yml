@@ -36,6 +36,8 @@ nav:
       - Writing New Recipes:
           - dev/recipes/jobs.md
           - dev/recipes/flows.md
+      - For Maintainers:
+          - dev/_internal.md
   - About 📜:
       - about/faq.md
       - about/contributors.md
