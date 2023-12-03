@@ -18,7 +18,7 @@ DEFAULT_SETTINGS = SETTINGS.model_copy()
 def test_static_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    atoms = bulk("Cu") * (2, 2, 2)
+    atoms = bulk("Cu")
 
     output = static_job(atoms)
     assert output["nsites"] == len(atoms)
@@ -49,7 +49,7 @@ def test_static_job(tmp_path, monkeypatch):
 def test_static_job_incar_copilot_aggressive(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    atoms = bulk("Cu") * (2, 2, 2)
+    atoms = bulk("Cu")
 
     SETTINGS.VASP_INCAR_COPILOT = "aggressive"
     output = static_job(atoms, ivdw=11, lasph=False, prec=None, lwave=None, efermi=None)
@@ -64,7 +64,7 @@ def test_static_job_incar_copilot_aggressive(tmp_path, monkeypatch):
 def test_relax_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    atoms = bulk("Cu") * (2, 2, 2)
+    atoms = bulk("Cu")
 
     output = relax_job(atoms)
     assert output["nsites"] == len(atoms)
@@ -95,7 +95,7 @@ def test_relax_job(tmp_path, monkeypatch):
 def test_doublerelax_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    atoms = bulk("Cu") * (2, 2, 2)
+    atoms = bulk("Cu")
 
     output = double_relax_job(atoms)
     assert output["relax1"]["nsites"] == len(atoms)
@@ -146,7 +146,7 @@ def test_doublerelax_job(tmp_path, monkeypatch):
 def test_slab_static_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    atoms = bulk("Cu") * (2, 2, 2)
+    atoms = bulk("Cu")
 
     output = slab_static_job(atoms)
     assert output["nsites"] == len(atoms)
@@ -174,7 +174,7 @@ def test_slab_static_job(tmp_path, monkeypatch):
 def test_slab_relax_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    atoms = bulk("Cu") * (2, 2, 2)
+    atoms = bulk("Cu")
 
     output = slab_relax_job(atoms)
     assert output["nsites"] == len(atoms)
