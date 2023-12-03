@@ -354,7 +354,7 @@ def test_qmof(tmp_path, monkeypatch):
 def test_mp_prerelax_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    atoms = bulk("Si")
+    atoms = bulk("Al")
     output = mp_prerelax_job(atoms)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["xc"] == "pbesol"
@@ -386,7 +386,7 @@ def test_mp_prerelax_job(tmp_path, monkeypatch):
 def test_mp_relax_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    atoms = bulk("Si")
+    atoms = bulk("Al")
 
     output = mp_relax_job(atoms)
     assert output["nsites"] == len(atoms)
@@ -419,7 +419,7 @@ def test_mp_relax_job(tmp_path, monkeypatch):
 def test_mp_relax_flow(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    atoms = bulk("Si")
+    atoms = bulk("Al")
 
     output = mp_relax_flow(atoms)
     assert output["nsites"] == len(atoms)

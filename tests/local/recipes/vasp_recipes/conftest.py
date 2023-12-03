@@ -51,7 +51,7 @@ def mock_summarize_run(atoms, **kwargs):
     )
     output["output"] = {
         "energy": -1.0,
-        "bandgap": 0.0 if "Si" in atoms.get_chemical_symbols() else 0.5,
+        "bandgap": 0.0 if "Al" in atoms.get_chemical_symbols() else 0.5,
     }
     return output
 
