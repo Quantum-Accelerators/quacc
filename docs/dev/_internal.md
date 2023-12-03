@@ -8,8 +8,8 @@ When a new pull request is opened by someone who is on the whitelist (by default
 
 For a pull request opened by a contributor not on the whitelist, [@buildbot-princeton](https://github.com/buildbot-princeton) will ask "Can one of the admins verify this patch?". No build will be launched until one of the following actions are taken by a member on the whitelist:
 
-- "@buildbot-princeton test this please" to run the test once. Use this if you don't know the contributor.
-- "@buildbot-princeton ok to test" to accept the pull request for testing. Use this for trusted contributors only.
+- "@buildbot-princeton test this please" to run the test once. Use this if you don't personally know the contributor. Use "@buildbot-princeton retest this please" to launch a follow-up test, if needed.
+- "@buildbot-princeton ok to test" to run tests for all future commits in the pull request. Use this for trusted contributors only.
 - "@buildbot-princeton add to whitelist" to add a contributor to the whitelist permanently. Use this only after consulting with a maintainer of `quacc`.
 
 ## Manual Upload to PyPi
