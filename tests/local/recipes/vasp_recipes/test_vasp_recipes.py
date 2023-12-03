@@ -18,7 +18,7 @@ DEFAULT_SETTINGS = SETTINGS.model_copy()
 def test_static_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    atoms = bulk("Cu")
+    atoms = bulk("Si")
 
     output = static_job(atoms)
     assert output["nsites"] == len(atoms)
@@ -49,7 +49,7 @@ def test_static_job(tmp_path, monkeypatch):
 def test_static_job_incar_copilot_aggressive(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    atoms = bulk("Cu")
+    atoms = bulk("Si")
 
     SETTINGS.VASP_INCAR_COPILOT = "aggressive"
     output = static_job(atoms, ivdw=11, lasph=False, prec=None, lwave=None, efermi=None)
@@ -64,7 +64,7 @@ def test_static_job_incar_copilot_aggressive(tmp_path, monkeypatch):
 def test_relax_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    atoms = bulk("Cu")
+    atoms = bulk("Si")
 
     output = relax_job(atoms)
     assert output["nsites"] == len(atoms)
@@ -95,7 +95,7 @@ def test_relax_job(tmp_path, monkeypatch):
 def test_doublerelax_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    atoms = bulk("Cu")
+    atoms = bulk("Si")
 
     output = double_relax_job(atoms)
     assert output["relax1"]["nsites"] == len(atoms)
@@ -146,7 +146,7 @@ def test_doublerelax_job(tmp_path, monkeypatch):
 def test_slab_static_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    atoms = bulk("Cu")
+    atoms = bulk("Si")
 
     output = slab_static_job(atoms)
     assert output["nsites"] == len(atoms)
@@ -174,7 +174,7 @@ def test_slab_static_job(tmp_path, monkeypatch):
 def test_slab_relax_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    atoms = bulk("Cu")
+    atoms = bulk("Si")
 
     output = slab_relax_job(atoms)
     assert output["nsites"] == len(atoms)
@@ -197,7 +197,7 @@ def test_slab_relax_job(tmp_path, monkeypatch):
 def test_slab_dynamic_jobs(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    atoms = bulk("Cu")
+    atoms = bulk("Si")
 
     ### --------- Test bulk_to_slabs_flow --------- ###
 
@@ -285,7 +285,7 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
 def test_qmof(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    atoms = bulk("Cu")
+    atoms = bulk("Si")
     output = qmof_relax_job(atoms)
     assert output["prerelax_lowacc"]["nsites"] == len(atoms)
     assert output["prerelax_lowacc"]["parameters"]["sigma"] == 0.01
@@ -350,14 +350,14 @@ def test_qmof(tmp_path, monkeypatch):
     assert output["double_relax"][0]["parameters"]["isif"] == 2
     assert output["double_relax"][1]["parameters"]["isif"] == 2
 
-    atoms = bulk("Cu") * (8, 8, 8)
+    atoms = bulk("Si") * (8, 8, 8)
     output = qmof_relax_job(atoms)
 
 
 def test_mp_prerelax_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    atoms = bulk("Cu")
+    atoms = bulk("Si")
     output = mp_prerelax_job(atoms)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["xc"] == "pbesol"
@@ -389,7 +389,7 @@ def test_mp_prerelax_job(tmp_path, monkeypatch):
 def test_mp_relax_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    atoms = bulk("Cu")
+    atoms = bulk("Si")
 
     output = mp_relax_job(atoms)
     assert output["nsites"] == len(atoms)
@@ -422,7 +422,7 @@ def test_mp_relax_job(tmp_path, monkeypatch):
 def test_mp_relax_flow(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    atoms = bulk("Cu")
+    atoms = bulk("Si")
 
     output = mp_relax_flow(atoms)
     assert output["nsites"] == len(atoms)
