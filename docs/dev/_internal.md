@@ -2,7 +2,7 @@
 
 ## Approving Jenkins Builds
 
-We have a [Jenkins build pipeline](https://jenkins.princeton.edu/job/rosen_group/job/quacc_PRs/) that is automatically launched on pull requests, running a subset of the tests on the [Adroit cluster](https://researchcomputing.princeton.edu/systems/adroit) at Princeton with the `--noconftest` pytest flag. This makes it possible to test recipes for licensed codes in a true production environment.
+We have a [Jenkins build pipeline](https://jenkins.princeton.edu/job/rosen_group/) that is automatically launched on pull requests, running a subset of the tests on the [Adroit cluster](https://researchcomputing.princeton.edu/systems/adroit) at Princeton with the `--noconftest` pytest flag. This makes it possible to test recipes for licensed codes in a true production environment.
 
 When a new pull request is opened by someone who is on the whitelist (by default, everyone in the [@Quantum-Accelerators](https://github.com/Quantum-Accelerators) organization), the build process will automatically start.
 
