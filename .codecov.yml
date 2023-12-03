@@ -1,7 +1,7 @@
 comment: false
 coverage:
   status:
-    project:
+    project:dsadas
       default:
         target: auto
         threshold: 0.2
