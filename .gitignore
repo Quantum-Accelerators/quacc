@@ -5,7 +5,7 @@ POTCAR*
 tmp*
 cache*
 .test_results
-.test_scratch
+.test_scratch*
 package-lock*
 package.json
 
