@@ -86,6 +86,4 @@ For recipes that involve a calculation that cannot be easily run in the test sui
 
 ### Running a PR on an HPC Machine
 
-When opening a PR, it is possible to trigger the test suite on a Princeton-hosted HPC machine where the licensed executables are run without monkeypatching. To do so, simply comment "Run Jenkins" in a PR. This is strongly encouraged for all PRs that touch any code related to calculators or recipes.
-
-If you are adding recipes for a calculator that is not yet part of quacc and cannot be installed via `pip` or `conda`, we will add the necessary executables to the [HPC build pipeline](https://github.com/Quantum-Accelerators/quacc/tree/main/tests/jenkins) so that production-quality tests will be run automatically (provided we have a license for it). This is an important reason for why the unit tests should be done with a small molecule/solid.
+It is possible to trigger the test suite on a Princeton-hosted HPC machine where the licensed executables are run without monkeypatching. If you are a member of the [@Quantum-Accelerators](https://github.com/Quantum-Accelerators), this will happen automatically. If you are not, then an admin will need to give permission. Permission is only needed if your PR is modifying a calculator or recipe.
