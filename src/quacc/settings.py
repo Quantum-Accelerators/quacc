@@ -68,7 +68,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
 
     RESULTS_DIR: Path = Field(
-        Path.cwd(),
+        test,
         description=(
             "Directory to store I/O-based calculation results in."
             "Note that this behavior may be modified by the chosen workflow engine."
