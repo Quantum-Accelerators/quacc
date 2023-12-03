@@ -60,7 +60,7 @@ graph LR
 
     !!! Note
 
-        Parsl `PythonApp` objects will implicitly know to call `.result()` on any `AppFuture` it receives, and it is good to rely on this fact to avoid unecessary blocking.
+        Parsl `PythonApp` objects will implicitly know to call `.result()` on any `AppFuture` it receives, and it is good to rely on this fact to avoid unnecessary blocking.
 
 === "Covalent"
 

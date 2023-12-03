@@ -19,8 +19,8 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
     from numpy.typing import ArrayLike
-    from qucac import Job
 
+    from quacc import Job
     from quacc.schemas._aliases.phonons import PhononSchema
 
 
