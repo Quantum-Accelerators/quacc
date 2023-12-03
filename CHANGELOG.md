@@ -193,8 +193,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
-- Fixed compatability with FireWorks.
-- Fixed I/O issue on Windows and NFS filesystems where Sella optimizations would crash.
+- Fixed compatibility with FireWorks.
+- Fixed I/O issue on Windows and NFS file systems where Sella optimizations would crash.
 
 ## [0.2.7]
 

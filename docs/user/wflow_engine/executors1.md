@@ -205,7 +205,7 @@ In the previous examples, we have been running calculations on our local machine
 
     ??? Note
 
-        If you plan to use the dedicated [SlurmExecutor](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/slurm) developed by Covalent, an analagous example is included below:
+        If you plan to use the dedicated [SlurmExecutor](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/slurm) developed by Covalent, an analogous example is included below:
 
         ```python
         n_nodes = 2
