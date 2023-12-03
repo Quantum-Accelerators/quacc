@@ -71,7 +71,7 @@ class Vasp(Vasp_):
             Options include:
             off: Do not use co-pilot mode. INCAR parameters will be unmodified.
             on: Use co-pilot mode. This will only modify INCAR flags not already set by the user.
-            aggressive: Use co-pilot mode in agressive mode. This will modify INCAR flags even if they are already set by the user.
+            aggressive: Use co-pilot mode in aggressive mode. This will modify INCAR flags even if they are already set by the user.
         copy_magmoms
             If True, any pre-existing `atoms.get_magnetic_moments()` will be set in
             `atoms.set_initial_magnetic_moments()`. Set this to False if you want to
