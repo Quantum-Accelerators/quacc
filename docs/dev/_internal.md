@@ -12,7 +12,7 @@ For a pull request opened by a contributor not on the whitelist, [@buildbot-prin
 - "@buildbot-princeton ok to test" to run tests for all future commits in the pull request. Use this for trusted contributors only.
 - "@buildbot-princeton add to whitelist" to add a contributor to the whitelist permanently. Use this only after consulting with a maintainer of `quacc`.
 
-## Manual Upload to PyPi
+## Manual Upload to PyPI
 
 To upload to PyPI manually in the case of a GitHub Actions failure:
 
