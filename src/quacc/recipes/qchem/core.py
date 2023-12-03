@@ -58,7 +58,7 @@ def static_job(
         Algorithm used to converge the SCF. Defaults to "diis", but for
         particularly difficult cases, "gdm" should be employed instead.
     pcm_dielectric
-        Dielectric constant of the optional polarizable continuum impicit
+        Dielectric constant of the optional polarizable continuum implicit
         solvation model. Defaults to None, in which case PCM will not be
         employed.
     smd_solvent
@@ -141,7 +141,7 @@ def freq_job(
         Algorithm used to converge the SCF. Defaults to "diis", but for
         particularly difficult cases, "gdm" should be employed instead.
     pcm_dielectric
-        Dielectric constant of the optional polarizable continuum impicit
+        Dielectric constant of the optional polarizable continuum implicit
         solvation model. Defaults to None, in which case PCM will not be
         employed.
     smd_solvent
@@ -225,7 +225,7 @@ def relax_job(
         Algorithm used to converge the SCF. Defaults to "diis", but for
         particularly difficult cases, "gdm" should be employed instead.
     pcm_dielectric
-        Dielectric constant of the optional polarizable continuum impicit
+        Dielectric constant of the optional polarizable continuum implicit
         solvation model. Defaults to None, in which case PCM will not be
         employed.
     smd_solvent
