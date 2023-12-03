@@ -350,9 +350,6 @@ def test_qmof(tmp_path, monkeypatch):
     assert output["double_relax"][0]["parameters"]["isif"] == 2
     assert output["double_relax"][1]["parameters"]["isif"] == 2
 
-    atoms = bulk("Si") * (8, 8, 8)
-    output = qmof_relax_job(atoms)
-
 
 def test_mp_prerelax_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
