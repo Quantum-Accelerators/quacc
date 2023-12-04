@@ -126,6 +126,20 @@ class QuaccSettings(BaseSettings):
         Path("pw.x"),
         description=("Path to the espresso executable."),
     )
+    ESPRESSO_BIN_PATH: dict [str, Path] = Field(
+        {
+            "pw": Path("pw.x"),
+            "ph": Path("ph.x"),
+            "neb": Path("neb.x"),
+            "q2r": Path("q2r.x"),
+            "matdyn": Path("matdyn.x"),
+            "dynmat": Path("dynmat.x"),
+            "bands": Path("bands.x"),
+            "projwfc": Path("projwfc.x"),
+            "pp": Path("pp.x"),
+            "wannier90": Path("wannier90.x"),
+        },
+    )
     ESPRESSO_PP_PATH: Optional[Path] = Field(
         None,
         description=("Path to a pseudopotential library for espresso."),
@@ -133,26 +147,6 @@ class QuaccSettings(BaseSettings):
     ESPRESSO_PRESET_DIR: Path = Field(
         Path(__file__).parent / "calculators" / "espresso" / "presets",
         description="Path to the espresso preset directory",
-    )
-    ESPRESSO_PH_CMD: Path = Field(
-        Path("ph.x"),
-        description=("Path to the espresso ph.x executable."),
-    )
-    ESPRESSO_NEB_CMD: Path = Field(
-        Path("neb.x"),
-        description=("Path to the espresso neb.x executable."),
-    )
-    ESPRESSO_Q2R_CMD: Path = Field(
-        Path("q2r.x"),
-        description=("Path to the espresso q2r.x executable."),
-    )
-    ESPRESSO_MATDYN_CMD: Path = Field(
-        Path("matdyn.x"),
-        description=("Path to the espresso matdyn.x executable."),
-    )
-    ESPRESSO_DYNMAT_CMD: Path = Field(
-        Path("dynmat.x"),
-        description=("Path to the espresso dynmat.x executable."),
     )
 
     # ---------------------------
