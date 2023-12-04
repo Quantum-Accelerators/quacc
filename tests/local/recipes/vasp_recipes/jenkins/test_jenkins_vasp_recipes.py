@@ -15,9 +15,9 @@ DEFAULT_SETTINGS = SETTINGS.model_copy()
 def test_static_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    atoms = bulk("Al", kpts=[3, 3, 3])
+    atoms = bulk("Al")
 
-    output = static_job(atoms)
+    output = static_job(atoms, kpts=[3, 3, 3])
     assert output["nsites"] == len(atoms)
     assert "isym" not in output["parameters"]
     assert output["parameters"]["nsw"] == 0
