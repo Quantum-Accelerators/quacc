@@ -5,9 +5,6 @@ from ase.build import bulk
 from ase.calculators.emt import EMT
 from ase.optimize import BFGS
 
-from quacc.schemas.ase import summarize_run as calc_summarize_run
-
-
 def mock_get_potential_energy(self, **kwargs):
     # Instead of running .get_potential_energy(), we mock it by attaching
     # dummy results to the atoms object and returning a fake energy. This
@@ -40,6 +37,8 @@ def patch_dynrun(monkeypatch):
 
 
 def mock_summarize_run(atoms, **kwargs):
+    from quacc.schemas.ase import summarize_run as calc_summarize_run
+
     # Instead of running the VASP-specific summarize_run(), we mock it with the
     # general calculator schema which does not require VASP files to be
     # in the working directory and will work with pytest.
