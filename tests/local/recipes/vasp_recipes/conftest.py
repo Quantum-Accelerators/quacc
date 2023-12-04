@@ -5,6 +5,7 @@ from ase.build import bulk
 from ase.calculators.emt import EMT
 from ase.optimize import BFGS
 
+
 def mock_get_potential_energy(self, **kwargs):
     # Instead of running .get_potential_energy(), we mock it by attaching
     # dummy results to the atoms object and returning a fake energy. This
