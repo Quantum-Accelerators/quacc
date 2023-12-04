@@ -49,8 +49,7 @@ def static_job(
         'input_data': {
             'control': {
                 'calculation': 'scf',
-                'restart_mode': 'from_scratch',
-                'pseudo_dir': SETTINGS.ESPRESSO_PP_PATH,
+                'restart_mode': 'from_scratch'
             },
             'system': {
                 "ecutwfc": 60,
