@@ -1,7 +1,6 @@
 import numpy as np
 import pytest
 from ase import Atoms
-from ase.build import bulk
 from ase.calculators.emt import EMT
 from ase.optimize import BFGS
 
@@ -24,7 +23,7 @@ def patch_get_potential_energy(monkeypatch):
 
 
 def mock_dynrun(atoms, **kwargs):
-    dummy_atoms = bulk("Cu")
+    dummy_atoms = atoms.copy()
     dummy_atoms.calc = EMT()
     dyn = BFGS(dummy_atoms, restart=False, trajectory="opt.traj")
     dyn.run(fmax=100.0)
@@ -51,7 +50,7 @@ def mock_summarize_run(atoms, **kwargs):
     )
     output["output"] = {
         "energy": -1.0,
-        "bandgap": 0.0 if "Cu" in atoms.get_chemical_symbols() else 0.5,
+        "bandgap": 0.0 if "Al" in atoms.get_chemical_symbols() else 0.5,
     }
     return output
 

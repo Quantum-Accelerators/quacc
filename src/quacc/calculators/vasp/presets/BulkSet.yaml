@@ -1,7 +1,7 @@
 # Last modified: 10-07-2023
 inputs:
   algo: fast
-  auto_kpts:
+  pmg_kpts:
     kppvol: 100
   ediff: 1.0e-5
   efermi: midgap
