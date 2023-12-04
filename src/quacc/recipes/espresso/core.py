@@ -22,9 +22,7 @@ def static_job(
     atoms: Atoms,
     preset: str | None = None,
     copy_files: list[str] | None = None,
-    tmpdir: str | None = None,
     parallel_info: dict[str] | None = None,
-    calc_clean: bool = True,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -73,18 +71,14 @@ def static_job(
         calc_swaps = calc_kwargs,
         additional_fields = {"name": "pw.x static"},
         copy_files = copy_files,
-        tmpdir = tmpdir,
         parallel_info = parallel_info,
-        calc_clean = calc_clean,
     )
 
 @job
 def ph_job(
     preset: str | None = None,
     copy_files: list[str] | None = None,
-    tmpdir: str | None = None,
     parallel_info: dict[str] | None = None,
-    calc_clean: bool = True,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -92,7 +86,7 @@ def ph_job(
 
     Parameters
     ----------
-    atoms
+    atoms 1
         Atoms object
     **calc_kwargs
         Custom kwargs for the espresso calculator. Set a value to
@@ -136,9 +130,7 @@ def ph_job(
         calc_swaps=calc_kwargs,
         additional_fields={"name": "ph.x static"},
         copy_files=copy_files,
-        tmpdir=tmpdir,
         parallel_info=parallel_info,
-        calc_clean = calc_clean
     )
 
 def _base_job(
@@ -150,9 +142,7 @@ def _base_job(
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
-    tmpdir: str | None = None,
     parallel_info: dict[str] | None = None,
-    calc_clean: bool = True
 ) -> RunSchema:
     """
     Base function to carry out espresso recipes.
@@ -189,9 +179,7 @@ def _base_job(
                           **calc_swaps)
     
     final_atoms = run_calc(atoms,
-                           copy_files=copy_files,
-                           tmpdir=tmpdir,
-                           calc_clean=calc_clean)
+                           copy_files=copy_files)
 
     return summarize_run(
         final_atoms,

@@ -8,7 +8,7 @@ import warnings
 from datetime import datetime, timezone
 from pathlib import Path
 from random import randint
-from shutil import copy, copytree
+from shutil import copy
 from typing import TYPE_CHECKING
 
 import yaml
@@ -39,13 +39,15 @@ def check_logfile(logfile: str, check_str: str) -> bool:
     zlog = zpath(logfile)
     with zopen(zlog, "r") as f:
         for line in f:
-            clean_line = line if isinstance(line, str) else line.decode("utf-8")
+            clean_line = line if isinstance(
+                line, str) else line.decode("utf-8")
             if check_str.lower() in clean_line.lower():
                 return True
     return False
 
 
-def copy_decompress(source_files: list[str | Path], destination: str | Path) -> None:
+def copy_decompress(
+        source_files: list[str | Path], destination: str | Path) -> None:
     """
     Copy and decompress files from source to destination.
 
@@ -61,18 +63,12 @@ def copy_decompress(source_files: list[str | Path], destination: str | Path) -> 
     None
     """
     for f in source_files:
-        if f.is_dir():
-            for file in f.iterdir():
-                if file.is_file():
-                    copy(file, Path(destination, file.name))
-                    decompress_file(Path(destination, file.name))
-                elif f.is_dir():
-                    copytree([file], Path(destination, file.name))
-                elif f.is_symlink():
-                    pass
+        z_path = Path(zpath(f))
+        if z_path.exists():
+            copy(z_path, Path(destination, z_path.name))
+            decompress_file(Path(destination, z_path.name))
         else:
-            warnings.warn(f"Cannot find file: {f}", UserWarning)
-
+            warnings.warn(f"Cannot find file: {z_path}", UserWarning)
 
 
 def make_unique_dir(base_path: str | None = None) -> Path:
@@ -133,7 +129,8 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
     # the child file.
     for config_arg in config.copy():
         if "parent" in config_arg.lower():
-            yaml_parent_path = Path(yaml_path).parent / Path(config[config_arg])
+            yaml_parent_path = Path(yaml_path).parent / \
+                Path(config[config_arg])
             parent_config = load_yaml_calc(yaml_parent_path)
 
             for k, v in parent_config.items():
@@ -150,7 +147,9 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
     return config
 
 
-def find_recent_logfile(dir_name: Path | str, logfile_extensions: str | list[str]):
+def find_recent_logfile(
+        dir_name: Path | str,
+        logfile_extensions: str | list[str]):
     """
     Find the most recent logfile in a given directory.
 

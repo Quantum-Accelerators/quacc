@@ -38,9 +38,7 @@ if TYPE_CHECKING:
 def run_calc(
     atoms: Atoms,
     geom_file: str | None = None,
-    copy_files: list[str] | None = None,
-    tmpdir: str | None = None,
-    calc_clean: bool = True,
+    copy_files: list[str] | None = None
 ) -> Atoms:
     """
     Run a calculation in a scratch directory and copy the results back to the original
@@ -71,7 +69,6 @@ def run_calc(
 
     # Perform staging operations
     atoms, tmpdir, job_results_dir = calc_setup(atoms,
-                                                tmpdir=tmpdir,
                                                 copy_files=copy_files)
 
     # Run calculation via get_potential_energy()
@@ -101,8 +98,7 @@ def run_calc(
         atoms.cell = atoms_new.cell
 
     # Perform cleanup operations
-    if calc_clean:
-        calc_cleanup(tmpdir, job_results_dir)
+    calc_cleanup(tmpdir, job_results_dir)
 
     return atoms
 
