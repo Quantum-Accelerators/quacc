@@ -30,21 +30,13 @@ def handle_non_pickleable(obj):
     elif isinstance(obj, set):
         # Handle non-pickleable sets by converting them to lists
         return [custom_deep_copy(item) for item in obj]
-    elif isinstance(obj, CustomNonPickleableObject):
-        # Handle custom non-pickleable objects as needed
-        return obj.handle_special_case()
     else:
-        # For other non-pickleable objects, return the original object
+        # For other non-pickleable objects return the original object
         return obj
     
 class CustomNonPickleableObject:
     def __init__(self, data):
         self.data = data
-
-    def handle_special_case(self):
-        # Implement custom handling for this specific non-pickleable object
-        return f"CustomNonPickleableObject({self.data})"
-
 def custom_deep_copy(obj):
     if is_non_pickleable(obj):
         return handle_non_pickleable(obj)
