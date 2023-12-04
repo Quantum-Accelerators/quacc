@@ -63,6 +63,7 @@ class Espresso(_Espresso):
         
         profile = profile or EspressoProfile(
             binary=str(SETTINGS.ESPRESSO_CMD),
+            parallel_info=parallel_info,
             pseudo_path=pseudo_path)
 
         super().__init__(

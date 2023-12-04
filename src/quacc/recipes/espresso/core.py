@@ -23,7 +23,7 @@ def static_job(
     preset: str | None = None,
     copy_files: list[str] | None = None,
     tmpdir: str | None = None,
-    parallel_info: str | None = None,
+    parallel_info: dict[str] | None = None,
     calc_clean: bool = True,
     **calc_kwargs,
 ) -> RunSchema:
@@ -84,7 +84,7 @@ def ph_job(
     preset: str | None = None,
     copy_files: list[str] | None = None,
     tmpdir: str | None = None,
-    parallel_info: str | None = None,
+    parallel_info: dict[str] | None = None,
     calc_clean: bool = True,
     **calc_kwargs,
 ) -> RunSchema:
@@ -124,6 +124,7 @@ def ph_job(
     template = EspressoTemplate('ph')
     profile = EspressoProfile(
         binary=str(SETTINGS.ESPRESSO_PH_CMD),
+        parallel_info=parallel_info,
         pseudo_path=None
         )
 
@@ -151,7 +152,7 @@ def _base_job(
     additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
     tmpdir: str | None = None,
-    parallel_info: str | None = None,
+    parallel_info: dict[str] | None = None,
     calc_clean: bool = True
 ) -> RunSchema:
     """
