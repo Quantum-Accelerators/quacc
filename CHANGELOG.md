@@ -8,11 +8,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- Added a Jenkins-based test suite that runs tests on HPC resources without mocking
+- Added a Jenkins-based test suite that runs tests on HPC resources without mocking for Gaussian, GULP, ORCA, and VASP (minimal)
 - Added a TBLite phonon recipe
+
+### Changed
+
+- Changed the `auto_kpts` kwarg in the `Vasp` calculator to `pmg_kpts`
+- Internal refactoring of recipes to have a separate `_base.py` module when appropriate
+- Removed the unnecessary `Atoms` arg from the `calc_setup` function
 
 ### Fixed
 
+- Fixed slow initial import (3 s --> 1 s)
+- Fixed a few broken type hints
 - Fixed functional and basis set strings in Gaussian recipes
 - Uses number of physical cores instead of logical cores as default for molecular DFT recipes
 
@@ -20,7 +28,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- Switched to using the PyPi release of NewtonNet (1.1).
+- Switched to using the PyPI release of NewtonNet (1.1).
 - NewtonNet recipes don't run a Hessian calculation by default unless needed
 
 ### Fixed
