@@ -1,2 +1,2 @@
 #!/bin/bash
-pytest ../mocked/test_orca_recipes.py --noconftest
+pytest tests/local/recipes/orca_recipes/mocked/test_orca_recipes.py --noconftest
