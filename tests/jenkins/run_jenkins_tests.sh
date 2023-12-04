@@ -9,11 +9,10 @@ pip install -e .[dev]
 # Gaussian, ORCA, GULP
 module load gaussian/g16
 module load openmpi/gcc/4.1.2
-salloc -N 1 -n 32 -t 00:10:00 pytest \
-    tests/local/recipes/gaussian_recipes \
-    tests/local/recipes/gulp_recipes \
-    tests/local/recipes/orca_recipes \
-    --noconftest
+salloc -N 1 -n 32 -t 00:10:00 \
+    tests/local/recipes/gaussian_recipes/jenkins/run_jenkins_tests.sh \
+    && tests/local/recipes/gulp_recipes/jenkins/run_jenkins_tests.sh \
+    && tests/local/recipes/orca_recipes/jenkins/run_jenkins_tests.sh \
 
 # VASP
 module purge
