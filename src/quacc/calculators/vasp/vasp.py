@@ -37,7 +37,7 @@ class Vasp(Vasp_):
     def __init__(
         self,
         input_atoms: Atoms,
-        preset: None | str = None,
+        preset: None | Path | str = None,
         use_custodian: bool | None = None,
         incar_copilot: Literal["off", "on", "aggressive"] | None = None,
         copy_magmoms: bool | None = None,
