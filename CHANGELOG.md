@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
+- Fixed slow initial import (3 s --> 1 s)
 - Fixed a few broken type hints
 - Fixed functional and basis set strings in Gaussian recipes
 - Uses number of physical cores instead of logical cores as default for molecular DFT recipes
