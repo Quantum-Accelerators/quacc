@@ -24,7 +24,7 @@ def patch_get_potential_energy(monkeypatch):
 
 
 def mock_dynrun(atoms, **kwargs):
-    dummy_atoms = bulk("Cu")
+    dummy_atoms = atoms.copy()
     dummy_atoms.calc = EMT()
     dyn = BFGS(dummy_atoms, restart=False, trajectory="opt.traj")
     dyn.run(fmax=100.0)
