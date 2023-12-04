@@ -44,6 +44,7 @@ class Espresso(_Espresso):
                  template=None,
                  profile=None,
                  calc_defaults=None,
+                 parallel_info=None,
                  **kwargs):
 
         self.preset = preset
@@ -66,6 +67,7 @@ class Espresso(_Espresso):
 
         super().__init__(
             profile=profile,
+            parallel_info=parallel_info,
             **kwargs)
 
         self.template = template
