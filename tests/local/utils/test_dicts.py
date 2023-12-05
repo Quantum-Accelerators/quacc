@@ -38,6 +38,10 @@ def test_remove_dict_nones():
     d5_copied = custom_deepcopy(d5)
     d5_copied = remove_dict_nones(d5_copied)
     assert d5_copied == {"tuple": (1, [2, None], {})}
+    d6 = {"list_of_tuples": [(1, 2), [3, (4, None)]]}
+    d6_copied = custom_deepcopy(d6)
+    d6_copied = remove_dict_nones(d6_copied)
+    assert d6_copied == {"list_of_tuples": [(1, 2), [3, (4,)]]}
 
 def test_merge_dicts():
     defaults = {"a": 1, "b": {"a": 1, "b": 2}}
@@ -57,3 +61,10 @@ def test_merge_dicts():
     empty_dict1 = {}
     empty_dict2 = {}
     assert merge_dicts(empty_dict1, empty_dict2) == {}
+    # Additional test case 3: Merging dictionaries with lists and tuples
+    merge_list_dict1 = {"list": [1, (2, 3)], "tuple": (4, [5, 6])}
+    merge_list_dict2 = {"list": [7, (8, None)], "tuple": (9, [10, 11])}
+    assert merge_dicts(merge_list_dict1, merge_list_dict2) == {
+        "list": [1, (2, 3), 7, (8, None)],
+        "tuple": (4, [5, 6, 9, [10, 11]]),
+    }
