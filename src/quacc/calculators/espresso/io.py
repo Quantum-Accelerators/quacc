@@ -1,7 +1,4 @@
 """I/O utilities for the espresso calculator."""
-# 1. use the globals() dictionary
-# 2. use sys.modules[__name__] and getattr
-# 3. keep track of all functions in a dictionary
 from __future__ import annotations
 
 import re
@@ -10,9 +7,8 @@ import numpy as np
 from ase import Atoms
 from ase.io import read as _read
 from ase.io import write as _write
+from ase.io.espresso import namelist_to_string
 from ase.units import Bohr
-
-from quacc.calculators.espresso.utils import namelist_to_string
 
 # Three ways to call a function based on a string:
 freg = re.compile(r"-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+\-]?\d+)?")
@@ -20,12 +16,8 @@ freg = re.compile(r"-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+\-]?\d+)?")
 
 def write(filename, atoms, format="pw", properties=None, **kwargs):
     with open(filename, "w") as fd:
-        write_espresso_dict[format](fd, atoms=atoms, properties=properties, **kwargs)
-    # lines = write_namelist(filename, parameters)
-    # specific_lines = func_dict[format][1](**kwargs)
-    # lines += specific_lines
-    # with open(filename, 'w') as fd:
-    #    fd.write(''.join(lines))
+        write_espresso_dict[format](
+            fd, atoms=atoms, properties=properties, **kwargs)
 
 
 def read(filename, format="pw"):
@@ -119,7 +111,7 @@ def read_espresso_ph(fd):
     def _read_kpoints(idx):
         n_kpts = int(re.findall(freg, fdo_lines[idx])[0])
         kpts = []
-        for line in fdo_lines[idx + 2 : idx + 2 + n_kpts]:
+        for line in fdo_lines[idx + 2: idx + 2 + n_kpts]:
             if bool(re.search(r"^\s*k\(.*wk", line)):
                 kpts.append([float(x) for x in re.findall(freg, line)[1:]])
         return np.array(kpts)
@@ -136,7 +128,8 @@ def read_espresso_ph(fd):
 
     def _read_eqpoints(idx):
         n_star = int(re.findall(freg, fdo_lines[idx])[0])
-        eqpoints = np.loadtxt(fdo_lines[idx + 2 : idx + 2 + n_star], usecols=(1, 2, 3))
+        eqpoints = np.loadtxt(
+            fdo_lines[idx + 2: idx + 2 + n_star], usecols=(1, 2, 3))
         return eqpoints
 
     def _read_freqs(idx):
@@ -228,7 +221,8 @@ def read_espresso_ph(fd):
         cell = []
         n = 1
         while re.findall(r"^\s*a\(\d\)", fdo_lines[idx + n]):
-            cell.append([float(x) for x in re.findall(freg, fdo_lines[idx + n])[-3:]])
+            cell.append([float(x)
+                        for x in re.findall(freg, fdo_lines[idx + n])[-3:]])
             n += 1
         return np.array(cell)
 
@@ -304,7 +298,12 @@ def read_espresso_pw(filename):
 
 
 def write_espresso_pw(filename, atoms, properties, **kwargs):
-    _write(filename, atoms, format="espresso-in", properties=properties, **kwargs)
+    _write(
+        filename,
+        atoms,
+        format="espresso-in",
+        properties=properties,
+        **kwargs)
 
 
 read_espresso_dict = {"ph": read_espresso_ph, "pw": read_espresso_pw}

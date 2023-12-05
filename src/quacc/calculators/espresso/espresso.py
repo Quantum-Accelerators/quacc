@@ -6,11 +6,12 @@ from ase import Atoms
 from ase.calculators.espresso import Espresso as Espresso_
 from ase.calculators.espresso import EspressoProfile
 from ase.calculators.espresso import EspressoTemplate as EspressoTemplate_
+from ase.io.espresso import construct_namelist
 
 from quacc import SETTINGS
 from quacc.calculators.espresso.io import read, write
 from quacc.calculators.espresso.keys import ALL_KEYS
-from quacc.calculators.espresso.utils import construct_namelist, parse_pp_and_cutoff
+from quacc.calculators.espresso.utils import parse_pp_and_cutoff
 from quacc.utils.dicts import merge_dicts
 from quacc.utils.files import load_yaml_calc
 
@@ -90,7 +91,9 @@ class Espresso(Espresso_):
         # it is fully compatible with the Namelist class. I believe
         # changing 'dict or {}' would do.
         if self.preset:
-            config = load_yaml_calc(SETTINGS.ESPRESSO_PRESET_DIR / f"{self.preset}")
+            config = load_yaml_calc(
+                SETTINGS.ESPRESSO_PRESET_DIR /
+                f"{self.preset}")
             preset_pp = parse_pp_and_cutoff(config, self.input_atoms)
             kwargs = merge_dicts(preset_pp, kwargs)
         kwargs = merge_dicts(self.calc_defaults, kwargs)
