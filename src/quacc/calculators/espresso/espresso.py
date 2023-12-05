@@ -38,8 +38,10 @@ class EspressoTemplate(EspressoTemplate_):
 
     def read_results(self, directory):
         path = directory / self.outputname
-        atoms = read(path, format=self.binary)
-        return dict(atoms.calc.properties())
+        results = read(path, format=self.binary)
+        if self.binary != 'pw':
+            results['energy'] = None
+        return results
 
 
 class Espresso(Espresso_):
