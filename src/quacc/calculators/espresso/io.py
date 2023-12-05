@@ -298,7 +298,9 @@ def read_espresso_ph(fd):
 
 
 def read_espresso_pw(filename):
-    return _read(filename, format="espresso-out")
+    atoms = _read(filename, format="espresso-out")
+    results = dict(atoms.calc.properties())
+    return results
 
 
 def write_espresso_pw(filename, atoms, properties, **kwargs):
