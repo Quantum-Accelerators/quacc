@@ -1,47 +1,26 @@
 """Utility functions for dealing with dictionaries."""
 from __future__ import annotations
-import copy
+
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from typing import Any
-def is_non_pickleable(obj):
-    """
-    Check if an object is non-pickleable.
-    """
+
+import copy
+import pickle
+
+
+def custom_deepcopy(obj):
     try:
-        copy.deepcopy(obj)
-        return False
-    except (TypeError, ValueError):
-        return True
-def handle_non_pickleable(obj):
-    """
-    Handle non-pickleable objects in a custom way.
-    """
-    if isinstance(obj, dict):
-        # Handle non-pickleable dictionaries by creating a new one
-        return {key: custom_deep_copy(value) for key, value in obj.items()}
-    elif isinstance(obj, list):
-        # Handle non-pickleable lists by creating a new one
-        return [custom_deep_copy(item) for item in obj]
-    elif isinstance(obj, tuple):
-        # Handle non-pickleable tuples by converting them to lists
-        return [custom_deep_copy(item) for item in obj]
-    elif isinstance(obj, set):
-        # Handle non-pickleable sets by converting them to lists
-        return [custom_deep_copy(item) for item in obj]
-    else:
-        # For other non-pickleable objects return the original object
-        return obj
-    
-class CustomNonPickleableObject:
-    def __init__(self, data):
-        self.data = data
-def custom_deep_copy(obj):
-    if is_non_pickleable(obj):
-        return handle_non_pickleable(obj)
-    else:
         return copy.deepcopy(obj)
+    except (TypeError, pickle.PicklingError):
+        if isinstance(obj, dict):
+            return {key: custom_deepcopy(value) for key, value in obj.items()}
+        elif isinstance(obj, (list, tuple)):
+            return type(obj)(custom_deepcopy(item) for item in obj)
+        else:
+            # For other types, use the default copy.copy
+            return copy.copy(obj)
 
 def merge_dicts(
     dict1: dict[str, Any] | None,
@@ -72,22 +51,21 @@ def merge_dicts(
     """
     dict1 = dict1 or {}
     dict2 = dict2 or {}
-    merged = custom_deep_copy(dict1)  # Use custom_deep_copy here
+    merged = custom_deepcopy(dict1)
 
     for key, value in dict2.items():
         if key in merged:
             if isinstance(merged[key], dict) and isinstance(value, dict):
                 merged[key] = merge_dicts(merged[key], value)
             else:
-                merged[key] = custom_deep_copy(value)  # Use custom_deep_copy for values
+                merged[key] = value
         else:
-            merged[key] = custom_deep_copy(value)  # Use custom_deep_copy for values
+            merged[key] = value
 
     if remove_nones:
         merged = remove_dict_nones(merged)
 
     return merged
-
 
 def merge_several_dicts(*args, remove_nones: bool = True) -> dict[str, Any]:
     """
@@ -108,9 +86,8 @@ def merge_several_dicts(*args, remove_nones: bool = True) -> dict[str, Any]:
     old_dict = args[0]
     for i in range(len(args) - 1):
         merged = merge_dicts(old_dict, args[i + 1], remove_nones=remove_nones)
-        old_dict = custom_deep_copy(merged)  # Use custom_deep_copy for copying the merged dictionary
+        old_dict = custom_deepcopy(merged)
     return merged
-
 
 def remove_dict_nones(start_dict: dict[str, Any]) -> dict[str, Any]:
     """
@@ -134,7 +111,6 @@ def remove_dict_nones(start_dict: dict[str, Any]) -> dict[str, Any]:
         if isinstance(start_dict, list)
         else start_dict
     )
-
 
 def sort_dict(start_dict: dict[str, Any]) -> dict[str, Any]:
     """
