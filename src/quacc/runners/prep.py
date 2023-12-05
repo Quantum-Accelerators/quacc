@@ -19,9 +19,7 @@ if TYPE_CHECKING:
 
 
 def calc_setup(
-    atoms: Atoms,
-    tmpdir: str | None = None,
-    copy_files: list[str | Path] | None = None
+    atoms: Atoms, tmpdir: str | None = None, copy_files: list[str | Path] | None = None
 ) -> tuple[Atoms, Path, Path]:
     """
     Perform staging operations for a calculation, including copying files to the scratch

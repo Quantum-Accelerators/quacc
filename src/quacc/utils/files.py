@@ -39,15 +39,13 @@ def check_logfile(logfile: str, check_str: str) -> bool:
     zlog = zpath(logfile)
     with zopen(zlog, "r") as f:
         for line in f:
-            clean_line = line if isinstance(
-                line, str) else line.decode("utf-8")
+            clean_line = line if isinstance(line, str) else line.decode("utf-8")
             if check_str.lower() in clean_line.lower():
                 return True
     return False
 
 
-def copy_decompress(
-        source_files: list[str | Path], destination: str | Path) -> None:
+def copy_decompress(source_files: list[str | Path], destination: str | Path) -> None:
     """
     Copy and decompress files from source to destination.
 
@@ -115,7 +113,7 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
     # yaml_path = Path(yaml_path).with_suffix(".yaml")
     yaml_path = Path(yaml_path)
     # Very ugly but very safe workwaround for now
-    yaml_path = list(yaml_path.parent.glob(f'{yaml_path.name}*'))[0]
+    yaml_path = list(yaml_path.parent.glob(f"{yaml_path.name}*"))[0]
 
     if not yaml_path.exists():
         msg = f"Cannot find {yaml_path}"
@@ -129,8 +127,7 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
     # the child file.
     for config_arg in config.copy():
         if "parent" in config_arg.lower():
-            yaml_parent_path = Path(yaml_path).parent / \
-                Path(config[config_arg])
+            yaml_parent_path = Path(yaml_path).parent / Path(config[config_arg])
             parent_config = load_yaml_calc(yaml_parent_path)
 
             for k, v in parent_config.items():
@@ -147,9 +144,7 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
     return config
 
 
-def find_recent_logfile(
-        dir_name: Path | str,
-        logfile_extensions: str | list[str]):
+def find_recent_logfile(dir_name: Path | str, logfile_extensions: str | list[str]):
     """
     Find the most recent logfile in a given directory.
 

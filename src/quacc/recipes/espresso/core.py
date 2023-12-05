@@ -6,8 +6,11 @@ from typing import TYPE_CHECKING
 from ase import Atoms
 
 from quacc import SETTINGS, job
-from quacc.calculators.espresso.espresso import (Espresso, EspressoProfile,
-                                                 EspressoTemplate)
+from quacc.calculators.espresso.espresso import (
+    Espresso,
+    EspressoProfile,
+    EspressoTemplate,
+)
 from quacc.runners.ase import run_calc
 from quacc.schemas.ase import summarize_run
 
@@ -44,35 +47,26 @@ def static_job(
     """
 
     calc_defaults = {
-        'input_data': {
-            'control': {
-                'calculation': 'scf',
-                'restart_mode': 'from_scratch'
-            },
-            'system': {
-                "ecutwfc": 60,
-                "ecutrho": 240,
-            },
-            'electrons': {
-                'conv_thr': 1e-8,
-                'mixing_mode': 'plain',
-                'mixing_beta': 0.7
-            }
+        "input_data": {
+            "control": {"calculation": "scf", "restart_mode": "from_scratch"},
+            "system": {"ecutwfc": 60, "ecutrho": 240},
+            "electrons": {"conv_thr": 1e-8, "mixing_mode": "plain", "mixing_beta": 0.7},
         }
     }
-    
-    template = EspressoTemplate('pw')
+
+    template = EspressoTemplate("pw")
 
     return _base_job(
         atoms,
-        preset = preset,
-        template = template,
-        calc_defaults = calc_defaults,
-        calc_swaps = calc_kwargs,
-        additional_fields = {"name": "pw.x static"},
-        copy_files = copy_files,
-        parallel_info = parallel_info,
+        preset=preset,
+        template=template,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        additional_fields={"name": "pw.x static"},
+        copy_files=copy_files,
+        parallel_info=parallel_info,
     )
+
 
 @job
 def ph_job(
@@ -102,36 +96,36 @@ def ph_job(
     # and a lower alphamix(1) as it is very very often
     # recommended in the QE mailing list...
     calc_defaults = {
-        'input_data': {
-            'inputph': {
-                'tr2_ph': 1e-16,
-                'alpha_mix(1)': 0.1,
-                'nmix_ph': 12,
-                'verbosity': 'high',
-
+        "input_data": {
+            "inputph": {
+                "tr2_ph": 1e-16,
+                "alpha_mix(1)": 0.1,
+                "nmix_ph": 12,
+                "verbosity": "high",
             }
         },
-        'qpts': [(0, 0, 0)]
+        "qpts": [(0, 0, 0)],
     }
-    
-    template = EspressoTemplate('ph')
+
+    template = EspressoTemplate("ph")
     profile = EspressoProfile(
         binary=str(SETTINGS.ESPRESSO_PH_CMD),
         parallel_info=parallel_info,
-        pseudo_path=None
-        )
+        pseudo_path=None,
+    )
 
     return _base_job(
         Atoms(),
-        preset = preset,
-        template = template,
-        profile = profile,
+        preset=preset,
+        template=template,
+        profile=profile,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "ph.x static"},
         copy_files=copy_files,
         parallel_info=parallel_info,
     )
+
 
 def _base_job(
     atoms: Atoms,
@@ -170,19 +164,18 @@ def _base_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
-    atoms.calc = Espresso(input_atoms = atoms,
-                          preset = preset,
-                          template = template,
-                          profile = profile,
-                          calc_defaults = calc_defaults,
-                          parallel_info = parallel_info,
-                          **calc_swaps)
-    
-    final_atoms = run_calc(atoms,
-                           copy_files=copy_files)
+    atoms.calc = Espresso(
+        input_atoms=atoms,
+        preset=preset,
+        template=template,
+        profile=profile,
+        calc_defaults=calc_defaults,
+        parallel_info=parallel_info,
+        **calc_swaps,
+    )
+
+    final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(
-        final_atoms,
-        input_atoms=atoms,
-        additional_fields=additional_fields,
+        final_atoms, input_atoms=atoms, additional_fields=additional_fields
     )

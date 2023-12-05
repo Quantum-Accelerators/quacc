@@ -123,10 +123,9 @@ class QuaccSettings(BaseSettings):
     # ESPRESSO Settings
     # ---------------------------
     ESPRESSO_CMD: Path = Field(
-        Path("pw.x"),
-        description=("Path to the espresso executable."),
+        Path("pw.x"), description=("Path to the espresso executable.")
     )
-    ESPRESSO_BIN_PATH: dict [str, Path] = Field(
+    ESPRESSO_BIN_PATH: dict[str, Path] = Field(
         {
             "pw": Path("pw.x"),
             "ph": Path("ph.x"),
@@ -138,11 +137,10 @@ class QuaccSettings(BaseSettings):
             "projwfc": Path("projwfc.x"),
             "pp": Path("pp.x"),
             "wannier90": Path("wannier90.x"),
-        },
+        }
     )
     ESPRESSO_PP_PATH: Optional[Path] = Field(
-        None,
-        description=("Path to a pseudopotential library for espresso."),
+        None, description=("Path to a pseudopotential library for espresso.")
     )
     ESPRESSO_PRESET_DIR: Path = Field(
         Path(__file__).parent / "calculators" / "espresso" / "presets",
@@ -332,8 +330,12 @@ class QuaccSettings(BaseSettings):
         return v
 
     @field_validator(
-        "GAUSSIAN_CMD", "ORCA_CMD", "QCHEM_LOCAL_SCRATCH", "VASP_PRESET_DIR",
-        "ESPRESSO_CMD", "ESPRESSO_PRESET_DIR",
+        "GAUSSIAN_CMD",
+        "ORCA_CMD",
+        "QCHEM_LOCAL_SCRATCH",
+        "VASP_PRESET_DIR",
+        "ESPRESSO_CMD",
+        "ESPRESSO_PRESET_DIR",
     )
     @classmethod
     def expand_paths(cls, v):

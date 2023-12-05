@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import warnings
 
 from ase.io.espresso import Namelist
@@ -61,10 +63,8 @@ def construct_namelist(parameters=None, keys=None, warn=False, **kwargs):
     input_namelist = Namelist()
     # Collect
     for section in keys:
-
         sec_list = Namelist()
         for key in keys[section]:
-
             # Check all three separately and pop them all so that
             # we can check for missing values later
             if key in parameters.get(section, {}):
@@ -75,15 +75,15 @@ def construct_namelist(parameters=None, keys=None, warn=False, **kwargs):
                 sec_list[key] = kwargs.pop(key)
             # Check if there is a key(i) version (no extra parsing)
             for arg_key in list(parameters.get(section, {})):
-                if arg_key.split('(')[0].strip().lower() == key.lower():
+                if arg_key.split("(")[0].strip().lower() == key.lower():
                     sec_list[arg_key] = parameters[section].pop(arg_key)
             cp_parameters = parameters.copy()
             for arg_key in cp_parameters:
-                if arg_key.split('(')[0].strip().lower() == key.lower():
+                if arg_key.split("(")[0].strip().lower() == key.lower():
                     sec_list[arg_key] = parameters.pop(arg_key)
             cp_kwargs = kwargs.copy()
             for arg_key in cp_kwargs:
-                if arg_key.split('(')[0].strip().lower() == key.lower():
+                if arg_key.split("(")[0].strip().lower() == key.lower():
                     sec_list[arg_key] = kwargs.pop(arg_key)
 
         # Add to output
@@ -100,7 +100,7 @@ def construct_namelist(parameters=None, keys=None, warn=False, **kwargs):
             unused_keys.append(key)
 
     if warn and unused_keys:
-        warnings.warn('Unused keys: {}'.format(', '.join(unused_keys)))
+        warnings.warn("Unused keys: {}".format(", ".join(unused_keys)))
 
     return input_namelist
 
@@ -110,27 +110,21 @@ def parse_pp_and_cutoff(config, atoms):
 
     # pseudopotentials should be the only special case
     # in the sense that it contains additional information
-    if 'pseudopotentials' in config:
-        pp_dict = config['pseudopotentials']
+    if "pseudopotentials" in config:
+        pp_dict = config["pseudopotentials"]
         unique_elements = list(set(atoms.symbols))
         wfc_cutoff, rho_cutoff = 0, 0
         pseudopotentials = {}
         for element in unique_elements:
-            if pp_dict[element]['cutoff_wfc'] > wfc_cutoff:
-                wfc_cutoff = pp_dict[element]['cutoff_wfc']
-            if pp_dict[element]['cutoff_rho'] > rho_cutoff:
-                rho_cutoff = pp_dict[element]['cutoff_rho']
-            pseudopotentials[element] = \
-                pp_dict[element]['filename']
+            if pp_dict[element]["cutoff_wfc"] > wfc_cutoff:
+                wfc_cutoff = pp_dict[element]["cutoff_wfc"]
+            if pp_dict[element]["cutoff_rho"] > rho_cutoff:
+                rho_cutoff = pp_dict[element]["cutoff_rho"]
+            pseudopotentials[element] = pp_dict[element]["filename"]
     else:
         return {}
-    tmp_input_data = {
-        'system': {
-            'ecutwfc': wfc_cutoff,
-            'ecutrho': rho_cutoff}}
-    return {
-        'pseudopotentials': pseudopotentials,
-        'input_data': tmp_input_data}
+    tmp_input_data = {"system": {"ecutwfc": wfc_cutoff, "ecutrho": rho_cutoff}}
+    return {"pseudopotentials": pseudopotentials, "input_data": tmp_input_data}
 
 
 def namelist_to_string(parameters):
@@ -141,14 +135,14 @@ def namelist_to_string(parameters):
     # and imported here? See with the ASE gods.
     pwi = []
     for section in parameters:
-        pwi.append('&{0}\n'.format(section.upper()))
+        pwi.append(f"&{section.upper()}\n")
         for key, value in parameters[section].items():
             if value is True:
-                pwi.append('   {0:16} = .true.\n'.format(key))
+                pwi.append(f"   {key:16} = .true.\n")
             elif value is False:
-                pwi.append('   {0:16} = .false.\n'.format(key))
+                pwi.append(f"   {key:16} = .false.\n")
             else:
-                pwi.append('   {0:16} = {1!r:}\n'.format(key, value))
-        pwi.append('/\n')  # terminate section
-    pwi.append('\n')
+                pwi.append(f"   {key:16} = {value!r}\n")
+        pwi.append("/\n")  # terminate section
+    pwi.append("\n")
     return pwi
