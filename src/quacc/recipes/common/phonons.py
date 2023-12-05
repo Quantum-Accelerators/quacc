@@ -19,8 +19,8 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
     from numpy.typing import ArrayLike
-    from qucac import Job
 
+    from quacc import Job
     from quacc.schemas._aliases.phonons import PhononSchema
 
 
@@ -34,6 +34,7 @@ def phonon_flow(
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
+    phonopy_kwargs: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
 ) -> PhononSchema:
     """
@@ -57,6 +58,8 @@ def phonon_flow(
         Min temperature (K).
     t_max
         Max temperature (K).
+    phonopy_kwargs
+        Additional kwargs to pass to the Phonopy class.
     additional_fields
         Additional fields to store in the database.
 
@@ -68,7 +71,9 @@ def phonon_flow(
 
     @subflow
     def _phonopy_forces_subflow(atoms: Atoms) -> list[dict]:
-        phonon = atoms_to_phonopy(atoms, supercell_matrix, atom_disp)
+        phonon = atoms_to_phonopy(
+            atoms, supercell_matrix, atom_disp, phonopy_kwargs=phonopy_kwargs
+        )
         supercells = [
             phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
         ]

@@ -19,13 +19,13 @@ if TYPE_CHECKING:
     from pymatgen.core import Structure
 
     class AdsSiteFinderKwargs(TypedDict, total=False):
-        selective_dynamics: bool  # defualt = False
+        selective_dynamics: bool  # default = False
         height: float  # default = 0.9
         mi_vec: ArrayLike | None  # default = None
 
     class FindAdsSitesKwargs(TypedDict, total=False):
         distance: float  # default = 2.0
-        put_inside: True  # default = True
+        put_inside: bool  # default = True
         symm_reduce: float  # default = 1e-2
         near_reduce: float  # default = 1e-2
         positions: list[

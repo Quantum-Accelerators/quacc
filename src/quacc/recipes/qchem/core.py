@@ -1,9 +1,9 @@
 """Core recipes for the Q-Chem."""
 from __future__ import annotations
 
-import multiprocessing
 from typing import TYPE_CHECKING
 
+import psutil
 from ase.optimize import FIRE
 
 from quacc import SETTINGS, job
@@ -19,7 +19,7 @@ except ImportError:
 if TYPE_CHECKING:
     from typing import Any
 
-    from ase import Atoms
+    from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import OptSchema, RunSchema
 
@@ -58,7 +58,7 @@ def static_job(
         Algorithm used to converge the SCF. Defaults to "diis", but for
         particularly difficult cases, "gdm" should be employed instead.
     pcm_dielectric
-        Dielectric constant of the optional polarizable continuum impicit
+        Dielectric constant of the optional polarizable continuum implicit
         solvation model. Defaults to None, in which case PCM will not be
         employed.
     smd_solvent
@@ -87,7 +87,7 @@ def static_job(
         "method": method,
         "charge": charge,
         "spin_multiplicity": spin_multiplicity,
-        "cores": n_cores or multiprocessing.cpu_count(),
+        "cores": n_cores or psutil.cpu_count(logical=False),
         "qchem_input_params": {
             "pcm_dielectric": pcm_dielectric,
             "smd_solvent": smd_solvent,
@@ -141,7 +141,7 @@ def freq_job(
         Algorithm used to converge the SCF. Defaults to "diis", but for
         particularly difficult cases, "gdm" should be employed instead.
     pcm_dielectric
-        Dielectric constant of the optional polarizable continuum impicit
+        Dielectric constant of the optional polarizable continuum implicit
         solvation model. Defaults to None, in which case PCM will not be
         employed.
     smd_solvent
@@ -172,7 +172,7 @@ def freq_job(
         "method": method,
         "charge": charge,
         "spin_multiplicity": spin_multiplicity,
-        "cores": n_cores or multiprocessing.cpu_count(),
+        "cores": n_cores or psutil.cpu_count(logical=False),
         "qchem_input_params": {
             "pcm_dielectric": pcm_dielectric,
             "smd_solvent": smd_solvent,
@@ -225,7 +225,7 @@ def relax_job(
         Algorithm used to converge the SCF. Defaults to "diis", but for
         particularly difficult cases, "gdm" should be employed instead.
     pcm_dielectric
-        Dielectric constant of the optional polarizable continuum impicit
+        Dielectric constant of the optional polarizable continuum implicit
         solvation model. Defaults to None, in which case PCM will not be
         employed.
     smd_solvent
@@ -257,7 +257,7 @@ def relax_job(
         "method": method,
         "charge": charge,
         "spin_multiplicity": spin_multiplicity,
-        "cores": n_cores or multiprocessing.cpu_count(),
+        "cores": n_cores or psutil.cpu_count(logical=False),
         "qchem_input_params": {
             "pcm_dielectric": pcm_dielectric,
             "smd_solvent": smd_solvent,

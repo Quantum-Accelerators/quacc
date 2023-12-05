@@ -11,6 +11,7 @@ from ase.vibrations import Vibrations
 from monty.dev import requires
 from monty.os.path import zpath
 
+from quacc.atoms.core import copy_atoms
 from quacc.runners.prep import calc_cleanup, calc_setup
 
 try:
@@ -22,7 +23,7 @@ except ImportError:
 if TYPE_CHECKING:
     from typing import Any, TypedDict
 
-    from ase import Atoms
+    from ase.atoms import Atoms
     from ase.optimize.optimize import Optimizer
 
     class OptimizerKwargs(TypedDict, total=False):
@@ -65,8 +66,11 @@ def run_calc(
         The updated Atoms object.
     """
 
+    # Copy atoms so we don't modify it in-place
+    atoms = copy_atoms(atoms)
+
     # Perform staging operations
-    atoms, tmpdir, job_results_dir = calc_setup(atoms, copy_files=copy_files)
+    tmpdir, job_results_dir = calc_setup(copy_files=copy_files)
 
     # Run calculation via get_potential_energy()
     atoms.get_potential_energy()
@@ -143,6 +147,9 @@ def run_opt(
         The ASE Optimizer object.
     """
 
+    # Copy atoms so we don't modify it in-place
+    atoms = copy_atoms(atoms)
+
     # Set defaults
     optimizer_kwargs = optimizer_kwargs or {}
     run_kwargs = run_kwargs or {}
@@ -153,7 +160,7 @@ def run_opt(
         raise ValueError(msg)
 
     # Perform staging operations
-    atoms, tmpdir, job_results_dir = calc_setup(atoms, copy_files=copy_files)
+    tmpdir, job_results_dir = calc_setup(copy_files=copy_files)
 
     # Set Sella kwargs
     if optimizer.__name__ == "Sella":
@@ -210,11 +217,14 @@ def run_vib(
         The updated Vibrations module
     """
 
+    # Copy atoms so we don't modify it in-place
+    atoms = copy_atoms(atoms)
+
     # Set defaults
     vib_kwargs = vib_kwargs or {}
 
     # Perform staging operations
-    atoms, tmpdir, job_results_dir = calc_setup(atoms, copy_files=copy_files)
+    tmpdir, job_results_dir = calc_setup(copy_files=copy_files)
 
     # Run calculation
     vib = Vibrations(atoms, name=str(tmpdir / "vib"), **vib_kwargs)

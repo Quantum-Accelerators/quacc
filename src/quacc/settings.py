@@ -1,9 +1,8 @@
 """Settings for quacc."""
-
 from __future__ import annotations
 
 import os
-from importlib import resources, util
+from importlib import util
 from pathlib import Path
 from shutil import which
 from typing import TYPE_CHECKING, Literal, Optional, Union
@@ -112,7 +111,7 @@ class QuaccSettings(BaseSettings):
     # ORCA Settings
     # ---------------------------
     ORCA_CMD: Path = Field(
-        Path("orca"),
+        Path(which("orca") or "orca"),
         description=(
             "Path to the ORCA executable. This must be the full, absolute path "
             "for parallel calculations to work."
@@ -196,7 +195,7 @@ class QuaccSettings(BaseSettings):
             "Controls VASP co-pilot mode for automated INCAR parameter handling."
             "off: Do not use co-pilot mode. INCAR parameters will be unmodified."
             "on: Use co-pilot mode. This will only modify INCAR flags not already set by the user."
-            "aggressive: Use co-pilot mode in agressive mode. This will modify INCAR flags even if they are already set by the user."
+            "aggressive: Use co-pilot mode in aggressive mode. This will modify INCAR flags even if they are already set by the user."
         ),
     )
     VASP_BADER: bool = Field(

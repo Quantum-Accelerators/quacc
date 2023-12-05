@@ -15,14 +15,14 @@ from quacc.atoms.core import check_is_metal
 if TYPE_CHECKING:
     from typing import Any, Literal
 
-    from ase import Atoms
+    from ase.atoms import Atoms
 
 logger = logging.getLogger(__name__)
 
 
 def get_param_swaps(
     user_calc_params: dict[str, Any],
-    auto_kpts: dict[Literal["line_density", "kppvol", "kppa"], float],
+    pmg_kpts: dict[Literal["line_density", "kppvol", "kppa"], float],
     input_atoms: Atoms,
     incar_copilot: Literal["off", "on", "aggressive"],
 ) -> dict[str, Any]:
@@ -33,8 +33,8 @@ def get_param_swaps(
     ----------
     user_calc_params
         The user-provided calculator parameters.
-    auto_kpts
-        The auto_kpts kwarg.
+    pmg_kpts
+        The pmg_kpts kwarg.
     input_atoms
         The input atoms.
     incar_copilot
@@ -133,7 +133,7 @@ def get_param_swaps(
         )
         calc.set(ismear=0)
 
-    if auto_kpts and auto_kpts.get("line_density") and calc.int_params["ismear"] != 0:
+    if pmg_kpts and pmg_kpts.get("line_density") and calc.int_params["ismear"] != 0:
         logger.info(
             "Copilot: Recommending ISMEAR = 0 and SIGMA = 0.01 because you are doing a line mode calculation."
         )
@@ -309,9 +309,9 @@ def set_auto_dipole(
     return user_calc_params
 
 
-def convert_auto_kpts(
+def convert_pmg_kpts(
     user_calc_params: dict[str, Any],
-    auto_kpts: dict[Literal["line_density", "kppvol", "kppa"], float],
+    pmg_kpts: dict[Literal["line_density", "kppvol", "kppa"], float],
     input_atoms: Atoms,
 ) -> dict[str, Any]:
     """
@@ -321,8 +321,8 @@ def convert_auto_kpts(
     ----------
     user_calc_params
         The user-provided calculator parameters.
-    auto_kpts
-        The auto_kpts kwarg.
+    pmg_kpts
+        The pmg_kpts kwarg.
     input_atoms
         The input atoms.
 
@@ -333,7 +333,7 @@ def convert_auto_kpts(
     """
     struct = AseAtomsAdaptor.get_structure(input_atoms)
 
-    if auto_kpts.get("line_density"):
+    if pmg_kpts.get("line_density"):
         # TODO: Support methods other than latimer-munro
         kpath = HighSymmKpath(
             struct,
@@ -341,7 +341,7 @@ def convert_auto_kpts(
             has_magmoms=np.any(struct.site_properties.get("magmom", None)),
         )
         kpts, _ = kpath.get_kpoints(
-            line_density=auto_kpts["line_density"], coords_are_cartesian=True
+            line_density=pmg_kpts["line_density"], coords_are_cartesian=True
         )
         kpts = np.stack(kpts)
         reciprocal = True
@@ -351,7 +351,7 @@ def convert_auto_kpts(
         reciprocal = None
         force_gamma = user_calc_params.get("gamma", False)
         max_pmg_kpts = None
-        for k, v in auto_kpts.items():
+        for k, v in pmg_kpts.items():
             if k == "kppvol":
                 pmg_kpts = Kpoints.automatic_density_by_vol(
                     struct, v, force_gamma=force_gamma
@@ -363,7 +363,7 @@ def convert_auto_kpts(
                     struct, v, force_gamma=force_gamma
                 )
             else:
-                msg = f"Unsupported k-point generation scheme: {auto_kpts}."
+                msg = f"Unsupported k-point generation scheme: {pmg_kpts}."
                 raise ValueError(msg)
 
             max_pmg_kpts = (

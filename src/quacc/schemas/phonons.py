@@ -13,7 +13,7 @@ from quacc.wflow_tools.db import results_to_db
 if TYPE_CHECKING:
     from typing import Any
 
-    from ase import Atoms
+    from ase.atoms import Atoms
     from maggma.core import Store
     from phonopy import Phonopy
 

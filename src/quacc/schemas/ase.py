@@ -20,7 +20,7 @@ from quacc.wflow_tools.db import results_to_db
 if TYPE_CHECKING:
     from typing import Any
 
-    from ase import Atoms
+    from ase.atoms import Atoms
     from ase.io import Trajectory
     from ase.optimize.optimize import Optimizer
     from ase.thermochemistry import IdealGasThermo
@@ -58,8 +58,8 @@ def summarize_run(
         Charge and spin multiplicity of the Atoms object, only used for Molecule
         metadata.
     prep_next_run
-        Whether the Atoms object stored in {"atoms": atoms} should be prepared
-        for the next run This clears out any attached calculator and moves the
+        Whether the Atoms object stored in `{"atoms": atoms}` should be prepared
+        for the next run. This clears out any attached calculator and moves the
         final magmoms to the initial magmoms.
     additional_fields
         Additional fields to add to the task document.

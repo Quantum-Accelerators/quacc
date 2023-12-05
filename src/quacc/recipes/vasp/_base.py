@@ -11,7 +11,7 @@ from quacc.utils.dicts import merge_dicts
 if TYPE_CHECKING:
     from typing import Any
 
-    from ase import Atoms
+    from ase.atoms import Atoms
 
     from quacc.schemas._aliases.vasp import VaspSchema
 
@@ -49,9 +49,9 @@ def base_fn(
     VaspSchema
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
-    flags = merge_dicts(calc_defaults, calc_swaps, remove_nones=False)
+    calc_flags = merge_dicts(calc_defaults, calc_swaps, remove_nones=False)
 
-    atoms.calc = Vasp(atoms, preset=preset, **flags)
+    atoms.calc = Vasp(atoms, preset=preset, **calc_flags)
     atoms = run_calc(atoms, copy_files=copy_files)
 
     return vasp_summarize_run(atoms, additional_fields=additional_fields)

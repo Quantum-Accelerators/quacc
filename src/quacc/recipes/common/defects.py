@@ -9,8 +9,9 @@ from quacc.atoms.defects import make_defects_from_bulk
 if TYPE_CHECKING:
     from typing import Callable
 
-    from ase import Atoms
-    from qucac import Job
+    from ase.atoms import Atoms
+
+    from quacc import Job
 
 
 @subflow

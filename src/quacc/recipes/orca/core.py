@@ -1,8 +1,9 @@
 """Core recipes for ORCA."""
 from __future__ import annotations
 
-import multiprocessing
 from typing import TYPE_CHECKING
+
+import psutil
 
 from quacc import job
 from quacc.recipes.orca._base import base_fn
@@ -10,7 +11,7 @@ from quacc.recipes.orca._base import base_fn
 if TYPE_CHECKING:
     from typing import Any
 
-    from ase import Atoms
+    from ase.atoms import Atoms
 
     from quacc.schemas._aliases.cclib import cclibSchema
 
@@ -24,6 +25,7 @@ def static_job(
     basis: str = "def2-tzvp",
     orcasimpleinput: dict[str, Any] | None = None,
     orcablocks: dict[str, Any] | None = None,
+    nprocs: int | None = None,
     copy_files: list[str] | None = None,
 ) -> cclibSchema:
     """
@@ -51,6 +53,8 @@ def static_job(
         set the value as True. To remove entries from the defaults, set the
         value as None. For a list of available keys, refer to the
         `ase.calculators.orca.ORCA` calculator.
+    nprocs
+        Number of processors to use. Defaults to the number of physical cores.
     copy_files
         Files to copy to the runtime directory.
 
@@ -60,6 +64,7 @@ def static_job(
         Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][]
     """
 
+    nprocs = nprocs or psutil.cpu_count(logical=False)
     default_inputs = {
         xc: True,
         basis: True,
@@ -68,7 +73,7 @@ def static_job(
         "normalprint": True,
         "xyzfile": True,
     }
-    default_blocks = {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
+    default_blocks = {f"%pal nprocs {nprocs} end": True}
 
     return base_fn(
         atoms,
@@ -93,6 +98,7 @@ def relax_job(
     run_freq: bool = False,
     orcasimpleinput: dict[str, Any] | None = None,
     orcablocks: dict[str, Any] | None = None,
+    nprocs: int | None = None,
     copy_files: list[str] | None = None,
 ) -> cclibSchema:
     """
@@ -122,6 +128,8 @@ def relax_job(
         set the value as True. To remove entries from the defaults, set the
         value as None. For a list of available keys, refer to the
         `ase.calculators.orca.ORCA` calculator.
+    nprocs
+        Number of processors to use. Defaults to the number of physical cores.
     copy_files
         Files to copy to the runtime directory.
 
@@ -131,6 +139,7 @@ def relax_job(
         Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][]
     """
 
+    nprocs = nprocs or psutil.cpu_count(logical=False)
     default_inputs = {
         xc: True,
         basis: True,
@@ -140,7 +149,7 @@ def relax_job(
         "freq": True if run_freq else None,
         "xyzfile": True,
     }
-    default_blocks = {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
+    default_blocks = {f"%pal nprocs {nprocs} end": True}
 
     return base_fn(
         atoms,

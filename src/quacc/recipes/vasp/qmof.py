@@ -18,7 +18,7 @@ from quacc.schemas.ase import summarize_opt_run
 from quacc.utils.dicts import merge_dicts
 
 if TYPE_CHECKING:
-    from ase import Atoms
+    from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import OptSchema
     from quacc.schemas._aliases.vasp import QMOFRelaxSchema, VaspSchema
@@ -124,7 +124,7 @@ def _prerelax(
     """
 
     calc_defaults = {
-        "auto_kpts": {"kppa": 100},
+        "pmg_kpts": {"kppa": 100},
         "ediff": 1e-4,
         "encut": None,
         "lcharg": False,
@@ -133,8 +133,8 @@ def _prerelax(
         "nelm": 225,
         "nsw": 0,
     }
-    flags = merge_dicts(calc_defaults, calc_kwargs, remove_nones=False)
-    atoms.calc = Vasp(atoms, preset=preset, **flags)
+    calc_flags = merge_dicts(calc_defaults, calc_kwargs, remove_nones=False)
+    atoms.calc = Vasp(atoms, preset=preset, **calc_flags)
     dyn = run_opt(atoms, fmax=fmax, optimizer=BFGSLineSearch)
 
     return summarize_opt_run(dyn, additional_fields={"name": "QMOF Prerelax"})
@@ -163,7 +163,7 @@ def _loose_relax_positions(
     """
 
     calc_defaults = {
-        "auto_kpts": {"kppa": 100},
+        "pmg_kpts": {"kppa": 100},
         "ediff": 1e-4,
         "ediffg": -0.05,
         "encut": None,
@@ -206,7 +206,7 @@ def _loose_relax_cell(
     """
 
     calc_defaults = {
-        "auto_kpts": {"kppa": 100},
+        "pmg_kpts": {"kppa": 100},
         "ediffg": -0.03,
         "ibrion": 2,
         "isif": 3,

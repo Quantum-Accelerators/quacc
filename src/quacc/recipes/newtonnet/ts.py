@@ -24,7 +24,7 @@ except ImportError:
 if TYPE_CHECKING:
     from typing import Any, Literal
 
-    from ase import Atoms
+    from ase.atoms import Atoms
     from numpy.typing import NDArray
 
     from quacc.recipes.newtonnet.core import FreqSchema
@@ -95,15 +95,15 @@ def ts_job(
         else {"order": 1},
     }
 
-    flags = merge_dicts(calc_defaults, calc_kwargs)
+    calc_flags = merge_dicts(calc_defaults, calc_kwargs)
     opt_flags = merge_dicts(opt_defaults, opt_params)
 
-    atoms.calc = NewtonNet(**flags)
+    atoms.calc = NewtonNet(**calc_flags)
 
     if use_custom_hessian:
         opt_flags["optimizer_kwargs"]["hessian_function"] = _get_hessian
 
-    ml_calculator = NewtonNet(**flags)
+    ml_calculator = NewtonNet(**calc_flags)
     atoms.calc = ml_calculator
 
     # Run the TS optimization
@@ -176,11 +176,11 @@ def irc_job(
         "run_kwargs": {"direction": direction},
     }
 
-    flags = merge_dicts(calc_defaults, calc_kwargs)
+    calc_flags = merge_dicts(calc_defaults, calc_kwargs)
     opt_flags = merge_dicts(opt_defaults, opt_params)
 
     # Define calculator
-    atoms.calc = NewtonNet(**flags)
+    atoms.calc = NewtonNet(**calc_flags)
 
     # Run IRC
     SETTINGS.CHECK_CONVERGENCE = False

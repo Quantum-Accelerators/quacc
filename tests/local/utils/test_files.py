@@ -3,8 +3,8 @@ import os
 from quacc.utils.files import make_unique_dir
 
 
-def test_make_unique_dir(tmpdir):
-    tmpdir.chdir()
+def test_make_unique_dir(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     jobdir = make_unique_dir()
     assert os.path.exists(jobdir)
