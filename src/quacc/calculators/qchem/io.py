@@ -17,7 +17,7 @@ from pymatgen.io.qchem.sets import QChemDictSet
 if TYPE_CHECKING:
     from typing import Any, Literal
 
-    from ase import Atoms
+    from ase.atoms import Atoms
 
     from quacc.calculators.qchem.qchem import Results
 

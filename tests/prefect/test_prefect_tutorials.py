@@ -1,11 +1,16 @@
 import pytest
 from ase.build import bulk, molecule
 
-from quacc import flow, job
+from quacc import SETTINGS, flow, job
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 prefect = pytest.importorskip("prefect")
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "prefect",
+    reason="This test requires the Prefect workflow engine",
+)
+
 from prefect.testing.utilities import prefect_test_harness
 
 
@@ -15,8 +20,8 @@ def prefect_test_fixture():
         yield
 
 
-def test_tutorial1a(tmpdir):
-    tmpdir.chdir()
+def test_tutorial1a(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -34,8 +39,8 @@ def test_tutorial1a(tmpdir):
     assert "atoms" in result
 
 
-def test_tutorial1b(tmpdir):
-    tmpdir.chdir()
+def test_tutorial1b(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Define the Atoms object
     atoms = bulk("Cu")
@@ -49,8 +54,8 @@ def test_tutorial1b(tmpdir):
         assert "atom" in result
 
 
-def test_tutorial2a(tmpdir):
-    tmpdir.chdir()
+def test_tutorial2a(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Define the workflow
     @flow
@@ -69,8 +74,8 @@ def test_tutorial2a(tmpdir):
     assert "atoms" in result
 
 
-def test_tutorial2b(tmpdir):
-    tmpdir.chdir()
+def test_tutorial2b(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Define workflow
     @flow
@@ -95,8 +100,8 @@ def test_tutorial2b(tmpdir):
     assert "atoms" in result2
 
 
-def test_tutorial2c(tmpdir):
-    tmpdir.chdir()
+def test_tutorial2c(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Define the workflow
     @flow
@@ -114,8 +119,8 @@ def test_tutorial2c(tmpdir):
         assert "atoms" in result
 
 
-def test_comparison(tmpdir):
-    tmpdir.chdir()
+def test_comparison(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     @job  #  (1)!
     def add(a, b):

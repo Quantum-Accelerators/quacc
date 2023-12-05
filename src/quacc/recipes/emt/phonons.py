@@ -11,10 +11,10 @@ from quacc.recipes.emt.core import static_job
 if TYPE_CHECKING:
     from typing import Any
 
-    from ase import Atoms
+    from ase.atoms import Atoms
     from numpy.typing import ArrayLike
 
-    from quacc.recipes.phonons import PhononSchema
+    from quacc.schemas._aliases.phonons import PhononSchema
 
 
 @flow
@@ -22,6 +22,7 @@ def phonon_flow(
     atoms: Atoms,
     supercell_matrix: ArrayLike = ((2, 0, 0), (0, 2, 0), (0, 0, 2)),
     atom_disp: float = 0.01,
+    symprec: float = 1e-5,
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
@@ -38,6 +39,8 @@ def phonon_flow(
         Supercell matrix to use. Defaults to 2x2x2 supercell.
     atom_disp
         Atomic displacement (A).
+    symprec
+        Precision for symmetry detection.
     t_step
         Temperature step (K).
     t_min
@@ -47,6 +50,8 @@ def phonon_flow(
     static_job_kwargs
         Additional keyword arguments for [quacc.recipes.emt.core.static_job][]
         for the force calculations.
+    phonopy_kwargs
+        Additional keyword arguments for the `phonopy.Phonopy` class.
 
     Returns
     -------
@@ -63,5 +68,6 @@ def phonon_flow(
         t_step=t_step,
         t_min=t_min,
         t_max=t_max,
+        phonopy_kwargs={"symprec": symprec},
         additional_fields={"name": "EMT Phonons"},
     )

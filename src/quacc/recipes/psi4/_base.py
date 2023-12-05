@@ -17,7 +17,7 @@ except ImportError:
 if TYPE_CHECKING:
     from typing import Any
 
-    from ase import Atoms
+    from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
 
@@ -58,9 +58,9 @@ def base_fn(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    flags = merge_dicts(calc_defaults, calc_swaps)
+    calc_flags = merge_dicts(calc_defaults, calc_swaps)
 
-    atoms.calc = Psi4(**flags)
+    atoms.calc = Psi4(**calc_flags)
     final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(

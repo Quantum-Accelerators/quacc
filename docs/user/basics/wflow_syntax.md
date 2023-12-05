@@ -168,7 +168,7 @@ graph LR
 
     2. The `#!Python @flow` decorator will be transformed into `#!Python @ct.lattice`.
 
-    3. This commmand will dispatch the workflow to the Covalent server.
+    3. This command will dispatch the workflow to the Covalent server.
 
 === "Redun"
 

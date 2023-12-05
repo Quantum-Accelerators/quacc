@@ -20,7 +20,7 @@ except ImportError:
 if TYPE_CHECKING:
     from typing import Any, Literal
 
-    from ase import Atoms
+    from ase.atoms import Atoms
 
     from quacc.runners.ase import VibKwargs
     from quacc.schemas._aliases.ase import OptSchema, RunSchema, VibThermoSchema
@@ -54,8 +54,8 @@ def static_job(
     """
 
     calc_defaults = {"method": method}
-    flags = merge_dicts(calc_defaults, calc_kwargs)
-    atoms.calc = TBLite(**flags)
+    calc_flags = merge_dicts(calc_defaults, calc_kwargs)
+    atoms.calc = TBLite(**calc_flags)
 
     final_atoms = run_calc(atoms)
     return summarize_run(
@@ -99,8 +99,8 @@ def relax_job(
     """
 
     defaults = {"method": method}
-    flags = merge_dicts(defaults, calc_kwargs)
-    atoms.calc = TBLite(**flags)
+    calc_flags = merge_dicts(defaults, calc_kwargs)
+    atoms.calc = TBLite(**calc_flags)
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
     opt_flags = merge_dicts(opt_defaults, opt_params)
@@ -151,8 +151,8 @@ def freq_job(
     vib_kwargs = vib_kwargs or {}
 
     defaults = {"method": method}
-    flags = merge_dicts(defaults, calc_kwargs)
-    atoms.calc = TBLite(**flags)
+    calc_flags = merge_dicts(defaults, calc_kwargs)
+    atoms.calc = TBLite(**calc_flags)
 
     vibrations = run_vib(atoms, vib_kwargs=vib_kwargs)
     igt = run_ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)

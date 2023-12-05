@@ -26,7 +26,7 @@ from quacc.recipes.vasp._base import base_fn
 if TYPE_CHECKING:
     from typing import Any
 
-    from ase import Atoms
+    from ase.atoms import Atoms
 
     from quacc.schemas._aliases.vasp import MPRelaxFlowSchema, VaspSchema
 
@@ -177,7 +177,7 @@ def _get_bandgap_swaps(bandgap: float | None = None) -> dict[str, float]:
     """
     Get bandgap-related swaps.
 
-    Paramters
+    Parameters
     ---------
     bandgap
         The bandgap, in units of eV.

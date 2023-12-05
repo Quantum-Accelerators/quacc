@@ -1,15 +1,19 @@
 import pytest
 from ase.build import bulk, molecule
 
-from quacc import flow, job, subflow
+from quacc import SETTINGS, flow, job, subflow
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 ct = pytest.importorskip("covalent")
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "covalent",
+    reason="This test requires the Covalent workflow engine",
+)
 
 
-def test_quickstart(tmpdir):
-    tmpdir.chdir()
+def test_quickstart(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Define the Atoms object
     atoms = bulk("Cu")
@@ -22,8 +26,8 @@ def test_quickstart(tmpdir):
     assert result.status == "COMPLETED"
 
 
-def test_tutorial1a(tmpdir):
-    tmpdir.chdir()
+def test_tutorial1a(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -40,8 +44,8 @@ def test_tutorial1a(tmpdir):
     assert result.status == "COMPLETED"
 
 
-def test_tutorial1b(tmpdir):
-    tmpdir.chdir()
+def test_tutorial1b(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Cu")
     dispatch_id = ct.dispatch(bulk_to_slabs_flow)(atoms)  # (1)!
@@ -49,8 +53,8 @@ def test_tutorial1b(tmpdir):
     assert result.status == "COMPLETED"
 
 
-def test_tutorial2a(tmpdir):
-    tmpdir.chdir()
+def test_tutorial2a(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Define the workflow
     @flow  # (1)!
@@ -73,8 +77,8 @@ def test_tutorial2a(tmpdir):
     assert result.status == "COMPLETED"
 
 
-def test_tutorial2b(tmpdir):
-    tmpdir.chdir()
+def test_tutorial2b(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Define workflow
     @flow
@@ -97,8 +101,8 @@ def test_tutorial2b(tmpdir):
     assert result.status == "COMPLETED"
 
 
-def test_tutorial2c(tmpdir):
-    tmpdir.chdir()
+def test_tutorial2c(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     @flow
     def workflow(atoms):
@@ -111,8 +115,8 @@ def test_tutorial2c(tmpdir):
     assert result.status == "COMPLETED"
 
 
-def test_tutorial_excecutor1(tmpdir):
-    tmpdir.chdir()
+def test_tutorial_excecutor1(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     @flow(executor="local")
     def workflow4(atoms):
@@ -125,8 +129,8 @@ def test_tutorial_excecutor1(tmpdir):
     assert result.status == "COMPLETED"
 
 
-def test_tutorial_excecutor2(tmpdir):
-    tmpdir.chdir()
+def test_tutorial_excecutor2(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     relax_job.electron_object.executor = "dask"
     static_job.electron_object.executor = "local"
@@ -142,8 +146,8 @@ def test_tutorial_excecutor2(tmpdir):
     assert result.status == "COMPLETED"
 
 
-def test_comparison1(tmpdir):
-    tmpdir.chdir()
+def test_comparison1(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     @job  # (1)!
     def add(a, b):
@@ -166,8 +170,8 @@ def test_comparison1(tmpdir):
     assert result.status == "COMPLETED"
 
 
-def test_comparison2(tmpdir):
-    tmpdir.chdir()
+def test_comparison2(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     @job
     def add(a, b):
@@ -197,8 +201,8 @@ def test_comparison2(tmpdir):
     assert result.status == "COMPLETED"
 
 
-def test_comparison3(tmpdir):
-    tmpdir.chdir()
+def test_comparison3(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     @job  #  (1)!
     def add(a, b):
@@ -217,8 +221,8 @@ def test_comparison3(tmpdir):
     assert result.status == "COMPLETED"
 
 
-def test_comparison4(tmpdir):
-    tmpdir.chdir()
+def test_comparison4(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     @job
     def add(a, b):

@@ -6,10 +6,6 @@ We welcome all contributions, big or small (provided they come with unit tests!)
 
     Thank you for reading this page! If you need additional incentive to contribute to quacc, we plan to eventually submit a manuscript based on this code. If you contribute to quacc in a significant way (e.g. adding a new recipe or module), you will be contacted to opt-in for authorship once a draft is written. Regardless, all contributors are acknowledged in the [About](../about/contributors.md) section of the documentation.
 
-## General Tips
-
-When developing new recipes, it is often helpful to start from an existing example. In general, we recommend referring to `quacc.recipes.emt` as a starting point.
-
 ## Steps to Contribute
 
 To contribute to quacc, we recommend doing the following:
@@ -18,13 +14,11 @@ To contribute to quacc, we recommend doing the following:
 
 - [Clone this forked repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) to your local machine, e.g. via `git clone <repo url>.git`.
 
-- In the newly downloaded `quacc` base directory, run `pip install -e .[dev]` to install quacc in editable mode and with the development dependencies. If you need to strictly match the versions of dependencies used in the GitHub actions test suite, you can find `requirements.txt` files in the `tests` directory.
+- In the newly downloaded `quacc` base directory, run `pip install -e .[dev]` to install quacc in editable mode and with the development dependencies. For reproducibility purposes, we strongly recommend installing quacc in a fresh virtual environment.
 
 - [Commit your changes](https://github.com/git-guides/git-commit) and [push them](https://github.com/git-guides/git-push) to your personal forked repository _in a new branch_.
 
 - Create a [pull request (PR)](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) to merge your changes into the main quacc repository.
-
-For reproducibility purposes, we strongly recommend installing quacc in a fresh virtual environment.
 
 ## Guidelines
 
@@ -36,58 +30,60 @@ Please abide by the following guidelines when contributing code to quacc:
 
 - All code should include type hints and have internally consistent documentation for the inputs and outputs.
 
-- Only define multi-step workflows if they go beyond simply stitching together existing functions or if they are widely used in other recipes. Otherwise, just define the individual functions.
-
-- Use absolute paths where possible and avoid using `os.chdir`. This helps ensure that quacc can be run in a multi-threading mode.
-
-- Put your imports inside each function in your test suite
+- Use absolute paths where possible and avoid using `os.chdir`. This helps ensure that quacc can be run in multi-threading mode.
 
 - `gzip` large test files to save space.
 
-### New Recipes
+### Writing New Recipes
+
+!!! Tip
+
+    In general, the easiest way to develop a new recipe is to first make one for a cheap-to-run calculator (e.g. EMT for solids, LJ for molecules), which you can then basically copy and paste for your more expensive calculator of choice.
 
 If contributing new recipes, please abide by the following guidelines:
 
 - Please mimic one of the other recipes as a general template for internal consistency.
 
-- Decorate your individual compute jobs with a `#!Python @job` decorator or your flow with a `#!Python @flow` decorator and name them accordingly.
+- Decorate your individual compute jobs with a `#!Python @job` decorator and your flows with a `#!Python @flow` decorator. Name them accordingly.
 
-- Add your recipe to the [List of Recipes](../user/recipes/recipes_list.md).
+- Add your new recipe to the [List of Recipes](../user/recipes/recipes_list.md).
 
-In general, the easiest way to develop a new recipe is to first make one for a cheap-to-run calculator (e.g. EMT for solids, LJ for molecules), which you can then basically copy and paste for your more expensive calculator of choice.
+- In general, your tests for new recipes should use a small molecule/solid (and cheap settings, where possible) to ensure that the unit tests run quickly.
 
 ### Style
 
 In general, please try to keep the code style consistent when possible, particularly:
 
-1. Use NumPy-style Docstrings.
+1. Use NumPy-style docstrings.
 
-2. Address any relevant style issues raised by the "Deepsource: Python," if present.
+2. Address any relevant issues raised by the GitHub Actions test suite.
 
-3. All Python code should be formatted with [isort](https://github.com/PyCQA/isort), [black](https://github.com/psf/black), and [ruff](https://github.com/astral-sh/ruff), although this will be corrected automatically when merged.
+3. All Python code should be formatted with [isort](https://github.com/PyCQA/isort) (`isort .`), [black](https://github.com/psf/black) (`black .`), and [ruff](https://github.com/astral-sh/ruff) (`ruff . --fix`), although this will be corrected automatically when merged.
 
 ## Unit Tests
 
 ### General
 
-All changes you make to quacc should be accompanied by unit tests and should not break existing tests. The full test suite will run on automatically via GitHub actions.
+All changes you make to quacc should be accompanied by unit tests and should not break existing tests. The full test suite will run automatically via GitHub Actions. If you are fixing a bug, include a regression test to make sure the fix you submit continues to work.
 
 ### Running Locally
 
-To run the core test suite locally, run `pytest tests/local` (which is the same as doing `pytest` without any extra arguments).
+To run the core test suite locally, run `pytest tests/local`.
 
 If you wish to test the behavior of a given workflow engine, run `pytest tests/WORKFLOW_ENGINE` where `WORKFLOW_ENGINE` is the name of your workflow engine.
 
 ### Coverage
 
-Each PR will report the coverage once your tests pass, but if you'd like to generate a coverage report locally, you can use [pytest-cov](https://pytest-cov.readthedocs.io/en/latest/), such as by doing `pytest --cov=quacc .`.
+Each PR will report the code coverage once your tests pass, but if you'd like to generate a coverage report locally, you can use [pytest-cov](https://pytest-cov.readthedocs.io/en/latest/), such as by doing `pytest --cov=quacc .`.
 
 !!! Note
 
-    The codecov check on pull requests update as each unit test finishes, so don't be surprised to see an "X" if tests are still running.
+    The codecov check on PRs updates as each unit test finishes, so don't be surprised to see an "X" if tests are still running.
 
-### Adding New Recipes
+### Monkeypatching
 
-If you are adding recipes based on a code that can be readily installed via `pip` or `conda` (e.g. tblite, DFTB+, Psi4), then you can run these codes directly in the test suite. Preferably, you should use a small molecule or solid and cheap method so the unit tests run quickly.
+For recipes that involve a calculation that cannot be easily run in the test suite (e.g. the underlying calculator cannot be installed via `pip` or `conda`), you will need to make a `conftest.py` file in the recipe directory that monkeypatches the relevant functions (refer to the Gaussian recipe tests for an example). Ideally, the tests should be written in such a way that they would also pass if the executable were actually available and the `conftest.py` file were not applied. To run the test on your own machine without the `conftest.py` file applied, you can use the `--noconftest` flag when calling `pytest`. If this is not practical (e.g. because it would take too long), a separate minimal test suite can be made specifically for running on an HPC machine.
 
-If the recipes you're adding are proprietary or not available via `pip` or `conda` (e.g. Gaussian, GULP), then you will need to [monkeypatch](https://docs.pytest.org/en/7.1.x/how-to/monkeypatch.html) certain functions to change their behavior during testing.
+### Running a PR on an HPC Machine
+
+It is possible to trigger the test suite on a Princeton-hosted HPC machine where the licensed executables are run without monkeypatching. If you are a member of the [@Quantum-Accelerators](https://github.com/Quantum-Accelerators), this will happen automatically. If you are not, then an admin will need to give permission. Permission is only needed if your PR is modifying a calculator or recipe.

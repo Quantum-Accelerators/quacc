@@ -4,6 +4,8 @@ from typing import TypedDict
 
 from numpy.typing import NDArray
 
+from quacc.schemas._aliases.ase import AtomsSchema
+
 
 class ThermalProperties(TypedDict):
     """Type hint associated with PhononSchema"""
@@ -24,9 +26,13 @@ class MeshProperties(TypedDict):
     group_velocities: NDArray
 
 
-class PhononSchema(TypedDict):
-    """Type hint associated with `quacc.schemas.phonons.summarize_phonopy`"""
-
+class PhononResults(TypedDict):
     thermal_properties: ThermalProperties
     mesh_properties: MeshProperties
     force_constants: NDArray
+
+
+class PhononSchema(AtomsSchema):
+    """Type hint associated with `quacc.schemas.phonons.summarize_phonopy`"""
+
+    results: PhononResults

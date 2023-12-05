@@ -1,8 +1,8 @@
 from quacc import flow, job, subflow
 
 
-def test_decorators(tmpdir):
-    tmpdir.chdir()
+def test_decorators(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     @job
     def add(a, b):
@@ -39,8 +39,8 @@ def test_decorators(tmpdir):
     assert mult.__wrapped__(1, 2) == 2
 
 
-def test_decorators_v2(tmpdir):
-    tmpdir.chdir()
+def test_decorators_v2(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     @job()
     def add(a, b):
@@ -74,8 +74,8 @@ def test_decorators_v2(tmpdir):
     assert dynamic_workflow(1, 2, 3) == [6, 6, 6]
 
 
-def test_decorators_v3(tmpdir):
-    tmpdir.chdir()
+def test_decorators_v3(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     def add(a, b):
         return a + b

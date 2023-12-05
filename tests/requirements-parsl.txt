@@ -1,2 +1,2 @@
-parsl[monitoring]==2023.11.13
-phonopy==2.20.0
+parsl[monitoring]==2023.11.27
+phonopy==2.21.0

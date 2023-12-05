@@ -1,12 +1,16 @@
 import pytest
 
-from quacc import flow, job, subflow
+from quacc import SETTINGS, flow, job, subflow
 
 jf = pytest.importorskip("jobflow")
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "jobflow",
+    reason="This test requires the Jobflow workflow engine",
+)
 
 
-def test_jobflow_decorators(tmpdir):
-    tmpdir.chdir()
+def test_jobflow_decorators(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     @job
     def add(a, b):
@@ -34,8 +38,8 @@ def test_jobflow_decorators(tmpdir):
     assert isinstance(add_distributed([1, 2, 3], 4)[0], jf.Job)
 
 
-def test_jobflow_decorators_args(tmpdir):
-    tmpdir.chdir()
+def test_jobflow_decorators_args(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     @job()
     def add(a, b):
