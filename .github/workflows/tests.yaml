@@ -300,3 +300,46 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         if: github.repository == 'Quantum-Accelerators/quacc'
+
+  tests-espresso:
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.11"]
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Set up conda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+          activate-environment: quacc-env
+
+      - name: Install conda packages
+        run: conda install -c conda-forge qe
+
+      - name: Install pip packages
+        run: |
+          pip install -r tests/requirements.txt
+          pip install .[dev]
+
+      - name: Run tests with pytest
+        run: pytest -k 'espresso' --cov=quacc --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'Quantum-Accelerators/quacc'
