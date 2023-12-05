@@ -67,7 +67,7 @@ def copy_decompress(source_files: list[str | Path], destination: str | Path) -> 
     # Just testing for now
     ext_source_files = []
     for f in source_files:
-        globbed_files = glob(f)
+        globbed_files = glob(str(f))
         ext_source_files.extend(globbed_files)
 
     for f in ext_source_files:
