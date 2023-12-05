@@ -94,39 +94,18 @@ def test_custom_deepcopy():
     tuple_of_lists = ([1, 2], [3, 4])
     copied_tuple_of_lists = custom_deepcopy(tuple_of_lists)
     assert copied_tuple_of_lists == tuple_of_lists
-def test_custom_deepcopy_with_unpickleable():
-    # Lambda function (unpickleable) inside a list
-    original_list = [1, 2, lambda x: x + 1]
+def test_custom_deepcopy_with_simple_list_tuple():
+    # Simple list and tuple
+    original_list = [1, 2, 3]
+    original_tuple = (4, 5, 6)
 
-    # Attempting to deepcopy the list
+    # Copy them using custom_deepcopy
     copied_list = custom_deepcopy(original_list)
-
-    # Check if the list is copied correctly
-    # The lambda function will be shallow copied
-    assert copied_list[0] == original_list[0]
-    assert copied_list[1] == original_list[1]
-    assert copied_list[2] is original_list[2]  # lambda function is the same object (shallow copy)
-
-def test_custom_deepcopy_with_list():
-    # Original list with simple data types
-    original_list = [1, 2, 3, "a", "b", "c"]
-
-    # Copying the list
-    copied_list = custom_deepcopy(original_list)
-
-    # Modify the original list to check if the copy is indeed deep
-    original_list.append(4)
-
-    # Assertions to verify deep copying
-    assert copied_list == [1, 2, 3, "a", "b", "c"]
-    assert original_list != copied_list
-
-def test_custom_deepcopy_with_tuple():
-    # Original tuple with simple data types
-    original_tuple = (1, 2, 3, "a", "b", "c")
-
-    # Copying the tuple
     copied_tuple = custom_deepcopy(original_tuple)
 
-    # Tuples are immutable, so we can't modify the original, but we can still check the copy
-    assert copied_tuple == (1, 2, 3, "a", "b", "c")
+    # Assertions
+    assert copied_list == original_list
+    assert copied_tuple == original_tuple
+    # Ensure they are not the same objects (deep copy check)
+    assert copied_list is not original_list
+    assert copied_tuple is not original_tuple

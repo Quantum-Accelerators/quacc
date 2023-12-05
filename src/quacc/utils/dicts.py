@@ -17,7 +17,8 @@ def custom_deepcopy(obj):
         if isinstance(obj, dict):
             return {key: custom_deepcopy(value) for key, value in obj.items()}
         elif isinstance(obj, (list, tuple)):
-            return type(obj)(custom_deepcopy(item) for item in obj)
+            # Use list or tuple comprehension instead of a generator
+            return type(obj)([custom_deepcopy(item) for item in obj])
         else:
             # For other types, use the default copy.copy
             return copy.copy(obj)
