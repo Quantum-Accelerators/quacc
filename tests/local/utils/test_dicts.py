@@ -1,4 +1,4 @@
-from quacc.utils.dicts import merge_dicts, remove_dict_nones
+from quacc.utils.dicts import merge_dicts, remove_dict_nones,custom_deepcopy
 
 def test_remove_dict_nones():
     d = {
@@ -27,6 +27,17 @@ def test_remove_dict_nones():
     d3 = {"x": {}, "y": {"z": {}}}
     d3 = remove_dict_nones(d3)
     assert d3 == {}
+    # Test custom_deepcopy with a list in remove_dict_nones context
+    d4 = {"list": [1, [2, None], {"a": None}]}
+    d4_copied = custom_deepcopy(d4)
+    d4_copied = remove_dict_nones(d4_copied)
+    assert d4_copied == {"list": [1, [2, None], {}]}
+
+    # Test custom_deepcopy with a tuple in remove_dict_nones context
+    d5 = {"tuple": (1, [2, None], {"a": None})}
+    d5_copied = custom_deepcopy(d5)
+    d5_copied = remove_dict_nones(d5_copied)
+    assert d5_copied == {"tuple": (1, [2, None], {})}
 
 def test_merge_dicts():
     defaults = {"a": 1, "b": {"a": 1, "b": 2}}
