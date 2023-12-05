@@ -70,28 +70,33 @@ def test_merge_dicts():
     result = merge_dicts(dict5, dict6)
     assert result == {"mixed": {"a": [1, 2, 4], "b": {"c": 3, "d": 5}}}
 
-def test_custom_deepcopy():
-    # Test deep copy of a dictionary
-    dict1 = {"a": 1, "b": {"c": 2}}
-    copied_dict1 = custom_deepcopy(dict1)
-    assert copied_dict1 == dict1
+def test_custom_deepcopy_with_list_tuple():
+    # Original list and tuple
+    original_list = [1, [2, 3], {"a": 4}]
+    original_tuple = (1, [2, 3], {"a": 4})
 
-    # Test deep copy of a list
-    list1 = [1, [2, 3]]
-    copied_list1 = custom_deepcopy(list1)
-    assert copied_list1 == list1
+    # Copying the list and tuple
+    copied_list = custom_deepcopy(original_list)
+    copied_tuple = custom_deepcopy(original_tuple)
 
-    # Test deep copy of a tuple
-    tuple1 = (1, (2, 3))
-    copied_tuple1 = custom_deepcopy(tuple1)
-    assert copied_tuple1 == tuple1
+    # Modify the original list and tuple to check if the copies are indeed deep copies
+    original_list[1].append(4)
+    original_tuple[1].append(4)
 
-    # Test deep copy of a list of dictionaries
-    list_of_dicts = [{"a": 1}, {"b": 2}]
-    copied_list_of_dicts = custom_deepcopy(list_of_dicts)
-    assert copied_list_of_dicts == list_of_dicts
+    # Assertions to verify deep copying
+    assert copied_list == [1, [2, 3], {"a": 4}]
+    assert copied_tuple == (1, [2, 3], {"a": 4})
+def test_merge_dicts_with_nested_dicts():
+    # Dictionaries with a common key having dictionary values
+    dict1 = {"common": {"key1": "value1"}, "unique1": "value2"}
+    dict2 = {"common": {"key2": "value3"}, "unique2": "value4"}
 
-    # Test deep copy of a tuple of lists
-    tuple_of_lists = ([1, 2], [3, 4])
-    copied_tuple_of_lists = custom_deepcopy(tuple_of_lists)
-    assert copied_tuple_of_lists == tuple_of_lists
+    # Merging the dictionaries
+    merged_dict = merge_dicts(dict1, dict2)
+
+    # Expected result: the nested dictionaries under "common" should be merged
+    assert merged_dict == {
+        "common": {"key1": "value1", "key2": "value3"},
+        "unique1": "value2",
+        "unique2": "value4"
+    }
