@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 
 def base_fn(
-    atoms: Atoms,
+    atoms: Atoms = Atoms(),
     preset: str | None = None,
     template: EspressoTemplate | None = None,
     profile: EspressoProfile | None = None,
