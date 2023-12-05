@@ -38,6 +38,9 @@ def calc_setup(
     Atoms
         The input Atoms object.
     Path
+        The path to the tmpdir, where the calculation will be run. It will be
+        deleted after the calculation is complete.
+    Path
         The path to the results_dir, where the files will ultimately be stored.
         A symlink to the tmpdir will be made here during the calculation for
         convenience.
@@ -53,6 +56,7 @@ def calc_setup(
         else SETTINGS.RESULTS_DIR
     )
 
+    # Create a tmpdir for the calculation within the scratch_dir
     time_now = datetime.now(timezone.utc).strftime("%Y-%m-%d-%H-%M-%S-%f")
     tmpdir = Path(
         mkdtemp(prefix=f"quacc-tmp-{time_now}-", dir=SETTINGS.SCRATCH_DIR)
