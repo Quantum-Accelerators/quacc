@@ -73,7 +73,7 @@ def ph_job(
 
     Parameters
     ----------
-    atoms 1
+    atoms
         Atoms object
     **calc_kwargs
         Custom kwargs for the espresso calculator. Set a value to
