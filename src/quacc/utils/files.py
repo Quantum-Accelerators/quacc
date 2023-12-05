@@ -6,9 +6,10 @@ import os
 import socket
 import warnings
 from datetime import datetime, timezone
+from glob import glob
 from pathlib import Path
 from random import randint
-from shutil import copy
+from shutil import copy, copytree
 from typing import TYPE_CHECKING
 
 import yaml
@@ -60,11 +61,22 @@ def copy_decompress(source_files: list[str | Path], destination: str | Path) -> 
     -------
     None
     """
+
+    # Proposal to make the copy file more flexible
+    # i.e add glob support. (Dangerous maybe?)
+    # Just testing for now
+    ext_source_files = []
     for f in source_files:
+        globbed_files = glob(f)
+        ext_source_files.extend(globbed_files)
+
+    for f in ext_source_files:
         z_path = Path(zpath(f))
-        if z_path.exists():
+        if z_path.is_file():
             copy(z_path, Path(destination, z_path.name))
             decompress_file(Path(destination, z_path.name))
+        elif z_path.is_dir():
+            copytree(z_path, Path(destination, z_path.name))
         else:
             warnings.warn(f"Cannot find file: {z_path}", UserWarning)
 
