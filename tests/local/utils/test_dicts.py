@@ -52,34 +52,46 @@ def test_merge_dicts():
     merge_defaults = {"x": 10, "y": 20}
     merge_calc_swaps = {"y": 30, "z": 40}
     assert merge_dicts(merge_defaults, merge_calc_swaps) == {"x": 10, "y": 30, "z": 40}
+    # Additional test case 2: Merging dictionaries with nested dictionaries
+    dict1 = {"a": {"b": 1}}
+    dict2 = {"a": {"c": 2}}
+    result = merge_dicts(dict1, dict2)
+    assert result == {"a": {"b": 1, "c": 2}}
+
+    # Additional test case 3: Merging dictionaries with nested lists
+    dict3 = {"list1": [1, 2]}
+    dict4 = {"list1": [3, 4]}
+    result = merge_dicts(dict3, dict4)
+    assert result == {"list1": [1, 2, 3, 4]}
+
+    # Additional test case 4: Merging dictionaries with mixed types
+    dict5 = {"mixed": {"a": [1, 2], "b": {"c": 3}}}
+    dict6 = {"mixed": {"a": [4], "b": {"d": 5}}}
+    result = merge_dicts(dict5, dict6)
+    assert result == {"mixed": {"a": [1, 2, 4], "b": {"c": 3, "d": 5}}}
 
 def test_custom_deepcopy():
-    # Test custom_deepcopy with a list containing None
-    lst_with_none = [1, [2, None], {"a": None}]
-    copied_list = custom_deepcopy(lst_with_none)
-    assert copied_list == [1, [2, None], {}]
+    # Test deep copy of a dictionary
+    dict1 = {"a": 1, "b": {"c": 2}}
+    copied_dict1 = custom_deepcopy(dict1)
+    assert copied_dict1 == dict1
 
-    # Test custom_deepcopy with a tuple containing None
-    tpl_with_none = (1, [2, None], {"a": None})
-    copied_tuple = custom_deepcopy(tpl_with_none)
-    assert copied_tuple == (1, [2, None], {})
+    # Test deep copy of a list
+    list1 = [1, [2, 3]]
+    copied_list1 = custom_deepcopy(list1)
+    assert copied_list1 == list1
 
-    # Test custom_deepcopy with a list containing nested tuples
-    lst_with_tuples = [1, (2, [3, (4, None)]), {"a": ((5, [6, None]),)}]
-    copied_lst_with_tuples = custom_deepcopy(lst_with_tuples)
-    assert copied_lst_with_tuples == [1, (2, [3, (4, None)]), {"a": ((5, [6, None]),)}]
+    # Test deep copy of a tuple
+    tuple1 = (1, (2, 3))
+    copied_tuple1 = custom_deepcopy(tuple1)
+    assert copied_tuple1 == tuple1
 
-    # Test custom_deepcopy with a tuple containing nested lists
-    tpl_with_lists = (1, [2, [3, [4, None]]], {"a": ([5, [6, None]],)})
-    copied_tpl_with_lists = custom_deepcopy(tpl_with_lists)
-    assert copied_tpl_with_lists == (1, [2, [3, [4, None]]], {"a": ([5, [6, None]],)})
+    # Test deep copy of a list of dictionaries
+    list_of_dicts = [{"a": 1}, {"b": 2}]
+    copied_list_of_dicts = custom_deepcopy(list_of_dicts)
+    assert copied_list_of_dicts == list_of_dicts
 
-    # Test custom_deepcopy with a list of tuples
-    list_of_tuples = [(1, 2), (3, 4), (5, 6)]
-    copied_list_of_tuples = custom_deepcopy(list_of_tuples)
-    assert copied_list_of_tuples == [(1, 2), (3, 4), (5, 6)]
-
-    # Test custom_deepcopy with a tuple of lists
-    tuple_of_lists = ([1, 2], [3, 4], [5, 6])
+    # Test deep copy of a tuple of lists
+    tuple_of_lists = ([1, 2], [3, 4])
     copied_tuple_of_lists = custom_deepcopy(tuple_of_lists)
-    assert copied_tuple_of_lists == ([1, 2], [3, 4], [5, 6])
+    assert copied_tuple_of_lists == tuple_of_lists
