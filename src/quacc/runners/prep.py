@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 
 def calc_setup(
-    atoms: Atoms, tmpdir: str | None = None, copy_files: list[str | Path] | None = None
+    atoms: Atoms, copy_files: list[str | Path] | None = None
 ) -> tuple[Atoms, Path, Path]:
     """
     Perform staging operations for a calculation, including copying files to the scratch
@@ -38,9 +38,6 @@ def calc_setup(
     Atoms
         The input Atoms object.
     Path
-        The path to the tmpdir, where the calculation will be run. It will be
-        deleted after the calculation is complete.
-    Path
         The path to the results_dir, where the files will ultimately be stored.
         A symlink to the tmpdir will be made here during the calculation for
         convenience.
@@ -55,9 +52,6 @@ def calc_setup(
         if SETTINGS.CREATE_UNIQUE_WORKDIR
         else SETTINGS.RESULTS_DIR
     )
-
-    # Create a tmpdir for the calculation within the scratch_dir
-    # Just a test to see if we can avoid heavy io
 
     time_now = datetime.now(timezone.utc).strftime("%Y-%m-%d-%H-%M-%S-%f")
     tmpdir = Path(
