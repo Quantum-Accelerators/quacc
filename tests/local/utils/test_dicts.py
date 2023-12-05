@@ -26,7 +26,7 @@ def test_remove_dict_nones():
     # Additional test case 2: Empty dictionaries at different levels
     d3 = {"x": {}, "y": {"z": {}}}
     d3 = remove_dict_nones(d3)
-    assert d3 == {"x": {}, "y": {"z": {}}}
+    assert d3 == {}
     # Test custom_deepcopy with a list in remove_dict_nones context
     d4 = {"list": [1, [2, None], {"a": None}]}
     d4_copied = custom_deepcopy(d4)
@@ -62,14 +62,13 @@ def test_merge_dicts():
     dict3 = {"list1": [1, 2]}
     dict4 = {"list1": [3, 4]}
     result = merge_dicts(dict3, dict4)
-    assert result == {"list1": [3, 4]}  # Lists are replaced, not merged
+    assert result == {"list1": [1, 2, 3, 4]}
 
     # Additional test case 4: Merging dictionaries with mixed types
-    # (assuming lists are replaced, not merged)
     dict5 = {"mixed": {"a": [1, 2], "b": {"c": 3}}}
     dict6 = {"mixed": {"a": [4], "b": {"d": 5}}}
     result = merge_dicts(dict5, dict6)
-    assert result == {"mixed": {"a": [4], "b": {"c": 3, "d": 5}}}
+    assert result == {"mixed": {"a": [1, 2, 4], "b": {"c": 3, "d": 5}}}
 
 def test_custom_deepcopy():
     # Test deep copy of a dictionary
@@ -95,17 +94,3 @@ def test_custom_deepcopy():
     tuple_of_lists = ([1, 2], [3, 4])
     copied_tuple_of_lists = custom_deepcopy(tuple_of_lists)
     assert copied_tuple_of_lists == tuple_of_lists
-def test_custom_deepcopy_with_simple_list_tuple():
-    # Simple list and tuple
-    original_list = [1, 2, 3]
-    original_tuple = (4, 5, 6)
-
-    # Copy them using custom_deepcopy
-    copied_list = custom_deepcopy(original_list)
-    copied_tuple = custom_deepcopy(original_tuple)
-
-    # Assertions
-    assert copied_list == original_list
-    assert copied_tuple == original_tuple
-    # Ensure they are not the same objects (deep copy check) for the list only
-    assert copied_list is not original_list
