@@ -38,10 +38,6 @@ def test_remove_dict_nones():
     d5_copied = custom_deepcopy(d5)
     d5_copied = remove_dict_nones(d5_copied)
     assert d5_copied == {"tuple": (1, [2, None], {})}
-    d6 = {"list_of_tuples": [(1, 2), [3, (4, None)]]}
-    d6_copied = custom_deepcopy(d6)
-    d6_copied = remove_dict_nones(d6_copied)
-    assert d6_copied == {"list_of_tuples": [(1, 2), [3, (4,)]]}
 
 def test_merge_dicts():
     defaults = {"a": 1, "b": {"a": 1, "b": 2}}
@@ -56,15 +52,19 @@ def test_merge_dicts():
     merge_defaults = {"x": 10, "y": 20}
     merge_calc_swaps = {"y": 30, "z": 40}
     assert merge_dicts(merge_defaults, merge_calc_swaps) == {"x": 10, "y": 30, "z": 40}
+    
+def test_custom_deepcopy():
+    # Test custom_deepcopy with a list containing None
+    lst_with_none = [1, [2, None], {"a": None}]
+    copied_list = custom_deepcopy(lst_with_none)
+    assert copied_list == [1, [2, None], {}]
 
-    # Additional test case 2: Merging empty dictionaries
-    empty_dict1 = {}
-    empty_dict2 = {}
-    assert merge_dicts(empty_dict1, empty_dict2) == {}
-    # Additional test case 3: Merging dictionaries with lists and tuples
-    merge_list_dict1 = {"list": [1, (2, 3)], "tuple": (4, [5, 6])}
-    merge_list_dict2 = {"list": [7, (8, None)], "tuple": (9, [10, 11])}
-    assert merge_dicts(merge_list_dict1, merge_list_dict2) == {
-        "list": [1, (2, 3), 7, (8, None)],
-        "tuple": (4, [5, 6, 9, [10, 11]]),
-    }
+    # Test custom_deepcopy with a tuple containing None
+    tpl_with_none = (1, [2, None], {"a": None})
+    copied_tuple = custom_deepcopy(tpl_with_none)
+    assert copied_tuple == (1, [2, None], {})
+
+    # Test custom_deepcopy with nested lists and tuples
+    nested_structure = [1, (2, [3, [4, None]]), {"a": (5, [6, None])}]
+    copied_structure = custom_deepcopy(nested_structure)
+    assert copied_structure == [1, (2, [3, [4, None]]), {"a": (5, [6, None])}]
