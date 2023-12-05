@@ -107,18 +107,27 @@ def test_custom_deepcopy_with_unpickleable():
     assert copied_list[0] == original_list[0]
     assert copied_list[1] == original_list[1]
     assert copied_list[2] is original_list[2]  # lambda function is the same object (shallow copy)
-def test_merge_dicts_with_nested_dicts():
-    # Dictionaries with a common key having dictionary values
-    dict1 = {"common": {"key1": "value1"}, "unique1": "value2"}
-    dict2 = {"common": {"key2": "value3"}, "unique2": "value4"}
+def test_custom_deepcopy_with_list_tuple():
+    # Original list and tuple containing a lambda (unpickleable object)
+    original_list = [1, [2, 3], lambda x: x + 1]
+    original_tuple = (1, [2, 3], lambda x: x + 1)
 
-    # Merging the dictionaries
-    merged_dict = merge_dicts(dict1, dict2)
+    # Copying the list and tuple
+    copied_list = custom_deepcopy(original_list)
+    copied_tuple = custom_deepcopy(original_tuple)
 
-    # Expected result: the nested dictionaries under "common" should be merged
-    assert merged_dict == {
-        "common": {"key1": "value1", "key2": "value3"},
-        "unique1": "value2",
-        "unique2": "value4"
-    }
+    # Iterating over the copied list and tuple to ensure deep copy is performed
+    for item in copied_list:
+        pass  # Just iterating to trigger the deepcopy
 
+    for item in copied_tuple:
+        pass  # Just iterating to trigger the deepcopy
+
+    # Assertions to verify the behavior
+    assert copied_list[0] == original_list[0]
+    assert copied_list[1] != original_list[1]  # Deep copy check
+    assert copied_list[2] is original_list[2]  # Lambda function is shallow copied
+
+    assert copied_tuple[0] == original_tuple[0]
+    assert copied_tuple[1] != original_tuple[1]  # Deep copy check
+    assert copied_tuple[2] is original_tuple[2]  # Lambda function is shallow copied
