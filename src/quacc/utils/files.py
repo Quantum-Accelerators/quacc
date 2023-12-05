@@ -45,14 +45,14 @@ def check_logfile(logfile: str, check_str: str) -> bool:
     return False
 
 
-def copy_decompress(source_files: list[str | Path], destination: str | Path) -> None:
+def copy_decompress(source: list[str | Path], destination: str | Path) -> None:
     """
     Copy and decompress files from source to destination.
 
     Parameters
     ----------
-    source_files
-        List of files to copy and decompress.
+    source
+        Directory to walk and copy files from.
     destination
         Destination directory.
 
@@ -60,13 +60,24 @@ def copy_decompress(source_files: list[str | Path], destination: str | Path) -> 
     -------
     None
     """
-    for f in source_files:
-        z_path = Path(zpath(f))
-        if z_path.exists():
-            copy(z_path, Path(destination, z_path.name))
-            decompress_file(Path(destination, z_path.name))
-        else:
-            warnings.warn(f"Cannot find file: {z_path}", UserWarning)
+    src, dst = Path(source), Path(destination)
+
+    if src.is_dir():
+        for f in src.iterdir():
+            # Symlink have to be explicitly passed
+            # as they are considered as 'dir' and 'file'
+            # otherwise and can seriously mess up the
+            # copying process
+            if f.is_symlink():
+                pass
+            elif f.is_file():
+                copy(src / f, dst / f.name)
+                decompress_file(dst / f.name)
+            elif f.is_dir:
+                (dst / f.name).mkdir(exist_ok=True)
+                copy_decompress(src / f, dst / f.name)
+    else:
+        warnings.warn(f"Cannot find dir: {src}", UserWarning)
 
 
 def make_unique_dir(base_path: str | None = None) -> Path:
