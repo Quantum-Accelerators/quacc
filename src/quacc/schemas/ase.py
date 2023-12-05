@@ -99,9 +99,13 @@ def summarize_run(
     results = {"results": atoms.calc.results}
 
     atoms_to_store = prep_next_run_(atoms) if prep_next_run else atoms
-    final_atoms_metadata = atoms_to_metadata(
-        atoms_to_store, charge_and_multiplicity=charge_and_multiplicity
-    )
+    # Required to make it work if atoms = Atoms()
+    if atoms:
+        final_atoms_metadata = atoms_to_metadata(
+            atoms_to_store, charge_and_multiplicity=charge_and_multiplicity
+        )
+    else:
+        final_atoms_metadata = {} 
 
     unsorted_task_doc = merge_several_dicts(
         final_atoms_metadata, inputs, results, additional_fields
