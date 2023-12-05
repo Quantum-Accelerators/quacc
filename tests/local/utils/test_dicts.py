@@ -52,7 +52,7 @@ def test_merge_dicts():
     merge_defaults = {"x": 10, "y": 20}
     merge_calc_swaps = {"y": 30, "z": 40}
     assert merge_dicts(merge_defaults, merge_calc_swaps) == {"x": 10, "y": 30, "z": 40}
-    
+
 def test_custom_deepcopy():
     # Test custom_deepcopy with a list containing None
     lst_with_none = [1, [2, None], {"a": None}]
@@ -64,7 +64,22 @@ def test_custom_deepcopy():
     copied_tuple = custom_deepcopy(tpl_with_none)
     assert copied_tuple == (1, [2, None], {})
 
-    # Test custom_deepcopy with nested lists and tuples
-    nested_structure = [1, (2, [3, [4, None]]), {"a": (5, [6, None])}]
-    copied_structure = custom_deepcopy(nested_structure)
-    assert copied_structure == [1, (2, [3, [4, None]]), {"a": (5, [6, None])}]
+    # Test custom_deepcopy with a list containing nested tuples
+    lst_with_tuples = [1, (2, [3, (4, None)]), {"a": ((5, [6, None]),)}]
+    copied_lst_with_tuples = custom_deepcopy(lst_with_tuples)
+    assert copied_lst_with_tuples == [1, (2, [3, (4, None)]), {"a": ((5, [6, None]),)}]
+
+    # Test custom_deepcopy with a tuple containing nested lists
+    tpl_with_lists = (1, [2, [3, [4, None]]], {"a": ([5, [6, None]],)})
+    copied_tpl_with_lists = custom_deepcopy(tpl_with_lists)
+    assert copied_tpl_with_lists == (1, [2, [3, [4, None]]], {"a": ([5, [6, None]],)})
+
+    # Test custom_deepcopy with a list of tuples
+    list_of_tuples = [(1, 2), (3, 4), (5, 6)]
+    copied_list_of_tuples = custom_deepcopy(list_of_tuples)
+    assert copied_list_of_tuples == [(1, 2), (3, 4), (5, 6)]
+
+    # Test custom_deepcopy with a tuple of lists
+    tuple_of_lists = ([1, 2], [3, 4], [5, 6])
+    copied_tuple_of_lists = custom_deepcopy(tuple_of_lists)
+    assert copied_tuple_of_lists == ([1, 2], [3, 4], [5, 6])
