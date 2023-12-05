@@ -61,7 +61,7 @@ class Espresso(Espresso_):
 
         kwargs = self._kwargs_handler(template.binary, **kwargs)
 
-        pseudo_path = kwargs["input_data"]["control"].get(
+        pseudo_path = kwargs["input_data"].get("control", {}).get(
             "pseudo_dir", str(SETTINGS.ESPRESSO_PP_PATH)
         )
 
