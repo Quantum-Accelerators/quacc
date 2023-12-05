@@ -94,3 +94,18 @@ def test_custom_deepcopy():
     tuple_of_lists = ([1, 2], [3, 4])
     copied_tuple_of_lists = custom_deepcopy(tuple_of_lists)
     assert copied_tuple_of_lists == tuple_of_lists
+def test_custom_deepcopy_with_simple_list_tuple():
+    # Simple list and tuple
+    original_list = [1, 2, 3]
+    original_tuple = (4, 5, 6)
+
+    # Copy them using custom_deepcopy
+    copied_list = custom_deepcopy(original_list)
+    copied_tuple = custom_deepcopy(original_tuple)
+
+    # Assertions
+    assert copied_list == original_list
+    assert copied_tuple == original_tuple
+    # Ensure they are not the same objects (deep copy check)
+    assert copied_list is not original_list
+    assert copied_tuple is not original_tuple
