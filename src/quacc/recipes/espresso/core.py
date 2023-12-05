@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 
 from ase import Atoms
 
-from quacc import SETTINGS, job
-from quacc.calculators.espresso.espresso import EspressoProfile, EspressoTemplate
+from quacc import job
+from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.recipes.espresso._base import base_fn
 
 if TYPE_CHECKING:
@@ -102,17 +102,11 @@ def ph_job(
     }
 
     template = EspressoTemplate("ph")
-    profile = EspressoProfile(
-        binary=str(SETTINGS.ESPRESSO_PH_CMD),
-        parallel_info=parallel_info,
-        pseudo_path=None,
-    )
 
     return base_fn(
         Atoms(),
         preset=preset,
         template=template,
-        profile=profile,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,

@@ -65,8 +65,9 @@ class Espresso(Espresso_):
             "pseudo_dir", str(SETTINGS.ESPRESSO_PP_PATH)
         )
 
+        bin_path = SETTINGS.ESPRESSO_BIN_PATH[template.binary]
         profile = profile or EspressoProfile(
-            binary=str(SETTINGS.ESPRESSO_CMD),
+            binary=str(bin_path),
             parallel_info=parallel_info,
             pseudo_path=pseudo_path,
         )
