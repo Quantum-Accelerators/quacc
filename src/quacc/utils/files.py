@@ -45,7 +45,7 @@ def check_logfile(logfile: str, check_str: str) -> bool:
     return False
 
 
-def copy_decompress(source: list[str | Path], destination: str | Path) -> None:
+def copy_decompress(source: str | Path, destination: str | Path) -> None:
     """
     Copy and decompress files from source to destination.
 
