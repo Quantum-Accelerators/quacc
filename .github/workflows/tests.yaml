@@ -88,8 +88,7 @@ jobs:
         run: covalent stop
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        if: github.repository == 'Quantum-Accelerators/quacc'
+        run: codecovcli upload-process
 
   tests-engines:
     runs-on: ubuntu-latest
@@ -124,8 +123,7 @@ jobs:
         run: pytest tests/${{ matrix.wflow_engine }} --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        if: github.repository == 'Quantum-Accelerators/quacc'
+        run: codecovcli upload-process
 
   tests-psi4:
     strategy:
@@ -169,8 +167,7 @@ jobs:
         run: pytest -k 'psi4' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        if: github.repository == 'Quantum-Accelerators/quacc'
+        run: codecovcli upload-process
 
   tests-defects-phonons:
     strategy:
@@ -210,8 +207,7 @@ jobs:
         run: pytest -k 'defects or phonon' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        if: github.repository == 'Quantum-Accelerators/quacc'
+        run: codecovcli upload-process
 
   tests-tblite-dftbplus:
     strategy:
@@ -254,8 +250,7 @@ jobs:
         run: pytest -k 'dftb or tblite' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        if: github.repository == 'Quantum-Accelerators/quacc'
+        run: codecovcli upload-process
 
   tests-qchem-sella-newtonnet:
     strategy:
@@ -298,5 +293,4 @@ jobs:
         run: pytest -k 'qchem or sella or newtonnet' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        if: github.repository == 'Quantum-Accelerators/quacc'
+        run: codecovcli upload-process
