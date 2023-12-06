@@ -1,12 +1,15 @@
-from __future__ import annotations
-
 from pathlib import Path
+from shutil import which
 
 import numpy as np
+import pytest
 from ase.build import bulk
+from ase.io.espresso import construct_namelist
 
 from quacc import SETTINGS
 from quacc.recipes.espresso.core import ph_job, static_job
+
+pytestmark = pytest.mark.skipif(which("pw.x") is None, reason="QE not installed")
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 
@@ -23,6 +26,7 @@ def test_static_job(tmp_path, monkeypatch):
         "mixing_mode": "plain",
         "mixing_beta": 0.6,
         "pseudo_dir": Path(__file__).parent,
+        "conv_thr": 1.0e-6,
     }
 
     pseudopotentials = {"Si": "Si.upf"}
@@ -31,12 +35,13 @@ def test_static_job(tmp_path, monkeypatch):
         atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.5
     )
 
+    input_data = dict(construct_namelist(input_data))
+
     assert np.allclose(results["atoms"].positions, atoms.positions, atol=1.0e-4)
 
     assert np.allclose(results["atoms"].cell, atoms.cell, atol=1.0e-3)
     assert (results["atoms"].symbols == atoms.symbols).all()
-    for key, value in input_data.items():
-        assert results["parameters"]["input_data"][key] == value
+    assert input_data.items() <= results["parameters"]["input_data"].items()
 
 
 def test_ph_job(tmp_path, monkeypatch):
