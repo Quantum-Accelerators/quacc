@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import re
+from pathlib import Path
 
 import numpy as np
 from ase import Atoms
@@ -10,23 +11,35 @@ from ase.io import write as _write
 from ase.io.espresso import namelist_to_string
 from ase.units import Bohr
 
+from quacc import SETTINGS
+
 # Three ways to call a function based on a string:
 freg = re.compile(r"-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+\-]?\d+)?")
 
+SCRATCH_DIR = SETTINGS.SCRATCH_DIR.absolute()
 
 def write(filename, atoms, binary="pw", properties=None, **kwargs):
+    filename_path = Path(filename).absolute()
+    if not SCRATCH_DIR in filename_path.parents:
+        raise ValueError(
+            f"File {filename_path} is not in the scratch directory."
+        )
     with open(filename, "w") as fd:
         write_espresso_dict[binary](
             fd, atoms=atoms, properties=properties, **kwargs)
 
 
 def read(filename, binary="pw"):
+    filename_path = Path(filename).absolute()
+    if not SCRATCH_DIR in filename_path.parents:
+        raise ValueError(
+            f"File {filename_path} is not in the scratch directory."
+        )
     with open(filename) as fd:
         return read_espresso_dict[binary](fd)
 
 
 def write_espresso_io(fd, **kwargs):
-    "For simple binaries, this is enough."
     pwi = namelist_to_string(kwargs["input_data"])
     fd.write("".join(pwi))
 
