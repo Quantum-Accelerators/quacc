@@ -1,6 +1,7 @@
 """Transition state recipes for the Q-Chem."""
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import psutil
@@ -40,7 +41,7 @@ def ts_job(
     n_cores: int | None = None,
     overwrite_inputs: dict[str, Any] | None = None,
     opt_params: dict[str, Any] | None = None,
-    copy_files: str | Path | list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
 ) -> OptSchema:
     """
     TS optimize a molecular structure.
@@ -139,7 +140,7 @@ def irc_job(
     n_cores: int | None = None,
     overwrite_inputs: dict[str, Any] | None = None,
     opt_params: dict[str, Any] | None = None,
-    copy_files: str | Path | list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
 ) -> OptSchema:
     """
     IRC optimize a molecular structure.
@@ -241,7 +242,7 @@ def quasi_irc_job(
     overwrite_inputs: dict[str, Any] | None = None,
     irc_opt_params: dict[str, Any] | None = None,
     relax_opt_params: dict[str, Any] | None = None,
-    copy_files: str | Path | list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
 ) -> OptSchema:
     """
     Quasi-IRC optimize a molecular structure. Runs `irc_job` for 10 steps (default)

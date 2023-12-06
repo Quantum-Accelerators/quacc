@@ -1,6 +1,7 @@
 """Core recipes for ORCA."""
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import psutil
@@ -26,7 +27,7 @@ def static_job(
     orcasimpleinput: dict[str, Any] | None = None,
     orcablocks: dict[str, Any] | None = None,
     nprocs: int | None = None,
-    copy_files: str | Path | list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
 ) -> cclibSchema:
     """
     Carry out a single-point calculation.
@@ -99,7 +100,7 @@ def relax_job(
     orcasimpleinput: dict[str, Any] | None = None,
     orcablocks: dict[str, Any] | None = None,
     nprocs: int | None = None,
-    copy_files: str | Path | list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
 ) -> cclibSchema:
     """
     Carry out a geometry optimization.

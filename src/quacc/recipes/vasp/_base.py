@@ -1,6 +1,7 @@
 """Core recipes for VASP."""
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from quacc.calculators.vasp import Vasp
@@ -22,7 +23,7 @@ def base_fn(
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: str | Path | list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
 ) -> VaspSchema:
     """
     Base job function for VASP recipes.

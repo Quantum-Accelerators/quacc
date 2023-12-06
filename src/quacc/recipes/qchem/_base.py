@@ -1,6 +1,7 @@
 """Base jobs for Q-Chem"""
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from quacc.calculators.qchem import QChem
@@ -22,7 +23,7 @@ def base_fn(
     spin_multiplicity: int = 1,
     defaults: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: str | Path | list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
 ) -> RunSchema:
     """
     Base job function used for Q-Chem recipes that don't rely on ASE optimizers or other
@@ -70,7 +71,7 @@ def base_opt_fn(
     opt_defaults: dict[str, Any] | None = None,
     opt_params: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: str | Path | list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
 ) -> OptSchema:
     """
     Base function for Q-Chem recipes that involve ASE optimizers.

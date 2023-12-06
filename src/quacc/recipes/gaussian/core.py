@@ -1,6 +1,7 @@
 """Core recipes for Gaussian."""
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import psutil
@@ -21,7 +22,7 @@ def static_job(
     spin_multiplicity: int = 1,
     xc: str = "wb97xd",
     basis: str = "def2tzvp",
-    copy_files: str | Path | list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
     **calc_kwargs,
 ) -> cclibSchema:
     """
@@ -86,7 +87,7 @@ def relax_job(
     xc: str = "wb97xd",
     basis: str = "def2tzvp",
     freq: bool = False,
-    copy_files: str | Path | list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
     **calc_kwargs,
 ) -> cclibSchema:
     """

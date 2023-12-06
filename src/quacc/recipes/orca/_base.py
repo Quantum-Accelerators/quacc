@@ -1,6 +1,7 @@
 """Base jobs for ORCA"""
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ase.calculators.orca import ORCA, OrcaProfile, OrcaTemplate
@@ -31,7 +32,7 @@ def base_fn(
     input_swaps: dict[str, Any] | None = None,
     block_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: str | Path | list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
 ) -> cclibSchema:
     """
     Base job function for ORCA recipes.

@@ -1,6 +1,7 @@
 """Base jobs for DFTB+"""
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ase.calculators.dftb import Dftb
@@ -27,7 +28,7 @@ def base_fn(
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: str | Path | list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
 ) -> RunSchema:
     """
     Base job function for DFTB+ recipes.

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from functools import partial
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from quacc import flow, job
@@ -21,7 +22,7 @@ if TYPE_CHECKING:
 def slab_static_job(
     atoms: Atoms,
     preset: str | None = "SlabSet",
-    copy_files: str | Path | list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """
@@ -71,7 +72,7 @@ def slab_static_job(
 def slab_relax_job(
     atoms: Atoms,
     preset: str | None = "SlabSet",
-    copy_files: str | Path | list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """

@@ -1,6 +1,7 @@
 """Base jobs for Gaussian"""
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ase.calculators.gaussian import Gaussian
@@ -27,7 +28,7 @@ def base_fn(
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: str | Path | list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
 ) -> cclibSchema:
     """
     Base job function for carrying out Gaussian recipes.

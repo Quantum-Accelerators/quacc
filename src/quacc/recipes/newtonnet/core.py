@@ -1,6 +1,7 @@
 """Core recipes for the NewtonNet code."""
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ase.optimize import FIRE
@@ -43,7 +44,7 @@ if TYPE_CHECKING:
 @job
 @requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
 def static_job(
-    atoms: Atoms, copy_files: str | Path | list[str] | None = None, **calc_kwargs
+    atoms: Atoms, copy_files: str | Path | list[str | Path] | None = None, **calc_kwargs
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -84,7 +85,7 @@ def static_job(
 def relax_job(
     atoms: Atoms,
     opt_params: dict[str, Any] | None = None,
-    copy_files: str | Path | list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
     """
@@ -134,7 +135,7 @@ def freq_job(
     atoms: Atoms,
     temperature: float = 298.15,
     pressure: float = 1.0,
-    copy_files: str | Path | list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
     **calc_kwargs,
 ) -> FreqSchema:
     """

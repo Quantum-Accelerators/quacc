@@ -36,7 +36,7 @@ def mp_prerelax_job(
     atoms: Atoms,
     preset: str | None = "MPScanSet",
     bandgap: float | None = None,
-    copy_files: str | Path | list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """
@@ -86,7 +86,7 @@ def mp_relax_job(
     atoms: Atoms,
     preset: str | None = "MPScanSet",
     bandgap: float | None = None,
-    copy_files: str | Path | list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """

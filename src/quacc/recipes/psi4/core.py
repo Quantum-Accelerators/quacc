@@ -1,6 +1,7 @@
 """Core recipes for Psi4."""
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
@@ -27,7 +28,7 @@ def static_job(
     spin_multiplicity: int = 1,
     method: str = "wb97x-v",
     basis: str = "def2-tzvp",
-    copy_files: str | Path | list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
     **kwargs,
 ) -> RunSchema:
     """
