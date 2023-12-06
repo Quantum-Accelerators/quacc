@@ -45,7 +45,9 @@ def check_logfile(logfile: str, check_str: str) -> bool:
     return False
 
 
-def copy_decompress(source_files: list[str | Path], destination: str | Path) -> None:
+def copy_decompress_files(
+    source_files: list[str | Path], destination: str | Path
+) -> None:
     """
     Copy and decompress files from source to destination.
 
@@ -61,15 +63,17 @@ def copy_decompress(source_files: list[str | Path], destination: str | Path) -> 
     None
     """
     for f in source_files:
+        if f.is_symlink():
+            continue
         z_path = Path(zpath(f))
         if z_path.exists():
             copy(z_path, Path(destination, z_path.name))
             decompress_file(Path(destination, z_path.name))
         else:
-            warnings.warn(f"Cannot find file: {z_path}", UserWarning)
+            warnings.warn(f"Cannot find {z_path}", UserWarning)
 
 
-def copy_decompress_from_dir(source: str | Path, destination: str | Path) -> None:
+def copy_decompress_files_from_dir(source: str | Path, destination: str | Path) -> None:
     """
     Copy and decompress files recursively from source to destination.
 
@@ -93,15 +97,15 @@ def copy_decompress_from_dir(source: str | Path, destination: str | Path) -> Non
             # otherwise and can seriously mess up the
             # copying process
             if f.is_symlink():
-                pass
+                continue
             elif f.is_file():
                 copy(src / f, dst / f.name)
                 decompress_file(dst / f.name)
             elif f.is_dir:
                 (dst / f.name).mkdir(exist_ok=True)
-                copy_decompress(src / f, dst / f.name)
+                copy_decompress_files(src / f, dst / f.name)
     else:
-        warnings.warn(f"Cannot find dir: {src}", UserWarning)
+        warnings.warn(f"Cannot find {src}", UserWarning)
 
 
 def make_unique_dir(base_path: str | None = None) -> Path:
