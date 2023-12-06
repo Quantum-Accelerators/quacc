@@ -1,7 +1,6 @@
 """Core recipes for the NewtonNet code."""
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ase.optimize import FIRE
@@ -30,6 +29,7 @@ except ImportError:
     NewtonNet = None
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from typing import Any
 
     from ase.atoms import Atoms

@@ -1,7 +1,6 @@
 """Core recipes for Gaussian."""
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 import psutil
@@ -10,6 +9,8 @@ from quacc import job
 from quacc.recipes.gaussian._base import base_fn
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.cclib import cclibSchema

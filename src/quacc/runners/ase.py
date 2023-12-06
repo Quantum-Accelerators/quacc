@@ -1,7 +1,6 @@
 """Utility functions for running ASE calculators with ASE-based methods."""
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -22,6 +21,7 @@ except ImportError:
     Sella = None
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from typing import Any, TypedDict
 
     from ase.atoms import Atoms

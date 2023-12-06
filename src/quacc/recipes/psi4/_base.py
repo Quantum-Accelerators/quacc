@@ -1,7 +1,6 @@
 """Base jobs for Psi4"""
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ase.calculators.psi4 import Psi4
@@ -16,6 +15,7 @@ except ImportError:
     psi4 = None
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from typing import Any
 
     from ase.atoms import Atoms

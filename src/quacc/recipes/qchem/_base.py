@@ -1,7 +1,6 @@
 """Base jobs for Q-Chem"""
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from quacc.calculators.qchem import QChem
@@ -10,6 +9,7 @@ from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import merge_dicts, remove_dict_nones
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from typing import Any
 
     from ase.atoms import Atoms

@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from functools import partial
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from quacc import flow, job
@@ -11,6 +10,7 @@ from quacc.recipes.common.slabs import bulk_to_slabs_subflow, slab_to_ads_subflo
 from quacc.recipes.vasp._base import base_fn
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from typing import Any
 
     from ase.atoms import Atoms

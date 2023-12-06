@@ -1,7 +1,6 @@
 """Core recipes for VASP."""
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from quacc.calculators.vasp import Vasp
@@ -10,6 +9,7 @@ from quacc.schemas.vasp import vasp_summarize_run
 from quacc.utils.dicts import merge_dicts
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from typing import Any
 
     from ase.atoms import Atoms

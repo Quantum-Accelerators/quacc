@@ -1,7 +1,6 @@
 """Base jobs for DFTB+"""
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ase.calculators.dftb import Dftb
@@ -13,6 +12,7 @@ from quacc.utils.dicts import merge_dicts
 from quacc.utils.files import check_logfile
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from typing import Any
 
     from ase.atoms import Atoms

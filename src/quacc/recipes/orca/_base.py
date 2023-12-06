@@ -1,7 +1,6 @@
 """Base jobs for ORCA"""
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ase.calculators.orca import ORCA, OrcaProfile, OrcaTemplate
@@ -12,6 +11,7 @@ from quacc.schemas.cclib import cclib_summarize_run
 from quacc.utils.dicts import merge_dicts
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from typing import Any
 
     from ase.atoms import Atoms

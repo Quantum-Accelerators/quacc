@@ -1,7 +1,6 @@
 """Core recipes for Psi4."""
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
@@ -15,6 +14,8 @@ except ImportError:
     psi4 = None
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
