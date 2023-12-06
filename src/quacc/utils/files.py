@@ -151,11 +151,11 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
     dict
         The calculator configuration (i.e. settings).
     """
-    # This is problematic if the path contains a dot(s)
-    # yaml_path = Path(yaml_path).with_suffix(".yaml")
+
     yaml_path = Path(yaml_path)
-    # Very ugly but very safe workwaround for now
-    yaml_path = list(yaml_path.parent.glob(f"{yaml_path.name}*"))[0]
+
+    if yaml_path.suffix != ".yaml":
+        yaml_path = yaml_path.with_suffix(yaml_path.suffix + ".yaml")
 
     if not yaml_path.exists():
         msg = f"Cannot find {yaml_path}"
