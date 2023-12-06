@@ -19,7 +19,7 @@ def test_static_job(tmp_path, monkeypatch):
         'mixing_beta': 0.6,
     }
 
-    pseudopotentials = {'Li': 'Li.upf'}
+    pseudopotentials = {'Si': 'Si.upf'}
     
     results = static_job(atoms,
                         input_data=input_data,
@@ -46,7 +46,7 @@ def test_ph_job(tmp_path, monkeypatch):
         'tr2_ph': 1e-10,
     }
 
-    pseudopotentials = {'Si': 'Si.upf'}
+    pseudopotentials = {'Li': 'Li.upf'}
 
     pw_results = static_job(atoms,
                         input_data=input_data,
