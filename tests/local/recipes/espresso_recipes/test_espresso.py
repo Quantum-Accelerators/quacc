@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pathlib import Path
 from shutil import which
 
@@ -41,7 +43,13 @@ def test_static_job(tmp_path, monkeypatch):
 
     assert np.allclose(results["atoms"].cell, atoms.cell, atol=1.0e-3)
     assert (results["atoms"].symbols == atoms.symbols).all()
-    assert input_data.items() <= results["parameters"]["input_data"].items()
+
+    new_input_data = results["parameters"]["input_data"]
+
+    assert new_input_data["system"]["degauss"] == 0.005
+    assert new_input_data["system"]["occupations"] == "smearing"
+    assert new_input_data["electrons"]["conv_thr"] == 1.0e-6
+    assert new_input_data["control"]["calculation"] == "scf"
 
 
 def test_ph_job(tmp_path, monkeypatch):
