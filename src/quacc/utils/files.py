@@ -92,10 +92,6 @@ def copy_decompress_files_from_dir(source: str | Path, destination: str | Path) 
 
     if src.is_dir():
         for f in src.iterdir():
-            # Symlink have to be explicitly passed
-            # as they are considered as 'dir' and 'file'
-            # otherwise and can seriously mess up the
-            # copying process
             if f.is_symlink():
                 continue
             elif f.is_file():
