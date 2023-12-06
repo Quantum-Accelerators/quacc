@@ -36,7 +36,7 @@ def static_job(
     smd_solvent: str | None = None,
     n_cores: int | None = None,
     overwrite_inputs: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
+    copy_files: str | Path | list[str] | None = None,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -119,7 +119,7 @@ def freq_job(
     smd_solvent: str | None = None,
     n_cores: int | None = None,
     overwrite_inputs: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
+    copy_files: str | Path | list[str] | None = None,
 ) -> RunSchema:
     """
     Perform a frequency calculation on a molecular structure.
@@ -203,7 +203,7 @@ def relax_job(
     n_cores: int | None = None,
     overwrite_inputs: dict[str, Any] | None = None,
     opt_params: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
+    copy_files: str | Path | list[str] | None = None,
 ) -> OptSchema:
     """
     Optimize aka "relax" a molecular structure with an ASE optimizer.

@@ -31,7 +31,7 @@ def base_fn(
     input_swaps: dict[str, Any] | None = None,
     block_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
+    copy_files: str | Path | list[str] | None = None,
 ) -> cclibSchema:
     """
     Base job function for ORCA recipes.

@@ -37,7 +37,9 @@ if TYPE_CHECKING:
 
 
 def run_calc(
-    atoms: Atoms, geom_file: str | None = None, copy_files: list[str] | None = None
+    atoms: Atoms,
+    geom_file: str | None = None,
+    copy_files: str | Path | list[str] | None = None,
 ) -> Atoms:
     """
     Run a calculation in a scratch directory and copy the results back to the original
@@ -112,7 +114,7 @@ def run_opt(
     optimizer: Optimizer = FIRE,
     optimizer_kwargs: OptimizerKwargs | None = None,
     run_kwargs: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
+    copy_files: str | Path | list[str] | None = None,
 ) -> Optimizer:
     """
     Run an ASE-based optimization in a scratch directory and copy the results back to
@@ -192,7 +194,7 @@ def run_opt(
 def run_vib(
     atoms: Atoms,
     vib_kwargs: VibKwargs | None = None,
-    copy_files: list[str] | None = None,
+    copy_files: str | Path | list[str] | None = None,
 ) -> Vibrations:
     """
     Run an ASE-based vibration analysis in a scratch directory and copy the results back

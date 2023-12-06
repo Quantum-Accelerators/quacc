@@ -26,7 +26,7 @@ def static_job(
     orcasimpleinput: dict[str, Any] | None = None,
     orcablocks: dict[str, Any] | None = None,
     nprocs: int | None = None,
-    copy_files: list[str] | None = None,
+    copy_files: str | Path | list[str] | None = None,
 ) -> cclibSchema:
     """
     Carry out a single-point calculation.
@@ -99,7 +99,7 @@ def relax_job(
     orcasimpleinput: dict[str, Any] | None = None,
     orcablocks: dict[str, Any] | None = None,
     nprocs: int | None = None,
-    copy_files: list[str] | None = None,
+    copy_files: str | Path | list[str] | None = None,
 ) -> cclibSchema:
     """
     Carry out a geometry optimization.
