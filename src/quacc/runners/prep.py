@@ -57,7 +57,7 @@ def calc_setup(copy_files: list[str | Path] | None = None) -> tuple[Path, Path]:
     # Copy files to tmpdir and decompress them if needed
     if isinstance(copy_files, list):
         copy_decompress(copy_files, tmpdir)
-    elif isinstance(copy_files, (str, Path)) and Path(copy_files).is_dir():
+    elif isinstance(copy_files, (str, Path)):
         copy_decompress_from_dir(copy_files, tmpdir)
 
     os.chdir(tmpdir)
