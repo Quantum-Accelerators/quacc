@@ -96,8 +96,6 @@ def copy_decompress_files_from_dir(source: str | Path, destination: str | Path) 
             # as they are considered as 'dir' and 'file'
             # otherwise and can seriously mess up the
             # copying process
-            if f.is_symlink():
-                continue
             if f.is_file():
                 copy_decompress_files([f], dst)
             elif f.is_dir:
