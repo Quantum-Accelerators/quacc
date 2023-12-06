@@ -18,9 +18,10 @@ freg = re.compile(r"-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+\-]?\d+)?")
 
 SCRATCH_DIR = SETTINGS.SCRATCH_DIR.absolute()
 
+
 def write(filename, atoms, binary="pw", properties=None, **kwargs):
     filename_path = Path(filename).absolute()
-    if not SCRATCH_DIR in filename_path.parents:
+    if SCRATCH_DIR not in filename_path.parents:
         raise ValueError(
             f"File {filename_path} is not in the scratch directory."
         )
@@ -31,7 +32,7 @@ def write(filename, atoms, binary="pw", properties=None, **kwargs):
 
 def read(filename, binary="pw"):
     filename_path = Path(filename).absolute()
-    if not SCRATCH_DIR in filename_path.parents:
+    if SCRATCH_DIR not in filename_path.parents:
         raise ValueError(
             f"File {filename_path} is not in the scratch directory."
         )
