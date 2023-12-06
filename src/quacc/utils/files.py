@@ -98,7 +98,7 @@ def copy_decompress_files_from_dir(source: str | Path, destination: str | Path) 
             # copying process
             if f.is_file():
                 copy_decompress_files([f], dst)
-            elif f.is_dir:
+            elif f.is_dir():
                 (dst / f.name).mkdir(exist_ok=True)
                 copy_decompress_files_from_dir(src / f, dst / f.name)
     else:
