@@ -35,6 +35,21 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 
 </center>
 
+## ESPRESSO
+
+!!! Info
+
+    [Quantum Espresso](https://www.quantum-espresso.org) is a open-source code for plane-wave, periodic DFT calculations.
+
+<center>
+
+| Name                | Decorator        | Documentation                                      | Req'd Extras     |
+| ------------------- | ---------------- | -------------------------------------------------- | ---------------- |
+| Espresso Static     | `#!Python @job`  | [quacc.recipes.espresso.core.static_job][]         |                  |
+| Espresso Ph         | `#!Python @job`  | [quacc.recipes.espresso.core.ph_job][]             |                  |
+
+</center>
+
 ## Gaussian
 
 !!! Info
