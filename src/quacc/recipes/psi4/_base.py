@@ -51,7 +51,7 @@ def base_fn(
     additional_fields
         Any additional fields to supply to the summarizer.
     copy_files
-        Files to copy to the runtime directory.
+        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
 
     Returns
     -------

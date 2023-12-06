@@ -46,7 +46,7 @@ def static_job(
     basis
         Basis set
     copy_files
-        Files to copy to the runtime directory.
+        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
     **kwargs
         Custom kwargs for the Psi4 calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available

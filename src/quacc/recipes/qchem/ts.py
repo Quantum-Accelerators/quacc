@@ -80,7 +80,7 @@ def ts_job(
     opt_params
         Dictionary of custom kwargs for [quacc.runners.ase.run_opt][]
     copy_files
-        Files to copy to the runtime directory.
+        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
 
     Returns
     -------
@@ -181,7 +181,7 @@ def irc_job(
     opt_params
         Dictionary of custom kwargs for [quacc.runners.ase.run_opt][]
     copy_files
-        Files to copy to the runtime directory.
+        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
 
     Returns
     -------
@@ -262,7 +262,7 @@ def quasi_irc_job(
     relax_opt_params
         Dictionary of opt_params kwargs for the relax_job.
     copy_files
-        Files to copy to the runtime directory.
+        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
 
     Returns
     -------

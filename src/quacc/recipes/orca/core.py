@@ -56,7 +56,7 @@ def static_job(
     nprocs
         Number of processors to use. Defaults to the number of physical cores.
     copy_files
-        Files to copy to the runtime directory.
+        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
 
     Returns
     -------
@@ -131,7 +131,7 @@ def relax_job(
     nprocs
         Number of processors to use. Defaults to the number of physical cores.
     copy_files
-        Files to copy to the runtime directory.
+        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
 
     Returns
     -------
