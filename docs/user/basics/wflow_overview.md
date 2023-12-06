@@ -27,6 +27,10 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     - Understanding the various configuration options for your HPC setup can be an initial hurdle
     - Monitoring job progress is more challenging and less detailed than other solutions
 
+=== "Dask"
+
+    [Dask](https://www.dask.org/) is a popular parallel computing library for Python. We use [Dask Delayed](https://docs.dask.org/en/stable/delayed.html) for lazy function execution and [Dask-Jobqueue](https://jobqueue.dask.org/en/latest/) for execution on HPC machines.
+
 === "Covalent"
 
     [Covalent](https://github.com/AgnostiqHQ/covalent/) is a workflow management solution from the company [Agnostiq](https://agnostiq.ai/).

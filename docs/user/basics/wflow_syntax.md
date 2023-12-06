@@ -36,6 +36,18 @@ To help enable interoperability between workflow engines, quacc offers a unified
 
     </center>
 
+=== "Dask"
+
+    <center>
+
+    | Quacc              | Covalent                           |
+    | ------------------ | ---------------------------------- |
+    | `#!Python @job`     | `#!Python @delayed`             |
+    | `#!Python @flow`    | No effect              |
+    | `#!Python @subflow` | `#!Python @delayed` |
+
+    </center>
+
 === "Redun"
 
     Take a moment to read the Redun documentation's [Design Overview page](https://insitro.github.io/redun/design.html) to get a sense of how Redun works. Namely, you should understand the `Task` decorator and how to interface with the `Scheduler`.
@@ -170,6 +182,50 @@ graph LR
 
     3. This command will dispatch the workflow to the Covalent server.
 
+=== "Dask"
+
+    !!! Important
+
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md) and load the default Dask client:
+
+        ```bash
+        quacc set WORKFLOW_ENGINE dask
+        ```
+
+        ```python title="python"
+        from dask.distributed import Client
+
+        client = Client()  #  (1)!
+        ```
+
+        1. It is necessary to instantiate a Dask client before running Dask workflows. This command loads the default (local) client and only needs to be done once.
+
+    ```python
+    from quacc import job
+
+
+    @job  #  (1)!
+    def add(a, b):
+        return a + b
+
+
+    @job
+    def mult(a, b):
+        return a * b
+
+
+    def workflow(a, b, c):  #  (2)!
+        return mult(add(a, b), c)
+
+
+    result = workflow(1, 2, 3).result()  # 9
+    print(result)
+    ```
+
+    1. The `#!Python @job` decorator will be transformed into `#!Python @delayed`.
+
+    2. The `#!Python @flow` decorator doesn't actually do anything when using Dask, so we chose to not include it here for brevity.
+
 === "Redun"
 
     !!! Important
@@ -273,6 +329,10 @@ add.__wrapped__(1, 2)
 === "Covalent"
 
     If you want to learn more about Covalent, you can read the [Covalent Documentation](https://docs.covalent.xyz/docs/). Please refer to the Covalent [Discussion Board](https://github.com/AgnostiqHQ/covalent/discussions) for any Covalent-specific questions.
+
+=== "Dask"
+
+    If you want to learn more about Dask, you can read the [Dask delayed documentation](https://docs.dask.org/en/stable/delayed.html). Please refer to the [Dask Discourse channel](https://discourse.dask.org/) for Dask-specific questions.
 
 === "Redun"
 

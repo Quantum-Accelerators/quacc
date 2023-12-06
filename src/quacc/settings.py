@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 installed_engine = next(
     (
         wflow_engine
-        for wflow_engine in ["parsl", "covalent", "prefect", "redun", "jobflow"]
+        for wflow_engine in ["parsl", "covalent", "dask", "prefect", "redun", "jobflow"]
         if util.find_spec(wflow_engine)
     ),
     "local",
@@ -54,7 +54,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
 
     WORKFLOW_ENGINE: Literal[
-        "covalent", "jobflow", "parsl", "prefect", "redun", "local"
+        "covalent", "dask", "parsl", "redun", "jobflow", "prefect", "local"
     ] = Field(
         installed_engine,
         description=(
