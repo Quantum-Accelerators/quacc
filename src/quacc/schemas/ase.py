@@ -105,7 +105,7 @@ def summarize_run(
             atoms_to_store, charge_and_multiplicity=charge_and_multiplicity
         )
     else:
-        final_atoms_metadata = {} 
+        final_atoms_metadata = {}
 
     unsorted_task_doc = merge_several_dicts(
         final_atoms_metadata, inputs, results, additional_fields

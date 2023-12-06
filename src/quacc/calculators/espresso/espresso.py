@@ -31,7 +31,7 @@ class EspressoTemplate(EspressoTemplate_):
         write(
             dst,
             atoms,
-            format=self.binary,
+            binary=self.binary,
             properties=properties,
             pseudo_dir=str(profile.pseudo_path),
             **parameters,
@@ -39,7 +39,7 @@ class EspressoTemplate(EspressoTemplate_):
 
     def read_results(self, directory):
         path = directory / self.outputname
-        results = read(path, format=self.binary)
+        results = read(path, binary=self.binary)
         if self.binary != 'pw':
             results['energy'] = None
         return results
@@ -82,7 +82,7 @@ class Espresso(Espresso_):
     def _kwargs_handler(self, binary, **kwargs):
         keys = ALL_KEYS[binary]
         kwargs["input_data"] = construct_namelist(
-            kwargs.get("input_data", None), keys=keys
+            kwargs.get("input_data"), keys=keys
         )
         self.calc_defaults["input_data"] = construct_namelist(
             self.calc_defaults["input_data"], keys=keys

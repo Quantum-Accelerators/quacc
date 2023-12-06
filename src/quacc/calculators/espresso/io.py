@@ -14,15 +14,15 @@ from ase.units import Bohr
 freg = re.compile(r"-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+\-]?\d+)?")
 
 
-def write(filename, atoms, format="pw", properties=None, **kwargs):
+def write(filename, atoms, binary="pw", properties=None, **kwargs):
     with open(filename, "w") as fd:
-        write_espresso_dict[format](
+        write_espresso_dict[binary](
             fd, atoms=atoms, properties=properties, **kwargs)
 
 
-def read(filename, format="pw"):
+def read(filename, binary="pw"):
     with open(filename) as fd:
-        return read_espresso_dict[format](fd)
+        return read_espresso_dict[binary](fd)
 
 
 def write_espresso_io(fd, **kwargs):
@@ -32,8 +32,8 @@ def write_espresso_io(fd, **kwargs):
 
 
 def write_espresso_ph(fd, **kwargs):
-    input_data = kwargs.get("input_data", None)
-    qpts = kwargs.get("qpts", None)
+    input_data = kwargs.get("input_data")
+    qpts = kwargs.get("qpts")
     pwi = namelist_to_string(input_data)[:-1]
     fd.write("".join(pwi))
     qplot = input_data["inputph"].get("qplot", False)
@@ -41,7 +41,7 @@ def write_espresso_ph(fd, **kwargs):
     if qplot:
         fd.write(f"{len(qpts)}\n")
         for qpt in qpts:
-            fd.write("{0:8.4f} {1:8.4f} {2:8.4f}\n".format(*qpt))
+            fd.write(f"{qpt[0]:8.4f} {qpt[1]:8.4f} {qpt[2]:8.4f}\n")
     elif not ldisp:
         fd.write("0.0 0.0 0.0\n")
 
@@ -106,7 +106,7 @@ def read_espresso_ph(fd):
 
     def _read_qpoints(idx):
         match = re.findall(freg, fdo_lines[idx])
-        return tuple([float(x) for x in match])
+        return tuple(float(x) for x in match)
 
     def _read_kpoints(idx):
         n_kpts = int(re.findall(freg, fdo_lines[idx])[0])
@@ -241,7 +241,7 @@ def read_espresso_ph(fd):
         CELL: _read_cell,
     }
 
-    # Should this be printed only once?
+    # Should this be printed only once per block?
     unique = {
         QPOINTS: True,
         NKPTS: False,
@@ -270,7 +270,7 @@ def read_espresso_ph(fd):
             selected = output[prop][p]
             if len(selected) == 0:
                 continue
-            elif unique[prop]:
+            if unique[prop]:
                 idx = output[prop][p][-1]
                 results[qpoint][names[prop]] = properties[prop](idx)
             else:
@@ -286,7 +286,6 @@ def read_espresso_ph(fd):
             atoms.cell = cell * alat * Bohr
             atoms.wrap()
             results[qpoint]["atoms"] = atoms
-        results[qpoint]["atoms"]
 
     return results
 

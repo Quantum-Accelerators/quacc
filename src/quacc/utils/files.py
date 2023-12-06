@@ -6,7 +6,6 @@ import os
 import socket
 import warnings
 from datetime import datetime, timezone
-from glob import glob
 from pathlib import Path
 from random import randint
 from shutil import copy, copytree
@@ -67,7 +66,6 @@ def copy_decompress_files(
     # Proposal to make the copy file more flexible
     # i.e add glob support. (Dangerous maybe?)
     # Just testing for now
-    ext_source_files = []
     for f in source_files:
         if Path(f).is_symlink():
             continue
