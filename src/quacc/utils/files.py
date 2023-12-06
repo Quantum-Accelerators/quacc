@@ -45,9 +45,33 @@ def check_logfile(logfile: str, check_str: str) -> bool:
     return False
 
 
-def copy_decompress(source: str | Path, destination: str | Path) -> None:
+def copy_decompress(source_files: list[str | Path], destination: str | Path) -> None:
     """
     Copy and decompress files from source to destination.
+
+    Parameters
+    ----------
+    source_files
+        List of files to copy and decompress.
+    destination
+        Destination directory.
+
+    Returns
+    -------
+    None
+    """
+    for f in source_files:
+        z_path = Path(zpath(f))
+        if z_path.exists():
+            copy(z_path, Path(destination, z_path.name))
+            decompress_file(Path(destination, z_path.name))
+        else:
+            warnings.warn(f"Cannot find file: {z_path}", UserWarning)
+
+
+def copy_decompress_from_dir(source: str | Path, destination: str | Path) -> None:
+    """
+    Copy and decompress files recursively from source to destination.
 
     Parameters
     ----------
