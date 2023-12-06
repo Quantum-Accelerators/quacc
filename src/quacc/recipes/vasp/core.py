@@ -1,13 +1,13 @@
 """Core recipes for VASP."""
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from quacc import job
 from quacc.recipes.vasp._base import base_fn
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from typing import Any
 
     from ase import Atoms
