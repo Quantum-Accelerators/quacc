@@ -149,6 +149,6 @@ def test_unique_workdir(tmp_path, monkeypatch):
     DEFAULT_SETTINGS = SETTINGS.model_copy()
 
     SETTINGS.CREATE_UNIQUE_WORKDIR = True
-    test_static_job(tmp_path, monkeypatch)
+    test_static_job_v1(tmp_path, monkeypatch)
     test_relax_job(tmp_path, monkeypatch)
     SETTINGS.CREATE_UNIQUE_WORKDIR = DEFAULT_SETTINGS.CREATE_UNIQUE_WORKDIR
