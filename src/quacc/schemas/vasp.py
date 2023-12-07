@@ -17,10 +17,10 @@ from quacc.utils.dicts import remove_dict_nones, sort_dict
 from quacc.wflow_tools.db import results_to_db
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from typing import Any
 
     from ase.atoms import Atoms
-    from pathlib import Path
     from pymatgen.core import Structure
 
     from quacc.schemas._aliases.vasp import BaderSchema, ChargemolSchema, VaspSchema
@@ -111,7 +111,9 @@ def vasp_summarize_run(
             chargemol_results = _chargemol_runner(dir_path, structure=struct)
         except Exception as err:
             chargemol_results = None
-            logging.warning(f"Chargemol analysis could not be performed.", exc_info=True)
+            logging.warning(
+                f"Chargemol analysis could not be performed.", exc_info=True
+            )
 
         if chargemol_results:
             vasp_task_doc["chargemol"] = chargemol_results[0]
