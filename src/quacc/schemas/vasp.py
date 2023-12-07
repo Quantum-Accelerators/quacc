@@ -17,10 +17,10 @@ from quacc.utils.dicts import remove_dict_nones, sort_dict
 from quacc.wflow_tools.db import results_to_db
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from typing import Any
 
     from ase.atoms import Atoms
-    from pathlib import Path
     from pymatgen.core import Structure
 
     from quacc.schemas._aliases.vasp import BaderSchema, ChargemolSchema, VaspSchema
