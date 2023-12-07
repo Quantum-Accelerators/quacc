@@ -41,15 +41,14 @@ def calc_setup(copy_files: list[str | Path] | None = None) -> tuple[Path, Path]:
         if SETTINGS.CREATE_UNIQUE_WORKDIR
         else SETTINGS.RESULTS_DIR
     )
+    base_tmpdir = SETTINGS.SCRATCH_DIR or SETTINGS.RESULTS_DIR
 
-    # Create a tmpdir for the calculation within the scratch_dir
+    # Create a tmpdir for the calculation within the `base_tmpdir`
     time_now = datetime.now(timezone.utc).strftime("%Y-%m-%d-%H-%M-%S-%f")
-    tmpdir = Path(
-        mkdtemp(prefix=f"quacc-tmp-{time_now}-", dir=SETTINGS.SCRATCH_DIR)
-    ).resolve()
+    tmpdir = Path(mkdtemp(prefix=f"quacc-tmp-{time_now}-", dir=base_tmpdir)).resolve()
 
     # Create a symlink to the tmpdir in the results_dir
-    if os.name != "nt" and SETTINGS.SCRATCH_DIR != SETTINGS.RESULTS_DIR:
+    if os.name != "nt" and base_tmpdir != SETTINGS.RESULTS_DIR:
         symlink = job_results_dir / f"{tmpdir.name}-symlink"
         symlink.unlink(missing_ok=True)
         symlink.symlink_to(tmpdir, target_is_directory=True)
