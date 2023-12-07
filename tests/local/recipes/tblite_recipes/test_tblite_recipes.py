@@ -146,6 +146,7 @@ def test_freq_job_v3(tmp_path, monkeypatch):
 
 
 def test_unique_workdir(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
     DEFAULT_SETTINGS = SETTINGS.model_copy()
 
     SETTINGS.CREATE_UNIQUE_WORKDIR = True
