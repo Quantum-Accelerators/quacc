@@ -77,8 +77,8 @@ class QuaccSettings(BaseSettings):
             "In this case, the `RESULTS_DIR` will be a subdirectory of that directory."
         ),
     )
-    SCRATCH_DIR: Path = Field(
-        Path("~/.scratch"), description="Scratch directory for calculations."
+    SCRATCH_DIR: Optional[Path] = Field(
+        None, description="Scratch directory for calculations."
     )
     CREATE_UNIQUE_WORKDIR: bool = Field(
         False,
@@ -294,7 +294,10 @@ class QuaccSettings(BaseSettings):
 
     @field_validator("RESULTS_DIR", "SCRATCH_DIR")
     @classmethod
-    def resolve_and_make_paths(cls, v):
+    def resolve_and_make_paths(cls, v: Optional[Path]):
+        if v is None:
+            return v
+
         v = Path(os.path.expandvars(v)).expanduser().resolve()
         if not v.exists():
             os.makedirs(v)
