@@ -89,6 +89,7 @@ def calc_cleanup(tmpdir: Path, job_results_dir: Path) -> None:
     if SETTINGS.GZIP_FILES:
         gzip_dir(tmpdir)
 
+    # Move files from tmpdir to job_results_dir
     for file_name in os.listdir(tmpdir):
         move(tmpdir / file_name, job_results_dir / file_name)
 
