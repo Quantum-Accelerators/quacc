@@ -24,7 +24,7 @@ To use quacc with Quantum ESPRESSO, you will first need to download and compile 
 
 Additionally, you will need to define multiple environment variables. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md).
 
-At minimum, you should define the `ESPRESSO_CMD` and `ESPRESSO_PP_PATH`:
+At minimum, you should define the `ESPRESSO_CMD` and `ESPRESSO_PP_PATH` settings:
 
 ```bash
 QUACC_ESPRESSO_CMD="/path/to/pw.x"

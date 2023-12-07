@@ -335,12 +335,19 @@ class QuaccSettings(BaseSettings):
         return v
 
     @field_validator(
-        "GAUSSIAN_CMD",
-        "ORCA_CMD",
-        "QCHEM_LOCAL_SCRATCH",
-        "VASP_PRESET_DIR",
         "ESPRESSO_CMD",
         "ESPRESSO_PRESET_DIR",
+        "ESPRESSO_PP_PATH",
+        "ESPRESSO_BIN_PATH",
+        "GAUSSIAN_CMD",
+        "GULP_CMD",
+        "GULP_LIB",
+        "ORCA_CMD",
+        "QCHEM_LOCAL_SCRATCH",
+        "NEWTONNET_MODEL_PATH",
+        "VASP_PRESET_DIR",
+        "VASP_PP_PATH",
+        "VASP_VDW",
     )
     @classmethod
     def expand_paths(cls, v):
