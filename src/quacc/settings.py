@@ -294,7 +294,7 @@ class QuaccSettings(BaseSettings):
 
     @field_validator("RESULTS_DIR", "SCRATCH_DIR")
     @classmethod
-    def resolve_and_make_paths(cls, v: Optional[Path]):
+    def resolve_and_make_paths(cls, v):
         if v is None:
             return v
 
