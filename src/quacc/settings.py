@@ -159,7 +159,10 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     GULP_CMD: Path = Field(Path("gulp"), description=("Path to the GULP executable."))
     GULP_LIB: Optional[Path] = Field(
-        None, description=("Path to the GULP force field library.")
+        None,
+        description=(
+            "Path to the GULP force field library. If not specified, the GULP_LIB environment variable will be used (if present)."
+        ),
     )
 
     # ---------------------------
@@ -323,26 +326,35 @@ class QuaccSettings(BaseSettings):
 
     @field_validator("RESULTS_DIR", "SCRATCH_DIR")
     @classmethod
-    def resolve_and_make_paths(cls, v):
+    def resolve_and_make_paths(cls, v: Path) -> Path:
+        """Resolve and make paths."""
         v = Path(os.path.expandvars(v)).expanduser().resolve()
         if not v.exists():
             os.makedirs(v)
         return v
 
     @field_validator(
-        "GAUSSIAN_CMD",
-        "ORCA_CMD",
-        "QCHEM_LOCAL_SCRATCH",
-        "VASP_PRESET_DIR",
         "ESPRESSO_CMD",
         "ESPRESSO_PRESET_DIR",
+        "ESPRESSO_PP_PATH",
+        "GAUSSIAN_CMD",
+        "GULP_CMD",
+        "GULP_LIB",
+        "ORCA_CMD",
+        "QCHEM_LOCAL_SCRATCH",
+        "NEWTONNET_MODEL_PATH",
+        "VASP_PRESET_DIR",
+        "VASP_PP_PATH",
+        "VASP_VDW",
     )
     @classmethod
-    def expand_paths(cls, v):
-        return v.expanduser()
+    def expand_paths(cls, v: Optional[Path]) -> Optional[Path]:
+        """Expand paths to absolute paths."""
+        return v.expanduser() if v is not None else v
 
     @field_validator("PRIMARY_STORE")
-    def generate_store(cls, v):
+    def generate_store(cls, v: Union[str, Store]) -> Store:
+        """Generate the Maggma store"""
         return MontyDecoder().decode(v) if isinstance(v, str) else v
 
     model_config = SettingsConfigDict(env_prefix="quacc_")

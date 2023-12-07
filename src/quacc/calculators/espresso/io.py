@@ -22,20 +22,15 @@ SCRATCH_DIR = SETTINGS.SCRATCH_DIR
 def write(filename, atoms, binary="pw", properties=None, **kwargs):
     filename_path = Path(filename).absolute()
     if SCRATCH_DIR not in filename_path.parents:
-        raise ValueError(
-            f"File {filename_path} is not in the scratch directory."
-        )
+        raise ValueError(f"File {filename_path} is not in the scratch directory.")
     with open(filename, "w") as fd:
-        write_espresso_dict[binary](
-            fd, atoms=atoms, properties=properties, **kwargs)
+        write_espresso_dict[binary](fd, atoms=atoms, properties=properties, **kwargs)
 
 
 def read(filename, binary="pw"):
     filename_path = Path(filename).absolute()
     if SCRATCH_DIR not in filename_path.parents:
-        raise ValueError(
-            f"File {filename_path} is not in the scratch directory."
-        )
+        raise ValueError(f"File {filename_path} is not in the scratch directory.")
     with open(filename) as fd:
         return read_espresso_dict[binary](fd)
 
@@ -125,7 +120,7 @@ def read_espresso_ph(fd):
     def _read_kpoints(idx):
         n_kpts = int(re.findall(freg, fdo_lines[idx])[0])
         kpts = []
-        for line in fdo_lines[idx + 2: idx + 2 + n_kpts]:
+        for line in fdo_lines[idx + 2 : idx + 2 + n_kpts]:
             if bool(re.search(r"^\s*k\(.*wk", line)):
                 kpts.append([float(x) for x in re.findall(freg, line)[1:]])
         return np.array(kpts)
@@ -142,8 +137,7 @@ def read_espresso_ph(fd):
 
     def _read_eqpoints(idx):
         n_star = int(re.findall(freg, fdo_lines[idx])[0])
-        eqpoints = np.loadtxt(
-            fdo_lines[idx + 2: idx + 2 + n_star], usecols=(1, 2, 3))
+        eqpoints = np.loadtxt(fdo_lines[idx + 2 : idx + 2 + n_star], usecols=(1, 2, 3))
         return eqpoints
 
     def _read_freqs(idx):
@@ -235,8 +229,7 @@ def read_espresso_ph(fd):
         cell = []
         n = 1
         while re.findall(r"^\s*a\(\d\)", fdo_lines[idx + n]):
-            cell.append([float(x)
-                        for x in re.findall(freg, fdo_lines[idx + n])[-3:]])
+            cell.append([float(x) for x in re.findall(freg, fdo_lines[idx + n])[-3:]])
             n += 1
         return np.array(cell)
 
@@ -311,12 +304,7 @@ def read_espresso_pw(filename):
 
 
 def write_espresso_pw(filename, atoms, properties, **kwargs):
-    _write(
-        filename,
-        atoms,
-        format="espresso-in",
-        properties=properties,
-        **kwargs)
+    _write(filename, atoms, format="espresso-in", properties=properties, **kwargs)
 
 
 read_espresso_dict = {"ph": read_espresso_ph, "pw": read_espresso_pw}
