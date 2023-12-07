@@ -338,7 +338,6 @@ class QuaccSettings(BaseSettings):
         "ESPRESSO_CMD",
         "ESPRESSO_PRESET_DIR",
         "ESPRESSO_PP_PATH",
-        "ESPRESSO_BIN_PATH",
         "GAUSSIAN_CMD",
         "GULP_CMD",
         "GULP_LIB",
