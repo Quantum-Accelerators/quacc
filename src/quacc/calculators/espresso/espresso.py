@@ -40,8 +40,8 @@ class EspressoTemplate(EspressoTemplate_):
     def read_results(self, directory):
         path = directory / self.outputname
         results = read(path, binary=self.binary)
-        if self.binary != 'pw':
-            results['energy'] = None
+        if self.binary != "pw":
+            results["energy"] = None
         return results
 
 
@@ -64,15 +64,15 @@ class Espresso(Espresso_):
 
         kwargs = self._kwargs_handler(template.binary, **kwargs)
 
-        pseudo_path = kwargs["input_data"].get("control", {}).get(
-            "pseudo_dir", str(SETTINGS.ESPRESSO_PP_PATH)
+        pseudo_path = (
+            kwargs["input_data"]
+            .get("control", {})
+            .get("pseudo_dir", str(SETTINGS.ESPRESSO_PP_PATH))
         )
 
         bin_path = SETTINGS.ESPRESSO_BIN_PATH[template.binary]
         profile = profile or EspressoProfile(
-            binary=str(bin_path),
-            parallel_info=parallel_info,
-            pseudo_path=pseudo_path,
+            binary=str(bin_path), parallel_info=parallel_info, pseudo_path=pseudo_path
         )
 
         super().__init__(profile=profile, parallel_info=parallel_info, **kwargs)
@@ -81,9 +81,7 @@ class Espresso(Espresso_):
 
     def _kwargs_handler(self, binary, **kwargs):
         keys = ALL_KEYS[binary]
-        kwargs["input_data"] = construct_namelist(
-            kwargs.get("input_data"), keys=keys
-        )
+        kwargs["input_data"] = construct_namelist(kwargs.get("input_data"), keys=keys)
         self.calc_defaults["input_data"] = construct_namelist(
             self.calc_defaults["input_data"], keys=keys
         )
@@ -91,9 +89,7 @@ class Espresso(Espresso_):
         # it is fully compatible with the Namelist class. I believe
         # changing 'dict or {}' would do.
         if self.preset:
-            config = load_yaml_calc(
-                SETTINGS.ESPRESSO_PRESET_DIR /
-                f"{self.preset}")
+            config = load_yaml_calc(SETTINGS.ESPRESSO_PRESET_DIR / f"{self.preset}")
             preset_pp = parse_pp_and_cutoff(config, self.input_atoms)
             kwargs = merge_dicts(preset_pp, kwargs)
         kwargs = merge_dicts(self.calc_defaults, kwargs)

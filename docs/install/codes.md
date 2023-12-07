@@ -18,25 +18,18 @@ conda install -c conda-forge dftbplus
 
 No setup needed!
 
-## ESPRESSO
+## Quantum ESPRESSO
 
-To use quacc with ESPRESSO, you will need to define multiple environment variables. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md). Because the Quantum Espresso has many binaries, they should be defined as such:
+To use quacc with Quantum ESPRESSO, you will first need to download and compile [Quantum ESPRESSO](https://www.quantum-espresso.org/) or install it via conda as `conda install -c conda-forge qe`.
 
-Actually how to do it though?
+Additionally, you will need to define multiple environment variables. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md).
 
-The pseudopotentials path can either be passed explicitly in the input_data keywords or set with the quacc setting. `ESPRESSO_PP_PATH`. The input_data definition takes precedence. Last resort, pw.x will always try to look into the env variable `ESPRESSO_PSEUDO` if nothing is defined.
-
-Presets can be used to use predefined parameters, k-points, pseudopotentials, etc. In this case, the user has to pass a preset string to the function, the string must point to an existing preset (quacc.calculators.espresso.presets). Order of precedence for the parameters:
-
-1. The `input_data` dictionary passed by the user to the function.
-2. The preset parameters passed by the user if any.
-3. Default parameters in some recipes.
-
-This means that in any case the `input_data` keyword can be used to override default/preset parameters.
-
-For other binaries, normal Namelist cards still must be passed as a dictionary to the `input_data` keyword. How to pass the additional cards will be explained in the documentation of the respective function.
+At minimum, you should define the `ESPRESSO_CMD` and `ESPRESSO_PP_PATH`:
 
 ```bash
+QUACC_ESPRESSO_CMD="/path/to/pw.x"
+QUACC_ESPRESSO_PP_PATH="/path/to/pseudopotentials"
+```
 
 ## Gaussian
 

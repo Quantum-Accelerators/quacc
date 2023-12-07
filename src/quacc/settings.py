@@ -139,7 +139,10 @@ class QuaccSettings(BaseSettings):
         }
     )
     ESPRESSO_PP_PATH: Optional[Path] = Field(
-        None, description=("Path to a pseudopotential library for espresso.")
+        None,
+        description=(
+            "Path to a pseudopotential library for espresso. If not explicitly specified, the ESPRESSO_PSEUDO environment variable will be used (if present)."
+        ),
     )
     ESPRESSO_PRESET_DIR: Path = Field(
         Path(__file__).parent / "calculators" / "espresso" / "presets",
@@ -158,7 +161,10 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     GULP_CMD: Path = Field(Path("gulp"), description=("Path to the GULP executable."))
     GULP_LIB: Optional[Path] = Field(
-        None, description=("Path to the GULP force field library.")
+        None,
+        description=(
+            "Path to the GULP force field library. If not specified, the GULP_LIB environment variable will be used (if present)."
+        ),
     )
 
     # ---------------------------
