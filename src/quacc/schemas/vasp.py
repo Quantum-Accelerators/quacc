@@ -20,6 +20,7 @@ if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
+    from pathlib import Path
     from pymatgen.core import Structure
 
     from quacc.schemas._aliases.vasp import BaderSchema, ChargemolSchema, VaspSchema
@@ -29,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 def vasp_summarize_run(
     atoms: Atoms,
-    dir_path: str | None = None,
+    dir_path: str | Path | None = None,
     prep_next_run: bool = True,
     run_bader: bool | None = None,
     run_chargemol: bool | None = None,
