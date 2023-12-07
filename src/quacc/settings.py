@@ -121,24 +121,25 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # ESPRESSO Settings
     # ---------------------------
-    ESPRESSO_CMD: Path = Field(
-        Path("pw.x"), description=("Path to the espresso executable.")
+    ESPRESSO_PATH: Path = Field(
+        Path(), description=("Path to the espresso bin directory.")
     )
-    ESPRESSO_BIN_PATH: dict[str, Path] = Field(
+    ESPRESSO_BIN_PATHS: dict[str, Path] = Field(
         {
-            "pw": Path("pw.x"),
-            "ph": Path("ph.x"),
-            "neb": Path("neb.x"),
-            "q2r": Path("q2r.x"),
-            "matdyn": Path("matdyn.x"),
-            "dynmat": Path("dynmat.x"),
-            "bands": Path("bands.x"),
-            "projwfc": Path("projwfc.x"),
-            "pp": Path("pp.x"),
-            "wannier90": Path("wannier90.x"),
-        }
+            "pw": Path(ESPRESSO_PATH, "pw.x"),
+            "ph": Path(ESPRESSO_PATH, "ph.x"),
+            "neb": Path(ESPRESSO_PATH, "neb.x"),
+            "q2r": Path(ESPRESSO_PATH, "q2r.x"),
+            "matdyn": Path(ESPRESSO_PATH, "matdyn.x"),
+            "dynmat": Path(ESPRESSO_PATH, "dynmat.x"),
+            "bands": Path(ESPRESSO_PATH, "bands.x"),
+            "projwfc": Path(ESPRESSO_PATH, "projwfc.x"),
+            "pp": Path(ESPRESSO_PATH, "pp.x"),
+            "wannier90": Path(ESPRESSO_PATH, "wannier90.x"),
+        },
+        description="Name for each espresso binary and its corresponding path",
     )
-    ESPRESSO_PP_PATH: Optional[Path] = Field(
+    ESPRESSO_PSEUDO: Optional[Path] = Field(
         None, description=("Path to a pseudopotential library for espresso.")
     )
     ESPRESSO_PRESET_DIR: Path = Field(

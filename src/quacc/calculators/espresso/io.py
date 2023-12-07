@@ -16,7 +16,7 @@ from quacc import SETTINGS
 # Three ways to call a function based on a string:
 freg = re.compile(r"-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+\-]?\d+)?")
 
-SCRATCH_DIR = SETTINGS.SCRATCH_DIR.absolute()
+SCRATCH_DIR = SETTINGS.SCRATCH_DIR
 
 
 def write(filename, atoms, binary="pw", properties=None, **kwargs):
