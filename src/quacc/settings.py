@@ -350,7 +350,7 @@ class QuaccSettings(BaseSettings):
     )
     @classmethod
     def expand_paths(cls, v):
-        return v.expanduser()
+        return v.expanduser() if v is not None else v
 
     @field_validator("PRIMARY_STORE")
     def generate_store(cls, v):
