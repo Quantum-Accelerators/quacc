@@ -70,7 +70,7 @@ class QuaccSettings(BaseSettings):
     RESULTS_DIR: Path = Field(
         Path.cwd(),
         description=(
-            "Directory to store I/O-based calculation results in."
+            "Directory to permanently store I/O-based calculation results in."
             "Note that this behavior may be modified by the chosen workflow engine."
             "For instance, Covalent specifies the base directory as the `workdir` "
             "of a local executor or the `remote_workdir` of a remote executor."
@@ -78,7 +78,11 @@ class QuaccSettings(BaseSettings):
         ),
     )
     SCRATCH_DIR: Optional[Path] = Field(
-        None, description="Scratch directory for calculations."
+        None,
+        description="Directory to run the calculations in. If set to None, calculations "
+        "will be run in a temporary directory within `RESULTS_DIR`. If a `Path` is supplied, "
+        "calculations will be run in a temporary directory within `SCRATCH_DIR`. Results are "
+        "always copied back to `RESULTS_DIR` after the calculation is complete.",
     )
     CREATE_UNIQUE_WORKDIR: bool = Field(
         False,
