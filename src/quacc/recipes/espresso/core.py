@@ -22,16 +22,35 @@ def static_job(
     **calc_kwargs,
 ) -> RunSchema:
     """
-    Function to carry out a single-point calculation.
+    Function to carry out a basic pw.x calculation.
 
     Parameters
     ----------
-    atoms
-        Atoms object
+    preset
+        The name of a YAML file containing a list of parameters to use as
+        a "preset" for the calculator. quacc will automatically look in the
+        `ESPRESSO_PRESET_DIR` (default: quacc/calculators/espresso/presets).
+
+    copy_files
+        List of files to copy to the calculation directory. Useful for copying
+        files from a previous calculation. This parameter can either be a string
+        or a list of strings.
+
+        If a string is provided, it is assumed to be a path to a directory,
+        all of the child tree structure of that directory is going to be copied to the
+        scratch of this calculation. For ph_job this is what most users will want to do.
+
+        If a list of strings is provided, each string point to a specific file. In this case
+        it is important to note that no directory structure is going to be copied, everything
+        is copied at the root of the scratch directory.
+
+    parallel_info
+        Dictionary containing information about the parallelization of the
+        calculation. See the ASE documentation for more information.
+
     **calc_kwargs
-        Custom kwargs for the espresso calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.espresso.Espresso` calculator.
+        Additional keyword arguments to pass to the Espresso calculator. See the
+        docstring of ase.calculators.espresso.espresso for more information.
 
     Returns
     -------
@@ -64,21 +83,46 @@ def static_job(
 @job
 def ph_job(
     preset: str | None = None,
-    copy_files: list[str] | None = None,
+    copy_files: str | list[str] | None = None,
     parallel_info: dict[str] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
-    Function to carry out a single-point calculation.
+    Function to carry out a basic ph.x calculation.
 
     Parameters
     ----------
-    atoms
-        Atoms object
+    preset
+        The name of a YAML file containing a list of parameters to use as
+        a "preset" for the calculator. quacc will automatically look in the
+        `ESPRESSO_PRESET_DIR` (default: quacc/calculators/espresso/presets).
+
+    copy_files
+        List of files to copy to the calculation directory. Almost always needed
+        for ph.x calculations. This parameter can either be a string or a list of
+        strings.
+
+        If a string is provided, it is assumed to be a path to a directory,
+        all of the child tree structure of that directory is going to be copied to the
+        scratch of this calculation. For ph_job this is what most users will want to do.
+
+        If a list of strings is provided, each string point to a specific file. In this case
+        it is important to note that no directory structure is going to be copied, everything
+        is copied at the root of the scratch directory.
+
+    parallel_info
+        Dictionary containing information about the parallelization of the
+        calculation. See the ASE documentation for more information.
+
     **calc_kwargs
-        Custom kwargs for the espresso calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.espresso.Espresso` calculator.
+        calc_kwargs dictionary possibly containing the following keys:
+
+        - input_data: dict
+        - qpts: list[list[float]] | list[tuple[float]] | list[float]
+        - nat_todo: list[int]
+
+        See the docstring of quacc.calculators.espresso.io.write_espresso_ph for more
+        information.
 
     Returns
     -------
@@ -86,13 +130,10 @@ def ph_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
-    # Default is phonon at gamma, with tight convergence
-    # and a lower alphamix(1) as it is very very often
-    # recommended in the QE mailing list...
     calc_defaults = {
         "input_data": {
             "inputph": {
-                "tr2_ph": 1e-16,
+                "tr2_ph": 1e-12,
                 "alpha_mix(1)": 0.1,
                 "nmix_ph": 12,
                 "verbosity": "high",

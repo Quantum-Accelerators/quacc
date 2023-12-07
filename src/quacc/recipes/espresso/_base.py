@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 
 def base_fn(
-    atoms: Atoms = Atoms(),
+    atoms: Atoms = None,
     preset: str | None = None,
     template: EspressoTemplate | None = None,
     profile: EspressoProfile | None = None,
@@ -61,6 +61,8 @@ def base_fn(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
+
+    atoms = Atoms() if atoms is None else atoms
 
     atoms.calc = Espresso(
         input_atoms=atoms,

@@ -20,13 +20,51 @@ if TYPE_CHECKING:
 
 
 class EspressoTemplate(EspressoTemplate_):
+    """
+    This is a wrapper around the ASE Espresso template that allows for the use
+    of other binaries such as pw.x, ph.x, cp.x, etc.
+    """
     def __init__(self, binary: str = "pw"):
+        """
+        Initialize the Espresso template.
+
+        Parameters
+        ----------
+        binary
+            The name of the espresso binary to use. This is used to set the
+            input/output file names. By default we fall bacl on "pw".
+
+        Returns
+        -------
+        None
+        """
         super().__init__()
         self.inputname = f"{binary}.in"
         self.outputname = f"{binary}.out"
         self.binary = binary
 
     def write_input(self, profile, directory, atoms, parameters, properties):
+        """
+        The function that should be used instead of the one in ASE EspressoTemplate
+        to write the input file. It calls a customly defined write function.
+
+        Parameters
+        ----------
+        profile
+            The profile to use.
+        directory
+            The directory in which to write the input file.
+        atoms
+            The atoms object to use.
+        parameters
+            The parameters to use.
+        properties
+            Special ASE properties
+
+        Returns
+        -------
+        None
+        """
         dst = directory / self.inputname
         write(
             dst,
@@ -38,14 +76,35 @@ class EspressoTemplate(EspressoTemplate_):
         )
 
     def read_results(self, directory):
+        """
+        The function that should be used instead of the one in ASE EspressoTemplate
+        to read the output file. It calls a customly defined read function. It also
+        adds the "energy" key to the results dictionnary if it is not present. This
+        is needed if the calculation is not made with pw.x.
+
+        Parameters
+        ----------
+        directory
+            The directory in which to read the output file.
+
+        Returns
+        -------
+        dict
+            The results dictionnary
+        """
         path = directory / self.outputname
         results = read(path, binary=self.binary)
-        if self.binary != "pw":
+        if "energy" not in results:
             results["energy"] = None
         return results
 
 
 class Espresso(Espresso_):
+    """
+    This is a wrapper around the ASE Espresso calculator that adjusts input_data
+    parameters and allows for the use of presets. Templates are used to set
+    the binary and input/output file names.
+    """
     def __init__(
         self,
         input_atoms: Atoms = None,
@@ -56,6 +115,43 @@ class Espresso(Espresso_):
         parallel_info: dict[str | Any] = None,
         **kwargs,
     ):
+        """
+        Initialize the Espresso calculator.
+
+        Parameters
+        ----------
+        input_atoms
+            The input Atoms object to be used for the calculation.
+        preset
+            The name of a YAML file containing a list of parameters to use as
+            a "preset" for the calculator. quacc will automatically look in the
+            `ESPRESSO_PRESET_DIR` (default: quacc/calculators/espresso/presets),
+            The .yaml extension is not necessary. Any user-supplied calculator 
+            **kwargs will override any corresponding preset values.
+        template
+            ASE calculator templace which can be used to specify which espresso
+            binary will be used in the calculation. This is taken care of by recipe
+            in most cases.
+        profile
+            ASE calculator profile which can be used to specify the location of
+            the espresso binary and pseudopotential files. This is taken care of
+            internally using quacc settings.
+        calc_defaults
+            A dictionary of default input_data parameters to pass to the Espresso
+            calculator. These will be overridden by any user-supplied calculator
+            **kwargs.
+        parallel_info
+            parallel_info is a dictionary passed to the ASE Espresso calculator
+            profile. It is used to specify prefixes for the command line arguments.
+            See the ASE documentation for more details.
+        **kwargs
+            Additional arguments to be passed to the Espresso calculator, e.g.
+            `input_data`, `kpts`... Takes all valid ASE calculator arguments.
+
+        Returns
+        -------
+        None
+        """
         self.preset = preset
         self.input_atoms = input_atoms
         self.calc_defaults = calc_defaults
@@ -80,14 +176,30 @@ class Espresso(Espresso_):
         self.template = template
 
     def _kwargs_handler(self, binary, **kwargs):
+        """
+        Function that handles the kwargs. It will merge the user-supplied
+        kwargs with the defaults and preset values. Priority order is as follow:
+
+        User-supplied kwargs > preset > defaults
+
+        Parameters
+        ----------
+        binary
+            The espresso binary used to construct the namelist
+        **kwargs
+            User-supplied kwargs
+
+        Returns
+        -------
+        kwargs
+            The merged kwargs
+        """
         keys = ALL_KEYS[binary]
         kwargs["input_data"] = construct_namelist(kwargs.get("input_data"), keys=keys)
         self.calc_defaults["input_data"] = construct_namelist(
             self.calc_defaults["input_data"], keys=keys
         )
-        # Would be nice to change the merge_dict function so that
-        # it is fully compatible with the Namelist class. I believe
-        # changing 'dict or {}' would do.
+
         if self.preset:
             config = load_yaml_calc(SETTINGS.ESPRESSO_PRESET_DIR / f"{self.preset}")
             preset_pp = parse_pp_and_cutoff(config, self.input_atoms)
