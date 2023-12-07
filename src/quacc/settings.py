@@ -334,7 +334,8 @@ class QuaccSettings(BaseSettings):
             return v
 
         v = Path(os.path.expandvars(v)).expanduser().resolve()
-        os.makedirs(v, exist_ok=True)
+        if not v.exists():
+            os.makedirs(v)
         return v
 
     @field_validator(
