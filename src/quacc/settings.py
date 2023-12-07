@@ -78,7 +78,7 @@ class QuaccSettings(BaseSettings):
         ),
     )
     SCRATCH_DIR: Path = Field(
-        Path("~/.scratch"), description="Scratch directory for calculations."
+        Path.cwd(), description="Scratch directory for calculations."
     )
     CREATE_UNIQUE_WORKDIR: bool = Field(
         False,
