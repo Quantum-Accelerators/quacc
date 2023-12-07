@@ -328,7 +328,8 @@ class QuaccSettings(BaseSettings):
 
     @field_validator("RESULTS_DIR", "SCRATCH_DIR")
     @classmethod
-    def resolve_and_make_paths(cls, v):
+    def resolve_and_make_paths(cls, v: Path) -> Path:
+        """Resolve and make paths."""
         v = Path(os.path.expandvars(v)).expanduser().resolve()
         if not v.exists():
             os.makedirs(v)
@@ -349,11 +350,13 @@ class QuaccSettings(BaseSettings):
         "VASP_VDW",
     )
     @classmethod
-    def expand_paths(cls, v):
+    def expand_paths(cls, v: Optional[Path]) -> Optional[Path]:
+        """Expand paths to absolute paths."""
         return v.expanduser() if v is not None else v
 
     @field_validator("PRIMARY_STORE")
-    def generate_store(cls, v):
+    def generate_store(cls, v: Union[str, Store]) -> Store:
+        """Generate the Maggma store"""
         return MontyDecoder().decode(v) if isinstance(v, str) else v
 
     model_config = SettingsConfigDict(env_prefix="quacc_")
