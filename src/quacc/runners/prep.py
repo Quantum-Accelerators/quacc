@@ -43,7 +43,7 @@ def calc_setup(copy_files: list[str | Path] | None = None) -> tuple[Path, Path]:
     )
     tmpdir_base = SETTINGS.SCRATCH_DIR or SETTINGS.RESULTS_DIR
 
-    # Create a tmpdir for the calculation`
+    # Create a tmpdir for the calculation
     time_now = datetime.now(timezone.utc).strftime("%Y-%m-%d-%H-%M-%S-%f")
     tmpdir = Path(mkdtemp(prefix=f"quacc-tmp-{time_now}-", dir=tmpdir_base)).resolve()
 
