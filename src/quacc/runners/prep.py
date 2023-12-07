@@ -4,10 +4,10 @@ from __future__ import annotations
 import os
 from datetime import datetime, timezone
 from pathlib import Path
-from shutil import rmtree
+from shutil import move, rmtree
 from tempfile import mkdtemp
 
-from monty.shutil import copy_r, gzip_dir
+from monty.shutil import gzip_dir
 
 from quacc import SETTINGS
 from quacc.utils.files import copy_decompress, make_unique_dir
@@ -90,7 +90,7 @@ def calc_cleanup(tmpdir: str | Path, job_results_dir: str | Path) -> None:
         gzip_dir(tmpdir)
 
     # Copy files back to job_results_dir
-    copy_r(tmpdir, job_results_dir)
+    move(tmpdir, job_results_dir)
 
     # Remove symlink to tmpdir
     symlink_path = job_results_dir / f"{tmpdir.name}-symlink"
