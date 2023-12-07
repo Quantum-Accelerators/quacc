@@ -9,9 +9,6 @@ from ase.calculators.onetep import OnetepTemplate
 from ase.io.onetep import read_onetep_in,read_onetep_out,write_onetep_in,get_onetep_keywords
 
 from quacc import SETTINGS
-from quacc.calculators.espresso.io import read, write
-from quacc.calculators.espresso.keys import ALL_KEYS
-from quacc.calculators.espresso.utils import parse_pp_and_cutoff
 from quacc.utils.dicts import merge_dicts
 from quacc.utils.files import load_yaml_calc
 
