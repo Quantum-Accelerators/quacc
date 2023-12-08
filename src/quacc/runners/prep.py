@@ -48,7 +48,7 @@ def calc_setup(copy_files: list[str | Path] | None = None) -> tuple[Path, Path]:
     tmpdir = Path(mkdtemp(prefix=f"quacc-tmp-{time_now}-", dir=tmpdir_base)).resolve()
 
     # Create a symlink to the tmpdir in the results_dir
-    if os.name != "nt":
+    if os.name != "nt" and SETTINGS.SCRATCH_DIR:
         symlink = job_results_dir / f"{tmpdir.name}-symlink"
         symlink.unlink(missing_ok=True)
         symlink.symlink_to(tmpdir, target_is_directory=True)
