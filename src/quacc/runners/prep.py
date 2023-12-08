@@ -41,7 +41,7 @@ def calc_setup(copy_files: list[str | Path] | None = None) -> tuple[Path, Path]:
         if SETTINGS.CREATE_UNIQUE_WORKDIR
         else SETTINGS.RESULTS_DIR
     )
-    tmpdir_base = SETTINGS.SCRATCH_DIR or SETTINGS.RESULTS_DIR
+    tmpdir_base = SETTINGS.SCRATCH_DIR or Path.cwd()
 
     # Create a tmpdir for the calculation
     time_now = datetime.now(timezone.utc).strftime("%Y-%m-%d-%H-%M-%S-%f")
