@@ -27,7 +27,7 @@ If you haven't done so already:
     ```bash
     pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
     pip install quacc[covalent]
-    quacc set WORKFLOW_ENGINE covalent && quacc set CREATE_UNIQUE_DIR True
+    quacc set WORKFLOW_ENGINE covalent
     ```
 
     On the local machine:
@@ -51,7 +51,7 @@ If you haven't done so already:
     ```bash
     pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
     pip install quacc[jobflow]
-    quacc set WORKFLOW_ENGINE jobflow && quacc set CREATE_UNIQUE_DIR True
+    quacc set WORKFLOW_ENGINE jobflow
     ```
 
 ## Example 1
@@ -224,6 +224,8 @@ When deploying calculations for the first time, it's important to start simple, 
             "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
         },
         remote_conda_env="quacc",
+        remote_workdir="$SCRATCH/quacc",
+        create_unique_workdir=True,
         cleanup=False,
     )
 
@@ -368,6 +370,8 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
         pre_launch_cmds=["module load vasp/6.4.1-cpu"],
         environment={"QUACC_VASP_PARALLEL_CMD": f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"},
         remote_conda_env="quacc",
+        remote_workdir="$SCRATCH/quacc",
+        create_unique_workdir=True,
         cleanup=False,
     )
 
