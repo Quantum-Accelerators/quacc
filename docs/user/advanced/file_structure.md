@@ -32,9 +32,9 @@ RESULTS_DIR
 
     If you don't want the results to be gzipped, you can set the `GZIP_FILES` setting to `False`.
 
-!!! Note
+### Job Failure
 
-    If the job fails or does not complete, then the `quacc-tmp-12345` directory will remain in `RESULTS_DIR` so you can inspect the files.
+If the job fails or does not complete, then the `quacc-tmp-12345` directory will remain in `RESULTS_DIR` so you can inspect the files.
 
 ## Scenario 2: Specifying a `SCRATCH_DIR`
 
@@ -77,9 +77,9 @@ SCRATCH_DIR
 │
 ```
 
-!!! Note
+### Job Failure
 
-    If the job fails or does not complete, then the `quacc-tmp-12345` directory will remain in `SCRATCH_DIR` so you can inspect the files. The symbolic link in `RESULTS_DIR` will also remain.
+If the job fails or does not complete, then the `quacc-tmp-12345` directory will remain in `SCRATCH_DIR` so you can inspect the files. The symbolic link in `RESULTS_DIR` will also remain.
 
 ## Scenario 3: Setting `CREATE_UNIQUE_DIR` to `True`
 
@@ -120,6 +120,6 @@ SCRATCH_DIR
 │
 ```
 
-!!! Note
+### Job Failure
 
-    If the job fails or does not complete, then the `quacc-tmp-12345` directory will remain in `SCRATCH_DIR` so you can inspect the files. The symbolic link in `RESULTS_DIR/quacc-2023-12-08-67890` will also remain.
+If the job fails or does not complete, then the `quacc-tmp-12345` directory will remain in `SCRATCH_DIR` so you can inspect the files. The symbolic link in `RESULTS_DIR/quacc-2023-12-08-67890` will also remain.
