@@ -48,7 +48,6 @@ def static_job(
     'task' : 'SinglePoint'
 }
 
-    print("core calc_kwargs",calc_kwargs)
     return base_fn(
         atoms,
         preset=preset,

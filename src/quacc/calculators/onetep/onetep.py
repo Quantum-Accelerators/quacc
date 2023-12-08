@@ -27,7 +27,6 @@ class Onetep(Onetep_):
         self.input_atoms = input_atoms
         self.calc_defaults = calc_defaults
         kwargs = merge_dicts(self.calc_defaults, kwargs)
-        print("class",kwargs)
         super().__init__(profile=profile, parallel_info=parallel_info, **kwargs)
 
         self.template = template
