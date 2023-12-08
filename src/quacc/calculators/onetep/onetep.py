@@ -21,7 +21,7 @@ class Onetep(Onetep_):
         parallel_info: dict[str | Any] = None,
         **kwargs,
     ):
-        
+        template = OnetepTemplate("onetep",append=True)
         profile = OnetepProfile(SETTINGS.ONETEP_CMD,parallel_info = parallel_info)
         self.preset = preset
         self.input_atoms = input_atoms
