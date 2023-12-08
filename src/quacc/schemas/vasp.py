@@ -108,7 +108,7 @@ def vasp_summarize_run(
     if run_chargemol:
         try:
             chargemol_results = _chargemol_runner(dir_path, structure=struct)
-        except Exception as err:
+        except Exception:
             chargemol_results = None
             logging.warning("Chargemol analysis could not be performed.", exc_info=True)
 
