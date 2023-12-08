@@ -11,6 +11,11 @@ def make_files():
         f.write("file2")
 
 
+def make_files2():
+    p = Path("quacc-tmp-1234")
+    os.makedirs(p)
+
+
 def test_calc_setup(tmp_path, monkeypatch):
     from quacc import SETTINGS
 
@@ -59,4 +64,22 @@ def test_calc_setup_v2(tmp_path, monkeypatch):
     assert Path.cwd() == tmpdir
 
     SETTINGS.RESULTS_DIR = DEFAULT_SETTINGS.RESULTS_DIR
+    SETTINGS.SCRATCH_DIR = DEFAULT_SETTINGS.SCRATCH_DIR
+
+
+def test_calc_cleanup(tmp_path, monkeypatch):
+    from quacc import SETTINGS
+
+    DEFAULT_SETTINGS = SETTINGS.model_copy()
+    monkeypatch.chdir(tmp_path)
+
+    make_files2()
+    SETTINGS.SCRATCH_DIR = tmp_path
+
+    p = Path(Path.cwd(), "quacc-tmp-1234").resolve()
+    assert p.is_dir()
+    calc_cleanup(p, SETTINGS.RESULTS_DIR)
+    assert not p.exists()
+    assert Path.cwd() == SETTINGS.RESULTS_DIR
+
     SETTINGS.SCRATCH_DIR = DEFAULT_SETTINGS.SCRATCH_DIR
