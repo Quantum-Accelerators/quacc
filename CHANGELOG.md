@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.3]
+
+### Changed
+
+- The default for the `SCRATCH_DIR` setting is now `None` instead of `~/.quacc_scratch`. In other words, the default is to not use a scratch directory. This should help with onboarding, and the ability to set it as `None`. Setting the `SCRATCH_DIR` to a given `Path` will still work as expected.
+- Files are no longer recursively _copied_ from `SCRATCH_DIR` to `RESULTS_DIR`. Instead, they are recursively moved. This should speed up I/O operations.
+
 ## [0.4.2]
 
 ### Added
