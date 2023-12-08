@@ -187,7 +187,9 @@ In the previous examples, we have been running calculations on our local machine
         # Remote Python env parameters
         remote_conda_env="quacc",
         # Covalent parameters
-        cleanup=False,  # (4)!
+        remote_workdir="$SCRATCH/quacc",  # (4)!
+        create_unique_workdir=True,  # (5)!
+        cleanup=False,  # (6)!
     )
     ```
 
@@ -197,7 +199,11 @@ In the previous examples, we have been running calculations on our local machine
 
     3. These are the job attributes that the job scheduler needs, which are keyword arguments passed to PSI/J's [`JobAttributes` class](https://exaworks.org/psij-python/docs/v/0.9.0/.generated/psij.html#psij.JobAttributes).
 
-    4. For debugging purposes, it can be useful to keep all the temporary files. Once you're confident things work, you can omit the `cleanup` keyword argument.
+    4. This will tell Slurm where to `cd` and will specify where the calculations and results are stored. If you use this keyword argument, you should not explicitly specify the `RESULTS_DIR` quacc setting, which seeks to do largely the same thing.
+
+    5. You generally want each quacc job to have the results stored in its own unique working directory to ensure files don't overwrite one another, so  `create_unique_workdir` should be set to `True`. This should not be used in combination with the `CREATE_UNIQUE_DIR` quacc setting, which seeks to do largely the same thing.
+
+    6. For debugging purposes, it can be useful to keep all the temporary files. Once you're confident things work, you can omit the `cleanup` keyword argument.
 
     ??? Note
 
@@ -221,11 +227,14 @@ In the previous examples, we have been running calculations on our local machine
                 "job-name": "quacc",
                 "time": "00:10:00",
             },
-            use_srun=False,  # (1)!
+            remote_workdir="$SCRATCH/quacc",  # (1)!
+            use_srun=False,  # (2)!
         )
         ```
 
-        1.  The `SlurmExecutor` must have `use_srun=False` in order for ASE-based calculators to be launched appropriately.
+        1. This will tell Slurm where to `cd` into and will specify where the calculations and results are stored. If you use this keyword argument, you should not explicitly specify the `RESULTS_DIR` quacc setting, which seeks to do largely the same thing.
+
+        2.  The `SlurmExecutor` must have `use_srun=False` in order for ASE-based calculators to be launched appropriately.
 
 === "Redun"
 
