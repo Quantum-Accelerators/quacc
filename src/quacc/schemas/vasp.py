@@ -96,7 +96,7 @@ def vasp_summarize_run(
     if run_bader:
         try:
             bader_results = _bader_runner(dir_path, structure=struct)
-        except Exception as err:
+        except Exception:
             bader_results = None
             logging.warning(f"Bader analysis could not be performed.", exc_info=True)
 
