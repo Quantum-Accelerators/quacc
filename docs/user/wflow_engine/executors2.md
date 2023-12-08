@@ -224,7 +224,6 @@ When deploying calculations for the first time, it's important to start simple, 
             "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
         },
         remote_conda_env="quacc",
-        remote_workdir="$SCRATCH/quacc",
         cleanup=False,
     )
 
@@ -369,7 +368,6 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
         pre_launch_cmds=["module load vasp/6.4.1-cpu"],
         environment={"QUACC_VASP_PARALLEL_CMD": f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"},
         remote_conda_env="quacc",
-        remote_workdir="$SCRATCH/quacc",
         cleanup=False,
     )
 

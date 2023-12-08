@@ -187,7 +187,6 @@ In the previous examples, we have been running calculations on our local machine
         # Remote Python env parameters
         remote_conda_env="quacc",
         # Covalent parameters
-        remote_workdir="$SCRATCH/quacc",
         cleanup=False,  # (4)!
     )
     ```
@@ -213,7 +212,6 @@ In the previous examples, we have been running calculations on our local machine
             address="perlmutter-p1.nersc.gov",
             ssh_key_file="~/.ssh/nersc",
             cert_file="~/.ssh/nersc-cert.pub",
-            remote_workdir="$SCRATCH/quacc",
             conda_env="quacc",
             options={
                 "nodes": f"{n_nodes}",
