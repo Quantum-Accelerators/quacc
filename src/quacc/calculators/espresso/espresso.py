@@ -163,10 +163,10 @@ class Espresso(Espresso_):
         pseudo_path = (
             kwargs["input_data"]
             .get("control", {})
-            .get("pseudo_dir", str(SETTINGS.ESPRESSO_PP_PATH))
+            .get("pseudo_dir", str(SETTINGS.ESPRESSO_PSEUDO))
         )
 
-        bin_path = SETTINGS.ESPRESSO_BIN_PATH[template.binary]
+        bin_path = SETTINGS.ESPRESSO_BIN_PATHS[template.binary]
         profile = profile or EspressoProfile(
             binary=str(bin_path), parallel_info=parallel_info, pseudo_path=pseudo_path
         )
