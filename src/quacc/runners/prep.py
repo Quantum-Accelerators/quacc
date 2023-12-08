@@ -7,7 +7,7 @@ from pathlib import Path
 from shutil import move, rmtree
 from tempfile import mkdtemp
 
-from monty.shutil import gzip_dir
+from monty.shutil import gzip_dir, remove
 
 from quacc import SETTINGS
 from quacc.utils.files import copy_decompress, make_unique_dir
@@ -91,6 +91,8 @@ def calc_cleanup(tmpdir: Path, job_results_dir: Path) -> None:
 
     # Move files from tmpdir to job_results_dir
     for file_name in os.listdir(tmpdir):
+        if Path(job_results_dir / file_name).exists():
+            remove(job_results_dir / file_name)
         move(tmpdir / file_name, job_results_dir / file_name)
 
     # Remove symlink to tmpdir
