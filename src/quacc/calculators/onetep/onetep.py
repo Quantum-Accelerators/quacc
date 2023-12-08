@@ -21,12 +21,12 @@ class Onetep(Onetep_):
         parallel_info: dict[str | Any] = None,
         **kwargs,
     ):
-        template = OnetepTemplate("onetep",append=True)
+
         profile = OnetepProfile(SETTINGS.ONETEP_CMD,parallel_info = parallel_info)
         self.preset = preset
         self.input_atoms = input_atoms
         self.calc_defaults = calc_defaults
         kwargs = merge_dicts(self.calc_defaults, kwargs)
-        self.template = template
         super().__init__(profile=profile, parallel_info=parallel_info, **kwargs)
+        self.template = template
 
