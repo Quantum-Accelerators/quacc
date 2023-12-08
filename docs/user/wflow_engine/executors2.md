@@ -27,7 +27,7 @@ If you haven't done so already:
     ```bash
     pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
     pip install quacc[covalent]
-    quacc set WORKFLOW_ENGINE covalent
+    quacc set WORKFLOW_ENGINE covalent && quacc set CREATE_UNIQUE_DIR True
     ```
 
     On the local machine:
@@ -51,7 +51,7 @@ If you haven't done so already:
     ```bash
     pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
     pip install quacc[jobflow]
-    quacc set WORKFLOW_ENGINE jobflow
+    quacc set WORKFLOW_ENGINE jobflow && quacc set CREATE_UNIQUE_DIR True
     ```
 
 ## Example 1
