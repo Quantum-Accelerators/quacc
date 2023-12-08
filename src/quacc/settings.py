@@ -126,16 +126,16 @@ class QuaccSettings(BaseSettings):
     )
     ESPRESSO_BIN_PATHS: dict[str, Path] = Field(
         {
-            "pw": Path(ESPRESSO_PATH, "pw.x"),
-            "ph": Path(ESPRESSO_PATH, "ph.x"),
-            "neb": Path(ESPRESSO_PATH, "neb.x"),
-            "q2r": Path(ESPRESSO_PATH, "q2r.x"),
-            "matdyn": Path(ESPRESSO_PATH, "matdyn.x"),
-            "dynmat": Path(ESPRESSO_PATH, "dynmat.x"),
-            "bands": Path(ESPRESSO_PATH, "bands.x"),
-            "projwfc": Path(ESPRESSO_PATH, "projwfc.x"),
-            "pp": Path(ESPRESSO_PATH, "pp.x"),
-            "wannier90": Path(ESPRESSO_PATH, "wannier90.x"),
+            "pw": Path("pw.x"),
+            "ph": Path("ph.x"),
+            "neb": Path("neb.x"),
+            "q2r": Path("q2r.x"),
+            "matdyn": Path("matdyn.x"),
+            "dynmat": Path("dynmat.x"),
+            "bands": Path("bands.x"),
+            "projwfc": Path("projwfc.x"),
+            "pp": Path("pp.x"),
+            "wannier90": Path("wannier90.x"),
         },
         description="Name for each espresso binary and its corresponding path",
     )
@@ -334,9 +334,9 @@ class QuaccSettings(BaseSettings):
         return v
 
     @field_validator(
-        "ESPRESSO_CMD",
+        "ESPRESSO_PATH",
         "ESPRESSO_PRESET_DIR",
-        "ESPRESSO_PP_PATH",
+        "ESPRESSO_PSEUDO",
         "GAUSSIAN_CMD",
         "GULP_CMD",
         "GULP_LIB",

@@ -169,6 +169,33 @@ DYNMAT_KEYS = Namelist(
     }
 )
 
+PROJWFC_KEYS = Namelist(
+    {
+        "PROJWFC": [
+            "prefix",
+            "outdir",
+            "ngauss",
+            "degauss",
+            "emin",
+            "emax",
+            "deltae",
+            "lsym"
+            "diag_basis",
+            "pawproj",
+            "filpdos",
+            "filproj",
+            "lwrite_overlaps",
+            "lbinary_data",
+            "kresolveddos",
+            "tdosinboxes",
+            "n_proj_boxes",
+            "irmin",
+            "irmax",
+            "plot_boxes",
+        ]
+    }
+)
+
 
 # Updated pw.x keys from my own branch
 
@@ -422,4 +449,5 @@ ALL_KEYS = {
     "neb": NEB_KEYS,
     "q2r": Q2R_KEYS,
     "dynmat": DYNMAT_KEYS,
+    "projwfc": PROJWFC_KEYS,
 }

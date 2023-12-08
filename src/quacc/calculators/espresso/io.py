@@ -46,14 +46,14 @@ def read(filename, binary="pw"):
 
 def write_espresso_io(fd, **kwargs):
     """
-    Function that writes input for very simple espresso binary
-    which does not possess special cards. Here is non exhaustive list (to complete):
+    Function which writes input for simple espresso binaries without special cards.
+    Non-exhaustive list (to complete):
 
     - pp.x
     - dynmat.x
     - projwfc.x
 
-    Note: "EOF" is appended at the end of the file for safety.
+    Note: "EOF" is appended at the end of the file.
     (https://lists.quantum-espresso.org/pipermail/users/2020-November/046269.html)
 
     Parameters
@@ -121,12 +121,14 @@ def write_espresso_ph(fd, **kwargs):
     if qplot:
         fd.write(f"{len(qpts)}\n")
         for qpt in qpts:
-            fd.write(f"{qpt[0]:8.4f} {qpt[1]:8.4f} {qpt[2]:8.4f}\n")
+            fd.write(f"{qpt[0]:0.8f} {qpt[1]:0.8f} {qpt[2]:0.8f}\n")
     elif not ldisp:
-        fd.write(f"{qpts[0]:8.4f} {qpts[1]:8.4f} {qpts[2]:8.4f}\n")
+        fd.write(f"{qpts[0]:0.8f} {qpts[1]:0.8f} {qpts[2]:0.8f}\n")
     if nat_todo:
-        tmp = [str(i) for i in nat_todo]
+        nat_todo_index = kwargs.get("nat_todo")
+        tmp = [str(i) for i in nat_todo_index]
         fd.write(" ".join(tmp))
+        fd.write("\n")
 
 
 def read_espresso_ph(fd):
