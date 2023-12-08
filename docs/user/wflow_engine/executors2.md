@@ -17,7 +17,7 @@ If you haven't done so already:
     ```bash
     pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
     pip install quacc[parsl]
-    quacc set WORKFLOW_ENGINE parsl && quacc set CREATE_UNIQUE_WORKDIR True
+    quacc set WORKFLOW_ENGINE parsl && quacc set CREATE_UNIQUE_DIR True
     ```
 
 === "Covalent"
@@ -225,7 +225,7 @@ When deploying calculations for the first time, it's important to start simple, 
         },
         remote_conda_env="quacc",
         remote_workdir="$SCRATCH/quacc",
-        create_unique_workdir=True,
+        CREATE_UNIQUE_DIR=True,
         cleanup=False,
     )
 
@@ -371,7 +371,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
         environment={"QUACC_VASP_PARALLEL_CMD": f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"},
         remote_conda_env="quacc",
         remote_workdir="$SCRATCH/quacc",
-        create_unique_workdir=True,
+        CREATE_UNIQUE_DIR=True,
         cleanup=False,
     )
 

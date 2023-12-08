@@ -1,4 +1,4 @@
-CREATE_UNIQUE_WORKDIR: true
+CREATE_UNIQUE_DIR: true
 RESULTS_DIR: ./.test_results
 SCRATCH_DIR: ./.test_scratch
 WORKFLOW_ENGINE: parsl
