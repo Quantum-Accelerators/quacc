@@ -225,7 +225,6 @@ When deploying calculations for the first time, it's important to start simple, 
         },
         remote_conda_env="quacc",
         remote_workdir="$SCRATCH/quacc",
-        CREATE_UNIQUE_DIR=True,
         cleanup=False,
     )
 
@@ -371,7 +370,6 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
         environment={"QUACC_VASP_PARALLEL_CMD": f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"},
         remote_conda_env="quacc",
         remote_workdir="$SCRATCH/quacc",
-        CREATE_UNIQUE_DIR=True,
         cleanup=False,
     )
 
