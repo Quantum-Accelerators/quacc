@@ -56,8 +56,6 @@ def bulk_to_slabs_flow(
     """
 
     make_slabs_kwargs = make_slabs_kwargs or {}
-    slab_relax_kwargs = slab_relax_kwargs or {}
-    slab_static_kwargs = slab_static_kwargs or {}
 
     return bulk_to_slabs_subflow(
         atoms,
