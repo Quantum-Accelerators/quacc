@@ -11,11 +11,11 @@
 
 `quacc` is a flexible platform for computational materials science 💎 and quantum chemistry 🧪 that is built for the exascale era 🔥. It is maintained by the [Rosen Research Group](https://rosen.cbe.princeton.edu/) at Princeton University.
 
-- `quacc` makes it possible to easily run pre-made workflows that can be efficiently dispatched anywhere: locally, HPC, the cloud, or any combination thereof.
+- `quacc` makes it possible to easily run [pre-made workflows](https://quantum-accelerators.github.io/quacc/user/recipes/recipes_list.html) that can be efficiently dispatched anywhere: locally, HPC, the cloud, or any combination thereof.
 
 - `quacc` leverages community resources. It is built around the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/) and much of the software infrastructure powering the [Materials Project](https://materialsproject.org).
 
-- `quacc` gives you the freedom of choice. Through a single, unified interface to several [supported workflow management solutions](https://quantum-accelerators.github.io/quacc/user/basics/wflow_overview.html), `quacc` lets you use what best suits your unique computing needs.
+- `quacc` gives you the freedom of choice. Through a single, unified interface to several [supported workflow management solutions](https://quantum-accelerators.github.io/quacc/user/basics/wflow_overview.html), you can use what best suits your unique computing needs.
 
 ## Documentation 📖
 
@@ -31,7 +31,7 @@
 
 ## Visual Example ✨
 
-🚀 Representative `quacc` workflow using [Covalent](https://github.com/AgnostiqHQ/covalent) as one of the [several supported workflow managers](https://quantum-accelerators.github.io/quacc/user/basics/wflow_overview.html).
+🚀 Representative `quacc` workflow using [Covalent](https://github.com/AgnostiqHQ/covalent) as one of the several supported workflow managers.
 
 ![](https://github.com/Quantum-Accelerators/quacc/blob/main/docs/images/start/start.gif)
 
