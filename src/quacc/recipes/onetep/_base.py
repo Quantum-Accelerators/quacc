@@ -68,7 +68,8 @@ def base_fn(
         parallel_info=parallel_info,
         **calc_swaps,
     )
-    
+    print(atoms.calc)
+    print(atoms)
     final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(
