@@ -82,7 +82,7 @@ class QuaccSettings(BaseSettings):
         description="Directory to run the calculations in. If set to None, calculations "
         "will be run in a temporary directory within `RESULTS_DIR`. If a `Path` is supplied, "
         "calculations will be run in a temporary directory within `SCRATCH_DIR`. Results are "
-        "always copied back to `RESULTS_DIR` after the calculation is complete.",
+        "always moved back to `RESULTS_DIR` after the calculation is complete.",
     )
     CREATE_UNIQUE_WORKDIR: bool = Field(
         False,
