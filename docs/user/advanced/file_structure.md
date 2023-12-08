@@ -28,6 +28,10 @@ RESULTS_DIR
 │
 ```
 
+!!! Tip
+
+    If you don't want the results to be gzipped, you can set the `GZIP_FILES` setting to `False`.
+
 !!! Note
 
     If the job fails or does not complete, then the `quacc-tmp-12345` directory will remain in `RESULTS_DIR` so you can inspect the files.

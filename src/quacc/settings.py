@@ -96,7 +96,7 @@ class QuaccSettings(BaseSettings):
     )
     CHECK_CONVERGENCE: bool = Field(
         True,
-        description="Whether to check for convergence in the `summarize_run`-type functions, if supported.",
+        description="Whether to check for convergence, when implemented by a given recipe.",
     )
 
     # ---------------------------
