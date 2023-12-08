@@ -70,15 +70,19 @@ class QuaccSettings(BaseSettings):
     RESULTS_DIR: Path = Field(
         Path.cwd(),
         description=(
-            "Directory to store I/O-based calculation results in."
+            "Directory to permanently store I/O-based calculation results in."
             "Note that this behavior may be modified by the chosen workflow engine."
             "For instance, Covalent specifies the base directory as the `workdir` "
             "of a local executor or the `remote_workdir` of a remote executor."
             "In this case, the `RESULTS_DIR` will be a subdirectory of that directory."
         ),
     )
-    SCRATCH_DIR: Path = Field(
-        Path("~/.scratch"), description="Scratch directory for calculations."
+    SCRATCH_DIR: Optional[Path] = Field(
+        None,
+        description="Directory to run the calculations in. If set to None, calculations "
+        "will be run in a temporary directory within `RESULTS_DIR`. If a `Path` is supplied, "
+        "calculations will be run in a temporary directory within `SCRATCH_DIR`. Results are "
+        "always moved back to `RESULTS_DIR` after the calculation is complete.",
     )
     CREATE_UNIQUE_WORKDIR: bool = Field(
         False,
@@ -295,6 +299,9 @@ class QuaccSettings(BaseSettings):
     @field_validator("RESULTS_DIR", "SCRATCH_DIR")
     @classmethod
     def resolve_and_make_paths(cls, v):
+        if v is None:
+            return v
+
         v = Path(os.path.expandvars(v)).expanduser().resolve()
         if not v.exists():
             os.makedirs(v)
