@@ -48,12 +48,10 @@ def static_job(
     'task' : 'SinglePoint'
 }
 
-    template = OnetepTemplate("onetep",append=False)
 
     return base_fn(
         atoms,
         preset=preset,
-        template=template,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,

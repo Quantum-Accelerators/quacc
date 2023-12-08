@@ -4,15 +4,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from ase import Atoms
+
 ### Do we need to import from quacc at this point we can do it directly from ase
-from quacc.calculators.onetep.onetep import (
-    Onetep,
-    OnetepProfile,
-    OnetepTemplate,
-)
+from quacc.calculators.onetep.onetep import Onetep, OnetepProfile, OnetepTemplate
 from quacc.runners.ase import run_calc
 from quacc.schemas.ase import summarize_run
-from quacc.utils.dicts import merge_dicts
+
 if TYPE_CHECKING:
     from typing import Any
 
@@ -61,7 +58,7 @@ def base_fn(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    calc_flags = merge_dicts(calc_defaults, calc_swaps)
+
     atoms.calc = Onetep(
         input_atoms=atoms,
         preset=preset,
@@ -69,7 +66,7 @@ def base_fn(
         profile=profile,
         calc_defaults=calc_defaults,
         parallel_info=parallel_info,
-        **calc_flags,
+        **calc_swaps,
     )
 
     final_atoms = run_calc(atoms, copy_files=copy_files)
