@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
+    from quacc import Job
     from quacc.schemas._aliases.ase import OptSchema, RunSchema
 
 
@@ -21,9 +22,8 @@ if TYPE_CHECKING:
 def bulk_to_slabs_flow(
     atoms: Atoms,
     make_slabs_kwargs: dict[str, Any] | None = None,
-    run_static: bool = True,
-    slab_relax_kwargs: dict[str, Any] | None = None,
-    slab_static_kwargs: dict[str, Any] | None = None,
+    slab_relax_job: Job | None = relax_job,
+    slab_static_job: Job | None = static_job,
 ) -> list[RunSchema | OptSchema]:
     """
     Workflow consisting of:
@@ -61,7 +61,7 @@ def bulk_to_slabs_flow(
 
     return bulk_to_slabs_subflow(
         atoms,
-        partial(relax_job, **slab_relax_kwargs),
-        static_job=partial(static_job, **slab_static_kwargs) if run_static else None,
+        slab_relax_job,
+        static_job=static_job if slab_static_job else None,
         make_slabs_fn=partial(make_slabs_from_bulk, **make_slabs_kwargs),
     )
