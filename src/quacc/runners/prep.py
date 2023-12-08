@@ -28,11 +28,15 @@ def calc_setup(copy_files: list[str | Path] | None = None) -> tuple[Path, Path]:
     -------
     Path
         The path to the tmpdir, where the calculation will be run. It will be
-        deleted after the calculation is complete.
+        deleted after the calculation is complete. By default, this will be
+        located within the SETTINGS.SCRATCH_DIR, but if that is not set, it will
+        be located within the SETTINGS.RESULTS_DIR.
     Path
         The path to the results_dir, where the files will ultimately be stored.
         A symlink to the tmpdir will be made here during the calculation for
-        convenience.
+        convenience. By defualt, this will be the SETTINGS.RESULTS_DIR, but if
+        SETTINGS.CREATE_UNIQUE_WORKDIR is set, it will be a unique directory
+        within the SETTINGS.RESULTS_DIR.
     """
 
     # Set where to store the results
@@ -41,7 +45,7 @@ def calc_setup(copy_files: list[str | Path] | None = None) -> tuple[Path, Path]:
         if SETTINGS.CREATE_UNIQUE_WORKDIR
         else SETTINGS.RESULTS_DIR
     )
-    tmpdir_base = SETTINGS.SCRATCH_DIR or Path.cwd()
+    tmpdir_base = SETTINGS.SCRATCH_DIR or SETTINGS.RESULTS_DIR
 
     # Create a tmpdir for the calculation
     time_now = datetime.now(timezone.utc).strftime("%Y-%m-%d-%H-%M-%S-%f")
