@@ -116,7 +116,7 @@ def test_ph_job_list_to_do(tmp_path, monkeypatch):
 
     copy_decompress_files([pp_dir / "Li.upf"], tmp_path)
 
-    SETTINGS.ESPRESSO_PSEUDO = Path(__file__).parent
+    SETTINGS.ESPRESSO_PSEUDO = tmp_path
 
     input_data = {
         "calculation": "scf",
