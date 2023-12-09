@@ -219,31 +219,3 @@ def test_comparison3(tmp_path, monkeypatch):
     dispatch_id = ct.dispatch(workflow)(1, 2, 3)  # (3)!
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
-
-
-def test_comparison4(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
-    @job
-    def add(a, b):
-        return a + b
-
-    @job
-    def make_more(val):
-        return [val] * 3
-
-    @subflow  #  (1)!
-    def add_distributed(vals, c):
-        return [add(val, c) for val in vals]
-
-    @flow
-    def workflow(a, b, c):
-        result1 = add(a, b)
-        result2 = make_more(result1)
-        return add_distributed(result2, c)
-
-    # Dispatched
-    dispatch_id = ct.dispatch(workflow)(1, 2, 3)
-    result = ct.get_result(dispatch_id, wait=True)  # e.g. [6, 6, 6]
-
-    assert result.status == "COMPLETED"

@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.4.3]
 
+### Added
+
+- Added preliminary support for the `Dask` workflow engine via Dask Delayed and Dask Distributed.
+
 ### Changed
 
 - Renamed `CREATE_UNIQUE_WORKDIR` to `CREATE_UNIQUE_DIR` to better reflect its utility.

@@ -48,6 +48,16 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
         export COVALENT_CONFIG_DIR="$SCRATCH/.config/covalent"
         ```
 
+=== "Dask"
+
+    **Installation**
+
+    To install Dask, run the following:
+
+    ```bash
+    pip install quacc[dask]
+    ```
+
 === "Redun"
 
     **Installation**
