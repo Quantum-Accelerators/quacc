@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from quacc import flow
 from quacc.recipes.common.phonons import phonon_flow as phonon_flow_
-from quacc.recipes.emt.core import static_job as static_job_
+from quacc.recipes.emt.core import static_job
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
@@ -24,7 +24,7 @@ def phonon_flow(
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
-    static_job: Job | None = static_job_,
+    static_job: Job | None = static_job,
 ) -> PhononSchema:
     """
     Carry out a phonon calculation.
