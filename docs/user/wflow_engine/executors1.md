@@ -236,6 +236,10 @@ In the previous examples, we have been running calculations on our local machine
 
         2.  The `SlurmExecutor` must have `use_srun=False` in order for ASE-based calculators to be launched appropriately.
 
+=== "Dask"
+
+    A Dask cluster can be set up to be used with a queueing system like that found on most HPC machines. This is done via [Dask Jobqueue](https://jobqueue.dask.org/en/latest/index.html). Example configurations for various queuing systems can be found in ["Example Deployments"](https://jobqueue.dask.org/en/latest/examples.html) section of the documentation.
+
 === "Redun"
 
     Out-of-the-box, Redun will run on your local machine. However, in practice, you will probably want to specify a dedicated executor.
