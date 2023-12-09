@@ -307,7 +307,7 @@ result = bulk_to_slabs_flow(
 print(result)
 ```
 
-1. We have used a [partial function](https://www.learnpython.org/en/Partial_functions) here, which is a way to create a new function with specific arguments already applied. In this case, `partial(relax_job, opt_params={"fmax": 1e-4})` is identical to `relax_job(..., opt_params={"fmax": 1e-4})`. We have chosen to override the default force tolerance for the `relax_job` recipe by passing in a custom dictionary of `opt_params`. This is a common pattern in quacc recipes, where you can override the default parameters of a recipe by passing in a new dictionary of parameters.
+1. We have used a [partial function](https://www.learnpython.org/en/Partial_functions) here, which is a way to create a new function with specific arguments already applied. In this case, `partial(relax_job, opt_params={"fmax": 1e-4})` means `opt_params={"fmax": 1e-4}` will be set as a keyword argument in the `relax_job` function. This is a common pattern in quacc recipes, where you can override the default parameters of a recipe by passing in a new dictionary of parameters.
 
 ## Concluding Comments
 
