@@ -102,7 +102,7 @@ def test_ph_job_list_to_do():
 
     atoms = bulk("Li")
 
-    SETTINGS.ESPRESSO_PP_PATH = Path(__file__).parent
+    SETTINGS.ESPRESSO_PSEUDO = Path(__file__).parent
 
     input_data = {
         "calculation": "scf",
