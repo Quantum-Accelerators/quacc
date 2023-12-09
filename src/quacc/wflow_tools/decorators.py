@@ -130,7 +130,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     ) -> Any:
         """
         This function is used for handling workflow engines that require some action
-        beyond just decoration. It also patches the parent function `_func` to takke an
+        beyond just decoration. It also patches the parent function `_func` to take an
         additional keyword argument, `deocrator_kwargs`, that is a dictionary of keyword
         arguments to pass during the decorator construction.
 
@@ -155,8 +155,6 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
 
             decorated = prefect_task(_func, **decorator_kwargs)
             return decorated.submit(*f_args, **f_kwargs)
-
-        return decorated(*f_args, **f_kwargs)
 
     from quacc import SETTINGS
 
@@ -546,7 +544,7 @@ def subflow(
     ) -> Any:
         """
         This function is used for handling workflow engines that require some action
-        beyond just decoration. It also patches the parent function `_func` to takke an
+        beyond just decoration. It also patches the parent function `_func` to take an
         additional keyword argument, `deocrator_kwargs`, that is a dictionary of keyword
         arguments to pass during the decorator construction.
 
@@ -571,8 +569,6 @@ def subflow(
 
             decorated = delayed(_func, **decorator_kwargs)
             return decorated(*f_args, **f_kwargs).compute()
-
-        return decorated(*f_args, **f_kwargs)
 
     from quacc import SETTINGS
 
