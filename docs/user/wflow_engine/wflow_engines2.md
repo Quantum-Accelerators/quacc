@@ -184,7 +184,7 @@ graph LR
     workflow = jf.Flow([job1, job2])  # (3)!
 
     # Run the workflow locally
-    responses = jf.run_locally(workflow, create_folders=True)  # (4)!
+    responses = jf.run_locally(workflow)  # (4)!
 
     # Get the result
     result = responses[job2.uuid][1].output
@@ -318,7 +318,7 @@ graph LR
     workflow = jf.Flow([job1, job2])
 
     # Run the workflow locally
-    responses = jf.run_locally(workflow, create_folders=True)
+    responses = jf.run_locally(workflow)
 
     # Get the result
     result = responses[job2.uuid][1].output

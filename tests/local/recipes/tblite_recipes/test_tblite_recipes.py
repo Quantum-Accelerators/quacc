@@ -10,7 +10,7 @@ from quacc.recipes.tblite.core import freq_job, relax_job, static_job
 pytest.importorskip("tblite.ase")
 
 
-def test_static_job(tmp_path, monkeypatch):
+def test_static_job_v1(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = molecule("H2O")
@@ -21,6 +21,11 @@ def test_static_job(tmp_path, monkeypatch):
     assert output["results"]["energy"] == pytest.approx(-137.96777594361672)
     assert np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
 
+
+def test_static_job_v2(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    atoms = molecule("H2O")
     output = static_job(atoms, method="GFN1-xTB")
     assert output["parameters"]["method"] == "GFN1-xTB"
     assert output["results"]["energy"] == pytest.approx(-156.96750578831137)
@@ -51,7 +56,7 @@ def test_relax_job_cell(tmp_path, monkeypatch):
     )
 
 
-def test_freq_job(tmp_path, monkeypatch):
+def test_freq_job_v1(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = molecule("H2O")
@@ -79,6 +84,10 @@ def test_freq_job(tmp_path, monkeypatch):
     assert output["results"]["entropy"] == pytest.approx(0.0019584992229988523)
     assert output["results"]["gibbs_energy"] == pytest.approx(0.05367081893346437)
 
+
+def test_freq_job_v2(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
     atoms = molecule("H")
     atoms.set_initial_magnetic_moments([0.0])
     initial_atoms = deepcopy(atoms)
@@ -99,6 +108,10 @@ def test_freq_job(tmp_path, monkeypatch):
     assert output["results"]["enthalpy"] == pytest.approx(-0.9357685739989672)
     assert output["results"]["entropy"] == pytest.approx(0.0011292352752446438)
     assert output["results"]["gibbs_energy"] == pytest.approx(-1.2724500713131577)
+
+
+def test_freq_job_v3(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     atoms = molecule("CH3")
     initial_atoms = deepcopy(atoms)
@@ -133,9 +146,10 @@ def test_freq_job(tmp_path, monkeypatch):
 
 
 def test_unique_workdir(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
     DEFAULT_SETTINGS = SETTINGS.model_copy()
 
-    SETTINGS.CREATE_UNIQUE_WORKDIR = True
-    test_static_job(tmp_path, monkeypatch)
+    SETTINGS.CREATE_UNIQUE_DIR = True
+    test_static_job_v1(tmp_path, monkeypatch)
     test_relax_job(tmp_path, monkeypatch)
-    SETTINGS.CREATE_UNIQUE_WORKDIR = DEFAULT_SETTINGS.CREATE_UNIQUE_WORKDIR
+    SETTINGS.CREATE_UNIQUE_DIR = DEFAULT_SETTINGS.CREATE_UNIQUE_DIR
