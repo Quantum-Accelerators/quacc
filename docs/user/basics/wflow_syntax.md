@@ -38,6 +38,8 @@ To help enable interoperability between workflow engines, quacc offers a unified
 
 === "Dask"
 
+    Take a moment to read the Dask Delayed documentation [overview page](https://docs.dask.org/en/stable/delayed.html) to get a sense of how the Dask decorators works and the Dask Distributed [quickstart page](https://distributed.dask.org/en/stable/quickstart.html) to understand how to submit tasks to a Dask cluster. Namely, you should understand the `@delayed` decorator and how to interface with the `Client`.
+
     <center>
 
     | Quacc              | Covalent                           |
