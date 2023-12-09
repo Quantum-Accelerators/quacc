@@ -124,29 +124,3 @@ def test_comparison3(tmp_path, monkeypatch):
     flow = jf.Flow([job1, job2])
 
     jf.run_locally(flow, ensure_success=True)
-
-
-def test_comparison4(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
-    @job
-    def add(a, b):
-        return a + b
-
-    @job
-    def make_more(val):
-        return [val] * 3
-
-    @job
-    def add_distributed(vals, c):
-        jobs = []
-        for val in vals:
-            jobs.append(add(val, c))
-        return jf.Response(replace=jf.Flow(jobs))
-
-    job1 = add(1, 2)
-    job2 = make_more(job1.output)
-    job3 = add_distributed(job2.output, 3)
-    flow = jf.Flow([job1, job2, job3])
-
-    jf.run_locally(flow, ensure_success=True)

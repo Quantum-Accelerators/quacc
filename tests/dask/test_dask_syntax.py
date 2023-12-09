@@ -1,26 +1,15 @@
-import contextlib
-
 import pytest
 
 from quacc import SETTINGS, flow, job, subflow
 
-parsl = pytest.importorskip("dask")
+dask = pytest.importorskip("dask")
 pytestmark = pytest.mark.skipif(
     SETTINGS.WORKFLOW_ENGINE != "dask",
     reason="This test requires the Dask workflow engine",
 )
+from dask.distributed import default_client
 
-
-def setup_module():
-    from dask.distributed import Client
-
-    Client()
-
-
-def teardown_module():
-    from dask.distributed import default_client
-
-    default_client().close()
+client = default_client()
 
 
 def test_dask_decorators(tmp_path, monkeypatch):
@@ -52,10 +41,14 @@ def test_dask_decorators(tmp_path, monkeypatch):
         result2 = make_more(result1)
         return add_distributed(result2, c)
 
-    assert add(1, 2).compute() == 3
-    assert mult(1, 2).compute() == 2
-    assert workflow(1, 2, 3).compute() == 9
-    assert dynamic_workflow(1, 2, 3).compute() == [6, 6, 6]
+    assert client.compute(add(1, 2)).result() == 3
+    assert client.compute(mult(1, 2)).result() == 2
+    assert client.compute(workflow(1, 2, 3)).result() == 9
+    assert dask.compute(*client.gather(client.compute(dynamic_workflow(1, 2, 3)))) == (
+        6,
+        6,
+        6,
+    )
 
 
 def test_dask_decorators_args(tmp_path, monkeypatch):
@@ -87,7 +80,11 @@ def test_dask_decorators_args(tmp_path, monkeypatch):
         result2 = make_more(result1)
         return add_distributed(result2, c)
 
-    assert add(1, 2).compute() == 3
-    assert mult(1, 2).compute() == 2
-    assert workflow(1, 2, 3).compute() == 9
-    assert dynamic_workflow(1, 2, 3).compute() == [6, 6, 6]
+    assert client.compute(add(1, 2)).result() == 3
+    assert client.compute(mult(1, 2)).result() == 2
+    assert client.compute(workflow(1, 2, 3)).result() == 9
+    assert dask.compute(*client.gather(client.compute(dynamic_workflow(1, 2, 3)))) == (
+        6,
+        6,
+        6,
+    )

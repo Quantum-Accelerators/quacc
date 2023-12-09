@@ -1,5 +1,3 @@
-import contextlib
-
 import pytest
 from ase.build import bulk, molecule
 
@@ -7,20 +5,15 @@ from quacc import SETTINGS, job, subflow
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
-parsl = pytest.importorskip("parsl")
+dask = pytest.importorskip("dask")
 pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "parsl",
-    reason="This test requires the Parsl workflow engine",
+    SETTINGS.WORKFLOW_ENGINE != "dask",
+    reason="This test requires the Dask workflow engine",
 )
 
+from dask.distributed import default_client
 
-def setup_module():
-    with contextlib.suppress(Exception):
-        parsl.load()
-
-
-def teardown_module():
-    parsl.clear()
+client = default_client()
 
 
 def test_tutorial1a(tmp_path, monkeypatch):
@@ -33,7 +26,7 @@ def test_tutorial1a(tmp_path, monkeypatch):
     future = relax_job(atoms)  # (1)!
 
     # Print result
-    assert "atoms" in future.result()  # (2)!
+    assert "atoms" in client.compute(future).result()  # (2)!
 
 
 def test_tutorial1b(tmp_path, monkeypatch):
@@ -46,7 +39,7 @@ def test_tutorial1b(tmp_path, monkeypatch):
     future = relax_job(atoms)  # (1)!
 
     # Print result
-    assert "atoms" in future.result()  # (2)!
+    assert "atoms" in client.compute(future).result()  # (2)!
 
     # Define the Atoms object
     atoms = bulk("Cu")
@@ -55,7 +48,7 @@ def test_tutorial1b(tmp_path, monkeypatch):
     future = bulk_to_slabs_flow(atoms)  # (1)!
 
     # Print the results
-    assert "atoms" in future.result()[0]  # (2)!
+    assert "atoms" in dask.compute(*client.gather(client.compute(future)))[0]
 
 
 def test_tutorial2a(tmp_path, monkeypatch):
@@ -76,7 +69,7 @@ def test_tutorial2a(tmp_path, monkeypatch):
     future = workflow(atoms)
 
     # Fetch the result
-    result = future.result()  # (2)!
+    result = client.compute(future).result()  # (2)!
     assert "atoms" in result
 
 
@@ -99,8 +92,9 @@ def test_tutorial2b(tmp_path, monkeypatch):
     futures = workflow(atoms1, atoms2)
 
     # Fetch the results
-    result1 = futures["result1"].result()
-    result2 = futures["result2"].result()
+    results = client.gather(client.compute(futures))
+    result1 = results["result1"]
+    result2 = results["result2"]
 
     # Print the results
     assert "atoms" in result1
@@ -122,7 +116,7 @@ def test_tutorial2c(tmp_path, monkeypatch):
     future = workflow(atoms)
 
     # Fetch the results
-    result = future.result()
+    result = dask.compute(*client.gather(client.compute(future)))
 
     # Print the results
     assert len(result) == 4
@@ -142,7 +136,7 @@ def test_comparison1(tmp_path, monkeypatch):
     def workflow(a, b, c):  #  (2)!
         return mult(add(a, b), c)
 
-    result = workflow(1, 2, 3).result()  # 9
+    result = client.compute(workflow(1, 2, 3)).result()  # 9
     assert result == 9
 
 
@@ -165,7 +159,7 @@ def test_comparison2(tmp_path, monkeypatch):
     future2 = make_more(future1)
     future3 = add_distributed(future2, 3)
 
-    assert future3.result() == [6, 6, 6]
+    assert dask.compute(*client.gather(client.compute(future3))) == (6, 6, 6)
 
 
 def test_comparison3(tmp_path, monkeypatch):
@@ -182,4 +176,4 @@ def test_comparison3(tmp_path, monkeypatch):
     future1 = add(1, 2)
     future2 = mult(future1, 3)
 
-    assert future2.result() == 9
+    assert client.compute(future2).result() == 9

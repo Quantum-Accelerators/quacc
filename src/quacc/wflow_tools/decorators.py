@@ -458,7 +458,6 @@ def subflow(
         def add_distributed(vals, c):
             return [add(val, c) for val in vals]
 
-        @delayed
         def workflow(a, b, c):
             result1 = add(a, b)
             result2 = make_more(result1)
@@ -562,6 +561,10 @@ def subflow(
         from redun import task as redun_task
 
         decorated = redun_task(_func, **kwargs)
+    elif wflow_engine == "dask":
+        from dask import delayed
+
+        decorated = delayed(_func, **kwargs)
     else:
         decorated = _func
 
