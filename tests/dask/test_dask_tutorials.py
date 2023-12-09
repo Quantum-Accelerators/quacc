@@ -48,7 +48,7 @@ def test_tutorial1b(tmp_path, monkeypatch):
     future = bulk_to_slabs_flow(atoms)  # (1)!
 
     # Print the results
-    assert "atoms" in dask.compute(*client.gather(future))[0]
+    assert "atoms" in client.gather(client.compute(future))[0]
 
 
 def test_tutorial2a(tmp_path, monkeypatch):
@@ -116,7 +116,7 @@ def test_tutorial2c(tmp_path, monkeypatch):
     future = workflow(atoms)
 
     # Fetch the results
-    result = dask.compute(*client.gather(future))
+    result = client.gather(client.compute(future))
 
     # Print the results
     assert len(result) == 4
