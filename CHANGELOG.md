@@ -6,9 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.4.3]
 
+### Added
+
+- Added preliminary support for the `Dask` workflow engine via Dask Delayed and Dask Distributed.
+
 ### Changed
 
-- The default for the `SCRATCH_DIR` setting is now `None` instead of `~/.quacc_scratch`. In other words, the default is to not use a scratch directory. This should help with onboarding, and the ability to set it as `None`. Setting the `SCRATCH_DIR` to a given `Path` will still work as expected.
+- Renamed `CREATE_UNIQUE_WORKDIR` to `CREATE_UNIQUE_DIR` to better reflect its utility.
+- The default for the `SCRATCH_DIR` setting is now `None` instead of `~/.quacc_scratch`. In other words, the default is to not use a scratch directory. This should help with onboarding, and the ability to set it as `None` may be broadly of interest. Setting the `SCRATCH_DIR` to a given `Path` will still work as expected.
 - Files are no longer recursively _copied_ from `SCRATCH_DIR` to `RESULTS_DIR`. Instead, they are recursively moved. This should speed up I/O operations.
 
 ## [0.4.2]
@@ -373,7 +378,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added the `quacc.recipes.emt.parsl` module.
 - Added a CLI for `quacc` along with a `quacc config` option to configure Covalent appropriately upon install.
 - Added generic type hints for schemas.
-- Added a `CREATE_UNIQUE_WORKDIR` global setting to have quacc automatically make a unique working directory for each calculation.
+- Added a `CREATE_UNIQUE_DIR` global setting to have quacc automatically make a unique working directory for each calculation.
 - Added `CHECK_CONVERGENCE` to global settings.
 
 ### Changed

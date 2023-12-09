@@ -96,9 +96,9 @@ def vasp_summarize_run(
     if run_bader:
         try:
             bader_results = _bader_runner(dir_path, structure=struct)
-        except Exception as err:
+        except Exception:
             bader_results = None
-            logging.warning(f"Bader analysis could not be performed.", exc_info=True)
+            logging.warning("Bader analysis could not be performed.", exc_info=True)
 
         if bader_results:
             vasp_task_doc["bader"] = bader_results[0]
@@ -108,11 +108,9 @@ def vasp_summarize_run(
     if run_chargemol:
         try:
             chargemol_results = _chargemol_runner(dir_path, structure=struct)
-        except Exception as err:
+        except Exception:
             chargemol_results = None
-            logging.warning(
-                f"Chargemol analysis could not be performed.", exc_info=True
-            )
+            logging.warning("Chargemol analysis could not be performed.", exc_info=True)
 
         if chargemol_results:
             vasp_task_doc["chargemol"] = chargemol_results[0]
