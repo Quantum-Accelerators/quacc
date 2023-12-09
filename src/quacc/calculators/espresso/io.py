@@ -110,6 +110,7 @@ def write_espresso_ph(fd, **kwargs):
     -------
     None
     """
+
     input_data = kwargs.get("input_data")
     pwi = namelist_to_string(input_data)[:-1]
     fd.write("".join(pwi))
@@ -117,11 +118,12 @@ def write_espresso_ph(fd, **kwargs):
     qpts = kwargs.get("qpts")
     qplot = input_data["inputph"].get("qplot", False)
     ldisp = input_data["inputph"].get("ldisp", False)
-    nat_todo = input_data["inputph"].get("nat_todo", False)
+    nat_todo = input_data["inputph"].get("nat_todo", 0)
+
     if qplot:
         fd.write(f"{len(qpts)}\n")
         for qpt in qpts:
-            fd.write(f"{qpt[0]:0.8f} {qpt[1]:0.8f} {qpt[2]:0.8f}\n")
+            fd.write(f"{qpt[0]:0.8f} {qpt[1]:0.8f} {qpt[2]:0.8f} {qpt[3]:1d}\n")
     elif not ldisp:
         fd.write(f"{qpts[0]:0.8f} {qpts[1]:0.8f} {qpts[2]:0.8f}\n")
     if nat_todo:
@@ -377,9 +379,10 @@ def read_espresso_ph(fd):
         lambdas = []
         gammas = []
 
+        current = None
+
         n = 1
         while idx + n < n_lines:
-
             line = fdo_lines[idx + n]
 
             broad_match = re.match(broad_re, line)

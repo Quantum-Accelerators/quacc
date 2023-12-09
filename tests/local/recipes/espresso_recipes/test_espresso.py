@@ -96,3 +96,59 @@ def test_ph_job(tmp_path, monkeypatch):
 
     for key in sections:
         assert key in ph_results["results"][(0, 0, 0)]
+
+
+def test_ph_job_list_to_do():
+
+    atoms = bulk("Li")
+
+    SETTINGS.ESPRESSO_PP_PATH = Path(__file__).parent
+
+    input_data = {
+        "calculation": "scf",
+        "occupations": "smearing",
+        "smearing": "cold",
+        "degauss": 0.02,
+        "mixing_mode": "TF",
+        "mixing_beta": 0.7,
+        "conv_thr": 1.0e-6
+    }
+
+    ph_loose = {"tr2_ph": 1e-8, "qplot": True, "nat_todo": 1, 'ldisp': True}
+
+    pseudopotentials = {"Li": "Li.upf"}
+
+    pw_results = static_job(
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.25
+    )
+
+    qpts = [
+        (0, 0, 0, 1),
+        (1/3, 0, 0, 1),
+        (1/2, 0, 0, 1)
+    ]
+
+    nat_todo = [1]
+
+    ph_results = ph_job(input_data=ph_loose,
+                        copy_files=pw_results["dir_name"],
+                        qpts = qpts,
+                        nat_todo = nat_todo)
+
+    assert (0, 0, 0) in ph_results["results"]
+    assert np.allclose(
+        ph_results["results"][(0, 0, 0)]["atoms"].positions,
+        atoms.positions,
+        atol=1.0e-4,
+    )
+    # ph.x cell param are not defined to a very high level of accuracy,
+    # atol = 1.0e-3 is needed here...
+    assert np.allclose(
+        ph_results["results"][(0, 0, 0)]["atoms"].cell, atoms.cell, atol=1.0e-3
+    )
+    assert (ph_results["results"][(0, 0, 0)]["atoms"].symbols == atoms.symbols).all()
+
+    sections = ["atoms", "eqpoints", "freqs", "kpoints", "mode_symmetries", "modes"]
+
+    for key in sections:
+        assert key in ph_results["results"][(0, 0, 0)]
