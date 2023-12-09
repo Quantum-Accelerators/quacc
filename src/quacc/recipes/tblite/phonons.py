@@ -55,7 +55,6 @@ def phonon_flow(
     PhononSchema
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][]
     """
-    static_job_kwargs = static_job_kwargs or {}
 
     return phonon_flow_(
         atoms,
