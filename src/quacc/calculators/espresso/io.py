@@ -120,11 +120,11 @@ def write_espresso_ph(fd, **kwargs):
     ldisp = input_data["inputph"].get("ldisp", False)
     nat_todo = input_data["inputph"].get("nat_todo", 0)
 
-    if qplot:
+    if qplot and ldisp:
         fd.write(f"{len(qpts)}\n")
         for qpt in qpts:
             fd.write(f"{qpt[0]:0.8f} {qpt[1]:0.8f} {qpt[2]:0.8f} {qpt[3]:1d}\n")
-    elif not ldisp:
+    else:
         fd.write(f"{qpts[0]:0.8f} {qpts[1]:0.8f} {qpts[2]:0.8f}\n")
     if nat_todo:
         nat_todo_index = kwargs.get("nat_todo")
@@ -155,7 +155,6 @@ def read_espresso_ph(fd):
 
         - For some reason, the cell is not defined to high level of precision with
             ph.x. Be careful when using the atoms object retrieved from this function.
-        - Electron-phonon coupling is not implemented yet.
         - This function can be called on incomplete calculations i.e. if the calculation
             couldn't diagonalize the dynamical matrix for some q-points, the results for
             the other q-points will still be returned.

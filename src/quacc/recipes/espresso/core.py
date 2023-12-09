@@ -139,7 +139,7 @@ def ph_job(
                 "verbosity": "high",
             }
         },
-        "qpts": [(0, 0, 0)],
+        "qpts": (0, 0, 0),
     }
 
     template = EspressoTemplate("ph")
