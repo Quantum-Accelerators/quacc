@@ -122,8 +122,8 @@ def bulk_to_slabs_flow(
     atoms: Atoms,
     make_slabs_kwargs: dict[str, Any] | None = None,
     run_static: bool = True,
-    slab_relax_job: Job = None,
-    slab_static_job: Job | None = None,
+    slab_relax_kwargs: dict[str, Any] | None = None,
+    slab_static_kwargs: dict[str, Any] | None = None,
 ) -> list[VaspSchema]:
     """
     Workflow consisting of:
