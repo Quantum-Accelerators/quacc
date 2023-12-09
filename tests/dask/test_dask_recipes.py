@@ -4,9 +4,9 @@ from ase.build import bulk
 from quacc import SETTINGS
 from quacc.recipes.emt.core import relax_job
 
-parsl = pytest.importorskip("parsl")
+dask = pytest.importorskip("dask")
 pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "parsl",
+    SETTINGS.WORKFLOW_ENGINE != "dask",
     reason="This test requires the Parsl workflow engine",
 )
 
@@ -15,7 +15,7 @@ from dask.distributed import default_client
 client = default_client()
 
 
-def test_phonon_flow(tmp_path, monkeypatch):
+def test_dask_phonon_flow(tmp_path, monkeypatch):
     pytest.importorskip("phonopy")
     from quacc.recipes.emt.phonons import phonon_flow
 
@@ -27,7 +27,7 @@ def test_phonon_flow(tmp_path, monkeypatch):
     ].shape == (101,)
 
 
-def test_phonon_flow_multistep(tmp_path, monkeypatch):
+def test_dask_phonon_flow_multistep(tmp_path, monkeypatch):
     pytest.importorskip("phonopy")
     from quacc.recipes.emt.phonons import phonon_flow
 
