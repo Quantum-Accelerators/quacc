@@ -181,6 +181,7 @@ def read_espresso_ph(fd):
     POSITIONS = r"(?i)^\s*site\s*n\..*\(alat\s*units\)"
     ALAT = r"(?i)^\s*celldm\(1\)="
     CELL = r"^\s*crystal\s*axes:\s*\(cart.\s*coord.\s*in\s*units\s*of\s*alat\)"
+    ELECTRON_PHONON = r"(?i)^\s*electron-phonon\s*interaction\s*...\s*$"
 
     output = {
         QPOINTS: [],
@@ -196,6 +197,7 @@ def read_espresso_ph(fd):
         POSITIONS: [],
         ALAT: [],
         CELL: [],
+        ELECTRON_PHONON: [],
     }
 
     names = {
@@ -212,6 +214,7 @@ def read_espresso_ph(fd):
         POSITIONS: "positions",
         ALAT: "alat",
         CELL: "cell",
+        ELECTRON_PHONON: "ep_data",
     }
 
     unique = {
@@ -228,6 +231,7 @@ def read_espresso_ph(fd):
         POSITIONS: True,
         ALAT: True,
         CELL: True,
+        ELECTRON_PHONON: True,
     }
 
     results = {}
@@ -265,7 +269,9 @@ def read_espresso_ph(fd):
 
     def _read_eqpoints(idx):
         n_star = int(re.findall(freg, fdo_lines[idx])[0])
-        return np.loadtxt(fdo_lines[idx + 2 : idx + 2 + n_star], usecols=(1, 2, 3))
+        return np.loadtxt(
+            fdo_lines[idx + 2 : idx + 2 + n_star], usecols=(1, 2, 3)
+        ).reshape(-1, 3)
 
     def _read_freqs(idx):
         n = 0
@@ -360,6 +366,51 @@ def read_espresso_ph(fd):
             n += 1
         return np.array(cell)
 
+    def _read_electron_phonon(idx):
+        results = {}
+
+        broad_re = r"^\s*Gaussian\s*Broadening:\s+([\d.]+)\s+Ry, ngauss=\s+\d+"
+        dos_re = r"^\s*DOS\s*=\s*([\d.]+)\s*states/spin/Ry/Unit\s*Cell\s*at\s*Ef=\s+([\d.]+)\s+eV"
+        lg_re = r"^\s*lambda\(\s+(\d+)\)=\s+([\d.]+)\s+gamma=\s+([\d.]+)\s+GHz"
+        end_re = r"^\s*Number\s*of\s*q\s*in\s*the\s*star\s*=\s+(\d+)$"
+
+        lambdas = []
+        gammas = []
+
+        n = 1
+        while idx + n < n_lines:
+
+            line = fdo_lines[idx + n]
+
+            broad_match = re.match(broad_re, line)
+            dos_match = re.match(dos_re, line)
+            lg_match = re.match(lg_re, line)
+            end_match = re.match(end_re, line)
+
+            if broad_match:
+                if lambdas:
+                    results[current]["lambdas"] = lambdas
+                    results[current]["gammas"] = gammas
+                    lambdas = []
+                    gammas = []
+                current = broad_match.group(1)
+                results[current] = {}
+            elif dos_match:
+                results[current]["dos"] = float(dos_match.group(1))
+                results[current]["fermi"] = float(dos_match.group(2))
+            elif lg_match:
+                lambdas.append(float(lg_match.group(2)))
+                gammas.append(float(lg_match.group(3)))
+
+            if end_match:
+                results[current]["lambdas"] = lambdas
+                results[current]["gammas"] = gammas
+                break
+
+            n += 1
+
+        return results
+
     properties = {
         NKPTS: _read_kpoints,
         DIEL: _read_epsil,
@@ -373,6 +424,7 @@ def read_espresso_ph(fd):
         POSITIONS: _read_positions,
         ALAT: _read_alat,
         CELL: _read_cell,
+        ELECTRON_PHONON: _read_electron_phonon,
     }
 
     iblocks = np.append(output[QPOINTS], n_lines)
