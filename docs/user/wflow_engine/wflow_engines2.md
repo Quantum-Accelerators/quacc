@@ -485,7 +485,7 @@ graph LR
     # Define the workflow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)  # (1)!
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], slab_static_job=None)  # (1)!
 
         return relaxed_slabs
 
@@ -501,7 +501,7 @@ graph LR
     print(result)
     ```
 
-    1. We chose to set `#!Python run_static=False` here to disable the static calculation that is normally carried out in this workflow.
+    1. We chose to set `#!Python slab_static_job=None` here to disable the static calculation that is normally carried out in this workflow.
 
 === "Redun"
 
