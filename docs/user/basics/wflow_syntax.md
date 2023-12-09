@@ -332,7 +332,7 @@ add.__wrapped__(1, 2)
 
 === "Dask"
 
-    If you want to learn more about Dask, you can read the [Dask delayed documentation](https://docs.dask.org/en/stable/delayed.html). Please refer to the [Dask Discourse channel](https://discourse.dask.org/) for Dask-specific questions.
+    If you want to learn more about Dask, you can read the [Dask Delayed documentation](https://docs.dask.org/en/stable/delayed.html) to read more about the decorators and the [Dask Distributed documentation](https://distributed.dask.org/en/stable/) to read more about the distributed Dask cluster. Please refer to the [Dask Discourse page](https://discourse.dask.org/) for Dask-specific questions.
 
 === "Redun"
 
