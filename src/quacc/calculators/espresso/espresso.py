@@ -20,10 +20,12 @@ if TYPE_CHECKING:
 
 
 class EspressoTemplate(EspressoTemplate_):
+
     """
     This is a wrapper around the ASE Espresso template that allows for the use
     of other binaries such as pw.x, ph.x, cp.x, etc.
     """
+
     def __init__(self, binary: str = "pw"):
         """
         Initialize the Espresso template.
@@ -100,11 +102,13 @@ class EspressoTemplate(EspressoTemplate_):
 
 
 class Espresso(Espresso_):
+    
     """
     This is a wrapper around the ASE Espresso calculator that adjusts input_data
     parameters and allows for the use of presets. Templates are used to set
     the binary and input/output file names.
     """
+
     def __init__(
         self,
         input_atoms: Atoms = None,
@@ -126,7 +130,7 @@ class Espresso(Espresso_):
             The name of a YAML file containing a list of parameters to use as
             a "preset" for the calculator. quacc will automatically look in the
             `ESPRESSO_PRESET_DIR` (default: quacc/calculators/espresso/presets),
-            The .yaml extension is not necessary. Any user-supplied calculator 
+            The .yaml extension is not necessary. Any user-supplied calculator
             **kwargs will override any corresponding preset values.
         template
             ASE calculator templace which can be used to specify which espresso
@@ -204,5 +208,4 @@ class Espresso(Espresso_):
             config = load_yaml_calc(SETTINGS.ESPRESSO_PRESET_DIR / f"{self.preset}")
             preset_pp = parse_pp_and_cutoff(config, self.input_atoms)
             kwargs = merge_dicts(preset_pp, kwargs)
-        kwargs = merge_dicts(self.calc_defaults, kwargs)
-        return kwargs
+        return merge_dicts(self.calc_defaults, kwargs)

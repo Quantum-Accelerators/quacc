@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 from ase.build import bulk
 from ase.io.espresso import construct_namelist
+from monty.shutil import decompress_file
 
 from quacc import SETTINGS
 from quacc.recipes.espresso.core import ph_job, static_job

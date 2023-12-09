@@ -4,18 +4,14 @@ from io import StringIO
 from pathlib import Path
 import numpy as np
 
-from ase.io.espresso import (
-    construct_namelist,
-    read_fortran_namelist,
+from ase.io.espresso import construct_namelist, read_fortran_namelist
+
+from quacc.calculators.espresso.io import (
+    write_espresso_io,
+    write_espresso_ph,
+    read_espresso_ph,
 )
-
-from quacc.calculators.espresso.io import write_espresso_io, write_espresso_ph, read_espresso_ph
 from quacc.calculators.espresso.keys import ALL_KEYS
-
-"""
-Very rough tests for the espresso io functions.
-read_espresso_ph is tested against the whole suite of QE examples
-"""
 
 
 def test_write_espresso_io():
@@ -26,7 +22,7 @@ def test_write_espresso_io():
         "nbnd": 10,
         "ecutwfc": 20,
         "irmin(2, 6)": 0.1,
-        "outdir(5)": str(Path("/path/to/outdir")),
+        "outdir(5)": "/path/to/outdir",
     }
 
     input_data = construct_namelist(input_data, ALL_KEYS["projwfc"])
@@ -58,7 +54,7 @@ def test_write_espresso_ph_single():
         "amass(1)": 1.0,
         "amass(2)": 2.0,
         "prefix": "prefix",
-        "outdir": str(Path("/path/to/outdir")),
+        "outdir": "/path/to/outdir",
         "eth_rps": 0.1,
     }
 
@@ -94,10 +90,10 @@ def test_write_espresso_ph_list():
         "amass(1)": 1.0,
         "amass(2)": 2.0,
         "prefix": "prefix",
-        "outdir": str(Path("/path/to/outdir")),
+        "outdir": "/path/to/outdir",
         "eth_rps": 0.1,
         "qplot": True,
-        "ldisp": True
+        "ldisp": True,
     }
 
     qpts = [(0.5, -0.1, 1 / 3, 2), (0.1, 0.2, 0.3, 10), (0.2, 0.3, 0.4, 1)]
@@ -137,11 +133,11 @@ def test_write_espresso_ph_nat_todo():
         "amass(1)": 1.0,
         "amass(2)": 2.0,
         "prefix": "prefix",
-        "outdir": str(Path("/path/to/outdir")),
+        "outdir": "/path/to/outdir",
         "eth_rps": 0.1,
         "qplot": True,
         "nat_todo": True,
-        "ldisp": True
+        "ldisp": True,
     }
 
     qpts = [(0.5, -0.1, 1 / 3, 1), (0.1, 0.2, 0.3, -1), (0.2, 0.3, 0.4, 4)]
@@ -20393,27 +20389,27 @@ test_66 = """
 =------------------------------------------------------------------------------=
 """
 
+
 def test_read_espresso_ph_all():
     for i in range(1, 66, 5):
-        to_read = globals()[f'test_{i}']
+        to_read = globals()[f"test_{i}"]
         fd = StringIO(to_read)
         read_espresso_ph(fd)
+
 
 def test_read_espresso_ph_1():
     fd = StringIO(test_1)
     results = read_espresso_ph(fd)
-    
+
     assert len(results) == 8
     assert (0, 0, 0) in results
-    assert np.unique(results[(0, 0, 0)]['freqs']).shape[0] == 1
-    assert np.unique(results[(0, 0, 0)]['freqs'])[0] == 0.173268
-    assert len(results[(0, 0, 0)]['eqpoints']) == 1
-    assert results[(0, 0, 0)]['atoms'].symbols == ['Al']
-
+    assert np.unique(results[(0, 0, 0)]["freqs"]).shape[0] == 1
+    assert np.unique(results[(0, 0, 0)]["freqs"])[0] == 0.173268
+    assert len(results[(0, 0, 0)]["eqpoints"]) == 1
+    assert results[(0, 0, 0)]["atoms"].symbols == ["Al"]
 
     assert (0.75, -0.25, 0.75) in results
-    assert np.unique(results[(0.75, -0.25, 0.75)]['freqs']).shape[0] == 3
-    assert np.unique(results[(0.75, -0.25, 0.75)]['freqs'])[2] == 8.791383
-    assert len(results[(0.75, -0.25, 0.75)]['eqpoints']) == 24
-    assert results[(0.75, -0.25, 0.75)]['atoms'].symbols == ['Al']
-
+    assert np.unique(results[(0.75, -0.25, 0.75)]["freqs"]).shape[0] == 3
+    assert np.unique(results[(0.75, -0.25, 0.75)]["freqs"])[2] == 8.791383
+    assert len(results[(0.75, -0.25, 0.75)]["eqpoints"]) == 24
+    assert results[(0.75, -0.25, 0.75)]["atoms"].symbols == ["Al"]
