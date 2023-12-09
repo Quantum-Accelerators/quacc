@@ -1,12 +1,11 @@
 """Phonon recipes for TBLite"""
 from __future__ import annotations
 
-from functools import partial
 from typing import TYPE_CHECKING
 
 from quacc import flow
 from quacc.recipes.common.phonons import phonon_flow as phonon_flow_
-from quacc.recipes.tblite.core import static_job
+from quacc.recipes.tblite.core import static_job as static_job_
 
 if TYPE_CHECKING:
     from typing import Any
@@ -14,6 +13,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from numpy.typing import ArrayLike
 
+    from quacc import Job
     from quacc.schemas._aliases.phonons import PhononSchema
 
 
@@ -26,7 +26,7 @@ def phonon_flow(
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
-    static_job_kwargs: dict[str, Any] | None = None,
+    static_job: Job | None = static_job_,
 ) -> PhononSchema:
     """
     Carry out a phonon calculation.
@@ -47,9 +47,8 @@ def phonon_flow(
         Min temperature (K).
     t_max
         Max temperature (K).
-    static_job_kwargs
-        Keyword arguments for [quacc.recipes.tblite.core.static_job][]
-        for the force calculations.
+    static_job
+        Static job, which defaults to [quacc.recipes.tblite.core.static_job][]
 
     Returns
     -------
@@ -60,7 +59,7 @@ def phonon_flow(
 
     return phonon_flow_(
         atoms,
-        partial(static_job, **static_job_kwargs),
+        static_job,
         supercell_matrix=supercell_matrix,
         atom_disp=atom_disp,
         t_step=t_step,

@@ -157,7 +157,7 @@ print(result)
      'volume': 11.761470249999999}
     ```
 
-### A Simple Mixed-Code Workflow
+### A Mixed-Code Workflow
 
 ```mermaid
 graph LR
@@ -271,6 +271,39 @@ print(result2)
                 'version': '2.1.0'},
     'volume': 11.761470249999999}
     ```
+
+### A More Complex Workflow
+
+```mermaid
+graph LR
+  A[Input] --> B(Make Slabs)
+  B --> C(Slab Relax) --> G(Slab Static) --> K[Output]
+  B --> D(Slab Relax) --> H(Slab Static) --> K[Output]
+  B --> E(Slab Relax) --> I(Slab Static) --> K[Output]
+  B --> F(Slab Relax) --> J(Slab Static) --> K[Output];
+```
+
+In this example, we will run a pre-made workflow that generates a set of slabs from a bulk structure and then runs a structure relaxation on each slab. We will specifically highlight an example where we want to override the default parameters of a recipe, in this case to tighten the force tolerance for the relaxation calculation.
+
+```python
+from functools import partial
+from ase.build import bulk
+from quacc.recipes.emt.core import relax_job
+from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+# Define the Atoms object
+atoms = bulk("Cu")
+
+# Define the workflow
+result = bulk_to_slabs_flow(
+    atoms, slab_relax_job=partial(relax_job, opt_params={"fmax": 1e-4})  # (1)!
+)
+
+# Print the result
+print(result)
+```
+
+1. We have used a [partial function](https://www.learnpython.org/en/Partial_functions) here, which is a way to create a new function with certain arguments already applied. In this case, `partial(relax_job, opt_params={"fmax": 1e-4})` is identical to `relax_job(..., opt_params={"fmax": 1e-4})`. We have chosen to override the default force tolerance for the `relax_job` recipe by passing in a custom dictionary of `opt_params`. This is a common pattern in quacc recipes, where you can override the default parameters of a recipe by passing in a new dictionary of parameters.
 
 ## Concluding Comments
 

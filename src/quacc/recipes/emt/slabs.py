@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 def bulk_to_slabs_flow(
     atoms: Atoms,
     make_slabs_kwargs: dict[str, Any] | None = None,
-    slab_relax_job: Job | None = relax_job,
+    slab_relax_job: Job = relax_job,
     slab_static_job: Job | None = static_job,
 ) -> list[RunSchema | OptSchema]:
     """
@@ -43,10 +43,10 @@ def bulk_to_slabs_flow(
         [quacc.atoms.slabs.make_slabs_from_bulk][]
     run_static
         Whether to run the static calculation.
-    slab_relax_kwargs
-        Additional keyword arguments to pass to [quacc.recipes.emt.core.relax_job][].
+    slab_relax_job
+        The relaxation job, which defaults to [quacc.recipes.emt.core.relax_job][].
     slab_static_kwargs
-        Additional keyword arguments to pass to [quacc.recipes.emt.core.static_job][].
+        The static job, which defaults to [quacc.recipes.emt.core.static_job][].
 
     Returns
     -------
@@ -60,6 +60,6 @@ def bulk_to_slabs_flow(
     return bulk_to_slabs_subflow(
         atoms,
         slab_relax_job,
-        static_job=static_job if slab_static_job else None,
+        static_job=slab_static_job,
         make_slabs_fn=partial(make_slabs_from_bulk, **make_slabs_kwargs),
     )
