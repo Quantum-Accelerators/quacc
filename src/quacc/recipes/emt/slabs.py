@@ -41,8 +41,6 @@ def bulk_to_slabs_flow(
     make_slabs_kwargs
         Additional keyword arguments to pass to
         [quacc.atoms.slabs.make_slabs_from_bulk][]
-    run_static
-        Whether to run the static calculation.
     slab_relax_job
         The relaxation job, which defaults to [quacc.recipes.emt.core.relax_job][].
     slab_static_kwargs

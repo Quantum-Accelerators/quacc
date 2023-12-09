@@ -283,7 +283,7 @@ graph LR
   B --> F(Slab Relax) --> J(Slab Static) --> K[Output];
 ```
 
-In this example, we will run a pre-made workflow that generates a set of slabs from a bulk structure and then runs a structure relaxation on each slab. We will specifically highlight an example where we want to override the default parameters of a recipe, in this case to tighten the force tolerance for the relaxation calculation.
+In this example, we will run a pre-made workflow that generates a set of slabs from a bulk structure and then runs a structure relaxation and static calculation on each slab. We will specifically highlight an example where we want to override the default parameters of one step in the recipe, in this case to tighten the force tolerance for the slab relaxation.
 
 ```python
 from functools import partial
@@ -303,7 +303,7 @@ result = bulk_to_slabs_flow(
 print(result)
 ```
 
-1. We have used a [partial function](https://www.learnpython.org/en/Partial_functions) here, which is a way to create a new function with certain arguments already applied. In this case, `partial(relax_job, opt_params={"fmax": 1e-4})` is identical to `relax_job(..., opt_params={"fmax": 1e-4})`. We have chosen to override the default force tolerance for the `relax_job` recipe by passing in a custom dictionary of `opt_params`. This is a common pattern in quacc recipes, where you can override the default parameters of a recipe by passing in a new dictionary of parameters.
+1. We have used a [partial function](https://www.learnpython.org/en/Partial_functions) here, which is a way to create a new function with specific arguments already applied. In this case, `partial(relax_job, opt_params={"fmax": 1e-4})` is identical to `relax_job(..., opt_params={"fmax": 1e-4})`. We have chosen to override the default force tolerance for the `relax_job` recipe by passing in a custom dictionary of `opt_params`. This is a common pattern in quacc recipes, where you can override the default parameters of a recipe by passing in a new dictionary of parameters.
 
 ## Concluding Comments
 

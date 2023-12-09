@@ -63,8 +63,6 @@ def bulk_to_defects_flow(
     make_defects_kwargs
         Keyword arguments to pass to
         [quacc.atoms.defects.make_defects_from_bulk][]
-    run_static
-        Whether to run the static calculation.
     defect_relax_job
         Relaxation job, which defaults to [quacc.recipes.emt.core.relax_job][].
     defect_static_job
