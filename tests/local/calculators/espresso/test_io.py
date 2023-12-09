@@ -97,9 +97,10 @@ def test_write_espresso_ph_list():
         "outdir": str(Path("/path/to/outdir")),
         "eth_rps": 0.1,
         "qplot": True,
+        "ldisp": True
     }
 
-    qpts = [(0.5, -0.1, 1 / 3), (0.1, 0.2, 0.3), (0.2, 0.3, 0.4)]
+    qpts = [(0.5, -0.1, 1 / 3, 2), (0.1, 0.2, 0.3, 10), (0.2, 0.3, 0.4, 1)]
 
     input_data = construct_namelist(input_data, ALL_KEYS["ph"])
 
@@ -115,11 +116,12 @@ def test_write_espresso_ph_list():
         "   prefix           = 'prefix'\n"
         "   eth_rps          = 0.1\n"
         "   qplot            = .true.\n"
+        "   ldisp            = .true.\n"
         "/\n"
         "3\n"
-        "0.50000000 -0.10000000 0.33333333\n"
-        "0.10000000 0.20000000 0.30000000\n"
-        "0.20000000 0.30000000 0.40000000\n"
+        "0.50000000 -0.10000000 0.33333333 2\n"
+        "0.10000000 0.20000000 0.30000000 10\n"
+        "0.20000000 0.30000000 0.40000000 1\n"
     )
 
     string_io.seek(0)
@@ -139,9 +141,10 @@ def test_write_espresso_ph_nat_todo():
         "eth_rps": 0.1,
         "qplot": True,
         "nat_todo": True,
+        "ldisp": True
     }
 
-    qpts = [(0.5, -0.1, 1 / 3), (0.1, 0.2, 0.3), (0.2, 0.3, 0.4)]
+    qpts = [(0.5, -0.1, 1 / 3, 1), (0.1, 0.2, 0.3, -1), (0.2, 0.3, 0.4, 4)]
 
     input_data = construct_namelist(input_data, ALL_KEYS["ph"])
 
@@ -157,12 +160,13 @@ def test_write_espresso_ph_nat_todo():
         "   prefix           = 'prefix'\n"
         "   eth_rps          = 0.1\n"
         "   qplot            = .true.\n"
+        "   ldisp            = .true.\n"
         "   nat_todo         = .true.\n"
         "/\n"
         "3\n"
-        "0.50000000 -0.10000000 0.33333333\n"
-        "0.10000000 0.20000000 0.30000000\n"
-        "0.20000000 0.30000000 0.40000000\n"
+        "0.50000000 -0.10000000 0.33333333 1\n"
+        "0.10000000 0.20000000 0.30000000 -1\n"
+        "0.20000000 0.30000000 0.40000000 4\n"
         "1 2 3\n"
     )
 
