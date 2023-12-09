@@ -69,7 +69,7 @@ def test_ph_job(tmp_path, monkeypatch):
         "conv_thr": 1.0e-6,
     }
 
-    ph_loose = {"tr2_ph": 1e-10}
+    ph_loose = {"tr2_ph": 1e-8}
 
     pseudopotentials = {"Li": "Li.upf"}
 
