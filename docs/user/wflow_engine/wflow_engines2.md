@@ -159,10 +159,6 @@ graph LR
 
     2. The use of `client.compute()` submits the job to the cluster, and `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `Delayed` object.
 
-    !!! Note
-
-        Dask will implicitly know to call `.result()` on any `Delayed` it receives, and it is good to rely on this fact to avoid unnecessary blocking.
-
 === "Redun"
 
     !!! Important
@@ -501,7 +497,7 @@ graph LR
     delayed = workflow(atoms)
 
     # Fetch the results
-    result = dask.compute(*client.gather(delayed))
+    result = client.gather(client.compute(delayed))
     print(result)
     ```
 

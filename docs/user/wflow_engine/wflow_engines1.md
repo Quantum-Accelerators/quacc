@@ -252,11 +252,11 @@ graph LR
     delayed = bulk_to_slabs_flow(atoms)
 
     # Print the results
-    result = dask.compute(*client.gather(delayed))  # (1)!
+    result = client.gather(client.compute(delayed))  # (1)!
     print(result)
     ```
 
-    1. Calling `client.gatheer()` will collect the outputs from multiple `Delayed` objects.
+    1. Calling `client.gather()` will collect the outputs from multiple `Delayed` objects.
 
 === "Redun"
 
