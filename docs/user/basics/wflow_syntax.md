@@ -44,7 +44,7 @@ To help enable interoperability between workflow engines, quacc offers a unified
     | ------------------ | ---------------------------------- |
     | `#!Python @job`     | `#!Python @delayed`             |
     | `#!Python @flow`    | No effect              |
-    | `#!Python @subflow` | `#!Python @delayed` |
+    | `#!Python @subflow` | `#!Python @delayed(...).compute()` |
 
     </center>
 
@@ -218,7 +218,8 @@ graph LR
         return mult(add(a, b), c)
 
 
-    result = workflow(1, 2, 3).result()  # 9
+    delayed = workflow(1, 2, 3)
+    result = client.compute(delayed).result()  # 9
     print(result)
     ```
 
