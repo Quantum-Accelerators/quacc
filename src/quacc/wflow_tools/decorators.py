@@ -190,8 +190,9 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     else:
         decorated = _func
 
-    # if not hasattr(decorated, "__wrapped__"):
-    #     decorated.__wrapped__ = _func
+    if not hasattr(decorated, "__wrapped__") and wflow_engine != "dask":
+        # TODO: https://github.com/dask/dask/issues/10685
+        decorated.__wrapped__ = _func
 
     return decorated
 

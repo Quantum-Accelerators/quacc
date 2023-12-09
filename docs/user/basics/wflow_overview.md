@@ -27,10 +27,6 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     - Understanding the various configuration options for your HPC setup can be an initial hurdle
     - Monitoring job progress is more challenging and less detailed than other solutions
 
-=== "Dask"
-
-    [Dask](https://www.dask.org/) is a popular parallel computing library for Python. We use [Dask Delayed](https://docs.dask.org/en/stable/delayed.html) for lazy function execution and [Dask-Jobqueue](https://jobqueue.dask.org/en/latest/) for execution on HPC machines.
-
 === "Covalent"
 
     [Covalent](https://github.com/AgnostiqHQ/covalent/) is a workflow management solution from the company [Agnostiq](https://agnostiq.ai/).
@@ -49,6 +45,23 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     - Only supports standard queuing schemes, limiting throughput
     - It requires a centralized server to be running continuously in order to manage the workflows
     - High-security HPC environments may be difficult to access via SSH with the centralized server approach
+
+=== "Dask"
+
+    [Dask](https://www.dask.org/) is a popular parallel computing library for Python. We use [Dask Delayed](https://docs.dask.org/en/stable/delayed.html) for lazy function execution, [Dask Distributed](https://distributed.dask.org/en/stable/) for distributed compute, and [Dask-Jobqueue](https://jobqueue.dask.org/en/latest/) for orchestrating the execution on HPC machines.
+
+    Pros:
+
+    - Extremely popular
+    - Has significant support for running on HPC resources
+    - It does not involve a centralized server or network connectivity
+    - Supports the pilot job model and advanced queuing schemes via Dask Jobqueue
+
+    Cons:
+
+    - Retrieving the results of a workflow is not as straightforward as other solutions
+    - Monitoring job progress is more challenging and less detailed than other solutions
+    - The documentation, while comprehensive, can be difficult to follow given the various Dask components
 
 === "Redun"
 
