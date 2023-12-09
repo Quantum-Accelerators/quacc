@@ -501,7 +501,7 @@ graph LR
     delayed = workflow(atoms)
 
     # Fetch the results
-    result = dask.compute(*client.gather(client.compute(delayed)))
+    result = dask.compute(*client.gather(delayed))
     print(result)
     ```
 

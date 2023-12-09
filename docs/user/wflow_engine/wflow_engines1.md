@@ -252,7 +252,7 @@ graph LR
     delayed = bulk_to_slabs_flow(atoms)
 
     # Print the results
-    result = dask.compute(*client.gather(client.compute(delayed)))  # (1)!
+    result = dask.compute(*client.gather(delayed))  # (1)!
     print(result)
     ```
 
