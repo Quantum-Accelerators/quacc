@@ -7,10 +7,10 @@ import numpy as np
 import pytest
 from ase.build import bulk
 from ase.io.espresso import construct_namelist
-from monty.shutil import decompress_file
 
 from quacc import SETTINGS
 from quacc.recipes.espresso.core import ph_job, static_job
+from quacc.utils.files import copy_decompress_files
 
 pytestmark = pytest.mark.skipif(which("pw.x") is None, reason="QE not installed")
 
@@ -20,6 +20,10 @@ DEFAULT_SETTINGS = SETTINGS.model_copy()
 def test_static_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
+    pp_dir = Path(__file__).parent
+
+    copy_decompress_files(pp_dir / "Si.upf", tmp_path)
+
     atoms = bulk("Si")
 
     input_data = {
@@ -28,7 +32,7 @@ def test_static_job(tmp_path, monkeypatch):
         "degauss": 0.005,
         "mixing_mode": "plain",
         "mixing_beta": 0.6,
-        "pseudo_dir": Path(__file__).parent,
+        "pseudo_dir": tmp_path,
         "conv_thr": 1.0e-6,
     }
 
@@ -58,7 +62,11 @@ def test_ph_job(tmp_path, monkeypatch):
 
     atoms = bulk("Li")
 
-    SETTINGS.ESPRESSO_PSEUDO = Path(__file__).parent
+    pp_dir = Path(__file__).parent
+
+    copy_decompress_files(pp_dir / "Li.upf", tmp_path)
+
+    SETTINGS.ESPRESSO_PSEUDO = tmp_path
 
     input_data = {
         "calculation": "scf",
@@ -99,9 +107,14 @@ def test_ph_job(tmp_path, monkeypatch):
         assert key in ph_results["results"][(0, 0, 0)]
 
 
-def test_ph_job_list_to_do():
+def test_ph_job_list_to_do(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Li")
+
+    pp_dir = Path(__file__).parent
+
+    copy_decompress_files(pp_dir / "Li.upf", tmp_path)
 
     SETTINGS.ESPRESSO_PSEUDO = Path(__file__).parent
 
@@ -112,10 +125,10 @@ def test_ph_job_list_to_do():
         "degauss": 0.02,
         "mixing_mode": "TF",
         "mixing_beta": 0.7,
-        "conv_thr": 1.0e-6
+        "conv_thr": 1.0e-6,
     }
 
-    ph_loose = {"tr2_ph": 1e-8, "qplot": True, "nat_todo": 1, 'ldisp': True}
+    ph_loose = {"tr2_ph": 1e-8, "qplot": True, "nat_todo": 1, "ldisp": True}
 
     pseudopotentials = {"Li": "Li.upf"}
 
@@ -123,18 +136,16 @@ def test_ph_job_list_to_do():
         atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.25
     )
 
-    qpts = [
-        (0, 0, 0, 1),
-        (1/3, 0, 0, 1),
-        (1/2, 0, 0, 1)
-    ]
+    qpts = [(0, 0, 0, 1), (1 / 3, 0, 0, 1), (1 / 2, 0, 0, 1)]
 
     nat_todo = [1]
 
-    ph_results = ph_job(input_data=ph_loose,
-                        copy_files=pw_results["dir_name"],
-                        qpts = qpts,
-                        nat_todo = nat_todo)
+    ph_results = ph_job(
+        input_data=ph_loose,
+        copy_files=pw_results["dir_name"],
+        qpts=qpts,
+        nat_todo=nat_todo,
+    )
 
     assert (0, 0, 0) in ph_results["results"]
     assert np.allclose(
