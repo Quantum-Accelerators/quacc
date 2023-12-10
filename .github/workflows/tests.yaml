@@ -129,7 +129,7 @@ jobs:
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.job }} ${{ matrix.wflow_engines }} coverage report
+          name: ${{ github.job }} ${{ matrix.wflow_engine }} coverage report
           path: "coverage.xml"
           retention-days: 1
 
