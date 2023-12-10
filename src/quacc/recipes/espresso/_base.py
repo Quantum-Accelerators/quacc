@@ -26,7 +26,7 @@ def base_fn(
     profile: EspressoProfile | None = None,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
-    parallel_info: dict[str] | None = None,
+    parallel_info: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
