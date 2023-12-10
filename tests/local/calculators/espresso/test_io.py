@@ -5,8 +5,11 @@ from io import StringIO
 import numpy as np
 from ase.io.espresso import construct_namelist, read_fortran_namelist
 
-from quacc.calculators.espresso.io import (read_espresso_ph, write_espresso_io,
-                                           write_espresso_ph)
+from quacc.calculators.espresso.io import (
+    read_espresso_ph,
+    write_espresso_io,
+    write_espresso_ph,
+)
 from quacc.calculators.espresso.keys import ALL_KEYS
 
 

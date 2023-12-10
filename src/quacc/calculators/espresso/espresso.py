@@ -117,12 +117,12 @@ class Espresso(Espresso_):
 
     def __init__(
         self,
-        input_atoms: Atoms = None,
-        preset: str = None,
-        template: EspressoTemplate = None,
-        profile: EspressoProfile = None,
-        calc_defaults: dict[str, Any] = None,
-        parallel_info: dict[str, Any] = None,
+        input_atoms: Atoms | None = None,
+        preset: str | None = None,
+        template: EspressoTemplate | None = None,
+        profile: EspressoProfile | None = None,
+        calc_defaults: dict[str, Any] | None = None,
+        parallel_info: dict[str, Any] | None = None,
         **kwargs,
     ) -> None:
         """

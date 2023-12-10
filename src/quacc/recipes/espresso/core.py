@@ -50,7 +50,7 @@ def static_job(
 
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. See the
-        docstring of ase.calculators.espresso.espresso for more information.
+        docstring of [][ase.calculators.espresso.espresso] for more information.
 
     Returns
     -------
@@ -121,7 +121,7 @@ def ph_job(
         - qpts: list[list[float]] | list[tuple[float]] | list[float]
         - nat_todo: list[int]
 
-        See the docstring of quacc.calculators.espresso.io.write_espresso_ph for more
+        See the docstring of [quacc.calculators.espresso.espresso.io.write_espresso_ph][] for more
         information.
 
     Returns

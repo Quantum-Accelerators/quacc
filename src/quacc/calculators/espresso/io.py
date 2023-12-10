@@ -35,7 +35,7 @@ def write(
     filename_path = Path(filename).resolve()
     if SETTINGS.SCRATCH_DIR not in filename_path.parents:
         raise ValueError(f"File {filename_path} is not in the scratch directory.")
-    with open(filename, "w") as fd:
+    with Path.open(filename, "w") as fd:
         write_espresso_dict[binary](fd, atoms=atoms, properties=properties, **kwargs)
 
 
@@ -48,7 +48,7 @@ def read(filename: str | Path, binary: str = "pw") -> dict[str, Any]:
     filename_path = Path(filename).resolve()
     if SETTINGS.SCRATCH_DIR not in filename_path.parents:
         raise ValueError(f"File {filename_path} is not in the scratch directory.")
-    with open(filename) as fd:
+    with Path.open(filename) as fd:
         return read_espresso_dict[binary](fd)
 
 

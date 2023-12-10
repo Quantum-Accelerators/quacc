@@ -179,8 +179,7 @@ PROJWFC_KEYS = Namelist(
             "emin",
             "emax",
             "deltae",
-            "lsym"
-            "diag_basis",
+            "lsymdiag_basis",
             "pawproj",
             "filpdos",
             "filproj",
