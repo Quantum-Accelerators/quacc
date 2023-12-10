@@ -146,7 +146,7 @@ def test_bad_runs(tmp_path, monkeypatch):
 
 
 def test_unique_workdir(tmp_path, monkeypatch):
-    SETTINGS.CREATE_UNIQUE_WORKDIR = True
+    SETTINGS.CREATE_UNIQUE_DIR = True
     monkeypatch.chdir(tmp_path)
     prep_files()
 
@@ -176,4 +176,4 @@ def test_unique_workdir(tmp_path, monkeypatch):
     assert np.real(vib.get_frequencies()[-1]) == pytest.approx(255.6863883406967)
     assert np.array_equal(vib.atoms.get_positions(), o2.get_positions()) is True
 
-    SETTINGS.CREATE_UNIQUE_WORKDIR = DEFAULT_SETTINGS.CREATE_UNIQUE_WORKDIR
+    SETTINGS.CREATE_UNIQUE_DIR = DEFAULT_SETTINGS.CREATE_UNIQUE_DIR

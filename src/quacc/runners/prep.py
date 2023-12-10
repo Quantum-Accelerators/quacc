@@ -39,14 +39,14 @@ def calc_setup(copy_files: list[str | Path] | None = None) -> tuple[Path, Path]:
         The path to the results_dir, where the files will ultimately be stored.
         A symlink to the tmpdir will be made here during the calculation for
         convenience. By defualt, this will be the `SETTINGS.RESULTS_DIR`, but if
-        `SETTINGS.CREATE_UNIQUE_WORKDIR` is set, it will be a unique directory
+        `SETTINGS.CREATE_UNIQUE_DIR` is set, it will be a unique directory
         within the `SETTINGS.RESULTS_DIR`.
     """
 
     # Set where to store the results
     job_results_dir = (
         make_unique_dir(base_path=SETTINGS.RESULTS_DIR)
-        if SETTINGS.CREATE_UNIQUE_WORKDIR
+        if SETTINGS.CREATE_UNIQUE_DIR
         else SETTINGS.RESULTS_DIR
     )
     tmpdir_base = SETTINGS.SCRATCH_DIR or SETTINGS.RESULTS_DIR
