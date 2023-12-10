@@ -293,7 +293,9 @@ jobs:
           activate-environment: quacc-env
 
       - name: Install conda packages
-        run: conda install -c conda-forge openbabel -c pytorch pytorch
+        run: |
+          conda install -c conda-forge openbabel
+          conda install -c pytorch pytorch
 
       - name: Install pip packages
         run: |
