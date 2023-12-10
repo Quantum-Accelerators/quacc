@@ -49,7 +49,7 @@ jobs:
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.job }} coverage report
+          name: ${{ GITHUB_JOB }} ${{ matrix.os }} ${{ matrix.python-version }} coverage report
           path: 'coverage.xml'
           retention-days: 1
 
@@ -93,7 +93,7 @@ jobs:
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.job }} coverage report
+          name: ${{ GITHUB_JOB }} coverage report
           path: 'coverage.xml'
           retention-days: 1
 
@@ -132,7 +132,7 @@ jobs:
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.job }} coverage report
+          name: ${{ GITHUB_JOB }} ${{ matrix.wflow_engine }} coverage report
           path: 'coverage.xml'
           retention-days: 1
 
@@ -180,7 +180,7 @@ jobs:
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.job }} coverage report
+          name: ${{ GITHUB_JOB }} coverage report
           path: 'coverage.xml'
           retention-days: 1
 
@@ -224,7 +224,7 @@ jobs:
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.job }} coverage report
+          name: ${{ GITHUB_JOB }} coverage report
           path: 'coverage.xml'
           retention-days: 1
 
@@ -271,7 +271,7 @@ jobs:
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.job }} coverage report
+          name: ${{ GITHUB_JOB }} coverage report
           path: 'coverage.xml'
           retention-days: 1
 
@@ -318,7 +318,7 @@ jobs:
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.job }} coverage report
+          name: ${{ GITHUB_JOB }} coverage report
           path: 'coverage.xml'
           retention-days: 1
 
