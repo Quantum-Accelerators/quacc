@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ase import Atoms
@@ -16,7 +17,6 @@ from quacc.utils.dicts import merge_dicts
 from quacc.utils.files import load_yaml_calc
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from typing import Any
 
 
