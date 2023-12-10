@@ -6,7 +6,7 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 
 ## Background
 
-To help enable interoperability between workflow engines, quacc offers a unified set of decorators: [`#!Python @job`](https://quantum-accelerators.github.io/quacc/reference/quacc/utils/wflows.html#quacc.wflow_tools.job), [`#!Python @flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/utils/wflows.html#quacc.wflow_tools.flow), and [`#!Python @subflow`](https://quantum-accelerators.github.io/quacc/reference/quacc/utils/wflows.html#quacc.wflow_tools.subflow).
+To help enable interoperability between workflow engines, quacc offers a unified set of decorators: [`#!Python @job`](https://quantum-accelerators.github.io/quacc/reference/quacc/wflow_tools/decorators.html#quacc.wflow_tools.decorators.job), [`#!Python @flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/wflow_tools/decorators.html#quacc.wflow_tools.decorators.flow), and [`#!Python @subflow`](https://quantum-accelerators.github.io/quacc/reference/quacc/wflow_tools/decorators.html#quacc.wflow_tools.decorators.subflow).
 
 === "Parsl"
 
@@ -14,10 +14,10 @@ To help enable interoperability between workflow engines, quacc offers a unified
 
     <center>
 
-    | Quacc              | Parsl                 |
-    | ------------------ | --------------------- |
+    | Quacc               | Parsl                  |
+    | ------------------- | ---------------------- |
     | `#!Python @job`     | `#!Python @python_app` |
-    | `#!Python @flow`    | No effect             |
+    | `#!Python @flow`    | No effect              |
     | `#!Python @subflow` | `#!Python @join_app`   |
 
     </center>
@@ -28,10 +28,10 @@ To help enable interoperability between workflow engines, quacc offers a unified
 
     <center>
 
-    | Quacc              | Covalent                           |
-    | ------------------ | ---------------------------------- |
-    | `#!Python @job`     | `#!Python @ct.electron`             |
-    | `#!Python @flow`    | `#!Python @ct.lattice`              |
+    | Quacc               | Covalent                                               |
+    | ------------------- | ------------------------------------------------------ |
+    | `#!Python @job`     | `#!Python @ct.electron`                                |
+    | `#!Python @flow`    | `#!Python @ct.lattice`                                 |
     | `#!Python @subflow` | `#!Python @ct.electron`<br>`#!Python @ct.lattice`</br> |
 
     </center>
@@ -42,10 +42,10 @@ To help enable interoperability between workflow engines, quacc offers a unified
 
     <center>
 
-    | Quacc              | Covalent                           |
-    | ------------------ | ---------------------------------- |
-    | `#!Python @job`     | `#!Python @delayed`             |
-    | `#!Python @flow`    | No effect              |
+    | Quacc               | Covalent                          |
+    | ------------------- | ---------------------------------|
+    | `#!Python @job`     | `#!Python @delayed`               |
+    | `#!Python @flow`    | No effect                         |
     | `#!Python @subflow` | `#!Python delayed(...).compute()` |
 
     </center>
@@ -56,8 +56,8 @@ To help enable interoperability between workflow engines, quacc offers a unified
 
     <center>
 
-    | Quacc              | Redun           |
-    | ------------------ | --------------- |
+    | Quacc               | Redun            |
+    | ------------------- | ---------------- |
     | `#!Python @job`     | `#!Python @task` |
     | `#!Python @flow`    | `#!Python @task` |
     | `#!Python @subflow` | `#!Python @task` |
@@ -70,11 +70,11 @@ To help enable interoperability between workflow engines, quacc offers a unified
 
     <center>
 
-    | Quacc              | Jobflow        |
-    | ------------------ | -------------- |
+    | Quacc               | Jobflow         |
+    | ------------------- | --------------- |
     | `#!Python @job`     | `#!Python @job` |
-    | `#!Python @flow`    | N/A      |
-    | `#!Python @subflow` | N/A      |
+    | `#!Python @flow`    | N/A             |
+    | `#!Python @subflow` | N/A             |
 
     </center>
 
