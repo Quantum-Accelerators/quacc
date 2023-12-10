@@ -233,7 +233,7 @@ def get_uri(dir_name: str | Path) -> str:
     str
         Full URI path, e.g., "fileserver.host.com:/full/path/of/dir_name".
     """
-    fullpath = Path(dir_name).absolute()
+    fullpath = Path(dir_name).resolve()
     hostname = socket.gethostname()
     with contextlib.suppress(socket.gaierror, socket.herror):
         hostname = socket.gethostbyaddr(hostname)[0]
