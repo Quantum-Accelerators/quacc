@@ -270,7 +270,7 @@ def read_espresso_ph(fd: TextIO) -> dict[str, Any]:
         n = 1
         n_modes = len(re.findall(r"mode", fdo_lines[idx]))
         modes = []
-        while len(modes) == 0 or bool(re.match(r"^\s*\(", fdo_lines[idx + n])):
+        while not modes or bool(re.match(r"^\s*\(", fdo_lines[idx + n])):
             tmp = re.findall(freg, fdo_lines[idx + n])
             modes.append([float(x) for x in tmp])
             n += 1
@@ -286,7 +286,7 @@ def read_espresso_ph(fd: TextIO) -> dict[str, Any]:
         n = 0
         freqs = []
         stop = 0
-        while len(freqs) == 0 or stop < 2:
+        while not freqs or stop < 2:
             if bool(re.search(r"^\s*freq", fdo_lines[idx + n])):
                 tmp = re.findall(freg, fdo_lines[idx + n])[1]
                 freqs.append(float(tmp))
@@ -403,14 +403,14 @@ def read_espresso_ph(fd: TextIO) -> dict[str, Any]:
                     results[current]["gammas"] = gammas
                     lambdas = []
                     gammas = []
-                current = broad_match.group(1)
+                current = broad_match[1]
                 results[current] = {}
             elif dos_match:
-                results[current]["dos"] = float(dos_match.group(1))
-                results[current]["fermi"] = float(dos_match.group(2))
+                results[current]["dos"] = float(dos_match[1])
+                results[current]["fermi"] = float(dos_match[2])
             elif lg_match:
-                lambdas.append(float(lg_match.group(2)))
-                gammas.append(float(lg_match.group(3)))
+                lambdas.append(float(lg_match[2]))
+                gammas.append(float(lg_match[3]))
 
             if end_match:
                 results[current]["lambdas"] = lambdas

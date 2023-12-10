@@ -150,7 +150,7 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
     yaml_path = Path(yaml_path)
 
     if yaml_path.suffix != ".yaml":
-        yaml_path = yaml_path.with_suffix(yaml_path.suffix + ".yaml")
+        yaml_path = yaml_path.with_suffix(f"{yaml_path.suffix}.yaml")
 
     if not yaml_path.exists():
         msg = f"Cannot find {yaml_path}"
