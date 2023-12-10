@@ -258,16 +258,16 @@ When deploying calculations for the first time, it's important to start simple, 
 
 === "Dask"
 
-    From an interactive resource like a Jupyter Notebook or IPython kernel on the login node of the remote machine, run the following to instantiate a Dask `SLURMCluster`:
+    From an interactive resource like a Jupyter Notebook or IPython kernel on the login node of the remote machine, run the following to instantiate a Dask [`SLURMCluster`](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html):
 
     ```python
     from dask.distributed import Client
     from dask_jobqueue import SLURMCluster
 
-    n_slurm_jobs = 1  # (1)!
-    n_nodes_per_calc = 1  # (2)!
-    n_cores_per_node = 48  # (3)!
-    mem_per_node = "64 GB"  # (4)!
+    n_slurm_jobs = 1
+    n_nodes_per_calc = 1
+    n_cores_per_node = 48
+    mem_per_node = "64 GB"
 
     cluster_kwargs = {
         # Dask worker options
@@ -276,7 +276,7 @@ When deploying calculations for the first time, it's important to start simple, 
         "memory": mem_per_node,
         # SLURM options
         "shebang": "#!/bin/bash",
-        "account": "MyAccountName",  # (5)!
+        "account": "MyAccountName",  # (1)!
         "walltime": "00:10:00",
         "job_mem": "0",
         "job_script_prologue": [
@@ -292,15 +292,7 @@ When deploying calculations for the first time, it's important to start simple, 
     client = Client(cluster)
     ```
 
-    1. Number of Slurm jobs to launch in parallel.
-
-    2. Number of nodes to reserve for each Slurm job.
-
-    3. Number of CPU cores per node.
-
-    4. Total memory per node.
-
-    5. Make sure to replace this with the account name to charge.
+    1. Make sure to replace this with the account name to charge.
 
     Then run the following code:
 
