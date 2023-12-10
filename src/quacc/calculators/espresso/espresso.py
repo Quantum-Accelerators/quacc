@@ -16,6 +16,7 @@ from quacc.utils.dicts import merge_dicts
 from quacc.utils.files import load_yaml_calc
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from typing import Any
 
 
@@ -44,7 +45,14 @@ class EspressoTemplate(EspressoTemplate_):
         self.outputname = f"{binary}.out"
         self.binary = binary
 
-    def write_input(self, profile, directory, atoms, parameters, properties):
+    def write_input(
+        self,
+        profile: EspressoProfile,
+        directory: Path | str,
+        atoms: Atoms,
+        parameters: dict[str, Any],
+        properties: Any,
+    ):
         """
         The function that should be used instead of the one in ASE EspressoTemplate
         to write the input file. It calls a customly defined write function.
@@ -66,7 +74,7 @@ class EspressoTemplate(EspressoTemplate_):
         -------
         None
         """
-        dst = directory / self.inputname
+        dst = Path(directory) / self.inputname
         write(
             dst,
             atoms,
@@ -76,7 +84,7 @@ class EspressoTemplate(EspressoTemplate_):
             **parameters,
         )
 
-    def read_results(self, directory):
+    def read_results(self, directory: Path | str):
         """
         The function that should be used instead of the one in ASE EspressoTemplate
         to read the output file. It calls a customly defined read function. It also
@@ -93,7 +101,7 @@ class EspressoTemplate(EspressoTemplate_):
         dict
             The results dictionnary
         """
-        path = directory / self.outputname
+        path = Path(directory) / self.outputname
         results = read(path, binary=self.binary)
         if "energy" not in results:
             results["energy"] = None
@@ -177,7 +185,7 @@ class Espresso(Espresso_):
 
         self.template = template
 
-    def _kwargs_handler(self, binary, **kwargs):
+    def _kwargs_handler(self, binary: str, **kwargs):
         """
         Function that handles the kwargs. It will merge the user-supplied
         kwargs with the defaults and preset values. Priority order is as follow:
