@@ -145,7 +145,6 @@ def ph_job(
     template = EspressoTemplate("ph")
 
     return base_fn(
-        Atoms(),
         preset=preset,
         template=template,
         calc_defaults=calc_defaults,
