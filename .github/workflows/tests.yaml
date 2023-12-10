@@ -310,3 +310,22 @@ jobs:
           name: ${{ github.job }} ${{ RANDOM }} coverage report
           path: 'coverage.xml'
           retention-days: 1
+
+  codecov:
+    needs: [tests-core,tests-covalent,tests-engines,tests-psi4,tests-defects-phonons,tests-qchem-sella-newtonnet]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download coverage artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Upload coverage to Codecov.io
+        uses: Wandalen/wretry.action@v1.3.0
+        with:
+          action: codecov/codecov-action@v3
+          with: |
+            fail_ci_if_error: true
+          attempt_limit: 5
+          attempt_delay: 30000
