@@ -302,6 +302,8 @@ When deploying calculations for the first time, it's important to start simple, 
 
     5. Make sure to replace this with the account name to charge.
 
+    Then run the following code:
+
     ```python
     from ase.build import bulk
     from quacc.recipes.emt.core import relax_job, static_job
