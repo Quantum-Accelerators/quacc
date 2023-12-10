@@ -49,8 +49,8 @@ jobs:
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.job }} ${{ RANDOM }} coverage report
-          path: 'coverage.xml'
+          name: ${{ github.job }} $RANDOM coverage report
+          path: "coverage.xml"
           retention-days: 1
 
   tests-covalent:
@@ -91,8 +91,8 @@ jobs:
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.job }} ${{ RANDOM }} coverage report
-          path: 'coverage.xml'
+          name: ${{ github.job }} $RANDOM coverage report
+          path: "coverage.xml"
           retention-days: 1
 
   tests-engines:
@@ -129,8 +129,8 @@ jobs:
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.job }} ${{ RANDOM }} coverage report
-          path: 'coverage.xml'
+          name: ${{ github.job }} $RANDOM coverage report
+          path: "coverage.xml"
           retention-days: 1
 
   tests-psi4:
@@ -175,8 +175,8 @@ jobs:
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.job }} ${{ RANDOM }} coverage report
-          path: 'coverage.xml'
+          name: ${{ github.job }} $RANDOM coverage report
+          path: "coverage.xml"
           retention-days: 1
 
   tests-defects-phonons:
@@ -217,8 +217,8 @@ jobs:
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.job }} ${{ RANDOM }} coverage report
-          path: 'coverage.xml'
+          name: ${{ github.job }} $RANDOM coverage report
+          path: "coverage.xml"
           retention-days: 1
 
   tests-tblite-dftbplus:
@@ -262,8 +262,8 @@ jobs:
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.job }} ${{ RANDOM }} coverage report
-          path: 'coverage.xml'
+          name: ${{ github.job }} $RANDOM coverage report
+          path: "coverage.xml"
           retention-days: 1
 
   tests-qchem-sella-newtonnet:
@@ -307,12 +307,20 @@ jobs:
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.job }} ${{ RANDOM }} coverage report
-          path: 'coverage.xml'
+          name: ${{ github.job }} $RANDOM coverage report
+          path: "coverage.xml"
           retention-days: 1
 
   codecov:
-    needs: [tests-core,tests-covalent,tests-engines,tests-psi4,tests-defects-phonons,tests-qchem-sella-newtonnet]
+    needs:
+      [
+        tests-core,
+        tests-covalent,
+        tests-engines,
+        tests-psi4,
+        tests-defects-phonons,
+        tests-qchem-sella-newtonnet,
+      ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
