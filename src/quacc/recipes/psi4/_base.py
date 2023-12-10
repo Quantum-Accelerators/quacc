@@ -9,7 +9,6 @@ from quacc.runners.ase import run_calc
 from quacc.schemas.ase import summarize_run
 from quacc.utils.dicts import merge_dicts
 
-
 if TYPE_CHECKING:
     from typing import Any
 
