@@ -53,7 +53,7 @@ jobs:
           path: "coverage.xml"
           retention-days: 1
 
-  tests-covalent:
+  tests-engines (covalent):
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
