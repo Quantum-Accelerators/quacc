@@ -329,11 +329,6 @@ jobs:
       - name: Download coverage artifacts
         uses: actions/download-artifact@v3
 
-      - name: Upload coverage to Codecov.io
-        uses: Wandalen/wretry.action@v1.3.0
-        with:
-          action: codecov/codecov-action@v3
-          with: |
-            fail_ci_if_error: true
-          attempt_limit: 5
-          attempt_delay: 30000
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'Quantum-Accelerators/quacc'
