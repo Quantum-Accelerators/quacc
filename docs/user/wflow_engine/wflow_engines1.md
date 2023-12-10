@@ -94,6 +94,41 @@ graph LR
 
     3. The `ct.get_result` function is used to fetch the workflow status and results from the server. You don't need to set `wait=True` in practice. Once you dispatch the workflow, it will begin running (if the resources are available).
 
+=== "Dask"
+
+    !!! Important
+
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md) and load the default Dask cluster:
+
+        ```bash title="terminal"
+        quacc set WORKFLOW_ENGINE dask
+        ```
+
+        ```python title="python"
+        from dask.distributed import Client
+
+        client = Client()
+        ```
+
+    ```python
+    from ase.build import bulk
+    from quacc.recipes.emt.core import relax_job
+
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
+
+    # Call the PythonApp
+    delayed = relax_job(atoms)  # (1)!
+
+    # Print result
+    result = client.compute(delayed).result()
+    print(result)  # (2)!
+    ```
+
+    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here. We also did not need to use a `#!Python @flow` decorator because Parsl does not have an analogous decorator.
+
+    2. Calling `client.compute()` dispatches the compute job to the active Dask cluster. The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `Delayed` object.
+
 === "Redun"
 
     !!! Important
@@ -144,7 +179,7 @@ graph LR
     job = relax_job(atoms)  # (1)!
 
     # Run the job locally
-    responses = jf.run_locally(job, create_folders=True)  # (2)!
+    responses = jf.run_locally(job)  # (2)!
 
     # Get the result
     result = responses[job.uuid][1].output
@@ -203,6 +238,25 @@ graph LR
     ```
 
     1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator.
+
+=== "Dask"
+
+    ```python
+    from ase.build import bulk
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Define the workflow
+    delayed = bulk_to_slabs_flow(atoms)
+
+    # Print the results
+    result = client.gather(client.compute(delayed))  # (1)!
+    print(result)
+    ```
+
+    1. Calling `client.gather()` will collect the outputs from multiple `Delayed` objects.
 
 === "Redun"
 

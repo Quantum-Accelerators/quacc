@@ -112,6 +112,53 @@ graph LR
 
     4. You don't need to set `wait=True` in practice. Once you dispatch the workflow, it will begin running (if the resources are available). The `ct.get_result` function is used to fetch the workflow status and results from the server.
 
+=== "Dask"
+
+    !!! Important
+
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md) and load the default Dask cluster:
+
+        ```bash title="terminal"
+        quacc set WORKFLOW_ENGINE dask
+        ```
+
+        ```python title="python"
+        from dask.distributed import Client
+
+        client = Client()
+        ```
+
+    ```python
+    from ase.build import bulk
+    from quacc.recipes.emt.core import relax_job, static_job
+
+
+    # Define the workflow
+    def workflow(atoms):
+        # Define Job 1
+        delayed1 = relax_job(atoms)  # (1)!
+
+        # Define Job 2, which takes the output of Job 1 as input
+        delayed12 = static_job(delayed1["atoms"])
+
+        return delayed1
+
+
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
+
+    # Dispatch the workflow
+    delayed = workflow(atoms)
+
+    # Fetch the result
+    result = client.compute(delayed).result()  # (2)!
+    print(result)
+    ```
+
+    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
+
+    2. The use of `client.compute()` submits the job to the cluster, and `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `Delayed` object.
+
 === "Redun"
 
     !!! Important
@@ -184,7 +231,7 @@ graph LR
     workflow = jf.Flow([job1, job2])  # (3)!
 
     # Run the workflow locally
-    responses = jf.run_locally(workflow, create_folders=True)  # (4)!
+    responses = jf.run_locally(workflow)  # (4)!
 
     # Get the result
     result = responses[job2.uuid][1].output
@@ -268,6 +315,36 @@ graph LR
     print(result)
     ```
 
+=== "Dask"
+
+    ```python
+    from ase.build import bulk, molecule
+    from quacc.recipes.emt.core import relax_job
+
+
+    # Define workflow
+    def workflow(atoms1, atoms2):
+        # Define two independent relaxation jobs
+        result1 = relax_job(atoms1)
+        result2 = relax_job(atoms2)
+
+        return {"result1": result1, "result2": result2}
+
+
+    # Define two Atoms objects
+    atoms1 = bulk("Cu")
+    atoms2 = molecule("N2")
+
+    # Define two independent relaxation jobs
+    delayed = workflow(atoms1, atoms2)
+
+    # Fetch the results
+    results = client.gather(client.compute(delayed))
+    result1 = results["result1"]
+    result2 = results["result2"]
+    print(result1, result2)
+    ```
+
 === "Redun"
 
     ```python
@@ -318,7 +395,7 @@ graph LR
     workflow = jf.Flow([job1, job2])
 
     # Run the workflow locally
-    responses = jf.run_locally(workflow, create_folders=True)
+    responses = jf.run_locally(workflow)
 
     # Get the result
     result = responses[job2.uuid][1].output
@@ -396,6 +473,35 @@ graph LR
     ```
 
     1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator. We also chose to set `#!Python run_static=False` here to disable the static calculation that is normally carried out in this workflow.
+
+=== "Dask"
+
+    ```python
+    from ase.build import bulk
+    from quacc.recipes.emt.core import relax_job
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+
+    # Define the workflow
+    def workflow(atoms):
+        relaxed_bulk = relax_job(atoms)
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)  # (1)!
+
+        return relaxed_slabs
+
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Dispatch the workflow
+    delayed = workflow(atoms)
+
+    # Fetch the results
+    result = client.gather(client.compute(delayed))
+    print(result)
+    ```
+
+    1. We chose to set `#!Python run_static=False` here to disable the static calculation that is normally carried out in this workflow.
 
 === "Redun"
 

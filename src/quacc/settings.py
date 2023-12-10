@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 installed_engine = next(
     (
         wflow_engine
-        for wflow_engine in ["parsl", "covalent", "prefect", "redun", "jobflow"]
+        for wflow_engine in ["parsl", "covalent", "dask", "prefect", "redun", "jobflow"]
         if util.find_spec(wflow_engine)
     ),
     "local",
@@ -54,7 +54,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
 
     WORKFLOW_ENGINE: Literal[
-        "covalent", "jobflow", "parsl", "prefect", "redun", "local"
+        "covalent", "dask", "parsl", "redun", "jobflow", "prefect", "local"
     ] = Field(
         installed_engine,
         description=(
@@ -72,24 +72,22 @@ class QuaccSettings(BaseSettings):
         description=(
             "Directory to permanently store I/O-based calculation results in."
             "Note that this behavior may be modified by the chosen workflow engine."
-            "For instance, Covalent specifies the base directory as the `workdir` "
-            "of a local executor or the `remote_workdir` of a remote executor."
-            "In this case, the `RESULTS_DIR` will be a subdirectory of that directory."
         ),
     )
     SCRATCH_DIR: Optional[Path] = Field(
         None,
         description=(
-            "Directory to run the calculations in. If set to None, calculations will be run in a "
+            "The base directory where calculations are run. If set to None, calculations will be run in a "
             "temporary directory within `RESULTS_DIR`. If a `Path` is supplied, calculations will "
-            "be run in a temporary directory within `SCRATCH_DIR`. Results are always moved back "
-            "to `RESULTS_DIR` after the calculation is complete."
+            "be run in a temporary directory within `SCRATCH_DIR`. Files are always moved back "
+            "to `RESULTS_DIR` after the calculation is complete, and the temporary directory "
+            "in `SCRATCH_DIR` is removed."
         ),
     )
-    CREATE_UNIQUE_WORKDIR: bool = Field(
+    CREATE_UNIQUE_DIR: bool = Field(
         False,
         description=(
-            "Whether to have a unique working directory in RESULTS_DIR for each job."
+            "Whether to have a unique directory in RESULTS_DIR for each job."
             "Some workflow engines have an option to do this for you already."
         ),
     )
@@ -98,7 +96,7 @@ class QuaccSettings(BaseSettings):
     )
     CHECK_CONVERGENCE: bool = Field(
         True,
-        description="Whether to check for convergence in the `summarize_run`-type functions, if supported.",
+        description="Whether to check for convergence, when implemented by a given recipe.",
     )
 
     # ---------------------------
