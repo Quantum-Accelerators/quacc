@@ -46,16 +46,17 @@ jobs:
       - name: Run tests with pytest
         run: pytest --cov=quacc --cov-report=xml
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        if: github.repository == 'Quantum-Accelerators/quacc'
+      - name: Upload code coverage report to Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.job }} ${{ matrix.python-version }} ${{ matrix.os }} coverage report
+          path: "coverage.xml"
+          retention-days: 1
 
-  tests-covalent:
+  tests-engines-covalent:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
-      matrix:
-        python-version: ["3.10"]
 
     defaults:
       run:
@@ -68,7 +69,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.10"
           cache: pip
           cache-dependency-path: pyproject.toml
 
@@ -87,17 +88,19 @@ jobs:
       - name: Stop Covalent server
         run: covalent stop
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        if: github.repository == 'Quantum-Accelerators/quacc'
+      - name: Upload code coverage report to Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.job }} coverage report
+          path: "coverage.xml"
+          retention-days: 1
 
   tests-engines:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
       matrix:
-        python-version: ["3.11"]
-        wflow_engine: [parsl, redun, jobflow]
+        wflow_engine: [dask, parsl, redun, jobflow]
 
     defaults:
       run:
@@ -110,7 +113,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.11"
           cache: pip
           cache-dependency-path: pyproject.toml
 
@@ -123,15 +126,16 @@ jobs:
       - name: Run tests with pytest
         run: pytest tests/${{ matrix.wflow_engine }} --cov=quacc --cov-report=xml
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        if: github.repository == 'Quantum-Accelerators/quacc'
+      - name: Upload code coverage report to Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.job }} ${{ matrix.wflow_engine }} coverage report
+          path: "coverage.xml"
+          retention-days: 1
 
   tests-psi4:
     strategy:
       fail-fast: true
-      matrix:
-        python-version: ["3.11"]
     runs-on: ubuntu-latest
 
     defaults:
@@ -145,7 +149,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.11"
           cache: pip
           cache-dependency-path: pyproject.toml
 
@@ -168,15 +172,16 @@ jobs:
       - name: Run tests with pytest
         run: pytest -k 'psi4' --cov=quacc --cov-report=xml
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        if: github.repository == 'Quantum-Accelerators/quacc'
+      - name: Upload code coverage report to Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.job }} coverage report
+          path: "coverage.xml"
+          retention-days: 1
 
   tests-defects-phonons:
     strategy:
       fail-fast: true
-      matrix:
-        python-version: ["3.11"]
     runs-on: ubuntu-latest
 
     defaults:
@@ -190,7 +195,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.11"
           cache: pip
           cache-dependency-path: pyproject.toml
 
@@ -209,15 +214,16 @@ jobs:
       - name: Run tests with pytest
         run: pytest -k 'defects or phonon' --cov=quacc --cov-report=xml
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        if: github.repository == 'Quantum-Accelerators/quacc'
+      - name: Upload code coverage report to Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.job }} coverage report
+          path: "coverage.xml"
+          retention-days: 1
 
   tests-tblite-dftbplus:
     strategy:
       fail-fast: true
-      matrix:
-        python-version: ["3.11"]
     runs-on: ubuntu-latest
 
     defaults:
@@ -231,7 +237,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.11"
           cache: pip
           cache-dependency-path: pyproject.toml
 
@@ -253,15 +259,16 @@ jobs:
       - name: Run tests with pytest
         run: pytest -k 'dftb or tblite' --cov=quacc --cov-report=xml
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        if: github.repository == 'Quantum-Accelerators/quacc'
+      - name: Upload code coverage report to Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.job }} coverage report
+          path: "coverage.xml"
+          retention-days: 1
 
   tests-qchem-sella-newtonnet:
     strategy:
       fail-fast: true
-      matrix:
-        python-version: ["3.11"]
     runs-on: ubuntu-latest
 
     defaults:
@@ -275,7 +282,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.11"
           cache: pip
           cache-dependency-path: pyproject.toml
 
@@ -286,7 +293,9 @@ jobs:
           activate-environment: quacc-env
 
       - name: Install conda packages
-        run: conda install -c conda-forge openbabel
+        run: |
+          conda install -c conda-forge openbabel
+          conda install -c pytorch pytorch
 
       - name: Install pip packages
         run: |
@@ -296,6 +305,29 @@ jobs:
 
       - name: Run tests with pytest
         run: pytest -k 'qchem or sella or newtonnet' --cov=quacc --cov-report=xml
+
+      - name: Upload code coverage report to Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.job }} coverage report
+          path: "coverage.xml"
+          retention-days: 1
+
+  codecov:
+    needs:
+      - tests-core
+      - tests-engines-covalent
+      - tests-engines
+      - tests-psi4
+      - tests-defects-phonons
+      - tests-qchem-sella-newtonnet
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download coverage artifacts
+        uses: actions/download-artifact@v3
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
