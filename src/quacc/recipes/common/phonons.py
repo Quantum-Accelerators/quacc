@@ -19,8 +19,8 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
     from numpy.typing import ArrayLike
-    from qucac import Job
 
+    from quacc import Job
     from quacc.schemas._aliases.phonons import PhononSchema
 
 
@@ -85,7 +85,9 @@ def phonon_flow(
     def _phonopy_thermo_job(
         atoms: Atoms, force_job_results: list[dict]
     ) -> PhononSchema:
-        phonon = atoms_to_phonopy(atoms, supercell_matrix, atom_disp)
+        phonon = atoms_to_phonopy(
+            atoms, supercell_matrix, atom_disp, phonopy_kwargs=phonopy_kwargs
+        )
         parameters = force_job_results[-1].get("parameters")
         forces = [output["results"]["forces"] for output in force_job_results]
         phonon.forces = forces

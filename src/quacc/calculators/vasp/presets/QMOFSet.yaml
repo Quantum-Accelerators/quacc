@@ -1,7 +1,7 @@
 # Last modified: 08-01-2023
 inputs:
   algo: all
-  auto_kpts:
+  pmg_kpts:
     kppa: 1000
   ediff: 1.0e-6
   encut: 520

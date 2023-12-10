@@ -11,8 +11,8 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-def test_tutorial1a(tmpdir):
-    tmpdir.chdir()
+def test_tutorial1a(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -24,8 +24,8 @@ def test_tutorial1a(tmpdir):
     jf.run_locally(job, create_folders=True, ensure_success=True)
 
 
-def test_tutorial2a(tmpdir):
-    tmpdir.chdir()
+def test_tutorial2a(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -43,8 +43,8 @@ def test_tutorial2a(tmpdir):
     jf.run_locally(workflow, create_folders=True, ensure_success=True)
 
 
-def test_tutorial2b(tmpdir):
-    tmpdir.chdir()
+def test_tutorial2b(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Define two Atoms objects
     atoms1 = bulk("Cu")
@@ -61,8 +61,8 @@ def test_tutorial2b(tmpdir):
     jf.run_locally(workflow, create_folders=True, ensure_success=True)
 
 
-def test_comparison1(tmpdir):
-    tmpdir.chdir()
+def test_comparison1(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     @job  # (1)!
     def add(a, b):
@@ -80,8 +80,8 @@ def test_comparison1(tmpdir):
     assert responses[job2.uuid][1].output == 9
 
 
-def test_comparison2(tmpdir):
-    tmpdir.chdir()
+def test_comparison2(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     @jf.job
     def add(a, b):
@@ -108,8 +108,8 @@ def test_comparison2(tmpdir):
     jf.run_locally(flow, ensure_success=True)  # [6, 6, 6] in final 3 jobs
 
 
-def test_comparison3(tmpdir):
-    tmpdir.chdir()
+def test_comparison3(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     @job  #  (1)!
     def add(a, b):
@@ -122,31 +122,5 @@ def test_comparison3(tmpdir):
     job1 = add(1, 2)
     job2 = mult(job1.output, 3)
     flow = jf.Flow([job1, job2])
-
-    jf.run_locally(flow, ensure_success=True)
-
-
-def test_comparison4(tmpdir):
-    tmpdir.chdir()
-
-    @job
-    def add(a, b):
-        return a + b
-
-    @job
-    def make_more(val):
-        return [val] * 3
-
-    @job
-    def add_distributed(vals, c):
-        jobs = []
-        for val in vals:
-            jobs.append(add(val, c))
-        return jf.Response(replace=jf.Flow(jobs))
-
-    job1 = add(1, 2)
-    job2 = make_more(job1.output)
-    job3 = add_distributed(job2.output, 3)
-    flow = jf.Flow([job1, job2, job3])
 
     jf.run_locally(flow, ensure_success=True)

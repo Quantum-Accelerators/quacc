@@ -9,8 +9,8 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-def test_jobflow_decorators(tmpdir):
-    tmpdir.chdir()
+def test_jobflow_decorators(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     @job
     def add(a, b):
@@ -38,8 +38,8 @@ def test_jobflow_decorators(tmpdir):
     assert isinstance(add_distributed([1, 2, 3], 4)[0], jf.Job)
 
 
-def test_jobflow_decorators_args(tmpdir):
-    tmpdir.chdir()
+def test_jobflow_decorators_args(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     @job()
     def add(a, b):

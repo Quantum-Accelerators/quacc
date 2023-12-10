@@ -23,8 +23,8 @@ def teardown_module():
     parsl.clear()
 
 
-def test_tutorial1a(tmpdir):
-    tmpdir.chdir()
+def test_tutorial1a(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -36,8 +36,8 @@ def test_tutorial1a(tmpdir):
     assert "atoms" in future.result()  # (2)!
 
 
-def test_tutorial1b(tmpdir):
-    tmpdir.chdir()
+def test_tutorial1b(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -58,8 +58,8 @@ def test_tutorial1b(tmpdir):
     assert "atoms" in future.result()[0]  # (2)!
 
 
-def test_tutorial2a(tmpdir):
-    tmpdir.chdir()
+def test_tutorial2a(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Define the workflow
     def workflow(atoms):
@@ -80,8 +80,8 @@ def test_tutorial2a(tmpdir):
     assert "atoms" in result
 
 
-def test_tutorial2b(tmpdir):
-    tmpdir.chdir()
+def test_tutorial2b(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Define workflow
     def workflow(atoms1, atoms2):
@@ -107,8 +107,8 @@ def test_tutorial2b(tmpdir):
     assert "atoms" in result2
 
 
-def test_tutorial2c(tmpdir):
-    tmpdir.chdir()
+def test_tutorial2c(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Define the workflow
     def workflow(atoms):
@@ -128,8 +128,8 @@ def test_tutorial2c(tmpdir):
     assert len(result) == 4
 
 
-def test_comparison1(tmpdir):
-    tmpdir.chdir()
+def test_comparison1(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     @job  #  (1)!
     def add(a, b):
@@ -146,8 +146,8 @@ def test_comparison1(tmpdir):
     assert result == 9
 
 
-def test_comparison2(tmpdir):
-    tmpdir.chdir()
+def test_comparison2(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     @job
     def add(a, b):
@@ -168,8 +168,8 @@ def test_comparison2(tmpdir):
     assert future3.result() == [6, 6, 6]
 
 
-def test_comparison3(tmpdir):
-    tmpdir.chdir()
+def test_comparison3(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     @job  #  (1)!
     def add(a, b):
@@ -183,25 +183,3 @@ def test_comparison3(tmpdir):
     future2 = mult(future1, 3)
 
     assert future2.result() == 9
-
-
-def test_comparison4(tmpdir):
-    tmpdir.chdir()
-
-    @job
-    def add(a, b):
-        return a + b
-
-    @job
-    def make_more(val):
-        return [val] * 3
-
-    @subflow  #  (1)!
-    def add_distributed(vals, c):
-        return [add(val, c) for val in vals]
-
-    future1 = add(1, 2)
-    future2 = make_more(future1)
-    future3 = add_distributed(future2, 3)
-
-    assert future3.result() == [6, 6, 6]

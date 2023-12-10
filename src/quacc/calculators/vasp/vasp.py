@@ -14,7 +14,7 @@ from ase.constraints import FixAtoms
 from quacc.calculators.vasp import vasp_custodian
 from quacc.calculators.vasp.io import load_vasp_yaml_calc
 from quacc.calculators.vasp.params import (
-    convert_auto_kpts,
+    convert_pmg_kpts,
     get_param_swaps,
     remove_unused_flags,
     set_auto_dipole,
@@ -44,7 +44,7 @@ class Vasp(Vasp_):
         preset_mag_default: float | None = None,
         mag_cutoff: None | float = None,
         elemental_magmoms: dict[str, float] | None = None,
-        auto_kpts: dict[Literal["line_density", "kppvol", "kppa"], float]
+        pmg_kpts: dict[Literal["line_density", "kppvol", "kppa"], float]
         | dict[Literal["length_densities"], list[float]]
         | None = None,
         auto_dipole: bool | None = None,
@@ -71,7 +71,7 @@ class Vasp(Vasp_):
             Options include:
             off: Do not use co-pilot mode. INCAR parameters will be unmodified.
             on: Use co-pilot mode. This will only modify INCAR flags not already set by the user.
-            aggressive: Use co-pilot mode in agressive mode. This will modify INCAR flags even if they are already set by the user.
+            aggressive: Use co-pilot mode in aggressive mode. This will modify INCAR flags even if they are already set by the user.
         copy_magmoms
             If True, any pre-existing `atoms.get_magnetic_moments()` will be set in
             `atoms.set_initial_magnetic_moments()`. Set this to False if you want to
@@ -86,7 +86,7 @@ class Vasp(Vasp_):
         elemental_magmoms
             A dictionary of elemental initial magnetic moments to pass to
             [quacc.schemas.prep.set_magmoms][], e.g. `{"Fe": 5, "Ni": 4}`.
-        auto_kpts
+        pmg_kpts
             An automatic k-point generation scheme from Pymatgen. Options include:
 
             - {"line_density": float}. This will call
@@ -147,7 +147,7 @@ class Vasp(Vasp_):
         self.preset_mag_default = preset_mag_default
         self.mag_cutoff = mag_cutoff
         self.elemental_magmoms = elemental_magmoms
-        self.auto_kpts = auto_kpts
+        self.pmg_kpts = pmg_kpts
         self.auto_dipole = auto_dipole
         self.kwargs = kwargs
 
@@ -259,17 +259,17 @@ class Vasp(Vasp_):
             and self.elemental_magmoms is None
         ):
             self.elemental_magmoms = self.user_calc_params["elemental_magmoms"]
-        if self.user_calc_params.get("auto_kpts") and self.auto_kpts is None:
-            self.auto_kpts = self.user_calc_params["auto_kpts"]
+        if self.user_calc_params.get("pmg_kpts") and self.pmg_kpts is None:
+            self.pmg_kpts = self.user_calc_params["pmg_kpts"]
         if self.user_calc_params.get("auto_dipole") and self.auto_dipole is None:
             self.auto_dipole = self.user_calc_params["auto_dipole"]
-        for k in ["elemental_magmoms", "auto_kpts", "auto_dipole"]:
+        for k in ["elemental_magmoms", "pmg_kpts", "auto_dipole"]:
             self.user_calc_params.pop(k, None)
 
         # Make automatic k-point mesh
-        if self.auto_kpts and not self.user_calc_params.get("kpts"):
-            self.user_calc_params = convert_auto_kpts(
-                self.user_calc_params, self.auto_kpts, self.input_atoms
+        if self.pmg_kpts and not self.user_calc_params.get("kpts"):
+            self.user_calc_params = convert_pmg_kpts(
+                self.user_calc_params, self.pmg_kpts, self.input_atoms
             )
 
         # Add dipole corrections if requested
@@ -289,7 +289,7 @@ class Vasp(Vasp_):
 
         # Handle INCAR swaps
         self.user_calc_params = get_param_swaps(
-            self.user_calc_params, self.auto_kpts, self.input_atoms, self.incar_copilot
+            self.user_calc_params, self.pmg_kpts, self.input_atoms, self.incar_copilot
         )
 
         # Remove unused INCAR flags

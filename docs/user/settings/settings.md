@@ -14,12 +14,12 @@ If you are planning to modify a given set of parameters for all of your calculat
 
 ```yaml title="~/.quacc.yaml"
 SCRATCH_DIR: $SCRATCH # (1)!
-CREATE_UNIQUE_WORKDIR: true # (2)!
+CREATE_UNIQUE_DIR: true # (2)!
 ```
 
 1. This would set the quacc scratch directory to the environment variable `$SCRATCH` on whatever machine the calculations are run on.
 
-2. This would ensure that each job in your quacc workflow is run in a unique, isolated working directory. This is often useful when running workflows in parallel, although some workflow engines like Covalent have their own mechanisms for this.
+2. This would ensure that each job in your quacc workflow is stored in a unique, isolated directory.
 
 !!! Tip "Command-Line Interface"
 

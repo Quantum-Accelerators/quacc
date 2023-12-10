@@ -20,8 +20,8 @@ def prefect_test_fixture():
         yield
 
 
-def test_tutorial1a(tmpdir):
-    tmpdir.chdir()
+def test_tutorial1a(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -39,8 +39,8 @@ def test_tutorial1a(tmpdir):
     assert "atoms" in result
 
 
-def test_tutorial1b(tmpdir):
-    tmpdir.chdir()
+def test_tutorial1b(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Define the Atoms object
     atoms = bulk("Cu")
@@ -54,8 +54,8 @@ def test_tutorial1b(tmpdir):
         assert "atom" in result
 
 
-def test_tutorial2a(tmpdir):
-    tmpdir.chdir()
+def test_tutorial2a(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Define the workflow
     @flow
@@ -74,8 +74,8 @@ def test_tutorial2a(tmpdir):
     assert "atoms" in result
 
 
-def test_tutorial2b(tmpdir):
-    tmpdir.chdir()
+def test_tutorial2b(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Define workflow
     @flow
@@ -100,8 +100,8 @@ def test_tutorial2b(tmpdir):
     assert "atoms" in result2
 
 
-def test_tutorial2c(tmpdir):
-    tmpdir.chdir()
+def test_tutorial2c(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Define the workflow
     @flow
@@ -119,8 +119,8 @@ def test_tutorial2c(tmpdir):
         assert "atoms" in result
 
 
-def test_comparison(tmpdir):
-    tmpdir.chdir()
+def test_comparison(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     @job  #  (1)!
     def add(a, b):

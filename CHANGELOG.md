@@ -4,15 +4,39 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.3]
+
+### Added
+
+- Added preliminary support for the `Dask` workflow engine via Dask Delayed and Dask Distributed.
+
+### Changed
+
+- Renamed `CREATE_UNIQUE_WORKDIR` to `CREATE_UNIQUE_DIR` to better reflect its utility.
+- The default for the `SCRATCH_DIR` setting is now `None` instead of `~/.quacc_scratch`. In other words, the default is to not use a scratch directory. This should help with onboarding, and the ability to set it as `None` may be broadly of interest. Setting the `SCRATCH_DIR` to a given `Path` will still work as expected.
+- Files are no longer recursively _copied_ from `SCRATCH_DIR` to `RESULTS_DIR`. Instead, they are recursively moved. This should speed up I/O operations.
+
+### Fixed
+
+- Fixed a missing `phonopy_kwargs` keyword argument in `quacc.recipes.common.phonons`
+
 ## [0.4.2]
 
 ### Added
 
-- Added a Jenkins-based test suite that runs tests on HPC resources without mocking
+- Added a Jenkins-based test suite that runs tests on HPC resources without mocking for Gaussian, GULP, ORCA, and VASP (minimal)
 - Added a TBLite phonon recipe
+
+### Changed
+
+- Changed the `auto_kpts` kwarg in the `Vasp` calculator to `pmg_kpts`
+- Internal refactoring of recipes to have a separate `_base.py` module when appropriate
+- Removed the unnecessary `Atoms` arg from the `calc_setup` function
 
 ### Fixed
 
+- Fixed slow initial import (3 s --> 1 s)
+- Fixed a few broken type hints
 - Fixed functional and basis set strings in Gaussian recipes
 - Uses number of physical cores instead of logical cores as default for molecular DFT recipes
 
@@ -20,7 +44,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- Switched to using the PyPi release of NewtonNet (1.1).
+- Switched to using the PyPI release of NewtonNet (1.1).
 - NewtonNet recipes don't run a Hessian calculation by default unless needed
 
 ### Fixed
@@ -193,8 +217,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
-- Fixed compatability with FireWorks.
-- Fixed I/O issue on Windows and NFS filesystems where Sella optimizations would crash.
+- Fixed compatibility with FireWorks.
+- Fixed I/O issue on Windows and NFS file systems where Sella optimizations would crash.
 
 ## [0.2.7]
 
@@ -358,7 +382,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added the `quacc.recipes.emt.parsl` module.
 - Added a CLI for `quacc` along with a `quacc config` option to configure Covalent appropriately upon install.
 - Added generic type hints for schemas.
-- Added a `CREATE_UNIQUE_WORKDIR` global setting to have quacc automatically make a unique working directory for each calculation.
+- Added a `CREATE_UNIQUE_DIR` global setting to have quacc automatically make a unique working directory for each calculation.
 - Added `CHECK_CONVERGENCE` to global settings.
 
 ### Changed
