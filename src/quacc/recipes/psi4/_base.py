@@ -9,11 +9,6 @@ from quacc.runners.ase import run_calc
 from quacc.schemas.ase import summarize_run
 from quacc.utils.dicts import merge_dicts
 
-try:
-    import psi4
-except ImportError:
-    psi4 = None
-
 if TYPE_CHECKING:
     from pathlib import Path
     from typing import Any
