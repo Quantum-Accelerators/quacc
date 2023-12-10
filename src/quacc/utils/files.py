@@ -63,9 +63,6 @@ def copy_decompress_files(
     None
     """
 
-    # Proposal to make the copy file more flexible
-    # i.e add glob support. (Dangerous maybe?)
-    # Just testing for now
     for f in source_files:
         if Path(f).is_symlink():
             continue

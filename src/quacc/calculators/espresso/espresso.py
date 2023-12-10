@@ -121,8 +121,8 @@ class Espresso(Espresso_):
         preset: str = None,
         template: EspressoTemplate = None,
         profile: EspressoProfile = None,
-        calc_defaults: dict[str | Any] = None,
-        parallel_info: dict[str | Any] = None,
+        calc_defaults: dict[str, Any] = None,
+        parallel_info: dict[str, Any] = None,
         **kwargs,
     ) -> None:
         """

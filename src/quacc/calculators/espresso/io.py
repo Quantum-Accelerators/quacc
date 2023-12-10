@@ -19,8 +19,6 @@ if TYPE_CHECKING:
 
 freg = re.compile(r"-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+\-]?\d+)?")
 
-SCRATCH_DIR = SETTINGS.SCRATCH_DIR
-
 
 def write(
     filename: str | Path,
@@ -35,7 +33,7 @@ def write(
     """
 
     filename_path = Path(filename).resolve()
-    if SCRATCH_DIR not in filename_path.parents:
+    if SETTINGS.SCRATCH_DIR not in filename_path.parents:
         raise ValueError(f"File {filename_path} is not in the scratch directory.")
     with open(filename, "w") as fd:
         write_espresso_dict[binary](fd, atoms=atoms, properties=properties, **kwargs)
@@ -48,7 +46,7 @@ def read(filename: str | Path, binary: str = "pw") -> dict[str, Any]:
     """
 
     filename_path = Path(filename).resolve()
-    if SCRATCH_DIR not in filename_path.parents:
+    if SETTINGS.SCRATCH_DIR not in filename_path.parents:
         raise ValueError(f"File {filename_path} is not in the scratch directory.")
     with open(filename) as fd:
         return read_espresso_dict[binary](fd)
