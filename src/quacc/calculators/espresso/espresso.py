@@ -26,7 +26,7 @@ class EspressoTemplate(EspressoTemplate_):
     of other binaries such as pw.x, ph.x, cp.x, etc.
     """
 
-    def __init__(self, binary: str = "pw"):
+    def __init__(self, binary: str = "pw") -> None:
         """
         Initialize the Espresso template.
 
@@ -52,7 +52,7 @@ class EspressoTemplate(EspressoTemplate_):
         atoms: Atoms,
         parameters: dict[str, Any],
         properties: Any,
-    ):
+    ) -> None:
         """
         The function that should be used instead of the one in ASE EspressoTemplate
         to write the input file. It calls a customly defined write function.
@@ -84,7 +84,7 @@ class EspressoTemplate(EspressoTemplate_):
             **parameters,
         )
 
-    def read_results(self, directory: Path | str):
+    def read_results(self, directory: Path | str) -> dict[str, Any]:
         """
         The function that should be used instead of the one in ASE EspressoTemplate
         to read the output file. It calls a customly defined read function. It also
@@ -124,7 +124,7 @@ class Espresso(Espresso_):
         calc_defaults: dict[str | Any] = None,
         parallel_info: dict[str | Any] = None,
         **kwargs,
-    ):
+    ) -> None:
         """
         Initialize the Espresso calculator.
 
@@ -185,7 +185,7 @@ class Espresso(Espresso_):
 
         self.template = template
 
-    def _kwargs_handler(self, binary: str, **kwargs):
+    def _kwargs_handler(self, binary: str, **kwargs) -> dict[str, Any]:
         """
         Function that handles the kwargs. It will merge the user-supplied
         kwargs with the defaults and preset values. Priority order is as follow:

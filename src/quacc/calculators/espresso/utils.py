@@ -1,7 +1,14 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 
-def parse_pp_and_cutoff(config, atoms):
+if TYPE_CHECKING:
+    from typing import Any
+
+    from ase.atoms import Atoms
+
+
+def parse_pp_and_cutoff(config: dict[str, Any], atoms: Atoms) -> dict[str, Any]:
     """
     Function that parses the pseudopotentials and cutoffs from a preset file.
     The cutoffs are taken from the largest value of the cutoffs among the elements

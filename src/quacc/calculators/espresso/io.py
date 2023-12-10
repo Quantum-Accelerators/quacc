@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
 from ase import Atoms
@@ -13,12 +14,21 @@ from ase.units import Bohr
 
 from quacc import SETTINGS
 
+if TYPE_CHECKING:
+    from typing import Any, TextIO
+
 freg = re.compile(r"-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+\-]?\d+)?")
 
 SCRATCH_DIR = SETTINGS.SCRATCH_DIR
 
 
-def write(filename, atoms, binary="pw", properties=None, **kwargs):
+def write(
+    filename: str | Path,
+    atoms: Atoms,
+    binary: str = "pw",
+    properties: dict[str, Any] | None = None,
+    **kwargs,
+) -> None:
     """
     Wrapper around ase.io.espresso.write to read additional binary, such as ph.x.
     This is probably temporary until ase.io.espresso is updated.
@@ -31,7 +41,7 @@ def write(filename, atoms, binary="pw", properties=None, **kwargs):
         write_espresso_dict[binary](fd, atoms=atoms, properties=properties, **kwargs)
 
 
-def read(filename, binary="pw"):
+def read(filename: str | Path, binary: str = "pw") -> dict[str, Any]:
     """
     Wrapper around ase.io.espresso.read to read additional binary, such as ph.x.
     This is probably temporary until ase.io.espresso is updated.
@@ -44,7 +54,7 @@ def read(filename, binary="pw"):
         return read_espresso_dict[binary](fd)
 
 
-def write_espresso_io(fd, **kwargs):
+def write_espresso_io(fd: TextIO, **kwargs) -> None:
     """
     Function which writes input for simple espresso binaries without special cards.
     Non-exhaustive list (to complete):
@@ -76,7 +86,7 @@ def write_espresso_io(fd, **kwargs):
     fd.write("".join(pwi))
 
 
-def write_espresso_ph(fd, **kwargs):
+def write_espresso_ph(fd: TextIO, **kwargs) -> None:
     """
     Function that write the input file for a ph.x calculation. Normal namelist
     cards are passed in the input_data dictionary. Which can be either nested
@@ -133,7 +143,7 @@ def write_espresso_ph(fd, **kwargs):
         fd.write("\n")
 
 
-def read_espresso_ph(fd):
+def read_espresso_ph(fd: TextIO) -> dict[str, Any]:
     """
     Function that reads the output of a ph.x calculation. It returns a dictionary
     where each q-point is a key and the value is a dictionary with the following
@@ -459,7 +469,7 @@ def read_espresso_ph(fd):
     return results
 
 
-def read_espresso_pw(filename):
+def read_espresso_pw(filename: str | Path) -> dict[str, Any]:
     """
     Wrapper around ase.io.espresso.read_espresso_out to read the output of a pw.x
     and directly return the dictionary of properties to quacc.
@@ -478,7 +488,9 @@ def read_espresso_pw(filename):
     return dict(atoms.calc.properties())
 
 
-def write_espresso_pw(filename, atoms, properties, **kwargs):
+def write_espresso_pw(
+    filename: str | Path, atoms: Atoms, properties: dict[str, Any] | None, **kwargs
+) -> None:
     """
     Wrapper around ase.io.espresso.write_espresso_in to write the input of a pw.x
 
