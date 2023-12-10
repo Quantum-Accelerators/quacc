@@ -440,7 +440,9 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
             "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
         },
         pre_launch_cmds=["module load vasp/6.4.1-cpu"],
-        environment={"QUACC_VASP_PARALLEL_CMD": f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"},
+        environment={
+            "QUACC_VASP_PARALLEL_CMD": f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
+        },
         remote_conda_env="quacc",
         remote_workdir="$SCRATCH/quacc",
         create_unique_workdir=True,
