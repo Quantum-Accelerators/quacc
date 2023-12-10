@@ -84,9 +84,9 @@ If you plan to use Q-Chem with Quacc, you will need to install `openbabel`. This
 conda install -c conda-forge openbabel
 ```
 
-## tblite
+## TBLite
 
-If you plan to use tblite with quacc, you will need to install the tblite interface with ASE support.
+If you plan to use TBLite with quacc, you will need to install the tblite interface with ASE support.
 
 ```bash
 pip install quacc[tblite] # only on Linux
