@@ -53,7 +53,7 @@ jobs:
           path: "coverage.xml"
           retention-days: 1
 
-  tests-engines (covalent):
+  tests-engines-covalent:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
@@ -312,7 +312,13 @@ jobs:
           retention-days: 1
 
   codecov:
-    needs: [tests-core, tests-engines (covalent), tests-engines, tests-psi4, tests-defects-phonons, tests-qchem-sella-newtonnet]
+    needs:
+      - tests-core
+      - tests-engines-covalent
+      - tests-engines
+      - tests-psi4
+      - tests-defects-phonons
+      - tests-qchem-sella-newtonnet
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
