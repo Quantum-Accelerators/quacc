@@ -10,6 +10,7 @@ from quacc.calculators.onetep.onetep import OnetepTemplate
 from quacc.recipes.onetep._base import base_fn
 
 if TYPE_CHECKING:
+    from typing import Any
     from quacc.schemas._aliases.ase import RunSchema
 
 
@@ -19,6 +20,7 @@ def static_job(
     preset: str | None = None,
     copy_files: list[str] | None = None,
     parallel_info: dict[str] | None = None,
+    additional_fields: dict[str,Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -40,20 +42,21 @@ def static_job(
     """
 
     calc_defaults = {
-    'pseudo_path': './',
-    'output_detail': 'verbose',
-    'xc' : 'PBE',
-    'do_properties': True,
-    'cutoff_energy' : '600 eV',
-    'task' : 'SinglePoint'
-}
-
+        'keywords' : {
+            'output_detail': 'verbose',
+            'do_properties': True,
+            'cutoff_energy' : '600 eV',
+            'task' : 'SinglePoint'
+        }
+    }
+    
+    
     return base_fn(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
-        additional_fields={"name": "onetep static"},
+        additional_fields=additional_fields,
         copy_files=copy_files,
     )

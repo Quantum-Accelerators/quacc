@@ -28,5 +28,4 @@ class Onetep(Onetep_):
         self.calc_defaults = calc_defaults
         kwargs = merge_dicts(self.calc_defaults, kwargs)
         super().__init__(profile=profile, parallel_info=parallel_info, **kwargs)
-        self.template = template
-
+        self.directory = '.'
