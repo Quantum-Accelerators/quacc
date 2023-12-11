@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- Added core Quantum ESPRESSO recipes and custom calculator.
+- Added core Quantum ESPRESSO recipes and custom calculator. (@tomdemeyere)
 - Added a new function, `quacc.utils.files.copy_decompress_files_from_dir`
 
 ### Changed
