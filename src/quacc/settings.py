@@ -123,6 +123,33 @@ class QuaccSettings(BaseSettings):
     )
 
     # ---------------------------
+    # ESPRESSO Settings
+    # ---------------------------
+    ESPRESSO_BIN_PATHS: dict[str, Path] = Field(
+        {
+            "pw": Path("pw.x"),
+            "ph": Path("ph.x"),
+            "neb": Path("neb.x"),
+            "q2r": Path("q2r.x"),
+            "matdyn": Path("matdyn.x"),
+            "dynmat": Path("dynmat.x"),
+            "bands": Path("bands.x"),
+            "projwfc": Path("projwfc.x"),
+            "pp": Path("pp.x"),
+            "wannier90": Path("wannier90.x"),
+        },
+        description="Name for each espresso binary and its corresponding path. "
+        "By default, the binaries are assumed to be in PATH.",
+    )
+    ESPRESSO_PSEUDO: Optional[Path] = Field(
+        None, description=("Path to a pseudopotential library for espresso.")
+    )
+    ESPRESSO_PRESET_DIR: Path = Field(
+        Path(__file__).parent / "calculators" / "espresso" / "presets",
+        description="Path to the espresso preset directory",
+    )
+
+    # ---------------------------
     # Gaussian Settings
     # ---------------------------
     GAUSSIAN_CMD: Path = Field(
@@ -134,7 +161,10 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     GULP_CMD: Path = Field(Path("gulp"), description=("Path to the GULP executable."))
     GULP_LIB: Optional[Path] = Field(
-        None, description=("Path to the GULP force field library.")
+        None,
+        description=(
+            "Path to the GULP force field library. If not specified, the GULP_LIB environment variable will be used (if present)."
+        ),
     )
 
     # ---------------------------
@@ -298,7 +328,8 @@ class QuaccSettings(BaseSettings):
 
     @field_validator("RESULTS_DIR", "SCRATCH_DIR")
     @classmethod
-    def resolve_and_make_paths(cls, v):
+    def resolve_and_make_paths(cls, v: Optional[Path]) -> Optional[Path]:
+        """Resolve and make paths."""
         if v is None:
             return v
 
@@ -308,14 +339,26 @@ class QuaccSettings(BaseSettings):
         return v
 
     @field_validator(
-        "GAUSSIAN_CMD", "ORCA_CMD", "QCHEM_LOCAL_SCRATCH", "VASP_PRESET_DIR"
+        "ESPRESSO_PRESET_DIR",
+        "ESPRESSO_PSEUDO",
+        "GAUSSIAN_CMD",
+        "GULP_CMD",
+        "GULP_LIB",
+        "ORCA_CMD",
+        "QCHEM_LOCAL_SCRATCH",
+        "NEWTONNET_MODEL_PATH",
+        "VASP_PRESET_DIR",
+        "VASP_PP_PATH",
+        "VASP_VDW",
     )
     @classmethod
-    def expand_paths(cls, v):
-        return v.expanduser()
+    def expand_paths(cls, v: Optional[Path]) -> Optional[Path]:
+        """Expand ~/ in paths."""
+        return v.expanduser() if v is not None else v
 
     @field_validator("PRIMARY_STORE")
-    def generate_store(cls, v):
+    def generate_store(cls, v: Union[str, Store]) -> Store:
+        """Generate the Maggma store"""
         return MontyDecoder().decode(v) if isinstance(v, str) else v
 
     model_config = SettingsConfigDict(env_prefix="quacc_")
