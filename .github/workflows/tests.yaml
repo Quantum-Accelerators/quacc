@@ -324,7 +324,6 @@ jobs:
       - tests-psi4
       - tests-defects-phonons-espresso
       - tests-qchem-sella-newtonnet
-      - tests-espresso
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
