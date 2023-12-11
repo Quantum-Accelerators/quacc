@@ -175,11 +175,7 @@ class Espresso(Espresso_):
             .get("pseudo_dir", str(SETTINGS.ESPRESSO_PSEUDO))
         )
 
-        bin_path = (
-            SETTINGS.ESPRESSO_BINARY_PATHS[template.binary]
-            if SETTINGS.ESPRESSO_BINARY_PATHS.get(template.binary)
-            else SETTINGS.ESPRESSO_COMMON_BIN_PATH / template.binary
-        )
+        bin_path = SETTINGS.ESPRESSO_BIN_PATHS[template.binary]
         profile = profile or EspressoProfile(
             binary=str(bin_path), parallel_info=parallel_info, pseudo_path=pseudo_path
         )

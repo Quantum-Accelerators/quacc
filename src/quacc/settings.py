@@ -339,7 +339,6 @@ class QuaccSettings(BaseSettings):
         return v
 
     @field_validator(
-        "ESPRESSO_PATH",
         "ESPRESSO_PRESET_DIR",
         "ESPRESSO_PSEUDO",
         "GAUSSIAN_CMD",

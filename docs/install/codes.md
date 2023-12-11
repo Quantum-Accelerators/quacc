@@ -30,7 +30,7 @@ At minimum, you should define the `ESPRESSO_PSEUDO` setting:
 QUACC_ESPRESSO_PSEUDO="/path/to/pseudopotentials"
 ```
 
-Additionally, the various ESPRESSO binaries should be present in your `PATH`, or you should modify `ESPRESSO_BIN_PATHS` accordingly.
+Additionally, the various ESPRESSO binaries should be present in your `PATH`, or you should modify the `ESPRESSO_BIN_PATHS` quacc setting accordingly.
 
 ## Gaussian
 
