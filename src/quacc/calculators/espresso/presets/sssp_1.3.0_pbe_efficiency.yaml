@@ -363,7 +363,7 @@ pseudopotentials:
     filename: ni_pbe_v1.4.uspp.F.UPF
     md5: 1ee80287db30b12d2bc1f57a5b5d6409
     pseudopotential: GBRV-1.4
-  'No':
+  "No":
     cutoff_rho: 480.0
     cutoff_wfc: 60.0
     filename: No.paw.z_24.ld1.uni-marburg.v0.upf
