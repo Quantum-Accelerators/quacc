@@ -125,9 +125,6 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # ESPRESSO Settings
     # ---------------------------
-    ESPRESSO_PATH: Path = Field(
-        Path.cwd(), description=("Path to the espresso bin directory.")
-    )
     ESPRESSO_BIN_PATHS: dict[str, Path] = Field(
         {
             "pw": Path("pw.x"),
@@ -141,7 +138,8 @@ class QuaccSettings(BaseSettings):
             "pp": Path("pp.x"),
             "wannier90": Path("wannier90.x"),
         },
-        description="Name for each espresso binary and its corresponding path",
+        description="Name for each espresso binary and its corresponding path. "
+        "By default, the binaries are assumed to be in PATH.",
     )
     ESPRESSO_PSEUDO: Optional[Path] = Field(
         None, description=("Path to a pseudopotential library for espresso.")
