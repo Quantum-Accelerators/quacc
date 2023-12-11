@@ -431,6 +431,7 @@ pseudopotentials:
     pseudopotential: Wentzcovitch
   Pt:
     cutoff_rho: 280.0
+    cutoff_wfc: 35.0
     filename: pt_pbe_v1.4.uspp.F.UPF
     md5: f09d6de1a584b5a045c4fc126da2d0c4
     pseudopotential: GBRV-1.4
