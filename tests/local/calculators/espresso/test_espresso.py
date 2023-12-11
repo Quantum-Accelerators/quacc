@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from ase import Atoms
 
 from quacc.calculators.espresso.espresso import Espresso
