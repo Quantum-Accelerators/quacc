@@ -19,6 +19,7 @@ except ImportError:
     has_sella = False
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from typing import Any, Literal
 
     from ase.atoms import Atoms
@@ -40,7 +41,7 @@ def ts_job(
     n_cores: int | None = None,
     overwrite_inputs: dict[str, Any] | None = None,
     opt_params: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
 ) -> OptSchema:
     """
     TS optimize a molecular structure.
@@ -80,7 +81,7 @@ def ts_job(
     opt_params
         Dictionary of custom kwargs for [quacc.runners.ase.run_opt][]
     copy_files
-        Files to copy to the runtime directory.
+        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
 
     Returns
     -------
@@ -139,7 +140,7 @@ def irc_job(
     n_cores: int | None = None,
     overwrite_inputs: dict[str, Any] | None = None,
     opt_params: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
 ) -> OptSchema:
     """
     IRC optimize a molecular structure.
@@ -181,7 +182,7 @@ def irc_job(
     opt_params
         Dictionary of custom kwargs for [quacc.runners.ase.run_opt][]
     copy_files
-        Files to copy to the runtime directory.
+        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
 
     Returns
     -------
@@ -241,7 +242,7 @@ def quasi_irc_job(
     overwrite_inputs: dict[str, Any] | None = None,
     irc_opt_params: dict[str, Any] | None = None,
     relax_opt_params: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
 ) -> OptSchema:
     """
     Quasi-IRC optimize a molecular structure. Runs `irc_job` for 10 steps (default)
@@ -262,7 +263,7 @@ def quasi_irc_job(
     relax_opt_params
         Dictionary of opt_params kwargs for the relax_job.
     copy_files
-        Files to copy to the runtime directory.
+        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
 
     Returns
     -------

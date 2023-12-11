@@ -17,6 +17,7 @@ except ImportError:
     has_sella = False
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from typing import Any
 
     from ase.atoms import Atoms
@@ -36,7 +37,7 @@ def static_job(
     smd_solvent: str | None = None,
     n_cores: int | None = None,
     overwrite_inputs: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -74,7 +75,7 @@ def static_job(
         default values set therein as well as set additional Q-Chem parameters.
         See QChemDictSet documentation for more details.
     copy_files
-        Files to copy to the runtime directory.
+        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
 
     Returns
     -------
@@ -119,7 +120,7 @@ def freq_job(
     smd_solvent: str | None = None,
     n_cores: int | None = None,
     overwrite_inputs: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
 ) -> RunSchema:
     """
     Perform a frequency calculation on a molecular structure.
@@ -157,7 +158,7 @@ def freq_job(
         default values set therein as well as set additional Q-Chem parameters.
         See QChemDictSet documentation for more details.
     copy_files
-        Files to copy to the runtime directory.
+        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
 
     Returns
     -------
@@ -203,7 +204,7 @@ def relax_job(
     n_cores: int | None = None,
     overwrite_inputs: dict[str, Any] | None = None,
     opt_params: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
 ) -> OptSchema:
     """
     Optimize aka "relax" a molecular structure with an ASE optimizer.
@@ -243,7 +244,7 @@ def relax_job(
     opt_params
         Dictionary of custom kwargs for [quacc.runners.ase.run_opt][]
     copy_files
-        Files to copy to the runtime directory.
+        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
 
     Returns
     -------

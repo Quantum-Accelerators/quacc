@@ -10,7 +10,11 @@ from tempfile import mkdtemp
 from monty.shutil import gzip_dir, remove
 
 from quacc import SETTINGS
-from quacc.utils.files import copy_decompress, make_unique_dir
+from quacc.utils.files import (
+    copy_decompress_files,
+    copy_decompress_files_from_dir,
+    make_unique_dir,
+)
 
 
 def calc_setup(copy_files: list[str | Path] | None = None) -> tuple[Path, Path]:
@@ -58,8 +62,13 @@ def calc_setup(copy_files: list[str | Path] | None = None) -> tuple[Path, Path]:
         symlink.symlink_to(tmpdir, target_is_directory=True)
 
     # Copy files to tmpdir and decompress them if needed
-    if copy_files:
-        copy_decompress(copy_files, tmpdir)
+    if isinstance(copy_files, list):
+        copy_decompress_files(copy_files, tmpdir)
+    elif isinstance(copy_files, (str, Path)):
+        if Path(copy_files).is_dir():
+            copy_decompress_files_from_dir(copy_files, tmpdir)
+        else:
+            copy_decompress_files([copy_files], tmpdir)
 
     os.chdir(tmpdir)
 
