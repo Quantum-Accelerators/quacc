@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import TYPE_CHECKING
+from warnings import warn
 
 from ase.calculators.espresso import Espresso as Espresso_
 from ase.calculators.espresso import EspressoProfile
@@ -27,7 +29,7 @@ class EspressoTemplate(EspressoTemplate_):
     of other binaries such as pw.x, ph.x, cp.x, etc.
     """
 
-    def __init__(self, binary: str = "pw") -> None:
+    def __init__(self, binary: str = "pw", clean_dirs: bool = False) -> None:
         """
         Initialize the Espresso template.
 
@@ -42,9 +44,16 @@ class EspressoTemplate(EspressoTemplate_):
         None
         """
         super().__init__()
+
         self.inputname = f"{binary}.in"
         self.outputname = f"{binary}.out"
+
         self.binary = binary
+
+        self.outdirs = {"outdir": os.environ.get("ESPRESSO_TMPDIR"),
+                        'wfcdir': os.environ.get("ESPRESSO_TMPDIR")}
+        
+        self.clean_dirs = clean_dirs
 
     def write_input(
         self,
@@ -75,6 +84,8 @@ class EspressoTemplate(EspressoTemplate_):
         -------
         None
         """
+        self._outdir_handler(parameters)
+
         write(
             Path(directory) / self.inputname,
             atoms,
@@ -101,10 +112,77 @@ class EspressoTemplate(EspressoTemplate_):
         dict
             The results dictionnary
         """
+
         results = read(Path(directory) / self.outputname, binary=self.binary)
         if "energy" not in results:
             results["energy"] = None
         return results
+    
+    def _outdir_handler(self, parameters):
+        """
+        Function that handles the various outdir of espresso binaries.
+        If the user-supplied path are absolute, they are resolved and checked
+        against the scratch_dir and results_dir. If they are relative, they are
+        resolved against the scratch_dir and results_dir. If they are not in
+        either of those directories, they are ignored. This case is discouraged,
+        are encouraged to use quacc's scratch_dir and results_dir.
+
+        Parameters
+        ----------
+        **kwargs
+            User-supplied kwargs
+
+        Returns
+        -------
+        kwargs
+            The merged kwargs
+        """
+
+        input_data = parameters.get("input_data", {})
+
+        used_dir = SETTINGS.SCRATCH_DIR or SETTINGS.RESULTS_DIR
+
+        cwd = Path.cwd()
+
+        for section in input_data:
+            for d_key in self.outdirs.keys():
+                if d_key in input_data[section]:
+                    path = Path(input_data[section][d_key])
+                    if path.is_absolute():
+                        path = path.resolve()
+                    else:
+                        path = cwd / path
+
+                    if used_dir not in path:
+                        # If this condition is true then the user
+                        # supplied a path that is outside any quacc dir
+                        # it is the user complete responsability to take care
+                        # of it. This is discouraged.
+                        continue
+
+                    if cwd not in path:
+                        # If this condition is true it means that
+                        # the user supplied a path inside
+                        # one of the quacc dir but outside the current calc dir 
+                        # as a result quacc will not take
+                        # care of it during summarize_run. This is not the default case and
+                        # is not encouraged, but it is allowed i.e. (it would be
+                        # more complex and unintuitive to disallowd it)
+                        # This allows for multiple jobs in a workflow or even different
+                        # workflows to read/write to the same directory.
+
+                        # If the user wants to clean the directory, he can do it
+                        # manually or by setting the clean_dirs flag to True
+                        self.outdirs[d_key] = path       
+                    
+                    path.mkdir(parents=True, exist_ok=True)
+                    input_data[section][d_key] = str(path)
+
+        self.outdirs = [path for path in self.outdirs.values() if path is not None]
+
+        parameters["input_data"] = input_data
+        
+        return parameters
 
 
 class Espresso(Espresso_):
@@ -180,7 +258,15 @@ class Espresso(Espresso_):
             binary=str(bin_path), parallel_info=parallel_info, pseudo_path=pseudo_path
         )
 
-        super().__init__(profile=profile, parallel_info=parallel_info, **kwargs)
+        if kwargs.pop("directory", None):
+            warn(
+                "It is highly discouraged to use the 'directory' parameter when using quacc."
+            )
+
+        super().__init__(profile=profile,
+                         directory='.',
+                         parallel_info=parallel_info,
+                         **kwargs)
 
         self.template = template
 
