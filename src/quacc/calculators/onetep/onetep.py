@@ -28,7 +28,7 @@ class Onetep(Onetep_):
         self.calc_defaults = calc_defaults
         kwargs = merge_dicts(self.calc_defaults, kwargs)
 
-        if kwargs.pop("directory"):
+        if kwargs.pop("directory",None):
             warn(
                 "It is highly discouraged to use the 'directory' parameter when using quacc" 
             )
