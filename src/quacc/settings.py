@@ -158,8 +158,8 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # ONETEP Settings
     # ---------------------------
-    ONETEP_CMD: Path = Field(
-        Path("/home/ds12g20/software/dsarpa_onetep/bin/onetep.RH8.ifort.omp.scalapack"), description=("Path to the ONETEP executable.")
+    ONETEP_CMD: Optional[Path] = Field(
+        None, description=("Path to the ONETEP executable.")
     )
     ONETEP_PP_PATH: Optional[Path] = Field(
         None, description=("Path to pseudopotentials.")
