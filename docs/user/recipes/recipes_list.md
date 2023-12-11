@@ -65,7 +65,7 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 
 </center>
 
-## Lennard-Jones Potential
+## Lennard Jones
 
 !!! Info
 
