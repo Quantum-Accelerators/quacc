@@ -12,9 +12,9 @@ from pymatgen.io.qchem.inputs import QCInput
 
 from quacc import SETTINGS
 from quacc.atoms.core import check_charge_and_spin
-from quacc.calculators.qchem import QChem
-from quacc.recipes.qchem.core import freq_job, relax_job, static_job
-from quacc.recipes.qchem.ts import irc_job, quasi_irc_job, ts_job
+from quacc.calculators._qchem_beta import QChem
+from quacc.recipes._qchem_beta.core import freq_job, relax_job, static_job
+from quacc.recipes._qchem_beta.ts import irc_job, quasi_irc_job, ts_job
 
 pytest.importorskip("sella")
 
