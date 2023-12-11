@@ -103,12 +103,12 @@ def run_calc(
 
     try:
         clean_dirs = atoms.calc.template.clean_dirs
-        additional_dir = atoms.calc.template.outdirs if clean_dirs else []
+        additional_dirs = atoms.calc.template.outdirs if clean_dirs else []
     except AttributeError:
         additional_dir = []
 
     # Perform cleanup operations
-    calc_cleanup(tmpdir, job_results_dir, additional_dir=additional_dir)
+    calc_cleanup(tmpdir, job_results_dir, additional_dirs=additional_dirs)
 
     return atoms
 
