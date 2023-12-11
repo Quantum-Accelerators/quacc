@@ -12,9 +12,9 @@
 
 `quacc` is a flexible platform for computational materials science 💎 and quantum chemistry 🧪 that is built for the big data era 🔥.
 
-- `quacc` makes it possible to easily run [pre-made workflows](https://quantum-accelerators.github.io/quacc/user/recipes/recipes_list.html) that can be efficiently dispatched anywhere: locally, HPC, the cloud, or any combination thereof.
+- `quacc` makes it possible to easily run pre-made [computational materials science workflows](https://quantum-accelerators.github.io/quacc/user/recipes/recipes_list.html) that can be efficiently dispatched anywhere: locally, HPC, the cloud, or any combination thereof.
 
-- `quacc` gives you the freedom of choice. Through a single, unified interface to several [supported workflow management solutions](https://quantum-accelerators.github.io/quacc/user/basics/wflow_overview.html), you can use what best suits your unique computing needs.
+- `quacc` gives you the freedom of choice. Through a single, unified interface to several supported [workflow management solutions](https://quantum-accelerators.github.io/quacc/user/basics/wflow_overview.html), you can use what best suits your unique computing needs.
 
 - `quacc` leverages community resources. It is built around the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/) and much of the software infrastructure powering the [Materials Project](https://materialsproject.org).
 
