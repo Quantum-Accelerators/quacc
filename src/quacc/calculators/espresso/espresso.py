@@ -29,7 +29,7 @@ class EspressoTemplate(EspressoTemplate_):
     of other binaries such as pw.x, ph.x, cp.x, etc.
     """
 
-    def __init__(self, binary: str = "pw", clean_dirs: bool = False) -> None:
+    def __init__(self, binary: str = "pw") -> None:
         """
         Initialize the Espresso template.
 
@@ -52,8 +52,6 @@ class EspressoTemplate(EspressoTemplate_):
 
         self.outdirs = {"outdir": os.environ.get("ESPRESSO_TMPDIR"),
                         'wfcdir': os.environ.get("ESPRESSO_TMPDIR")}
-        
-        self.clean_dirs = clean_dirs
 
     def write_input(
         self,
@@ -140,8 +138,6 @@ class EspressoTemplate(EspressoTemplate_):
 
         input_data = parameters.get("input_data", {})
 
-        used_dir = SETTINGS.SCRATCH_DIR or SETTINGS.RESULTS_DIR
-
         cwd = Path.cwd()
 
         for section in input_data:
@@ -152,29 +148,9 @@ class EspressoTemplate(EspressoTemplate_):
                         path = path.resolve()
                     else:
                         path = cwd / path
-
-                    if used_dir not in path.parents:
-                        # If this condition is true then the user
-                        # supplied a path that is outside any quacc dir
-                        # it is the user complete responsability to take care
-                        # of it. This is discouraged.
-                        continue
-
                     if cwd not in path.parents:
-                        # If this condition is true it means that
-                        # the user supplied a path inside
-                        # one of the quacc dir but outside the current calc dir 
-                        # as a result quacc will not take
-                        # care of it during summarize_run. This is not the default case and
-                        # is not encouraged, but it is allowed i.e. (it would be
-                        # more complex and unintuitive to disallowd it)
-                        # This allows for multiple jobs in a workflow or even different
-                        # workflows to read/write to the same directory.
-
-                        # If the user wants to clean the directory, he can do it
-                        # manually or by setting the clean_dirs flag to True
-                        self.outdirs[d_key] = path       
-                    
+                        self.outdirs[d_key] = path
+                        continue
                     path.mkdir(parents=True, exist_ok=True)
                     input_data[section][d_key] = str(path)
 

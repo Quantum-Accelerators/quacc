@@ -75,7 +75,7 @@ def calc_setup(copy_files: list[str | Path] | None = None) -> tuple[Path, Path]:
     return tmpdir, job_results_dir
 
 
-def calc_cleanup(tmpdir: Path, job_results_dir: Path, additional_dirs: list) -> None:
+def calc_cleanup(tmpdir: Path, job_results_dir: Path) -> None:
     """
     Perform cleanup operations for a calculation, including gzipping files, copying
     files back to the original directory, and removing the tmpdir.
@@ -102,10 +102,8 @@ def calc_cleanup(tmpdir: Path, job_results_dir: Path, additional_dirs: list) -> 
     if SETTINGS.GZIP_FILES:
         gzip_dir(tmpdir)
 
-    to_move = os.listdir(tmpdir) + additional_dirs
-
     # Move files from tmpdir to job_results_dir
-    for file_name in to_move:
+    for file_name in os.listdir(tmpdir):
         if Path(job_results_dir / file_name).exists():
             remove(job_results_dir / file_name)
         move(tmpdir / file_name, job_results_dir / file_name)
