@@ -32,7 +32,7 @@ def write(
     This is probably temporary until ase.io.espresso is updated.
     """
 
-    filename_path = Path(filename).resolve()
+    filename_path = Path(filename).expanduser().resolve()
     if SETTINGS.SCRATCH_DIR not in filename_path.parents:
         raise ValueError(f"File {filename_path} is not in the scratch directory.")
     with Path.open(filename, "w") as fd:
@@ -45,7 +45,7 @@ def read(filename: str | Path, binary: str = "pw") -> dict[str, Any]:
     This is probably temporary until ase.io.espresso is updated.
     """
 
-    filename_path = Path(filename).resolve()
+    filename_path = Path(filename).expanduser().resolve()
     if SETTINGS.SCRATCH_DIR not in filename_path.parents:
         raise ValueError(f"File {filename_path} is not in the scratch directory.")
     with Path.open(filename) as fd:
