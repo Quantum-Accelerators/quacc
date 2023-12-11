@@ -353,7 +353,7 @@ class QuaccSettings(BaseSettings):
     )
     @classmethod
     def expand_paths(cls, v: Optional[Path]) -> Optional[Path]:
-        """Expand paths to absolute paths."""
+        """Expand ~/ in paths."""
         return v.expanduser() if v is not None else v
 
     @field_validator("PRIMARY_STORE")

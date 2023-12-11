@@ -18,20 +18,6 @@ conda install -c conda-forge dftbplus
 
 No setup needed!
 
-## Quantum ESPRESSO
-
-To use quacc with Quantum ESPRESSO, you will first need to download and compile [Quantum ESPRESSO](https://www.quantum-espresso.org/) or install it via conda as `conda install -c conda-forge qe`.
-
-Additionally, you will need to define multiple environment variables. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md).
-
-At minimum, you should define the `ESPRESSO_PSEUDO` setting:
-
-```bash
-QUACC_ESPRESSO_PSEUDO="/path/to/pseudopotentials"
-```
-
-Additionally, the various ESPRESSO binaries should be present in your `PATH`, or you should modify the `ESPRESSO_BIN_PATHS` quacc setting accordingly.
-
 ## Gaussian
 
 To use quacc with Gaussian, you will need to define the `GAUSSIAN_CMD` setting to be the path of the Gaussian executable (or the name of the executable if it is already in your `PATH`). This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md), such as by defining the following environment variable:
@@ -84,6 +70,20 @@ If you plan to use Q-Chem with Quacc, you will need to install `openbabel`. This
 ```bash
 conda install -c conda-forge openbabel
 ```
+
+## Quantum ESPRESSO
+
+To use quacc with Quantum ESPRESSO, you will first need to download and compile [Quantum ESPRESSO](https://www.quantum-espresso.org/) or install it via conda as `conda install -c conda-forge qe`.
+
+Additionally, you will need to define multiple environment variables. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md).
+
+At minimum, you should define the `ESPRESSO_PSEUDO` setting:
+
+```bash
+QUACC_ESPRESSO_PSEUDO="/path/to/pseudopotentials"
+```
+
+Additionally, the various ESPRESSO binaries should be present in your `PATH`, or you should modify the `ESPRESSO_BIN_PATHS` quacc setting accordingly.
 
 ## TBLite
 
