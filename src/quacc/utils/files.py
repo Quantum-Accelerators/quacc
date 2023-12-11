@@ -45,7 +45,9 @@ def check_logfile(logfile: str, check_str: str) -> bool:
     return False
 
 
-def copy_decompress(source_files: list[str | Path], destination: str | Path) -> None:
+def copy_decompress_files(
+    source_files: list[str | Path], destination: str | Path
+) -> None:
     """
     Copy and decompress files from source to destination.
 
@@ -61,12 +63,44 @@ def copy_decompress(source_files: list[str | Path], destination: str | Path) -> 
     None
     """
     for f in source_files:
+        if Path(f).is_symlink():
+            continue
         z_path = Path(zpath(f))
         if z_path.exists():
             copy(z_path, Path(destination, z_path.name))
             decompress_file(Path(destination, z_path.name))
         else:
-            warnings.warn(f"Cannot find file: {z_path}", UserWarning)
+            warnings.warn(f"Cannot find file {z_path}", UserWarning)
+
+
+def copy_decompress_files_from_dir(source: str | Path, destination: str | Path) -> None:
+    """
+    Copy and decompress files recursively from source to destination.
+
+    Parameters
+    ----------
+    source
+        Directory to walk and copy files from.
+    destination
+        Destination directory.
+
+    Returns
+    -------
+    None
+    """
+    src, dst = Path(source), Path(destination)
+
+    if src.is_dir():
+        for f in src.iterdir():
+            if f.is_symlink():
+                continue
+            if f.is_file():
+                copy_decompress_files([f], dst)
+            elif f.is_dir():
+                (dst / f.name).mkdir(exist_ok=True)
+                copy_decompress_files_from_dir(src / f, dst / f.name)
+    else:
+        warnings.warn(f"Cannot find {src}", UserWarning)
 
 
 def make_unique_dir(base_path: str | None = None) -> Path:
@@ -110,7 +144,10 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
         The calculator configuration (i.e. settings).
     """
 
-    yaml_path = Path(yaml_path).with_suffix(".yaml")
+    yaml_path = Path(yaml_path)
+
+    if yaml_path.suffix != ".yaml":
+        yaml_path = yaml_path.with_suffix(f"{yaml_path.suffix}.yaml")
 
     if not yaml_path.exists():
         msg = f"Cannot find {yaml_path}"
@@ -190,7 +227,7 @@ def get_uri(dir_name: str | Path) -> str:
     str
         Full URI path, e.g., "fileserver.host.com:/full/path/of/dir_name".
     """
-    fullpath = Path(dir_name).absolute()
+    fullpath = Path(dir_name).resolve()
     hostname = socket.gethostname()
     with contextlib.suppress(socket.gaierror, socket.herror):
         hostname = socket.gethostbyaddr(hostname)[0]

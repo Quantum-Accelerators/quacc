@@ -65,7 +65,7 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 
 </center>
 
-## Lennard-Jones Potential
+## Lennard Jones
 
 !!! Info
 
@@ -146,6 +146,21 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 | Q-Chem TS             | `#!Python @job` | [quacc.recipes.qchem.ts.ts_job][]               | `quacc[sella]` |
 | Q-Chem IRC            | `#!Python @job` | [quacc.recipes.qchem.ts.irc_job][]              | `quacc[sella]` |
 | Q-Chem Quasi IRC      | `#!Python @job` | [quacc.recipes.qchem.ts.quasi_irc_job][]        | `quacc[sella]` |
+
+</center>
+
+## Quantum ESPRESSO
+
+!!! Info
+
+    [Quantum Espresso](https://www.quantum-espresso.org) is an open-source code for plane-wave, periodic DFT calculations.
+
+<center>
+
+| Name            | Decorator       | Documentation                              | Req'd Extras |
+| --------------- | --------------- | ------------------------------------------ | ------------ |
+| Espresso Static | `#!Python @job` | [quacc.recipes.espresso.core.static_job][] |              |
+| Espresso Phonon | `#!Python @job` | [quacc.recipes.espresso.core.phonon_job][] |              |
 
 </center>
 

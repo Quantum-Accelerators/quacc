@@ -12,9 +12,10 @@ Additional contributions were made by the individuals listed [here](https://gith
 
     Don't see your name and want to update the list? Submit a PR and update this documentation page!
 
-- [@samblau](https://github.com/samblau): Custom Q-Chem calculator, Q-Chem core and TS recipes.
 - [@kumaranu](https://github.com/kumaranu): NewtonNet core and TS recipes.
 - [@rwexler](https://github.com/rwexler): Defect utilities and EMT defect recipe.
+- [@samblau](https://github.com/samblau): Custom Q-Chem calculator, Q-Chem core and TS recipes.
+- [@tomdemeyere](https://github.com/tomdemeyere): Custom Espresso calculator, Espresso core recipes.
 - [@ViktoriiaBaib](https://github.com/ViktoriiaBaib): Initial testing of quacc.
 
 ## Inspiration

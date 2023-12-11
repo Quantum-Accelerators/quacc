@@ -6,7 +6,7 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 
 ## Background
 
-To help enable interoperability between workflow engines, quacc offers a unified set of decorators: [`#!Python @job`](https://quantum-accelerators.github.io/quacc/reference/quacc/utils/wflows.html#quacc.wflow_tools.job), [`#!Python @flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/utils/wflows.html#quacc.wflow_tools.flow), and [`#!Python @subflow`](https://quantum-accelerators.github.io/quacc/reference/quacc/utils/wflows.html#quacc.wflow_tools.subflow).
+To help enable interoperability between workflow engines, quacc offers a unified set of decorators: [`#!Python @job`](https://quantum-accelerators.github.io/quacc/reference/quacc/wflow_tools/decorators.html#quacc.wflow_tools.decorators.job), [`#!Python @flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/wflow_tools/decorators.html#quacc.wflow_tools.decorators.flow), and [`#!Python @subflow`](https://quantum-accelerators.github.io/quacc/reference/quacc/wflow_tools/decorators.html#quacc.wflow_tools.decorators.subflow).
 
 === "Parsl"
 
@@ -14,10 +14,10 @@ To help enable interoperability between workflow engines, quacc offers a unified
 
     <center>
 
-    | Quacc              | Parsl                 |
-    | ------------------ | --------------------- |
+    | Quacc               | Parsl                  |
+    | ------------------- | ---------------------- |
     | `#!Python @job`     | `#!Python @python_app` |
-    | `#!Python @flow`    | No effect             |
+    | `#!Python @flow`    | No effect              |
     | `#!Python @subflow` | `#!Python @join_app`   |
 
     </center>
@@ -28,11 +28,25 @@ To help enable interoperability between workflow engines, quacc offers a unified
 
     <center>
 
-    | Quacc              | Covalent                           |
-    | ------------------ | ---------------------------------- |
-    | `#!Python @job`     | `#!Python @ct.electron`             |
-    | `#!Python @flow`    | `#!Python @ct.lattice`              |
+    | Quacc               | Covalent                                               |
+    | ------------------- | ------------------------------------------------------ |
+    | `#!Python @job`     | `#!Python @ct.electron`                                |
+    | `#!Python @flow`    | `#!Python @ct.lattice`                                 |
     | `#!Python @subflow` | `#!Python @ct.electron`<br>`#!Python @ct.lattice`</br> |
+
+    </center>
+
+=== "Dask"
+
+    Take a moment to read the Dask Delayed documentation [overview page](https://docs.dask.org/en/stable/delayed.html) to get a sense of how the Dask decorators works and the Dask Distributed [quickstart page](https://distributed.dask.org/en/stable/quickstart.html) to understand how to submit tasks to a Dask cluster. Namely, you should understand the `@delayed` decorator and how to interface with the `Client`.
+
+    <center>
+
+    | Quacc               | Covalent                          |
+    | ------------------- | ---------------------------------|
+    | `#!Python @job`     | `#!Python @delayed`               |
+    | `#!Python @flow`    | No effect                         |
+    | `#!Python @subflow` | `#!Python delayed(...).compute()` |
 
     </center>
 
@@ -42,8 +56,8 @@ To help enable interoperability between workflow engines, quacc offers a unified
 
     <center>
 
-    | Quacc              | Redun           |
-    | ------------------ | --------------- |
+    | Quacc               | Redun            |
+    | ------------------- | ---------------- |
     | `#!Python @job`     | `#!Python @task` |
     | `#!Python @flow`    | `#!Python @task` |
     | `#!Python @subflow` | `#!Python @task` |
@@ -56,11 +70,11 @@ To help enable interoperability between workflow engines, quacc offers a unified
 
     <center>
 
-    | Quacc              | Jobflow        |
-    | ------------------ | -------------- |
+    | Quacc               | Jobflow         |
+    | ------------------- | --------------- |
     | `#!Python @job`     | `#!Python @job` |
-    | `#!Python @flow`    | N/A      |
-    | `#!Python @subflow` | N/A      |
+    | `#!Python @flow`    | N/A             |
+    | `#!Python @subflow` | N/A             |
 
     </center>
 
@@ -170,6 +184,51 @@ graph LR
 
     3. This command will dispatch the workflow to the Covalent server.
 
+=== "Dask"
+
+    !!! Important
+
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md) and load the default Dask client:
+
+        ```bash
+        quacc set WORKFLOW_ENGINE dask
+        ```
+
+        ```python title="python"
+        from dask.distributed import Client
+
+        client = Client()  #  (1)!
+        ```
+
+        1. It is necessary to instantiate a Dask client before running Dask workflows. This command loads the default (local) client and only needs to be done once.
+
+    ```python
+    from quacc import job
+
+
+    @job  #  (1)!
+    def add(a, b):
+        return a + b
+
+
+    @job
+    def mult(a, b):
+        return a * b
+
+
+    def workflow(a, b, c):  #  (2)!
+        return mult(add(a, b), c)
+
+
+    delayed = workflow(1, 2, 3)
+    result = client.compute(delayed).result()  # 9
+    print(result)
+    ```
+
+    1. The `#!Python @job` decorator will be transformed into `#!Python @delayed`.
+
+    2. The `#!Python @flow` decorator doesn't actually do anything when using Dask, so we chose to not include it here for brevity.
+
 === "Redun"
 
     !!! Important
@@ -273,6 +332,10 @@ add.__wrapped__(1, 2)
 === "Covalent"
 
     If you want to learn more about Covalent, you can read the [Covalent Documentation](https://docs.covalent.xyz/docs/). Please refer to the Covalent [Discussion Board](https://github.com/AgnostiqHQ/covalent/discussions) for any Covalent-specific questions.
+
+=== "Dask"
+
+    If you want to learn more about Dask, you can read the [Dask Delayed documentation](https://docs.dask.org/en/stable/delayed.html) to read more about the decorators and the [Dask Distributed documentation](https://distributed.dask.org/en/stable/) to read more about the distributed Dask cluster. Please refer to the [Dask Discourse page](https://discourse.dask.org/) for Dask-specific questions.
 
 === "Redun"
 

@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 installed_engine = next(
     (
         wflow_engine
-        for wflow_engine in ["parsl", "covalent", "prefect", "redun", "jobflow"]
+        for wflow_engine in ["parsl", "covalent", "dask", "prefect", "redun", "jobflow"]
         if util.find_spec(wflow_engine)
     ),
     "local",
@@ -54,7 +54,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
 
     WORKFLOW_ENGINE: Literal[
-        "covalent", "jobflow", "parsl", "prefect", "redun", "local"
+        "covalent", "dask", "parsl", "redun", "jobflow", "prefect", "local"
     ] = Field(
         installed_engine,
         description=(
@@ -70,20 +70,24 @@ class QuaccSettings(BaseSettings):
     RESULTS_DIR: Path = Field(
         Path.cwd(),
         description=(
-            "Directory to store I/O-based calculation results in."
+            "Directory to permanently store I/O-based calculation results in."
             "Note that this behavior may be modified by the chosen workflow engine."
-            "For instance, Covalent specifies the base directory as the `workdir` "
-            "of a local executor or the `remote_workdir` of a remote executor."
-            "In this case, the `RESULTS_DIR` will be a subdirectory of that directory."
         ),
     )
-    SCRATCH_DIR: Path = Field(
-        Path("~/.scratch"), description="Scratch directory for calculations."
+    SCRATCH_DIR: Optional[Path] = Field(
+        None,
+        description=(
+            "The base directory where calculations are run. If set to None, calculations will be run in a "
+            "temporary directory within `RESULTS_DIR`. If a `Path` is supplied, calculations will "
+            "be run in a temporary directory within `SCRATCH_DIR`. Files are always moved back "
+            "to `RESULTS_DIR` after the calculation is complete, and the temporary directory "
+            "in `SCRATCH_DIR` is removed."
+        ),
     )
-    CREATE_UNIQUE_WORKDIR: bool = Field(
+    CREATE_UNIQUE_DIR: bool = Field(
         False,
         description=(
-            "Whether to have a unique working directory in RESULTS_DIR for each job."
+            "Whether to have a unique directory in RESULTS_DIR for each job."
             "Some workflow engines have an option to do this for you already."
         ),
     )
@@ -92,7 +96,7 @@ class QuaccSettings(BaseSettings):
     )
     CHECK_CONVERGENCE: bool = Field(
         True,
-        description="Whether to check for convergence in the `summarize_run`-type functions, if supported.",
+        description="Whether to check for convergence, when implemented by a given recipe.",
     )
 
     # ---------------------------
@@ -119,6 +123,33 @@ class QuaccSettings(BaseSettings):
     )
 
     # ---------------------------
+    # ESPRESSO Settings
+    # ---------------------------
+    ESPRESSO_BIN_PATHS: dict[str, Path] = Field(
+        {
+            "pw": Path("pw.x"),
+            "ph": Path("ph.x"),
+            "neb": Path("neb.x"),
+            "q2r": Path("q2r.x"),
+            "matdyn": Path("matdyn.x"),
+            "dynmat": Path("dynmat.x"),
+            "bands": Path("bands.x"),
+            "projwfc": Path("projwfc.x"),
+            "pp": Path("pp.x"),
+            "wannier90": Path("wannier90.x"),
+        },
+        description="Name for each espresso binary and its corresponding path. "
+        "By default, the binaries are assumed to be in PATH.",
+    )
+    ESPRESSO_PSEUDO: Optional[Path] = Field(
+        None, description=("Path to a pseudopotential library for espresso.")
+    )
+    ESPRESSO_PRESET_DIR: Path = Field(
+        Path(__file__).parent / "calculators" / "espresso" / "presets",
+        description="Path to the espresso preset directory",
+    )
+
+    # ---------------------------
     # Gaussian Settings
     # ---------------------------
     GAUSSIAN_CMD: Path = Field(
@@ -142,7 +173,10 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     GULP_CMD: Path = Field(Path("gulp"), description=("Path to the GULP executable."))
     GULP_LIB: Optional[Path] = Field(
-        None, description=("Path to the GULP force field library.")
+        None,
+        description=(
+            "Path to the GULP force field library. If not specified, the GULP_LIB environment variable will be used (if present)."
+        ),
     )
 
     # ---------------------------
@@ -306,21 +340,37 @@ class QuaccSettings(BaseSettings):
 
     @field_validator("RESULTS_DIR", "SCRATCH_DIR")
     @classmethod
-    def resolve_and_make_paths(cls, v):
+    def resolve_and_make_paths(cls, v: Optional[Path]) -> Optional[Path]:
+        """Resolve and make paths."""
+        if v is None:
+            return v
+
         v = Path(os.path.expandvars(v)).expanduser().resolve()
         if not v.exists():
             os.makedirs(v)
         return v
 
     @field_validator(
-        "GAUSSIAN_CMD", "ORCA_CMD", "QCHEM_LOCAL_SCRATCH", "VASP_PRESET_DIR"
+        "ESPRESSO_PRESET_DIR",
+        "ESPRESSO_PSEUDO",
+        "GAUSSIAN_CMD",
+        "GULP_CMD",
+        "GULP_LIB",
+        "ORCA_CMD",
+        "QCHEM_LOCAL_SCRATCH",
+        "NEWTONNET_MODEL_PATH",
+        "VASP_PRESET_DIR",
+        "VASP_PP_PATH",
+        "VASP_VDW",
     )
     @classmethod
-    def expand_paths(cls, v):
-        return v.expanduser()
+    def expand_paths(cls, v: Optional[Path]) -> Optional[Path]:
+        """Expand ~/ in paths."""
+        return v.expanduser() if v is not None else v
 
     @field_validator("PRIMARY_STORE")
-    def generate_store(cls, v):
+    def generate_store(cls, v: Union[str, Store]) -> Store:
+        """Generate the Maggma store"""
         return MontyDecoder().decode(v) if isinstance(v, str) else v
 
     model_config = SettingsConfigDict(env_prefix="quacc_")

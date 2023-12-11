@@ -4,6 +4,38 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.4]
+
+### Added
+
+- Added core Quantum ESPRESSO recipes and custom calculator. (@tomdemeyere)
+- Added a new function, `quacc.utils.files.copy_decompress_files_from_dir`
+
+### Changed
+
+- The `copy_files` kwarg in most recipes can now include a directory
+- Renamed `quacc.utils.files.copy_decompress` to `quacc.utils.files.copy_decompress_files`
+
+### Fixed
+
+- Quacc settings that are paths now have `~/` expanded in most cases
+
+## [0.4.3]
+
+### Added
+
+- Added preliminary support for the `Dask` workflow engine via Dask Delayed and Dask Distributed.
+
+### Changed
+
+- Renamed `CREATE_UNIQUE_WORKDIR` to `CREATE_UNIQUE_DIR` to better reflect its utility.
+- The default for the `SCRATCH_DIR` setting is now `None` instead of `~/.quacc_scratch`. In other words, the default is to not use a scratch directory. This should help with onboarding, and the ability to set it as `None` may be broadly of interest. Setting the `SCRATCH_DIR` to a given `Path` will still work as expected.
+- Files are no longer recursively _copied_ from `SCRATCH_DIR` to `RESULTS_DIR`. Instead, they are recursively moved. This should speed up I/O operations.
+
+### Fixed
+
+- Fixed a missing `phonopy_kwargs` keyword argument in `quacc.recipes.common.phonons`
+
 ## [0.4.2]
 
 ### Added
@@ -366,7 +398,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added the `quacc.recipes.emt.parsl` module.
 - Added a CLI for `quacc` along with a `quacc config` option to configure Covalent appropriately upon install.
 - Added generic type hints for schemas.
-- Added a `CREATE_UNIQUE_WORKDIR` global setting to have quacc automatically make a unique working directory for each calculation.
+- Added a `CREATE_UNIQUE_DIR` global setting to have quacc automatically make a unique working directory for each calculation.
 - Added `CHECK_CONVERGENCE` to global settings.
 
 ### Changed

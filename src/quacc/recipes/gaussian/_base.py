@@ -11,6 +11,7 @@ from quacc.schemas.cclib import cclib_summarize_run
 from quacc.utils.dicts import merge_dicts
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from typing import Any
 
     from ase.atoms import Atoms
@@ -27,7 +28,7 @@ def base_fn(
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
 ) -> cclibSchema:
     """
     Base job function for carrying out Gaussian recipes.
@@ -45,7 +46,7 @@ def base_fn(
     additional_fields
         Additional fields to supply to the summarizer.
     copy_files
-        Files to copy to the runtime directory.
+        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
 
     Returns
     -------

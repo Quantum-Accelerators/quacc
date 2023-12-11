@@ -50,8 +50,6 @@ def phonon_flow(
     static_job_kwargs
         Additional keyword arguments for [quacc.recipes.emt.core.static_job][]
         for the force calculations.
-    phonopy_kwargs
-        Additional keyword arguments for the `phonopy.Phonopy` class.
 
     Returns
     -------

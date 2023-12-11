@@ -17,9 +17,9 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     Decorator for individual compute jobs. This is a `#!Python @job` decorator. Think of
     each `#!Python @job`-decorated function as an individual SLURM job, if that helps.
 
-    | Quacc | Covalent      | Parsl        | Prefect | Redun  | Jobflow |
-    | ----- | ------------- | ------------ | ------- | ------ | ------- |
-    | `job` | `ct.electron` | `python_app` | `task`  | `task` | `job`   |
+    | Quacc | Covalent      | Parsl        | Dask      | Prefect | Redun  | Jobflow |
+    | ----- | ------------- | ------------ | --------- | ------- | ------ | ------- |
+    | `job` | `ct.electron` | `python_app` | `delayed` |`task`   | `task` | `job`   |
 
     All `#!Python @job`-decorated functions are transformed into their corresponding
     decorator.
@@ -57,6 +57,18 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
         from parsl import python_app
 
         @python_app
+        def add(a, b):
+            return a + b
+
+        add(1, 2)
+        ```
+
+    === "Dask"
+
+        ```python
+        from dask import delayed
+
+        @delayed
         def add(a, b):
             return a + b
 
@@ -118,7 +130,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     ) -> Any:
         """
         This function is used for handling workflow engines that require some action
-        beyond just decoration. It also patches the parent function `_func` to takke an
+        beyond just decoration. It also patches the parent function `_func` to take an
         additional keyword argument, `deocrator_kwargs`, that is a dictionary of keyword
         arguments to pass during the decorator construction.
 
@@ -144,8 +156,6 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
             decorated = prefect_task(_func, **decorator_kwargs)
             return decorated.submit(*f_args, **f_kwargs)
 
-        return decorated(*f_args, **f_kwargs)
-
     from quacc import SETTINGS
 
     wflow_engine = SETTINGS.WORKFLOW_ENGINE
@@ -169,12 +179,17 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
         from redun import task as redun_task
 
         decorated = redun_task(_func, **kwargs)
+    elif wflow_engine == "dask":
+        from dask import delayed
+
+        decorated = delayed(_func, **kwargs)
     elif wflow_engine == "prefect":
         return _inner
     else:
         decorated = _func
 
-    if not hasattr(decorated, "__wrapped__"):
+    if not hasattr(decorated, "__wrapped__") and wflow_engine != "dask":
+        # TODO: https://github.com/dask/dask/issues/10685
         decorated.__wrapped__ = _func
 
     return decorated
@@ -187,9 +202,9 @@ def flow(
     Decorator for workflows, which consist of at least one compute job. This is a
     `#!Python @flow` decorator.
 
-    | Quacc  | Covalent     | Parsl     | Prefect | Redun  | Jobflow   |
-    | ------ | ------------ | --------- | ------- | ------ | --------- |
-    | `flow` | `ct.lattice` | No effect | `flow`  | `task` | No effect |
+    | Quacc  | Covalent     | Parsl     | Dask      | Prefect | Redun  | Jobflow   |
+    | ------ | ------------ | --------- | --------- | ------- | ------ | --------- |
+    | `flow` | `ct.lattice` | No effect | No effect | `flow`  | `task` | No effect |
 
     All `#!Python @flow`-decorated functions are transformed into their corresponding
     decorator.
@@ -232,6 +247,21 @@ def flow(
         from parsl import python_app
 
         @python_app
+        def add(a, b):
+            return a + b
+
+        def workflow(a, b, c):
+            return add(add(a, b), c)
+
+        workflow(1, 2, 3)
+        ```
+
+    === "Dask"
+
+        ```python
+        from dask import delayed
+
+        @delayed
         def add(a, b):
             return a + b
 
@@ -321,9 +351,9 @@ def subflow(
     """
     Decorator for (dynamic) sub-workflows. This is a `#!Python @subflow` decorator.
 
-    | Quacc     | Covalent                  | Parsl      | Prefect | Redun  | Jobflow   |
-    | --------- | ------------------------- | ---------- | ------- | ------ | --------- |
-    | `subflow` | `ct.electron(ct.lattice)` | `join_app` | `flow`  | `task` | No effect |
+    | Quacc     | Covalent                  | Parsl      | Dask      | Prefect | Redun  | Jobflow   |
+    | --------- | ------------------------- | ---------- | --------- | ------- | ------ | --------- |
+    | `subflow` | `ct.electron(ct.lattice)` | `join_app` | `delayed` | `flow`  | `task` | No effect |
 
     All `#!Python @subflow`-decorated functions are transformed into their corresponding
     decorator.
@@ -409,6 +439,32 @@ def subflow(
         workflow(1, 2, 3)
         ```
 
+    === "Dask"
+
+        ```python
+        import random
+        from dask import delayed
+
+        @delayed
+        def add(a, b):
+            return a + b
+
+        @delayed
+        def make_more(val):
+            return [val] * random.randint(2, 5)
+
+        @delayed
+        def add_distributed(vals, c):
+            return [add(val, c) for val in vals]
+
+        def workflow(a, b, c):
+            result1 = add(a, b)
+            result2 = make_more(result1)
+            return add_distributed(result2, c).compute()
+
+        workflow(1, 2, 3)
+        ```
+
     === "Prefect"
 
         ```python
@@ -482,6 +538,38 @@ def subflow(
         The decorated function.
     """
 
+    @functools.wraps(_func)
+    def _inner(
+        *f_args, decorator_kwargs: dict[str, Any] | None = None, **f_kwargs
+    ) -> Any:
+        """
+        This function is used for handling workflow engines that require some action
+        beyond just decoration. It also patches the parent function `_func` to take an
+        additional keyword argument, `deocrator_kwargs`, that is a dictionary of keyword
+        arguments to pass during the decorator construction.
+
+        Parameters
+        ----------
+        *f_args
+            Positional arguments to the function, if any.
+        decorator_kwargs
+            Keyword arguments to pass to the workflow engine decorator.
+        **f_kwargs
+            Keyword arguments to the function, if any.
+
+        Returns
+        -------
+        Any
+            The output of the @job-decorated function.
+        """
+        decorator_kwargs = decorator_kwargs if decorator_kwargs is not None else kwargs
+
+        if wflow_engine == "dask":
+            from dask import delayed
+
+            decorated = delayed(_func, **decorator_kwargs)
+            return decorated(*f_args, **f_kwargs).compute()
+
     from quacc import SETTINGS
 
     if _func is None:
@@ -504,6 +592,8 @@ def subflow(
         from redun import task as redun_task
 
         decorated = redun_task(_func, **kwargs)
+    elif wflow_engine == "dask":
+        return _inner
     else:
         decorated = _func
 
