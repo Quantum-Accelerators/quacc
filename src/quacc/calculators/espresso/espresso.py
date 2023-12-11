@@ -153,14 +153,14 @@ class EspressoTemplate(EspressoTemplate_):
                     else:
                         path = cwd / path
 
-                    if used_dir not in path:
+                    if used_dir not in path.parents:
                         # If this condition is true then the user
                         # supplied a path that is outside any quacc dir
                         # it is the user complete responsability to take care
                         # of it. This is discouraged.
                         continue
 
-                    if cwd not in path:
+                    if cwd not in path.parents:
                         # If this condition is true it means that
                         # the user supplied a path inside
                         # one of the quacc dir but outside the current calc dir 
