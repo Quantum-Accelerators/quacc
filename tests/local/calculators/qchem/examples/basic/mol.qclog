@@ -1,0 +1,46 @@
+You are running Q-Chem version: 6.0.2
+withsave === 1
+
+#
+# job setting
+#
+local host:  n0219.lr6
+current dir: /global/home/groups/lr_mp/smblau/direct_testing/for_quacc/block_2023-06-10-00-21-42-629762/launcher_2023-06-10-00-21-46-205830
+input file:  mol.qin
+output file: mol.qout
+nprocs     : 0
+nthreads   : 40
+#
+# qchem installation setting
+#
+QC:          /clusterfs/mp/software/qchem6.0
+QCAUX:       /clusterfs/mp/software/qchem6.0/qcaux
+QCPROG:      /clusterfs/mp/software/qchem6.0/exe/qcprog.exe_s
+QCPROG_S:    /clusterfs/mp/software/qchem6.0/exe/qcprog.exe_s
+PARALLEL:    -DSERIAL
+QCMPI:       MPICH
+#
+# qchem directory setting
+#
+qcrun:       scratch
+QCSCRATCH:   /global/home/groups/lr_mp/smblau/direct_testing/for_quacc/block_2023-06-10-00-21-42-629762/launcher_2023-06-10-00-21-46-205830
+QCLOCALSCR:  /tmp
+QCTMPDIR:    /tmp
+QCFILEPREF:  /tmp/scratch
+QCSAVEDIR:   /global/home/groups/lr_mp/smblau/direct_testing/for_quacc/block_2023-06-10-00-21-42-629762/launcher_2023-06-10-00-21-46-205830/scratch
+workdirs:    /tmp/scratch
+workdir0:    /tmp/scratch
+partmpdirs =  
+#
+# parallel setting
+#
+QCRSH:           ssh
+QCMPI:           mpich
+QCMPIRUN:        /clusterfs/mp/software/qchem6.0/bin/mpi/mpirun_qchem
+QCMACHINEFILE:   /tmp/scratch/hostfile
+
+#
+# env setting
+#
+exported envs:   QC QCAUX QCSCRATCH QCRUNNAME QCFILEPREF QCPROG QCPROG_S GUIFILE
+copy savedir ...
