@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+from warnings import warn
 from typing import TYPE_CHECKING
 from quacc import SETTINGS
 from ase import Atoms
@@ -27,5 +27,11 @@ class Onetep(Onetep_):
         self.input_atoms = input_atoms
         self.calc_defaults = calc_defaults
         kwargs = merge_dicts(self.calc_defaults, kwargs)
-        super().__init__(profile=profile, parallel_info=parallel_info, **kwargs)
-        self.directory = '.'
+
+        if kwargs.pop("directory"):
+            warn(
+                "It is highly discouraged to use the 'directory' parameter when using quacc" 
+            )
+
+
+        super().__init__(profile=profile, directory = '.', parallel_info=parallel_info, **kwargs)
