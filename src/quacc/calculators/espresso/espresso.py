@@ -3,7 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from ase import Atoms
 from ase.calculators.espresso import Espresso as Espresso_
 from ase.calculators.espresso import EspressoProfile
 from ase.calculators.espresso import EspressoTemplate as EspressoTemplate_
@@ -18,6 +17,8 @@ from quacc.utils.files import load_yaml_calc
 
 if TYPE_CHECKING:
     from typing import Any
+
+    from ase import Atoms
 
 
 class EspressoTemplate(EspressoTemplate_):
@@ -74,9 +75,8 @@ class EspressoTemplate(EspressoTemplate_):
         -------
         None
         """
-        dst = Path(directory) / self.inputname
         write(
-            dst,
+            Path(directory) / self.inputname,
             atoms,
             binary=self.binary,
             properties=properties,
@@ -101,8 +101,7 @@ class EspressoTemplate(EspressoTemplate_):
         dict
             The results dictionnary
         """
-        path = Path(directory) / self.outputname
-        results = read(path, binary=self.binary)
+        results = read(Path(directory) / self.outputname, binary=self.binary)
         if "energy" not in results:
             results["energy"] = None
         return results

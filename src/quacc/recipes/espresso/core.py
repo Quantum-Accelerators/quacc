@@ -3,13 +3,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ase import Atoms
-
 from quacc import job
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.recipes.espresso._base import base_fn
 
 if TYPE_CHECKING:
+    from ase.atoms import Atoms
+
     from quacc.schemas._aliases.ase import RunSchema
 
 
@@ -38,11 +38,11 @@ def static_job(
 
         If a string is provided, it is assumed to be a path to a directory,
         all of the child tree structure of that directory is going to be copied to the
-        scratch of this calculation. For ph_job this is what most users will want to do.
+        scratch of this calculation. For phonon_job this is what most users will want to do.
 
         If a list of strings is provided, each string point to a specific file. In this case
         it is important to note that no directory structure is going to be copied, everything
-        is copied at the root of the scratch directory.
+        is copied at the root of the temporary directory.
 
     parallel_info
         Dictionary containing information about the parallelization of the
@@ -66,22 +66,20 @@ def static_job(
         }
     }
 
-    template = EspressoTemplate("pw")
-
     return base_fn(
         atoms,
         preset=preset,
-        template=template,
+        template=EspressoTemplate("pw"),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
-        additional_fields={"name": "pw.x static"},
+        additional_fields={"name": "pw.x Static"},
         copy_files=copy_files,
     )
 
 
 @job
-def ph_job(
+def phonon_job(
     preset: str | None = None,
     copy_files: str | list[str] | None = None,
     parallel_info: dict[str] | None = None,
@@ -104,11 +102,11 @@ def ph_job(
 
         If a string is provided, it is assumed to be a path to a directory,
         all of the child tree structure of that directory is going to be copied to the
-        scratch of this calculation. For ph_job this is what most users will want to do.
+        scratch of this calculation. For phonon_job this is what most users will want to do.
 
         If a list of strings is provided, each string point to a specific file. In this case
         it is important to note that no directory structure is going to be copied, everything
-        is copied at the root of the scratch directory.
+        is copied at the root of the temporary directory.
 
     parallel_info
         Dictionary containing information about the parallelization of the
@@ -142,14 +140,12 @@ def ph_job(
         "qpts": (0, 0, 0),
     }
 
-    template = EspressoTemplate("ph")
-
     return base_fn(
         preset=preset,
-        template=template,
+        template=EspressoTemplate("ph"),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
-        additional_fields={"name": "ph.x static"},
+        additional_fields={"name": "ph.x Phonon"},
         copy_files=copy_files,
     )

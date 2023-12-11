@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
 
-def parse_pp_and_cutoff(config: dict[str, Any], atoms: Atoms) -> dict[str, Any]:
+def parse_pp_and_cutoff(config: dict[str, Any], atoms: Atoms) -> dict[str, Any] | None:
     """
     Function that parses the pseudopotentials and cutoffs from a preset file.
     The cutoffs are taken from the largest value of the cutoffs among the elements
@@ -24,12 +24,12 @@ def parse_pp_and_cutoff(config: dict[str, Any], atoms: Atoms) -> dict[str, Any]:
 
     Returns
     -------
-    dict
+    dict | None
         A dictionary containing the pseudopotentials and cutoffs
     """
 
     if "pseudopotentials" not in config:
-        return {}
+        return None
 
     pp_dict = config["pseudopotentials"]
     unique_elements = list(set(atoms.symbols))

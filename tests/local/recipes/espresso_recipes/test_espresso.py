@@ -9,7 +9,7 @@ from ase.build import bulk
 from ase.io.espresso import construct_namelist
 
 from quacc import SETTINGS
-from quacc.recipes.espresso.core import ph_job, static_job
+from quacc.recipes.espresso.core import phonon_job, static_job
 from quacc.utils.files import copy_decompress_files
 
 pytestmark = pytest.mark.skipif(which("pw.x") is None, reason="QE not installed")
@@ -57,7 +57,7 @@ def test_static_job(tmp_path, monkeypatch):
     assert new_input_data["control"]["calculation"] == "scf"
 
 
-def test_ph_job(tmp_path, monkeypatch):
+def test_phonon_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Li")
@@ -86,7 +86,7 @@ def test_ph_job(tmp_path, monkeypatch):
         atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.25
     )
 
-    ph_results = ph_job(input_data=ph_loose, copy_files=pw_results["dir_name"])
+    ph_results = phonon_job(input_data=ph_loose, copy_files=pw_results["dir_name"])
 
     assert (0, 0, 0) in ph_results["results"]
     assert np.allclose(
@@ -107,7 +107,7 @@ def test_ph_job(tmp_path, monkeypatch):
         assert key in ph_results["results"][(0, 0, 0)]
 
 
-def test_ph_job_list_to_do(tmp_path, monkeypatch):
+def test_phonon_job_list_to_do(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Li")
@@ -140,7 +140,7 @@ def test_ph_job_list_to_do(tmp_path, monkeypatch):
 
     nat_todo = [1]
 
-    ph_results = ph_job(
+    ph_results = phonon_job(
         input_data=ph_loose,
         copy_files=pw_results["dir_name"],
         qpts=qpts,
