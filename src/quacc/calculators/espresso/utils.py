@@ -18,7 +18,6 @@ def parse_pp_and_cutoff(config: dict[str, Any], atoms: Atoms) -> dict[str, Any] 
     ----------
     config
         The config dictionary return by load_yaml_calc
-
     atoms
         The atoms object to get the elements from
 
