@@ -18,6 +18,7 @@ except ImportError:
     has_sella = False
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from typing import Any, Literal
 
     from ase.atoms import Atoms
@@ -34,7 +35,7 @@ def ts_job(
     method: str = "wb97mv",
     basis: str = "def2-svpd",
     opt_params: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
     """
@@ -58,7 +59,7 @@ def ts_job(
         to `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
     copy_files
-        Files to copy to the runtime directory.
+        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
     **calc_kwargs
         Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
@@ -106,7 +107,7 @@ def irc_job(
     method: str = "wb97mv",
     basis: str = "def2-svpd",
     opt_params: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
     """
@@ -132,7 +133,7 @@ def irc_job(
         to `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
     copy_files
-        Files to copy to the runtime directory.
+        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
     **calc_kwargs
         Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
@@ -181,7 +182,7 @@ def quasi_irc_job(
     basis: str = "def2-svpd",
     irc_job_kwargs: dict[str, Any] | None = None,
     relax_job_kwargs: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
 ) -> OptSchema:
     """
     Quasi-IRC optimize a molecular structure. Runs `irc_job` for 10 steps (default)
@@ -202,7 +203,7 @@ def quasi_irc_job(
     relax_job_kwargs
         Dictionary of kwargs for the `relax_job`.
     copy_files
-        Files to copy to the runtime directory.
+        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
 
     Returns
     -------

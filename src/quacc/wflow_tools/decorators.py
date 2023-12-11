@@ -17,9 +17,9 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     Decorator for individual compute jobs. This is a `#!Python @job` decorator. Think of
     each `#!Python @job`-decorated function as an individual SLURM job, if that helps.
 
-    | Quacc | Covalent      | Parsl        | Dask | Prefect | Redun  | Jobflow |
-    | ----- | ------------- | ------------ | ---- | ------- | ------ | ------- |
-    | `job` | `ct.electron` | `python_app` | `delayed` |`task`  | `task` | `job`   |
+    | Quacc | Covalent      | Parsl        | Dask      | Prefect | Redun  | Jobflow |
+    | ----- | ------------- | ------------ | --------- | ------- | ------ | ------- |
+    | `job` | `ct.electron` | `python_app` | `delayed` |`task`   | `task` | `job`   |
 
     All `#!Python @job`-decorated functions are transformed into their corresponding
     decorator.
@@ -202,8 +202,8 @@ def flow(
     Decorator for workflows, which consist of at least one compute job. This is a
     `#!Python @flow` decorator.
 
-    | Quacc  | Covalent     | Parsl     | Dask | Prefect | Redun  | Jobflow   |
-    | ------ | ------------ | --------- | ----- | ------- | ------ | --------- |
+    | Quacc  | Covalent     | Parsl     | Dask      | Prefect | Redun  | Jobflow   |
+    | ------ | ------------ | --------- | --------- | ------- | ------ | --------- |
     | `flow` | `ct.lattice` | No effect | No effect | `flow`  | `task` | No effect |
 
     All `#!Python @flow`-decorated functions are transformed into their corresponding
@@ -351,8 +351,8 @@ def subflow(
     """
     Decorator for (dynamic) sub-workflows. This is a `#!Python @subflow` decorator.
 
-    | Quacc     | Covalent                  | Parsl      | Dask | Prefect | Redun  | Jobflow   |
-    | --------- | ------------------------- | ---------- | ----- |------- | ------ | --------- |
+    | Quacc     | Covalent                  | Parsl      | Dask      | Prefect | Redun  | Jobflow   |
+    | --------- | ------------------------- | ---------- | --------- | ------- | ------ | --------- |
     | `subflow` | `ct.electron(ct.lattice)` | `join_app` | `delayed` | `flow`  | `task` | No effect |
 
     All `#!Python @subflow`-decorated functions are transformed into their corresponding

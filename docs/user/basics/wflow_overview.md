@@ -55,7 +55,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     - Extremely popular
     - Has significant support for running on HPC resources
     - It does not involve a centralized server or network connectivity
-    - Supports the pilot job model and advanced queuing schemes via Dask Jobqueue
+    - Supports adaptive scaling of compute resources
 
     Cons:
 

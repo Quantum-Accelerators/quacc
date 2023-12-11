@@ -18,5 +18,5 @@ def pytest_sessionfinish():
 
     try:
         default_client().close()
-    except:
+    except Exception:
         pass
