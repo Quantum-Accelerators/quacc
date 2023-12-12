@@ -1,1 +1,1 @@
-"""DEPRECATED: USE `qchem2` instead."""
+"""Recipes for Q-Chem."""
