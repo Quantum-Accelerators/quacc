@@ -1,3 +1,4 @@
+matcalc==0.0.3
 matgl==0.9.1
 chgnet==0.3.3
 git+https://github.com/ACEsuit/mace.git
