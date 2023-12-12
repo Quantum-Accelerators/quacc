@@ -6,11 +6,13 @@ from quacc.recipes.mlip.core import relax_job, static_job
 
 
 @pytest.mark.parametrize("method", ["chgnet", "m3gnet", "umace"])
-@pytest.mark.parametrize(
-    "energy", [-4.083308219909668, np.array([-4.0938973]), -4.083906650543213]
-)
-def test_static_job(tmp_path, monkeypatch, method, energy):
+def test_static_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
+    ref_energy = {
+        "chgnet": -4.083308219909668,
+        "m3gnet": -4.0938973,
+        "umace": -4.083906650543213,
+    }
     if method == "chgnet":
         pytestmark = pytest.importorskip("chgnet")
     elif method == "m3gnet":
@@ -20,17 +22,19 @@ def test_static_job(tmp_path, monkeypatch, method, energy):
         pytestmark = pytest.importorskip("mace")
     atoms = bulk("Cu")
     output = static_job(atoms, method=method)
-    assert output["results"]["energy"] == pytest.approx(energy)
+    assert output["results"]["energy"] == pytest.approx(ref_energy[method])
     assert np.shape(output["results"]["forces"]) == (1, 3)
     assert output["atoms"] == atoms
 
 
 @pytest.mark.parametrize("method", ["chgnet", "m3gnet", "umace"])
-@pytest.mark.parametrize(
-    "energy", [-32.662731, np.array([-32.747219]), -32.66752624511719]
-)
-def test_relax_job(tmp_path, monkeypatch, method, energy):
+def test_relax_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
+    ref_energy = {
+        "chgnet": -32.662731,
+        "m3gnet": -32.747219,
+        "umace": -32.66752624511719,
+    }
     if method == "chgnet":
         pytestmark = pytest.importorskip("chgnet")
     elif method == "m3gnet":
@@ -42,7 +46,7 @@ def test_relax_job(tmp_path, monkeypatch, method, energy):
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += 0.1
     output = relax_job(atoms, method=method)
-    assert output["results"]["energy"] == pytest.approx(energy)
+    assert output["results"]["energy"] == pytest.approx(ref_energy[method])
     assert np.shape(output["results"]["forces"]) == (8, 3)
     assert np.shape(output["results"]["stress"]) == (3, 3)
     assert output["atoms"] != atoms
