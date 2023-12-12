@@ -45,7 +45,7 @@ No setup needed!
 
 ## MLIPs
 
-Several so-called ``universal'' machine-learned interatomic potentials (MLIPs) are natively supported in quacc, including [U-MACE](https://github.com/ACEsuit/mace), [CHGNet](https://github.com/CederGroupHub/chgnet), and [M3GNet](https://github.com/materialsvirtuallab/matgl).
+Several so-called "universal" machine-learned interatomic potentials (MLIPs) are natively supported in quacc, including [U-MACE](https://github.com/ACEsuit/mace), [CHGNet](https://github.com/CederGroupHub/chgnet), and [M3GNet](https://github.com/materialsvirtuallab/matgl).
 
 To use these potentials, you will need to install the corresponding packages. This can be done as follows:
 
