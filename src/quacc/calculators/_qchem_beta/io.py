@@ -13,9 +13,7 @@ from pymatgen.io.qchem.inputs import QCInput
 from pymatgen.io.qchem.outputs import QCOutput
 
 if TYPE_CHECKING:
-    from typing import Any, Literal
 
-    from ase.atoms import Atoms
 
     from quacc.calculators._qchem_beta.qchem import Results
 
