@@ -333,6 +333,10 @@ jobs:
         uses: actions/download-artifact@v3
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: Wandalen/wretry.action@v1
         with:
-          fail_ci_if_error: true
+          action: codecov/codecov-action@v3
+          attempt_limit: 5
+          attempt_delay: 30000
+          with: |
+            fail_ci_if_error: true
