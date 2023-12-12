@@ -5,6 +5,13 @@ from ase.build import bulk
 from quacc.recipes.mlip.core import relax_job, static_job
 
 
+def test_bad_method():
+    atoms = bulk("Cu")
+    pytestmark = pytest.importorskiip("chgnet")
+    with pytest.raises(ValueError):
+        static_job(atoms, method="bad_method")
+
+
 @pytest.mark.parametrize("method", ["chgnet", "m3gnet", "umace"])
 def test_static_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
