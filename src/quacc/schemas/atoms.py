@@ -54,24 +54,8 @@ def atoms_to_metadata(
     results = {}
 
     # Set any charge or multiplicity keys
-    if charge_and_multiplicity:
-        atoms.charge = charge_and_multiplicity[0]
-        atoms.spin_multiplicity = charge_and_multiplicity[1]
-    else:
-        charge = getattr(atoms, "charge", None)
-        spin_multiplicity = getattr(atoms, "spin_multiplicity", None)
-        if charge is None and spin_multiplicity is None:
-            charge, spin_multiplicity = charge_and_multiplicity(atoms)
-            atoms.charge = charge
-            atoms.spin_multiplicity = spin_multiplicity
-        elif charge is None:
-            charge, _ = check_charge_and_spin(
-                atoms, spin_multiplicity=spin_multiplicity
-            )
-            atoms.charge = charge
-        else:
-            _, spin_multiplicity = check_charge_and_spin(atoms, charge=charge)
-            atoms.spin_multiplicity = spin_multiplicity
+    if not atoms.pbc.any():
+        _set_charge_and_spin(atoms, charge_and_multiplicity=charge_and_multiplicity)
 
     # Strip the dummy atoms, if present
     del atoms[[atom.index for atom in atoms if atom.symbol == "X"]]
@@ -102,6 +86,46 @@ def atoms_to_metadata(
     atoms_doc_unsorted = metadata | results | additional_fields
 
     return sort_dict(remove_dict_nones(atoms_doc_unsorted))
+
+
+def _set_charge_and_spin(
+    atoms: Atoms, charge_and_multiplicity: tuple[int, int] | None = None
+) -> None:
+    """
+    Set the charge and spin multiplicity of an Atoms object.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+    charge_and_multiplicity
+        Charge and spin multiplicity of the Atoms object, only used for Molecule
+        metadata.
+
+    Returns
+    -------
+    None
+        Modifies the Atoms object in place.
+    """
+
+    if charge_and_multiplicity:
+        atoms.charge = charge_and_multiplicity[0]
+        atoms.spin_multiplicity = charge_and_multiplicity[1]
+    else:
+        charge = getattr(atoms, "charge", None)
+        spin_multiplicity = getattr(atoms, "spin_multiplicity", None)
+        if charge is None and spin_multiplicity is None:
+            charge, spin_multiplicity = check_charge_and_spin(atoms)
+            atoms.charge = charge
+            atoms.spin_multiplicity = spin_multiplicity
+        elif charge is None:
+            charge, _ = check_charge_and_spin(
+                atoms, spin_multiplicity=spin_multiplicity
+            )
+            atoms.charge = charge
+        else:
+            _, spin_multiplicity = check_charge_and_spin(atoms, charge=charge)
+            atoms.spin_multiplicity = spin_multiplicity
 
 
 def _quacc_sanitize(obj: Any) -> Any:
