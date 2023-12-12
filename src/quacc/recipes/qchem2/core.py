@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from ase.optimize import FIRE
 
 from quacc import job
-from quacc.recipes._qchem_beta._base import base_fn, base_opt_fn
+from quacc.recipes.qchem2._base import base_fn, base_opt_fn
 from quacc.utils.dicts import merge_dicts
 
 try:

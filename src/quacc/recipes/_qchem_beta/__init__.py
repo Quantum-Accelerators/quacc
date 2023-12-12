@@ -1,1 +1,0 @@
-"""Recipes for Q-Chem."""

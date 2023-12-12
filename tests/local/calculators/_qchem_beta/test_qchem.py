@@ -7,7 +7,7 @@ from ase.io import read
 from monty.io import zopen
 from pymatgen.io.qchem.inputs import QCInput
 
-from quacc.calculators._qchem_beta import QChem
+from quacc.calculators.qchem2 import QChem
 
 FILE_DIR = Path(__file__).parent
 
