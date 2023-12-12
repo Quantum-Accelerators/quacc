@@ -89,7 +89,7 @@ def test_freq_job_v2(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = molecule("H")
-    atoms.set_initial_magnetic_moments([0.0])
+    atoms.set_initial_magnetic_moments([1.0])
     initial_atoms = deepcopy(atoms)
     output = freq_job(atoms, energy=-1.0)
     assert output["atoms"] == initial_atoms
@@ -106,8 +106,8 @@ def test_freq_job_v2(tmp_path, monkeypatch):
     assert len(output["parameters_thermo"]["vib_freqs"]) == 0
     assert output["results"]["energy"] == -1.0
     assert output["results"]["enthalpy"] == pytest.approx(-0.9357685739989672)
-    assert output["results"]["entropy"] == pytest.approx(0.0011292352752446438)
-    assert output["results"]["gibbs_energy"] == pytest.approx(-1.2724500713131577)
+    assert output["results"]["entropy"] == pytest.approx(0.0011889660575166018)
+    assert output["results"]["gibbs_energy"] == pytest.approx(-1.290258804047542)
 
 
 def test_freq_job_v3(tmp_path, monkeypatch):
