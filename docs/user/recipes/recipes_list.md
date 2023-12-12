@@ -141,7 +141,6 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 | --------------------- | --------------- | ----------------------------------------------- | -------------- |
 | Q-Chem Static         | `#!Python @job` | [quacc.recipes.qchem.core.static_job][]         |                |
 | Q-Chem Relax          | `#!Python @job` | [quacc.recipes.qchem.core.relax_job][]          |                |
-| Q-Chem Internal Relax | `#!Python @job` | [quacc.recipes.qchem.core.internal_relax_job][] |                |
 | Q-Chem Frequency      | `#!Python @job` | [quacc.recipes.qchem.core.freq_job][]           |                |
 | Q-Chem TS             | `#!Python @job` | [quacc.recipes.qchem.ts.ts_job][]               | `quacc[sella]` |
 | Q-Chem IRC            | `#!Python @job` | [quacc.recipes.qchem.ts.irc_job][]              | `quacc[sella]` |
