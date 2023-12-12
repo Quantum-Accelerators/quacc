@@ -9,7 +9,7 @@ from quacc.recipes.mlip.core import relax_job, static_job
 @pytest.mark.parametrize(
     "energy", [-4.083308219909668, np.array([-4.0938973]), -4.083906650543213]
 )
-def test_relax_job(tmp_path, monkeypatch, method, energy):
+def test_static_job(tmp_path, monkeypatch, method, energy):
     monkeypatch.chdir(tmp_path)
     if method == "chgnet":
         pytestmark = pytest.importorskip("chgnet")
@@ -18,8 +18,7 @@ def test_relax_job(tmp_path, monkeypatch, method, energy):
         pytestmark = pytest.importorskip("matcalc")
     elif method == "umace":
         pytestmark = pytest.importorskip("mace")
-    atoms = bulk("Cu") * (2, 2, 2)
-    atoms[0].position += 0.1
+    atoms = bulk("Cu")
     output = static_job(atoms, method=method)
     assert output["results"]["energy"] == pytest.approx(energy)
     assert np.shape(output["results"]["forces"]) == (8, 3)
