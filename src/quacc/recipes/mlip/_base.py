@@ -46,7 +46,7 @@ def _pick_calculator(
 
         calc = CHGNetCalculator(**kwargs)
 
-    elif calculator.lower() == "mace":
+    elif calculator.lower() == "umace":
         from mace.calculators import mace_mp
 
         calc = mace_mp(**kwargs)

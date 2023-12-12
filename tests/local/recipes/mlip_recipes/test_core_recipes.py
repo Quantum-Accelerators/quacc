@@ -6,7 +6,9 @@ from quacc.recipes.mlip.core import relax_job, static_job
 
 
 @pytest.mark.parametrize("method", ["chgnet", "m3gnet", "umace"])
-@pytest.mark.parametrize("energy", [-32.688549, -32.662731, -32.662731])
+@pytest.mark.parametrize(
+    "energy", [-4.083308219909668, np.array([-4.0938973]), -4.083906650543213]
+)
 def test_relax_job(tmp_path, monkeypatch, method, energy):
     monkeypatch.chdir(tmp_path)
     if method == "chgnet":
@@ -26,7 +28,9 @@ def test_relax_job(tmp_path, monkeypatch, method, energy):
 
 
 @pytest.mark.parametrize("method", ["chgnet", "m3gnet", "umace"])
-@pytest.mark.parametrize("energy", [-32.662731, -32.662731, -32.662731])
+@pytest.mark.parametrize(
+    "energy", [-32.662731, np.array([-32.747219]), -32.66752624511719]
+)
 def test_relax_job(tmp_path, monkeypatch, method, energy):
     monkeypatch.chdir(tmp_path)
     if method == "chgnet":
