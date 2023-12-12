@@ -170,10 +170,6 @@ class Vasp(Vasp_):
         """
         Manage the environment for the VASP calculator.
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         str
@@ -210,10 +206,6 @@ class Vasp(Vasp_):
     def _cleanup_params(self) -> None:
         """
         Clean up various calculator attributes and parameters.
-
-        Parameters
-        ----------
-        None
 
         Returns
         -------

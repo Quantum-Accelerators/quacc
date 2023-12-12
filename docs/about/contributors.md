@@ -1,8 +1,14 @@
 # People
 
-## Developers
+## Lead Developers
 
-Quacc was designed and developed by [**Andrew S. Rosen**](https://cbe.princeton.edu/people/andrew-rosen).
+Quacc was originally designed and developed by [Andrew S. Rosen](https://cbe.princeton.edu/people/andrew-rosen).
+
+## Active Maintainers
+
+The currently active maintainers are as follows:
+
+- [@Andrew_S_Rosen](https://github.com/Quantum-Accelerators/quacc)
 
 ## Contributors
 

@@ -7,6 +7,7 @@ from pathlib import Path
 from shutil import which
 from typing import TYPE_CHECKING, Literal, Optional, Union
 
+import psutil
 from maggma.core import Store
 from monty.json import MontyDecoder
 from pydantic import Field, field_validator, model_validator
@@ -309,6 +310,10 @@ class QuaccSettings(BaseSettings):
     QCHEM_LOCAL_SCRATCH: Path = Field(
         Path("/tmp") if Path("/tmp").exists() else Path.cwd() / ".qchem_scratch",
         description="Compute-node local scratch directory in which Q-Chem should perform IO.",
+    )
+    QCHEM_NUM_CORES: int = Field(
+        psutil.cpu_count(logical=False),
+        description="Number of cores to use for the Q-Chem calculation.",
     )
 
     # Q-Chem Settings: Custodian
