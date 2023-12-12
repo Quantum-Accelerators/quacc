@@ -5,13 +5,32 @@ from functools import lru_cache
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from typing import Literal
+
     from ase.calculator.calculator import Calculator
 
 
 @lru_cache
-def _pick_calculator(calculator: str, **kwargs) -> Calculator:
+def _pick_calculator(
+    calculator: Literal["umace", "m3gnet", "chgnet"], **kwargs
+) -> Calculator:
     """
     Adapted from `matcalc.util.get_universal_calculator`.
+
+    Parameters
+    ----------
+    calculator
+        Name of the calculator to use
+    **kwargs
+        Custom kwargs for the underlying calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `mace.calculators.mace_mp`, `chgnet.model.dynamics.CHGNetCalculator`,
+        or `matgl.ext.ase.M3GNetCalculator` calculators.
+
+    Returns
+    -------
+    Calculator
+        The chosen calculator
     """
 
     if calculator.lower().startswith("m3gnet"):
