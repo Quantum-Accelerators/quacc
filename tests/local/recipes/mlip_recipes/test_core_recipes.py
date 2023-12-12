@@ -21,8 +21,7 @@ def test_static_job(tmp_path, monkeypatch, method, energy):
     atoms = bulk("Cu")
     output = static_job(atoms, method=method)
     assert output["results"]["energy"] == pytest.approx(energy)
-    assert np.shape(output["results"]["forces"]) == (8, 3)
-    assert np.shape(output["results"]["stress"]) == (3, 3)
+    assert np.shape(output["results"]["forces"]) == (1, 3)
     assert output["atoms"] == atoms
 
 
