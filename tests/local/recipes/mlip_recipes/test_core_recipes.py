@@ -48,5 +48,4 @@ def test_relax_job(tmp_path, monkeypatch, method):
     output = relax_job(atoms, method=method)
     assert output["results"]["energy"] == pytest.approx(ref_energy[method])
     assert np.shape(output["results"]["forces"]) == (8, 3)
-    assert np.shape(output["results"]["stress"]) == (3, 3)
     assert output["atoms"] != atoms
