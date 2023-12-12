@@ -81,6 +81,21 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 
 </center>
 
+## MLIPs
+
+!!! Info
+
+    Machine-learned interatomic potentials are a class of machine learning models that are trained to reproduce the potential energy surface of a system. The following pre-trained, "universal" MLIPs are supported: [CHGNet](https://doi.org/10.1038/s42256-023-00716-3), [M3GNet](https://doi.org/10.1038/s43588-022-00349-3), and [U-MACE](https://mace-docs.readthedocs.io/en/latest/examples/foundation_models.html).
+
+<center>
+
+| Name        | Decorator       | Documentation                          | Req'd Extras  |
+| ----------- | --------------- | -------------------------------------- | ------------- |
+| MLIP Static | `#!Python @job` | [quacc.recipes.mlip.core.static_job][] | `quacc[mlip]` |
+| MLIP Relax  | `#!Python @job` | [quacc.recipes.mlip.core.relax_job][]  | `quacc[mlip]` |
+
+</center>
+
 ## NewtonNet
 
 !!! Info
@@ -137,15 +152,14 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 
 <center>
 
-| Name                  | Decorator       | Documentation                                   | Req'd Extras   |
-| --------------------- | --------------- | ----------------------------------------------- | -------------- |
-| Q-Chem Static         | `#!Python @job` | [quacc.recipes.qchem.core.static_job][]         |                |
-| Q-Chem Relax          | `#!Python @job` | [quacc.recipes.qchem.core.relax_job][]          |                |
-| Q-Chem Internal Relax | `#!Python @job` | [quacc.recipes.qchem.core.internal_relax_job][] |                |
-| Q-Chem Frequency      | `#!Python @job` | [quacc.recipes.qchem.core.freq_job][]           |                |
-| Q-Chem TS             | `#!Python @job` | [quacc.recipes.qchem.ts.ts_job][]               | `quacc[sella]` |
-| Q-Chem IRC            | `#!Python @job` | [quacc.recipes.qchem.ts.irc_job][]              | `quacc[sella]` |
-| Q-Chem Quasi IRC      | `#!Python @job` | [quacc.recipes.qchem.ts.quasi_irc_job][]        | `quacc[sella]` |
+| Name             | Decorator       | Documentation                            | Req'd Extras   |
+| ---------------- | --------------- | ---------------------------------------- | -------------- |
+| Q-Chem Static    | `#!Python @job` | [quacc.recipes.qchem.core.static_job][]  |                |
+| Q-Chem Relax     | `#!Python @job` | [quacc.recipes.qchem.core.relax_job][]   |                |
+| Q-Chem Frequency | `#!Python @job` | [quacc.recipes.qchem.core.freq_job][]    |                |
+| Q-Chem TS        | `#!Python @job` | [quacc.recipes.qchem.ts.ts_job][]        | `quacc[sella]` |
+| Q-Chem IRC       | `#!Python @job` | [quacc.recipes.qchem.ts.irc_job][]       | `quacc[sella]` |
+| Q-Chem Quasi IRC | `#!Python @job` | [quacc.recipes.qchem.ts.quasi_irc_job][] | `quacc[sella]` |
 
 </center>
 
