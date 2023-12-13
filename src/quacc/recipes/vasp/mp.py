@@ -24,9 +24,10 @@ from quacc import flow, job
 from quacc.recipes.vasp._base import base_fn
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase.atoms import Atoms
 
-    from quacc import Job
     from quacc.schemas._aliases.vasp import MPRelaxFlowSchema, VaspSchema
 
 
@@ -126,7 +127,9 @@ def mp_relax_job(
 
 @flow
 def mp_relax_flow(
-    atoms: Atoms, prerelax_job: Job = mp_prerelax_job, relax_job: Job = mp_relax_job
+    atoms: Atoms,
+    prerelax_job_kwargs: dict[str, Any] | None = None,
+    relax_job_kwargs: dict[str, Any] | None = None,
 ) -> MPRelaxFlowSchema:
     """
     Workflow consisting of:
@@ -139,28 +142,31 @@ def mp_relax_flow(
     ----------
     atoms
         Atoms object for the structure.
-    prerelax_job
-        Pre-relaxation job, which defaults to [quacc.recipes.vasp.mp.mp_prerelax_job][].
-    relax_job
-        Relaxation job, which defaults to [quacc.recipes.vasp.mp.mp_relax_job][].
+    prerelax_job_kwargs
+        Additional keyword arguments to pass to [quacc.recipes.vasp.mp.mp_prerelax_job][].
+    relax_job_kwargs
+        Additional keyword arguments to pass to [quacc.recipes.vasp.mp.mp_relax_job][].
 
     Returns
     -------
     MPRelaxFlowSchema
         Dictionary of results
     """
+    prerelax_job_kwargs = prerelax_job_kwargs or {}
+    relax_job_kwargs = relax_job_kwargs or {}
 
     # Run the prerelax
-    prerelax_results = prerelax_job(atoms)
+    prerelax_results = mp_prerelax_job(atoms, **prerelax_job_kwargs)
 
     # Run the relax
-    relax_results = relax_job(
+    relax_results = mp_relax_job(
         prerelax_results["atoms"],
         bandgap=prerelax_results["output"]["bandgap"],
         copy_files=[
             Path(prerelax_results["dir_name"]) / "CHGCAR",
             Path(prerelax_results["dir_name"]) / "WAVECAR",
         ],
+        **relax_job_kwargs,
     )
     relax_results["prerelax"] = prerelax_results
 

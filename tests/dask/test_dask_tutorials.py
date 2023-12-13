@@ -107,7 +107,7 @@ def test_tutorial2c(tmp_path, monkeypatch):
     # Define the workflow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        return bulk_to_slabs_flow(relaxed_bulk["atoms"], slab_static_job=None)  # (1)!
+        return bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)  # (1)!
 
     # Define the Atoms object
     atoms = bulk("Cu")
