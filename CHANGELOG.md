@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Added ML interatomic potential recipes
 
+### Removed
+
+- Officially drop support of the Prefect workflow engine
+
 ## [0.4.4]
 
 ### Added

@@ -17,9 +17,9 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     Decorator for individual compute jobs. This is a `#!Python @job` decorator. Think of
     each `#!Python @job`-decorated function as an individual SLURM job, if that helps.
 
-    | Quacc | Covalent      | Parsl        | Dask      | Prefect | Redun  | Jobflow |
-    | ----- | ------------- | ------------ | --------- | ------- | ------ | ------- |
-    | `job` | `ct.electron` | `python_app` | `delayed` |`task`   | `task` | `job`   |
+    | Quacc | Covalent      | Parsl        | Dask      | Redun  | Jobflow |
+    | ----- | ------------- | ------------ | --------- | ------ | ------- |
+    | `job` | `ct.electron` | `python_app` | `delayed` | `task` | `job`   |
 
     All `#!Python @job`-decorated functions are transformed into their corresponding
     decorator.
@@ -75,18 +75,6 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
         add(1, 2)
         ```
 
-    === "Prefect"
-
-        ```python
-        from prefect import task
-
-        @task
-        def add(a, b):
-            return a + b
-
-        add.submit(1, 2)
-        ```
-
     === "Redun"
 
         ```python
@@ -124,38 +112,6 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
         The @job-decorated function.
     """
 
-    @functools.wraps(_func)
-    def _inner(
-        *f_args, decorator_kwargs: dict[str, Any] | None = None, **f_kwargs
-    ) -> Any:
-        """
-        This function is used for handling workflow engines that require some action
-        beyond just decoration. It also patches the parent function `_func` to take an
-        additional keyword argument, `deocrator_kwargs`, that is a dictionary of keyword
-        arguments to pass during the decorator construction.
-
-        Parameters
-        ----------
-        *f_args
-            Positional arguments to the function, if any.
-        decorator_kwargs
-            Keyword arguments to pass to the workflow engine decorator.
-        **f_kwargs
-            Keyword arguments to the function, if any.
-
-        Returns
-        -------
-        Any
-            The output of the @job-decorated function.
-        """
-        decorator_kwargs = decorator_kwargs if decorator_kwargs is not None else kwargs
-
-        if wflow_engine == "prefect":
-            from prefect import task as prefect_task
-
-            decorated = prefect_task(_func, **decorator_kwargs)
-            return decorated.submit(*f_args, **f_kwargs)
-
     from quacc import SETTINGS
 
     wflow_engine = SETTINGS.WORKFLOW_ENGINE
@@ -183,8 +139,6 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
         from dask import delayed
 
         decorated = delayed(_func, **kwargs)
-    elif wflow_engine == "prefect":
-        return _inner
     else:
         decorated = _func
 
@@ -202,9 +156,9 @@ def flow(
     Decorator for workflows, which consist of at least one compute job. This is a
     `#!Python @flow` decorator.
 
-    | Quacc  | Covalent     | Parsl     | Dask      | Prefect | Redun  | Jobflow   |
-    | ------ | ------------ | --------- | --------- | ------- | ------ | --------- |
-    | `flow` | `ct.lattice` | No effect | No effect | `flow`  | `task` | No effect |
+    | Quacc  | Covalent     | Parsl     | Dask      | Redun  | Jobflow   |
+    | ------ | ------------ | --------- | --------- | ------ | --------- |
+    | `flow` | `ct.lattice` | No effect | No effect | `task` | No effect |
 
     All `#!Python @flow`-decorated functions are transformed into their corresponding
     decorator.
@@ -271,22 +225,6 @@ def flow(
         workflow(1, 2, 3)
         ```
 
-    === "Prefect"
-
-        ```python
-        from prefect import flow, task
-
-        @task
-        def add(a, b):
-            return a + b
-
-        @flow
-        def workflow(a, b, c):
-            return add.submit(add.submit(a, b), c)
-
-        workflow(1, 2, 3)
-        ```
-
     === "Redun"
 
         ```python
@@ -331,10 +269,6 @@ def flow(
         import covalent as ct
 
         decorated = ct.lattice(_func, **kwargs)
-    elif wflow_engine == "prefect":
-        from prefect import flow as prefect_flow
-
-        decorated = prefect_flow(_func, **kwargs)
     elif wflow_engine == "redun":
         from redun import task as redun_task
 
@@ -351,9 +285,9 @@ def subflow(
     """
     Decorator for (dynamic) sub-workflows. This is a `#!Python @subflow` decorator.
 
-    | Quacc     | Covalent                  | Parsl      | Dask      | Prefect | Redun  | Jobflow   |
-    | --------- | ------------------------- | ---------- | --------- | ------- | ------ | --------- |
-    | `subflow` | `ct.electron(ct.lattice)` | `join_app` | `delayed` | `flow`  | `task` | No effect |
+    | Quacc     | Covalent                  | Parsl      | Dask      | Redun  | Jobflow   |
+    | --------- | ------------------------- | ---------- | --------- | ------ | --------- |
+    | `subflow` | `ct.electron(ct.lattice)` | `join_app` | `delayed` | `task` | No effect |
 
     All `#!Python @subflow`-decorated functions are transformed into their corresponding
     decorator.
@@ -465,33 +399,6 @@ def subflow(
         workflow(1, 2, 3)
         ```
 
-    === "Prefect"
-
-        ```python
-        import random
-        from prefect import flow, task
-
-        @task
-        def add(a, b):
-            return a + b
-
-        @task
-        def make_more(val):
-            return [val] * random.randint(2, 5)
-
-        @flow
-        def add_distributed(vals, c):
-            return [add(val, c) for val in vals]
-
-        @flow
-        def workflow(a, b, c):
-            result1 = add.submit(a, b)
-            result2 = make_more.submit(result1)
-            return add_distributed(result2, c)
-
-        workflow(1, 2, 3)
-        ```
-
     === "Redun"
 
         ```python
@@ -584,10 +491,6 @@ def subflow(
         from parsl import join_app
 
         decorated = join_app(_func, **kwargs)
-    elif wflow_engine == "prefect":
-        from prefect import flow as prefect_flow
-
-        decorated = prefect_flow(_func, **kwargs)
     elif wflow_engine == "redun":
         from redun import task as redun_task
 
