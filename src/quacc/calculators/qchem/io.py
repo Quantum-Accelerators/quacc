@@ -9,28 +9,16 @@ import numpy as np
 from ase import units
 from emmet.core.tasks import _parse_custodian
 from monty.io import zopen
-from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.qchem.inputs import QCInput
 from pymatgen.io.qchem.outputs import QCOutput
-from pymatgen.io.qchem.sets import QChemDictSet
 
 if TYPE_CHECKING:
-    from typing import Any, Literal
-
-    from ase.atoms import Atoms
-
-    from quacc.calculators.qchem.qchem import Results
+    from quacc.calculators.qchem._qchem_legacy import Results
 
 
 def write_qchem(
-    atoms: Atoms,
+    qc_input: QCInput,
     directory: Path | str = ".",
-    charge: int = 0,
-    spin_multiplicity: int = 1,
-    basis_set: str = "def2-tzvpd",
-    job_type: Literal["sp", "force", "opt", "freq"] = "force",
-    scf_algorithm: str = "diis",
-    qchem_input_params: dict[str, Any] | None = None,
     prev_orbital_coeffs: list[float] | None = None,
 ) -> None:
     """
@@ -38,23 +26,10 @@ def write_qchem(
 
     Parameters
     ----------
-    atoms
-        The Atoms object to be used for the calculation.
+    qc_input
+        The QCInput object.
     directory
-        The directory in which to write the Q-Chem input files.
-    charge
-        The total charge of the molecular system.
-    spin_multiplicity
-        The spin multiplicity of the molecular system.
-    basis_set
-        The basis set to use for the calculation.
-    job_type
-        The type of calculation to perform.
-    scf_algorithm
-        The SCF algorithm to use for the calculation.
-    qchem_input_params
-        Dictionary of Q-Chem input parameters to be passed to
-        `pymatgen.io.qchem.sets.DictSet`.
+        The directory in which to write the files.
     prev_orbital_coeffs
         The orbital coefficients from a previous calculation.
 
@@ -64,24 +39,13 @@ def write_qchem(
     """
     directory = Path(directory)
 
-    if prev_orbital_coeffs is not None:
+    if prev_orbital_coeffs:
         with Path(directory / "53.0").open(mode="wb") as file:
             for val in prev_orbital_coeffs:
                 data = struct.pack("d", val)
                 file.write(data)
-        if "overwrite_inputs" not in qchem_input_params:
-            qchem_input_params["overwrite_inputs"] = {}
-        if "rem" not in qchem_input_params["overwrite_inputs"]:
-            qchem_input_params["overwrite_inputs"]["rem"] = {}
-        if "scf_guess" not in qchem_input_params["overwrite_inputs"]["rem"]:
-            qchem_input_params["overwrite_inputs"]["rem"]["scf_guess"] = "read"
 
-    atoms.charge = charge
-    atoms.spin_multiplicity = spin_multiplicity
-    mol = AseAtomsAdaptor.get_molecule(atoms)
-    QChemDictSet(
-        mol, job_type, basis_set, scf_algorithm, qchem_version=6, **qchem_input_params
-    ).write(directory / "mol.qin")
+    qc_input.write_file(directory / "mol.qin")
 
 
 def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float]]:
@@ -100,13 +64,14 @@ def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float]]:
         calculation.
     """
     directory = Path(directory)
-    qc_input = QCInput.from_file(directory / "mol.qin").as_dict()
+
+    qc_input = QCInput.from_file(directory / "mol.qin")
     qc_output = QCOutput(directory / "mol.qout").data
 
     results: Results = {
         "energy": qc_output["final_energy"] * units.Hartree,
         "qc_output": qc_output,
-        "qc_input": qc_input,
+        "qc_input": qc_input.as_dict(),
         "custodian": _parse_custodian(directory),
     }
 
@@ -135,9 +100,10 @@ def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float]]:
             gradient = qc_output["pcm_gradients"][0]
         else:
             gradient = qc_output["gradients"][0]
+        tol = 1e-6
         for ii, subgrad in enumerate(grad):
             for jj, val in enumerate(subgrad):
-                if abs(gradient[ii, jj] - val) > 1e-6:
+                if abs(gradient[ii, jj] - val) > tol:
                     raise ValueError(
                         "Difference between gradient value in scratch file vs. output file should not be this large."
                     )
