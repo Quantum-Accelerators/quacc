@@ -84,7 +84,7 @@ def run_custodian(
         )
     ]
 
-    c = Custodian(handlers, jobs, max_errors=qchem_custodian_max_errors)
+    c = Custodian(handlers, jobs, max_errors=qchem_custodian_max_errors, terminate_on_nonzero_returncode=False)
 
     c.run()
 
