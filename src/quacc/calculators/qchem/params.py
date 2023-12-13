@@ -17,7 +17,7 @@ from quacc.utils.dicts import merge_dicts, sort_dict
 if TYPE_CHECKING:
     from typing import Any
 
-    from quacc.calculators.qchem2.qchem import QChem
+    from quacc.calculators.qchem.qchem import QChem
 
 logger = logging.getLogger(__name__)
 
