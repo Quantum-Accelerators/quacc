@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.calculators._qchem_legacy._qchem_legacy import Results
+    from quacc.calculators._qchem_legacy.qchem import Results
 
 
 def write_qchem(

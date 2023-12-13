@@ -13,7 +13,7 @@ from pymatgen.io.qchem.inputs import QCInput
 from pymatgen.io.qchem.outputs import QCOutput
 
 if TYPE_CHECKING:
-    from quacc.calculators.qchem._qchem_legacy import Results
+    from quacc.calculators.qchem.qchem import Results
 
 
 def write_qchem(
