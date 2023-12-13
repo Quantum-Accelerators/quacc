@@ -24,8 +24,14 @@ def os_atoms():
 
 def test_qchem_write_input_basic(tmp_path, monkeypatch, test_atoms):
     monkeypatch.chdir(tmp_path)
-    calc = QChem(test_atoms, cores=40)
-    assert calc.parameters["cores"] == 40
+    calc = QChem(
+        test_atoms,
+        qchem_dict_set_params={
+            "basis_set": "def2-tzvpd",
+            "job_type": "force",
+            "scf_algorithm": "diis",
+        },
+    )
     assert calc.parameters["charge"] == 0
     assert calc.parameters["spin_multiplicity"] == 1
     calc.write_input(test_atoms)
@@ -35,27 +41,31 @@ def test_qchem_write_input_basic(tmp_path, monkeypatch, test_atoms):
     assert not Path(FILE_DIR / "53.0").exists()
 
     with pytest.raises(NotImplementedError):
-        QChem(test_atoms, cores=40, directory="notsupported")
+        QChem(test_atoms, directory="notsupported")
+
+    with pytest.raises(NotImplementedError):
+        calc = QChem(
+            test_atoms, job_type="freq", qchem_dict_set_params={"molecule": "test"}
+        )
+        calc.write_input(test_atoms)
 
 
 def test_qchem_write_input_intermediate(tmp_path, monkeypatch, test_atoms):
     monkeypatch.chdir(tmp_path)
-    params = {"dft_rung": 3, "pcm_dielectric": "3.0"}
     calc = QChem(
         test_atoms,
-        basis_set="def2-svpd",
-        cores=40,
+        qchem_dict_set_params={
+            "job_type": "force",
+            "basis_set": "def2-svpd",
+            "dft_rung": 3,
+            "pcm_dielectric": "3.0",
+            "scf_algorithm": "diis",
+        },
         charge=-1,
         spin_multiplicity=2,
-        qchem_input_params=params,
     )
-    assert calc.parameters["cores"] == 40
     assert calc.parameters["charge"] == -1
     assert calc.parameters["spin_multiplicity"] == 2
-    assert calc.parameters["dft_rung"] == 3
-    assert calc.parameters["basis_set"] == "def2-svpd"
-    assert calc.parameters["pcm_dielectric"] == "3.0"
-    assert calc.parameters["scf_algorithm"] == "diis"
     calc.write_input(test_atoms)
     qcinp = QCInput.from_file("mol.qin")
     ref_qcinp = QCInput.from_file(
@@ -66,27 +76,21 @@ def test_qchem_write_input_intermediate(tmp_path, monkeypatch, test_atoms):
 
 def test_qchem_write_input_advanced(tmp_path, monkeypatch, test_atoms):
     monkeypatch.chdir(tmp_path)
-    params = {
-        "smd_solvent": "water",
-        "overwrite_inputs": {"rem": {"method": "b97mv", "mem_total": "170000"}},
-    }
     calc = QChem(
         test_atoms,
-        basis_set="def2-svpd",
-        scf_algorithm="gdm",
-        cores=40,
+        qchem_dict_set_params={
+            "job_type": "force",
+            "basis_set": "def2-svpd",
+            "scf_algorithm": "gdm",
+            "max_scf_cycles": 100,
+            "smd_solvent": "water",
+            "overwrite_inputs": {"rem": {"method": "b97mv", "mem_total": "170000"}},
+        },
         charge=-1,
         spin_multiplicity=2,
-        qchem_input_params=params,
     )
-    assert calc.parameters["cores"] == 40
     assert calc.parameters["charge"] == -1
     assert calc.parameters["spin_multiplicity"] == 2
-    assert calc.parameters["scf_algorithm"] == "gdm"
-    assert calc.parameters["basis_set"] == "def2-svpd"
-    assert calc.parameters["smd_solvent"] == "water"
-    assert calc.parameters["overwrite_rem_method"] == "b97mv"
-    assert calc.parameters["overwrite_rem_mem_total"] == "170000"
     assert "method" not in calc.parameters
     calc.write_input(test_atoms)
     qcinp = QCInput.from_file("mol.qin")
@@ -98,8 +102,15 @@ def test_qchem_write_input_open_shell_and_different_charges(
     tmp_path, monkeypatch, os_atoms
 ):
     monkeypatch.chdir(tmp_path)
-    calc = QChem(os_atoms, spin_multiplicity=2, cores=40)
-    assert calc.parameters["cores"] == 40
+    calc = QChem(
+        os_atoms,
+        spin_multiplicity=2,
+        qchem_dict_set_params={
+            "basis_set": "def2-tzvpd",
+            "job_type": "force",
+            "scf_algorithm": "diis",
+        },
+    )
     assert calc.parameters["charge"] == 0
     assert calc.parameters["spin_multiplicity"] == 2
     calc.write_input(os_atoms)
@@ -107,8 +118,16 @@ def test_qchem_write_input_open_shell_and_different_charges(
     ref_qcinp = QCInput.from_file(str(FILE_DIR / "examples" / "OSDC1.qin"))
     assert qcinp.as_dict() == ref_qcinp.as_dict()
 
-    calc = QChem(os_atoms, cores=40, charge=0, spin_multiplicity=4)
-    assert calc.parameters["cores"] == 40
+    calc = QChem(
+        os_atoms,
+        charge=0,
+        spin_multiplicity=4,
+        qchem_dict_set_params={
+            "basis_set": "def2-tzvpd",
+            "job_type": "force",
+            "scf_algorithm": "diis",
+        },
+    )
     assert calc.parameters["charge"] == 0
     assert calc.parameters["spin_multiplicity"] == 4
     calc.write_input(os_atoms)
@@ -116,8 +135,15 @@ def test_qchem_write_input_open_shell_and_different_charges(
     ref_qcinp = QCInput.from_file(str(FILE_DIR / "examples" / "OSDC2.qin"))
     assert qcinp.as_dict() == ref_qcinp.as_dict()
 
-    calc = QChem(os_atoms, cores=40, charge=1)
-    assert calc.parameters["cores"] == 40
+    calc = QChem(
+        os_atoms,
+        charge=1,
+        qchem_dict_set_params={
+            "basis_set": "def2-tzvpd",
+            "job_type": "force",
+            "scf_algorithm": "diis",
+        },
+    )
     assert calc.parameters["charge"] == 1
     assert calc.parameters["spin_multiplicity"] == 1
     calc.write_input(os_atoms)
@@ -125,8 +151,16 @@ def test_qchem_write_input_open_shell_and_different_charges(
     ref_qcinp = QCInput.from_file(str(FILE_DIR / "examples" / "OSDC3.qin"))
     assert qcinp.as_dict() == ref_qcinp.as_dict()
 
-    calc = QChem(os_atoms, cores=40, charge=1, spin_multiplicity=3)
-    assert calc.parameters["cores"] == 40
+    calc = QChem(
+        os_atoms,
+        charge=1,
+        spin_multiplicity=3,
+        qchem_dict_set_params={
+            "basis_set": "def2-tzvpd",
+            "job_type": "force",
+            "scf_algorithm": "diis",
+        },
+    )
     assert calc.parameters["charge"] == 1
     assert calc.parameters["spin_multiplicity"] == 3
     calc.write_input(os_atoms)
@@ -137,23 +171,20 @@ def test_qchem_write_input_open_shell_and_different_charges(
 
 def test_qchem_write_input_freq(tmp_path, monkeypatch, test_atoms):
     monkeypatch.chdir(tmp_path)
-    params = {"dft_rung": 3, "pcm_dielectric": "3.0"}
     calc = QChem(
         test_atoms,
-        job_type="freq",
-        basis_set="def2-svpd",
-        cores=40,
+        qchem_dict_set_params={
+            "scf_algorithm": "diis",
+            "job_type": "freq",
+            "basis_set": "def2-svpd",
+            "dft_rung": 3,
+            "pcm_dielectric": 3.0,
+        },
         charge=-1,
         spin_multiplicity=2,
-        qchem_input_params=params,
     )
-    assert calc.parameters["cores"] == 40
     assert calc.parameters["charge"] == -1
     assert calc.parameters["spin_multiplicity"] == 2
-    assert calc.parameters["dft_rung"] == 3
-    assert calc.parameters["basis_set"] == "def2-svpd"
-    assert calc.parameters["pcm_dielectric"] == "3.0"
-    assert calc.parameters["scf_algorithm"] == "diis"
     calc.write_input(test_atoms)
     qcinp = QCInput.from_file("mol.qin")
     ref_qcinp = QCInput.from_file(str(FILE_DIR / "examples" / "freq" / "mol.qin"))
@@ -161,14 +192,17 @@ def test_qchem_write_input_freq(tmp_path, monkeypatch, test_atoms):
 
 
 def test_qchem_read_results_basic_and_write_53(tmp_path, monkeypatch, test_atoms):
-    calc = QChem(test_atoms, cores=40)
+    calc = QChem(
+        test_atoms,
+        rem={"basis": "def2-tzvpd", "method": "wb97x-v", "job_type": "force"},
+    )
     monkeypatch.chdir(FILE_DIR / "examples" / "basic")
     calc.read_results()
     monkeypatch.chdir(tmp_path)
 
     assert calc.results["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
     assert calc.results["forces"][0][0] == pytest.approx(-1.3826330655069403)
-    assert calc._prev_orbital_coeffs is not None
+    assert calc.prev_orbital_coeffs is not None
 
     calc.write_input(test_atoms)
     assert Path(tmp_path, "53.0").exists()
@@ -185,38 +219,35 @@ def test_qchem_read_results_basic_and_write_53(tmp_path, monkeypatch, test_atoms
 
 def test_qchem_read_results_intermediate(tmp_path, monkeypatch, test_atoms):
     monkeypatch.chdir(tmp_path)
-    calc = QChem(test_atoms, cores=40)
+    calc = QChem(test_atoms)
     monkeypatch.chdir(FILE_DIR / "examples" / "intermediate")
     calc.read_results()
-    monkeypatch.chdir(tmp_path)
 
     assert calc.results["energy"] == pytest.approx(-605.6859554025 * units.Hartree)
     assert calc.results["forces"][0][0] == pytest.approx(-0.6955571014353796)
-    assert calc._prev_orbital_coeffs is not None
+    assert calc.prev_orbital_coeffs is not None
 
 
 def test_qchem_read_results_advanced(tmp_path, monkeypatch, test_atoms):
     monkeypatch.chdir(tmp_path)
-    calc = QChem(test_atoms, cores=40)
+    calc = QChem(test_atoms)
     monkeypatch.chdir(FILE_DIR / "examples" / "advanced")
     calc.read_results()
-    monkeypatch.chdir(tmp_path)
 
     assert calc.results["energy"] == pytest.approx(-605.7310332390 * units.Hartree)
     assert calc.results["forces"][0][0] == pytest.approx(-0.4270884974249971)
-    assert calc._prev_orbital_coeffs is not None
+    assert calc.prev_orbital_coeffs is not None
     assert calc.results.get("hessian") is None
 
 
 def test_qchem_read_results_freq(tmp_path, monkeypatch, test_atoms):
-    calc = QChem(test_atoms, job_type="freq", cores=40)
+    calc = QChem(test_atoms, job_type="freq")
     monkeypatch.chdir(FILE_DIR / "examples" / "freq")
     calc.read_results()
-    monkeypatch.chdir(tmp_path)
 
     assert calc.results["energy"] == pytest.approx(-605.6859554025 * units.Hartree)
     assert calc.results.get("forces") is None
-    assert calc._prev_orbital_coeffs is not None
+    assert calc.prev_orbital_coeffs is not None
     assert len(calc.results["hessian"]) == 42
     assert len(calc.results["hessian"][0]) == 42
     assert calc.results["qc_output"]["frequencies"][0] == -340.2
