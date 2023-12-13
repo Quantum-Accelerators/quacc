@@ -172,7 +172,8 @@ def run_opt(
     # Set Sella kwargs
     if optimizer.__name__ == "Sella":
         _set_sella_kwargs(atoms, optimizer_kwargs)
-    optimizer_kwargs.pop("use_TRICs", None)
+    if optimizer.__name__ == "IRC":
+        optimizer_kwargs.pop("restart", None)
 
     # Define the Trajectory object
     traj_filename = tmpdir / "opt.traj"
@@ -276,9 +277,6 @@ def _set_sella_kwargs(atoms: Atoms, optimizer_kwargs: dict[str, Any]) -> None:
 
     if "order" not in optimizer_kwargs:
         optimizer_kwargs["order"] = 0
-
-    if "restart" in optimizer_kwargs:
-        optimizer_kwargs.pop("restart")
 
     if not atoms.pbc.any():
         if "internal" not in optimizer_kwargs:
