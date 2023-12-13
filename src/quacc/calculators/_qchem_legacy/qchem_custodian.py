@@ -49,8 +49,8 @@ def run_custodian(
     """
     # Adapted from atomate._qchem_legacy.firetasks.run_calc
     from custodian import Custodian
-    from custodian._qchem_legacy.handlers import QChemErrorHandler
-    from custodian._qchem_legacy.jobs import QCJob
+    from custodian.qchem.handlers import QChemErrorHandler
+    from custodian.qchem.jobs import QCJob
 
     # Set defaults
     qchem_cmd = SETTINGS.QCHEM_CMD if qchem_cmd is None else qchem_cmd

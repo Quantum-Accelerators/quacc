@@ -1,7 +1,7 @@
 [
   {
     "job": {
-      "@module": "custodian._qchem_legacy.jobs",
+      "@module": "custodian.qchem.jobs",
       "@class": "QCJob",
       "@version": "2023.3.10",
       "qchem_command": ["qchem"],
