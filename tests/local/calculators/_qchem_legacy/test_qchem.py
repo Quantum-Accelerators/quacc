@@ -5,7 +5,7 @@ import pytest
 from ase import units
 from ase.io import read
 from monty.io import zopen
-from pymatgen.io._qchem_legacy.inputs import QCInput
+from pymatgen.io.qchem.inputs import QCInput
 
 from quacc.calculators.qchem import QChem
 

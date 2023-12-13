@@ -25,10 +25,10 @@ if TYPE_CHECKING:
         entropy: float  # total entropy in eV/K
         qc_output: dict[
             str, Any
-        ]  # Output from `pymatgen.io._qchem_legacy.outputs.QCOutput.data`
+        ]  # Output from `pymatgen.io.qchem.outputs.QCOutput.data`
         qc_input: dict[
             str, Any
-        ]  # Input from `pymatgen.io._qchem_legacy.inputs.QCInput.as_dict()`
+        ]  # Input from `pymatgen.io.qchem.inputs.QCInput.as_dict()`
         custodian: dict[str, Any]  # custodian.json file metadata
 
 
@@ -72,7 +72,7 @@ class QChem(FileIOCalculator):
     ) -> None:
         """
         Initialize the Q-Chem calculator. Most of the input parameters here
-        are used to create a `pymatgen.io._qchem_legacy.inputs.QCInput` object. See
+        are used to create a `pymatgen.io.qchem.inputs.QCInput` object. See
         the documentation for that class for more information.
 
         Parameters
@@ -186,11 +186,11 @@ class QChem(FileIOCalculator):
         pcm_nonels
             TODO.
         qchem_dict_set_params
-            Keyword arguments to be passed to `pymatgen.io._qchem_legacy.sets.QChemDictSet`,
+            Keyword arguments to be passed to `pymatgen.io.qchem.sets.QChemDictSet`,
             which will generate a `QCInput`. If `qchem_dict_set_params` is specified,
             the resulting `QCInput` will be merged with the `QCInput` generated from
             the `QChem` calculator kwargs, with the former taking priority. Accepts
-            all arguments that `pymatgen.io._qchem_legacy.sets.QChemDictSet` accepts, except
+            all arguments that `pymatgen.io.qchem.sets.QChemDictSet` accepts, except
             for `molecule`, which will always be generated from `atoms`. By default,
             `job_type`, `basis_set`, and `scf_algorithm` will be pulled from the `rem`
             kwarg if not specified in `qchem_dict_set_params`. `qchem_version` will

@@ -7,10 +7,10 @@ import logging
 from typing import TYPE_CHECKING
 
 from ase import Atoms
-from pymatgen.io._qchem_legacy.inputs import QCInput
-from pymatgen.io._qchem_legacy.sets import QChemDictSet
-from pymatgen.io._qchem_legacy.utils import lower_and_check_unique
 from pymatgen.io.ase import AseAtomsAdaptor
+from pymatgen.io.qchem.inputs import QCInput
+from pymatgen.io.qchem.sets import QChemDictSet
+from pymatgen.io.qchem.utils import lower_and_check_unique
 
 from quacc.utils.dicts import merge_dicts, sort_dict
 

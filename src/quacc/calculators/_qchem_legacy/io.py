@@ -9,10 +9,10 @@ import numpy as np
 from ase import units
 from emmet.core.tasks import _parse_custodian
 from monty.io import zopen
-from pymatgen.io._qchem_legacy.inputs import QCInput
-from pymatgen.io._qchem_legacy.outputs import QCOutput
-from pymatgen.io._qchem_legacy.sets import QChemDictSet
 from pymatgen.io.ase import AseAtomsAdaptor
+from pymatgen.io.qchem.inputs import QCInput
+from pymatgen.io.qchem.outputs import QCOutput
+from pymatgen.io.qchem.sets import QChemDictSet
 
 if TYPE_CHECKING:
     from typing import Any, Literal
@@ -54,7 +54,7 @@ def write_qchem(
         The SCF algorithm to use for the calculation.
     qchem_input_params
         Dictionary of Q-Chem input parameters to be passed to
-        `pymatgen.io._qchem_legacy.sets.DictSet`.
+        `pymatgen.io.qchem.sets.DictSet`.
     prev_orbital_coeffs
         The orbital coefficients from a previous calculation.
 

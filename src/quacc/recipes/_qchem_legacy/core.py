@@ -71,7 +71,7 @@ def static_job(
         Number of cores to use for the Q-Chem calculation. Defaults to use all
         cores available on a given node.
     overwrite_inputs
-        Dictionary passed to `pymatgen.io._qchem_legacy.QChemDictSet` which can modify
+        Dictionary passed to `pymatgen.io.qchem.QChemDictSet` which can modify
         default values set therein as well as set additional Q-Chem parameters.
         See QChemDictSet documentation for more details.
     copy_files
@@ -154,7 +154,7 @@ def freq_job(
         Number of cores to use for the Q-Chem calculation. Defaults to use all
         cores available on a given node.
     overwrite_inputs
-        Dictionary passed to `pymatgen.io._qchem_legacy.QChemDictSet` which can modify
+        Dictionary passed to `pymatgen.io.qchem.QChemDictSet` which can modify
         default values set therein as well as set additional Q-Chem parameters.
         See QChemDictSet documentation for more details.
     copy_files
@@ -238,7 +238,7 @@ def relax_job(
         Number of cores to use for the Q-Chem calculation. Defaults to use all
         cores available on a given node.
     overwrite_inputs
-        Dictionary passed to `pymatgen.io._qchem_legacy.QChemDictSet` which can modify
+        Dictionary passed to `pymatgen.io.qchem.QChemDictSet` which can modify
         default values set therein as well as set additional Q-Chem parameters.
         See QChemDictSet documentation for more details.
     opt_params

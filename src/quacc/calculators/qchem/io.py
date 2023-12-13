@@ -9,8 +9,8 @@ import numpy as np
 from ase import units
 from emmet.core.tasks import _parse_custodian
 from monty.io import zopen
-from pymatgen.io._qchem_legacy.inputs import QCInput
-from pymatgen.io._qchem_legacy.outputs import QCOutput
+from pymatgen.io.qchem.inputs import QCInput
+from pymatgen.io.qchem.outputs import QCOutput
 
 if TYPE_CHECKING:
     from quacc.calculators.qchem.qchem import Results

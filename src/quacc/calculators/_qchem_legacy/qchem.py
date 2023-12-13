@@ -24,10 +24,10 @@ if TYPE_CHECKING:
         entropy: float  # total entropy in eV/K
         qc_output: dict[
             str, Any
-        ]  # Output from `pymatgen.io._qchem_legacy.outputs.QCOutput.data`
+        ]  # Output from `pymatgen.io.qchem.outputs.QCOutput.data`
         qc_input: dict[
             str, Any
-        ]  # Input from `pymatgen.io._qchem_legacy.inputs.QCInput.as_dict()`
+        ]  # Input from `pymatgen.io.qchem.inputs.QCInput.as_dict()`
         custodian: dict[str, Any]  # custodian.json file metadata
 
 
@@ -84,7 +84,7 @@ class QChem(FileIOCalculator):
             The number of CPU cores to run on.
         qchem_input_params
             Dictionary of Q-Chem input parameters to be passed to
-            `pymatgen.io._qchem_legacy.sets.DictSet`.
+            `pymatgen.io.qchem.sets.DictSet`.
         **fileiocalculator_kwargs
             Additional arguments to be passed to
             `ase.calculators.calculator.FileIOCalculator`.

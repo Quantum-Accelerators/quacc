@@ -7,8 +7,8 @@ from ase.calculators.calculator import FileIOCalculator
 from ase.calculators.lj import LennardJones
 from ase.io import read
 from ase.optimize import FIRE
-from pymatgen.io._qchem_legacy.inputs import QCInput
 from pymatgen.io.ase import AseAtomsAdaptor
+from pymatgen.io.qchem.inputs import QCInput
 
 from quacc import SETTINGS
 from quacc.atoms.core import check_charge_and_spin
