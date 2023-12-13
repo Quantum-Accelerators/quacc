@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING
 
 from ase.calculators.calculator import FileIOCalculator
 
-from quacc.calculators.qchem import qchem_custodian
 from quacc.calculators._qchem_legacy.io import read_qchem, write_qchem
+from quacc.calculators.qchem import qchem_custodian
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Literal, TypedDict
