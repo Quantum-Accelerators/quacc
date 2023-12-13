@@ -277,6 +277,9 @@ def _set_sella_kwargs(atoms: Atoms, optimizer_kwargs: dict[str, Any]) -> None:
     if "order" not in optimizer_kwargs:
         optimizer_kwargs["order"] = 0
 
+    if "restart" in optimizer_kwargs:
+        optimizer_kwargs.pop("restart")
+
     if not atoms.pbc.any():
         if "internal" not in optimizer_kwargs:
             optimizer_kwargs["internal"] = True
