@@ -495,8 +495,6 @@ def subflow(
         from redun import task as redun_task
 
         decorated = redun_task(_func, **kwargs)
-    elif wflow_engine == "dask":
-        return _inner
     else:
         decorated = _func
 

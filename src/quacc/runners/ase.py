@@ -158,10 +158,7 @@ def run_opt(
     tmpdir, job_results_dir = calc_setup(copy_files=copy_files)
 
     # Set defaults
-    optimizer_kwargs = merge_dicts(
-        {"logfile": tmpdir / "opt.log", "restart": tmpdir / "opt.pckl"},
-        optimizer_kwargs,
-    )
+    optimizer_kwargs = merge_dicts({"restart": tmpdir / "opt.pckl"}, optimizer_kwargs)
     run_kwargs = run_kwargs or {}
 
     # Check if trajectory kwarg is specified

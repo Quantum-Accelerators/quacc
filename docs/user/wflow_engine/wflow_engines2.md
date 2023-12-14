@@ -308,7 +308,7 @@ graph LR
         result1 = relax_job(atoms1)
         result2 = relax_job(atoms2)
 
-        return {"result1": result1, "result2": result2}
+        return [result1, result2]
 
 
     # Define two Atoms objects
@@ -320,9 +320,7 @@ graph LR
 
     # Fetch the results
     results = client.gather(client.compute(delayed))
-    result1 = results["result1"]
-    result2 = results["result2"]
-    print(result1, result2)
+    print(results)
     ```
 
 === "Redun"
