@@ -36,6 +36,7 @@ def test_parsl_speed(tmp_path, monkeypatch):
     atoms = bulk("Cu")
     result = bulk_to_slabs_flow(atoms).result()
     assert len(result) == 4
+    assert "atoms" in result[-1]
 
     times = []
     fs = os.listdir(tmp_path)
