@@ -28,6 +28,16 @@ def teardown_module():
     parsl.clear()
 
 
+def test_parsl_functools(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    atoms = bulk("Cu")
+    result = bulk_to_slabs_flow(
+        atoms, slab_relax_job=partial(relax_job, relax_cell=True)
+    ).result()
+    assert len(result) == 4
+    assert "atoms" in result[-1]
+
+
 def test_parsl_speed(tmp_path, monkeypatch):
     """This test is critical for making sure we are using multiple cores"""
     monkeypatch.chdir(tmp_path)
@@ -61,16 +71,6 @@ def test_parsl_speed(tmp_path, monkeypatch):
             times.append(time)
 
     assert times[1][0] <= times[0][-1]
-
-
-def test_parsl_functools(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-    atoms = bulk("Cu")
-    result = bulk_to_slabs_flow(
-        atoms, slab_relax_job=partial(relax_job, relax_cell=True)
-    ).result()
-    assert len(result) == 4
-    assert "atoms" in result[-1]
 
 
 def test_phonon_flow(tmp_path, monkeypatch):
