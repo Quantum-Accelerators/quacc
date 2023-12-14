@@ -51,7 +51,7 @@ def bad_mock_cclib_calculate(*args, **kwargs):
     raise ValueError(msg)
 
 
-def test_cclib_summarize_run(tmp_path, monkeypatch):
+def test_cclib_summarize_run1(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     # Make sure metadata is made
@@ -66,6 +66,10 @@ def test_cclib_summarize_run(tmp_path, monkeypatch):
     assert results["attributes"]["metadata"].get("success", None) is True
     assert results["results"].get("energy", None) == pytest.approx(-5516.118738093933)
     assert "pymatgen_version" in results["builder_meta"]
+
+
+def test_cclib_summarize_run2(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Make sure metadata is made
     atoms = read(log2)
@@ -105,16 +109,21 @@ def test_cclib_summarize_run(tmp_path, monkeypatch):
     MontyDecoder().process_decoded(d)
 
     # Make sure default dir works
-    cwd = os.getcwd()
     monkeypatch.chdir(run1)
-    cclib_summarize_run(atoms, ".log")
+    assert cclib_summarize_run(atoms, ".log")
 
+
+def test_cclib_summarize_run3(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
     # Test DB
     atoms = read(log1)
     store = MemoryStore()
     cclib_summarize_run(atoms, ".log", dir_path=run1, store=store)
     assert store.count() == 1
 
+
+def test_cclib_summarize_run4(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
     # Make sure info tags are handled appropriately
     atoms = read(log1)
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
@@ -124,6 +133,9 @@ def test_cclib_summarize_run(tmp_path, monkeypatch):
     assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
+
+def test_cclib_summarize_run5(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
     # Make sure magnetic moments are handled appropriately
     atoms = read(os.path.join(run1, log1))
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
@@ -138,6 +150,9 @@ def test_cclib_summarize_run(tmp_path, monkeypatch):
     )
     assert results["atoms"].calc is None
 
+
+def test_cclib_summarize_run6(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
     # Make sure Atoms magmoms were not moved if specified
     atoms = read(os.path.join(run1, log1))
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
