@@ -9,7 +9,7 @@ Flow = TypeVar("Flow")
 Subflow = TypeVar("Subflow")
 
 if TYPE_CHECKING:
-    from typing import Any, Callable
+    from typing import Callable
 
 
 def job(_func: Callable | None = None, **kwargs) -> Job:
@@ -445,38 +445,6 @@ def subflow(
         The decorated function.
     """
 
-    @functools.wraps(_func)
-    def _inner(
-        *f_args, decorator_kwargs: dict[str, Any] | None = None, **f_kwargs
-    ) -> Any:
-        """
-        This function is used for handling workflow engines that require some action
-        beyond just decoration. It also patches the parent function `_func` to take an
-        additional keyword argument, `deocrator_kwargs`, that is a dictionary of keyword
-        arguments to pass during the decorator construction.
-
-        Parameters
-        ----------
-        *f_args
-            Positional arguments to the function, if any.
-        decorator_kwargs
-            Keyword arguments to pass to the workflow engine decorator.
-        **f_kwargs
-            Keyword arguments to the function, if any.
-
-        Returns
-        -------
-        Any
-            The output of the @job-decorated function.
-        """
-        decorator_kwargs = decorator_kwargs if decorator_kwargs is not None else kwargs
-
-        if wflow_engine == "dask":
-            from dask import delayed
-
-            decorated = delayed(_func, **decorator_kwargs)
-            return decorated(*f_args, **f_kwargs).compute()
-
     from quacc import SETTINGS
 
     if _func is None:
@@ -495,8 +463,6 @@ def subflow(
         from redun import task as redun_task
 
         decorated = redun_task(_func, **kwargs)
-    elif wflow_engine == "dask":
-        return _inner
     else:
         decorated = _func
 

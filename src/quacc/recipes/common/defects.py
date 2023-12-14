@@ -53,7 +53,7 @@ def bulk_to_defects_subflow(
     for defect in defects:
         result = relax_job(defect)
 
-        if static_job:
+        if static_job is not None:
             result = static_job(result["atoms"])
 
         results.append(result)
