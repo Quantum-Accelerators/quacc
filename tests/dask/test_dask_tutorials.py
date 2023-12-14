@@ -95,8 +95,8 @@ def test_tutorial2b(tmp_path, monkeypatch):
 
     # Fetch the results
     results = client.gather(client.compute(delayed))
-    result1 = results["result1"]
-    result2 = results["result2"]
+    result1 = results[0]
+    result2 = results[1]
 
     # Print the results
     assert "atoms" in result1
