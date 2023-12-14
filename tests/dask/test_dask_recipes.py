@@ -1,18 +1,53 @@
+import datetime
+import gzip
+import os
+from pathlib import Path
+
 import pytest
 from ase.build import bulk
 
 from quacc import SETTINGS
 from quacc.recipes.emt.core import relax_job
+from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 dask = pytest.importorskip("dask")
 pytestmark = pytest.mark.skipif(
     SETTINGS.WORKFLOW_ENGINE != "dask",
-    reason="This test requires the Parsl workflow engine",
+    reason="This test requires the Dask workflow engine",
 )
 
 from dask.distributed import default_client
 
 client = default_client()
+
+
+def test_dask_speed(tmp_path, monkeypatch):
+    """This test is critical for making sure we are using multiple cores"""
+    monkeypatch.chdir(tmp_path)
+
+    atoms = bulk("Cu")
+    delayed = bulk_to_slabs_flow(atoms)
+    result = client.gather(client.compute(delayed))
+    assert len(result) == 4
+
+    times = []
+    fs = os.listdir(tmp_path)
+    fs.sort()
+    assert fs
+
+    for dir in fs:
+        p = Path(tmp_path / dir, "opt.log.gz")
+        if p.exists():
+            with gzip.open(p, "rt") as file:
+                time = []
+                for line in file:
+                    if ":" in line:
+                        time_format = "%H:%M:%S"
+                        time_object = datetime.strptime(line.split()[2], time_format)
+                        time.append(time_object)
+            times.append(time)
+
+    assert times[-1][0] <= times[0][-1]
 
 
 def test_dask_phonon_flow(tmp_path, monkeypatch):
