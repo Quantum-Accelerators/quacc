@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 import contextlib
+=======
+>>>>>>> 974b7c6250b0d6d0d6866884a7cfa428b40798f7
 from functools import partial
 
 import pytest
