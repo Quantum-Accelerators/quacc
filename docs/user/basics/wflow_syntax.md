@@ -134,13 +134,18 @@ graph LR
         return mult(add(a, b), c)
 
 
-    result = workflow(1, 2, 3).result()  # 9
+    future = workflow(1, 2, 3)  #  (3)!
+    result = future.result()  #  (4)!
     print(result)
     ```
 
     1. The `#!Python @job` decorator will be transformed into `#!Python @python_app`.
 
     2. The `#!Python @flow` decorator doesn't actually do anything when using Parsl, so we chose to not include it here for brevity.
+
+    3. This will create a `PythonApp` object that represents the workflow. At this point, the workflow has been dispatched, but only a reference is returned.
+
+    4. Calling `.result()` will block until the workflow is complete and return the result.
 
 === "Covalent"
 
@@ -173,8 +178,8 @@ graph LR
         return mult(add(a, b), c)
 
 
-    dispatch_id = ct.dispatch(workflow)(1, 2, 3)
-    result = ct.get_result(dispatch_id, wait=True)
+    dispatch_id = ct.dispatch(workflow)(1, 2, 3)   #  (3)!
+    result = ct.get_result(dispatch_id, wait=True)  #  (4)!
     print(result)
     ```
 
@@ -182,7 +187,9 @@ graph LR
 
     2. The `#!Python @flow` decorator will be transformed into `#!Python @ct.lattice`.
 
-    3. This command will dispatch the workflow to the Covalent server.
+    3. This command will dispatch the workflow to the Covalent server, and a unique dispatch ID will be returned in place of the result.
+
+    4. This command will fetch the result from the Covalent server. The `wait=True` argument will block until the workflow is complete.
 
 === "Dask"
 
@@ -239,14 +246,18 @@ graph LR
         quacc set WORKFLOW_ENGINE redun
         ```
 
+        ```python title="python"
+        from redun import Scheduler
+
+        scheduler = Scheduler()  #  (1)!
+        ```
+
+        1. It is necessary to instantiate the scheduler before submitting calculations.
+
     ```python
-    from redun import Scheduler
     from quacc import flow, job
 
-    scheduler = Scheduler()  #  (1)!
-
-
-    @job  #  (2)!
+    @job  #  (1)!
     def add(a, b):
         return a + b
 
@@ -256,20 +267,20 @@ graph LR
         return a * b
 
 
-    @flow  #  (3)!
+    @flow  #  (2)!
     def workflow(a, b, c):
         return mult(add(a, b), c)
 
 
-    result = scheduler.run(workflow(1, 2, 3))
+    result = scheduler.run(workflow(1, 2, 3))  # (3)!
     print(result)
     ```
 
-    1. It is necessary to instantiate the scheduler before submitting calculations.
+    1. The `#!Python @job` decorator will be transformed into a Redun `#!Python @task`.
 
-    2. The `#!Python @job` decorator will be transformed into a Redun `#!Python @task`.
+    2. The `#!Python @flow` decorator will also be transformed into a Redun `#!Python @task`. Everything in Redun is a `#!Python @task`, so it doesn't matter what quacc decorator you apply. We chose `#!Python @flow` simply for clarity.
 
-    3. The `#!Python @flow` decorator will also be transformed into a Redun `#!Python @task`. Everything in Redun is a `#!Python @task`, so it doesn't matter what quacc decorator you apply. We chose `#!Python @flow` simply for clarity.
+    3. This command will submit the workflow to the Redun scheduler.
 
 === "Jobflow"
 
@@ -298,14 +309,20 @@ graph LR
 
     job1 = add(1, 2)
     job2 = mult(job1.output, 3)
-    flow = jf.Flow([job1, job2])
+    flow = jf.Flow([job1, job2])  #  (2)!
 
-    responses = jf.run_locally(flow)
-    result = responses[job2.uuid][1].output
+    responses = jf.run_locally(flow)  #  (3)!
+    result = responses[job2.uuid][1].output   #  (4)!
     print(result)
     ```
 
     1. The `#!Python @job` decorator will be transformed into `#!Python @jf.job`.
+
+    2. A `#!Python @jf.Flow` object is created to represent the workflow.
+
+    3. The workflow is run locally and the result is returned in a dictionary.
+
+    4. The result is extracted from the dictionary by using the UUID of the second job in the workflow.
 
 ## Stripping the Decorator from a Job
 
