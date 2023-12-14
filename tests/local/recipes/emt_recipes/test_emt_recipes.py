@@ -97,7 +97,7 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
         atoms,
         slab_static_job=None,
         slab_relax_job=partial(
-            relax_job, **{"opt_params": {"fmax": 1.0}, "asap_cutoff": True}
+            relax_job, opt_params={"fmax": 1.0, "asap_cutoff": True}
         ),
     )
     assert len(outputs) == 4

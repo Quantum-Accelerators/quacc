@@ -219,7 +219,7 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
 
     outputs = bulk_to_slabs_flow(
         atoms,
-        slab_relax_job=partial(slab_relax_job, **{"preset": "SlabSet", "nelmin": 6}),
+        slab_relax_job=partial(slab_relax_job, preset="SlabSet", nelmin=6),
         slab_static_job=None,
     )
     assert len(outputs) == 4
@@ -232,8 +232,7 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
     assert [output["parameters"]["encut"] == 450 for output in outputs]
 
     outputs = bulk_to_slabs_flow(
-        atoms,
-        slab_relax_job=partial(slab_relax_job, **{"preset": "SlabSet", "nelmin": 6}),
+        atoms, slab_relax_job=partial(slab_relax_job, preset="SlabSet", nelmin=6)
     )
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 45
@@ -260,7 +259,7 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
     outputs = slab_to_ads_flow(
         atoms,
         adsorbate,
-        slab_relax_job=partial(slab_relax_job, **{"preset": "SlabSet", "nelmin": 6}),
+        slab_relax_job=partial(slab_relax_job, preset="SlabSet", nelmin=6),
         slab_static_job=None,
     )
 
@@ -272,7 +271,7 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
     outputs = slab_to_ads_flow(
         atoms,
         adsorbate,
-        slab_static_job=partial(slab_static_job, **{"preset": "SlabSet", "nelmin": 6}),
+        slab_static_job=partial(slab_static_job, preset="SlabSet", nelmin=6),
     )
 
     assert [output["nsites"] == 82 for output in outputs]
