@@ -31,6 +31,7 @@ def test_dask_speed(tmp_path, monkeypatch):
         slab_relax_kwargs={
             "opt_params": {"optimizer_kwargs": {"logfile": "test_dask_speed.log"}}
         },
+        run_static=False,
     )
     result = client.gather(client.compute(delayed))
     assert len(result) == 4
