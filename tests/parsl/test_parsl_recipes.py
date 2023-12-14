@@ -28,7 +28,7 @@ def test_parsl_functools(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
     result = bulk_to_slabs_flow(
-        atoms, slab_relax_job=partial(relax_job, opt_params={"fmax": 0.001})
+        atoms, slab_relax_job=partial(relax_job, opt_params={"fmax": 0.1})
     ).result()
     assert len(result) == 4
     assert "atoms" in result[-1]

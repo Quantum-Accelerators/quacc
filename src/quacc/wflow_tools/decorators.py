@@ -447,9 +447,6 @@ def subflow(
 
     from quacc import SETTINGS
 
-    if _func is None:
-        return functools.partial(subflow, **kwargs)
-
     wflow_engine = SETTINGS.WORKFLOW_ENGINE
     if wflow_engine == "covalent":
         import covalent as ct
@@ -463,6 +460,10 @@ def subflow(
         from redun import task as redun_task
 
         decorated = redun_task(_func, **kwargs)
+    elif wflow_engine == "dask":
+        from dask import delayed
+
+        decorated = delayed(_func, **kwargs)
     else:
         decorated = _func
 
