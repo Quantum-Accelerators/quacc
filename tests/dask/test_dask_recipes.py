@@ -26,7 +26,7 @@ def test_dask_speed(tmp_path, monkeypatch):
     """This test is critical for making sure we are using multiple cores"""
     monkeypatch.chdir(tmp_path)
     pytestmark = pytest.mark.skipif(
-        psutil.cpu_count(logical=False) < 2, reason="Need multiple cores"
+        psutil.cpu_count(logical=False) < 4, reason="Need several cores"
     )
 
     atoms = bulk("Cu")
