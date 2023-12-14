@@ -47,7 +47,7 @@ def test_parsl_speed(tmp_path, monkeypatch):
     assert fs
 
     for d in fs:
-        p = Path(SETTINGS.RESULTS_DIR / d, "opt.log.gz")
+        p = Path(SETTINGS.RESULTS_DIR / d, "test_dask_speed.log.gz")
         if p.exists():
             with gzip.open(p, "rt") as file:
                 time = []
