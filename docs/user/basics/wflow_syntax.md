@@ -38,7 +38,7 @@ To help enable interoperability between workflow engines, quacc offers a unified
 
 === "Dask"
 
-    Take a moment to read the Dask Delayed documentation [overview page](https://docs.dask.org/en/stable/delayed.html) to get a sense of how the Dask decorators works and the Dask Distributed [quickstart page](https://distributed.dask.org/en/stable/quickstart.html) to understand how to submit tasks to a Dask cluster. Namely, you should understand the `@delayed` decorator and how to interface with the `Client`.
+    Take a moment to read the Dask Delayed documentation [overview page](https://docs.dask.org/en/stable/delayed.html) to get a sense of how the Dask decorators works and the Dask Distributed [quickstart page](https://distributed.dask.org/en/stable/quickstart.html) to understand how to submit tasks to a Dask cluster. Namely, you should understand the `#!Python @delayed` decorator and how to interface with the `Client`.
 
     <center>
 
@@ -238,7 +238,7 @@ graph LR
 
     3. This returns a `Delayed` object. A reference is returned.
 
-    4. There are multiple ways to resolve a `Delayed` object. Here, `#!Python client.compute(delayed)` will return a `Future` object, which can be resolved with `.result()`. The `.result()` call will block until the workflow is complete and return the result. As an alternative, you could also use `#!Python delayed.compute()` to dispatch and resolve the `Delayed` object in one command. Similarly, you could use `dask.compute(delayed)[0]`, where the `[0]` indexing is needed because `#!Python dask.compute()` alwaays returns a tuple.
+    4. There are multiple ways to resolve a `Delayed` object. Here, `#!Python client.compute(delayed)` will return a `Future` object, which can be resolved with `.result()`. The `.result()` call will block until the workflow is complete and return the result. As an alternative, you could also use `#!Python delayed.compute()` to dispatch and resolve the `Delayed` object in one command. Similarly, you could use `#!Python dask.compute(delayed)[0]`, where the `[0]` indexing is needed because `#!Python dask.compute()` alwaays returns a tuple.
 
 === "Redun"
 
