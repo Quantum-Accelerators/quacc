@@ -136,7 +136,7 @@ graph LR
 
     future = workflow(1, 2, 3)  #  (3)!
     result = future.result()  #  (4)!
-    print(result)
+    print(result)  # 9
     ```
 
     1. The `#!Python @job` decorator will be transformed into `#!Python @python_app`.
@@ -180,7 +180,7 @@ graph LR
 
     dispatch_id = ct.dispatch(workflow)(1, 2, 3)   #  (3)!
     result = ct.get_result(dispatch_id, wait=True)  #  (4)!
-    print(result)
+    print(result)  # 9
     ```
 
     1. The `#!Python @job` decorator will be transformed into `#!Python @ct.electron`.
@@ -228,8 +228,8 @@ graph LR
 
 
     delayed = workflow(1, 2, 3)
-    result = client.compute(delayed).result()  # 9
-    print(result)
+    result = client.compute(delayed).result()
+    print(result)  # 9
     ```
 
     1. The `#!Python @job` decorator will be transformed into `#!Python @delayed`.
@@ -273,7 +273,7 @@ graph LR
 
 
     result = scheduler.run(workflow(1, 2, 3))  # (3)!
-    print(result)
+    print(result)  # 9
     ```
 
     1. The `#!Python @job` decorator will be transformed into a Redun `#!Python @task`.
@@ -313,7 +313,7 @@ graph LR
 
     responses = jf.run_locally(flow)  #  (3)!
     result = responses[job2.uuid][1].output   #  (4)!
-    print(result)
+    print(result)  # 9
     ```
 
     1. The `#!Python @job` decorator will be transformed into `#!Python @jf.job`.
@@ -337,7 +337,7 @@ def add(a, b):
     return a + b
 
 
-add.__wrapped__(1, 2)
+add.__wrapped__(1, 2)  # 3
 ```
 
 ## Learn More
