@@ -172,8 +172,9 @@ def run_opt(
     # Set Sella kwargs
     if optimizer.__name__ == "Sella":
         _set_sella_kwargs(atoms, optimizer_kwargs)
-    if optimizer.__name__ == "IRC":
+    elif optimizer.__name__ == "IRC":
         optimizer_kwargs.pop("restart", None)
+    optimizer_kwargs.pop("use_TRICs", None)
 
     # Define the Trajectory object
     traj_filename = tmpdir / "opt.traj"
