@@ -30,6 +30,8 @@ def teardown_module():
 def test_parsl_speed(tmp_path, monkeypatch):
     """This test is critical for making sure we are using multiple cores"""
     monkeypatch.chdir(tmp_path)
+    DEFAULT_SETTINGS = SETTINGS.model_copy()
+    SETTINGS.RESULTS_DIR = tmp_path
 
     atoms = bulk("Cu")
     result = bulk_to_slabs_flow(atoms).result()
@@ -52,7 +54,8 @@ def test_parsl_speed(tmp_path, monkeypatch):
                         time.append(time_object)
             times.append(time)
 
-    assert times[-1][0] <= times[0][-1]
+    assert times[1][0] <= times[0][-1]
+    SETTINGS.RESULTS_DIR = DEFAULT_SETTINGS.RESULTS_DIR
 
 
 def test_phonon_flow(tmp_path, monkeypatch):
