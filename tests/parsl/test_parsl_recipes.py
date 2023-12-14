@@ -40,8 +40,8 @@ def test_parsl_speed(tmp_path, monkeypatch):
     fs.sort()
     assert fs
 
-    for dir in fs:
-        p = Path(tmp_path / dir, "opt.log.gz")
+    for d in fs:
+        p = Path(tmp_path / d, "opt.log.gz")
         if p.exists():
             with gzip.open(p, "rt") as file:
                 time = []
