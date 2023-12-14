@@ -1,8 +1,11 @@
+from functools import partial
+
 import pytest
 from ase.build import bulk
 
 from quacc import SETTINGS
 from quacc.recipes.emt.core import relax_job
+from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 dask = pytest.importorskip("dask")
 pytestmark = pytest.mark.skipif(
@@ -13,6 +16,17 @@ pytestmark = pytest.mark.skipif(
 from dask.distributed import default_client
 
 client = default_client()
+
+
+def test_dask_functools(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    atoms = bulk("Cu")
+    delayed = bulk_to_slabs_flow(
+        atoms, slab_relax_job=partial(relax_job, opt_params={"fmax": 0.001})
+    )
+    result = client.gather(client.compute(delayed))
+    assert len(result) == 4
+    assert "atoms" in result[-1]
 
 
 def test_dask_phonon_flow(tmp_path, monkeypatch):
