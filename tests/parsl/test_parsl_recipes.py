@@ -30,21 +30,24 @@ def teardown_module():
 def test_parsl_speed(tmp_path, monkeypatch):
     """This test is critical for making sure we are using multiple cores"""
     monkeypatch.chdir(tmp_path)
-    DEFAULT_SETTINGS = SETTINGS.model_copy()
-    SETTINGS.RESULTS_DIR = tmp_path
 
     atoms = bulk("Cu")
-    result = bulk_to_slabs_flow(atoms).result()
+    result = bulk_to_slabs_flow(
+        atoms,
+        slab_relax_kwargs={
+            "opt_params": {"optimizer_kwargs": {"logfile": "test_dask_speed.log"}}
+        },
+    ).result()
     assert len(result) == 4
     assert "atoms" in result[-1]
 
     times = []
-    fs = os.listdir(tmp_path)
+    fs = os.listdir(SETTINGS.RESULTS_DIR)
     fs.sort()
     assert fs
 
     for d in fs:
-        p = Path(tmp_path / d, "opt.log.gz")
+        p = Path(SETTINGS.RESULTS_DIR / d, "opt.log.gz")
         if p.exists():
             with gzip.open(p, "rt") as file:
                 time = []
@@ -56,7 +59,6 @@ def test_parsl_speed(tmp_path, monkeypatch):
             times.append(time)
 
     assert times[1][0] <= times[0][-1]
-    SETTINGS.RESULTS_DIR = DEFAULT_SETTINGS.RESULTS_DIR
 
 
 def test_phonon_flow(tmp_path, monkeypatch):
