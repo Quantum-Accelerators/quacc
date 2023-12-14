@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: ["3.9", "3.12"]
+        python-version: ["3.9", "3.11"]
         os: [ubuntu-latest, windows-latest]
         exclude:
           - os: windows-latest
@@ -44,7 +44,7 @@ jobs:
           pip install .[dev]
 
       - name: Run tests with pytest
-        run: pytest --cov=quacc --cov-report=xml
+        run: pytest --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v3
@@ -83,7 +83,7 @@ jobs:
         run: covalent start
 
       - name: Run tests with pytest
-        run: pytest tests/covalent --cov=quacc --cov-report=xml
+        run: pytest --durations=10 tests/covalent --cov=quacc --cov-report=xml
 
       - name: Stop Covalent server
         run: covalent stop
@@ -124,7 +124,7 @@ jobs:
           pip install .[dev]
 
       - name: Run tests with pytest
-        run: pytest tests/${{ matrix.wflow_engine }} --cov=quacc --cov-report=xml
+        run: pytest --durations=10 tests/${{ matrix.wflow_engine }} --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v3
@@ -170,7 +170,7 @@ jobs:
           pip install .[dev]
 
       - name: Run tests with pytest
-        run: pytest -k 'psi4' --cov=quacc --cov-report=xml
+        run: pytest -k 'psi4' --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v3
@@ -215,7 +215,7 @@ jobs:
           pip install .[dev]
 
       - name: Run tests with pytest
-        run: pytest -k 'defects or phonon or espresso' --cov=quacc --cov-report=xml
+        run: pytest -k 'defects or phonon or espresso' --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v3
@@ -260,7 +260,7 @@ jobs:
           pip install .[dev]
 
       - name: Run tests with pytest
-        run: pytest -k 'dftb or tblite' --cov=quacc --cov-report=xml
+        run: pytest -k 'dftb or tblite' --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v3
@@ -307,7 +307,7 @@ jobs:
           pip install .[dev]
 
       - name: Run tests with pytest
-        run: pytest -k 'qchem or sella' --cov=quacc --cov-report=xml
+        run: pytest -k 'qchem or sella' --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v3
@@ -349,7 +349,7 @@ jobs:
           pip install .[dev]
 
       - name: Run tests with pytest
-        run: pytest -k 'mlip or newtonnet' --cov=quacc --cov-report=xml
+        run: pytest -k 'mlip or newtonnet' --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v3
