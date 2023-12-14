@@ -1,6 +1,7 @@
 import gzip
 import os
 from datetime import datetime
+from functools import partial
 from pathlib import Path
 
 import pytest
@@ -28,9 +29,10 @@ def test_dask_speed(tmp_path, monkeypatch):
     atoms = bulk("Cu")
     delayed = bulk_to_slabs_flow(
         atoms,
-        slab_relax_kwargs={
-            "opt_params": {"optimizer_kwargs": {"logfile": "test_dask_speed.log"}}
-        },
+        slab_relax_job=partial(
+            relax_job,
+            {"opt_params": {"optimizer_kwargs": {"logfile": "test_dask_speed.log"}}},
+        ),
     )
     result = client.gather(client.compute(delayed))
     assert len(result) == 4

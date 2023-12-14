@@ -2,6 +2,7 @@ import contextlib
 import gzip
 import os
 from datetime import datetime
+from functools import partial
 from pathlib import Path
 
 import pytest
@@ -34,9 +35,10 @@ def test_parsl_speed(tmp_path, monkeypatch):
     atoms = bulk("Cu")
     result = bulk_to_slabs_flow(
         atoms,
-        slab_relax_kwargs={
-            "opt_params": {"optimizer_kwargs": {"logfile": "test_dask_speed.log"}}
-        },
+        slab_relax_job=partial(
+            relax_job,
+            {"opt_params": {"optimizer_kwargs": {"logfile": "test_dask_speed.log"}}},
+        ),
     ).result()
     assert len(result) == 4
     assert "atoms" in result[-1]
@@ -59,6 +61,16 @@ def test_parsl_speed(tmp_path, monkeypatch):
             times.append(time)
 
     assert times[1][0] <= times[0][-1]
+
+
+def test_parsl_functools(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    atoms = bulk("Cu")
+    result = bulk_to_slabs_flow(
+        atoms, slab_relax_job=partial(relax_job, relax_cell=True)
+    ).result()
+    assert len(result) == 4
+    assert "atoms" in result[-1]
 
 
 def test_phonon_flow(tmp_path, monkeypatch):
