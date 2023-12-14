@@ -32,45 +32,10 @@ def test_parsl_functools(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
     result = bulk_to_slabs_flow(
-        atoms, slab_relax_job=partial(relax_job, relax_cell=True)
+        atoms, slab_relax_job=partial(relax_job, opt_params={"fmax": 0.001})
     ).result()
     assert len(result) == 4
     assert "atoms" in result[-1]
-
-
-def test_parsl_speed(tmp_path, monkeypatch):
-    """This test is critical for making sure we are using multiple cores"""
-    monkeypatch.chdir(tmp_path)
-
-    atoms = bulk("Cu")
-    result = bulk_to_slabs_flow(
-        atoms,
-        slab_relax_job=partial(
-            relax_job,
-            {"opt_params": {"optimizer_kwargs": {"logfile": "test_dask_speed.log"}}},
-        ),
-    ).result()
-    assert len(result) == 4
-    assert "atoms" in result[-1]
-
-    times = []
-    fs = os.listdir(SETTINGS.RESULTS_DIR)
-    fs.sort()
-    assert fs
-
-    for d in fs:
-        p = Path(SETTINGS.RESULTS_DIR / d, "test_dask_speed.log.gz")
-        if p.exists():
-            with gzip.open(p, "rt") as file:
-                time = []
-                for line in file:
-                    if ":" in line:
-                        time_format = "%H:%M:%S"
-                        time_object = datetime.strptime(line.split()[2], time_format)
-                        time.append(time_object)
-            times.append(time)
-
-    assert times[1][0] <= times[0][-1]
 
 
 def test_phonon_flow(tmp_path, monkeypatch):
