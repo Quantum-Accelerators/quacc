@@ -20,8 +20,6 @@ def pytest_sessionstart():
 def pytest_sessionfinish():
     from dask.distributed import default_client
 
-    from quacc import SETTINGS
-
     try:
         default_client().close()
     except Exception:
