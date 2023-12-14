@@ -3,6 +3,7 @@ from pathlib import Path
 
 TEST_RESULTS_DIR = Path(__file__).parent / ".test_results"
 TEST_SCRATCH_DIR = Path(__file__).parent / ".test_scratch"
+TEST_RUNINFO = Path(__file__).parent / "runinfo"
 
 
 def pytest_sessionstart():
@@ -15,3 +16,4 @@ def pytest_sessionfinish():
 
     rmtree(TEST_RESULTS_DIR)
     rmtree(TEST_SCRATCH_DIR)
+    rmtree(TEST_RUNINFO)
