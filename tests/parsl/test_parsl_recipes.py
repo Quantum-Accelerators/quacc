@@ -37,6 +37,7 @@ def test_parsl_speed(tmp_path, monkeypatch):
         slab_relax_kwargs={
             "opt_params": {"optimizer_kwargs": {"logfile": "test_dask_speed.log"}}
         },
+        run_static=False,
     ).result()
     assert len(result) == 4
     assert "atoms" in result[-1]
