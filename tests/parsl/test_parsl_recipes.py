@@ -1,16 +1,10 @@
-import contextlib
-import gzip
-import os
-from datetime import datetime
-from functools import partial
-from pathlib import Path
-
 import pytest
+from functools import partial
+
 from ase.build import bulk
 
 from quacc import SETTINGS
 from quacc.recipes.emt.core import relax_job
-from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 parsl = pytest.importorskip("parsl")
 pytestmark = pytest.mark.skipif(

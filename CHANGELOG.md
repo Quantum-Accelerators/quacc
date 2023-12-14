@@ -10,6 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Added ML interatomic potential recipes
 
+### Changed
+
+- ASE optimization log files and pickle files are written to disk by default
+- Deprecated the old Q-Chem recipes and replaced them with the updated versions
+
 ### Removed
 
 - Officially drop support of the Prefect workflow engine
