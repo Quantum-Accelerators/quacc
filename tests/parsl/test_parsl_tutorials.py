@@ -116,9 +116,9 @@ def test_tutorial2c(tmp_path, monkeypatch):
         return bulk_to_slabs_flow(
             relaxed_bulk["atoms"],
             run_static=False,
-            slab_relax_kwargs={
-                "opt_params": {"optimizer_kwargs": {"logfile": "-"}}
-            },  # keep this for easy debugging
+            # slab_relax_kwargs={
+            #     "opt_params": {"optimizer_kwargs": {"logfile": "-"}}
+            # },  # this is for easy debugging
         )
 
     # Define the Atoms object

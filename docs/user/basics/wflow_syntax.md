@@ -227,14 +227,18 @@ graph LR
         return mult(add(a, b), c)
 
 
-    delayed = workflow(1, 2, 3)
-    result = client.compute(delayed).result()
+    delayed = workflow(1, 2, 3)  #  (3)!
+    result = client.compute(delayed).result()  #  (4)!
     print(result)  # 9
     ```
 
     1. The `#!Python @job` decorator will be transformed into `#!Python @delayed`.
 
     2. The `#!Python @flow` decorator doesn't actually do anything when using Dask, so we chose to not include it here for brevity.
+
+    3. This returns a `Delayed` object. A reference is returned.
+
+    4. There are multiple ways to resolve a `Delayed` object. Here, `#!Python client.compute(delayed)` will return a `Future` object, which can be resolved with `.result()`. The `.result()` call will block until the workflow is complete and return the result. As an alternative, you could also use `#!Python delayed.compute()` to dispatch and resolve the `Delayed` object in one command. Similarly, you could use `dask.compute(delayed)[0]`, where the `[0]` indexing is needed because `#!Python dask.compute()` alwaays returns a tuple.
 
 === "Redun"
 
