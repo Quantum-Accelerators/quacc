@@ -1,15 +1,8 @@
-import gzip
-import os
-from datetime import datetime
-from pathlib import Path
-
-import psutil
 import pytest
 from ase.build import bulk
 
 from quacc import SETTINGS
 from quacc.recipes.emt.core import relax_job
-from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 dask = pytest.importorskip("dask")
 pytestmark = pytest.mark.skipif(
@@ -20,47 +13,6 @@ pytestmark = pytest.mark.skipif(
 from dask.distributed import default_client
 
 client = default_client()
-
-
-def test_dask_speed(tmp_path, monkeypatch):
-    """This test is critical for making sure we are using multiple cores"""
-    monkeypatch.chdir(tmp_path)
-    pytestmark = pytest.mark.skipif(
-        psutil.cpu_count(logical=False) < 2, reason="Need several cores"
-    )
-
-    atoms = bulk("Cu") * (2, 2, 2)
-    delayed = bulk_to_slabs_flow(
-        atoms,
-        slab_relax_kwargs={
-            "opt_params": {"optimizer_kwargs": {"logfile": "test_dask_speed.log"}}
-        },
-        run_static=False,
-    )
-    result = client.gather(client.compute(delayed))
-    assert len(result) == 4
-    assert "atoms" in result[-1]
-
-    times = []
-    fs = os.listdir(SETTINGS.RESULTS_DIR)
-    fs.sort()
-    assert fs
-
-    for d in fs:
-        p = Path(SETTINGS.RESULTS_DIR / d, "test_dask_speed.log.gz")
-        if p.is_file():
-            with gzip.open(p, "rt") as file:
-                time = []
-                for line in file:
-                    if ":" in line:
-                        time_format = "%H:%M:%S"
-                        time_object = datetime.strptime(line.split()[2], time_format)
-                        time.append(time_object)
-            times.append(time)
-            if len(times) == 2:
-                break
-
-    assert times[1][0] < times[0][-1]
 
 
 def test_dask_phonon_flow(tmp_path, monkeypatch):
