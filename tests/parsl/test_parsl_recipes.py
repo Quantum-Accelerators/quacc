@@ -4,6 +4,7 @@ import os
 from datetime import datetime
 from pathlib import Path
 
+import psutil
 import pytest
 from ase.build import bulk
 
@@ -30,6 +31,9 @@ def teardown_module():
 def test_parsl_speed(tmp_path, monkeypatch):
     """This test is critical for making sure we are using multiple cores"""
     monkeypatch.chdir(tmp_path)
+    pytestmark = pytest.mark.skipif(
+        psutil.cpu_count(logical=False) < 2, reason="Need multiple cores"
+    )
 
     atoms = bulk("Cu")
     result = bulk_to_slabs_flow(
@@ -37,6 +41,7 @@ def test_parsl_speed(tmp_path, monkeypatch):
         slab_relax_kwargs={
             "opt_params": {"optimizer_kwargs": {"logfile": "test_dask_speed.log"}}
         },
+        run_static=False,
     ).result()
     assert len(result) == 4
     assert "atoms" in result[-1]
