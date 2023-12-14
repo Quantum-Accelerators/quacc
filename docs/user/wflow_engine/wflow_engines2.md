@@ -129,9 +129,9 @@ graph LR
         delayed1 = relax_job(atoms)
 
         # Define Job 2, which takes the output of Job 1 as input
-        delayed12 = static_job(delayed1["atoms"])
+        delayed2 = static_job(delayed1["atoms"])
 
-        return delayed1
+        return delayed2
 
 
     # Make an Atoms object of a bulk Cu structure
