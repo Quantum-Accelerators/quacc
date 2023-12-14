@@ -1,10 +1,12 @@
-import pytest
+import contextlib
 from functools import partial
 
+import pytest
 from ase.build import bulk
 
 from quacc import SETTINGS
 from quacc.recipes.emt.core import relax_job
+from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 parsl = pytest.importorskip("parsl")
 pytestmark = pytest.mark.skipif(
