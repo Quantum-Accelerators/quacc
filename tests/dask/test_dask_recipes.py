@@ -26,10 +26,10 @@ def test_dask_speed(tmp_path, monkeypatch):
     """This test is critical for making sure we are using multiple cores"""
     monkeypatch.chdir(tmp_path)
     pytestmark = pytest.mark.skipif(
-        psutil.cpu_count(logical=False) < 4, reason="Need several cores"
+        psutil.cpu_count(logical=False) < 2, reason="Need several cores"
     )
 
-    atoms = bulk("Cu")
+    atoms = bulk("Cu") * (2, 2, 2)
     delayed = bulk_to_slabs_flow(
         atoms,
         slab_relax_kwargs={
@@ -48,7 +48,7 @@ def test_dask_speed(tmp_path, monkeypatch):
 
     for d in fs:
         p = Path(SETTINGS.RESULTS_DIR / d, "test_dask_speed.log.gz")
-        if p.exists():
+        if p.is_file():
             with gzip.open(p, "rt") as file:
                 time = []
                 for line in file:
@@ -57,6 +57,8 @@ def test_dask_speed(tmp_path, monkeypatch):
                         time_object = datetime.strptime(line.split()[2], time_format)
                         time.append(time_object)
             times.append(time)
+            if len(times) == 2:
+                break
 
     assert times[1][0] < times[0][-1]
 

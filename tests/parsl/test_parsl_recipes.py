@@ -35,7 +35,7 @@ def test_parsl_speed(tmp_path, monkeypatch):
         psutil.cpu_count(logical=False) < 2, reason="Need several cores"
     )
 
-    atoms = bulk("Cu")
+    atoms = bulk("Cu") * (2, 2, 2)
     result = bulk_to_slabs_flow(
         atoms,
         slab_relax_kwargs={
@@ -53,7 +53,7 @@ def test_parsl_speed(tmp_path, monkeypatch):
 
     for d in fs:
         p = Path(SETTINGS.RESULTS_DIR / d, "test_dask_speed.log.gz")
-        if p.exists():
+        if p.is_file():
             with gzip.open(p, "rt") as file:
                 time = []
                 for line in file:
@@ -62,8 +62,10 @@ def test_parsl_speed(tmp_path, monkeypatch):
                         time_object = datetime.strptime(line.split()[2], time_format)
                         time.append(time_object)
             times.append(time)
+            if len(times) == 2:
+                break
 
-    assert times[1][0] <= times[0][-1]
+    assert times[1][0] < times[0][-1]
 
 
 def test_phonon_flow(tmp_path, monkeypatch):
