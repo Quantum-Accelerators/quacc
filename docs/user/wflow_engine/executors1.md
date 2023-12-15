@@ -154,10 +154,8 @@ In the previous examples, we have been running calculations on our local machine
     print(result)
     ```
 
-    !!! Tip
-
-        This is the same as doing the following:
-
+    ??? Tip "An Alternate Approach"
+    
         ```python
         import covalent as ct
         from ase.build import bulk
