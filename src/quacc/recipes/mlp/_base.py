@@ -35,6 +35,7 @@ def _pick_calculator(
 
     if calculator.lower().startswith("m3gnet"):
         import matgl
+        from matgl import __version__
         from matgl.ext.ase import M3GNetCalculator
 
         model = matgl.load_model("M3GNet-MP-2021.2.8-DIRECT-PES")
