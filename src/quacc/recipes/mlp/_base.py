@@ -42,16 +42,20 @@ def _pick_calculator(
         calc = M3GNetCalculator(potential=model, **kwargs)
 
     elif calculator.lower() == "chgnet":
+        from chgnet import __version__
         from chgnet.model.dynamics import CHGNetCalculator
 
         calc = CHGNetCalculator(**kwargs)
 
     elif calculator.lower() == "umace":
+        from mace import __version__
         from mace.calculators import mace_mp
 
         calc = mace_mp(**kwargs)
 
     else:
         raise ValueError(f"Unrecognized {calculator=}.")
+
+    calc.parameters["version"] = __version__
 
     return calc
