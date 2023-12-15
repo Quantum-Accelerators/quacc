@@ -155,7 +155,7 @@ In the previous examples, we have been running calculations on our local machine
     ```
 
     ??? Tip "An Alternate Approach"
-    
+
         ```python
         import covalent as ct
         from ase.build import bulk
