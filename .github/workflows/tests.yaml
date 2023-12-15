@@ -316,7 +316,7 @@ jobs:
           path: "coverage.xml"
           retention-days: 1
 
-  tests-mlips:
+  tests-mlps:
     strategy:
       fail-fast: true
     runs-on: ubuntu-latest
@@ -345,11 +345,11 @@ jobs:
       - name: Install pip packages
         run: |
           pip install -r tests/requirements.txt
-          pip install -r tests/requirements-mlips.txt
+          pip install -r tests/requirements-mlps.txt
           pip install .[dev]
 
       - name: Run tests with pytest
-        run: pytest -k 'mlip or newtonnet' --durations=10 --cov=quacc --cov-report=xml
+        run: pytest -k 'mlp or newtonnet' --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v3
@@ -366,7 +366,7 @@ jobs:
       - tests-psi4
       - tests-defects-phonons-espresso
       - tests-qchem-sella
-      - tests-mlips
+      - tests-mlps
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

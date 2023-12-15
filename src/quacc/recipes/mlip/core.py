@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from ase.optimize import FIRE
 
 from quacc import job
-from quacc.recipes.mlip._base import _pick_calculator
+from quacc.recipes.mlp._base import _pick_calculator
 from quacc.runners.ase import run_calc, run_opt
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import merge_dicts
