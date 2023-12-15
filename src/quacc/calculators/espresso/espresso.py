@@ -3,7 +3,6 @@ from __future__ import annotations
 import os
 from pathlib import Path
 from typing import TYPE_CHECKING
-from warnings import warn
 
 from ase.calculators.espresso import Espresso as Espresso_
 from ase.calculators.espresso import EspressoProfile
@@ -115,7 +114,7 @@ class EspressoTemplate(EspressoTemplate_):
         if "energy" not in results:
             results["energy"] = None
         return results
-    
+
     def _outdir_handler(self, parameters: dict[str, Any]) -> dict[str, Any]:
         """
         Function that handles the various outdir of espresso binaries.
@@ -157,7 +156,7 @@ class EspressoTemplate(EspressoTemplate_):
         self.outdirs = [path for path in self.outdirs.values() if path is not None]
 
         parameters["input_data"] = input_data
-        
+
         return parameters
 
 
