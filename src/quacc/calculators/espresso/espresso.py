@@ -127,12 +127,12 @@ class EspressoTemplate(EspressoTemplate_):
 
         Parameters
         ----------
-        **kwargs
+        parameters
             User-supplied kwargs
 
         Returns
         -------
-        kwargs
+        dict[str, Any]
             The merged kwargs
         """
 
@@ -145,7 +145,7 @@ class EspressoTemplate(EspressoTemplate_):
                 if d_key in input_data[section]:
                     path = Path(input_data[section][d_key])
                     if path.is_absolute():
-                        path = path.resolve()
+                        path = path.expanduser().resolve()
                     else:
                         path = cwd / path
                     if cwd not in path.parents:
@@ -234,9 +234,9 @@ class Espresso(Espresso_):
             binary=str(bin_path), parallel_info=parallel_info, pseudo_path=pseudo_path
         )
 
-        if kwargs.pop("directory", None):
-            warn(
-                "It is highly discouraged to use the 'directory' parameter when using quacc."
+        if kwargs.get("directory"):
+            raise ValueError(
+                "quacc does not support the directory argument."
             )
 
         super().__init__(profile=profile,
