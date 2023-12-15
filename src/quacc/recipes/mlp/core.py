@@ -46,7 +46,12 @@ def static_job(
     atoms.calc = _pick_calculator(method, **calc_kwargs)
     final_atoms = run_calc(atoms)
     return summarize_run(
-        final_atoms, input_atoms=atoms, additional_fields={"name": f"{method} Static"}
+        final_atoms,
+        input_atoms=atoms,
+        additional_fields={
+            "name": f"{method} Static",
+            f"{method} version": f"{method.__version__}",
+        },
     )
 
 
@@ -92,4 +97,10 @@ def relax_job(
 
     dyn = run_opt(atoms, relax_cell=relax_cell, **opt_flags)
 
-    return summarize_opt_run(dyn, additional_fields={"name": f"{method} Relax"})
+    return summarize_opt_run(
+        dyn,
+        additional_fields={
+            "name": f"{method} Relax",
+            f"{method} version": f"{method.__version__}",
+        },
+    )
