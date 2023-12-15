@@ -106,7 +106,6 @@ def write_espresso_ph(fd: TextIO, **kwargs) -> None:
     ----------
     fd
         The file descriptor of the input file.
-
     kwargs
         kwargs dictionary possibly containing the following keys:
 
@@ -496,14 +495,11 @@ def write_espresso_pw(
     ----------
     filename
         The name of the output file.
-
     atoms
         The atoms object.
-
     properties
         Additional ASE properties
-
-    kwargs
+    **kwargs
         Additional keyword arguments to pass to ase.io.espresso.write_espresso_in
 
     Returns
