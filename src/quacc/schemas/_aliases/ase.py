@@ -19,6 +19,7 @@ class RunSchema(AtomsSchema):
     dir_name: str
     parameters: parameters
     results: results
+    version: str
 
 
 class OptSchema(RunSchema):
