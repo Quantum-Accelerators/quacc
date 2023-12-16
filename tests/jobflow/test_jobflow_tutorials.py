@@ -8,7 +8,7 @@ pytestmark = pytest.mark.skipif(
     SETTINGS.WORKFLOW_ENGINE != "jobflow",
     reason="This test requires the Jobflow workflow engine",
 )
-from quacc.recipes.emt.core import relax_job, static_job
+from quacc.recipes.emt.core import relax_job, static_job  # skipcq: PYL-C0412
 
 
 def test_tutorial1a(tmp_path, monkeypatch):
