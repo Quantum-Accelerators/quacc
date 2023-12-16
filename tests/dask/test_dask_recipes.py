@@ -20,10 +20,15 @@ client = default_client()
 
 
 def test_dask_functools(tmp_path, monkeypatch):
+    from dask import delayed
+
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
     delayed = bulk_to_slabs_flow(
-        atoms, slab_relax_job=partial(relax_job, opt_params={"fmax": 0.1})
+        atoms,
+        slab_relax_job=delayed(
+            partial(relax_job.__wrapped__, opt_params={"fmax": 0.1})
+        ),
     )
     result = client.gather(client.compute(delayed))
     assert len(result) == 4
