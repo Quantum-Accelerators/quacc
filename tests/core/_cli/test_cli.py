@@ -70,6 +70,16 @@ def test_set(runner):
                 val = line.split(":")[-1].strip()
     assert val == "dummy"
 
+    response = runner.invoke(app, ["set", "WORKFLOW_ENGINE", "GZIP_FILES"])
+    assert response.exit_code == 0
+    assert "True" in response.stdout
+    val = None
+    with open(TEST_YAML) as f:
+        for line in f:
+            if "WORKFLOW_ENGINE" in line:
+                val = line.split(":")[-1].strip()
+    assert val is True
+
 
 def test_unset(runner):
     response = runner.invoke(app, ["unset", "WORKFLOW_ENGINE"])

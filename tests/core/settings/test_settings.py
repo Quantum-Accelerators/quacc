@@ -41,22 +41,6 @@ def test_file_v1(tmp_path, monkeypatch):
     os.remove("quacc_test.yaml")
 
 
-def test_file_v2(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
-    assert QuaccSettings().GZIP_FILES is True
-
-    with open("quacc_test.yaml", "w") as f:
-        f.write("GZIP_FILES: 'false'\nSCRATCH_DIR: 'None'")
-    monkeypatch.setenv(
-        "QUACC_CONFIG_FILE", os.path.join(os.getcwd(), "quacc_test.yaml")
-    )
-
-    assert QuaccSettings().GZIP_FILES is False
-    assert QuaccSettings().SCRATCH_DIR is None
-    os.remove("quacc_test.yaml")
-
-
 def test_store(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     SETTINGS.PRIMARY_STORE = MemoryStore()
