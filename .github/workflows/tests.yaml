@@ -32,11 +32,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-          cache-dependency-path: pyproject.toml
+          cache-dependency-path: tests/requirements**.txt
 
       - name: Install pip packages
         run: |
@@ -44,7 +44,7 @@ jobs:
           pip install .[dev]
 
       - name: Run tests with pytest
-        run: pytest --cov=quacc --cov-report=xml
+        run: pytest --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v3
@@ -67,11 +67,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10"
           cache: pip
-          cache-dependency-path: pyproject.toml
+          cache-dependency-path: tests/requirements**.txt
 
       - name: Install pip packages
         run: |
@@ -83,7 +83,7 @@ jobs:
         run: covalent start
 
       - name: Run tests with pytest
-        run: pytest tests/covalent --cov=quacc --cov-report=xml
+        run: pytest --durations=10 tests/covalent --cov=quacc --cov-report=xml
 
       - name: Stop Covalent server
         run: covalent stop
@@ -111,11 +111,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: pip
-          cache-dependency-path: pyproject.toml
+          cache-dependency-path: tests/requirements**.txt
 
       - name: Install pip packages
         run: |
@@ -124,7 +124,7 @@ jobs:
           pip install .[dev]
 
       - name: Run tests with pytest
-        run: pytest tests/${{ matrix.wflow_engine }} --cov=quacc --cov-report=xml
+        run: pytest --durations=10 tests/${{ matrix.wflow_engine }} --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v3
@@ -147,11 +147,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: pip
-          cache-dependency-path: pyproject.toml
+          cache-dependency-path: tests/requirements**.txt
 
       - name: Set up conda
         uses: conda-incubator/setup-miniconda@v3
@@ -170,7 +170,7 @@ jobs:
           pip install .[dev]
 
       - name: Run tests with pytest
-        run: pytest -k 'psi4' --cov=quacc --cov-report=xml
+        run: pytest -k 'psi4' --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v3
@@ -193,11 +193,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: pip
-          cache-dependency-path: pyproject.toml
+          cache-dependency-path: tests/requirements**.txt
 
       - name: Set up conda
         uses: conda-incubator/setup-miniconda@v3
@@ -215,7 +215,7 @@ jobs:
           pip install .[dev]
 
       - name: Run tests with pytest
-        run: pytest -k 'defects or phonon or espresso' --cov=quacc --cov-report=xml
+        run: pytest -k 'defects or phonon or espresso' --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v3
@@ -238,11 +238,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: pip
-          cache-dependency-path: pyproject.toml
+          cache-dependency-path: tests/requirements**.txt
 
       - name: Set up conda
         uses: conda-incubator/setup-miniconda@v3
@@ -260,7 +260,7 @@ jobs:
           pip install .[dev]
 
       - name: Run tests with pytest
-        run: pytest -k 'dftb or tblite' --cov=quacc --cov-report=xml
+        run: pytest -k 'dftb or tblite' --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v3
@@ -269,7 +269,7 @@ jobs:
           path: "coverage.xml"
           retention-days: 1
 
-  tests-qchem-sella-newtonnet:
+  tests-qchem-sella:
     strategy:
       fail-fast: true
     runs-on: ubuntu-latest
@@ -283,11 +283,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: pip
-          cache-dependency-path: pyproject.toml
+          cache-dependency-path: tests/requirements**.txt
 
       - name: Set up conda
         uses: conda-incubator/setup-miniconda@v3
@@ -303,11 +303,53 @@ jobs:
       - name: Install pip packages
         run: |
           pip install -r tests/requirements.txt
-          pip install -r tests/requirements-qchem-sella-newtonnet.txt
+          pip install -r tests/requirements-qchem-sella.txt
           pip install .[dev]
 
       - name: Run tests with pytest
-        run: pytest -k 'qchem or sella or newtonnet' --cov=quacc --cov-report=xml
+        run: pytest -k 'qchem or sella' --durations=10 --cov=quacc --cov-report=xml
+
+      - name: Upload code coverage report to Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.job }} coverage report
+          path: "coverage.xml"
+          retention-days: 1
+
+  tests-mlps:
+    strategy:
+      fail-fast: true
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: tests/requirements**.txt
+
+      - name: Set up conda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+          activate-environment: quacc-env
+
+      - name: Install pip packages
+        run: |
+          pip install -r tests/requirements.txt
+          pip install -r tests/requirements-mlps.txt
+          pip install .[dev]
+
+      - name: Run tests with pytest
+        run: pytest -k 'mlp or newtonnet' --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v3
@@ -323,7 +365,8 @@ jobs:
       - tests-engines
       - tests-psi4
       - tests-defects-phonons-espresso
-      - tests-qchem-sella-newtonnet
+      - tests-qchem-sella
+      - tests-mlps
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -333,5 +376,10 @@ jobs:
         uses: actions/download-artifact@v3
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        if: github.repository == 'Quantum-Accelerators/quacc'
+        uses: Wandalen/wretry.action@v1
+        with:
+          action: codecov/codecov-action@v3
+          attempt_limit: 5
+          attempt_delay: 30000
+          with: |
+            fail_ci_if_error: true

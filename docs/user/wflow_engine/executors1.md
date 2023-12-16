@@ -41,15 +41,16 @@ In the previous examples, we have been running calculations on our local machine
                 cores_per_worker=1e-6,  # (5)!
                 provider=SlurmProvider(
                     account="MyAccountName",
-                    scheduler_options="#SBATCH -q debug -C cpu",  # (6)!
-                    worker_init=f"source ~/.bashrc && conda activate quacc",  # (7)!
-                    walltime="00:10:00",  # (8)!
-                    nodes_per_block=n_nodes_per_calc * n_calcs_per_job,  # (9)!
-                    init_blocks=0,  # (10)!
-                    min_blocks=0,  # (11)!
-                    max_blocks=max_slurm_jobs,  # (12)!
-                    launcher=SimpleLauncher(),  # (13)!
-                    cmd_timeout=120,  # (14)!
+                    qos="debug",
+                    constraint="cpu",
+                    worker_init=f"source ~/.bashrc && conda activate quacc",  # (6)!
+                    walltime="00:10:00",  # (7)!
+                    nodes_per_block=n_nodes_per_calc * n_calcs_per_job,  # (8)!
+                    init_blocks=0,  # (9)!
+                    min_blocks=0,  # (10)!
+                    max_blocks=max_slurm_jobs,  # (11)!
+                    launcher=SimpleLauncher(),  # (12)!
+                    cmd_timeout=120,  # (13)!
                 ),
             )
         ],
@@ -72,19 +73,19 @@ In the previous examples, we have been running calculations on our local machine
 
     7. Any commands to run before carrying out any of the Parsl tasks. This is useful for setting environment variables, activating a given Conda environment, and loading modules.
 
-    8. The walltime for each block (i.e. Slurm job).
+    7. The walltime for each block (i.e. Slurm job).
 
-    9. The number of nodes that each block (i.e. Slurm job) should allocate.
+    8. The number of nodes that each block (i.e. Slurm job) should allocate.
 
-    10. Sets the number of blocks (e.g. Slurm jobs) to provision during initialization of the workflow. We set this to a value of 0 so that there isn't a running Slurm job before any tasks have been submitted to Parsl.
+    9. Sets the number of blocks (e.g. Slurm jobs) to provision during initialization of the workflow. We set this to a value of 0 so that there isn't a running Slurm job before any tasks have been submitted to Parsl.
 
-    11. Sets the minimum number of blocks (e.g. Slurm jobs) to maintain during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 0 so that Slurm jobs aren't running when there are no remaining tasks.
+    10. Sets the minimum number of blocks (e.g. Slurm jobs) to maintain during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 0 so that Slurm jobs aren't running when there are no remaining tasks.
 
-    12. Sets the maximum number of active blocks (e.g. Slurm jobs) during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 1 here, but it can be increased to have multiple Slurm jobs running simultaneously. Raising `max_blocks` to a larger value will allow the "htex_auto_scale" strategy to upscale resources as needed.
+    11. Sets the maximum number of active blocks (e.g. Slurm jobs) during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 1 here, but it can be increased to have multiple Slurm jobs running simultaneously. Raising `max_blocks` to a larger value will allow the "htex_auto_scale" strategy to upscale resources as needed.
 
-    13. The type of Launcher to use. `SimpleLauncher()` must be used instead of the commonly used `SrunLauncher()` to allow quacc subprocesses to launch their own `srun` commands.
+    12. The type of Launcher to use. `SimpleLauncher()` must be used instead of the commonly used `SrunLauncher()` to allow quacc subprocesses to launch their own `srun` commands.
 
-    14. The maximum time to wait (in seconds) for the job scheduler info to be retrieved/sent.
+    13. The maximum time to wait (in seconds) for the job scheduler info to be retrieved/sent.
 
     **Practical Deployment**
 
@@ -137,9 +138,7 @@ In the previous examples, we have been running calculations on our local machine
     from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
 
-    relax_job.electron_object.executor = "dask"
     static_job.electron_object.executor = "local"
-
 
     @flow
     def workflow(atoms):
@@ -154,6 +153,33 @@ In the previous examples, we have been running calculations on our local machine
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
     ```
+
+    ??? Tip "An Alternate Approach"
+
+        ```python
+        import covalent as ct
+        from ase.build import bulk
+        from quacc import flow
+        from quacc.recipes.emt.core import relax_job, static_job
+
+        @ct.electron(executor="local")
+        def local_static_job(*args, **kwargs):
+            return static_job(*args, **kwargs)
+
+
+        @flow
+        def workflow(atoms):
+            output1 = relax_job(atoms)
+            output2 = local_static_job(output1["atoms"])
+
+            return output2
+
+
+        atoms = bulk("Cu")
+        dispatch_id = ct.dispatch(workflow)(atoms)
+        result = ct.get_result(dispatch_id, wait=True)
+        print(result)
+        ```
 
     **Configuring Executors**
 

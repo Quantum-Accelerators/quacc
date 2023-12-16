@@ -43,6 +43,17 @@ export QUACC_GULP_LIB="/path/to/gulp-#.#.#/Libraries"
 
 No setup needed!
 
+## MLPs
+
+Several so-called "universal" machine-learned potentials (MLPs) are natively supported in quacc, including [U-MACE](https://github.com/ACEsuit/mace), [CHGNet](https://github.com/CederGroupHub/chgnet), and [M3GNet](https://github.com/materialsvirtuallab/matgl).
+
+To use these potentials, you will need to install the corresponding packages. This can be done as follows:
+
+```bash
+pip install quacc[ml] # CHGNet, M3GNet
+pip install git+https://github.com/ACEsuit/mace.git # U-MACE
+```
+
 ## NewtonNet
 
 If you plan to use NewtonNet with Quacc, you will need to install it prior to use. This can be done as follows:
