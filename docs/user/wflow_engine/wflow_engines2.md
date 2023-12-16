@@ -35,7 +35,7 @@ graph LR
     # Define the workflow
     def workflow(atoms):
         # Define Job 1
-        future1 = relax_job(atoms)  # (1)!
+        future1 = relax_job(atoms)
 
         # Define Job 2, which takes the output of Job 1 as input
         future2 = static_job(future1["atoms"])
@@ -50,13 +50,9 @@ graph LR
     future = workflow(atoms)
 
     # Fetch the result
-    result = future.result()  # (2)!
+    result = future.result()
     print(result)
     ```
-
-    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
-
-    2. The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object.
 
     !!! Note
 
@@ -84,7 +80,7 @@ graph LR
     @flow  # (1)!
     def workflow(atoms):
         # Define Job 1
-        result1 = relax_job(atoms)  # (2)!
+        result1 = relax_job(atoms)
 
         # Define Job 2, which takes the output of Job 1 as input
         result2 = static_job(result1["atoms"])
@@ -97,20 +93,14 @@ graph LR
 
     # Dispatch the workflow to the Covalent server
     # with the bulk Cu Atoms object as the input
-    dispatch_id = ct.dispatch(workflow)(atoms)  # (3)!
+    dispatch_id = ct.dispatch(workflow)(atoms)
 
     # Fetch the result from the server
-    result = ct.get_result(dispatch_id, wait=True)  # (4)!
+    result = ct.get_result(dispatch_id, wait=True)
     print(result)
     ```
 
-    1. The `#!Python @flow` decorator defines the workflow that will be executed. It is the same as calling `#!Python ct.lattice` in Covalent.
-
-    2. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
-
-    3. Because the workflow was defined with a `#!Python @flow` decorator, it will be sent to the Covalent server and a dispatch ID will be returned.
-
-    4. You don't need to set `wait=True` in practice. Once you dispatch the workflow, it will begin running (if the resources are available). The `ct.get_result` function is used to fetch the workflow status and results from the server.
+    1. Because the workflow was defined with a `#!Python @flow` decorator, it will be sent to the Covalent server and a dispatch ID will be returned.
 
 === "Dask"
 
@@ -136,12 +126,12 @@ graph LR
     # Define the workflow
     def workflow(atoms):
         # Define Job 1
-        delayed1 = relax_job(atoms)  # (1)!
+        delayed1 = relax_job(atoms)
 
         # Define Job 2, which takes the output of Job 1 as input
-        delayed12 = static_job(delayed1["atoms"])
+        delayed2 = static_job(delayed1["atoms"])
 
-        return delayed1
+        return delayed2
 
 
     # Make an Atoms object of a bulk Cu structure
@@ -151,13 +141,9 @@ graph LR
     delayed = workflow(atoms)
 
     # Fetch the result
-    result = client.compute(delayed).result()  # (2)!
+    result = client.compute(delayed).result()
     print(result)
     ```
-
-    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
-
-    2. The use of `client.compute()` submits the job to the cluster, and `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `Delayed` object.
 
 === "Redun"
 
@@ -183,7 +169,7 @@ graph LR
     @flow  # (1)!
     def workflow(atoms):
         # Define Job 1
-        result1 = relax_job(atoms)  # (2)!
+        result1 = relax_job(atoms)
 
         # Define Job 2, which takes the output of Job 1 as input
         result2 = static_job(result1["atoms"])
@@ -200,8 +186,6 @@ graph LR
     ```
 
     1. The `#!Python @flow` decorator defines the workflow that will be executed. It is the same as the `#!Python @task` decorator in Redun.
-
-    2. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
 
 === "Jobflow"
 
@@ -222,29 +206,25 @@ graph LR
     atoms = bulk("Cu")
 
     # Define Job 1
-    job1 = relax_job(atoms)  # (1)!
+    job1 = relax_job(atoms)
 
     # Define Job 2, which takes the output of Job 1 as input
-    job2 = static_job(job1.output["atoms"])  # (2)!
+    job2 = static_job(job1.output["atoms"])  # (1)!
 
     # Define the workflow
-    workflow = jf.Flow([job1, job2])  # (3)!
+    workflow = jf.Flow([job1, job2])  # (2)!
 
     # Run the workflow locally
-    responses = jf.run_locally(workflow)  # (4)!
+    responses = jf.run_locally(workflow)
 
     # Get the result
     result = responses[job2.uuid][1].output
     print(result)
     ```
 
-    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
+    1. In Jobflow, each `Job` is only a reference and so the `.output` must be explicitly passed between jobs.
 
-    2. In Jobflow, each `Job` is only a reference and so the `.output` must be explicitly passed between jobs.
-
-    3. We must stitch the individual `Job` objects together into a `jf.Flow`, which can be easily achieved by passing them as a list to the `jf.Flow()` constructor.
-
-    4. We chose to run the job locally, but other workflow managers supported by Jobflow can be imported and used.
+    2. We must stitch the individual `Job` objects together into a `jf.Flow`, which can be easily achieved by passing them as a list to the `jf.Flow()` constructor.
 
 ## Running a User-Constructed Parallel Workflow
 
@@ -328,7 +308,7 @@ graph LR
         result1 = relax_job(atoms1)
         result2 = relax_job(atoms2)
 
-        return {"result1": result1, "result2": result2}
+        return [result1, result2]
 
 
     # Define two Atoms objects
@@ -340,9 +320,7 @@ graph LR
 
     # Fetch the results
     results = client.gather(client.compute(delayed))
-    result1 = results["result1"]
-    result2 = results["result2"]
-    print(result1, result2)
+    print(results)
     ```
 
 === "Redun"
@@ -426,7 +404,7 @@ graph LR
     # Define the workflow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], slab_static_job=None)  # (1)!
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)
 
         return relaxed_slabs
 
@@ -442,8 +420,6 @@ graph LR
     print(result)
     ```
 
-    1. We chose to set `#!Python slab_static_job=None` here to disable the static calculation that is normally carried out in this workflow.
-
 === "Covalent"
 
     ```python
@@ -458,7 +434,7 @@ graph LR
     @flow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], slab_static_job=None)  # (1)!
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)
 
         return relaxed_slabs
 
@@ -472,8 +448,6 @@ graph LR
     print(result)
     ```
 
-    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator. We also chose to set `#!Python slab_static_job=None` here to disable the static calculation that is normally carried out in this workflow.
-
 === "Dask"
 
     ```python
@@ -485,7 +459,7 @@ graph LR
     # Define the workflow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], slab_static_job=None)  # (1)!
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)
 
         return relaxed_slabs
 
@@ -500,8 +474,6 @@ graph LR
     result = client.gather(client.compute(delayed))
     print(result)
     ```
-
-    1. We chose to set `#!Python slab_static_job=None` here to disable the static calculation that is normally carried out in this workflow.
 
 === "Redun"
 
@@ -519,7 +491,7 @@ graph LR
     @flow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], slab_static_job=None)  # (1)!
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)
 
         return relaxed_slabs
 
@@ -531,8 +503,6 @@ graph LR
     result = scheduler.run(workflow(atoms))
     print(result)
     ```
-
-    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator. We also chose to set `#!Python slab_static_job=None` here to disable the static calculation that is normally carried out in this workflow.
 
 === "Jobflow"
 

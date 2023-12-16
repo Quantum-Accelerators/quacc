@@ -2,14 +2,15 @@ import pytest
 from ase.build import bulk, molecule
 
 from quacc import SETTINGS, flow
-from quacc.recipes.emt.core import relax_job, static_job
-from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 redun = pytest.importorskip("redun")
 pytestmark = pytest.mark.skipif(
     SETTINGS.WORKFLOW_ENGINE != "redun",
     reason="This test requires the Redun workflow engine",
 )
+
+from quacc.recipes.emt.core import relax_job, static_job
+from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 
 @pytest.fixture()
@@ -78,7 +79,7 @@ def test_tutorial2c(tmp_path, monkeypatch, scheduler):
     @flow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        return bulk_to_slabs_flow(relaxed_bulk["atoms"], slab_static_job=None)  # (1)!
+        return bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)  # (1)!
 
     # Define the Atoms object
     atoms = bulk("Cu")

@@ -26,7 +26,7 @@ def teardown_function():
     SETTINGS.CREATE_UNIQUE_DIR = DEFAULT_SETTINGS.CREATE_UNIQUE_DIR
 
 
-def test_file(tmp_path, monkeypatch):
+def test_file_v1(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     assert QuaccSettings().GZIP_FILES is True

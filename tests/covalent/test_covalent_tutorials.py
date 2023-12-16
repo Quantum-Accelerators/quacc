@@ -2,14 +2,16 @@ import pytest
 from ase.build import bulk, molecule
 
 from quacc import SETTINGS, flow, job, subflow
-from quacc.recipes.emt.core import relax_job, static_job
-from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 ct = pytest.importorskip("covalent")
 pytestmark = pytest.mark.skipif(
     SETTINGS.WORKFLOW_ENGINE != "covalent",
     reason="This test requires the Covalent workflow engine",
 )
+
+
+from quacc.recipes.emt.core import relax_job, static_job
+from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 
 def test_quickstart(tmp_path, monkeypatch):
@@ -107,7 +109,7 @@ def test_tutorial2c(tmp_path, monkeypatch):
     @flow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        return bulk_to_slabs_flow(relaxed_bulk["atoms"], slab_static_job=None)  # (1)!
+        return bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)  # (1)!
 
     atoms = bulk("Cu")
     dispatch_id = ct.dispatch(workflow)(atoms)

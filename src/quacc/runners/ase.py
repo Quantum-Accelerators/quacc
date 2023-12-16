@@ -13,6 +13,7 @@ from monty.os.path import zpath
 
 from quacc.atoms.core import copy_atoms
 from quacc.runners.prep import calc_cleanup, calc_setup
+from quacc.utils.dicts import merge_dicts
 
 try:
     from sella import Internals, Sella
@@ -153,8 +154,14 @@ def run_opt(
     # Copy atoms so we don't modify it in-place
     atoms = copy_atoms(atoms)
 
+    # Perform staging operations
+    tmpdir, job_results_dir = calc_setup(copy_files=copy_files)
+
     # Set defaults
-    optimizer_kwargs = optimizer_kwargs or {}
+    optimizer_kwargs = merge_dicts(
+        {"logfile": tmpdir / "opt.log", "restart": tmpdir / "opt.pckl"},
+        optimizer_kwargs,
+    )
     run_kwargs = run_kwargs or {}
 
     # Check if trajectory kwarg is specified
@@ -162,12 +169,11 @@ def run_opt(
         msg = "Quacc does not support setting the `trajectory` kwarg."
         raise ValueError(msg)
 
-    # Perform staging operations
-    tmpdir, job_results_dir = calc_setup(copy_files=copy_files)
-
     # Set Sella kwargs
     if optimizer.__name__ == "Sella":
         _set_sella_kwargs(atoms, optimizer_kwargs)
+    elif optimizer.__name__ == "IRC":
+        optimizer_kwargs.pop("restart", None)
     optimizer_kwargs.pop("use_TRICs", None)
 
     # Define the Trajectory object

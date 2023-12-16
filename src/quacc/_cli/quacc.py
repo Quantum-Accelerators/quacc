@@ -58,7 +58,7 @@ def main(
 
 
 @app.command("set")
-def set_(parameter: str, new_value) -> None:
+def set_(parameter: str, new_value: str) -> None:
     """
     Set the specified quacc parameter in the quacc configuration file. This command will
     not override any environment variables.
@@ -79,12 +79,9 @@ def set_(parameter: str, new_value) -> None:
 
     CONFIG_FILE = SETTINGS.CONFIG_FILE or _DEFAULT_CONFIG_FILE_PATH
     parameter = parameter.upper()
-    if parameter not in SETTINGS.model_dump():
-        msg = f"{parameter} is not a supported quacc configuration variable."
-        raise ValueError(msg)
-    if parameter == "CONFIG_FILE":
-        msg = "Cannot set the CONFIG_FILE parameter via the CLI."
-        raise ValueError(msg)
+
+    _parameter_handler(parameter, SETTINGS.model_dump())
+    new_value = _type_handler(new_value)
 
     typer.echo(f"Setting `{parameter}` to `{new_value}` in {CONFIG_FILE}")
     _update_setting(parameter, new_value, CONFIG_FILE)
@@ -110,13 +107,8 @@ def unset(parameter: str) -> None:
 
     CONFIG_FILE = SETTINGS.CONFIG_FILE or _DEFAULT_CONFIG_FILE_PATH
     parameter = parameter.upper()
-    if parameter not in SETTINGS.model_dump():
-        msg = f"{parameter} is not a supported quacc configuration variable."
-        raise ValueError(msg)
-    if parameter == "CONFIG_FILE":
-        msg = "Cannot unset the CONFIG_FILE parameter via the CLI."
-        raise ValueError(msg)
 
+    _parameter_handler(parameter, SETTINGS.model_dump())
     typer.echo(f"Unsetting `{parameter}` in {CONFIG_FILE}")
     _delete_setting(parameter, CONFIG_FILE)
 
@@ -148,6 +140,48 @@ Python version: {platform.python_version()}
 quacc settings: {settings}
 """
     )
+
+
+def _parameter_handler(parameter: str, settings_dict: dict) -> None:
+    """
+    Check if the parameter is a valid quacc configuration variable.
+
+    Parameters
+    ----------
+    parameter
+        The quacc parameter to check.
+    settings_dict
+        The quacc settings.
+
+    Returns
+    -------
+    """
+    if parameter not in settings_dict:
+        msg = f"{parameter} is not a supported quacc configuration variable."
+        raise ValueError(msg)
+    if parameter == "CONFIG_FILE":
+        msg = "Cannot set the CONFIG_FILE parameter via the CLI."
+        raise ValueError(msg)
+
+
+def _type_handler(value: str) -> Any:
+    """
+    Convert the string value to the appropriate type.
+
+    Parameters
+    ----------
+    value
+        The value to convert.
+
+    Returns
+    -------
+    Any
+    """
+    if value.lower() in ("null", "none"):
+        value = None
+    elif value.lower() in ("true", "false"):
+        value = value.lower() == "true"
+    return value
 
 
 def _delete_setting(key: str, config_file: Path) -> None:

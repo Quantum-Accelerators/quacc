@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from ase.build import bulk
 
-from quacc.recipes.mlip.core import relax_job, static_job
+from quacc.recipes.mlp.core import relax_job, static_job
 
 
 def test_bad_method():
@@ -24,7 +24,6 @@ def test_static_job(tmp_path, monkeypatch, method):
         pytestmark = pytest.importorskip("chgnet")
     elif method == "m3gnet":
         pytestmark = pytest.importorskip("matgl")
-        pytestmark = pytest.importorskip("matcalc")
     elif method == "umace":
         pytestmark = pytest.importorskip("mace")
     atoms = bulk("Cu")
@@ -46,7 +45,6 @@ def test_relax_job(tmp_path, monkeypatch, method):
         pytestmark = pytest.importorskip("chgnet")
     elif method == "m3gnet":
         pytestmark = pytest.importorskip("matgl")
-        pytestmark = pytest.importorskip("matcalc")
     elif method == "umace":
         pytestmark = pytest.importorskip("mace")
 
@@ -71,7 +69,6 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
         pytestmark = pytest.importorskip("chgnet")
     elif method == "m3gnet":
         pytestmark = pytest.importorskip("matgl")
-        pytestmark = pytest.importorskip("matcalc")
     elif method == "umace":
         pytestmark = pytest.importorskip("mace")
 

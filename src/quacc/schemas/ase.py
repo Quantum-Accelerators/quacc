@@ -10,7 +10,7 @@ from ase.filters import Filter
 from ase.io import read
 from ase.vibrations.data import VibrationsData
 
-from quacc import SETTINGS
+from quacc import SETTINGS, __version__
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.schemas.prep import prep_next_run as prep_next_run_
 from quacc.utils.dicts import merge_several_dicts, sort_dict
@@ -94,6 +94,7 @@ def summarize_run(
         "nid": uri.split(":")[0],
         "dir_name": ":".join(uri.split(":")[1:]),
         "input_atoms": input_atoms_metadata,
+        "quacc_version": __version__,
     }
 
     results = {"results": atoms.calc.results}
