@@ -147,9 +147,9 @@ def _get_defect_entry_from_defect(
     # Find defect's fractional coordinates and remove it from supercell
     for site in defect_supercell:
         if site.species.elements[0].symbol == DummySpecies().symbol:
-            defect_supercell.remove(site)
             dummy_site = site
             break
+    defect_supercell.remove(dummy_site)
 
     computed_structure_entry = ComputedStructureEntry(
         structure=defect_supercell, energy=0.0  # needs to be set, so set to 0.0
