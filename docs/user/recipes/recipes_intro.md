@@ -306,14 +306,11 @@ result = bulk_to_slabs_flow(atoms, slab_relax_job=custom_relax_job)
 print(result)
 ```
 
-1. We have used a [partial function](https://www.learnpython.org/en/Partial_functions) here, which is a way to create a new function with specific arguments already applied. In this case, `#!Python partial(relax_job, opt_params={"fmax": 1e-4})` means the same thing as:
-
-```python
-def custom_relax_job(*args, **kwargs):
-    return relax_job(*args, opt_params={"fmax": 1e-4}, **kwargs)
-```
-
-In other words, `#!Python opt_params={"fmax": 1e-4}` will be set as a keyword argument in the `relax_job` function by default. This is a common pattern in quacc recipes, where you can override the default parameters of a recipe by passing in a new dictionary of parameters.
+1. We have used a [partial function](https://www.learnpython.org/en/Partial_functions) here, which is a way to create a new function with specific arguments already applied. In other words, `#!Python opt_params={"fmax": 1e-4}` will be set as a keyword argument in the `relax_job` function by default. The same could be achieved, albeit more verbosely, as follows:
+   ```python
+   def custom_relax_job(*args, **kwargs):
+       return relax_job(*args, opt_params={"fmax": 1e-4}, **kwargs)
+   ```
 
 ## Concluding Comments
 
