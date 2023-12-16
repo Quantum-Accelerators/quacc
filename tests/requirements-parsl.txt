@@ -1,2 +1,2 @@
 parsl[monitoring]==2023.12.4
-phonopy==2.21.0
+phonopy==2.21.
