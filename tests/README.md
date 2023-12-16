@@ -9,7 +9,7 @@ Note that you aren't meant to run `pytest` from the root of the `tests` director
 For instance, to run the core test suite:
 
 ```bash
-pytest tests/local # or `pytest .` from within `tests/local`
+pytest tests/core # or `pytest .` from within `tests/core`
 ```
 
 Similarly, to run the test suite for Parsl-specific functionality:
@@ -20,4 +20,4 @@ pytest tests/parsl # or `pytest .` from within `tests/parsl`
 
 ## Troubleshooting Tests
 
-If you ever need to inspect files from recipes that are generated during a test run, you can find them in the `.quacc_scratch` and `.quacc_results` directories that are created in the current working directory.
+If you ever need to inspect files from a failed test run, you can find them in the `.quacc_scratch` and `.quacc_results` directories that are created in the current working directory.
