@@ -11,8 +11,8 @@ pytestmark = pytest.mark.skipif(
     reason="This test requires the Covalent workflow engine",
 )
 
-from quacc.recipes.emt.core import relax_job
-from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+from quacc.recipes.emt.core import relax_job  # skipcq: PYL-C0412
+from quacc.recipes.emt.slabs import bulk_to_slabs_flow  # skipcq: PYL-C0412
 
 
 def test_covalent_functools(tmp_path, monkeypatch):
