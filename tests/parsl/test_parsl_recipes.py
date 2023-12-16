@@ -33,6 +33,7 @@ def test_parsl_functools(tmp_path, monkeypatch):
     ).result()
     assert len(result) == 4
     assert "atoms" in result[-1]
+    assert result[-1]["fmax"] == 0.1
 
 
 def test_phonon_flow(tmp_path, monkeypatch):

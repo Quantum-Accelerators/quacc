@@ -25,6 +25,7 @@ def test_covalent_functools(tmp_path, monkeypatch):
     assert output.status == "COMPLETED"
     assert len(output.result) == 4
     assert "atoms" in output.result[-1]
+    assert output.results[-1]["fmax"] == 0.1
 
 
 def test_phonon_flow(tmp_path, monkeypatch):
