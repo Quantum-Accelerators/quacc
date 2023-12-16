@@ -329,7 +329,7 @@ class QuaccSettings(BaseSettings):
     @classmethod
     def validate_workflow_engine(cls, v: Optional[str]) -> Optional[str]:
         """Validate the workflow engine"""
-        if v.lower() == "local":
+        if v and v.lower() == "local":
             return None
         return v
 
