@@ -20,13 +20,13 @@ client = default_client()
 
 
 def test_dask_functools(tmp_path, monkeypatch):
-    from dask import delayed
+    from dask import delayed as delayed_
 
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
     delayed = bulk_to_slabs_flow(
         atoms,
-        slab_relax_job=delayed(
+        slab_relax_job=delayed_(
             partial(relax_job.__wrapped__, opt_params={"fmax": 0.1})
         ),
     )
