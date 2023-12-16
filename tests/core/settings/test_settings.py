@@ -26,7 +26,22 @@ def teardown_function():
     SETTINGS.CREATE_UNIQUE_DIR = DEFAULT_SETTINGS.CREATE_UNIQUE_DIR
 
 
-def test_file(tmp_path, monkeypatch):
+def test_file_v1(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    assert QuaccSettings().GZIP_FILES is True
+
+    with open("quacc_test.yaml", "w") as f:
+        f.write("GZIP_FILES: false")
+    monkeypatch.setenv(
+        "QUACC_CONFIG_FILE", os.path.join(os.getcwd(), "quacc_test.yaml")
+    )
+
+    assert QuaccSettings().GZIP_FILES is False
+    os.remove("quacc_test.yaml")
+
+
+def test_file_v2(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     assert QuaccSettings().GZIP_FILES is True
@@ -38,6 +53,7 @@ def test_file(tmp_path, monkeypatch):
     )
 
     assert QuaccSettings().GZIP_FILES is False
+    assert QuaccSettings().WORKFLOW_ENGINE is None
     os.remove("quacc_test.yaml")
 
 
