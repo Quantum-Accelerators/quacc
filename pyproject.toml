@@ -150,6 +150,7 @@ extend-ignore = [
   "EM102",  # Exception must not use an f-string literal
   "G004",   # f-string in Logging statement
   "RET503", # Missing explicit return
+  "RUF015", # Prefer next(iter())
 ]
 typing-modules = ["mypackage._compat.typing"]
 src = ["src"]

@@ -325,6 +325,14 @@ class QuaccSettings(BaseSettings):
 
     # --8<-- [end:settings]
 
+    @field_validator("WORKFLOW_ENGINE")
+    @classmethod
+    def validate_workflow_engine(cls, v: Optional[str]) -> Optional[str]:
+        """Validate the workflow engine"""
+        if v and v.lower() == "local":
+            return None
+        return v
+
     @field_validator("RESULTS_DIR", "SCRATCH_DIR")
     @classmethod
     def resolve_and_make_paths(cls, v: Optional[Path]) -> Optional[Path]:
