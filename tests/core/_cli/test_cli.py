@@ -40,15 +40,15 @@ def test_help(runner):
 
 
 def test_set(runner):
-    response = runner.invoke(app, ["set", "WORKFLOW_ENGINE", "local"])
+    response = runner.invoke(app, ["set", "WORKFLOW_ENGINE", "None"])
     assert response.exit_code == 0
-    assert "local" in response.stdout
+    assert "None" in response.stdout
     val = None
     with open(TEST_YAML) as f:
         for line in f:
             if "WORKFLOW_ENGINE" in line:
                 val = line.split(":")[-1].strip()
-    assert val == "local"
+    assert not val
 
     response = runner.invoke(app, ["set", "WORKFLOW_ENGINE", "covalent"])
     assert response.exit_code == 0
