@@ -15,7 +15,7 @@ pytest tests/core # or `pytest .` from within `tests/core`
 Similarly, to run the test suite for Parsl-specific functionality:
 
 ```bash
-pytest tests/wflow_engines/parsl # or `pytest .` from within `tests/wflow_engines/parsl`
+pytest tests/parsl # or `pytest .` from within `tests/parsl`
 ```
 
 ## Troubleshooting Tests
