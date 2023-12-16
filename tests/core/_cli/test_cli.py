@@ -76,9 +76,9 @@ def test_set(runner):
     val = None
     with open(TEST_YAML) as f:
         for line in f:
-            if "WORKFLOW_ENGINE" in line:
+            if "GZIP_FILES" in line:
                 val = line.split(":")[-1].strip()
-    assert val is True
+    assert val == "true"
 
 
 def test_unset(runner):
