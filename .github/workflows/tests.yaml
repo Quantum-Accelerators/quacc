@@ -76,7 +76,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install -r tests/requirements.txt
-          pip install -r tests/wflow_engines/requirements-covalent.txt
+          pip install -r tests/wflow_engines/covalent/requirements-covalent.txt
           pip install .[dev]
 
       - name: Start Covalent server
