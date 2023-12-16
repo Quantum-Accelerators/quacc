@@ -12,6 +12,12 @@ For instance, to run the core test suite:
 pytest tests/core # or `pytest .` from within `tests/core`
 ```
 
+Similarly, to run the test suite for Parsl-specific functionality:
+
+```bash
+pytest tests/wflow_engines/parsl # or `pytest .` from within `tests/wflow_engines/parsl`
+```
+
 ## Troubleshooting Tests
 
 If you ever need to inspect files from recipes that are generated during a test run, you can find them in the `.quacc_scratch` and `.quacc_results` directories that are created in the current working directory.
