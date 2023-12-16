@@ -104,7 +104,7 @@ def make_defects_from_bulk(
 
         # Apply rattle and bond distortion to all defects
         defect_dict, distortion_metadata = Dist.apply_distortions()
-        defect_symbol = next(iter(distortion_metadata["defects"].keys()))
+        defect_symbol = list(distortion_metadata["defects"].keys())[0]
         distortion_dict = defect_dict[defect_symbol]["charges"][defect_charge][
             "structures"
         ]["distortions"]
@@ -150,7 +150,6 @@ def _get_defect_entry_from_defect(
         for site in defect_supercell
         if site.species.elements[0].symbol == DummySpecies().symbol
     )
-    sc_defect_frac_coords = dummy_site.frac_coords
     defect_supercell.remove(dummy_site)
 
     computed_structure_entry = ComputedStructureEntry(
@@ -161,5 +160,5 @@ def _get_defect_entry_from_defect(
         defect=defect,
         charge_state=defect_charge,
         sc_entry=computed_structure_entry,
-        sc_defect_frac_coords=sc_defect_frac_coords,
+        sc_defect_frac_coords=dummy_site.frac_coords,
     )
