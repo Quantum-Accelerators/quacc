@@ -404,7 +404,7 @@ graph LR
     # Define the workflow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], slab_static_job=False)
 
         return relaxed_slabs
 
@@ -434,7 +434,7 @@ graph LR
     @flow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], slab_static_job=False)
 
         return relaxed_slabs
 
@@ -459,7 +459,7 @@ graph LR
     # Define the workflow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], slab_static_job=False)
 
         return relaxed_slabs
 
@@ -491,7 +491,7 @@ graph LR
     @flow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], slab_static_job=False)
 
         return relaxed_slabs
 
