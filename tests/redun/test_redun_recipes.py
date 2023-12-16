@@ -21,7 +21,7 @@ from quacc.recipes.emt.core import relax_job  # skipcq: PYL-C0412
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow  # skipcq: PYL-C0412
 
 
-def test_redun_functools(tmp_path, monkeypatch):
+def test_redun_functools(tmp_path, monkeypatch, scheduler):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
     result = scheduler.run(
