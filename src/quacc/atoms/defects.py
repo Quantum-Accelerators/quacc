@@ -150,7 +150,6 @@ def _get_defect_entry_from_defect(
         for site in defect_supercell
         if site.species.elements[0].symbol == DummySpecies().symbol
     )
-    sc_defect_frac_coords = dummy_site.frac_coords
     defect_supercell.remove(dummy_site)
 
     computed_structure_entry = ComputedStructureEntry(
@@ -161,5 +160,5 @@ def _get_defect_entry_from_defect(
         defect=defect,
         charge_state=defect_charge,
         sc_entry=computed_structure_entry,
-        sc_defect_frac_coords=sc_defect_frac_coords,
+        sc_defect_frac_coords=dummy_site.frac_coords,
     )
