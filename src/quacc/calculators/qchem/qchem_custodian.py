@@ -1,7 +1,6 @@
 """Custodian handlers for QChem."""
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
 from monty.dev import requires
@@ -16,8 +15,8 @@ except ImportError:
 
 @requires(ob, "Openbabel must be installed. Try conda install -c conda-forge openbabel")
 def run_custodian(
-    qchem_cores: int = 1,
     qchem_cmd: str | None = None,
+    qchem_cores: int | None = None,
     qchem_local_scratch: str | Path | None = None,
     qchem_use_error_handlers: bool | None = None,
     qchem_custodian_max_errors: int | None = None,
@@ -28,10 +27,10 @@ def run_custodian(
 
     Parameters
     ----------
-    qchem_cores
-        Number of cores to use for the Q-Chem calculation.
     qchem_cmd
         Q-Chem command. Defaults to "qchem" in settings.
+    qchem_cores
+        Number of cores to use for the Q-Chem calculation.
     qchem_local_scratch
         Compute-node local scratch directory in which Q-Chem should perform IO.
         Defaults to /tmp in settings.
@@ -47,12 +46,13 @@ def run_custodian(
     -------
     None
     """
-    # Adapted from atomate.qchem.firetasks.run_calc
+    # Adapted from atomate._qchem_legacy.firetasks.run_calc
     from custodian import Custodian
     from custodian.qchem.handlers import QChemErrorHandler
     from custodian.qchem.jobs import QCJob
 
     # Set defaults
+    qchem_cores = SETTINGS.QCHEM_NUM_CORES if qchem_cores is None else qchem_cores
     qchem_cmd = SETTINGS.QCHEM_CMD if qchem_cmd is None else qchem_cmd
     qchem_local_scratch = (
         SETTINGS.QCHEM_LOCAL_SCRATCH
@@ -84,12 +84,15 @@ def run_custodian(
         )
     ]
 
-    c = Custodian(handlers, jobs, max_errors=qchem_custodian_max_errors)
+    c = Custodian(
+        handlers,
+        jobs,
+        max_errors=qchem_custodian_max_errors,
+        terminate_on_nonzero_returncode=False,
+    )
 
     c.run()
 
 
 if __name__ == "__main__":
-    run_custodian(qchem_cores=int(sys.argv[1])) if len(  # skipcq: PYL-W0106
-        sys.argv
-    ) > 1 else run_custodian()
+    run_custodian()

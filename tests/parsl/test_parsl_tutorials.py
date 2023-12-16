@@ -1,17 +1,19 @@
 import contextlib
 
 import pytest
-from ase.build import bulk, molecule
 
 from quacc import SETTINGS, job, subflow
-from quacc.recipes.emt.core import relax_job, static_job
-from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 parsl = pytest.importorskip("parsl")
 pytestmark = pytest.mark.skipif(
     SETTINGS.WORKFLOW_ENGINE != "parsl",
     reason="This test requires the Parsl workflow engine",
 )
+
+from ase.build import bulk, molecule
+
+from quacc.recipes.emt.core import relax_job, static_job
+from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 
 def setup_module():
@@ -113,7 +115,13 @@ def test_tutorial2c(tmp_path, monkeypatch):
     # Define the workflow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        return bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)  # (1)!
+        return bulk_to_slabs_flow(
+            relaxed_bulk["atoms"],
+            run_static=False,
+            # slab_relax_kwargs={
+            #     "opt_params": {"optimizer_kwargs": {"logfile": "-"}}
+            # },  # this is for easy debugging
+        )
 
     # Define the Atoms object
     atoms = bulk("Cu")

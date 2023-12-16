@@ -19,10 +19,10 @@ if TYPE_CHECKING:
 installed_engine = next(
     (
         wflow_engine
-        for wflow_engine in ["parsl", "covalent", "dask", "prefect", "redun", "jobflow"]
+        for wflow_engine in ["parsl", "covalent", "dask", "redun", "jobflow"]
         if util.find_spec(wflow_engine)
     ),
-    "local",
+    None,
 )
 _DEFAULT_CONFIG_FILE_PATH = Path("~", ".quacc.yaml").expanduser().resolve()
 
@@ -54,15 +54,9 @@ class QuaccSettings(BaseSettings):
     # Workflow Engine
     # ---------------------------
 
-    WORKFLOW_ENGINE: Literal[
-        "covalent", "dask", "parsl", "redun", "jobflow", "prefect", "local"
-    ] = Field(
-        installed_engine,
-        description=(
-            "The workflow manager to use."
-            "Options include: 'covalent', 'parsl', 'redun', 'jobflow', 'prefect', or 'local'"
-        ),
-    )
+    WORKFLOW_ENGINE: Optional[
+        Literal["covalent", "dask", "parsl", "redun", "jobflow", "local"]
+    ] = Field(installed_engine, description=("The workflow manager to use, if any."))
 
     # ---------------------------
     # General Settings

@@ -81,18 +81,18 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 
 </center>
 
-## MLIPs
+## MLPs
 
 !!! Info
 
-    Machine-learned interatomic potentials are a class of machine learning models that are trained to reproduce the potential energy surface of a system. The following pre-trained, "universal" MLIPs are supported: [CHGNet](https://doi.org/10.1038/s42256-023-00716-3), [M3GNet](https://doi.org/10.1038/s43588-022-00349-3), and [U-MACE](https://mace-docs.readthedocs.io/en/latest/examples/foundation_models.html).
+    Machine-learned interatomic potentials are a class of machine learning models that are trained to reproduce the potential energy surface of a system. The following pre-trained, "universal" MLPs are supported: [CHGNet](https://doi.org/10.1038/s42256-023-00716-3), [M3GNet](https://doi.org/10.1038/s43588-022-00349-3), and [U-MACE](https://mace-docs.readthedocs.io/en/latest/examples/foundation_models.html).
 
 <center>
 
-| Name        | Decorator       | Documentation                          | Req'd Extras  |
-| ----------- | --------------- | -------------------------------------- | ------------- |
-| MLIP Static | `#!Python @job` | [quacc.recipes.mlip.core.static_job][] | `quacc[mlip]` |
-| MLIP Relax  | `#!Python @job` | [quacc.recipes.mlip.core.relax_job][]  | `quacc[mlip]` |
+| Name       | Decorator       | Documentation                         | Req'd Extras |
+| ---------- | --------------- | ------------------------------------- | ------------ |
+| MLP Static | `#!Python @job` | [quacc.recipes.mlp.core.static_job][] | `quacc[mlp]` |
+| MLP Relax  | `#!Python @job` | [quacc.recipes.mlp.core.relax_job][]  | `quacc[mlp]` |
 
 </center>
 
