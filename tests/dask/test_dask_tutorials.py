@@ -1,7 +1,7 @@
 import pytest
 from ase.build import bulk, molecule
 
-from quacc import SETTINGS, job, subflow
+from quacc import SETTINGS
 
 dask = pytest.importorskip("dask")
 pytestmark = pytest.mark.skipif(

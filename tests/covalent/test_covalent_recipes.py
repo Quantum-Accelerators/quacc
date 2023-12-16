@@ -1,4 +1,3 @@
-from functools import partial
 
 import pytest
 from ase.build import bulk
@@ -12,7 +11,6 @@ pytestmark = pytest.mark.skipif(
 )
 
 from quacc.recipes.emt.core import relax_job
-from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 
 def test_phonon_flow(tmp_path, monkeypatch):
