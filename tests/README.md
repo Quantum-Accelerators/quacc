@@ -9,7 +9,7 @@ Note that you aren't meant to run `pytest` from the root of the `tests` director
 For instance, to run the core test suite:
 
 ```bash
-pytest tests/local # or `pytest .` from within `tests/local`
+pytest tests/core # or `pytest .` from within `tests/core`
 ```
 
 Similarly, to run the test suite for Parsl-specific functionality:

@@ -4,8 +4,6 @@ import pytest
 from ase.build import bulk
 
 from quacc import SETTINGS
-from quacc.recipes.emt.core import relax_job
-from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 dask = pytest.importorskip("dask")
 pytestmark = pytest.mark.skipif(
@@ -14,6 +12,9 @@ pytestmark = pytest.mark.skipif(
 )
 
 from dask.distributed import default_client
+
+from quacc.recipes.emt.core import relax_job
+from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 client = default_client()
 
