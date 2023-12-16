@@ -47,13 +47,13 @@ def test_file_v2(tmp_path, monkeypatch):
     assert QuaccSettings().GZIP_FILES is True
 
     with open("quacc_test.yaml", "w") as f:
-        f.write("GZIP_FILES: 'false'\nWORKFLOW_ENGINE: 'None'")
+        f.write("GZIP_FILES: 'false'\nSCRATCH_DIR: 'None'")
     monkeypatch.setenv(
         "QUACC_CONFIG_FILE", os.path.join(os.getcwd(), "quacc_test.yaml")
     )
 
     assert QuaccSettings().GZIP_FILES is False
-    assert QuaccSettings().WORKFLOW_ENGINE is None
+    assert QuaccSettings().SCRATCH_DIR is None
     os.remove("quacc_test.yaml")
 
 
