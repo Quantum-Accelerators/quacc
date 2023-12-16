@@ -328,7 +328,7 @@ class QuaccSettings(BaseSettings):
     @field_validator("WORKFLOW_ENGINE")
     def workflow_engine(cls, v: Optional[str]) -> Optional[str]:
         """Validate the workflow engine."""
-        if v and v.lower() == "none":
+        if v and v.lower() in ("null", "none"):
             return None
         return v
 
