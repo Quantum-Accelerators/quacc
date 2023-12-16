@@ -19,13 +19,15 @@ def test_covalent_functools(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
     dispatch_id = ct.dispatch(bulk_to_slabs_flow)(
-        atoms, slab_relax_job=partial(relax_job, opt_params={"fmax": 0.1})
+        atoms,
+        slab_relax_job=partial(relax_job, opt_params={"fmax": 0.1}),
+        slab_static_job=None,
     )
     output = ct.get_result(dispatch_id, wait=True)
     assert output.status == "COMPLETED"
     assert len(output.result) == 4
     assert "atoms" in output.result[-1]
-    assert output.results[-1]["fmax"] == 0.1
+    assert output.result[-1]["fmax"] == 0.1
 
 
 def test_phonon_flow(tmp_path, monkeypatch):

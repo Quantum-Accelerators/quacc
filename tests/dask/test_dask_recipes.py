@@ -29,6 +29,7 @@ def test_dask_functools(tmp_path, monkeypatch):
         slab_relax_job=delayed_(
             partial(relax_job.__wrapped__, opt_params={"fmax": 0.1})
         ),
+        slab_static_job=None,
     )
     result = client.gather(client.compute(delayed))
     assert len(result) == 4
