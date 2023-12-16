@@ -54,6 +54,7 @@ def test_static_job(tmp_path, monkeypatch):
     assert new_input_data["electrons"]["conv_thr"] == 1.0e-6
     assert new_input_data["control"]["calculation"] == "scf"
 
+
 def test_static_job_outdir(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
@@ -93,6 +94,79 @@ def test_static_job_outdir(tmp_path, monkeypatch):
     assert new_input_data["system"]["occupations"] == "smearing"
     assert new_input_data["electrons"]["conv_thr"] == 1.0e-6
     assert new_input_data["control"]["calculation"] == "scf"
+
+
+def test_static_job_outdir_abs(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    pp_dir = Path(__file__).parent
+
+    copy_decompress_files([pp_dir / "Si.upf"], tmp_path)
+
+    atoms = bulk("Si")
+
+    input_data = {
+        "occupations": "smearing",
+        "smearing": "gaussian",
+        "degauss": 0.005,
+        "mixing_mode": "plain",
+        "mixing_beta": 0.6,
+        "pseudo_dir": tmp_path,
+        "conv_thr": 1.0e-6,
+        "outdir": Path(tmp_path, "test2").resolve(),
+    }
+
+    pseudopotentials = {"Si": "Si.upf"}
+
+    results = static_job(
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.5
+    )
+
+    input_data = dict(construct_namelist(input_data))
+
+    assert np.allclose(results["atoms"].positions, atoms.positions, atol=1.0e-4)
+
+    assert np.allclose(results["atoms"].cell, atoms.cell, atol=1.0e-3)
+    assert (results["atoms"].symbols == atoms.symbols).all()
+
+    new_input_data = results["parameters"]["input_data"]
+
+    assert new_input_data["system"]["degauss"] == 0.005
+    assert new_input_data["system"]["occupations"] == "smearing"
+    assert new_input_data["electrons"]["conv_thr"] == 1.0e-6
+    assert new_input_data["control"]["calculation"] == "scf"
+
+
+def test_static_job_dir_fail(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    pp_dir = Path(__file__).parent
+
+    copy_decompress_files([pp_dir / "Si.upf"], tmp_path)
+
+    atoms = bulk("Si")
+
+    input_data = {
+        "occupations": "smearing",
+        "smearing": "gaussian",
+        "degauss": 0.005,
+        "mixing_mode": "plain",
+        "mixing_beta": 0.6,
+        "pseudo_dir": tmp_path,
+        "conv_thr": 1.0e-6,
+        "outdir": Path(tmp_path, "test2").resolve(),
+    }
+
+    pseudopotentials = {"Si": "Si.upf"}
+
+    with pytest.raises(ValueError):
+        results = static_job(
+            atoms,
+            input_data=input_data,
+            pseudopotentials=pseudopotentials,
+            kspacing=0.5,
+            directory=Path(tmp_path, "test2").resolve(),
+        )
 
 
 def test_phonon_job(tmp_path, monkeypatch):
