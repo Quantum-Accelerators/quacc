@@ -177,7 +177,7 @@ def _type_handler(value: str) -> Any:
     -------
     Any
     """
-    if value.lower() in ("null", "none"):
+    if value.lower() in {"null", "none"}:
         value = None
     elif value.lower() in ("true", "false"):
         value = value.lower() == "true"
