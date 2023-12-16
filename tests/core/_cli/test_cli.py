@@ -70,7 +70,7 @@ def test_set(runner):
                 val = line.split(":")[-1].strip()
     assert val == "dummy"
 
-    response = runner.invoke(app, ["set", "WORKFLOW_ENGINE", "GZIP_FILES"])
+    response = runner.invoke(app, ["set", "GZIP_FILES", "True"])
     assert response.exit_code == 0
     assert "True" in response.stdout
     val = None
