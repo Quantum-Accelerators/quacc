@@ -384,7 +384,7 @@ jobs:
         uses: Wandalen/wretry.action@v1
         with:
           action: codecov/codecov-action@v3
-          attempt_limit: 5
+          attempt_limit: 10
           attempt_delay: 30000
           with: |
             fail_ci_if_error: true
