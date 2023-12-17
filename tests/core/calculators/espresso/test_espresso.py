@@ -52,14 +52,11 @@ def test_bad_calculator_params():
 
     input_data = {"system": {"ecutwfc": 30}}
 
-    preset = "sssp_1.3.0_pbe_efficiency"
-
     atoms = Atoms(symbols="LiLaOZr")
 
     with pytest.raises(ValueError):
         Espresso(
             input_atoms=atoms,
-            preset=preset,
             calc_defaults=calc_defaults,
             input_data=input_data,
             kpts=(1, 1, 1),
