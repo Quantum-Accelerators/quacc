@@ -1,6 +1,7 @@
+import pytest
 from ase import Atoms
 
-from quacc.calculators.espresso.espresso import Espresso
+from quacc.calculators.espresso.espresso import Espresso, EspressoTemplate
 
 
 def test_espresso_kwargs_handler():
@@ -42,3 +43,25 @@ def test_espresso_kwargs_handler():
 
     assert calc.template.binary == "pw"
     assert calc.parameters == expected_parameters
+
+
+def test_bad_calculator_params():
+    calc_defaults = {
+        "input_data": {"system": {"ecutwfc": 20, "ecutrho": 80, "conv_thr": 1e-8}}
+    }
+
+    input_data = {"system": {"ecutwfc": 30}}
+
+    preset = "sssp_1.3.0_pbe_efficiency"
+
+    atoms = Atoms(symbols="LiLaOZr")
+
+    with pytest.raises(ValueError):
+        Espresso(
+            input_atoms=atoms,
+            preset=preset,
+            calc_defaults=calc_defaults,
+            input_data=input_data,
+            kpts=(1, 1, 1),
+            directory="bad",
+        )
