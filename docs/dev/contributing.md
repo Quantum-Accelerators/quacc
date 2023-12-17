@@ -58,7 +58,7 @@ In general, please try to keep the code style consistent when possible, particul
 
 2. Address any relevant issues raised by the GitHub Actions test suite.
 
-3. All Python code should be formatted with [isort](https://github.com/PyCQA/isort) (`isort .`), [black](https://github.com/psf/black) (`black .`), and [ruff](https://github.com/astral-sh/ruff) (`ruff . --fix`), although this will be corrected automatically when merged.
+3. All Python code should be formatted with [isort](https://github.com/PyCQA/isort) (`isort .`), [black](https://github.com/psf/black) (`black .`), and [ruff](https://github.com/astral-sh/ruff) (`ruff . --fix`).
 
 ## Unit Tests
 
@@ -68,7 +68,7 @@ All changes you make to quacc should be accompanied by unit tests and should not
 
 ### Running Locally
 
-To run the core test suite locally, run `pytest tests/local`.
+To run the core test suite locally, run `pytest tests/core`.
 
 If you wish to test the behavior of a given workflow engine, run `pytest tests/WORKFLOW_ENGINE` where `WORKFLOW_ENGINE` is the name of your workflow engine.
 

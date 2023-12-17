@@ -2,16 +2,16 @@ import pytest
 from ase.build import bulk, molecule
 
 from quacc import SETTINGS, job, subflow
-from quacc.recipes.emt.core import relax_job, static_job
-from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 dask = pytest.importorskip("dask")
 pytestmark = pytest.mark.skipif(
     SETTINGS.WORKFLOW_ENGINE != "dask",
     reason="This test requires the Dask workflow engine",
 )
-
 from dask.distributed import default_client
+
+from quacc.recipes.emt.core import relax_job, static_job  # skipcq: PYL-C0412
+from quacc.recipes.emt.slabs import bulk_to_slabs_flow  # skipcq: PYL-C0412
 
 client = default_client()
 

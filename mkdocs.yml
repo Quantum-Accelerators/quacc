@@ -25,7 +25,7 @@ nav:
           - user/wflow_engine/executors2.md
       - Global Settings:
           - user/settings/settings.md
-          - user/advanced/file_management.md
+          - user/settings/file_management.md
           - user/settings/settings_list.md
       - Advanced:
           - user/advanced/database.md
