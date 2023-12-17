@@ -121,13 +121,13 @@ graph LR
     delayed = relax_job(atoms)  # (1)!
 
     # Print result
-    result = client.compute(delayed).result()
-    print(result)  # (2)!
+    result = client.compute(delayed).result()  #  (2)!
+    print(result)
     ```
 
-    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here. We also did not need to use a `#!Python @flow` decorator because Parsl does not have an analogous decorator.
+    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here. We also did not need to use a `#!Python @flow` decorator because Dask does not have an analogous decorator. At this point, we have a `Delayed` object.
 
-    2. Calling `client.compute()` dispatches the compute job to the active Dask cluster. The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `Delayed` object.
+    2. Calling `client.compute(delayed)` dispatches the compute job to the active Dask cluster and returns a `Future`. The use of `.result()` serves to block any further calculations from running and resolves the `Future`. You could also achieve the same result by doing `#!Python delayed.compute()`, which will dispatch and resolve the `Future` as one action. This is identical to `#!Python result = dask.compute(delayed)[0]`, where the `[0]` indexing is needed because `#!Python dask.compute` always returns a tuple.
 
 === "Redun"
 
@@ -249,14 +249,16 @@ graph LR
     atoms = bulk("Cu")
 
     # Define the workflow
-    delayed = bulk_to_slabs_flow(atoms)
+    delayed = bulk_to_slabs_flow(atoms)  # (1)!
 
     # Print the results
-    result = client.gather(client.compute(delayed))  # (1)!
+    result = client.gather(client.compute(delayed))  # (2)!
     print(result)
     ```
 
-    1. Calling `client.gather()` will collect the outputs from multiple `Delayed` objects.
+    1. This has type `List[Delayed]`.
+
+    2. Running `#!Python client.compute(List[Delayed])` yields a `#!Python List[Future]` object. Calling `#!Python client.gather(List[Future])` will resolve the outputs from multiple `Future` objects. As an alternative, you could also do `#!Python result = dask.compute(delayed)[0]`, where the `[0]` indexing is needed because `#!Python dask.compute` always returns a tuple even when there is only one result.
 
 === "Redun"
 
