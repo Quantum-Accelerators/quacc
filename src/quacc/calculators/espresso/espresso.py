@@ -49,8 +49,10 @@ class EspressoTemplate(EspressoTemplate_):
 
         self.binary = binary
 
-        self.outdirs = {"outdir": os.environ.get("ESPRESSO_TMPDIR"),
-                        'wfcdir': os.environ.get("ESPRESSO_TMPDIR")}
+        self.outdirs = {
+            "outdir": os.environ.get("ESPRESSO_TMPDIR"),
+            "wfcdir": os.environ.get("ESPRESSO_TMPDIR"),
+        }
 
     def write_input(
         self,
@@ -115,7 +117,7 @@ class EspressoTemplate(EspressoTemplate_):
             results["energy"] = None
         return results
 
-    def _outdir_handler(self, parameters: dict[str, Any], directory: Path) -> dict[str, Any]:
+    def _outdir_handler(self, parameters: dict[str, Any]) -> dict[str, Any]:
         """
         Function that handles the various outdir of espresso binaries.
         If the user-supplied path are absolute, they are resolved and checked
@@ -141,15 +143,12 @@ class EspressoTemplate(EspressoTemplate_):
             for d_key in self.outdirs.keys():
                 if d_key in input_data[section]:
                     path = Path(input_data[section][d_key])
-                    if path.is_absolute():
-                        path = path.expanduser().resolve()
-                    else:
-                        path = directory / path
-                    if directory not in path.parents:
+                    path = path.expanduser().resolve()
+                    if Path().expanduser().resolve() not in path.parents:
                         self.outdirs[d_key] = path
                         continue
                     path.mkdir(parents=True, exist_ok=True)
-                    input_data[section][d_key] = str(path)
+                    input_data[section][d_key] = path
 
         self.outdirs = [path for path in self.outdirs.values() if path is not None]
 
@@ -232,14 +231,11 @@ class Espresso(Espresso_):
         )
 
         if kwargs.get("directory"):
-            raise ValueError(
-                "quacc does not support the directory argument."
-            )
+            raise ValueError("quacc does not support the directory argument.")
 
-        super().__init__(profile=profile,
-                         directory='.',
-                         parallel_info=parallel_info,
-                         **kwargs)
+        super().__init__(
+            profile=profile, directory=".", parallel_info=parallel_info, **kwargs
+        )
 
         self.template = template
 

@@ -1,7 +1,11 @@
+from __future__ import annotations
+
+from pathlib import Path
+
 import pytest
 from ase import Atoms
 
-from quacc.calculators.espresso.espresso import Espresso
+from quacc.calculators.espresso.espresso import Espresso, EspressoTemplate
 
 
 def test_espresso_kwargs_handler():
@@ -43,6 +47,47 @@ def test_espresso_kwargs_handler():
 
     assert calc.template.binary == "pw"
     assert calc.parameters == expected_parameters
+
+
+def test_outdir_handler(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    parameters = {
+        "input_data": {
+            "control": {},
+            "system": {"outdir": "../test3/test2/test1"},
+            "electrons": {},
+            "ions": {},
+            "cell": {},
+            "rism": {},
+        }
+    }
+
+    test_path = "../test3/test2/test1"
+    fake_template = EspressoTemplate()
+    new_parameters = fake_template._outdir_handler(parameters)
+    assert len(fake_template.outdirs) == 1
+    assert new_parameters["input_data"]["system"]["outdir"] == test_path
+    assert not Path(test_path).exists()
+
+    test_path = "/test3/test2/test1"
+    parameters["input_data"]["system"]["outdir"] = test_path
+    fake_template = EspressoTemplate()
+    new_parameters = fake_template._outdir_handler(parameters)
+    assert len(fake_template.outdirs) == 1
+    assert new_parameters["input_data"]["system"]["outdir"] == test_path
+    assert not Path(test_path).exists()
+
+    test_path = Path("test3/test2/test1")
+    parameters["input_data"]["system"]["outdir"] = test_path
+    fake_template = EspressoTemplate()
+    new_parameters = fake_template._outdir_handler(parameters)
+    assert len(fake_template.outdirs) == 0
+    assert (
+        new_parameters["input_data"]["system"]["outdir"]
+        == test_path.expanduser().resolve()
+    )
+    assert Path(tmp_path, "test3/test2/test1").exists()
 
 
 def test_bad_calculator_params():
