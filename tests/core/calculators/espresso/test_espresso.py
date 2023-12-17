@@ -1,7 +1,7 @@
 import pytest
 from ase import Atoms
 
-from quacc.calculators.espresso.espresso import Espresso, EspressoTemplate
+from quacc.calculators.espresso.espresso import Espresso
 
 
 def test_espresso_kwargs_handler():
