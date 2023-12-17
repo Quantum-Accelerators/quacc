@@ -83,7 +83,7 @@ class EspressoTemplate(EspressoTemplate_):
         -------
         None
         """
-        self._outdir_handler(parameters, Path(directory))
+        self._outdir_handler(parameters)
 
         write(
             Path(directory) / self.inputname,
