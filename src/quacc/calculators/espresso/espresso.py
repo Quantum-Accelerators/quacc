@@ -81,7 +81,7 @@ class EspressoTemplate(EspressoTemplate_):
         -------
         None
         """
-        self._outdir_handler(parameters)
+        self._outdir_handler(parameters, Path(directory))
 
         write(
             Path(directory) / self.inputname,
@@ -115,7 +115,7 @@ class EspressoTemplate(EspressoTemplate_):
             results["energy"] = None
         return results
 
-    def _outdir_handler(self, parameters: dict[str, Any]) -> dict[str, Any]:
+    def _outdir_handler(self, parameters: dict[str, Any], directory: Path) -> dict[str, Any]:
         """
         Function that handles the various outdir of espresso binaries.
         If the user-supplied path are absolute, they are resolved and checked
@@ -137,8 +137,6 @@ class EspressoTemplate(EspressoTemplate_):
 
         input_data = parameters.get("input_data", {})
 
-        cwd = Path.cwd()
-
         for section in input_data:
             for d_key in self.outdirs.keys():
                 if d_key in input_data[section]:
@@ -146,8 +144,8 @@ class EspressoTemplate(EspressoTemplate_):
                     if path.is_absolute():
                         path = path.expanduser().resolve()
                     else:
-                        path = cwd / path
-                    if cwd not in path.parents:
+                        path = directory / path
+                    if directory not in path.parents:
                         self.outdirs[d_key] = path
                         continue
                     path.mkdir(parents=True, exist_ok=True)
