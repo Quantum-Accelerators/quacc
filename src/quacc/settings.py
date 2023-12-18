@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING, Literal, Optional, Union
 
 import psutil
 from maggma.core import Store
-from monty.json import MontyDecoder
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -323,6 +322,17 @@ class QuaccSettings(BaseSettings):
         "config.yml", description="Path to NewtonNet YAML settings file"
     )
 
+    # ---------------------------
+    # Debug Settings
+    # ---------------------------
+    DEBUG: bool = Field(
+        False,
+        description=(
+            "Whether to run in debug mode. This will print out more information "
+            "about the calculations as they are run."
+        ),
+    )
+
     # --8<-- [end:settings]
 
     @field_validator("WORKFLOW_ENGINE")
@@ -364,6 +374,8 @@ class QuaccSettings(BaseSettings):
     @field_validator("PRIMARY_STORE")
     def generate_store(cls, v: Union[str, Store]) -> Store:
         """Generate the Maggma store"""
+        from monty.json import MontyDecoder
+
         return MontyDecoder().decode(v) if isinstance(v, str) else v
 
     model_config = SettingsConfigDict(env_prefix="quacc_")

@@ -11,6 +11,7 @@ from ase.vibrations import Vibrations
 from monty.dev import requires
 from monty.os.path import zpath
 
+from quacc import SETTINGS
 from quacc.atoms.core import copy_atoms
 from quacc.runners.prep import calc_cleanup, calc_setup
 from quacc.utils.dicts import merge_dicts
@@ -159,7 +160,10 @@ def run_opt(
 
     # Set defaults
     optimizer_kwargs = merge_dicts(
-        {"logfile": tmpdir / "opt.log", "restart": tmpdir / "opt.pckl"},
+        {
+            "logfile": "-" if SETTINGS.DEBUG else tmpdir / "opt.log",
+            "restart": tmpdir / "opt.pckl",
+        },
         optimizer_kwargs,
     )
     run_kwargs = run_kwargs or {}
