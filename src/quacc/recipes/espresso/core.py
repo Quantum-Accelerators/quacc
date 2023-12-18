@@ -47,7 +47,7 @@ def static_job(
         calculation. See the ASE documentation for more information.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. See the
-        docstring of [][ase.calculators.espresso.espresso.Espresso] for more information.
+        docstring of [][quacc.calculators.espresso.espresso.Espresso] for more information.
 
     Returns
     -------
@@ -113,8 +113,7 @@ def phonon_job(
         - qpts: list[list[float]] | list[tuple[float]] | list[float]
         - nat_todo: list[int]
 
-        See the docstring of [quacc.calculators.espresso.espresso.io.write_espresso_ph][] for more
-        information.
+        See the docstring of [quacc.calculators.espresso.io.write_espresso_ph][] for more information.
 
     Returns
     -------
