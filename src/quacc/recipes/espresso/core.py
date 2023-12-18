@@ -47,7 +47,7 @@ def static_job(
         calculation. See the ASE documentation for more information.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. See the
-        docstring of [][ase.calculators.espresso.espresso] for more information.
+        docstring of [][ase.calculators.espresso.espresso.Espresso] for more information.
 
     Returns
     -------

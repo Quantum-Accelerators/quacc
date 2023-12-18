@@ -45,7 +45,7 @@ def phonon_flow(
         Min temperature (K).
     t_max
         Max temperature (K).
-    static_job
+    custom_static_job
         The static job for the force calculations, which defaults
         to [quacc.recipes.emt.core.static_job][]
 

@@ -141,9 +141,9 @@ def bulk_to_slabs_flow(
     make_slabs_kwargs
         Additional keyword arguments to pass to [quacc.atoms.slabs.make_slabs_from_bulk][]
     custom_relax_job
-        Relaxation job, which defaults to [quacc.recipes.vasp.slabs.slab_relax_job][].
+        Relaxation job, which defaults to [quacc.recipes.vasp.slabs.relax_job][].
     custom_static_job
-        Static job, which defaults to [quacc.recipes.vasp.slabs.slab_static_job][].
+        Static job, which defaults to [quacc.recipes.vasp.slabs.static_job][].
     run_static
         Whether to run static calculations.
 
@@ -188,9 +188,9 @@ def slab_to_ads_flow(
     adsorbate
         Atoms object for the adsorbate.
     custom_relax_job
-        Relaxation job, which defaults to [quacc.recipes.vasp.slabs.slab_relax_job][].
+        Relaxation job, which defaults to [quacc.recipes.vasp.slabs.relax_job][].
     custom_static_job
-        Static job, which defaults to [quacc.recipes.vasp.slabs.slab_static_job][].
+        Static job, which defaults to [quacc.recipes.vasp.slabs.static_job][].
     run_static
         Whether to run static calculations.
     make_ads_kwargs
