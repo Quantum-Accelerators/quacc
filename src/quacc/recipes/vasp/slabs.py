@@ -1,11 +1,9 @@
 """Recipes for slabs."""
 from __future__ import annotations
 
-from functools import partial
 from typing import TYPE_CHECKING
 
 from quacc import flow, job
-from quacc.atoms.slabs import make_adsorbate_structures, make_slabs_from_bulk
 from quacc.recipes.common.slabs import bulk_to_slabs_subflow, slab_to_ads_subflow
 from quacc.recipes.vasp._base import base_fn
 
@@ -123,8 +121,9 @@ def relax_job(
 def bulk_to_slabs_flow(
     atoms: Atoms,
     make_slabs_kwargs: dict[str, Any] | None = None,
-    slab_relax_job: Job = relax_job,
-    slab_static_job: Job | None = static_job,
+    custom_relax_job: Job | None = None,
+    custom_static_job: Job | None = None,
+    run_static: bool = True,
 ) -> list[VaspSchema]:
     """
     Workflow consisting of:
@@ -141,10 +140,12 @@ def bulk_to_slabs_flow(
         Atoms object
     make_slabs_kwargs
         Additional keyword arguments to pass to [quacc.atoms.slabs.make_slabs_from_bulk][]
-    slab_relax_job
+    custom_relax_job
         Relaxation job, which defaults to [quacc.recipes.vasp.slabs.slab_relax_job][].
-    slab_static_kwargs
+    custom_static_job
         Static job, which defaults to [quacc.recipes.vasp.slabs.slab_static_job][].
+    run_static
+        Whether to run static calculations.
 
     Returns
     -------
@@ -152,12 +153,13 @@ def bulk_to_slabs_flow(
         List of dictionary results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
 
-    make_slabs_kwargs = make_slabs_kwargs or {}
     return bulk_to_slabs_subflow(
         atoms,
-        slab_relax_job,
-        static_job=slab_static_job,
-        make_slabs_fn=partial(make_slabs_from_bulk, **make_slabs_kwargs),
+        relax_job if custom_relax_job is None else custom_relax_job,
+        static_job=(static_job if custom_static_job is None else custom_static_job)
+        if run_static
+        else None,
+        make_slabs_kwargs=make_slabs_kwargs,
     )
 
 
@@ -165,9 +167,10 @@ def bulk_to_slabs_flow(
 def slab_to_ads_flow(
     slab: Atoms,
     adsorbate: Atoms,
+    custom_relax_job: Job | None = None,
+    custom_static_job: Job | None = None,
+    run_static: bool = True,
     make_ads_kwargs: dict[str, Any] | None = None,
-    slab_relax_job: Job = relax_job,
-    slab_static_job: Job | None = static_job,
 ) -> list[VaspSchema]:
     """
     Workflow consisting of:
@@ -184,12 +187,14 @@ def slab_to_ads_flow(
         Atoms object for the slab structure.
     adsorbate
         Atoms object for the adsorbate.
+    custom_relax_job
+        Relaxation job, which defaults to [quacc.recipes.vasp.slabs.slab_relax_job][].
+    custom_static_job
+        Static job, which defaults to [quacc.recipes.vasp.slabs.slab_static_job][].
+    run_static
+        Whether to run static calculations.
     make_ads_kwargs
         Additional keyword arguments to pass to [quacc.atoms.slabs.make_adsorbate_structures][]
-    slab_relax_kwargs
-        Relaxation job, which defaults to [quacc.recipes.vasp.slabs.slab_relax_job][].
-    slab_static_kwargs
-        Static job, which defaults to [quacc.recipes.vasp.slabs.slab_static_job][].
 
     Returns
     -------
@@ -197,11 +202,12 @@ def slab_to_ads_flow(
         List of dictionaries of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
 
-    make_ads_kwargs = make_ads_kwargs or {}
     return slab_to_ads_subflow(
         slab,
         adsorbate,
-        slab_relax_job,
-        static_job=slab_static_job,
-        make_ads_fn=partial(make_adsorbate_structures, **make_ads_kwargs),
+        relax_job if custom_relax_job is None else custom_relax_job,
+        static_job=(static_job if custom_static_job is None else custom_static_job)
+        if run_static
+        else None,
+        make_ads_kwargs=make_ads_kwargs,
     )

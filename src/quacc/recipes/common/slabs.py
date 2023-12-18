@@ -7,7 +7,7 @@ from quacc import subflow
 from quacc.atoms.slabs import make_adsorbate_structures, make_slabs_from_bulk
 
 if TYPE_CHECKING:
-    from typing import Callable
+    from typing import Any
 
     from ase.atoms import Atoms
 
@@ -19,7 +19,7 @@ def bulk_to_slabs_subflow(
     atoms: Atoms,
     relax_job: Job,
     static_job: Job | None = None,
-    make_slabs_fn: Callable = make_slabs_from_bulk,
+    make_slabs_kwargs: dict[str, Any] | None = None,
 ) -> list[dict]:
     """
     Workflow consisting of:
@@ -38,16 +38,18 @@ def bulk_to_slabs_subflow(
         The relaxation function.
     static_job
         The static function.
-    make_slabs_fn
-        The function for generating slabs.
+    make_slabs_kwargs
+        Additional keyword arguments to pass to
+        [quacc.atoms.slabs.make_slabs_from_bulk][]
 
     Returns
     -------
     list[dict]
         List of schemas.
     """
+    make_slabs_kwargs = make_slabs_kwargs or {}
 
-    slabs = make_slabs_fn(atoms)
+    slabs = make_slabs_from_bulk(atoms, **make_slabs_kwargs)
 
     results = []
     for slab in slabs:
@@ -67,7 +69,7 @@ def slab_to_ads_subflow(
     adsorbate: Atoms,
     relax_job: Job,
     static_job: Job | None,
-    make_ads_fn: Callable = make_adsorbate_structures,
+    make_ads_kwargs: dict[str, Any] | None = None,
 ) -> list[dict]:
     """
     Workflow consisting of:
@@ -88,22 +90,24 @@ def slab_to_ads_subflow(
         The slab releaxation job.
     static_job
         The slab static job.
-    make_ads_fn
-        The function to generate slab-adsorbate structures.
+    make_ads_kwargs
+        Additional keyword arguments to pass to
+        [quacc.atoms.slabs.make_adsorbate_structures][]
 
     Returns
     -------
     list[dict]
         List of schemas.
     """
+    make_ads_kwargs = make_ads_kwargs or {}
 
-    slabs = make_ads_fn(atoms, adsorbate)
+    slabs = make_adsorbate_structures(atoms, adsorbate, **make_ads_kwargs)
 
     results = []
     for slab in slabs:
         result = relax_job(slab)
 
-        if static_job:
+        if static_job is not None:
             result = static_job(result["atoms"])
 
         results.append(result)

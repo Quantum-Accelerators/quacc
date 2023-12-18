@@ -7,7 +7,7 @@ from quacc import subflow
 from quacc.atoms.defects import make_defects_from_bulk
 
 if TYPE_CHECKING:
-    from typing import Callable
+    from typing import Any
 
     from ase.atoms import Atoms
 
@@ -19,7 +19,7 @@ def bulk_to_defects_subflow(
     atoms: Atoms,
     relax_job: Job,
     static_job: Job | None = None,
-    make_defects_fn: Callable = make_defects_from_bulk,
+    make_defects_kwargs: dict[str, Any] | None = None,
 ) -> list[dict]:
     """
     Workflow consisting of:
@@ -38,8 +38,6 @@ def bulk_to_defects_subflow(
         The relaxation function.
     static_job
         The static function.
-    make_defects_fn
-        The function for generating defects.
 
     Returns
     -------
@@ -47,13 +45,13 @@ def bulk_to_defects_subflow(
         List of dictionary of results
     """
 
-    defects = make_defects_fn(atoms)
+    defects = make_defects_from_bulk(atoms, **make_defects_kwargs)
 
     results = []
     for defect in defects:
         result = relax_job(defect)
 
-        if static_job:
+        if static_job is not None:
             result = static_job(result["atoms"])
 
         results.append(result)

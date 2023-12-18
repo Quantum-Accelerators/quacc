@@ -20,8 +20,8 @@ def test_covalent_functools(tmp_path, monkeypatch):
     atoms = bulk("Cu")
     dispatch_id = ct.dispatch(bulk_to_slabs_flow)(
         atoms,
-        slab_relax_job=partial(relax_job, opt_params={"fmax": 0.1}),
-        slab_static_job=None,
+        custom_relax_job=partial(relax_job, opt_params={"fmax": 0.1}),
+        run_static=False,
     )
     output = ct.get_result(dispatch_id, wait=True)
     assert output.status == "COMPLETED"
