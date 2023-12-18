@@ -328,8 +328,9 @@ class QuaccSettings(BaseSettings):
     DEBUG: bool = Field(
         False,
         description=(
-            "Whether to run in debug mode. This will print out more information "
-            "about the calculations as they are run."
+            "Whether to run in debug mode. This will set the logging level to DEBUG "
+            "and set the `logfile` parameter in ASE optimizations to '-', which prints "
+            "to stdout."
         ),
     )
 
