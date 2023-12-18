@@ -300,7 +300,7 @@ atoms = bulk("Cu")
 
 # Define the workflow
 custom_relax_job = partial(relax_job, opt_params={"fmax": 1e-4})  # (1)!
-result = bulk_to_slabs_flow(atoms, slab_relax_job=custom_relax_job)
+result = bulk_to_slabs_flow(atoms, custom_relax_job=custom_relax_job)
 
 # Print the result
 print(result)
