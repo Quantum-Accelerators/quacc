@@ -9,9 +9,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - The `WORKFLOW_ENGINE` quacc setting now accepts `None`
+- A `DEBUG` quacc setting as been added.
 
 ### Changed
 
+- The way to run complex, dynamic flows has been modified to rely on `functools.partial()` instead of kwargs. See the updated documentation.
 - Refactored test suite
 
 ## [0.4.5]
