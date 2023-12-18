@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc import flow
-from quacc.recipes.common.phonons import phonon_flow as phonon_flow_
+from quacc.recipes.common.phonons import phonon_flow as common_phonon_flow
 from quacc.recipes.tblite.core import static_job
 
 if TYPE_CHECKING:
@@ -54,7 +54,7 @@ def phonon_flow(
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][]
     """
 
-    return phonon_flow_(
+    return common_phonon_flow(
         atoms,
         static_job if custom_static_job is None else custom_static_job,
         supercell_matrix=supercell_matrix,
