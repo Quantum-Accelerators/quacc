@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- The `WORKFLOW_ENGINE` quacc setting now accepts `None`
+- The `WORKFLOW_ENGINE` quacc setting now accepts `None`.
 - A `DEBUG` quacc setting as been added.
 
 ### Changed
