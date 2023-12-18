@@ -120,12 +120,11 @@ class EspressoTemplate(EspressoTemplate_):
 
     def _outdir_handler(self, parameters: dict[str, Any], directory: Path) -> dict[str, Any]:
         """
-        Function that handles the various outdir of espresso binaries.
-        If the user-supplied path are absolute, they are resolved and checked
-        against the scratch_dir and results_dir. If they are relative, they are
-        resolved against the scratch_dir and results_dir. If they are not in
-        either of those directories, they are ignored. This case is discouraged,
-        are encouraged to use quacc's scratch_dir and results_dir.
+        Function that handles the various outdir of espresso binaries. If they are relative,
+        they are resolved against `directory`, which is the recommended approach.
+        If the user-supplied paths are absolute, they are resolved and checked
+        against `directory`, which is typically `os.getcwd()`. If they are not in `directory`,
+        they will be ignored.
 
         Parameters
         ----------
