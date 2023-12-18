@@ -343,7 +343,7 @@ When deploying calculations for the first time, it's important to start simple, 
 
 ## Example 2
 
-In this example, we will run a sample VASP recipe that will highlight the use of a more complicated configuration.
+In this example, we will run a sample VASP recipe that will highlight the use of a more complicated configuration. It can only be run if you are a licensed VASP user, but the same fundamental principles apply to many other DFT codes with recipes in quacc.
 
 First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc` of your remote machine as described in the [Calculator Setup guide](../../install/codes.md). When you're done, follow the steps below.
 
