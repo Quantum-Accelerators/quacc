@@ -395,7 +395,7 @@ def summarize_ideal_gas_thermo(
             "gibbs_energy": igt.get_gibbs_energy(
                 temperature, pressure * 10**5, verbose=SETTINGS.DEBUG
             ),
-            "zpe": igt.get_ZPE_correction(verbose=SETTINGS.DEBUG),
+            "zpe": igt.get_ZPE_correction(),
         }
     }
 
