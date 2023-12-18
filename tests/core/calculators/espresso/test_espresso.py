@@ -65,7 +65,7 @@ def test_outdir_handler(tmp_path, monkeypatch):
 
     test_path = "../test3/test2/test1"
     fake_template = EspressoTemplate()
-    new_parameters = fake_template._outdir_handler(parameters)
+    new_parameters = fake_template._outdir_handler(parameters, Path())
     assert len(fake_template.outdirs) == 1
     assert new_parameters["input_data"]["system"]["outdir"] == test_path
     assert not Path(test_path).exists()
@@ -73,7 +73,7 @@ def test_outdir_handler(tmp_path, monkeypatch):
     test_path = "/test3/test2/test1"
     parameters["input_data"]["system"]["outdir"] = test_path
     fake_template = EspressoTemplate()
-    new_parameters = fake_template._outdir_handler(parameters)
+    new_parameters = fake_template._outdir_handler(parameters, Path())
     assert len(fake_template.outdirs) == 1
     assert new_parameters["input_data"]["system"]["outdir"] == test_path
     assert not Path(test_path).exists()
@@ -81,7 +81,7 @@ def test_outdir_handler(tmp_path, monkeypatch):
     test_path = Path("test3/test2/test1")
     parameters["input_data"]["system"]["outdir"] = test_path
     fake_template = EspressoTemplate()
-    new_parameters = fake_template._outdir_handler(parameters)
+    new_parameters = fake_template._outdir_handler(parameters, Path())
     assert len(fake_template.outdirs) == 0
     assert (
         new_parameters["input_data"]["system"]["outdir"]
