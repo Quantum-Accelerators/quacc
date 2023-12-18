@@ -38,6 +38,8 @@ def bulk_to_defects_subflow(
         The relaxation function.
     static_job
         The static function.
+    make_defects_kwargs
+        Keyword arguments for [quacc.atoms.defects.make_defects_from_bulk][]
 
     Returns
     -------
