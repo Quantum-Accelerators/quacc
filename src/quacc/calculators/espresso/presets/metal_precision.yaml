@@ -3,13 +3,13 @@
 input_data:
   system:
     occupations: smearing
-    smearing: gaussian
+    smearing: marzari-vanderbilt
     degauss: 0.005
   electrons:
     conv_thr: 1.0e-12
-    mixing_mode: local-TF
-    mixing_beta: 0.6
+    mixing_mode: TF
+    mixing_beta: 0.7
 
-kspacing: 0.20
+kspacing: 0.10
 
 parent_pseudopotentials: sssp_1.3.0_pbe_precision.yaml

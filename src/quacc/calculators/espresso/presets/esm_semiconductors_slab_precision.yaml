@@ -5,11 +5,16 @@ input_data:
     occupations: smearing
     smearing: gaussian
     degauss: 0.005
+    assume_isolated: esm
+    esm_bc: bc1
   electrons:
-    conv_thr: 1.0e-12
+    conv_thr: 1.0e-9
     mixing_mode: local-TF
-    mixing_beta: 0.6
+    mixing_beta: 0.25
 
 kspacing: 0.20
+
+atoms:
+  pbc: [True, True, False]
 
 parent_pseudopotentials: sssp_1.3.0_pbe_precision.yaml
