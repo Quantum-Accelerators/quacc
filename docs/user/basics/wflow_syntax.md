@@ -43,7 +43,7 @@ To help enable interoperability between workflow engines, quacc offers a unified
     <center>
 
     | Quacc               | Covalent                          |
-    | ------------------- | ---------------------------------|
+    | ------------------- | --------------------------------- |
     | `#!Python @job`     | `#!Python @delayed`               |
     | `#!Python @flow`    | No effect                         |
     | `#!Python @subflow` | `#!Python delayed(...).compute()` |

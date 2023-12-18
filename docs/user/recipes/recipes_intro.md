@@ -157,7 +157,7 @@ print(result)
      'volume': 11.761470249999999}
     ```
 
-### A Simple Mixed-Code Workflow
+### A Mixed-Code Workflow
 
 ```mermaid
 graph LR
@@ -271,6 +271,47 @@ print(result2)
                 'version': '2.1.0'},
     'volume': 11.761470249999999}
     ```
+
+### A More Complex Workflow
+
+```mermaid
+graph LR
+  A[Input] --> B(Make Slabs)
+  B --> C(Slab Relax) --> G(Slab Static) --> K[Output]
+  B --> D(Slab Relax) --> H(Slab Static) --> K[Output]
+  B --> E(Slab Relax) --> I(Slab Static) --> K[Output]
+  B --> F(Slab Relax) --> J(Slab Static) --> K[Output];
+```
+
+In this example, we will run a pre-made workflow that generates a set of slabs from a bulk structure and then runs a structure relaxation and static calculation on each slab. We will specifically highlight an example where we want to override the default parameters of one step in the recipe, in this case to tighten the force tolerance for the slab relaxation.
+
+!!! Tip
+
+    Unsure what arguments a given function takes? Check out the [API documentation](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/slabs.html).
+
+```python
+from functools import partial
+from ase.build import bulk
+from quacc.recipes.emt.core import relax_job
+from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+# Define the Atoms object
+atoms = bulk("Cu")
+
+# Define the workflow
+custom_relax_job = partial(relax_job, opt_params={"fmax": 1e-4})  # (1)!
+result = bulk_to_slabs_flow(atoms, custom_relax_job=custom_relax_job)
+
+# Print the result
+print(result)
+```
+
+1. We have used a [partial function](https://www.learnpython.org/en/Partial_functions) here, which is a way to create a new function with specific arguments already applied. In other words, `#!Python opt_params={"fmax": 1e-4}` will be set as a keyword argument in the `relax_job` function by default. The same could be achieved, albeit more verbosely, as follows:
+
+   ```python
+   def custom_relax_job(*args, **kwargs):
+       return relax_job(*args, opt_params={"fmax": 1e-4}, **kwargs)
+   ```
 
 ## Concluding Comments
 
