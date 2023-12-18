@@ -1,6 +1,7 @@
 """Utility functions for running ASE calculators with ASE-based methods."""
 from __future__ import annotations
 
+import sys
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -244,7 +245,7 @@ def run_vib(
     vib.run()
 
     # Summarize run
-    vib.summary(log=str(tmpdir / "vib_summary.log"))
+    vib.summary(log=sys.stdout if SETTINGS.DEBUG else str(tmpdir / "vib_summary.log"))
 
     # Perform cleanup operations
     calc_cleanup(tmpdir, job_results_dir)
