@@ -8,7 +8,6 @@ from quacc.recipes.common.phonons import phonon_flow as phonon_flow_
 from quacc.recipes.tblite.core import static_job as static_job_
 
 if TYPE_CHECKING:
-
     from ase.atoms import Atoms
     from numpy.typing import ArrayLike
 
