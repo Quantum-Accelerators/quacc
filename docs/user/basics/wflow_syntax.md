@@ -42,7 +42,7 @@ To help enable interoperability between workflow engines, quacc offers a unified
 
     <center>
 
-    | Quacc               | Covalent                          |
+    | Quacc               | Dask                              |
     | ------------------- | --------------------------------- |
     | `#!Python @job`     | `#!Python @delayed`               |
     | `#!Python @flow`    | No effect                         |
