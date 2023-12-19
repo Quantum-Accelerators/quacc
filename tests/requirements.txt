@@ -8,4 +8,4 @@ numpy==1.26.2
 psutil==5.9.6
 pydantic==2.5.2
 pydantic-settings==2.1.0
-pymatgen==2023.11.12
+pymatgen==2023.12.18
