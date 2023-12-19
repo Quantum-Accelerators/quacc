@@ -8,7 +8,7 @@ from monty.dev import requires
 
 from quacc import job
 from quacc.runners.ase import run_calc, run_opt
-from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
+from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import merge_dicts
 
 try:
