@@ -132,6 +132,8 @@ def run_opt(
     ----------
     atoms
         The Atoms object to run the calculation on.
+    relax_cell
+        Whether to relax the unit cell shape and volume.
     fmax
         Tolerance for the force convergence (in eV/A).
     max_steps
