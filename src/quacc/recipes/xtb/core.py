@@ -25,8 +25,9 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.runners.ase import VibKwargs
     from quacc.schemas._aliases.ase import OptSchema, RunSchema, VibThermoSchema
+
+GEOM_FILE = "xtbopt.xyz"
 
 
 @job
@@ -77,7 +78,10 @@ def static_job(
 
     final_atoms = run_calc(atoms)
     return summarize_run(
-        final_atoms, input_atoms=atoms, additional_fields={"name": "xTB Static"}
+        final_atoms,
+        input_atoms=atoms,
+        charge_and_multiplicity=(charge, spin_multiplicity),
+        additional_fields={"name": "xTB Static"},
     )
 
 
@@ -127,9 +131,12 @@ def relax_job(
         **calc_kwargs,
     )
 
-    final_atoms = run_calc(atoms)
+    final_atoms = run_calc(atoms, geom_file=GEOM_FILE)
     return summarize_run(
-        final_atoms, input_atoms=atoms, additional_fields={"name": "xTB Static"}
+        final_atoms,
+        input_atoms=atoms,
+        charge_and_multiplicity=(charge, spin_multiplicity),
+        additional_fields={"name": "xTB Static"},
     )
 
 
@@ -189,4 +196,8 @@ def ase_relax_job(
 
     dyn = run_opt(atoms, **opt_flags)
 
-    return summarize_opt_run(dyn, additional_fields={"name": "xTB Relax"})
+    return summarize_opt_run(
+        dyn,
+        charge_and_multiplicity=(charge, spin_multiplicity),
+        additional_fields={"name": "xTB Relax"},
+    )
