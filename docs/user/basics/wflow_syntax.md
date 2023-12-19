@@ -42,7 +42,7 @@ To help enable interoperability between workflow engines, quacc offers a unified
 
     <center>
 
-    | Quacc               | Covalent                          |
+    | Quacc               | Dask                              |
     | ------------------- | --------------------------------- |
     | `#!Python @job`     | `#!Python @delayed`               |
     | `#!Python @flow`    | No effect                         |
@@ -238,7 +238,7 @@ graph LR
 
     3. This returns a `Delayed` object. A reference is returned.
 
-    4. There are multiple ways to resolve a `Delayed` object. Here, `#!Python client.compute(delayed)` will return a `Future` object, which can be resolved with `.result()`. The `.result()` call will block until the workflow is complete and return the result. As an alternative, you could also use `#!Python delayed.compute()` to dispatch and resolve the `Delayed` object in one command. Similarly, you could use `#!Python dask.compute(delayed)[0]`, where the `[0]` indexing is needed because `#!Python dask.compute()` alwaays returns a tuple.
+    4. There are multiple ways to resolve a `Delayed` object. Here, `#!Python client.compute(delayed)` will return a `Future` object, which can be resolved with `.result()`. The `.result()` call will block until the workflow is complete and return the result. As an alternative, you could also use `#!Python delayed.compute()` to dispatch and resolve the `Delayed` object in one command. Similarly, you could use `#!Python dask.compute(delayed)[0]`, where the `[0]` indexing is needed because `#!Python dask.compute()` always returns a tuple.
 
 === "Redun"
 
