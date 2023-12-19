@@ -1,4 +1,4 @@
-## VASP Example
+## VASP Example on HPC
 
 As a complement to the [toy EMT example](../wflow_engine/executors2.md) described earlier in the documentation, here we will run a sample VASP recipe that will highlight the use of a more complicated configuration. It can only be run if you are a licensed VASP user, but the same fundamental principles apply to many other DFT codes with recipes in quacc.
 
