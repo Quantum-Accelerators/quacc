@@ -121,3 +121,12 @@ The `VASP_PP_PATH` setting should point to the directory containing your VASP ps
 The `VASP_VDW` environment variable is necessary if you are using a vdW functional and should point to the directory that contains the `vdw_kernel.bindat` file distributed with VASP. We also recommend including this in your `~/.bashrc` file since this rarely changes.
 
 Additional settings can be specified as well, such as the name of the VASP executables if they differ from the default values (i.e. `vasp_std`, `vasp_gam`).
+
+## xTB
+
+To use the standalone xTB executable, you will need to install `xTB` and the `xtb-ase` packages:
+
+```bash
+conda install -c conda-forge xtb
+pip install quacc[xtb]
+```

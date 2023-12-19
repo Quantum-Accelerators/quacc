@@ -218,3 +218,19 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 | VASP QMOF Relax         | `#!Python @job`  | [quacc.recipes.vasp.qmof.qmof_relax_job][]      |              |
 
 </center>
+
+## xTB
+
+!!! Info
+
+    [xtb]() is a code for semi-empirical tight-binding calculations based on the GFN-xTB method. This set of recipes has significant overlap with the TBLite recipes, which is another interface to the GFN-xTB methods.
+
+<center>
+
+| Name          | Decorator       | Documentation                            | Req'd Extras |
+| ------------- | --------------- | ---------------------------------------- | ------------ |
+| xTB Static    | `#!Python @job` | [quacc.recipes.xtb.core.static_job][]    |              |
+| xTB ASE Relax | `#!Python @job` | [quacc.recipes.xtb.core.ase_relax_job][] |              |
+| xTB Relax     | `#!Python @job` | [quacc.recipes.xtb.core.relax_job][]     |              |
+
+</center>
