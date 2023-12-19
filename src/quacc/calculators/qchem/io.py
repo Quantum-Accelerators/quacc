@@ -89,14 +89,14 @@ def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float]]:
     # Read the gradient scratch file in 8 byte chunks
     grad_scratch = directory / "131.0"
     if grad_scratch.exists() and grad_scratch.stat().st_size > 0:
-        grad = parse_gradient(directory / "131.0")
+        gradient = gradient_parser(directory / "131.0")
 
         results["forces"] = gradient * (-units.Hartree / units.Bohr)
 
     # Read Hessian scratch file in 8 byte chunks
     hessian_scratch = directory / "132.0"
     if hessian_scratch.exists() and hessian_scratch.stat().st_size > 0:
-        parse_hessian(hessian_scratch, n_atoms=len(qc_output["species"]))
+        reshaped_hess = hessian_parser(hessian_scratch, n_atoms=len(qc_output["species"]))
         results["hessian"] = reshaped_hess * (units.Hartree / units.Bohr**2)
 
     # Read orbital coefficients scratch file in 8 byte chunks
