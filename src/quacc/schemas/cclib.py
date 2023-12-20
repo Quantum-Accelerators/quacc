@@ -9,9 +9,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import cclib
-from ase.atoms import Atoms
 from cclib.io import ccread
-from maggma.core import Store
 from monty.json import jsanitize
 
 from quacc import SETTINGS
@@ -23,6 +21,9 @@ from quacc.wflow_tools.db import results_to_db
 
 if TYPE_CHECKING:
     from typing import Any, Literal
+
+    from ase.atoms import Atoms
+    from maggma.core import Store
 
     from quacc.schemas._aliases.cclib import (
         PopAnalysisAttributes,
