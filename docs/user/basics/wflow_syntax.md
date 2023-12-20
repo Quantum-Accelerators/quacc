@@ -14,7 +14,7 @@ A `#!Python @job` in quacc is an individual compute task. In the context of an H
 
 ### `@flow`
 
-A `#!Python @flow` in quacc is a collection of one or more jobs. It defines the logic of the workflow, connecting the output of one job to the inputs of one or more other jobs. For instance, a flow could define the logic for passing the output of a structure relaxation job to the input of a subsequent static calculation job. Note all workflow engines strictly require the use of a `@flow`, but it is included in the recipe definitions as a matter of interoperability. As a general guideline, the flow should not contain computations beyond those of the underlying jobs or subflows.
+A `#!Python @flow` in quacc is a collection of one or more jobs. It defines the logic of the workflow, connecting the output of one job to the inputs of one or more other jobs. Not all workflow engines strictly require the use of a `@flow`, but it is included in the recipe definitions as a matter of interoperability. As a general guideline, the flow should not contain computations beyond those of the underlying jobs or subflows.
 
 ### `@subflow`
 
