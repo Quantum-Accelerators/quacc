@@ -11,7 +11,7 @@ from ase.io.espresso import construct_namelist
 from quacc import SETTINGS
 from quacc.calculators.espresso.io import read, write
 from quacc.calculators.espresso.keys import ALL_KEYS
-from quacc.calculators.espresso.utils import parse_pp_and_cutoff
+from quacc.calculators.espresso.utils import parse_pw_preset
 from quacc.utils.dicts import merge_dicts
 from quacc.utils.files import load_yaml_calc
 
@@ -211,6 +211,8 @@ class Espresso(Espresso_):
 
         if self.preset:
             config = load_yaml_calc(SETTINGS.ESPRESSO_PRESET_DIR / f"{self.preset}")
-            preset_pp = parse_pp_and_cutoff(config, self.input_atoms)
-            kwargs = merge_dicts(preset_pp, kwargs)
+            preset = parse_pw_preset(config, self.input_atoms)
+            self.input_atoms = preset.pop("atoms", None) or self.input_atoms
+            kwargs = merge_dicts(preset, kwargs)
+
         return merge_dicts(self.calc_defaults, kwargs)
