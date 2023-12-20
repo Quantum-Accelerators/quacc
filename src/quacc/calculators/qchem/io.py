@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ase import units
+from emmet.core.qc_tasks import TaskDoc
 from emmet.core.tasks import _parse_custodian
 from pymatgen.io.qchem.inputs import QCInput
 from pymatgen.io.qchem.outputs import (
@@ -68,23 +69,20 @@ def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float]]:
     """
     directory = Path(directory)
 
-    qc_input = QCInput.from_file(directory / "mol.qin")
-    qc_output = QCOutput(directory / "mol.qout").data
+    task_doc = TaskDoc.from_directory(directory).model_dump()
+    qc_output = task_doc["output"]
 
     results: Results = {
         "energy": qc_output["final_energy"] * units.Hartree,
-        "qc_output": qc_output,
-        "qc_input": qc_input.as_dict(),
+        "taskdoc": task_doc,
         "custodian": _parse_custodian(directory),
     }
 
     # Parse thermo properties
     if "total_enthalpy" in qc_output:
-        results["enthalpy"] = qc_output["total_enthalpy"] * (units.kcal / units.mol)
+        results["enthalpy"] = qc_output["enthalpy"] * (units.kcal / units.mol)
     if "total_entropy" in qc_output:
-        results["entropy"] = qc_output["total_entropy"] * (
-            0.001 * units.kcal / units.mol
-        )
+        results["entropy"] = qc_output["entropy"] * (0.001 * units.kcal / units.mol)
 
     # Read the gradient scratch file in 8 byte chunks
     grad_scratch = directory / "131.0"

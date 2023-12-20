@@ -41,8 +41,7 @@ class QChem(FileIOCalculator):
         "hessian",
         "enthalpy",
         "entropy",
-        "qc_output",
-        "qc_input",
+        "taskdoc",
         "custodian",
     ]
     results: ClassVar[Results] = {}
