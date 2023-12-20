@@ -105,7 +105,6 @@ def test_cclib_summarize_run(tmp_path, monkeypatch):
     MontyDecoder().process_decoded(d)
 
     # Make sure default dir works
-    cwd = os.getcwd()
     monkeypatch.chdir(run1)
     cclib_summarize_run(atoms, ".log")
 

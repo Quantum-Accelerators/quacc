@@ -104,7 +104,7 @@ def calc_cleanup(tmpdir: Path, job_results_dir: Path) -> None:
 
     # Move files from tmpdir to job_results_dir
     for file_name in os.listdir(tmpdir):
-        if Path(job_results_dir / file_name).exists():
+        if Path(job_results_dir / file_name).is_dir():
             remove(job_results_dir / file_name)
         move(tmpdir / file_name, job_results_dir / file_name)
 

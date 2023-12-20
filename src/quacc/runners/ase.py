@@ -1,6 +1,7 @@
 """Utility functions for running ASE calculators with ASE-based methods."""
 from __future__ import annotations
 
+import sys
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -11,6 +12,7 @@ from ase.vibrations import Vibrations
 from monty.dev import requires
 from monty.os.path import zpath
 
+from quacc import SETTINGS
 from quacc.atoms.core import copy_atoms
 from quacc.runners.prep import calc_cleanup, calc_setup
 from quacc.utils.dicts import merge_dicts
@@ -130,6 +132,8 @@ def run_opt(
     ----------
     atoms
         The Atoms object to run the calculation on.
+    relax_cell
+        Whether to relax the unit cell shape and volume.
     fmax
         Tolerance for the force convergence (in eV/A).
     max_steps
@@ -159,7 +163,10 @@ def run_opt(
 
     # Set defaults
     optimizer_kwargs = merge_dicts(
-        {"logfile": tmpdir / "opt.log", "restart": tmpdir / "opt.pckl"},
+        {
+            "logfile": "-" if SETTINGS.DEBUG else tmpdir / "opt.log",
+            "restart": tmpdir / "opt.pckl",
+        },
         optimizer_kwargs,
     )
     run_kwargs = run_kwargs or {}
@@ -240,7 +247,7 @@ def run_vib(
     vib.run()
 
     # Summarize run
-    vib.summary(log=str(tmpdir / "vib_summary.log"))
+    vib.summary(log=sys.stdout if SETTINGS.DEBUG else str(tmpdir / "vib_summary.log"))
 
     # Perform cleanup operations
     calc_cleanup(tmpdir, job_results_dir)

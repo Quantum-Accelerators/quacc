@@ -60,7 +60,7 @@ def qmof_relax_job(
         If True, a pre-relax will be carried out with BFGSLineSearch.
         Recommended if starting from hypothetical structures or materials with
         very high starting forces.
-    **kwargs
+    **calc_kwargs
         Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely. Applies for all jobs.
 
