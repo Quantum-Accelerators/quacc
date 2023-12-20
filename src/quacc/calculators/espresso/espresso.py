@@ -118,7 +118,9 @@ class EspressoTemplate(EspressoTemplate_):
             results["energy"] = None
         return results
 
-    def _outdir_handler(self, parameters: dict[str, Any], directory: Path) -> dict[str, Any]:
+    def _outdir_handler(
+        self, parameters: dict[str, Any], directory: Path
+    ) -> dict[str, Any]:
         """
         Function that handles the various outdir of espresso binaries. If they are relative,
         they are resolved against `directory`, which is the recommended approach.
