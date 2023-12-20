@@ -8,6 +8,18 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 
 To help enable interoperability between workflow engines, quacc offers a unified set of decorators: [`#!Python @job`](https://quantum-accelerators.github.io/quacc/reference/quacc/wflow_tools/decorators.html#quacc.wflow_tools.decorators.job), [`#!Python @flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/wflow_tools/decorators.html#quacc.wflow_tools.decorators.flow), and [`#!Python @subflow`](https://quantum-accelerators.github.io/quacc/reference/quacc/wflow_tools/decorators.html#quacc.wflow_tools.decorators.subflow).
 
+### `@job`
+
+A `#!Python @job` in quacc is an individual compute task. In the context of an HPC environment, this can typically be thought of as a compute task you would normally submit as a single job to the scheduler. For instance, a structure relaxation would be its own job.
+
+### `@flow`
+
+A `#!Python @flow` in quacc is a collection of one or more jobs. It defines the logic of the workflow, connecting the output of one job to the inputs of one or more other jobs. For instance, a flow could define the logic for passing the output of a structure relaxation job to the input of a subsequent static calculation job. Note all workflow engines strictly require the use of a `@flow`, but it is included in the recipe definitions as a matter of interoperability. As a general guideline, the flow should not contain computations beyond those of the underlying jobs or subflows.
+
+### `@subflow`
+
+A `#!Python subflow` in quacc is a special kind of dynamic subworkflow. Specifically, a subflow is any workflow that returns a list of job outputs and can be called as part of a larger flow.
+
 === "Parsl"
 
     Take a moment to read the Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a [`#!Python python_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html#Python-Apps) and [`#!Python join_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html?highlight=join_app#Dynamic-workflows-with-apps-that-generate-other-apps), which describe individual compute tasks and dynamic job tasks, respectively.
