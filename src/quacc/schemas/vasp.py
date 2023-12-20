@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from emmet.core.tasks import TaskDoc
-from maggma.core import Store
 from pymatgen.command_line.bader_caller import bader_analysis_from_path
 from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
 
@@ -20,6 +19,7 @@ if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
+    from maggma.core import Store
     from pymatgen.core import Structure
 
     from quacc.schemas._aliases.vasp import BaderSchema, ChargemolSchema, VaspSchema
