@@ -18,7 +18,7 @@ A `#!Python @flow` in quacc is a collection of one or more jobs. It defines the 
 
 ### `@subflow`
 
-A `#!Python subflow` in quacc is a special kind of dynamic subworkflow. Specifically, a subflow is any workflow that returns a list of job outputs and can be called as part of a larger flow.
+A `#!Python subflow` in quacc is a special kind of dynamic subworkflow. Specifically, a subflow is any workflow that returns a list of job outputs and where the number of jobs to be called is not necessarily known until runtime.
 
 === "Parsl"
 
