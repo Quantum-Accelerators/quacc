@@ -54,10 +54,11 @@ def phonon_flow(
     PhononSchema
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][]
     """
+    phonon_static_job = static_job if custom_static_job is None else custom_static_job
 
     return phonon_flow_(
         atoms,
-        static_job if custom_static_job is None else custom_static_job,
+        phonon_static_job,
         supercell_matrix=supercell_matrix,
         atom_disp=atom_disp,
         t_step=t_step,
