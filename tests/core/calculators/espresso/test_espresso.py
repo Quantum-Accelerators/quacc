@@ -99,3 +99,19 @@ def test_espresso_presets():
     }
     assert calc.template.binary == "pw"
     assert calc.parameters == expected_parameters
+    
+def test_espresso_presets_gamma():
+
+    calc_defaults = {
+        "input_data": {}
+    }
+
+    preset = "molecule_efficiency.yaml"
+
+    calc = Espresso(
+        input_atoms= Atoms(),
+        preset=preset,
+        calc_defaults=calc_defaults
+    )
+
+    assert calc.parameters['kpts'] == None
