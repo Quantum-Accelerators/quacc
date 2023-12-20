@@ -10,15 +10,15 @@ To help enable interoperability between workflow engines, quacc offers a unified
 
 ### `@job`
 
-A `#!Python @job` in quacc is an individual compute task. In the context of an HPC environment, this can typically be thought of as a compute task you would normally submit as a single job to the scheduler. For instance, a structure relaxation would be its own job.
+A `#!Python @job` in quacc is an individual compute task. In the context of an HPC environment, this can typically be thought of as a compute task you would normally submit as a single job to the scheduler.
 
 ### `@flow`
 
-A `#!Python @flow` in quacc is a collection of one or more jobs. It defines the logic of the workflow, connecting the output of one job to the inputs of one or more other jobs. Not all workflow engines strictly require the use of a `@flow`, but it is included in the recipe definitions as a matter of interoperability. As a general guideline, the flow should not contain computations beyond those of the underlying jobs or subflows.
+A `#!Python @flow` in quacc is a collection of one or more jobs. It defines the logic of the workflow, connecting the output of one job to the inputs of one or more other jobs. As a general guideline, the flow should not contain computations beyond those of the underlying jobs or subflows.
 
 ### `@subflow`
 
-A `#!Python subflow` in quacc is a special kind of dynamic subworkflow. Specifically, a subflow is any workflow that returns a list of job outputs and where the number of jobs to be called is not necessarily known until runtime.
+A `#!Python @subflow` in quacc is any workflow that returns a list of job outputs and where the number of jobs to be called is not necessarily known until runtime.
 
 === "Parsl"
 
