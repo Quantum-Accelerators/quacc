@@ -12,9 +12,9 @@ input_data:
     mixing_mode: local-TF
     mixing_beta: 0.25
 
-kspacing: 0.30
+kspacing: 0.045
 
-atoms:
+atoms_info:
   pbc: [True, True, False]
 
 parent_pseudopotentials: sssp_1.3.0_pbe_efficiency.yaml

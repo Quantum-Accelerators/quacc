@@ -212,7 +212,11 @@ class Espresso(Espresso_):
         if self.preset:
             config = load_yaml_calc(SETTINGS.ESPRESSO_PRESET_DIR / f"{self.preset}")
             preset = parse_pw_preset(config, self.input_atoms)
-            self.input_atoms = preset.pop("atoms", None) or self.input_atoms
             kwargs = merge_dicts(preset, kwargs)
 
-        return merge_dicts(self.calc_defaults, kwargs)
+        kwargs = merge_dicts(self.calc_defaults, kwargs)
+
+        if kwargs.get("kpts") == "gamma":
+            kwargs["kpts"] = None
+
+        return kwargs

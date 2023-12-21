@@ -59,6 +59,7 @@ def test_espresso_presets():
     preset = "esm_metal_slab_efficiency"
 
     atoms = Atoms(symbols="LiLaOZr")
+    atoms.set_cell([5, 2, 10])
 
     calc = Espresso(
         input_atoms=atoms,
@@ -89,7 +90,7 @@ def test_espresso_presets():
             "cell": {},
             "rism": {},
         },
-        "kspacing": 0.2,
+        "kpts": [7, 17, 1],
         "pseudopotentials": {
             "O": "O.pbe-n-kjpaw_psl.0.1.UPF",
             "Zr": "Zr_pbe_v1.uspp.F.UPF",
@@ -99,19 +100,13 @@ def test_espresso_presets():
     }
     assert calc.template.binary == "pw"
     assert calc.parameters == expected_parameters
-    
-def test_espresso_presets_gamma():
 
-    calc_defaults = {
-        "input_data": {}
-    }
+
+def test_espresso_presets_gamma():
+    calc_defaults = {"input_data": {}}
 
     preset = "molecule_efficiency.yaml"
 
-    calc = Espresso(
-        input_atoms= Atoms(),
-        preset=preset,
-        calc_defaults=calc_defaults
-    )
+    calc = Espresso(input_atoms=Atoms(), preset=preset, calc_defaults=calc_defaults)
 
-    assert calc.parameters['kpts'] == None
+    assert calc.parameters["kpts"] is None

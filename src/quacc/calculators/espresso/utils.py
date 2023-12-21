@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from quacc.utils.dicts import merge_dicts, remove_dict_nones
+from ase.io.espresso import kspacing_to_grid
+
+from quacc.utils.dicts import merge_dicts
 
 if TYPE_CHECKING:
     from typing import Any
@@ -29,9 +31,11 @@ def parse_pw_preset(config: dict[str, Any], atoms: Atoms) -> dict[str, Any] | No
         A dictionary containing the pseudopotentials and cutoffs
     """
 
+    atoms_copy = atoms.copy()
+
     if "pseudopotentials" in config:
         pp_dict = config["pseudopotentials"]
-        unique_elements = list(set(atoms.symbols))
+        unique_elements = list(set(atoms_copy.symbols))
         wfc_cutoff, rho_cutoff = 0, 0
         pseudopotentials = {}
         for element in unique_elements:
@@ -45,24 +49,22 @@ def parse_pw_preset(config: dict[str, Any], atoms: Atoms) -> dict[str, Any] | No
     input_data = config.get("input_data")
     input_data = merge_dicts(pp_input_data, input_data)
 
-    atoms_info = config.get("atoms", {})
+    atoms_info = config.get("atoms_info", {})
 
     if "pbc" in atoms_info:
-        atoms.set_pbc(atoms_info["pbc"])
+        atoms_copy.set_pbc(atoms_info["pbc"])
 
-    kpts = config.get("kpts")
     kspacing = config.get("kspacing")
 
-    return_dict = {
+    if kspacing:
+        kpts = kspacing_to_grid(atoms_copy, kspacing)
+        kspacing = None
+    else:
+        kpts = config.get("kpts")
+
+    return {
         "input_data": input_data,
         "pseudopotentials": pseudopotentials,
         "kspacing": kspacing,
-        "atoms": atoms,
         "kpts": kpts,
     }
-    return_dict = remove_dict_nones(return_dict)
-
-    if return_dict.get("kpts") == "gamma":
-        return_dict[kpts] = None
-
-    return return_dict
