@@ -85,7 +85,7 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 
 !!! Info
 
-    Machine-learned interatomic potentials are a class of machine learning models that are trained to reproduce the potential energy surface of a system. The following pre-trained, "universal" MLPs are supported: [CHGNet](https://doi.org/10.1038/s42256-023-00716-3), [M3GNet](https://doi.org/10.1038/s43588-022-00349-3), and [U-MACE](https://mace-docs.readthedocs.io/en/latest/examples/foundation_models.html).
+    Machine-learned interatomic potentials are a class of machine learning models that are trained to reproduce the potential energy surface of a system. The following pre-trained, "universal" MLPs are supported: [CHGNet](https://doi.org/10.1038/s42256-023-00716-3), [M3GNet](https://doi.org/10.1038/s43588-022-00349-3), and [MACE](https://mace-docs.readthedocs.io/en/latest/examples/foundation_models.html).
 
 <center>
 
@@ -208,8 +208,8 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 | VASP Static             | `#!Python @job`  | [quacc.recipes.vasp.core.static_job][]          |              |
 | VASP Relax              | `#!Python @job`  | [quacc.recipes.vasp.core.relax_job][]           |              |
 | VASP Double Relax       | `#!Python @job`  | [quacc.recipes.vasp.core.double_relax_job][]    |              |
-| VASP Slab Static        | `#!Python @job`  | [quacc.recipes.vasp.slabs.slab_static_job][]    |              |
-| VASP Slab Relax         | `#!Python @job`  | [quacc.recipes.vasp.slabs.slab_relax_job][]     |              |
+| VASP Slab Static        | `#!Python @job`  | [quacc.recipes.vasp.slabs.static_job][]         |              |
+| VASP Slab Relax         | `#!Python @job`  | [quacc.recipes.vasp.slabs.relax_job][]          |              |
 | VASP Bulk to Slabs      | `#!Python @flow` | [quacc.recipes.vasp.slabs.bulk_to_slabs_flow][] |              |
 | VASP Slab to Adsorbates | `#!Python @flow` | [quacc.recipes.vasp.slabs.slab_to_ads_flow][]   |              |
 | VASP MP Prerelax        | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_relax_job][]          |              |

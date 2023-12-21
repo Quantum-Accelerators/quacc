@@ -4,7 +4,8 @@
 
 - [ ] I have read the [Contributing Guide](https://quantum-accelerators.github.io/quacc/dev/contributing.html). Don't lie! 😉
 - [ ] My PR is on a custom branch and is _not_ named `main`.
-- [ ] I have added relevant unit tests.
+- [ ] I have used `black`, `isort`, and `ruff` as described in the [style guide](https://quantum-accelerators.github.io/quacc/dev/contributing.html#style).
+- [ ] I have added relevant, comprehensive [unit tests](https://quantum-accelerators.github.io/quacc/dev/contributing.html#unit-tests).
 
 ### Notes
 

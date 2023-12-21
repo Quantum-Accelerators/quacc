@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 @lru_cache
 def _pick_calculator(
-    calculator: Literal["umace", "m3gnet", "chgnet"], **kwargs
+    calculator: Literal["mace", "m3gnet", "chgnet"], **kwargs
 ) -> Calculator:
     """
     Adapted from `matcalc.util.get_universal_calculator`.
@@ -48,7 +48,7 @@ def _pick_calculator(
 
         calc = CHGNetCalculator(**kwargs)
 
-    elif calculator.lower() == "umace":
+    elif calculator.lower() == "mace":
         from mace import __version__
         from mace.calculators import mace_mp
 

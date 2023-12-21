@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -42,9 +43,16 @@ class EspressoTemplate(EspressoTemplate_):
         None
         """
         super().__init__()
+
         self.inputname = f"{binary}.in"
         self.outputname = f"{binary}.out"
+
         self.binary = binary
+
+        self.outdirs = {
+            "outdir": os.environ.get("ESPRESSO_TMPDIR"),
+            "wfcdir": os.environ.get("ESPRESSO_TMPDIR"),
+        }
 
     def write_input(
         self,
@@ -75,8 +83,11 @@ class EspressoTemplate(EspressoTemplate_):
         -------
         None
         """
+        directory = Path(directory)
+        self._outdir_handler(parameters, directory)
+
         write(
-            Path(directory) / self.inputname,
+            directory / self.inputname,
             atoms,
             binary=self.binary,
             properties=properties,
@@ -101,10 +112,53 @@ class EspressoTemplate(EspressoTemplate_):
         dict
             The results dictionnary
         """
+
         results = read(Path(directory) / self.outputname, binary=self.binary)
         if "energy" not in results:
             results["energy"] = None
         return results
+
+    def _outdir_handler(
+        self, parameters: dict[str, Any], directory: Path
+    ) -> dict[str, Any]:
+        """
+        Function that handles the various outdir of espresso binaries. If they are relative,
+        they are resolved against `directory`, which is the recommended approach.
+        If the user-supplied paths are absolute, they are resolved and checked
+        against `directory`, which is typically `os.getcwd()`. If they are not in `directory`,
+        they will be ignored.
+
+        Parameters
+        ----------
+        parameters
+            User-supplied kwargs
+        directory
+            The `directory` kwarg from the calculator.
+
+        Returns
+        -------
+        dict[str, Any]
+            The merged kwargs
+        """
+
+        input_data = parameters.get("input_data", {})
+
+        for section in input_data:
+            for d_key in self.outdirs.keys():
+                if d_key in input_data[section]:
+                    path = Path(input_data[section][d_key])
+                    path = path.expanduser().resolve()
+                    if directory.expanduser().resolve() not in path.parents:
+                        self.outdirs[d_key] = path
+                        continue
+                    path.mkdir(parents=True, exist_ok=True)
+                    input_data[section][d_key] = path
+
+        self.outdirs = [path for path in self.outdirs.values() if path is not None]
+
+        parameters["input_data"] = input_data
+
+        return parameters
 
 
 class Espresso(Espresso_):
@@ -180,7 +234,12 @@ class Espresso(Espresso_):
             binary=str(bin_path), parallel_info=parallel_info, pseudo_path=pseudo_path
         )
 
-        super().__init__(profile=profile, parallel_info=parallel_info, **kwargs)
+        if kwargs.get("directory"):
+            raise ValueError("quacc does not support the directory argument.")
+
+        super().__init__(
+            profile=profile, directory=".", parallel_info=parallel_info, **kwargs
+        )
 
         self.template = template
 
