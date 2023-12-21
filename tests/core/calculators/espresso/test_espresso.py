@@ -106,11 +106,10 @@ def test_espresso_presets():
 
 
 def test_espresso_presets_gamma():
-    calc_defaults = {"input_data": {}}
 
     preset = "molecule_efficiency.yaml"
 
-    calc = Espresso(input_atoms=Atoms(), preset=preset, calc_defaults=calc_defaults)
+    calc = Espresso(preset=preset)
 
     assert calc.parameters["kpts"] is None
 

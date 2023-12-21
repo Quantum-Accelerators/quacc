@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from ase import Atoms
 from ase.calculators.espresso import Espresso as Espresso_
 from ase.calculators.espresso import EspressoProfile
 from ase.calculators.espresso import EspressoTemplate as EspressoTemplate_
@@ -18,8 +19,6 @@ from quacc.utils.files import load_yaml_calc
 
 if TYPE_CHECKING:
     from typing import Any
-
-    from ase import Atoms
 
 
 class EspressoTemplate(EspressoTemplate_):
@@ -216,8 +215,8 @@ class Espresso(Espresso_):
         None
         """
         self.preset = preset
-        self.input_atoms = input_atoms
-        self.calc_defaults = calc_defaults
+        self.input_atoms = input_atoms or Atoms()
+        self.calc_defaults = calc_defaults or {}
 
         template = template or EspressoTemplate("pw")
 
@@ -265,7 +264,7 @@ class Espresso(Espresso_):
         keys = ALL_KEYS[binary]
         kwargs["input_data"] = construct_namelist(kwargs.get("input_data"), keys=keys)
         self.calc_defaults["input_data"] = construct_namelist(
-            self.calc_defaults["input_data"], keys=keys
+            self.calc_defaults.get("input_data"), keys=keys
         )
 
         if self.preset:
