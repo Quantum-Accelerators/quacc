@@ -1,6 +1,7 @@
 """Utility functions for dealing with dictionaries."""
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -28,7 +29,7 @@ def recursive_dict_merge(*args, remove_nones: bool = True) -> dict[str, Any]:
         merged = recursive_dict_pair_merge(
             old_dict, args[i + 1], remove_nones=remove_nones
         )
-        old_dict = merged.copy()
+        old_dict = safe_dict_copy(merged)
     return merged
 
 
@@ -61,7 +62,7 @@ def recursive_dict_pair_merge(
     """
     dict1 = dict1 or {}
     dict2 = dict2 or {}
-    merged = dict1.copy()
+    merged = safe_dict_copy(dict1)
 
     for key, value in dict2.items():
         if key in merged:
@@ -76,6 +77,26 @@ def recursive_dict_pair_merge(
         merged = remove_dict_nones(merged)
 
     return merged
+
+
+def safe_dict_copy(d: dict) -> dict:
+    """
+    Safely copy a dictionary to account for deepcopy errors.
+
+    Parameters
+    ----------
+    d
+        Dictionary to copy
+
+    Returns
+    -------
+    dict
+        Copied dictionary
+    """
+    try:
+        return deepcopy(d)
+    except Exception:
+        return d.copy()
 
 
 def remove_dict_nones(start_dict: dict[str, Any]) -> dict[str, Any]:
