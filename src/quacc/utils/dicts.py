@@ -7,7 +7,32 @@ if TYPE_CHECKING:
     from typing import Any
 
 
-def recursive_merge_dicts(
+def recursively_merge_dicts(*args, remove_nones: bool = True) -> dict[str, Any]:
+    """
+    Recursively merge several dictionaries, taking the latter in the list as higher preference.
+
+    Parameters
+    ----------
+    *args
+        Dictionaries to merge
+    remove_nones
+        If True, remove empty lists and dictionaries
+
+    Returns
+    -------
+    dict
+        Merged dictionary
+    """
+    old_dict = args[0]
+    for i in range(len(args) - 1):
+        merged = recursively_merge_dict_pairs(
+            old_dict, args[i + 1], remove_nones=remove_nones
+        )
+        old_dict = merged.copy()
+    return merged
+
+
+def recursively_merge_dict_pairs(
     dict1: dict[str, Any] | None,
     dict2: dict[str, Any] | None,
     remove_nones: bool = True,
@@ -18,7 +43,7 @@ def recursive_merge_dicts(
 
     This function should be used instead of the | operator when merging nested dictionaries,
     e.g. `{"a": {"b": 1}} | {"a": {"c": 2}}` will return `{"a": {"c": 2}}` whereas
-    `recursive_merge_dicts({"a": {"b": 1}}, {"a": {"c": 2}})` will return `{"a": {"b": 1, "c": 2}}`.
+    `recursively_merge_dicts({"a": {"b": 1}}, {"a": {"c": 2}})` will return `{"a": {"b": 1, "c": 2}}`.
 
     Parameters
     ----------
@@ -41,7 +66,7 @@ def recursive_merge_dicts(
     for key, value in dict2.items():
         if key in merged:
             if isinstance(merged[key], dict) and isinstance(value, dict):
-                merged[key] = recursive_merge_dicts(merged[key], value)
+                merged[key] = recursively_merge_dict_pairs(merged[key], value)
             else:
                 merged[key] = value
         else:
@@ -50,29 +75,6 @@ def recursive_merge_dicts(
     if remove_nones:
         merged = remove_dict_nones(merged)
 
-    return merged
-
-
-def merge_several_dicts(*args, remove_nones: bool = True) -> dict[str, Any]:
-    """
-    Recursively merge several dictionaries, taking the latter in the list as higher preference.
-
-    Parameters
-    ----------
-    *args
-        Dictionaries to merge
-    remove_nones
-        If True, remove empty lists and dictionaries
-
-    Returns
-    -------
-    dict
-        Merged dictionary
-    """
-    old_dict = args[0]
-    for i in range(len(args) - 1):
-        merged = recursive_merge_dicts(old_dict, args[i + 1], remove_nones=remove_nones)
-        old_dict = merged.copy()
     return merged
 
 

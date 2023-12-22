@@ -16,7 +16,7 @@ from quacc.schemas.ase import (
     summarize_run,
     summarize_vib_run,
 )
-from quacc.utils.dicts import recursive_merge_dicts
+from quacc.utils.dicts import recursively_merge_dicts
 
 try:
     from sella import Sella
@@ -70,7 +70,7 @@ def static_job(
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
     }
-    calc_flags = recursive_merge_dicts(defaults, calc_kwargs)
+    calc_flags = recursively_merge_dicts(defaults, calc_kwargs)
 
     atoms.calc = NewtonNet(**calc_flags)
     final_atoms = run_calc(atoms, copy_files=copy_files)
@@ -118,8 +118,8 @@ def relax_job(
     }
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella or FIRE}
 
-    calc_flags = recursive_merge_dicts(calc_defaults, calc_kwargs)
-    opt_flags = recursive_merge_dicts(opt_defaults, opt_params)
+    calc_flags = recursively_merge_dicts(calc_defaults, calc_kwargs)
+    opt_flags = recursively_merge_dicts(opt_defaults, opt_params)
 
     atoms.calc = NewtonNet(**calc_flags)
     dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
@@ -167,7 +167,7 @@ def freq_job(
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
         "hess_method": "autograd",
     }
-    calc_flags = recursive_merge_dicts(defaults, calc_kwargs)
+    calc_flags = recursively_merge_dicts(defaults, calc_kwargs)
 
     ml_calculator = NewtonNet(**calc_flags)
     atoms.calc = ml_calculator

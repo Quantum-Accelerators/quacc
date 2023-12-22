@@ -9,7 +9,7 @@ from quacc import SETTINGS, job
 from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
 from quacc.runners.ase import run_opt
 from quacc.schemas.ase import summarize_opt_run
-from quacc.utils.dicts import recursive_merge_dicts
+from quacc.utils.dicts import recursively_merge_dicts
 
 try:
     from sella import IRC, Sella
@@ -95,8 +95,8 @@ def ts_job(
         else {"order": 1},
     }
 
-    calc_flags = recursive_merge_dicts(calc_defaults, calc_kwargs)
-    opt_flags = recursive_merge_dicts(opt_defaults, opt_params)
+    calc_flags = recursively_merge_dicts(calc_defaults, calc_kwargs)
+    opt_flags = recursively_merge_dicts(opt_defaults, opt_params)
 
     atoms.calc = NewtonNet(**calc_flags)
 
@@ -176,8 +176,8 @@ def irc_job(
         "run_kwargs": {"direction": direction},
     }
 
-    calc_flags = recursive_merge_dicts(calc_defaults, calc_kwargs)
-    opt_flags = recursive_merge_dicts(opt_defaults, opt_params)
+    calc_flags = recursively_merge_dicts(calc_defaults, calc_kwargs)
+    opt_flags = recursively_merge_dicts(opt_defaults, opt_params)
 
     # Define calculator
     atoms.calc = NewtonNet(**calc_flags)
@@ -243,7 +243,7 @@ def quasi_irc_job(
     freq_job_kwargs = freq_job_kwargs or {}
 
     irc_job_defaults = {"max_steps": 5}
-    irc_job_kwargs = recursive_merge_dicts(irc_job_defaults, irc_job_kwargs)
+    irc_job_kwargs = recursively_merge_dicts(irc_job_defaults, irc_job_kwargs)
 
     # Run IRC
     irc_summary = irc_job.__wrapped__(

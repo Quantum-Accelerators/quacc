@@ -8,7 +8,7 @@ from ase.calculators.dftb import Dftb
 from quacc import SETTINGS
 from quacc.runners.ase import run_calc
 from quacc.schemas.ase import summarize_run
-from quacc.utils.dicts import recursive_merge_dicts
+from quacc.utils.dicts import recursively_merge_dicts
 from quacc.utils.files import check_logfile
 
 if TYPE_CHECKING:
@@ -55,7 +55,7 @@ def base_fn(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
 
-    calc_flags = recursive_merge_dicts(calc_defaults, calc_swaps)
+    calc_flags = recursively_merge_dicts(calc_defaults, calc_swaps)
 
     atoms.calc = Dftb(**calc_flags)
     final_atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)

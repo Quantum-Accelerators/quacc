@@ -9,7 +9,7 @@ from monty.dev import requires
 from quacc import SETTINGS, job
 from quacc.recipes._qchem_legacy._base import base_opt_fn
 from quacc.recipes._qchem_legacy.core import relax_job
-from quacc.utils.dicts import recursive_merge_dicts
+from quacc.utils.dicts import recursively_merge_dicts
 
 try:
     from sella import IRC, Sella
@@ -274,7 +274,7 @@ def quasi_irc_job(
     default_settings = SETTINGS.model_copy()
 
     irc_opt_params_defaults = {"fmax": 100, "max_steps": 10}
-    irc_opt_params = recursive_merge_dicts(irc_opt_params_defaults, irc_opt_params)
+    irc_opt_params = recursively_merge_dicts(irc_opt_params_defaults, irc_opt_params)
 
     SETTINGS.CHECK_CONVERGENCE = False
     irc_summary = irc_job.__wrapped__(

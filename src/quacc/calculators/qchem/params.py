@@ -12,7 +12,7 @@ from pymatgen.io.qchem.inputs import QCInput
 from pymatgen.io.qchem.sets import QChemDictSet
 from pymatgen.io.qchem.utils import lower_and_check_unique
 
-from quacc.utils.dicts import recursive_merge_dicts, sort_dict
+from quacc.utils.dicts import recursively_merge_dicts, sort_dict
 
 if TYPE_CHECKING:
     from typing import Any
@@ -78,7 +78,7 @@ def make_qc_input(qchem: QChem, atoms: Atoms) -> QCInput:
         ]:
             prop1 = getattr(qchem, prop)
             if prop2 := getattr(qc_dict_set, prop):
-                setattr(qchem, prop, recursive_merge_dicts(prop2, prop1))
+                setattr(qchem, prop, recursively_merge_dicts(prop2, prop1))
         for prop in ["vdw_mode", "cdft", "almo_coupling"]:
             prop2 = getattr(qc_dict_set, prop)
             if prop2 and not prop1:
