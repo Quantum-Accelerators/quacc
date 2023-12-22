@@ -32,6 +32,10 @@ def _pick_calculator(
     Calculator
         The chosen calculator
     """
+    import torch
+
+    if not torch.cuda_is_available():
+        warnings.warn("CUDA is not available to PyTorch. Calculations will be slow.")
 
     if calculator.lower().startswith("m3gnet"):
         import matgl
