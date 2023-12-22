@@ -26,14 +26,14 @@ def recursive_dict_merge(*args, remove_nones: bool = True) -> dict[str, Any]:
     """
     old_dict = args[0]
     for i in range(len(args) - 1):
-        merged = recursive_dict_pair_merge(
+        merged = _recursive_dict_pair_merge(
             old_dict, args[i + 1], remove_nones=remove_nones
         )
         old_dict = safe_dict_copy(merged)
     return merged
 
 
-def recursive_dict_pair_merge(
+def _recursive_dict_pair_merge(
     dict1: dict[str, Any] | None,
     dict2: dict[str, Any] | None,
     remove_nones: bool = True,
@@ -67,7 +67,7 @@ def recursive_dict_pair_merge(
     for key, value in dict2.items():
         if key in merged:
             if isinstance(merged[key], dict) and isinstance(value, dict):
-                merged[key] = recursive_dict_pair_merge(merged[key], value)
+                merged[key] = _recursive_dict_pair_merge(merged[key], value)
             else:
                 merged[key] = value
         else:
