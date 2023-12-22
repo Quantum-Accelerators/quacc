@@ -26,9 +26,7 @@ def recursive_dict_merge(*args, remove_nones: bool = True) -> dict[str, Any]:
     """
     old_dict = args[0]
     for i in range(len(args) - 1):
-        merged = _recursive_dict_pair_merge(
-            old_dict, args[i + 1], remove_nones=remove_nones
-        )
+        merged = _recursive_dict_pair_merge(old_dict, args[i + 1])
         old_dict = safe_dict_copy(merged)
 
     if remove_nones:
