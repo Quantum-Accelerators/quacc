@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from typing import Any
 
 
-def recursively_merge_dicts(*args, remove_nones: bool = True) -> dict[str, Any]:
+def recursive_dict_merge(*args, remove_nones: bool = True) -> dict[str, Any]:
     """
     Recursively merge several dictionaries, taking the latter in the list as higher preference.
 
@@ -25,14 +25,14 @@ def recursively_merge_dicts(*args, remove_nones: bool = True) -> dict[str, Any]:
     """
     old_dict = args[0]
     for i in range(len(args) - 1):
-        merged = recursively_merge_dict_pairs(
+        merged = recursive_dict_pair_merge(
             old_dict, args[i + 1], remove_nones=remove_nones
         )
         old_dict = merged.copy()
     return merged
 
 
-def recursively_merge_dict_pairs(
+def recursive_dict_pair_merge(
     dict1: dict[str, Any] | None,
     dict2: dict[str, Any] | None,
     remove_nones: bool = True,
@@ -43,7 +43,7 @@ def recursively_merge_dict_pairs(
 
     This function should be used instead of the | operator when merging nested dictionaries,
     e.g. `{"a": {"b": 1}} | {"a": {"c": 2}}` will return `{"a": {"c": 2}}` whereas
-    `recursively_merge_dicts({"a": {"b": 1}}, {"a": {"c": 2}})` will return `{"a": {"b": 1, "c": 2}}`.
+    `recursive_dict_merge({"a": {"b": 1}}, {"a": {"c": 2}})` will return `{"a": {"b": 1, "c": 2}}`.
 
     Parameters
     ----------
@@ -66,7 +66,7 @@ def recursively_merge_dict_pairs(
     for key, value in dict2.items():
         if key in merged:
             if isinstance(merged[key], dict) and isinstance(value, dict):
-                merged[key] = recursively_merge_dict_pairs(merged[key], value)
+                merged[key] = recursive_dict_pair_merge(merged[key], value)
             else:
                 merged[key] = value
         else:

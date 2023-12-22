@@ -8,7 +8,7 @@ from ase.calculators.orca import ORCA, OrcaProfile, OrcaTemplate
 from quacc import SETTINGS
 from quacc.runners.ase import run_calc
 from quacc.schemas.cclib import cclib_summarize_run
-from quacc.utils.dicts import recursively_merge_dicts
+from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -67,8 +67,8 @@ def base_fn(
     cclibSchema
         Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][]
     """
-    inputs = recursively_merge_dicts(default_inputs, input_swaps)
-    blocks = recursively_merge_dicts(default_blocks, block_swaps)
+    inputs = recursive_dict_merge(default_inputs, input_swaps)
+    blocks = recursive_dict_merge(default_blocks, block_swaps)
     orcasimpleinput = " ".join(list(inputs.keys()))
     orcablocks = " ".join(list(blocks.keys()))
 

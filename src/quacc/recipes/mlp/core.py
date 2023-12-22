@@ -9,7 +9,7 @@ from quacc import job
 from quacc.recipes.mlp._base import _pick_calculator
 from quacc.runners.ase import run_calc, run_opt
 from quacc.schemas.ase import summarize_opt_run, summarize_run
-from quacc.utils.dicts import recursively_merge_dicts
+from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
     from typing import Any, Literal
@@ -88,7 +88,7 @@ def relax_job(
     atoms.calc = _pick_calculator(method, **calc_kwargs)
 
     opt_defaults = {"fmax": 0.1, "max_steps": 1000, "optimizer": FIRE}
-    opt_flags = recursively_merge_dicts(opt_defaults, opt_params)
+    opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
     dyn = run_opt(atoms, relax_cell=relax_cell, **opt_flags)
 

@@ -15,7 +15,7 @@ from monty.os.path import zpath
 from quacc import SETTINGS
 from quacc.atoms.core import copy_atoms
 from quacc.runners.prep import calc_cleanup, calc_setup
-from quacc.utils.dicts import recursively_merge_dicts
+from quacc.utils.dicts import recursive_dict_merge
 
 try:
     from sella import Internals, Sella
@@ -162,7 +162,7 @@ def run_opt(
     tmpdir, job_results_dir = calc_setup(copy_files=copy_files)
 
     # Set defaults
-    optimizer_kwargs = recursively_merge_dicts(
+    optimizer_kwargs = recursive_dict_merge(
         {
             "logfile": "-" if SETTINGS.DEBUG else tmpdir / "opt.log",
             "restart": tmpdir / "opt.pckl",

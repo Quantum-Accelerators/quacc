@@ -10,7 +10,7 @@ from quacc import job
 from quacc.runners.ase import run_calc, run_opt, run_vib
 from quacc.runners.thermo import run_ideal_gas
 from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
-from quacc.utils.dicts import recursively_merge_dicts
+from quacc.utils.dicts import recursive_dict_merge
 
 try:
     from tblite.ase import TBLite
@@ -54,7 +54,7 @@ def static_job(
     """
 
     calc_defaults = {"method": method}
-    calc_flags = recursively_merge_dicts(calc_defaults, calc_kwargs)
+    calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
     atoms.calc = TBLite(**calc_flags)
 
     final_atoms = run_calc(atoms)
@@ -99,11 +99,11 @@ def relax_job(
     """
 
     defaults = {"method": method}
-    calc_flags = recursively_merge_dicts(defaults, calc_kwargs)
+    calc_flags = recursive_dict_merge(defaults, calc_kwargs)
     atoms.calc = TBLite(**calc_flags)
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
-    opt_flags = recursively_merge_dicts(opt_defaults, opt_params)
+    opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
     dyn = run_opt(atoms, relax_cell=relax_cell, **opt_flags)
 
@@ -151,7 +151,7 @@ def freq_job(
     vib_kwargs = vib_kwargs or {}
 
     defaults = {"method": method}
-    calc_flags = recursively_merge_dicts(defaults, calc_kwargs)
+    calc_flags = recursive_dict_merge(defaults, calc_kwargs)
     atoms.calc = TBLite(**calc_flags)
 
     vibrations = run_vib(atoms, vib_kwargs=vib_kwargs)

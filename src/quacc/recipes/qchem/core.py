@@ -7,7 +7,7 @@ from ase.optimize import FIRE
 
 from quacc import job
 from quacc.recipes.qchem._base import base_fn, base_opt_fn
-from quacc.utils.dicts import recursively_merge_dicts
+from quacc.utils.dicts import recursive_dict_merge
 
 try:
     from sella import Sella
@@ -77,7 +77,7 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
-    calc_defaults = recursively_merge_dicts(
+    calc_defaults = recursive_dict_merge(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
 
@@ -136,7 +136,7 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
 
-    calc_defaults = recursively_merge_dicts(
+    calc_defaults = recursive_dict_merge(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
     opt_defaults = {
@@ -197,7 +197,7 @@ def freq_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
-    calc_defaults = recursively_merge_dicts(
+    calc_defaults = recursive_dict_merge(
         _BASE_SET, {"rem": {"job_type": "freq", "method": method, "basis": basis}}
     )
 

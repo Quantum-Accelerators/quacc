@@ -10,7 +10,7 @@ from ase.calculators.gulp import GULP
 from quacc import SETTINGS
 from quacc.runners.ase import run_calc
 from quacc.schemas.ase import summarize_run
-from quacc.utils.dicts import recursively_merge_dicts
+from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
     from typing import Any
@@ -72,7 +72,7 @@ def base_fn(
         for k in ["gwolf", "conp"]:
             keyword_defaults.pop(k, None)
 
-    option_defaults = recursively_merge_dicts(
+    option_defaults = recursive_dict_merge(
         option_defaults,
         {
             f"output cif {GEOM_FILE_PBC}": True if atoms.pbc.any() else None,
@@ -80,8 +80,8 @@ def base_fn(
         },
     )
 
-    keywords = recursively_merge_dicts(keyword_defaults, keyword_swaps)
-    options = recursively_merge_dicts(option_defaults, option_swaps)
+    keywords = recursive_dict_merge(keyword_defaults, keyword_swaps)
+    options = recursive_dict_merge(option_defaults, option_swaps)
 
     gulp_keywords = " ".join(list(keywords.keys()))
     gulp_options = list(options.keys())

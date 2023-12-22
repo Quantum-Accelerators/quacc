@@ -8,8 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- Renamed the `quacc.utils.dicts.merge_dicts` function to `.recursively_merge_dict_pairs` to better reflect its functionality.
-- Renamed the `quacc.utils.dicts.merge_several_dicts` function to `.recursively_merge_dicts` to better reflect its functionality.
+- Renamed the `quacc.utils.dicts.merge_dicts` function to `.recursive_dict_pair_merge` to better reflect its functionality.
+- Renamed the `quacc.utils.dicts.merge_several_dicts` function to `.recursive_dict_merge` to better reflect its functionality.
 
 ## [0.4.6]
 
