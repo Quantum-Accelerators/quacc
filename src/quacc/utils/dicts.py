@@ -17,7 +17,7 @@ def recursive_dict_merge(*args, remove_nones: bool = True) -> dict[str, Any]:
     *args
         Dictionaries to merge
     remove_nones
-        If True, remove empty lists and dictionaries
+        If True, recursively remove all items that are None.
 
     Returns
     -------
@@ -30,13 +30,14 @@ def recursive_dict_merge(*args, remove_nones: bool = True) -> dict[str, Any]:
             old_dict, args[i + 1], remove_nones=remove_nones
         )
         old_dict = safe_dict_copy(merged)
+
+    if remove_nones:
+        merged = remove_dict_nones(merged)
     return merged
 
 
 def _recursive_dict_pair_merge(
-    dict1: dict[str, Any] | None,
-    dict2: dict[str, Any] | None,
-    remove_nones: bool = True,
+    dict1: dict[str, Any] | None, dict2: dict[str, Any] | None
 ) -> dict[str, Any]:
     """
     Recursively merges two dictionaries. If one of the inputs is `None`, then it is
@@ -52,8 +53,6 @@ def _recursive_dict_pair_merge(
         First dictionary
     dict2
         Second dictionary
-    remove_nones
-        If True, remove empty lists and dictionaries
 
     Returns
     -------
@@ -72,9 +71,6 @@ def _recursive_dict_pair_merge(
                 merged[key] = value
         else:
             merged[key] = value
-
-    if remove_nones:
-        merged = remove_dict_nones(merged)
 
     return merged
 
