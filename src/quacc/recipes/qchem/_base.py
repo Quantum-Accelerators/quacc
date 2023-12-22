@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from quacc.calculators.qchem import QChem
 from quacc.runners.ase import run_calc, run_opt
 from quacc.schemas.ase import summarize_opt_run, summarize_run
-from quacc.utils.dicts import merge_dicts
+from quacc.utils.dicts import recursive_merge_dicts
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -55,7 +55,7 @@ def base_fn(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
-    calc_flags = merge_dicts(calc_defaults, calc_swaps)
+    calc_flags = recursive_merge_dicts(calc_defaults, calc_swaps)
     atoms.calc = QChem(
         atoms, charge=charge, spin_multiplicity=spin_multiplicity, **calc_flags
     )
@@ -112,8 +112,8 @@ def base_opt_fn(
     # TODO:
     #   - passing initial Hessian?
 
-    calc_flags = merge_dicts(calc_defaults, calc_swaps)
-    opt_flags = merge_dicts(opt_defaults, opt_params)
+    calc_flags = recursive_merge_dicts(calc_defaults, calc_swaps)
+    opt_flags = recursive_merge_dicts(opt_defaults, opt_params)
 
     atoms.calc = QChem(
         atoms, charge=charge, spin_multiplicity=spin_multiplicity, **calc_flags

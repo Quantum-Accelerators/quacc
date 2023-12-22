@@ -8,7 +8,7 @@ from monty.dev import requires
 from quacc import SETTINGS, job
 from quacc.recipes.qchem._base import base_opt_fn
 from quacc.recipes.qchem.core import _BASE_SET, relax_job
-from quacc.utils.dicts import merge_dicts
+from quacc.utils.dicts import recursive_merge_dicts
 
 try:
     from sella import IRC, Sella
@@ -71,7 +71,7 @@ def ts_job(
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
 
-    calc_defaults = merge_dicts(
+    calc_defaults = recursive_merge_dicts(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
     opt_defaults = {
@@ -145,7 +145,7 @@ def irc_job(
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
 
-    calc_defaults = merge_dicts(
+    calc_defaults = recursive_merge_dicts(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
     opt_defaults = {
@@ -228,8 +228,8 @@ def quasi_irc_job(
         "method": method,
         "basis": basis,
     }
-    irc_job_kwargs = merge_dicts(irc_job_defaults, irc_job_kwargs)
-    relax_job_kwargs = merge_dicts(relax_job_defaults, relax_job_kwargs)
+    irc_job_kwargs = recursive_merge_dicts(irc_job_defaults, irc_job_kwargs)
+    relax_job_kwargs = recursive_merge_dicts(relax_job_defaults, relax_job_kwargs)
 
     SETTINGS.CHECK_CONVERGENCE = False
     irc_summary = irc_job.__wrapped__(atoms, **irc_job_kwargs)

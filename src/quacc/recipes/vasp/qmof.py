@@ -15,7 +15,7 @@ from quacc.calculators.vasp import Vasp
 from quacc.recipes.vasp._base import base_fn
 from quacc.runners.ase import run_opt
 from quacc.schemas.ase import summarize_opt_run
-from quacc.utils.dicts import merge_dicts
+from quacc.utils.dicts import recursive_merge_dicts
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
@@ -133,7 +133,7 @@ def _prerelax(
         "nelm": 225,
         "nsw": 0,
     }
-    calc_flags = merge_dicts(calc_defaults, calc_kwargs, remove_nones=False)
+    calc_flags = recursive_merge_dicts(calc_defaults, calc_kwargs, remove_nones=False)
     atoms.calc = Vasp(atoms, preset=preset, **calc_flags)
     dyn = run_opt(atoms, fmax=fmax, optimizer=BFGSLineSearch)
 

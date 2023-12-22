@@ -1,4 +1,4 @@
-from quacc.utils.dicts import merge_dicts, remove_dict_nones
+from quacc.utils.dicts import recursive_merge_dicts, remove_dict_nones
 
 
 def test_remove_dict_nones():
@@ -20,10 +20,10 @@ def test_remove_dict_nones():
     }
 
 
-def test_merge_dicts():
+def test_recursive_merge_dicts():
     defaults = {"a": 1, "b": {"a": 1, "b": 2}}
     calc_swaps = {"c": 3, "b": {"b": 3, "d": 1}}
-    assert merge_dicts(defaults, calc_swaps) == {
+    assert recursive_merge_dicts(defaults, calc_swaps) == {
         "a": 1,
         "b": {"a": 1, "b": 3, "d": 1},
         "c": 3,

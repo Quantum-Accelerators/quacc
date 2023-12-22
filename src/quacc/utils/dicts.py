@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from typing import Any
 
 
-def merge_dicts(
+def recursive_merge_dicts(
     dict1: dict[str, Any] | None,
     dict2: dict[str, Any] | None,
     remove_nones: bool = True,
@@ -18,7 +18,7 @@ def merge_dicts(
 
     This function should be used instead of the | operator when merging nested dictionaries,
     e.g. `{"a": {"b": 1}} | {"a": {"c": 2}}` will return `{"a": {"c": 2}}` whereas
-    `merge_dicts({"a": {"b": 1}}, {"a": {"c": 2}})` will return `{"a": {"b": 1, "c": 2}}`.
+    `recursive_merge_dicts({"a": {"b": 1}}, {"a": {"c": 2}})` will return `{"a": {"b": 1, "c": 2}}`.
 
     Parameters
     ----------
@@ -41,7 +41,7 @@ def merge_dicts(
     for key, value in dict2.items():
         if key in merged:
             if isinstance(merged[key], dict) and isinstance(value, dict):
-                merged[key] = merge_dicts(merged[key], value)
+                merged[key] = recursive_merge_dicts(merged[key], value)
             else:
                 merged[key] = value
         else:
@@ -71,7 +71,7 @@ def merge_several_dicts(*args, remove_nones: bool = True) -> dict[str, Any]:
     """
     old_dict = args[0]
     for i in range(len(args) - 1):
-        merged = merge_dicts(old_dict, args[i + 1], remove_nones=remove_nones)
+        merged = recursive_merge_dicts(old_dict, args[i + 1], remove_nones=remove_nones)
         old_dict = merged.copy()
     return merged
 
