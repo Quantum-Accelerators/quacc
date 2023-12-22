@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from quacc.calculators._qchem_legacy import QChem
 from quacc.runners.ase import run_calc, run_opt
 from quacc.schemas.ase import summarize_opt_run, summarize_run
-from quacc.utils.dicts import merge_dicts, remove_dict_nones
+from quacc.utils.dicts import recursive_dict_merge, remove_dict_nones
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -102,7 +102,7 @@ def base_opt_fn(
     #   - passing initial Hessian?
 
     qchem_flags = remove_dict_nones(calc_defaults)
-    opt_flags = merge_dicts(opt_defaults, opt_params)
+    opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
     atoms.calc = QChem(atoms, **qchem_flags)
     dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)

@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from quacc.calculators.vasp import Vasp
 from quacc.runners.ase import run_calc
 from quacc.schemas.vasp import vasp_summarize_run
-from quacc.utils.dicts import merge_dicts
+from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -50,7 +50,7 @@ def base_fn(
     VaspSchema
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
-    calc_flags = merge_dicts(calc_defaults, calc_swaps, remove_nones=False)
+    calc_flags = recursive_dict_merge(calc_defaults, calc_swaps, remove_nones=False)
 
     atoms.calc = Vasp(atoms, preset=preset, **calc_flags)
     atoms = run_calc(atoms, copy_files=copy_files)

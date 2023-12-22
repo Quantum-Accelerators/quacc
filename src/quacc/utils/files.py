@@ -5,6 +5,7 @@ import contextlib
 import os
 import socket
 import warnings
+from copy import deepcopy
 from datetime import datetime, timezone
 from pathlib import Path
 from random import randint
@@ -159,7 +160,7 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
 
     # Inherit arguments from any parent YAML files but do not overwrite those in
     # the child file.
-    for config_arg in config.copy():
+    for config_arg in deepcopy(config):
         if "parent" in config_arg.lower():
             yaml_parent_path = Path(yaml_path).parent / Path(config[config_arg])
             parent_config = load_yaml_calc(yaml_parent_path)
