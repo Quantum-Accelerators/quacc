@@ -168,6 +168,7 @@ def run_opt(
             "restart": tmpdir / "opt.pckl",
         },
         optimizer_kwargs,
+        remove_nones=False,
     )
     run_kwargs = run_kwargs or {}
 
