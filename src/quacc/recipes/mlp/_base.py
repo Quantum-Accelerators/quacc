@@ -1,6 +1,7 @@
 """Base functions for universal machine-learned interatomic potentials."""
 from __future__ import annotations
 
+import warnings
 from functools import lru_cache
 from typing import TYPE_CHECKING
 
