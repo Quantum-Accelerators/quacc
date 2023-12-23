@@ -23,7 +23,7 @@ def set_default_dtype(method):
 def test_static_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
     set_default_dtype(method)
-    
+
     ref_energy = {
         "chgnet": -4.083308219909668,
         "m3gnet": -4.0938973,
