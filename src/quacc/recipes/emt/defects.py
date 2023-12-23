@@ -8,7 +8,7 @@ from pymatgen.analysis.defects.generators import VacancyGenerator
 from quacc import flow
 from quacc.recipes.common.defects import bulk_to_defects_subflow
 from quacc.recipes.emt.core import relax_job, static_job
-from quacc.utils.dicts import merge_dicts
+from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
     from typing import Any
@@ -74,7 +74,7 @@ def bulk_to_defects_flow(
         List of dictionary of results from [quacc.schemas.ase.summarize_run][]
         or [quacc.schemas.ase.summarize_opt_run][]
     """
-    make_defects_kwargs = merge_dicts(
+    make_defects_kwargs = recursive_dict_merge(
         make_defects_kwargs, {"defect_gen": defect_gen, "defect_charge": defect_charge}
     )
     defect_relax_job = relax_job if custom_relax_job is None else custom_relax_job
