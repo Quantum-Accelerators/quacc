@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.7]
+
+### Changed
+
+- Renamed the `quacc.utils.dicts.merge_dicts` function to `._recursive_dict_pair_merge` to better reflect its functionality.
+- Renamed the `quacc.utils.dicts.merge_several_dicts` function to `.recursive_dict_merge` to better reflect its functionality.
+
 ## [0.4.6]
 
 ### Added

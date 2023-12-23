@@ -55,7 +55,7 @@ def mp_prerelax_job(
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
+        keys, refer to the [quacc.calculators.vasp.vasp.Vasp][] calculator.
 
     Returns
     -------
@@ -105,7 +105,7 @@ def mp_relax_job(
     **calc_kwargs
         Dictionary of custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
+        keys, refer to the [quacc.calculators.vasp.vasp.Vasp][] calculator.
 
     Returns
     -------

@@ -14,7 +14,7 @@ from quacc import SETTINGS
 from quacc.calculators.espresso.io import read, write
 from quacc.calculators.espresso.keys import ALL_KEYS
 from quacc.calculators.espresso.utils import parse_pw_preset
-from quacc.utils.dicts import merge_dicts
+from quacc.utils.dicts import recursive_dict_merge
 from quacc.utils.files import load_yaml_calc
 
 if TYPE_CHECKING:
@@ -276,14 +276,14 @@ class Espresso(Espresso_):
         if self.preset:
             config = load_yaml_calc(SETTINGS.ESPRESSO_PRESET_DIR / f"{self.preset}")
             preset = parse_pw_preset(config, self.input_atoms)
-            kwargs = merge_dicts(preset, kwargs)
+            kwargs = recursive_dict_merge(preset, kwargs)
 
         if kpts:
             kwargs.pop("kspacing", None)
         elif kspacing:
             kwargs.pop("kpts", None)
 
-        kwargs = merge_dicts(self.calc_defaults, kwargs)
+        kwargs = recursive_dict_merge(self.calc_defaults, kwargs)
 
         if kwargs.get("kpts") == "gamma":
             kwargs["kpts"] = None

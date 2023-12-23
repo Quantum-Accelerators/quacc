@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+from copy import deepcopy
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -171,7 +172,7 @@ def make_slabs_from_bulk(
         # Make sure desired atoms are on surface
         if allowed_surface_symbols:
             # Find atoms at surface
-            surf_sites = AdsorbateSiteFinder(slab.copy()).surface_sites
+            surf_sites = AdsorbateSiteFinder(deepcopy(slab)).surface_sites
             surface_species = [s.specie.symbol for s in surf_sites]
 
         if allowed_surface_symbols and all(
@@ -188,7 +189,7 @@ def make_slabs_from_bulk(
         # Add constraints. Note: This does not actually add an adsorbate
         if z_fix:
             sel_dyn = AdsorbateSiteFinder(
-                slab.copy(), selective_dynamics=True, height=z_fix
+                deepcopy(slab), selective_dynamics=True, height=z_fix
             ).slab.site_properties["selective_dynamics"]
             slab.add_site_property("selective_dynamics", sel_dyn)
 
@@ -344,7 +345,7 @@ def make_adsorbate_structures(
                 continue
 
             # Store adsorbate info
-            atoms_with_adsorbate.info = atoms.info.copy()
+            atoms_with_adsorbate.info = deepcopy(atoms.info)
             ads_stats = {
                 "adsorbate": adsorbate,
                 "initial_mode": mode,
