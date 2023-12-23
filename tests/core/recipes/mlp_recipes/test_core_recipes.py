@@ -14,13 +14,16 @@ def test_bad_method():
         static_job(atoms, method="bad_method")
 
 
-def setup_function():
-    torch.set_default_dtype(getattr(torch, "float32"))
+def set_default_dtype(method):
+    if method != "mace":
+        torch.set_default_dtype(getattr(torch, "float32", "float32"))
 
 
 @pytest.mark.parametrize("method", ["chgnet", "m3gnet", "mace"])
 def test_static_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
+    set_default_dtype(method)
+    
     ref_energy = {
         "chgnet": -4.083308219909668,
         "m3gnet": -4.0938973,
@@ -42,6 +45,8 @@ def test_static_job(tmp_path, monkeypatch, method):
 @pytest.mark.parametrize("method", ["chgnet", "m3gnet", "mace"])
 def test_relax_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
+    set_default_dtype(method)
+
     ref_energy = {
         "chgnet": -32.665626525878906,
         "m3gnet": -32.749088287353516,
@@ -66,6 +71,8 @@ def test_relax_job(tmp_path, monkeypatch, method):
 @pytest.mark.parametrize("method", ["chgnet", "m3gnet", "mace"])
 def test_relax_cell_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
+    set_default_dtype(method)
+
     ref_energy = {
         "chgnet": -32.6676139831543,
         "m3gnet": -32.74995040893555,
