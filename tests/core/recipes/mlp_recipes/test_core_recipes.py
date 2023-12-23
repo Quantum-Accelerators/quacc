@@ -4,12 +4,17 @@ from ase.build import bulk
 
 from quacc.recipes.mlp.core import relax_job, static_job
 
+torch = pytest.importorskip("torch")
+
 
 def test_bad_method():
     atoms = bulk("Cu")
     pytestmark = pytest.importorskip("chgnet")
     with pytest.raises(ValueError):
         static_job(atoms, method="bad_method")
+
+def setup_function():
+    torch.set_default_dtype(getattr(torch, f"float32"))
 
 
 @pytest.mark.parametrize("method", ["chgnet", "m3gnet", "mace"])
