@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from ase.io.espresso import kspacing_to_grid
 
-from quacc.utils.dicts import merge_dicts
+from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
     from typing import Any
@@ -47,7 +47,7 @@ def parse_pw_preset(config: dict[str, Any], atoms: Atoms) -> dict[str, Any] | No
         pp_input_data = {"system": {"ecutwfc": wfc_cutoff, "ecutrho": rho_cutoff}}
 
     input_data = config.get("input_data")
-    input_data = merge_dicts(pp_input_data, input_data)
+    input_data = recursive_dict_merge(pp_input_data, input_data)
 
     atoms_info = config.get("atoms_info", {})
 
