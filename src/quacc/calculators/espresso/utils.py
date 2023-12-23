@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ase.io.espresso import kspacing_to_grid
-
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
