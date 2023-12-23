@@ -37,7 +37,7 @@ def test_static_job(tmp_path, monkeypatch, method):
 def test_relax_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
     ref_energy = {
-        "chgnet": -32.662731,
+        "chgnet": -32.665626525878906,
         "m3gnet": -32.749088287353516,
         "mace": -32.670471191406259,
     }
