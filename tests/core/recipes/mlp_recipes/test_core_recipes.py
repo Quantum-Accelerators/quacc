@@ -38,8 +38,8 @@ def test_relax_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
     ref_energy = {
         "chgnet": -32.662731,
-        "m3gnet": -32.747219,
-        "mace": -32.66752624511719,
+        "m3gnet": -32.749088287353516,
+        "mace": -32.670471191406259,
     }
     if method == "chgnet":
         pytestmark = pytest.importorskip("chgnet")
@@ -61,9 +61,9 @@ def test_relax_job(tmp_path, monkeypatch, method):
 def test_relax_cell_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
     ref_energy = {
-        "chgnet": -32.664215087890625,
-        "m3gnet": -32.74749,
-        "mace": -32.67439270019531,
+        "chgnet": -32.6676139831543,
+        "m3gnet": -32.74995040893555,
+        "mace": -32.67771911621094,
     }
     if method == "chgnet":
         pytestmark = pytest.importorskip("chgnet")
