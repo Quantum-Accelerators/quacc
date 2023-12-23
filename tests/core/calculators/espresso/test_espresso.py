@@ -106,12 +106,23 @@ def test_espresso_presets():
 
 
 def test_espresso_presets_gamma():
-
     preset = "molecule_efficiency.yaml"
 
     calc = Espresso(preset=preset)
 
     assert calc.parameters["kpts"] is None
+
+
+def test_espresso_bad_kpts():
+    with pytest.raises(ValueError):
+        Espresso(kpts=(1, 1, 1), kspacing=0.5)
+
+
+def test_espresso_kpts():
+    calc = Espresso(kspacing=0.001, preset="esm_metal_slab_efficiency")
+
+    assert "kpts" not in calc.parameters
+    assert calc.parameters["kspacing"] == 0.001
 
 
 def test_outdir_handler(tmp_path, monkeypatch):

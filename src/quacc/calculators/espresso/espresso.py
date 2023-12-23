@@ -267,10 +267,21 @@ class Espresso(Espresso_):
             self.calc_defaults.get("input_data"), keys=keys
         )
 
+        kpts = kwargs.get("kpts")
+        kspacing = kwargs.get("kspacing")
+
+        if kpts and kspacing:
+            raise ValueError("Cannot specify both kpts and kspacing.")
+
         if self.preset:
             config = load_yaml_calc(SETTINGS.ESPRESSO_PRESET_DIR / f"{self.preset}")
             preset = parse_pw_preset(config, self.input_atoms)
             kwargs = merge_dicts(preset, kwargs)
+
+        if kpts:
+            kwargs.pop("kspacing", None)
+        elif kspacing:
+            kwargs.pop("kpts", None)
 
         kwargs = merge_dicts(self.calc_defaults, kwargs)
 
