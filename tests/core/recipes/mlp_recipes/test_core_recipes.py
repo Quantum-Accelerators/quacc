@@ -15,7 +15,7 @@ def test_bad_method():
 
 
 def setup_function():
-    torch.set_default_dtype(getattr(torch, f"float32"))
+    torch.set_default_dtype(getattr(torch, "float32"))
 
 
 @pytest.mark.parametrize("method", ["chgnet", "m3gnet", "mace"])
