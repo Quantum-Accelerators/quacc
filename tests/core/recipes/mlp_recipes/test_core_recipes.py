@@ -13,6 +13,7 @@ def test_bad_method():
     with pytest.raises(ValueError):
         static_job(atoms, method="bad_method")
 
+
 def setup_function():
     torch.set_default_dtype(getattr(torch, f"float32"))
 
