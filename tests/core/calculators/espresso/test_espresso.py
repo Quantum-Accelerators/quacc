@@ -69,6 +69,7 @@ def test_espresso_presets():
         preset=preset,
         calc_defaults=calc_defaults,
         input_data=input_data,
+        kpts=[7, 17, 1],
     )
 
     expected_parameters = {
@@ -119,7 +120,7 @@ def test_espresso_bad_kpts():
 
 
 def test_espresso_kpts():
-    calc = Espresso(kspacing=0.001, preset="esm_metal_slab_efficiency")
+    calc = Espresso(kspacing=0.001, preset="metal_precision")
 
     assert "kpts" not in calc.parameters
     assert calc.parameters["kspacing"] == 0.001

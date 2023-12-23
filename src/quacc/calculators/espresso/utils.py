@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ase.io.espresso import kspacing_to_grid
-
 from quacc.utils.dicts import merge_dicts
 
 if TYPE_CHECKING:
@@ -49,18 +47,9 @@ def parse_pw_preset(config: dict[str, Any], atoms: Atoms) -> dict[str, Any] | No
     input_data = config.get("input_data")
     input_data = merge_dicts(pp_input_data, input_data)
 
-    atoms_info = config.get("atoms_info", {})
-
-    if "pbc" in atoms_info:
-        atoms_copy.set_pbc(atoms_info["pbc"])
-
     kspacing = config.get("kspacing")
 
-    if kspacing:
-        kpts = kspacing_to_grid(atoms_copy, kspacing)
-        kspacing = None
-    else:
-        kpts = config.get("kpts")
+    kpts = config.get("kpts")
 
     return {
         "input_data": input_data,
