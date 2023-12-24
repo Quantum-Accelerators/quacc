@@ -48,6 +48,9 @@ def phonon_job(
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
+    test_run
+        If True, a test run is performed to check that the calculation input_data is correct or
+        to generate some files/info if needed.
     **calc_kwargs
         calc_kwargs dictionary possibly containing the following keys:
 
