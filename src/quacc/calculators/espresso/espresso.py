@@ -103,7 +103,7 @@ class EspressoTemplate(EspressoTemplate_):
             **parameters,
         )
 
-    def _test_run(self, parameters: dict[str, Any], directory: Path):
+    def _test_run(self, parameters: dict[str, Any], directory: Path) -> dict[str, Any]:
         """
         Almost all QE binaries will do a test run if a file named
         <prefix>.EXIT is present in the working directory. This
