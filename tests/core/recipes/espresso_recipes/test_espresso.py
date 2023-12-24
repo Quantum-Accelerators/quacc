@@ -7,7 +7,8 @@ from ase.build import bulk
 from ase.io.espresso import construct_namelist
 
 from quacc import SETTINGS
-from quacc.recipes.espresso.core import phonon_job, static_job
+from quacc.recipes.espresso.core import static_job
+from quacc.recipes.espresso.phonons import phonon_job
 from quacc.utils.files import copy_decompress_files
 
 pytestmark = pytest.mark.skipif(which("pw.x") is None, reason="QE not installed")
