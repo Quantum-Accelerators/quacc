@@ -4,6 +4,7 @@ from __future__ import annotations
 from functools import partial
 from typing import TYPE_CHECKING
 
+import numpy as np
 from ase import Atoms
 
 from quacc import Job, flow, job
@@ -94,16 +95,54 @@ def phonon_job(
 
 
 @flow
-def grid_phonon(pw_job: Job = static_job, phonon_job: Job = phonon_job):
+def grid_phonon_flow(
+    custom_pw_job: Job | None = None,
+    custom_phonon_job: Job | None = None,
+    nblocks: int = 1,
+):
+    """
+    Function to carry out a grid parallelization of a ph.x calculation. Each representation of each
+    q-point is calculated in a separate job. This allow the calculations to be run on different machines
+    at possibly different times. The only drawback is that the data of the prior pw.x calculation has to
+    be copied to each of the jobs. Thus the total amount of data will be n*m times the size of the pw.x
+    calculation where n is the number of q-points and m is the number of representations. Plus the data
+    produced by each ph.x calculations. This can becomes very large if your system has a lot of atoms.
+    To provide a way to control the amount of data produced, the user can provide an additional argument
+    "nblocks" which will group multiple representations together in a single job. This will reduce the
+    amount of data produced by a factor of nblocks.
+
+    Parameters
+    ----------
+    custom_pw_job
+        A custom job to run the pw.x calculation. This job should return a RunSchema dictionary.
+        The default job is a static_job.
+
+    custom_phonon_job
+        A custom job to run the ph.x calculation. This job should return a RunSchema dictionary.
+        The default job is a phonon_job.
+
+    nblocks
+        The number of representations to group together in a single job. This will reduce the amount
+        of data produced by a factor of nblocks. If nblocks = 0 each job will contain all the representations
+        for a single q-point.
+
+    Returns
+    -------
+    RunSchema
+        Dictionary of results from [quacc.schemas.ase.summarize_run][]
+    """
 
     # We run a first pw job (single point or relax) depending on the input
+    pw_job = static_job if custom_pw_job is None else custom_phonon_job
+    ph_job = phonon_job if custom_phonon_job is None else phonon_job
+
     pw_job_results = pw_job()
 
     # First ph job to generate the patterns
     ph_job_partial = partial(
-        phonon_job, test_run=True, copy_files=pw_job_results["dir_name"]
+        ph_job, test_run=True, copy_files=pw_job_results["dir_name"]
     )
-    # We acutally run the job
+    # We actually run the job
     ph_job_results = ph_job_partial()
     # We parse the patterns
     ph_patterns = parse_ph_patterns(ph_job_results["dir_name"])
@@ -117,11 +156,15 @@ def grid_phonon(pw_job: Job = static_job, phonon_job: Job = phonon_job):
         input_data["inputph"]["start_q"] = pattern
         input_data["inputph"]["last_q"] = pattern
         n_repr = ph_patterns[pattern]
-        for representation in range(1, n_repr + 1):
-            input_data["inputph"]["start_irr"] = representation
-            input_data["inputph"]["last_irr"] = representation
+        this_block = nblocks if nblocks > 0 else n_repr
+        repr_to_do = np.array_split(
+            np.arange(1, n_repr + 1), np.ceil(n_repr / this_block)
+        )
+        for representation in repr_to_do:
+            input_data["inputph"]["start_irr"] = representation[0]
+            input_data["inputph"]["last_irr"] = representation[-1]
             ph_job_partial = partial(
-                phonon_job, input_data=input_data, copy_files=pw_job_results["dir_name"]
+                ph_job, input_data=input_data, copy_files=pw_job_results["dir_name"]
             )
             grid_results.append(ph_job_partial())
     # We have to copy back the files from all of the jobs
@@ -135,8 +178,6 @@ def grid_phonon(pw_job: Job = static_job, phonon_job: Job = phonon_job):
 
     input_data["inputph"]["recover"] = True
 
-    ph_job_partial = partial(phonon_job, input_data=input_data, copy_files=copy_back)
+    ph_job_partial = partial(ph_job, input_data=input_data, copy_files=copy_back)
 
-    final_ph_job = ph_job_partial()
-
-    return final_ph_job
+    return ph_job_partial()

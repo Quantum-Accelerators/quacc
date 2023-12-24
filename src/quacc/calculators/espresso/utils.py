@@ -48,7 +48,7 @@ def parse_pp_and_cutoff(config: dict[str, Any], atoms: Atoms) -> dict[str, Any] 
     return {"pseudopotentials": pseudopotentials, "input_data": tmp_input_data}
 
 
-def parse_ph_patterns(root_dir):
+def parse_ph_patterns(root_dir : str | Path) -> dict[int, int]:
     """
     Function that parses the patterns from a ph.x calculation.
 

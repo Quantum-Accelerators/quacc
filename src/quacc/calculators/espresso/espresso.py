@@ -36,7 +36,11 @@ class EspressoTemplate(EspressoTemplate_):
         ----------
         binary
             The name of the espresso binary to use. This is used to set the
-            input/output file names. By default we fall bacl on "pw".
+            input/output file names. By default we fall back to "pw".
+
+        test_run
+            If True, a test run is performed to check that the calculation
+            input_data is correct or to generate some files/info if needed.
 
         Returns
         -------
@@ -101,21 +105,32 @@ class EspressoTemplate(EspressoTemplate_):
         )
 
     def _test_run(self, parameters: dict[str, Any], directory: Path):
-        # Almost all QE binaries will do a test run if a file named
-        # <prefix>.EXIT is present in the working directory. This
-        # function will create this file.
+        """
+        Almost all QE binaries will do a test run if a file named
+        <prefix>.EXIT is present in the working directory. This
+        function will create this file.
+
+        Parameters
+        ----------
+        parameters
+            input_data, which are needed to know the prefix
+        directory
+            The directory in which to write the EXIT file.
+
+        Returns
+        -------
+        dict
+            The parameters dictionnary, modified for special cases.
+        """
         input_data = parameters.get("input_data", {})
-        # Default prefix is "pwscf"
         prefix = "pwscf"
-        # We look if the user has specified a prefix
+
         for section in input_data:
             for key in input_data[section]:
                 if key == "prefix":
                     prefix = input_data[section][key]
                     break
-        # If the binary is ph.x then it is a special case
-        # we have to remove the start_q and last_q keys
-        # and set start_irr and last_irr to 0
+
         if self.binary == "ph":
             input_data["inputph"]["start_irr"] = 0
             input_data["inputph"]["last_irr"] = 0
