@@ -22,7 +22,7 @@ input_data:
   ions:
     ion_dynamics: bfgs
     bfgs_ndim: 6
-    upscale : 1000
+    upscale: 1000
 
 kpts: gamma
 
