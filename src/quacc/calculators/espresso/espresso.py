@@ -36,7 +36,6 @@ class EspressoTemplate(EspressoTemplate_):
         binary
             The name of the espresso binary to use. This is used to set the
             input/output file names. By default we fall back to "pw".
-
         test_run
             If True, a test run is performed to check that the calculation
             input_data is correct or to generate some files/info if needed.
