@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from quacc.atoms.core import copy_atoms
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
@@ -10,7 +11,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
 
-def parse_pw_preset(config: dict[str, Any], atoms: Atoms) -> dict[str, Any] | None:
+def parse_pw_preset(config: dict[str, Any], atoms: Atoms) -> dict[str, Any]:
     """
     Function that parses the pseudopotentials and cutoffs from a preset file.
     The cutoffs are taken from the largest value of the cutoffs among the elements
@@ -25,11 +26,11 @@ def parse_pw_preset(config: dict[str, Any], atoms: Atoms) -> dict[str, Any] | No
 
     Returns
     -------
-    dict | None
+    dict
         A dictionary containing the pseudopotentials and cutoffs
     """
 
-    atoms_copy = atoms.copy()
+    atoms_copy = copy_atoms(atoms)
 
     if "pseudopotentials" in config:
         pp_dict = config["pseudopotentials"]
