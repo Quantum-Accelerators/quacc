@@ -1,0 +1,15 @@
+# Last modified: 12-23-2023
+
+input_data:
+  system:
+    occupations: smearing
+    smearing: marzari-vanderbilt
+    degauss: 0.005
+    assume_isolated: esm
+    esm_bc: bc1
+  electrons:
+    conv_thr: 1.0e-10
+    mixing_mode: local-TF
+    mixing_beta: 0.35
+
+parent_pseudopotentials: sssp_1.3.0_pbe_precision.yaml
