@@ -9,7 +9,7 @@ from copy import deepcopy
 from datetime import datetime, timezone
 from pathlib import Path
 from random import randint
-from shutil import copy, copytree
+from shutil import copy
 from typing import TYPE_CHECKING
 
 import yaml
