@@ -62,7 +62,7 @@ def parse_pw_preset(config: dict[str, Any], atoms: Atoms) -> dict[str, Any]:
         "kpts": kpts,
     }
 
-  
+
 def parse_ph_patterns(root_dir : str | Path) -> dict[int, int]:
     """
     Function that parses the patterns from a ph.x calculation.
