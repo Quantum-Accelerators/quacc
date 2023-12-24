@@ -126,7 +126,9 @@ def mp_relax_job(
 
 @flow
 def mp_relax_flow(
-    atoms: Atoms, custom_prerelax_job: Job | None = None, custom_relax_job: Job | None = None, 
+    atoms: Atoms,
+    custom_prerelax_job: Job | None = None,
+    custom_relax_job: Job | None = None,
 ) -> MPRelaxFlowSchema:
     """
     Workflow consisting of:
@@ -151,7 +153,9 @@ def mp_relax_flow(
     """
 
     # Run the prerelax
-    prerelax_job = mp_prerelax_job if custom_prerelax_job is None else custom_prerelax_job
+    prerelax_job = (
+        mp_prerelax_job if custom_prerelax_job is None else custom_prerelax_job
+    )
     prerelax_results = prerelax_job(atoms)
 
     # Run the relax
