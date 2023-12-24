@@ -12,8 +12,8 @@ pytestmark = pytest.mark.skipif(
 
 from ase.build import bulk, molecule
 
-from quacc.recipes.emt.core import relax_job, static_job
-from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+from quacc.recipes.emt.core import relax_job, static_job  # skipcq: PYL-C0412
+from quacc.recipes.emt.slabs import bulk_to_slabs_flow  # skipcq: PYL-C0412
 
 
 def setup_module():
@@ -115,13 +115,7 @@ def test_tutorial2c(tmp_path, monkeypatch):
     # Define the workflow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        return bulk_to_slabs_flow(
-            relaxed_bulk["atoms"],
-            run_static=False,
-            # slab_relax_kwargs={
-            #     "opt_params": {"optimizer_kwargs": {"logfile": "-"}}
-            # },  # this is for easy debugging
-        )
+        return bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)  # (1)!
 
     # Define the Atoms object
     atoms = bulk("Cu")

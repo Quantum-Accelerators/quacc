@@ -1,3 +1,5 @@
+from functools import partial
+
 import numpy as np
 import pytest
 from ase.build import bulk, molecule
@@ -94,7 +96,7 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
     outputs = bulk_to_slabs_flow(
         atoms,
         run_static=False,
-        slab_relax_kwargs={"opt_params": {"fmax": 1.0}, "asap_cutoff": True},
+        custom_relax_job=partial(relax_job, opt_params={"fmax": 1.0}, asap_cutoff=True),
     )
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80

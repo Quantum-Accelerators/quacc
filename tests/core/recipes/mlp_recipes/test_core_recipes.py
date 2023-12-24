@@ -12,19 +12,19 @@ def test_bad_method():
         static_job(atoms, method="bad_method")
 
 
-@pytest.mark.parametrize("method", ["chgnet", "m3gnet", "umace"])
+@pytest.mark.parametrize("method", ["chgnet", "m3gnet", "mace"])
 def test_static_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
     ref_energy = {
         "chgnet": -4.083308219909668,
         "m3gnet": -4.0938973,
-        "umace": -4.083906650543213,
+        "mace": -4.083906650543213,
     }
     if method == "chgnet":
         pytestmark = pytest.importorskip("chgnet")
     elif method == "m3gnet":
         pytestmark = pytest.importorskip("matgl")
-    elif method == "umace":
+    elif method == "mace":
         pytestmark = pytest.importorskip("mace")
     atoms = bulk("Cu")
     output = static_job(atoms, method=method)
@@ -33,19 +33,19 @@ def test_static_job(tmp_path, monkeypatch, method):
     assert output["atoms"] == atoms
 
 
-@pytest.mark.parametrize("method", ["chgnet", "m3gnet", "umace"])
+@pytest.mark.parametrize("method", ["chgnet", "m3gnet", "mace"])
 def test_relax_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
     ref_energy = {
-        "chgnet": -32.662731,
-        "m3gnet": -32.747219,
-        "umace": -32.66752624511719,
+        "chgnet": -32.665626525878906,
+        "m3gnet": -32.749088287353516,
+        "mace": -32.670471191406259,
     }
     if method == "chgnet":
         pytestmark = pytest.importorskip("chgnet")
     elif method == "m3gnet":
         pytestmark = pytest.importorskip("matgl")
-    elif method == "umace":
+    elif method == "mace":
         pytestmark = pytest.importorskip("mace")
 
     atoms = bulk("Cu") * (2, 2, 2)
@@ -57,19 +57,19 @@ def test_relax_job(tmp_path, monkeypatch, method):
     assert output["atoms"].get_volume() == pytest.approx(atoms.get_volume())
 
 
-@pytest.mark.parametrize("method", ["chgnet", "m3gnet", "umace"])
+@pytest.mark.parametrize("method", ["chgnet", "m3gnet", "mace"])
 def test_relax_cell_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
     ref_energy = {
-        "chgnet": -32.664215087890625,
-        "m3gnet": -32.74749,
-        "umace": -32.67439270019531,
+        "chgnet": -32.6676139831543,
+        "m3gnet": -32.74995040893555,
+        "mace": -32.67771911621094,
     }
     if method == "chgnet":
         pytestmark = pytest.importorskip("chgnet")
     elif method == "m3gnet":
         pytestmark = pytest.importorskip("matgl")
-    elif method == "umace":
+    elif method == "mace":
         pytestmark = pytest.importorskip("mace")
 
     atoms = bulk("Cu") * (2, 2, 2)

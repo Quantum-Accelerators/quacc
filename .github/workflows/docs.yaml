@@ -35,7 +35,7 @@ jobs:
           pip install .[docs]
 
       - name: Build docs
-        run: mkdocs build
+        run: mkdocs build --strict
         id: build_docs
 
       - name: Rebuild and deploy docs

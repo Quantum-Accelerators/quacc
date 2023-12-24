@@ -48,7 +48,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
 === "Dask"
 
-    [Dask](https://www.dask.org/) is a popular parallel computing library for Python. We use [Dask Delayed](https://docs.dask.org/en/stable/delayed.html) for lazy function execution, [Dask Distributed](https://distributed.dask.org/en/stable/) for distributed compute, and [Dask-Jobqueue](https://jobqueue.dask.org/en/latest/) for orchestrating the execution on HPC machines.
+    [Dask](https://www.dask.org/) is a popular parallel computing library for Python. We use [Dask Delayed](https://docs.dask.org/en/stable/delayed.html) for lazy function execution, [Dask Distributed](https://distributed.dask.org/en/stable/) for distributed compute, and (optionally) [Dask-Jobqueue](https://jobqueue.dask.org/en/latest/) for orchestrating the execution on HPC machines.
 
     Pros:
 
@@ -81,7 +81,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
 === "Jobflow"
 
-    [Jobflow](https://github.com/materialsproject/jobflow) is developed and maintained by the Materials Project team at Lawrence Berkeley National Laboratory and serves as a seamless interface to [FireWorks](https://github.com/materialsproject/fireworks) for dispatching and monitoring compute jobs.
+    [Jobflow](https://github.com/materialsproject/jobflow) is developed and maintained by the Materials Project team at Lawrence Berkeley National Laboratory and serves as a seamless interface to [FireWorks](https://github.com/materialsproject/fireworks) or [Jobflow Remote](https://github.com/Matgenix/jobflow-remote) for dispatching and monitoring compute jobs.
 
     **Jobflow**
 
@@ -97,18 +97,3 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     - Is not compatible with the `#!Python @flow` decorator used in some quacc recipes
     - Parsing the output of a workflow is not as intuitive as other solutions
     - Defining dynamic workflows with Jobflow's `Response` object can be more complex than other solutions
-    - Only supports FireWorks for job dispatching at the moment
-
-    **FireWorks**:
-
-    Pros:
-
-    - Well-suited for a variety of job management approaches
-    - Helpful dashboard for monitoring job progress
-
-    Cons:
-
-    - FireWorks documentation can be difficult to navigate without prior experience
-    - FireWorks can have a steep learning curve due to its many configuration options
-    - The reliance on MongoDB can be challenging for new users and certain HPC environments
-    - New features are not planned

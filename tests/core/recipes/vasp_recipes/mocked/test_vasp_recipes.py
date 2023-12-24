@@ -1,3 +1,5 @@
+from functools import partial
+
 import pytest
 from ase.build import bulk, molecule
 
@@ -5,12 +7,10 @@ from quacc import SETTINGS
 from quacc.recipes.vasp.core import double_relax_job, relax_job, static_job
 from quacc.recipes.vasp.mp import mp_prerelax_job, mp_relax_flow, mp_relax_job
 from quacc.recipes.vasp.qmof import qmof_relax_job
-from quacc.recipes.vasp.slabs import (
-    bulk_to_slabs_flow,
-    slab_relax_job,
-    slab_static_job,
-    slab_to_ads_flow,
-)
+from quacc.recipes.vasp.slabs import bulk_to_slabs_flow
+from quacc.recipes.vasp.slabs import relax_job as slab_relax_job
+from quacc.recipes.vasp.slabs import slab_to_ads_flow
+from quacc.recipes.vasp.slabs import static_job as slab_static_job
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 
@@ -218,7 +218,9 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
     outputs = bulk_to_slabs_flow(
-        atoms, slab_relax_kwargs={"preset": "SlabSet", "nelmin": 6}, run_static=False
+        atoms,
+        custom_relax_job=partial(slab_relax_job, preset="SlabSet", nelmin=6),
+        run_static=False,
     )
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 45
@@ -230,7 +232,7 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
     assert [output["parameters"]["encut"] == 450 for output in outputs]
 
     outputs = bulk_to_slabs_flow(
-        atoms, slab_static_kwargs={"preset": "SlabSet", "nelmin": 6}
+        atoms, custom_relax_job=partial(slab_relax_job, preset="SlabSet", nelmin=6)
     )
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 45
@@ -257,7 +259,7 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
     outputs = slab_to_ads_flow(
         atoms,
         adsorbate,
-        slab_relax_kwargs={"preset": "SlabSet", "nelmin": 6},
+        custom_relax_job=partial(slab_relax_job, preset="SlabSet", nelmin=6),
         run_static=False,
     )
 
@@ -267,7 +269,9 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
     assert [output["parameters"]["encut"] == 450 for output in outputs]
 
     outputs = slab_to_ads_flow(
-        atoms, adsorbate, slab_static_kwargs={"preset": "SlabSet", "nelmin": 6}
+        atoms,
+        adsorbate,
+        custom_static_job=partial(slab_static_job, preset="SlabSet", nelmin=6),
     )
 
     assert [output["nsites"] == 82 for output in outputs]

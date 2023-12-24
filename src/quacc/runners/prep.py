@@ -17,7 +17,9 @@ from quacc.utils.files import (
 )
 
 
-def calc_setup(copy_files: list[str | Path] | None = None) -> tuple[Path, Path]:
+def calc_setup(
+    copy_files: str | Path | list[str | Path] | None = None,
+) -> tuple[Path, Path]:
     """
     Perform staging operations for a calculation, including copying files to the scratch
     directory, setting the calculator's directory, decompressing files, and creating a
@@ -104,7 +106,7 @@ def calc_cleanup(tmpdir: Path, job_results_dir: Path) -> None:
 
     # Move files from tmpdir to job_results_dir
     for file_name in os.listdir(tmpdir):
-        if Path(job_results_dir / file_name).exists():
+        if Path(job_results_dir / file_name).is_dir():
             remove(job_results_dir / file_name)
         move(tmpdir / file_name, job_results_dir / file_name)
 

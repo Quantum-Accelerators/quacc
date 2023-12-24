@@ -4,14 +4,25 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.7]
+
+### Changed
+
+- Changed default `fmax` for `quacc.recipes.mlp.core.relax_job` to 0.05
+- Changed default `dtype` to `"float64"` when using `method="mace"` in `quacc.recipes.mlp.core.relax_job`
+- Renamed the `quacc.utils.dicts.merge_dicts` function to `._recursive_dict_pair_merge` to better reflect its functionality.
+- Renamed the `quacc.utils.dicts.merge_several_dicts` function to `.recursive_dict_merge` to better reflect its functionality.
+
 ## [0.4.6]
 
 ### Added
 
-- The `WORKFLOW_ENGINE` quacc setting now accepts `None`
+- The `WORKFLOW_ENGINE` quacc setting now accepts `None`.
+- A `DEBUG` quacc setting as been added.
 
 ### Changed
 
+- The way to run complex, dynamic flows has been modified to rely on `functools.partial()` instead of kwargs. See the updated documentation.
 - Refactored test suite
 
 ## [0.4.5]

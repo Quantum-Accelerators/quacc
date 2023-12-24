@@ -1,0 +1,623 @@
+# SSSP PBE Precision v1.3.0
+# https://doi.org/10.1038/s41524-018-0127-2
+# https://www.materialscloud.org/discover/sssp/table/efficiency
+
+pseudopotentials:
+  Ac:
+    cutoff_rho: 320.0
+    cutoff_wfc: 40.0
+    filename: Ac.us.z_11.ld1.psl.v1.0.0-high.upf
+    md5: 3a78bb30464666358a3ec0edb47f6656
+    pseudopotential: 100US
+  Ag:
+    cutoff_rho: 220.0
+    cutoff_wfc: 55.0
+    filename: Ag_ONCV_PBE-1.0.oncvpsp.upf
+    md5: 94f47bd0669c641108e45594df92fabc
+    pseudopotential: SG15
+  Al:
+    cutoff_rho: 240.0
+    cutoff_wfc: 30.0
+    filename: Al.pbe-n-kjpaw_psl.1.0.0.UPF
+    md5: cfc449ca30b5f3223ec38ddd88ac046d
+    pseudopotential: 100PAW
+  Am:
+    cutoff_rho: 480.0
+    cutoff_wfc: 60.0
+    filename: Am.paw.z_17.ld1.uni-marburg.v0.upf
+    md5: b90604daea46e7f2635bfe47e71ce977
+    pseudopotential: MalteSachs
+  Ar:
+    cutoff_rho: 960.0
+    cutoff_wfc: 120.0
+    filename: Ar.paw.z_8.ld1.psl.v1.0.0-high.upf
+    md5: 86eb6412701852330f587daee5be6c21
+    pseudopotential: 100PAW
+  As:
+    cutoff_rho: 300.0
+    cutoff_wfc: 75.0
+    filename: As.nc.z_15.oncvpsp3.dojo.v4-std.upf
+    md5: bfe1a874457ce592347346129958e7cf
+    pseudopotential: Dojo
+  At:
+    cutoff_rho: 640.0
+    cutoff_wfc: 80.0
+    filename: At.us.z_17.ld1.psl.v1.0.0-high.upf
+    md5: 171e941146fbb8d42c50c0ba61055d18
+    pseudopotential: 100US
+  Au:
+    cutoff_rho: 200.0
+    cutoff_wfc: 50.0
+    filename: Au_ONCV_PBE-1.0.oncvpsp.upf
+    md5: d14007822ba0e19f0206237467fc06c2
+    pseudopotential: SG15
+  B:
+    cutoff_rho: 440.0
+    cutoff_wfc: 55.0
+    filename: B_pbe_v1.01.uspp.F.UPF
+    md5: d081ebb89d0c768e112975f650467a00
+    pseudopotential: GBRV-1.2
+  Ba:
+    cutoff_rho: 140.0
+    cutoff_wfc: 35.0
+    filename: Ba.nc.z_10.oncvpsp4.dojo.v4-sp.upf
+    md5: ecceda5fc736cf81896add41b7758c6c
+    pseudopotential: Dojo
+  Be:
+    cutoff_rho: 220.0
+    cutoff_wfc: 55.0
+    filename: Be_ONCV_PBE-1.0.oncvpsp.upf
+    md5: 28b8ff6b8130143f4fef2c47cbef089d
+    pseudopotential: SG15
+  Bi:
+    cutoff_rho: 400.0
+    cutoff_wfc: 50.0
+    filename: Bi_pbe_v1.uspp.F.UPF
+    md5: cceb9f28ec65b6d7ff33140f5b0b1758
+    pseudopotential: GBRV-1.2
+  Bk:
+    cutoff_rho: 480.0
+    cutoff_wfc: 60.0
+    filename: Bk.paw.z_19.ld1.uni-marburg.v0.upf
+    md5: 34a5c1d9790ca2603c79955cdb099600
+    pseudopotential: MalteSachs
+  Br:
+    cutoff_rho: 720.0
+    cutoff_wfc: 90.0
+    filename: br_pbe_v1.4.uspp.F.UPF
+    md5: d3ffb7b29f6225aa16fe06858fb2a80b
+    pseudopotential: GBRV-1.4
+  C:
+    cutoff_rho: 360.0
+    cutoff_wfc: 45.0
+    filename: C.pbe-n-kjpaw_psl.1.0.0.UPF
+    md5: 5d2aebdfa2cae82b50a7e79e9516da0f
+    pseudopotential: 100PAW
+  Ca:
+    cutoff_rho: 240.0
+    cutoff_wfc: 30.0
+    filename: Ca_pbe_v1.uspp.F.UPF
+    md5: 403a4c14b9e4d4dfdc3024c9a3812218
+    pseudopotential: GBRV-1.2
+  Cd:
+    cutoff_rho: 800.0
+    cutoff_wfc: 100.0
+    filename: Cd.paw.z_20.ld1.psl.v1.0.0-high.upf
+    md5: 1f58be37c2dbf75aec6b05b1d77ccc80
+    pseudopotential: 100PAW
+  Ce:
+    cutoff_rho: 400.0
+    cutoff_wfc: 50.0
+    filename: Ce.paw.z_12.atompaw.wentzcovitch.v1.2.upf
+    md5: 2241420ff980c77e0c917a2dc8a7e08e
+    pseudopotential: Wentzcovitch
+  Cf:
+    cutoff_rho: 480.0
+    cutoff_wfc: 60.0
+    filename: Cf.paw.z_20.ld1.uni-marburg.v0.upf
+    md5: 0e4adf7627c2d1305f26dd63271f2b94
+    pseudopotential: MalteSachs
+  Cl:
+    cutoff_rho: 800.0
+    cutoff_wfc: 100.0
+    filename: Cl.pbe-n-rrkjus_psl.1.0.0.UPF
+    md5: 18cc83b4be324290a879bee3176034ba
+    pseudopotential: 100US
+  Cm:
+    cutoff_rho: 480.0
+    cutoff_wfc: 60.0
+    filename: Cm.paw.z_18.ld1.uni-marburg.v0.upf
+    md5: fa6219561ad2ecb899c96af402755927
+    pseudopotential: MalteSachs
+  Co:
+    cutoff_rho: 1080.0
+    cutoff_wfc: 90.0
+    filename: Co_pbe_v1.2.uspp.F.UPF
+    md5: 5f91765df6ddd3222702df6e7b74a16d
+    pseudopotential: GBRV-1.2
+  Cr:
+    cutoff_rho: 320.0
+    cutoff_wfc: 40.0
+    filename: cr_pbe_v1.5.uspp.F.UPF
+    md5: 0d52af634a40206e4dee301ad30da4bf
+    pseudopotential: GBRV-1.5
+  Cs:
+    cutoff_rho: 180.0
+    cutoff_wfc: 45.0
+    filename: Cs.nc.z_9.oncvpsp3.dojo.v4-str.upf
+    md5: d01c53d012be9123745781bcb8b00a26
+    pseudopotential: Dojo
+  Cu:
+    cutoff_rho: 720.0
+    cutoff_wfc: 90.0
+    filename: Cu.paw.z_11.ld1.psl.v1.0.0-low.upf
+    md5: 619f40885d92a09a85a8b37550532d0c
+    pseudopotential: 100PAW-low
+  Dy:
+    cutoff_rho: 320.0
+    cutoff_wfc: 40.0
+    filename: Dy.paw.z_20.atompaw.wentzcovitch.v1.2.upf
+    md5: fad4f994dc38884d1fc17fd7bf5e13bf
+    pseudopotential: Wentzcovitch
+  Er:
+    cutoff_rho: 320.0
+    cutoff_wfc: 40.0
+    filename: Er.paw.z_22.atompaw.wentzcovitch.v1.2.upf
+    md5: 5ba6a5c626b1678e031aafe1da34e245
+    pseudopotential: Wentzcovitch
+  Es:
+    cutoff_rho: 480.0
+    cutoff_wfc: 60.0
+    filename: Es.paw.z_21.ld1.uni-marburg.v0.upf
+    md5: 4bc7a67aee4e34db40c77f63d9e88986
+    pseudopotential: MalteSachs
+  Eu:
+    cutoff_rho: 320.0
+    cutoff_wfc: 40.0
+    filename: Eu.paw.z_17.atompaw.wentzcovitch.v1.2.upf
+    md5: 52b6e423bc4e840b6e0dc4248fa51623
+    pseudopotential: Wentzcovitch
+  F:
+    cutoff_rho: 360.0
+    cutoff_wfc: 90.0
+    filename: F.oncvpsp.upf
+    md5: dbf8367619a749999a0442b33b80a7e7
+    pseudopotential: Dojo
+  Fe:
+    cutoff_rho: 1080.0
+    cutoff_wfc: 90.0
+    filename: Fe.pbe-spn-kjpaw_psl.0.2.1.UPF
+    md5: e86618425769142926afa95317d90200
+    pseudopotential: 031PAW
+  Fm:
+    cutoff_rho: 480.0
+    cutoff_wfc: 60.0
+    filename: Fm.paw.z_22.ld1.uni-marburg.v0.upf
+    md5: 2a5ec34d2abb196d3027bbefca4b5922
+    pseudopotential: MalteSachs
+  Fr:
+    cutoff_rho: 1200.0
+    cutoff_wfc: 150.0
+    filename: Fr.paw.z_19.ld1.psl.v1.0.0-high.upf
+    md5: 4e1baa83397213ef351c329de67c4222
+    pseudopotential: 100PAW
+  Ga:
+    cutoff_rho: 720.0
+    cutoff_wfc: 90.0
+    filename: Ga.pbe-dn-kjpaw_psl.1.0.0.UPF
+    md5: a27b4342b1af7e5f338de752e9ed7044
+    pseudopotential: 100PAW
+  Gd:
+    cutoff_rho: 320.0
+    cutoff_wfc: 40.0
+    filename: Gd.paw.z_18.atompaw.wentzcovitch.v1.2.upf
+    md5: a44f32af2ba180e1a67c5cef9ff7f39b
+    pseudopotential: Wentzcovitch
+  Ge:
+    cutoff_rho: 360.0
+    cutoff_wfc: 45.0
+    filename: ge_pbe_v1.4.uspp.F.UPF
+    md5: 9c9eaa91e581c3f09632fb3098b2c6b2
+    pseudopotential: GBRV-1.4
+  H:
+    cutoff_rho: 320.0
+    cutoff_wfc: 80.0
+    filename: H_ONCV_PBE-1.0.oncvpsp.upf
+    md5: 1790becc920ee074925cf490c71280fe
+    pseudopotential: SG15
+  He:
+    cutoff_rho: 220.0
+    cutoff_wfc: 55.0
+    filename: He_ONCV_PBE-1.0.oncvpsp.upf
+    md5: e7160162b946020f132a727efeb32d00
+    pseudopotential: SG15
+  Hf:
+    cutoff_rho: 220.0
+    cutoff_wfc: 55.0
+    filename: Hf-sp.oncvpsp.upf
+    md5: 417ed15784afe83d2e06dacf143de3f8
+    pseudopotential: Dojo
+  Hg:
+    cutoff_rho: 390.0
+    cutoff_wfc: 65.0
+    filename: Hg.us.z_12.uspp.gbrv.v1.upf
+    md5: 8f42caffe07f7fd9c0a564347f8c5498
+    pseudopotential: GBRV-v1.0
+  Ho:
+    cutoff_rho: 320.0
+    cutoff_wfc: 40.0
+    filename: Ho.paw.z_21.atompaw.wentzcovitch.v1.2.upf
+    md5: f900adcc49abc9ab8113872cdbacec3e
+    pseudopotential: Wentzcovitch
+  I:
+    cutoff_rho: 260.0
+    cutoff_wfc: 65.0
+    filename: I.nc.z_17.oncvpsp4.sg15.v0.upf
+    md5: 01aece6dfeaff728ece6f409764611b3
+    pseudopotential: SG15
+  In:
+    cutoff_rho: 400.0
+    cutoff_wfc: 50.0
+    filename: In.pbe-dn-rrkjus_psl.0.2.2.UPF
+    md5: 25e7c42c3b55b68f4bf926be2e7201a4
+    pseudopotential: 031US
+  Ir:
+    cutoff_rho: 720.0
+    cutoff_wfc: 90.0
+    filename: Ir.us.z_31.ld1.psl.v1.0.0-high.upf
+    md5: 38277204e703136c184b6a7dd74a78df
+    pseudopotential: 100US
+  K:
+    cutoff_rho: 480.0
+    cutoff_wfc: 60.0
+    filename: K.pbe-spn-kjpaw_psl.1.0.0.UPF
+    md5: 7d58810084cac21f60fbe77ea2b688fd
+    pseudopotential: 100PAW
+  Kr:
+    cutoff_rho: 1200.0
+    cutoff_wfc: 200.0
+    filename: Kr.paw.z_18.ld1.psl.v1.0.0-high.upf
+    md5: cde63d6f6cf9ccadbd3dd23661d90f66
+    pseudopotential: 100PAW
+  La:
+    cutoff_rho: 320.0
+    cutoff_wfc: 40.0
+    filename: La.paw.z_11.atompaw.wentzcovitch.v1.2.upf
+    md5: 754494e15ae71f30e5b5f678af019e01
+    pseudopotential: Wentzcovitch
+  Li:
+    cutoff_rho: 320.0
+    cutoff_wfc: 40.0
+    filename: li_pbe_v1.4.uspp.F.UPF
+    md5: e912e257baa3777c20ea3d68f190483c
+    pseudopotential: GBRV-1.4
+  Lr:
+    cutoff_rho: 480.0
+    cutoff_wfc: 60.0
+    filename: Lr.paw.z_25.ld1.uni-marburg.v0.upf
+    md5: f945946d0d1ec8347dc1259eb00091c8
+    pseudopotential: MalteSachs
+  Lu:
+    cutoff_rho: 360.0
+    cutoff_wfc: 45.0
+    filename: Lu.paw.z_25.atompaw.wentzcovitch.v1.2.upf
+    md5: a517b3205eadf2aa79773283867f4cbe
+    pseudopotential: Wentzcovitch
+  Md:
+    cutoff_rho: 480.0
+    cutoff_wfc: 60.0
+    filename: Md.paw.z_23.ld1.uni-marburg.v0.upf
+    md5: e3e4fed06ac619855d80864afca10136
+    pseudopotential: MalteSachs
+  Mg:
+    cutoff_rho: 360.0
+    cutoff_wfc: 45.0
+    filename: mg_pbe_v1.4.uspp.F.UPF
+    md5: 8ffbd8f729fef71095aac5bd8316fb1f
+    pseudopotential: GBRV-1.4
+  Mn:
+    cutoff_rho: 1080.0
+    cutoff_wfc: 90.0
+    filename: mn_pbe_v1.5.uspp.F.UPF
+    md5: 82ef2b46521d7a7d9e736dc3972e4928
+    pseudopotential: GBRV-1.5
+  Mo:
+    cutoff_rho: 140.0
+    cutoff_wfc: 35.0
+    filename: Mo_ONCV_PBE-1.0.oncvpsp.upf
+    md5: 1b5d28e075c9ccadda658a603575cd1f
+    pseudopotential: SG15
+  N:
+    cutoff_rho: 320.0
+    cutoff_wfc: 80.0
+    filename: N.oncvpsp.upf
+    md5: 563d65bfb082928f0c9eb97172f6c357
+    pseudopotential: Dojo
+  Na:
+    cutoff_rho: 800.0
+    cutoff_wfc: 100.0
+    filename: Na.paw.z_9.ld1.psl.v1.0.0-low.upf
+    md5: 32bccecb13d7399e6c7dae6fe6685ff0
+    pseudopotential: 100PAW-low
+  Nb:
+    cutoff_rho: 320.0
+    cutoff_wfc: 40.0
+    filename: Nb.pbe-spn-kjpaw_psl.0.3.0.UPF
+    md5: 411d72ad547312f8017e2943ceca08cc
+    pseudopotential: 031PAW
+  Nd:
+    cutoff_rho: 320.0
+    cutoff_wfc: 40.0
+    filename: Nd.paw.z_14.atompaw.wentzcovitch.v1.2.upf
+    md5: 8a77231a7dfbac907351543c5ef6bfc9
+    pseudopotential: Wentzcovitch
+  Ne:
+    cutoff_rho: 720.0
+    cutoff_wfc: 120.0
+    filename: Ne.paw.z_8.ld1.psl.v1.0.0-high.upf
+    md5: 5567efd6d280a1ebb12a19bb24aae62b
+    pseudopotential: 100PAW
+  Ni:
+    cutoff_rho: 400.0
+    cutoff_wfc: 50.0
+    filename: ni_pbe_v1.4.uspp.F.UPF
+    md5: 1ee80287db30b12d2bc1f57a5b5d6409
+    pseudopotential: GBRV-1.4
+  "No":
+    cutoff_rho: 480.0
+    cutoff_wfc: 60.0
+    filename: No.paw.z_24.ld1.uni-marburg.v0.upf
+    md5: 75d6fcbe3c3afebd97ab105f1656d1c1
+    pseudopotential: MalteSachs
+  Np:
+    cutoff_rho: 480.0
+    cutoff_wfc: 60.0
+    filename: Np.paw.z_15.ld1.uni-marburg.v0.upf
+    md5: 2b27845584d1ae013b107a04f9c09b5b
+    pseudopotential: MalteSachs
+  O:
+    cutoff_rho: 600.0
+    cutoff_wfc: 75.0
+    filename: O.pbe-n-kjpaw_psl.0.1.UPF
+    md5: 0234752ac141de4415c5fc33072bef88
+    pseudopotential: 031PAW
+  Os:
+    cutoff_rho: 320.0
+    cutoff_wfc: 40.0
+    filename: Os_pbe_v1.2.uspp.F.UPF
+    md5: a3fb40a04f0c37c25c34bbc47164c9a8
+    pseudopotential: GBRV-1.2
+  P:
+    cutoff_rho: 240.0
+    cutoff_wfc: 30.0
+    filename: P.pbe-n-rrkjus_psl.1.0.0.UPF
+    md5: 8b930f418f0a4573dca56cd030ffe088
+    pseudopotential: 100US
+  Pa:
+    cutoff_rho: 480.0
+    cutoff_wfc: 60.0
+    filename: Pa.paw.z_13.ld1.uni-marburg.v0.upf
+    md5: d7b89857b2b2f446a6f8a94fd7fc0316
+    pseudopotential: MalteSachs
+  Pb:
+    cutoff_rho: 360.0
+    cutoff_wfc: 45.0
+    filename: Pb.pbe-dn-kjpaw_psl.0.2.2.UPF
+    md5: 9d431e6316058b74ade52399a6cf67da
+    pseudopotential: 031PAW
+  Pd:
+    cutoff_rho: 200.0
+    cutoff_wfc: 50.0
+    filename: Pd_ONCV_PBE-1.0.oncvpsp.upf
+    md5: eb77f42b51d86fb18e25f68156a31cf1
+    pseudopotential: SG15
+  Pm:
+    cutoff_rho: 320.0
+    cutoff_wfc: 40.0
+    filename: Pm.paw.z_15.atompaw.wentzcovitch.v1.2.upf
+    md5: 73dcdc0c9fe91f97d1fdb9924a622ccb
+    pseudopotential: Wentzcovitch
+  Po:
+    cutoff_rho: 640.0
+    cutoff_wfc: 80.0
+    filename: Po.pbe-dn-rrkjus_psl.1.0.0.UPF
+    md5: 3f8a5a8b7a531f42ca8381c21d3cd528
+    pseudopotential: 100US
+  Pr:
+    cutoff_rho: 320.0
+    cutoff_wfc: 40.0
+    filename: Pr.paw.z_13.atompaw.wentzcovitch.v1.2.upf
+    md5: e0f8e046fa815e336ba020f7e7bc75cb
+    pseudopotential: Wentzcovitch
+  Pt:
+    cutoff_rho: 800.0
+    cutoff_wfc: 100.0
+    filename: Pt.pbe-spfn-rrkjus_psl.1.0.0.UPF
+    md5: ed006ba81d2b6b3b17616bb61ae12f04
+    pseudopotential: 100US
+  Pu:
+    cutoff_rho: 480.0
+    cutoff_wfc: 60.0
+    filename: Pu.paw.z_16.ld1.uni-marburg.v0.upf
+    md5: 566c3e560fb5ccfacef076b74913ab0c
+    pseudopotential: MalteSachs
+  Ra:
+    cutoff_rho: 720.0
+    cutoff_wfc: 90.0
+    filename: Ra.paw.z_20.ld1.psl.v1.0.0-high.upf
+    md5: d3f31cdfcb736122946f367071bad67a
+    pseudopotential: 100PAW
+  Rb:
+    cutoff_rho: 120.0
+    cutoff_wfc: 30.0
+    filename: Rb_ONCV_PBE-1.0.oncvpsp.upf
+    md5: 55a5172d6bfbce6759a58e35d43f6aa9
+    pseudopotential: SG15
+  Re:
+    cutoff_rho: 240.0
+    cutoff_wfc: 30.0
+    filename: Re_pbe_v1.2.uspp.F.UPF
+    md5: 85f993410f3e006da9d71c142b4ad953
+    pseudopotential: GBRV-1.2
+  Rh:
+    cutoff_rho: 220.0
+    cutoff_wfc: 55.0
+    filename: Rh_ONCV_PBE-1.0.oncvpsp.upf
+    md5: ba07c69523b14cacd10683cd4c4284c1
+    pseudopotential: SG15
+  Rn:
+    cutoff_rho: 1600.0
+    cutoff_wfc: 200.0
+    filename: Rn.paw.z_18.ld1.psl.v1.0.0-high.upf
+    md5: 2ee8f183081cd84b04ed791df1fb0731
+    pseudopotential: 100PAW
+  Ru:
+    cutoff_rho: 140.0
+    cutoff_wfc: 35.0
+    filename: Ru_ONCV_PBE-1.0.oncvpsp.upf
+    md5: be037bb81c227cfb9b1461a9f099f4bd
+    pseudopotential: SG15
+  S:
+    cutoff_rho: 280.0
+    cutoff_wfc: 35.0
+    filename: s_pbe_v1.4.uspp.F.UPF
+    md5: 88d86576ff6df21479756cfb9bdac1df
+    pseudopotential: GBRV-1.4
+  Sb:
+    cutoff_rho: 440.0
+    cutoff_wfc: 55.0
+    filename: sb_pbe_v1.4.uspp.F.UPF
+    md5: 9bc50dfb53373b713f5709b9110fe27f
+    pseudopotential: GBRV-1.4
+  Sc:
+    cutoff_rho: 720.0
+    cutoff_wfc: 90.0
+    filename: Sc.pbe-spn-kjpaw_psl.0.2.3.UPF
+    md5: 2c6607fffa759d1e5292e48f5ddd8baa
+    pseudopotential: 031PAW
+  Se:
+    cutoff_rho: 240.0
+    cutoff_wfc: 30.0
+    filename: Se_pbe_v1.uspp.F.UPF
+    md5: 1b3568f3a8ae88f9a2a0ad0698632c85
+    pseudopotential: GBRV-1.2
+  Si:
+    cutoff_rho: 240.0
+    cutoff_wfc: 30.0
+    filename: Si.pbe-n-rrkjus_psl.1.0.0.UPF
+    md5: 0b0bb1205258b0d07b9f9672cf965d36
+    pseudopotential: 100US
+  Sm:
+    cutoff_rho: 320.0
+    cutoff_wfc: 40.0
+    filename: Sm.paw.z_16.atompaw.wentzcovitch.v1.2.upf
+    md5: d38221e44bcfc3c784cbdb498a69732f
+    pseudopotential: Wentzcovitch
+  Sn:
+    cutoff_rho: 560.0
+    cutoff_wfc: 70.0
+    filename: Sn_pbe_v1.uspp.F.UPF
+    md5: 4cf58ce39ec5d5d420df3dd08604eb00
+    pseudopotential: GBRV-1.2
+  Sr:
+    cutoff_rho: 320.0
+    cutoff_wfc: 40.0
+    filename: Sr_pbe_v1.uspp.F.UPF
+    md5: 6b418c05fbe9db5448babca5e47b7a5b
+    pseudopotential: GBRV-1.2
+  Ta:
+    cutoff_rho: 400.0
+    cutoff_wfc: 50.0
+    filename: Ta_pbe_v1.uspp.F.UPF
+    md5: f8bbe9446314a3b8ea5d9f3e3836c939
+    pseudopotential: GBRV-1.2
+  Tb:
+    cutoff_rho: 320.0
+    cutoff_wfc: 40.0
+    filename: Tb.paw.z_19.atompaw.wentzcovitch.v1.2.upf
+    md5: 9e397ff4c8e7fcf344a3e57e25721bc0
+    pseudopotential: Wentzcovitch
+  Tc:
+    cutoff_rho: 160.0
+    cutoff_wfc: 40.0
+    filename: Tc_ONCV_PBE-1.0.oncvpsp.upf
+    md5: 1c2b1e6c8b361b656073c0c20ed4f60a
+    pseudopotential: SG15
+  Te:
+    cutoff_rho: 400.0
+    cutoff_wfc: 50.0
+    filename: Te.us.z_6.ld1.psl.v1.0.0-low.upf
+    md5: 44eeed7063cd65092dfe4811eda022ea
+    pseudopotential: US100-low
+  Th:
+    cutoff_rho: 480.0
+    cutoff_wfc: 60.0
+    filename: Th.paw.z_12.ld1.uni-marburg.v0.upf
+    md5: c778f5c1781d25750cbff4a0d60de988
+    pseudopotential: MalteSachs
+  Ti:
+    cutoff_rho: 320.0
+    cutoff_wfc: 40.0
+    filename: ti_pbe_v1.4.uspp.F.UPF
+    md5: 88a00a6731bd790ddea75d31a80cb452
+    pseudopotential: GBRV-1.4
+  Tl:
+    cutoff_rho: 560.0
+    cutoff_wfc: 70.0
+    filename: Tl_pbe_v1.2.uspp.F.UPF
+    md5: b76cf1f7e72655a2b2c53cf6385d7059
+    pseudopotential: GBRV-1.2
+  Tm:
+    cutoff_rho: 320.0
+    cutoff_wfc: 40.0
+    filename: Tm.paw.z_23.atompaw.wentzcovitch.v1.2.upf
+    md5: 65ac1a59d66520b67f41930ed0a84655
+    pseudopotential: Wentzcovitch
+  U:
+    cutoff_rho: 480.0
+    cutoff_wfc: 60.0
+    filename: U.paw.z_14.ld1.uni-marburg.v0.upf
+    md5: 0343693cc166857ace12183ecb4b0f49
+    pseudopotential: MalteSachs
+  V:
+    cutoff_rho: 320.0
+    cutoff_wfc: 40.0
+    filename: v_pbe_v1.4.uspp.F.UPF
+    md5: 22b79981416ebb76fdaf5b1b8640f6fb
+    pseudopotential: GBRV-1.4
+  W:
+    cutoff_rho: 400.0
+    cutoff_wfc: 50.0
+    filename: W_pbe_v1.2.uspp.F.UPF
+    md5: 9c083fa34c2a2ea0f02f1f893e16e1c8
+    pseudopotential: GBRV-1.2
+  Xe:
+    cutoff_rho: 900.0
+    cutoff_wfc: 150.0
+    filename: Xe.paw.z_18.ld1.psl.v1.0.0-high.upf
+    md5: 337379db17a2c20b6c8cb601c639f0cd
+    pseudopotential: 100PAW
+  Y:
+    cutoff_rho: 280.0
+    cutoff_wfc: 35.0
+    filename: Y_pbe_v1.uspp.F.UPF
+    md5: 2cf71db95cafeb975fc457bd7f14888e
+    pseudopotential: GBRV-1.2
+  Yb:
+    cutoff_rho: 320.0
+    cutoff_wfc: 40.0
+    filename: Yb.paw.z_24.atompaw.wentzcovitch.v1.2.upf
+    md5: 2246be0c1287a90a9096a0c3416daab6
+    pseudopotential: Wentzcovitch
+  Zn:
+    cutoff_rho: 720.0
+    cutoff_wfc: 90.0
+    filename: Zn_pbe_v1.uspp.F.UPF
+    md5: df62231357ef9e81f77b2b3087fa5675
+    pseudopotential: GBRV-1.2
+  Zr:
+    cutoff_rho: 240.0
+    cutoff_wfc: 30.0
+    filename: Zr_pbe_v1.uspp.F.UPF
+    md5: 5db81b1e868ab7776c4564c113de050b
+    pseudopotential: GBRV-1.2

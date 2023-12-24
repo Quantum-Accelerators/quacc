@@ -47,7 +47,7 @@ jobs:
         run: pytest --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ github.job }} ${{ matrix.python-version }} ${{ matrix.os }} coverage report
           path: "coverage.xml"
@@ -76,7 +76,8 @@ jobs:
       - name: Install pip packages
         run: |
           pip install -r tests/requirements.txt
-          pip install -r tests/covalent/requirements-covalent.txt
+          pip install -r tests/requirements-covalent.txt
+          pip install -r tests/phonopy.txt
           pip install .[dev]
 
       - name: Start Covalent server
@@ -89,7 +90,7 @@ jobs:
         run: covalent stop
 
       - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ github.job }} coverage report
           path: "coverage.xml"
@@ -120,14 +121,15 @@ jobs:
       - name: Install pip packages
         run: |
           pip install -r tests/requirements.txt
-          pip install -r tests/${{ matrix.wflow_engine }}/requirements-${{ matrix.wflow_engine }}.txt
+          pip install -r tests/requirements-${{ matrix.wflow_engine }}.txt
+          pip install -r tests/phonopy.txt
           pip install .[dev]
 
       - name: Run tests with pytest
         run: pytest --durations=10 tests/${{ matrix.wflow_engine }} --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ github.job }} ${{ matrix.wflow_engine }} coverage report
           path: "coverage.xml"
@@ -173,7 +175,7 @@ jobs:
         run: pytest -k 'psi4' --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ github.job }} coverage report
           path: "coverage.xml"
@@ -219,7 +221,7 @@ jobs:
         run: pytest -k 'defects or phonon or espresso' --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ github.job }} coverage report
           path: "coverage.xml"
@@ -265,7 +267,7 @@ jobs:
         run: pytest -k 'dftb or tblite' --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ github.job }} coverage report
           path: "coverage.xml"
@@ -312,7 +314,7 @@ jobs:
         run: pytest -k 'qchem or sella' --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ github.job }} coverage report
           path: "coverage.xml"
@@ -355,7 +357,7 @@ jobs:
         run: pytest -k 'mlp or newtonnet' --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ github.job }} coverage report
           path: "coverage.xml"
@@ -376,13 +378,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download coverage artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
 
       - name: Upload coverage to Codecov
         uses: Wandalen/wretry.action@v1
         with:
           action: codecov/codecov-action@v3
-          attempt_limit: 5
+          attempt_limit: 10
           attempt_delay: 30000
           with: |
             fail_ci_if_error: true
