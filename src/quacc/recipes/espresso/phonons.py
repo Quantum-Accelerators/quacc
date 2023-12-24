@@ -21,6 +21,7 @@ def phonon_job(
     preset: str | None = None,
     copy_files: str | list[str] | None = None,
     parallel_info: dict[str] | None = None,
+    test_run: bool = False,
     **calc_kwargs,
 ) -> RunSchema:
     """
