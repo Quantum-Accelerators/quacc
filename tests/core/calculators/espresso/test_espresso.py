@@ -49,6 +49,83 @@ def test_espresso_kwargs_handler():
     assert calc.parameters == expected_parameters
 
 
+def test_espresso_presets():
+    calc_defaults = {
+        "input_data": {
+            "system": {"ecutwfc": 20, "ecutrho": 80, "occupations": "fixed"},
+            "electrons": {"scf_must_converge": False},
+        }
+    }
+
+    input_data = {"system": {"ecutwfc": 30}, "electrons": {"conv_thr": 1.0e-16}}
+
+    preset = "esm_metal_slab_efficiency"
+
+    atoms = Atoms(symbols="LiLaOZr")
+    atoms.set_cell([5, 2, 10])
+
+    calc = Espresso(
+        input_atoms=atoms,
+        preset=preset,
+        calc_defaults=calc_defaults,
+        input_data=input_data,
+        kpts=[7, 17, 1],
+    )
+
+    expected_parameters = {
+        "input_data": {
+            "control": {},
+            "system": {
+                "ecutwfc": 30,
+                "ecutrho": 400.0,
+                "occupations": "smearing",
+                "smearing": "marzari-vanderbilt",
+                "degauss": 0.01,
+                "assume_isolated": "esm",
+                "esm_bc": "bc1",
+            },
+            "electrons": {
+                "scf_must_converge": False,
+                "conv_thr": 1.0e-16,
+                "mixing_mode": "local-TF",
+                "mixing_beta": 0.35,
+            },
+            "ions": {},
+            "cell": {},
+            "rism": {},
+        },
+        "kpts": [7, 17, 1],
+        "pseudopotentials": {
+            "O": "O.pbe-n-kjpaw_psl.0.1.UPF",
+            "Zr": "Zr_pbe_v1.uspp.F.UPF",
+            "Li": "li_pbe_v1.4.uspp.F.UPF",
+            "La": "La.paw.z_11.atompaw.wentzcovitch.v1.2.upf",
+        },
+    }
+    assert calc.template.binary == "pw"
+    assert calc.parameters == expected_parameters
+
+
+def test_espresso_presets_gamma():
+    preset = "molecule_efficiency.yaml"
+
+    calc = Espresso(preset=preset)
+
+    assert calc.parameters["kpts"] is None
+
+
+def test_espresso_bad_kpts():
+    with pytest.raises(ValueError):
+        Espresso(kpts=(1, 1, 1), kspacing=0.5)
+
+
+def test_espresso_kpts():
+    calc = Espresso(kspacing=0.001, preset="metal_precision")
+
+    assert "kpts" not in calc.parameters
+    assert calc.parameters["kspacing"] == 0.001
+
+
 def test_outdir_handler(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
