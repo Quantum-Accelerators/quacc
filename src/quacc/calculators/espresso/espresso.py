@@ -237,10 +237,8 @@ class Espresso(Espresso_):
             raise ValueError("quacc does not support the directory argument.")
 
         super().__init__(
-            profile=profile, directory=".", parallel_info=parallel_info, **kwargs
+            profile=profile, template=template, directory=".", parallel_info=parallel_info, **kwargs
         )
-
-        self.template = template
 
     def _kwargs_handler(self, binary: str, **kwargs) -> dict[str, Any]:
         """
