@@ -109,11 +109,9 @@ def grid_phonon_flow(
     custom_pw_job
         A custom job to run the pw.x calculation. This job should return a RunSchema dictionary.
         The default job is a static_job.
-
     custom_phonon_job
         A custom job to run the ph.x calculation. This job should return a RunSchema dictionary.
         The default job is a phonon_job.
-
     nblocks
         The number of representations to group together in a single job. This will reduce the amount
         of data produced by a factor of nblocks. If nblocks = 0 each job will contain all the representations
@@ -127,7 +125,7 @@ def grid_phonon_flow(
 
     # We run a first pw job (single point or relax) depending on the input
     pw_job = static_job if custom_pw_job is None else custom_phonon_job
-    ph_job = phonon_job if custom_phonon_job is None else phonon_job
+    ph_job = phonon_job if custom_phonon_job is None else custom_phonon_job
 
     pw_job_results = pw_job()
 
