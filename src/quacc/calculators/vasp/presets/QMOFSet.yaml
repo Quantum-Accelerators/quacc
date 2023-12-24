@@ -1,0 +1,21 @@
+# Last modified: 08-01-2023
+inputs:
+  algo: all
+  pmg_kpts:
+    kppa: 1000
+  ediff: 1.0e-6
+  encut: 520
+  ismear: 0
+  isym: 0
+  ivdw: 12
+  lasph: false
+  lorbit: 11
+  lreal: false
+  nelm: 150
+  nelmin: 3
+  prec: accurate
+  sigma: 0.01
+  symprec: 1.0e-8
+  xc: pbe
+parent_magmoms: magmoms_qmof.yaml
+parent_setups: setups_qmof.yaml

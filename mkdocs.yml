@@ -1,0 +1,153 @@
+repo_url: https://github.com/Quantum-Accelerators/quacc/
+site_author: Andrew S. Rosen
+site_description: >-
+  Quacc is a flexible and extensible platform for
+  high-throughput computational materials science and quantum chemistry.
+site_name: quacc
+site_url: https://quantum-accelerators.github.io/quacc/
+nav:
+  - Home: index.md
+  - Installation Guide 🔧:
+      - install/install.md
+      - install/codes.md
+      - install/wflow_engines.md
+  - User Guide 🧠:
+      - Recipes:
+          - user/recipes/recipes_intro.md
+          - user/recipes/recipes_list.md
+      - Workflow Basics:
+          - user/basics/wflow_overview.md
+          - user/basics/wflow_syntax.md
+      - Using a Workflow Engine:
+          - user/wflow_engine/wflow_engines1.md
+          - user/wflow_engine/wflow_engines2.md
+          - user/wflow_engine/executors1.md
+          - user/wflow_engine/executors2.md
+      - Global Settings:
+          - user/settings/settings.md
+          - user/settings/file_management.md
+          - user/settings/settings_list.md
+      - Advanced:
+          - user/advanced/database.md
+          - user/advanced/file_transfers.md
+          - user/advanced/vasp_hpc.md
+  - Code Documentation 📖: reference/
+  - Developer Guide 🤝:
+      - dev/contributing.md
+      - dev/docs.md
+      - Writing New Recipes:
+          - dev/recipes/jobs.md
+          - dev/recipes/flows.md
+  - For Maintainers:
+      - maintainers/internal.md
+  - About 📜:
+      - about/faq.md
+      - about/contributors.md
+      - about/changelog.md
+      - about/conduct.md
+      - about/license.md
+
+theme:
+  favicon: images/quacc_favicon.png
+  features:
+    - content.action.edit
+    - content.code.copy
+    - content.code.select
+    - content.code.annotate
+    - content.tabs.link
+    - content.tooltips
+    - navigation.footer
+    - navigation.path
+    - navigation.tracking
+    - navigation.sections
+    - navigation.top
+    - search.highlight
+    - search.suggest
+    - search.share
+    - header.autohide
+    - toc.follow
+  logo: images/quacc_logo_wide.png
+  name: material
+  palette:
+    primary: orange
+    scheme: slate
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink
+  - pymdownx.mark
+  - pymdownx.snippets
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format ""
+          name: mermaid
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+plugins:
+  - search:
+      separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+  - autorefs
+  - social
+  - offline
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          import:
+            - https://docs.python.org/3/objects.inv
+            - https://wiki.fysik.dtu.dk/ase/objects.inv
+            - https://pymatgen.org/objects.inv
+            - https://cclib.github.io/objects.inv
+            - https://materialsproject.github.io/maggma/objects.inv
+            - https://materialsproject.github.io/emmet/objects.inv
+            - https://materialsproject.github.io/jobflow/objects.inv
+            - https://materialsproject.github.io/fireworks/objects.inv
+            - https://parsl.readthedocs.io/en/latest/objects.inv
+            - https://tblite.readthedocs.io/en/latest/objects.inv
+            - https://numpy.org/doc/stable/objects.inv
+            - https://docs.pydantic.dev/latest/objects.inv
+            - https://covalent.readthedocs.io/en/latest/objects.inv
+            - https://click.palletsprojects.com/en/latest/objects.inv
+          options:
+            docstring_style: numpy
+            docstring_section_style: list
+            separate_signature: true
+            merge_init_into_class: true
+            docstring_options:
+              ignore_init_summary: true
+  - gen-files:
+      scripts:
+        - docs/gen_ref_pages.py
+  - literate-nav:
+      nav_file: SUMMARY.md
+
+edit_uri: blob/main/docs/
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Quantum-Accelerators/

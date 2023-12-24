@@ -1,0 +1,15 @@
+# Magmoms used in the Materials Project
+# Source: https://github.com/materialsproject/atomate2/blob/main/src/atomate2/vasp/sets/BaseMPR2SCANRelaxSet.yaml
+# Last modified: 08-01-2023
+inputs:
+  elemental_magmoms:
+    Ce: 5
+    Co: 0.6
+    Cr: 5
+    Eu: 10
+    Fe: 5
+    Mn: 5
+    Mo: 5
+    Ni: 5
+    V: 5
+    W: 5

@@ -1,0 +1,22 @@
+# Last modified: 10-07-2023
+inputs:
+  algo: fast
+  pmg_kpts:
+    kppvol: 100
+  ediff: 1.0e-5
+  efermi: midgap
+  encut: 520
+  ismear: 0
+  ivdw: 12
+  lasph: true
+  lcharg: false
+  lorbit: 11
+  lreal: false
+  lwave: false
+  nelm: 150
+  nelmin: 3
+  prec: accurate
+  sigma: 0.05
+  xc: pbe
+parent_magmoms: magmoms_base.yaml
+parent_setups: setups_pbe54.yaml

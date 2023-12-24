@@ -1,46 +1,47 @@
 <div align="center">
-  <img src=docs/src/_static/quacc_logo_wide.svg width="500"><br>
+  <img src=https://github.com/Quantum-Accelerators/quacc/blob/main/docs/images/quacc_logo_wide.png width="300"><br>
 </div>
 
----
+# `quacc` – The Quantum Accelerator 🦆
 
-# Quacc – The Quantum Accelerator 🦆
-
-![tests](https://github.com/arosen93/quacc/actions/workflows/tests.yaml/badge.svg)
-[![codecov](https://codecov.io/gh/arosen93/quacc/branch/main/graph/badge.svg?token=BCKGTD89H0)](https://codecov.io/gh/arosen93/quacc)
-[![DeepSource](https://deepsource.io/gh/arosen93/quacc.svg/?label=active+issues&token=O0LvluUkUS6qiQnHXc7BUlHn)](https://deepsource.io/gh/arosen93/quacc/?ref=repository-badge)
-[![This project supports Python 3.8+](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org/downloads)
-[![Pypi](https://img.shields.io/pypi/v/quacc)](https://pypi.org/project/quacc)
+![tests](https://github.com/quantum-accelerators/quacc/actions/workflows/tests.yaml/badge.svg)
+[![codecov](https://codecov.io/gh/Quantum-Accelerators/quacc/branch/main/graph/badge.svg?token=OJaOZAH30u)](https://codecov.io/gh/Quantum-Accelerators/quacc)
+[![DeepSource](https://app.deepsource.com/gh/Quantum-Accelerators/quacc.svg/?label=active+issues&token=Y1NxOLIuFFEqWdjawIYnJNde)](https://app.deepsource.com/gh/Quantum-Accelerators/quacc/?ref=repository-badge)
+![Python - Version](https://img.shields.io/pypi/pyversions/quacc)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7720998.svg)](https://doi.org/10.5281/zenodo.7720998)
 
-Quacc is a flexible platform for high-throughput, database-driven computational materials science and quantum chemistry.
+`quacc` is a flexible platform for computational materials science 💎 and quantum chemistry 🧪 that is built for the big data era 🔥. It is maintained by the [Rosen Research Group](https://rosen.cbe.princeton.edu/) at Princeton University.
 
-Built around the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/index.html) (ASE), Quacc seeks to:
+- `quacc` makes it possible to easily run pre-made [computational materials science workflows](https://quantum-accelerators.github.io/quacc/user/recipes/recipes_list.html) that can be efficiently dispatched anywhere: locally, HPC, the cloud, or any combination thereof.
 
-1. Reduce the barrier for running complex, mixed-code workflows for molecules and materials across heterogeneous compute environments.
+- `quacc` gives you the freedom of choice. Through a single, unified interface to several supported [workflow management solutions](https://quantum-accelerators.github.io/quacc/user/basics/wflow_overview.html), you can use what best suits your unique computing needs.
 
-2. Promote rapid workflow development and testing via modern workflow managers, such as [Covalent](https://github.com/AgnostiqHQ/covalent) and [Jobflow](https://github.com/materialsproject/jobflow).
-
-3. Enable a seamless interface with much of the software infrastructure powering the [Materials Project](https://materialsproject.org).
-
-**Disclaimer**: Currently, this package is under active development. Questions and bug reports are always welcome! **Please wait for the upcoming v0.1.0 release to use Quacc with Covalent as your workflow manager**.
-
-## Installation 🔧
-
-Quacc can be installed as follows:
-
-```bash
-pip install git+https://github.com/arosen93/quacc.git
-```
+- `quacc` leverages community resources. It is built around the Atomic Simulation Environment and much of the software infrastructure powering the Materials Project.
 
 ## Documentation 📖
 
-[Learn more here!](https://arosen93.github.io/quacc/)
+<p align="center">
+     <a href="https://quantum-accelerators.github.io/quacc/"><b><i>Learn More Here!</i></b></a> 
+</p>
 
-## Demonstration ✨
+... or skip straight to one of the following sections:
 
-Coming soon...
+- 🔧 [Installation Guide](https://quantum-accelerators.github.io/quacc/install/install.html)
+- 🧠 [User Guide](https://quantum-accelerators.github.io/quacc/user/recipes/recipes_intro.html)
+- 🤝 [Developer Guide](https://quantum-accelerators.github.io/quacc/dev/contributing.html)
+
+## Visual Example ✨
+
+🚀 Representative `quacc` workflow using [Covalent](https://github.com/AgnostiqHQ/covalent) as one of the several supported workflow managers.
+
+![](https://github.com/Quantum-Accelerators/quacc/blob/main/docs/images/start/start.gif)
+
+## Citation 📝
+
+If you use `quacc` in your work, please cite it as follows:
+
+- quacc – The Quantum Accelerator, https://doi.org/10.5281/zenodo.7720998.
 
 ## License ⚖️
 
-Quacc is released under a [modified BSD license](https://github.com/arosen93/quacc/blob/main/LICENSE.md).
+`quacc` is released under a [BSD 3-Clause license](https://github.com/quantum-accelerators/quacc/blob/main/LICENSE.md).

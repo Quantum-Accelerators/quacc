@@ -1,9 +1,16 @@
-<!--
-⚠️ Your pull request title should be short, detailed, and understandable to all.
-⚠️ If your pull request fixes an open issue, please link to the issue.
-⚠️ Add a note to CHANGELOG.md with summarizing the changes under the [UNRELEASED] section.
-⚠️ Make sure to add unit tests to cover any changes.
--->
+## Requirements
 
-- [ ] I have added unit tests to cover my changes.
-- [ ] I have updated the documentation and `CHANGELOG.md` file accordingly.
+### Checklist
+
+- [ ] I have read the [Contributing Guide](https://quantum-accelerators.github.io/quacc/dev/contributing.html). Don't lie! 😉
+- [ ] My PR is on a custom branch and is _not_ named `main`.
+- [ ] I have used `black`, `isort`, and `ruff` as described in the [style guide](https://quantum-accelerators.github.io/quacc/dev/contributing.html#style).
+- [ ] I have added relevant, comprehensive [unit tests](https://quantum-accelerators.github.io/quacc/dev/contributing.html#unit-tests).
+
+### Notes
+
+- Your PR will likely not be merged without proper and thorough tests.
+- If you are an external contributor, you will see a comment from [@buildbot-princeton](https://github.com/buildbot-princeton). This is solely for the maintainers.
+- When your code is ready for review, ping one of the [active maintainers](https://quantum-accelerators.github.io/quacc/about/contributors.html#active-maintainers).
+
+## Summary of Changes
