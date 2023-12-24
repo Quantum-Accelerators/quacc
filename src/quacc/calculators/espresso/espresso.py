@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from ase import Atoms
 from ase.calculators.espresso import Espresso as Espresso_
 from ase.calculators.espresso import EspressoProfile
 from ase.calculators.espresso import EspressoTemplate as EspressoTemplate_
@@ -12,14 +13,12 @@ from ase.io.espresso import construct_namelist
 from quacc import SETTINGS
 from quacc.calculators.espresso.io import read, write
 from quacc.calculators.espresso.keys import ALL_KEYS
-from quacc.calculators.espresso.utils import parse_pp_and_cutoff
+from quacc.calculators.espresso.utils import parse_pw_preset
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.utils.files import load_yaml_calc
 
 if TYPE_CHECKING:
     from typing import Any
-
-    from ase import Atoms
 
 
 class EspressoTemplate(EspressoTemplate_):
@@ -264,8 +263,8 @@ class Espresso(Espresso_):
         None
         """
         self.preset = preset
-        self.input_atoms = input_atoms
-        self.calc_defaults = calc_defaults
+        self.input_atoms = input_atoms or Atoms()
+        self.calc_defaults = calc_defaults or {}
 
         template = template or EspressoTemplate("pw")
 
@@ -313,11 +312,28 @@ class Espresso(Espresso_):
         keys = ALL_KEYS[binary]
         kwargs["input_data"] = construct_namelist(kwargs.get("input_data"), keys=keys)
         self.calc_defaults["input_data"] = construct_namelist(
-            self.calc_defaults["input_data"], keys=keys
+            self.calc_defaults.get("input_data"), keys=keys
         )
+
+        kpts = kwargs.get("kpts")
+        kspacing = kwargs.get("kspacing")
+
+        if kpts and kspacing:
+            raise ValueError("Cannot specify both kpts and kspacing.")
 
         if self.preset:
             config = load_yaml_calc(SETTINGS.ESPRESSO_PRESET_DIR / f"{self.preset}")
-            preset_pp = parse_pp_and_cutoff(config, self.input_atoms)
-            kwargs = recursive_dict_merge(preset_pp, kwargs)
-        return recursive_dict_merge(self.calc_defaults, kwargs)
+            preset = parse_pw_preset(config, self.input_atoms)
+            kwargs = recursive_dict_merge(preset, kwargs)
+
+        if kpts:
+            kwargs.pop("kspacing", None)
+        elif kspacing:
+            kwargs.pop("kpts", None)
+
+        kwargs = recursive_dict_merge(self.calc_defaults, kwargs)
+
+        if kwargs.get("kpts") == "gamma":
+            kwargs["kpts"] = None
+
+        return kwargs

@@ -126,7 +126,9 @@ def mp_relax_job(
 
 @flow
 def mp_relax_flow(
-    atoms: Atoms, prerelax_job: Job = mp_prerelax_job, relax_job: Job = mp_relax_job
+    atoms: Atoms,
+    custom_prerelax_job: Job | None = None,
+    custom_relax_job: Job | None = None,
 ) -> MPRelaxFlowSchema:
     """
     Workflow consisting of:
@@ -139,9 +141,9 @@ def mp_relax_flow(
     ----------
     atoms
         Atoms object for the structure.
-    prerelax_job
+    custom_prerelax_job
         Pre-relaxation job, which defaults to [quacc.recipes.vasp.mp.mp_prerelax_job][].
-    relax_job
+    custom_relax_job
         Relaxation job, which defaults to [quacc.recipes.vasp.mp.mp_relax_job][].
 
     Returns
@@ -151,9 +153,13 @@ def mp_relax_flow(
     """
 
     # Run the prerelax
+    prerelax_job = (
+        mp_prerelax_job if custom_prerelax_job is None else custom_prerelax_job
+    )
     prerelax_results = prerelax_job(atoms)
 
     # Run the relax
+    relax_job = mp_relax_job if custom_relax_job is None else custom_relax_job
     relax_results = relax_job(
         prerelax_results["atoms"],
         bandgap=prerelax_results["output"]["bandgap"],
