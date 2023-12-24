@@ -9,7 +9,7 @@ from copy import deepcopy
 from datetime import datetime, timezone
 from pathlib import Path
 from random import randint
-from shutil import copy
+from shutil import copy, copytree
 from typing import TYPE_CHECKING
 
 import yaml
@@ -67,9 +67,11 @@ def copy_decompress_files(
         if Path(f).is_symlink():
             continue
         z_path = Path(zpath(f))
-        if z_path.exists():
+        if z_path.is_file():
             copy(z_path, Path(destination, z_path.name))
             decompress_file(Path(destination, z_path.name))
+        elif z_path.is_dir():
+            copy_decompress_files_from_dir(z_path, destination)
         else:
             warnings.warn(f"Cannot find file {z_path}", UserWarning)
 

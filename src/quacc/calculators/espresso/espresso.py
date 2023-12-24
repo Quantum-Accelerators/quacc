@@ -28,7 +28,7 @@ class EspressoTemplate(EspressoTemplate_):
     of other binaries such as pw.x, ph.x, cp.x, etc.
     """
 
-    def __init__(self, binary: str = "pw") -> None:
+    def __init__(self, binary: str = "pw", test_run: bool = False) -> None:
         """
         Initialize the Espresso template.
 
@@ -53,6 +53,8 @@ class EspressoTemplate(EspressoTemplate_):
             "outdir": os.environ.get("ESPRESSO_TMPDIR"),
             "wfcdir": os.environ.get("ESPRESSO_TMPDIR"),
         }
+
+        self.test_run = test_run
 
     def write_input(
         self,
@@ -86,6 +88,9 @@ class EspressoTemplate(EspressoTemplate_):
         directory = Path(directory)
         self._outdir_handler(parameters, directory)
 
+        if self.test_run:
+            parameters = self._test_run(parameters, directory)
+
         write(
             directory / self.inputname,
             atoms,
@@ -94,6 +99,34 @@ class EspressoTemplate(EspressoTemplate_):
             pseudo_dir=str(profile.pseudo_path),
             **parameters,
         )
+
+    def _test_run(self, parameters: dict[str, Any], directory: Path):
+        # Almost all QE binaries will do a test run if a file named
+        # <prefix>.EXIT is present in the working directory. This
+        # function will create this file.
+        input_data = parameters.get("input_data", {})
+        # Default prefix is "pwscf"
+        prefix = "pwscf"
+        # We look if the user has specified a prefix
+        for section in input_data:
+            for key in input_data[section]:
+                if key == "prefix":
+                    prefix = input_data[section][key]
+                    break
+        # If the binary is ph.x then it is a special case
+        # we have to remove the start_q and last_q keys
+        # and set start_irr and last_irr to 0
+        if self.binary == "ph":
+            input_data["inputph"]["start_irr"] = 0
+            input_data["inputph"]["last_irr"] = 0
+            input_data["inputph"].pop("start_q", None)
+            input_data["inputph"].pop("last_q", None)
+        else:
+            directory.touch(f"{prefix}.EXIT")
+
+        parameters["input_data"] = input_data
+
+        return parameters
 
     def read_results(self, directory: Path | str) -> dict[str, Any]:
         """
