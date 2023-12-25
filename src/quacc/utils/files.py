@@ -92,9 +92,7 @@ def copy_decompress_files_from_dir(source: str | Path, destination: str | Path) 
 
     if src.is_dir():
         for f in src.iterdir():
-            if f.resolve() == dst.resolve():
-                continue
-            if f.is_symlink():
+            if f.resolve() == dst.resolve() or f.is_symlink():
                 continue
             if f.is_file():
                 copy_decompress_files([f], dst)
