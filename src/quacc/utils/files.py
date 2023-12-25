@@ -98,10 +98,10 @@ def copy_decompress_files_from_dir(source: str | Path, destination: str | Path) 
             if f.is_symlink():
                 continue
             if f.is_file():
-                copy_decompress_files([f_path], dst)
+                copy_decompress_files([f], dst)
             elif f.is_dir():
-                (dst / f_path.name).mkdir(exist_ok=True)
-                copy_decompress_files_from_dir(src / f_path, dst / f_path.name)
+                (dst / f.name).mkdir(exist_ok=True)
+                copy_decompress_files_from_dir(src / f, dst / f.name)
     else:
         warnings.warn(f"Cannot find {src}", UserWarning)
 
