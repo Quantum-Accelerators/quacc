@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import contextlib
-import os
 import socket
 from copy import deepcopy
 from datetime import datetime, timezone
@@ -63,7 +62,7 @@ def copy_decompress_files(
     None
     """
     for f in source_files:
-        z_path = Path(zpath(f)).expanduser()
+        z_path = Path(f).expanduser()
         if z_path.is_symlink():
             continue
         if z_path.exists():
@@ -92,14 +91,13 @@ def copy_decompress_files_from_dir(source: str | Path, destination: str | Path) 
 
     if src.is_dir():
         for f in src.iterdir():
-            z_path = Path(zpath(f)).expanduser()
-            if z_path.is_symlink():
+            if f.resolve() == dst.resolve() or f.is_symlink():
                 continue
-            if z_path.is_file():
-                copy_decompress_files([z_path], dst)
-            elif z_path.is_dir():
-                (dst / z_path.name).mkdir(exist_ok=True)
-                copy_decompress_files_from_dir(src / z_path, dst / z_path.name)
+            if f.is_file():
+                copy_decompress_files([f], dst)
+            elif f.is_dir():
+                (dst / f.name).mkdir(exist_ok=True)
+                copy_decompress_files_from_dir(src / f, dst / f.name)
     else:
         raise FileNotFoundError(f"Cannot find {src}")
 
@@ -200,10 +198,10 @@ def find_recent_logfile(dir_name: Path | str, logfile_extensions: str | list[str
     logfile = None
     if isinstance(logfile_extensions, str):
         logfile_extensions = [logfile_extensions]
-    for f in os.listdir(dir_name):
-        f_path = Path(dir_name, f).expanduser()
+    for f in Path(dir_name).expanduser().iterdir():
+        f_path = Path(dir_name, f)
         for ext in logfile_extensions:
-            if ext in f and f_path.stat().st_mtime > mod_time:
+            if ext in str(f) and f_path.stat().st_mtime > mod_time:
                 mod_time = f_path.stat().st_mtime
                 logfile = f_path.resolve()
     return logfile
