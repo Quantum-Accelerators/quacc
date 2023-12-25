@@ -16,7 +16,7 @@ A simple, representative flow can be found in [quacc.recipes.vasp.mp.mp_relax_fl
 
 quacc fully supports complex, dynamic flows where the number of jobs is not known _a priori_. In this case, a common pattern is the use of a subflow, defined with a `#!Python @subflow` decorator. A subflow is just like a flow, except the returned object is a list of job outputs.
 
-### Dynamic Flow: Minimal Example
+### Minimal Example
 
 Let's do the following:
 
