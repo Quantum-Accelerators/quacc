@@ -89,10 +89,7 @@ def copy_decompress_files_from_dir(source: str | Path, destination: str | Path) 
     -------
     None
     """
-    src, dst = (
-        Path(zpath(source)),
-        Path(zpath(destination)),
-    )
+    src, dst = (Path(zpath(source)), Path(zpath(destination)))
 
     if src.is_dir():
         for f in src.iterdir():
