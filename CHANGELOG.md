@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 
 - Raise a `FileNotFoundError` (instead of a warning) if files specified in `copy_files` are not present.
-- `quacc.recipes.vasp.mp.mp_relax_flow` now has modified kwargs that are no longer mutable to prevent subtle bugs. 
+- `quacc.recipes.vasp.mp.mp_relax_flow` now has modified kwargs that are no longer mutable to prevent subtle bugs.
 - Changed default `fmax` for `quacc.recipes.mlp.core.relax_job` to 0.05.
 - Renamed the `quacc.utils.dicts.merge_dicts` function to `._recursive_dict_pair_merge` to better reflect its functionality.
 - Renamed the `quacc.utils.dicts.merge_several_dicts` function to `.recursive_dict_merge` to better reflect its functionality.
