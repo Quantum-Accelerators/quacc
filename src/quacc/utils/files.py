@@ -90,22 +90,22 @@ def copy_decompress_files_from_dir(source: str | Path, destination: str | Path) 
     None
     """
     src, dst = (
-        Path(source).expanduser().resolve(),
-        Path(destination).expanduser().resolve(),
+        Path(zpath(source)).expanduser().resolve(),
+        Path(zpath(destination)).expanduser().resolve(),
     )
 
     if src.is_dir():
         for f in src.iterdir():
-            z_path = Path(zpath(f)).expanduser().resolve()
-            if z_path == dst:
+            f_path = f.expanduser().resolve()
+            if f_path == dst:
                 continue
-            if z_path.is_symlink():
+            if f_path.is_symlink():
                 continue
-            if z_path.is_file():
-                copy_decompress_files([z_path], dst)
-            elif z_path.is_dir():
-                (dst / z_path.name).mkdir(exist_ok=True)
-                copy_decompress_files_from_dir(src / z_path, dst / z_path.name)
+            if f_path.is_file():
+                copy_decompress_files([f_path], dst)
+            elif f_path.is_dir():
+                (dst / f_path.name).mkdir(exist_ok=True)
+                copy_decompress_files_from_dir(src / f_path, dst / f_path.name)
     else:
         warnings.warn(f"Cannot find {src}", UserWarning)
 
