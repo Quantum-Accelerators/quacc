@@ -1,7 +1,6 @@
 """Core recipes for espresso."""
 from __future__ import annotations
 
-from functools import partial
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -142,7 +141,7 @@ def grid_phonon_flow(
     """
 
     # We run a first pw job (single point or relax) depending on the input
-    pw_job = static_job if custom_pw_job is None else custom_phonon_job
+    pw_job = static_job if custom_pw_job is None else custom_pw_job
     ph_job = phonon_job if custom_phonon_job is None else custom_phonon_job
 
     pw_job_results = pw_job(atoms, preset=preset, parallel_info=parallel_info)
@@ -152,9 +151,7 @@ def grid_phonon_flow(
     ph_patterns = parse_ph_patterns(ph_test_job_results["dir_name"])
 
     # We need to get the input_data from the ph job that was sent in...
-    input_data = ph_test_job_results["parameters"][
-        "input_data"
-    ]  # Better way to do that?
+    input_data = ph_test_job_results["parameters"]["input_data"]
 
     # We loop over the q-points and representations and run a ph job for each
     # of them
