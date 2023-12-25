@@ -18,8 +18,8 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms,
     preset: str | None = None,
-    copy_files: str | Path | list[str | Path] | None = None,
     parallel_info: dict[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
