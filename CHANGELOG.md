@@ -8,10 +8,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- Changed default `fmax` for `quacc.recipes.mlp.core.relax_job` to 0.05
-- Changed default `dtype` to `"float64"` when using `method="mace"` in `quacc.recipes.mlp.core.relax_job`
+- Raise a `FileNotFoundError` (instead of a warning) if files specified in `copy_files` are not present.
+- `quacc.recipes.vasp.mp.mp_relax_flow` now has modified kwargs that are no longer mutable to prevent subtle bugs.
+- Changed default `fmax` for `quacc.recipes.mlp.core.relax_job` to 0.05.
 - Renamed the `quacc.utils.dicts.merge_dicts` function to `._recursive_dict_pair_merge` to better reflect its functionality.
 - Renamed the `quacc.utils.dicts.merge_several_dicts` function to `.recursive_dict_merge` to better reflect its functionality.
+
+### Fixed
+
+- Increased support of `~/` throughout quacc file handling mechanisms
+- Fixed an infinite recursion error when `copy_decompress_files_from_dir` was run in the current working directory.
+
+### Operations
+
+- `PH_KEYS` in Espresso calculator are now imported from ASE directly
 
 ## [0.4.6]
 
