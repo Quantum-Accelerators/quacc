@@ -26,6 +26,8 @@ def static_job(
 
     Parameters
     ----------
+    atoms
+        The Atoms object.
     preset
         The name of a YAML file containing a list of parameters to use as
         a "preset" for the calculator. quacc will automatically look in the
