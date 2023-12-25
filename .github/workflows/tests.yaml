@@ -386,5 +386,3 @@ jobs:
           action: codecov/codecov-action@v3
           attempt_limit: 10
           attempt_delay: 30000
-          with: |
-            fail_ci_if_error: true
