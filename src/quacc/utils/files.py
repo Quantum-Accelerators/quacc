@@ -146,7 +146,7 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
         The calculator configuration (i.e. settings).
     """
 
-    yaml_path = Path(yaml_path).expanduser().resolve()
+    yaml_path = Path(yaml_path).expanduser()
 
     if yaml_path.suffix != ".yaml":
         yaml_path = yaml_path.with_suffix(f"{yaml_path.suffix}.yaml")
