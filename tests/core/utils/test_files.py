@@ -36,3 +36,25 @@ def test_copy_decompress_files_from_dir(tmp_path):
     assert (dst / "dir1" / "file2").exists()
     assert Path(f"{str(dst)}{'/nested' * 10}").exists()
     assert not (dst / "dir1" / "symlink1").exists()
+
+
+def test_copy_decompress_files_from_dir_v2(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    src = os.getcwd()
+
+    dst = tmp_path / "dst"
+    dst.mkdir()
+
+    Path(src / "file1").touch()
+    Path(src / "dir1").mkdir()
+    Path(f"{str(src)}{'/nested' * 10}").mkdir(parents=True)
+    Path(src / "dir1" / "file2").touch()
+    Path(src / "dir1" / "symlink1").symlink_to(src)
+
+    copy_decompress_files_from_dir(src, dst)
+
+    assert (dst / "file1").exists()
+    assert (dst / "dir1").exists()
+    assert (dst / "dir1" / "file2").exists()
+    assert Path(f"{str(dst)}{'/nested' * 10}").exists()
+    assert not (dst / "dir1" / "symlink1").exists()
