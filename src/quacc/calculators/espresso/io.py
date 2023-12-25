@@ -30,8 +30,8 @@ def write(
     This is probably temporary until ase.io.espresso is updated.
     """
 
-    filename_path = Path(filename).expanduser().resolve()
-    with Path.open(filename, "w") as fd:
+    filename_path = Path(filename).expanduser()
+    with Path.open(filename_path, "w") as fd:
         write_espresso_dict[binary](fd, atoms=atoms, properties=properties, **kwargs)
 
 
@@ -41,8 +41,8 @@ def read(filename: str | Path, binary: str = "pw") -> dict[str, Any]:
     This is probably temporary until ase.io.espresso is updated.
     """
 
-    filename_path = Path(filename).expanduser().resolve()
-    with Path.open(filename) as fd:
+    filename_path = Path(filename).expanduser()
+    with Path.open(filename_path) as fd:
         return read_espresso_dict[binary](fd)
 
 
@@ -62,7 +62,6 @@ def write_espresso_io(fd: TextIO, **kwargs) -> None:
     ----------
     fd
         The file descriptor of the input file.
-
     kwargs
         kwargs dictionary possibly containing the following keys:
 
