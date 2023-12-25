@@ -12,8 +12,6 @@ from ase.io import write as _write
 from ase.io.espresso import namelist_to_string
 from ase.units import Bohr
 
-from quacc import SETTINGS
-
 if TYPE_CHECKING:
     from typing import Any, TextIO
 
@@ -33,8 +31,6 @@ def write(
     """
 
     filename_path = Path(filename).expanduser().resolve()
-    if SETTINGS.SCRATCH_DIR and SETTINGS.SCRATCH_DIR not in filename_path.parents:
-        raise ValueError(f"File {filename_path} is not in the scratch directory.")
     with Path.open(filename, "w") as fd:
         write_espresso_dict[binary](fd, atoms=atoms, properties=properties, **kwargs)
 
@@ -46,8 +42,6 @@ def read(filename: str | Path, binary: str = "pw") -> dict[str, Any]:
     """
 
     filename_path = Path(filename).expanduser().resolve()
-    if SETTINGS.SCRATCH_DIR and SETTINGS.SCRATCH_DIR not in filename_path.parents:
-        raise ValueError(f"File {filename_path} is not in the scratch directory.")
     with Path.open(filename) as fd:
         return read_espresso_dict[binary](fd)
 
