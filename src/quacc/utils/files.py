@@ -37,7 +37,7 @@ def check_logfile(logfile: str, check_str: str) -> bool:
     bool
         True if the string is found in the logfile, False otherwise.
     """
-    zlog = Path(zpath(logfile)).expanduser().resolve()
+    zlog = Path(zpath(logfile)).expanduser()
     with zopen(zlog, "r") as f:
         for line in f:
             clean_line = line if isinstance(line, str) else line.decode("utf-8")
@@ -64,7 +64,7 @@ def copy_decompress_files(
     None
     """
     for f in source_files:
-        z_path = Path(zpath(f)).expanduser().resolve()
+        z_path = Path(zpath(f)).expanduser()
         if z_path.is_symlink():
             continue
         if z_path.exists():
@@ -90,20 +90,19 @@ def copy_decompress_files_from_dir(source: str | Path, destination: str | Path) 
     None
     """
     src, dst = (
-        Path(zpath(source)).expanduser().resolve(),
-        Path(zpath(destination)).expanduser().resolve(),
+        Path(zpath(source)),
+        Path(zpath(destination)),
     )
 
     if src.is_dir():
         for f in src.iterdir():
-            f_path = f.expanduser().resolve()
-            if f_path == dst:
+            if f.resolve() == dst.resolve():
                 continue
-            if f_path.is_symlink():
+            if f.is_symlink():
                 continue
-            if f_path.is_file():
+            if f.is_file():
                 copy_decompress_files([f_path], dst)
-            elif f_path.is_dir():
+            elif f.is_dir():
                 (dst / f_path.name).mkdir(exist_ok=True)
                 copy_decompress_files_from_dir(src / f_path, dst / f_path.name)
     else:
@@ -206,8 +205,8 @@ def find_recent_logfile(dir_name: Path | str, logfile_extensions: str | list[str
     logfile = None
     if isinstance(logfile_extensions, str):
         logfile_extensions = [logfile_extensions]
-    for f in os.listdir(dir_name):
-        f_path = Path(dir_name, f).expanduser().resolve()
+    for f in Path(dir_name).expanduser().iterdir():
+        f_path = Path(dir_name, f)
         for ext in logfile_extensions:
             if ext in f and f_path.stat().st_mtime > mod_time:
                 mod_time = f_path.stat().st_mtime
