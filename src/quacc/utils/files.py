@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import contextlib
-import os
 import socket
 import warnings
 from copy import deepcopy
