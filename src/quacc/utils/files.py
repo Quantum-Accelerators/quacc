@@ -37,7 +37,7 @@ def check_logfile(logfile: str, check_str: str) -> bool:
     bool
         True if the string is found in the logfile, False otherwise.
     """
-    zlog = zpath(logfile).expanduser()
+    zlog = Path(zpath(logfile)).expanduser()
     with zopen(zlog, "r") as f:
         for line in f:
             clean_line = line if isinstance(line, str) else line.decode("utf-8")
