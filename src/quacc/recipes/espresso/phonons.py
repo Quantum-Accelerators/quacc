@@ -23,6 +23,7 @@ def phonon_job(
     prev_dir: str | Path,
     preset: str | None = None,
     parallel_info: dict[str] | None = None,
+    test_run: bool = False,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -40,6 +41,9 @@ def phonon_job(
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
+    test_run
+        If True, a test run is performed to check that the calculation input_data is correct or
+        to generate some files/info if needed.
     **calc_kwargs
         calc_kwargs dictionary possibly containing the following keys:
 
@@ -67,9 +71,11 @@ def phonon_job(
         "qpts": (0, 0, 0),
     }
 
+    template = EspressoTemplate("ph", test_run=test_run)
+
     return base_fn(
         preset=preset,
-        template=EspressoTemplate("ph"),
+        template=template,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
