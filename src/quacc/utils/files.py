@@ -37,7 +37,7 @@ def check_logfile(logfile: str, check_str: str) -> bool:
     bool
         True if the string is found in the logfile, False otherwise.
     """
-    zlog = Path(zpath(logfile)).expanduser()
+    zlog = Path(zpath(logfile)).expanduser().resolve()
     with zopen(zlog, "r") as f:
         for line in f:
             clean_line = line if isinstance(line, str) else line.decode("utf-8")
@@ -64,7 +64,7 @@ def copy_decompress_files(
     None
     """
     for f in source_files:
-        z_path = Path(zpath(f)).expanduser()
+        z_path = Path(zpath(f)).expanduser().resolve()
         if z_path.is_symlink():
             continue
         if z_path.exists():
@@ -89,11 +89,14 @@ def copy_decompress_files_from_dir(source: str | Path, destination: str | Path) 
     -------
     None
     """
-    src, dst = Path(source).expanduser(), Path(destination).expanduser()
+    src, dst = (
+        Path(source).expanduser().resolve(),
+        Path(destination).expanduser().resolve(),
+    )
 
     if src.is_dir():
         for f in src.iterdir():
-            z_path = Path(zpath(f)).expanduser()
+            z_path = Path(zpath(f)).expanduser().resolve()
             if z_path == dst:
                 continue
             if z_path.is_symlink():
@@ -148,7 +151,7 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
         The calculator configuration (i.e. settings).
     """
 
-    yaml_path = Path(yaml_path).expanduser()
+    yaml_path = Path(yaml_path).expanduser().resolve()
 
     if yaml_path.suffix != ".yaml":
         yaml_path = yaml_path.with_suffix(f"{yaml_path.suffix}.yaml")
@@ -204,7 +207,7 @@ def find_recent_logfile(dir_name: Path | str, logfile_extensions: str | list[str
     if isinstance(logfile_extensions, str):
         logfile_extensions = [logfile_extensions]
     for f in os.listdir(dir_name):
-        f_path = Path(dir_name, f).expanduser()
+        f_path = Path(dir_name, f).expanduser().resolve()
         for ext in logfile_extensions:
             if ext in f and f_path.stat().st_mtime > mod_time:
                 mod_time = f_path.stat().st_mtime
