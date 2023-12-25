@@ -198,7 +198,7 @@ def test_phonon_job(tmp_path, monkeypatch):
         atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.25
     )
 
-    ph_results = phonon_job(input_data=ph_loose, copy_files=pw_results["dir_name"])
+    ph_results = phonon_job(pw_results["dir_name"], input_data=ph_loose)
 
     assert (0, 0, 0) in ph_results["results"]
     assert np.allclose(
@@ -253,8 +253,8 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
     nat_todo = [1]
 
     ph_results = phonon_job(
+        pw_results["dir_name"]
         input_data=ph_loose,
-        copy_files=pw_results["dir_name"],
         qpts=qpts,
         nat_todo=nat_todo,
     )
