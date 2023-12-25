@@ -6,13 +6,15 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from quacc import Job, flow, job
+from quacc import Job, flow, job, subflow
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.calculators.espresso.utils import parse_ph_patterns
 from quacc.recipes.espresso._base import base_fn
 from quacc.recipes.espresso.core import static_job
 
 if TYPE_CHECKING:
+    from ase.atoms import Atoms
+
     from quacc.schemas._aliases.ase import RunSchema
 
 
@@ -93,6 +95,9 @@ def phonon_job(
 
 @flow
 def grid_phonon_flow(
+    atoms: Atoms,
+    preset: str | None = None,
+    parallel_info: dict[str] | None = None,
     custom_pw_job: Job | None = None,
     custom_phonon_job: Job | None = None,
     nblocks: int = 1,
@@ -110,6 +115,15 @@ def grid_phonon_flow(
 
     Parameters
     ----------
+    atoms
+        Atoms object
+    preset
+        The name of a YAML file containing a list of parameters to use as
+        a "preset" for the calculator. quacc will automatically look in the
+        `ESPRESSO_PRESET_DIR` (default: quacc/calculators/espresso/presets).
+    parallel_info
+        Dictionary containing information about the parallelization of the
+        calculation. See the ASE documentation for more information.
     custom_pw_job
         A custom job to run the pw.x calculation. This job should return a RunSchema dictionary.
         The default job is [quacc.recipes.espresso.core.static_job][].
@@ -131,22 +145,20 @@ def grid_phonon_flow(
     pw_job = static_job if custom_pw_job is None else custom_phonon_job
     ph_job = phonon_job if custom_phonon_job is None else custom_phonon_job
 
-    pw_job_results = pw_job()
+    pw_job_results = pw_job(atoms, preset=preset, parallel_info=parallel_info)
+    ph_test_job_results = ph_job(test_run=True, copy_files=pw_job_results["dir_name"])
 
-    # First ph job to generate the patterns
-    ph_job_partial = partial(
-        ph_job, test_run=True, copy_files=pw_job_results["dir_name"]
-    )
-    # We actually run the job
-    ph_job_results = ph_job_partial()
     # We parse the patterns
-    ph_patterns = parse_ph_patterns(ph_job_results["dir_name"])
-    # We need to get the input_data from the ph job that was sent in...
-    input_data = ph_job_results["parameters"]["input_data"]  # Better way to do that?
+    ph_patterns = parse_ph_patterns(ph_test_job_results["dir_name"])
 
-    grid_results = []
+    # We need to get the input_data from the ph job that was sent in...
+    input_data = ph_test_job_results["parameters"][
+        "input_data"
+    ]  # Better way to do that?
+
     # We loop over the q-points and representations and run a ph job for each
     # of them
+    grid_results = []
     for pattern in ph_patterns:
         input_data["inputph"]["start_q"] = pattern
         input_data["inputph"]["last_q"] = pattern
@@ -158,10 +170,11 @@ def grid_phonon_flow(
         for representation in repr_to_do:
             input_data["inputph"]["start_irr"] = representation[0]
             input_data["inputph"]["last_irr"] = representation[-1]
-            ph_job_partial = partial(
-                ph_job, input_data=input_data, copy_files=pw_job_results["dir_name"]
+            ph_job_results = ph_job(
+                input_data=input_data, copy_files=pw_job_results["dir_name"]
             )
-            grid_results.append(ph_job_partial())
+            grid_results.append(ph_job_results)
+
     # We have to copy back the files from all of the jobs
     copy_back = [result["dir_name"] for result in grid_results]
     # We run a 'recover' ph job to diagonalize the dynamical matrix
@@ -173,6 +186,4 @@ def grid_phonon_flow(
 
     input_data["inputph"]["recover"] = True
 
-    ph_job_partial = partial(ph_job, input_data=input_data, copy_files=copy_back)
-
-    return ph_job_partial()
+    return ph_job(input_data=input_data, copy_files=copy_back)
