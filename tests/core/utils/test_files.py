@@ -40,7 +40,7 @@ def test_copy_decompress_files_from_dir(tmp_path):
 
 def test_copy_decompress_files_from_dir_v2(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    src = os.getcwd()
+    src = Path(os.getcwd())
 
     dst = tmp_path / "dst"
     dst.mkdir()
