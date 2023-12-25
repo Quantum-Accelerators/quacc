@@ -17,6 +17,7 @@ nav:
           - user/recipes/recipes_list.md
       - Workflow Basics:
           - user/basics/wflow_overview.md
+          - user/basics/wflow_decorators.md
           - user/basics/wflow_syntax.md
       - Using a Workflow Engine:
           - user/wflow_engine/wflow_engines1.md

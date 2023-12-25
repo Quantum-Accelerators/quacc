@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import contextlib
-import os
 import socket
 import warnings
 from copy import deepcopy
@@ -37,7 +36,7 @@ def check_logfile(logfile: str, check_str: str) -> bool:
     bool
         True if the string is found in the logfile, False otherwise.
     """
-    zlog = zpath(logfile)
+    zlog = Path(zpath(logfile)).expanduser()
     with zopen(zlog, "r") as f:
         for line in f:
             clean_line = line if isinstance(line, str) else line.decode("utf-8")
@@ -64,9 +63,9 @@ def copy_decompress_files(
     None
     """
     for f in source_files:
-        if Path(f).is_symlink():
+        z_path = Path(f).expanduser()
+        if z_path.is_symlink():
             continue
-        z_path = Path(zpath(f))
         if z_path.is_file():
             copy(z_path, Path(destination, z_path.name))
             decompress_file(Path(destination, z_path.name))
@@ -91,11 +90,11 @@ def copy_decompress_files_from_dir(source: str | Path, destination: str | Path) 
     -------
     None
     """
-    src, dst = Path(source), Path(destination)
+    src, dst = Path(source).expanduser(), Path(destination).expanduser()
 
     if src.is_dir():
         for f in src.iterdir():
-            if f.is_symlink():
+            if f.resolve() == dst.resolve() or f.is_symlink():
                 continue
             if f.is_file():
                 copy_decompress_files([f], dst)
@@ -147,7 +146,7 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
         The calculator configuration (i.e. settings).
     """
 
-    yaml_path = Path(yaml_path)
+    yaml_path = Path(yaml_path).expanduser()
 
     if yaml_path.suffix != ".yaml":
         yaml_path = yaml_path.with_suffix(f"{yaml_path.suffix}.yaml")
@@ -202,10 +201,10 @@ def find_recent_logfile(dir_name: Path | str, logfile_extensions: str | list[str
     logfile = None
     if isinstance(logfile_extensions, str):
         logfile_extensions = [logfile_extensions]
-    for f in os.listdir(dir_name):
+    for f in Path(dir_name).expanduser().iterdir():
         f_path = Path(dir_name, f)
         for ext in logfile_extensions:
-            if ext in f and f_path.stat().st_mtime > mod_time:
+            if ext in str(f) and f_path.stat().st_mtime > mod_time:
                 mod_time = f_path.stat().st_mtime
                 logfile = f_path.resolve()
     return logfile
@@ -230,7 +229,7 @@ def get_uri(dir_name: str | Path) -> str:
     str
         Full URI path, e.g., "fileserver.host.com:/full/path/of/dir_name".
     """
-    fullpath = Path(dir_name).resolve()
+    fullpath = Path(dir_name).expanduser().resolve()
     hostname = socket.gethostname()
     with contextlib.suppress(socket.gaierror, socket.herror):
         hostname = socket.gethostbyaddr(hostname)[0]
