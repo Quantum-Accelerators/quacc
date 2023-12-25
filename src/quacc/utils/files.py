@@ -71,7 +71,7 @@ def copy_decompress_files(
             copy(z_path, Path(destination, z_path.name))
             decompress_file(Path(destination, z_path.name))
         else:
-            warnings.warn(f"Cannot find file {z_path}", UserWarning)
+            raise FileNotFoundError(f"Cannot find file {z_path}")
 
 
 def copy_decompress_files_from_dir(source: str | Path, destination: str | Path) -> None:
@@ -102,7 +102,7 @@ def copy_decompress_files_from_dir(source: str | Path, destination: str | Path) 
                 (dst / z_path.name).mkdir(exist_ok=True)
                 copy_decompress_files_from_dir(src / z_path, dst / z_path.name)
     else:
-        warnings.warn(f"Cannot find {src}", UserWarning)
+        raise FileNotFoundError(f"Cannot find {src}")
 
 
 def make_unique_dir(base_path: str | None = None) -> Path:
