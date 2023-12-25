@@ -63,7 +63,7 @@ def copy_decompress_files(
     None
     """
     for f in source_files:
-        z_path = Path(zpath(f)).expanduser()
+        z_path = Path(f).expanduser()
         if z_path.is_symlink():
             continue
         if z_path.exists():
@@ -88,7 +88,7 @@ def copy_decompress_files_from_dir(source: str | Path, destination: str | Path) 
     -------
     None
     """
-    src, dst = Path(zpath(source)).expanduser(), Path(zpath(destination)).expanduser()
+    src, dst = Path(source).expanduser(), Path(destination).expanduser()
 
     if src.is_dir():
         for f in src.iterdir():
