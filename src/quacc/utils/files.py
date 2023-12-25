@@ -94,6 +94,8 @@ def copy_decompress_files_from_dir(source: str | Path, destination: str | Path) 
     if src.is_dir():
         for f in src.iterdir():
             z_path = Path(zpath(f)).expanduser()
+            if z_path == dst:
+                continue
             if z_path.is_symlink():
                 continue
             if z_path.is_file():
