@@ -63,14 +63,14 @@ def copy_decompress_files(
     None
     """
     for f in source_files:
-        z_path = Path(f).expanduser()
-        if z_path.is_symlink():
+        f_path = Path(f).expanduser()
+        if f_path.is_symlink():
             continue
-        if z_path.exists():
-            copy(z_path, Path(destination, z_path.name))
-            decompress_file(Path(destination, z_path.name))
+        if f_path.is_file():
+            copy(f_path, Path(destination, f_path.name))
+            decompress_file(Path(destination, f_path.name))
         else:
-            warnings.warn(f"Cannot find file {z_path}", UserWarning)
+            warnings.warn(f"Cannot find file {f_path}", UserWarning)
 
 
 def copy_decompress_files_from_dir(source: str | Path, destination: str | Path) -> None:
