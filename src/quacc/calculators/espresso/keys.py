@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ase.io.espresso import Namelist, PH_KEYS
+from ase.io.espresso import PH_KEYS, Namelist
 
 NEB_KEYS = Namelist(
     {
