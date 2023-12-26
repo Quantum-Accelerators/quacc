@@ -8,6 +8,8 @@ from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.recipes.espresso._base import base_fn
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
@@ -17,8 +19,8 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms,
     preset: str | None = None,
-    copy_files: list[str] | None = None,
     parallel_info: dict[str] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -32,6 +34,9 @@ def static_job(
         The name of a YAML file containing a list of parameters to use as
         a "preset" for the calculator. quacc will automatically look in the
         `ESPRESSO_PRESET_DIR` (default: quacc/calculators/espresso/presets).
+    parallel_info
+        Dictionary containing information about the parallelization of the
+        calculation. See the ASE documentation for more information.
     copy_files
         List of files to copy to the calculation directory. Useful for copying
         files from a previous calculation. This parameter can either be a string
@@ -44,9 +49,6 @@ def static_job(
         If a list of strings is provided, each string point to a specific file. In this case
         it is important to note that no directory structure is going to be copied, everything
         is copied at the root of the temporary directory.
-    parallel_info
-        Dictionary containing information about the parallelization of the
-        calculation. See the ASE documentation for more information.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. See the
         docstring of [quacc.calculators.espresso.espresso.Espresso][] for more information.
