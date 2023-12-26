@@ -20,7 +20,7 @@ def test_static_job(tmp_path, monkeypatch):
 
     pp_dir = Path(__file__).parent
 
-    copy_decompress_files([pp_dir / "Si.upf"], tmp_path)
+    copy_decompress_files([pp_dir / "Si.upf.gz"], tmp_path)
 
     atoms = bulk("Si")
 
@@ -60,7 +60,7 @@ def test_static_job_outdir(tmp_path, monkeypatch):
 
     pp_dir = Path(__file__).parent
 
-    copy_decompress_files([pp_dir / "Si.upf"], tmp_path)
+    copy_decompress_files([pp_dir / "Si.upf.gz"], tmp_path)
 
     atoms = bulk("Si")
 
@@ -101,7 +101,7 @@ def test_static_job_outdir_abs(tmp_path, monkeypatch):
 
     pp_dir = Path(__file__).parent
 
-    copy_decompress_files([pp_dir / "Si.upf"], tmp_path)
+    copy_decompress_files([pp_dir / "Si.upf.gz"], tmp_path)
 
     atoms = bulk("Si")
 
@@ -142,7 +142,7 @@ def test_static_job_dir_fail(tmp_path, monkeypatch):
 
     pp_dir = Path(__file__).parent
 
-    copy_decompress_files([pp_dir / "Si.upf"], tmp_path)
+    copy_decompress_files([pp_dir / "Si.upf.gz"], tmp_path)
 
     atoms = bulk("Si")
 
@@ -176,7 +176,7 @@ def test_phonon_job(tmp_path, monkeypatch):
 
     pp_dir = Path(__file__).parent
 
-    copy_decompress_files([pp_dir / "Li.upf"], tmp_path)
+    copy_decompress_files([pp_dir / "Li.upf.gz"], tmp_path)
 
     SETTINGS.ESPRESSO_PSEUDO = tmp_path
 
@@ -226,7 +226,7 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
 
     pp_dir = Path(__file__).parent
 
-    copy_decompress_files([pp_dir / "Li.upf"], tmp_path)
+    copy_decompress_files([pp_dir / "Li.upf.gz"], tmp_path)
 
     SETTINGS.ESPRESSO_PSEUDO = tmp_path
 
