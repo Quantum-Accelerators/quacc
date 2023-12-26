@@ -4,11 +4,6 @@ from ase.build import bulk
 
 from quacc.recipes.mlp.core import relax_job, static_job
 
-try:
-    import torch
-except ImportError:
-    torch = None
-
 torch = pytest.importorskip("torch")
 
 
