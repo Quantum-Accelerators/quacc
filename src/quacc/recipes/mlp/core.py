@@ -43,7 +43,7 @@ def static_job(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    calc_defaults = {"dtype": "float64"} if method == "mace" else {}
+    calc_defaults = {"default_dtype": "float64"} if method == "mace" else {}
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
 
     atoms.calc = _pick_calculator(method, **calc_flags)
@@ -88,7 +88,7 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
 
-    calc_defaults = {"dtype": "float64"} if method == "mace" else {}
+    calc_defaults = {"default_dtype": "float64"} if method == "mace" else {}
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
 
     opt_defaults = {"fmax": 0.05, "max_steps": 1000, "optimizer": FIRE}
