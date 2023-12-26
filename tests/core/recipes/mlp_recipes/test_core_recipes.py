@@ -9,7 +9,7 @@ try:
 except ImportError:
     torch = None
 
-pytestmark = pytest.mark.skipif(torch is None, reason="torch is not installed")
+torch = pytest.importorskip("torch")
 
 
 def test_bad_method():
@@ -29,7 +29,9 @@ def _set_dtype(size, type_="float"):
 def test_static_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
 
-    if method == "m3gnet":
+    if method == "mace":
+        _set_dtype(64)
+    else:
         _set_dtype(32)
 
     ref_energy = {
@@ -54,7 +56,9 @@ def test_static_job(tmp_path, monkeypatch, method):
 def test_relax_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
 
-    if method == "m3gnet":
+    if method == "mace":
+        _set_dtype(64)
+    else:
         _set_dtype(32)
     ref_energy = {
         "chgnet": -32.665626525878906,
@@ -81,7 +85,9 @@ def test_relax_job(tmp_path, monkeypatch, method):
 def test_relax_cell_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
 
-    if method == "m3gnet":
+    if method == "mace":
+        _set_dtype(64)
+    else:
         _set_dtype(32)
 
     ref_energy = {
