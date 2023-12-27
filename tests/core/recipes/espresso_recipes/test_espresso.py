@@ -7,7 +7,8 @@ from ase.build import bulk
 from ase.io.espresso import construct_namelist
 
 from quacc import SETTINGS
-from quacc.recipes.espresso.core import phonon_job, static_job
+from quacc.recipes.espresso.core import static_job
+from quacc.recipes.espresso.phonons import phonon_job
 from quacc.utils.files import copy_decompress_files
 
 pytestmark = pytest.mark.skipif(which("pw.x") is None, reason="QE not installed")
@@ -160,7 +161,7 @@ def test_static_job_dir_fail(tmp_path, monkeypatch):
     pseudopotentials = {"Si": "Si.upf"}
 
     with pytest.raises(ValueError):
-        results = static_job(
+        static_job(
             atoms,
             input_data=input_data,
             pseudopotentials=pseudopotentials,
@@ -198,7 +199,7 @@ def test_phonon_job(tmp_path, monkeypatch):
         atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.25
     )
 
-    ph_results = phonon_job(input_data=ph_loose, copy_files=pw_results["dir_name"])
+    ph_results = phonon_job(pw_results["dir_name"], input_data=ph_loose)
 
     assert (0, 0, 0) in ph_results["results"]
     assert np.allclose(
@@ -253,10 +254,7 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
     nat_todo = [1]
 
     ph_results = phonon_job(
-        input_data=ph_loose,
-        copy_files=pw_results["dir_name"],
-        qpts=qpts,
-        nat_todo=nat_todo,
+        pw_results["dir_name"], input_data=ph_loose, qpts=qpts, nat_todo=nat_todo
     )
 
     assert (0, 0, 0) in ph_results["results"]
