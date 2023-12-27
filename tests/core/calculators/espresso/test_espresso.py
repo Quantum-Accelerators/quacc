@@ -9,22 +9,17 @@ from quacc.calculators.espresso.espresso import Espresso, EspressoTemplate
 
 
 def test_espresso_kwargs_handler():
-    calc_defaults = {
-        "input_data": {"system": {"ecutwfc": 20, "ecutrho": 80, "conv_thr": 1e-8}}
+    input_data = {
+        "system": {"ecutwfc": 30},
+        "input_data": {"system": {"ecutwfc": 20, "ecutrho": 80, "conv_thr": 1e-8}},
     }
-
-    input_data = {"system": {"ecutwfc": 30}}
 
     preset = "sssp_1.3.0_pbe_efficiency"
 
     atoms = Atoms(symbols="LiLaOZr")
 
     calc = Espresso(
-        input_atoms=atoms,
-        preset=preset,
-        calc_defaults=calc_defaults,
-        input_data=input_data,
-        kpts=(1, 1, 1),
+        input_atoms=atoms, preset=preset, input_data=input_data, kpts=(1, 1, 1)
     )
 
     expected_parameters = {
@@ -50,14 +45,14 @@ def test_espresso_kwargs_handler():
 
 
 def test_espresso_presets():
-    calc_defaults = {
+    input_data = {
+        "system": {"ecutwfc": 30},
+        "electrons": {"conv_thr": 1.0e-16},
         "input_data": {
             "system": {"ecutwfc": 20, "ecutrho": 80, "occupations": "fixed"},
             "electrons": {"scf_must_converge": False},
-        }
+        },
     }
-
-    input_data = {"system": {"ecutwfc": 30}, "electrons": {"conv_thr": 1.0e-16}}
 
     preset = "esm_metal_slab_efficiency"
 
@@ -65,11 +60,7 @@ def test_espresso_presets():
     atoms.set_cell([5, 2, 10])
 
     calc = Espresso(
-        input_atoms=atoms,
-        preset=preset,
-        calc_defaults=calc_defaults,
-        input_data=input_data,
-        kpts=[7, 17, 1],
+        input_atoms=atoms, preset=preset, input_data=input_data, kpts=[7, 17, 1]
     )
 
     expected_parameters = {
@@ -168,19 +159,14 @@ def test_outdir_handler(tmp_path, monkeypatch):
 
 
 def test_bad_calculator_params():
-    calc_defaults = {
-        "input_data": {"system": {"ecutwfc": 20, "ecutrho": 80, "conv_thr": 1e-8}}
+    input_data = {
+        "system": {"ecutwfc": 30},
+        "input_data": {"system": {"ecutwfc": 20, "ecutrho": 80, "conv_thr": 1e-8}},
     }
-
-    input_data = {"system": {"ecutwfc": 30}}
 
     atoms = Atoms(symbols="LiLaOZr")
 
     with pytest.raises(ValueError):
         Espresso(
-            input_atoms=atoms,
-            calc_defaults=calc_defaults,
-            input_data=input_data,
-            kpts=(1, 1, 1),
-            directory="bad",
+            input_atoms=atoms, input_data=input_data, kpts=(1, 1, 1), directory="bad"
         )
