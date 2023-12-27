@@ -107,10 +107,7 @@ class Espresso(Espresso_):
 
         Parameters
         ----------
-        binary
-            The espresso binary used to construct the namelist
-        **kwargs
-            User-supplied kwargs
+        None
 
         Returns
         -------
