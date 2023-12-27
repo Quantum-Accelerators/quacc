@@ -8,17 +8,142 @@ from ase import Atoms
 from ase.calculators.espresso import Espresso as Espresso_
 from ase.calculators.espresso import EspressoProfile
 from ase.calculators.espresso import EspressoTemplate as EspressoTemplate_
-from ase.io.espresso import construct_namelist
 
 from quacc import SETTINGS
 from quacc.calculators.espresso.io import read, write
-from quacc.calculators.espresso.keys import ALL_KEYS
-from quacc.calculators.espresso.utils import parse_pw_preset
+from quacc.calculators.espresso.utils import get_pseudopotential_info
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.utils.files import load_yaml_calc
 
 if TYPE_CHECKING:
     from typing import Any
+
+
+class Espresso(Espresso_):
+    """
+    This is a wrapper around the ASE Espresso calculator that adjusts input_data
+    parameters and allows for the use of presets. Templates are used to set
+    the binary and input/output file names.
+    """
+
+    def __init__(
+        self,
+        input_atoms: Atoms | None = None,
+        preset: str | None = None,
+        parallel_info: dict[str, Any] | None = None,
+        template: EspressoTemplate | None = None,
+        profile: EspressoProfile | None = None,
+        **kwargs,
+    ) -> None:
+        """
+        Initialize the Espresso calculator.
+
+        Parameters
+        ----------
+        input_atoms
+            The input Atoms object to be used for the calculation.
+        preset
+            The name of a YAML file containing a list of parameters to use as
+            a "preset" for the calculator. quacc will automatically look in the
+            `ESPRESSO_PRESET_DIR` (default: quacc/calculators/espresso/presets),
+            The .yaml extension is not necessary. Any user-supplied calculator
+            **kwargs will override any corresponding preset values.
+        parallel_info
+            parallel_info is a dictionary passed to the ASE Espresso calculator
+            profile. It is used to specify prefixes for the command line arguments.
+            See the ASE documentation for more details.
+        template
+            ASE calculator templace which can be used to specify which espresso
+            binary will be used in the calculation. This is taken care of by recipe
+            in most cases.
+        profile
+            ASE calculator profile which can be used to specify the location of
+            the espresso binary and pseudopotential files. This is taken care of
+            internally using quacc settings.
+        **kwargs
+            Additional arguments to be passed to the Espresso calculator. Takes all valid
+            ASE calculator arguments, such as `input_data` and `kpts`. Refer to
+            `ase.calculators.espresso.Espresso` for details. Note that the full input
+            must be described; use `{"system":{"ecutwfc": 60}}` and not the `{"ecutwfc": 60}`
+            short-hand.
+
+        Returns
+        -------
+        None
+        """
+        self.input_atoms = input_atoms or Atoms()
+        self.preset = preset
+        self.parallel_info = parallel_info
+        self.kwargs = kwargs
+        self.user_calc_params = {}
+
+        template = template or EspressoTemplate("pw")
+        self._bin_path = str(SETTINGS.ESPRESSO_BIN_PATHS[template.binary])
+        self._binary = template.binary
+        self._cleanup_params()
+        self._pseudo_path = (
+            self.user_calc_params.get("input_data", {})
+            .get("control", {})
+            .get("pseudo_dir", str(SETTINGS.ESPRESSO_PSEUDO))
+        )
+        self.profile = profile or EspressoProfile(
+            binary=self._bin_path,
+            parallel_info=parallel_info,
+            pseudo_path=self._pseudo_path,
+        )
+
+        super().__init__(
+            profile=self.profile,
+            parallel_info=self.parallel_info,
+            **self.user_calc_params,
+        )
+
+        self.template = template
+
+    def _cleanup_params(self) -> None:
+        """
+        Function that handles the kwargs. It will merge the user-supplied
+        kwargs with the preset values, using the former as priority.
+
+        Parameters
+        ----------
+        binary
+            The espresso binary used to construct the namelist
+        **kwargs
+            User-supplied kwargs
+
+        Returns
+        -------
+        None
+        """
+
+        if self.preset:
+            calc_preset = load_yaml_calc(
+                SETTINGS.ESPRESSO_PRESET_DIR / f"{self.preset}"
+            )
+            ecutwfc, ecutrho, pseudopotentials = get_pseudopotential_info(
+                calc_preset, self.input_atoms
+            )
+            calc_preset.pop("pseudopotentials", None)
+            self.user_calc_params = recursive_dict_merge(
+                calc_preset,
+                {
+                    "input_data": {"system": {"ecutwfc": ecutwfc, "ecutrho": ecutrho}},
+                    "pseudopotentials": pseudopotentials,
+                },
+                self.kwargs,
+            )
+        else:
+            self.user_calc_params = self.kwargs
+
+        if self.user_calc_params.get("kpts") == "gamma":
+            self.user_calc_params["kpts"] = None
+
+        if self.user_calc_params.get("kpts") and self.user_calc_params.get("kspacing"):
+            raise ValueError("Cannot specify both kpts and kspacing.")
+
+        if self.user_calc_params.get("directory"):
+            raise ValueError("quacc does not support the directory argument.")
 
 
 class EspressoTemplate(EspressoTemplate_):
@@ -158,123 +283,3 @@ class EspressoTemplate(EspressoTemplate_):
         parameters["input_data"] = input_data
 
         return parameters
-
-
-class Espresso(Espresso_):
-    """
-    This is a wrapper around the ASE Espresso calculator that adjusts input_data
-    parameters and allows for the use of presets. Templates are used to set
-    the binary and input/output file names.
-    """
-
-    def __init__(
-        self,
-        input_atoms: Atoms | None = None,
-        preset: str | None = None,
-        template: EspressoTemplate | None = None,
-        profile: EspressoProfile | None = None,
-        parallel_info: dict[str, Any] | None = None,
-        **kwargs,
-    ) -> None:
-        """
-        Initialize the Espresso calculator.
-
-        Parameters
-        ----------
-        input_atoms
-            The input Atoms object to be used for the calculation.
-        preset
-            The name of a YAML file containing a list of parameters to use as
-            a "preset" for the calculator. quacc will automatically look in the
-            `ESPRESSO_PRESET_DIR` (default: quacc/calculators/espresso/presets),
-            The .yaml extension is not necessary. Any user-supplied calculator
-            **kwargs will override any corresponding preset values.
-        template
-            ASE calculator templace which can be used to specify which espresso
-            binary will be used in the calculation. This is taken care of by recipe
-            in most cases.
-        profile
-            ASE calculator profile which can be used to specify the location of
-            the espresso binary and pseudopotential files. This is taken care of
-            internally using quacc settings.
-        parallel_info
-            parallel_info is a dictionary passed to the ASE Espresso calculator
-            profile. It is used to specify prefixes for the command line arguments.
-            See the ASE documentation for more details.
-        **kwargs
-            Additional arguments to be passed to the Espresso calculator, e.g.
-            `input_data`, `kpts`... Takes all valid ASE calculator arguments.
-
-        Returns
-        -------
-        None
-        """
-        self.preset = preset
-        self.input_atoms = input_atoms or Atoms()
-
-        template = template or EspressoTemplate("pw")
-
-        kwargs = self._kwargs_handler(template.binary, **kwargs)
-
-        pseudo_path = (
-            kwargs["input_data"]
-            .get("control", {})
-            .get("pseudo_dir", str(SETTINGS.ESPRESSO_PSEUDO))
-        )
-
-        bin_path = SETTINGS.ESPRESSO_BIN_PATHS[template.binary]
-        profile = profile or EspressoProfile(
-            binary=str(bin_path), parallel_info=parallel_info, pseudo_path=pseudo_path
-        )
-
-        if kwargs.get("directory"):
-            raise ValueError("quacc does not support the directory argument.")
-
-        super().__init__(
-            profile=profile, directory=".", parallel_info=parallel_info, **kwargs
-        )
-
-        self.template = template
-
-    def _kwargs_handler(self, binary: str, **kwargs) -> dict[str, Any]:
-        """
-        Function that handles the kwargs. It will merge the user-supplied
-        kwargs with the defaults and preset values. Priority order is as follow:
-
-        User-supplied kwargs > preset > defaults
-
-        Parameters
-        ----------
-        binary
-            The espresso binary used to construct the namelist
-        **kwargs
-            User-supplied kwargs
-
-        Returns
-        -------
-        kwargs
-            The merged kwargs
-        """
-        keys = ALL_KEYS[binary]
-        kwargs["input_data"] = construct_namelist(kwargs.get("input_data"), keys=keys)
-
-        kpts = kwargs.get("kpts")
-        kspacing = kwargs.get("kspacing")
-
-        if kpts and kspacing:
-            raise ValueError("Cannot specify both kpts and kspacing.")
-
-        if self.preset:
-            config = load_yaml_calc(SETTINGS.ESPRESSO_PRESET_DIR / f"{self.preset}")
-            preset = parse_pw_preset(config, self.input_atoms)
-            kwargs = recursive_dict_merge(preset, kwargs)
-
-        if kpts:
-            kwargs.pop("kspacing", None)
-        elif kspacing:
-            kwargs.pop("kpts", None)
-
-        if kwargs.get("kpts") == "gamma":
-            kwargs["kpts"] = None
-
-        return kwargs

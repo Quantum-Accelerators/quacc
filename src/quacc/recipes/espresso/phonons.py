@@ -9,8 +9,6 @@ from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.recipes.espresso._base import base_fn
 
 if TYPE_CHECKING:
-    from ase.atoms import Atoms
-
     from quacc.schemas._aliases.ase import RunSchema
 
 
