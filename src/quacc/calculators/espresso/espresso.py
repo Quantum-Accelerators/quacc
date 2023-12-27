@@ -253,6 +253,9 @@ class Espresso(Espresso_):
         None
         """
 
+        if self.kwargs.get("directory"):
+            raise ValueError("quacc does not support the directory argument.")
+
         if self.preset:
             calc_preset = load_yaml_calc(
                 SETTINGS.ESPRESSO_PRESET_DIR / f"{self.preset}"
@@ -279,6 +282,3 @@ class Espresso(Espresso_):
             "kspacing"
         ):
             raise ValueError("Cannot specify both kpts and kspacing.")
-
-        if self._user_calc_params.get("directory"):
-            raise ValueError("quacc does not support the directory argument.")
