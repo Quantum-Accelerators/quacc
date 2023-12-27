@@ -75,14 +75,14 @@ class Espresso(Espresso_):
         self.preset = preset
         self.parallel_info = parallel_info
         self.kwargs = kwargs
-        self.user_calc_params = {}
+        self._user_calc_params = {}
 
         template = template or EspressoTemplate("pw")
         self._bin_path = str(SETTINGS.ESPRESSO_BIN_PATHS[template.binary])
         self._binary = template.binary
         self._cleanup_params()
         self._pseudo_path = (
-            self.user_calc_params.get("input_data", {})
+            self._user_calc_params.get("input_data", {})
             .get("control", {})
             .get("pseudo_dir", str(SETTINGS.ESPRESSO_PSEUDO))
         )
@@ -95,7 +95,7 @@ class Espresso(Espresso_):
         super().__init__(
             profile=self.profile,
             parallel_info=self.parallel_info,
-            **self.user_calc_params,
+            **self._user_calc_params,
         )
 
         self.template = template
@@ -125,7 +125,7 @@ class Espresso(Espresso_):
                 calc_preset, self.input_atoms
             )
             calc_preset.pop("pseudopotentials", None)
-            self.user_calc_params = recursive_dict_merge(
+            self._user_calc_params = recursive_dict_merge(
                 calc_preset,
                 {
                     "input_data": {"system": {"ecutwfc": ecutwfc, "ecutrho": ecutrho}},
@@ -134,15 +134,17 @@ class Espresso(Espresso_):
                 self.kwargs,
             )
         else:
-            self.user_calc_params = self.kwargs
+            self._user_calc_params = self.kwargs
 
-        if self.user_calc_params.get("kpts") == "gamma":
-            self.user_calc_params["kpts"] = None
+        if self._user_calc_params.get("kpts") == "gamma":
+            self._user_calc_params["kpts"] = None
 
-        if self.user_calc_params.get("kpts") and self.user_calc_params.get("kspacing"):
+        if self._user_calc_params.get("kpts") and self._user_calc_params.get(
+            "kspacing"
+        ):
             raise ValueError("Cannot specify both kpts and kspacing.")
 
-        if self.user_calc_params.get("directory"):
+        if self._user_calc_params.get("directory"):
             raise ValueError("quacc does not support the directory argument.")
 
 
