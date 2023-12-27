@@ -16,8 +16,36 @@ pytestmark = pytest.mark.skipif(which("pw.x") is None, reason="QE not installed"
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 
-
 def test_static_job(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    pp_dir = Path(__file__).parent
+
+    copy_decompress_files([pp_dir / "Si.upf.gz"], tmp_path)
+
+    atoms = bulk("Si")
+
+    pseudopotentials = {"Si": "Si.upf"}
+    input_data = {"control": {"pseudo_dir": tmp_path}}
+
+    results = static_job(
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.5
+    )
+
+    assert np.allclose(results["atoms"].positions, atoms.positions, atol=1.0e-4)
+
+    assert np.allclose(results["atoms"].cell, atoms.cell, atol=1.0e-3)
+    assert (results["atoms"].symbols == atoms.symbols).all()
+
+    new_input_data = results["parameters"]["input_data"]
+
+    assert new_input_data["system"]["degauss"] == 0.001
+    assert new_input_data["system"]["occupations"] == "smearing"
+    assert new_input_data["system"]["ecutwfc"] == 30.0
+    assert new_input_data["system"]["ecutrho"] == 240.0
+
+
+def test_static_job_v2(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     pp_dir = Path(__file__).parent
