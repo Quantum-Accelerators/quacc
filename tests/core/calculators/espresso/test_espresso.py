@@ -9,33 +9,19 @@ from quacc.calculators.espresso.espresso import Espresso, EspressoTemplate
 
 
 def test_espresso_kwargs_handler():
-    calc_defaults = {
-        "input_data": {"system": {"ecutwfc": 20, "ecutrho": 80, "conv_thr": 1e-8}}
+    kwargs = {
+        "kpts": (1, 1, 1),
+        "input_data": {"system": {"ecutwfc": 30, "ecutrho": 80}},
     }
-
-    input_data = {"system": {"ecutwfc": 30}}
 
     preset = "sssp_1.3.0_pbe_efficiency"
 
     atoms = Atoms(symbols="LiLaOZr")
 
-    calc = Espresso(
-        input_atoms=atoms,
-        preset=preset,
-        calc_defaults=calc_defaults,
-        input_data=input_data,
-        kpts=(1, 1, 1),
-    )
+    calc = Espresso(input_atoms=atoms, preset=preset, **kwargs)
 
     expected_parameters = {
-        "input_data": {
-            "control": {},
-            "system": {"ecutwfc": 30, "ecutrho": 400, "conv_thr": 1e-8},
-            "electrons": {},
-            "ions": {},
-            "cell": {},
-            "rism": {},
-        },
+        "input_data": {"system": {"ecutwfc": 30, "ecutrho": 80}},
         "kpts": (1, 1, 1),
         "pseudopotentials": {
             "O": "O.pbe-n-kjpaw_psl.0.1.UPF",
@@ -46,18 +32,47 @@ def test_espresso_kwargs_handler():
     }
 
     assert calc.template.binary == "pw"
-    assert calc.parameters == expected_parameters
+    assert calc.parameters["kpts"] == expected_parameters["kpts"]
+    assert (
+        calc.parameters["input_data"]["system"]
+        == expected_parameters["input_data"]["system"]
+    )
+
+
+def test_espresso_kwargs_handler_v2():
+    preset = "sssp_1.3.0_pbe_efficiency"
+
+    atoms = Atoms(symbols="LiLaOZr")
+
+    calc = Espresso(input_atoms=atoms, preset=preset, kpts=(1, 1, 1))
+
+    expected_parameters = {
+        "input_data": {"system": {"ecutwfc": 50.0, "ecutrho": 400.0}},
+        "kpts": (1, 1, 1),
+        "pseudopotentials": {
+            "O": "O.pbe-n-kjpaw_psl.0.1.UPF",
+            "Zr": "Zr_pbe_v1.uspp.F.UPF",
+            "Li": "li_pbe_v1.4.uspp.F.UPF",
+            "La": "La.paw.z_11.atompaw.wentzcovitch.v1.2.upf",
+        },
+    }
+
+    assert calc.template.binary == "pw"
+    assert calc.parameters["kpts"] == expected_parameters["kpts"]
+    assert (
+        calc.parameters["input_data"]["system"]
+        == expected_parameters["input_data"]["system"]
+    )
+    assert (
+        calc.parameters["pseudopotentials"] == expected_parameters["pseudopotentials"]
+    )
 
 
 def test_espresso_presets():
-    calc_defaults = {
-        "input_data": {
-            "system": {"ecutwfc": 20, "ecutrho": 80, "occupations": "fixed"},
-            "electrons": {"scf_must_converge": False},
-        }
+    input_data = {
+        "system": {"ecutwfc": 200, "occupations": "fixed"},
+        "electrons": {"scf_must_converge": False, "conv_thr": 1.0e-16},
     }
-
-    input_data = {"system": {"ecutwfc": 30}, "electrons": {"conv_thr": 1.0e-16}}
 
     preset = "esm_metal_slab_efficiency"
 
@@ -65,20 +80,15 @@ def test_espresso_presets():
     atoms.set_cell([5, 2, 10])
 
     calc = Espresso(
-        input_atoms=atoms,
-        preset=preset,
-        calc_defaults=calc_defaults,
-        input_data=input_data,
-        kpts=[7, 17, 1],
+        input_atoms=atoms, preset=preset, kpts=[7, 17, 1], input_data=input_data
     )
 
     expected_parameters = {
         "input_data": {
-            "control": {},
             "system": {
-                "ecutwfc": 30,
+                "ecutwfc": 200,
                 "ecutrho": 400.0,
-                "occupations": "smearing",
+                "occupations": "fixed",
                 "smearing": "marzari-vanderbilt",
                 "degauss": 0.01,
                 "assume_isolated": "esm",
@@ -90,9 +100,6 @@ def test_espresso_presets():
                 "mixing_mode": "local-TF",
                 "mixing_beta": 0.35,
             },
-            "ions": {},
-            "cell": {},
-            "rism": {},
         },
         "kpts": [7, 17, 1],
         "pseudopotentials": {
@@ -103,7 +110,18 @@ def test_espresso_presets():
         },
     }
     assert calc.template.binary == "pw"
-    assert calc.parameters == expected_parameters
+    assert (
+        calc.parameters["input_data"]["system"]
+        == expected_parameters["input_data"]["system"]
+    )
+    assert (
+        calc.parameters["input_data"]["electrons"]
+        == expected_parameters["input_data"]["electrons"]
+    )
+    assert calc.parameters["kpts"] == expected_parameters["kpts"]
+    assert (
+        calc.parameters["pseudopotentials"] == expected_parameters["pseudopotentials"]
+    )
 
 
 def test_espresso_presets_gamma():
@@ -129,16 +147,7 @@ def test_espresso_kpts():
 def test_outdir_handler(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    parameters = {
-        "input_data": {
-            "control": {},
-            "system": {"outdir": "../test3/test2/test1"},
-            "electrons": {},
-            "ions": {},
-            "cell": {},
-            "rism": {},
-        }
-    }
+    parameters = {"input_data": {"system": {"outdir": "../test3/test2/test1"}}}
 
     test_path = "../test3/test2/test1"
     fake_template = EspressoTemplate()
@@ -168,19 +177,7 @@ def test_outdir_handler(tmp_path, monkeypatch):
 
 
 def test_bad_calculator_params():
-    calc_defaults = {
-        "input_data": {"system": {"ecutwfc": 20, "ecutrho": 80, "conv_thr": 1e-8}}
-    }
-
-    input_data = {"system": {"ecutwfc": 30}}
-
     atoms = Atoms(symbols="LiLaOZr")
 
     with pytest.raises(ValueError):
-        Espresso(
-            input_atoms=atoms,
-            calc_defaults=calc_defaults,
-            input_data=input_data,
-            kpts=(1, 1, 1),
-            directory="bad",
-        )
+        Espresso(input_atoms=atoms, kpts=(1, 1, 1), directory="bad")
