@@ -63,7 +63,7 @@ def phonon_job(
         "qpts": (0, 0, 0),
     }
 
-    template = EspressoTemplate("ph", test_run=test_run)
+    template = EspressoTemplate("ph")
 
     return base_fn(
         preset=preset,
