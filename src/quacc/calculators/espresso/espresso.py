@@ -173,7 +173,6 @@ class Espresso(Espresso_):
         preset: str | None = None,
         template: EspressoTemplate | None = None,
         profile: EspressoProfile | None = None,
-        calc_defaults: dict[str, Any] | None = None,
         parallel_info: dict[str, Any] | None = None,
         **kwargs,
     ) -> None:
@@ -198,10 +197,6 @@ class Espresso(Espresso_):
             ASE calculator profile which can be used to specify the location of
             the espresso binary and pseudopotential files. This is taken care of
             internally using quacc settings.
-        calc_defaults
-            A dictionary of default input_data parameters to pass to the Espresso
-            calculator. These will be overridden by any user-supplied calculator
-            **kwargs.
         parallel_info
             parallel_info is a dictionary passed to the ASE Espresso calculator
             profile. It is used to specify prefixes for the command line arguments.
@@ -216,7 +211,6 @@ class Espresso(Espresso_):
         """
         self.preset = preset
         self.input_atoms = input_atoms or Atoms()
-        self.calc_defaults = calc_defaults or {}
 
         template = template or EspressoTemplate("pw")
 
@@ -263,9 +257,6 @@ class Espresso(Espresso_):
         """
         keys = ALL_KEYS[binary]
         kwargs["input_data"] = construct_namelist(kwargs.get("input_data"), keys=keys)
-        self.calc_defaults["input_data"] = construct_namelist(
-            self.calc_defaults.get("input_data"), keys=keys
-        )
 
         kpts = kwargs.get("kpts")
         kspacing = kwargs.get("kspacing")
@@ -282,8 +273,6 @@ class Espresso(Espresso_):
             kwargs.pop("kspacing", None)
         elif kspacing:
             kwargs.pop("kpts", None)
-
-        kwargs = recursive_dict_merge(self.calc_defaults, kwargs)
 
         if kwargs.get("kpts") == "gamma":
             kwargs["kpts"] = None
