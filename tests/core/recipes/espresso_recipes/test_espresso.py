@@ -16,7 +16,6 @@ pytestmark = pytest.mark.skipif(which("pw.x") is None, reason="QE not installed"
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 
-
 def test_static_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
