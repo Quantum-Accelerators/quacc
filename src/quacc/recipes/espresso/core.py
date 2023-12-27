@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 @job
 def static_job(
     atoms: Atoms,
-    preset: str | None = None,
+    preset: str | None = "basic",
     parallel_info: dict[str] | None = None,
     copy_files: str | Path | list[str | Path] | None = None,
     **calc_kwargs,
@@ -59,13 +59,7 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
-    calc_defaults = {
-        "input_data": {
-            "control": {"calculation": "scf", "restart_mode": "from_scratch"},
-            "system": {"ecutwfc": 60, "ecutrho": 240},
-            "electrons": {"conv_thr": 1e-8, "mixing_mode": "plain", "mixing_beta": 0.7},
-        }
-    }
+    calc_defaults = {"input_data": {"control": {"calculation": "scf"}}}
 
     return base_fn(
         atoms,

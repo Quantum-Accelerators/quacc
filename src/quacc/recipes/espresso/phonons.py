@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 @job
 def phonon_job(
     prev_dir: str | Path,
-    preset: str | None = None,
+    preset: str | None = "basic",
     parallel_info: dict[str] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
