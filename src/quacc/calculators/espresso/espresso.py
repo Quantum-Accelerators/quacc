@@ -19,6 +19,145 @@ if TYPE_CHECKING:
     from typing import Any
 
 
+class EspressoTemplate(EspressoTemplate_):
+    """
+    This is a wrapper around the ASE Espresso template that allows for the use
+    of other binaries such as pw.x, ph.x, cp.x, etc.
+    """
+
+    def __init__(self, binary: str = "pw") -> None:
+        """
+        Initialize the Espresso template.
+
+        Parameters
+        ----------
+        binary
+            The name of the espresso binary to use. This is used to set the
+            input/output file names. By default we fall bacl on "pw".
+
+        Returns
+        -------
+        None
+        """
+        super().__init__()
+
+        self.inputname = f"{binary}.in"
+        self.outputname = f"{binary}.out"
+
+        self.binary = binary
+
+        self.outdirs = {
+            "outdir": os.environ.get("ESPRESSO_TMPDIR"),
+            "wfcdir": os.environ.get("ESPRESSO_TMPDIR"),
+        }
+
+    def write_input(
+        self,
+        profile: EspressoProfile,
+        directory: Path | str,
+        atoms: Atoms,
+        parameters: dict[str, Any],
+        properties: Any,
+    ) -> None:
+        """
+        The function that should be used instead of the one in ASE EspressoTemplate
+        to write the input file. It calls a customly defined write function.
+
+        Parameters
+        ----------
+        profile
+            The profile to use.
+        directory
+            The directory in which to write the input file.
+        atoms
+            The atoms object to use.
+        parameters
+            The parameters to use.
+        properties
+            Special ASE properties
+
+        Returns
+        -------
+        None
+        """
+        directory = Path(directory)
+        self._outdir_handler(parameters, directory)
+
+        write(
+            directory / self.inputname,
+            atoms,
+            binary=self.binary,
+            properties=properties,
+            pseudo_dir=str(profile.pseudo_path),
+            **parameters,
+        )
+
+    def read_results(self, directory: Path | str) -> dict[str, Any]:
+        """
+        The function that should be used instead of the one in ASE EspressoTemplate
+        to read the output file. It calls a customly defined read function. It also
+        adds the "energy" key to the results dictionnary if it is not present. This
+        is needed if the calculation is not made with pw.x.
+
+        Parameters
+        ----------
+        directory
+            The directory in which to read the output file.
+
+        Returns
+        -------
+        dict
+            The results dictionnary
+        """
+
+        results = read(Path(directory) / self.outputname, binary=self.binary)
+        if "energy" not in results:
+            results["energy"] = None
+        return results
+
+    def _outdir_handler(
+        self, parameters: dict[str, Any], directory: Path
+    ) -> dict[str, Any]:
+        """
+        Function that handles the various outdir of espresso binaries. If they are relative,
+        they are resolved against `directory`, which is the recommended approach.
+        If the user-supplied paths are absolute, they are resolved and checked
+        against `directory`, which is typically `os.getcwd()`. If they are not in `directory`,
+        they will be ignored.
+
+        Parameters
+        ----------
+        parameters
+            User-supplied kwargs
+        directory
+            The `directory` kwarg from the calculator.
+
+        Returns
+        -------
+        dict[str, Any]
+            The merged kwargs
+        """
+
+        input_data = parameters.get("input_data", {})
+
+        for section in input_data:
+            for d_key in self.outdirs:
+                if d_key in input_data[section]:
+                    path = Path(input_data[section][d_key])
+                    path = path.expanduser().resolve()
+                    if directory.expanduser().resolve() not in path.parents:
+                        self.outdirs[d_key] = path
+                        continue
+                    path.mkdir(parents=True, exist_ok=True)
+                    input_data[section][d_key] = path
+
+        self.outdirs = [path for path in self.outdirs.values() if path is not None]
+
+        parameters["input_data"] = input_data
+
+        return parameters
+
+
 class Espresso(Espresso_):
     """
     This is a wrapper around the ASE Espresso calculator that adjusts input_data
@@ -143,142 +282,3 @@ class Espresso(Espresso_):
 
         if self._user_calc_params.get("directory"):
             raise ValueError("quacc does not support the directory argument.")
-
-
-class EspressoTemplate(EspressoTemplate_):
-    """
-    This is a wrapper around the ASE Espresso template that allows for the use
-    of other binaries such as pw.x, ph.x, cp.x, etc.
-    """
-
-    def __init__(self, binary: str = "pw") -> None:
-        """
-        Initialize the Espresso template.
-
-        Parameters
-        ----------
-        binary
-            The name of the espresso binary to use. This is used to set the
-            input/output file names. By default we fall bacl on "pw".
-
-        Returns
-        -------
-        None
-        """
-        super().__init__()
-
-        self.inputname = f"{binary}.in"
-        self.outputname = f"{binary}.out"
-
-        self.binary = binary
-
-        self.outdirs = {
-            "outdir": os.environ.get("ESPRESSO_TMPDIR"),
-            "wfcdir": os.environ.get("ESPRESSO_TMPDIR"),
-        }
-
-    def write_input(
-        self,
-        profile: EspressoProfile,
-        directory: Path | str,
-        atoms: Atoms,
-        parameters: dict[str, Any],
-        properties: Any,
-    ) -> None:
-        """
-        The function that should be used instead of the one in ASE EspressoTemplate
-        to write the input file. It calls a customly defined write function.
-
-        Parameters
-        ----------
-        profile
-            The profile to use.
-        directory
-            The directory in which to write the input file.
-        atoms
-            The atoms object to use.
-        parameters
-            The parameters to use.
-        properties
-            Special ASE properties
-
-        Returns
-        -------
-        None
-        """
-        directory = Path(directory)
-        self._outdir_handler(parameters, directory)
-
-        write(
-            directory / self.inputname,
-            atoms,
-            binary=self.binary,
-            properties=properties,
-            pseudo_dir=str(profile.pseudo_path),
-            **parameters,
-        )
-
-    def read_results(self, directory: Path | str) -> dict[str, Any]:
-        """
-        The function that should be used instead of the one in ASE EspressoTemplate
-        to read the output file. It calls a customly defined read function. It also
-        adds the "energy" key to the results dictionnary if it is not present. This
-        is needed if the calculation is not made with pw.x.
-
-        Parameters
-        ----------
-        directory
-            The directory in which to read the output file.
-
-        Returns
-        -------
-        dict
-            The results dictionnary
-        """
-
-        results = read(Path(directory) / self.outputname, binary=self.binary)
-        if "energy" not in results:
-            results["energy"] = None
-        return results
-
-    def _outdir_handler(
-        self, parameters: dict[str, Any], directory: Path
-    ) -> dict[str, Any]:
-        """
-        Function that handles the various outdir of espresso binaries. If they are relative,
-        they are resolved against `directory`, which is the recommended approach.
-        If the user-supplied paths are absolute, they are resolved and checked
-        against `directory`, which is typically `os.getcwd()`. If they are not in `directory`,
-        they will be ignored.
-
-        Parameters
-        ----------
-        parameters
-            User-supplied kwargs
-        directory
-            The `directory` kwarg from the calculator.
-
-        Returns
-        -------
-        dict[str, Any]
-            The merged kwargs
-        """
-
-        input_data = parameters.get("input_data", {})
-
-        for section in input_data:
-            for d_key in self.outdirs.keys():
-                if d_key in input_data[section]:
-                    path = Path(input_data[section][d_key])
-                    path = path.expanduser().resolve()
-                    if directory.expanduser().resolve() not in path.parents:
-                        self.outdirs[d_key] = path
-                        continue
-                    path.mkdir(parents=True, exist_ok=True)
-                    input_data[section][d_key] = path
-
-        self.outdirs = [path for path in self.outdirs.values() if path is not None]
-
-        parameters["input_data"] = input_data
-
-        return parameters
