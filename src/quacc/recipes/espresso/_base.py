@@ -69,9 +69,9 @@ def base_fn(
     atoms.calc = Espresso(
         input_atoms=atoms,
         preset=preset,
+        parallel_info=parallel_info,
         template=template,
         profile=profile,
-        parallel_info=parallel_info,
         **calc_flags,
     )
 
