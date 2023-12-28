@@ -275,6 +275,9 @@ def flow(
     else:
         decorated = _func
 
+    if not hasattr(decorated, "__wrapped__"):
+        decorated.__wrapped__ = _func
+
     return decorated
 
 
@@ -499,4 +502,45 @@ def subflow(
     else:
         decorated = _func
 
+    if not hasattr(decorated, "__wrapped__"):
+        decorated.__wrapped__ = _func
+
     return decorated
+
+
+def redecorate(
+    decorated_funcs: list[Job | Flow | Subflow | None],
+    decorators: dict[str, Callable | None],
+) -> Job | Flow | Subflow:
+    """
+    Redecorate pre-decorated functions with custom decorators.
+
+    Parameters
+    ----------
+    decorated_funcs
+        The pre-decorated functions. If one of the values in `decorated_funcs`
+        is `None`, a `None` is returned as-is.
+    decorators
+        The new decorators to apply. For `decorated_funcs` given as
+        ["Job1", "Job2"], then `decorators` should be formatted as something
+        like `{"Job1": job(executor="local"), "Job2": job(executor="local")}`.
+        If a decorated function in `decorated_funcs` is not present in the keys
+        of `decorators`, no change will be made to the pre-decorated function.
+
+    Returns
+    -------
+    Job | Flow | Subflow
+        The newly decorated function
+    """
+    redecorated_funcs = []
+    for decorated_func in decorated_funcs:
+        if decorated_func is None:
+            redecorated_funcs.append(None)
+            continue
+
+        if new_decorator := decorators.get(decorated_func.__name__):
+            redecorated_func = new_decorator(decorated_func.__wrapped__)
+        else:
+            redecorated_func = decorated_func
+        redecorated_funcs.append(redecorated_func)
+    return decorated_funcs

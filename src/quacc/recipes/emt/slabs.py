@@ -6,9 +6,10 @@ from typing import TYPE_CHECKING
 from quacc import flow
 from quacc.recipes.common.slabs import bulk_to_slabs_subflow
 from quacc.recipes.emt.core import relax_job, static_job
+from quacc.wflow_tools.decorators import redecorate
 
 if TYPE_CHECKING:
-    from typing import Any
+    from typing import Any, Callable
 
     from ase.atoms import Atoms
 
@@ -19,10 +20,10 @@ if TYPE_CHECKING:
 @flow
 def bulk_to_slabs_flow(
     atoms: Atoms,
-    custom_relax_job: Job | None = None,
-    custom_static_job: Job | None = None,
-    run_static: bool = True,
     make_slabs_kwargs: dict[str, Any] | None = None,
+    slab_relax_job: Job = relax_job,
+    slab_static_job: Job | None = static_job,
+    decorators: dict[str, Callable | None] | None = None,
 ) -> list[RunSchema | OptSchema]:
     """
     Workflow consisting of:
@@ -37,12 +38,12 @@ def bulk_to_slabs_flow(
     ----------
     atoms
         Atoms object
-    custom_relax_job
-        The relaxation job, which defaults to [quacc.recipes.emt.core.relax_job][].
-    custom_static_job
-        The static job, which defaults to [quacc.recipes.emt.core.static_job][].
-    run_static
-        Whether to run static calculations.
+    slab_relax_job
+        The slab relaxation job, which defaults to [quacc.recipes.emt.core.relax_job][].
+    slab_static_job
+        The slab static job, which defaults to [quacc.recipes.emt.core.static_job][].
+    decorators
+        Custom decorators to apply to each Job in the Flow.
     make_slabs_kwargs
         Additional keyword arguments to pass to
         [quacc.atoms.slabs.make_slabs_from_bulk][]
@@ -53,12 +54,13 @@ def bulk_to_slabs_flow(
         [RunSchema][quacc.schemas.ase.summarize_run] or
         [OptSchema][quacc.schemas.ase.summarize_opt_run] for each slab.
     """
-    slab_relax_job = relax_job if custom_relax_job is None else custom_relax_job
-    slab_static_job = static_job if custom_static_job is None else custom_static_job
+    slab_relax_job, slab_static_job = redecorate(
+        [slab_relax_job, slab_static_job], decorators
+    )
 
     return bulk_to_slabs_subflow(
         atoms,
         slab_relax_job,
-        static_job=slab_static_job if run_static else None,
+        static_job=slab_static_job,
         make_slabs_kwargs=make_slabs_kwargs,
     )

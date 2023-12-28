@@ -22,6 +22,7 @@ import numpy as np
 
 from quacc import flow, job
 from quacc.recipes.vasp._base import base_fn
+from quacc.wflow_tools.decorators import redecorate
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
@@ -129,13 +130,14 @@ def mp_relax_flow(
     atoms: Atoms,
     custom_prerelax_job: Job | None = None,
     custom_relax_job: Job | None = None,
+    decorators: dict | None = None,
 ) -> MPRelaxFlowSchema:
     """
     Workflow consisting of:
 
-    1. MP-compatible pre-relax
+    1. MP-compatible pre-relax: "prerelax_job"
 
-    2. MP-compatible relax
+    2. MP-compatible relax: "relax_job"
 
     Parameters
     ----------
@@ -145,6 +147,8 @@ def mp_relax_flow(
         Pre-relaxation job, which defaults to [quacc.recipes.vasp.mp.mp_prerelax_job][].
     custom_relax_job
         Relaxation job, which defaults to [quacc.recipes.vasp.mp.mp_relax_job][].
+    decorators
+        Custom decorators for each job in the flow
 
     Returns
     -------
@@ -152,14 +156,17 @@ def mp_relax_flow(
         Dictionary of results
     """
 
-    # Run the prerelax
+    # Initialize job info
     prerelax_job = (
         mp_prerelax_job if custom_prerelax_job is None else custom_prerelax_job
     )
+    relax_job = mp_relax_job if custom_relax_job is None else custom_relax_job
+    prerelax_job, relax_job = redecorate(prerelax_job, relax_job, decorators=decorators)
+
+    # Run the prerelax
     prerelax_results = prerelax_job(atoms)
 
     # Run the relax
-    relax_job = mp_relax_job if custom_relax_job is None else custom_relax_job
     relax_results = relax_job(
         prerelax_results["atoms"],
         bandgap=prerelax_results["output"]["bandgap"],
