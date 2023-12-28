@@ -504,7 +504,7 @@ def subflow(
 
 def redecorate(
     decorated_funcs: list[Job | None], decorators: dict[str, Callable | None]
-) -> Job | Flow | Subflow:
+) -> list[Job | None]:
     """
     Redecorate pre-decorated functions with custom decorators.
 
