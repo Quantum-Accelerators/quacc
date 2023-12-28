@@ -529,8 +529,8 @@ def redecorate(
 
     Returns
     -------
-    Job | Flow | Subflow
-        The newly decorated function
+    list[Job | Flow | Subflow | None]
+        The newly decorated functions
     """
     redecorated_funcs = []
     for decorated_func in decorated_funcs:
