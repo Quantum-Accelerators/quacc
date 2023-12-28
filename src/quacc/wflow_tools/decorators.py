@@ -503,14 +503,14 @@ def subflow(
 
 
 def redecorate(
-    decorated_funcs: list[Job | None], decorators: dict[str, Callable | None]
-) -> list[Job | None]:
+    funcs: dict[str, Callable], decorators: dict[str, Callable | None] | None
+) -> tuple[Job | None]:
     """
     Redecorate pre-decorated functions with custom decorators.
 
     Parameters
     ----------
-    decorated_funcs
+    funcs
         The pre-decorated functions. If one of the values in `decorated_funcs`
         is `None`, a `None` is returned as-is.
     decorators
@@ -522,21 +522,17 @@ def redecorate(
 
     Returns
     -------
-    list[Job | None]
+    tuple[Job | None]
         The newly decorated functions
     """
     if decorators is None:
-        return decorated_funcs
+        decorators = {}
 
     redecorated_funcs = []
-    for decorated_func in decorated_funcs:
-        if decorated_func is None:
-            redecorated_funcs.append(None)
-            continue
-
-        if new_decorator := decorators.get(decorated_func.__name__):
-            redecorated_func = new_decorator(decorated_func.__wrapped__)
+    for func_name, func in funcs.items():
+        if new_decorator := decorators.get(func_name):
+            redecorated_func = new_decorator(func.__wrapped__)
         else:
-            redecorated_func = decorated_func
+            redecorated_func = func
         redecorated_funcs.append(redecorated_func)
-    return decorated_funcs
+    return tuple(redecorated_funcs)

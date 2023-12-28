@@ -32,7 +32,7 @@ def bulk_to_slabs_flow(
 
     2. Slab relaxations
 
-    3. Slab statics (optional)
+    3. Optional Slab statics
 
     Parameters
     ----------
@@ -55,7 +55,8 @@ def bulk_to_slabs_flow(
         [OptSchema][quacc.schemas.ase.summarize_opt_run] for each slab.
     """
     slab_relax_job, slab_static_job = redecorate(
-        [slab_relax_job, slab_static_job], decorators
+        {"slab_relax_job": slab_relax_job, "slab_static_job": slab_static_job},
+        decorators,
     )
 
     return bulk_to_slabs_subflow(
