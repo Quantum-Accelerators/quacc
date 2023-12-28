@@ -8,9 +8,11 @@ from ase import Atoms
 from ase.calculators.espresso import Espresso as Espresso_
 from ase.calculators.espresso import EspressoProfile
 from ase.calculators.espresso import EspressoTemplate as EspressoTemplate_
+from ase.io.espresso import construct_namelist
 
 from quacc import SETTINGS
 from quacc.calculators.espresso.io import read, write
+from quacc.calculators.espresso.keys import ALL_KEYS
 from quacc.calculators.espresso.utils import get_pseudopotential_info
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.utils.files import load_yaml_calc
@@ -253,12 +255,21 @@ class Espresso(Espresso_):
         None
         """
 
+        keys = ALL_KEYS[self._binary]
+
         if self.kwargs.get("directory"):
             raise ValueError("quacc does not support the directory argument.")
+
+        self.kwargs["input_data"] = construct_namelist(
+            self.kwargs.get("input_data"), keys=keys
+        )
 
         if self.preset:
             calc_preset = load_yaml_calc(
                 SETTINGS.ESPRESSO_PRESET_DIR / f"{self.preset}"
+            )
+            calc_preset["input_data"] = construct_namelist(
+                calc_preset.get("input_data"), keys=keys
             )
             ecutwfc, ecutrho, pseudopotentials = get_pseudopotential_info(
                 calc_preset, self.input_atoms
