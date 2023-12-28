@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from quacc import flow
 from quacc.recipes.common.slabs import bulk_to_slabs_subflow
 from quacc.recipes.emt.core import relax_job, static_job
-from quacc.wflow_tools.decorators import redecorate
+from quacc.wflow_tools.decorators import customize_funcs
 
 if TYPE_CHECKING:
     from typing import Any, Callable
@@ -24,6 +24,7 @@ def bulk_to_slabs_flow(
     slab_relax_job: Job = relax_job,
     slab_static_job: Job | None = static_job,
     decorators: dict[str, Callable | None] | None = None,
+    common_kwargs: dict[str, Any] | None = None,
 ) -> list[RunSchema | OptSchema]:
     """
     Workflow consisting of:
@@ -47,6 +48,8 @@ def bulk_to_slabs_flow(
         The slab static job, which defaults to [quacc.recipes.emt.core.static_job][].
     decorators
         Custom decorators to apply to each Job in the Flow.
+    common_kwargs
+        Common keyword arguments to pass to each Job in the Flow.
 
     Returns
     -------
@@ -54,13 +57,14 @@ def bulk_to_slabs_flow(
         [RunSchema][quacc.schemas.ase.summarize_run] or
         [OptSchema][quacc.schemas.ase.summarize_opt_run] for each slab.
     """
-    slab_relax_job_, slab_static_job_, bulk_to_slabs_subflow_ = redecorate(
+    slab_relax_job_, slab_static_job_, bulk_to_slabs_subflow_ = customize_funcs(
         {
             "slab_relax_job": slab_relax_job,
             "slab_static_job": slab_static_job,
             "bulk_to_slabs_subflow": bulk_to_slabs_subflow,
         },
-        decorators,
+        decorators=decorators,
+        common_kwargs=common_kwargs,
     )
 
     return bulk_to_slabs_subflow_(

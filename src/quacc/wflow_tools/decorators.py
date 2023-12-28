@@ -1,7 +1,8 @@
 """Workflow decorators."""
 from __future__ import annotations
 
-import functools
+import inspect
+from functools import partial, wraps
 from typing import TYPE_CHECKING, TypeVar
 
 Job = TypeVar("Job")
@@ -117,7 +118,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     wflow_engine = SETTINGS.WORKFLOW_ENGINE
 
     if _func is None:
-        return functools.partial(job, **kwargs)
+        return partial(job, **kwargs)
 
     if wflow_engine == "covalent":
         import covalent as ct
@@ -261,7 +262,7 @@ def flow(
     from quacc import SETTINGS
 
     if _func is None:
-        return functools.partial(flow, **kwargs)
+        return partial(flow, **kwargs)
 
     wflow_engine = SETTINGS.WORKFLOW_ENGINE
     if wflow_engine == "covalent":
@@ -447,7 +448,7 @@ def subflow(
         The decorated function.
     """
 
-    @functools.wraps(_func)
+    @wraps(_func)
     def _inner(
         *f_args, decorator_kwargs: dict[str, Any] | None = None, **f_kwargs
     ) -> Any:
@@ -482,7 +483,7 @@ def subflow(
     from quacc import SETTINGS
 
     if _func is None:
-        return functools.partial(subflow, **kwargs)
+        return partial(subflow, **kwargs)
 
     wflow_engine = SETTINGS.WORKFLOW_ENGINE
     if wflow_engine == "covalent":
@@ -508,48 +509,112 @@ def subflow(
     return decorated
 
 
-def redecorate(
-    funcs: dict[str, Callable], decorators: dict[str, Callable | None] | None
-) -> tuple[Job | None]:
+def strip_decorator(func: Callable) -> Callable:
+    """
+    Strip the decorators from a function.
+
+    Parameters
+    ----------
+    func
+        The function to strip decorators from.
+
+    Returns
+    -------
+    Callable
+        The function with all decorators removed.
+    """
+    from quacc import SETTINGS
+
+    if hasattr(func, "__wrapped__"):
+        func = func.__wrapped__
+
+    if SETTINGS.WORKFLOW_ENGINE == "covalent":
+        from covalent._workflow.lattice import Lattice
+
+        if isinstance(func, Lattice):
+            func = func.workflow_function.get_deserialized()
+    return func
+
+
+def redecorate(func: Callable, decorator: Callable | None) -> Callable:
     """
     Redecorate pre-decorated functions with custom decorators.
 
     Parameters
     ----------
-    funcs
-        The pre-decorated functions. If one of the values in `decorated_funcs`
-        is `None`, a `None` is returned as-is.
-    decorators
-        The new decorators to apply. For `decorated_funcs` given as
-        ["Job1", "Job2"], then `decorators` should be formatted as something
-        like `{"Job1": job(executor="local"), "Job2": job(executor="local")}`.
-        If a decorated function in `decorated_funcs` is not present in the keys
-        of `decorators`, no change will be made to the pre-decorated function.
+    func
+        The pre-decorated function.
+    decorator
+        The new decorator to apply. If `None`, the function is stripped of its
+        decorators.
 
     Returns
     -------
-    tuple[Job | None]
-        The newly decorated functions
+    Callable
+        The newly decorated function.
     """
-    from quacc import SETTINGS
+    func = strip_decorator(func)
+    if decorator is None:
+        return func
+    return decorator(func)
 
-    if decorators is None:
-        decorators = {}
 
-    redecorated_funcs = []
+def update_parameters(func: Callable, params: dict[str, Any]) -> Callable:
+    """
+    Update the parameters of a function. If the function does not have a given parameter,
+    it is ignored.
+
+    Parameters
+    ----------
+    func
+        The function to update.
+    params
+        The parameters and associated values to update.
+
+    Returns
+    -------
+    Callable
+        The updated function.
+    """
+    stripped_func = strip_decorator(func)
+    func_params = inspect.signature(stripped_func).parameters
+    valid_params = {k: v for k, v in params.items() if k in func_params}
+    return partial(func, **valid_params)
+
+
+def customize_funcs(
+    funcs: dict[str, Callable],
+    decorators: dict[str, Callable | None] | None,
+    common_params: dict[str, Any] | None,
+) -> tuple[Callable]:
+    """
+    Customize a set of functions with decorators and common parameters.
+
+    Parameters
+    ----------
+    funcs
+        The functions to customize, as a dictionary where the keys are unique
+        identifiers for each function and the values are the functions themselves.
+    decorators
+        Custom decorators to apply to each function. The keys of this dictionary correspond
+        to the keys of `funcs`. If `None`, no decorators are applied.
+    common_params
+        Common parameters to apply to each function. The keys of this dictionary correspond
+        to the keys of `funcs`. If `None`, no common parameters are applied. If a function
+        does not have a given parameter, it is ignored.
+
+    Returns
+    -------
+    tuple[Callable]
+        The customized functions, returned in the same order as provided in `funcs`.
+    """
+    decorators = decorators or {}
+    common_params = common_params or {}
+    updated_funcs = []
     for func_name, func in funcs.items():
-        if new_decorator := decorators.get(func_name):
-            if hasattr(func, "__wrapped__"):
-                func = func.__wrapped__
-
-            if SETTINGS.WORKFLOW_ENGINE == "covalent":
-                from covalent._workflow.lattice import Lattice
-
-                if isinstance(func, Lattice):
-                    func = func.workflow_function.get_deserialized()
-
-            redecorated_func = new_decorator(func)
-        else:
-            redecorated_func = func
-        redecorated_funcs.append(redecorated_func)
-    return tuple(redecorated_funcs)
+        if common_params:
+            func = update_parameters(func, common_params)
+        if func_name in decorators:
+            func = redecorate(func, decorators[func_name])
+        updated_funcs.append(func)
+    return tuple(updated_funcs)
