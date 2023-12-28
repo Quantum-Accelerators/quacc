@@ -21,10 +21,8 @@ if TYPE_CHECKING:
 def bulk_to_slabs_flow(
     atoms: Atoms,
     make_slabs_kwargs: dict[str, Any] | None = None,
-    slab_relax_job: Job = relax_job,
-    slab_static_job: Job | None = static_job,
     decorators: dict[str, Callable | None] | None = None,
-    common_kwargs: dict[str, Any] | None = None,
+    parameters: dict[str, Any] | None = None,
 ) -> list[RunSchema | OptSchema]:
     """
     Workflow consisting of:
@@ -33,23 +31,18 @@ def bulk_to_slabs_flow(
 
     2. Slab relaxations
 
-    3. Optional Slab statics
+    3. Optional slab statics
 
     Parameters
     ----------
     atoms
         Atoms object
     make_slabs_kwargs
-        Additional keyword arguments to pass to
-        [quacc.atoms.slabs.make_slabs_from_bulk][]
-    slab_relax_job
-        The slab relaxation job, which defaults to [quacc.recipes.emt.core.relax_job][].
-    slab_static_job
-        The slab static job, which defaults to [quacc.recipes.emt.core.static_job][].
+        Additional keyword arguments to pass to [quacc.atoms.slabs.make_slabs_from_bulk][]
     decorators
         Custom decorators to apply to each Job in the Flow.
-    common_kwargs
-        Common keyword arguments to pass to each Job in the Flow.
+    parameters
+        Custom parameters to pass to each Job in the Flow.
 
     Returns
     -------
@@ -59,12 +52,12 @@ def bulk_to_slabs_flow(
     """
     slab_relax_job_, slab_static_job_, bulk_to_slabs_subflow_ = customize_funcs(
         {
-            "slab_relax_job": slab_relax_job,
-            "slab_static_job": slab_static_job,
+            "slab_relax_job": relax_job,
+            "slab_static_job": static_job,
             "bulk_to_slabs_subflow": bulk_to_slabs_subflow,
         },
         decorators=decorators,
-        common_kwargs=common_kwargs,
+        parameters=parameters,
     )
 
     return bulk_to_slabs_subflow_(

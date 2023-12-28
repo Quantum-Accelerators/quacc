@@ -585,7 +585,7 @@ def update_parameters(func: Callable, params: dict[str, Any]) -> Callable:
 def customize_funcs(
     funcs: dict[str, Callable],
     decorators: dict[str, Callable | None] | None,
-    common_params: dict[str, Any] | None,
+    parameters: dict[str, Any] | None,
 ) -> tuple[Callable]:
     """
     Customize a set of functions with decorators and common parameters.
@@ -597,11 +597,13 @@ def customize_funcs(
         identifiers for each function and the values are the functions themselves.
     decorators
         Custom decorators to apply to each function. The keys of this dictionary correspond
-        to the keys of `funcs`. If `None`, no decorators are applied.
-    common_params
-        Common parameters to apply to each function. The keys of this dictionary correspond
-        to the keys of `funcs`. If `None`, no common parameters are applied. If a function
-        does not have a given parameter, it is ignored.
+        to the keys of `funcs`. If the key `"all"` is present, it will be applied to all
+        functions. If a value is `None`, no decorator will be applied that function.
+    parameters
+        Custom parameters to apply to each function. The keys of this dictionary correspond
+        to the keys of `funcs`. If the key `"all"` is present, it will be applied to all
+        functions. If the value is `None`, no custom parameters will be applied to that function.
+        If a function does not have a given parameter, it is ignored.
 
     Returns
     -------
@@ -609,11 +611,15 @@ def customize_funcs(
         The customized functions, returned in the same order as provided in `funcs`.
     """
     decorators = decorators or {}
-    common_params = common_params or {}
+    parameters = parameters or {}
     updated_funcs = []
     for func_name, func in funcs.items():
-        if common_params:
-            func = update_parameters(func, common_params)
+        if params := parameters.get("all"):
+            func = update_parameters(func, params)
+        if params := parameters.get(func_name):
+            func = update_parameters(func, params)
+        if "all" in decorators:
+            func = redecorate(func, decorators["all"])
         if func_name in decorators:
             func = redecorate(func, decorators[func_name])
         updated_funcs.append(func)
