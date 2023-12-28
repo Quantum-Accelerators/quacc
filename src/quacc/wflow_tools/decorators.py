@@ -275,6 +275,9 @@ def flow(
     else:
         decorated = _func
 
+    if wflow_engine != "covalent" and not hasattr(decorated, "__wrapped__"):
+        decorated.__wrapped__ = _func
+
     return decorated
 
 
@@ -499,6 +502,9 @@ def subflow(
     else:
         decorated = _func
 
+    if wflow_engine != "covalent" and not hasattr(decorated, "__wrapped__"):
+        decorated.__wrapped__ = _func
+
     return decorated
 
 
@@ -525,13 +531,24 @@ def redecorate(
     tuple[Job | None]
         The newly decorated functions
     """
+    from quacc import SETTINGS
+
     if decorators is None:
         decorators = {}
 
     redecorated_funcs = []
     for func_name, func in funcs.items():
         if new_decorator := decorators.get(func_name):
-            redecorated_func = new_decorator(func.__wrapped__)
+            if hasattr(func, "__wrapped__"):
+                func = func.__wrapped__
+
+            if SETTINGS.WORKFLOW_ENGINE == "covalent":
+                from covalent._workflow.lattice import Lattice
+
+                if isinstance(func, Lattice):
+                    func = func.workflow_function.get_deserialized()
+
+            redecorated_func = new_decorator(func)
         else:
             redecorated_func = func
         redecorated_funcs.append(redecorated_func)
