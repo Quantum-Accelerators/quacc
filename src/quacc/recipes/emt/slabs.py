@@ -38,15 +38,15 @@ def bulk_to_slabs_flow(
     ----------
     atoms
         Atoms object
+    make_slabs_kwargs
+        Additional keyword arguments to pass to
+        [quacc.atoms.slabs.make_slabs_from_bulk][]
     slab_relax_job
         The slab relaxation job, which defaults to [quacc.recipes.emt.core.relax_job][].
     slab_static_job
         The slab static job, which defaults to [quacc.recipes.emt.core.static_job][].
     decorators
         Custom decorators to apply to each Job in the Flow.
-    make_slabs_kwargs
-        Additional keyword arguments to pass to
-        [quacc.atoms.slabs.make_slabs_from_bulk][]
 
     Returns
     -------

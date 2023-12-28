@@ -275,9 +275,6 @@ def flow(
     else:
         decorated = _func
 
-    if not hasattr(decorated, "__wrapped__"):
-        decorated.__wrapped__ = _func
-
     return decorated
 
 
@@ -501,9 +498,6 @@ def subflow(
         return _inner
     else:
         decorated = _func
-
-    if not hasattr(decorated, "__wrapped__"):
-        decorated.__wrapped__ = _func
 
     return decorated
 
