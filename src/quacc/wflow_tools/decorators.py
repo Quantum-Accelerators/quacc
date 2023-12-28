@@ -525,6 +525,9 @@ def redecorate(
     list[Job | None]
         The newly decorated functions
     """
+    if decorators is None:
+        return decorated_funcs
+
     redecorated_funcs = []
     for decorated_func in decorated_funcs:
         if decorated_func is None:
