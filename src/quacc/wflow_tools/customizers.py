@@ -54,9 +54,7 @@ def redecorate(func: Callable, decorator: Callable | None) -> Callable:
         The newly decorated function.
     """
     func = strip_decorator(func)
-    if decorator is None:
-        return func
-    return decorator(func)
+    return func if decorator is None else decorator(func)
 
 
 def update_parameters(func: Callable, params: dict[str, Any]) -> Callable:
@@ -116,14 +114,12 @@ def customize_funcs(
     parameters = parameters or {}
     updated_funcs = []
 
-    bad_decorator_keys = [k for k in decorators if k not in funcs]
-    if bad_decorator_keys:
+    if bad_decorator_keys := [k for k in decorators if k not in funcs]:
         raise ValueError(
             f"Invalid decorator keys: {bad_decorator_keys}. "
             f"Valid keys are: {list(funcs.keys())}"
         )
-    bad_parameter_keys = [k for k in parameters if k not in funcs]
-    if bad_parameter_keys:
+    if bad_parameter_keys := [k for k in parameters if k not in funcs]:
         raise ValueError(
             f"Invalid parameter keys: {bad_parameter_keys}. "
             f"Valid keys are: {list(funcs.keys())}"
