@@ -260,18 +260,23 @@ class Espresso(Espresso_):
             calc_preset = load_yaml_calc(
                 SETTINGS.ESPRESSO_PRESET_DIR / f"{self.preset}"
             )
-            ecutwfc, ecutrho, pseudopotentials = get_pseudopotential_info(
-                calc_preset, self.input_atoms
-            )
-            calc_preset.pop("pseudopotentials", None)
-            self._user_calc_params = recursive_dict_merge(
-                calc_preset,
-                {
-                    "input_data": {"system": {"ecutwfc": ecutwfc, "ecutrho": ecutrho}},
-                    "pseudopotentials": pseudopotentials,
-                },
-                self.kwargs,
-            )
+            if "pseudopotentials" in calc_preset:
+                ecutwfc, ecutrho, pseudopotentials = get_pseudopotential_info(
+                    calc_preset["pseudopotentials"], self.input_atoms
+                )
+                calc_preset.pop("pseudopotentials", None)
+                self._user_calc_params = recursive_dict_merge(
+                    calc_preset,
+                    {
+                        "input_data": {
+                            "system": {"ecutwfc": ecutwfc, "ecutrho": ecutrho}
+                        },
+                        "pseudopotentials": pseudopotentials,
+                    },
+                    self.kwargs,
+                )
+            else:
+                self._user_calc_params = recursive_dict_merge(calc_preset, self.kwargs)
         else:
             self._user_calc_params = self.kwargs
 
