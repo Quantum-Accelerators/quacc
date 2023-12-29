@@ -122,6 +122,8 @@ def customize_funcs(
 
     funcs_dict = dict(zip(names, funcs))
 
+    if "all" in names:
+        raise ValueError("Invalid function name: 'all' is a reserved name.")
     if bad_decorator_keys := [k for k in decorators if k not in names and k != "all"]:
         raise ValueError(
             f"Invalid decorator keys: {bad_decorator_keys}. " f"Valid keys are: {names}"
