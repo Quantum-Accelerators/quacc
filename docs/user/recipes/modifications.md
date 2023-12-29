@@ -36,9 +36,7 @@ result = bulk_to_slabs_flow(
 print(result)
 ```
 
-1. See the documentation for [quacc.wflow_tools.customizers.customize_funcs][] for additional details.
-
-Here, we have used the `parameters` keyword argument to override the default parameters of the `relax_job` function called within `bulk_to_slabs_flow`. This is a convenient way to modify the behavior of a workflow without having to modify the source code itself.
+Here, we have used the `parameters` keyword argument to override the default parameters only for the `relax_job` function called within `bulk_to_slabs_flow`. This is a convenient way to selectively modify the default behavior of a workflow without having to modify the source code itself.
 
 ## Modifying all the Jobs in a Dynamic Workflow
 
@@ -54,14 +52,12 @@ atoms = bulk("Cu")
 
 # Define the workflow
 result = bulk_to_slabs_flow(
-    atoms, parameters={"all": {"asap_cutoff": True}}  # (1)!
+    atoms, parameters={"all": {"asap_cutoff": True}}
 )
 
 # Print the result
 print(result)
 ```
-
-1. See the documentation for [quacc.wflow_tools.customizers.customize_funcs][] for additional details.
 
 !!! Note
 
