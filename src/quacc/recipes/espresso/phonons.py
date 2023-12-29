@@ -14,6 +14,7 @@ from quacc.recipes.espresso.core import static_job
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
+
     from quacc.schemas._aliases.ase import RunSchema
 
 
@@ -111,27 +112,6 @@ def _phonon_subflow(
             grid_results.append(ph_job_results)
     return grid_results
 
-    pw_job = static_job if custom_pw_job is None else custom_pw_job
-    ph_job = phonon_job if custom_phonon_job is None else custom_phonon_job
-
-    # We run a first pw job (single point or relax) depending on the input
-    # ASR: Where is the relax job??
-    pw_job_results = pw_job(atoms)
-
-    # Run the phonon subflow
-    grid_results = _phonon_subflow(ph_job, pw_job_results["dir_name"], nblocks=nblocks)
-
-    # We have to copy back the files from all of the jobs
-    copy_back = [result["dir_name"] for result in grid_results]
-
-    # We run a 'recover' ph job to diagonalize the dynamical matrix
-    # for each q-point.
-    input_data = grid_results[-1]["parameters"]["input_data"]
-    for k in ["start_q", "last_q", "start_irr", "last_irr"]:
-        input_data["inputph"].pop(k)
-    input_data["inputph"]["recover"] = True
-
-    return ph_job(copy_back, input_data=input_data)
 
 @flow
 def grid_phonon_flow(
@@ -171,3 +151,25 @@ def grid_phonon_flow(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
+
+    pw_job = static_job if custom_pw_job is None else custom_pw_job
+    ph_job = phonon_job if custom_phonon_job is None else custom_phonon_job
+
+    # We run a first pw job (single point or relax) depending on the input
+    # ASR: Where is the relax job??
+    pw_job_results = pw_job(atoms)
+
+    # Run the phonon subflow
+    grid_results = _phonon_subflow(ph_job, pw_job_results["dir_name"], nblocks=nblocks)
+
+    # We have to copy back the files from all of the jobs
+    copy_back = [result["dir_name"] for result in grid_results]
+
+    # We run a 'recover' ph job to diagonalize the dynamical matrix
+    # for each q-point.
+    input_data = grid_results[-1]["parameters"]["input_data"]
+    for k in ["start_q", "last_q", "start_irr", "last_irr"]:
+        input_data["inputph"].pop(k)
+    input_data["inputph"]["recover"] = True
+
+    return ph_job(copy_back, input_data=input_data)
