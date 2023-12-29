@@ -143,4 +143,8 @@ def customize_funcs(
         if func_name in decorators:
             func_ = redecorate(func_, decorators[func_name])
         updated_funcs.append(func_)
+
+    if len(updated_funcs) == 1:
+        return updated_funcs[0]
+
     return tuple(updated_funcs)
