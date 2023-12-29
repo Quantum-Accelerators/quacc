@@ -176,6 +176,7 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 | Espresso Static      | `#!Python @job`  | [quacc.recipes.espresso.core.static_job][]                    |              |
 | Espresso Phonon      | `#!Python @job`  | [quacc.recipes.espresso.phonons.phonon_job][]                  |              |
 | Espresso Grid Phonon | `#!Python @flow` | [quacc.recipes.espresso.phonons.grid_phonon_flow][]            |              |
+
 </center>
 
 ## TBLite
