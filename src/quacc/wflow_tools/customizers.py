@@ -123,15 +123,13 @@ def customize_funcs(
 
     funcs_dict = dict(zip(names, funcs))
 
-    if bad_decorator_keys := [k for k in decorators if k not in funcs and k != "all"]:
+    if bad_decorator_keys := [k for k in decorators if k not in names and k != "all"]:
         raise ValueError(
-            f"Invalid decorator keys: {bad_decorator_keys}. "
-            f"Valid keys are: {list(funcs.keys())}"
+            f"Invalid decorator keys: {bad_decorator_keys}. " f"Valid keys are: {names}"
         )
-    if bad_parameter_keys := [k for k in parameters if k not in funcs and k != "all"]:
+    if bad_parameter_keys := [k for k in parameters if k not in names and k != "all"]:
         raise ValueError(
-            f"Invalid parameter keys: {bad_parameter_keys}. "
-            f"Valid keys are: {list(funcs.keys())}"
+            f"Invalid parameter keys: {bad_parameter_keys}. " f"Valid keys are: {names}"
         )
 
     for func_name, func in funcs_dict.items():
