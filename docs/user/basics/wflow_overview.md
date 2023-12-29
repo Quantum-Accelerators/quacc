@@ -6,7 +6,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
 !!! Tip "Recommendations"
 
-    If you are new to workflow engines, we recommend trying either **Parsl** or **Covalent**. If you have a need for speed and appreciate flexibility, Parsl is the choice for you. If you are looking for a visual dashboard with an emphasis on distributed compute resources, Covalent may be worth considering.
+    If you are new to workflow engines, we recommend trying either **Parsl** or **Covalent**. If you have a need for speed and appreciate flexibility, Parsl may be the choice for you. If you are looking for a visual dashboard with an emphasis on distributed compute resources, Covalent may be worth considering.
 
 === "Parsl"
 
