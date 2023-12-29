@@ -116,9 +116,9 @@ def customize_funcs(
     decorators = decorators or {}
     updated_funcs = []
 
-    if isinstance(names, str):
+    if not isinstance(names, (list, tuple)):
         names = [names]
-    if isinstance(funcs, str):
+    if not isinstance(funcs, (list, tuple)):
         funcs = [funcs]
 
     funcs_dict = dict(zip(names, funcs))
