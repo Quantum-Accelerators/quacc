@@ -1,7 +1,6 @@
 import pytest
 from ase.build import bulk
 
-from quacc.recipes.tblite.core import static_job as static_job_
 from quacc.recipes.tblite.phonons import phonon_flow
 
 pytest.importorskip("tblite.ase")
