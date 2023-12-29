@@ -94,9 +94,7 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
     outputs = bulk_to_slabs_flow(
         atoms,
         run_static=False,
-        parameters={
-            "slab_relax_job": {"opt_params": {"fmax": 1.0}, "asap_cutoff": True}
-        },
+        parameters={"relax_job": {"opt_params": {"fmax": 1.0}, "asap_cutoff": True}},
     )
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
