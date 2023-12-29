@@ -26,7 +26,7 @@ atoms = bulk("Cu")
 
 # Define the workflow
 result = bulk_to_slabs_flow(
-    atoms, decorators={"static_job": job(foo=bar)}  # (1)!
+    atoms, decorators={"static_job": job(foo=bar)}
 )
 
 # Print the result
