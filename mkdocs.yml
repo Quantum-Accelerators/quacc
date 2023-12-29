@@ -14,8 +14,8 @@ nav:
   - User Guide 🧠:
       - Recipes:
           - user/recipes/recipes_intro.md
-          - user/recipes/recipes_list.md
           - user/recipes/modifications.md
+          - user/recipes/recipes_list.md
       - Workflow Basics:
           - user/basics/wflow_overview.md
           - user/basics/wflow_decorators.md
