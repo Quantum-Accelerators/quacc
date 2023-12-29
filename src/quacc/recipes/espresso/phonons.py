@@ -11,8 +11,11 @@ from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.calculators.espresso.utils import parse_ph_patterns
 from quacc.recipes.espresso._base import base_fn
 from quacc.recipes.espresso.core import static_job
+from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:
+    from typing import Any, Callable
+
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
@@ -88,6 +91,9 @@ def phonon_job(
 def _phonon_subflow(
     ph_job: Job, pw_job_results_dir: str | Path, nblocks: int = 1
 ) -> list[RunSchema]:
+    """
+    TODO.
+    """
     # We loop over the q-points and representations and run a ph job for each
     # of them
 
@@ -116,9 +122,9 @@ def _phonon_subflow(
 @flow
 def grid_phonon_flow(
     atoms: Atoms,
-    custom_pw_job: Job | None = None,
-    custom_phonon_job: Job | None = None,
     nblocks: int = 1,
+    decorators: dict[str, Callable | None] | None = None,
+    parameters: dict[str, Any] | None = None,
 ) -> RunSchema:
     """
     Function to carry out a grid parallelization of a ph.x calculation. Each representation of each
@@ -131,29 +137,39 @@ def grid_phonon_flow(
     "nblocks" which will group multiple representations together in a single job. This will reduce the
     amount of data produced by a factor of nblocks.
 
+    Consists of following jobs that can be modified:
+
+    1. pw.x calculation ("pw_job")
+
+    2. ph.x calculation ("ph_job")
+
+    3. ph.x calculation to diagonalize the dynamical matrix ("recover_ph_job")
+
     Parameters
     ----------
     atoms
         Atoms object
-    custom_pw_job
-        A custom job to run the pw.x calculation. This job should return a RunSchema dictionary.
-        The default job is [quacc.recipes.espresso.core.static_job][].
-    custom_phonon_job
-        A custom job to run the ph.x calculation. This job should return a RunSchema dictionary.
-        The default job is [quacc.recipes.espresso.phonons.phonon_job][].
     nblocks
         The number of representations to group together in a single job. This will reduce the amount
         of data produced by a factor of nblocks. If nblocks = 0 each job will contain all the representations
         for a single q-point.
+    decorators
+        Custom decorators to apply to each Job in the Flow.
+        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
+    parameters
+        Custom parameters to pass to each Job in the Flow.
+        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
 
     Returns
     -------
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-
-    pw_job = static_job if custom_pw_job is None else custom_pw_job
-    ph_job = phonon_job if custom_phonon_job is None else custom_phonon_job
+    pw_job, ph_job, recover_ph_job = customize_funcs(
+        {"pw_job": static_job, "ph_job": phonon_job, "recover_ph_job": phonon_job},
+        decorators=decorators,
+        parameters=parameters,
+    )
 
     # We run a first pw job (single point or relax) depending on the input
     # ASR: Where is the relax job??
@@ -172,4 +188,4 @@ def grid_phonon_flow(
         input_data["inputph"].pop(k)
     input_data["inputph"]["recover"] = True
 
-    return ph_job(copy_back, input_data=input_data)
+    return recover_ph_job(copy_back, input_data=input_data)
