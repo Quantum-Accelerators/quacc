@@ -124,7 +124,7 @@ def grid_phonon_flow(
     atoms: Atoms,
     nblocks: int = 1,
     job_decorators: dict[str, Callable | None] | None = None,
-    job_parameters: dict[str, Any] | None = None,
+    job_params: dict[str, Any] | None = None,
 ) -> RunSchema:
     """
     Function to carry out a grid parallelization of a ph.x calculation. Each representation of each
@@ -156,7 +156,7 @@ def grid_phonon_flow(
     job_decorators
         Custom decorators to apply to each Job in the Flow.
         Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
-    ob_parameters
+    job_params
         Custom parameters to pass to each Job in the Flow.
         Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
 
@@ -166,9 +166,10 @@ def grid_phonon_flow(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
     pw_job, ph_job, recover_ph_job = customize_funcs(
-        {"pw_job": static_job, "ph_job": phonon_job, "recover_ph_job": phonon_job},
+        ["pw_job", "ph_job", "recover_ph_job"],
+        [static_job, phonon_job, phonon_job],
         decorators=job_decorators,
-        parameters=job_parameters,
+        parameters=job_params,
     )
 
     # We run a first pw job (single point or relax) depending on the input
