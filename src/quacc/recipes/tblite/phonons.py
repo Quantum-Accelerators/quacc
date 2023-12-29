@@ -26,8 +26,8 @@ def phonon_flow(
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
-    decorators: dict[str, Callable | None] | None = None,
-    parameters: dict[str, Any] | None = None,
+    job_decorators: dict[str, Callable | None] | None = None,
+    job_parameters: dict[str, Any] | None = None,
 ) -> PhononSchema:
     """
     Carry out a phonon workflow, consisting of:
@@ -54,10 +54,10 @@ def phonon_flow(
         Min temperature (K).
     t_max
         Max temperature (K).
-    decorators
+    job_decorators
         Custom decorators to apply to each Job in the Flow.
         Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
-    parameters
+    job_parameters
         Custom parameters to pass to each Job in the Flow.
         Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
 
@@ -67,7 +67,7 @@ def phonon_flow(
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][]
     """
     static_job_ = customize_funcs(
-        {"static_job": static_job}, decorators=decorators, parameters=parameters
+        {"static_job": static_job}, decorators=job_decorators, parameters=job_parameters
     )[0]
 
     return common_phonon_flow(

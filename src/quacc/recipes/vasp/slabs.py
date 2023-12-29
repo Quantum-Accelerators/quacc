@@ -122,8 +122,8 @@ def bulk_to_slabs_flow(
     atoms: Atoms,
     make_slabs_kwargs: dict[str, Any] | None = None,
     run_static: bool = True,
-    decorators: dict[str, Callable | None] | None = None,
-    parameters: dict[str, Any] | None = None,
+    job_decorators: dict[str, Callable | None] | None = None,
+    job_parameters: dict[str, Any] | None = None,
 ) -> list[VaspSchema]:
     """
     Workflow consisting of:
@@ -142,10 +142,10 @@ def bulk_to_slabs_flow(
         Additional keyword arguments to pass to [quacc.atoms.slabs.make_slabs_from_bulk][]
     run_static
         Whether to run static calculations.
-    decorators
+    job_decorators
         Custom decorators to apply to each Job in the Flow.
         Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
-    parameters
+    job_parameters
         Custom parameters to pass to each Job in the Flow.
         Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
 
@@ -156,8 +156,8 @@ def bulk_to_slabs_flow(
     """
     relax_job_, static_job_ = customize_funcs(
         {"relax_job": relax_job, "static_job": static_job},
-        decorators=decorators,
-        parameters=parameters,
+        decorators=job_decorators,
+        parameters=job_parameters,
     )
 
     return bulk_to_slabs_subflow(
@@ -174,8 +174,8 @@ def slab_to_ads_flow(
     adsorbate: Atoms,
     run_static: bool = True,
     make_ads_kwargs: dict[str, Any] | None = None,
-    decorators: dict[str, Callable | None] | None = None,
-    parameters: dict[str, Any] | None = None,
+    job_decorators: dict[str, Callable | None] | None = None,
+    job_parameters: dict[str, Any] | None = None,
 ) -> list[VaspSchema]:
     """
     Workflow consisting of:
@@ -196,10 +196,10 @@ def slab_to_ads_flow(
         Whether to run static calculations.
     make_ads_kwargs
         Additional keyword arguments to pass to [quacc.atoms.slabs.make_adsorbate_structures][]
-    decorators
+    job_decorators
         Custom decorators to apply to each Job in the Flow.
         Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
-    parameters
+    job_parameters
         Custom parameters to pass to each Job in the Flow.
         Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
 
@@ -210,8 +210,8 @@ def slab_to_ads_flow(
     """
     relax_job_, static_job_ = customize_funcs(
         {"relax_job": relax_job, "static_job": static_job},
-        decorators=decorators,
-        parameters=parameters,
+        decorators=job_decorators,
+        parameters=job_parameters,
     )
 
     return slab_to_ads_subflow(
