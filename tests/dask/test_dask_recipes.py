@@ -18,7 +18,6 @@ client = default_client()
 
 
 def test_dask_functools(tmp_path, monkeypatch):
-
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
     delayed = bulk_to_slabs_flow(
