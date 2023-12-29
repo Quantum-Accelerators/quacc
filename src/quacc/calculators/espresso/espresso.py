@@ -268,9 +268,10 @@ class Espresso(Espresso_):
             calc_preset = load_yaml_calc(
                 SETTINGS.ESPRESSO_PRESET_DIR / f"{self.preset}"
             )
-            calc_preset["input_data"] = construct_namelist(
-                calc_preset.get("input_data"), keys=keys
-            )
+            if "input_data" in calc_preset:
+                calc_preset["input_data"] = construct_namelist(
+                    calc_preset.get("input_data"), keys=keys
+                )
 
             if "pseudopotentials" in calc_preset:
                 ecutwfc, ecutrho, pseudopotentials = get_pseudopotential_info(
