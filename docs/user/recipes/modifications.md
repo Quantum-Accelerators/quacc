@@ -29,7 +29,7 @@ atoms = bulk("Cu")
 
 # Define the workflow
 result = bulk_to_slabs_flow(
-    atoms, parameters={"relax_job": {"opt_params": {"fmax": 1e-4}}}  # (1)!
+    atoms, parameters={"relax_job": {"opt_params": {"fmax": 1e-4}}}
 )
 
 # Print the result
