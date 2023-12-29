@@ -38,7 +38,7 @@ def strip_decorator(func: Callable) -> Callable:
 
 def redecorate(func: Callable, decorator: Callable | None) -> Callable:
     """
-    Redecorate pre-decorated functions with custom decorators.
+    Redecorate a pre-decorated function with a custom decorator.
 
     Parameters
     ----------
@@ -59,8 +59,7 @@ def redecorate(func: Callable, decorator: Callable | None) -> Callable:
 
 def update_parameters(func: Callable, params: dict[str, Any]) -> Callable:
     """
-    Update the parameters of a function. If the function does not have a given parameter,
-    it is ignored.
+    Update the parameters of a function.
 
     Parameters
     ----------
