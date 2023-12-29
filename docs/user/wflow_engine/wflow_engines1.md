@@ -221,16 +221,16 @@ graph LR
 
     !!! Tip "Selectively Modifying Decorators in a Pre-Made Flow"
 
-        If you want to modify the decorators of select jobs in a pre-made workflow, such as to modify the executor of a given function, you can use the `decorators` keyword argument:
+        If you want to modify the decorators of select jobs in a pre-made workflow, such as to modify the executor of a given function, you can use the `job_decorators` keyword argument:
 
         ```python
-        bulk_to_slabs_flow(atoms, decorators={"static_job": job(executors=["all"])})
+        bulk_to_slabs_flow(atoms, job_decorators={"static_job": job(executors=["all"])})
         ```
 
         As a shorthand, all of the decorators can be modified at once using the "all" keyword:
 
         ```python
-        bulk_to_slabs_flow(atoms, decorators={"all": job(executors=["all"])})
+        bulk_to_slabs_flow(atoms, job_decorators={"all": job(executors=["all"])})
         ```
 
 === "Covalent"
@@ -255,16 +255,16 @@ graph LR
 
     !!! Tip "Selectively Modifying Decorators in a Pre-Made Flow"
 
-        If you want to modify the decorators of select jobs in a pre-made workflow, such as to modify the executor of a given function, you can use the `decorators` keyword argument:
+        If you want to modify the decorators of select jobs in a pre-made workflow, such as to modify the executor of a given function, you can use the `job_decorators` keyword argument:
 
         ```python
-        ct.dispatch(bulk_to_slabs_flow)(atoms, decorators={"static_job": job(executor="local")})
+        ct.dispatch(bulk_to_slabs_flow)(atoms, job_decorators={"static_job": job(executor="local")})
         ```
 
         As a shorthand, all of the decorators can be modified at once using the "all" keyword:
 
         ```python
-        ct.dispatch(bulk_to_slabs_flow)(atoms, decorators={"all": job(executor="local")})  # (1)!
+        ct.dispatch(bulk_to_slabs_flow)(atoms, job_decorators={"all": job(executor="local")})  # (1)!
         ```
 
         1. Alternatively, you can simply modify the `#!Python @flow` decorator itself:

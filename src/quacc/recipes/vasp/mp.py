@@ -129,8 +129,8 @@ def mp_relax_job(
 @flow
 def mp_relax_flow(
     atoms: Atoms,
-    decorators: dict[str, Callable | None] | None = None,
-    parameters: dict[str, Any] | None = None,
+    job_decorators: dict[str, Callable | None] | None = None,
+    job_parameters: dict[str, Any] | None = None,
 ) -> MPRelaxFlowSchema:
     """
     Workflow consisting of:
@@ -143,10 +143,10 @@ def mp_relax_flow(
     ----------
     atoms
         Atoms object for the structure.
-    decorators
+    job_decorators
         Custom decorators to apply to each Job in the Flow.
         Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
-    parameters
+    job_parameters
         Custom parameters to pass to each Job in the Flow.
         Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
 
@@ -157,8 +157,8 @@ def mp_relax_flow(
     """
     mp_prerelax_job_, mp_relax_job_ = customize_funcs(
         {"mp_prerelax_job": mp_prerelax_job, "mp_relax_job": mp_relax_job},
-        decorators=decorators,
-        parameters=parameters,
+        decorators=job_decorators,
+        parameters=job_parameters,
     )
 
     # Run the prerelax
