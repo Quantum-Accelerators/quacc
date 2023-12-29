@@ -102,3 +102,36 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
     assert outputs[2]["nsites"] == 80
     assert outputs[3]["nsites"] == 64
     assert [output["parameters"]["asap_cutoff"] is True for output in outputs]
+
+
+def test_customizer():
+    atoms = bulk("Cu")
+    results = bulk_to_slabs_flow(
+        atoms, parameters={"static_job": {"asap_cutoff": True}}
+    )
+    for result in results:
+        assert result["parameters"]["asap_cutoff"] is True
+
+
+def test_customizer_v2():
+    atoms = bulk("Cu")
+    results = bulk_to_slabs_flow(atoms, parameters={"relax_job": {"asap_cutoff": True}})
+    for result in results:
+        assert result["parameters"]["asap_cutoff"] is False
+
+
+def test_all_customizers():
+    atoms = bulk("Cu")
+    results = bulk_to_slabs_flow(atoms, parameters={"all": {"asap_cutoff": True}})
+    for result in results:
+        assert result["parameters"]["asap_cutoff"] is True
+
+
+def test_all_customizers_v2():
+    atoms = bulk("Cu")
+    results = bulk_to_slabs_flow(
+        atoms,
+        parameters={"all": {"asap_cutoff": True}, "static_job": {"asap_cutoff": False}},
+    )
+    for result in results:
+        assert result["parameters"]["asap_cutoff"] is False

@@ -85,8 +85,8 @@ def update_parameters(func: Callable, params: dict[str, Any]) -> Callable:
 
 def customize_funcs(
     funcs: dict[str, Callable],
-    decorators: dict[str, Callable | None] | None,
-    parameters: dict[str, Any] | None,
+    decorators: dict[str, Callable | None] | None = None,
+    parameters: dict[str, Any] | None = None,
 ) -> tuple[Callable]:
     """
     Customize a set of functions with decorators and common parameters.

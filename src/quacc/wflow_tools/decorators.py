@@ -488,7 +488,7 @@ def subflow(
     if wflow_engine == "covalent":
         import covalent as ct
 
-        decorated = ct.electron(ct.lattice(_func, **kwargs))
+        decorated = ct.electron(ct.lattice(_func), **kwargs)
     elif wflow_engine == "parsl":
         from parsl import join_app
 

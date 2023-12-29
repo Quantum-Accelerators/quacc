@@ -42,7 +42,7 @@ Here, we have used the `parameters` keyword argument to override the default par
 
 ## Modifying all the Jobs in a Dynamic Workflow
 
-What if you wanted to modify the parameters of all the jobs in the aforementioned recipe? Rather than enumerate each one, you can use the magic keyword `"all"`:
+What if you wanted to modify a common parameters of all the jobs in the aforementioned recipe? Rather than enumerate each one, you can use the magic keyword `"all"`:
 
 ```python
 from ase.build import bulk
@@ -54,7 +54,7 @@ atoms = bulk("Cu")
 
 # Define the workflow
 result = bulk_to_slabs_flow(
-    atoms, parameters={"all": {"opt_params": {"fmax": 1e-4}}}  # (1)!
+    atoms, parameters={"all": {"asap_cutoff": True}}  # (1)!
 )
 
 # Print the result
