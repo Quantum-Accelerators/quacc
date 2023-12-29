@@ -10,16 +10,14 @@ def test_bulk_to_defects_flow(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
     output = bulk_to_defects_flow(
-        atoms, parameters={"defect_relax_job": {"opt_params": {"fmax": 5}}}
+        atoms, parameters={"relax_job": {"opt_params": {"fmax": 5}}}
     )
     assert len(output) == 1
     assert len(output[0]["atoms"]) == 107
 
     atoms = bulk("Cu")
     output = bulk_to_defects_flow(
-        atoms,
-        parameters={"defect_relax_job": {"opt_params": {"fmax": 5}}},
-        run_static=False,
+        atoms, parameters={"relax_job": {"opt_params": {"fmax": 5}}}, run_static=False
     )
     assert len(output) == 1
     assert len(output[0]["atoms"]) == 107

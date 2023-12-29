@@ -78,10 +78,10 @@ def bulk_to_defects_flow(
     make_defects_kwargs = recursive_dict_merge(
         make_defects_kwargs, {"defect_gen": defect_gen, "defect_charge": defect_charge}
     )
-    defect_relax_job, defect_static_job, bulk_to_defects_subflow_ = customize_funcs(
+    relax_job_, static_job_, bulk_to_defects_subflow_ = customize_funcs(
         {
-            "defect_relax_job": relax_job,
-            "defect_static_job": static_job,
+            "relax_job": relax_job,
+            "static_job": static_job,
             "bulk_to_defects_subflow": bulk_to_defects_subflow,
         },
         decorators=decorators,
@@ -90,7 +90,7 @@ def bulk_to_defects_flow(
 
     return bulk_to_defects_subflow_(
         atoms,
-        defect_relax_job,
-        static_job=defect_static_job if run_static else None,
+        relax_job_,
+        static_job=static_job_ if run_static else None,
         make_defects_kwargs=make_defects_kwargs,
     )

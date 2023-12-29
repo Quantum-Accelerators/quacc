@@ -54,10 +54,10 @@ def bulk_to_slabs_flow(
         [RunSchema][quacc.schemas.ase.summarize_run] or
         [OptSchema][quacc.schemas.ase.summarize_opt_run] for each slab.
     """
-    slab_relax_job, slab_static_job, bulk_to_slabs_subflow_ = customize_funcs(
+    relax_job_, static_job_, bulk_to_slabs_subflow_ = customize_funcs(
         {
-            "slab_relax_job": relax_job,
-            "slab_static_job": static_job,
+            "relax_job": relax_job,
+            "static_job": static_job,
             "bulk_to_slabs_subflow": bulk_to_slabs_subflow,
         },
         decorators=decorators,
@@ -66,7 +66,7 @@ def bulk_to_slabs_flow(
 
     return bulk_to_slabs_subflow_(
         atoms,
-        slab_relax_job,
-        static_job=slab_static_job if run_static else None,
+        relax_job_,
+        static_job=static_job_ if run_static else None,
         make_slabs_kwargs=make_slabs_kwargs,
     )
