@@ -40,8 +40,8 @@ def bulk_to_defects_flow(
     defect_charge: int = 0,
     run_static: bool = True,
     make_defects_kwargs: dict[str, Any] | None = None,
-    job_decorators: dict[str, Callable | None] | None = None,
     job_params: dict[str, Any] | None = None,
+    job_decorators: dict[str, Callable | None] | None = None,
 ) -> list[RunSchema | OptSchema]:
     """
     Workflow consisting of:
