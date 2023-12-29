@@ -59,7 +59,7 @@ def test_customize_flows():
 
     workflow_ = customize_funcs(
         "workflow", workflow, decorators={"workflow": flow(executor="local")}
-    )[0]
+    )
     assert workflow_.metadata["executor"] == "local"
 
 
@@ -74,7 +74,7 @@ def test_customize_subflows():
 
     subworkflow_ = customize_funcs(
         "workflow", subworkflow, decorators={"workflow": subflow(executor="local")}
-    )[0]
+    )
     assert subworkflow_.electron_object.executor == "local"
 
 
