@@ -13,7 +13,7 @@ from ase.optimize import FIRE
 from quacc import job
 from quacc.runners.ase import run_calc, run_opt
 from quacc.schemas.ase import summarize_opt_run, summarize_run
-from quacc.utils.dicts import merge_dicts
+from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
     from typing import Any
@@ -82,7 +82,7 @@ def relax_job(
         [quacc.schemas.ase.summarize_opt_run][]
     """
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
-    opt_flags = merge_dicts(opt_defaults, opt_params)
+    opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
     atoms.calc = EMT(**calc_kwargs)
 

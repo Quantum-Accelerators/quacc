@@ -8,7 +8,7 @@ from ase.calculators.gaussian import Gaussian
 from quacc import SETTINGS
 from quacc.runners.ase import run_calc
 from quacc.schemas.cclib import cclib_summarize_run
-from quacc.utils.dicts import merge_dicts
+from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -54,7 +54,7 @@ def base_fn(
         Dictionary of results, as specified in
         [quacc.schemas.cclib.cclib_summarize_run][]
     """
-    calc_flags = merge_dicts(calc_defaults, calc_swaps)
+    calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
     atoms.calc = Gaussian(command=GAUSSIAN_CMD, label=_LABEL, **calc_flags)
     atoms = run_calc(atoms, geom_file=LOG_FILE, copy_files=copy_files)

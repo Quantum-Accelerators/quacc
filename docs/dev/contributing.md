@@ -74,11 +74,7 @@ If you wish to test the behavior of a given workflow engine, run `pytest tests/W
 
 ### Coverage
 
-Each PR will report the code coverage once your tests pass, but if you'd like to generate a coverage report locally, you can use [pytest-cov](https://pytest-cov.readthedocs.io/en/latest/), such as by doing `pytest --cov=quacc .`.
-
-!!! Note
-
-    The codecov check on PRs updates as each unit test finishes, so don't be surprised to see an "X" if tests are still running.
+Each PR will report the code coverage once your tests pass, but if you'd like to generate a coverage report locally, you can use [pytest-cov](https://pytest-cov.readthedocs.io/en/latest/), such as by doing `pytest --cov=quacc .`
 
 ### Monkeypatching
 

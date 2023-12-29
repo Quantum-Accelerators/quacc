@@ -1,24 +1,22 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from ase import Atoms
 from ase.calculators.espresso import Espresso as Espresso_
 from ase.calculators.espresso import EspressoProfile
 from ase.calculators.espresso import EspressoTemplate as EspressoTemplate_
-from ase.io.espresso import construct_namelist
 
 from quacc import SETTINGS
 from quacc.calculators.espresso.io import read, write
-from quacc.calculators.espresso.keys import ALL_KEYS
-from quacc.calculators.espresso.utils import parse_pp_and_cutoff
-from quacc.utils.dicts import merge_dicts
+from quacc.calculators.espresso.utils import get_pseudopotential_info
+from quacc.utils.dicts import recursive_dict_merge
 from quacc.utils.files import load_yaml_calc
 
 if TYPE_CHECKING:
     from typing import Any
-
-    from ase import Atoms
 
 
 class EspressoTemplate(EspressoTemplate_):
@@ -42,9 +40,16 @@ class EspressoTemplate(EspressoTemplate_):
         None
         """
         super().__init__()
+
         self.inputname = f"{binary}.in"
         self.outputname = f"{binary}.out"
+
         self.binary = binary
+
+        self.outdirs = {
+            "outdir": os.environ.get("ESPRESSO_TMPDIR"),
+            "wfcdir": os.environ.get("ESPRESSO_TMPDIR"),
+        }
 
     def write_input(
         self,
@@ -75,8 +80,11 @@ class EspressoTemplate(EspressoTemplate_):
         -------
         None
         """
+        directory = Path(directory)
+        self._outdir_handler(parameters, directory)
+
         write(
-            Path(directory) / self.inputname,
+            directory / self.inputname,
             atoms,
             binary=self.binary,
             properties=properties,
@@ -101,10 +109,53 @@ class EspressoTemplate(EspressoTemplate_):
         dict
             The results dictionnary
         """
+
         results = read(Path(directory) / self.outputname, binary=self.binary)
         if "energy" not in results:
             results["energy"] = None
         return results
+
+    def _outdir_handler(
+        self, parameters: dict[str, Any], directory: Path
+    ) -> dict[str, Any]:
+        """
+        Function that handles the various outdir of espresso binaries. If they are relative,
+        they are resolved against `directory`, which is the recommended approach.
+        If the user-supplied paths are absolute, they are resolved and checked
+        against `directory`, which is typically `os.getcwd()`. If they are not in `directory`,
+        they will be ignored.
+
+        Parameters
+        ----------
+        parameters
+            User-supplied kwargs
+        directory
+            The `directory` kwarg from the calculator.
+
+        Returns
+        -------
+        dict[str, Any]
+            The merged kwargs
+        """
+
+        input_data = parameters.get("input_data", {})
+
+        for section in input_data:
+            for d_key in self.outdirs:
+                if d_key in input_data[section]:
+                    path = Path(input_data[section][d_key])
+                    path = path.expanduser().resolve()
+                    if directory.expanduser().resolve() not in path.parents:
+                        self.outdirs[d_key] = path
+                        continue
+                    path.mkdir(parents=True, exist_ok=True)
+                    input_data[section][d_key] = path
+
+        self.outdirs = [path for path in self.outdirs.values() if path is not None]
+
+        parameters["input_data"] = input_data
+
+        return parameters
 
 
 class Espresso(Espresso_):
@@ -118,10 +169,9 @@ class Espresso(Espresso_):
         self,
         input_atoms: Atoms | None = None,
         preset: str | None = None,
+        parallel_info: dict[str, Any] | None = None,
         template: EspressoTemplate | None = None,
         profile: EspressoProfile | None = None,
-        calc_defaults: dict[str, Any] | None = None,
-        parallel_info: dict[str, Any] | None = None,
         **kwargs,
     ) -> None:
         """
@@ -137,6 +187,10 @@ class Espresso(Espresso_):
             `ESPRESSO_PRESET_DIR` (default: quacc/calculators/espresso/presets),
             The .yaml extension is not necessary. Any user-supplied calculator
             **kwargs will override any corresponding preset values.
+        parallel_info
+            parallel_info is a dictionary passed to the ASE Espresso calculator
+            profile. It is used to specify prefixes for the command line arguments.
+            See the ASE documentation for more details.
         template
             ASE calculator templace which can be used to specify which espresso
             binary will be used in the calculation. This is taken care of by recipe
@@ -145,72 +199,91 @@ class Espresso(Espresso_):
             ASE calculator profile which can be used to specify the location of
             the espresso binary and pseudopotential files. This is taken care of
             internally using quacc settings.
-        calc_defaults
-            A dictionary of default input_data parameters to pass to the Espresso
-            calculator. These will be overridden by any user-supplied calculator
-            **kwargs.
-        parallel_info
-            parallel_info is a dictionary passed to the ASE Espresso calculator
-            profile. It is used to specify prefixes for the command line arguments.
-            See the ASE documentation for more details.
         **kwargs
-            Additional arguments to be passed to the Espresso calculator, e.g.
-            `input_data`, `kpts`... Takes all valid ASE calculator arguments.
+            Additional arguments to be passed to the Espresso calculator. Takes all valid
+            ASE calculator arguments, such as `input_data` and `kpts`. Refer to
+            `ase.calculators.espresso.Espresso` for details. Note that the full input
+            must be described; use `{"system":{"ecutwfc": 60}}` and not the `{"ecutwfc": 60}`
+            short-hand.
 
         Returns
         -------
         None
         """
+        self.input_atoms = input_atoms or Atoms()
         self.preset = preset
-        self.input_atoms = input_atoms
-        self.calc_defaults = calc_defaults
+        self.parallel_info = parallel_info
+        self.kwargs = kwargs
+        self._user_calc_params = {}
 
         template = template or EspressoTemplate("pw")
-
-        kwargs = self._kwargs_handler(template.binary, **kwargs)
-
-        pseudo_path = (
-            kwargs["input_data"]
+        self._bin_path = str(SETTINGS.ESPRESSO_BIN_PATHS[template.binary])
+        self._binary = template.binary
+        self._cleanup_params()
+        self._pseudo_path = (
+            self._user_calc_params.get("input_data", {})
             .get("control", {})
             .get("pseudo_dir", str(SETTINGS.ESPRESSO_PSEUDO))
         )
-
-        bin_path = SETTINGS.ESPRESSO_BIN_PATHS[template.binary]
-        profile = profile or EspressoProfile(
-            binary=str(bin_path), parallel_info=parallel_info, pseudo_path=pseudo_path
+        self.profile = profile or EspressoProfile(
+            binary=self._bin_path,
+            parallel_info=parallel_info,
+            pseudo_path=self._pseudo_path,
         )
 
-        super().__init__(profile=profile, parallel_info=parallel_info, **kwargs)
+        super().__init__(
+            profile=self.profile,
+            parallel_info=self.parallel_info,
+            **self._user_calc_params,
+        )
 
         self.template = template
 
-    def _kwargs_handler(self, binary: str, **kwargs) -> dict[str, Any]:
+    def _cleanup_params(self) -> None:
         """
         Function that handles the kwargs. It will merge the user-supplied
-        kwargs with the defaults and preset values. Priority order is as follow:
-
-        User-supplied kwargs > preset > defaults
+        kwargs with the preset values, using the former as priority.
 
         Parameters
         ----------
-        binary
-            The espresso binary used to construct the namelist
-        **kwargs
-            User-supplied kwargs
+        None
 
         Returns
         -------
-        kwargs
-            The merged kwargs
+        None
         """
-        keys = ALL_KEYS[binary]
-        kwargs["input_data"] = construct_namelist(kwargs.get("input_data"), keys=keys)
-        self.calc_defaults["input_data"] = construct_namelist(
-            self.calc_defaults["input_data"], keys=keys
-        )
+
+        if self.kwargs.get("directory"):
+            raise ValueError("quacc does not support the directory argument.")
 
         if self.preset:
-            config = load_yaml_calc(SETTINGS.ESPRESSO_PRESET_DIR / f"{self.preset}")
-            preset_pp = parse_pp_and_cutoff(config, self.input_atoms)
-            kwargs = merge_dicts(preset_pp, kwargs)
-        return merge_dicts(self.calc_defaults, kwargs)
+            calc_preset = load_yaml_calc(
+                SETTINGS.ESPRESSO_PRESET_DIR / f"{self.preset}"
+            )
+            if "pseudopotentials" in calc_preset:
+                ecutwfc, ecutrho, pseudopotentials = get_pseudopotential_info(
+                    calc_preset["pseudopotentials"], self.input_atoms
+                )
+                calc_preset.pop("pseudopotentials", None)
+                self._user_calc_params = recursive_dict_merge(
+                    calc_preset,
+                    {
+                        "input_data": {
+                            "system": {"ecutwfc": ecutwfc, "ecutrho": ecutrho}
+                        },
+                        "pseudopotentials": pseudopotentials,
+                    },
+                    self.kwargs,
+                )
+            else:
+                self._user_calc_params = recursive_dict_merge(calc_preset, self.kwargs)
+        else:
+            self._user_calc_params = self.kwargs
+
+        if self._user_calc_params.get("kpts") == "gamma":
+            self._user_calc_params["kpts"] = None
+
+        if self._user_calc_params.get("kpts") and self._user_calc_params.get(
+            "kspacing"
+        ):
+            raise ValueError("Cannot specify both kpts and kspacing.")

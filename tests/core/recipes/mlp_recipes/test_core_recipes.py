@@ -4,6 +4,8 @@ from ase.build import bulk
 
 from quacc.recipes.mlp.core import relax_job, static_job
 
+torch = pytest.importorskip("torch")
+
 
 def test_bad_method():
     atoms = bulk("Cu")
@@ -12,9 +14,21 @@ def test_bad_method():
         static_job(atoms, method="bad_method")
 
 
+def _set_dtype(size, type_="float"):
+    globals()[f"{type_}_th"] = getattr(torch, f"{type_}{size}")
+    globals()[f"{type_}_np"] = getattr(np, f"{type_}{size}")
+    torch.set_default_dtype(getattr(torch, f"float{size}"))
+
+
 @pytest.mark.parametrize("method", ["chgnet", "m3gnet", "mace"])
 def test_static_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
+
+    if method == "mace":
+        _set_dtype(64)
+    else:
+        _set_dtype(32)
+
     ref_energy = {
         "chgnet": -4.083308219909668,
         "m3gnet": -4.0938973,
@@ -36,10 +50,15 @@ def test_static_job(tmp_path, monkeypatch, method):
 @pytest.mark.parametrize("method", ["chgnet", "m3gnet", "mace"])
 def test_relax_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
+
+    if method == "mace":
+        _set_dtype(64)
+    else:
+        _set_dtype(32)
     ref_energy = {
-        "chgnet": -32.662731,
-        "m3gnet": -32.747219,
-        "mace": -32.66752624511719,
+        "chgnet": -32.665626525878906,
+        "m3gnet": -32.749088287353516,
+        "mace": -32.670471191406259,
     }
     if method == "chgnet":
         pytestmark = pytest.importorskip("chgnet")
@@ -60,10 +79,16 @@ def test_relax_job(tmp_path, monkeypatch, method):
 @pytest.mark.parametrize("method", ["chgnet", "m3gnet", "mace"])
 def test_relax_cell_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
+
+    if method == "mace":
+        _set_dtype(64)
+    else:
+        _set_dtype(32)
+
     ref_energy = {
-        "chgnet": -32.664215087890625,
-        "m3gnet": -32.74749,
-        "mace": -32.67439270019531,
+        "chgnet": -32.6676139831543,
+        "m3gnet": -32.74995040893555,
+        "mace": -32.67771911621094,
     }
     if method == "chgnet":
         pytestmark = pytest.importorskip("chgnet")

@@ -22,11 +22,13 @@ import numpy as np
 
 from quacc import flow, job
 from quacc.recipes.vasp._base import base_fn
+from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:
+    from typing import Any, Callable
+
     from ase.atoms import Atoms
 
-    from quacc import Job
     from quacc.schemas._aliases.vasp import MPRelaxFlowSchema, VaspSchema
 
 
@@ -55,7 +57,7 @@ def mp_prerelax_job(
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
+        keys, refer to the [quacc.calculators.vasp.vasp.Vasp][] calculator.
 
     Returns
     -------
@@ -105,7 +107,7 @@ def mp_relax_job(
     **calc_kwargs
         Dictionary of custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `quacc.calculators.vasp.vasp.Vasp` calculator.
+        keys, refer to the [quacc.calculators.vasp.vasp.Vasp][] calculator.
 
     Returns
     -------
@@ -126,35 +128,44 @@ def mp_relax_job(
 
 @flow
 def mp_relax_flow(
-    atoms: Atoms, prerelax_job: Job = mp_prerelax_job, relax_job: Job = mp_relax_job
+    atoms: Atoms,
+    decorators: dict[str, Callable | None] | None = None,
+    parameters: dict[str, Any] | None = None,
 ) -> MPRelaxFlowSchema:
     """
     Workflow consisting of:
 
-    1. MP-compatible pre-relax
+    1. MP-compatible pre-relax ("mp_prerelax_job")
 
-    2. MP-compatible relax
+    2. MP-compatible relax ("mp_relax_job")
 
     Parameters
     ----------
     atoms
         Atoms object for the structure.
-    prerelax_job
-        Pre-relaxation job, which defaults to [quacc.recipes.vasp.mp.mp_prerelax_job][].
-    relax_job
-        Relaxation job, which defaults to [quacc.recipes.vasp.mp.mp_relax_job][].
+    decorators
+        Custom decorators to apply to each Job in the Flow.
+        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
+    parameters
+        Custom parameters to pass to each Job in the Flow.
+        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
 
     Returns
     -------
     MPRelaxFlowSchema
         Dictionary of results
     """
+    mp_prerelax_job_, mp_relax_job_ = customize_funcs(
+        {"mp_prerelax_job": mp_prerelax_job, "mp_relax_job": mp_relax_job},
+        decorators=decorators,
+        parameters=parameters,
+    )
 
     # Run the prerelax
-    prerelax_results = prerelax_job(atoms)
+    prerelax_results = mp_prerelax_job_(atoms)
 
     # Run the relax
-    relax_results = relax_job(
+    relax_results = mp_relax_job_(
         prerelax_results["atoms"],
         bandgap=prerelax_results["output"]["bandgap"],
         copy_files=[
