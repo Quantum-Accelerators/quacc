@@ -14,7 +14,6 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc import Job
     from quacc.schemas._aliases.vasp import VaspSchema
 
 
@@ -155,17 +154,13 @@ def bulk_to_slabs_flow(
     list[VaspSchema]
         List of dictionary results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
-    relax_job_, static_job_, bulk_to_slabs_subflow_ = customize_funcs(
-        {
-            "relax_job": relax_job,
-            "static_job": static_job,
-            "bulk_to_slabs_subflow": bulk_to_slabs_subflow,
-        },
+    relax_job_, static_job_ = customize_funcs(
+        {"relax_job": relax_job, "static_job": static_job},
         decorators=decorators,
         parameters=parameters,
     )
 
-    return bulk_to_slabs_subflow_(
+    return bulk_to_slabs_subflow(
         atoms,
         relax_job_,
         static_job=static_job_ if run_static else None,
@@ -213,17 +208,13 @@ def slab_to_ads_flow(
     list[VaspSchema]
         List of dictionaries of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
-    relax_job_, static_job_, slab_to_ads_subflow_ = customize_funcs(
-        {
-            "relax_job": relax_job,
-            "static_job": static_job,
-            "slab_to_ads_subflow": slab_to_ads_subflow,
-        },
+    relax_job_, static_job_ = customize_funcs(
+        {"relax_job": relax_job, "static_job": static_job},
         decorators=decorators,
         parameters=parameters,
     )
 
-    return slab_to_ads_subflow_(
+    return slab_to_ads_subflow(
         slab,
         adsorbate,
         relax_job_,

@@ -114,12 +114,12 @@ def customize_funcs(
     parameters = parameters or {}
     updated_funcs = []
 
-    if bad_decorator_keys := [k for k in decorators if k not in funcs]:
+    if bad_decorator_keys := [k for k in decorators if k not in funcs and k != "all"]:
         raise ValueError(
             f"Invalid decorator keys: {bad_decorator_keys}. "
             f"Valid keys are: {list(funcs.keys())}"
         )
-    if bad_parameter_keys := [k for k in parameters if k not in funcs]:
+    if bad_parameter_keys := [k for k in parameters if k not in funcs and k != "all"]:
         raise ValueError(
             f"Invalid parameter keys: {bad_parameter_keys}. "
             f"Valid keys are: {list(funcs.keys())}"

@@ -254,7 +254,7 @@ graph LR
 
 ## Stripping the Decorator from a Job
 
-If you ever want to strip the decorator from a pre-decorated `#!Python @job` for any reason, you can call the `.__wrapped__` attribute. This returns the original function.
+If you ever want to strip the decorator from a pre-decorated `#!Python @job` (e.g. to test out a calculation locally without changing your quacc settings), you can call the `.__wrapped__` attribute. This returns the original function.
 
 ```python
 from quacc import job
