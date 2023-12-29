@@ -9,9 +9,10 @@ from quacc import flow
 from quacc.recipes.common.defects import bulk_to_defects_subflow
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.utils.dicts import recursive_dict_merge
+from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:
-    from typing import Any
+    from typing import Any, Callable
 
     from ase.atoms import Atoms
     from pymatgen.analysis.defects.generators import (
@@ -22,7 +23,6 @@ if TYPE_CHECKING:
         VoronoiInterstitialGenerator,
     )
 
-    from quacc import Job
     from quacc.schemas._aliases.ase import OptSchema, RunSchema
 
 
@@ -38,10 +38,10 @@ def bulk_to_defects_flow(
         | VoronoiInterstitialGenerator
     ) = VacancyGenerator,
     defect_charge: int = 0,
-    custom_relax_job: Job | None = None,
-    custom_static_job: Job | None = None,
     run_static: bool = True,
     make_defects_kwargs: dict[str, Any] | None = None,
+    decorators: dict[str, Callable | None] | None = None,
+    parameters: dict[str, Any] | None = None,
 ) -> list[RunSchema | OptSchema]:
     """
     Workflow consisting of:
@@ -60,13 +60,14 @@ def bulk_to_defects_flow(
         Defect generator
     defect_charge
         Charge state of the defect
-    custom_relax_job
-        Relaxation job, which defaults to [quacc.recipes.emt.core.relax_job][].
-    custom_static_job
-        Static job, which defaults to [quacc.recipes.emt.core.static_job][].
+    run_static
+        Whether to run static calculations.
     make_defects_kwargs
         Keyword arguments to pass to
         [quacc.atoms.defects.make_defects_from_bulk][]
+    parameters
+        Custom parameters to pass to each Job in the Flow.
+        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
 
     Returns
     -------
@@ -77,10 +78,17 @@ def bulk_to_defects_flow(
     make_defects_kwargs = recursive_dict_merge(
         make_defects_kwargs, {"defect_gen": defect_gen, "defect_charge": defect_charge}
     )
-    defect_relax_job = relax_job if custom_relax_job is None else custom_relax_job
-    defect_static_job = static_job if custom_static_job is None else custom_static_job
+    defect_relax_job, defect_static_job, bulk_to_defects_subflow_ = customize_funcs(
+        {
+            "defect_relax_job": relax_job,
+            "defect_static_job": static_job,
+            "bulk_to_defects_subflow": bulk_to_defects_subflow,
+        },
+        decorators=decorators,
+        parameters=parameters,
+    )
 
-    return bulk_to_defects_subflow(
+    return bulk_to_defects_subflow_(
         atoms,
         defect_relax_job,
         static_job=defect_static_job if run_static else None,
