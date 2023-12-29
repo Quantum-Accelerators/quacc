@@ -12,6 +12,7 @@ from quacc.calculators.espresso.espresso import (
 )
 from quacc.runners.ase import run_calc
 from quacc.schemas.ase import summarize_run
+from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
     from typing import Any
@@ -63,15 +64,15 @@ def base_fn(
     """
 
     atoms = Atoms() if atoms is None else atoms
+    calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
     atoms.calc = Espresso(
         input_atoms=atoms,
         preset=preset,
+        parallel_info=parallel_info,
         template=template,
         profile=profile,
-        calc_defaults=calc_defaults,
-        parallel_info=parallel_info,
-        **calc_swaps,
+        **calc_flags,
     )
 
     final_atoms = run_calc(atoms, copy_files=copy_files)

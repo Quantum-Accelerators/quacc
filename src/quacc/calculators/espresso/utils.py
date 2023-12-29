@@ -2,16 +2,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from quacc.atoms.core import copy_atoms
-from quacc.utils.dicts import recursive_dict_merge
-
 if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
 
 
-def parse_pw_preset(config: dict[str, Any], atoms: Atoms) -> dict[str, Any]:
+def get_pseudopotential_info(
+    pp_dict: dict[str, Any], atoms: Atoms
+) -> tuple[float, float, dict[str, str]]:
     """
     Function that parses the pseudopotentials and cutoffs from a preset file.
     The cutoffs are taken from the largest value of the cutoffs among the elements
@@ -19,42 +18,28 @@ def parse_pw_preset(config: dict[str, Any], atoms: Atoms) -> dict[str, Any]:
 
     Parameters
     ----------
-    config
-        The config dictionary return by load_yaml_calc
+    pp_dict
+        The "pseudopotential" parameters returned by load_yaml_calc
     atoms
         The atoms object to get the elements from
 
     Returns
     -------
-    dict
-        A dictionary containing the pseudopotentials and cutoffs
+    float
+        The max(ecutwfc) value
+    float
+        The max(ecutrho) value
+    dict[str, str]
+        The pseudopotentials dictinoary, e.g. {"O": "O.pbe-n-kjpaw_psl.0.1.UPF"}
     """
 
-    atoms_copy = copy_atoms(atoms)
-
-    if "pseudopotentials" in config:
-        pp_dict = config["pseudopotentials"]
-        unique_elements = list(set(atoms_copy.symbols))
-        wfc_cutoff, rho_cutoff = 0, 0
-        pseudopotentials = {}
-        for element in unique_elements:
-            if pp_dict[element]["cutoff_wfc"] > wfc_cutoff:
-                wfc_cutoff = pp_dict[element]["cutoff_wfc"]
-            if pp_dict[element]["cutoff_rho"] > rho_cutoff:
-                rho_cutoff = pp_dict[element]["cutoff_rho"]
-            pseudopotentials[element] = pp_dict[element]["filename"]
-        pp_input_data = {"system": {"ecutwfc": wfc_cutoff, "ecutrho": rho_cutoff}}
-
-    input_data = config.get("input_data")
-    input_data = recursive_dict_merge(pp_input_data, input_data)
-
-    kspacing = config.get("kspacing")
-
-    kpts = config.get("kpts")
-
-    return {
-        "input_data": input_data,
-        "pseudopotentials": pseudopotentials,
-        "kspacing": kspacing,
-        "kpts": kpts,
-    }
+    unique_elements = list(set(atoms.get_chemical_symbols()))
+    ecutwfc, ecutrho = 0, 0
+    pseudopotentials = {}
+    for element in unique_elements:
+        if pp_dict[element]["cutoff_wfc"] > ecutwfc:
+            ecutwfc = pp_dict[element]["cutoff_wfc"]
+        if pp_dict[element]["cutoff_rho"] > ecutrho:
+            ecutrho = pp_dict[element]["cutoff_rho"]
+        pseudopotentials[element] = pp_dict[element]["filename"]
+    return ecutwfc, ecutrho, pseudopotentials
