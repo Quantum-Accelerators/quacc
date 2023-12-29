@@ -30,7 +30,7 @@ atoms = bulk("Cu")
 
 # Define the workflow
 result = bulk_to_slabs_flow(
-    atoms, decorators={"static_job": job(MyKeywordArg=NewValue)}  # (1)!
+    atoms, decorators={"static_job": job(foo=bar)}  # (1)!
 )
 
 # Print the result
@@ -41,4 +41,4 @@ print(result)
 
 !!! Note
 
-    The `MyKeywordArg` and `NewValue` arguments are just placeholders. You will need to replace them with the appropriate values for your workflow engine and use case.
+    The `foo` argument and `bar` value are simply placeholders. You will need to replace them with the appropriate values for your workflow engine and use case.
