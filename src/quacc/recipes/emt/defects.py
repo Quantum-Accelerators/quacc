@@ -40,8 +40,8 @@ def bulk_to_defects_flow(
     defect_charge: int = 0,
     run_static: bool = True,
     make_defects_kwargs: dict[str, Any] | None = None,
+    job_params: dict[str, Any] | None = None,
     job_decorators: dict[str, Callable | None] | None = None,
-    job_parameters: dict[str, Any] | None = None,
 ) -> list[RunSchema | OptSchema]:
     """
     Workflow consisting of:
@@ -65,11 +65,11 @@ def bulk_to_defects_flow(
     make_defects_kwargs
         Keyword arguments to pass to
         [quacc.atoms.defects.make_defects_from_bulk][]
+    job_params
+        Custom parameters to pass to each Job in the Flow.
+        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
     job_decorators
         Custom decorators to apply to each Job in the Flow.
-        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
-    job_parameters
-        Custom parameters to pass to each Job in the Flow.
         Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
 
     Returns
@@ -82,9 +82,10 @@ def bulk_to_defects_flow(
         make_defects_kwargs, {"defect_gen": defect_gen, "defect_charge": defect_charge}
     )
     relax_job_, static_job_ = customize_funcs(
-        {"relax_job": relax_job, "static_job": static_job},
+        ["relax_job", "static_job"],
+        [relax_job, static_job],
+        parameters=job_params,
         decorators=job_decorators,
-        parameters=job_parameters,
     )
 
     return bulk_to_defects_subflow(
