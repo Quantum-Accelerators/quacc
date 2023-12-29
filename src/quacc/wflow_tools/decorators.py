@@ -1,7 +1,6 @@
 """Workflow decorators."""
 from __future__ import annotations
 
-import inspect
 from functools import partial, wraps
 from typing import TYPE_CHECKING, TypeVar
 

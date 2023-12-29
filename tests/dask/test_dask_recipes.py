@@ -26,6 +26,7 @@ def test_dask_functools(tmp_path, monkeypatch):
     atoms = bulk("Cu")
     delayed = bulk_to_slabs_flow(
         atoms,
+        parameters={"slab_relax_job": {"opt_params": {"fmax": 0.1}}},
         custom_relax_job=delayed_(
             partial(relax_job.__wrapped__, opt_params={"fmax": 0.1})
         ),

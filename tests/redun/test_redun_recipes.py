@@ -27,7 +27,7 @@ def test_redun_functools(tmp_path, monkeypatch, scheduler):
     result = scheduler.run(
         bulk_to_slabs_flow(
             atoms,
-            custom_relax_job=partial(relax_job, opt_params={"fmax": 0.1}),
+            parameters={"slab_relax_job": {"opt_params": {"fmax": 0.1}}},
             run_static=False,
         )
     )

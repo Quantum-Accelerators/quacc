@@ -1,9 +1,10 @@
 """Functions to customize workflow steps."""
 from __future__ import annotations
 
-import inspect
 from functools import partial
 from typing import TYPE_CHECKING
+
+from quacc import SETTINGS, job
 
 if TYPE_CHECKING:
     from typing import Any, Callable
@@ -23,7 +24,6 @@ def strip_decorator(func: Callable) -> Callable:
     Callable
         The function with all decorators removed.
     """
-    from quacc import SETTINGS
 
     if hasattr(func, "__wrapped__"):
         func = func.__wrapped__
@@ -76,10 +76,13 @@ def update_parameters(func: Callable, params: dict[str, Any]) -> Callable:
     Callable
         The updated function.
     """
-    stripped_func = strip_decorator(func)
-    func_params = inspect.signature(stripped_func).parameters
-    valid_params = {k: v for k, v in params.items() if k in func_params}
-    return partial(func, **valid_params)
+    if SETTINGS.WORKFLOW_ENGINE == "dask":
+        func = strip_decorator(func)
+        updated_func = job(partial(func, **params))
+    else:
+        updated_func = partial(func, **params)
+
+    return updated_func
 
 
 def customize_funcs(
@@ -103,7 +106,6 @@ def customize_funcs(
         Custom parameters to apply to each function. The keys of this dictionary correspond
         to the keys of `funcs`. If the key `"all"` is present, it will be applied to all
         functions. If the value is `None`, no custom parameters will be applied to that function.
-        If a function does not have a given parameter, it is ignored.
 
     Returns
     -------
@@ -113,14 +115,29 @@ def customize_funcs(
     decorators = decorators or {}
     parameters = parameters or {}
     updated_funcs = []
+
+    bad_decorator_keys = [k for k in decorators if k not in funcs]
+    if bad_decorator_keys:
+        raise ValueError(
+            f"Invalid decorator keys: {bad_decorator_keys}. "
+            f"Valid keys are: {list(funcs.keys())}"
+        )
+    bad_parameter_keys = [k for k in parameters if k not in funcs]
+    if bad_parameter_keys:
+        raise ValueError(
+            f"Invalid parameter keys: {bad_parameter_keys}. "
+            f"Valid keys are: {list(funcs.keys())}"
+        )
+
     for func_name, func in funcs.items():
+        func_ = func
         if params := parameters.get("all"):
-            func = update_parameters(func, params)
+            func_ = update_parameters(func_, params)
         if params := parameters.get(func_name):
-            func = update_parameters(func, params)
+            func_ = update_parameters(func_, params)
         if "all" in decorators:
-            func = redecorate(func, decorators["all"])
+            func_ = redecorate(func_, decorators["all"])
         if func_name in decorators:
-            func = redecorate(func, decorators[func_name])
-        updated_funcs.append(func)
+            func_ = redecorate(func_, decorators[func_name])
+        updated_funcs.append(func_)
     return tuple(updated_funcs)
