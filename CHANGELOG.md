@@ -22,10 +22,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Increased support of `~/` throughout quacc file handling mechanisms
 - Fixed an infinite recursion error when `copy_decompress_files_from_dir` was run in the current working directory.
 
-### Operations
-
-- `PH_KEYS` in Espresso calculator are now imported from ASE directly
-
 ## [0.4.6]
 
 ### Added
