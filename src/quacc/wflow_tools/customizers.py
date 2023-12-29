@@ -121,7 +121,7 @@ def customize_funcs(
     if isinstance(funcs, str):
         funcs = [funcs]
 
-    funcs_dict = {name: func for name, func in zip(names, funcs)}
+    funcs_dict = dict(zip(names, funcs))
 
     if bad_decorator_keys := [k for k in decorators if k not in funcs and k != "all"]:
         raise ValueError(
