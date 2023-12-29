@@ -9,7 +9,7 @@ from quacc import job
 from quacc.recipes.mlp._base import _pick_calculator
 from quacc.runners.ase import run_calc, run_opt
 from quacc.schemas.ase import summarize_opt_run, summarize_run
-from quacc.utils.dicts import merge_dicts
+from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
     from typing import Any, Literal
@@ -43,7 +43,10 @@ def static_job(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    atoms.calc = _pick_calculator(method, **calc_kwargs)
+    calc_defaults = {"default_dtype": "float64"} if method == "mace" else {}
+    calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
+
+    atoms.calc = _pick_calculator(method, **calc_flags)
     final_atoms = run_calc(atoms)
     return summarize_run(
         final_atoms, input_atoms=atoms, additional_fields={"name": f"{method} Static"}
@@ -85,10 +88,13 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
 
-    atoms.calc = _pick_calculator(method, **calc_kwargs)
+    calc_defaults = {"default_dtype": "float64"} if method == "mace" else {}
+    calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
 
-    opt_defaults = {"fmax": 0.1, "max_steps": 1000, "optimizer": FIRE}
-    opt_flags = merge_dicts(opt_defaults, opt_params)
+    opt_defaults = {"fmax": 0.05, "max_steps": 1000, "optimizer": FIRE}
+    opt_flags = recursive_dict_merge(opt_defaults, opt_params)
+
+    atoms.calc = _pick_calculator(method, **calc_flags)
 
     dyn = run_opt(atoms, relax_cell=relax_cell, **opt_flags)
 

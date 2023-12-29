@@ -1,0 +1,29 @@
+# Last modified: 12-18-2023
+# Presets for difficult isolated metallic clusters
+# with possible spin states (e.g. (Au, Pt, Pd) clusters + adsorbates)
+# relaxation starts with loose conv_thr but tightens as the calculation
+# progresses.
+
+input_data:
+  control:
+    calculation: relax
+    tprnfor: True
+  system:
+    occupations: smearing
+    smearing: marzari-vanderbilt
+    degauss: 0.015
+  electrons:
+    conv_thr: 1.0e-6
+    mixing_mode: local-TF
+    mixing_beta: 0.25
+    scf_must_converge: False
+    electron_maxstep: 70
+    startingwfc: random
+  ions:
+    ion_dynamics: bfgs
+    bfgs_ndim: 6
+    upscale: 1000
+
+kpts: gamma
+
+parent_pseudopotentials: sssp_1.3.0_pbe_efficiency.yaml

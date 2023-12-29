@@ -6,12 +6,14 @@ from typing import TYPE_CHECKING
 from quacc import flow
 from quacc.recipes.common.phonons import phonon_flow as phonon_flow_
 from quacc.recipes.emt.core import static_job
+from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:
+    from typing import Any, Callable
+
     from ase.atoms import Atoms
     from numpy.typing import ArrayLike
 
-    from quacc import Job
     from quacc.schemas._aliases.phonons import PhononSchema
 
 
@@ -24,10 +26,17 @@ def phonon_flow(
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
-    custom_static_job: Job | None = None,
+    decorators: dict[str, Callable | None] | None = None,
+    parameters: dict[str, Any] | None = None,
 ) -> PhononSchema:
     """
-    Carry out a phonon calculation.
+    Carry out a phonon workflow, consisting of:
+
+    1. Generation of supercells.
+
+    2. Static calculations on supercells ("static_job").
+
+    3. Calculation of thermodynamic properties.
 
     Parameters
     ----------
@@ -45,19 +54,25 @@ def phonon_flow(
         Min temperature (K).
     t_max
         Max temperature (K).
-    custom_static_job
-        The static job for the force calculations, which defaults
-        to [quacc.recipes.emt.core.static_job][]
+    decorators
+        Custom decorators to apply to each Job in the Flow.
+        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
+    parameters
+        Custom parameters to pass to each Job in the Flow.
+        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
 
     Returns
     -------
     PhononSchema
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][]
     """
+    static_job_ = customize_funcs(
+        {"static_job": static_job}, decorators=decorators, parameters=parameters
+    )[0]
 
     return phonon_flow_(
         atoms,
-        static_job if custom_static_job is None else custom_static_job,
+        static_job_,
         supercell_matrix=supercell_matrix,
         atom_disp=atom_disp,
         t_step=t_step,

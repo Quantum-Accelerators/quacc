@@ -1,7 +1,7 @@
 """Workflow decorators."""
 from __future__ import annotations
 
-import functools
+from functools import partial, wraps
 from typing import TYPE_CHECKING, TypeVar
 
 Job = TypeVar("Job")
@@ -117,7 +117,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     wflow_engine = SETTINGS.WORKFLOW_ENGINE
 
     if _func is None:
-        return functools.partial(job, **kwargs)
+        return partial(job, **kwargs)
 
     if wflow_engine == "covalent":
         import covalent as ct
@@ -142,8 +142,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     else:
         decorated = _func
 
-    if not hasattr(decorated, "__wrapped__") and wflow_engine != "dask":
-        # TODO: https://github.com/dask/dask/issues/10685
+    if not hasattr(decorated, "__wrapped__"):
         decorated.__wrapped__ = _func
 
     return decorated
@@ -262,7 +261,7 @@ def flow(
     from quacc import SETTINGS
 
     if _func is None:
-        return functools.partial(flow, **kwargs)
+        return partial(flow, **kwargs)
 
     wflow_engine = SETTINGS.WORKFLOW_ENGINE
     if wflow_engine == "covalent":
@@ -275,6 +274,9 @@ def flow(
         decorated = redun_task(_func, **kwargs)
     else:
         decorated = _func
+
+    if wflow_engine != "covalent" and not hasattr(decorated, "__wrapped__"):
+        decorated.__wrapped__ = _func
 
     return decorated
 
@@ -445,7 +447,7 @@ def subflow(
         The decorated function.
     """
 
-    @functools.wraps(_func)
+    @wraps(_func)
     def _inner(
         *f_args, decorator_kwargs: dict[str, Any] | None = None, **f_kwargs
     ) -> Any:
@@ -480,13 +482,13 @@ def subflow(
     from quacc import SETTINGS
 
     if _func is None:
-        return functools.partial(subflow, **kwargs)
+        return partial(subflow, **kwargs)
 
     wflow_engine = SETTINGS.WORKFLOW_ENGINE
     if wflow_engine == "covalent":
         import covalent as ct
 
-        decorated = ct.electron(ct.lattice(_func, **kwargs))
+        decorated = ct.electron(ct.lattice(_func), **kwargs)
     elif wflow_engine == "parsl":
         from parsl import join_app
 
@@ -499,5 +501,8 @@ def subflow(
         return _inner
     else:
         decorated = _func
+
+    if wflow_engine != "covalent" and not hasattr(decorated, "__wrapped__"):
+        decorated.__wrapped__ = _func
 
     return decorated

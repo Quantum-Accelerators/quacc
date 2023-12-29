@@ -7,7 +7,8 @@ from ase.build import bulk
 from ase.io.espresso import construct_namelist
 
 from quacc import SETTINGS
-from quacc.recipes.espresso.core import phonon_job, static_job
+from quacc.recipes.espresso.core import static_job
+from quacc.recipes.espresso.phonons import phonon_job
 from quacc.utils.files import copy_decompress_files
 
 pytestmark = pytest.mark.skipif(which("pw.x") is None, reason="QE not installed")
@@ -20,18 +21,77 @@ def test_static_job(tmp_path, monkeypatch):
 
     pp_dir = Path(__file__).parent
 
-    copy_decompress_files([pp_dir / "Si.upf"], tmp_path)
+    copy_decompress_files([pp_dir / "Si.upf.gz"], tmp_path)
+
+    atoms = bulk("Si")
+
+    pseudopotentials = {"Si": "Si.upf"}
+    input_data = {"control": {"pseudo_dir": tmp_path}}
+
+    results = static_job(
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.5
+    )
+
+    assert np.allclose(results["atoms"].positions, atoms.positions, atol=1.0e-4)
+
+    assert np.allclose(results["atoms"].cell, atoms.cell, atol=1.0e-3)
+    assert (results["atoms"].symbols == atoms.symbols).all()
+
+    new_input_data = results["parameters"]["input_data"]
+
+    assert new_input_data["system"]["degauss"] == 0.001
+    assert new_input_data["system"]["occupations"] == "smearing"
+    assert new_input_data["system"]["ecutwfc"] == 30.0
+    assert new_input_data["system"]["ecutrho"] == 240.0
+
+
+def test_static_job_v2(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    pp_dir = Path(__file__).parent
+
+    copy_decompress_files([pp_dir / "Si.upf.gz"], tmp_path)
 
     atoms = bulk("Si")
 
     input_data = {
-        "occupations": "smearing",
-        "smearing": "gaussian",
-        "degauss": 0.005,
-        "mixing_mode": "plain",
-        "mixing_beta": 0.6,
-        "pseudo_dir": tmp_path,
-        "conv_thr": 1.0e-6,
+        "system": {"occupations": "smearing", "smearing": "gaussian", "degauss": 0.005},
+        "electrons": {"mixing_mode": "plain", "mixing_beta": 0.6, "conv_thr": 1.0e-6},
+        "control": {"pseudo_dir": tmp_path},
+    }
+
+    pseudopotentials = {"Si": "Si.upf"}
+
+    results = static_job(
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.5
+    )
+
+    assert np.allclose(results["atoms"].positions, atoms.positions, atol=1.0e-4)
+
+    assert np.allclose(results["atoms"].cell, atoms.cell, atol=1.0e-3)
+    assert (results["atoms"].symbols == atoms.symbols).all()
+
+    new_input_data = results["parameters"]["input_data"]
+
+    assert new_input_data["system"]["degauss"] == 0.005
+    assert new_input_data["system"]["occupations"] == "smearing"
+    assert new_input_data["electrons"]["conv_thr"] == 1.0e-6
+    assert new_input_data["control"]["calculation"] == "scf"
+
+
+def test_static_job_outdir(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    pp_dir = Path(__file__).parent
+
+    copy_decompress_files([pp_dir / "Si.upf.gz"], tmp_path)
+
+    atoms = bulk("Si")
+
+    input_data = {
+        "system": {"occupations": "smearing", "smearing": "gaussian", "degauss": 0.005},
+        "electrons": {"mixing_mode": "plain", "mixing_beta": 0.6, "conv_thr": 1.0e-6},
+        "control": {"pseudo_dir": tmp_path, "outdir": "test2/test3/test4"},
     }
 
     pseudopotentials = {"Si": "Si.upf"}
@@ -55,6 +115,57 @@ def test_static_job(tmp_path, monkeypatch):
     assert new_input_data["control"]["calculation"] == "scf"
 
 
+def test_static_job_outdir_abs(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    pp_dir = Path(__file__).parent
+
+    copy_decompress_files([pp_dir / "Si.upf.gz"], tmp_path)
+
+    atoms = bulk("Si")
+
+    input_data = {
+        "system": {"occupations": "smearing", "smearing": "gaussian", "degauss": 0.005},
+        "electrons": {"mixing_mode": "plain", "mixing_beta": 0.6, "conv_thr": 1.0e-6},
+        "control": {
+            "pseudo_dir": tmp_path,
+            "outdir": Path(tmp_path, "test2").resolve(),
+        },
+    }
+    pseudopotentials = {"Si": "Si.upf"}
+
+    results = static_job(
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.5
+    )
+
+    input_data = dict(construct_namelist(input_data))
+
+    assert np.allclose(results["atoms"].positions, atoms.positions, atol=1.0e-4)
+
+    assert np.allclose(results["atoms"].cell, atoms.cell, atol=1.0e-3)
+    assert (results["atoms"].symbols == atoms.symbols).all()
+
+    new_input_data = results["parameters"]["input_data"]
+
+    assert new_input_data["system"]["degauss"] == 0.005
+    assert new_input_data["system"]["occupations"] == "smearing"
+    assert new_input_data["electrons"]["conv_thr"] == 1.0e-6
+    assert new_input_data["control"]["calculation"] == "scf"
+
+
+def test_static_job_dir_fail(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    pp_dir = Path(__file__).parent
+
+    copy_decompress_files([pp_dir / "Si.upf.gz"], tmp_path)
+
+    atoms = bulk("Si")
+
+    with pytest.raises(ValueError):
+        static_job(atoms, directory=Path("fake_path"))
+
+
 def test_phonon_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
@@ -62,21 +173,17 @@ def test_phonon_job(tmp_path, monkeypatch):
 
     pp_dir = Path(__file__).parent
 
-    copy_decompress_files([pp_dir / "Li.upf"], tmp_path)
+    copy_decompress_files([pp_dir / "Li.upf.gz"], tmp_path)
 
     SETTINGS.ESPRESSO_PSEUDO = tmp_path
 
     input_data = {
-        "calculation": "scf",
-        "occupations": "smearing",
-        "smearing": "cold",
-        "degauss": 0.02,
-        "mixing_mode": "TF",
-        "mixing_beta": 0.7,
-        "conv_thr": 1.0e-6,
+        "control": {"calculation": "scf"},
+        "system": {"occupations": "smearing", "smearing": "cold", "degauss": 0.02},
+        "electrons": {"mixing_mode": "TF", "mixing_beta": 0.7, "conv_thr": 1.0e-6},
     }
 
-    ph_loose = {"tr2_ph": 1e-8}
+    ph_loose = {"inputph": {"tr2_ph": 1e-8}}
 
     pseudopotentials = {"Li": "Li.upf"}
 
@@ -84,7 +191,7 @@ def test_phonon_job(tmp_path, monkeypatch):
         atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.25
     )
 
-    ph_results = phonon_job(input_data=ph_loose, copy_files=pw_results["dir_name"])
+    ph_results = phonon_job(pw_results["dir_name"], input_data=ph_loose)
 
     assert (0, 0, 0) in ph_results["results"]
     assert np.allclose(
@@ -112,21 +219,19 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
 
     pp_dir = Path(__file__).parent
 
-    copy_decompress_files([pp_dir / "Li.upf"], tmp_path)
+    copy_decompress_files([pp_dir / "Li.upf.gz"], tmp_path)
 
     SETTINGS.ESPRESSO_PSEUDO = tmp_path
 
     input_data = {
-        "calculation": "scf",
-        "occupations": "smearing",
-        "smearing": "cold",
-        "degauss": 0.02,
-        "mixing_mode": "TF",
-        "mixing_beta": 0.7,
-        "conv_thr": 1.0e-6,
+        "control": {"calculation": "scf"},
+        "system": {"occupations": "smearing", "smearing": "cold", "degauss": 0.02},
+        "electrons": {"mixing_mode": "TF", "mixing_beta": 0.7, "conv_thr": 1.0e-6},
     }
 
-    ph_loose = {"tr2_ph": 1e-8, "qplot": True, "nat_todo": 1, "ldisp": True}
+    ph_loose = {
+        "inputph": {"tr2_ph": 1e-8, "qplot": True, "nat_todo": 1, "ldisp": True}
+    }
 
     pseudopotentials = {"Li": "Li.upf"}
 
@@ -139,10 +244,7 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
     nat_todo = [1]
 
     ph_results = phonon_job(
-        input_data=ph_loose,
-        copy_files=pw_results["dir_name"],
-        qpts=qpts,
-        nat_todo=nat_todo,
+        pw_results["dir_name"], input_data=ph_loose, qpts=qpts, nat_todo=nat_todo
     )
 
     assert (0, 0, 0) in ph_results["results"]

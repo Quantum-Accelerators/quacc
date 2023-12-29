@@ -1,6 +1,7 @@
 """Base functions for universal machine-learned interatomic potentials."""
 from __future__ import annotations
 
+import warnings
 from functools import lru_cache
 from typing import TYPE_CHECKING
 
@@ -32,6 +33,10 @@ def _pick_calculator(
     Calculator
         The chosen calculator
     """
+    import torch
+
+    if not torch.cuda.is_available():
+        warnings.warn("CUDA is not available to PyTorch. Calculations will be slow.")
 
     if calculator.lower().startswith("m3gnet"):
         import matgl

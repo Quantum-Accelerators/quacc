@@ -50,8 +50,8 @@ Several pre-trained "universal" machine-learned potentials (MLPs) are natively s
 To use these potentials, you will need to install the corresponding packages. This can be done as follows:
 
 ```bash
-pip install quacc[ml] # CHGNet, M3GNet
-pip install git+https://github.com/ACEsuit/mace.git # MACE
+pip install quacc[ml]
+pip install git+https://github.com/ACEsuit/mace.git
 ```
 
 ## NewtonNet
@@ -84,7 +84,7 @@ conda install -c conda-forge openbabel
 
 ## Quantum ESPRESSO
 
-To use quacc with Quantum ESPRESSO, you will first need to download and compile [Quantum ESPRESSO](https://www.quantum-espresso.org/) or install it via conda as `conda install -c conda-forge qe`.
+To use quacc with Quantum ESPRESSO, you will first need to download and compile [Quantum ESPRESSO](https://www.quantum-espresso.org/) or install it via conda as `conda install -c conda-forge qe`. You will also need to download the relevant [pseudopotentials](https://www.quantum-espresso.org/pseudopotentials/).
 
 Additionally, you will need to define multiple environment variables. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md).
 

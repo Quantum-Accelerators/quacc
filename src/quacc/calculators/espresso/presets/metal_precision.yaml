@@ -1,0 +1,15 @@
+# Last modified: 12-18-2023
+
+input_data:
+  system:
+    occupations: smearing
+    smearing: marzari-vanderbilt
+    degauss: 0.005
+  electrons:
+    conv_thr: 1.0e-12
+    mixing_mode: TF
+    mixing_beta: 0.7
+
+kspacing: 0.015
+
+parent_pseudopotentials: sssp_1.3.0_pbe_precision.yaml

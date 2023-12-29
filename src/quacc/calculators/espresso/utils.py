@@ -8,7 +8,9 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
 
-def parse_pp_and_cutoff(config: dict[str, Any], atoms: Atoms) -> dict[str, Any] | None:
+def get_pseudopotential_info(
+    pp_dict: dict[str, Any], atoms: Atoms
+) -> tuple[float, float, dict[str, str]]:
     """
     Function that parses the pseudopotentials and cutoffs from a preset file.
     The cutoffs are taken from the largest value of the cutoffs among the elements
@@ -16,30 +18,28 @@ def parse_pp_and_cutoff(config: dict[str, Any], atoms: Atoms) -> dict[str, Any] 
 
     Parameters
     ----------
-    config
-        The config dictionary return by load_yaml_calc
+    pp_dict
+        The "pseudopotential" parameters returned by load_yaml_calc
     atoms
         The atoms object to get the elements from
 
     Returns
     -------
-    dict | None
-        A dictionary containing the pseudopotentials and cutoffs
+    float
+        The max(ecutwfc) value
+    float
+        The max(ecutrho) value
+    dict[str, str]
+        The pseudopotentials dictinoary, e.g. {"O": "O.pbe-n-kjpaw_psl.0.1.UPF"}
     """
 
-    if "pseudopotentials" not in config:
-        return None
-
-    pp_dict = config["pseudopotentials"]
-    unique_elements = list(set(atoms.symbols))
-    wfc_cutoff, rho_cutoff = 0, 0
+    unique_elements = list(set(atoms.get_chemical_symbols()))
+    ecutwfc, ecutrho = 0, 0
     pseudopotentials = {}
     for element in unique_elements:
-        if pp_dict[element]["cutoff_wfc"] > wfc_cutoff:
-            wfc_cutoff = pp_dict[element]["cutoff_wfc"]
-        if pp_dict[element]["cutoff_rho"] > rho_cutoff:
-            rho_cutoff = pp_dict[element]["cutoff_rho"]
+        if pp_dict[element]["cutoff_wfc"] > ecutwfc:
+            ecutwfc = pp_dict[element]["cutoff_wfc"]
+        if pp_dict[element]["cutoff_rho"] > ecutrho:
+            ecutrho = pp_dict[element]["cutoff_rho"]
         pseudopotentials[element] = pp_dict[element]["filename"]
-    tmp_input_data = {"system": {"ecutwfc": wfc_cutoff, "ecutrho": rho_cutoff}}
-
-    return {"pseudopotentials": pseudopotentials, "input_data": tmp_input_data}
+    return ecutwfc, ecutrho, pseudopotentials
