@@ -130,9 +130,9 @@ def bulk_to_slabs_flow(
 
     1. Slab generation
 
-    2. Slab relaxations
+    2. Slab relaxations ("relax_job")
 
-    3. Slab statics (optional)
+    3. Optional slab statics ("static_job")
 
     Parameters
     ----------
@@ -182,9 +182,9 @@ def slab_to_ads_flow(
 
     1. Slab-adsorbate generation
 
-    2. Slab-adsorbate relaxations
+    2. Slab-adsorbate relaxations ("relax_job")
 
-    3. Slab-adsorbate statics (optional)
+    3. Optional slab-adsorbate statics ("static_job")
 
     Parameters
     ----------

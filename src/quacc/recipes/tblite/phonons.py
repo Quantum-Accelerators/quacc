@@ -30,7 +30,13 @@ def phonon_flow(
     parameters: dict[str, Any] | None = None,
 ) -> PhononSchema:
     """
-    Carry out a phonon calculation.
+    Carry out a phonon workflow, consisting of:
+
+    1. Generation of supercells.
+
+    2. Static calculations on supercells ("static_job").
+
+    3. Calculation of thermodynamic properties.
 
     Parameters
     ----------

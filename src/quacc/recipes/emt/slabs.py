@@ -29,9 +29,9 @@ def bulk_to_slabs_flow(
 
     1. Slab generation
 
-    2. Slab relaxations
+    2. Slab relaxations ("relax_job")
 
-    3. Slab statics (optional)
+    3. Optional slab statics ("static_job")
 
     Parameters
     ----------

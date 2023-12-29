@@ -48,9 +48,9 @@ def bulk_to_defects_flow(
 
     1. Defect generation
 
-    2. Defect relaxations
+    2. Defect relaxations ("relax_job")
 
-    3. Defect statics (optional)
+    3. Optional defect statics ("static_job")
 
     Parameters
     ----------
