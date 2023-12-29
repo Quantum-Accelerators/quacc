@@ -48,7 +48,8 @@ def get_pseudopotential_info(
                 ecutrho = pp_dict[element]["cutoff_rho"]
             pseudopotentials[element] = pp_dict[element]["filename"]
 
-def parse_ph_patterns(root_dir : str | Path) -> dict[int, int]:
+
+def parse_ph_patterns(root_dir: str | Path) -> dict[int, int]:
     """
     Function that parses the patterns from a ph.x calculation.
 
