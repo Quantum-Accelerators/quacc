@@ -22,11 +22,13 @@ import numpy as np
 
 from quacc import flow, job
 from quacc.recipes.vasp._base import base_fn
+from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:
+    from typing import Any, Callable
+
     from ase.atoms import Atoms
 
-    from quacc import Job
     from quacc.schemas._aliases.vasp import MPRelaxFlowSchema, VaspSchema
 
 
@@ -127,40 +129,43 @@ def mp_relax_job(
 @flow
 def mp_relax_flow(
     atoms: Atoms,
-    custom_prerelax_job: Job | None = None,
-    custom_relax_job: Job | None = None,
+    decorators: dict[str, Callable | None] | None = None,
+    parameters: dict[str, Any] | None = None,
 ) -> MPRelaxFlowSchema:
     """
     Workflow consisting of:
 
-    1. MP-compatible pre-relax
+    1. MP-compatible pre-relax ("mp_prerelax_job")
 
-    2. MP-compatible relax
+    2. MP-compatible relax ("mp_relax_job")
 
     Parameters
     ----------
     atoms
         Atoms object for the structure.
-    custom_prerelax_job
-        Pre-relaxation job, which defaults to [quacc.recipes.vasp.mp.mp_prerelax_job][].
-    custom_relax_job
-        Relaxation job, which defaults to [quacc.recipes.vasp.mp.mp_relax_job][].
+    decorators
+        Custom decorators to apply to each Job in the Flow.
+        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
+    parameters
+        Custom parameters to pass to each Job in the Flow.
+        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
 
     Returns
     -------
     MPRelaxFlowSchema
         Dictionary of results
     """
+    mp_prerelax_job_, mp_relax_job_ = customize_funcs(
+        {"mp_prerelax_job": mp_prerelax_job, "mp_relax_job": mp_relax_job},
+        decorators=decorators,
+        parameters=parameters,
+    )
 
     # Run the prerelax
-    prerelax_job = (
-        mp_prerelax_job if custom_prerelax_job is None else custom_prerelax_job
-    )
-    prerelax_results = prerelax_job(atoms)
+    prerelax_results = mp_prerelax_job_(atoms)
 
     # Run the relax
-    relax_job = mp_relax_job if custom_relax_job is None else custom_relax_job
-    relax_results = relax_job(
+    relax_results = mp_relax_job_(
         prerelax_results["atoms"],
         bandgap=prerelax_results["output"]["bandgap"],
         copy_files=[

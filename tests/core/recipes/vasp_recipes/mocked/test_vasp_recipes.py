@@ -1,5 +1,3 @@
-from functools import partial
-
 import pytest
 from ase.build import bulk, molecule
 
@@ -219,7 +217,7 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
 
     outputs = bulk_to_slabs_flow(
         atoms,
-        custom_relax_job=partial(slab_relax_job, preset="SlabSet", nelmin=6),
+        parameters={"relax_job": {"preset": "SlabSet", "nelmin": 6}},
         run_static=False,
     )
     assert len(outputs) == 4
@@ -232,7 +230,7 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
     assert [output["parameters"]["encut"] == 450 for output in outputs]
 
     outputs = bulk_to_slabs_flow(
-        atoms, custom_relax_job=partial(slab_relax_job, preset="SlabSet", nelmin=6)
+        atoms, parameters={"relax_job": {"preset": "SlabSet", "nelmin": 6}}
     )
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 45
@@ -259,7 +257,7 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
     outputs = slab_to_ads_flow(
         atoms,
         adsorbate,
-        custom_relax_job=partial(slab_relax_job, preset="SlabSet", nelmin=6),
+        parameters={"relax_job": {"preset": "SlabSet", "nelmin": 6}},
         run_static=False,
     )
 
@@ -269,9 +267,7 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
     assert [output["parameters"]["encut"] == 450 for output in outputs]
 
     outputs = slab_to_ads_flow(
-        atoms,
-        adsorbate,
-        custom_static_job=partial(slab_static_job, preset="SlabSet", nelmin=6),
+        atoms, adsorbate, parameters={"relax_job": {"preset": "SlabSet", "nelmin": 6}}
     )
 
     assert [output["nsites"] == 82 for output in outputs]
