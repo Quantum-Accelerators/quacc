@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from quacc import flow
 from quacc.recipes.common.slabs import bulk_to_slabs_subflow
 from quacc.recipes.emt.core import relax_job, static_job
-from quacc.wflow_tools.decorators import customize_funcs
+from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:
     from typing import Any, Callable
@@ -41,8 +41,10 @@ def bulk_to_slabs_flow(
         Additional keyword arguments to pass to [quacc.atoms.slabs.make_slabs_from_bulk][]
     decorators
         Custom decorators to apply to each Job in the Flow.
+        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
     parameters
         Custom parameters to pass to each Job in the Flow.
+        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
 
     Returns
     -------
