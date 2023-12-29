@@ -21,8 +21,8 @@ def bulk_to_slabs_flow(
     atoms: Atoms,
     run_static: bool = True,
     make_slabs_kwargs: dict[str, Any] | None = None,
+    job_params: dict[str, Any] | None = None,
     job_decorators: dict[str, Callable | None] | None = None,
-    job_parameters: dict[str, Any] | None = None,
 ) -> list[RunSchema | OptSchema]:
     """
     Workflow consisting of:
@@ -41,11 +41,11 @@ def bulk_to_slabs_flow(
         Whether to run static calculations.
     make_slabs_kwargs
         Additional keyword arguments to pass to [quacc.atoms.slabs.make_slabs_from_bulk][]
+    job_params
+        Custom parameters to pass to each Job in the Flow.
+        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
     job_decorators
         Custom decorators to apply to each Job in the Flow.
-        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
-    job_parameters
-        Custom parameters to pass to each Job in the Flow.
         Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
 
     Returns
@@ -55,9 +55,10 @@ def bulk_to_slabs_flow(
         [OptSchema][quacc.schemas.ase.summarize_opt_run] for each slab.
     """
     relax_job_, static_job_ = customize_funcs(
-        {"relax_job": relax_job, "static_job": static_job},
+        ["relax_job", "static_job"],
+        [relax_job, static_job],
+        parameters=job_params,
         decorators=job_decorators,
-        parameters=job_parameters,
     )
 
     return bulk_to_slabs_subflow(
