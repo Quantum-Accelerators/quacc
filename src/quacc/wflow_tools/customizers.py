@@ -86,7 +86,7 @@ def update_parameters(func: Callable, params: dict[str, Any]) -> Callable:
 def customize_funcs(
     names: list[str] | str,
     funcs: list[Callable] | Callable,
-    parameters: dict[str, Any] | None = None,
+    parameters: dict[str, dict[str, Any]] | None = None,
     decorators: dict[str, Callable | None] | None = None,
 ) -> tuple[Callable] | Callable:
     """

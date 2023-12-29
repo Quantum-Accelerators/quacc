@@ -129,26 +129,30 @@ def mp_relax_job(
 @flow
 def mp_relax_flow(
     atoms: Atoms,
-    job_params: dict[str, Any] | None = None,
+    job_params: dict[str, dict[str, Any]] | None = None,
     job_decorators: dict[str, Callable | None] | None = None,
 ) -> MPRelaxFlowSchema:
     """
     Workflow consisting of:
 
-    1. MP-compatible pre-relax ("mp_prerelax_job")
+    1. MP-compatible pre-relax
+        - name: "mp_prerelax_job"
+        - job: [quacc.recipes.vasp.mp.mp_prerelax_job][]
 
-    2. MP-compatible relax ("mp_relax_job")
+    2. MP-compatible relax
+        - name: "mp_relax_job"
+        - job: [quacc.recipes.vasp.mp.mp_relax_job][]
 
     Parameters
     ----------
     atoms
         Atoms object for the structure.
     job_params
-        Custom parameters to pass to each Job in the Flow.
-        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
+        Custom parameters to pass to each Job in the Flow. This is a dictinoary where
+        the keys are the names of the jobs and the values are dictionaries of parameters.
     job_decorators
-        Custom decorators to apply to each Job in the Flow.
-        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
+        Custom decorators to apply to each Job in the Flow. This is a dictionary where
+        the keys are the names of the jobs and the values are decorators.
 
     Returns
     -------
