@@ -1,6 +1,6 @@
 # Intro to Recipes
 
-In quacc, each code comes with pre-packaged jobs and workflows, which we call recipes for short. This tutorial walks you through how to use these provided recipes to run simple calculations that can be tested out on your local machine.
+In quacc, each code comes with [pre-packaged jobs and workflows](recipes_list.md), which we call recipes for short. This tutorial walks you through how to use these provided recipes to run simple calculations that can be tested out on your local machine.
 
 ## Pre-Requisites
 
