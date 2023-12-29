@@ -55,7 +55,8 @@ def bulk_to_slabs_flow(
         [OptSchema][quacc.schemas.ase.summarize_opt_run] for each slab.
     """
     relax_job_, static_job_ = customize_funcs(
-        {"relax_job": relax_job, "static_job": static_job},
+        ["relax_job", "static_job"],
+        [relax_job, static_job],
         parameters=job_params,
         decorators=job_decorators,
     )

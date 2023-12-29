@@ -84,35 +84,44 @@ def update_parameters(func: Callable, params: dict[str, Any]) -> Callable:
 
 
 def customize_funcs(
-    funcs: dict[str, Callable],
+    names: list[str] | str,
+    funcs: list[Callable] | Callable,
     parameters: dict[str, Any] | None = None,
     decorators: dict[str, Callable | None] | None = None,
-) -> tuple[Callable]:
+) -> tuple[Callable] | Callable:
     """
     Customize a set of functions with decorators and common parameters.
 
     Parameters
     ----------
+    names
+        The names of the functions to customize, in the order they should be returned.
     funcs
-        The functions to customize, as a dictionary where the keys are unique
-        identifiers for each function and the values are the functions themselves.
+        The functions to customize, in the order they are described in `names`.
     parameters
         Custom parameters to apply to each function. The keys of this dictionary correspond
-        to the keys of `funcs`. If the key `"all"` is present, it will be applied to all
+        to the strings in `names`. If the key `"all"` is present, it will be applied to all
         functions. If the value is `None`, no custom parameters will be applied to that function.
     decorators
         Custom decorators to apply to each function. The keys of this dictionary correspond
-        to the keys of `funcs`. If the key `"all"` is present, it will be applied to all
+        to the strings in `names`. If the key `"all"` is present, it will be applied to all
         functions. If a value is `None`, no decorator will be applied that function.
 
     Returns
     -------
-    tuple[Callable]
+    tuple[Callable] | Callable
         The customized functions, returned in the same order as provided in `funcs`.
     """
     parameters = parameters or {}
     decorators = decorators or {}
     updated_funcs = []
+
+    if isinstance(names, str):
+        names = [names]
+    if isinstance(funcs, str):
+        funcs = [funcs]
+
+    funcs_dict = {name: func for name, func in zip(names, funcs)}
 
     if bad_decorator_keys := [k for k in decorators if k not in funcs and k != "all"]:
         raise ValueError(
@@ -125,7 +134,7 @@ def customize_funcs(
             f"Valid keys are: {list(funcs.keys())}"
         )
 
-    for func_name, func in funcs.items():
+    for func_name, func in funcs_dict.items():
         func_ = func
         if params := parameters.get("all"):
             func_ = update_parameters(func_, params)

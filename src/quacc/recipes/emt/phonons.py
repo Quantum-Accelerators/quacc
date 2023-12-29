@@ -67,8 +67,8 @@ def phonon_flow(
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][]
     """
     static_job_ = customize_funcs(
-        {"static_job": static_job}, parameters=job_params, decorators=job_decorators
-    )[0]
+        "static_job", static_job, parameters=job_params, decorators=job_decorators
+    )
 
     return phonon_flow_(
         atoms,

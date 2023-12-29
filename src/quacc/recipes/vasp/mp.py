@@ -156,7 +156,8 @@ def mp_relax_flow(
         Dictionary of results
     """
     mp_prerelax_job_, mp_relax_job_ = customize_funcs(
-        {"mp_prerelax_job": mp_prerelax_job, "mp_relax_job": mp_relax_job},
+        ["mp_prerelax_job", "mp_relax_job"],
+        [mp_prerelax_job, mp_relax_job],
         parameters=job_params,
         decorators=job_decorators,
     )

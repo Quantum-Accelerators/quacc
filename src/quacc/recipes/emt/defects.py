@@ -82,7 +82,8 @@ def bulk_to_defects_flow(
         make_defects_kwargs, {"defect_gen": defect_gen, "defect_charge": defect_charge}
     )
     relax_job_, static_job_ = customize_funcs(
-        {"relax_job": relax_job, "static_job": static_job},
+        ["relax_job", "static_job"],
+        [relax_job, static_job],
         parameters=job_params,
         decorators=job_decorators,
     )

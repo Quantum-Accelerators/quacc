@@ -155,9 +155,10 @@ def bulk_to_slabs_flow(
         List of dictionary results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
     relax_job_, static_job_ = customize_funcs(
-        {"relax_job": relax_job, "static_job": static_job},
-        decorators=job_decorators,
+        ["relax_job", "static_job"],
+        [relax_job, static_job],
         parameters=job_params,
+        decorators=job_decorators,
     )
 
     return bulk_to_slabs_subflow(
@@ -174,8 +175,8 @@ def slab_to_ads_flow(
     adsorbate: Atoms,
     run_static: bool = True,
     make_ads_kwargs: dict[str, Any] | None = None,
-    job_decorators: dict[str, Callable | None] | None = None,
     job_params: dict[str, Any] | None = None,
+    job_decorators: dict[str, Callable | None] | None = None,
 ) -> list[VaspSchema]:
     """
     Workflow consisting of:
@@ -196,11 +197,11 @@ def slab_to_ads_flow(
         Whether to run static calculations.
     make_ads_kwargs
         Additional keyword arguments to pass to [quacc.atoms.slabs.make_adsorbate_structures][]
-    job_decorators
-        Custom decorators to apply to each Job in the Flow.
-        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
     job_params
         Custom parameters to pass to each Job in the Flow.
+        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
+    job_decorators
+        Custom decorators to apply to each Job in the Flow.
         Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
 
     Returns
@@ -209,9 +210,10 @@ def slab_to_ads_flow(
         List of dictionaries of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
     relax_job_, static_job_ = customize_funcs(
-        {"relax_job": relax_job, "static_job": static_job},
-        decorators=job_decorators,
+        ["relax_job", "static_job"],
+        [relax_job, static_job],
         parameters=job_params,
+        decorators=job_decorators,
     )
 
     return slab_to_ads_subflow(

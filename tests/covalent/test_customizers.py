@@ -20,26 +20,28 @@ def test_customize_jobs():
         return a * b
 
     add_, mult_ = customize_funcs(
-        {"add": add, "mult": mult}, decorators={"add": job(executor="local")}
+        ["add", "mult"], [add, mult], decorators={"add": job(executor="local")}
     )
     assert add_.electron_object.executor == "local"
     assert mult_.electron_object.executor is None
 
     add_, mult_ = customize_funcs(
-        {"add": add, "mult": mult},
+        ["add", "mult"],
+        [add, mult],
         decorators={"add": job(executor="local"), "mult": job(executor="local")},
     )
     assert add_.electron_object.executor == "local"
     assert mult_.electron_object.executor == "local"
 
     add_, mult_ = customize_funcs(
-        {"add": add, "mult": mult}, decorators={"all": job(executor="local")}
+        ["add", "mult"], [add, mult], decorators={"all": job(executor="local")}
     )
     assert add_.electron_object.executor == "local"
     assert mult_.electron_object.executor == "local"
 
     add_, mult_ = customize_funcs(
-        {"add": add, "mult": mult},
+        ["add", "mult"],
+        [add, mult],
         decorators={"all": job(executor="local"), "mult": job(executor="dask")},
     )
     assert add_.electron_object.executor == "local"
@@ -56,7 +58,7 @@ def test_customize_flows():
         return add(1, 2)
 
     workflow_ = customize_funcs(
-        {"workflow": workflow}, decorators={"workflow": flow(executor="local")}
+        "workflow", workflow, decorators={"workflow": flow(executor="local")}
     )[0]
     assert workflow_.metadata["executor"] == "local"
 
@@ -71,7 +73,7 @@ def test_customize_subflows():
         return add(1, 2)
 
     subworkflow_ = customize_funcs(
-        {"workflow": subworkflow}, decorators={"workflow": subflow(executor="local")}
+        "workflow", subworkflow, decorators={"workflow": subflow(executor="local")}
     )[0]
     assert subworkflow_.electron_object.executor == "local"
 
@@ -82,4 +84,4 @@ def test_bad_customizers():
         return a + b
 
     with pytest.raises(ValueError):
-        customize_funcs({"add": add}, decorators={"bad": job(executor="local")})
+        customize_funcs("add", add, decorators={"bad": job(executor="local")})
