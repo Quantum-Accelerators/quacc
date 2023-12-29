@@ -19,6 +19,3 @@ name = "isort"
 
 [[transformers]]
 name = "black"
-
-[[transformers]]
-name = "ruff"
