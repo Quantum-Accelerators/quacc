@@ -30,3 +30,6 @@ def test_basic_customizers():
 
     with pytest.raises(ValueError):
         customize_funcs(["add", "mult"], [add, mult], parameters={"bad": {"b": 2}})
+
+    with pytest.raises(ValueError):
+        customize_funcs("all", [add], parameters={"all": {"b": 2}})
