@@ -14,7 +14,7 @@ nav:
   - User Guide 🧠:
       - Recipes:
           - user/recipes/recipes_intro.md
-          - user/recipes/modifications.md
+          - user/recipes/workflows.md
           - user/recipes/recipes_list.md
       - Workflow Basics:
           - user/basics/wflow_overview.md
@@ -23,7 +23,6 @@ nav:
       - Using a Workflow Engine:
           - user/wflow_engine/wflow_engines1.md
           - user/wflow_engine/wflow_engines2.md
-          - user/wflow_engine/wflow_engines3.md
           - user/wflow_engine/executors1.md
           - user/wflow_engine/executors2.md
       - Global Settings:
