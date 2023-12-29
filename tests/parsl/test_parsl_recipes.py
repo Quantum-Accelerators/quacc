@@ -1,5 +1,4 @@
 import contextlib
-from functools import partial
 
 import pytest
 from ase.build import bulk
@@ -29,9 +28,7 @@ def test_parsl_functools(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
     result = bulk_to_slabs_flow(
-        atoms,
-        custom_relax_job=partial(relax_job, opt_params={"fmax": 0.1}),
-        run_static=False,
+        atoms, parameters={"relax_job": {"opt_params": {"fmax": 0.1}}}, run_static=False
     ).result()
     assert len(result) == 4
     assert "atoms" in result[-1]

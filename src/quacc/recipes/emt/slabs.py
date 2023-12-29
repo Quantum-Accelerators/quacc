@@ -6,46 +6,47 @@ from typing import TYPE_CHECKING
 from quacc import flow
 from quacc.recipes.common.slabs import bulk_to_slabs_subflow
 from quacc.recipes.emt.core import relax_job, static_job
+from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:
-    from typing import Any
+    from typing import Any, Callable
 
     from ase.atoms import Atoms
 
-    from quacc import Job
     from quacc.schemas._aliases.ase import OptSchema, RunSchema
 
 
 @flow
 def bulk_to_slabs_flow(
     atoms: Atoms,
-    custom_relax_job: Job | None = None,
-    custom_static_job: Job | None = None,
     run_static: bool = True,
     make_slabs_kwargs: dict[str, Any] | None = None,
+    decorators: dict[str, Callable | None] | None = None,
+    parameters: dict[str, Any] | None = None,
 ) -> list[RunSchema | OptSchema]:
     """
     Workflow consisting of:
 
     1. Slab generation
 
-    2. Slab relaxations
+    2. Slab relaxations ("relax_job")
 
-    3. Slab statics (optional)
+    3. Optional slab statics ("static_job")
 
     Parameters
     ----------
     atoms
         Atoms object
-    custom_relax_job
-        The relaxation job, which defaults to [quacc.recipes.emt.core.relax_job][].
-    custom_static_job
-        The static job, which defaults to [quacc.recipes.emt.core.static_job][].
     run_static
         Whether to run static calculations.
     make_slabs_kwargs
-        Additional keyword arguments to pass to
-        [quacc.atoms.slabs.make_slabs_from_bulk][]
+        Additional keyword arguments to pass to [quacc.atoms.slabs.make_slabs_from_bulk][]
+    decorators
+        Custom decorators to apply to each Job in the Flow.
+        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
+    parameters
+        Custom parameters to pass to each Job in the Flow.
+        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
 
     Returns
     -------
@@ -53,12 +54,15 @@ def bulk_to_slabs_flow(
         [RunSchema][quacc.schemas.ase.summarize_run] or
         [OptSchema][quacc.schemas.ase.summarize_opt_run] for each slab.
     """
-    slab_relax_job = relax_job if custom_relax_job is None else custom_relax_job
-    slab_static_job = static_job if custom_static_job is None else custom_static_job
+    relax_job_, static_job_ = customize_funcs(
+        {"relax_job": relax_job, "static_job": static_job},
+        decorators=decorators,
+        parameters=parameters,
+    )
 
     return bulk_to_slabs_subflow(
         atoms,
-        slab_relax_job,
-        static_job=slab_static_job if run_static else None,
+        relax_job_,
+        static_job=static_job_ if run_static else None,
         make_slabs_kwargs=make_slabs_kwargs,
     )
