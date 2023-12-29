@@ -1,5 +1,3 @@
-from functools import partial
-
 import numpy as np
 import pytest
 from ase.build import bulk, molecule
@@ -96,7 +94,7 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
     outputs = bulk_to_slabs_flow(
         atoms,
         run_static=False,
-        custom_relax_job=partial(relax_job, opt_params={"fmax": 1.0}, asap_cutoff=True),
+        job_params={"relax_job": {"opt_params": {"fmax": 1.0}, "asap_cutoff": True}},
     )
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
@@ -104,3 +102,36 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
     assert outputs[2]["nsites"] == 80
     assert outputs[3]["nsites"] == 64
     assert [output["parameters"]["asap_cutoff"] is True for output in outputs]
+
+
+def test_customizer():
+    atoms = bulk("Cu")
+    results = bulk_to_slabs_flow(
+        atoms, job_params={"static_job": {"asap_cutoff": True}}
+    )
+    for result in results:
+        assert result["parameters"]["asap_cutoff"] is True
+
+
+def test_customizer_v2():
+    atoms = bulk("Cu")
+    results = bulk_to_slabs_flow(atoms, job_params={"relax_job": {"asap_cutoff": True}})
+    for result in results:
+        assert result["parameters"]["asap_cutoff"] is False
+
+
+def test_all_customizers():
+    atoms = bulk("Cu")
+    results = bulk_to_slabs_flow(atoms, job_params={"all": {"asap_cutoff": True}})
+    for result in results:
+        assert result["parameters"]["asap_cutoff"] is True
+
+
+def test_all_customizers_v2():
+    atoms = bulk("Cu")
+    results = bulk_to_slabs_flow(
+        atoms,
+        job_params={"all": {"asap_cutoff": True}, "static_job": {"asap_cutoff": False}},
+    )
+    for result in results:
+        assert result["parameters"]["asap_cutoff"] is False
