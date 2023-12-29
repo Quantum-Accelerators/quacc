@@ -1,5 +1,3 @@
-from functools import partial
-
 import numpy as np
 import pytest
 from ase.build import bulk, molecule

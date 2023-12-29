@@ -1,5 +1,3 @@
-from functools import partial
-
 import pytest
 from ase.build import bulk
 
@@ -27,9 +25,6 @@ def test_dask_functools(tmp_path, monkeypatch):
     delayed = bulk_to_slabs_flow(
         atoms,
         parameters={"slab_relax_job": {"opt_params": {"fmax": 0.1}}},
-        custom_relax_job=delayed_(
-            partial(relax_job.__wrapped__, opt_params={"fmax": 0.1})
-        ),
         run_static=False,
     )
     result = client.gather(client.compute(delayed))
