@@ -18,7 +18,6 @@ client = default_client()
 
 
 def test_dask_functools(tmp_path, monkeypatch):
-    from dask import delayed as delayed_
 
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
