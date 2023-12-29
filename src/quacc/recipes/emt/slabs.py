@@ -20,6 +20,7 @@ if TYPE_CHECKING:
 @flow
 def bulk_to_slabs_flow(
     atoms: Atoms,
+    run_static: bool = True,
     make_slabs_kwargs: dict[str, Any] | None = None,
     decorators: dict[str, Callable | None] | None = None,
     parameters: dict[str, Any] | None = None,
@@ -31,12 +32,14 @@ def bulk_to_slabs_flow(
 
     2. Slab relaxations
 
-    3. Optional slab statics
+    3. Slab statics (optional)
 
     Parameters
     ----------
     atoms
         Atoms object
+    run_static
+        Whether to run static calculations.
     make_slabs_kwargs
         Additional keyword arguments to pass to [quacc.atoms.slabs.make_slabs_from_bulk][]
     decorators
@@ -65,6 +68,6 @@ def bulk_to_slabs_flow(
     return bulk_to_slabs_subflow_(
         atoms,
         slab_relax_job_,
-        static_job=slab_static_job_,
+        static_job=slab_static_job_ if run_static else None,
         make_slabs_kwargs=make_slabs_kwargs,
     )
