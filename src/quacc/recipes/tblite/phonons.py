@@ -62,7 +62,7 @@ def phonon_flow(
     """
     static_job_ = customize_funcs(
         {"static_job": static_job}, decorators=decorators, parameters=parameters
-    )
+    )[0]
 
     return common_phonon_flow(
         atoms,
