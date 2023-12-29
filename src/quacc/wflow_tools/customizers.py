@@ -85,8 +85,8 @@ def update_parameters(func: Callable, params: dict[str, Any]) -> Callable:
 
 def customize_funcs(
     funcs: dict[str, Callable],
-    decorators: dict[str, Callable | None] | None = None,
     parameters: dict[str, Any] | None = None,
+    decorators: dict[str, Callable | None] | None = None,
 ) -> tuple[Callable]:
     """
     Customize a set of functions with decorators and common parameters.
@@ -96,22 +96,22 @@ def customize_funcs(
     funcs
         The functions to customize, as a dictionary where the keys are unique
         identifiers for each function and the values are the functions themselves.
-    decorators
-        Custom decorators to apply to each function. The keys of this dictionary correspond
-        to the keys of `funcs`. If the key `"all"` is present, it will be applied to all
-        functions. If a value is `None`, no decorator will be applied that function.
     parameters
         Custom parameters to apply to each function. The keys of this dictionary correspond
         to the keys of `funcs`. If the key `"all"` is present, it will be applied to all
         functions. If the value is `None`, no custom parameters will be applied to that function.
+    decorators
+        Custom decorators to apply to each function. The keys of this dictionary correspond
+        to the keys of `funcs`. If the key `"all"` is present, it will be applied to all
+        functions. If a value is `None`, no decorator will be applied that function.
 
     Returns
     -------
     tuple[Callable]
         The customized functions, returned in the same order as provided in `funcs`.
     """
-    decorators = decorators or {}
     parameters = parameters or {}
+    decorators = decorators or {}
     updated_funcs = []
 
     if bad_decorator_keys := [k for k in decorators if k not in funcs and k != "all"]:
