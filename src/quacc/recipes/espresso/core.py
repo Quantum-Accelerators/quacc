@@ -75,20 +75,26 @@ def static_job(
 
 @job
 def post_processing_job(
-    prev_outdir: str | Path,
+    prev_dir: str | Path,
     preset: str | None = None,
     parallel_info: dict[str] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
-    Function to carry out a basic pp.x calculation.
+    Function to carry out a basic pp.x calculation (post-processing).
+    Fore more details please see 
+    (https://www.quantum-espresso.org/Doc/INPUT_PP.html)
 
     Parameters
     ----------
-    prev_outdir
+    prev_dir
         Outdir of the previously ran pw.x calculation. This is used to copy
         the entire tree structure of that directory to the working directory
         of this calculation.
+    preset
+        The name of a YAML file containing a list of parameters to use as
+        a "preset" for the calculator. quacc will automatically look in the
+        `ESPRESSO_PRESET_DIR` (default: quacc/calculators/espresso/presets).
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -98,7 +104,7 @@ def post_processing_job(
         - input_data: dict
         - additional_fields: list[str] | str
 
-        See the docstring of [ase.io.espresso.write_fortran_namelist][] for more information.
+        See the docstring of ase.io.espresso.write_fortran_namelist for more information.
 
     Returns
     -------
@@ -112,7 +118,7 @@ def post_processing_job(
             "plot": {
                 "iflag": 3,
                 "output_format": 6,
-                "fileout": "pseudo-charge-density.cube",
+                "fileout": "pseudo_charge_density.cube",
             },
         }
     }
@@ -124,5 +130,5 @@ def post_processing_job(
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "pp.x post-processing"},
-        copy_files=prev_outdir,
+        copy_files=prev_dir,
     )

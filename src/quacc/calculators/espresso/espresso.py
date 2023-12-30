@@ -86,26 +86,30 @@ class EspressoTemplate(EspressoTemplate_):
         directory = Path(directory)
         self._outdir_handler(parameters, directory)
 
+        fd = Path.open(directory / self.inputname, "w")
+
         write_functions = {
-            "pw": partial(
-                write,
+            "pw": write(
                 filename=directory / self.inputname,
                 images=atoms,
                 format="espresso-in",
                 pseudo_dir=str(profile.pseudo_path),
+                properties=properties,
+                **parameters
             ),
-            "ph": partial(
-                self._safe_io, write_espresso_ph, directory / self.inputname, "w"
+            "ph": write_espresso_ph(
+                fd = fd,
+                properties=properties,
+                **parameters
             ),
         }
 
-        default_write = partial(write_fortran_namelist, binary=self.binary)
-
-        # We have to unpack parameters now :/, safe_io will use name mangling
         write_functions.get(
             self.binary,
-            partial(self._safe_io, default_write, directory / self.inputname, "w"),
-        )(properties=properties, **parameters)
+            write_fortran_namelist(fd, binary=self.binary, properties=properties, **parameters),
+        )()
+
+        fd.close()
 
     def read_results(self, directory: Path | str) -> dict[str, Any]:
         """
@@ -125,47 +129,26 @@ class EspressoTemplate(EspressoTemplate_):
             The results dictionnary
         """
 
+        fd = Path.open(directory / self.outputname, "r")
         read_functions = {
-            "pw": partial(
-                read,
+            "pw": read(
                 filename=directory / self.outputname,
                 format="espresso-out",
                 full_output=True,
             ),
-            "ph": partial(
-                self._safe_io, read_espresso_ph, directory / self.outputname, "r"
+            "ph": read_espresso_ph(
+                fd
             ),
         }
 
         results = read_functions.get(self.binary, lambda: {})()
 
+        fd.close()
+        
         if "energy" not in results:
             results["energy"] = None
 
         return results
-
-    @staticmethod
-    def _safe_io(__func: Callable, __path: Path, __mode: str, **kwargs) -> dict | None:
-        """
-        Wrapper which aim to 'safely' perform IO operation
-
-        Parameters
-        ----------
-        __func
-            The function to call
-        __path
-            The path to the file
-        __mode
-            The mode to open the file in
-
-        Returns
-        -------
-        data | None
-            if reading, data data if writing None
-        """
-
-        with Path.open(__path, __mode) as __file:
-            return __func(__file, **kwargs)
 
     def _outdir_handler(
         self, parameters: dict[str, Any], directory: Path

@@ -80,6 +80,8 @@ def test_static_job_v2(tmp_path, monkeypatch):
 
     post_processing_job(prev_outdir=results["dir_name"])
 
+    assert Path("pseudo_charge_density.cube").exists()
+
 
 def test_static_job_outdir(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)

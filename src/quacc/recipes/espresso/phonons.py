@@ -42,7 +42,7 @@ def phonon_job(
         - qpts: list[list[float]] | list[tuple[float]] | list[float]
         - nat_todo: list[int]
 
-        See the docstring of [ase.io.espresso.write_espresso_ph][] for more information.
+        See the docstring of ase.io.espresso.write_espresso_ph for more information.
 
     Returns
     -------
