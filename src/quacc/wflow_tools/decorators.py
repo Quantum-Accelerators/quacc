@@ -134,8 +134,8 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
         from redun import task as redun_task
 
         return redun_task(_func, **kwargs)
-
-    return _func
+    else:
+        return _func
 
 
 def flow(_func: Callable | None = None, **kwargs) -> Flow:
@@ -259,8 +259,8 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
         from redun import task as redun_task
 
         return redun_task(_func, **kwargs)
-
-    return _func
+    else:
+        return _func
 
 
 def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
@@ -479,5 +479,5 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
         return redun_task(_func, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "dask":
         return _inner
-
-    return _func
+    else:
+        return _func
