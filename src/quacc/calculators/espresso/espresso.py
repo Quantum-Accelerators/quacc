@@ -99,11 +99,13 @@ class EspressoTemplate(EspressoTemplate_):
             ),
         }
 
-        default = partial(
-            self._safe_io, write_fortran_namelist, directory / self.inputname, "w"
-        )
+        default_write = partial(write_fortran_namelist, binary=self.binary)
+
         # We have to unpack parameters now :/, safe_io will use name mangling
-        write_functions.get(self.binary, default)(properties=properties, **parameters)
+        write_functions.get(
+            self.binary,
+            partial(self._safe_io, default_write, directory / self.inputname, "w"),
+        )(properties=properties, **parameters)
 
     def read_results(self, directory: Path | str) -> dict[str, Any]:
         """
