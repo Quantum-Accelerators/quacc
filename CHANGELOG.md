@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.1]
+
+### Added
+
+- `quacc.wflow_tools.customizers.strip_decorator` and `quacc.wflow_tools.customizers.redecorate` are imported in the base `__init__.py` for easy user access
+
+### Changed
+
+- The `quacc.wflow_tools.customizers.strip_decorator` function is recommended instead of calling `.__wrapped__`
+
 ## [0.5.0]
 
 ### Added
