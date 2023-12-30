@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from quacc import Job, flow, job, subflow
+from quacc import Job, flow, job, strip_decorator, subflow
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.calculators.espresso.utils import parse_ph_patterns
 from quacc.recipes.espresso._base import base_fn
@@ -98,7 +98,7 @@ def _phonon_subflow(
     # of them
 
     # Run a test phonon job
-    ph_test_job_results = ph_job.__wrapped__(pw_job_results_dir, test_run=True)
+    ph_test_job_results = strip_decorator(ph_job)(pw_job_results_dir, test_run=True)
     input_data = ph_test_job_results["parameters"]["input_data"]
     ph_patterns = parse_ph_patterns(ph_test_job_results["dir_name"])
 
