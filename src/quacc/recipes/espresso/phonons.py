@@ -24,7 +24,7 @@ def phonon_job(
 
     Parameters
     ----------
-    prev_outdir
+    prev_dir
         Outdir of the previously ran pw.x calculation. This is used to copy 
         the entire tree structure of that directory to the working directory
         of this calculation.
