@@ -78,9 +78,9 @@ def test_static_job_v2(tmp_path, monkeypatch):
     assert new_input_data["electrons"]["conv_thr"] == 1.0e-6
     assert new_input_data["control"]["calculation"] == "scf"
 
-    post_processing_job(prev_dir=results["dir_name"])
+    pp_results = post_processing_job(prev_dir=results["dir_name"])
 
-    assert Path("pseudo_charge_density.cube").exists()
+    assert Path(pp_results["dir_name"], "pseudo_charge_density.cube.gz").exists()
 
 
 def test_static_job_outdir(tmp_path, monkeypatch):
