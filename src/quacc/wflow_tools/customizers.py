@@ -24,18 +24,7 @@ def strip_decorator(func: Callable) -> Callable:
     """
     from quacc import SETTINGS
 
-    if SETTINGS.WORKFLOW_ENGINE == "parsl":
-        from parsl.app.python import PythonApp
-
-        if isinstance(func, PythonApp):
-            return func.func
-    elif SETTINGS.WORKFLOW_ENGINE == "redun":
-        from redun import Task
-
-        if isinstance(func, Task):
-            return func.func
-
-    elif SETTINGS.WORKFLOW_ENGINE == "covalent":
+    if SETTINGS.WORKFLOW_ENGINE == "covalent":
         from covalent._workflow.lattice import Lattice
 
         if hasattr(func, "electron_object"):
@@ -43,14 +32,27 @@ def strip_decorator(func: Callable) -> Callable:
 
         if isinstance(func, Lattice):
             func = func.workflow_function.get_deserialized()
+
     elif SETTINGS.WORKFLOW_ENGINE == "dask":
         from dask.delayed import Delayed
 
         if isinstance(func, Delayed):
-            return func.__wrapped__
+            func = func.__wrapped__
     elif SETTINGS.WORKFLOW_ENGINE == "jobflow":
         if hasattr(func, "original"):
-            return func.original
+            func = func.original
+
+    elif SETTINGS.WORKFLOW_ENGINE == "parsl":
+        from parsl.app.python import PythonApp
+
+        if isinstance(func, PythonApp):
+            func = func.func
+    elif SETTINGS.WORKFLOW_ENGINE == "redun":
+        from redun import Task
+
+        if isinstance(func, Task):
+            func = func.func
+
     return func
 
 
@@ -93,13 +95,11 @@ def update_parameters(func: Callable, params: dict[str, Any]) -> Callable:
     """
     from quacc import SETTINGS, job
 
-    if SETTINGS.WORKFLOW_ENGINE == "dask":
-        func = strip_decorator(func)
-        updated_func = job(partial(func, **params))
-    else:
-        updated_func = partial(func, **params)
+    if SETTINGS.WORKFLOW_ENGINE != "dask":
+        return partial(func, **params)
 
-    return updated_func
+    func = strip_decorator(func)
+    return job(partial(func, **params))
 
 
 def customize_funcs(
@@ -146,11 +146,11 @@ def customize_funcs(
         raise ValueError("Invalid function name: 'all' is a reserved name.")
     if bad_decorator_keys := [k for k in decorators if k not in names and k != "all"]:
         raise ValueError(
-            f"Invalid decorator keys: {bad_decorator_keys}. " f"Valid keys are: {names}"
+            f"Invalid decorator keys: {bad_decorator_keys}. Valid keys are: {names}"
         )
     if bad_parameter_keys := [k for k in parameters if k not in names and k != "all"]:
         raise ValueError(
-            f"Invalid parameter keys: {bad_parameter_keys}. " f"Valid keys are: {names}"
+            f"Invalid parameter keys: {bad_parameter_keys}. Valid keys are: {names}"
         )
 
     for func_name, func in funcs_dict.items():
@@ -165,7 +165,4 @@ def customize_funcs(
             func_ = redecorate(func_, decorators[func_name])
         updated_funcs.append(func_)
 
-    if len(updated_funcs) == 1:
-        return updated_funcs[0]
-
-    return tuple(updated_funcs)
+    return updated_funcs[0] if len(updated_funcs) == 1 else tuple(updated_funcs)
