@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -18,7 +17,7 @@ from quacc.utils.dicts import recursive_dict_merge
 from quacc.utils.files import load_yaml_calc
 
 if TYPE_CHECKING:
-    from typing import Any, Callable
+    from typing import Any
 
 
 class EspressoTemplate(EspressoTemplate_):
@@ -95,16 +94,14 @@ class EspressoTemplate(EspressoTemplate_):
                 format="espresso-in",
                 pseudo_dir=str(profile.pseudo_path),
                 properties=properties,
-                **parameters
+                **parameters,
             )
         elif self.binary == "ph":
-            write_espresso_ph(
-                fd = fd,
-                properties=properties,
-                **parameters
-            )
+            write_espresso_ph(fd=fd, properties=properties, **parameters)
         else:
-            write_fortran_namelist(fd, binary=self.binary, properties=properties, **parameters),
+            write_fortran_namelist(
+                fd, binary=self.binary, properties=properties, **parameters
+            )
 
         fd.close()
 
@@ -135,9 +132,7 @@ class EspressoTemplate(EspressoTemplate_):
                 full_output=True,
             )
         elif self.binary == "ph":
-            results = read_espresso_ph(
-                fd
-            )
+            results = read_espresso_ph(fd)
         else:
             results = {}
 
