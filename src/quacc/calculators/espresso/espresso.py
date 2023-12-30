@@ -144,9 +144,8 @@ class EspressoTemplate(EspressoTemplate_):
 
         return results
 
-    def _safe_io(
-        self, __func: Callable, __path: Path, __mode: str, **kwargs
-    ) -> dict | None:
+    @staticmethod
+    def _safe_io(__func: Callable, __path: Path, __mode: str, **kwargs) -> dict | None:
         """
         Wrapper which aim to 'safely' perform IO operation
 

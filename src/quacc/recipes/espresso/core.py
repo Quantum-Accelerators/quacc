@@ -7,8 +7,6 @@ from quacc import job
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.recipes.espresso._base import base_fn
 
-from ase.io.espresso import Namelist
-
 if TYPE_CHECKING:
     from pathlib import Path
 
@@ -74,6 +72,7 @@ def static_job(
         copy_files=copy_files,
     )
 
+
 @job
 def post_processing_job(
     prev_outdir: str | Path,
@@ -87,7 +86,7 @@ def post_processing_job(
     Parameters
     ----------
     prev_outdir
-        Outdir of the previously ran pw.x calculation. This is used to copy 
+        Outdir of the previously ran pw.x calculation. This is used to copy
         the entire tree structure of that directory to the working directory
         of this calculation.
     parallel_info
@@ -109,14 +108,12 @@ def post_processing_job(
 
     calc_defaults = {
         "input_data": {
-            "inputpp": {
-                "plot_num": 0,
-            },
+            "inputpp": {"plot_num": 0},
             "plot": {
                 "iflag": 3,
                 "output_format": 6,
-                "fileout": "pseudo-charge-density.cube"
-            }
+                "fileout": "pseudo-charge-density.cube",
+            },
         }
     }
 
@@ -129,4 +126,3 @@ def post_processing_job(
         additional_fields={"name": "pp.x post-processing"},
         copy_files=prev_outdir,
     )
-
