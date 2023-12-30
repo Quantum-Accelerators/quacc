@@ -34,7 +34,6 @@ def strip_decorator(func: Callable) -> Callable:
             func = func.workflow_function.get_deserialized()
 
     elif SETTINGS.WORKFLOW_ENGINE == "dask":
-
         if hasattr(func, "__wrapped__"):
             func = func.__wrapped__
 
