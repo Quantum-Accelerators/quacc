@@ -1,12 +1,13 @@
 import pytest
 
-from quacc import SETTINGS, flow, job, subflow
+from quacc import SETTINGS, flow, job, strip_decorator, subflow
 
 dask = pytest.importorskip("dask")
 pytestmark = pytest.mark.skipif(
     SETTINGS.WORKFLOW_ENGINE != "dask",
     reason="This test requires the Dask workflow engine",
 )
+from dask.delayed import Delayed
 from dask.distributed import default_client
 
 client = default_client()
@@ -80,3 +81,26 @@ def test_dask_decorators_args(tmp_path, monkeypatch):
     assert client.compute(mult(1, 2)).result() == 2
     assert client.compute(workflow(1, 2, 3)).result() == 9
     assert dask.compute(*client.gather(dynamic_workflow(1, 2, 3))) == (6, 6, 6)
+
+
+def test_strip_decorators():
+    @job
+    def add(a, b):
+        return a + b
+
+    @flow
+    def add2(a, b):
+        return a + b
+
+    @subflow
+    def add3(a, b):
+        return a + b
+
+    stripped_add = strip_decorator(add)
+    assert stripped_add(1, 2) == 3
+
+    stripped_add2 = strip_decorator(add2)
+    assert stripped_add2(1, 2) == 3
+
+    stripped_add3 = strip_decorator(add3)
+    assert stripped_add3(1, 2) == 3

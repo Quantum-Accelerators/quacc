@@ -24,9 +24,6 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     All `#!Python @job`-decorated functions are transformed into their corresponding
     decorator.
 
-    The wrapped function can also be stripped of its decorator by calling the
-    `#!Python .__wrapped__` attribute.
-
     ```python
     from quacc import job
 
@@ -141,10 +138,6 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
         decorated = delayed(_func, **kwargs)
     else:
         decorated = _func
-
-    if not hasattr(decorated, "__wrapped__"):
-        decorated.__wrapped__ = _func
-
     return decorated
 
 
@@ -274,9 +267,6 @@ def flow(
         decorated = redun_task(_func, **kwargs)
     else:
         decorated = _func
-
-    if wflow_engine != "covalent" and not hasattr(decorated, "__wrapped__"):
-        decorated.__wrapped__ = _func
 
     return decorated
 
@@ -501,8 +491,5 @@ def subflow(
         return _inner
     else:
         decorated = _func
-
-    if wflow_engine != "covalent" and not hasattr(decorated, "__wrapped__"):
-        decorated.__wrapped__ = _func
 
     return decorated

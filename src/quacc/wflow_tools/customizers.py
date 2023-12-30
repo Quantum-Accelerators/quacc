@@ -4,8 +4,6 @@ from __future__ import annotations
 from functools import partial
 from typing import TYPE_CHECKING
 
-from quacc import SETTINGS, job
-
 if TYPE_CHECKING:
     from typing import Any, Callable
 
@@ -24,15 +22,37 @@ def strip_decorator(func: Callable) -> Callable:
     Callable
         The function with all decorators removed.
     """
+    from quacc import SETTINGS
 
-    if hasattr(func, "__wrapped__"):
-        func = func.__wrapped__
+    if SETTINGS.WORKFLOW_ENGINE == "parsl":
+        from parsl import join_app, python_app
 
-    if SETTINGS.WORKFLOW_ENGINE == "covalent":
+        if isinstance(func, python_app) or isinstance(func, join_app):
+            return func.func
+    elif SETTINGS.WORKFLOW_ENGINE == "redun":
+        from redun import Task
+
+        if isinstance(func, Task):
+            return func.func
+
+    elif SETTINGS.WORKFLOW_ENGINE == "covalent":
         from covalent._workflow.lattice import Lattice
+
+        if hasattr(func, "electron_object"):
+            func = func.electron_object.function
 
         if isinstance(func, Lattice):
             func = func.workflow_function.get_deserialized()
+    elif SETTINGS.WORKFLOW_ENGINE == "dask":
+        from dask.delayed import Delayed
+
+        if isinstance(func, Delayed):
+            return func.__wrapped__
+    elif SETTINGS.WORKFLOW_ENGINE == "jobflow":
+        from jobflow import JobflowJob
+
+        if isinstance(func, JobflowJob):
+            return func.original
     return func
 
 
@@ -73,6 +93,8 @@ def update_parameters(func: Callable, params: dict[str, Any]) -> Callable:
     Callable
         The updated function.
     """
+    from quacc import SETTINGS, job
+
     if SETTINGS.WORKFLOW_ENGINE == "dask":
         func = strip_decorator(func)
         updated_func = job(partial(func, **params))
