@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 @job
 def phonon_job(
-    prev_outdir: str | Path,
+    prev_dir: str | Path,
     preset: str | None = "basic",
     parallel_info: dict[str] | None = None,
     **calc_kwargs,
@@ -69,5 +69,5 @@ def phonon_job(
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "ph.x Phonon"},
-        copy_files=prev_outdir,
+        copy_files=prev_dir,
     )
