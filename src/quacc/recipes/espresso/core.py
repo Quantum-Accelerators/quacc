@@ -98,7 +98,7 @@ def post_processing_job(
         - input_data: dict
         - additional_fields: list[str] | str
 
-        See the docstring of [ase.io.write_fortran_namelist][] for more information.
+        See the docstring of [ase.io.espresso.write_fortran_namelist][] for more information.
 
     Returns
     -------
