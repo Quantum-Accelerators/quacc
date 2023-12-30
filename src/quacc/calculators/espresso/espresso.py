@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -17,7 +18,7 @@ from quacc.utils.dicts import recursive_dict_merge
 from quacc.utils.files import load_yaml_calc
 
 if TYPE_CHECKING:
-    from typing import Any
+    from typing import Any, Callable
 
 
 class EspressoTemplate(EspressoTemplate_):
@@ -81,21 +82,28 @@ class EspressoTemplate(EspressoTemplate_):
         -------
         None
         """
+
         directory = Path(directory)
         self._outdir_handler(parameters, directory)
 
-        write_functions = {"pw": write, "ph": write_espresso_ph}
-
-        if self.binary in write_functions:
-            write_functions[self.binary](
-                fd=directory / self.inputname,
-                atoms=atoms,
-                properties=properties,
+        write_functions = {
+            "pw": partial(
+                write,
+                filename=directory / self.inputname,
+                images=atoms,
+                format="espresso-in",
                 pseudo_dir=str(profile.pseudo_path),
-                **parameters,
-            )
-        else:
-            write_fortran_namelist(fd=directory / self.inputname, **parameters)
+            ),
+            "ph": partial(
+                self._safe_io, write_espresso_ph, directory / self.inputname, "w"
+            ),
+        }
+
+        default = partial(
+            self._safe_io, write_fortran_namelist, directory / self.inputname, "w"
+        )
+        # We have to unpack parameters now :/, safe_io will use name mangling
+        write_functions.get(self.binary, default)(properties=properties, **parameters)
 
     def read_results(self, directory: Path | str) -> dict[str, Any]:
         """
@@ -115,15 +123,48 @@ class EspressoTemplate(EspressoTemplate_):
             The results dictionnary
         """
 
-        read_functions = {"pw": read, "ph": read_espresso_ph}
+        read_functions = {
+            "pw": partial(
+                read,
+                filename=directory / self.outputname,
+                format="espresso-out",
+                full_output=True,
+            ),
+            "ph": partial(
+                self._safe_io, read_espresso_ph, directory / self.outputname, "r"
+            ),
+        }
 
-        if self.binary in read_functions:
-            results = read_functions[self.binary](Path(directory) / self.outputname)
-        else:
-            results = {}
+        results = read_functions.get(self.binary, lambda: {})()
+
         if "energy" not in results:
             results["energy"] = None
+
         return results
+
+    def _safe_io(
+        self, __func: Callable, __path: Path, __mode: str, **kwargs
+    ) -> dict | None:
+        """
+        Wrapper which aim to 'safely' perform IO operation
+
+        Parameters
+        ----------
+        __func
+            The function to call
+        __path
+            The path to the file
+        __mode
+            The mode to open the file in
+
+        Returns
+        -------
+        data | None
+            if reading, data data if writing None
+        """
+
+        with Path.open(__path, __mode) as __file:
+            return __func(__file, **kwargs)
 
     def _outdir_handler(
         self, parameters: dict[str, Any], directory: Path

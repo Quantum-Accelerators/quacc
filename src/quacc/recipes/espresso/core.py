@@ -7,6 +7,8 @@ from quacc import job
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.recipes.espresso._base import base_fn
 
+from ase.io.espresso import Namelist
+
 if TYPE_CHECKING:
     from pathlib import Path
 
@@ -71,3 +73,60 @@ def static_job(
         additional_fields={"name": "pw.x Static"},
         copy_files=copy_files,
     )
+
+@job
+def post_processing_job(
+    prev_outdir: str | Path,
+    preset: str | None = None,
+    parallel_info: dict[str] | None = None,
+    **calc_kwargs,
+) -> RunSchema:
+    """
+    Function to carry out a basic pp.x calculation.
+
+    Parameters
+    ----------
+    prev_outdir
+        Outdir of the previously ran pw.x calculation. This is used to copy 
+        the entire tree structure of that directory to the working directory
+        of this calculation.
+    parallel_info
+        Dictionary containing information about the parallelization of the
+        calculation. See the ASE documentation for more information.
+    **calc_kwargs
+        calc_kwargs dictionary possibly containing the following keys:
+
+        - input_data: dict
+        - additional_fields: list[str] | str
+
+        See the docstring of [ase.io.write_fortran_namelist][] for more information.
+
+    Returns
+    -------
+    RunSchema
+        Dictionary of results from [quacc.schemas.ase.summarize_run][]
+    """
+
+    calc_defaults = {
+        "input_data": {
+            "inputpp": {
+                "plot_num": 0,
+            },
+            "plot": {
+                "iflag": 3,
+                "output_format": 6,
+                "fileout": "pseudo-charge-density.cube"
+            }
+        }
+    }
+
+    return base_fn(
+        preset=preset,
+        template=EspressoTemplate("pp"),
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        parallel_info=parallel_info,
+        additional_fields={"name": "pp.x post-processing"},
+        copy_files=prev_outdir,
+    )
+
