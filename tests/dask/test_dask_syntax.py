@@ -7,7 +7,6 @@ pytestmark = pytest.mark.skipif(
     SETTINGS.WORKFLOW_ENGINE != "dask",
     reason="This test requires the Dask workflow engine",
 )
-from dask.delayed import Delayed
 from dask.distributed import default_client
 
 client = default_client()

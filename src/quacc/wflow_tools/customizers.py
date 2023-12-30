@@ -27,7 +27,7 @@ def strip_decorator(func: Callable) -> Callable:
     if SETTINGS.WORKFLOW_ENGINE == "parsl":
         from parsl import join_app, python_app
 
-        if isinstance(func, python_app) or isinstance(func, join_app):
+        if isinstance(func, (python_app, join_app)):
             return func.func
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
         from redun import Task
