@@ -85,8 +85,6 @@ class EspressoTemplate(EspressoTemplate_):
         directory = Path(directory)
         self._outdir_handler(parameters, directory)
 
-        fd = Path.open(directory / self.inputname, "w")
-
         if self.binary == "pw":
             write(
                 filename=directory / self.inputname,
@@ -97,13 +95,13 @@ class EspressoTemplate(EspressoTemplate_):
                 **parameters,
             )
         elif self.binary == "ph":
-            write_espresso_ph(fd=fd, properties=properties, **parameters)
+            with Path.open(directory / self.inputname, "w") as fd:
+                write_espresso_ph(fd=fd, properties=properties, **parameters)
         else:
-            write_fortran_namelist(
-                fd, binary=self.binary, properties=properties, **parameters
-            )
-
-        fd.close()
+            with Path.open(directory / self.inputname, "w") as fd:
+                write_fortran_namelist(
+                    fd, binary=self.binary, properties=properties, **parameters
+                )
 
     def read_results(self, directory: Path | str) -> dict[str, Any]:
         """
@@ -123,8 +121,6 @@ class EspressoTemplate(EspressoTemplate_):
             The results dictionnary
         """
 
-        fd = Path.open(directory / self.outputname, "r")
-
         if self.binary == "pw":
             results = read(
                 filename=directory / self.outputname,
@@ -132,11 +128,10 @@ class EspressoTemplate(EspressoTemplate_):
                 full_output=True,
             )
         elif self.binary == "ph":
-            results = read_espresso_ph(fd)
+            with Path.open(directory / self.outputname, "r") as fd:
+                results = read_espresso_ph(fd)
         else:
             results = {}
-
-        fd.close()
 
         if "energy" not in results:
             results["energy"] = None
