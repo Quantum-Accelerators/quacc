@@ -459,8 +459,8 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
 
             decorated = delayed(_func, **decorator_kwargs)
             return decorated(*f_args, **f_kwargs).compute()
-
-        raise NotImplementedError("Only Dask is supported for this inner function.")
+        else:
+            raise NotImplementedError("Only Dask is supported for this inner function.")
 
     if _func is None:
         return partial(subflow, **kwargs)
