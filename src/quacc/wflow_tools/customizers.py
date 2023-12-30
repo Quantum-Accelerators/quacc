@@ -30,13 +30,13 @@ def strip_decorator(func: Callable) -> Callable:
         if hasattr(func, "electron_object"):
             func = func.electron_object.function
 
-        if isinstance(func, Lattice):
+        if hasattr(func, "workflow_function"):
             func = func.workflow_function.get_deserialized()
 
     elif SETTINGS.WORKFLOW_ENGINE == "dask":
         from dask.delayed import Delayed
 
-        if isinstance(func, Delayed):
+        if hasattr(func, "__wrapped__"):
             func = func.__wrapped__
     elif SETTINGS.WORKFLOW_ENGINE == "jobflow":
         if hasattr(func, "original"):
@@ -45,12 +45,12 @@ def strip_decorator(func: Callable) -> Callable:
     elif SETTINGS.WORKFLOW_ENGINE == "parsl":
         from parsl.app.python import PythonApp
 
-        if isinstance(func, PythonApp):
+        if hasattr(func, "func"):
             func = func.func
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
         from redun import Task
 
-        if isinstance(func, Task):
+        if hasattr(func, "func"):
             func = func.func
 
     return func
