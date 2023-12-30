@@ -8,9 +8,10 @@ from ase import Atoms
 from ase.calculators.espresso import Espresso as Espresso_
 from ase.calculators.espresso import EspressoProfile
 from ase.calculators.espresso import EspressoTemplate as EspressoTemplate_
+from ase.io import read, write
+from ase.io.espresso import read_espresso_ph, write_espresso_ph, write_fortran_namelist
 
 from quacc import SETTINGS
-from quacc.calculators.espresso.io import read, write
 from quacc.calculators.espresso.utils import get_pseudopotential_info
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.utils.files import load_yaml_calc
@@ -83,14 +84,18 @@ class EspressoTemplate(EspressoTemplate_):
         directory = Path(directory)
         self._outdir_handler(parameters, directory)
 
-        write(
-            directory / self.inputname,
-            atoms,
-            binary=self.binary,
-            properties=properties,
-            pseudo_dir=str(profile.pseudo_path),
-            **parameters,
-        )
+        write_functions = {"pw": write, "ph": write_espresso_ph}
+
+        if self.binary in write_functions:
+            write_functions[self.binary](
+                fd=directory / self.inputname,
+                atoms=atoms,
+                properties=properties,
+                pseudo_dir=str(profile.pseudo_path),
+                **parameters,
+            )
+        else:
+            write_fortran_namelist(fd=directory / self.inputname, **parameters)
 
     def read_results(self, directory: Path | str) -> dict[str, Any]:
         """
@@ -110,7 +115,12 @@ class EspressoTemplate(EspressoTemplate_):
             The results dictionnary
         """
 
-        results = read(Path(directory) / self.outputname, binary=self.binary)
+        read_functions = {"pw": read, "ph": read_espresso_ph}
+
+        if self.binary in read_functions:
+            results = read_functions[self.binary](Path(directory) / self.outputname)
+        else:
+            results = {}
         if "energy" not in results:
             results["energy"] = None
         return results
