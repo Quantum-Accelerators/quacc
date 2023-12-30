@@ -69,30 +69,30 @@ graph LR
     atoms = bulk("Cu")
 
     # Define the workflow
-    workflow = flow(relax_job)  # (1)!
+    @flow  # (1)!
+    def workflow(atoms):
+        return relax_job(atoms)  # (2)!
 
     # Dispatch the workflow to the Covalent server
     # with the bulk Cu Atoms object as the input
-    dispatch_id = ct.dispatch(workflow)(atoms)  # (2)!
+    dispatch_id = ct.dispatch(workflow)(atoms)  # (3)!
 
     # Fetch the result from the server
-    result = ct.get_result(dispatch_id, wait=True)  # (3)!
+    result = ct.get_result(dispatch_id, wait=True)  # (4)!
     print(result)
     ```
 
-    1. This is shorthand for the following:
+    1. This can be written more compactly as:
 
         ```python
-        @flow
-        def workflow(atoms):
-            return relax_job(atoms)
+        workflow = flow(relax_job)
         ```
 
-        Also note that the `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
+    2. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
 
-    2. This will dispatch the workflow to the Covalent server.
+    3. This will dispatch the workflow to the Covalent server.
 
-    3. The `ct.get_result` function is used to fetch the workflow status and results from the server. You don't need to set `wait=True` in practice. Once you dispatch the workflow, it will begin running (if the resources are available).
+    4. The `ct.get_result` function is used to fetch the workflow status and results from the server. You don't need to set `wait=True` in practice. Once you dispatch the workflow, it will begin running (if the resources are available).
 
 === "Dask"
 
@@ -219,20 +219,6 @@ graph LR
     print(future.result())
     ```
 
-    !!! Tip "Selectively Modifying Decorators in a Pre-Made Flow"
-
-        If you want to modify the decorators of select jobs in a pre-made workflow, such as to modify the executor of a given function, you can use the `job_decorators` keyword argument:
-
-        ```python
-        bulk_to_slabs_flow(atoms, job_decorators={"static_job": job(executors=["all"])})
-        ```
-
-        As a shorthand, all of the decorators can be modified at once using the "all" keyword:
-
-        ```python
-        bulk_to_slabs_flow(atoms, job_decorators={"all": job(executors=["all"])})
-        ```
-
 === "Covalent"
 
     ```python
@@ -252,32 +238,6 @@ graph LR
     ```
 
     1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator.
-
-    !!! Tip "Selectively Modifying Decorators in a Pre-Made Flow"
-
-        If you want to modify the decorators of select jobs in a pre-made workflow, such as to modify the executor of a given function, you can use the `job_decorators` keyword argument:
-
-        ```python
-        ct.dispatch(bulk_to_slabs_flow)(atoms, job_decorators={"static_job": job(executor="local")})
-        ```
-
-        As a shorthand, all of the decorators can be modified at once using the "all" keyword:
-
-        ```python
-        ct.dispatch(bulk_to_slabs_flow)(atoms, job_decorators={"all": job(executor="local")})  # (1)!
-        ```
-
-        1. Alternatively, you can simply modify the `#!Python @flow` decorator itself:
-
-            ```python
-            from quacc import flow
-
-            @flow(executor="local")
-            def bulk_to_slabs_flow_(*args, **kwargs):
-                return bulk_to_slabs_flow(*args, **kwargs)
-
-            ct.dispatch(bulk_to_slabs_flow_)(atoms)
-            ```
 
 === "Dask"
 

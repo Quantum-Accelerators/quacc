@@ -254,10 +254,10 @@ graph LR
 
 ## Stripping the Decorator from a Job
 
-If you ever want to strip the decorator from a pre-decorated `#!Python @job` (e.g. to test out a calculation locally without changing your quacc settings), you can call the `.__wrapped__` attribute. This returns the original function.
+If you ever want to strip the decorator from a pre-decorated `#!Python @job` (e.g. to test out a calculation locally without changing your quacc settings), you can do so with [quacc.wflow_tools.customizers.strip_decorator][] as follows:
 
 ```python
-from quacc import job
+from quacc import job, strip_decorator
 
 
 @job
@@ -265,7 +265,8 @@ def add(a, b):
     return a + b
 
 
-add.__wrapped__(1, 2)  # 3
+original_add = strip_decorator(add)
+original_add(1, 2)  # 3
 ```
 
 ## Learn More
