@@ -21,7 +21,7 @@ def bulk_to_slabs_flow(
     atoms: Atoms,
     run_static: bool = True,
     make_slabs_kwargs: dict[str, Any] | None = None,
-    job_params: dict[str, Any] | None = None,
+    job_params: dict[str, dict[str, Any]] | None = None,
     job_decorators: dict[str, Callable | None] | None = None,
 ) -> list[RunSchema | OptSchema]:
     """
@@ -29,9 +29,13 @@ def bulk_to_slabs_flow(
 
     1. Slab generation
 
-    2. Slab relaxations ("relax_job")
+    2. Slab relaxations
+        - name: "relax_job"
+        - job: [quacc.recipes.emt.core.relax_job][]
 
-    3. Optional slab statics ("static_job")
+    3. Optional slab statics
+        - name: "static_job"
+        - job: [quacc.recipes.emt.core.static_job][]
 
     Parameters
     ----------
@@ -42,11 +46,11 @@ def bulk_to_slabs_flow(
     make_slabs_kwargs
         Additional keyword arguments to pass to [quacc.atoms.slabs.make_slabs_from_bulk][]
     job_params
-        Custom parameters to pass to each Job in the Flow.
-        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
+        Custom parameters to pass to each Job in the Flow. This is a dictinoary where
+        the keys are the names of the jobs and the values are dictionaries of parameters.
     job_decorators
-        Custom decorators to apply to each Job in the Flow.
-        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
+        Custom decorators to apply to each Job in the Flow. This is a dictionary where
+        the keys are the names of the jobs and the values are decorators.
 
     Returns
     -------

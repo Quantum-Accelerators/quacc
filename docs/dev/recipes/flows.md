@@ -12,6 +12,10 @@ The flow itself does not contain computationally intensive tasks. It simply call
 
 A simple, representative flow can be found in [quacc.recipes.vasp.mp.mp_relax_flow][].
 
+!!! Note
+
+    All `#!Python @flow`-decorated functions distributed with quacc must allow for the individual job parameters and decorators to be updated by the user, which is typically done via the [quacc.wflow_tools.customizers.customize_funcs][] function. Refer to the example above for details.
+
 ## Dynamic Flows
 
 quacc fully supports complex, dynamic flows where the number of jobs is not known _a priori_. In this case, a common pattern is the use of a subflow, defined with a `#!Python @subflow` decorator. A subflow is just like a flow, except the returned object is a list of job outputs.
