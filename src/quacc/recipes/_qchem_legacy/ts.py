@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 import psutil
 from monty.dev import requires
 
-from quacc import SETTINGS, job
+from quacc import SETTINGS, job, strip_decorator
 from quacc.recipes._qchem_legacy._base import base_opt_fn
 from quacc.recipes._qchem_legacy.core import relax_job
 from quacc.utils.dicts import recursive_dict_merge
@@ -277,7 +277,7 @@ def quasi_irc_job(
     irc_opt_params = recursive_dict_merge(irc_opt_params_defaults, irc_opt_params)
 
     SETTINGS.CHECK_CONVERGENCE = False
-    irc_summary = irc_job.__wrapped__(
+    irc_summary = strip_decorator(irc_job)(
         atoms,
         charge,
         spin_multiplicity,
@@ -294,7 +294,7 @@ def quasi_irc_job(
     )
 
     SETTINGS.CHECK_CONVERGENCE = default_settings.CHECK_CONVERGENCE
-    relax_summary = relax_job.__wrapped__(
+    relax_summary = strip_decorator(relax_job)(
         irc_summary["atoms"],
         charge,
         spin_multiplicity,

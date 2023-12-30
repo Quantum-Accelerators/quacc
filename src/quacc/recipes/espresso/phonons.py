@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from quacc import Job, flow, job, subflow
+from quacc import Job, flow, job, strip_decorator, subflow
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.calculators.espresso.utils import parse_ph_patterns
 from quacc.recipes.espresso._base import base_fn
@@ -98,7 +98,7 @@ def _phonon_subflow(
     # of them
 
     # Run a test phonon job
-    ph_test_job_results = ph_job.__wrapped__(pw_job_results_dir, test_run=True)
+    ph_test_job_results = strip_decorator(ph_job)(pw_job_results_dir, test_run=True)
     input_data = ph_test_job_results["parameters"]["input_data"]
     prefix = input_data['inputph'].get("prefix", "pwscf")
     ph_patterns = parse_ph_patterns(ph_test_job_results["dir_name"], prefix)
@@ -125,7 +125,7 @@ def grid_phonon_flow(
     atoms: Atoms,
     nblocks: int = 1,
     job_decorators: dict[str, Callable | None] | None = None,
-    job_parameters: dict[str, Any] | None = None,
+    job_params: dict[str, Any] | None = None,
 ) -> RunSchema:
     """
     Function to carry out a grid parallelization of a ph.x calculation. Each representation of each
@@ -157,7 +157,7 @@ def grid_phonon_flow(
     job_decorators
         Custom decorators to apply to each Job in the Flow.
         Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
-    ob_parameters
+    job_params
         Custom parameters to pass to each Job in the Flow.
         Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
 
@@ -167,9 +167,10 @@ def grid_phonon_flow(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
     pw_job, ph_job, recover_ph_job = customize_funcs(
-        {"pw_job": static_job, "ph_job": phonon_job, "recover_ph_job": phonon_job},
+        ["pw_job", "ph_job", "recover_ph_job"],
+        [static_job, phonon_job, phonon_job],
         decorators=job_decorators,
-        parameters=job_parameters,
+        parameters=job_params,
     )
 
     # We run a first pw job (single point or relax) depending on the input

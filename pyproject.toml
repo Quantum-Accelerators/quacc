@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "quacc"
 description="A platform to enable high-throughput, database-driven quantum chemistry and computational materials science"
-version = "0.5.0"
+version = "0.5.1"
 readme = "README.md"
 license = { text = "BSD-3" }
 authors = [{ name = "Andrew S. Rosen", email = "asrosen@princeton.edu" }]
@@ -144,13 +144,12 @@ select = [
 extend-ignore = [
   "PLR",    # Design related pylint codes
   "E501",   # Line too long
-  "PT004",  # Use underscore for non-returning fixture (use usefixture instead)
   "B028",   # No explicit stacklevel
   "EM101",  # Exception must not use a string literal
   "EM102",  # Exception must not use an f-string literal
   "G004",   # f-string in Logging statement
-  "RET503", # Missing explicit return
   "RUF015", # Prefer next(iter())
+  "RET505", # Unnecessary `elif` after `return`
 ]
 typing-modules = ["mypackage._compat.typing"]
 src = ["src"]
