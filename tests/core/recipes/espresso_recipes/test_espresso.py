@@ -265,7 +265,7 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
     for key in sections:
         assert key in ph_results["results"][(0, 0, 0)]
 
-def test_phonon_job_list_to_do(tmp_path, monkeypatch):
+def test_post_processing(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     # Just running is, by itself a test. If it fails, it will raise an error.
     post_processing_job(prev_outdir=tmp_path)
