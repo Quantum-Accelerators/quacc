@@ -231,7 +231,7 @@ In the previous examples, we have been running calculations on our local machine
 
     6. For debugging purposes, it can be useful to keep all the temporary files. Once you're confident things work, you can omit the `cleanup` keyword argument.
 
-    ??? Note
+    ??? Note "The SlurmExecutor"
 
         If you plan to use the dedicated [SlurmExecutor](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/slurm) developed by Covalent, an analogous example is included below:
 
