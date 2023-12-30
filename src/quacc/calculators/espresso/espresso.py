@@ -88,26 +88,23 @@ class EspressoTemplate(EspressoTemplate_):
 
         fd = Path.open(directory / self.inputname, "w")
 
-        write_functions = {
-            "pw": write(
+        if self.binary == "pw":
+            write(
                 filename=directory / self.inputname,
                 images=atoms,
                 format="espresso-in",
                 pseudo_dir=str(profile.pseudo_path),
                 properties=properties,
                 **parameters
-            ),
-            "ph": write_espresso_ph(
+            )
+        elif self.binary == "ph":
+            write_espresso_ph(
                 fd = fd,
                 properties=properties,
                 **parameters
-            ),
-        }
-
-        write_functions.get(
-            self.binary,
+            )
+        else:
             write_fortran_namelist(fd, binary=self.binary, properties=properties, **parameters),
-        )()
 
         fd.close()
 
@@ -130,21 +127,22 @@ class EspressoTemplate(EspressoTemplate_):
         """
 
         fd = Path.open(directory / self.outputname, "r")
-        read_functions = {
-            "pw": read(
+
+        if self.binary == "pw":
+            results = read(
                 filename=directory / self.outputname,
                 format="espresso-out",
                 full_output=True,
-            ),
-            "ph": read_espresso_ph(
+            )
+        elif self.binary == "ph":
+            results = read_espresso_ph(
                 fd
-            ),
-        }
-
-        results = read_functions.get(self.binary, lambda: {})()
+            )
+        else:
+            results = {}
 
         fd.close()
-        
+
         if "energy" not in results:
             results["energy"] = None
 
