@@ -26,7 +26,7 @@ def phonon_flow(
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
-    job_params: dict[str, Any] | None = None,
+    job_params: dict[str, dict[str, Any]] | None = None,
     job_decorators: dict[str, Callable | None] | None = None,
 ) -> PhononSchema:
     """
@@ -34,7 +34,9 @@ def phonon_flow(
 
     1. Generation of supercells.
 
-    2. Static calculations on supercells ("static_job").
+    2. Static calculations on supercells
+        - name: "static_job"
+        - job: [quacc.recipes.emt.core.static_job][]
 
     3. Calculation of thermodynamic properties.
 
@@ -55,11 +57,11 @@ def phonon_flow(
     t_max
         Max temperature (K).
     job_params
-        Custom parameters to pass to each Job in the Flow.
-        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
+        Custom parameters to pass to each Job in the Flow. This is a dictinoary where
+        the keys are the names of the jobs and the values are dictionaries of parameters.
     job_decorators
-        Custom decorators to apply to each Job in the Flow.
-        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
+        Custom decorators to apply to each Job in the Flow. This is a dictionary where
+        the keys are the names of the jobs and the values are decorators.
 
     Returns
     -------

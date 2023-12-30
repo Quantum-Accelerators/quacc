@@ -4,8 +4,6 @@ from __future__ import annotations
 from functools import partial
 from typing import TYPE_CHECKING
 
-from quacc import SETTINGS, job
-
 if TYPE_CHECKING:
     from typing import Any, Callable
 
@@ -24,21 +22,39 @@ def strip_decorator(func: Callable) -> Callable:
     Callable
         The function with all decorators removed.
     """
-
-    if hasattr(func, "__wrapped__"):
-        func = func.__wrapped__
+    from quacc import SETTINGS
 
     if SETTINGS.WORKFLOW_ENGINE == "covalent":
         from covalent._workflow.lattice import Lattice
 
-        if isinstance(func, Lattice):
+        if hasattr(func, "electron_object"):
+            func = func.electron_object.function
+
+        if hasattr(func, "workflow_function"):
             func = func.workflow_function.get_deserialized()
+
+    elif SETTINGS.WORKFLOW_ENGINE == "dask":
+        if hasattr(func, "__wrapped__"):
+            func = func.__wrapped__
+
+    elif SETTINGS.WORKFLOW_ENGINE == "jobflow":
+        if hasattr(func, "original"):
+            func = func.original
+
+    elif SETTINGS.WORKFLOW_ENGINE == "parsl":
+        if hasattr(func, "func"):
+            func = func.func
+
+    elif SETTINGS.WORKFLOW_ENGINE == "redun":
+        if hasattr(func, "func"):
+            func = func.func
+
     return func
 
 
 def redecorate(func: Callable, decorator: Callable | None) -> Callable:
     """
-    Redecorate pre-decorated functions with custom decorators.
+    Redecorate a pre-decorated function with a custom decorator.
 
     Parameters
     ----------
@@ -59,8 +75,7 @@ def redecorate(func: Callable, decorator: Callable | None) -> Callable:
 
 def update_parameters(func: Callable, params: dict[str, Any]) -> Callable:
     """
-    Update the parameters of a function. If the function does not have a given parameter,
-    it is ignored.
+    Update the parameters of a function.
 
     Parameters
     ----------
@@ -74,19 +89,19 @@ def update_parameters(func: Callable, params: dict[str, Any]) -> Callable:
     Callable
         The updated function.
     """
-    if SETTINGS.WORKFLOW_ENGINE == "dask":
-        func = strip_decorator(func)
-        updated_func = job(partial(func, **params))
-    else:
-        updated_func = partial(func, **params)
+    from quacc import SETTINGS, job
 
-    return updated_func
+    if SETTINGS.WORKFLOW_ENGINE != "dask":
+        return partial(func, **params)
+
+    func = strip_decorator(func)
+    return job(partial(func, **params))
 
 
 def customize_funcs(
     names: list[str] | str,
     funcs: list[Callable] | Callable,
-    parameters: dict[str, Any] | None = None,
+    parameters: dict[str, dict[str, Any]] | None = None,
     decorators: dict[str, Callable | None] | None = None,
 ) -> tuple[Callable] | Callable:
     """
@@ -123,13 +138,15 @@ def customize_funcs(
 
     funcs_dict = dict(zip(names, funcs))
 
+    if "all" in names:
+        raise ValueError("Invalid function name: 'all' is a reserved name.")
     if bad_decorator_keys := [k for k in decorators if k not in names and k != "all"]:
         raise ValueError(
-            f"Invalid decorator keys: {bad_decorator_keys}. " f"Valid keys are: {names}"
+            f"Invalid decorator keys: {bad_decorator_keys}. Valid keys are: {names}"
         )
     if bad_parameter_keys := [k for k in parameters if k not in names and k != "all"]:
         raise ValueError(
-            f"Invalid parameter keys: {bad_parameter_keys}. " f"Valid keys are: {names}"
+            f"Invalid parameter keys: {bad_parameter_keys}. Valid keys are: {names}"
         )
 
     for func_name, func in funcs_dict.items():
@@ -144,7 +161,4 @@ def customize_funcs(
             func_ = redecorate(func_, decorators[func_name])
         updated_funcs.append(func_)
 
-    if len(updated_funcs) == 1:
-        return updated_funcs[0]
-
-    return tuple(updated_funcs)
+    return updated_funcs[0] if len(updated_funcs) == 1 else tuple(updated_funcs)

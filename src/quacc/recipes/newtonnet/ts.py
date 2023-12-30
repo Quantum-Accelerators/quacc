@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
-from quacc import SETTINGS, job
+from quacc import SETTINGS, job, strip_decorator
 from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
 from quacc.runners.ase import run_opt
 from quacc.schemas.ase import summarize_opt_run
@@ -114,7 +114,7 @@ def ts_job(
 
     # Run a frequency calculation
     freq_summary = (
-        freq_job.__wrapped__(opt_ts_summary["atoms"], **freq_job_kwargs)
+        strip_decorator(freq_job)(opt_ts_summary["atoms"], **freq_job_kwargs)
         if run_freq
         else None
     )
@@ -194,7 +194,7 @@ def irc_job(
 
     # Run frequency job
     freq_summary = (
-        freq_job.__wrapped__(opt_irc_summary["atoms"], **freq_job_kwargs)
+        strip_decorator(freq_job)(opt_irc_summary["atoms"], **freq_job_kwargs)
         if run_freq
         else None
     )
@@ -246,16 +246,16 @@ def quasi_irc_job(
     irc_job_kwargs = recursive_dict_merge(irc_job_defaults, irc_job_kwargs)
 
     # Run IRC
-    irc_summary = irc_job.__wrapped__(
+    irc_summary = strip_decorator(irc_job)(
         atoms, direction=direction, run_freq=False, **irc_job_kwargs
     )
 
     # Run opt
-    relax_summary = relax_job.__wrapped__(irc_summary["atoms"], **relax_job_kwargs)
+    relax_summary = strip_decorator(relax_job)(irc_summary["atoms"], **relax_job_kwargs)
 
     # Run frequency
     freq_summary = (
-        freq_job.__wrapped__(relax_summary["atoms"], **freq_job_kwargs)
+        strip_decorator(freq_job)(relax_summary["atoms"], **freq_job_kwargs)
         if run_freq
         else None
     )

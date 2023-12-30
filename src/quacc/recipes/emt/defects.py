@@ -40,7 +40,7 @@ def bulk_to_defects_flow(
     defect_charge: int = 0,
     run_static: bool = True,
     make_defects_kwargs: dict[str, Any] | None = None,
-    job_params: dict[str, Any] | None = None,
+    job_params: dict[str, dict[str, Any]] | None = None,
     job_decorators: dict[str, Callable | None] | None = None,
 ) -> list[RunSchema | OptSchema]:
     """
@@ -48,9 +48,13 @@ def bulk_to_defects_flow(
 
     1. Defect generation
 
-    2. Defect relaxations ("relax_job")
+    2. Defect relaxations
+        - name: "relax_job"
+        - job: [quacc.recipes.emt.core.relax_job][]
 
-    3. Optional defect statics ("static_job")
+    3. Optional defect statics
+        - name: "static_job"
+        - job: [quacc.recipes.emt.core.static_job][]
 
     Parameters
     ----------
@@ -66,11 +70,11 @@ def bulk_to_defects_flow(
         Keyword arguments to pass to
         [quacc.atoms.defects.make_defects_from_bulk][]
     job_params
-        Custom parameters to pass to each Job in the Flow.
-        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
+        Custom parameters to pass to each Job in the Flow. This is a dictinoary where
+        the keys are the names of the jobs and the values are dictionaries of parameters.
     job_decorators
-        Custom decorators to apply to each Job in the Flow.
-        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
+        Custom decorators to apply to each Job in the Flow. This is a dictionary where
+        the keys are the names of the jobs and the values are decorators.
 
     Returns
     -------
