@@ -34,22 +34,19 @@ def strip_decorator(func: Callable) -> Callable:
             func = func.workflow_function.get_deserialized()
 
     elif SETTINGS.WORKFLOW_ENGINE == "dask":
-        from dask.delayed import Delayed
 
         if hasattr(func, "__wrapped__"):
             func = func.__wrapped__
+
     elif SETTINGS.WORKFLOW_ENGINE == "jobflow":
         if hasattr(func, "original"):
             func = func.original
 
     elif SETTINGS.WORKFLOW_ENGINE == "parsl":
-        from parsl.app.python import PythonApp
-
         if hasattr(func, "func"):
             func = func.func
-    elif SETTINGS.WORKFLOW_ENGINE == "redun":
-        from redun import Task
 
+    elif SETTINGS.WORKFLOW_ENGINE == "redun":
         if hasattr(func, "func"):
             func = func.func
 
