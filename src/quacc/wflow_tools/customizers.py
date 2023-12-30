@@ -25,9 +25,9 @@ def strip_decorator(func: Callable) -> Callable:
     from quacc import SETTINGS
 
     if SETTINGS.WORKFLOW_ENGINE == "parsl":
-        from parsl import join_app, python_app
+        from parsl.app.python import PythonApp
 
-        if isinstance(func, (python_app, join_app)):
+        if isinstance(func, PythonApp):
             return func.func
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
         from redun import Task
