@@ -8,7 +8,7 @@ from ase.io.espresso import construct_namelist
 
 from quacc import SETTINGS
 from quacc.recipes.espresso.core import static_job
-from quacc.recipes.espresso.phonons import phonon_job
+from quacc.recipes.espresso.phonons import phonon_job, grid_phonon_flow
 from quacc.utils.files import copy_decompress_files
 
 pytestmark = pytest.mark.skipif(which("pw.x") is None, reason="QE not installed")
@@ -264,3 +264,26 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
 
     for key in sections:
         assert key in ph_results["results"][(0, 0, 0)]
+
+def test_phonon_grid(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    pp_dir = Path(__file__).parent
+
+    copy_decompress_files([pp_dir / "Si.upf.gz"], tmp_path)
+
+    atoms = bulk("Si")
+
+    input_data = {
+        "system": {"occupations": "smearing", "smearing": "gaussian", "degauss": 0.005},
+        "electrons": {"mixing_mode": "plain", "mixing_beta": 0.6, "conv_thr": 1.0e-6},
+        "control": {"pseudo_dir": tmp_path},
+    }
+
+    ph_loose = {"inputph": {"tr2_ph": 1e-8}}
+
+    pseudopotentials = {"Si": "Si.upf"}
+
+    job_params = {'pw_job': {'input_data' : input_data, 'pseudopotentials' : pseudopotentials}, 'ph_job': {'input_data': ph_loose}}
+
+    grid_results = grid_phonon_flow(atoms, job_params = job_params)

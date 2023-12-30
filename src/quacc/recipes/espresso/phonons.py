@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 @job
 def phonon_job(
     prev_dir: str | Path,
-    preset: str | None = "basic",
+    preset: str | None = None,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -100,7 +100,8 @@ def _phonon_subflow(
     # Run a test phonon job
     ph_test_job_results = ph_job.__wrapped__(pw_job_results_dir, test_run=True)
     input_data = ph_test_job_results["parameters"]["input_data"]
-    ph_patterns = parse_ph_patterns(ph_test_job_results["dir_name"])
+    prefix = input_data['inputph'].get("prefix", "pwscf")
+    ph_patterns = parse_ph_patterns(ph_test_job_results["dir_name"], prefix)
 
     grid_results = []
     for pattern in ph_patterns:

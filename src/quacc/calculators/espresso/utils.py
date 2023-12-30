@@ -48,7 +48,7 @@ def get_pseudopotential_info(
     return ecutwfc, ecutrho, pseudopotentials
 
 
-def parse_ph_patterns(root_dir: str | Path) -> dict[int, int]:
+def parse_ph_patterns(root_dir: str | Path, prefix: str) -> dict[int, int]:
     """
     Function that parses the patterns from a ph.x calculation.
 
@@ -64,7 +64,7 @@ def parse_ph_patterns(root_dir: str | Path) -> dict[int, int]:
     """
     # Patterns (which means number of representation per q-point)
     # are found in files which follow the pattern:
-    fds = Path(root_dir).glob("_ph0/*.phsave/patterns.*.xml*")
+    fds = Path(root_dir).glob(f"_ph0/{prefix}.phsave/patterns.*.xml*")
     # we do not use the xml parser because of security issues
     patterns = {}
 
