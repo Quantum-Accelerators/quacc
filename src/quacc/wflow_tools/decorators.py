@@ -426,6 +426,7 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
     callable
         The decorated function.
     """
+    from quacc import SETTINGS
 
     @wraps(_func)
     def _inner(
@@ -453,13 +454,11 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
         """
         decorator_kwargs = decorator_kwargs if decorator_kwargs is not None else kwargs
 
-        if wflow_engine == "dask":
+        if SETTINGS.WORKFLOW_ENGINE == "dask":
             from dask import delayed
 
             decorated = delayed(_func, **decorator_kwargs)
             return decorated(*f_args, **f_kwargs).compute()
-
-    from quacc import SETTINGS
 
     if _func is None:
         return partial(subflow, **kwargs)
