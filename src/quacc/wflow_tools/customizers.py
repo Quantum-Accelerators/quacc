@@ -49,9 +49,7 @@ def strip_decorator(func: Callable) -> Callable:
         if isinstance(func, Delayed):
             return func.__wrapped__
     elif SETTINGS.WORKFLOW_ENGINE == "jobflow":
-        from jobflow import Job as JobflowJob
-
-        if isinstance(func, JobflowJob):
+        if hasattr(func, "original"):
             return func.original
     return func
 
