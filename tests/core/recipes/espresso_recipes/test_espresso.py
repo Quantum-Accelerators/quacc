@@ -1,7 +1,5 @@
 from pathlib import Path
 from shutil import which
-
-import numpy as np
 import pytest
 from ase.build import bulk
 from ase.io.espresso import construct_namelist
