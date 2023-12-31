@@ -32,7 +32,7 @@ WORKFLOW_ENGINE: # (3)!
 
 If you want to define quacc settings without writing them to a YAML file, you can instead modify the desired settings by defining individual environment variables with `QUACC` as the prefix. For instance, to modify the `SCRATCH_DIR` setting to be `$SCRATCH`, simply define `QUACC_SCRATCH_DIR=$SCRATCH` as a new environment variable.
 
-!!! Tip
+!!! Tip "When This is Ideal"
 
     This approach is ideal when you want to dynamically modify the quacc settings for a given set of calculations, as the environment variable can be modified in-memory or included in the job's submission script without modifying the YAML file that is read by all other calculations.
 
@@ -46,6 +46,6 @@ from quacc import SETTINGS
 SETTINGS.RESULTS_DIR = "/new/path/to/store/results"
 ```
 
-!!! Warning
+!!! Warning "Be Cautious of Local vs. Remote Global Variables"
 
 This approach should be used with caution when deploying calculations via a workflow engine, as changes to in-memory global variables locally will not be reflected on the remote machine.
