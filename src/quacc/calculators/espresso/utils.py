@@ -62,15 +62,14 @@ def parse_ph_patterns(root_dir: str | Path, prefix: str) -> dict[int, int]:
     dict
         A dictionary containing the patterns
     """
-    # Patterns (which means number of representation per q-point)
-    # are found in files which follow the pattern:
+
     fds = Path(root_dir).glob(f"_ph0/{prefix}.phsave/patterns.*.xml*")
-    # we do not use the xml parser because of security issues
+
     patterns = {}
 
     qpt_num = r"<QPOINT_NUMBER>(\d+)</QPOINT_NUMBER>"
     repr_count = r"<NUMBER_IRR_REP>(\d+)</NUMBER_IRR_REP"
-    # If compressed, decompress first in memory
+
     for fd in fds:
         if fd.suffix == ".gz":
             decompressed = GzipFile(filename=fd, mode="r")

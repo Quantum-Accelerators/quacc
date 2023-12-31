@@ -265,6 +265,7 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
     for key in sections:
         assert key in ph_results["results"][(0, 0, 0)]
 
+
 def test_phonon_grid(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
@@ -284,6 +285,14 @@ def test_phonon_grid(tmp_path, monkeypatch):
 
     pseudopotentials = {"Si": "Si.upf"}
 
-    job_params = {'pw_job': {'input_data' : input_data, 'pseudopotentials' : pseudopotentials}, 'ph_job': {'input_data': ph_loose}}
+    job_params = {
+        "pw_job": {"input_data": input_data, "pseudopotentials": pseudopotentials},
+        "ph_job": {"input_data": ph_loose},
+    }
 
-    grid_results = grid_phonon_flow(atoms, job_params = job_params)
+    grid_results = grid_phonon_flow(atoms, job_params=job_params)
+
+    sections = ["atoms", "eqpoints", "freqs", "kpoints", "mode_symmetries", "modes"]
+
+    for key in sections:
+        assert key in grid_results["results"][(0, 0, 0)]
