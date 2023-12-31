@@ -122,11 +122,8 @@ class EspressoTemplate(EspressoTemplate_):
         """
 
         if self.binary == "pw":
-            results = read(
-                filename=directory / self.outputname,
-                format="espresso-out",
-                full_output=True,
-            )
+            atoms = read(directory / self.outputname, format="espresso-out")
+            results = dict(atoms.calc.properties())
         elif self.binary == "ph":
             with Path.open(directory / self.outputname, "r") as fd:
                 results = read_espresso_ph(fd)
