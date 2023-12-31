@@ -34,4 +34,4 @@ If you want to define quacc settings without writing them to a YAML file, you ca
 
 !!! Tip
 
-    This approach is ideal when you want to dynamically modify the quacc settings for a given set of calculations, as the environment variable can be included in the job's submission script without modifying the YAML file that is read by all other calculations.
+    This approach is ideal when you want to dynamically modify the quacc settings for a given set of calculations, as the environment variable can be modified in-memory or included in the job's submission script without modifying the YAML file that is read by all other calculations.
