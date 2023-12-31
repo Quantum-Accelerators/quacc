@@ -71,3 +71,65 @@ def static_job(
         additional_fields={"name": "pw.x Static"},
         copy_files=copy_files,
     )
+
+
+@job
+def post_processing_job(
+    prev_dir: str | Path,
+    preset: str | None = None,
+    parallel_info: dict[str] | None = None,
+    **calc_kwargs,
+) -> RunSchema:
+    """
+    Function to carry out a basic pp.x calculation (post-processing).
+    It is mainly used to extract the charge density from a previous pw.x calculation.
+    and perform simple to complex post-processing on it. Fore more details please see 
+    (https://www.quantum-espresso.org/Doc/INPUT_PP.html)
+
+    Parameters
+    ----------
+    prev_dir
+        Outdir of the previously ran pw.x calculation. This is used to copy
+        the entire tree structure of that directory to the working directory
+        of this calculation.
+    preset
+        The name of a YAML file containing a list of parameters to use as
+        a "preset" for the calculator. quacc will automatically look in the
+        `ESPRESSO_PRESET_DIR` (default: quacc/calculators/espresso/presets).
+    parallel_info
+        Dictionary containing information about the parallelization of the
+        calculation. See the ASE documentation for more information.
+    **calc_kwargs
+        calc_kwargs dictionary possibly containing the following keys:
+
+        - input_data: dict
+        - additional_fields: list[str] | str
+
+        See the docstring of ase.io.espresso.write_fortran_namelist for more information.
+
+    Returns
+    -------
+    RunSchema
+        Dictionary of results from [quacc.schemas.ase.summarize_run][]
+    """
+
+    calc_defaults = {
+        "input_data": {
+            "inputpp": {"plot_num": 0},
+            "plot": {
+                "iflag": 3,
+                "output_format": 6,
+                "fileout": "pseudo_charge_density.cube",
+            },
+        }
+    }
+
+    return base_fn(
+        preset=preset,
+        template=EspressoTemplate("pp"),
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        parallel_info=parallel_info,
+        additional_fields={"name": "pp.x post-processing"},
+        copy_files=prev_dir,
+    )

@@ -7,7 +7,7 @@ from ase.build import bulk
 from ase.io.espresso import construct_namelist
 
 from quacc import SETTINGS
-from quacc.recipes.espresso.core import static_job
+from quacc.recipes.espresso.core import static_job, post_processing_job
 from quacc.recipes.espresso.phonons import phonon_job
 from quacc.utils.files import copy_decompress_files
 
@@ -77,6 +77,10 @@ def test_static_job_v2(tmp_path, monkeypatch):
     assert new_input_data["system"]["occupations"] == "smearing"
     assert new_input_data["electrons"]["conv_thr"] == 1.0e-6
     assert new_input_data["control"]["calculation"] == "scf"
+
+    pp_results = post_processing_job(prev_dir=results["dir_name"])
+
+    assert Path(pp_results["dir_name"], "pseudo_charge_density.cube.gz").exists()
 
 
 def test_static_job_outdir(tmp_path, monkeypatch):
