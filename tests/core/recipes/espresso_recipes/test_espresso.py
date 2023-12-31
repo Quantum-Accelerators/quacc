@@ -7,7 +7,7 @@ from ase.io.espresso import construct_namelist
 from numpy.testing import assert_allclose
 
 from quacc import SETTINGS
-from quacc.recipes.espresso.core import post_processing_job, static_job
+from quacc.recipes.espresso.core import post_processing_job, relax_job, static_job
 from quacc.recipes.espresso.phonons import phonon_job
 from quacc.utils.files import copy_decompress_files
 
@@ -168,6 +168,51 @@ def test_static_job_dir_fail(tmp_path, monkeypatch):
 
     with pytest.raises(ValueError):
         static_job(atoms, directory=Path("fake_path"))
+
+
+def test_relax_job(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    pp_dir = Path(__file__).parent
+
+    copy_decompress_files([pp_dir / "Si.upf.gz"], tmp_path)
+
+    atoms = bulk("Si")
+    atoms[0].position += 0.1
+
+    pseudopotentials = {"Si": "Si.upf"}
+    input_data = {"control": {"pseudo_dir": tmp_path}}
+
+    results = relax_job(
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.5
+    )
+
+    new_input_data = results["parameters"]["input_data"]
+    assert new_input_data["control"]["calculation"] == "relax"
+
+
+def test_relax_job_cell(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    pp_dir = Path(__file__).parent
+
+    copy_decompress_files([pp_dir / "Si.upf.gz"], tmp_path)
+
+    atoms = bulk("Si")
+
+    pseudopotentials = {"Si": "Si.upf"}
+    input_data = {"control": {"pseudo_dir": tmp_path}}
+
+    results = relax_job(
+        atoms,
+        relax_cell=True,
+        input_data=input_data,
+        pseudopotentials=pseudopotentials,
+        kspacing=0.5,
+    )
+    new_input_data = results["parameters"]["input_data"]
+
+    assert new_input_data["control"]["calculation"] == "vc-relax"
 
 
 def test_phonon_job(tmp_path, monkeypatch):

@@ -14,10 +14,7 @@ if TYPE_CHECKING:
 
 @job
 def phonon_job(
-    prev_dir: str | Path,
-    preset: str | None = "basic",
-    parallel_info: dict[str] | None = None,
-    **calc_kwargs,
+    prev_dir: str | Path, parallel_info: dict[str] | None = None, **calc_kwargs
 ) -> RunSchema:
     """
     Function to carry out a basic ph.x calculation.
@@ -28,10 +25,6 @@ def phonon_job(
         Outdir of the previously ran pw.x calculation. This is used to copy
         the entire tree structure of that directory to the working directory
         of this calculation.
-    preset
-        The name of a YAML file containing a list of parameters to use as
-        a "preset" for the calculator. quacc will automatically look in the
-        `ESPRESSO_PRESET_DIR` (default: quacc/calculators/espresso/presets).
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
