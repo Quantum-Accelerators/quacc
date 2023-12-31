@@ -288,6 +288,10 @@ class Espresso(Espresso_):
                     calc_preset["pseudopotentials"], self.input_atoms
                 )
                 calc_preset.pop("pseudopotentials", None)
+                if "kpts" in self.kwargs and "kspacing" in calc_preset:
+                    calc_preset.pop("kspacing")
+                if "kspacing" in self.kwargs and "kpts" in calc_preset:
+                    calc_preset.pop("kpts")
                 self._user_calc_params = recursive_dict_merge(
                     calc_preset,
                     {
