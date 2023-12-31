@@ -178,7 +178,6 @@ def test_relax_job(tmp_path, monkeypatch):
     copy_decompress_files([pp_dir / "Si.upf.gz"], tmp_path)
 
     atoms = bulk("Si")
-    atoms[0].position += 0.1
 
     pseudopotentials = {"Si": "Si.upf"}
     input_data = {"control": {"pseudo_dir": tmp_path}}
