@@ -3,7 +3,6 @@ from shutil import which
 
 import pytest
 from ase.build import bulk
-from ase.io.espresso import construct_namelist
 from numpy.testing import assert_allclose, assert_array_equal
 
 from quacc import SETTINGS
