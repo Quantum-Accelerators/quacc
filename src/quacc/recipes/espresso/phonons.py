@@ -1,4 +1,9 @@
-"""Phonon recipes for espresso."""
+"""
+This module, 'phonons.py', contains recipes for performing phonon calculations using the ph.x binary from Quantum ESPRESSO via the quacc library. The recipes provided in this module are jobs and flows that can be used to perform phonon calculations in different fashion. Please refer to the individual function docstrings for more detailed information on their usage and parameters.
+
+If you don't know how to proceed, please consult [] to learn how to use the
+quacc espresso calculator from basics to advanced.
+"""
 from __future__ import annotations
 
 from pathlib import Path
@@ -30,7 +35,11 @@ def phonon_job(
     **calc_kwargs,
 ) -> RunSchema:
     """
-    Function to carry out a basic ph.x calculation.
+    Function to carry out a basic ph.x calculation. It should allow you to
+    use all the features of the ph.x binary (https://www.quantum-espresso.org/Doc/INPUT_PH.html)
+
+    This job requires the results of a previous pw.x calculation, you might
+    want to create your own flow to run both jobs in sequence. If you don't know how to do it please consult [].
 
     Parameters
     ----------
@@ -92,13 +101,29 @@ def _phonon_subflow(
     ph_job: Job, pw_job_results_dir: str | Path, nblocks: int = 1
 ) -> list[RunSchema]:
     """
-    TODO.
-    """
-    # We loop over the q-points and representations and run a ph job for each
-    # of them
+    This functions is a subflow used in [quacc.recipes.espresso.phonons.grid_phonon_flow][]. Feel free to call it directly in your own flow, for
+    example if you already have a pw.x calculation and you simply want to run a grid parallelized ph.x calculation.
 
-    # Run a test phonon job
-    ph_test_job_results = strip_decorator(ph_job)(pw_job_results_dir, test_run=True)
+    If you don't know how to create your own flow, please consult [].
+
+    Parameters
+    ----------
+        ph_job:
+            The phonon job to be executed.
+
+        pw_job_results_dir
+            The directory containing the results of the plane-wave job.
+
+        nblocks
+            The number of blocks for grouping representations. Defaults to 1.
+
+    Returns
+    -------
+        list[RunSchema]: A list of results from each phonon job.
+    """
+
+    ph_test_job_results = strip_decorator(
+        ph_job)(pw_job_results_dir, test_run=True)
     input_data = ph_test_job_results["parameters"]["input_data"]
     prefix = input_data["inputph"].get("prefix", "pwscf")
     ph_patterns = parse_ph_patterns(ph_test_job_results["dir_name"], prefix)
@@ -128,23 +153,29 @@ def grid_phonon_flow(
     job_params: dict[str, Any] | None = None,
 ) -> RunSchema:
     """
-    Function to carry out a grid parallelization of a ph.x calculation. Each representation of each
-    q-point is calculated in a separate job. This allow the calculations to be run on different machines
-    at possibly different times. The only drawback is that the data of the prior pw.x calculation has to
-    be copied to each of the jobs. Thus the total amount of data will be n*m times the size of the pw.x
-    calculation where n is the number of q-points and m is the number of representations. Plus the data
-    produced by each ph.x calculations. This can becomes very large if your system has a lot of atoms.
-    To provide a way to control the amount of data produced, the user can provide an additional argument
-    "nblocks" which will group multiple representations together in a single job. This will reduce the
-    amount of data produced by a factor of nblocks.
+    This function performs grid parallelization of a ph.x calculation. Each representation of each q-point is calculated in a separate job, allowing for distributed computation across different machines and times.
+
+    The grid parallelization is a technique to make phonon calculation embarrassingly parallel. This function should return similar results to [quacc.recipes.espresso.phonons.phonon_job][]. If you don't know about
+    grid parallelization please consult the Quantum Espresso user manual and
+    exemples.
+
+    This approach requires the data of the pw.x calculation to be copied to each job, leading to a total data size on the disk of n*m times the size of the pw.x calculation, where:
+    - n is the number of q-points
+    - m is the number of representations
+
+    In addition to the data produced by each ph.x calculation. This can result in large data sizes for systems with many atoms.
+
+    To mitigate this, an optional "nblocks" argument can be provided. This groups multiple representations together in a single job, reducing the data size by a factor of nblocks, but also reducing the level of parallelization. In the case of nblocks = 0, each job will contain all the representations for each q-point.
 
     Consists of following jobs that can be modified:
 
     1. pw.x calculation ("pw_job")
 
-    2. ph.x calculation ("ph_job")
+    2. ph.x calculation test_run ("ph_job")
 
-    3. ph.x calculation to diagonalize the dynamical matrix ("recover_ph_job")
+    3. (n * m) / nblocks ph.x calculations ("ph_job")
+
+    4. ph.x calculation to gather data and diagonalize each dynamical matrix ("recover_ph_job")
 
     Parameters
     ----------
@@ -178,7 +209,10 @@ def grid_phonon_flow(
     pw_job_results = pw_job(atoms)
 
     # Run the phonon subflow
-    grid_results = _phonon_subflow(ph_job, pw_job_results["dir_name"], nblocks=nblocks)
+    grid_results = _phonon_subflow(
+        ph_job,
+        pw_job_results["dir_name"],
+        nblocks=nblocks)
 
     # We have to copy back the files from all of the jobs
     copy_back = [result["dir_name"] for result in grid_results]
