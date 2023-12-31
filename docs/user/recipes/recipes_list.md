@@ -174,6 +174,7 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 | Name                     | Decorator       | Documentation                                       | Req'd Extras |
 | ------------------------ | --------------- | --------------------------------------------------- | ------------ |
 | Espresso Static          | `#!Python @job` | [quacc.recipes.espresso.core.static_job][]          |              |
+| Espresso Relax           | `#!Python @job` | [quacc.recipes.espresso.core.relax_job][]           |              |
 | Espresso Post Processing | `#!Python @job` | [quacc.recipes.espresso.core.post_processing_job][] |              |
 | Espresso Phonon          | `#!Python @job` | [quacc.recipes.espresso.phonons.phonon_job][]       |              |
 
