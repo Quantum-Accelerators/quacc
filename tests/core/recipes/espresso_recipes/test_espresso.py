@@ -81,7 +81,7 @@ def test_static_job_v2(tmp_path, monkeypatch):
 
     pp_results = post_processing_job(prev_dir=results["dir_name"])
 
-    assert Path(pp_results["dir_name"], "pseudo_charge_density.cube.gz").exists()
+    assert Path(pp_results["dir_name"], "pseudo_charge_density.cube.gz").is_file()
 
 
 def test_static_job_outdir(tmp_path, monkeypatch):
