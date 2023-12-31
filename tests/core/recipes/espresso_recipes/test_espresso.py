@@ -185,13 +185,20 @@ def test_relax_job(tmp_path, monkeypatch):
     copy_decompress_files([pp_dir / "Si.upf.gz"], tmp_path)
 
     atoms = bulk("Si")
+    atoms[0].position += 0.05
 
     pseudopotentials = {"Si": "Si.upf"}
     input_data = {"control": {"pseudo_dir": tmp_path}}
 
     results = relax_job(
-        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.5
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=(1, 1, 1)
     )
+
+    with pytest.raises(AssertionError):
+        assert_allclose(
+            results["atoms"].get_positions(), atoms.get_positions(), atol=1.0e-4
+        )
+    assert_allclose(results["atoms"].get_cell(), atoms.get_cell(), atol=1.0e-3)
 
     new_input_data = results["parameters"]["input_data"]
     assert new_input_data["control"]["calculation"] == "relax"
@@ -214,10 +221,17 @@ def test_relax_job_cell(tmp_path, monkeypatch):
         relax_cell=True,
         input_data=input_data,
         pseudopotentials=pseudopotentials,
-        kspacing=0.5,
+        kpts=(1, 1, 1),
     )
-    new_input_data = results["parameters"]["input_data"]
 
+    with pytest.raises(AssertionError):
+        assert_allclose(
+            results["atoms"].get_positions(), atoms.get_positions(), atol=1.0e-4
+        )
+    with pytest.raises(AssertionError):
+        assert_allclose(results["atoms"].get_cell(), atoms.get_cell(), atol=1.0e-3)
+
+    new_input_data = results["parameters"]["input_data"]
     assert new_input_data["control"]["calculation"] == "vc-relax"
 
 
