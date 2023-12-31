@@ -2,6 +2,10 @@
 
 It can be useful to understand how quacc handles files so that you can adjust the behavior for your needs. Let's consider a recipe that writes an input file INPUT and an output file OUTPUT.
 
+!!! Hint "Having an Organized Filesystem"
+
+    If you want to achieve a bit more structure in how your files are stored, you can dynamically set the `RESULTS_DIR` for each project of interest. Importantly, this should be done by modifying the `QUACC_RESULTS_DIR` environment variable in your submission script rather than modifying the YAML file directly, such that the change reflects only your given workflow.
+
 ## Scenario 1: The Default Case
 
 Here, let us begin by assuming we are using the default quacc settings. By default, `RESULTS_DIR` is set to `Path.cwd()` (i.e. the current working directory), but this can be modified by the user.
