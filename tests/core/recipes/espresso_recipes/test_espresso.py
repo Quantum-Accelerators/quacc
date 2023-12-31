@@ -1,10 +1,10 @@
 from pathlib import Path
 from shutil import which
 
-import numpy as np
 import pytest
 from ase.build import bulk
 from ase.io.espresso import construct_namelist
+from numpy.testing import assert_allclose
 
 from quacc import SETTINGS
 from quacc.recipes.espresso.core import post_processing_job, static_job
@@ -32,9 +32,9 @@ def test_static_job(tmp_path, monkeypatch):
         atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.5
     )
 
-    assert np.allclose(results["atoms"].positions, atoms.positions, atol=1.0e-4)
+    assert_allclose(results["atoms"].positions, atoms.positions, atol=1.0e-4)
 
-    assert np.allclose(results["atoms"].cell, atoms.cell, atol=1.0e-3)
+    assert_allclose(results["atoms"].cell, atoms.cell, atol=1.0e-3)
     assert (results["atoms"].symbols == atoms.symbols).all()
 
     new_input_data = results["parameters"]["input_data"]
@@ -66,9 +66,9 @@ def test_static_job_v2(tmp_path, monkeypatch):
         atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.5
     )
 
-    assert np.allclose(results["atoms"].positions, atoms.positions, atol=1.0e-4)
+    assert_allclose(results["atoms"].positions, atoms.positions, atol=1.0e-4)
 
-    assert np.allclose(results["atoms"].cell, atoms.cell, atol=1.0e-3)
+    assert_allclose(results["atoms"].cell, atoms.cell, atol=1.0e-3)
     assert (results["atoms"].symbols == atoms.symbols).all()
 
     new_input_data = results["parameters"]["input_data"]
@@ -80,7 +80,7 @@ def test_static_job_v2(tmp_path, monkeypatch):
 
     pp_results = post_processing_job(prev_dir=results["dir_name"])
 
-    assert Path(pp_results["dir_name"], "pseudo_charge_density.cube.gz").exists()
+    assert Path(pp_results["dir_name"], "pseudo_charge_density.cube.gz").is_file()
 
 
 def test_static_job_outdir(tmp_path, monkeypatch):
@@ -106,9 +106,9 @@ def test_static_job_outdir(tmp_path, monkeypatch):
 
     input_data = dict(construct_namelist(input_data))
 
-    assert np.allclose(results["atoms"].positions, atoms.positions, atol=1.0e-4)
+    assert_allclose(results["atoms"].positions, atoms.positions, atol=1.0e-4)
 
-    assert np.allclose(results["atoms"].cell, atoms.cell, atol=1.0e-3)
+    assert_allclose(results["atoms"].cell, atoms.cell, atol=1.0e-3)
     assert (results["atoms"].symbols == atoms.symbols).all()
 
     new_input_data = results["parameters"]["input_data"]
@@ -144,9 +144,9 @@ def test_static_job_outdir_abs(tmp_path, monkeypatch):
 
     input_data = dict(construct_namelist(input_data))
 
-    assert np.allclose(results["atoms"].positions, atoms.positions, atol=1.0e-4)
+    assert_allclose(results["atoms"].positions, atoms.positions, atol=1.0e-4)
 
-    assert np.allclose(results["atoms"].cell, atoms.cell, atol=1.0e-3)
+    assert_allclose(results["atoms"].cell, atoms.cell, atol=1.0e-3)
     assert (results["atoms"].symbols == atoms.symbols).all()
 
     new_input_data = results["parameters"]["input_data"]
@@ -198,14 +198,14 @@ def test_phonon_job(tmp_path, monkeypatch):
     ph_results = phonon_job(pw_results["dir_name"], input_data=ph_loose)
 
     assert (0, 0, 0) in ph_results["results"]
-    assert np.allclose(
+    assert_allclose(
         ph_results["results"][(0, 0, 0)]["atoms"].positions,
         atoms.positions,
         atol=1.0e-4,
     )
     # ph.x cell param are not defined to a very high level of accuracy,
     # atol = 1.0e-3 is needed here...
-    assert np.allclose(
+    assert_allclose(
         ph_results["results"][(0, 0, 0)]["atoms"].cell, atoms.cell, atol=1.0e-3
     )
     assert (ph_results["results"][(0, 0, 0)]["atoms"].symbols == atoms.symbols).all()
@@ -252,14 +252,14 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
     )
 
     assert (0, 0, 0) in ph_results["results"]
-    assert np.allclose(
+    assert_allclose(
         ph_results["results"][(0, 0, 0)]["atoms"].positions,
         atoms.positions,
         atol=1.0e-4,
     )
     # ph.x cell param are not defined to a very high level of accuracy,
     # atol = 1.0e-3 is needed here...
-    assert np.allclose(
+    assert_allclose(
         ph_results["results"][(0, 0, 0)]["atoms"].cell, atoms.cell, atol=1.0e-3
     )
     assert (ph_results["results"][(0, 0, 0)]["atoms"].symbols == atoms.symbols).all()
