@@ -24,7 +24,7 @@ def static_job(
     **calc_kwargs,
 ) -> RunSchema:
     """
-    Function to carry out a basic pw.x calculation.
+    Function to carry out a basic SCF calculation with pw.x.
 
     Parameters
     ----------
@@ -83,7 +83,7 @@ def relax_job(
     **calc_kwargs,
 ) -> RunSchema:
     """
-    Function to carry out a basic pw.x calculation.
+    Function to carry out a structure relaxation with pw.x.
 
     Parameters
     ----------
