@@ -56,7 +56,6 @@ def phonon_job(
     }
 
     return base_fn(
-        preset=preset,
         template=EspressoTemplate("ph"),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
