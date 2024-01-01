@@ -45,6 +45,8 @@ def test_static_job(tmp_path, monkeypatch):
     assert new_input_data["system"]["occupations"] == "smearing"
     assert new_input_data["system"]["ecutwfc"] == 30.0
     assert new_input_data["system"]["ecutrho"] == 240.0
+    assert "kspacing" not in results["parameters"]
+    assert results["parameters"].get("kpts") is None
 
 
 def test_static_job_v2(tmp_path, monkeypatch):
@@ -82,6 +84,8 @@ def test_static_job_v2(tmp_path, monkeypatch):
     assert new_input_data["system"]["occupations"] == "smearing"
     assert new_input_data["electrons"]["conv_thr"] == 1.0e-6
     assert new_input_data["control"]["calculation"] == "scf"
+    assert "kpts" not in results["parameters"]
+    assert results["parameters"]["kspacing"] == 0.5
 
     pp_results = post_processing_job(prev_dir=results["dir_name"])
     assert Path(pp_results["dir_name"], "pseudo_charge_density.cube.gz").is_file()
@@ -105,7 +109,7 @@ def test_static_job_outdir(tmp_path, monkeypatch):
     pseudopotentials = {"Si": "Si.upf"}
 
     results = static_job(
-        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.5
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=None
     )
 
     assert_allclose(
@@ -144,7 +148,7 @@ def test_static_job_outdir_abs(tmp_path, monkeypatch):
     pseudopotentials = {"Si": "Si.upf"}
 
     results = static_job(
-        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.5
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=None
     )
 
     assert_allclose(
@@ -256,7 +260,7 @@ def test_phonon_job(tmp_path, monkeypatch):
     pseudopotentials = {"Li": "Li.upf"}
 
     pw_results = static_job(
-        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.25
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=None
     )
 
     ph_results = phonon_job(pw_results["dir_name"], input_data=ph_loose)
@@ -307,7 +311,7 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
     pseudopotentials = {"Li": "Li.upf"}
 
     pw_results = static_job(
-        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.25
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=None
     )
 
     qpts = [(0, 0, 0, 1), (1 / 3, 0, 0, 1), (1 / 2, 0, 0, 1)]
