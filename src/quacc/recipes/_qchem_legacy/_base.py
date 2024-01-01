@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from quacc import Remove
 from quacc.calculators._qchem_legacy import QChem
 from quacc.runners.ase import run_calc, run_opt
 from quacc.schemas.ase import summarize_opt_run, summarize_run
@@ -50,7 +51,7 @@ def base_fn(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
-    qchem_flags = remove_dict_entries(defaults)
+    qchem_flags = remove_dict_entries(defaults, Remove)
 
     atoms.calc = QChem(atoms, **qchem_flags)
     final_atoms = run_calc(atoms, copy_files=copy_files)
@@ -101,7 +102,7 @@ def base_opt_fn(
     # TODO:
     #   - passing initial Hessian?
 
-    qchem_flags = remove_dict_entries(calc_defaults)
+    qchem_flags = remove_dict_entries(calc_defaults, Remove)
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
     atoms.calc = QChem(atoms, **qchem_flags)
