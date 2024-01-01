@@ -107,7 +107,7 @@ def relax_job(
         "gfnff": True if use_gfnff else Remove,
         "gwolf": True if use_gfnff else Remove,
         "conp": True if relax_cell else Remove,
-        "conv": None if relax_cell else True,
+        "conv": Remove if relax_cell else True,
     }
     option_defaults = {"dump every gulp.res": True}
 

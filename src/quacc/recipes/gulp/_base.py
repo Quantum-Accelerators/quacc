@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 from ase.calculators.gulp import GULP
 
-from quacc import SETTINGS
+from quacc import SETTINGS, Remove
 from quacc.runners.ase import run_calc
 from quacc.schemas.ase import summarize_run
 from quacc.utils.dicts import recursive_dict_merge
@@ -75,8 +75,8 @@ def base_fn(
     option_defaults = recursive_dict_merge(
         option_defaults,
         {
-            f"output cif {GEOM_FILE_PBC}": True if atoms.pbc.any() else None,
-            f"output xyz {GEOM_FILE_NOPBC}": None if atoms.pbc.any() else True,
+            f"output cif {GEOM_FILE_PBC}": True if atoms.pbc.any() else Remove,
+            f"output xyz {GEOM_FILE_NOPBC}": Remove if atoms.pbc.any() else True,
         },
     )
 
