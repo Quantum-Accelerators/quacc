@@ -13,7 +13,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- To remove calculator defaults entirely, `quacc.Remove` is recommended in place of `None`
 - The `quacc.wflow_tools.customizers.strip_decorator` function is recommended instead of calling `.__wrapped__`
+
+### Fixed
+
+- Fixed various bugs in the Espresso calculator and recipes
 
 ## [0.5.0]
 

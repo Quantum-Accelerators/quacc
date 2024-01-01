@@ -25,8 +25,6 @@ def strip_decorator(func: Callable) -> Callable:
     from quacc import SETTINGS
 
     if SETTINGS.WORKFLOW_ENGINE == "covalent":
-        from covalent._workflow.lattice import Lattice
-
         if hasattr(func, "electron_object"):
             func = func.electron_object.function
 
@@ -41,11 +39,7 @@ def strip_decorator(func: Callable) -> Callable:
         if hasattr(func, "original"):
             func = func.original
 
-    elif SETTINGS.WORKFLOW_ENGINE == "parsl":
-        if hasattr(func, "func"):
-            func = func.func
-
-    elif SETTINGS.WORKFLOW_ENGINE == "redun":
+    elif SETTINGS.WORKFLOW_ENGINE in ("parsl", "redun"):
         if hasattr(func, "func"):
             func = func.func
 
