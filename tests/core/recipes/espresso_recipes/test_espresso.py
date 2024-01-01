@@ -260,7 +260,7 @@ def test_phonon_job(tmp_path, monkeypatch):
     pseudopotentials = {"Li": "Li.upf"}
 
     pw_results = static_job(
-        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=None
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.5
     )
 
     ph_results = phonon_job(pw_results["dir_name"], input_data=ph_loose)
@@ -311,7 +311,7 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
     pseudopotentials = {"Li": "Li.upf"}
 
     pw_results = static_job(
-        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=None
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.5
     )
 
     qpts = [(0, 0, 0, 1), (1 / 3, 0, 0, 1), (1 / 2, 0, 0, 1)]
