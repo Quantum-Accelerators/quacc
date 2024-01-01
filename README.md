@@ -16,7 +16,7 @@
 
 - `quacc` gives you the freedom of choice. Through a single, unified interface to several supported [workflow management solutions](https://quantum-accelerators.github.io/quacc/user/basics/wflow_overview.html), you can use what best suits your unique computing needs.
 
-- `quacc` leverages community resources. It is built around the Atomic Simulation Environment and much of the software infrastructure powering the Materials Project.
+- `quacc` leverages community resources so we don't reinvent the wheel. It is built around the Atomic Simulation Environment and much of the software infrastructure powering the Materials Project.
 
 ## Documentation 📖
 

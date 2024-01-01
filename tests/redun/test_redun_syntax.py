@@ -1,6 +1,6 @@
 import pytest
 
-from quacc import SETTINGS, flow, job, subflow
+from quacc import SETTINGS, flow, job, strip_decorator, subflow
 
 redun = pytest.importorskip("redun")
 pytestmark = pytest.mark.skipif(
@@ -47,3 +47,26 @@ def test_redun_decorators(tmp_path, monkeypatch, scheduler):
     assert scheduler.run(mult(1, 2)) == 2
     assert scheduler.run(workflow(1, 2, 3)) == 9
     assert scheduler.run(dynamic_workflow(1, 2, 3)) == [6, 6, 6]
+
+
+def test_strip_decorators():
+    @job
+    def add(a, b):
+        return a + b
+
+    @flow
+    def add2(a, b):
+        return a + b
+
+    @subflow
+    def add3(a, b):
+        return a + b
+
+    stripped_add = strip_decorator(add)
+    assert stripped_add(1, 2) == 3
+
+    stripped_add2 = strip_decorator(add2)
+    assert stripped_add2(1, 2) == 3
+
+    stripped_add3 = strip_decorator(add3)
+    assert stripped_add3(1, 2) == 3

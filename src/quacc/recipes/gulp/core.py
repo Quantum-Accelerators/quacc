@@ -33,11 +33,11 @@ def static_job(
         True if (p)GFN-FF should be used; False if not.
     keywords
         Dictionary of custom `keyword` kwargs for the GULP calculator. Set a
-        value to `None` to remove a pre-existing key entirely. For a list of
+        value to `quacc.Remove` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
     options
         Dictionary of custom `options` kwargs for the GULP calculator. Set a
-        value to `None` to remove a pre-existing key entirely. For a list of
+        value to `quacc.Remove` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
     library
         Filename of the potential library file, if required.
@@ -48,10 +48,7 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
-    keyword_defaults = {
-        "gfnff": True if use_gfnff else None,
-        "gwolf": True if use_gfnff else None,
-    }
+    keyword_defaults = {"gfnff": True, "gwolf": True} if use_gfnff else {}
     option_defaults = {"dump every gulp.res": True}
 
     return base_fn(
@@ -87,11 +84,11 @@ def relax_job(
         True if the volume should be relaxed; False if not.
     keywords
         Dictionary of custom `keyword` kwargs for the GULP calculator. Set a
-        value to `None` to remove a pre-existing key entirely. For a list of
+        value to `quacc.Remove` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
     options
         Dictionary of custom `options` kwargs for the GULP calculator. Set a
-        value to `None` to remove a pre-existing key entirely. For a list of
+        value to `quacc.Remove` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
     library
         Filename of the potential library file, if required.
@@ -102,13 +99,12 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
-    keyword_defaults = {
-        "opti": True,
-        "gfnff": True if use_gfnff else None,
-        "gwolf": True if use_gfnff else None,
-        "conp": True if relax_cell else None,
-        "conv": None if relax_cell else True,
-    }
+    keyword_defaults = {"opti": True} | (
+        {"conp": True} if relax_cell else {"conv": True}
+    )
+    if use_gfnff:
+        keyword_defaults |= {"gfnff": True, "gwolf": True}
+
     option_defaults = {"dump every gulp.res": True}
 
     return base_fn(

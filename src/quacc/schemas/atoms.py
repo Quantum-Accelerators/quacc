@@ -10,7 +10,7 @@ from monty.json import jsanitize
 from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc.atoms.core import check_charge_and_spin, copy_atoms
-from quacc.utils.dicts import remove_dict_nones, sort_dict
+from quacc.utils.dicts import clean_task_doc
 
 if TYPE_CHECKING:
     from typing import Any
@@ -85,7 +85,7 @@ def atoms_to_metadata(
     # Combine the metadata and results dictionaries
     atoms_doc_unsorted = metadata | results | additional_fields
 
-    return sort_dict(remove_dict_nones(atoms_doc_unsorted))
+    return clean_task_doc(atoms_doc_unsorted)
 
 
 def _set_charge_and_spin(

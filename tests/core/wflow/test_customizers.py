@@ -11,22 +11,25 @@ def test_basic_customizers():
         return a * b * c * d
 
     add_, mult_ = customize_funcs(
-        {"add": add, "mult": mult}, parameters={"add": {"b": 2}}
+        ["add", "mult"], [add, mult], parameters={"add": {"b": 2}}
     )
     assert add_(1) == 5
     assert mult_(1) == 4
 
     add_, mult_ = customize_funcs(
-        {"add": add, "mult": mult}, parameters={"add": {"b": 2}, "mult": {"b": 2}}
+        ["add", "mult"], [add, mult], parameters={"add": {"b": 2}, "mult": {"b": 2}}
     )
     assert add_(1) == 5
     assert mult_(1) == 8
 
     add_, mult_ = customize_funcs(
-        {"add": add, "mult": mult}, parameters={"all": {"b": 2}}
+        ["add", "mult"], [add, mult], parameters={"all": {"b": 2}}
     )
     assert add_(1) == 5
     assert mult_(1) == 8
 
     with pytest.raises(ValueError):
-        customize_funcs({"add": add, "mult": mult}, parameters={"bad": {"b": 2}})
+        customize_funcs(["add", "mult"], [add, mult], parameters={"bad": {"b": 2}})
+
+    with pytest.raises(ValueError):
+        customize_funcs("all", [add], parameters={"all": {"b": 2}})

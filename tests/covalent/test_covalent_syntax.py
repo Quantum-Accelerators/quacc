@@ -1,12 +1,13 @@
 import pytest
 
-from quacc import SETTINGS, flow, job, subflow
+from quacc import SETTINGS, flow, job, strip_decorator, subflow
 
 ct = pytest.importorskip("covalent")
 pytestmark = pytest.mark.skipif(
     SETTINGS.WORKFLOW_ENGINE != "covalent",
     reason="This test requires the Covalent workflow engine",
 )
+from covalent._workflow.lattice import Lattice
 
 
 def test_covalent_decorators(tmp_path, monkeypatch):
@@ -88,3 +89,34 @@ def test_covalent_decorators_args(tmp_path, monkeypatch):
         6,
         6,
     ]
+
+
+def test_strip_decorators():
+    @job
+    def add(a, b):
+        return a + b
+
+    @flow
+    def add2(a, b):
+        return a + b
+
+    @subflow
+    def add3(a, b):
+        return a + b
+
+    assert hasattr(add, "electron_object")
+    stripped_add = strip_decorator(add)
+    assert stripped_add(1, 2) == 3
+    assert not hasattr(stripped_add, "electron_object")
+
+    assert isinstance(add2, Lattice)
+    stripped_add2 = strip_decorator(add2)
+    assert stripped_add2(1, 2) == 3
+    assert not hasattr(stripped_add2, "electron_object")
+    assert not isinstance(stripped_add2, Lattice)
+
+    assert hasattr(add3, "electron_object")
+    stripped_add3 = strip_decorator(add3)
+    assert stripped_add3(1, 2) == 3
+    assert not hasattr(stripped_add3, "electron_object")
+    assert not isinstance(stripped_add3, Lattice)
