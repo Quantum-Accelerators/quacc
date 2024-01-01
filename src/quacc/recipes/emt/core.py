@@ -33,8 +33,7 @@ def static_job(atoms: Atoms, **calc_kwargs) -> RunSchema:
     atoms
         Atoms object
     **calc_kwargs
-        Custom kwargs for the EMT calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
+        Custom kwargs for the EMT calculator. For a list of available
         keys, refer to the `ase.calculators.emt.EMT` calculator.
 
     Returns
@@ -71,8 +70,7 @@ def relax_job(
         to `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
     **calc_kwargs
-        Custom kwargs for the EMT calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
+        Custom kwargs for the EMT calculator. For a list of available
         keys, refer to the `ase.calculators.emt.EMT` calculator.
 
     Returns

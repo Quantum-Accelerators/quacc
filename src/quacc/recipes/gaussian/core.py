@@ -44,8 +44,7 @@ def static_job(
     copy_files
         File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
     **calc_kwargs
-        Custom kwargs for the Gaussian calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
+        Custom kwargs for the Gaussian calculator. For a list of available
         keys, refer to the `ase.calculators.gaussian.Gaussian` calculator.
 
     Returns
@@ -111,8 +110,7 @@ def relax_job(
     copy_files
         File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
     **calc_kwargs
-        Custom kwargs for the Gaussian calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
+        Custom kwargs for the Gaussian calculator. For a list of available
         keys, refer to the `ase.calculators.gaussian.Gaussian` calculator.
 
     Returns

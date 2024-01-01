@@ -33,8 +33,7 @@ def static_job(
     method
         Universal ML interatomic potential method to use
     **calc_kwargs
-        Custom kwargs for the underlying calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
+        Custom kwargs for the underlying calculator. For a list of available
         keys, refer to the `mace.calculators.mace_mp`, `chgnet.model.dynamics.CHGNetCalculator`,
         or `matgl.ext.ase.M3GNetCalculator` calculators.
 
@@ -77,8 +76,7 @@ def relax_job(
         to `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
     **calc_kwargs
-        Custom kwargs for the underlying calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
+        Custom kwargs for the underlying calculator. For a list of available
         keys, refer to the `mace.calculators.mace_mp`, `chgnet.model.dynamics.CHGNetCalculator`,
         or `matgl.ext.ase.M3GNetCalculator` calculators.
 

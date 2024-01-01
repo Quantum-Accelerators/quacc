@@ -70,8 +70,7 @@ def ts_job(
         to `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
     **calc_kwargs
-        Dictionary of custom kwargs for the NewtonNet calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
+        Dictionary of custom kwargs for the NewtonNet calculator. For a list of available
         keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
 
     Returns
@@ -152,8 +151,7 @@ def irc_job(
         to `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
     **calc_kwargs
-        Custom kwargs for the NewtonNet calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
+        Custom kwargs for the NewtonNet calculator. For a list of available
         keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
 
     Returns

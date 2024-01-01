@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from typing import Any
 
 
-def recursive_dict_merge(*args, remove_nones: bool = True) -> dict[str, Any]:
+def recursive_dict_merge(*args, remove_nones: bool = False) -> dict[str, Any]:
     """
     Recursively merge several dictionaries, taking the latter in the list as higher preference.
 

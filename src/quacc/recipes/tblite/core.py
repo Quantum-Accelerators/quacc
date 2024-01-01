@@ -43,8 +43,7 @@ def static_job(
     method
         xTB method to use
     **calc_kwargs
-        Custom kwargs for the TBLite calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
+        Custom kwargs for the TBLite calculator. For a list of available
         keys, refer to the `tblite.ase.TBLite` calculator
 
     Returns
@@ -88,8 +87,7 @@ def relax_job(
         to `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
     **calc_kwargs
-        Custom kwargs for the tblite calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
+        Custom kwargs for the tblite calculator. For a list of available
         keys, refer to the `tblite.ase.TBLite` calculator.
 
     Returns
@@ -139,8 +137,7 @@ def freq_job(
     vib_kwargs
         Dictionary of kwargs for [quacc.runners.ase.run_vib][].
     **calc_kwargs
-        Custom kwargs for the tblite calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
+        Custom kwargs for the tblite calculator. For a list of available
         keys, refer to the `tblite.ase.TBLite` calculator.
 
     Returns
