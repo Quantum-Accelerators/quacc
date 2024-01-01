@@ -17,6 +17,7 @@ from quacc.calculators.espresso.utils import parse_ph_patterns
 from quacc.recipes.espresso._base import base_fn
 from quacc.recipes.espresso.core import static_job
 from quacc.wflow_tools.customizers import customize_funcs
+from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
     from typing import Any, Callable
@@ -122,8 +123,7 @@ def _phonon_subflow(
         list[RunSchema]: A list of results from each phonon job.
     """
 
-    ph_test_job_results = strip_decorator(
-        ph_job)(pw_job_results_dir, test_run=True)
+    ph_test_job_results = strip_decorator(ph_job)(pw_job_results_dir, test_run=True)
     input_data = ph_test_job_results["parameters"]["input_data"]
     prefix = input_data["inputph"].get("prefix", "pwscf")
     ph_patterns = parse_ph_patterns(ph_test_job_results["dir_name"], prefix)
@@ -197,6 +197,11 @@ def grid_phonon_flow(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
+
+    calc_defaults = {"static_job": {"input_data": {"electrons": {"conv_thr": 1e-12}}}}
+
+    job_params = recursive_dict_merge(calc_defaults, job_params)
+
     pw_job, ph_job, recover_ph_job = customize_funcs(
         ["pw_job", "ph_job", "recover_ph_job"],
         [static_job, phonon_job, phonon_job],
@@ -209,10 +214,7 @@ def grid_phonon_flow(
     pw_job_results = pw_job(atoms)
 
     # Run the phonon subflow
-    grid_results = _phonon_subflow(
-        ph_job,
-        pw_job_results["dir_name"],
-        nblocks=nblocks)
+    grid_results = _phonon_subflow(ph_job, pw_job_results["dir_name"], nblocks=nblocks)
 
     # We have to copy back the files from all of the jobs
     copy_back = [result["dir_name"] for result in grid_results]

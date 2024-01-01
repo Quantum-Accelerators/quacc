@@ -296,3 +296,34 @@ def test_phonon_grid(tmp_path, monkeypatch):
 
     for key in sections:
         assert key in grid_results["results"][(0, 0, 0)]
+
+def test_phonon_grid_v2(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    pp_dir = Path(__file__).parent
+
+    copy_decompress_files([pp_dir / "Li.upf.gz"], tmp_path)
+
+    atoms = bulk("Li", 'bcc', orthorhombic=True)
+
+    input_data = {
+        "system": {"occupations": "smearing", "smearing": "gaussian", "degauss": 0.005},
+        "electrons": {"mixing_mode": "plain", "mixing_beta": 0.6, "conv_thr": 1.0e-6},
+        "control": {"pseudo_dir": tmp_path},
+    }
+
+    ph_loose = {"inputph": {"tr2_ph": 1e-8}}
+
+    pseudopotentials = {"Li": "Li.upf"}
+
+    job_params = {
+        "pw_job": {"input_data": input_data, "pseudopotentials": pseudopotentials},
+        "ph_job": {"input_data": ph_loose},
+    }
+
+    grid_results = grid_phonon_flow(atoms, job_params=job_params, nblocks=3)
+
+    sections = ["atoms", "eqpoints", "freqs", "kpoints", "mode_symmetries", "modes"]
+
+    for key in sections:
+        assert key in grid_results["results"][(0, 0, 0)]
