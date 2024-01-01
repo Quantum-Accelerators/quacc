@@ -31,3 +31,12 @@ def test_recursive_dict_merge():
         "b": {"a": 1, "b": 3, "d": 1},
         "c": 3,
     }
+
+
+def test_recursive_dict_merge2():
+    defaults = {"a": 1, "b": {"a": 1, "b": 2}}
+    calc_swaps = {"c": Remove, "b": {"b": 3, "d": 1}}
+    assert recursive_dict_merge(defaults, calc_swaps) == {
+        "a": 1,
+        "b": {"a": 1, "b": 3, "d": 1},
+    }

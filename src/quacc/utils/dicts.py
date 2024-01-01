@@ -96,12 +96,15 @@ def remove_dict_entries(
     start_dict: dict[str, Any], entry_to_remove: Any = Remove
 ) -> dict[str, Any]:
     """
-    For a given dictionary, recursively remove all items that are Remove.
+    For a given dictionary, recursively remove all items that are identical
+    to `entry_to_remove`.
 
     Parameters
     ----------
     start_dict
         Dictionary to clean
+    entry_to_remove
+        Entry to remove
 
     Returns
     -------
@@ -113,7 +116,7 @@ def remove_dict_entries(
         return {
             k: remove_dict_entries(v, entry_to_remove=entry_to_remove)
             for k, v in start_dict.items()
-            if v == entry_to_remove
+            if v != entry_to_remove
         }
     return (
         [remove_dict_entries(v, entry_to_remove=entry_to_remove) for v in start_dict]
