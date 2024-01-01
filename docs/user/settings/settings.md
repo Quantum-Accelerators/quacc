@@ -48,4 +48,4 @@ SETTINGS.RESULTS_DIR = "/new/path/to/store/results"
 
 !!! Warning "Be Cautious of Local vs. Remote Global Variables"
 
-This approach should be used with caution when deploying calculations via a workflow engine, as changes to in-memory global variables locally will not be reflected on the remote machine.
+    This approach should be used with caution when deploying calculations via a workflow engine, as changes to in-memory global variables locally will not be reflected on the remote machine.
