@@ -67,7 +67,7 @@ def static_job(
     copy_files
         File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
     **calc_kwargs
-        Custom kwargs for the calculator. Set a value to `quacc.Remove()` to remove
+        Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
         a pre-existing key entirely. See [quacc.calculators._qchem_legacy.qchem.QChem][] for more
         details.
 
@@ -121,12 +121,12 @@ def relax_job(
         Basis set. Defaults to def2-SVPD.
     opt_params
         Dictionary of custom kwargs for the optimization process. Set a value
-        to `quacc.Remove()` to remove a pre-existing key entirely. For a list of available
+        to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
     copy_files
         File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
     **calc_kwargs
-        Custom kwargs for the calculator. Set a value to `quacc.Remove()` to remove
+        Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
         a pre-existing key entirely. See [quacc.calculators._qchem_legacy.qchem.QChem][] for more
         details.
 
@@ -187,7 +187,7 @@ def freq_job(
     copy_files
         File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
     **calc_kwargs
-        Custom kwargs for the calculator. Set a value to `quacc.Remove()` to remove
+        Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
         a pre-existing key entirely. See [quacc.calculators._qchem_legacy.qchem.QChem][] for more
         details.
 

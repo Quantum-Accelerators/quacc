@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 
 from ase.optimize import BFGSLineSearch
 
-from quacc import job
+from quacc import Remove, job
 from quacc.calculators.vasp import Vasp
 from quacc.recipes.vasp._base import base_fn
 from quacc.runners.ase import run_opt
@@ -61,7 +61,7 @@ def qmof_relax_job(
         Recommended if starting from hypothetical structures or materials with
         very high starting forces.
     **calc_kwargs
-        Custom kwargs for the calculator. Set a value to `quacc.Remove()` to remove
+        Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
         a pre-existing key entirely. Applies for all jobs.
 
     Returns
@@ -115,7 +115,7 @@ def _prerelax(
     fmax
         Maximum force in eV/A.
     **kwargs
-        Custom kwargs for the calculator. Set a value to `quacc.Remove()` to remove
+        Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
         a pre-existing key entirely.
     Returns
     -------
@@ -126,14 +126,14 @@ def _prerelax(
     calc_defaults = {
         "pmg_kpts": {"kppa": 100},
         "ediff": 1e-4,
-        "encut": None,
+        "encut": Remove,
         "lcharg": False,
         "lreal": "auto",
         "lwave": True,
         "nelm": 225,
         "nsw": 0,
     }
-    calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs, remove_nones=False)
+    calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
     atoms.calc = Vasp(atoms, preset=preset, **calc_flags)
     dyn = run_opt(atoms, fmax=fmax, optimizer=BFGSLineSearch)
 
@@ -153,7 +153,7 @@ def _loose_relax_positions(
     preset
         Preset to use from `quacc.calculators.vasp.presets`.
     **kwargs
-        Custom kwargs for the calculator. Set a value to `quacc.Remove()` to remove
+        Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
         a pre-existing key entirely.
 
     Returns
@@ -166,7 +166,7 @@ def _loose_relax_positions(
         "pmg_kpts": {"kppa": 100},
         "ediff": 1e-4,
         "ediffg": -0.05,
-        "encut": None,
+        "encut": Remove,
         "ibrion": 2,
         "isif": 2,
         "lcharg": False,
@@ -196,7 +196,7 @@ def _loose_relax_cell(
     preset
         Preset to use from `quacc.calculators.vasp.presets`.
     **calc_kwargs
-        Custom kwargs for the calculator. Set a value to `quacc.Remove()` to remove
+        Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
         a pre-existing key entirely.
 
     Returns
@@ -240,7 +240,7 @@ def _double_relax(
     relax_cell
         True if a volume relaxation should be performed.
     **calc_kwargs
-        Dictionary of custom kwargs for the calculator. Set a value to `quacc.Remove()` to remove
+        Dictionary of custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
         a pre-existing key entirely.
     Returns
     -------
@@ -296,7 +296,7 @@ def _static(atoms: Atoms, preset: str | None = "QMOFSet", **calc_kwargs) -> Vasp
     preset
         Preset to use from `quacc.calculators.presets.vasp`.
     **kwargs
-        Custom kwargs for the calculator. Set a value to `quacc.Remove()` to remove
+        Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
         a pre-existing key entirely.
 
     Returns

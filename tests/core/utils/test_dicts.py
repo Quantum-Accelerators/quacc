@@ -1,22 +1,25 @@
-from quacc.utils.dicts import recursive_dict_merge, remove_dict_nones
+from quacc import Remove
+from quacc.utils.dicts import recursive_dict_merge, remove_dict_entries
 
 
-def test_remove_dict_nones():
+def test_remove_dict_entries():
     d = {
         "output": {
             "output": {
-                "test": [1, None],
+                "test": [1, Remove],
                 "test2": 1,
-                "test3": None,
+                "test3": Remove,
                 "test4": {},
                 "test5": [],
             }
         },
-        "test": None,
+        "test": Remove,
     }
-    d = remove_dict_nones(d)
+    d = remove_dict_entries(d)
     assert d == {
-        "output": {"output": {"test": [1, None], "test2": 1, "test4": {}, "test5": []}}
+        "output": {
+            "output": {"test": [1, Remove], "test2": 1, "test4": {}, "test5": []}
+        }
     }
 
 

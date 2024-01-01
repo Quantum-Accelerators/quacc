@@ -48,7 +48,7 @@ def base_fn(
         The default calculator parameters.
     calc_swaps
         Custom kwargs for the espresso calculator. Set a value to
-        `quacc.Remove()` to remove a pre-existing key entirely. For a list of available
+        `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.espresso.Espresso` calculator.
     parallel_info
         Dictionary of parallelization information.

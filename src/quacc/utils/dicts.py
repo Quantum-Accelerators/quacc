@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 def recursive_dict_merge(*args) -> dict[str, Any]:
     """
     Recursively merge several dictionaries, taking the latter in the list as higher preference.
-    Removes all entries that are isinstance(value, Remove).
+    Removes all entries that are `quacc.Remove`.
 
     Parameters
     ----------
@@ -30,7 +30,7 @@ def recursive_dict_merge(*args) -> dict[str, Any]:
         merged = _recursive_dict_pair_merge(old_dict, args[i + 1])
         old_dict = safe_dict_copy(merged)
 
-    return remove_dict_entries(merged)
+    return remove_dict_entries(merged, entry_to_remove=Remove)
 
 
 def _recursive_dict_pair_merge(
@@ -92,7 +92,9 @@ def safe_dict_copy(d: dict) -> dict:
         return d.copy()
 
 
-def remove_dict_entries(start_dict: dict[str, Any]) -> dict[str, Any]:
+def remove_dict_entries(
+    start_dict: dict[str, Any], entry_to_remove: Any = Remove
+) -> dict[str, Any]:
     """
     For a given dictionary, recursively remove all items that are Remove.
 
@@ -109,12 +111,12 @@ def remove_dict_entries(start_dict: dict[str, Any]) -> dict[str, Any]:
 
     if isinstance(start_dict, dict):
         return {
-            k: remove_dict_entries(v)
+            k: remove_dict_entries(v, entry_to_remove=entry_to_remove)
             for k, v in start_dict.items()
-            if isinstance(v, Remove)
+            if v == entry_to_remove
         }
     return (
-        [remove_dict_entries(v) for v in start_dict]
+        [remove_dict_entries(v, entry_to_remove=entry_to_remove) for v in start_dict]
         if isinstance(start_dict, list)
         else start_dict
     )

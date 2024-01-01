@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 import psutil
 from monty.dev import requires
 
-from quacc import SETTINGS, job, strip_decorator
+from quacc import SETTINGS, Remove, job, strip_decorator
 from quacc.recipes._qchem_legacy._base import base_opt_fn
 from quacc.recipes._qchem_legacy.core import relax_job
 from quacc.utils.dicts import recursive_dict_merge
@@ -100,7 +100,7 @@ def ts_job(
             "pcm_dielectric": pcm_dielectric,
             "smd_solvent": smd_solvent,
             "overwrite_inputs": overwrite_inputs,
-            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
+            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else Remove,
         },
     }
     opt_defaults = {
@@ -201,7 +201,7 @@ def irc_job(
             "pcm_dielectric": pcm_dielectric,
             "smd_solvent": smd_solvent,
             "overwrite_inputs": overwrite_inputs,
-            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
+            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else Remove,
         },
     }
     opt_defaults = {

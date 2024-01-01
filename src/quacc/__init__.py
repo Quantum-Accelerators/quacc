@@ -63,5 +63,4 @@ if SETTINGS.DEBUG:
 
 
 # Custom Remove class
-class Remove:
-    pass
+Remove = object()

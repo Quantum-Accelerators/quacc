@@ -47,12 +47,12 @@ def static_job(
     orcasimpleinput
         Dictionary of `orcasimpleinput` swaps for the calculator. To enable new
         entries, set the value as True. To remove entries from the defaults, set
-        the value as `quacc.Remove()`. For a list of available keys, refer to the
+        the value as `quacc.Remove`. For a list of available keys, refer to the
         `ase.calculators.orca.ORCA` calculator.
     orcablocks
         Dictionary of `orcablocks` swaps for the calculator. To enable new entries,
         set the value as True.To remove entries from the defaults, set
-        the value as `quacc.Remove()`. For a list of available keys, refer to the
+        the value as `quacc.Remove`. For a list of available keys, refer to the
         `ase.calculators.orca.ORCA` calculator.
     nprocs
         Number of processors to use. Defaults to the number of physical cores.

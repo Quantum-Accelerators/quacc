@@ -33,11 +33,11 @@ def static_job(
         True if (p)GFN-FF should be used; False if not.
     keywords
         Dictionary of custom `keyword` kwargs for the GULP calculator. Set a
-        value to `quacc.Remove()` to remove a pre-existing key entirely. For a list of
+        value to `quacc.Remove` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
     options
         Dictionary of custom `options` kwargs for the GULP calculator. Set a
-        value to `quacc.Remove()` to remove a pre-existing key entirely. For a list of
+        value to `quacc.Remove` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
     library
         Filename of the potential library file, if required.
@@ -87,11 +87,11 @@ def relax_job(
         True if the volume should be relaxed; False if not.
     keywords
         Dictionary of custom `keyword` kwargs for the GULP calculator. Set a
-        value to `quacc.Remove()` to remove a pre-existing key entirely. For a list of
+        value to `quacc.Remove` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
     options
         Dictionary of custom `options` kwargs for the GULP calculator. Set a
-        value to `quacc.Remove()` to remove a pre-existing key entirely. For a list of
+        value to `quacc.Remove` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
     library
         Filename of the potential library file, if required.

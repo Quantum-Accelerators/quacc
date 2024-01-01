@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 import psutil
 from ase.optimize import FIRE
 
-from quacc import SETTINGS, job
+from quacc import SETTINGS, Remove, job
 from quacc.recipes._qchem_legacy._base import base_fn, base_opt_fn
 
 try:
@@ -93,8 +93,8 @@ def static_job(
             "pcm_dielectric": pcm_dielectric,
             "smd_solvent": smd_solvent,
             "overwrite_inputs": overwrite_inputs,
-            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
-            "nbo_params": {"version": 7} if SETTINGS.QCHEM_NBO_EXE else None,
+            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else Remove,
+            "nbo_params": {"version": 7} if SETTINGS.QCHEM_NBO_EXE else Remove,
         },
     }
 
@@ -178,7 +178,7 @@ def freq_job(
             "pcm_dielectric": pcm_dielectric,
             "smd_solvent": smd_solvent,
             "overwrite_inputs": overwrite_inputs,
-            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
+            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else Remove,
         },
     }
     return base_fn(
@@ -263,7 +263,7 @@ def relax_job(
             "pcm_dielectric": pcm_dielectric,
             "smd_solvent": smd_solvent,
             "overwrite_inputs": overwrite_inputs,
-            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
+            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else Remove,
         },
     }
     opt_defaults = {

@@ -41,7 +41,7 @@ def base_fn(
     calc_defaults
         The default parameters for the recipe.
     calc_swaps
-        Dictionary of custom kwargs for the Q-Chem calculator. Set a value to `quacc.Remove()` to
+        Dictionary of custom kwargs for the Q-Chem calculator. Set a value to `quacc.Remove` to
         remove a pre-existing key entirely. For a list of available keys, refer to the
         `quacc.calculators._qchem_legacy.qchem.QChem` calculator.
     additional_fields
@@ -94,7 +94,7 @@ def base_opt_fn(
     calc_defaults
         Default arguments for the Q-Chem calculator.
     calc_swaps
-        Dictionary of custom kwargs for the Q-Chem calculator. Set a value to `quacc.Remove()` to
+        Dictionary of custom kwargs for the Q-Chem calculator. Set a value to `quacc.Remove` to
         remove a pre-existing key entirely. For a list of available keys, refer to the
         `quacc.calculators._qchem_legacy.qchem.QChem` calculator.
     opt_defaults

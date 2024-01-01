@@ -42,7 +42,7 @@ def base_fn(
         The default calculator parameters.
     calc_swaps
         Custom kwargs for the Psi4 calculator. Set a value to
-        `quacc.Remove()` to remove a pre-existing key entirely. For a list of available
+        `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.psi4.Psi4` calculator.
     additional_fields
         Any additional fields to supply to the summarizer.
