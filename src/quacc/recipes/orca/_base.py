@@ -52,11 +52,11 @@ def base_fn(
     input_swaps
         Dictionary of orcasimpleinput swaps for the calculator. To enable new
         entries, set the value as True. To remove entries from the defaults, set
-        the value as None.
+        the value as quacc.Remove.
     block_swaps
         Dictionary of orcablock swaps for the calculator. To enable new entries,
-        set the value as True. To remove entries from the defaults, set the
-        value as None.
+        set the value as True. To remove entries from the defaults, set
+        the value as quacc.Remove.
     additional_fields
         Any additional fields to supply to the summarizer.
     copy_files

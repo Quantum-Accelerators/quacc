@@ -4,20 +4,21 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import TYPE_CHECKING
 
+from quacc import Remove
+
 if TYPE_CHECKING:
     from typing import Any
 
 
-def recursive_dict_merge(*args, remove_nones: bool = True) -> dict[str, Any]:
+def recursive_dict_merge(*args) -> dict[str, Any]:
     """
     Recursively merge several dictionaries, taking the latter in the list as higher preference.
+    Removes all entries that are isinstance(value, Remove).
 
     Parameters
     ----------
     *args
         Dictionaries to merge
-    remove_nones
-        If True, recursively remove all items that are None.
 
     Returns
     -------
@@ -29,9 +30,7 @@ def recursive_dict_merge(*args, remove_nones: bool = True) -> dict[str, Any]:
         merged = _recursive_dict_pair_merge(old_dict, args[i + 1])
         old_dict = safe_dict_copy(merged)
 
-    if remove_nones:
-        merged = remove_dict_nones(merged)
-    return merged
+    return remove_dict_entries(merged)
 
 
 def _recursive_dict_pair_merge(
@@ -93,9 +92,9 @@ def safe_dict_copy(d: dict) -> dict:
         return d.copy()
 
 
-def remove_dict_nones(start_dict: dict[str, Any]) -> dict[str, Any]:
+def remove_dict_entries(start_dict: dict[str, Any]) -> dict[str, Any]:
     """
-    For a given dictionary, recursively remove all items that are None.
+    For a given dictionary, recursively remove all items that are Remove.
 
     Parameters
     ----------
@@ -109,9 +108,13 @@ def remove_dict_nones(start_dict: dict[str, Any]) -> dict[str, Any]:
     """
 
     if isinstance(start_dict, dict):
-        return {k: remove_dict_nones(v) for k, v in start_dict.items() if v is not None}
+        return {
+            k: remove_dict_entries(v)
+            for k, v in start_dict.items()
+            if isinstance(v, Remove)
+        }
     return (
-        [remove_dict_nones(v) for v in start_dict]
+        [remove_dict_entries(v) for v in start_dict]
         if isinstance(start_dict, list)
         else start_dict
     )

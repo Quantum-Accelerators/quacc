@@ -24,7 +24,7 @@ def _pick_calculator(
         Name of the calculator to use
     **kwargs
         Custom kwargs for the underlying calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
+        `quacc.Remove()` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `mace.calculators.mace_mp`, `chgnet.model.dynamics.CHGNetCalculator`,
         or `matgl.ext.ase.M3GNetCalculator` calculators.
 

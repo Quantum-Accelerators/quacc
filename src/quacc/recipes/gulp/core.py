@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from quacc import job
+from quacc import Remove, job
 from quacc.recipes.gulp._base import base_fn
 
 if TYPE_CHECKING:
@@ -33,11 +33,11 @@ def static_job(
         True if (p)GFN-FF should be used; False if not.
     keywords
         Dictionary of custom `keyword` kwargs for the GULP calculator. Set a
-        value to `None` to remove a pre-existing key entirely. For a list of
+        value to `quacc.Remove()` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
     options
         Dictionary of custom `options` kwargs for the GULP calculator. Set a
-        value to `None` to remove a pre-existing key entirely. For a list of
+        value to `quacc.Remove()` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
     library
         Filename of the potential library file, if required.
@@ -49,8 +49,8 @@ def static_job(
     """
 
     keyword_defaults = {
-        "gfnff": True if use_gfnff else None,
-        "gwolf": True if use_gfnff else None,
+        "gfnff": True if use_gfnff else Remove,
+        "gwolf": True if use_gfnff else Remove,
     }
     option_defaults = {"dump every gulp.res": True}
 
@@ -87,11 +87,11 @@ def relax_job(
         True if the volume should be relaxed; False if not.
     keywords
         Dictionary of custom `keyword` kwargs for the GULP calculator. Set a
-        value to `None` to remove a pre-existing key entirely. For a list of
+        value to `quacc.Remove()` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
     options
         Dictionary of custom `options` kwargs for the GULP calculator. Set a
-        value to `None` to remove a pre-existing key entirely. For a list of
+        value to `quacc.Remove()` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
     library
         Filename of the potential library file, if required.
@@ -104,9 +104,9 @@ def relax_job(
 
     keyword_defaults = {
         "opti": True,
-        "gfnff": True if use_gfnff else None,
-        "gwolf": True if use_gfnff else None,
-        "conp": True if relax_cell else None,
+        "gfnff": True if use_gfnff else Remove,
+        "gwolf": True if use_gfnff else Remove,
+        "conp": True if relax_cell else Remove,
         "conv": None if relax_cell else True,
     }
     option_defaults = {"dump every gulp.res": True}

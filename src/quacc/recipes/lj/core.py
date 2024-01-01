@@ -36,7 +36,7 @@ def static_job(atoms: Atoms, **calc_kwargs) -> RunSchema:
         Atoms object
     **calc_kwargs
         Dictionary of custom kwargs for the LJ calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
+        `quacc.Remove()` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.lj.LJ` calculator.
 
     Returns
@@ -66,11 +66,11 @@ def relax_job(
         Atoms object
     opt_params
         Dictionary of custom kwargs for the optimization process. Set a value
-        to `None` to remove a pre-existing key entirely. For a list of available
+        to `quacc.Remove()` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
     **calc_kwargs
         Custom kwargs for the LJ calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
+        `quacc.Remove()` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.lj.LJ` calculator.
 
     Returns
@@ -113,7 +113,7 @@ def freq_job(
         Dictionary of kwargs for the `ase.vibrations.Vibrations` class.
     **calc_kwargs
         Dictionary of custom kwargs for the LJ calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
+        `quacc.Remove()` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.lj.LJ` calculator.
 
     Returns

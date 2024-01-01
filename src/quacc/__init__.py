@@ -60,3 +60,8 @@ if SETTINGS.DEBUG:
 
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
+
+
+# Custom Remove class
+class Remove:
+    pass

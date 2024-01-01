@@ -41,7 +41,7 @@ def base_fn(
         The default calculator parameters to use.
     calc_swaps
         Dictionary of custom kwargs for the calculator that would override the
-        calculator defaults. Set a value to `None` to remove a pre-existing key
+        calculator defaults. Set a value to `quacc.Remove()` to remove a pre-existing key
         entirely. For a list of available keys, refer to the
         `ase.calculators.dftb.Dftb` calculator.
     additional_fields

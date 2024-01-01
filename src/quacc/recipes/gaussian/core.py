@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 import psutil
 
-from quacc import job
+from quacc import Remove, job
 from quacc.recipes.gaussian._base import base_fn
 
 if TYPE_CHECKING:
@@ -45,7 +45,7 @@ def static_job(
         File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
     **calc_kwargs
         Custom kwargs for the Gaussian calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
+        `quacc.Remove()` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.gaussian.Gaussian` calculator.
 
     Returns
@@ -112,7 +112,7 @@ def relax_job(
         File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
     **calc_kwargs
         Custom kwargs for the Gaussian calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
+        `quacc.Remove()` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.gaussian.Gaussian` calculator.
 
     Returns
@@ -135,7 +135,7 @@ def relax_job(
         "scf": ["maxcycle=250", "xqc"],
         "integral": "ultrafine",
         "nosymmetry": "",
-        "freq": "" if freq else None,
+        "freq": "" if freq else Remove,
         "ioplist": ["2/9=2000"],  # ASE issue #660
     }
     return base_fn(

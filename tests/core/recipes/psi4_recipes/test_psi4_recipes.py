@@ -1,6 +1,7 @@
 import pytest
 from ase.build import molecule
 
+from quacc import Remove
 from quacc.recipes.psi4.core import static_job
 
 pytest.importorskip("psi4")
@@ -27,7 +28,7 @@ def test_static(tmp_path, monkeypatch):
         method="pbe",
         basis="def2-svp",
         num_threads=1,
-        mem=None,
+        mem=Remove,
         pop="regular",
     )
     assert output["natoms"] == len(atoms)

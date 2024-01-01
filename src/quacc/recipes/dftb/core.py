@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from quacc import job
+from quacc import Remove, job
 from quacc.recipes.dftb._base import base_fn
 
 if TYPE_CHECKING:
@@ -34,7 +34,7 @@ def static_job(
         k-point grid to use.
     **calc_kwargs
         Custom kwargs for the calculator that would override the
-        calculator defaults. Set a value to `None` to remove a pre-existing key
+        calculator defaults. Set a value to `quacc.Remove()` to remove a pre-existing key
         entirely. For a list of available keys, refer to the
         `ase.calculators.dftb.Dftb` calculator.
 
@@ -47,7 +47,7 @@ def static_job(
     calc_defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
         "Hamiltonian_MaxSccIterations": 200,
-        "Hamiltonian_Method": method if "xtb" in method.lower() else None,
+        "Hamiltonian_Method": method if "xtb" in method.lower() else Remove,
         "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
     }
 
@@ -83,7 +83,7 @@ def relax_job(
         positions.
     **calc_kwargs
         Custom kwargs for the calculator that would override the
-        calculator defaults. Set a value to `None` to remove a pre-existing key
+        calculator defaults. Set a value to `quacc.Remove()` to remove a pre-existing key
         entirely. For a list of available keys, refer to the
         `ase.calculators.dftb.Dftb` calculator.
 
@@ -100,8 +100,8 @@ def relax_job(
         "Driver_MaxSteps": 2000,
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
         "Hamiltonian_MaxSccIterations": 200,
-        "Hamiltonian_Method": method if "xtb" in method.lower() else None,
-        "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
+        "Hamiltonian_Method": method if "xtb" in method.lower() else Remove,
+        "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else Remove),
     }
 
     return base_fn(
