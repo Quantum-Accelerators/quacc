@@ -64,7 +64,7 @@ def base_fn(
     """
 
     atoms = Atoms() if atoms is None else atoms
-    calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
+    calc_flags = recursive_dict_merge(calc_defaults, calc_swaps, allowed_nones=["kpts"])
 
     atoms.calc = Espresso(
         input_atoms=atoms,

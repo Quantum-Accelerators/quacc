@@ -28,7 +28,7 @@ def test_static_job(tmp_path, monkeypatch):
     input_data = {"control": {"pseudo_dir": tmp_path}}
 
     results = static_job(
-        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=(1, 1, 1)
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=None
     )
 
     assert_allclose(
@@ -190,7 +190,7 @@ def test_relax_job(tmp_path, monkeypatch):
     input_data = {"control": {"pseudo_dir": tmp_path}}
 
     results = relax_job(
-        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=(1, 1, 1)
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=None
     )
 
     with pytest.raises(AssertionError):
@@ -220,7 +220,7 @@ def test_relax_job_cell(tmp_path, monkeypatch):
         relax_cell=True,
         input_data=input_data,
         pseudopotentials=pseudopotentials,
-        kpts=(1, 1, 1),
+        kpts=None,
     )
 
     with pytest.raises(AssertionError):

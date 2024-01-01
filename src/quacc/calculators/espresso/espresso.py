@@ -298,9 +298,12 @@ class Espresso(Espresso_):
                         "pseudopotentials": pseudopotentials,
                     },
                     self.kwargs,
+                    allowed_nones=["kpts"],
                 )
             else:
-                self._user_calc_params = recursive_dict_merge(calc_preset, self.kwargs)
+                self._user_calc_params = recursive_dict_merge(
+                    calc_preset, self.kwargs, allowed_nones=["kpts"]
+                )
         else:
             self._user_calc_params = self.kwargs
 
