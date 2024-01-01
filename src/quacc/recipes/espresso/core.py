@@ -133,7 +133,7 @@ def relax_job(
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
-        additional_fields={"name": "pw.x Static"},
+        additional_fields={"name": "pw.x Relax"},
         copy_files=copy_files,
     )
 
