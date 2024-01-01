@@ -8,16 +8,22 @@ if TYPE_CHECKING:
     from typing import Any
 
 
-def recursive_dict_merge(*args, remove_nones: bool = True) -> dict[str, Any]:
+def recursive_dict_merge(
+    *args, remove_nones: bool = True, allowed_nones: list[Any] | None = None
+) -> dict[str, Any]:
     """
     Recursively merge several dictionaries, taking the latter in the list as higher preference.
+    It will also remove any keys that are None in the final, merged dictionary if `remove_nones`
+    is True.
 
     Parameters
     ----------
     *args
         Dictionaries to merge
     remove_nones
-        If True, recursively remove all items that are None.
+        If True, recursively remove all items that are None in the final, merged dictionary.
+    allowed_nones
+        List of keys to never remove if `remove_nones` is True.
 
     Returns
     -------
@@ -30,7 +36,7 @@ def recursive_dict_merge(*args, remove_nones: bool = True) -> dict[str, Any]:
         old_dict = safe_dict_copy(merged)
 
     if remove_nones:
-        merged = remove_dict_nones(merged)
+        merged = remove_dict_nones(merged, allowed_nones=allowed_nones)
     return merged
 
 
@@ -93,7 +99,9 @@ def safe_dict_copy(d: dict) -> dict:
         return d.copy()
 
 
-def remove_dict_nones(start_dict: dict[str, Any]) -> dict[str, Any]:
+def remove_dict_nones(
+    start_dict: dict[str, Any], allowed_nones: list[Any] | None = None
+) -> dict[str, Any]:
     """
     For a given dictionary, recursively remove all items that are None.
 
@@ -101,6 +109,8 @@ def remove_dict_nones(start_dict: dict[str, Any]) -> dict[str, Any]:
     ----------
     start_dict
         Dictionary to clean
+    allowed_nones
+        List of keys to never remove
 
     Returns
     -------
@@ -108,10 +118,16 @@ def remove_dict_nones(start_dict: dict[str, Any]) -> dict[str, Any]:
         Cleaned dictionary
     """
 
+    if allowed_nones is None:
+        allowed_nones = []
     if isinstance(start_dict, dict):
-        return {k: remove_dict_nones(v) for k, v in start_dict.items() if v is not None}
+        return {
+            k: remove_dict_nones(v, allowed_nones=allowed_nones)
+            for k, v in start_dict.items()
+            if (v is not None or k in allowed_nones)
+        }
     return (
-        [remove_dict_nones(v) for v in start_dict]
+        [remove_dict_nones(v, allowed_nones=allowed_nones) for v in start_dict]
         if isinstance(start_dict, list)
         else start_dict
     )

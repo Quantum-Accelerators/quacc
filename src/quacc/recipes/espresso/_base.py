@@ -64,7 +64,7 @@ def base_fn(
     """
 
     atoms = Atoms() if atoms is None else atoms
-    calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
+    calc_flags = recursive_dict_merge(calc_defaults, calc_swaps, allowed_nones=["kpts"])
 
     atoms.calc = Espresso(
         input_atoms=atoms,
@@ -75,7 +75,9 @@ def base_fn(
         **calc_flags,
     )
 
-    final_atoms = run_calc(atoms, copy_files=copy_files)
+    geom_file = template.outputname if template.binary == "pw" else None
+
+    final_atoms = run_calc(atoms, geom_file=geom_file, copy_files=copy_files)
 
     return summarize_run(
         final_atoms, input_atoms=atoms, additional_fields=additional_fields

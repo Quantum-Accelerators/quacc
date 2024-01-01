@@ -122,11 +122,8 @@ class EspressoTemplate(EspressoTemplate_):
         """
 
         if self.binary == "pw":
-            results = read(
-                filename=directory / self.outputname,
-                format="espresso-out",
-                full_output=True,
-            )
+            atoms = read(directory / self.outputname, format="espresso-out")
+            results = dict(atoms.calc.properties())
         elif self.binary == "ph":
             with Path.open(directory / self.outputname, "r") as fd:
                 results = read_espresso_ph(fd)
@@ -288,6 +285,10 @@ class Espresso(Espresso_):
                     calc_preset["pseudopotentials"], self.input_atoms
                 )
                 calc_preset.pop("pseudopotentials", None)
+                if "kpts" in self.kwargs:
+                    calc_preset.pop("kspacing", None)
+                if "kspacing" in self.kwargs:
+                    calc_preset.pop("kpts", None)
                 self._user_calc_params = recursive_dict_merge(
                     calc_preset,
                     {
@@ -297,9 +298,12 @@ class Espresso(Espresso_):
                         "pseudopotentials": pseudopotentials,
                     },
                     self.kwargs,
+                    allowed_nones=["kpts"],
                 )
             else:
-                self._user_calc_params = recursive_dict_merge(calc_preset, self.kwargs)
+                self._user_calc_params = recursive_dict_merge(
+                    calc_preset, self.kwargs, allowed_nones=["kpts"]
+                )
         else:
             self._user_calc_params = self.kwargs
 
