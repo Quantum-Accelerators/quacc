@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 from ase.atoms import Atoms
 
 from quacc.settings import QuaccSettings
+from quacc.utils.dicts import Remove
 from quacc.wflow_tools.customizers import redecorate, strip_decorator
 from quacc.wflow_tools.decorators import Flow, Job, Subflow, flow, job, subflow
 
@@ -22,6 +23,7 @@ __all__ = [
     "Subflow",
     "redecorate",
     "strip_decorator",
+    "Remove",
 ]
 
 
@@ -60,20 +62,3 @@ if SETTINGS.DEBUG:
 
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
-
-
-class Remove:
-    """
-    A sentinel class used in quacc to mark a key in a dictionary for removal.
-
-    Note: This is more robust than using `None` as the sentinel value because
-    `None` is a valid value for many keyword arguments. Also, using `object()`
-    as the sentinel value is not robust because its value changes every time
-    it is instantiated, which means an `object()` provided by the user locally
-    will not match an `object()` instantiated on the remote machine.
-    """
-
-    def __init__(self):
-        raise NotImplementedError(
-            "Remove is a sentinel class and should not be instantiated."
-        )
