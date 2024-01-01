@@ -22,7 +22,7 @@ WORKFLOW_ENGINE: # (3)!
 
 2. In YAML, booleans are lowercase. In this case, the setting would ensure that each job in your quacc workflow is stored in a unique, isolated directory.
 
-3. In YAML, a blank value is interpreted as `None` in Python. A value of `null` is equivalent to `quacc.Remove` too. In this case, no workflow engine would be used.
+3. In YAML, a blank value is interpreted as `None` in Python. A value of `null` is equivalent to `None` too. In this case, no workflow engine would be used.
 
 !!! Tip "Command-Line Interface"
 
