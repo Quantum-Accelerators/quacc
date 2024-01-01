@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.1]
+
+### Added
+
+- Adds `quacc.recipes.espresso.core.relax_job` and `quacc.recipes.espresso.core.post_processing_job`
+- `quacc.wflow_tools.customizers.strip_decorator` and `quacc.wflow_tools.customizers.redecorate` are imported in the base `__init__.py` for easy user access
+
+### Changed
+
+- To remove calculator defaults entirely, `quacc.Remove` is recommended in place of `None`
+- The `quacc.wflow_tools.customizers.strip_decorator` function is recommended instead of calling `.__wrapped__`
+
+### Fixed
+
+- Fixed various bugs in the Espresso calculator and recipes
+
 ## [0.5.0]
 
 ### Added
@@ -21,10 +37,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Increased support of `~/` throughout quacc file handling mechanisms
 - Fixed an infinite recursion error when `copy_decompress_files_from_dir` was run in the current working directory.
-
-### Operations
-
-- `PH_KEYS` in Espresso calculator are now imported from ASE directly
 
 ## [0.4.6]
 

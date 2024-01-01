@@ -2,7 +2,7 @@ import contextlib
 
 import pytest
 
-from quacc import SETTINGS, flow, job, subflow
+from quacc import SETTINGS, flow, job, strip_decorator, subflow
 
 parsl = pytest.importorskip("parsl")
 pytestmark = pytest.mark.skipif(
@@ -88,3 +88,26 @@ def test_parsl_decorators_args(tmp_path, monkeypatch):
     assert mult(1, 2).result() == 2
     assert workflow(1, 2, 3).result() == 9
     assert dynamic_workflow(1, 2, 3).result() == [6, 6, 6]
+
+
+def test_strip_decorators():
+    @job
+    def add(a, b):
+        return a + b
+
+    @flow
+    def add2(a, b):
+        return a + b
+
+    @subflow
+    def add3(a, b):
+        return a + b
+
+    stripped_add = strip_decorator(add)
+    assert stripped_add(1, 2) == 3
+
+    stripped_add2 = strip_decorator(add2)
+    assert stripped_add2(1, 2) == 3
+
+    stripped_add3 = strip_decorator(add3)
+    assert stripped_add3(1, 2) == 3

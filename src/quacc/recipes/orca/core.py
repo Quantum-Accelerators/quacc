@@ -147,9 +147,10 @@ def relax_job(
         "opt": True,
         "slowconv": True,
         "normalprint": True,
-        "freq": True if run_freq else None,
         "xyzfile": True,
     }
+    if run_freq:
+        default_inputs["freq"] = True
     default_blocks = {f"%pal nprocs {nprocs} end": True}
 
     return base_fn(

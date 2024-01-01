@@ -12,55 +12,59 @@ The flow itself does not contain computationally intensive tasks. It simply call
 
 A simple, representative flow can be found in [quacc.recipes.vasp.mp.mp_relax_flow][].
 
+!!! Note
+
+    All `#!Python @flow`-decorated functions distributed with quacc must allow for the individual job parameters and decorators to be updated by the user, which is typically done via the [quacc.wflow_tools.customizers.customize_funcs][] function. Refer to the example above for details.
+
 ## Dynamic Flows
 
 quacc fully supports complex, dynamic flows where the number of jobs is not known _a priori_. In this case, a common pattern is the use of a subflow, defined with a `#!Python @subflow` decorator. A subflow is just like a flow, except the returned object is a list of job outputs.
 
-### Minimal Example
+!!! Note "Minimal Example"
 
-Let's do the following:
+    Let's do the following:
 
-1. Add two numbers (e.g. `#!Python 1 + 2`)
-2. Make a list of random length of the output of Step 1 (e.g. `#!Python [3, 3, 3]`)
-3. Add a third number to each element of the list from Step 2 (e.g. `#!Python [3 + 3, 3 + 3, 3 + 3]`)
+    1. Add two numbers (e.g. `#!Python 1 + 2`)
+    2. Make a list of random length of the output of Step 1 (e.g. `#!Python [3, 3, 3]`)
+    3. Add a third number to each element of the list from Step 2 (e.g. `#!Python [3 + 3, 3 + 3, 3 + 3]`)
 
-In practice, we would want each of the two tasks to be their own compute job.
+    In practice, we would want each of the two tasks to be their own compute job.
 
-```mermaid
-graph LR
-  A[Input] --> B(add) --> C(make list)
-  C(make list) --> D(add) --> G[Output]
-  C(make list) --> E(add) --> G[Output]
-  C(make list) --> F(add) --> G[Output]
-```
+    ```mermaid
+    graph LR
+    A[Input] --> B(add) --> C(make list)
+    C(make list) --> D(add) --> G[Output]
+    C(make list) --> E(add) --> G[Output]
+    C(make list) --> F(add) --> G[Output]
+    ```
 
-```python
-from random import randint
-from quacc import flow, job, subflow
+    ```python
+    from random import randint
+    from quacc import flow, job, subflow
 
-@job
-def add(a, b):
-    return a + b
+    @job
+    def add(a, b):
+        return a + b
 
-@job
-def make_list(val):
-    return [val] * randint(2, 5)
+    @job
+    def make_list(val):
+        return [val] * randint(2, 5)
 
-@subflow
-def add_distributed(vals, c):
-    outputs = []
-    for val in vals:
-        output = add(val, c)
-        outputs.append(output)
-    return outputs
+    @subflow
+    def add_distributed(vals, c):
+        outputs = []
+        for val in vals:
+            output = add(val, c)
+            outputs.append(output)
+        return outputs
 
-@flow
-def workflow(a, b, c):
-    output1 = add(a, b)
-    output2 = make_list(output1)
-    output3 = add_distributed(output2, c)
-    return output3
-```
+    @flow
+    def workflow(a, b, c):
+        output1 = add(a, b)
+        output2 = make_list(output1)
+        output3 = add_distributed(output2, c)
+        return output3
+    ```
 
 ### Production Example
 

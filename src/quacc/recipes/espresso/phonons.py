@@ -14,10 +14,7 @@ if TYPE_CHECKING:
 
 @job
 def phonon_job(
-    prev_dir: str | Path,
-    preset: str | None = "basic",
-    parallel_info: dict[str] | None = None,
-    **calc_kwargs,
+    prev_dir: str | Path, parallel_info: dict[str] | None = None, **calc_kwargs
 ) -> RunSchema:
     """
     Function to carry out a basic ph.x calculation.
@@ -25,12 +22,9 @@ def phonon_job(
     Parameters
     ----------
     prev_dir
-        Previous directory where pw.x was run. This is used to copy the entire tree structure
-        of that directory to the working directory of this calculation.
-    preset
-        The name of a YAML file containing a list of parameters to use as
-        a "preset" for the calculator. quacc will automatically look in the
-        `ESPRESSO_PRESET_DIR` (default: quacc/calculators/espresso/presets).
+        Outdir of the previously ran pw.x calculation. This is used to copy
+        the entire tree structure of that directory to the working directory
+        of this calculation.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -41,7 +35,7 @@ def phonon_job(
         - qpts: list[list[float]] | list[tuple[float]] | list[float]
         - nat_todo: list[int]
 
-        See the docstring of [quacc.calculators.espresso.io.write_espresso_ph][] for more information.
+        See the docstring of ase.io.espresso.write_espresso_ph for more information.
 
     Returns
     -------
@@ -61,11 +55,8 @@ def phonon_job(
         "qpts": (0, 0, 0),
     }
 
-    template = EspressoTemplate("ph")
-
     return base_fn(
-        preset=preset,
-        template=template,
+        template=EspressoTemplate("ph"),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,

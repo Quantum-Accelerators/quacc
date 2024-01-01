@@ -50,11 +50,11 @@ def base_fn(
         Default `options` for calculator.
     keyword_swaps
         Dictionary of custom `keyword` kwargs for the GULP calculator. Set a
-        value to `None` to remove a pre-existing key entirely. For a list of
+        value to `quacc.Remove` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
     option_swaps
         Dictionary of custom `options` kwargs for the GULP calculator. Set a
-        value to `None` to remove a pre-existing key entirely. For a list of
+        value to `quacc.Remove` to remove a pre-existing key entirely. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
     additional_fields
         Additional field to supply to the summarizer.
@@ -74,10 +74,9 @@ def base_fn(
 
     option_defaults = recursive_dict_merge(
         option_defaults,
-        {
-            f"output cif {GEOM_FILE_PBC}": True if atoms.pbc.any() else None,
-            f"output xyz {GEOM_FILE_NOPBC}": None if atoms.pbc.any() else True,
-        },
+        {f"output cif {GEOM_FILE_PBC}": True}
+        if atoms.pbc.any()
+        else {f"output xyz {GEOM_FILE_NOPBC}": True},
     )
 
     keywords = recursive_dict_merge(keyword_defaults, keyword_swaps)
