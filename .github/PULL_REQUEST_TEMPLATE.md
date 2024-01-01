@@ -1,5 +1,7 @@
 ## Summary of Changes
 
+\>> Provide a description of your changes here, linking to any associated issue reports. <<
+
 ## Requirements
 
 ### Checklist
