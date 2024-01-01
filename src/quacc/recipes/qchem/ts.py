@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
-from quacc import SETTINGS, job
+from quacc import SETTINGS, job, strip_decorator
 from quacc.recipes.qchem._base import base_opt_fn
 from quacc.recipes.qchem.core import _BASE_SET, relax_job
 from quacc.utils.dicts import recursive_dict_merge
@@ -56,12 +56,12 @@ def ts_job(
         Basis set. Defaults to def2-SVPD.
     opt_params
         Dictionary of custom kwargs for the optimization process. Set a value
-        to `None` to remove a pre-existing key entirely. For a list of available
+        to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
     copy_files
         File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
     **calc_kwargs
-        Custom kwargs for the calculator. Set a value to `None` to remove
+        Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
         a pre-existing key entirely. See [quacc.calculators._qchem_legacy.qchem.QChem][] for more
         details.
 
@@ -130,12 +130,12 @@ def irc_job(
         Basis set. Defaults to def2-SVPD.
     opt_params
         Dictionary of custom kwargs for the optimization process. Set a value
-        to `None` to remove a pre-existing key entirely. For a list of available
+        to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
     copy_files
         File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
     **calc_kwargs
-        Custom kwargs for the calculator. Set a value to `None` to remove
+        Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
         a pre-existing key entirely. See [quacc.calculators._qchem_legacy.qchem.QChem][] for more
         details.
 
@@ -232,10 +232,10 @@ def quasi_irc_job(
     relax_job_kwargs = recursive_dict_merge(relax_job_defaults, relax_job_kwargs)
 
     SETTINGS.CHECK_CONVERGENCE = False
-    irc_summary = irc_job.__wrapped__(atoms, **irc_job_kwargs)
+    irc_summary = strip_decorator(irc_job)(atoms, **irc_job_kwargs)
 
     SETTINGS.CHECK_CONVERGENCE = default_settings.CHECK_CONVERGENCE
-    relax_summary = relax_job.__wrapped__(irc_summary["atoms"], **relax_job_kwargs)
+    relax_summary = strip_decorator(relax_job)(irc_summary["atoms"], **relax_job_kwargs)
 
     relax_summary["initial_irc"] = irc_summary
 

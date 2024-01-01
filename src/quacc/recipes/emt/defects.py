@@ -40,17 +40,21 @@ def bulk_to_defects_flow(
     defect_charge: int = 0,
     run_static: bool = True,
     make_defects_kwargs: dict[str, Any] | None = None,
-    decorators: dict[str, Callable | None] | None = None,
-    parameters: dict[str, Any] | None = None,
+    job_params: dict[str, dict[str, Any]] | None = None,
+    job_decorators: dict[str, Callable | None] | None = None,
 ) -> list[RunSchema | OptSchema]:
     """
     Workflow consisting of:
 
     1. Defect generation
 
-    2. Defect relaxations ("relax_job")
+    2. Defect relaxations
+        - name: "relax_job"
+        - job: [quacc.recipes.emt.core.relax_job][]
 
-    3. Optional defect statics ("static_job")
+    3. Optional defect statics
+        - name: "static_job"
+        - job: [quacc.recipes.emt.core.static_job][]
 
     Parameters
     ----------
@@ -65,12 +69,12 @@ def bulk_to_defects_flow(
     make_defects_kwargs
         Keyword arguments to pass to
         [quacc.atoms.defects.make_defects_from_bulk][]
-    decorators
-        Custom decorators to apply to each Job in the Flow.
-        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
-    parameters
-        Custom parameters to pass to each Job in the Flow.
-        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
+    job_params
+        Custom parameters to pass to each Job in the Flow. This is a dictinoary where
+        the keys are the names of the jobs and the values are dictionaries of parameters.
+    job_decorators
+        Custom decorators to apply to each Job in the Flow. This is a dictionary where
+        the keys are the names of the jobs and the values are decorators.
 
     Returns
     -------
@@ -82,9 +86,10 @@ def bulk_to_defects_flow(
         make_defects_kwargs, {"defect_gen": defect_gen, "defect_charge": defect_charge}
     )
     relax_job_, static_job_ = customize_funcs(
-        {"relax_job": relax_job, "static_job": static_job},
-        decorators=decorators,
-        parameters=parameters,
+        ["relax_job", "static_job"],
+        [relax_job, static_job],
+        parameters=job_params,
+        decorators=job_decorators,
     )
 
     return bulk_to_defects_subflow(

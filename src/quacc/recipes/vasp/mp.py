@@ -56,7 +56,7 @@ def mp_prerelax_job(
         File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
+        `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to the [quacc.calculators.vasp.vasp.Vasp][] calculator.
 
     Returns
@@ -106,7 +106,7 @@ def mp_relax_job(
         File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
     **calc_kwargs
         Dictionary of custom kwargs for the Vasp calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
+        `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to the [quacc.calculators.vasp.vasp.Vasp][] calculator.
 
     Returns
@@ -129,26 +129,30 @@ def mp_relax_job(
 @flow
 def mp_relax_flow(
     atoms: Atoms,
-    decorators: dict[str, Callable | None] | None = None,
-    parameters: dict[str, Any] | None = None,
+    job_params: dict[str, dict[str, Any]] | None = None,
+    job_decorators: dict[str, Callable | None] | None = None,
 ) -> MPRelaxFlowSchema:
     """
     Workflow consisting of:
 
-    1. MP-compatible pre-relax ("mp_prerelax_job")
+    1. MP-compatible pre-relax
+        - name: "mp_prerelax_job"
+        - job: [quacc.recipes.vasp.mp.mp_prerelax_job][]
 
-    2. MP-compatible relax ("mp_relax_job")
+    2. MP-compatible relax
+        - name: "mp_relax_job"
+        - job: [quacc.recipes.vasp.mp.mp_relax_job][]
 
     Parameters
     ----------
     atoms
         Atoms object for the structure.
-    decorators
-        Custom decorators to apply to each Job in the Flow.
-        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
-    parameters
-        Custom parameters to pass to each Job in the Flow.
-        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
+    job_params
+        Custom parameters to pass to each Job in the Flow. This is a dictinoary where
+        the keys are the names of the jobs and the values are dictionaries of parameters.
+    job_decorators
+        Custom decorators to apply to each Job in the Flow. This is a dictionary where
+        the keys are the names of the jobs and the values are decorators.
 
     Returns
     -------
@@ -156,9 +160,10 @@ def mp_relax_flow(
         Dictionary of results
     """
     mp_prerelax_job_, mp_relax_job_ = customize_funcs(
-        {"mp_prerelax_job": mp_prerelax_job, "mp_relax_job": mp_relax_job},
-        decorators=decorators,
-        parameters=parameters,
+        ["mp_prerelax_job", "mp_relax_job"],
+        [mp_prerelax_job, mp_relax_job],
+        parameters=job_params,
+        decorators=job_decorators,
     )
 
     # Run the prerelax

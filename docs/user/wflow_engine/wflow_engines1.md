@@ -69,30 +69,30 @@ graph LR
     atoms = bulk("Cu")
 
     # Define the workflow
-    workflow = flow(relax_job)  # (1)!
+    @flow  # (1)!
+    def workflow(atoms):
+        return relax_job(atoms)  # (2)!
 
     # Dispatch the workflow to the Covalent server
     # with the bulk Cu Atoms object as the input
-    dispatch_id = ct.dispatch(workflow)(atoms)  # (2)!
+    dispatch_id = ct.dispatch(workflow)(atoms)  # (3)!
 
     # Fetch the result from the server
-    result = ct.get_result(dispatch_id, wait=True)  # (3)!
+    result = ct.get_result(dispatch_id, wait=True)  # (4)!
     print(result)
     ```
 
-    1. This is shorthand for the following:
+    1. This can be written more compactly as:
 
         ```python
-        @flow
-        def workflow(atoms):
-            return relax_job(atoms)
+        workflow = flow(relax_job)
         ```
 
-        Also note that the `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
+    2. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
 
-    2. This will dispatch the workflow to the Covalent server.
+    3. This will dispatch the workflow to the Covalent server.
 
-    3. The `ct.get_result` function is used to fetch the workflow status and results from the server. You don't need to set `wait=True` in practice. Once you dispatch the workflow, it will begin running (if the resources are available).
+    4. The `ct.get_result` function is used to fetch the workflow status and results from the server. You don't need to set `wait=True` in practice. Once you dispatch the workflow, it will begin running (if the resources are available).
 
 === "Dask"
 

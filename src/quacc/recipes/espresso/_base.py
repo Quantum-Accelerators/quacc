@@ -48,7 +48,7 @@ def base_fn(
         The default calculator parameters.
     calc_swaps
         Custom kwargs for the espresso calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
+        `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.espresso.Espresso` calculator.
     parallel_info
         Dictionary of parallelization information.
@@ -75,7 +75,9 @@ def base_fn(
         **calc_flags,
     )
 
-    final_atoms = run_calc(atoms, copy_files=copy_files)
+    geom_file = template.outputname if template.binary == "pw" else None
+
+    final_atoms = run_calc(atoms, geom_file=geom_file, copy_files=copy_files)
 
     return summarize_run(
         final_atoms, input_atoms=atoms, additional_fields=additional_fields

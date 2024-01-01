@@ -16,7 +16,7 @@ from monty.json import jsanitize
 from quacc import SETTINGS
 from quacc.schemas.ase import summarize_run
 from quacc.schemas.atoms import atoms_to_metadata
-from quacc.utils.dicts import remove_dict_nones, sort_dict
+from quacc.utils.dicts import clean_task_doc
 from quacc.utils.files import find_recent_logfile
 from quacc.wflow_tools.db import results_to_db
 
@@ -138,7 +138,7 @@ def cclib_summarize_run(
 
     # Create a dictionary of the inputs/outputs
     unsorted_task_doc = run_task_doc | cclib_task_doc | additional_fields
-    task_doc = sort_dict(remove_dict_nones(unsorted_task_doc))
+    task_doc = clean_task_doc(unsorted_task_doc)
 
     # Store the results
     if store:

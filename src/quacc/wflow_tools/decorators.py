@@ -24,9 +24,6 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     All `#!Python @job`-decorated functions are transformed into their corresponding
     decorator.
 
-    The wrapped function can also be stripped of its decorator by calling the
-    `#!Python .__wrapped__` attribute.
-
     ```python
     from quacc import job
 
@@ -114,43 +111,34 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
 
     from quacc import SETTINGS
 
-    wflow_engine = SETTINGS.WORKFLOW_ENGINE
-
     if _func is None:
         return partial(job, **kwargs)
 
-    if wflow_engine == "covalent":
+    elif SETTINGS.WORKFLOW_ENGINE == "covalent":
         import covalent as ct
 
-        decorated = ct.electron(_func, **kwargs)
-    elif wflow_engine == "jobflow":
-        from jobflow import job as jf_job
-
-        decorated = jf_job(_func, **kwargs)
-    elif wflow_engine == "parsl":
-        from parsl import python_app
-
-        decorated = python_app(_func, **kwargs)
-    elif wflow_engine == "redun":
-        from redun import task as redun_task
-
-        decorated = redun_task(_func, **kwargs)
-    elif wflow_engine == "dask":
+        return ct.electron(_func, **kwargs)
+    elif SETTINGS.WORKFLOW_ENGINE == "dask":
         from dask import delayed
 
-        decorated = delayed(_func, **kwargs)
+        return delayed(_func, **kwargs)
+    elif SETTINGS.WORKFLOW_ENGINE == "jobflow":
+        from jobflow import job as jf_job
+
+        return jf_job(_func, **kwargs)
+    elif SETTINGS.WORKFLOW_ENGINE == "parsl":
+        from parsl import python_app
+
+        return python_app(_func, **kwargs)
+    elif SETTINGS.WORKFLOW_ENGINE == "redun":
+        from redun import task as redun_task
+
+        return redun_task(_func, **kwargs)
     else:
-        decorated = _func
-
-    if not hasattr(decorated, "__wrapped__"):
-        decorated.__wrapped__ = _func
-
-    return decorated
+        return _func
 
 
-def flow(
-    _func: Callable | None = None, **kwargs
-) -> Flow:  # sourcery skip: lift-return-into-if, switch
+def flow(_func: Callable | None = None, **kwargs) -> Flow:
     """
     Decorator for workflows, which consist of at least one compute job. This is a
     `#!Python @flow` decorator.
@@ -263,27 +251,19 @@ def flow(
     if _func is None:
         return partial(flow, **kwargs)
 
-    wflow_engine = SETTINGS.WORKFLOW_ENGINE
-    if wflow_engine == "covalent":
+    elif SETTINGS.WORKFLOW_ENGINE == "covalent":
         import covalent as ct
 
-        decorated = ct.lattice(_func, **kwargs)
-    elif wflow_engine == "redun":
+        return ct.lattice(_func, **kwargs)
+    elif SETTINGS.WORKFLOW_ENGINE == "redun":
         from redun import task as redun_task
 
-        decorated = redun_task(_func, **kwargs)
+        return redun_task(_func, **kwargs)
     else:
-        decorated = _func
-
-    if wflow_engine != "covalent" and not hasattr(decorated, "__wrapped__"):
-        decorated.__wrapped__ = _func
-
-    return decorated
+        return _func
 
 
-def subflow(
-    _func: Callable | None = None, **kwargs
-) -> Subflow:  # sourcery skip: lift-return-into-if, switch
+def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
     """
     Decorator for (dynamic) sub-workflows. This is a `#!Python @subflow` decorator.
 
@@ -446,6 +426,7 @@ def subflow(
     callable
         The decorated function.
     """
+    from quacc import SETTINGS
 
     @wraps(_func)
     def _inner(
@@ -473,36 +454,30 @@ def subflow(
         """
         decorator_kwargs = decorator_kwargs if decorator_kwargs is not None else kwargs
 
-        if wflow_engine == "dask":
+        if SETTINGS.WORKFLOW_ENGINE == "dask":
             from dask import delayed
 
             decorated = delayed(_func, **decorator_kwargs)
             return decorated(*f_args, **f_kwargs).compute()
-
-    from quacc import SETTINGS
+        else:
+            raise NotImplementedError("Only Dask is supported for this inner function.")
 
     if _func is None:
         return partial(subflow, **kwargs)
 
-    wflow_engine = SETTINGS.WORKFLOW_ENGINE
-    if wflow_engine == "covalent":
+    elif SETTINGS.WORKFLOW_ENGINE == "covalent":
         import covalent as ct
 
-        decorated = ct.electron(ct.lattice(_func), **kwargs)
-    elif wflow_engine == "parsl":
+        return ct.electron(ct.lattice(_func), **kwargs)
+    elif SETTINGS.WORKFLOW_ENGINE == "parsl":
         from parsl import join_app
 
-        decorated = join_app(_func, **kwargs)
-    elif wflow_engine == "redun":
+        return join_app(_func, **kwargs)
+    elif SETTINGS.WORKFLOW_ENGINE == "redun":
         from redun import task as redun_task
 
-        decorated = redun_task(_func, **kwargs)
-    elif wflow_engine == "dask":
+        return redun_task(_func, **kwargs)
+    elif SETTINGS.WORKFLOW_ENGINE == "dask":
         return _inner
     else:
-        decorated = _func
-
-    if wflow_engine != "covalent" and not hasattr(decorated, "__wrapped__"):
-        decorated.__wrapped__ = _func
-
-    return decorated
+        return _func

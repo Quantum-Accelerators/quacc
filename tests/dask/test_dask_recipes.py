@@ -21,7 +21,7 @@ def test_dask_functools(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
     delayed = bulk_to_slabs_flow(
-        atoms, parameters={"relax_job": {"opt_params": {"fmax": 0.1}}}, run_static=False
+        atoms, job_params={"relax_job": {"opt_params": {"fmax": 0.1}}}, run_static=False
     )
     result = client.gather(client.compute(delayed))
     assert len(result) == 4

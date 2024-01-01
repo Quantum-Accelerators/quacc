@@ -4,8 +4,7 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-
-from quacc.calculators.espresso.io import read_espresso_ph
+from ase.io.espresso import read_espresso_ph
 
 RUN_PATH = Path(__file__).parent / "test_runs"
 

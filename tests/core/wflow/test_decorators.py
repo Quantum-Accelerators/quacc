@@ -35,9 +35,6 @@ def test_decorators(tmp_path, monkeypatch):
     assert workflow(1, 2, 3) == 9
     assert dynamic_workflow(1, 2, 3) == [6, 6, 6]
 
-    assert add.__wrapped__(1, 2) == 3
-    assert mult.__wrapped__(1, 2) == 2
-
 
 def test_decorators_v2(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)

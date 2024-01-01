@@ -44,11 +44,11 @@ def test_espresso_kwargs_handler_v2():
 
     atoms = Atoms(symbols="LiLaOZr")
 
-    calc = Espresso(input_atoms=atoms, preset=preset, kpts=(1, 1, 1))
+    calc = Espresso(input_atoms=atoms, preset=preset, kpts=None)
 
     expected_parameters = {
         "input_data": {"system": {"ecutwfc": 50.0, "ecutrho": 400.0}},
-        "kpts": (1, 1, 1),
+        "kpts": None,
         "pseudopotentials": {
             "O": "O.pbe-n-kjpaw_psl.0.1.UPF",
             "Zr": "Zr_pbe_v1.uspp.F.UPF",
