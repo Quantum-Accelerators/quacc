@@ -116,7 +116,7 @@ def remove_dict_entries(
         return {
             k: remove_dict_entries(v, entry_to_remove=entry_to_remove)
             for k, v in start_dict.items()
-            if v != entry_to_remove
+            if v is not entry_to_remove
         }
     return (
         [remove_dict_entries(v, entry_to_remove=entry_to_remove) for v in start_dict]
