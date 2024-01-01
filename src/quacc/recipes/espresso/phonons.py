@@ -15,9 +15,9 @@ from quacc import Job, flow, job, strip_decorator, subflow
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.calculators.espresso.utils import parse_ph_patterns
 from quacc.recipes.espresso._base import base_fn
-from quacc.recipes.espresso.core import static_job
-from quacc.wflow_tools.customizers import customize_funcs
+from quacc.recipes.espresso.core import static_job, relax_job
 from quacc.utils.dicts import recursive_dict_merge
+from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:
     from typing import Any, Callable
@@ -115,7 +115,7 @@ def _phonon_subflow(
     -------
         list[RunSchema]: A list of results from each phonon job.
     """
-
+    # This will be forced to run locally, do we want that? FYI, test_run is calling the binaries
     ph_test_job_results = strip_decorator(ph_job)(pw_job_results_dir, test_run=True)
     input_data = ph_test_job_results["parameters"]["input_data"]
     prefix = input_data["inputph"].get("prefix", "pwscf")
@@ -191,29 +191,30 @@ def grid_phonon_flow(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
-    calc_defaults = {"static_job": {"input_data": {"electrons": {"conv_thr": 1e-12}}}}
+    calc_defaults = {
+        "relax_job": {
+            "input_data": {
+                "control": {"forc_conv_thr": 5.0e-5},
+                "electrons": {"conv_thr": 1e-12},
+            }
+        }
+    }
 
     job_params = recursive_dict_merge(calc_defaults, job_params)
 
     pw_job, ph_job, recover_ph_job = customize_funcs(
         ["pw_job", "ph_job", "recover_ph_job"],
-        [static_job, phonon_job, phonon_job],
+        [relax_job, phonon_job, phonon_job],
         decorators=job_decorators,
         parameters=job_params,
     )
 
-    # We run a first pw job (single point or relax) depending on the input
-    # ASR: Where is the relax job??
     pw_job_results = pw_job(atoms)
 
-    # Run the phonon subflow
     grid_results = _phonon_subflow(ph_job, pw_job_results["dir_name"], nblocks=nblocks)
 
-    # We have to copy back the files from all of the jobs
     copy_back = [result["dir_name"] for result in grid_results]
 
-    # We run a 'recover' ph job to diagonalize the dynamical matrix
-    # for each q-point.
     input_data = grid_results[-1]["parameters"]["input_data"]
     for k in ["start_q", "last_q", "start_irr", "last_irr"]:
         input_data["inputph"].pop(k)
