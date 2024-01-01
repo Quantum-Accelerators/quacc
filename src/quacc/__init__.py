@@ -72,3 +72,8 @@ class Remove:
     it is instantiated, which means an `object()` provided by the user locally
     will not match an `object()` instantiated on the remote machine.
     """
+
+    def __init__(self):
+        raise NotImplementedError(
+            "Remove is a sentinel class and should not be instantiated."
+        )

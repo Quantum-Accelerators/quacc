@@ -1,3 +1,5 @@
+import pytest
+
 from quacc import Remove
 from quacc.utils.dicts import recursive_dict_merge, remove_dict_entries
 
@@ -59,3 +61,7 @@ def test_recursive_dict_merge2():
         "a": 1,
         "b": {"a": 1, "b": 3, "d": 1},
     }
+
+
+with pytest.asserts(NotImplementedError):
+    Remove()
