@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from typing import TYPE_CHECKING
+from collections.abc import MutableMapping
 
 if TYPE_CHECKING:
     from typing import Any
@@ -41,8 +42,8 @@ def recursive_dict_merge(
 
 
 def _recursive_dict_pair_merge(
-    dict1: dict[str, Any] | None, dict2: dict[str, Any] | None
-) -> dict[str, Any]:
+    dict1: MutableMapping[str, Any] | None, dict2: MutableMapping[str, Any] | None
+) -> MutableMapping[str, Any]:
     """
     Recursively merges two dictionaries. If one of the inputs is `None`, then it is
     treated as `{}`.
@@ -63,13 +64,16 @@ def _recursive_dict_pair_merge(
     dict
         Merged dictionary
     """
-    dict1 = dict1 or {}
-    dict2 = dict2 or {}
+
+    dict1 = dict1 or (dict1.__class__() if dict1 is not None else {})
+    dict2 = dict2 or (dict2.__class__() if dict2 is not None else {})
     merged = safe_dict_copy(dict1)
 
     for key, value in dict2.items():
         if key in merged:
-            if isinstance(merged[key], dict) and isinstance(value, dict):
+            if isinstance(merged[key], MutableMapping) and isinstance(
+                value, MutableMapping
+            ):
                 merged[key] = _recursive_dict_pair_merge(merged[key], value)
             else:
                 merged[key] = value

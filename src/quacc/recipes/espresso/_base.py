@@ -13,6 +13,7 @@ from quacc.calculators.espresso.espresso import (
 from quacc.runners.ase import run_calc
 from quacc.schemas.ase import summarize_run
 from quacc.utils.dicts import recursive_dict_merge
+from ase.io.espresso import Namelist
 
 if TYPE_CHECKING:
     from typing import Any
@@ -64,6 +65,15 @@ def base_fn(
     """
 
     atoms = Atoms() if atoms is None else atoms
+
+    calc_defaults = Namelist(calc_defaults)
+    calc_swaps = Namelist(calc_swaps)
+
+    binary = template.binary if template else "pw"
+
+    calc_defaults.to_nested(binary = binary)
+    calc_swaps.to_nested(binary = binary)
+
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps, allowed_nones=["kpts"])
 
     atoms.calc = Espresso(
