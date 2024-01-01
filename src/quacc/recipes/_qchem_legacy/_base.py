@@ -51,7 +51,7 @@ def base_fn(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
-    qchem_flags = remove_dict_entries(defaults, Remove)
+    qchem_flags = remove_dict_entries(defaults, None)
 
     atoms.calc = QChem(atoms, **qchem_flags)
     final_atoms = run_calc(atoms, copy_files=copy_files)
@@ -102,7 +102,7 @@ def base_opt_fn(
     # TODO:
     #   - passing initial Hessian?
 
-    qchem_flags = remove_dict_entries(calc_defaults, Remove)
+    qchem_flags = remove_dict_entries(calc_defaults, None)
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
     atoms.calc = QChem(atoms, **qchem_flags)
