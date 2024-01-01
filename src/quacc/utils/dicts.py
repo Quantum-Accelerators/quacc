@@ -143,3 +143,21 @@ def sort_dict(start_dict: dict[str, Any]) -> dict[str, Any]:
         k: sort_dict(v) if isinstance(v, dict) else v
         for k, v in sorted(start_dict.items())
     }
+
+
+def clean_task_doc(start_dict: dict[str, Any]) -> dict[str, Any]:
+    """
+    Clean up a task document dictionary by removing all entries
+    that are None and sorting the dictionary alphabetically by key.
+
+    Parameters
+    ----------
+    start_dict
+        Dictionary to clean
+
+    Returns
+    -------
+    dict
+        Cleaned dictionary
+    """
+    return sort_dict(remove_dict_entries(start_dict, None))
