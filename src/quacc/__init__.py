@@ -63,4 +63,13 @@ if SETTINGS.DEBUG:
 
 
 class Remove:
-    pass
+    """
+    A sentinel class used in quacc to mark a key in a dictionary for removal.
+
+    Note: This is more robust than using `None` as the sentinel value because
+    `None` is a valid value for many keyword arguments. Also, using `object()`
+    as the sentinel value is not robust because its value changes every time
+    it is instantiated, which means an `object()` provided by the user locally
+    will not match an `object()` instantiated on the remote machine.
+    """
+

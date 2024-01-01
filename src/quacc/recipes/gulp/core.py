@@ -99,8 +99,9 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
-    keyword_defaults = {"opti": True}
-    keyword_defaults |= {"conp": True} if relax_cell else {"conv": True}
+    keyword_defaults = {"opti": True} | (
+        {"conp": True} if relax_cell else {"conv": True}
+    )
     if use_gfnff:
         keyword_defaults |= {"gfnff": True, "gwolf": True}
 
