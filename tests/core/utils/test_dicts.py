@@ -63,5 +63,6 @@ def test_recursive_dict_merge2():
     }
 
 
-with pytest.asserts(NotImplementedError):
-    Remove()
+def test_remove_instantiation():
+    with pytest.raises(NotImplementedError):
+        Remove()
