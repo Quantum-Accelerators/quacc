@@ -12,7 +12,7 @@ from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
 
 from quacc import SETTINGS
 from quacc.schemas.ase import summarize_run
-from quacc.utils.dicts import remove_dict_nones, sort_dict
+from quacc.utils.dicts import remove_dict_entries, sort_dict
 from quacc.wflow_tools.db import results_to_db
 
 if TYPE_CHECKING:
@@ -121,7 +121,7 @@ def vasp_summarize_run(
 
     # Make task document
     unsorted_task_doc = base_task_doc | vasp_task_doc | additional_fields
-    task_doc = sort_dict(remove_dict_nones(unsorted_task_doc))
+    task_doc = sort_dict(remove_dict_entries(unsorted_task_doc))
 
     # Store the results
     if store:

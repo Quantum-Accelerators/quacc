@@ -38,7 +38,7 @@ def base_fn(
         Default parameters for the recipe.
     calc_swaps
         Dictionary of custom kwargs for the Vasp calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
+        `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to the [quacc.calculators.vasp.vasp.Vasp][] calculator.
     additional_fields
         Additional fields to supply to the summarizer.
@@ -50,7 +50,7 @@ def base_fn(
     VaspSchema
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
-    calc_flags = recursive_dict_merge(calc_defaults, calc_swaps, remove_nones=False)
+    calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
     atoms.calc = Vasp(atoms, preset=preset, **calc_flags)
     atoms = run_calc(atoms, copy_files=copy_files)
