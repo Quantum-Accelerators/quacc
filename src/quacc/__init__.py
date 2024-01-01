@@ -62,5 +62,6 @@ if SETTINGS.DEBUG:
     logger.setLevel(logging.DEBUG)
 
 
-# Custom Remove class
-Remove = object()
+# Custom Remove object
+class Remove:
+    pass
