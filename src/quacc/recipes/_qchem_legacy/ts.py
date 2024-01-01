@@ -100,7 +100,7 @@ def ts_job(
             "pcm_dielectric": pcm_dielectric,
             "smd_solvent": smd_solvent,
             "overwrite_inputs": overwrite_inputs,
-            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
+            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else 100,
         },
     }
     opt_defaults = {
@@ -201,7 +201,7 @@ def irc_job(
             "pcm_dielectric": pcm_dielectric,
             "smd_solvent": smd_solvent,
             "overwrite_inputs": overwrite_inputs,
-            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
+            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else 100,
         },
     }
     opt_defaults = {

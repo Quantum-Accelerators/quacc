@@ -9,22 +9,15 @@ if TYPE_CHECKING:
     from typing import Any
 
 
-def recursive_dict_merge(
-    *args, remove_nones: bool = True, allowed_nones: list[Any] | None = None
-) -> dict[str, Any]:
+def recursive_dict_merge(*args) -> dict[str, Any]:
     """
     Recursively merge several dictionaries, taking the latter in the list as higher preference.
-    It will also remove any keys that are None in the final, merged dictionary if `remove_nones`
-    is True.
+    Also removes any entries that are `quacc.Remove` from the final dictionary.
 
     Parameters
     ----------
     *args
         Dictionaries to merge
-    remove_nones
-        If True, recursively remove all items that are None in the final, merged dictionary.
-    allowed_nones
-        List of keys to never remove if `remove_nones` is True.
 
     Returns
     -------
@@ -36,9 +29,7 @@ def recursive_dict_merge(
         merged = _recursive_dict_pair_merge(old_dict, args[i + 1])
         old_dict = safe_dict_copy(merged)
 
-    if remove_nones:
-        merged = remove_dict_nones(merged, allowed_nones=allowed_nones)
-    return merged
+    return remove_dict_entries(merged, Remove)
 
 
 def _recursive_dict_pair_merge(
@@ -103,8 +94,8 @@ def safe_dict_copy(d: dict) -> dict:
         return d.copy()
 
 
-def remove_dict_nones(
-    start_dict: dict[str, Any], allowed_nones: list[Any] | None = None
+def remove_dict_entries(
+    start_dict: dict[str, Any], remove_trigger: Any
 ) -> dict[str, Any]:
     """
     For a given dictionary, recursively remove all items that are None.
@@ -113,8 +104,8 @@ def remove_dict_nones(
     ----------
     start_dict
         Dictionary to clean
-    allowed_nones
-        List of keys to never remove
+    remove_trigger
+        Value to that triggers removal of the entry
 
     Returns
     -------
@@ -122,16 +113,14 @@ def remove_dict_nones(
         Cleaned dictionary
     """
 
-    if allowed_nones is None:
-        allowed_nones = []
     if isinstance(start_dict, dict):
         return {
-            k: remove_dict_nones(v, allowed_nones=allowed_nones)
+            k: remove_dict_entries(v, remove_trigger)
             for k, v in start_dict.items()
-            if (v is not None or k in allowed_nones)
+            if v is not remove_trigger
         }
     return (
-        [remove_dict_nones(v, allowed_nones=allowed_nones) for v in start_dict]
+        [remove_dict_entries(v, remove_trigger) for v in start_dict]
         if isinstance(start_dict, list)
         else start_dict
     )
@@ -156,3 +145,38 @@ def sort_dict(start_dict: dict[str, Any]) -> dict[str, Any]:
         k: sort_dict(v) if isinstance(v, dict) else v
         for k, v in sorted(start_dict.items())
     }
+
+
+def clean_task_doc(start_dict: dict[str, Any]) -> dict[str, Any]:
+    """
+    Clean up a task document dictionary by removing all entries
+    that are None and sorting the dictionary alphabetically by key.
+
+    Parameters
+    ----------
+    start_dict
+        Dictionary to clean
+
+    Returns
+    -------
+    dict
+        Cleaned dictionary
+    """
+    return sort_dict(remove_dict_entries(start_dict, None))
+
+
+class Remove:
+    """
+    A sentinel class used in quacc to mark a key in a dictionary for removal.
+
+    Note: This is more robust than using `None` as the sentinel value because
+    `None` is a valid value for many keyword arguments. Also, using `object()`
+    as the sentinel value is not robust because its value changes every time
+    it is instantiated, which means an `object()` provided by the user locally
+    will not match an `object()` instantiated on the remote machine.
+    """
+
+    def __init__(self):
+        raise NotImplementedError(
+            "Remove is a sentinel class and should not be instantiated."
+        )
