@@ -8,9 +8,10 @@ from ase import Atoms
 from ase.calculators.espresso import Espresso as Espresso_
 from ase.calculators.espresso import EspressoProfile
 from ase.calculators.espresso import EspressoTemplate as EspressoTemplate_
+from ase.io import read, write
+from ase.io.espresso import read_espresso_ph, write_espresso_ph, write_fortran_namelist
 
 from quacc import SETTINGS
-from quacc.calculators.espresso.io import read, write
 from quacc.calculators.espresso.utils import get_pseudopotential_info
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.utils.files import load_yaml_calc
@@ -85,20 +86,30 @@ class EspressoTemplate(EspressoTemplate_):
         -------
         None
         """
+
         directory = Path(directory)
         self._outdir_handler(parameters, directory)
 
         if self.test_run:
             parameters = self._test_run(parameters, directory)
 
-        write(
-            directory / self.inputname,
-            atoms,
-            binary=self.binary,
-            properties=properties,
-            pseudo_dir=str(profile.pseudo_path),
-            **parameters,
-        )
+        if self.binary == "pw":
+            write(
+                filename=directory / self.inputname,
+                images=atoms,
+                format="espresso-in",
+                pseudo_dir=str(profile.pseudo_path),
+                properties=properties,
+                **parameters,
+            )
+        elif self.binary == "ph":
+            with Path.open(directory / self.inputname, "w") as fd:
+                write_espresso_ph(fd=fd, properties=properties, **parameters)
+        else:
+            with Path.open(directory / self.inputname, "w") as fd:
+                write_fortran_namelist(
+                    fd, binary=self.binary, properties=properties, **parameters
+                )
 
     def _test_run(self, parameters: dict[str, Any], directory: Path) -> dict[str, Any]:
         """
@@ -157,9 +168,21 @@ class EspressoTemplate(EspressoTemplate_):
             The results dictionnary
         """
 
-        results = read(Path(directory) / self.outputname, binary=self.binary)
+        if self.binary == "pw":
+            results = read(
+                filename=directory / self.outputname,
+                format="espresso-out",
+                full_output=True,
+            )
+        elif self.binary == "ph":
+            with Path.open(directory / self.outputname, "r") as fd:
+                results = read_espresso_ph(fd)
+        else:
+            results = {}
+
         if "energy" not in results:
             results["energy"] = None
+
         return results
 
     def _outdir_handler(
