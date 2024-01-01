@@ -1,0 +1,10 @@
+# Last modified: 12-27-2023
+
+input_data:
+  system:
+    occupations: smearing
+    degauss: 0.001
+
+kspacing: 0.03
+
+parent_pseudopotentials: sssp_1.3.0_pbe_efficiency.yaml
