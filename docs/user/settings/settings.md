@@ -10,7 +10,7 @@ The default global quacc settings can be found in the [`settings.py`](https://gi
 
 ### Using a YAML File
 
-!!! Tip "Command-Line Interface"
+!!! Note "Command-Line Interface"
 
     The quacc command-line interface (CLI) lets you update the YAML file from the terminal. You can run `quacc set PARAMETER value` to set a given parameter in the YAML file to the specified value. Similarly, you can run `quacc unset PARAMETER` to remove a parameter from the YAML file.
 
