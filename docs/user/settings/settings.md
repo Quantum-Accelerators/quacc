@@ -30,7 +30,7 @@ WORKFLOW_ENGINE: # (3)!
 
 ??? Tip "When is This Method Ideal?"
 
-    This approach is ideal when you want to change a setting that is to be applied to most or all of your calculations.
+    This approach is ideal when you want to change a setting that applies to most or all of your calculations.
 
 ### Using Environment Variables
 
@@ -38,7 +38,7 @@ If you want to define quacc settings without writing them to a YAML file, you ca
 
 ??? Tip "When is This Method Ideal?"
 
-    This approach is ideal when you want to dynamically modify the quacc settings for a given set of calculations, as the environment variable can be modified in-memory or included in the job's submission script without modifying the YAML file that is read by all other calculations.
+    This approach is ideal when you want to dynamically modify the quacc settings for a given set of calculations, as the environment variable can be modified on-the-fly (e.g. in the job's submission script) without modifying the YAML file that is read by all other calculations.
 
 ### Modifying the Global Settings in a Script
 
@@ -52,4 +52,4 @@ SETTINGS.RESULTS_DIR = "/new/path/to/store/results"
 
 ??? Tip "When is This Method Ideal?"
 
-    This approach is ideal for debugging scenarios, such as when using a Jupyter Notebook. It should not be used when deploying calculations via a workflow engine, as changes to in-memory global variables locally will not be reflected on the remote machine.
+    This approach is ideal for debugging scenarios, such as when using a Jupyter Notebook. Generally, it should not be used when deploying calculations via a workflow engine, as changes to in-memory global variables on the local machine will not be reflected on the remote machine.
