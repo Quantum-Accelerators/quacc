@@ -96,36 +96,32 @@ def phonon_job(
 
 @subflow
 def _phonon_subflow(
+    ph_test_job_results: RunSchema,
     ph_job: Job,
     pw_job_results_dir: str | Path,
     nblocks: int = 1,
-    ph_test_job: Job | None = None,
 ) -> list[RunSchema]:
     """
     This functions is a subflow used in [quacc.recipes.espresso.phonons.grid_phonon_flow][].
-    Feel free to call it directly in your own flow, for example if you already have a
-    pw.x calculation and you simply want to run a grid parallelized ph.x calculation.
 
     Parameters
     ----------
+    ph_test_job_results
+        The results of the phonon test job.
     ph_job
         The phonon job to be executed.
     pw_job_results_dir
         The directory containing the results of the plane-wave job.
     nblocks
         The number of blocks for grouping representations. Defaults to 1.
-    ph_test_job
-        The phonon job to be executed for testing. Defaults to None, which
-        will use the same job as `ph_job`.
 
     Returns
     -------
-        list[RunSchema]: A list of results from each phonon job.
+    list[RunSchema]
+        A list of results from each phonon job.
     """
     if ph_test_job is None:
         ph_test_job = ph_job
-
-    ph_test_job_results = ph_test_job(pw_job_results_dir, test_run=True)
 
     input_data = ph_test_job_results["parameters"]["input_data"]
     prefix = input_data["inputph"].get("prefix", "pwscf")
@@ -237,12 +233,16 @@ def grid_phonon_flow(
         decorators=job_decorators,
     )
 
+    # Run the pw.x relaxation
     pw_job_results = pw_job(atoms)
 
-    grid_results = _phonon_subflow(
-        ph_job, pw_job_results["dir_name"], nblocks=nblocks, ph_test_job=ph_test_job
-    )
+    # Run the cheap ph.x test calculation
+    ph_test_job_results = ph_test_job(pw_job_results["dir_name"], test_run=True)
 
+    # Run the grid ph.x subflow
+    grid_results = _phonon_subflow(ph_test_job_results, ph_job, nblocks=nblocks)
+
+    # Prep for the final recover ph.x job
     copy_back = [result["dir_name"] for result in grid_results]
 
     input_data = grid_results[-1]["parameters"]["input_data"]
