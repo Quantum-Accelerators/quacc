@@ -83,7 +83,7 @@ exclude = ["**/__pycache__"]
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = ["-p no:warnings", "--import-mode=importlib"]
+addopts = ["--import-mode=importlib"]
 xfail_strict = true
 log_cli_level = "warn"
 pythonpath = "src"
