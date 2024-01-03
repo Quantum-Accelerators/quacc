@@ -15,7 +15,7 @@ from quacc import Job, flow, job, strip_decorator, subflow
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.calculators.espresso.utils import parse_ph_patterns
 from quacc.recipes.espresso._base import base_fn
-from quacc.recipes.espresso.core import static_job, relax_job
+from quacc.recipes.espresso.core import relax_job
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs
 
