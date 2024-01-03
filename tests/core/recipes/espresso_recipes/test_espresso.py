@@ -203,7 +203,7 @@ def test_relax_job_cell(tmp_path, monkeypatch):
 
     pseudopotentials = {"Si": "Si.upf"}
     input_data = {
-        "control": {"pseudo_dir": tmp_path, "etot_conv_thr": 1.0e-2},
+        "control": {"pseudo_dir": tmp_path, "etot_conv_thr": 1.0},
         "cell": {"press_conv_thr": 1.0e2},
     }
 
