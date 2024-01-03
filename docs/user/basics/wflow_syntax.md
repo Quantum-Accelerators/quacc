@@ -252,22 +252,22 @@ graph LR
 
     4. The result is extracted from the dictionary by using the UUID of the second job in the workflow.
 
-## Stripping the Decorator from a Job
+??? Tip "Stripping the Decorator from a Job"
 
-If you ever want to strip the decorator from a pre-decorated `#!Python @job` (e.g. to test out a calculation locally without changing your quacc settings), you can do so with [quacc.wflow_tools.customizers.strip_decorator][] as follows:
+    If you ever want to strip the decorator from a pre-decorated `#!Python @job` (e.g. to test out a calculation locally without changing your quacc settings), you can do so with [quacc.wflow_tools.customizers.strip_decorator][] as follows:
 
-```python
-from quacc import job, strip_decorator
-
-
-@job
-def add(a, b):
-    return a + b
+    ```python
+    from quacc import job, strip_decorator
 
 
-original_add = strip_decorator(add)
-original_add(1, 2)  # 3
-```
+    @job
+    def add(a, b):
+        return a + b
+
+
+    original_add = strip_decorator(add)
+    original_add(1, 2)  # 3
+    ```
 
 ## Learn More
 

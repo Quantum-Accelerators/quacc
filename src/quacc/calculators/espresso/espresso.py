@@ -111,6 +111,24 @@ class EspressoTemplate(EspressoTemplate_):
                     fd, binary=self.binary, properties=properties, **parameters
                 )
 
+        if self.binary == "pw":
+            write(
+                filename=directory / self.inputname,
+                images=atoms,
+                format="espresso-in",
+                pseudo_dir=str(profile.pseudo_path),
+                properties=properties,
+                **parameters,
+            )
+        elif self.binary == "ph":
+            with Path.open(directory / self.inputname, "w") as fd:
+                write_espresso_ph(fd=fd, properties=properties, **parameters)
+        else:
+            with Path.open(directory / self.inputname, "w") as fd:
+                write_fortran_namelist(
+                    fd, binary=self.binary, properties=properties, **parameters
+                )
+
     def _test_run(self, parameters: dict[str, Any], directory: Path) -> dict[str, Any]:
         """
         Almost all QE binaries will do a test run if a file named
@@ -169,11 +187,8 @@ class EspressoTemplate(EspressoTemplate_):
         """
 
         if self.binary == "pw":
-            results = read(
-                filename=directory / self.outputname,
-                format="espresso-out",
-                full_output=True,
-            )
+            atoms = read(directory / self.outputname, format="espresso-out")
+            results = dict(atoms.calc.properties())
         elif self.binary == "ph":
             with Path.open(directory / self.outputname, "r") as fd:
                 results = read_espresso_ph(fd)
@@ -335,6 +350,10 @@ class Espresso(Espresso_):
                     calc_preset["pseudopotentials"], self.input_atoms
                 )
                 calc_preset.pop("pseudopotentials", None)
+                if "kpts" in self.kwargs:
+                    calc_preset.pop("kspacing", None)
+                if "kspacing" in self.kwargs:
+                    calc_preset.pop("kpts", None)
                 self._user_calc_params = recursive_dict_merge(
                     calc_preset,
                     {

@@ -13,7 +13,7 @@ from ase.vibrations.data import VibrationsData
 from quacc import SETTINGS, __version__
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.schemas.prep import prep_next_run as prep_next_run_
-from quacc.utils.dicts import recursive_dict_merge, sort_dict
+from quacc.utils.dicts import clean_task_doc, recursive_dict_merge
 from quacc.utils.files import get_uri
 from quacc.wflow_tools.db import results_to_db
 
@@ -111,7 +111,7 @@ def summarize_run(
     unsorted_task_doc = recursive_dict_merge(
         final_atoms_metadata, inputs, results, additional_fields
     )
-    task_doc = sort_dict(unsorted_task_doc)
+    task_doc = clean_task_doc(unsorted_task_doc)
 
     if store:
         results_to_db(store, task_doc)
@@ -209,7 +209,7 @@ def summarize_opt_run(
     unsorted_task_doc = recursive_dict_merge(
         base_task_doc, opt_fields, additional_fields
     )
-    task_doc = sort_dict(unsorted_task_doc)
+    task_doc = clean_task_doc(unsorted_task_doc)
 
     if store:
         results_to_db(store, task_doc)
@@ -322,7 +322,7 @@ def summarize_vib_run(
     unsorted_task_doc = recursive_dict_merge(
         atoms_metadata, inputs, results, additional_fields
     )
-    task_doc = sort_dict(unsorted_task_doc)
+    task_doc = clean_task_doc(unsorted_task_doc)
 
     if store:
         results_to_db(store, task_doc)
@@ -412,7 +412,7 @@ def summarize_ideal_gas_thermo(
     unsorted_task_doc = recursive_dict_merge(
         atoms_metadata, inputs, results, additional_fields
     )
-    task_doc = sort_dict(unsorted_task_doc)
+    task_doc = clean_task_doc(unsorted_task_doc)
 
     if store:
         results_to_db(store, task_doc)
@@ -474,7 +474,7 @@ def summarize_vib_and_thermo(
     unsorted_task_doc = recursive_dict_merge(
         vib_task_doc, thermo_task_doc, additional_fields
     )
-    task_doc = sort_dict(unsorted_task_doc)
+    task_doc = clean_task_doc(unsorted_task_doc)
 
     if store:
         results_to_db(store, task_doc)

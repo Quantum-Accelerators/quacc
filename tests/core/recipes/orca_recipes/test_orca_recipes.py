@@ -3,6 +3,7 @@ import os
 import pytest
 from ase.build import molecule
 
+from quacc import Remove
 from quacc.recipes.orca.core import relax_job, static_job
 
 
@@ -33,7 +34,7 @@ def test_static_job_parallel(tmp_path, monkeypatch):
         atoms,
         charge=-2,
         spin_multiplicity=3,
-        orcasimpleinput={"def2-svp": True, "def2-tzvp": None},
+        orcasimpleinput={"def2-svp": True, "def2-tzvp": Remove},
         orcablocks={"%scf maxiter 300 end": True},
         nprocs=2,
     )
@@ -69,9 +70,9 @@ def test_relax_job(tmp_path, monkeypatch):
         spin_multiplicity=3,
         orcasimpleinput={
             "hf": True,
-            "wb97x-d3bj": None,
+            "wb97x-d3bj": Remove,
             "def2-svp": True,
-            "def2-tzvp": None,
+            "def2-tzvp": Remove,
         },
         orcablocks={"%scf maxiter 300 end": True},
         nprocs=2,
