@@ -123,11 +123,11 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 
 <center>
 
-| Name            | Decorator       | Documentation                              | Req'd Extras |
-| --------------- | --------------- | ------------------------------------------ | ------------ |
-| ORCA Static     | `#!Python @job` | [quacc.recipes.orca.core.static_job][]     |              |
-| ORCA Relax      | `#!Python @job` | [quacc.recipes.orca.core.relax_job][]      |              |
-| ORCA ASE Relax  | `#!Python @job` | [quacc.recipes.orca.core.ase_relax_job][]  |              |
+| Name           | Decorator       | Documentation                             | Req'd Extras |
+| -------------- | --------------- | ----------------------------------------- | ------------ |
+| ORCA Static    | `#!Python @job` | [quacc.recipes.orca.core.static_job][]    |              |
+| ORCA Relax     | `#!Python @job` | [quacc.recipes.orca.core.relax_job][]     |              |
+| ORCA ASE Relax | `#!Python @job` | [quacc.recipes.orca.core.ase_relax_job][] |              |
 
 </center>
 
