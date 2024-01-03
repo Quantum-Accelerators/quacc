@@ -338,8 +338,7 @@ def test_phonon_grid(tmp_path, monkeypatch):
     atoms = bulk("Si")
 
     input_data = {
-        "system": {"occupations": "smearing", "smearing": "gaussian", "degauss": 0.005},
-        "electrons": {"mixing_mode": "plain", "mixing_beta": 0.6, "conv_thr": 1.0e-5},
+        "electrons": {"conv_thr": 1.0e-5},
         "control": {"pseudo_dir": tmp_path},
     }
 
@@ -372,8 +371,7 @@ def test_phonon_grid_v2(tmp_path, monkeypatch):
     atoms = bulk("Li", "bcc", orthorhombic=True)
 
     input_data = {
-        "system": {"occupations": "smearing", "smearing": "gaussian", "degauss": 0.005},
-        "electrons": {"mixing_mode": "plain", "mixing_beta": 0.6, "conv_thr": 1.0e-5},
+        "electrons": {"conv_thr": 1.0e-5},
         "control": {"pseudo_dir": tmp_path},
     }
 
