@@ -224,6 +224,7 @@ def ase_relax_job(
     default_inputs = {
         xc: True,
         basis: True,
+        "engrad": True,
         "slowconv": True,
         "normalprint": True,
         "xyzfile": True,

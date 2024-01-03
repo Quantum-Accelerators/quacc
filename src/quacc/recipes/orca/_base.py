@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from ase.calculators.orca import ORCA, OrcaProfile, OrcaTemplate
 
 from quacc import SETTINGS
+from quacc.atoms.core import get_final_atoms_from_dyn
 from quacc.runners.ase import run_calc, run_opt
 from quacc.schemas.ase import summarize_opt_run
 from quacc.schemas.cclib import cclib_summarize_run
@@ -150,8 +151,13 @@ def base_opt_fn(
     )
     dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
 
-    return summarize_opt_run(
+    final_atoms = get_final_atoms_from_dyn(dyn)
+    cclib_summary = cclib_summarize_run(
+        final_atoms, LOG_FILE, additional_fields=additional_fields
+    )
+    opt_run_summary = summarize_opt_run(
         dyn,
         charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields=additional_fields,
     )
+    return recursive_dict_merge(opt_run_summary, cclib_summary)
