@@ -98,10 +98,10 @@ def phonon_job(
 # overall I would argue to globally
 # change the name of these jobs to distinguish them from other kind of
 # phonon calculations. ph.x is not limited to phonon calculations after all.
-# 2. Shouldn't the test_job also be run in this subflow? It would be
+# 2. Shouldn't the test_job also run in this subflow? It would be
 # easier for users who want to use this for custom workflows.
 @subflow
-def _phonon_subflow(
+def _grid_phonon_subflow(
     input_data: dict,
     ph_test_job_dir: str | Path,
     pw_job_dir: str | Path,
@@ -188,7 +188,7 @@ def grid_phonon_flow(
         - job: [quacc.recipes.espresso.core.relax_job][]
 
     2. ph.x calculation test_run
-        - name: "cheap_job"
+        - name: "ph_test_job"
         - job: [quacc.recipes.espresso.phonons.phonon_job][]
 
     3. (n * m) / nblocks ph.x calculations
@@ -196,7 +196,7 @@ def grid_phonon_flow(
         - job: [quacc.recipes.espresso.phonons.phonon_job][]
 
     4. ph.x calculation to gather data and diagonalize each dynamical matrix
-        - name: "cheap_job"
+        - name: "ph_recover_job"
         - job: [quacc.recipes.espresso.phonons.phonon_job][]
 
     Parameters
@@ -237,7 +237,7 @@ def grid_phonon_flow(
     # I guess that users will keep forgetting about it and be surprised
     # changing their parameters when writing custom flow?
     pw_job, ph_test_job, ph_job, recover_ph_job = customize_funcs(
-        ["pw_job", "cheap_job", "ph_job", "cheap_job"],
+        ["pw_job", "ph_test_job", "ph_job", "ph_recover_job"],
         [relax_job, phonon_job, phonon_job, phonon_job],
         parameters=job_params,
         decorators=job_decorators,
@@ -257,7 +257,7 @@ def grid_phonon_flow(
 
     # Run the grid ph.x subflow
     #
-    grid_results = _phonon_subflow(
+    grid_results = _grid_phonon_subflow(
         ph_job_input_data,
         ph_test_job_results["dir_name"],
         pw_job_results["dir_name"],
