@@ -202,7 +202,10 @@ def test_relax_job_cell(tmp_path, monkeypatch):
     atoms = bulk("Si")
 
     pseudopotentials = {"Si": "Si.upf"}
-    input_data = {"control": {"pseudo_dir": tmp_path}}
+    input_data = {
+        "control": {"pseudo_dir": tmp_path, "etot_conv_thr": 1.0e-2},
+        "press_conv_thr": 1.0e2,
+    }
 
     results = relax_job(
         atoms,
@@ -300,7 +303,7 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
     nat_todo = [1]
 
     ph_results = phonon_job(
-        pw_results["dir_name"], input_data=ph_loose, qpts=qpts, nat_todo=nat_todo
+        pw_results["dir_name"], input_data=ph_loose, qpts=qpts, nat_todo_list=nat_todo
     )
 
     assert (0, 0, 0) in ph_results["results"]
