@@ -204,7 +204,7 @@ def test_relax_job_cell(tmp_path, monkeypatch):
     pseudopotentials = {"Si": "Si.upf"}
     input_data = {
         "control": {"pseudo_dir": tmp_path, "etot_conv_thr": 1.0},
-        "cell": {"press_conv_thr": 1.0e2},
+        "cell": {"press_conv_thr": 1.5e2},
     }
 
     results = relax_job(
@@ -339,7 +339,7 @@ def test_phonon_grid(tmp_path, monkeypatch):
 
     input_data = {
         "system": {"occupations": "smearing", "smearing": "gaussian", "degauss": 0.005},
-        "electrons": {"mixing_mode": "plain", "mixing_beta": 0.6, "conv_thr": 1.0e-6},
+        "electrons": {"mixing_mode": "plain", "mixing_beta": 0.6, "conv_thr": 1.0e-5},
         "control": {"pseudo_dir": tmp_path},
     }
 
@@ -373,7 +373,7 @@ def test_phonon_grid_v2(tmp_path, monkeypatch):
 
     input_data = {
         "system": {"occupations": "smearing", "smearing": "gaussian", "degauss": 0.005},
-        "electrons": {"mixing_mode": "plain", "mixing_beta": 0.6, "conv_thr": 1.0e-6},
+        "electrons": {"mixing_mode": "plain", "mixing_beta": 0.6, "conv_thr": 1.0e-5},
         "control": {"pseudo_dir": tmp_path},
     }
 
