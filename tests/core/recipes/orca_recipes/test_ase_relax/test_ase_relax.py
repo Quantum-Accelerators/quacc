@@ -18,7 +18,7 @@ def test_ase_relax_job(tmp_path, monkeypatch):
 
     atoms = molecule("H2")
 
-    output = ase_relax_job(atoms, opt_params={"max_steps": 2}, nprocs=1)
+    output = ase_relax_job(atoms, opt_params={"fmax": 0.1}, nprocs=1)
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
