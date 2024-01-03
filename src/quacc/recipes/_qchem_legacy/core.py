@@ -93,7 +93,7 @@ def static_job(
             "pcm_dielectric": pcm_dielectric,
             "smd_solvent": smd_solvent,
             "overwrite_inputs": overwrite_inputs,
-            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
+            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else 100,
             "nbo_params": {"version": 7} if SETTINGS.QCHEM_NBO_EXE else None,
         },
     }
@@ -178,7 +178,7 @@ def freq_job(
             "pcm_dielectric": pcm_dielectric,
             "smd_solvent": smd_solvent,
             "overwrite_inputs": overwrite_inputs,
-            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
+            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else 100,
         },
     }
     return base_fn(
@@ -263,7 +263,7 @@ def relax_job(
             "pcm_dielectric": pcm_dielectric,
             "smd_solvent": smd_solvent,
             "overwrite_inputs": overwrite_inputs,
-            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
+            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else 100,
         },
     }
     opt_defaults = {

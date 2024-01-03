@@ -1,6 +1,7 @@
 """Functions to customize workflow steps."""
 from __future__ import annotations
 
+from copy import deepcopy
 from functools import partial
 from typing import TYPE_CHECKING
 
@@ -25,8 +26,6 @@ def strip_decorator(func: Callable) -> Callable:
     from quacc import SETTINGS
 
     if SETTINGS.WORKFLOW_ENGINE == "covalent":
-        from covalent._workflow.lattice import Lattice
-
         if hasattr(func, "electron_object"):
             func = func.electron_object.function
 
@@ -41,11 +40,7 @@ def strip_decorator(func: Callable) -> Callable:
         if hasattr(func, "original"):
             func = func.original
 
-    elif SETTINGS.WORKFLOW_ENGINE == "parsl":
-        if hasattr(func, "func"):
-            func = func.func
-
-    elif SETTINGS.WORKFLOW_ENGINE == "redun":
+    elif SETTINGS.WORKFLOW_ENGINE in ("parsl", "redun"):
         if hasattr(func, "func"):
             func = func.func
 
@@ -136,8 +131,6 @@ def customize_funcs(
     if not isinstance(funcs, (list, tuple)):
         funcs = [funcs]
 
-    funcs_dict = dict(zip(names, funcs))
-
     if "all" in names:
         raise ValueError("Invalid function name: 'all' is a reserved name.")
     if bad_decorator_keys := [k for k in decorators if k not in names and k != "all"]:
@@ -149,16 +142,16 @@ def customize_funcs(
             f"Invalid parameter keys: {bad_parameter_keys}. Valid keys are: {names}"
         )
 
-    for func_name, func in funcs_dict.items():
-        func_ = func
+    for i, func in enumerate(funcs):
+        func_ = deepcopy(func)
         if params := parameters.get("all"):
             func_ = update_parameters(func_, params)
-        if params := parameters.get(func_name):
+        if params := parameters.get(names[i]):
             func_ = update_parameters(func_, params)
         if "all" in decorators:
             func_ = redecorate(func_, decorators["all"])
-        if func_name in decorators:
-            func_ = redecorate(func_, decorators[func_name])
+        if names[i] in decorators:
+            func_ = redecorate(func_, decorators[names[i]])
         updated_funcs.append(func_)
 
     return updated_funcs[0] if len(updated_funcs) == 1 else tuple(updated_funcs)
