@@ -340,12 +340,16 @@ def test_phonon_grid(tmp_path, monkeypatch):
         "control": {"pseudo_dir": tmp_path},
     }
 
-    ph_loose = {"inputph": {"tr2_ph": 1e-8}}
+    ph_loose = {"inputph": {"tr2_ph": 1e-6}}
 
     pseudopotentials = {"Si": "Si.upf"}
 
     job_params = {
-        "pw_job": {"input_data": input_data, "pseudopotentials": pseudopotentials},
+        "pw_job": {
+            "input_data": input_data,
+            "pseudopotentials": pseudopotentials,
+            "kspacing": 0.5,
+        },
         "ph_job": {"input_data": ph_loose},
     }
 
@@ -370,12 +374,16 @@ def test_phonon_grid_v2(tmp_path, monkeypatch):
         "control": {"pseudo_dir": tmp_path},
     }
 
-    ph_loose = {"inputph": {"tr2_ph": 1e-8}}
+    ph_loose = {"inputph": {"tr2_ph": 1e-6}}
 
     pseudopotentials = {"Li": "Li.upf"}
 
     job_params = {
-        "pw_job": {"input_data": input_data, "pseudopotentials": pseudopotentials},
+        "pw_job": {
+            "input_data": input_data,
+            "pseudopotentials": pseudopotentials,
+            "kspacing": 0.5,
+        },
         "ph_job": {"input_data": ph_loose},
     }
 
