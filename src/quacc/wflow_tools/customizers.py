@@ -1,6 +1,7 @@
 """Functions to customize workflow steps."""
 from __future__ import annotations
 
+from copy import deepcopy
 from functools import partial
 from typing import TYPE_CHECKING
 
@@ -144,7 +145,7 @@ def customize_funcs(
         )
 
     for func_name, func in funcs_dict.items():
-        func_ = func
+        func_ = deepcopy(func)
         if params := parameters.get("all"):
             func_ = update_parameters(func_, params)
         if params := parameters.get(func_name):

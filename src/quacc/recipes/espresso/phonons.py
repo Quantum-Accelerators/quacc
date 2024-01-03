@@ -96,7 +96,10 @@ def phonon_job(
 
 @subflow
 def _phonon_subflow(
-    ph_job: Job, pw_job_results_dir: str | Path, nblocks: int = 1
+    ph_job: Job,
+    pw_job_results_dir: str | Path,
+    nblocks: int = 1,
+    ph_test_job: Job | None = None,
 ) -> list[RunSchema]:
     """
     This functions is a subflow used in [quacc.recipes.espresso.phonons.grid_phonon_flow][].
@@ -105,21 +108,25 @@ def _phonon_subflow(
 
     Parameters
     ----------
-        ph_job:
-            The phonon job to be executed.
-
-        pw_job_results_dir
-            The directory containing the results of the plane-wave job.
-
-        nblocks
-            The number of blocks for grouping representations. Defaults to 1.
+    ph_job
+        The phonon job to be executed.
+    pw_job_results_dir
+        The directory containing the results of the plane-wave job.
+    nblocks
+        The number of blocks for grouping representations. Defaults to 1.
+    ph_test_job
+        The phonon job to be executed for testing. Defaults to None, which
+        will use the same job as `ph_job`.
 
     Returns
     -------
         list[RunSchema]: A list of results from each phonon job.
     """
-    # This will be forced to run locally, do we want that? FYI, test_run is calling the binaries
-    ph_test_job_results = strip_decorator(ph_job)(pw_job_results_dir, test_run=True)
+    if ph_test_job is None:
+        ph_test_job = ph_job
+
+    ph_test_job_results = ph_test_job(pw_job_results_dir, test_run=True)
+
     input_data = ph_test_job_results["parameters"]["input_data"]
     prefix = input_data["inputph"].get("prefix", "pwscf")
     ph_patterns = parse_ph_patterns(ph_test_job_results["dir_name"], prefix)
@@ -179,7 +186,7 @@ def grid_phonon_flow(
         - job: [quacc.recipes.espresso.core.relax_job][]
 
     2. ph.x calculation test_run
-        - name: "ph_job"
+        - name: "cheap_job"
         - job: [quacc.recipes.espresso.phonons.phonon_job][]
 
     3. (n * m) / nblocks ph.x calculations
@@ -187,7 +194,7 @@ def grid_phonon_flow(
         - job: [quacc.recipes.espresso.phonons.phonon_job][]
 
     4. ph.x calculation to gather data and diagonalize each dynamical matrix
-        -name: "recover_ph_job"
+        - name: "cheap_job"
         - job: [quacc.recipes.espresso.phonons.phonon_job][]
 
     Parameters
@@ -213,7 +220,7 @@ def grid_phonon_flow(
     """
 
     calc_defaults = {
-        "relax_job": {
+        "pw_job": {
             "input_data": {
                 "control": {"forc_conv_thr": 5.0e-5},
                 "electrons": {"conv_thr": 1e-12},
@@ -223,16 +230,18 @@ def grid_phonon_flow(
 
     job_params = recursive_dict_merge(calc_defaults, job_params)
 
-    pw_job, ph_job, recover_ph_job = customize_funcs(
-        ["pw_job", "ph_job", "recover_ph_job"],
-        [relax_job, phonon_job, phonon_job],
-        decorators=job_decorators,
+    pw_job, ph_test_job, ph_job, recover_ph_job = customize_funcs(
+        ["pw_job", "cheap_job", "ph_job", "cheap_job"],
+        [relax_job, phonon_job, phonon_job, phonon_job],
         parameters=job_params,
+        decorators=job_decorators,
     )
 
     pw_job_results = pw_job(atoms)
 
-    grid_results = _phonon_subflow(ph_job, pw_job_results["dir_name"], nblocks=nblocks)
+    grid_results = _phonon_subflow(
+        ph_job, pw_job_results["dir_name"], nblocks=nblocks, ph_test_job=ph_test_job
+    )
 
     copy_back = [result["dir_name"] for result in grid_results]
 
