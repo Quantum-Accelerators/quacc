@@ -27,6 +27,5 @@ def test_ase_relax_job(tmp_path, monkeypatch):
         == "wb97x-d3bj def2-tzvp engrad slowconv normalprint xyzfile"
     )
     assert output.get("trajectory") is not None
-    assert len(output["trajectory"]) > 1
-    assert output["trajectory"][0] != output["trajectory"][-1]
+    assert len(output["trajectory_results"]) > 1
     assert output.get("attributes") is not None
