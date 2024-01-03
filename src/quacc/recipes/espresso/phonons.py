@@ -98,7 +98,7 @@ def phonon_job(
 def _phonon_subflow(
     input_data: dict,
     ph_test_job_dir: str | Path,
-    pw_job_results_dir: str | Path,
+    pw_job_dir: str | Path,
     ph_job: Job,
     nblocks: int = 1,
 ) -> list[RunSchema]:
@@ -111,7 +111,7 @@ def _phonon_subflow(
         The input_data from the phonon test job.
     ph_test_job_dir
         The directory containing the results of the phonon test job.
-    pw_job_results_dir
+    pw_job_dir
         The directory containing the results of the plane-wave job.
     ph_job
         The phonon job to be executed.
@@ -139,7 +139,7 @@ def _phonon_subflow(
         for representation in repr_to_do:
             input_data["inputph"]["start_irr"] = representation[0]
             input_data["inputph"]["last_irr"] = representation[-1]
-            ph_job_results = ph_job(pw_job_results_dir, input_data=input_data)
+            ph_job_results = ph_job(pw_job_dir, input_data=input_data)
             grid_results.append(ph_job_results)
     return grid_results
 
