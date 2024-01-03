@@ -1,8 +1,8 @@
 import os
 from pathlib import Path
 
-TEST_RESULTS_DIR = Path(__file__).parent / ".test_results"
-TEST_SCRATCH_DIR = Path(__file__).parent / ".test_scratch"
+TEST_RESULTS_DIR = Path(__file__).parent / "test_results"
+TEST_SCRATCH_DIR = Path(__file__).parent / "test_scratch"
 
 
 def pytest_sessionstart():

@@ -1,4 +1,4 @@
 DEBUG: true
-RESULTS_DIR: ./.test_results
-SCRATCH_DIR: ./.test_scratch
+RESULTS_DIR: ./test_results
+SCRATCH_DIR: ./test_scratch
 WORKFLOW_ENGINE: covalent
