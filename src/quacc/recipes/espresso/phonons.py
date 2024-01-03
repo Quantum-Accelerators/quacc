@@ -1,7 +1,11 @@
 """
-This module, 'phonons.py', contains recipes for performing phonon calculations using the ph.x binary from Quantum ESPRESSO via the quacc library. The recipes provided in this module are jobs and flows that can be used to perform phonon calculations in different fashion. Please refer to the individual function docstrings for more detailed information on their usage and parameters.
+This module, 'phonons.py', contains recipes for performing phonon calculations
+using the ph.x binary from Quantum ESPRESSO via the quacc library. The recipes
+provided in this module are jobs and flows that can be used to perform phonon
+calculations in different fashion. Please refer to the individual function
+docstrings for more detailed information on their usage and parameters.
 
-If you don't know how to proceed, please consult [] to learn how to use the
+TODO: If you don't know how to proceed, please consult [] to learn how to use the
 quacc espresso calculator from basics to advanced.
 """
 from __future__ import annotations
@@ -36,10 +40,10 @@ def phonon_job(
 ) -> RunSchema:
     """
     Function to carry out a basic ph.x calculation. It should allow you to
-    use all the features of the ph.x binary (https://www.quantum-espresso.org/Doc/INPUT_PH.html)
+    use all the features of the [ph.x binary](https://www.quantum-espresso.org/Doc/INPUT_PH.html)
 
     This job requires the results of a previous pw.x calculation, you might
-    want to create your own flow to run both jobs in sequence. If you don't know how to do it please consult [].
+    want to create your own flow to run both jobs in sequence.
 
     Parameters
     ----------
@@ -95,10 +99,9 @@ def _phonon_subflow(
     ph_job: Job, pw_job_results_dir: str | Path, nblocks: int = 1
 ) -> list[RunSchema]:
     """
-    This functions is a subflow used in [quacc.recipes.espresso.phonons.grid_phonon_flow][]. Feel free to call it directly in your own flow, for
-    example if you already have a pw.x calculation and you simply want to run a grid parallelized ph.x calculation.
-
-    If you don't know how to create your own flow, please consult [].
+    This functions is a subflow used in [quacc.recipes.espresso.phonons.grid_phonon_flow][].
+    Feel free to call it directly in your own flow, for example if you already have a
+    pw.x calculation and you simply want to run a grid parallelized ph.x calculation.
 
     Parameters
     ----------

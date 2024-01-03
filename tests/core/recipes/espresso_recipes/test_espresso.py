@@ -330,9 +330,7 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
 def test_phonon_grid(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    pp_dir = Path(__file__).parent
-
-    copy_decompress_files([pp_dir / "Si.upf.gz"], tmp_path)
+    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
 
     atoms = bulk("Si")
 
@@ -358,14 +356,13 @@ def test_phonon_grid(tmp_path, monkeypatch):
     for key in sections:
         assert key in grid_results["results"][(0, 0, 0)]
 
+
 def test_phonon_grid_v2(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    pp_dir = Path(__file__).parent
+    copy_decompress_files([DATA_DIR / "Li.upf.gz"], tmp_path)
 
-    copy_decompress_files([pp_dir / "Li.upf.gz"], tmp_path)
-
-    atoms = bulk("Li", 'bcc', orthorhombic=True)
+    atoms = bulk("Li", "bcc", orthorhombic=True)
 
     input_data = {
         "system": {"occupations": "smearing", "smearing": "gaussian", "degauss": 0.005},

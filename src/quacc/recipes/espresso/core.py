@@ -146,7 +146,7 @@ def post_processing_job(
     Function to carry out a basic pp.x calculation (post-processing).
     It is mainly used to extract the charge density from a previous pw.x calculation.
     and perform simple to complex post-processing on it. Fore more details please see
-    (https://www.quantum-espresso.org/Doc/INPUT_PP.html)
+    https://www.quantum-espresso.org/Doc/INPUT_PP.html
 
     Parameters
     ----------
