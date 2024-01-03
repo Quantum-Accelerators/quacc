@@ -96,9 +96,10 @@ def phonon_job(
 
 @subflow
 def _phonon_subflow(
-    ph_test_job_results: RunSchema,
-    ph_job: Job,
+    input_data: dict,
+    ph_test_job_dir: str | Path,
     pw_job_results_dir: str | Path,
+    ph_job: Job,
     nblocks: int = 1,
 ) -> list[RunSchema]:
     """
@@ -106,12 +107,14 @@ def _phonon_subflow(
 
     Parameters
     ----------
-    ph_test_job_results
-        The results of the phonon test job.
-    ph_job
-        The phonon job to be executed.
+    input_data
+        The input_data from the phonon test job.
+    ph_test_job_dir
+        The directory containing the results of the phonon test job.
     pw_job_results_dir
         The directory containing the results of the plane-wave job.
+    ph_job
+        The phonon job to be executed.
     nblocks
         The number of blocks for grouping representations. Defaults to 1.
 
@@ -120,12 +123,9 @@ def _phonon_subflow(
     list[RunSchema]
         A list of results from each phonon job.
     """
-    if ph_test_job is None:
-        ph_test_job = ph_job
 
-    input_data = ph_test_job_results["parameters"]["input_data"]
     prefix = input_data["inputph"].get("prefix", "pwscf")
-    ph_patterns = parse_ph_patterns(ph_test_job_results["dir_name"], prefix)
+    ph_patterns = parse_ph_patterns(ph_test_job_dir, prefix)
 
     grid_results = []
     for pattern in ph_patterns:
@@ -240,7 +240,13 @@ def grid_phonon_flow(
     ph_test_job_results = ph_test_job(pw_job_results["dir_name"], test_run=True)
 
     # Run the grid ph.x subflow
-    grid_results = _phonon_subflow(ph_test_job_results, ph_job, nblocks=nblocks)
+    grid_results = _phonon_subflow(
+        ph_test_job_results["parameters"]["input_data"],
+        ph_test_job_results["dir_name"],
+        pw_job_results["dir_name"],
+        ph_job,
+        nblocks=nblocks,
+    )
 
     # Prep for the final recover ph.x job
     copy_back = [result["dir_name"] for result in grid_results]
