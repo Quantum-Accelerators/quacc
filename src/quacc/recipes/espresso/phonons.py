@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from quacc import Job, flow, job, strip_decorator, subflow
+from quacc import Job, flow, job, subflow
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.calculators.espresso.utils import parse_ph_patterns
 from quacc.recipes.espresso._base import base_fn
