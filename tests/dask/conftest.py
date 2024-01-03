@@ -2,8 +2,8 @@ import os
 from pathlib import Path
 from shutil import rmtree
 
-TEST_RESULTS_DIR = Path(__file__).parent / ".test_results"
-TEST_SCRATCH_DIR = Path(__file__).parent / ".test_scratch"
+TEST_RESULTS_DIR = Path(__file__).parent / "test_results"
+TEST_SCRATCH_DIR = Path(__file__).parent / "test_scratch"
 
 try:
     import dask.distributed
