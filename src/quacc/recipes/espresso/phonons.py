@@ -94,6 +94,12 @@ def phonon_job(
     )
 
 
+# 1. The name seems confusing to me (this is grid parallelization),
+# overall I would argue to globally
+# change the name of these jobs to distinguish them from other kind of
+# phonon calculations. ph.x is not limited to phonon calculations after all.
+# 2. Shouldn't the test_job also be run in this subflow? It would be
+# easier for users who want to use this for custom workflows.
 @subflow
 def _phonon_subflow(
     input_data: dict,
@@ -226,6 +232,10 @@ def grid_phonon_flow(
 
     job_params = recursive_dict_merge(calc_defaults, job_params)
 
+    # I got surprised by the 'basic_pw' that is send to pw_job implicitly,
+    # changing parameters I didn't set.
+    # I guess that users will keep forgetting about it and be surprised
+    # changing their parameters when writing custom flow?
     pw_job, ph_test_job, ph_job, recover_ph_job = customize_funcs(
         ["pw_job", "cheap_job", "ph_job", "cheap_job"],
         [relax_job, phonon_job, phonon_job, phonon_job],
@@ -233,15 +243,22 @@ def grid_phonon_flow(
         decorators=job_decorators,
     )
 
+    # This is the main input_data that will be used for EVERY ph_job
+    # in this flow, to avoid any surprise with calc_defaults
+    # or presets
+    ph_job_input_data = job_params.get("ph_job", {}).get("input_data")
     # Run the pw.x relaxation
     pw_job_results = pw_job(atoms)
 
     # Run the cheap ph.x test calculation
-    ph_test_job_results = ph_test_job(pw_job_results["dir_name"], test_run=True)
+    ph_test_job_results = ph_test_job(
+        pw_job_results["dir_name"], test_run=True, input_data=ph_job_input_data
+    )
 
     # Run the grid ph.x subflow
+    #
     grid_results = _phonon_subflow(
-        ph_test_job_results["parameters"]["input_data"],
+        ph_job_input_data,
         ph_test_job_results["dir_name"],
         pw_job_results["dir_name"],
         ph_job,
