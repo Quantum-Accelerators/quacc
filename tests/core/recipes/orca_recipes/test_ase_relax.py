@@ -26,6 +26,7 @@ def test_ase_relax_job(tmp_path, monkeypatch):
         output["parameters"]["orcasimpleinput"]
         == "wb97x-d3bj def2-tzvp engrad slowconv normalprint xyzfile"
     )
+    assert output["fmax"] == 0.1
     assert output.get("trajectory") is not None
-    assert output.get("trajectory_results")
+    assert output.get("trajectory_results")(output["trajectory_results"]) > 1
     assert output.get("attributes") is not None
