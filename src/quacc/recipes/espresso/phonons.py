@@ -149,44 +149,62 @@ def grid_phonon_flow(
     job_params: dict[str, Any] | None = None,
 ) -> RunSchema:
     """
-    This function performs grid parallelization of a ph.x calculation. Each representation of each q-point is calculated in a separate job, allowing for distributed computation across different machines and times.
+    This function performs grid parallelization of a ph.x calculation. Each
+    representation of each q-point is calculated in a separate job, allowing
+    for distributed computation across different machines and times.
 
-    The grid parallelization is a technique to make phonon calculation embarrassingly parallel. This function should return similar results to [quacc.recipes.espresso.phonons.phonon_job][]. If you don't know about
+    The grid parallelization is a technique to make phonon calculation embarrassingly
+    parallel. This function should return similar results to
+    [quacc.recipes.espresso.phonons.phonon_job][]. If you don't know about
     grid parallelization please consult the Quantum Espresso user manual and
     exemples.
 
-    This approach requires the data of the pw.x calculation to be copied to each job, leading to a total data size on the disk of n*m times the size of the pw.x calculation, where:
+    This approach requires the data of the pw.x calculation to be copied to each job,
+    leading to a total data size on the disk of n*m times the size of the pw.x calculation, where:
     - n is the number of q-points
     - m is the number of representations
 
-    In addition to the data produced by each ph.x calculation. This can result in large data sizes for systems with many atoms.
+    In addition to the data produced by each ph.x calculation. This can
+    result in large data sizes for systems with many atoms.
 
-    To mitigate this, an optional "nblocks" argument can be provided. This groups multiple representations together in a single job, reducing the data size by a factor of nblocks, but also reducing the level of parallelization. In the case of nblocks = 0, each job will contain all the representations for each q-point.
+    To mitigate this, an optional "nblocks" argument can be provided. This
+    groups multiple representations together in a single job, reducing the
+    data size by a factor of nblocks, but also reducing the level of parallelization.
+    In the case of nblocks = 0, each job will contain all the representations for each q-point.
 
     Consists of following jobs that can be modified:
 
-    1. pw.x calculation ("pw_job")
+    1. pw.x relaxation
+        - name: "pw_job"
+        - job: [quacc.recipes.espresso.core.relax_job][]
 
-    2. ph.x calculation test_run ("ph_job")
+    2. ph.x calculation test_run
+        - name: "ph_job"
+        - job: [quacc.recipes.espresso.phonons.phonon_job][]
 
-    3. (n * m) / nblocks ph.x calculations ("ph_job")
+    3. (n * m) / nblocks ph.x calculations
+        - name: "ph_job"
+        - job: [quacc.recipes.espresso.phonons.phonon_job][]
 
-    4. ph.x calculation to gather data and diagonalize each dynamical matrix ("recover_ph_job")
+    4. ph.x calculation to gather data and diagonalize each dynamical matrix
+        -name: "recover_ph_job"
+        - job: [quacc.recipes.espresso.phonons.phonon_job][]
 
     Parameters
     ----------
     atoms
         Atoms object
     nblocks
-        The number of representations to group together in a single job. This will reduce the amount
-        of data produced by a factor of nblocks. If nblocks = 0 each job will contain all the representations
-        for a single q-point.
-    job_decorators
-        Custom decorators to apply to each Job in the Flow.
-        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
+        The number of representations to group together in a single job.
+        This will reduce the amount of data produced by a factor of nblocks.
+        If nblocks = 0, each job will contain all the representations for a
+        single q-point.
     job_params
-        Custom parameters to pass to each Job in the Flow.
-        Refer to [quacc.wflow_tools.customizers.customize_funcs][] for details.
+        Custom parameters to pass to each Job in the Flow. This is a dictinoary where
+        the keys are the names of the jobs and the values are dictionaries of parameters.
+    job_decorators
+        Custom decorators to apply to each Job in the Flow. This is a dictionary where
+        the keys are the names of the jobs and the values are decorators.
 
     Returns
     -------
