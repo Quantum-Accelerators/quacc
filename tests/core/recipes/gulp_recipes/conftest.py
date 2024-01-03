@@ -13,8 +13,9 @@ from quacc import SETTINGS
 FILE_DIR = Path(__file__).parent
 GULP_DIR = os.path.join(FILE_DIR, "gulp_run")
 has_gulp = bool(which(SETTINGS.GULP_CMD))
+has_gulp_lib = (GULP_LIB and GULP_LIB.is_dir()) or Path(os.environ.get("GULP_LIB")).is_dir()
 
-if not has_gulp:
+if not has_gulp and not has_gulp_lib:
 
     @pytest.fixture(autouse=True)
     def mock_settings_env_vars():
