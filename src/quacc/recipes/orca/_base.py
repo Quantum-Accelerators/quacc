@@ -152,12 +152,12 @@ def base_opt_fn(
     dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
 
     final_atoms = get_final_atoms_from_dyn(dyn)
-    cclib_summary = cclib_summarize_run(
-        final_atoms, LOG_FILE, additional_fields=additional_fields
-    )
     opt_run_summary = summarize_opt_run(
         dyn,
         charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields=additional_fields,
     )
-    return recursive_dict_merge(opt_run_summary, cclib_summary)
+    cclib_summary = cclib_summarize_run(
+        final_atoms, LOG_FILE, additional_fields=additional_fields
+    )
+    return recursive_dict_merge(cclib_summary, opt_run_summary)
