@@ -2,11 +2,7 @@
 This module, 'phonons.py', contains recipes for performing phonon calculations
 using the ph.x binary from Quantum ESPRESSO via the quacc library. The recipes
 provided in this module are jobs and flows that can be used to perform phonon
-calculations in different fashion. Please refer to the individual function
-docstrings for more detailed information on their usage and parameters.
-
-TODO: If you don't know how to proceed, please consult [] to learn how to use the
-quacc espresso calculator from basics to advanced.
+calculations in different fashion.
 """
 from __future__ import annotations
 
@@ -64,7 +60,7 @@ def phonon_job(
         - qpts: list[list[float]] | list[tuple[float]] | list[float]
         - nat_todo: list[int]
 
-        See the docstring of ase.io.espresso.write_espresso_ph for more information.
+        See the docstring of `ase.io.espresso.write_espresso_ph` for more information.
 
     Returns
     -------
@@ -94,12 +90,6 @@ def phonon_job(
     )
 
 
-# 1. The name seems confusing to me (this is grid parallelization),
-# overall I would argue to globally
-# change the name of these jobs to distinguish them from other kind of
-# phonon calculations. ph.x is not limited to phonon calculations after all.
-# 2. Shouldn't the test_job also run in this subflow? It would be
-# easier for users who want to use this for custom workflows.
 @subflow
 def _grid_phonon_subflow(
     input_data: dict,
@@ -221,6 +211,7 @@ def grid_phonon_flow(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
+    # Prepare the job parameters and decorators
     calc_defaults = {
         "pw_job": {
             "input_data": {
@@ -229,13 +220,7 @@ def grid_phonon_flow(
             }
         }
     }
-
     job_params = recursive_dict_merge(calc_defaults, job_params)
-
-    # I got surprised by the 'basic_pw' that is send to pw_job implicitly,
-    # changing parameters I didn't set.
-    # I guess that users will keep forgetting about it and be surprised
-    # changing their parameters when writing custom flow?
     pw_job, ph_test_job, ph_job, recover_ph_job = customize_funcs(
         ["pw_job", "ph_test_job", "ph_job", "ph_recover_job"],
         [relax_job, phonon_job, phonon_job, phonon_job],
@@ -243,10 +228,9 @@ def grid_phonon_flow(
         decorators=job_decorators,
     )
 
-    # This is the main input_data that will be used for EVERY ph_job
-    # in this flow, to avoid any surprise with calc_defaults
-    # or presets
-    ph_job_input_data = job_params.get("ph_job", {}).get("input_data")
+    # Get the ph.x input_data from the input job parameters
+    ph_job_input_data = job_params.get("ph_job", {}).get("input_data", {})
+
     # Run the pw.x relaxation
     pw_job_results = pw_job(atoms)
 
@@ -256,7 +240,6 @@ def grid_phonon_flow(
     )
 
     # Run the grid ph.x subflow
-    #
     grid_results = _grid_phonon_subflow(
         ph_job_input_data,
         ph_test_job_results["dir_name"],
