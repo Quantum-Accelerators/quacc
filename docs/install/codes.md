@@ -84,17 +84,23 @@ conda install -c conda-forge openbabel
 
 ## Quantum ESPRESSO
 
-To use quacc with Quantum ESPRESSO, you will first need to download and compile [Quantum ESPRESSO](https://www.quantum-espresso.org/) or install it via conda as `conda install -c conda-forge qe`. You will also need to download the relevant [pseudopotentials](https://www.quantum-espresso.org/pseudopotentials/).
+To use quacc with Quantum ESPRESSO, you will first need to download and install [Quantum ESPRESSO](https://www.quantum-espresso.org/). This can be most easily down as follows:
 
-Additionally, you will need to define multiple environment variables. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md).
+```bash
+conda install -c conda-forge qe
+```
+
+You will also need to download the relevant [pseudopotentials](https://www.quantum-espresso.org/pseudopotentials/).
+
+Finally, you will need to define multiple environment variables. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md).
 
 At minimum, you should define the `ESPRESSO_PSEUDO` setting:
 
 ```bash
-QUACC_ESPRESSO_PSEUDO="/path/to/pseudopotentials"
+export QUACC_ESPRESSO_PSEUDO="/path/to/pseudopotentials"
 ```
 
-Additionally, the various ESPRESSO binaries should be present in your `PATH`, or you should modify the `ESPRESSO_BIN_PATHS` quacc setting accordingly.
+The various ESPRESSO binaries should be present in your `PATH`, or you should modify the `ESPRESSO_BIN_PATHS` quacc setting accordingly.
 
 ## TBLite
 

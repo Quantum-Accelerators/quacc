@@ -254,7 +254,7 @@ When deploying calculations for the first time, it's important to start simple, 
     print(result)
     ```
 
-    !!! Tip "Debugging"
+    ??? Tip "Debugging"
 
         The most common cause of issues is related to the job scheduler details (i.e. the `resource_spec_kwargs` and the `job_attributes_kwargs`). If your job fails on the remote machine, check the files left behind in the working directory as well as the `~/.psij` directory for a history and various log files associated with your attempted job submissions.
 

@@ -92,8 +92,8 @@ class EspressoTemplate(EspressoTemplate_):
 
         if self.binary == "pw":
             write(
-                filename=directory / self.inputname,
-                images=atoms,
+                directory / self.inputname,
+                atoms,
                 format="espresso-in",
                 pseudo_dir=str(profile.pseudo_path),
                 properties=properties,

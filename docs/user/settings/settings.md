@@ -10,6 +10,10 @@ The default global quacc settings can be found in the [`settings.py`](https://gi
 
 ### Using a YAML File
 
+!!! Note "Command-Line Interface"
+
+    The quacc command-line interface (CLI) lets you update the YAML file from the terminal. You can run `quacc set PARAMETER value` to set a given parameter in the YAML file to the specified value. Similarly, you can run `quacc unset PARAMETER` to remove a parameter from the YAML file.
+
 If you are planning to modify a given set of parameters for all of your calculations, the easiest way is to create a YAML file with custom settings. By default, quacc looks for this YAML file at `~/.quacc.yaml`. If you wish to store the YAML file somewhere else or with a different name, you can define the environment variable `QUACC_CONFIG_FILE` and point it to the YAML path of your choosing.
 
 ```yaml title="~/.quacc.yaml"
@@ -24,21 +28,21 @@ WORKFLOW_ENGINE: # (3)!
 
 3. In YAML, a blank value is interpreted as `None` in Python. A value of `null` is equivalent to `None` too. In this case, no workflow engine would be used.
 
-!!! Tip "Command-Line Interface"
+??? Tip "When is This Method Ideal?"
 
-    The quacc command-line interface (CLI) lets you update the YAML file from the terminal. You can run `quacc set PARAMETER value` to set a given parameter in the YAML file to the specified value. Similarly, you can run `quacc unset PARAMETER` to remove a parameter from the YAML file.
+    This approach is ideal when you want to change a setting that applies to most or all of your calculations.
 
 ### Using Environment Variables
 
-If you want to define quacc settings without writing them to a YAML file, you can instead modify the desired settings by defining individual environment variables with `QUACC` as the prefix. For instance, to modify the `SCRATCH_DIR` setting to be `$SCRATCH`, simply define `QUACC_SCRATCH_DIR=$SCRATCH` as a new environment variable.
+If you want to define quacc settings without writing them to a YAML file, you can instead modify the desired settings by defining individual environment variables with `QUACC` as the prefix. For instance, to modify the `SCRATCH_DIR` setting to be `$SCRATCH`, simply define `QUACC_SCRATCH_DIR=$SCRATCH` as a new environment variable. The environment variable takes precedence over any value specified in the YAML file.
 
-!!! Tip "When This is Ideal"
+??? Tip "When is This Method Ideal?"
 
-    This approach is ideal when you want to dynamically modify the quacc settings for a given set of calculations, as the environment variable can be modified in-memory or included in the job's submission script without modifying the YAML file that is read by all other calculations.
+    This approach is ideal when you want to dynamically modify the quacc settings for a given set of calculations, as the environment variable can be modified on-the-fly (e.g. in the job's submission script) without modifying the YAML file that is read by all other calculations.
 
 ### Modifying the Global Settings in a Script
 
-If you want to define quacc settings on-the-fly without writing them to a YAML file or using environment variables, you can do so within your script by modifying the global `SETTINGS` object. This approach is ideal when you're debugging in a Jupyter Notebook.
+If you want to define quacc settings on-the-fly without writing them to a YAML file or using environment variables, you can do so within your script by modifying the global `SETTINGS` object.
 
 ```python
 from quacc import SETTINGS
@@ -46,6 +50,6 @@ from quacc import SETTINGS
 SETTINGS.RESULTS_DIR = "/new/path/to/store/results"
 ```
 
-!!! Warning "Be Cautious of Local vs. Remote Global Variables"
+??? Tip "When is This Method Ideal?"
 
-    This approach should be used with caution when deploying calculations via a workflow engine, as changes to in-memory global variables locally will not be reflected on the remote machine.
+    This approach is ideal for debugging scenarios, such as when using a Jupyter Notebook. Generally, it should not be used when deploying calculations via a workflow engine, as changes to in-memory global variables on the local machine will not be reflected on the remote machine.

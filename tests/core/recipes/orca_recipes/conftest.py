@@ -22,8 +22,28 @@ def mock_get_potential_energy(self, **kwargs):
     return e
 
 
+def mock_get_forces(self, **kwargs):
+    # Instead of running .get_forces(), we mock it by attaching
+    # dummy results to the atoms object and returning a fake energy. This
+    # works because the real atoms.get_forces() takes one argument
+    # (i.e. self) and that self object is the atoms object.
+    e = -1.0
+    forces = np.array([[0.0, 0.0, 0.0]] * len(self))
+    self.calc.results = {"energy": e, "free_energy": e, "forces": forces}
+    for f in os.listdir(ORCA_DIR):
+        copy(os.path.join(ORCA_DIR, f), f)
+    return forces
+
+
 @pytest.fixture(autouse=True)
 def patch_get_potential_energy(monkeypatch):
     # Monkeypatch the .get_potential_energy() method of the Atoms object so
     # we aren't running the actual calculation during testing.
     monkeypatch.setattr(Atoms, "get_potential_energy", mock_get_potential_energy)
+
+
+@pytest.fixture(autouse=True)
+def patch_get_forces(monkeypatch):
+    # Monkeypatch the .get_potential_energy() method of the Atoms object so
+    # we aren't running the actual calculation during testing.
+    monkeypatch.setattr(Atoms, "get_forces", mock_get_forces)

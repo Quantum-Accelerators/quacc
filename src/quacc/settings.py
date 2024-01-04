@@ -36,7 +36,7 @@ class QuaccSettings(BaseSettings):
     do this as well.
 
     The variables can also be modified individually though environment variables by
-    using the "QUACC" prefix. e.g. QUACC_SCRATCH_DIR=/path/to/scratch.
+    using the "QUACC" prefix. e.g. `export QUACC_SCRATCH_DIR=/path/to/scratch`.
     """
 
     CONFIG_FILE: Path = Field(
