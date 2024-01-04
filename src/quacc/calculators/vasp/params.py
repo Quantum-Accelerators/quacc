@@ -6,8 +6,6 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from ase.calculators.vasp import Vasp as Vasp_
-from pymatgen.io.ase import AseAtomsAdaptor
-from pymatgen.io.vasp.inputs import Kpoints
 
 from quacc.atoms.core import check_is_metal
 from quacc.utils.kpts import convert_pmg_kpts
@@ -333,7 +331,7 @@ def set_pmg_kpts(
     """
 
     kpts, gamma = convert_pmg_kpts(pmg_kpts, input_atoms)
-    reciprocal = True if pmg_kpts.get("line_density") else False
+    reciprocal = bool(pmg_kpts.get("line_density"))
 
     user_calc_params["kpts"] = kpts
     if reciprocal and user_calc_params.get("reciprocal") is None:
