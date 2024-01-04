@@ -5,6 +5,6 @@ input_data:
     occupations: smearing
     degauss: 0.005
 
-kspacing: gamma
+kpts: gamma
 
 parent_pseudopotentials: sssp_1.3.0_pbe_efficiency.yaml
