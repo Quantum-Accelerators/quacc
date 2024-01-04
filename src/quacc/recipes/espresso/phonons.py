@@ -70,11 +70,7 @@ def phonon_job(
 
     calc_defaults = {
         "input_data": {
-            "inputph": {
-                "tr2_ph": 1e-12,
-                "alpha_mix(1)": 0.1,
-                "verbosity": "high",
-            }
+            "inputph": {"tr2_ph": 1e-12, "alpha_mix(1)": 0.1, "verbosity": "high"}
         },
         "qpts": (0, 0, 0),
     }
@@ -211,7 +207,6 @@ def grid_phonon_flow(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
-    # Prepare the job parameters and decorators
     calc_defaults = {
         "pw_job": {
             "input_data": {
@@ -228,18 +223,14 @@ def grid_phonon_flow(
         decorators=job_decorators,
     )
 
-    # Get the ph.x input_data from the input job parameters
     ph_job_input_data = job_params.get("ph_job", {}).get("input_data", {})
 
-    # Run the pw.x relaxation
     pw_job_results = pw_job(atoms)
 
-    # Run the cheap ph.x test calculation
     ph_test_job_results = ph_test_job(
         pw_job_results["dir_name"], test_run=True, input_data=ph_job_input_data
     )
 
-    # Run the grid ph.x subflow
     grid_results = _grid_phonon_subflow(
         ph_job_input_data,
         ph_test_job_results["dir_name"],
@@ -248,10 +239,8 @@ def grid_phonon_flow(
         nblocks=nblocks,
     )
 
-    # Prep for the final recover ph.x job
     copy_back = [result["dir_name"] for result in grid_results]
 
-    # We use the flat form to make sure that recover takes priority
     ph_job_input_data["recover"] = True
 
     return recover_ph_job(copy_back, input_data=ph_job_input_data)
