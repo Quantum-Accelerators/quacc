@@ -66,7 +66,7 @@ def static_job(
 
     nprocs = nprocs or psutil.cpu_count(logical=False)
     default_inputs = [xc, basis, "sp", "slowconv", "normalprint", "xyzfile"]
-    default_blocks = ["%pal nprocs {nprocs} end"]
+    default_blocks = [f"%pal nprocs {nprocs} end"]
 
     return base_fn(
         atoms,
@@ -135,7 +135,7 @@ def relax_job(
     if run_freq:
         default_inputs.append("freq")
 
-    default_blocks = ["%pal nprocs {nprocs} end"]
+    default_blocks = [f"%pal nprocs {nprocs} end"]
 
     return base_fn(
         atoms,
@@ -200,7 +200,7 @@ def ase_relax_job(
 
     nprocs = nprocs or psutil.cpu_count(logical=False)
     default_inputs = [xc, basis, "slowconv", "normalprint", "xyzfile", "engrad"]
-    default_blocks = ["%pal nprocs {nprocs} end"]
+    default_blocks = [f"%pal nprocs {nprocs} end"]
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
 

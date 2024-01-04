@@ -61,7 +61,7 @@ def test_relax_job(tmp_path, monkeypatch):
     assert output["parameters"]["mult"] == 1
     assert (
         output["parameters"]["orcasimpleinput"]
-        == "wb97x-d3bj def2-tzvp opt slowconv normalprint xyzfile"
+        == "def2-tzvp normalprint opt slowconv wb97x-d3bj xyzfile"
     )
     assert output["trajectory"][0] != output["trajectory"][-1]
 
