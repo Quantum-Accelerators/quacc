@@ -332,7 +332,9 @@ def set_pmg_kpts(
         The updated user-provided calculator parameters.
     """
 
-    kpts, gamma = convert_pmg_kpts(pmg_kpts, input_atoms)
+    kpts, gamma = convert_pmg_kpts(
+        pmg_kpts, input_atoms, force_gamma=user_calc_params.get("gamma", False)
+    )
     reciprocal = bool(pmg_kpts.get("line_density"))
 
     user_calc_params["kpts"] = kpts
