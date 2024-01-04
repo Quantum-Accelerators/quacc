@@ -3,7 +3,7 @@ from ase.build import molecule
 from quacc.recipes.gaussian.core import relax_job, static_job
 
 
-def test_static_job(tmp_path, monkeypatch, patch_get_potential_energy):
+def test_static_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     patch_get_potential_energy()
 
