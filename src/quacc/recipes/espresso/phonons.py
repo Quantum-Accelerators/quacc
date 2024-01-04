@@ -92,7 +92,7 @@ def phonon_job(
 
 @subflow
 def _grid_phonon_subflow(
-    input_data: dict,
+    input_data: dict | None,
     ph_test_job_dir: str | Path,
     pw_job_dir: str | Path,
     ph_job: Job,
@@ -104,7 +104,7 @@ def _grid_phonon_subflow(
     Parameters
     ----------
     input_data
-        The input_data from the phonon test job.
+        The input_data used in the phonon test job.
     ph_test_job_dir
         The directory containing the results of the phonon test job.
     pw_job_dir
@@ -119,8 +119,11 @@ def _grid_phonon_subflow(
     list[RunSchema]
         A list of results from each phonon job.
     """
+    input_data = input_data or {}
+    if "inputph" not in input_data:
+        input_data["inputph"] = {}
 
-    prefix = input_data["inputph"].get("prefix", "pwscf")
+    prefix = input_data.get("inputph").get("prefix", "pwscf")
     ph_patterns = parse_ph_patterns(ph_test_job_dir, prefix)
 
     grid_results = []
