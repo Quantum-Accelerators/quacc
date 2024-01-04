@@ -32,9 +32,9 @@ def test_calc_setup(tmp_path, monkeypatch):
     assert results_dir.is_dir()
     assert str(SETTINGS.RESULTS_DIR) in str(results_dir)
     if os.name != "nt":
-        assert Path(SETTINGS.RESULTS_DIR, f"{tmpdir.name}-symlink").is_symlink()
+        assert Path(results_dir, f"{tmpdir.name}-symlink").is_symlink()
     else:
-        assert not Path(SETTINGS.RESULTS_DIR, f"{tmpdir.name}-symlink").is_symlink()
+        assert not Path(results_dir, f"{tmpdir.name}-symlink").is_symlink()
     assert "file1.txt" not in os.listdir(tmpdir)
     assert "file2.txt" not in os.listdir(tmpdir)
     assert Path.cwd() == tmpdir

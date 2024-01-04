@@ -1,4 +1,2 @@
-RESULTS_DIR: ./.test_results
-SCRATCH_DIR: ./.test_scratch
 CREATE_UNIQUE_DIR: true
 WORKFLOW_ENGINE: null
