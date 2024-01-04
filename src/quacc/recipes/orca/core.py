@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.schemas._aliases.cclib import cclibSchema
+    from quacc.schemas._aliases.cclib import cclibASEOptSchema, cclibSchema
 
 
 @job
@@ -216,8 +216,9 @@ def ase_relax_job(
 
     Returns
     -------
-    cclibSchema
-        Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][]
+    cclibASEOptSchema
+        Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][] merged with
+        the results from [quacc.schemas.ase.summarize_opt_run][]
     """
 
     nprocs = nprocs or psutil.cpu_count(logical=False)

@@ -4,7 +4,7 @@ import pytest
 from ase.build import molecule
 
 from quacc import Remove
-from quacc.recipes.orca.core import relax_job, static_job
+from quacc.recipes.orca.core import ase_relax_job, relax_job, static_job
 
 
 def test_static_job(tmp_path, monkeypatch):
@@ -22,7 +22,7 @@ def test_static_job(tmp_path, monkeypatch):
     assert output["parameters"]["mult"] == 1
     assert output["spin_multiplicity"] == 1
     assert output["charge"] == 0
-    assert output.get("attributes") is not None
+    assert output.get("attributes")
 
 
 @pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
@@ -47,7 +47,7 @@ def test_static_job_parallel(tmp_path, monkeypatch):
         == "wb97x-d3bj sp slowconv normalprint xyzfile def2-svp"
     )
     assert "%scf maxiter 300 end" in output["parameters"]["orcablocks"]
-    assert output.get("attributes") is not None
+    assert output.get("attributes")
 
 
 @pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
@@ -85,6 +85,25 @@ def test_relax_job(tmp_path, monkeypatch):
         == "opt slowconv normalprint xyzfile hf def2-svp"
     )
     assert "%scf maxiter 300 end" in output["parameters"]["orcablocks"]
-    assert output.get("trajectory") is not None
+    assert output.get("trajectory")
     assert len(output["trajectory"]) > 1
-    assert output.get("attributes") is not None
+    assert output.get("attributes")
+
+
+def test_ase_relax_job(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    atoms = molecule("H2")
+
+    output = ase_relax_job(atoms, opt_params={"fmax": 0.1}, nprocs=1)
+    assert output["natoms"] == len(atoms)
+    assert output["parameters"]["charge"] == 0
+    assert output["parameters"]["mult"] == 1
+    assert (
+        output["parameters"]["orcasimpleinput"]
+        == "wb97x-d3bj def2-tzvp engrad slowconv normalprint xyzfile"
+    )
+    assert output["fmax"] == 0.1
+    assert output.get("trajectory")
+    assert output.get("trajectory_results")
+    assert output.get("attributes")

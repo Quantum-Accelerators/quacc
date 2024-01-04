@@ -5,7 +5,7 @@ from typing import Any, TypedDict
 
 from numpy.typing import NDArray
 
-from quacc.schemas._aliases.ase import RunSchema
+from quacc.schemas._aliases.ase import OptSchema, RunSchema
 from quacc.schemas._aliases.atoms import AtomsSchema
 
 
@@ -134,3 +134,7 @@ class cclibBaseSchema(TypedDict):
 
 class cclibSchema(cclibBaseSchema, RunSchema):
     """Type hint associated with quacc.schemas.cclib.cclib_summarize_run."""
+
+
+class cclibASEOptSchema(cclibSchema, OptSchema):
+    """Type hint used when merging cclibSchema with OptSchema."""

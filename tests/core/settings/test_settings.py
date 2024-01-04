@@ -73,6 +73,7 @@ def test_yaml(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     p = FILE_DIR / "my/new/scratch/dir"
+    monkeypatch.delenv("QUACC_SCRATCH_DIR", raising=False)
     with open("quacc_test.yaml", "w") as f:
         f.write(f"SCRATCH_DIR: {p}")
     monkeypatch.setenv("QUACC_CONFIG_FILE", "quacc_test.yaml")
