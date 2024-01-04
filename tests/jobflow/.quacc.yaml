@@ -1,4 +1,2 @@
 DEBUG: true
-RESULTS_DIR: ./test_results
-SCRATCH_DIR: ./test_scratch
 WORKFLOW_ENGINE: jobflow
