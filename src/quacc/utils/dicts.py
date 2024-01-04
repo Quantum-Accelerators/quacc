@@ -25,11 +25,13 @@ class Remove:
         )
 
 
-def recursive_dict_merge(*dicts: dict[str, Any]) -> dict[str, Any]:
+def recursive_dict_merge(
+    *dicts: dict[str, Any], remove_trigger: Any = Remove
+) -> dict[str, Any]:
     """
     Recursively merge several dictionaries, taking the latter in the list as higher preference.
-    Also removes any entries that are `quacc.Remove` from the final dictionary and sorts
-    the dictionary alphabetically by key.
+    Also removes any entries that have a valu of `remove_trigger` from the final dictionary.
+    Sorts the final dictionary alphabetically by key.
 
     This function should be used instead of the | operator when merging nested dictionaries,
     e.g. `{"a": {"b": 1}} | {"a": {"c": 2}}` will return `{"a": {"c": 2}}` whereas
@@ -39,6 +41,8 @@ def recursive_dict_merge(*dicts: dict[str, Any]) -> dict[str, Any]:
     ----------
     *dicts
         Dictionaries to merge
+    remove_trigger
+        Value to that triggers removal of the entry
 
     Returns
     -------
@@ -51,7 +55,7 @@ def recursive_dict_merge(*dicts: dict[str, Any]) -> dict[str, Any]:
         merged = _recursive_dict_pair_merge(old_dict, dicts[i + 1])
         old_dict = safe_dict_copy(merged)
 
-    return sort_dict(remove_dict_entries(merged, remove_trigger=Remove))
+    return sort_dict(remove_dict_entries(merged, remove_trigger=remove_trigger))
 
 
 def _recursive_dict_pair_merge(
