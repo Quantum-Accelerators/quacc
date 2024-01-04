@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from shutil import copy, which
+from shutil import copy
 from unittest import mock
 
 import numpy as np
@@ -12,17 +12,10 @@ FILE_DIR = Path(__file__).parent
 GULP_DIR = os.path.join(FILE_DIR, "gulp_run")
 
 
-def _has_gulp():
-    from quacc import SETTINGS
-
-    return bool(which(str(SETTINGS.GULP_CMD)))
-
-
 @pytest.fixture(autouse=True)
 def mock_settings_env_vars():
-    if not _has_gulp():
-        with mock.patch.dict(os.environ, {"GULP_LIB": "."}):
-            yield
+    with mock.patch.dict(os.environ, {"GULP_LIB": "."}):
+        yield
 
 
 def mock_get_potential_energy(self, **kwargs):
@@ -41,9 +34,7 @@ def mock_get_potential_energy(self, **kwargs):
 def patch_get_potential_energy(monkeypatch):
     # Monkeypatch the .get_potential_energy() method of the Atoms object so
     # we aren't running the actual calculation during testing.
-
-    if not _has_gulp():
-        monkeypatch.setattr(Atoms, "get_potential_energy", mock_get_potential_energy)
+    monkeypatch.setattr(Atoms, "get_potential_energy", mock_get_potential_energy)
 
 
 def mock_get_opt_state(self, **kwargs):
@@ -59,7 +50,4 @@ def mock_get_opt_state(self, **kwargs):
 def patch_get_opt_state(monkeypatch):
     # Monkeypatch the .get_opt_state() method of the GULP calculator object so
     # we aren't fetching the actual state
-    from quacc import SETTINGS
-
-    if not _has_gulp():
-        monkeypatch.setattr(GULP, "get_opt_state", mock_get_opt_state)
+    monkeypatch.setattr(GULP, "get_opt_state", mock_get_opt_state)
