@@ -15,9 +15,12 @@ from quacc import SETTINGS
 from quacc.calculators.espresso.utils import get_pseudopotential_info
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.utils.files import load_yaml_calc
+from quacc.utils.kpts import convert_pmg_kpts
 
 if TYPE_CHECKING:
     from typing import Any
+
+    from quacc.utils.kpts import PmgKpts
 
 
 class EspressoTemplate(EspressoTemplate_):
@@ -192,6 +195,7 @@ class Espresso(Espresso_):
         parallel_info: dict[str, Any] | None = None,
         template: EspressoTemplate | None = None,
         profile: EspressoProfile | None = None,
+        pmg_kpts: PmgKpts | None = None,
         **kwargs,
     ) -> None:
         """
@@ -219,6 +223,9 @@ class Espresso(Espresso_):
             ASE calculator profile which can be used to specify the location of
             the espresso binary and pseudopotential files. This is taken care of
             internally using quacc settings.
+        pmg_kpts
+            An automatic k-point generation scheme from Pymatgen. See
+            [quacc.utils.kpts.convert_pmg_kpts][] for details.
         **kwargs
             Additional arguments to be passed to the Espresso calculator. Takes all valid
             ASE calculator arguments, such as `input_data` and `kpts`. Refer to
@@ -233,6 +240,7 @@ class Espresso(Espresso_):
         self.input_atoms = input_atoms or Atoms()
         self.preset = preset
         self.parallel_info = parallel_info
+        self.pmg_kpts = pmg_kpts
         self.kwargs = kwargs
         self._user_calc_params = {}
 
@@ -276,6 +284,10 @@ class Espresso(Espresso_):
         if self.kwargs.get("directory"):
             raise ValueError("quacc does not support the directory argument.")
 
+        params = self.kwargs
+        if self.pmg_kpts:
+            params["pmg_kpts"] = self.pmg_kpts
+
         if self.preset:
             calc_preset = load_yaml_calc(
                 SETTINGS.ESPRESSO_PRESET_DIR / f"{self.preset}"
@@ -285,10 +297,12 @@ class Espresso(Espresso_):
                     calc_preset["pseudopotentials"], self.input_atoms
                 )
                 calc_preset.pop("pseudopotentials", None)
-                if "kpts" in self.kwargs:
+                if "kpts" in params:
                     calc_preset.pop("kspacing", None)
-                if "kspacing" in self.kwargs:
+                    calc_preset.pop("pmg_kpts", None)
+                if "kspacing" in params:
                     calc_preset.pop("kpts", None)
+                    calc_preset.pop("pmg_kpts", None)
                 self._user_calc_params = recursive_dict_merge(
                     calc_preset,
                     {
@@ -297,15 +311,22 @@ class Espresso(Espresso_):
                         },
                         "pseudopotentials": pseudopotentials,
                     },
-                    self.kwargs,
+                    params,
                 )
             else:
-                self._user_calc_params = recursive_dict_merge(calc_preset, self.kwargs)
+                self._user_calc_params = recursive_dict_merge(calc_preset, params)
         else:
-            self._user_calc_params = self.kwargs
+            self._user_calc_params = params
 
         if self._user_calc_params.get("kpts") == "gamma":
             self._user_calc_params["kpts"] = None
+
+        if self._user_calc_params.get("pmg_kpts"):
+            kpts, _ = convert_pmg_kpts(
+                self._user_calc_params["pmg_kpts"], self.input_atoms
+            )
+            self._user_calc_params["kpts"] = kpts
+            self._user_calc_params.pop("pmg_kpts")
 
         if self._user_calc_params.get("kpts") and self._user_calc_params.get(
             "kspacing"

@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 from ase import Atoms
+from ase.build import bulk
 
 from quacc.calculators.espresso.espresso import Espresso, EspressoTemplate
 
@@ -181,3 +182,17 @@ def test_bad_calculator_params():
 
     with pytest.raises(ValueError):
         Espresso(input_atoms=atoms, kpts=(1, 1, 1), directory="bad")
+
+
+def test_pmg_kpts():
+    atoms = bulk("Cu")
+    calc = Espresso(input_atoms=atoms, pmg_kpts={"kppvol": 100})
+    assert calc.parameters["kpts"] == [12, 12, 12]
+
+    atoms = bulk("Cu")
+    calc = Espresso(input_atoms=atoms, preset="basic_pw")
+    assert calc.parameters["kpts"] == [12, 12, 12]
+
+    atoms = bulk("Cu")
+    calc = Espresso(input_atoms=atoms, kpts=[1, 1, 1], preset="basic_pw")
+    assert calc.parameters["kpts"] == [1, 1, 1]
