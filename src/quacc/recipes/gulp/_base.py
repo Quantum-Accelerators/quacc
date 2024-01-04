@@ -70,9 +70,7 @@ def base_fn(
     if not atoms.pbc.any():
         if "opti" in keyword_defaults and "conv" not in keyword_defaults:
             keyword_defaults += ["conv"]
-        for k in ["gwolf", "conp"]:
-            if k in keyword_defaults:
-                keyword_defaults.remove(k)
+        keyword_defaults = [k for k in keyword_defaults if k not in ["gwolf", "conp"]]
 
     option_defaults += [
         f"output cif {GEOM_FILE_PBC}"
