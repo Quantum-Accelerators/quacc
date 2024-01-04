@@ -8,6 +8,23 @@ if TYPE_CHECKING:
     from typing import Any
 
 
+class Remove:
+    """
+    A sentinel class used in quacc to mark a key in a dictionary for removal.
+
+    Note: This is more robust than using `None` as the sentinel value because
+    `None` is a valid value for many keyword arguments. Also, using `object()`
+    as the sentinel value is not robust because its value changes every time
+    it is instantiated, which means an `object()` provided by the user locally
+    will not match an `object()` instantiated on the remote machine.
+    """
+
+    def __init__(self):
+        raise NotImplementedError(
+            "Remove is a sentinel class and should not be instantiated."
+        )
+
+
 def recursive_dict_merge(*dicts: dict[str, Any]) -> dict[str, Any]:
     """
     Recursively merge several dictionaries, taking the latter in the list as higher preference.
@@ -28,7 +45,6 @@ def recursive_dict_merge(*dicts: dict[str, Any]) -> dict[str, Any]:
     dict
         Merged dictionary
     """
-    from quacc import Remove
 
     old_dict = dicts[0]
     for i in range(len(dicts) - 1):
@@ -161,20 +177,3 @@ def clean_task_doc(start_dict: dict[str, Any]) -> dict[str, Any]:
         Cleaned dictionary
     """
     return sort_dict(remove_dict_entries(start_dict, None))
-
-
-class Remove:
-    """
-    A sentinel class used in quacc to mark a key in a dictionary for removal.
-
-    Note: This is more robust than using `None` as the sentinel value because
-    `None` is a valid value for many keyword arguments. Also, using `object()`
-    as the sentinel value is not robust because its value changes every time
-    it is instantiated, which means an `object()` provided by the user locally
-    will not match an `object()` instantiated on the remote machine.
-    """
-
-    def __init__(self):
-        raise NotImplementedError(
-            "Remove is a sentinel class and should not be instantiated."
-        )
