@@ -10,6 +10,12 @@ FILE_DIR = Path(__file__).parent
 GAUSSIAN_DIR = os.path.join(FILE_DIR, "gaussian_run")
 
 
+def _has_gaussian():
+    from quacc import SETTINGS
+
+    return bool(str(which(SETTINGS.GAUSSIAN_CMD)))
+
+
 def mock_get_potential_energy(self, **kwargs):
     # Instead of running .get_potential_energy(), we mock it by attaching
     # dummy results to the atoms object and returning a fake energy. This
@@ -27,10 +33,7 @@ def mock_get_potential_energy(self, **kwargs):
 
 @pytest.fixture(autouse=True)
 def patch_get_potential_energy(monkeypatch):
-    from quacc import SETTINGS
-
-    has_gaussian = bool(str(which(SETTINGS.GAUSSIAN_CMD)))
-    if not has_gaussian:
+    if not _has_gaussian():
         # Monkeypatch the .get_potential_energy() method of the Atoms object so
         # we aren't running the actual calculation during testing.
         monkeypatch.setattr(Atoms, "get_potential_energy", mock_get_potential_energy)
