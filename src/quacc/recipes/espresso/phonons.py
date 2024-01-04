@@ -119,9 +119,7 @@ def _grid_phonon_subflow(
     list[RunSchema]
         A list of results from each phonon job.
     """
-    input_data = input_data or {}
-    if "inputph" not in input_data:
-        input_data["inputph"] = {}
+    input_data = input_data or {"inputph": {}}
 
     prefix = input_data.get("inputph").get("prefix", "pwscf")
     ph_patterns = parse_ph_patterns(ph_test_job_dir, prefix)
