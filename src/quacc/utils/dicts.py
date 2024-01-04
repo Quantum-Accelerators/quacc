@@ -31,7 +31,6 @@ def recursive_dict_merge(
     """
     Recursively merge several dictionaries, taking the latter in the list as higher preference.
     Also removes any entries that have a valu of `remove_trigger` from the final dictionary.
-    Sorts the final dictionary alphabetically by key.
 
     This function should be used instead of the | operator when merging nested dictionaries,
     e.g. `{"a": {"b": 1}} | {"a": {"c": 2}}` will return `{"a": {"c": 2}}` whereas
@@ -55,7 +54,7 @@ def recursive_dict_merge(
         merged = _recursive_dict_pair_merge(old_dict, dicts[i + 1])
         old_dict = safe_dict_copy(merged)
 
-    return sort_dict(remove_dict_entries(merged, remove_trigger=remove_trigger))
+    return remove_dict_entries(merged, remove_trigger=remove_trigger)
 
 
 def _recursive_dict_pair_merge(
