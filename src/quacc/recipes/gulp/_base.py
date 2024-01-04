@@ -10,7 +10,6 @@ from ase.calculators.gulp import GULP
 from quacc import SETTINGS
 from quacc.runners.ase import run_calc
 from quacc.schemas.ase import summarize_run
-from quacc.utils.dicts import recursive_dict_merge
 from quacc.utils.lists import merge_list_params
 
 if TYPE_CHECKING:
