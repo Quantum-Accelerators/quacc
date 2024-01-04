@@ -30,10 +30,10 @@ def base_fn(
     atoms: Atoms,
     charge: int = 0,
     spin_multiplicity: int = 1,
-    default_inputs: dict[str, Any] | None = None,
-    default_blocks: dict[str, Any] | None = None,
-    input_swaps: dict[str, Any] | None = None,
-    block_swaps: dict[str, Any] | None = None,
+    default_inputs: list[str] | None = None,
+    default_blocks: list[str] | None = None,
+    input_swaps: list[str] | None = None,
+    block_swaps: list[str] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: str | Path | list[str | Path] | None = None,
 ) -> cclibSchema:
@@ -56,7 +56,7 @@ def base_fn(
         List of orcasimpleinput swaps for the calculator. To remove entries
         from the defaults, put a `#` in front of the name.
     block_swaps
-        Dictionary of orcablock swaps for the calculator. To remove entries
+        List of orcablock swaps for the calculator. To remove entries
         from the defaults, put a `#` in front of the name.
     additional_fields
         Any additional fields to supply to the summarizer.
@@ -89,10 +89,10 @@ def base_opt_fn(
     atoms: Atoms,
     charge: int = 0,
     spin_multiplicity: int = 1,
-    default_inputs: dict[str, Any] | None = None,
-    default_blocks: dict[str, Any] | None = None,
-    input_swaps: dict[str, Any] | None = None,
-    block_swaps: dict[str, Any] | None = None,
+    default_inputs: list[str] | None = None,
+    default_blocks: list[str] | None = None,
+    input_swaps: list[str] | None = None,
+    block_swaps: list[str] | None = None,
     opt_defaults: dict[str, Any] | None = None,
     opt_params: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
@@ -117,7 +117,7 @@ def base_opt_fn(
         List of orcasimpleinput swaps for the calculator. To remove entries
         from the defaults, put a `#` in front of the name.
     block_swaps
-        Dictionary of orcablock swaps for the calculator. To remove entries
+        List of orcablock swaps for the calculator. To remove entries
         from the defaults, put a `#` in front of the name.
     opt_defaults
         Default arguments for the ASE optimizer.

@@ -11,6 +11,7 @@ from quacc import SETTINGS
 from quacc.runners.ase import run_calc
 from quacc.schemas.ase import summarize_run
 from quacc.utils.dicts import recursive_dict_merge
+from quacc.utils.lists import merge_list_params
 
 if TYPE_CHECKING:
     from typing import Any
@@ -29,10 +30,10 @@ GULP_CMD = f"{SETTINGS.GULP_CMD} < gulp.gin > gulp.got"
 def base_fn(
     atoms: Atoms,
     library: str | None = None,
-    keyword_defaults: dict[str, Any] | None = None,
-    option_defaults: dict[str, Any] | None = None,
-    keyword_swaps: dict[str, Any] | None = None,
-    option_swaps: dict[str, Any] | None = None,
+    keyword_defaults: list[str] | None = None,
+    option_defaults: list[str] | None = None,
+    keyword_swaps: list[str] | None = None,
+    option_swaps: list[str] | None = None,
     additional_fields: dict[str, Any] | None = None,
 ) -> RunSchema:
     """
@@ -49,12 +50,12 @@ def base_fn(
     option_defaults
         Default `options` for calculator.
     keyword_swaps
-        Dictionary of custom `keyword` kwargs for the GULP calculator. Set a
-        value to `quacc.Remove` to remove a pre-existing key entirely. For a list of
+        List of custom `keyword` kwargs for the GULP calculator. To remove entries
+        from the defaults, put a `#` in front of the name. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
     option_swaps
-        Dictionary of custom `options` kwargs for the GULP calculator. Set a
-        value to `quacc.Remove` to remove a pre-existing key entirely. For a list of
+        Dictionary of custom `options` kwargs for the GULP calculator. To remove entries
+        from the defaults, put a `#` in front of the name. For a list of
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
     additional_fields
         Additional field to supply to the summarizer.
@@ -64,26 +65,26 @@ def base_fn(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    keyword_defaults = keyword_defaults or {}
+    keyword_defaults = keyword_defaults or []
 
     if not atoms.pbc.any():
-        if keyword_defaults.get("opti") and not keyword_defaults.get("conv"):
-            keyword_defaults["conv"] = True
+        if "opti" in keyword_defaults and "conv" not in keyword_defaults:
+            keyword_defaults += ["conv"]
         for k in ["gwolf", "conp"]:
-            keyword_defaults.pop(k, None)
+            if k in keyword_defaults:
+                keyword_defaults.remove(k)
 
-    option_defaults = recursive_dict_merge(
-        option_defaults,
-        {f"output cif {GEOM_FILE_PBC}": True}
+    option_defaults += [
+        f"output cif {GEOM_FILE_PBC}"
         if atoms.pbc.any()
-        else {f"output xyz {GEOM_FILE_NOPBC}": True},
-    )
+        else f"output xyz {GEOM_FILE_NOPBC}"
+    ]
 
-    keywords = recursive_dict_merge(keyword_defaults, keyword_swaps)
-    options = recursive_dict_merge(option_defaults, option_swaps)
+    keywords = merge_list_params(keyword_defaults, keyword_swaps)
+    options = merge_list_params(option_defaults, option_swaps)
 
-    gulp_keywords = " ".join(list(keywords.keys()))
-    gulp_options = list(options.keys())
+    gulp_keywords = " ".join(keywords)
+    gulp_options = list(options)
 
     if SETTINGS.GULP_LIB:
         os.environ["GULP_LIB"] = str(SETTINGS.GULP_LIB)
