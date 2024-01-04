@@ -77,7 +77,6 @@ def phonon_job(
             "inputph": {
                 "tr2_ph": 1e-12,
                 "alpha_mix(1)": 0.1,
-                "nmix_ph": 12,
                 "verbosity": "high",
             }
         },
@@ -114,7 +113,7 @@ def _grid_phonon_subflow(
     Parameters
     ----------
     input_data
-        The input_data from the phonon test job.
+        The input_data for the phonon calculation.
     ph_test_job_dir
         The directory containing the results of the phonon test job.
     pw_job_dir
@@ -268,9 +267,7 @@ def grid_phonon_flow(
     # Prep for the final recover ph.x job
     copy_back = [result["dir_name"] for result in grid_results]
 
-    input_data = grid_results[-1]["parameters"]["input_data"]
-    for k in ["start_q", "last_q", "start_irr", "last_irr"]:
-        input_data["inputph"].pop(k)
-    input_data["inputph"]["recover"] = True
+    # We use the flat form to make sure that recover takes priority
+    ph_job_input_data["recover"] = True
 
-    return recover_ph_job(copy_back, input_data=input_data)
+    return recover_ph_job(copy_back, input_data=ph_job_input_data)
