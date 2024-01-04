@@ -16,7 +16,7 @@ def test_static_job(tmp_path, monkeypatch):
     assert output["natoms"] == len(atoms)
     assert (
         output["parameters"]["orcasimpleinput"]
-        == "wb97x-d3bj def2-tzvp sp slowconv normalprint xyzfile"
+        == "def2-tzvp normalprint slowconv sp wb97x-d3bj xyzfile"
     )
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
@@ -35,8 +35,8 @@ def test_static_job_parallel(tmp_path, monkeypatch):
         atoms,
         charge=-2,
         spin_multiplicity=3,
-        orcasimpleinput={"def2-svp": True, "def2-tzvp": Remove},
-        orcablocks={"%scf maxiter 300 end": True},
+        orcasimpleinput=["def2-svp", "#def2-tzvp"],
+        orcablocks=["%scf maxiter 300 end"],
         nprocs=2,
     )
     assert output["natoms"] == len(atoms)
@@ -44,7 +44,7 @@ def test_static_job_parallel(tmp_path, monkeypatch):
     assert output["parameters"]["mult"] == 3
     assert (
         output["parameters"]["orcasimpleinput"]
-        == "wb97x-d3bj sp slowconv normalprint xyzfile def2-svp"
+        == "def2-svp normalprint slowconv sp wb97x-d3bj xyzfile"
     )
     assert "%scf maxiter 300 end" in output["parameters"]["orcablocks"]
     assert output.get("attributes")
@@ -70,19 +70,14 @@ def test_relax_job(tmp_path, monkeypatch):
         atoms,
         charge=-2,
         spin_multiplicity=3,
-        orcasimpleinput={
-            "hf": True,
-            "wb97x-d3bj": Remove,
-            "def2-svp": True,
-            "def2-tzvp": Remove,
-        },
-        orcablocks={"%scf maxiter 300 end": True},
+        orcasimpleinput=["def2-svp", "#def2-tzvp", "#wb97x-d3bj", "hf"],
+        orcablocks=["%scf maxiter 300 end"],
         nprocs=2,
     )
     assert output["natoms"] == len(atoms)
     assert (
         output["parameters"]["orcasimpleinput"]
-        == "opt slowconv normalprint xyzfile hf def2-svp"
+        == "def2-svp hf normalprint opt slowconv xyzfile"
     )
     assert "%scf maxiter 300 end" in output["parameters"]["orcablocks"]
     assert output.get("trajectory")
@@ -101,7 +96,7 @@ def test_ase_relax_job(tmp_path, monkeypatch):
     assert output["parameters"]["mult"] == 1
     assert (
         output["parameters"]["orcasimpleinput"]
-        == "wb97x-d3bj def2-tzvp engrad slowconv normalprint xyzfile"
+        == "def2-tzvp engrad normalprint slowconv wb97x-d3bj xyzfile"
     )
     assert output["fmax"] == 0.1
     assert output.get("trajectory")
