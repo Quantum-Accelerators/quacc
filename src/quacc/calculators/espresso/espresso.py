@@ -318,9 +318,6 @@ class Espresso(Espresso_):
         else:
             self._user_calc_params = params
 
-        if self._user_calc_params.get("kpts") == "gamma":
-            self._user_calc_params["kpts"] = None
-
         if self._user_calc_params.get("pmg_kpts"):
             kpts, _ = convert_pmg_kpts(
                 self._user_calc_params["pmg_kpts"], self.input_atoms
