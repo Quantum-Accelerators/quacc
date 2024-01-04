@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.schemas._aliases.cclib import cclibSchema
+    from quacc.schemas._aliases.cclib import cclibASEOptSchema, cclibSchema
 
 _LABEL = OrcaTemplate()._label  # skipcq: PYL-W0212
 LOG_FILE = f"{_LABEL}.out"
@@ -98,9 +98,9 @@ def base_opt_fn(
     opt_params: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: str | Path | list[str | Path] | None = None,
-) -> cclibSchema:
+) -> cclibASEOptSchema:
     """
-    Base job function for ORCA recipes.
+    Base job function for ORCA recipes with ASE optimizer.
 
     Parameters
     ----------
