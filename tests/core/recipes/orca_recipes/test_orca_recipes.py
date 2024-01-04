@@ -2,6 +2,7 @@ import os
 
 import pytest
 from ase.build import molecule
+
 from quacc.recipes.orca.core import ase_relax_job, relax_job, static_job
 
 
