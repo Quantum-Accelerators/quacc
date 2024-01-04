@@ -325,6 +325,8 @@ class Espresso(Espresso_):
             kpts, _ = convert_pmg_kpts(
                 self._user_calc_params["pmg_kpts"], self.input_atoms
             )
+            if kpts == [1, 1, 1]:
+                kpts = None
             self._user_calc_params["kpts"] = kpts
             self._user_calc_params.pop("pmg_kpts")
 

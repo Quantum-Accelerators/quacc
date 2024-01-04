@@ -189,6 +189,10 @@ def test_pmg_kpts():
     calc = Espresso(input_atoms=atoms, pmg_kpts={"kppvol": 100})
     assert calc.parameters["kpts"] == [12, 12, 12]
 
+    atoms = bulk("Cu") * (10, 10, 10)
+    calc = Espresso(input_atoms=atoms, pmg_kpts={"kppvol": 100})
+    assert calc.parameters["kpts"] is None
+
     atoms = bulk("Cu")
     calc = Espresso(input_atoms=atoms, preset="basic_pw")
     assert calc.parameters["kpts"] == [12, 12, 12]
