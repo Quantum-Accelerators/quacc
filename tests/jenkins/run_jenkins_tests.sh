@@ -12,7 +12,7 @@ module load openmpi/gcc/4.1.2
 salloc -N 1 -n 32 -t 00:10:00 pytest \
     tests/core/recipes/gaussian_recipes \
     tests/core/recipes/gulp_recipes \
-    tests/core/recipes/orca_recipes \
+    tests/core/recipes/orca_recipes
 
 # VASP
 module purge
