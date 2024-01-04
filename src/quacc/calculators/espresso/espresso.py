@@ -64,7 +64,7 @@ class EspressoTemplate(EspressoTemplate_):
         properties: Any,
     ) -> None:
         """
-        The function that should be used instead of the one in ASE EspressoTemplate
+        The function that should be used instead of the one in ASE's `EspressoTemplate`
         to write the input file. It calls a customly defined write function.
 
         Parameters
@@ -108,7 +108,7 @@ class EspressoTemplate(EspressoTemplate_):
 
     def read_results(self, directory: Path | str) -> dict[str, Any]:
         """
-        The function that should be used instead of the one in ASE EspressoTemplate
+        The function that should be used instead of the one in ASE's `EspressoTemplate`
         to read the output file. It calls a customly defined read function. It also
         adds the "energy" key to the results dictionnary if it is not present. This
         is needed if the calculation is not made with pw.x.
@@ -183,7 +183,7 @@ class EspressoTemplate(EspressoTemplate_):
 
 class Espresso(Espresso_):
     """
-    This is a wrapper around the ASE Espresso calculator that adjusts input_data
+    This is a wrapper around the ASE `Espresso` calculator that adjusts input_data
     parameters and allows for the use of presets. Templates are used to set
     the binary and input/output file names.
     """
