@@ -6,16 +6,16 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from ase.calculators.vasp import Vasp as Vasp_
-from pymatgen.io.ase import AseAtomsAdaptor
-from pymatgen.io.vasp.inputs import Kpoints
-from pymatgen.symmetry.bandstructure import HighSymmKpath
 
 from quacc.atoms.core import check_is_metal
+from quacc.utils.kpts import convert_pmg_kpts
 
 if TYPE_CHECKING:
     from typing import Any, Literal
 
     from ase.atoms import Atoms
+
+    from quacc.utils.kpts import PmgKpts
 
 logger = logging.getLogger(__name__)
 
@@ -309,8 +309,8 @@ def set_auto_dipole(
     return user_calc_params
 
 
-def convert_pmg_kpts(
-    user_calc_params: dict[str, Any],
+def set_pmg_kpts(
+    user_calc_params: PmgKpts,
     pmg_kpts: dict[Literal["line_density", "kppvol", "kppa"], float],
     input_atoms: Atoms,
 ) -> dict[str, Any]:
@@ -331,52 +331,11 @@ def convert_pmg_kpts(
     dict
         The updated user-provided calculator parameters.
     """
-    struct = AseAtomsAdaptor.get_structure(input_atoms)
 
-    if pmg_kpts.get("line_density"):
-        # TODO: Support methods other than latimer-munro
-        kpath = HighSymmKpath(
-            struct,
-            path_type="latimer_munro",
-            has_magmoms=np.any(struct.site_properties.get("magmom", None)),
-        )
-        kpts, _ = kpath.get_kpoints(
-            line_density=pmg_kpts["line_density"], coords_are_cartesian=True
-        )
-        kpts = np.stack(kpts)
-        reciprocal = True
-        gamma = None
-
-    else:
-        reciprocal = None
-        force_gamma = user_calc_params.get("gamma", False)
-        max_pmg_kpts = None
-        for k, v in pmg_kpts.items():
-            if k == "kppvol":
-                pmg_kpts = Kpoints.automatic_density_by_vol(
-                    struct, v, force_gamma=force_gamma
-                )
-            elif k == "kppa":
-                pmg_kpts = Kpoints.automatic_density(struct, v, force_gamma=force_gamma)
-            elif k == "length_densities":
-                pmg_kpts = Kpoints.automatic_density_by_lengths(
-                    struct, v, force_gamma=force_gamma
-                )
-            else:
-                msg = f"Unsupported k-point generation scheme: {pmg_kpts}."
-                raise ValueError(msg)
-
-            max_pmg_kpts = (
-                pmg_kpts
-                if (
-                    not max_pmg_kpts
-                    or np.prod(pmg_kpts.kpts[0]) >= np.prod(max_pmg_kpts.kpts[0])
-                )
-                else max_pmg_kpts
-            )
-
-        kpts = max_pmg_kpts.kpts[0]
-        gamma = max_pmg_kpts.style.name.lower() == "gamma"
+    kpts, gamma = convert_pmg_kpts(
+        pmg_kpts, input_atoms, force_gamma=user_calc_params.get("gamma", False)
+    )
+    reciprocal = bool(pmg_kpts.get("line_density"))
 
     user_calc_params["kpts"] = kpts
     if reciprocal and user_calc_params.get("reciprocal") is None:

@@ -35,5 +35,5 @@ if has_import:
         except Exception:
             pass
 
-        rmtree(TEST_RESULTS_DIR)
-        rmtree(TEST_SCRATCH_DIR)
+        rmtree(TEST_RESULTS_DIR, ignore_errors=True)
+        rmtree(TEST_SCRATCH_DIR, ignore_errors=True)
