@@ -15,6 +15,8 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
+    from quacc.utils.kpts import PmgKpts
+
 logger = logging.getLogger(__name__)
 
 
@@ -308,7 +310,7 @@ def set_auto_dipole(
 
 
 def set_pmg_kpts(
-    user_calc_params: dict[str, Any],
+    user_calc_params: PmgKpts,
     pmg_kpts: dict[Literal["line_density", "kppvol", "kppa"], float],
     input_atoms: Atoms,
 ) -> dict[str, Any]:
