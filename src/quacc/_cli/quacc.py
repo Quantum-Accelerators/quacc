@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 import typer
+from rich import print
 
 app = typer.Typer()
 
@@ -28,7 +29,7 @@ def callback(value: bool) -> None:
     from quacc import __version__
 
     if value:
-        typer.echo(f"quacc v{__version__}")
+        print(f"quacc v{__version__}")
         raise typer.Exit()
 
 
@@ -83,7 +84,7 @@ def set_(parameter: str, new_value: str) -> None:
     _parameter_handler(parameter, SETTINGS.model_dump())
     new_value = _type_handler(new_value)
 
-    typer.echo(f"Setting `{parameter}` to `{new_value}` in {CONFIG_FILE}")
+    print(f"Setting `{parameter}` to `{new_value}` in {CONFIG_FILE}")
     _update_setting(parameter, new_value, CONFIG_FILE)
 
 
@@ -109,7 +110,7 @@ def unset(parameter: str) -> None:
     parameter = parameter.upper()
 
     _parameter_handler(parameter, SETTINGS.model_dump())
-    typer.echo(f"Unsetting `{parameter}` in {CONFIG_FILE}")
+    print(f"Unsetting `{parameter}` in {CONFIG_FILE}")
     _delete_setting(parameter, CONFIG_FILE)
 
 
