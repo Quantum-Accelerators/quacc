@@ -1,4 +1,6 @@
+import glob
 import os
+from pathlib import Path
 from shutil import rmtree
 
 import numpy as np
@@ -12,6 +14,17 @@ from quacc import SETTINGS
 from quacc.runners.ase import run_calc, run_opt, run_vib
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
+
+
+def _find_results_dir():
+    search_dir = SETTINGS.RESULTS_DIR
+    pattern = str(Path(search_dir, "quacc-*"))
+    matching_dirs = glob.glob(pattern)
+    most_recent_directory = max(matching_dirs, key=os.path.getmtime, default=None)
+    if most_recent_directory is None:
+        return Path.cwd()
+    else:
+        return most_recent_directory
 
 
 def prep_files():
@@ -39,10 +52,12 @@ def test_run_calc(tmp_path, monkeypatch):
     atoms.calc = EMT()
 
     new_atoms = run_calc(atoms, copy_files=["test_file.txt"])
+    results_dir = _find_results_dir()
+
     assert atoms.calc.results is not None
     assert new_atoms.calc.results is not None
-    assert not os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, "test_file.txt"))
-    assert os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, "test_file.txt.gz"))
+    assert not os.path.exists(os.path.join(results_dir, "test_file.txt"))
+    assert os.path.exists(os.path.join(results_dir, "test_file.txt.gz"))
     assert np.array_equal(new_atoms.get_positions(), atoms.get_positions()) is True
     assert np.array_equal(new_atoms.cell.array, atoms.cell.array) is True
 
@@ -58,10 +73,12 @@ def test_run_calc_no_gzip(tmp_path, monkeypatch):
     atoms.calc = EMT()
 
     new_atoms = run_calc(atoms, copy_files=["test_file.txt"])
+    results_dir = _find_results_dir()
+
     assert atoms.calc.results is not None
     assert new_atoms.calc.results is not None
-    assert os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, "test_file.txt"))
-    assert not os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, "test_file.txt.gz"))
+    assert os.path.exists(os.path.join(results_dir, "test_file.txt"))
+    assert not os.path.exists(os.path.join(results_dir, "test_file.txt.gz"))
     assert np.array_equal(new_atoms.get_positions(), atoms.get_positions()) is True
     assert np.array_equal(new_atoms.cell.array, atoms.cell.array) is True
     SETTINGS.GZIP_FILES = DEFAULT_SETTINGS.GZIP_FILES
@@ -77,9 +94,11 @@ def test_run_opt1(tmp_path, monkeypatch):
 
     dyn = run_opt(atoms, copy_files=["test_file.txt"])
     traj = dyn.traj_atoms
+    results_dir = _find_results_dir()
+
     assert traj[-1].calc.results is not None
-    assert not os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, "test_file.txt"))
-    assert os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, "test_file.txt.gz"))
+    assert not os.path.exists(os.path.join(results_dir, "test_file.txt"))
+    assert os.path.exists(os.path.join(results_dir, "test_file.txt.gz"))
     assert np.array_equal(traj[-1].get_positions(), atoms.get_positions()) is False
     assert np.array_equal(traj[-1].cell.array, atoms.cell.array) is True
 
@@ -116,10 +135,12 @@ def test_run_vib(tmp_path, monkeypatch):
     o2 = molecule("O2")
     o2.calc = LennardJones()
     vib = run_vib(o2, copy_files=["test_file.txt"])
+    results_dir = _find_results_dir()
+
     assert np.real(vib.get_frequencies()[-1]) == pytest.approx(255.6863883406967)
     assert np.array_equal(vib.atoms.get_positions(), o2.get_positions()) is True
-    assert not os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, "test_file.txt"))
-    assert os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, "test_file.txt.gz"))
+    assert not os.path.exists(os.path.join(results_dir, "test_file.txt"))
+    assert os.path.exists(os.path.join(results_dir, "test_file.txt.gz"))
 
 
 def test_bad_runs(tmp_path, monkeypatch):
@@ -150,30 +171,25 @@ def test_unique_workdir(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     prep_files()
 
-    # Static
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
     run_calc(atoms, copy_files=["test_file.txt"])
+    results_dir = _find_results_dir()
     assert atoms.calc.results is not None
+    assert not os.path.exists(os.path.join(results_dir, "test_file.txt"))
+    assert os.path.exists(os.path.join(results_dir, "test_file.txt.gz"))
 
-    # Opt
+    SETTINGS.CREATE_UNIQUE_DIR = False
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
-    dyn = run_opt(atoms, copy_files=["test_file.txt"])
-    traj = dyn.traj_atoms
-    assert traj[-1].calc.results is not None
-    assert np.array_equal(traj[-1].get_positions(), atoms.get_positions()) is False
-    assert np.array_equal(traj[-1].cell.array, atoms.cell.array) is True
-
-    # Vib
-    o2 = molecule("O2")
-    o2.calc = LennardJones()
-    vib = run_vib(o2)
-    assert np.real(vib.get_frequencies()[-1]) == pytest.approx(255.6863883406967)
-    assert np.array_equal(vib.atoms.get_positions(), o2.get_positions()) is True
+    run_calc(atoms, copy_files=["test_file.txt"])
+    results_dir = _find_results_dir()
+    assert atoms.calc.results is not None
+    assert not os.path.exists(os.path.join(results_dir, "test_file.txt"))
+    assert os.path.exists(os.path.join(results_dir, "test_file.txt.gz"))
 
     SETTINGS.CREATE_UNIQUE_DIR = DEFAULT_SETTINGS.CREATE_UNIQUE_DIR

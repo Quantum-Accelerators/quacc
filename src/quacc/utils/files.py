@@ -69,6 +69,8 @@ def copy_decompress_files(
         if f_path.is_file():
             copy(f_path, Path(destination, f_path.name))
             decompress_file(Path(destination, f_path.name))
+        elif f_path.is_dir():
+            copy_decompress_files_from_dir(f_path, destination)
         else:
             warnings.warn(f"Cannot find file {f_path}", UserWarning)
 
