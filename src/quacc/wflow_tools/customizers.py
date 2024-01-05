@@ -124,7 +124,6 @@ def customize_funcs(
     tuple[Callable] | Callable
         The customized functions, returned in the same order as provided in `funcs`.
     """
-    from quacc import SETTINGS
 
     parameters = parameters or {}
     decorators = decorators or {}
