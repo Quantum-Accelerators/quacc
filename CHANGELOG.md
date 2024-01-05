@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - ORCA and GULP recipes now use a more intuitive and concise `list[str]` input argument format instead of a `dict` format when overriding defaults
 
+### Fixed
+
+- Fixed concurrency issues with Dask subflows
+
 ## [0.5.1]
 
 ### Added
