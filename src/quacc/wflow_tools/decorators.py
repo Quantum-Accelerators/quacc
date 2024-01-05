@@ -1,7 +1,7 @@
 """Workflow decorators."""
 from __future__ import annotations
 
-from functools import partial
+from functools import partial, wraps
 from typing import TYPE_CHECKING, TypeVar
 
 Job = TypeVar("Job")
@@ -121,7 +121,12 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     elif SETTINGS.WORKFLOW_ENGINE == "dask":
         from dask import delayed
 
-        return delayed(_func, **kwargs)
+        @wraps(_func)
+        def wrapper(*args, **kwargs):
+            return _func(*args, **kwargs)
+
+        return Delayed_(delayed(wrapper))
+
     elif SETTINGS.WORKFLOW_ENGINE == "jobflow":
         from jobflow import job as jf_job
 
@@ -445,7 +450,36 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
         return task(_func, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "dask":
         from dask import delayed
+        from dask.distributed import worker_client
 
-        return delayed(_func, **kwargs)
+        @wraps(_func)
+        def wrapper(*args, **kwargs):
+            with worker_client() as client:
+                futures = client.compute(_func(*args, **kwargs))
+                results = client.gather(futures)
+                return results
+
+        return delayed(wrapper)
     else:
         return _func
+
+
+class Delayed_:
+    """
+    A small Dask-compatible, serializable object to wrap delayed functions
+    that we don't want to execute
+    """
+
+    __slots__ = ("func",)
+
+    def __init__(self, func):
+        self.func = func
+
+    def __repr__(self):
+        return f"Delayed_<type={type(self.func).__name__}>"
+
+    def __reduce__(self):
+        return (Delayed_, (self.func,))
+
+    def __call__(self, *args, **kwargs):
+        return self.func(*args, **kwargs)
