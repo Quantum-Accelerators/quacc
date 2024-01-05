@@ -35,6 +35,8 @@ def strip_decorator(func: Callable) -> Callable:
     elif SETTINGS.WORKFLOW_ENGINE == "dask":
         if hasattr(func, "__wrapped__"):
             func = func.__wrapped__
+        if hasattr(func, "__wrapped__"):
+            func = func.__wrapped__
 
     elif SETTINGS.WORKFLOW_ENGINE == "jobflow":
         if hasattr(func, "original"):
