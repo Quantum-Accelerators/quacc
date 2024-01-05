@@ -153,10 +153,12 @@ def test_customize_funcs(monkeypatch, tmp_path):
     def test_dynamic_workflow(a, b, c=3):
         result1 = add(a, b)
         result2 = make_more(result1)
-        return update_parameters(add_distributed, {"d": 1}, "subflow")(result2, c)
+        return update_parameters(add_distributed, {"d": 1}, decorator="subflow")(
+            result2, c
+        )
 
-    add_ = update_parameters(add, {"b": 3}, "job")
-    dynamic_workflow_ = update_parameters(dynamic_workflow, {"c": 4}, "flow")
+    add_ = update_parameters(add, {"b": 3}, decorator="job")
+    dynamic_workflow_ = update_parameters(dynamic_workflow, {"c": 4}, decorator="flow")
     assert client.compute(add_(1)).result() == 4
     assert client.gather(client.compute(dynamic_workflow_(1, 2))) == [7, 7, 7]
     assert client.gather(client.compute(test_dynamic_workflow(1, 2))) == [7, 7, 7]
