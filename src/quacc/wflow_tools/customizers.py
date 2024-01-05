@@ -96,6 +96,8 @@ def update_parameters(
         decorator = flow
     elif type == "subflow":
         decorator = subflow
+    else:
+        decorator = None
 
     if decorator and SETTINGS.WORKFLOW_ENGINE == "dask":
         func = strip_decorator(func)
