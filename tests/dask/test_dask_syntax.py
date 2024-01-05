@@ -46,7 +46,7 @@ def test_dask_decorators(tmp_path, monkeypatch):
         return add_distributed(result2, c)
 
     @flow
-    def dynamic_workflow2(a, b, c, op):
+    def dynamic_workflow2(a, b, c):
         result1 = add(a, b)
         result2 = make_more(result1)
         return add_distributed2(result2, c, op)
@@ -55,7 +55,7 @@ def test_dask_decorators(tmp_path, monkeypatch):
     assert client.compute(mult(1, 2)).result() == 2
     assert client.compute(workflow(1, 2, 3)).result() == 9
     assert client.gather(client.compute(dynamic_workflow(1, 2, 3))) == [6, 6, 6]
-    assert client.gather(client.compute(dynamic_workflow2(1, 2, 3, add))) == [6, 6, 6]
+    assert client.gather(client.compute(dynamic_workflow2(1, 2, 3))) == [6, 6, 6]
 
 
 def test_dask_decorators_args(tmp_path, monkeypatch):
@@ -92,16 +92,16 @@ def test_dask_decorators_args(tmp_path, monkeypatch):
         return add_distributed(result2, c)
 
     @flow()
-    def dynamic_workflow2(a, b, c, op):
+    def dynamic_workflow2(a, b, c):
         result1 = add(a, b)
         result2 = make_more(result1)
-        return add_distributed2(result2, c, op)
+        return add_distributed2(result2, c, add)
 
     assert client.compute(add(1, 2)).result() == 3
     assert client.compute(mult(1, 2)).result() == 2
     assert client.compute(workflow(1, 2, 3)).result() == 9
     assert client.gather(client.compute(dynamic_workflow(1, 2, 3))) == [6, 6, 6]
-    assert client.gather(client.compute(dynamic_workflow2(1, 2, 3, add))) == [6, 6, 6]
+    assert client.gather(client.compute(dynamic_workflow2(1, 2, 3))) == [6, 6, 6]
 
 
 def test_strip_decorators():
