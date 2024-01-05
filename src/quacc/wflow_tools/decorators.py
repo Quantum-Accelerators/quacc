@@ -466,7 +466,7 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
 
 class Delayed_:
     """
-    A small serializable object to wrap delayed functions
+    A small Dask-compatible, serializable object to wrap delayed functions
     that we don't want to execute
     """
 
