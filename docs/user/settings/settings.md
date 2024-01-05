@@ -1,14 +1,12 @@
-# Settings Management
+# Modifying Settings
 
 !!! Important
 
     The quacc configuration parameters (e.g. YAML file, environment variables) are only active on the machine where they are specified. In other words, each remote machine has its own custom set of configuration parameters.
 
-## Modifying Quacc Settings
-
 The default global quacc settings can be found in the [`settings.py`](https://github.com/quantum-accelerators/quacc/blob/main/src/quacc/settings.py) file. If you wish to modify any of the global quacc settings, there are several ways to do so.
 
-### Using a YAML File
+## Using a YAML File
 
 !!! Note "Command-Line Interface"
 
@@ -32,7 +30,7 @@ WORKFLOW_ENGINE: # (3)!
 
     This approach is ideal when you want to change a setting that applies to most or all of your calculations.
 
-### Using Environment Variables
+## Using Environment Variables
 
 If you want to define quacc settings without writing them to a YAML file, you can instead modify the desired settings by defining individual environment variables with `QUACC` as the prefix. For instance, to modify the `SCRATCH_DIR` setting to be `$SCRATCH`, simply define `QUACC_SCRATCH_DIR=$SCRATCH` as a new environment variable. The environment variable takes precedence over any value specified in the YAML file.
 
@@ -40,7 +38,7 @@ If you want to define quacc settings without writing them to a YAML file, you ca
 
     This approach is ideal when you want to dynamically modify the quacc settings for a given set of calculations, as the environment variable can be modified on-the-fly (e.g. in the job's submission script) without modifying the YAML file that is read by all other calculations.
 
-### Modifying the Global Settings in a Script
+## Modifying the Global Settings in a Script
 
 If you want to define quacc settings on-the-fly without writing them to a YAML file or using environment variables, you can do so within your script by modifying the global `SETTINGS` object.
 
