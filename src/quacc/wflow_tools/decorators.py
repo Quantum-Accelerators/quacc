@@ -131,9 +131,9 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
 
         return python_app(_func, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
-        from redun import task as redun_task
+        from redun import task
 
-        return redun_task(_func, **kwargs)
+        return task(_func, **kwargs)
     else:
         return _func
 
@@ -256,9 +256,9 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
 
         return ct.lattice(_func, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
-        from redun import task as redun_task
+        from redun import task
 
-        return redun_task(_func, **kwargs)
+        return task(_func, **kwargs)
     else:
         return _func
 
@@ -440,9 +440,9 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
 
         return join_app(_func, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
-        from redun import task as redun_task
+        from redun import task
 
-        return redun_task(_func, **kwargs)
+        return task(_func, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "dask":
         from dask import delayed
 

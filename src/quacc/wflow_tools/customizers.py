@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from functools import partial
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 if TYPE_CHECKING:
     from typing import Any, Callable
@@ -68,7 +68,11 @@ def redecorate(func: Callable, decorator: Callable | None) -> Callable:
     return func if decorator is None else decorator(func)
 
 
-def update_parameters(func: Callable, params: dict[str, Any]) -> Callable:
+def update_parameters(
+    func: Callable,
+    params: dict[str, Any],
+    type: Literal["job", "flow", "subflow"] | None = "job",
+) -> Callable:
     """
     Update the parameters of a function.
 
@@ -84,11 +88,18 @@ def update_parameters(func: Callable, params: dict[str, Any]) -> Callable:
     Callable
         The updated function.
     """
-    from quacc import SETTINGS, job
+    from quacc import SETTINGS, flow, job, subflow
 
-    if SETTINGS.WORKFLOW_ENGINE == "dask":
+    if type == "job":
+        decorator = job
+    elif type == "flow":
+        decorator = flow
+    elif type == "subflow":
+        decorator = subflow
+
+    if decorator and SETTINGS.WORKFLOW_ENGINE == "dask":
         func = strip_decorator(func)
-        return job(partial(func, **params))
+        return decorator(partial(func, **params))
 
     return partial(func, **params)
 
