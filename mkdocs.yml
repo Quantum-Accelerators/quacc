@@ -29,8 +29,10 @@ nav:
           - user/settings/settings.md
           - user/settings/file_management.md
           - user/settings/settings_list.md
-      - Advanced:
-          - user/advanced/database.md
+      - Using a Database:
+          - user/db/context.md
+          - user/db/basics.md
+      - Miscellaneous:
           - user/advanced/file_transfers.md
           - user/advanced/vasp_hpc.md
   - Code Documentation 📖: reference/
