@@ -86,11 +86,11 @@ def update_parameters(func: Callable, params: dict[str, Any]) -> Callable:
     """
     from quacc import SETTINGS, job
 
-    if SETTINGS.WORKFLOW_ENGINE != "dask":
-        return partial(func, **params)
+    if SETTINGS.WORKFLOW_ENGINE == "dask":
+        func = strip_decorator(func)
+        return job(partial(func, **params))
 
-    func = strip_decorator(func)
-    return job(partial(func, **params))
+    return partial(func, **params)
 
 
 def customize_funcs(
