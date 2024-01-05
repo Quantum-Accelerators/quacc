@@ -41,7 +41,7 @@ def strip_decorator(func: Callable) -> Callable:
 
         if isinstance(func, Delayed_):
             func = func.func
-        elif isinstance(func, Delayed):
+        if isinstance(func, Delayed):
             func = func.__wrapped__
             if hasattr(func, "__wrapped__"):
                 # Needed for custom `@subflow` decorator
