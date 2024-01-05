@@ -98,6 +98,7 @@ def customize_funcs(
     funcs: list[Callable] | Callable,
     parameters: dict[str, dict[str, Any]] | None = None,
     decorators: dict[str, Callable | None] | None = None,
+    prep_for_subflow: bool = True,
 ) -> tuple[Callable] | Callable:
     """
     Customize a set of functions with decorators and common parameters.
@@ -116,12 +117,17 @@ def customize_funcs(
         Custom decorators to apply to each function. The keys of this dictionary correspond
         to the strings in `names`. If the key `"all"` is present, it will be applied to all
         functions. If a value is `None`, no decorator will be applied that function.
+    prep_for_subflow
+        Whether to prepare the functions for use in a subflow. This is used to handle
+        some peculiarities of the various workflow engines.
 
     Returns
     -------
     tuple[Callable] | Callable
         The customized functions, returned in the same order as provided in `funcs`.
     """
+    from quacc import SETTINGS
+
     parameters = parameters or {}
     decorators = decorators or {}
     updated_funcs = []
@@ -153,5 +159,13 @@ def customize_funcs(
         if names[i] in decorators:
             func_ = redecorate(func_, decorators[names[i]])
         updated_funcs.append(func_)
+
+    if prep_for_subflow and SETTINGS.WORKFLOW_ENGINE == "dask":
+        from dask.core import literal
+        from dask.delayed import Delayed
+
+        updated_funcs = [
+            literal(f) if isinstance(f, Delayed) else f for f in updated_funcs
+        ]
 
     return updated_funcs[0] if len(updated_funcs) == 1 else tuple(updated_funcs)

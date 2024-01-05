@@ -1,7 +1,7 @@
 """Workflow decorators."""
 from __future__ import annotations
 
-from functools import partial
+from functools import partial, wraps
 from typing import TYPE_CHECKING, TypeVar
 
 Job = TypeVar("Job")
@@ -131,9 +131,9 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
 
         return python_app(_func, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
-        from redun import task as redun_task
+        from redun import task
 
-        return redun_task(_func, **kwargs)
+        return task(_func, **kwargs)
     else:
         return _func
 
@@ -256,9 +256,9 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
 
         return ct.lattice(_func, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
-        from redun import task as redun_task
+        from redun import task
 
-        return redun_task(_func, **kwargs)
+        return task(_func, **kwargs)
     else:
         return _func
 
@@ -440,12 +440,30 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
 
         return join_app(_func, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
-        from redun import task as redun_task
+        from redun import task
 
-        return redun_task(_func, **kwargs)
+        return task(_func, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "dask":
         from dask import delayed
+        from dask.core import literal
+        from dask.distributed import worker_client
 
-        return delayed(_func, **kwargs)
+        @wraps(_func)
+        def wrapper(*args, **kwargs):
+            with worker_client() as client:
+                print(args)
+                args = [a.data if isinstance(a, literal) else a for a in args]
+                kwargs = {
+                    key: kwargs[key].data
+                    if isinstance(kwargs[key], literal)
+                    else kwargs[key]
+                    for key in kwargs
+                }
+                futures = client.compute(_func(*args, **kwargs))
+                results = client.gather(futures)
+                return results
+
+        return delayed(wrapper)
+
     else:
         return _func
