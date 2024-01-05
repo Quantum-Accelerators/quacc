@@ -77,8 +77,8 @@ def _recursive_dict_pair_merge(
         Merged dictionary
     """
 
-    dict1 = dict1 or (dict1.__class__() if dict1 is not None else {})
-    dict2 = dict2 or (dict2.__class__() if dict2 is not None else {})
+    dict1 = dict1 or ({} if dict1 is None else dict1.__class__())
+    dict2 = dict2 or ({} if dict2 is None else dict2.__class__())
     merged = safe_dict_copy(dict1)
 
     for key, value in dict2.items():
