@@ -84,6 +84,32 @@ def test_relax_job(tmp_path, monkeypatch):
     assert output.get("attributes")
 
 
+@pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
+def test_relax_freq_job(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    atoms = molecule("H2")
+
+    output = relax_job(
+        atoms,
+        xc="hf",
+        basis="def2-svp",
+        charge=0,
+        spin_multiplicity=1,
+        nprocs=2,
+        orcasimpleinput=["#slowconv"],
+        run_freq=True,
+    )
+    assert output["natoms"] == len(atoms)
+    assert output["parameters"]["charge"] == 0
+    assert output["parameters"]["mult"] == 1
+    assert (
+        output["parameters"]["orcasimpleinput"]
+        == "def2-svp freq hf normalprint opt xyzfile"
+    )
+    assert output["trajectory"][0] != output["trajectory"][-1]
+
+
 def test_ase_relax_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
