@@ -11,6 +11,7 @@ from quacc.runners.ase import run_calc, run_opt
 from quacc.schemas.ase import summarize_opt_run
 from quacc.schemas.cclib import cclib_summarize_run
 from quacc.utils.dicts import recursive_dict_merge
+from quacc.utils.lists import merge_list_params
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -29,10 +30,10 @@ def base_fn(
     atoms: Atoms,
     charge: int = 0,
     spin_multiplicity: int = 1,
-    default_inputs: dict[str, Any] | None = None,
-    default_blocks: dict[str, Any] | None = None,
-    input_swaps: dict[str, Any] | None = None,
-    block_swaps: dict[str, Any] | None = None,
+    default_inputs: list[str] | None = None,
+    default_blocks: list[str] | None = None,
+    input_swaps: list[str] | None = None,
+    block_swaps: list[str] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: str | Path | list[str | Path] | None = None,
 ) -> cclibSchema:
@@ -52,13 +53,11 @@ def base_fn(
     default_blocks
         Default block input parameters.
     input_swaps
-        Dictionary of orcasimpleinput swaps for the calculator. To enable new
-        entries, set the value as True. To remove entries from the defaults, set
-        the value as `quacc.Remove`.
+        List of orcasimpleinput swaps for the calculator. To remove entries
+        from the defaults, put a `#` in front of the name.
     block_swaps
-        Dictionary of orcablock swaps for the calculator. To enable new entries,
-        set the value as True. To remove entries from the defaults, set the
-        value as `quacc.Remove`.
+        List of orcablock swaps for the calculator. To remove entries
+        from the defaults, put a `#` in front of the name.
     additional_fields
         Any additional fields to supply to the summarizer.
     copy_files
@@ -69,10 +68,10 @@ def base_fn(
     cclibSchema
         Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][]
     """
-    inputs = recursive_dict_merge(default_inputs, input_swaps)
-    blocks = recursive_dict_merge(default_blocks, block_swaps)
-    orcasimpleinput = " ".join(list(inputs.keys()))
-    orcablocks = " ".join(list(blocks.keys()))
+    inputs = merge_list_params(default_inputs, input_swaps)
+    blocks = merge_list_params(default_blocks, block_swaps)
+    orcasimpleinput = " ".join(inputs)
+    orcablocks = " ".join(blocks)
 
     atoms.calc = ORCA(
         profile=OrcaProfile(SETTINGS.ORCA_CMD),
@@ -90,10 +89,10 @@ def base_opt_fn(
     atoms: Atoms,
     charge: int = 0,
     spin_multiplicity: int = 1,
-    default_inputs: dict[str, Any] | None = None,
-    default_blocks: dict[str, Any] | None = None,
-    input_swaps: dict[str, Any] | None = None,
-    block_swaps: dict[str, Any] | None = None,
+    default_inputs: list[str] | None = None,
+    default_blocks: list[str] | None = None,
+    input_swaps: list[str] | None = None,
+    block_swaps: list[str] | None = None,
     opt_defaults: dict[str, Any] | None = None,
     opt_params: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
@@ -115,13 +114,11 @@ def base_opt_fn(
     default_blocks
         Default block input parameters.
     input_swaps
-        Dictionary of orcasimpleinput swaps for the calculator. To enable new
-        entries, set the value as True. To remove entries from the defaults, set
-        the value as `quacc.Remove`.
+        List of orcasimpleinput swaps for the calculator. To remove entries
+        from the defaults, put a `#` in front of the name.
     block_swaps
-        Dictionary of orcablock swaps for the calculator. To enable new entries,
-        set the value as True. To remove entries from the defaults, set the
-        value as `quacc.Remove`.
+        List of orcablock swaps for the calculator. To remove entries
+        from the defaults, put a `#` in front of the name.
     opt_defaults
         Default arguments for the ASE optimizer.
     opt_params
@@ -136,11 +133,11 @@ def base_opt_fn(
     cclibSchema
         Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][]
     """
-    inputs = recursive_dict_merge(default_inputs, input_swaps)
-    blocks = recursive_dict_merge(default_blocks, block_swaps)
+    inputs = merge_list_params(default_inputs, input_swaps)
+    blocks = merge_list_params(default_blocks, block_swaps)
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
-    orcasimpleinput = " ".join(list(inputs.keys()))
-    orcablocks = " ".join(list(blocks.keys()))
+    orcasimpleinput = " ".join(inputs)
+    orcablocks = " ".join(blocks)
 
     atoms.calc = ORCA(
         profile=OrcaProfile(SETTINGS.ORCA_CMD),
