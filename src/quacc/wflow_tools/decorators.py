@@ -121,7 +121,29 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     elif SETTINGS.WORKFLOW_ENGINE == "dask":
         from dask import delayed
 
-        return delayed(_func, **kwargs)
+        class DontExecuteDaskDelayed:
+            """A small serializable object to wrap delayed functions that we don't want to execute"""
+
+            __slots__ = ("func",)
+
+            def __init__(self, func):
+                self.func = func
+
+            def __repr__(self):
+                return "DontExecuteDaskDelayed<type=%s>" % type(self.func).__name__
+
+            def __reduce__(self):
+                return (DontExecuteDaskDelayed, (self.func,))
+
+            def __call__(self, *args, **kwargs):
+                return self.func(*args, **kwargs)
+
+        @wraps(_func)
+        def wrapper(*args, **kwargs):
+            return _func(*args, **kwargs)
+
+        return DontExecuteDaskDelayed(delayed(wrapper))
+
     elif SETTINGS.WORKFLOW_ENGINE == "jobflow":
         from jobflow import job as jf_job
 
@@ -445,25 +467,15 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
         return task(_func, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "dask":
         from dask import delayed
-        from dask.core import literal
         from dask.distributed import worker_client
 
         @wraps(_func)
         def wrapper(*args, **kwargs):
             with worker_client() as client:
-                print(args)
-                args = [a.data if isinstance(a, literal) else a for a in args]
-                kwargs = {
-                    key: kwargs[key].data
-                    if isinstance(kwargs[key], literal)
-                    else kwargs[key]
-                    for key in kwargs
-                }
                 futures = client.compute(_func(*args, **kwargs))
                 results = client.gather(futures)
                 return results
 
         return delayed(wrapper)
-
     else:
         return _func
