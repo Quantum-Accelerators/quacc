@@ -71,7 +71,7 @@ def redecorate(func: Callable, decorator: Callable | None) -> Callable:
 def update_parameters(
     func: Callable,
     params: dict[str, Any],
-    type: Literal["job", "flow", "subflow"] | None = "job",
+    decorator: Literal["job", "flow", "subflow"] | None = "job",
 ) -> Callable:
     """
     Update the parameters of a (potentially decorated) function.
@@ -82,6 +82,8 @@ def update_parameters(
         The function to update.
     params
         The parameters and associated values to update.
+    decorator
+        The decorator associated with `func`.
 
     Returns
     -------
@@ -90,11 +92,11 @@ def update_parameters(
     """
     from quacc import SETTINGS, flow, job, subflow
 
-    if type == "job":
+    if decorator == "job":
         decorator = job
-    elif type == "flow":
+    elif decorator == "flow":
         decorator = flow
-    elif type == "subflow":
+    elif decorator == "subflow":
         decorator = subflow
     else:
         decorator = None
