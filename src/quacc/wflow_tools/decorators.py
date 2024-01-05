@@ -451,7 +451,6 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
         @wraps(_func)
         def wrapper(*args, **kwargs):
             with worker_client() as client:
-                print(args)
                 args = [a.data if isinstance(a, literal) else a for a in args]
                 kwargs = {
                     key: kwargs[key].data
