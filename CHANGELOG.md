@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Adds a new `ase_relax_job` for ORCA
 - Adds a new `relax_job` and `post_processing_job` for Quantum Espresso
 - `quacc.wflow_tools.customizers.strip_decorator` and `quacc.wflow_tools.customizers.redecorate` are imported in the base `__init__.py` for easy user access
-- The CLI now has *color*
+- The CLI now has _color_
 
 ### Changed
 
