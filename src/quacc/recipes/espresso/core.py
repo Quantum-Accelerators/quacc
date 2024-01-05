@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 @job
 def static_job(
     atoms: Atoms,
-    preset: str | None = "basic_pw",
+    preset: str | None = "sssp_1.3.0_pbe_efficiency",
     parallel_info: dict[str] | None = None,
     copy_files: str | Path | list[str | Path] | None = None,
     **calc_kwargs,
@@ -76,7 +76,7 @@ def static_job(
 @job
 def relax_job(
     atoms: Atoms,
-    preset: str | None = "basic_pw",
+    preset: str | None = "sssp_1.3.0_pbe_efficiency",
     relax_cell: bool = False,
     parallel_info: dict[str] | None = None,
     copy_files: str | Path | list[str | Path] | None = None,
