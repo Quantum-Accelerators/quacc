@@ -26,22 +26,41 @@ def strip_decorator(func: Callable) -> Callable:
     from quacc import SETTINGS
 
     if SETTINGS.WORKFLOW_ENGINE == "covalent":
+        from covalent._workflow.lattice import Lattice
+
         if hasattr(func, "electron_object"):
             func = func.electron_object.function
 
-        if hasattr(func, "workflow_function"):
+        if isinstance(func, Lattice):
             func = func.workflow_function.get_deserialized()
 
     elif SETTINGS.WORKFLOW_ENGINE == "dask":
-        if hasattr(func, "__wrapped__"):
+        from dask.delayed import Delayed
+
+        from quacc.wflow_tools.decorators import Delayed_
+
+        if isinstance(func, Delayed_):
+            func = func.func
+        if isinstance(func, Delayed):
             func = func.__wrapped__
+            if hasattr(func, "__wrapped__"):
+                # Needed for custom `@subflow` decorator
+                func = func.__wrapped__
 
     elif SETTINGS.WORKFLOW_ENGINE == "jobflow":
         if hasattr(func, "original"):
             func = func.original
 
-    elif SETTINGS.WORKFLOW_ENGINE in ("parsl", "redun"):
-        if hasattr(func, "func"):
+    elif SETTINGS.WORKFLOW_ENGINE == "parsl":
+        from parsl.app.python import PythonApp
+
+        if isinstance(func, PythonApp):
+            func = func.func
+
+    elif SETTINGS.WORKFLOW_ENGINE == "redun":
+        from redun import Task
+
+        if isinstance(func, Task):
             func = func.func
 
     return func
@@ -122,6 +141,7 @@ def customize_funcs(
     tuple[Callable] | Callable
         The customized functions, returned in the same order as provided in `funcs`.
     """
+
     parameters = parameters or {}
     decorators = decorators or {}
     updated_funcs = []
