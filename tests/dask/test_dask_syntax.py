@@ -77,7 +77,7 @@ def test_dask_decorators_args(tmp_path, monkeypatch):
     def add_distributed(vals, c):
         return [add(val, c) for val in vals]
 
-    @subflow
+    @subflow()
     def add_distributed2(vals, c, op):
         return [op(val, c) for val in vals]
 
@@ -90,10 +90,8 @@ def test_dask_decorators_args(tmp_path, monkeypatch):
         result1 = add(a, b)
         result2 = make_more(result1)
         return add_distributed(result2, c)
-        result2 = make_more(result1)
-        return add_distributed(result2, c)
 
-    @flow
+    @flow()
     def dynamic_workflow2(a, b, c, op):
         result1 = add(a, b)
         result2 = make_more(result1)
