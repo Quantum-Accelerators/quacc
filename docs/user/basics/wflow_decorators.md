@@ -58,7 +58,7 @@ A `#!Python @subflow` in quacc is any workflow that returns a list of job output
     | ------------------- | --------------------------------- |
     | `#!Python @job`     | `#!Python @delayed`               |
     | `#!Python @flow`    | No effect                         |
-    | `#!Python @subflow` | `#!Python delayed(...).compute()` |
+    | `#!Python @subflow` | `#!Python @delayed`               |
 
     </center>
 
