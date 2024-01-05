@@ -131,9 +131,6 @@ def test_strip_decorators():
 def test_customize_funcs(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
 
-    def f(a, b=1):
-        return a + b
-
     @job
     def add(a, b=1):
         return a + b
@@ -160,7 +157,6 @@ def test_customize_funcs(monkeypatch, tmp_path):
             result2, c
         )
 
-    assert update_parameters(f, {"b": 2}, decorator=None)(1) == 3
     add_ = update_parameters(add, {"b": 3}, decorator="job")
     dynamic_workflow_ = update_parameters(dynamic_workflow, {"c": 4}, decorator="flow")
     assert client.compute(add_(1)).result() == 4

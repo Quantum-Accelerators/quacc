@@ -118,8 +118,6 @@ def update_parameters(
             decorator = flow
         elif decorator == "subflow":
             decorator = subflow
-        else:
-            decorator = None
 
         func = strip_decorator(func)
         return decorator(partial(func, **params))
