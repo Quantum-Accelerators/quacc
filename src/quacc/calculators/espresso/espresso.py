@@ -10,7 +10,12 @@ from ase.calculators.espresso import Espresso as Espresso_
 from ase.calculators.espresso import EspressoProfile
 from ase.calculators.espresso import EspressoTemplate as EspressoTemplate_
 from ase.io import read, write
-from ase.io.espresso import read_espresso_ph, write_espresso_ph, write_fortran_namelist
+from ase.io.espresso import (
+    Namelist,
+    read_espresso_ph,
+    write_espresso_ph,
+    write_fortran_namelist,
+)
 
 from quacc import SETTINGS
 from quacc.calculators.espresso.utils import get_pseudopotential_info
@@ -342,10 +347,15 @@ class Espresso(Espresso_):
         if self.kwargs.get("directory"):
             raise ValueError("quacc does not support the directory argument.")
 
+        self.kwargs["input_data"] = Namelist(self.kwargs.get("input_data"))
+        self.kwargs["input_data"].to_nested(binary=self._binary, **self.kwargs)
+
         if self.preset:
             calc_preset = load_yaml_calc(
                 SETTINGS.ESPRESSO_PRESET_DIR / f"{self.preset}"
             )
+            calc_preset["input_data"] = Namelist(calc_preset.get("input_data"))
+            calc_preset["input_data"].to_nested(binary=self._binary, **calc_preset)
             if "pseudopotentials" in calc_preset:
                 ecutwfc, ecutrho, pseudopotentials = get_pseudopotential_info(
                     calc_preset["pseudopotentials"], self.input_atoms

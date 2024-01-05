@@ -25,8 +25,8 @@ def static_job(
     spin_multiplicity: int = 1,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
-    orcasimpleinput: dict[str, Any] | None = None,
-    orcablocks: dict[str, Any] | None = None,
+    orcasimpleinput: list[str] | None = None,
+    orcablocks: list[str] | None = None,
     nprocs: int | None = None,
     copy_files: str | Path | list[str | Path] | None = None,
 ) -> cclibSchema:
@@ -46,15 +46,13 @@ def static_job(
     basis
         Basis set
     orcasimpleinput
-        Dictionary of `orcasimpleinput` swaps for the calculator. To enable new
-        entries, set the value as True. To remove entries from the defaults, set
-        the value as `quacc.Remove`. For a list of available keys, refer to the
-        `ase.calculators.orca.ORCA` calculator.
+        List of `orcasimpleinput` swaps for the calculator. To remove entries
+        from the defaults, put a `#` in front of the name. Refer to the
+        `ase.calculators.orca.ORCA` calculator for details on `orcasimpleinput`.
     orcablocks
-        Dictionary of `orcablocks` swaps for the calculator. To enable new entries,
-        set the value as True. To remove entries from the defaults, set the
-        value as `quacc.Remove`. For a list of available keys, refer to the
-        `ase.calculators.orca.ORCA` calculator.
+        List of `orcablocks` swaps for the calculator. To remove entries
+        from the defaults, put a `#` in front of the name. Refer to the
+        `ase.calculators.orca.ORCA` calculator for details on `orcablocks`.
     nprocs
         Number of processors to use. Defaults to the number of physical cores.
     copy_files
@@ -67,15 +65,8 @@ def static_job(
     """
 
     nprocs = nprocs or psutil.cpu_count(logical=False)
-    default_inputs = {
-        xc: True,
-        basis: True,
-        "sp": True,
-        "slowconv": True,
-        "normalprint": True,
-        "xyzfile": True,
-    }
-    default_blocks = {f"%pal nprocs {nprocs} end": True}
+    default_inputs = [xc, basis, "sp", "slowconv", "normalprint", "xyzfile"]
+    default_blocks = [f"%pal nprocs {nprocs} end"]
 
     return base_fn(
         atoms,
@@ -98,8 +89,8 @@ def relax_job(
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
     run_freq: bool = False,
-    orcasimpleinput: dict[str, Any] | None = None,
-    orcablocks: dict[str, Any] | None = None,
+    orcasimpleinput: list[str] | None = None,
+    orcablocks: list[str] | None = None,
     nprocs: int | None = None,
     copy_files: str | Path | list[str | Path] | None = None,
 ) -> cclibSchema:
@@ -121,15 +112,13 @@ def relax_job(
     run_freq
         If a frequency calculation should be carried out.
     orcasimpleinput
-        Dictionary of `orcasimpleinput` swaps for the calculator. To enable new
-        entries, set the value as True. To remove entries from the defaults, set
-        the value as `quacc.Remove`. For a list of available keys, refer to the
-        `ase.calculators.orca.ORCA` calculator.
+        List of `orcasimpleinput` swaps for the calculator. To remove entries
+        from the defaults, put a `#` in front of the name. Refer to the
+        `ase.calculators.orca.ORCA` calculator for details on `orcasimpleinput`.
     orcablocks
-        Dictionary of `orcablocks` swaps for the calculator. To enable new entries,
-        set the value as True. To remove entries from the defaults, set the
-        value as `quacc.Remove`. For a list of available keys, refer to the
-        `ase.calculators.orca.ORCA` calculator.
+        List of `orcablocks` swaps for the calculator. To remove entries
+        from the defaults, put a `#` in front of the name. Refer to the
+        `ase.calculators.orca.ORCA` calculator for details on `orcablocks`.
     nprocs
         Number of processors to use. Defaults to the number of physical cores.
     copy_files
@@ -140,19 +129,13 @@ def relax_job(
     cclibSchema
         Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][]
     """
-
     nprocs = nprocs or psutil.cpu_count(logical=False)
-    default_inputs = {
-        xc: True,
-        basis: True,
-        "opt": True,
-        "slowconv": True,
-        "normalprint": True,
-        "xyzfile": True,
-    }
+
+    default_inputs = [xc, basis, "opt", "slowconv", "normalprint", "xyzfile"]
     if run_freq:
-        default_inputs["freq"] = True
-    default_blocks = {f"%pal nprocs {nprocs} end": True}
+        default_inputs.append("freq")
+
+    default_blocks = [f"%pal nprocs {nprocs} end"]
 
     return base_fn(
         atoms,
@@ -174,8 +157,8 @@ def ase_relax_job(
     spin_multiplicity: int = 1,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
-    orcasimpleinput: dict[str, Any] | None = None,
-    orcablocks: dict[str, Any] | None = None,
+    orcasimpleinput: list[str] | None = None,
+    orcablocks: list[str] | None = None,
     opt_params: dict[str, Any] | None = None,
     nprocs: int | None = None,
     copy_files: str | Path | list[str | Path] | None = None,
@@ -196,19 +179,13 @@ def ase_relax_job(
     basis
         Basis set.
     orcasimpleinput
-        Dictionary of `orcasimpleinput` swaps for the calculator. To enable new
-        entries, set the value as True. To remove entries from the defaults, set
-        the value as `quacc.Remove`. For a list of available keys, refer to the
-        `ase.calculators.orca.ORCA` calculator.
+        List of `orcasimpleinput` swaps for the calculator. To remove entries
+        from the defaults, put a `#` in front of the name. Refer to the
+        `ase.calculators.orca.ORCA` calculator for details on `orcasimpleinput`.
     orcablocks
-        Dictionary of `orcablocks` swaps for the calculator. To enable new entries,
-        set the value as True. To remove entries from the defaults, set the
-        value as `quacc.Remove`. For a list of available keys, refer to the
-        `ase.calculators.orca.ORCA` calculator.
-    opt_params
-        Dictionary of custom kwargs for the optimization process. Set a value
-        to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [quacc.runners.ase.run_opt][].
+        List of `orcablocks` swaps for the calculator. To remove entries
+        from the defaults, put a `#` in front of the name. Refer to the
+        `ase.calculators.orca.ORCA` calculator for details on `orcablocks`.
     nprocs
         Number of processors to use. Defaults to the number of physical cores.
     copy_files
@@ -222,15 +199,8 @@ def ase_relax_job(
     """
 
     nprocs = nprocs or psutil.cpu_count(logical=False)
-    default_inputs = {
-        xc: True,
-        basis: True,
-        "engrad": True,
-        "slowconv": True,
-        "normalprint": True,
-        "xyzfile": True,
-    }
-    default_blocks = {f"%pal nprocs {nprocs} end": True}
+    default_inputs = [xc, basis, "slowconv", "normalprint", "xyzfile", "engrad"]
+    default_blocks = [f"%pal nprocs {nprocs} end"]
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
 

@@ -301,7 +301,10 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
     nat_todo = [1]
 
     ph_results = phonon_job(
-        pw_results["dir_name"], input_data=ph_loose, qpts=qpts, nat_todo_list=nat_todo
+        pw_results["dir_name"],
+        input_data=ph_loose,
+        qpts=qpts,
+        nat_todo_indices=nat_todo,
     )
 
     assert (0, 0, 0) in ph_results["results"]
