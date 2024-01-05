@@ -54,25 +54,27 @@ Here, we describe how to set up quacc with a database of your choosing.
 
     Covalent automatically stores all the inputs and outputs in an SQLite database, which you can find at the `"db_path"` when you run `covalent config`, and the results can be queried using the `#!Python ct.get_result(<dispatch ID>)` syntax.
 
-    However, if you want to store the results in a different database of your choosing, you can do so quite easily. An example is shown below for storing the results in your custom database via the [quacc.wflow_tools.db.covalent_to_db][] function.
+    ??? "Using a Different Database"
 
-    ```python
-    from maggma.stores import MongoStore
-    from quacc.wflow_tools.db import covalent_to_db
+        If you want to store the results in a different database of your choosing, you can do so quite easily. An example is shown below for storing the results in your custom database via the [quacc.wflow_tools.db.covalent_to_db][] function.
 
-    # Define your database credentials
-    store = MongoStore(
-        "my_db_name",
-        "my_collection_name",
-        username="my_username",
-        password="my_password",
-        host="localhost",
-        port=27017,
-    )
+        ```python
+        from maggma.stores import MongoStore
+        from quacc.wflow_tools.db import covalent_to_db
 
-    # Store the results
-    covalent_to_db(store)
-    ```
+        # Define your database credentials
+        store = MongoStore(
+            "my_db_name",
+            "my_collection_name",
+            username="my_username",
+            password="my_password",
+            host="localhost",
+            port=27017,
+        )
+
+        # Store the results
+        covalent_to_db(store)
+        ```
 
 === "Jobflow"
 
