@@ -74,7 +74,7 @@ def update_parameters(
     type: Literal["job", "flow", "subflow"] | None = "job",
 ) -> Callable:
     """
-    Update the parameters of a function.
+    Update the parameters of a (potentially decorated) function.
 
     Parameters
     ----------
