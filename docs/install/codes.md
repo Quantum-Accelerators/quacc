@@ -35,7 +35,7 @@ export QUACC_GULP_CMD="/path/to/gulp"
 export QUACC_GULP_LIB="/path/to/gulp-#.#.#/Libraries"
 ```
 
-!!! Tip "Receive a Compilation Error?"
+??? Tip "Receive a Compilation Error?"
 
     If you receive an error upon compilation, refer to [this forum post](https://matsci.org/t/installing-gulp/43158/18?u=arosen).
 
