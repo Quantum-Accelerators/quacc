@@ -1,9 +1,9 @@
 """Utility functions for dealing with dictionaries."""
 from __future__ import annotations
 
+from collections.abc import MutableMapping
 from copy import deepcopy
 from typing import TYPE_CHECKING
-from collections.abc import MutableMapping
 
 if TYPE_CHECKING:
     from typing import Any
