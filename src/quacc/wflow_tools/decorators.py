@@ -1,7 +1,7 @@
 """Workflow decorators."""
 from __future__ import annotations
 
-from functools import partial, wraps
+from functools import partial
 from typing import TYPE_CHECKING, TypeVar
 
 Job = TypeVar("Job")
