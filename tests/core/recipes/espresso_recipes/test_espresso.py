@@ -40,8 +40,6 @@ def test_static_job(tmp_path, monkeypatch):
     assert results["results"]["energy"] == pytest.approx(-293.71195934404255)
 
     new_input_data = results["parameters"]["input_data"]
-    assert new_input_data["system"]["degauss"] == 0.001
-    assert new_input_data["system"]["occupations"] == "smearing"
     assert new_input_data["system"]["ecutwfc"] == 30.0
     assert new_input_data["system"]["ecutrho"] == 240.0
     assert "kspacing" not in results["parameters"]
@@ -204,7 +202,7 @@ def test_relax_job_cell(tmp_path, monkeypatch):
     pseudopotentials = {"Si": "Si.upf"}
     input_data = {
         "control": {"pseudo_dir": tmp_path, "etot_conv_thr": 1.0},
-        "cell": {"press_conv_thr": 1.5e2},
+        "system": {"press_conv_thr": 1.5e2, "occupations": "smearing", "degauss": 0.001},
     }
 
     results = relax_job(

@@ -370,9 +370,6 @@ class Espresso(Espresso_):
         else:
             self._user_calc_params = self.kwargs
 
-        if self._user_calc_params.get("kpts") == "gamma":
-            self._user_calc_params["kpts"] = None
-
         if self._user_calc_params.get("kpts") and self._user_calc_params.get(
             "kspacing"
         ):
