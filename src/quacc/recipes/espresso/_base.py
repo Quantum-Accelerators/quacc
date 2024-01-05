@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from ase import Atoms
+from ase.io.espresso import Namelist
 
 from quacc.calculators.espresso.espresso import (
     Espresso,
@@ -64,6 +65,15 @@ def base_fn(
     """
 
     atoms = Atoms() if atoms is None else atoms
+
+    calc_defaults["input_data"] = Namelist(calc_defaults.get("input_data"))
+    calc_swaps["input_data"] = Namelist(calc_swaps.get("input_data"))
+
+    binary = template.binary if template else "pw"
+
+    calc_defaults["input_data"].to_nested(binary=binary, **calc_defaults)
+    calc_swaps["input_data"].to_nested(binary=binary, **calc_swaps)
+
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
     atoms.calc = Espresso(
