@@ -49,7 +49,7 @@ def test_dask_decorators(tmp_path, monkeypatch):
     def dynamic_workflow2(a, b, c):
         result1 = add(a, b)
         result2 = make_more(result1)
-        return add_distributed2(result2, c, op)
+        return add_distributed2(result2, c, add)
 
     assert client.compute(add(1, 2)).result() == 3
     assert client.compute(mult(1, 2)).result() == 2
