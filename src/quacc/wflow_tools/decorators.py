@@ -122,7 +122,10 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
         from dask import delayed
 
         class DontExecuteDaskDelayed:
-            """A small serializable object to wrap delayed functions that we don't want to execute"""
+            """
+            A small serializable object to wrap delayed functions
+            that we don't want to execute
+            """
 
             __slots__ = ("func",)
 
@@ -130,7 +133,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
                 self.func = func
 
             def __repr__(self):
-                return "DontExecuteDaskDelayed<type=%s>" % type(self.func).__name__
+                return f"DontExecuteDaskDelayed<type={type(self.func)}>".__name__
 
             def __reduce__(self):
                 return (DontExecuteDaskDelayed, (self.func,))
