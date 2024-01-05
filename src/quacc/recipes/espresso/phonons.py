@@ -170,7 +170,7 @@ def grid_phonon_flow(
     Consists of following jobs that can be modified:
 
     1. pw.x relaxation
-        - name: "pw_job"
+        - name: "relax_job"
         - job: [quacc.recipes.espresso.core.relax_job][]
 
     2. ph.x calculation test_run
@@ -208,7 +208,7 @@ def grid_phonon_flow(
     """
 
     calc_defaults = {
-        "pw_job": {
+        "relax_job": {
             "input_data": {
                 "control": {"forc_conv_thr": 5.0e-5},
                 "electrons": {"conv_thr": 1e-12},
@@ -217,7 +217,7 @@ def grid_phonon_flow(
     }
     job_params = recursive_dict_merge(calc_defaults, job_params)
     pw_job, ph_test_job, ph_job, recover_ph_job = customize_funcs(
-        ["pw_job", "ph_test_job", "ph_job", "ph_recover_job"],
+        ["relax_job", "ph_test_job", "ph_job", "ph_recover_job"],
         [relax_job, phonon_job, phonon_job, phonon_job],
         parameters=job_params,
         decorators=job_decorators,
