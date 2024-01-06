@@ -55,8 +55,8 @@ def test_dask_decorators(tmp_path, monkeypatch):
     assert client.compute(add(1, 2)).result() == 3
     assert client.compute(mult(1, 2)).result() == 2
     assert client.compute(workflow(1, 2, 3)).result() == 9
-    assert client.gather(client.compute(dynamic_workflow(1, 2, 3))) == [6, 6, 6]
-    assert client.gather(client.compute(dynamic_workflow2(1, 2, 3))) == [6, 6, 6]
+    assert client.compute(dynamic_workflow(1, 2, 3)).result() == [6, 6, 6]
+    assert client.compute(dynamic_workflow2(1, 2, 3)).result() == [6, 6, 6]
 
 
 def test_dask_decorators_args(tmp_path, monkeypatch):
@@ -101,8 +101,8 @@ def test_dask_decorators_args(tmp_path, monkeypatch):
     assert client.compute(add(1, 2)).result() == 3
     assert client.compute(mult(1, 2)).result() == 2
     assert client.compute(workflow(1, 2, 3)).result() == 9
-    assert client.gather(client.compute(dynamic_workflow(1, 2, 3))) == [6, 6, 6]
-    assert client.gather(client.compute(dynamic_workflow2(1, 2, 3))) == [6, 6, 6]
+    assert client.compute(dynamic_workflow(1, 2, 3)).result() == [6, 6, 6]
+    assert client.compute(dynamic_workflow2(1, 2, 3)).result() == [6, 6, 6]
 
 
 def test_strip_decorators():
@@ -160,5 +160,5 @@ def test_customize_funcs(monkeypatch, tmp_path):
     add_ = update_parameters(add, {"b": 3}, decorator="job")
     dynamic_workflow_ = update_parameters(dynamic_workflow, {"c": 4}, decorator="flow")
     assert client.compute(add_(1)).result() == 4
-    assert client.gather(client.compute(dynamic_workflow_(1, 2))) == [7, 7, 7]
-    assert client.gather(client.compute(test_dynamic_workflow(1, 2))) == [7, 7, 7]
+    assert client.compute(dynamic_workflow_(1, 2)).result() == [7, 7, 7]
+    assert client.compute(test_dynamic_workflow(1, 2)).result() == [7, 7, 7]

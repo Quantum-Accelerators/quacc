@@ -23,7 +23,7 @@ def test_dask_functools(tmp_path, monkeypatch):
     delayed = bulk_to_slabs_flow(
         atoms, job_params={"relax_job": {"opt_params": {"fmax": 0.1}}}, run_static=False
     )
-    result = client.gather(client.compute(delayed))
+    result = client.compute(delayed).result()
     assert len(result) == 4
     assert "atoms" in result[-1]
     assert result[-1]["fmax"] == 0.1

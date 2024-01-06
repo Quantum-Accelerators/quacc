@@ -558,7 +558,7 @@ graph LR
     delayed = workflow(atoms)
 
     # Fetch the results
-    result = client.gather(client.compute(delayed))
+    result = client.compute(delayed).result()
     print(result)
     ```
 

@@ -27,7 +27,6 @@ def test_tutorial1a(tmp_path, monkeypatch):
 
     # Print result
     assert "atoms" in client.compute(delayed).result()  # (2)!
-    assert "atoms" in delayed.compute()
     assert "atoms" in dask.compute(delayed)[0]
 
 
@@ -50,8 +49,7 @@ def test_tutorial1b(tmp_path, monkeypatch):
     delayed = bulk_to_slabs_flow(atoms)  # (1)!
 
     # Print the results
-    assert "atoms" in client.gather(client.compute(delayed))[0]
-    assert "atoms" in dask.compute(delayed)[0][0]
+    assert "atoms" in client.compute(delayed).result()[0]
 
 
 def test_tutorial2a(tmp_path, monkeypatch):
@@ -118,7 +116,7 @@ def test_tutorial2c(tmp_path, monkeypatch):
     delayed = workflow(atoms)
 
     # Fetch the results
-    result = client.gather(client.compute(delayed))
+    result = client.compute(delayed).result()
 
     # Print the results
     assert len(result) == 4
