@@ -9,7 +9,7 @@ Flow = TypeVar("Flow")
 Subflow = TypeVar("Subflow")
 
 if TYPE_CHECKING:
-    from typing import Any, Callable
+    from typing import Callable
 
 
 def job(_func: Callable | None = None, **kwargs) -> Job:
@@ -456,8 +456,7 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
         def wrapper(*f_args, **f_kwargs):
             with worker_client() as client:
                 futures = client.compute(_func(*f_args, **f_kwargs))
-                results = client.gather(futures)
-                return results
+                return client.gather(futures)
 
         return delayed(wrapper, **kwargs)
     else:

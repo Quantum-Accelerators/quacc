@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.schemas._aliases.cclib import cclibASEOptSchema, cclibSchema
+    from quacc.schemas._aliases.cclib import cclibSchema
 
 
 @job

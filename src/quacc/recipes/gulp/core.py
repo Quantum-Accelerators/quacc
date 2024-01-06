@@ -7,8 +7,6 @@ from quacc import job
 from quacc.recipes.gulp._base import base_fn
 
 if TYPE_CHECKING:
-    from typing import Any
-
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
@@ -99,7 +97,7 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
-    keyword_defaults = ["opti"] + ["conp" if relax_cell else "conv"]
+    keyword_defaults = ["opti", "conp" if relax_cell else "conv"]
     if use_gfnff:
         keyword_defaults += ["gfnff", "gwolf"]
 
