@@ -1,7 +1,3 @@
-## Summary of Changes
-
-\>> Provide a description of your changes here, linking to any associated issue reports. <<
-
 ## Requirements
 
 ### Checklist
@@ -16,3 +12,5 @@
 - Your PR will likely not be merged without proper and thorough tests.
 - If you are an external contributor, you will see a comment from [@buildbot-princeton](https://github.com/buildbot-princeton). This is solely for the maintainers.
 - When your code is ready for review, ping one of the [active maintainers](https://quantum-accelerators.github.io/quacc/about/contributors.html#active-maintainers).
+
+## Summary of Changes
