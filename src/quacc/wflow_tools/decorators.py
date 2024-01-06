@@ -453,13 +453,13 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
         from dask.distributed import worker_client
 
         @wraps(_func)
-        def wrapper(*args, **kwargs):
+        def wrapper(*f_args, **f_kwargs):
             with worker_client() as client:
-                futures = client.compute(_func(*args, **kwargs))
+                futures = client.compute(_func(*f_args, **f_kwargs))
                 results = client.gather(futures)
                 return results
 
-        return delayed(wrapper)
+        return delayed(wrapper, **kwargs)
     else:
         return _func
 
