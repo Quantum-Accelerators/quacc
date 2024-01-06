@@ -122,10 +122,10 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
         from dask import delayed
 
         @wraps(_func)
-        def wrapper(*args, **kwargs):
-            return _func(*args, **kwargs)
+        def wrapper(*f_args, **f_kwargs):
+            return _func(*f_args, **f_kwargs)
 
-        return Delayed_(delayed(wrapper))
+        return Delayed_(delayed(wrapper, **kwargs))
 
     elif SETTINGS.WORKFLOW_ENGINE == "jobflow":
         from jobflow import job as jf_job
