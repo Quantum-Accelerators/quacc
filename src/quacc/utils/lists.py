@@ -30,10 +30,11 @@ def merge_list_params(
     lists = [list_ for list_ in lists if list_]
     for list_ in lists:
         for item in list_:
+            item_ = item
             if case_insensitive:
-                item = item.lower()
-            if item not in merged_list:
-                merged_list.append(item)
+                item_ = item.lower()
+            if item_ not in merged_list:
+                merged_list.append(item_)
 
     if removal_prefix:
         items_to_remove1 = [
