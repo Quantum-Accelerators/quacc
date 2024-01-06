@@ -475,9 +475,6 @@ class Delayed_:
     def __init__(self, func):
         self.func = func
 
-    def __repr__(self):
-        return f"Delayed_<type={type(self.func).__name__}>"
-
     def __reduce__(self):
         return (Delayed_, (self.func,))
 
