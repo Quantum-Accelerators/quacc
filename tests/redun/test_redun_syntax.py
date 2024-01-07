@@ -50,11 +50,20 @@ def test_redun_decorators(tmp_path, monkeypatch, scheduler):
         result2 = make_more(result1)
         return add_distributed2(result2, c, add)
 
+    @flow
+    def dynamic_workflow3(a, b, c):
+        result1 = add(a, b)
+        result2 = make_more(result1)
+        result3 = add_distributed(result2, c)
+        result4 = add_distributed(result3, c)
+        return add(result4[0], c)
+
     assert scheduler.run(add(1, 2)) == 3
     assert scheduler.run(mult(1, 2)) == 2
     assert scheduler.run(workflow(1, 2, 3)) == 9
     assert scheduler.run(dynamic_workflow(1, 2, 3)) == [6, 6, 6]
     assert scheduler.run(dynamic_workflow2(1, 2, 3)) == [6, 6, 6]
+    assert scheduler.run(dynamic_workflow3(1, 2, 3)) == 12
 
 
 def test_strip_decorators():
