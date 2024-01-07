@@ -13,9 +13,6 @@ pytestmark = pytest.mark.skipif(
 @pytest.fixture()
 def scheduler():
     return redun.Scheduler()
-
-
-from quacc.recipes.emt.core import relax_job  # skipcq: PYL-C0412
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow  # skipcq: PYL-C0412
 
 
