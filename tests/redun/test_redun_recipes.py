@@ -34,7 +34,7 @@ def test_redun_functools(tmp_path, monkeypatch, scheduler):
     assert result[-1]["fmax"] == 0.1
 
 
-def test_phonon_flow(tmp_path, monkeypatch):
+def test_phonon_flow(tmp_path, monkeypatch, scheduler):
     pytest.importorskip("phonopy")
     from quacc.recipes.emt.phonons import phonon_flow
 
