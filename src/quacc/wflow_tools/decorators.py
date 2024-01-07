@@ -513,7 +513,7 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
         from parsl import join_app
 
         return join_app(_func, **kwargs)
-    elif wflow_engine == "prefect":
+    elif SETTINGS.WORKFLOW_ENGINE == "prefect":
         from prefect import flow as prefect_flow
 
         return prefect_flow(_func, **kwargs)

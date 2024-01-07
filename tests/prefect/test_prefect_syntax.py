@@ -16,6 +16,27 @@ def prefect_test_fixture():
         yield
 
 
+def test_patch():
+    from prefect import flow
+
+    from quacc import job
+
+    @job
+    def task1(val: float) -> dict:
+        return {"input": val, "result": val * 100}
+
+    @job
+    def task2(val: float) -> dict:
+        return {"input": val, "result": val * 200}
+
+    @flow
+    def workflow(val):
+        future1 = task1.submit(val)
+        return task2(future1["result"])
+
+    assert workflow(1) == {"input": 100, "result": 20000}
+
+
 def test_prefect_decorators(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
