@@ -95,6 +95,14 @@ def test_prefect_decorators(tmp_path, monkeypatch):
         return add_distributed2(result2, c, add)
 
     @flow
+    def dynamic_workflow3(a, b, c):
+        result1 = add(a, b)
+        result2 = make_more(result1)
+        result3 = add_distributed(result2, c)
+        result4 = add_distributed(result3, c)
+        return add(result4[0], c)
+
+    @flow
     def add_flow(a, b):
         return add(a, b)
 
@@ -102,6 +110,7 @@ def test_prefect_decorators(tmp_path, monkeypatch):
     assert workflow(1, 2, 3).is_completed()
     assert [r.is_completed() for r in dynamic_workflow(1, 2, 3)]
     assert [r.is_completed() for r in dynamic_workflow2(1, 2, 3)]
+    assert dynamic_workflow3(1, 2, 3).is_completed()
 
 
 def test_prefect_decorators_local(tmp_path, monkeypatch):
@@ -148,6 +157,14 @@ def test_prefect_decorators_local(tmp_path, monkeypatch):
         return add_distributed2(result2, c, add)
 
     @flow
+    def dynamic_workflow3(a, b, c):
+        result1 = add(a, b)
+        result2 = make_more(result1)
+        result3 = add_distributed(result2, c)
+        result4 = add_distributed(result3, c)
+        return add(result4[0], c)
+
+    @flow
     def add_flow(a, b):
         return add(a, b)
 
@@ -157,5 +174,6 @@ def test_prefect_decorators_local(tmp_path, monkeypatch):
     assert results == [6, 6, 6]
     results = dynamic_workflow2(1, 2, 3)
     assert results == [6, 6, 6]
+    assert dynamic_workflow3(1, 2, 3) == 12
 
     SETTINGS.PREFECT_TASK_RUNNER = DEFAULT_SETTINGS.PREFECT_TASK_RUNNER
