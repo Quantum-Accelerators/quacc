@@ -138,7 +138,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
         from redun import task
 
-        return task(_func, **kwargs)
+        return task(_func, namespace=_func.__module__, **kwargs)
     else:
         return _func
 
@@ -263,7 +263,7 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
         from redun import task
 
-        return task(_func, **kwargs)
+        return task(_func, namespace=_func.__module__, **kwargs)
     else:
         return _func
 
@@ -447,7 +447,7 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
         from redun import task
 
-        return task(_func, **kwargs)
+        return task(_func, namespace=_func.__module__, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "dask":
         from dask import delayed
         from dask.distributed import worker_client
