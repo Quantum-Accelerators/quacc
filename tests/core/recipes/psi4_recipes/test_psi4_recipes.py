@@ -1,9 +1,10 @@
 import pytest
+
+pytest.importorskip("psi4")
+
 from ase.build import molecule
 
 from quacc.recipes.psi4.core import static_job
-
-pytest.importorskip("psi4")
 
 
 def test_static(tmp_path, monkeypatch):

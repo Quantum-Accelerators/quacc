@@ -1,13 +1,7 @@
 import pytest
-from ase.build import bulk
-
-from quacc import SETTINGS
 
 redun = pytest.importorskip("redun")
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "redun",
-    reason="This test requires the Redun workflow engine",
-)
+from ase.build import bulk
 
 
 @pytest.fixture()

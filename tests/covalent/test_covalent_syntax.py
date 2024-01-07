@@ -1,13 +1,10 @@
 import pytest
 
-from quacc import SETTINGS, flow, job, strip_decorator, subflow
-
 ct = pytest.importorskip("covalent")
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "covalent",
-    reason="This test requires the Covalent workflow engine",
-)
+
 from covalent._workflow.lattice import Lattice
+
+from quacc import flow, job, strip_decorator, subflow
 
 
 def test_covalent_decorators(tmp_path, monkeypatch):

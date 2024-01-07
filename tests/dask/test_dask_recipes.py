@@ -1,14 +1,8 @@
 import pytest
-from ase.build import bulk
-
-from quacc import SETTINGS
 
 dask = pytest.importorskip("dask")
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "dask",
-    reason="This test requires the Dask workflow engine",
-)
 
+from ase.build import bulk
 from dask.distributed import default_client
 
 from quacc.recipes.emt.core import relax_job  # skipcq: PYL-C0412

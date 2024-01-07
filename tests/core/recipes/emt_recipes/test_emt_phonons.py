@@ -1,7 +1,7 @@
 import pytest
-from ase.build import bulk
 
 pytest.importorskip("phonopy")
+from ase.build import bulk
 
 from quacc.recipes.emt.phonons import phonon_flow
 

@@ -233,7 +233,7 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = deepcopy(atoms_nomag)
-    calc = SinglePointDFTCalculator(atoms, **{"magmoms": [0.0] * len(atoms)})
+    calc = SinglePointDFTCalculator(atoms, magmoms=[0.0] * len(atoms))
     atoms.calc = calc
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
