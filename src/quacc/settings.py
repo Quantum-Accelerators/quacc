@@ -54,7 +54,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
 
     WORKFLOW_ENGINE: Optional[
-        Literal["covalent", "dask", "parsl", "redun", "jobflow", "local"]
+        Literal["covalent", "dask", "parsl", "prefect", "redun", "jobflow", "local"]
     ] = Field(installed_engine, description=("The workflow manager to use, if any."))
 
     # ---------------------------
