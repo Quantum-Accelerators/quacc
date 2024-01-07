@@ -1,8 +1,7 @@
+import pytest
+
 prefect = pytest.importorskip("prefect")
 
-import contextlib
-
-import pytest
 from ase.build import bulk
 from prefect.testing.utilities import prefect_test_harness
 

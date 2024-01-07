@@ -1,5 +1,6 @@
-prefect = pytest.importorskip("prefect")
 import pytest
+
+prefect = pytest.importorskip("prefect")
 from prefect.testing.utilities import prefect_test_harness
 
 from quacc import flow, job, subflow
