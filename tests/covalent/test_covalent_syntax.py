@@ -4,7 +4,7 @@ ct = pytest.importorskip("covalent")
 
 from covalent._workflow.lattice import Lattice
 
-from quacc import SETTINGS, flow, job, strip_decorator, subflow
+from quacc import flow, job, strip_decorator, subflow
 
 
 def test_covalent_decorators(tmp_path, monkeypatch):

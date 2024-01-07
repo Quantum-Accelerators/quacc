@@ -3,7 +3,7 @@ import pytest
 ct = pytest.importorskip("covalent")
 
 
-from quacc import SETTINGS, flow, job, subflow
+from quacc import flow, job, subflow
 from quacc.wflow_tools.customizers import customize_funcs
 
 

@@ -1,7 +1,6 @@
 import pytest
 
 pytestmark = pytest.mark.skipif(which("vasp_std") is None, reason="VASP not installed")
-from shutil import which
 
 from ase.build import bulk
 
