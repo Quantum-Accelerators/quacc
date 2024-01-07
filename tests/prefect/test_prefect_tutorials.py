@@ -1,13 +1,11 @@
+prefect = pytest.importorskip("prefect")
 import pytest
 from ase.build import bulk, molecule
+from prefect.testing.utilities import prefect_test_harness
 
 from quacc import flow, job
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
-
-prefect = pytest.importorskip("prefect")
-
-from prefect.testing.utilities import prefect_test_harness
 
 
 @pytest.fixture(autouse=True, scope="session")
