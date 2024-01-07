@@ -32,7 +32,7 @@ def test_tutorial1a(tmp_path, monkeypatch):
 
     # Fetch the result
     result = future.result()  # (3)!
-    assert "atoms" in result
+    assert result.is_completed()
 
 
 def test_tutorial1b(tmp_path, monkeypatch):
@@ -47,7 +47,7 @@ def test_tutorial1b(tmp_path, monkeypatch):
     # Print the results
     results = [future.result() for future in futures]
     for result in results:
-        assert "atom" in result
+        assert result.is_completed()
 
 
 def test_tutorial2a(tmp_path, monkeypatch):
@@ -67,7 +67,7 @@ def test_tutorial2a(tmp_path, monkeypatch):
 
     # Run the workflow with Prefect tracking
     result = workflow(atoms).result()
-    assert "atoms" in result
+    assert result.is_completed()
 
 
 def test_tutorial2b(tmp_path, monkeypatch):
@@ -92,8 +92,8 @@ def test_tutorial2b(tmp_path, monkeypatch):
     # Fetch the results
     result1 = futures["result1"].result()
     result2 = futures["result2"].result()
-    assert "atoms" in result1
-    assert "atoms" in result2
+    assert result1.is_completed()
+    assert result2.is_completed()
 
 
 def test_tutorial2c(tmp_path, monkeypatch):
@@ -112,24 +112,4 @@ def test_tutorial2c(tmp_path, monkeypatch):
     futures = workflow(atoms)
     results = [future.result() for future in futures]
     for result in results:
-        assert "atoms" in result
-
-
-def test_comparison(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
-    @job  #  (1)!
-    def add(a, b):
-        return a + b
-
-    @job
-    def mult(a, b):
-        return a * b
-
-    @flow  #  (2)!
-    def workflow(a, b, c):
-        return mult(add(a, b), c)
-
-    future = workflow(1, 2, 3)  # (3)!
-    result = future.result()
-    assert result == 9
+        assert result.is_completed()

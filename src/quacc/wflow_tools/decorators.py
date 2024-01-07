@@ -152,15 +152,18 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
 
         return task(_func, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "prefect":
+        from prefect import task
 
-        @wraps(_func)
-        def wrapper(*f_args, **f_kwargs):
-            from prefect import task
+        if SETTINGS.PREFECT_TASK_RUNNER:
 
-            decorated = task(_func, **kwargs)
-            return decorated.submit(*f_args, **f_kwargs)
+            @wraps(_func)
+            def wrapper(*f_args, **f_kwargs):
+                decorated = task(_func, **kwargs)
+                return decorated.submit(*f_args, **f_kwargs)
 
-        return wrapper
+            return wrapper
+        else:
+            return task(_func, **kwargs)
     else:
         return _func
 

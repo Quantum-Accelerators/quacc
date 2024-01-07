@@ -1,2 +1,3 @@
 DEBUG: true
+PREFECT_TASK_RUNNER: true
 WORKFLOW_ENGINE: prefect

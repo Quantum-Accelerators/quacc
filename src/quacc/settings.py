@@ -106,6 +106,13 @@ class QuaccSettings(BaseSettings):
     )
 
     # ---------------------------
+    # Prefect Settings
+    # ---------------------------
+    PREFECT_TASK_RUNNER: bool = Field(
+        False, description="Whether to auto-submimt tasks to the task runner."
+    )
+
+    # ---------------------------
     # ORCA Settings
     # ---------------------------
     ORCA_CMD: Path = Field(

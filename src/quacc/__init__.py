@@ -67,11 +67,11 @@ if SETTINGS.DEBUG:
 if SETTINGS.WORKFLOW_ENGINE == "prefect":
     from prefect.futures import PrefectFuture
 
-    def patched_getattr(self, name):
-        return getattr(self.result(), name)
-
     def patched_getitem(self, index):
-        return self.result()[index]
+        @job
+        def getitem(future, index_):
+            return future[index_]
+
+        return getitem(self, index)
 
     PrefectFuture.__getitem__ = patched_getitem
-    PrefectFuture.__getattr__ = patched_getattr
