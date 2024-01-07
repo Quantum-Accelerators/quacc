@@ -31,7 +31,7 @@ def test_patch():
 
     @flow
     def workflow(val):
-        future1 = task1.submit(val)
+        future1 = task1(val)
         return task2(future1["result"])
 
     assert workflow(1) == {"input": 100, "result": 20000}
