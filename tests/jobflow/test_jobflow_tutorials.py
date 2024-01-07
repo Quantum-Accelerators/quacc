@@ -1,13 +1,10 @@
 import pytest
-from ase.build import bulk, molecule
-
-from quacc import SETTINGS, job
 
 jf = pytest.importorskip("jobflow")
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "jobflow",
-    reason="This test requires the Jobflow workflow engine",
-)
+
+from ase.build import bulk, molecule
+
+from quacc import job
 from quacc.recipes.emt.core import relax_job, static_job  # skipcq: PYL-C0412
 
 
