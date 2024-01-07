@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
 @flow
 @requires(phonopy, "Phonopy must be installed. Run `pip install quacc[phonons]`")
-def phonon_flow(
+def common_phonon_flow(
     atoms: Atoms,
     static_job: Job,
     supercell_matrix: ArrayLike = ((2, 0, 0), (0, 2, 0), (0, 0, 2)),
