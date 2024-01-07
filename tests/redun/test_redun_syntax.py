@@ -1,6 +1,7 @@
+import pytest
+
 redun = pytest.importorskip("redun")
 
-import pytest
 
 from quacc import flow, job, strip_decorator, subflow
 

@@ -1,6 +1,7 @@
+import pytest
+
 ct = pytest.importorskip("covalent")
 
-import pytest
 from ase.build import bulk
 
 from quacc import SETTINGS

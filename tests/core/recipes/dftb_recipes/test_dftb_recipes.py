@@ -1,8 +1,9 @@
+import pytest
+
 pytestmark = pytest.mark.skipif(not DFTBPLUS_EXISTS, reason="Needs DFTB+")
 from shutil import which
 
 import numpy as np
-import pytest
 from ase.build import bulk, molecule
 
 from quacc.recipes.dftb.core import relax_job, static_job

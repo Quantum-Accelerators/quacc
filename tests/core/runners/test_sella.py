@@ -1,5 +1,6 @@
-sella = pytest.importorskip("sella")
 import pytest
+
+sella = pytest.importorskip("sella")
 from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
