@@ -55,11 +55,20 @@ def test_parsl_decorators(tmp_path, monkeypatch):
         result2 = make_more(result1)
         return add_distributed2(result2, c, add)
 
+    @flow
+    def dynamic_workflow3(a, b, c):
+        result1 = add(a, b)
+        result2 = make_more(result1)
+        result3 = add_distributed(result2, c)
+        result4 = add_distributed(result3, c)
+        return add(result4[0], c)
+
     assert add(1, 2).result() == 3
     assert mult(1, 2).result() == 2
     assert workflow(1, 2, 3).result() == 9
     assert dynamic_workflow(1, 2, 3).result() == [6, 6, 6]
     assert dynamic_workflow2(1, 2, 3).result() == [6, 6, 6]
+    assert dynamic_workflow3(1, 2, 3).result() == 12
 
 
 def test_parsl_decorators_args(tmp_path, monkeypatch):
