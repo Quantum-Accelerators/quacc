@@ -13,8 +13,6 @@ def prefect_test_fixture():
 
 
 def test_patch():
-    from quacc import SETTINGS
-
     @job
     def task1(val: float) -> dict:
         return {"input": val, "result": val * 100}
