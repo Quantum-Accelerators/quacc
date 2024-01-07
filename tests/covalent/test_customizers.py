@@ -1,9 +1,7 @@
-ct = pytest.importorskip("covalent")
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "covalent",
-    reason="This test requires the Covalent workflow engine",
-)
 import pytest
+
+ct = pytest.importorskip("covalent")
+
 
 from quacc import SETTINGS, flow, job, subflow
 from quacc.wflow_tools.customizers import customize_funcs

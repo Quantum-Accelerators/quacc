@@ -1,12 +1,10 @@
-dask = pytest.importorskip("dask")
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "dask",
-    reason="This test requires the Dask workflow engine",
-)
 import pytest
+
+dask = pytest.importorskip("dask")
+
 from dask.distributed import default_client
 
-from quacc import SETTINGS, flow, job, strip_decorator, subflow
+from quacc import flow, job, strip_decorator, subflow
 from quacc.wflow_tools.customizers import update_parameters
 
 client = default_client()

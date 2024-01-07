@@ -1,6 +1,7 @@
+import pytest
+
 torch = pytest.importorskip("torch")
 import numpy as np
-import pytest
 from ase.build import bulk
 
 from quacc.recipes.mlp.core import relax_job, static_job

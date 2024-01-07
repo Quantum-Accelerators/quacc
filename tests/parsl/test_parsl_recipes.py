@@ -1,14 +1,11 @@
+import pytest
+
 parsl = pytest.importorskip("parsl")
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "parsl",
-    reason="This test requires the Parsl workflow engine",
-)
+
 import contextlib
 
-import pytest
 from ase.build import bulk
 
-from quacc import SETTINGS
 from quacc.recipes.emt.core import relax_job  # skipcq: PYL-C0412
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow  # skipcq: PYL-C0412
 

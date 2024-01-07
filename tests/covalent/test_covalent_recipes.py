@@ -1,8 +1,5 @@
 ct = pytest.importorskip("covalent")
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "covalent",
-    reason="This test requires the Covalent workflow engine",
-)
+
 import pytest
 from ase.build import bulk
 

@@ -1,9 +1,10 @@
+import pytest
+
 pytest.importorskip("sella")
 pytest.importorskip("newtonnet")
 from pathlib import Path
 
 import numpy as np
-import pytest
 from ase.build import molecule
 
 from quacc import SETTINGS

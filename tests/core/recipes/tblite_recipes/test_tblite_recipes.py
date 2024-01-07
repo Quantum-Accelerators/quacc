@@ -1,13 +1,13 @@
+import pytest
+
+pytest.importorskip("tblite.ase")
 from copy import deepcopy
 
 import numpy as np
-import pytest
 from ase.build import bulk, molecule
 
 from quacc import SETTINGS
 from quacc.recipes.tblite.core import freq_job, relax_job, static_job
-
-pytest.importorskip("tblite.ase")
 
 
 def test_static_job_v1(tmp_path, monkeypatch):

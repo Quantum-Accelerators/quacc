@@ -1,8 +1,9 @@
+import pytest
+
 pytest.importorskip("sella")
 from pathlib import Path
 from shutil import copy
 
-import pytest
 from ase import units
 from ase.calculators.calculator import FileIOCalculator
 from ase.calculators.lj import LennardJones
