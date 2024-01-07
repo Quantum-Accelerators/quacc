@@ -1,2 +1,2 @@
 DEBUG: true
-WORKFLOW_ENGINE: redun
+WORKFLOW_ENGINE: prefect
