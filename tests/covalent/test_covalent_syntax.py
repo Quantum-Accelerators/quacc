@@ -71,7 +71,7 @@ def test_covalent_decorators(tmp_path, monkeypatch):
         ct.dispatch(flow(add_distributed))([1, 1, 1], 2), wait=True
     ).result == [3, 3, 3]
     assert (
-        ct.get_result(ct.dispatch(dynamic_workflow3(1, 2, 3)), wait=True).result == 12
+        ct.get_result(ct.dispatch(dynamic_workflow3)(1, 2, 3), wait=True).result == 12
     )
 
 
