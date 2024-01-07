@@ -15,6 +15,7 @@ def scheduler():
     return redun.Scheduler()
 
 
+from quacc.recipes.emt.core import relax_job  # skipcq: PYL-C0412
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow  # skipcq: PYL-C0412
 
 
@@ -31,3 +32,13 @@ def test_redun_functools(tmp_path, monkeypatch, scheduler):
     assert len(result) == 4
     assert "atoms" in result[-1]
     assert result[-1]["fmax"] == 0.1
+
+
+def test_phonon_flow(tmp_path, monkeypatch):
+    pytest.importorskip("phonopy")
+    from quacc.recipes.emt.phonons import phonon_flow
+
+    monkeypatch.chdir(tmp_path)
+    atoms = bulk("Cu")
+    output = scheduler.run(phonon_flow(atoms))
+    assert output["results"]["thermal_properties"]["temperatures"].shape == (101,)
