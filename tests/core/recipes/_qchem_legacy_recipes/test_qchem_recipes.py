@@ -1,3 +1,4 @@
+pytest.importorskip("sella")
 from pathlib import Path
 from shutil import copy
 
@@ -15,8 +16,6 @@ from quacc.atoms.core import check_charge_and_spin
 from quacc.calculators._qchem_legacy import QChem
 from quacc.recipes._qchem_legacy.core import freq_job, relax_job, static_job
 from quacc.recipes._qchem_legacy.ts import irc_job, quasi_irc_job, ts_job
-
-pytest.importorskip("sella")
 
 FILE_DIR = Path(__file__).parent
 QCHEM_DIR = FILE_DIR / "qchem_examples"

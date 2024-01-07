@@ -1,15 +1,12 @@
-import pytest
-from ase.build import bulk, molecule
-
-from quacc import SETTINGS, flow, job, subflow
-
 ct = pytest.importorskip("covalent")
 pytestmark = pytest.mark.skipif(
     SETTINGS.WORKFLOW_ENGINE != "covalent",
     reason="This test requires the Covalent workflow engine",
 )
+import pytest
+from ase.build import bulk, molecule
 
-
+from quacc import SETTINGS, flow, job, subflow
 from quacc.recipes.emt.core import relax_job, static_job  # skipcq: PYL-C0412
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow  # skipcq: PYL-C0412
 

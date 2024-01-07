@@ -1,14 +1,13 @@
-import contextlib
-
-import pytest
-
-from quacc import SETTINGS, flow, job, strip_decorator, subflow
-
 parsl = pytest.importorskip("parsl")
 pytestmark = pytest.mark.skipif(
     SETTINGS.WORKFLOW_ENGINE != "parsl",
     reason="This test requires the Parsl workflow engine",
 )
+import contextlib
+
+import pytest
+
+from quacc import SETTINGS, flow, job, strip_decorator, subflow
 
 
 def setup_module():

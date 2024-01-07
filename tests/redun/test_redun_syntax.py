@@ -1,12 +1,11 @@
-import pytest
-
-from quacc import SETTINGS, flow, job, strip_decorator, subflow
-
 redun = pytest.importorskip("redun")
 pytestmark = pytest.mark.skipif(
     SETTINGS.WORKFLOW_ENGINE != "redun",
     reason="This test requires the Redun workflow engine",
 )
+import pytest
+
+from quacc import SETTINGS, flow, job, strip_decorator, subflow
 
 
 @pytest.fixture()

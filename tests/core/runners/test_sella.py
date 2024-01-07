@@ -1,13 +1,11 @@
+sella = pytest.importorskip("sella")
 import pytest
 from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
+from sella import Sella
 
 from quacc.runners.ase import run_opt
-
-sella = pytest.importorskip("sella")
-
-from sella import Sella
 
 
 def test_sella(tmp_path, monkeypatch):

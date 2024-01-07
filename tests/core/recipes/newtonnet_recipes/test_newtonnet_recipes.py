@@ -1,3 +1,5 @@
+pytest.importorskip("sella")
+pytest.importorskip("newtonnet")
 from pathlib import Path
 
 import numpy as np
@@ -9,9 +11,6 @@ from quacc.recipes.newtonnet.core import freq_job, relax_job, static_job
 from quacc.recipes.newtonnet.ts import irc_job, quasi_irc_job, ts_job
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
-
-pytest.importorskip("sella")
-pytest.importorskip("newtonnet")
 
 
 def setup_module():
