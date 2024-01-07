@@ -1,15 +1,11 @@
 import pytest
 from ase.build import bulk, molecule
 
-from quacc import SETTINGS, flow, job
+from quacc import flow, job
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 prefect = pytest.importorskip("prefect")
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "prefect",
-    reason="This test requires the Prefect workflow engine",
-)
 
 from prefect.testing.utilities import prefect_test_harness
 
