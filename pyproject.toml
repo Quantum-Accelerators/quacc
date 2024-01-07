@@ -113,7 +113,7 @@ exclude_also = [
   "if TYPE_CHECKING:",
   "if __name__ == .__main__.:",
   "except ImportError:",
-  "with worker_client\(\)"
+  r"with worker_client\(\)"
 ]
 
 [tool.ruff]
