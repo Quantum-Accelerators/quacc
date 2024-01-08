@@ -6,16 +6,14 @@ calculations in different fashion.
 """
 from __future__ import annotations
 
-from copy import deepcopy
-from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
 from ase.io.espresso import Namelist
+
 from quacc import Job, flow, job, subflow
 from quacc.calculators.espresso.espresso import EspressoTemplate
-from quacc.calculators.espresso.utils import parse_ph_patterns
 from quacc.recipes.espresso._base import base_fn
 from quacc.recipes.espresso.core import relax_job
 from quacc.utils.dicts import recursive_dict_merge
@@ -25,6 +23,7 @@ if TYPE_CHECKING:
     from typing import Any, Callable
 
     from ase.atoms import Atoms
+
     from quacc.schemas._aliases.ase import RunSchema
 
 

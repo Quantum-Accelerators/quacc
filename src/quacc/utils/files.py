@@ -74,6 +74,7 @@ def copy_decompress_files(
         else:
             warnings.warn(f"Cannot find file {f_path}", UserWarning)
 
+
 def copy_decompress_tree(
     source_files: dict[str, str | Path | list[str | Path]], destination: str | Path
 ) -> None:
@@ -102,7 +103,7 @@ def copy_decompress_tree(
 
         if not isinstance(tree, list):
             tree = [tree]
-            
+
         for f in tree:
             glob_found = list(base.glob(f))
             abs_files.extend(glob_found)
