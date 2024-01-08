@@ -104,8 +104,8 @@ def copy_decompress_tree(
             tree = [tree]
             
         for f in tree:
-            abs_files.extend(list(Path(base).glob(f)))
-            rel_files.extend([i.relative_to(base) for i in abs_f])
+            abs_files.extend(list(base.glob(f)))
+            rel_files.extend([i.relative_to(base) for i in abs_files])
 
         for abs_f, rel_f in zip(abs_files, rel_files):
             Path(destination, rel_f.parent).mkdir(parents=True, exist_ok=True)
