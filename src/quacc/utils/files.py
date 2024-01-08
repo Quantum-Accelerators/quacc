@@ -74,6 +74,52 @@ def copy_decompress_files(
         else:
             warnings.warn(f"Cannot find file {f_path}", UserWarning)
 
+def copy_decompress_tree(
+    source_files: dict[str, str | Path | list[str | Path]], destination: str | Path
+) -> None:
+    """
+    Copy and decompress files from source to destination.
+    This function respects the directory tree.
+
+    Parameters
+    ----------
+    source_files
+        Dict, key is the base_dir, values are the tree to
+        be respected
+    destination
+        Destination directory.
+
+    Returns
+    -------
+    None
+    """
+
+    # Work with glob pattern, work if the glob pattern return nothing
+    for base, tree in source_files.items():
+        base = Path(base).expanduser()
+
+        abs_files, rel_files = [], []
+
+        if not isinstance(tree, list):
+            tree = [tree]
+            
+        for f in tree:
+            abs_files.extend(list(Path(base).glob(f)))
+            rel_files.extend([i.relative_to(base) for i in abs_f])
+
+        for abs_f, rel_f in zip(abs_files, rel_files):
+            Path(destination, rel_f.parent).mkdir(parents=True, exist_ok=True)
+
+            if abs_f.is_symlink():
+                continue
+            if abs_f.is_file():
+                copy(abs_f, Path(destination, rel_f))
+                decompress_file(Path(destination, rel_f))
+            elif abs_f.is_dir():
+                copy_decompress_files_from_dir(abs_f, Path(destination, rel_f))
+            else:
+                warnings.warn(f"Cannot find file {abs_f}", UserWarning)
+
 
 def copy_decompress_files_from_dir(source: str | Path, destination: str | Path) -> None:
     """

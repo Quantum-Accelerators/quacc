@@ -162,13 +162,7 @@ class EspressoTemplate(EspressoTemplate_):
                     prefix = input_data[section][key]
                     break
 
-        if self.binary == "ph":
-            input_data["inputph"]["start_irr"] = 0
-            input_data["inputph"]["last_irr"] = 0
-            input_data["inputph"].pop("start_q", None)
-            input_data["inputph"].pop("last_q", None)
-        else:
-            directory.touch(f"{prefix}.EXIT")
+        directory.touch(f"{prefix}.EXIT")
 
         parameters["input_data"] = input_data
 

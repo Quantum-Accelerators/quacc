@@ -13,6 +13,7 @@ from quacc import SETTINGS
 from quacc.utils.files import (
     copy_decompress_files,
     copy_decompress_files_from_dir,
+    copy_decompress_tree,
     make_unique_dir,
 )
 
@@ -64,6 +65,8 @@ def calc_setup(
         symlink.symlink_to(tmpdir, target_is_directory=True)
 
     # Copy files to tmpdir and decompress them if needed
+    if isinstance(copy_files, dict):
+        copy_decompress_tree(copy_files, tmpdir)
     if isinstance(copy_files, list):
         copy_decompress_files(copy_files, tmpdir)
     elif isinstance(copy_files, (str, Path)):
