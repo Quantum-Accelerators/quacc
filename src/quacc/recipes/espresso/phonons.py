@@ -129,7 +129,8 @@ def _grid_phonon_subflow(
         input_data["inputph"]["last_q"] = n + 1
         this_block = nblocks if nblocks > 0 else len(qdata["representations"])
         repr_to_do = np.array_split(
-            [r for r in qdata["representations"] if not r["done"]], this_block
+            [r for r in qdata["representations"] if not qdata[r]["done"]],
+            this_block
         )
         if qpoint == (0, 0, 0):
             file_to_copy = {
