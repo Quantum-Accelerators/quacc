@@ -349,7 +349,7 @@ def test_phonon_grid(tmp_path, monkeypatch):
     pseudopotentials = {"Si": "Si.upf"}
 
     job_params = {
-        "pw_job": {
+        "relax_job": {
             "input_data": input_data,
             "pseudopotentials": pseudopotentials,
             "kspacing": 0.5,
@@ -382,7 +382,7 @@ def test_phonon_grid_v2(tmp_path, monkeypatch):
     pseudopotentials = {"Li": "Li.upf"}
 
     job_params = {
-        "pw_job": {
+        "relax_job": {
             "input_data": input_data,
             "pseudopotentials": pseudopotentials,
             "kspacing": 0.5,
