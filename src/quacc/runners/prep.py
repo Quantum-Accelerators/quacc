@@ -12,7 +12,6 @@ from monty.shutil import gzip_dir, remove
 from quacc import SETTINGS
 from quacc.utils.files import (
     copy_decompress_files,
-    copy_decompress_files_from_dir,
     copy_decompress_tree,
     make_unique_dir,
 )
