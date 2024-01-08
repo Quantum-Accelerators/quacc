@@ -124,12 +124,12 @@ def _grid_phonon_subflow(
     prefix = input_data["inputph"].get("prefix", "pwscf")
 
     grid_results = []
-    for n, qpoint in enumerate(ph_init_job_results["results"]):
+    for n, (qpoint, qdata) in enumerate(ph_init_job_results["results"].items()):
         input_data["inputph"]["start_q"] = n + 1
         input_data["inputph"]["last_q"] = n + 1
-        this_block = nblocks if nblocks > 0 else len(qpoint["representations"])
+        this_block = nblocks if nblocks > 0 else len(qdata["representations"])
         repr_to_do = np.array_split(
-            [r for r in qpoint["representations"] if not r["done"]], this_block
+            [r for r in qdata["representations"] if not r["done"]], this_block
         )
         if qpoint == (0, 0, 0):
             file_to_copy = {
@@ -151,7 +151,7 @@ def _grid_phonon_subflow(
             input_data["inputph"]["last_irr"] = representation[-1]
             ph_job_results = ph_job(file_to_copy, input_data=input_data)
             grid_results.append(ph_job_results)
-            
+
     return grid_results
 
 
