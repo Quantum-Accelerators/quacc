@@ -271,7 +271,7 @@ def grid_phonon_flow(
     )
 
     prev_dirs = {}
-    # Change that to something lighter
+
     for result in grid_results:
         prev_dirs[result["dir_name"]] = [
             "**/*.xml.*",

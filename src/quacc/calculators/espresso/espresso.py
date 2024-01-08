@@ -135,7 +135,8 @@ class EspressoTemplate(EspressoTemplate_):
                     fd, binary=self.binary, properties=properties, **parameters
                 )
 
-    def _test_run(self, parameters: dict[str, Any], directory: Path) -> dict[str, Any]:
+    @staticmethod
+    def _test_run(parameters: dict[str, Any], directory: Path) -> dict[str, Any]:
         """
         Almost all QE binaries will do a test run if a file named
         <prefix>.EXIT is present in the working directory. This
@@ -150,8 +151,7 @@ class EspressoTemplate(EspressoTemplate_):
 
         Returns
         -------
-        dict
-            The parameters dictionnary, modified for special cases.
+        None
         """
         input_data = parameters.get("input_data", {})
         prefix = "pwscf"
@@ -163,10 +163,6 @@ class EspressoTemplate(EspressoTemplate_):
                     break
 
         directory.touch(f"{prefix}.EXIT")
-
-        parameters["input_data"] = input_data
-
-        return parameters
 
     def read_results(self, directory: Path | str) -> dict[str, Any]:
         """
