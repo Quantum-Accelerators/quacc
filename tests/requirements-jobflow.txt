@@ -1,2 +1,2 @@
-jobflow==0.1.15
+jobflow==0.1.16
 fireworks==2.0.3
