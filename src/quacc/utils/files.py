@@ -109,16 +109,7 @@ def copy_decompress_tree(
 
         for abs_f, rel_f in zip(abs_files, rel_files):
             Path(destination, rel_f.parent).mkdir(parents=True, exist_ok=True)
-
-            if abs_f.is_symlink():
-                continue
-            if abs_f.is_file():
-                copy(abs_f, Path(destination, rel_f))
-                decompress_file(Path(destination, rel_f))
-            elif abs_f.is_dir():
-                copy_decompress_files_from_dir(abs_f, Path(destination, rel_f))
-            else:
-                warnings.warn(f"Cannot find file {abs_f}", UserWarning)
+            copy_decompress_files([abs_f], Path(destination, rel_f.parent))
 
 
 def copy_decompress_files_from_dir(source: str | Path, destination: str | Path) -> None:

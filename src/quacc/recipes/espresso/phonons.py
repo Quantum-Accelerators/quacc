@@ -7,12 +7,12 @@ calculations in different fashion.
 from __future__ import annotations
 
 from copy import deepcopy
+from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
 from ase.io.espresso import Namelist
-
 from quacc import Job, flow, job, subflow
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.calculators.espresso.utils import parse_ph_patterns
@@ -25,7 +25,6 @@ if TYPE_CHECKING:
     from typing import Any, Callable
 
     from ase.atoms import Atoms
-
     from quacc.schemas._aliases.ase import RunSchema
 
 
@@ -89,7 +88,7 @@ def phonon_job(
 
 @subflow
 def _grid_phonon_subflow(
-    input_data: dict | None,
+    ph_input_data: dict | None,
     ph_init_job_results: str | Path,
     ph_job: Job,
     nblocks: int = 1,
@@ -99,12 +98,10 @@ def _grid_phonon_subflow(
 
     Parameters
     ----------
-    input_data
-        The input_data for the phonon calculation.
-    ph_init_job_dir
-        The directory containing the results of the phonon test job.
-    pw_job_dir
-        The directory containing the results of the plane-wave job.
+    ph_input_data
+        The input data for the phonon calculation.
+    ph_init_job_results
+        The results of the phonon 'only_init' job.
     ph_job
         The phonon job to be executed.
     nblocks
@@ -115,42 +112,50 @@ def _grid_phonon_subflow(
     list[RunSchema]
         A list of results from each phonon job.
     """
-    input_data = Namelist(input_data)
-    input_data.to_nested(binary="ph")
 
-    input_data["inputph"]["recover"] = True
-    input_data["inputph"]["lqdir"] = True
+    ph_input_data = Namelist(ph_input_data)
+    ph_input_data.to_nested(binary="ph")
 
-    prefix = input_data["inputph"].get("prefix", "pwscf")
+    calc_forced = {"inputph": {"recover": True, "lqdir": True, "verbosity": "high"}}
+
+    ph_input_data = recursive_dict_merge(ph_input_data, calc_forced)
+
+    prefix = ph_input_data["inputph"].get("prefix", "pwscf")
+    outdir = ph_input_data["inputph"].get("outdir", ".")
 
     grid_results = []
     for n, (qpoint, qdata) in enumerate(ph_init_job_results["results"].items()):
-        input_data["inputph"]["start_q"] = n + 1
-        input_data["inputph"]["last_q"] = n + 1
+        ph_input_data["inputph"]["start_q"] = n + 1
+        ph_input_data["inputph"]["last_q"] = n + 1
         this_block = nblocks if nblocks > 0 else len(qdata["representations"])
-        repr_to_do = np.array_split(
-            [r for r in qdata["representations"] if not qdata["representations"][r]["done"]],
-            this_block
-        )
-        if qpoint == (0, 0, 0):
-            file_to_copy = {
-                ph_init_job_results["dir_name"]: [
-                    f"**/{prefix}.save/charge-density.*",
-                    f"**/{prefix}.save/data-file-schema.xml",
-                    f"**/{prefix}.save/paw.txt",
-                    f"**/{prefix}.save/wfc*.*",
+        repr_to_do = [
+            r
+            for r in qdata["representations"]
+            if not qdata["representations"][r]["done"]
+        ]
+        repr_to_do = np.array_split(repr_to_do, np.ceil(len(repr_to_do) / this_block))
+        file_to_copy = {
+            ph_init_job_results["dir_name"]: [
+                f"{outdir}/{prefix}.save/charge-density.*",
+                f"{outdir}/{prefix}.save/data-file-schema.xml.*",
+                f"{outdir}/{prefix}.save/paw.txt.*",
+                f"{outdir}/{prefix}.save/wfc*.*",
+            ]
+        }
+        if qpoint != (0.0, 0.0, 0.0):
+            file_to_copy[ph_init_job_results["dir_name"]].extend(
+                [
+                    f"{outdir}/_ph0/{prefix}.q_{n + 1}/{prefix}.save/*",
+                    f"{outdir}/_ph0/{prefix}.q_{n + 1}/{prefix}.wfc*",
+                    f"{outdir}/_ph0/{prefix}.phsave/control_ph.xml*",
+                    f"{outdir}/_ph0/{prefix}.phsave/status_run.xml*",
+                    f"{outdir}/_ph0/{prefix}.phsave/patterns.*.xml*",
                 ]
-            }
-        else:
-            file_to_copy = {
-                ph_init_job_results["dir_name"]: [
-                    f"**/_ph0/{prefix}.q_{n}/{prefix}.save/*"
-                ]
-            }
+            )
         for representation in repr_to_do:
-            input_data["inputph"]["start_irr"] = representation[0]
-            input_data["inputph"]["last_irr"] = representation[-1]
-            ph_job_results = ph_job(file_to_copy, input_data=input_data)
+            ph_input_data["inputph"]["start_irr"] = representation[0]
+            ph_input_data["inputph"]["last_irr"] = representation[-1]
+            ph_job_results = ph_job(file_to_copy, input_data=ph_input_data)
             grid_results.append(ph_job_results)
 
     return grid_results
@@ -200,7 +205,7 @@ def grid_phonon_flow(
         - job: [quacc.recipes.espresso.core.relax_job][]
 
     2. ph.x calculation test_run
-        - name: "ph_test_job"
+        - name: "ph_init_job"
         - job: [quacc.recipes.espresso.phonons.phonon_job][]
 
     3. (n * m) / nblocks ph.x calculations
@@ -240,57 +245,44 @@ def grid_phonon_flow(
                 "electrons": {"conv_thr": 1e-12},
             }
         },
-        "ph_init_job": {
-            "input_data": {
-                "inputph": {
-                    "lqdir": True,
-                    "tr2_ph": 1e-12,
-                    "only_init": True,
-                    "verbosity": "high",
-                }
-            }
-        },
-        "ph_job": {
-            "input_data": {
-                "inputph": {
-                    "tr2_ph": 1e-12,
-                    "alpha_mix(1)": 0.1,
-                    "verbosity": "high",
-                }
-            }
-        },
-        "ph_recover_job": {
-            "input_data": {
-                "inputph": {"recover": True, "lqdir": True, "verbosity": "high"}
-            }
-        },
+        "ph_init_job": {"input_data": {"inputph": {"lqdir": True, "only_init": True}}},
+        "ph_recover_job": {"input_data": {"inputph": {"recover": True, "lqdir": True}}},
     }
 
     job_params = recursive_dict_merge(calc_defaults, job_params)
-    pw_job, ph_init_job, ph_job, recover_ph_job = customize_funcs(
+
+    job_params["ph_init_job"] = recursive_dict_merge(
+        job_params["ph_init_job"], job_params["ph_job"]
+    )
+
+    job_params["ph_recover_job"] = recursive_dict_merge(
+        job_params["ph_recover_job"], job_params["ph_job"]
+    )
+
+    pw_job, ph_init_job, ph_job, ph_recover_job = customize_funcs(
         ["relax_job", "ph_init_job", "ph_job", "ph_recover_job"],
         [relax_job, phonon_job, phonon_job, phonon_job],
         parameters=job_params,
         decorators=job_decorators,
     )
 
-    ph_job_input_data = job_params.get("ph_job", {}).get("input_data", {})
-
     pw_job_results = pw_job(atoms)
 
-    ph_test_job_results = ph_init_job(
-        pw_job_results["dir_name"], input_data=ph_job_input_data
-    )
+    ph_init_job_results = ph_init_job(pw_job_results["dir_name"])
 
     grid_results = _grid_phonon_subflow(
-        ph_job_input_data, ph_test_job_results, ph_job, nblocks=nblocks
+        job_params["ph_job"]["input_data"], ph_init_job_results, ph_job, nblocks=nblocks
     )
 
     prev_dirs = {}
-
+    # Change that to something lighter
     for result in grid_results:
-        prev_dirs[result["dir_name"]] = ["**/dynmat.*.*.xml", "**/tensors.xml"]
+        prev_dirs[result["dir_name"]] = [
+            "**/*.xml.*",
+            "**/data-file-schema.xml.*",
+            "**/charge-density.*",
+            "**/wfc*.*",
+            "**/paw.txt.*",
+        ]
 
-    ph_job_input_data["recover"] = True
-
-    return recover_ph_job(prev_dirs, input_data=ph_job_input_data)
+    return ph_recover_job(prev_dirs)

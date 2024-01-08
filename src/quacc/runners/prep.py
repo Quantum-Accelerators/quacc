@@ -70,10 +70,7 @@ def calc_setup(
     if isinstance(copy_files, list):
         copy_decompress_files(copy_files, tmpdir)
     elif isinstance(copy_files, (str, Path)):
-        if Path(copy_files).is_dir():
-            copy_decompress_files_from_dir(copy_files, tmpdir)
-        else:
-            copy_decompress_files([copy_files], tmpdir)
+        copy_decompress_files([copy_files], tmpdir)
 
     os.chdir(tmpdir)
 
