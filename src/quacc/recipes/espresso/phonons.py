@@ -116,12 +116,9 @@ def _grid_phonon_subflow(
     ph_input_data = Namelist(ph_input_data)
     ph_input_data.to_nested(binary="ph")
 
-    calc_forced = {"inputph": {"recover": True, "lqdir": True, "verbosity": "high"}}
-
-    ph_input_data = recursive_dict_merge(ph_input_data, calc_forced)
-
     prefix = ph_input_data["inputph"].get("prefix", "pwscf")
     outdir = ph_input_data["inputph"].get("outdir", ".")
+    lqdir = ph_input_data["inputph"].get("lqdir", False)
 
     grid_results = []
     for n, (qpoint, qdata) in enumerate(ph_init_job_results["results"].items()):
@@ -142,7 +139,7 @@ def _grid_phonon_subflow(
                 f"{outdir}/{prefix}.save/wfc*.*",
             ]
         }
-        if qpoint != (0.0, 0.0, 0.0):
+        if qpoint != (0.0, 0.0, 0.0) and lqdir:
             file_to_copy[ph_init_job_results["dir_name"]].extend(
                 [
                     f"{outdir}/_ph0/{prefix}.q_{n + 1}/{prefix}.save/*",
