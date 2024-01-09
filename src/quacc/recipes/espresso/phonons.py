@@ -270,15 +270,19 @@ def grid_phonon_flow(
         job_params["ph_job"]["input_data"], ph_init_job_results, ph_job, nblocks=nblocks
     )
 
-    prev_dirs = {}
+    # Drop the job in name because it is meant to be internal?
+    @job
+    def _ph_recover(grid_results: list[RunSchema]) -> RunSchema:
+        prev_dirs = {}
+        for result in grid_results:
+            prev_dirs[result["dir_name"]] = [
+                "**/*.xml.*",
+                "**/data-file-schema.xml.*",
+                "**/charge-density.*",
+                "**/wfc*.*",
+                "**/paw.txt.*",
+            ]
+        # If we strip decorator, executor would be lost?
+        return ph_recover_job(prev_dirs)
 
-    for result in grid_results:
-        prev_dirs[result["dir_name"]] = [
-            "**/*.xml.*",
-            "**/data-file-schema.xml.*",
-            "**/charge-density.*",
-            "**/wfc*.*",
-            "**/paw.txt.*",
-        ]
-
-    return ph_recover_job(prev_dirs)
+    return _ph_recover(grid_results)
