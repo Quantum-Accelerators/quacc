@@ -120,6 +120,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
         return ct.electron(_func, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "dask":
         from dask import delayed
+
         # See https://github.com/dask/dask/issues/10733
 
         @wraps(_func)
@@ -430,6 +431,7 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
     elif SETTINGS.WORKFLOW_ENGINE == "dask":
         from dask import delayed
         from dask.distributed import worker_client
+
         # See https://github.com/dask/dask/issues/10733
 
         @wraps(_func)
