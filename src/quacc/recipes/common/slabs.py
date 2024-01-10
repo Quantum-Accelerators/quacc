@@ -1,17 +1,12 @@
 """Common slab workflows"""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import Any
 
-from quacc import subflow
+from ase.atoms import Atoms
+
+from quacc import Job, subflow
 from quacc.atoms.slabs import make_adsorbate_structures, make_slabs_from_bulk
-
-if TYPE_CHECKING:
-    from typing import Any
-
-    from ase.atoms import Atoms
-
-    from quacc import Job
 
 
 @subflow

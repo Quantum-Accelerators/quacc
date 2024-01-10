@@ -1,26 +1,20 @@
 """Common workflows for phonons"""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import Any
 
+from ase.atoms import Atoms
 from monty.dev import requires
 
-from quacc import flow, job, subflow
+from quacc import Job, flow, job, subflow
 from quacc.atoms.phonons import atoms_to_phonopy, phonopy_atoms_to_ase_atoms
+from quacc.schemas._aliases.phonons import PhononSchema
 from quacc.schemas.phonons import summarize_phonopy
 
 try:
     import phonopy
 except ImportError:
     phonopy = None
-
-if TYPE_CHECKING:
-    from typing import Any
-
-    from ase.atoms import Atoms
-
-    from quacc import Job
-    from quacc.schemas._aliases.phonons import PhononSchema
 
 
 @flow

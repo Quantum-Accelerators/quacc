@@ -1,17 +1,12 @@
 """Common defect workflows"""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import Any
 
-from quacc import subflow
+from ase.atoms import Atoms
+
+from quacc import Job, subflow
 from quacc.atoms.defects import make_defects_from_bulk
-
-if TYPE_CHECKING:
-    from typing import Any
-
-    from ase.atoms import Atoms
-
-    from quacc import Job
 
 
 @subflow

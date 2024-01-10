@@ -16,20 +16,15 @@ Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import Any, Callable
 
 import numpy as np
+from ase.atoms import Atoms
 
 from quacc import flow, job
 from quacc.recipes.vasp._base import base_fn
+from quacc.schemas._aliases.vasp import MPRelaxFlowSchema, VaspSchema
 from quacc.wflow_tools.customizers import customize_funcs
-
-if TYPE_CHECKING:
-    from typing import Any, Callable
-
-    from ase.atoms import Atoms
-
-    from quacc.schemas._aliases.vasp import MPRelaxFlowSchema, VaspSchema
 
 
 @job

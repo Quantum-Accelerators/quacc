@@ -1,19 +1,15 @@
 """Slab recipes for EMT."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import Any, Callable
+
+from ase.atoms import Atoms
 
 from quacc import flow
 from quacc.recipes.common.slabs import bulk_to_slabs_subflow
 from quacc.recipes.emt.core import relax_job, static_job
+from quacc.schemas._aliases.ase import OptSchema, RunSchema
 from quacc.wflow_tools.customizers import customize_funcs
-
-if TYPE_CHECKING:
-    from typing import Any, Callable
-
-    from ase.atoms import Atoms
-
-    from quacc.schemas._aliases.ase import OptSchema, RunSchema
 
 
 @flow

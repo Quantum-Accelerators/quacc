@@ -1,19 +1,15 @@
 """Phonon recipes for EMT"""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import Any, Callable
+
+from ase.atoms import Atoms
 
 from quacc import flow
 from quacc.recipes.common.phonons import phonon_flow as common_phonon_flow
 from quacc.recipes.emt.core import static_job
+from quacc.schemas._aliases.phonons import PhononSchema
 from quacc.wflow_tools.customizers import customize_funcs
-
-if TYPE_CHECKING:
-    from typing import Any, Callable
-
-    from ase.atoms import Atoms
-
-    from quacc.schemas._aliases.phonons import PhononSchema
 
 
 @flow
