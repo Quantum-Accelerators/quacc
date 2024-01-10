@@ -23,7 +23,7 @@ except ImportError:
 
 
 if has_deps:
-    from pymatgen.analysis.defect import (
+    from pymatgen.analysis.defects import (
         AntiSiteGenerator,
         ChargeInterstitialGenerator,
         InterstitialGenerator,
