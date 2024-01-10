@@ -270,7 +270,7 @@ def grid_phonon_flow(
 
     pw_job, ph_init_job, ph_job, ph_recover_job = customize_funcs(
         ["relax_job", "ph_init_job", "ph_job", "ph_recover_job"],
-        [relax_job, phonon_job, phonon_job, _ph_recover_job],
+        [relax_job, phonon_job, phonon_job, phonon_job],
         parameters=job_params,
         decorators=job_decorators,
     )
