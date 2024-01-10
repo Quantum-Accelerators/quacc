@@ -30,7 +30,7 @@ if TYPE_CHECKING:
             SubstitutionGenerator,
             VoronoiInterstitialGenerator,
         )
-    from pymatgen.analysis.defects.thermo import DefectEntry
+        from pymatgen.analysis.defects.thermo import DefectEntry
 
 
 @requires(
