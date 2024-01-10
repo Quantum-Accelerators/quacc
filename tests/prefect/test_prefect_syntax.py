@@ -26,7 +26,7 @@ def test_patch():
         future1 = task1(val)
         return task2(future1["result"])
 
-    assert workflow(1).is_completed()
+    assert workflow(1).result() == {"input": 100, "result": 20000}
 
 
 def test_patch_local():
@@ -54,7 +54,6 @@ def test_patch_local():
 
 def test_prefect_decorators(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    from quacc import SETTINGS
 
     @job
     def add(a, b):
@@ -106,9 +105,9 @@ def test_prefect_decorators(tmp_path, monkeypatch):
 
     assert add_flow(1, 2).is_completed()
     assert workflow(1, 2, 3).is_completed()
-    assert [r.is_completed() for r in dynamic_workflow(1, 2, 3)]
-    assert [r.is_completed() for r in dynamic_workflow2(1, 2, 3)]
-    assert dynamic_workflow3(1, 2, 3).is_completed()
+    assert [r.result() for r in dynamic_workflow(1, 2, 3)] == [6, 6, 6]
+    assert [r.result() for r in dynamic_workflow2(1, 2, 3)] == [6, 6, 6]
+    assert dynamic_workflow3(1, 2, 3).result() == 12
 
 
 def test_prefect_decorators_local(tmp_path, monkeypatch):
