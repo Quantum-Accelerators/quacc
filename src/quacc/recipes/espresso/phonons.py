@@ -260,7 +260,9 @@ def grid_phonon_flow(
             job_params["ph_job"],
         ),
         "ph_job": {
-            "input_data": {"inputph": {"lqdir": True, "low_directory_check": True}}
+            "input_data": {
+                "inputph": {"lqdir": True, "low_directory_check": True, "recover": True}
+            }
         },
         "ph_recover_job": recursive_dict_merge(
             {"input_data": {"inputph": {"recover": True, "lqdir": True}}},
