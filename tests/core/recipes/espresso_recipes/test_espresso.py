@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pathlib import Path
 from shutil import which
 
@@ -203,7 +205,7 @@ def test_relax_job_cell(tmp_path, monkeypatch):
     input_data = {
         "control": {"pseudo_dir": tmp_path, "etot_conv_thr": 1.0},
         "system": {"occupations": "smearing", "degauss": 0.001},
-        "cell": {"press_conv_thr": 1.5e2}
+        "cell": {"press_conv_thr": 1.5e2},
     }
 
     results = relax_job(
@@ -268,7 +270,14 @@ def test_phonon_job(tmp_path, monkeypatch):
         atoms.get_chemical_symbols(),
     )
 
-    sections = ["atoms", "eqpoints", "freqs", "kpoints", "mode_symmetries", "representations"]
+    sections = [
+        "atoms",
+        "eqpoints",
+        "freqs",
+        "kpoints",
+        "mode_symmetries",
+        "representations",
+    ]
 
     for key in sections:
         assert key in ph_results["results"][(0, 0, 0)]
@@ -326,7 +335,14 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
         atoms.get_chemical_symbols(),
     )
 
-    sections = ["atoms", "eqpoints", "freqs", "kpoints", "mode_symmetries", "modes"]
+    sections = [
+        "atoms",
+        "eqpoints",
+        "freqs",
+        "kpoints",
+        "mode_symmetries",
+        "representations",
+    ]
 
     for key in sections:
         assert key in ph_results["results"][(0, 0, 0)]
@@ -359,7 +375,14 @@ def test_phonon_grid(tmp_path, monkeypatch):
 
     grid_results = grid_phonon_flow(atoms, job_params=job_params)
 
-    sections = ["atoms", "eqpoints", "freqs", "kpoints", "mode_symmetries", "representations"]
+    sections = [
+        "atoms",
+        "eqpoints",
+        "freqs",
+        "kpoints",
+        "mode_symmetries",
+        "representations",
+    ]
 
     for key in sections:
         assert key in grid_results["results"][(0, 0, 0)]
@@ -392,7 +415,14 @@ def test_phonon_grid_v2(tmp_path, monkeypatch):
 
     grid_results = grid_phonon_flow(atoms, job_params=job_params, nblocks=3)
 
-    sections = ["atoms", "eqpoints", "freqs", "kpoints", "mode_symmetries", "representations"]
+    sections = [
+        "atoms",
+        "eqpoints",
+        "freqs",
+        "kpoints",
+        "mode_symmetries",
+        "representations",
+    ]
 
     for key in sections:
         assert key in grid_results["results"][(0, 0, 0)]
