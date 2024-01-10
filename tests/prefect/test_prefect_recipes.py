@@ -15,7 +15,7 @@ def prefect_test_fixture():
         yield
 
 
-def test_parsl_functools(tmp_path, monkeypatch):
+def test_prefect_functools(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
     result = bulk_to_slabs_flow(
