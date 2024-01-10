@@ -3,27 +3,38 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pymatgen.analysis.defects.generators import VacancyGenerator
-from pymatgen.analysis.defects.thermo import DefectEntry
+from monty.dev import requires
 from pymatgen.core.periodic_table import DummySpecies
 from pymatgen.entries.computed_entries import ComputedStructureEntry
 from pymatgen.io.ase import AseAtomsAdaptor
-from shakenbreak.input import Distortions
+
+try:
+    import shakenbreak
+    from pymatgen.analysis import defects
+
+    has_deps = True
+except ImportError:
+    has_deps = False
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
     from numpy.typing import NDArray
-    from pymatgen.analysis.defects.core import Defect
-    from pymatgen.analysis.defects.generators import (
-        AntiSiteGenerator,
-        ChargeInterstitialGenerator,
-        InterstitialGenerator,
-        SubstitutionGenerator,
-        VoronoiInterstitialGenerator,
-    )
     from pymatgen.core import Structure
 
+    if has_deps:
+        from pymatgen.analysis.defects.core import Defect
+        from pymatgen.analysis.defects.generators import (
+            AntiSiteGenerator,
+            ChargeInterstitialGenerator,
+            InterstitialGenerator,
+            SubstitutionGenerator,
+            VoronoiInterstitialGenerator,
+        )
 
+
+@requires(
+    has_deps, "Missing defect dependencies. Please run pip install quacc[defects]"
+)
 def make_defects_from_bulk(
     atoms: Atoms,
     defect_gen: (
@@ -72,6 +83,7 @@ def make_defects_from_bulk(
     list[Atoms]
         All generated defects
     """
+    from shakenbreak.input import Distortions
 
     # Use pymatgen-analysis-defects and ShakeNBreak to generate defects
     struct = AseAtomsAdaptor.get_structure(atoms)
@@ -144,6 +156,8 @@ def _get_defect_entry_from_defect(
     DefectEntry
         defect entry
     """
+    from pymatgen.analysis.defects.thermo import DefectEntry
+
     # Find defect's fractional coordinates and remove it from supercell
     for site in defect_supercell:
         if site.species.elements[0].symbol == DummySpecies().symbol:
