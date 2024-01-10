@@ -8,7 +8,7 @@ TEST_RUNINFO = Path(__file__).parent / "runinfo"
 
 def pytest_sessionstart():
     file_dir = Path(__file__).parent
-    os.environ["QUACC_CONFIG_FILE"] = str(file_dir / ".quacc.yaml")
+    os.environ["QUACC_CONFIG_FILE"] = str(file_dir / "quacc.yaml")
     os.environ["QUACC_RESULTS_DIR"] = str(TEST_RESULTS_DIR)
     os.environ["QUACC_SCRATCH_DIR"] = str(TEST_SCRATCH_DIR)
 
