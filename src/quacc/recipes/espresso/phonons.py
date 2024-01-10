@@ -17,7 +17,7 @@ from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.recipes.espresso._base import base_fn
 from quacc.recipes.espresso.core import relax_job
 from quacc.utils.dicts import recursive_dict_merge
-from quacc.wflow_tools.customizers import customize_funcs
+from quacc.wflow_tools.customizers import customize_funcs, strip_decorator
 
 if TYPE_CHECKING:
     from typing import Any, Callable
@@ -234,6 +234,19 @@ def grid_phonon_flow(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
+    @job
+    def _ph_recover_job(grid_results: list[RunSchema]) -> RunSchema:
+        prev_dirs = {}
+        for result in grid_results:
+            prev_dirs[result["dir_name"]] = [
+                "**/*.xml.*",
+                "**/data-file-schema.xml.*",
+                "**/charge-density.*",
+                "**/wfc*.*",
+                "**/paw.txt.*",
+            ]
+        return strip_decorator(ph_recover_job)(prev_dirs)
+
     calc_defaults = {
         "relax_job": {
             "input_data": {
@@ -257,7 +270,7 @@ def grid_phonon_flow(
 
     pw_job, ph_init_job, ph_job, ph_recover_job = customize_funcs(
         ["relax_job", "ph_init_job", "ph_job", "ph_recover_job"],
-        [relax_job, phonon_job, phonon_job, phonon_job],
+        [relax_job, phonon_job, phonon_job, _ph_recover_job],
         parameters=job_params,
         decorators=job_decorators,
     )
@@ -270,19 +283,4 @@ def grid_phonon_flow(
         job_params["ph_job"]["input_data"], ph_init_job_results, ph_job, nblocks=nblocks
     )
 
-    # Drop the job in name because it is meant to be internal?
-    @job
-    def _ph_recover(grid_results: list[RunSchema]) -> RunSchema:
-        prev_dirs = {}
-        for result in grid_results:
-            prev_dirs[result["dir_name"]] = [
-                "**/*.xml.*",
-                "**/data-file-schema.xml.*",
-                "**/charge-density.*",
-                "**/wfc*.*",
-                "**/paw.txt.*",
-            ]
-        # If we strip decorator, executor would be lost?
-        return ph_recover_job(prev_dirs)
-
-    return _ph_recover(grid_results)
+    return _ph_recover_job(grid_results)
