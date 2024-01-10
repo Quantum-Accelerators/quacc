@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from monty.dev import requires
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.phonopy import get_phonopy_structure, get_pmg_structure
 
@@ -13,14 +14,18 @@ except ImportError:
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
-    from numpy.typing import ArrayLike
-    from phonopy import Phonopy
-    from phonopy.structure.atoms import PhonopyAtoms
+
+    if phonopy:
+        from phonopy import Phonopy
+        from phonopy.structure.atoms import PhonopyAtoms
 
 
+@requires(phonopy, "Phonopy is not installed.")
 def atoms_to_phonopy(
     atoms: Atoms,
-    supercell_matrix: ArrayLike,
+    supercell_matrix: tuple[
+        tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]
+    ],
     atom_disp: float,
     phonopy_kwargs: dict | None = None,
 ) -> Phonopy:
