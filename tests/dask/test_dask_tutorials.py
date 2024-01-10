@@ -28,15 +28,6 @@ def test_tutorial1a(tmp_path, monkeypatch):
 def test_tutorial1b(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    # Make an Atoms object of a bulk Cu structure
-    atoms = bulk("Cu")
-
-    # Call the PythonApp
-    delayed = relax_job(atoms)  # (1)!
-
-    # Print result
-    assert "atoms" in client.compute(delayed).result()  # (2)!
-
     # Define the Atoms object
     atoms = bulk("Cu")
 

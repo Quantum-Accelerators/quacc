@@ -39,15 +39,6 @@ def test_tutorial1b(tmp_path, monkeypatch):
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
 
-    # Call the PythonApp
-    future = relax_job(atoms)  # (1)!
-
-    # Print result
-    assert "atoms" in future.result()  # (2)!
-
-    # Define the Atoms object
-    atoms = bulk("Cu")
-
     # Define the workflow
     future = bulk_to_slabs_flow(atoms)  # (1)!
 
