@@ -10,7 +10,7 @@ from pymatgen.io.ase import AseAtomsAdaptor
 
 try:
     import shakenbreak
-    from pymatgen.analysis import defects
+    from pymatgen.analysis import defects as pmg_defects
 
     has_deps = True
 except ImportError:
@@ -22,14 +22,16 @@ if TYPE_CHECKING:
     from pymatgen.core import Structure
 
     if has_deps:
-        from pymatgen.analysis.defects.core import Defect
-        from pymatgen.analysis.defects.generators import (
+        from pmg_defects.core import Defect
+        from pmg_defects.generators import (
             AntiSiteGenerator,
             ChargeInterstitialGenerator,
             InterstitialGenerator,
             SubstitutionGenerator,
             VoronoiInterstitialGenerator,
+            VacancyGenerator,
         )
+    from pmg_defects.thermo import DefectEntry
 
 
 @requires(
