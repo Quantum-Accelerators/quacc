@@ -164,6 +164,8 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
                 return decorated.submit(*f_args, **f_kwargs)
 
             return wrapper
+        else:
+            return task(_func, **kwargs)
     else:
         return _func
 
