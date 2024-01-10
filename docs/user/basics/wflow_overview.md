@@ -59,7 +59,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
     Cons:
 
-    - Retrieving the results of a workflow is not as straightforward as other solutions
+    - If the Dask cluster dies, there is no mechanism to gracefully recover the workflow history
     - Monitoring job progress is more challenging and less detailed than other solutions
     - The documentation, while comprehensive, can be difficult to follow given the various Dask components
 

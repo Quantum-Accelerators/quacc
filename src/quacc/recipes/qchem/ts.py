@@ -13,9 +13,8 @@ from quacc.utils.dicts import recursive_dict_merge
 try:
     from sella import IRC, Sella
 
-    has_sella = True
 except ImportError:
-    has_sella = False
+    Sella = False
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -27,7 +26,7 @@ if TYPE_CHECKING:
 
 
 @job
-@requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
+@requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
 def ts_job(
     atoms: Atoms,
     charge: int,
@@ -98,7 +97,7 @@ def ts_job(
 
 
 @job
-@requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
+@requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
 def irc_job(
     atoms: Atoms,
     charge: int,
@@ -172,7 +171,7 @@ def irc_job(
 
 
 @job
-@requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
+@requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
 def quasi_irc_job(
     atoms: Atoms,
     charge: int,

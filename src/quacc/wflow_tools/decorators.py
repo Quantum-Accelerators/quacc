@@ -1,7 +1,7 @@
 """Workflow decorators."""
 from __future__ import annotations
 
-from functools import partial
+from functools import partial, wraps
 from typing import TYPE_CHECKING, TypeVar
 
 Job = TypeVar("Job")
@@ -9,7 +9,7 @@ Flow = TypeVar("Flow")
 Subflow = TypeVar("Subflow")
 
 if TYPE_CHECKING:
-    from typing import Any, Callable
+    from typing import Callable
 
 
 def job(_func: Callable | None = None, **kwargs) -> Job:
@@ -121,7 +121,14 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     elif SETTINGS.WORKFLOW_ENGINE == "dask":
         from dask import delayed
 
-        return delayed(_func, **kwargs)
+        # See https://github.com/dask/dask/issues/10733
+
+        @wraps(_func)
+        def wrapper(*f_args, **f_kwargs):
+            return _func(*f_args, **f_kwargs)
+
+        return Delayed_(delayed(wrapper, **kwargs))
+
     elif SETTINGS.WORKFLOW_ENGINE == "jobflow":
         from jobflow import job as jf_job
 
@@ -131,9 +138,9 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
 
         return python_app(_func, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
-        from redun import task as redun_task
+        from redun import task
 
-        return redun_task(_func, **kwargs)
+        return task(_func, namespace=_func.__module__, **kwargs)
     else:
         return _func
 
@@ -256,9 +263,9 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
 
         return ct.lattice(_func, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
-        from redun import task as redun_task
+        from redun import task
 
-        return redun_task(_func, **kwargs)
+        return task(_func, namespace=_func.__module__, **kwargs)
     else:
         return _func
 
@@ -357,29 +364,7 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
 
     === "Dask"
 
-        ```python
-        import random
-        from dask import delayed
-
-        @delayed
-        def add(a, b):
-            return a + b
-
-        @delayed
-        def make_more(val):
-            return [val] * random.randint(2, 5)
-
-        @delayed
-        def add_distributed(vals, c):
-            return [add(val, c) for val in vals]
-
-        def workflow(a, b, c):
-            result1 = add(a, b)
-            result2 = make_more(result1)
-            return add_distributed(result2, c)
-
-        workflow(1, 2, 3)
-        ```
+        It's complicated... see the source code.
 
     === "Redun"
 
@@ -440,12 +425,39 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
 
         return join_app(_func, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
-        from redun import task as redun_task
+        from redun import task
 
-        return redun_task(_func, **kwargs)
+        return task(_func, namespace=_func.__module__, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "dask":
         from dask import delayed
+        from dask.distributed import worker_client
 
-        return delayed(_func, **kwargs)
+        # See https://github.com/dask/dask/issues/10733
+
+        @wraps(_func)
+        def wrapper(*f_args, **f_kwargs):
+            with worker_client() as client:
+                futures = client.compute(_func(*f_args, **f_kwargs))
+                return client.gather(futures)
+
+        return delayed(wrapper, **kwargs)
     else:
         return _func
+
+
+class Delayed_:
+    """
+    A small Dask-compatible, serializable object to wrap delayed functions
+    that we don't want to execute
+    """
+
+    __slots__ = ("func",)
+
+    def __init__(self, func):
+        self.func = func
+
+    def __reduce__(self):
+        return (Delayed_, (self.func,))
+
+    def __call__(self, *args, **kwargs):
+        return self.func(*args, **kwargs)

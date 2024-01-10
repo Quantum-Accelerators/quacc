@@ -1,17 +1,12 @@
-import contextlib
-
 import pytest
 
-from quacc import SETTINGS, job, subflow
-
 parsl = pytest.importorskip("parsl")
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "parsl",
-    reason="This test requires the Parsl workflow engine",
-)
+
+import contextlib
 
 from ase.build import bulk, molecule
 
+from quacc import job, subflow
 from quacc.recipes.emt.core import relax_job, static_job  # skipcq: PYL-C0412
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow  # skipcq: PYL-C0412
 
@@ -42,15 +37,6 @@ def test_tutorial1b(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     # Make an Atoms object of a bulk Cu structure
-    atoms = bulk("Cu")
-
-    # Call the PythonApp
-    future = relax_job(atoms)  # (1)!
-
-    # Print result
-    assert "atoms" in future.result()  # (2)!
-
-    # Define the Atoms object
     atoms = bulk("Cu")
 
     # Define the workflow

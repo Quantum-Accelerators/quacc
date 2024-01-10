@@ -51,7 +51,6 @@ To use these potentials, you will need to install the corresponding packages. Th
 
 ```bash
 pip install quacc[ml]
-pip install git+https://github.com/ACEsuit/mace.git
 ```
 
 ## NewtonNet

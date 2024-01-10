@@ -1,13 +1,10 @@
 import pytest
 from ase.build import bulk, molecule
 
-from quacc import SETTINGS, flow
+from quacc import flow
 
 redun = pytest.importorskip("redun")
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "redun",
-    reason="This test requires the Redun workflow engine",
-)
+
 
 from quacc.recipes.emt.core import relax_job, static_job  # skipcq: PYL-C0412
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow  # skipcq: PYL-C0412

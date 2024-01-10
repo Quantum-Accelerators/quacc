@@ -249,16 +249,12 @@ graph LR
     atoms = bulk("Cu")
 
     # Define the workflow
-    delayed = bulk_to_slabs_flow(atoms)  # (1)!
+    delayed = bulk_to_slabs_flow(atoms)
 
     # Print the results
-    result = client.gather(client.compute(delayed))  # (2)!
+    result = client.compute(delayed).result()
     print(result)
     ```
-
-    1. This has type `List[Delayed]`.
-
-    2. Running `#!Python client.compute(List[Delayed])` yields a `#!Python List[Future]` object. Calling `#!Python client.gather(List[Future])` will resolve the outputs from multiple `Future` objects. As an alternative, you could also do `#!Python result = dask.compute(delayed)[0]`, where the `[0]` indexing is needed because `#!Python dask.compute` always returns a tuple even when there is only one result.
 
 === "Redun"
 

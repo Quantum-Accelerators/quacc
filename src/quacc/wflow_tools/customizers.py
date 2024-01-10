@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from functools import partial
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 if TYPE_CHECKING:
     from typing import Any, Callable
@@ -26,22 +26,41 @@ def strip_decorator(func: Callable) -> Callable:
     from quacc import SETTINGS
 
     if SETTINGS.WORKFLOW_ENGINE == "covalent":
+        from covalent._workflow.lattice import Lattice
+
         if hasattr(func, "electron_object"):
             func = func.electron_object.function
 
-        if hasattr(func, "workflow_function"):
+        if isinstance(func, Lattice):
             func = func.workflow_function.get_deserialized()
 
     elif SETTINGS.WORKFLOW_ENGINE == "dask":
-        if hasattr(func, "__wrapped__"):
+        from dask.delayed import Delayed
+
+        from quacc.wflow_tools.decorators import Delayed_
+
+        if isinstance(func, Delayed_):
+            func = func.func
+        if isinstance(func, Delayed):
             func = func.__wrapped__
+            if hasattr(func, "__wrapped__"):
+                # Needed for custom `@subflow` decorator
+                func = func.__wrapped__
 
     elif SETTINGS.WORKFLOW_ENGINE == "jobflow":
         if hasattr(func, "original"):
             func = func.original
 
-    elif SETTINGS.WORKFLOW_ENGINE in ("parsl", "redun"):
-        if hasattr(func, "func"):
+    elif SETTINGS.WORKFLOW_ENGINE == "parsl":
+        from parsl.app.python import PythonApp
+
+        if isinstance(func, PythonApp):
+            func = func.func
+
+    elif SETTINGS.WORKFLOW_ENGINE == "redun":
+        from redun import Task
+
+        if isinstance(func, Task):
             func = func.func
 
     return func
@@ -68,9 +87,13 @@ def redecorate(func: Callable, decorator: Callable | None) -> Callable:
     return func if decorator is None else decorator(func)
 
 
-def update_parameters(func: Callable, params: dict[str, Any]) -> Callable:
+def update_parameters(
+    func: Callable,
+    params: dict[str, Any],
+    decorator: Literal["job", "flow", "subflow"] | None = "job",
+) -> Callable:
     """
-    Update the parameters of a function.
+    Update the parameters of a (potentially decorated) function.
 
     Parameters
     ----------
@@ -78,19 +101,28 @@ def update_parameters(func: Callable, params: dict[str, Any]) -> Callable:
         The function to update.
     params
         The parameters and associated values to update.
+    decorator
+        The decorator associated with `func`.
 
     Returns
     -------
     Callable
         The updated function.
     """
-    from quacc import SETTINGS, job
+    from quacc import SETTINGS, flow, job, subflow
 
-    if SETTINGS.WORKFLOW_ENGINE != "dask":
-        return partial(func, **params)
+    if decorator and SETTINGS.WORKFLOW_ENGINE == "dask":
+        if decorator == "job":
+            decorator = job
+        elif decorator == "flow":
+            decorator = flow
+        elif decorator == "subflow":
+            decorator = subflow
 
-    func = strip_decorator(func)
-    return job(partial(func, **params))
+        func = strip_decorator(func)
+        return decorator(partial(func, **params))
+
+    return partial(func, **params)
 
 
 def customize_funcs(
@@ -122,6 +154,7 @@ def customize_funcs(
     tuple[Callable] | Callable
         The customized functions, returned in the same order as provided in `funcs`.
     """
+
     parameters = parameters or {}
     decorators = decorators or {}
     updated_funcs = []

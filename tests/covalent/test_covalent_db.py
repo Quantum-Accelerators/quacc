@@ -1,11 +1,11 @@
+import pytest
+
+ct = pytest.importorskip("covalent")
 import os
 
-import pytest
 from maggma.stores import MemoryStore
 
 from quacc.wflow_tools.db import covalent_to_db
-
-ct = pytest.importorskip("covalent")
 
 
 def test_covalent_to_db():

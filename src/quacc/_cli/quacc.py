@@ -132,7 +132,7 @@ def info() -> None:
     from quacc import SETTINGS, __version__
 
     settings = SETTINGS.model_dump()
-    rich_print(  # noqa: T201
+    rich_print(
         f"""
 quacc version: {__version__}
 
