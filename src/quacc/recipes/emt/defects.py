@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from monty.dev import requires
 from pymatgen.analysis.defects.generators import VacancyGenerator
 
 from quacc import flow
@@ -11,22 +12,36 @@ from quacc.recipes.emt.core import relax_job, static_job
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs
 
+try:
+    import shakenbreak
+    from pymatgen.analysis import defects
+
+    has_deps = True
+except ImportError:
+    has_deps = False
+
+
 if TYPE_CHECKING:
     from typing import Any, Callable
 
     from ase.atoms import Atoms
-    from pymatgen.analysis.defects.generators import (
-        AntiSiteGenerator,
-        ChargeInterstitialGenerator,
-        InterstitialGenerator,
-        SubstitutionGenerator,
-        VoronoiInterstitialGenerator,
-    )
 
     from quacc.schemas._aliases.ase import OptSchema, RunSchema
 
+    if has_deps:
+        from pymatgen.analysis.defect import (
+            AntiSiteGenerator,
+            ChargeInterstitialGenerator,
+            InterstitialGenerator,
+            SubstitutionGenerator,
+            VoronoiInterstitialGenerator,
+        )
+
 
 @flow
+@requires(
+    has_deps, "Missing defect dependencies. Please run pip install quacc[defects]"
+)
 def bulk_to_defects_flow(
     atoms: Atoms,
     defect_gen: (
