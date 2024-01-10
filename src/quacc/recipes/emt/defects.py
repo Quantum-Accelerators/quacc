@@ -5,7 +5,6 @@ from typing import Any, Callable
 
 from ase.atoms import Atoms
 from monty.dev import requires
-from pymatgen.analysis.defects.generators import VacancyGenerator
 
 from quacc import flow
 from quacc.recipes.common.defects import bulk_to_defects_subflow
@@ -31,6 +30,7 @@ if has_deps:
         SubstitutionGenerator,
         VoronoiInterstitialGenerator,
     )
+    from pymatgen.analysis.defects.generators import VacancyGenerator
 
 
 @flow
