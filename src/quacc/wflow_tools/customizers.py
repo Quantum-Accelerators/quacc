@@ -57,6 +57,13 @@ def strip_decorator(func: Callable) -> Callable:
         if isinstance(func, PythonApp):
             func = func.func
 
+    elif SETTINGS.WORKFLOW_ENGINE == "prefect":
+        from prefect import flow as prefect_flow
+        from prefect import task
+
+        if isinstance(func, (task, prefect_flow)):
+            func = func.fn
+
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
         from redun import Task
 
