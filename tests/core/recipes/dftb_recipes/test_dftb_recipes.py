@@ -1,14 +1,15 @@
 from shutil import which
 
-import numpy as np
 import pytest
-from ase.build import bulk, molecule
-
-from quacc.recipes.dftb.core import relax_job, static_job
 
 DFTBPLUS_EXISTS = bool(which("dftb+"))
 
 pytestmark = pytest.mark.skipif(not DFTBPLUS_EXISTS, reason="Needs DFTB+")
+
+import numpy as np
+from ase.build import bulk, molecule
+
+from quacc.recipes.dftb.core import relax_job, static_job
 
 
 def test_static_job_water(tmp_path, monkeypatch):

@@ -62,6 +62,8 @@ A `#!Python @subflow` in quacc is any workflow that returns a list of job output
 
     </center>
 
+    Technically, there are some subtle differences between the `#!Python @delayed` decorator and the `quacc` equivalents, but for the purposes of this tutorial, you can think of them as similar.
+
 === "Redun"
 
     Take a moment to read the Redun documentation's [Design Overview page](https://insitro.github.io/redun/design.html) to get a sense of how Redun works. Namely, you should understand the `Task` decorator and how to interface with the `Scheduler`.

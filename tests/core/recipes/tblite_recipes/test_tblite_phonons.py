@@ -1,10 +1,10 @@
 import pytest
-from ase.build import bulk
-
-from quacc.recipes.tblite.phonons import phonon_flow
 
 pytest.importorskip("tblite.ase")
 pytest.importorskip("phonopy")
+from ase.build import bulk
+
+from quacc.recipes.tblite.phonons import phonon_flow
 
 
 def test_phonon_flow(tmp_path, monkeypatch):

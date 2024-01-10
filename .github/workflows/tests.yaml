@@ -77,7 +77,7 @@ jobs:
         run: |
           pip install -r tests/requirements.txt
           pip install -r tests/requirements-covalent.txt
-          pip install -r tests/phonopy.txt
+          pip install -r tests/requirements-phonopy.txt
           pip install .[dev]
 
       - name: Start Covalent server
@@ -122,7 +122,7 @@ jobs:
         run: |
           pip install -r tests/requirements.txt
           pip install -r tests/requirements-${{ matrix.wflow_engine }}.txt
-          pip install -r tests/phonopy.txt
+          pip install -r tests/requirements-phonopy.txt
           pip install .[dev]
 
       - name: Run tests with pytest

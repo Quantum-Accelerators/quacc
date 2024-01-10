@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc import flow
-from quacc.recipes.common.phonons import phonon_flow as phonon_flow_
+from quacc.recipes.common.phonons import phonon_flow as common_phonon_flow
 from quacc.recipes.emt.core import static_job
 from quacc.wflow_tools.customizers import customize_funcs
 
@@ -72,7 +72,7 @@ def phonon_flow(
         "static_job", static_job, parameters=job_params, decorators=job_decorators
     )
 
-    return phonon_flow_(
+    return common_phonon_flow(
         atoms,
         static_job_,
         supercell_matrix=supercell_matrix,

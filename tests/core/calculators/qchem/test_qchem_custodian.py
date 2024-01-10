@@ -1,9 +1,10 @@
 import pytest
+
+pytest.importorskip("openbabel")
+
 from custodian import Custodian
 
 from quacc.calculators.qchem.qchem_custodian import run_custodian
-
-pytest.importorskip("openbabel")
 
 
 def mock_custodian_run(*args, **kwargs):

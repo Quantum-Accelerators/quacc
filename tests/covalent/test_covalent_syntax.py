@@ -1,13 +1,10 @@
 import pytest
 
-from quacc import SETTINGS, flow, job, strip_decorator, subflow
-
 ct = pytest.importorskip("covalent")
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "covalent",
-    reason="This test requires the Covalent workflow engine",
-)
+
 from covalent._workflow.lattice import Lattice
+
+from quacc import flow, job, strip_decorator, subflow
 
 
 def test_covalent_decorators(tmp_path, monkeypatch):
@@ -49,6 +46,14 @@ def test_covalent_decorators(tmp_path, monkeypatch):
         result2 = make_more(result1)
         return add_distributed2(result2, c, add)
 
+    @flow
+    def dynamic_workflow3(a, b, c):
+        result1 = add(a, b)
+        result2 = make_more(result1)
+        result3 = add_distributed(result2, c)
+        result4 = add_distributed(result3, c)
+        return add(result4[0], c)
+
     assert add(1, 2) == 3
     assert mult(1, 2) == 2
     assert ct.get_result(ct.dispatch(workflow)(1, 2, 3), wait=True).result == 9
@@ -65,6 +70,9 @@ def test_covalent_decorators(tmp_path, monkeypatch):
     assert ct.get_result(
         ct.dispatch(flow(add_distributed))([1, 1, 1], 2), wait=True
     ).result == [3, 3, 3]
+    assert (
+        ct.get_result(ct.dispatch(dynamic_workflow3)(1, 2, 3), wait=True).result == 12
+    )
 
 
 def test_covalent_decorators_args(tmp_path, monkeypatch):
