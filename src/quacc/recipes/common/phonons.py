@@ -18,7 +18,6 @@ if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
-    from numpy.typing import ArrayLike
 
     from quacc import Job
     from quacc.schemas._aliases.phonons import PhononSchema
@@ -29,7 +28,9 @@ if TYPE_CHECKING:
 def phonon_flow(
     atoms: Atoms,
     static_job: Job,
-    supercell_matrix: ArrayLike = ((2, 0, 0), (0, 2, 0), (0, 0, 2)),
+    supercell_matrix: tuple[
+        tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]
+    ] = ((2, 0, 0), (0, 2, 0), (0, 0, 2)),
     atom_disp: float = 0.01,
     t_step: float = 10,
     t_min: float = 0,
