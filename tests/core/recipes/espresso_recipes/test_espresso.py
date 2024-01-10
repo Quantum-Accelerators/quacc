@@ -268,7 +268,7 @@ def test_phonon_job(tmp_path, monkeypatch):
         atoms.get_chemical_symbols(),
     )
 
-    sections = ["atoms", "eqpoints", "freqs", "kpoints", "mode_symmetries", "modes"]
+    sections = ["atoms", "eqpoints", "freqs", "kpoints", "mode_symmetries", "representations"]
 
     for key in sections:
         assert key in ph_results["results"][(0, 0, 0)]
@@ -359,7 +359,7 @@ def test_phonon_grid(tmp_path, monkeypatch):
 
     grid_results = grid_phonon_flow(atoms, job_params=job_params)
 
-    sections = ["atoms", "eqpoints", "freqs", "kpoints", "mode_symmetries", "modes"]
+    sections = ["atoms", "eqpoints", "freqs", "kpoints", "mode_symmetries", "representations"]
 
     for key in sections:
         assert key in grid_results["results"][(0, 0, 0)]
@@ -392,7 +392,7 @@ def test_phonon_grid_v2(tmp_path, monkeypatch):
 
     grid_results = grid_phonon_flow(atoms, job_params=job_params, nblocks=3)
 
-    sections = ["atoms", "eqpoints", "freqs", "kpoints", "mode_symmetries", "modes"]
+    sections = ["atoms", "eqpoints", "freqs", "kpoints", "mode_symmetries", "representations"]
 
     for key in sections:
         assert key in grid_results["results"][(0, 0, 0)]
