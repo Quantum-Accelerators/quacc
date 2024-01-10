@@ -1,3 +1,3 @@
+pennylane==0.34.0
 covalent==0.232.0
 covalent-hpc-plugin==0.0.8
-pennylane==0.34.0
