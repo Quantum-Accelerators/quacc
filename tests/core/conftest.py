@@ -13,7 +13,9 @@ def pytest_sessionstart():
 
 
 def pytest_sessionfinish():
+    import typing
     from shutil import rmtree
 
+    typing.TYPE_CHECKING = True
     rmtree(TEST_RESULTS_DIR, ignore_errors=True)
     rmtree(TEST_SCRATCH_DIR, ignore_errors=True)
