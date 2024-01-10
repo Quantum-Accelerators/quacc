@@ -31,7 +31,7 @@ if TYPE_CHECKING:
     from quacc.schemas._aliases.ase import OptSchema, RunSchema
 
     if has_deps:
-        from pymatgen.analysis.defect import (
+        from pymatgen.analysis.defects.generators import (
             AntiSiteGenerator,
             ChargeInterstitialGenerator,
             InterstitialGenerator,
