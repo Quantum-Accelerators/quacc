@@ -360,7 +360,7 @@ def test_phonon_grid(tmp_path, monkeypatch):
         "control": {"pseudo_dir": tmp_path},
     }
 
-    ph_loose = {"inputph": {"tr2_ph": 1e-6}}
+    ph_loose = {"inputph": {"tr2_ph": 1e-6, "qplot": True, "ldisp": True}}
 
     pseudopotentials = {"Si": "Si.upf"}
 
@@ -370,7 +370,7 @@ def test_phonon_grid(tmp_path, monkeypatch):
             "pseudopotentials": pseudopotentials,
             "kspacing": 0.5,
         },
-        "ph_job": {"input_data": ph_loose},
+        "ph_job": {"input_data": ph_loose, "qpts": [(0, 0, 0, 1), (0.5, 0.0, 0.0, 1)]},
     }
 
     grid_results = grid_phonon_flow(atoms, job_params=job_params)
