@@ -4,6 +4,7 @@ prefect = pytest.importorskip("prefect")
 
 from ase.build import bulk
 from prefect.testing.utilities import prefect_test_harness
+
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow  # skipcq: PYL-C0412
 
 
