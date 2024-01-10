@@ -157,7 +157,7 @@ def _get_defect_entry_from_defect(
     DefectEntry
         defect entry
     """
-    from pymatgen.analysis.defects.thermo import DefectEntry # skipcq: PYL-W0621
+    from pymatgen.analysis.defects.thermo import DefectEntry  # skipcq: PYL-W0621
 
     # Find defect's fractional coordinates and remove it from supercell
     for site in defect_supercell:
