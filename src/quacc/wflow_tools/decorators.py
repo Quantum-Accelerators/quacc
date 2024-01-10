@@ -156,7 +156,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     elif SETTINGS.WORKFLOW_ENGINE == "prefect":
         from prefect import task
 
-        if SETTINGS.PREFECT_TASK_RUNNER:
+        if SETTINGS.PREFECT_AUTO_SUBMIT:
 
             @wraps(_func)
             def wrapper(*f_args, **f_kwargs):

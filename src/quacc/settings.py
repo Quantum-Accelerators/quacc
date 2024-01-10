@@ -108,8 +108,8 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # Prefect Settings
     # ---------------------------
-    PREFECT_TASK_RUNNER: bool = Field(
-        False, description="Whether to auto-submit tasks to the task runner."
+    PREFECT_AUTO_SUBMIT: bool = Field(
+        True, description="Whether to auto-submit tasks to the task runner."
     )
 
     # ---------------------------

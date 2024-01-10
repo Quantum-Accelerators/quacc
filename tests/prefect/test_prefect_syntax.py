@@ -33,7 +33,7 @@ def test_patch_local():
     from quacc import SETTINGS
 
     DEFAULT_SETTINGS = SETTINGS.model_copy()
-    SETTINGS.PREFECT_TASK_RUNNER = False
+    SETTINGS.PREFECT_AUTO_SUBMIT = False
 
     @job
     def task1(val: float) -> dict:
@@ -49,7 +49,7 @@ def test_patch_local():
         return task2(future1["result"])
 
     assert workflow(1) == {"input": 100, "result": 20000}
-    SETTINGS.PREFECT_TASK_RUNNER = DEFAULT_SETTINGS.PREFECT_TASK_RUNNER
+    SETTINGS.PREFECT_AUTO_SUBMIT = DEFAULT_SETTINGS.PREFECT_AUTO_SUBMIT
 
 
 def test_prefect_decorators(tmp_path, monkeypatch):
@@ -115,7 +115,7 @@ def test_prefect_decorators_local(tmp_path, monkeypatch):
     from quacc import SETTINGS
 
     DEFAULT_SETTINGS = SETTINGS.model_copy()
-    SETTINGS.PREFECT_TASK_RUNNER = False
+    SETTINGS.PREFECT_AUTO_SUBMIT = False
 
     @job
     def add(a, b):
@@ -173,4 +173,4 @@ def test_prefect_decorators_local(tmp_path, monkeypatch):
     assert results == [6, 6, 6]
     assert dynamic_workflow3(1, 2, 3) == 12
 
-    SETTINGS.PREFECT_TASK_RUNNER = DEFAULT_SETTINGS.PREFECT_TASK_RUNNER
+    SETTINGS.PREFECT_AUTO_SUBMIT = DEFAULT_SETTINGS.PREFECT_AUTO_SUBMIT
