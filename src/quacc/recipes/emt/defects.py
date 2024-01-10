@@ -22,10 +22,6 @@ except ImportError:
     has_deps = False
 
 if has_deps:
-    from pymatgen.analysis.defects.generators import VacancyGenerator
-
-
-if has_deps:
     from pymatgen.analysis.defects import (
         AntiSiteGenerator,
         ChargeInterstitialGenerator,
