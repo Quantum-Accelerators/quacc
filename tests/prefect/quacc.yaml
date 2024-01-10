@@ -1,3 +1,2 @@
 DEBUG: true
-PREFECT_AUTO_SUBMIT: true
 WORKFLOW_ENGINE: prefect
