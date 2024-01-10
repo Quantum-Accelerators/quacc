@@ -18,11 +18,13 @@ def prefect_test_fixture():
 def test_prefect_functools(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
-    result = bulk_to_slabs_flow(
+    output = bulk_to_slabs_flow(
         atoms, job_params={"relax_job": {"opt_params": {"fmax": 0.1}}}, run_static=False
-    ).result()
+    )
+    result = [future.result() for future in output]
     assert len(result) == 4
-    assert [r.is_completed() for r in result]
+    assert "atoms" in result[-1]
+    assert result[-1]["fmax"] == 0.1
 
 
 def test_phonon_flow(tmp_path, monkeypatch):
@@ -32,7 +34,9 @@ def test_phonon_flow(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
     output = phonon_flow(atoms)
-    assert output.result().is_completed()
+    assert output.result()["results"]["thermal_properties"]["temperatures"].shape == (
+        101,
+    )
 
 
 def test_phonon_flow_multistep(tmp_path, monkeypatch):
@@ -43,4 +47,6 @@ def test_phonon_flow_multistep(tmp_path, monkeypatch):
     atoms = bulk("Cu")
     relaxed = relax_job(atoms)
     output = phonon_flow(relaxed["atoms"])
-    output.result().is_completed()
+    assert output.result()["results"]["thermal_properties"]["temperatures"].shape == (
+        101,
+    )
