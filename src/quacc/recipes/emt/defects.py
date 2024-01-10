@@ -4,7 +4,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
-from pymatgen.analysis.defects.generators import VacancyGenerator
 
 from quacc import flow
 from quacc.recipes.common.defects import bulk_to_defects_subflow
@@ -20,6 +19,9 @@ try:
 except ImportError:
     has_deps = False
 
+if has_deps:
+    from pymatgen.analysis.defects.generators import VacancyGenerator
+
 
 if TYPE_CHECKING:
     from typing import Any, Callable
@@ -29,7 +31,7 @@ if TYPE_CHECKING:
     from quacc.schemas._aliases.ase import OptSchema, RunSchema
 
     if has_deps:
-        from pymatgen.analysis.defect import (
+        from pymatgen.analysis.defects.generators import (
             AntiSiteGenerator,
             ChargeInterstitialGenerator,
             InterstitialGenerator,
