@@ -59,6 +59,8 @@ graph LR
         covalent start
         ```
 
+        While optional, it is advised to also set the `RESULTS_DIR` to a fixed location, e.g. `quacc set RESULTS_DIR /path/to/store/results`.
+
     ```python
     import covalent as ct
     from ase.build import bulk
