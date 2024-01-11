@@ -1,0 +1,234 @@
+********************************************************************************
+*                       GENERAL UTILITY LATTICE PROGRAM                        *
+*                                 Julian Gale                                  *
+*                       Curtin Institute for Computation                       *
+*                    School of Molecular and Life Sciences                     *
+*                    Curtin University, Western Australia                      *
+********************************************************************************
+* Version = 6.1.1 * Last modified =  16th November 2022                        *
+********************************************************************************
+*  optimise     - perform optimisation run                                     *
+*  conp         - constant pressure calculation                                *
+*  gfnff        - use the GFNFF of Spicher and Grimme                          *
+*  nomodcoord   - do not mod input coordinates                                 *
+*  molq         - molecule option activated, but with Coulomb terms retained   *
+********************************************************************************
+* ASE calculation                                                              *
+********************************************************************************
+
+
+  Job Started  at 16:13.50  6th April      2023                               
+
+  Number of CPUs =     1
+
+
+  Total number of configurations input =      1
+
+********************************************************************************
+*  Input for Configuration =   1                                               *
+********************************************************************************
+
+  Formula = OH2                                                         
+
+  Number of irreducible atoms/shells =       3
+
+
+  Total number atoms/shells =       3
+
+  Dimensionality = 0               :  Cluster
+
+
+  Charge on cluster =   1.316146
+
+
+  Initial cluster dipoles : x =      0.000000 e.Angs
+                            y =      0.000000 e.Angs
+                            z =     -0.795341 e.Angs
+
+  Temperature of configuration =   0.00     K 
+
+  Symmetry number =      1
+
+  Cartesian coordinates of cluster :
+
+--------------------------------------------------------------------------------
+   No.  Atomic       x           y          z         Charge      Occupancy
+        Label      (Angs)      (Angs)     (Angs)        (e)         (Frac)  
+--------------------------------------------------------------------------------
+      1 O     c      0.0000      0.0000      0.1193     0.00000    1.000000    
+      2 H     c      0.0000 *    0.7632 *   -0.4770 *   0.65807    1.000000    
+      3 H     c      0.0000 *   -0.7632 *   -0.4770 *   0.65807    1.000000    
+--------------------------------------------------------------------------------
+
+
+
+  Molecule list generated from bond lengths :
+
+  Total number of molecules =     1
+
+--------------------------------------------------------------------------------
+Molecule No./:  Atoms
+Periodicity  :  
+--------------------------------------------------------------------------------
+     1  0    : O    c     1 H    c     2 H    c     3
+--------------------------------------------------------------------------------
+
+
+********************************************************************************
+*  General input information                                                   *
+********************************************************************************
+
+  Species output for all configurations : 
+
+--------------------------------------------------------------------------------
+  Species    Type    Atomic    Atomic    Charge       Radii (Angs)     Library
+                     Number     Mass       (e)     Cova   Ionic  VDW   Symbol
+--------------------------------------------------------------------------------
+    O        Core        8      16.00   0.000000   0.730  0.000  1.360          
+    H        Core        1       1.01   0.658073   0.370  0.000  1.080          
+--------------------------------------------------------------------------------
+
+
+  Accuracy factor for short range sums = 12.000
+
+  Electrostatics method = Direct Coulomb
+
+  Analytic derivatives to be used
+
+  Time limit = Infinity
+
+  Maximum range for interatomic potentials =    100000.000000 Angstroms
+
+  pGFNFF forcefield to be used
+
+  pGFNFF parameter charges will use new PBC-consistent topology 
+  pGFNFF maximum number of shells for topology - loop 0   =    2
+  pGFNFF maximum number of shells for topology - loop > 0 =    4
+  pGFNFF fragments to be set based on original neighbour list
+  pGFNFF topological large distance = 10**12 
+  pGFNFF topological distances scaled by =  1.17500
+  pGFNFF topological distance  cutoff    = 12.00000 a.u.
+  pGFNFF minimum allowed charge in topology set =      -2.0000
+  pGFNFF dispersion-coordination number tolerance =    10.0000
+  pGFNFF high coordination numbers will NOT be trapped
+  pGFNFF pi biradicals modified based on charge of atoms
+  pGFNFF accuracy       =     0.100000
+  pGFNFF accuracy_disp  =     0.100000
+  pGFNFF accuracy_rep   =     0.100000
+  pGFNFF accuracy_cn    =     0.100000
+  pGFNFF accuracy_hb1   =     0.100000
+  pGFNFF accuracy_hb2   =     0.100000
+  pGFNFF taper          =     0.950000
+  pGFNFF temperature 1  =  4000.000000 K
+  pGFNFF temperature 2  =   300.000000 K
+  pGFNFF ATM dispersion =   damped 
+
+********************************************************************************
+*  Output for configuration   1                                                *
+********************************************************************************
+
+
+  Components of energy : 
+
+--------------------------------------------------------------------------------
+  Interatomic potentials     =           0.00000000 eV    
+  GFNFF force field          =          55.25668734 eV    
+  Monopole - monopole (real) =          -5.66490607 eV    
+  GFNFF Coulomb correction   =           0.22888968 eV    
+--------------------------------------------------------------------------------
+  Total lattice energy       =          49.82067095 eV    
+--------------------------------------------------------------------------------
+  Total lattice energy       =            4806.9332 kJ/mol
+--------------------------------------------------------------------------------
+
+
+  Number of variables =        6
+
+  Maximum number of calculations  =          1000
+  Maximum Hessian update interval =            10
+  Maximum step size               =   1.000000000
+  Maximum parameter tolerance     =   0.000010000
+  Maximum function  tolerance     =   0.000010000
+  Maximum gradient  tolerance     =   0.001000000
+  Maximum gradient  component     =   0.010000000
+
+  Symmetry not applied to optimisation
+
+  Newton-Raphson optimiser to be used
+
+  BFGS hessian update to be used
+
+  Lower half triangular hessian to be used
+
+  Start of cluster optimisation :
+
+  Cycle:      0 Energy:        49.820671  Gnorm:      0.688299  CPU:    0.004
+  ** Hessian calculated **
+  Cycle:      1 Energy:        49.084277  Gnorm:      0.078026  CPU:    0.004
+  Cycle:      2 Energy:        49.079121  Gnorm:      0.001903  CPU:    0.005
+
+
+  **** Optimisation achieved ****
+
+
+  Final energy =      49.07911539 eV      
+  Final Gnorm  =       0.00002776
+
+  Components of energy : 
+
+--------------------------------------------------------------------------------
+  Interatomic potentials     =           0.00000000 eV    
+  GFNFF force field          =          63.31094475 eV    
+  Monopole - monopole (real) =         -14.75283154 eV    
+  GFNFF Coulomb correction   =           0.52100218 eV    
+--------------------------------------------------------------------------------
+  Total lattice energy       =          49.07911539 eV    
+--------------------------------------------------------------------------------
+  Total lattice energy       =            4735.3844 kJ/mol
+--------------------------------------------------------------------------------
+
+  Final cartesian coordinates of atoms :
+
+--------------------------------------------------------------------------------
+   No.  Atomic        x           y          z          Radius
+        Label       (Angs)      (Angs)     (Angs)       (Angs) 
+--------------------------------------------------------------------------------
+     1  O     c     0.000000    0.000000    0.119262    0.000000
+     2  H     c     0.000000    0.867109   -0.213574    0.000000
+     3  H     c     0.000000   -0.867109   -0.213574    0.000000
+--------------------------------------------------------------------------------
+
+
+  Final Cartesian derivatives :
+
+--------------------------------------------------------------------------------
+   No.  Atomic          x             y             z           Radius
+        Label       (eV/Angs)     (eV/Angs)     (eV/Angs)      (eV/Angs)
+--------------------------------------------------------------------------------
+      1 O     c       0.000000      0.000000      0.000000      0.000000
+      2 H     c       0.000000     -0.000117      0.000010      0.000000
+      3 H     c       0.000000      0.000117      0.000010      0.000000
+--------------------------------------------------------------------------------
+  Maximum abs         0.000000      0.000117      0.000010      0.000000
+--------------------------------------------------------------------------------
+
+
+  Time to end of optimisation =       0.0048 seconds
+
+
+  Peak dynamic memory used =       1.81 MB 
+
+
+  Timing analysis for GULP :
+
+--------------------------------------------------------------------------------
+  Task / Subroutine                                          Time (Seconds)
+--------------------------------------------------------------------------------
+  Calculation of GFNFF energy and derivatives                     0.0003
+--------------------------------------------------------------------------------
+  Total CPU time                                                  0.0048
+--------------------------------------------------------------------------------
+
+
+  Job Finished at 16:13.50  6th April      2023                               
+
