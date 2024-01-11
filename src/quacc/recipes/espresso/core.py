@@ -20,8 +20,8 @@ def static_job(
     atoms: Atoms,
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
     parallel_info: dict[str] | None = None,
-    copy_files: str | Path | list[str | Path] | None = None,
     test_run: bool = False,
+    copy_files: str | Path | list[str | Path] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -50,6 +50,9 @@ def static_job(
         If a list of strings is provided, each string point to a specific file. In this case
         it is important to note that no directory structure is going to be copied, everything
         is copied at the root of the temporary directory.
+    test_run
+        If True, a test run is performed to check that the calculation input_data is correct or
+        to generate some files/info if needed.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. See the
         docstring of [quacc.calculators.espresso.espresso.Espresso][] for more information.
@@ -80,8 +83,8 @@ def relax_job(
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
     relax_cell: bool = False,
     parallel_info: dict[str] | None = None,
-    copy_files: str | Path | list[str | Path] | None = None,
     test_run: bool = False,
+    copy_files: str | Path | list[str | Path] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -100,6 +103,9 @@ def relax_job(
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
+    test_run
+        If True, a test run is performed to check that the calculation input_data is correct or
+        to generate some files/info if needed.
     copy_files
         List of files to copy to the calculation directory. Useful for copying
         files from a previous calculation. This parameter can either be a string
