@@ -142,8 +142,7 @@ class QuaccSettings(BaseSettings):
             "pp": "pp.x",
             "wannier90": "wannier90.x",
         },
-        description="Name for each espresso binary and its corresponding path. "
-        "By default, the binaries are assumed to be in PATH.",
+        description="Name for each espresso binary."
     )
     ESPRESSO_PSEUDO: Optional[Path] = Field(
         None, description=("Path to a pseudopotential library for espresso.")
