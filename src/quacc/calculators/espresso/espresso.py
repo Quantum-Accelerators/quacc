@@ -97,7 +97,7 @@ class EspressoTemplate(EspressoTemplate_):
         self._outdir_handler(parameters, directory)
 
         if self.test_run:
-            parameters = self._test_run(parameters, directory)
+            self._test_run(parameters, directory)
 
         if self.binary == "pw":
             write(
@@ -162,7 +162,7 @@ class EspressoTemplate(EspressoTemplate_):
                     prefix = input_data[section][key]
                     break
 
-        directory.touch(f"{prefix}.EXIT")
+        Path(directory, f"{prefix}.EXIT").touch()
 
     def read_results(self, directory: Path | str) -> dict[str, Any]:
         """
