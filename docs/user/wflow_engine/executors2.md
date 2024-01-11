@@ -409,5 +409,3 @@ When deploying calculations for the first time, it's important to start simple, 
     ```bash
     qlaunch rapidfire -m 1
     ```
-
-For an example involving a code with more complex settings, refer to the [VASP example](../advanced/vasp_hpc.md).
