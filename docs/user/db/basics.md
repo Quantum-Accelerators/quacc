@@ -76,6 +76,10 @@ Here, we describe how to set up quacc with a database of your choosing.
         covalent_to_db(store)
         ```
 
+=== "Prefect"
+
+    To use a database with Prefect, read the [Database](https://docs.prefect.io/2.10.2/concepts/database/) section of the Prefect documentation as well as how to [persist results](https://docs.prefect.io/latest/concepts/results/#persisting-results).
+
 === "Jobflow"
 
     If you are using Jobflow to construct your workflows, it will automatically store the results in the database you defined during the [setup process](../../install/wflow_engines.md). No additional steps are needed.
