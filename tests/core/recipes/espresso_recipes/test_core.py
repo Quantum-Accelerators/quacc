@@ -1,11 +1,13 @@
 from pathlib import Path
 from shutil import which
+from subprocess import CalledProcessError
 
 import pytest
 from ase.build import bulk
 from numpy.testing import assert_allclose, assert_array_equal
 
 from quacc import SETTINGS
+from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.recipes.espresso.core import post_processing_job, relax_job, static_job
 from quacc.utils.files import copy_decompress_files
 
@@ -164,6 +166,30 @@ def test_static_job_dir_fail(tmp_path, monkeypatch):
 
     with pytest.raises(ValueError):
         static_job(atoms, directory=Path("fake_path"))
+
+
+def test_static_job_test_run(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+
+    atoms = bulk("Si")
+
+    pseudopotentials = {"Si": "Si.upf"}
+
+    EspressoTemplate._test_run(
+        {"input_data": {"control": {"prefix": "test"}}}, Path(".")
+    )
+
+    assert Path("test.EXIT").exists()
+
+    with pytest.raises(CalledProcessError):
+        static_job(
+            atoms,
+            pseudopotentials=pseudopotentials,
+            input_data={"pseudo_dir": tmp_path},
+            test_run=True,
+        )
 
 
 def test_relax_job(tmp_path, monkeypatch):
