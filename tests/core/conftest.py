@@ -1,8 +1,11 @@
 import os
+import typing
 from pathlib import Path
 
 TEST_RESULTS_DIR = Path(__file__).parent / "_test_results"
 TEST_SCRATCH_DIR = Path(__file__).parent / "_test_scratch"
+
+typing.TYPE_CHECKING = True
 
 
 def pytest_sessionstart():
