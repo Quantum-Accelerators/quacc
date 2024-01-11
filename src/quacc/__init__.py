@@ -62,3 +62,16 @@ if SETTINGS.DEBUG:
 
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
+
+# Monkeypatching for Prefect
+if SETTINGS.WORKFLOW_ENGINE == "prefect":
+    from prefect.futures import PrefectFuture
+
+    def _patched_getitem(self, index):
+        @job
+        def _getitem(future, index_):
+            return future[index_]
+
+        return _getitem(self, index)
+
+    PrefectFuture.__getitem__ = _patched_getitem

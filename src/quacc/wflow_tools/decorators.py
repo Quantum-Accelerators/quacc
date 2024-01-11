@@ -17,9 +17,9 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     Decorator for individual compute jobs. This is a `#!Python @job` decorator. Think of
     each `#!Python @job`-decorated function as an individual SLURM job, if that helps.
 
-    | Quacc | Covalent      | Parsl        | Dask      | Redun  | Jobflow |
-    | ----- | ------------- | ------------ | --------- | ------ | ------- |
-    | `job` | `ct.electron` | `python_app` | `delayed` | `task` | `job`   |
+    | Quacc | Covalent      | Parsl        | Dask      | Prefect | Redun  | Jobflow |
+    | ----- | ------------- | ------------ | --------- | ------- | ------ | ------- |
+    | `job` | `ct.electron` | `python_app` | `delayed` | `task`  | `task` | `job`   |
 
     All `#!Python @job`-decorated functions are transformed into their corresponding
     decorator.
@@ -70,6 +70,18 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
             return a + b
 
         add(1, 2)
+        ```
+
+    === "Prefect"
+
+        ```python
+        from prefect import task
+
+        @task
+        def add(a, b):
+            return a + b
+
+        add.submit(1, 2)
         ```
 
     === "Redun"
@@ -141,6 +153,19 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
         from redun import task
 
         return task(_func, namespace=_func.__module__, **kwargs)
+    elif SETTINGS.WORKFLOW_ENGINE == "prefect":
+        from prefect import task
+
+        if SETTINGS.PREFECT_AUTO_SUBMIT:
+
+            @wraps(_func)
+            def wrapper(*f_args, **f_kwargs):
+                decorated = task(_func, **kwargs)
+                return decorated.submit(*f_args, **f_kwargs)
+
+            return wrapper
+        else:
+            return task(_func, **kwargs)
     else:
         return _func
 
@@ -150,9 +175,9 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
     Decorator for workflows, which consist of at least one compute job. This is a
     `#!Python @flow` decorator.
 
-    | Quacc  | Covalent     | Parsl     | Dask      | Redun  | Jobflow   |
-    | ------ | ------------ | --------- | --------- | ------ | --------- |
-    | `flow` | `ct.lattice` | No effect | No effect | `task` | No effect |
+    | Quacc  | Covalent     | Parsl     | Dask      | Prefect | Redun  | Jobflow   |
+    | ------ | ------------ | --------- | --------- | ------- | ------ | --------- |
+    | `flow` | `ct.lattice` | No effect | No effect | `flow`  | `task` | No effect |
 
     All `#!Python @flow`-decorated functions are transformed into their corresponding
     decorator.
@@ -219,6 +244,22 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
         workflow(1, 2, 3)
         ```
 
+    === "Prefect"
+
+        ```python
+        from prefect import flow, task
+
+        @task
+        def add(a, b):
+            return a + b
+
+        @flow
+        def workflow(a, b, c):
+            return add.submit(add.submit(a, b), c)
+
+        workflow(1, 2, 3)
+        ```
+
     === "Redun"
 
         ```python
@@ -266,6 +307,10 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
         from redun import task
 
         return task(_func, namespace=_func.__module__, **kwargs)
+    elif SETTINGS.WORKFLOW_ENGINE == "prefect":
+        from prefect import flow as prefect_flow
+
+        return prefect_flow(_func, validate_parameters=False, **kwargs)
     else:
         return _func
 
@@ -274,9 +319,9 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
     """
     Decorator for (dynamic) sub-workflows. This is a `#!Python @subflow` decorator.
 
-    | Quacc     | Covalent                  | Parsl      | Dask      | Redun  | Jobflow   |
-    | --------- | ------------------------- | ---------- | --------- | ------ | --------- |
-    | `subflow` | `ct.electron(ct.lattice)` | `join_app` | `delayed` | `task` | No effect |
+    | Quacc     | Covalent                  | Parsl      | Dask      | Prefect | Redun  | Jobflow   |
+    | --------- | ------------------------- | ---------- | --------- | ------- |------ | --------- |
+    | `subflow` | `ct.electron(ct.lattice)` | `join_app` | `delayed` | `flow`  | `task` | No effect |
 
     All `#!Python @subflow`-decorated functions are transformed into their corresponding
     decorator.
@@ -366,6 +411,33 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
 
         It's complicated... see the source code.
 
+    === "Prefect"
+
+        ```python
+        import random
+        from prefect import flow, task
+
+        @task
+        def add(a, b):
+            return a + b
+
+        @task
+        def make_more(val):
+            return [val] * random.randint(2, 5)
+
+        @flow
+        def add_distributed(vals, c):
+            return [add(val, c) for val in vals]
+
+        @flow
+        def workflow(a, b, c):
+            result1 = add.submit(a, b)
+            result2 = make_more.submit(result1)
+            return add_distributed(result2, c)
+
+        workflow(1, 2, 3)
+        ```
+
     === "Redun"
 
         ```python
@@ -424,6 +496,10 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
         from parsl import join_app
 
         return join_app(_func, **kwargs)
+    elif SETTINGS.WORKFLOW_ENGINE == "prefect":
+        from prefect import flow as prefect_flow
+
+        return prefect_flow(_func, validate_parameters=False, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
         from redun import task
 
