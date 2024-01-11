@@ -653,10 +653,10 @@ graph LR
     atoms = bulk("Cu")
 
     # Dispatch the workflow
-    future = workflow(atoms)
+    futures = workflow(atoms)
 
     # Fetch the results
-    result = future.result()
+    results = [future.result() for future in futures]
     print(result)
     ```
 
