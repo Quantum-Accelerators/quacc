@@ -6,7 +6,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
 !!! Tip "Recommendations"
 
-    Not sure which to choose? If you are new to workflow engines and are using a job scheduler on an HPC machine, try Parsl first. If you are looking for a visual dashboard and are fairly comfortable with HPC environments, check out Prefect or Covalent.
+    Not sure which to choose? If you are new to workflow engines and are using a job scheduler on an HPC machine, try **Parsl** first. If you are looking for a visual dashboard and are fairly comfortable with HPC environments, check out **Prefect** or **Covalent**.
 
 === "Covalent"
 
