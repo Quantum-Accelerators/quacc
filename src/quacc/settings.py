@@ -126,6 +126,9 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # ESPRESSO Settings
     # ---------------------------
+    ESPRESSO_BIN_DIR: Path = Field(
+        Path(), description="Base path to the espresso binaries."
+    )
     ESPRESSO_BIN_PATHS: dict[str, Path] = Field(
         {
             "pw": Path("pw.x"),
