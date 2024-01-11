@@ -48,24 +48,24 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
         add(1, 2)
         ```
 
-    === "Parsl"
-
-        ```python
-        from parsl import python_app
-
-        @python_app
-        def add(a, b):
-            return a + b
-
-        add(1, 2)
-        ```
-
     === "Dask"
 
         ```python
         from dask import delayed
 
         @delayed
+        def add(a, b):
+            return a + b
+
+        add(1, 2)
+        ```
+
+    === "Parsl"
+
+        ```python
+        from parsl import python_app
+
+        @python_app
         def add(a, b):
             return a + b
 
@@ -214,12 +214,12 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
         workflow(1, 2, 3)
         ```
 
-    === "Parsl"
+    === "Dask"
 
         ```python
-        from parsl import python_app
+        from dask import delayed
 
-        @python_app
+        @delayed
         def add(a, b):
             return a + b
 
@@ -229,12 +229,12 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
         workflow(1, 2, 3)
         ```
 
-    === "Dask"
+    === "Parsl"
 
         ```python
-        from dask import delayed
+        from parsl import python_app
 
-        @delayed
+        @python_app
         def add(a, b):
             return a + b
 
@@ -320,7 +320,7 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
     Decorator for (dynamic) sub-workflows. This is a `#!Python @subflow` decorator.
 
     | Quacc     | Covalent                  | Parsl      | Dask      | Prefect | Redun  | Jobflow   |
-    | --------- | ------------------------- | ---------- | --------- | ------- |------ | --------- |
+    | --------- | ------------------------- | ---------- | --------- | ------- |------- | --------- |
     | `subflow` | `ct.electron(ct.lattice)` | `join_app` | `delayed` | `flow`  | `task` | No effect |
 
     All `#!Python @subflow`-decorated functions are transformed into their corresponding
@@ -381,6 +381,10 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
         workflow(1, 2, 3)
         ```
 
+    === "Dask"
+
+        It's complicated... see the source code.
+
     === "Parsl"
 
         ```python
@@ -406,10 +410,6 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
 
         workflow(1, 2, 3)
         ```
-
-    === "Dask"
-
-        It's complicated... see the source code.
 
     === "Prefect"
 
@@ -492,18 +492,6 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
         import covalent as ct
 
         return ct.electron(ct.lattice(_func), **kwargs)
-    elif SETTINGS.WORKFLOW_ENGINE == "parsl":
-        from parsl import join_app
-
-        return join_app(_func, **kwargs)
-    elif SETTINGS.WORKFLOW_ENGINE == "prefect":
-        from prefect import flow as prefect_flow
-
-        return prefect_flow(_func, validate_parameters=False, **kwargs)
-    elif SETTINGS.WORKFLOW_ENGINE == "redun":
-        from redun import task
-
-        return task(_func, namespace=_func.__module__, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "dask":
         from dask import delayed
         from dask.distributed import worker_client
@@ -517,6 +505,18 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
                 return client.gather(futures)
 
         return delayed(wrapper, **kwargs)
+    elif SETTINGS.WORKFLOW_ENGINE == "parsl":
+        from parsl import join_app
+
+        return join_app(_func, **kwargs)
+    elif SETTINGS.WORKFLOW_ENGINE == "prefect":
+        from prefect import flow as prefect_flow
+
+        return prefect_flow(_func, validate_parameters=False, **kwargs)
+    elif SETTINGS.WORKFLOW_ENGINE == "redun":
+        from redun import task
+
+        return task(_func, namespace=_func.__module__, **kwargs)
     else:
         return _func
 

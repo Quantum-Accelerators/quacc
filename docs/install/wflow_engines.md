@@ -8,18 +8,6 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     If you don't want to use a workflow engine, you can simply skip this section.
 
-=== "Parsl"
-
-    **Installation**
-
-    To install Parsl, run the following:
-
-    ```bash
-    pip install quacc[parsl]
-    ```
-
-    Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
-
 === "Covalent"
 
     **Installation**
@@ -56,6 +44,34 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     ```bash
     pip install quacc[dask]
+    ```
+
+=== "Parsl"
+
+    **Installation**
+
+    To install Parsl, run the following:
+
+    ```bash
+    pip install quacc[parsl]
+    ```
+
+    Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
+
+=== "Prefect"
+
+    **Installation**
+
+    To install Prefect, run the following:
+
+    ```bash
+    pip install quacc[prefect]
+    ```
+
+    To connect to Prefect Cloud, run the following as well:
+
+    ```bash
+    prefect cloud login
     ```
 
 === "Redun"

@@ -14,57 +14,6 @@ graph LR
   A[Input] --> B(add) --> C(mult) --> D[Output];
 ```
 
-=== "Parsl"
-
-    !!! Important
-
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md) and load the default Parsl configuration:
-
-        ```bash
-        quacc set WORKFLOW_ENGINE parsl
-        ```
-
-        ```python title="python"
-        import parsl
-
-        parsl.load()  #  (1)!
-        ```
-
-        1. It is necessary to instantiate a Parsl configuration before running Parsl workflows. This command loads the default (local) configuration and only needs to be done once.
-
-    ```python
-    from quacc import job
-
-
-    @job  #  (1)!
-    def add(a, b):
-        return a + b
-
-
-    @job
-    def mult(a, b):
-        return a * b
-
-
-    def workflow(a, b, c):  #  (2)!
-        output1 = add(a, b)
-        output2 = mult(output1, c)
-        return output2
-
-
-    future = workflow(1, 2, 3)  #  (3)!
-    result = future.result()  #  (4)!
-    print(result)  # 9
-    ```
-
-    1. The `#!Python @job` decorator will be transformed into `#!Python @python_app`.
-
-    2. The `#!Python @flow` decorator doesn't actually do anything when using Parsl, so we chose to not include it here for brevity.
-
-    3. This will create a `PythonApp` object that represents the workflow. At this point, the workflow has been dispatched, but only a reference is returned.
-
-    4. Calling `.result()` will block until the workflow is complete and return the result.
-
 === "Covalent"
 
     !!! Important
@@ -103,9 +52,9 @@ graph LR
     print(result)  # 9
     ```
 
-    1. The `#!Python @job` decorator will be transformed into `#!Python @ct.electron`.
+    1. The `#!Python @job` decorator will be transformed into a Covalent `#!Python @ct.electron`.
 
-    2. The `#!Python @flow` decorator will be transformed into `#!Python @ct.lattice`.
+    2. The `#!Python @flow` decorator will be transformed into a Covalent `#!Python @ct.lattice`.
 
     3. This command will dispatch the workflow to the Covalent server, and a unique dispatch ID will be returned in place of the result.
 
@@ -154,13 +103,107 @@ graph LR
     print(result)  # 9
     ```
 
-    1. The `#!Python @job` decorator will be transformed into `#!Python @delayed`.
+    1. The `#!Python @job` decorator will be transformed into a Dask `#!Python @delayed`.
 
     2. The `#!Python @flow` decorator doesn't actually do anything when using Dask, so we chose to not include it here for brevity.
 
     3. This returns a `Delayed` object. A reference is returned.
 
     4. There are multiple ways to resolve a `Delayed` object. Here, `#!Python client.compute(delayed)` will return a `Future` object, which can be resolved with `.result()`. The `.result()` call will block until the workflow is complete and return the result. As an alternative, you could also use `#!Python delayed.compute()` to dispatch and resolve the `Delayed` object in one command. Similarly, you could use `#!Python dask.compute(delayed)[0]`, where the `[0]` indexing is needed because `#!Python dask.compute()` always returns a tuple.
+
+=== "Parsl"
+
+    !!! Important
+
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md) and load the default Parsl configuration:
+
+        ```bash
+        quacc set WORKFLOW_ENGINE parsl
+        ```
+
+        ```python title="python"
+        import parsl
+
+        parsl.load()  #  (1)!
+        ```
+
+        1. It is necessary to instantiate a Parsl configuration before running Parsl workflows. This command loads the default (local) configuration and only needs to be done once.
+
+    ```python
+    from quacc import job
+
+
+    @job  #  (1)!
+    def add(a, b):
+        return a + b
+
+
+    @job
+    def mult(a, b):
+        return a * b
+
+
+    def workflow(a, b, c):  #  (2)!
+        output1 = add(a, b)
+        output2 = mult(output1, c)
+        return output2
+
+
+    future = workflow(1, 2, 3)  #  (3)!
+    result = future.result()  #  (4)!
+    print(result)  # 9
+    ```
+
+    1. The `#!Python @job` decorator will be transformed into a Parsl `#!Python @python_app`.
+
+    2. The `#!Python @flow` decorator doesn't actually do anything when using Parsl, so we chose to not include it here for brevity.
+
+    3. This will create a `PythonApp` object that represents the workflow. At this point, the workflow has been dispatched, but only a reference is returned.
+
+    4. Calling `.result()` will block until the workflow is complete and return the result.
+
+=== "Prefect"
+
+    !!! Important
+
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md).
+
+        ```bash
+        quacc set WORKFLOW_ENGINE prefect
+        ```
+
+    ```python
+    from quacc import job
+
+
+    @job  #  (1)!
+    def add(a, b):
+        return a + b
+
+
+    @job
+    def mult(a, b):
+        return a * b
+
+
+    def workflow(a, b, c):  #  (2)!
+        output1 = add(a, b)
+        output2 = mult(output1, c)
+        return output2
+
+
+    future = workflow(1, 2, 3)  #  (3)!
+    result = future.result()  #  (4)!
+    print(result)  # 9
+    ```
+
+    1. The `#!Python @job` decorator will be transformed into a Prefect `#!Python @task`.
+
+    2. The `#!Python @flow` decorator will be transformed into a Prefect `#!Python @flow'.
+
+    3. This will create and run the `Flow`. At this point, the workflow has been dispatched, but only a reference is returned.
+
+    4. Calling `.result()` will return the result of the workflow.
 
 === "Redun"
 
@@ -271,10 +314,6 @@ graph LR
 
 ## Learn More
 
-=== "Parsl"
-
-    If you want to learn more about Parsl, you can read the [Parsl Documentation](https://parsl.readthedocs.io/en/stable/#). Please refer to the [Parsl Slack Channel](http://parsl-project.org/support.html) for any Parsl-specific questions.
-
 === "Covalent"
 
     If you want to learn more about Covalent, you can read the [Covalent Documentation](https://docs.covalent.xyz/docs/). Please refer to the Covalent [Discussion Board](https://github.com/AgnostiqHQ/covalent/discussions) for any Covalent-specific questions.
@@ -282,6 +321,14 @@ graph LR
 === "Dask"
 
     If you want to learn more about Dask, you can read the [Dask Delayed documentation](https://docs.dask.org/en/stable/delayed.html) to read more about the decorators and the [Dask Distributed documentation](https://distributed.dask.org/en/stable/) to read more about the distributed Dask cluster. Please refer to the [Dask Discourse page](https://discourse.dask.org/) for Dask-specific questions.
+
+=== "Parsl"
+
+    If you want to learn more about Parsl, you can read the [Parsl Documentation](https://parsl.readthedocs.io/en/stable/#). Please refer to the [Parsl Slack Channel](http://parsl-project.org/support.html) for any Parsl-specific questions.
+
+=== "Prefect"
+
+    If you want to learn more about Prefect, you can read the [Prefect Documentation](https://docs.prefect.io/). Please refer to the [Prefect community resources](https://www.prefect.io/community) for any Prefect-specific questions.
 
 === "Redun"
 
