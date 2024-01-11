@@ -199,7 +199,7 @@ graph LR
 
     1. The `#!Python @job` decorator will be transformed into a Prefect `#!Python @task`.
 
-    2. The `#!Python @flow` decorator will be transformed into a Prefect `#!Python @flow'.
+    2. The `#!Python @flow` decorator will be transformed into a Prefect `#!Python @flow`.
 
     3. This will create and run the `Flow`. At this point, the workflow has been dispatched, but only a reference is returned.
 
