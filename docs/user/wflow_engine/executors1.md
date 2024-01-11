@@ -262,6 +262,10 @@ In the previous examples, we have been running calculations on our local machine
 
     For example, running `tmux new -s launcher` will create a new `tmux` session named `launcher`. To exit the `tmux` session while still preserving any running tasks on the login node, press `ctrl+b` followed by `d`. To re-enter the tmux session, run `tmux attach -t launcher`. Additional `tmux` commands can be found on the [tmux cheatsheet](https://tmuxcheatsheet.com/).
 
+    **Multiple Executors**
+
+    Parsl supports tying specific executors to a given `PythonApp`, as discussed in the [Multi-Executor section](https://parsl.readthedocs.io/en/stable/userguide/execution.html#multi-executor) of the Parsl documentation.
+    
     ??? Note "Guide for NERSC Users"
 
         If you are a user of NERSC HPC resources, they have a [dedicated Parsl guide](https://docs.nersc.gov/jobs/workflow/parsl/) that is worth checking out.
