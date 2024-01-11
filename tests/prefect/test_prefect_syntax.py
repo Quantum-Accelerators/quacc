@@ -1,15 +1,8 @@
 import pytest
 
 prefect = pytest.importorskip("prefect")
-from prefect.testing.utilities import prefect_test_harness
 
 from quacc import flow, job, strip_decorator, subflow
-
-
-@pytest.fixture(autouse=True, scope="session")
-def prefect_test_fixture():
-    with prefect_test_harness():
-        yield
 
 
 def test_patch():
