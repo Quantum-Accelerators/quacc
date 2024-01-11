@@ -8,12 +8,12 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
     Not sure which to choose? In general, new users of workflow orchestration tools should probably start with **Parsl**. The more savvy HPC users can probably start with **Prefect** or **Covalent** depending on your needs. Some additional opinions on the matter:
 
-    - Covalent: You want a visual dashboard and are prioritizing the use of distributed, heterogeneous compute resources.
+    - Covalent: You want a visual dashboard and are prioritizing the use of distributed compute resources.
     - Dask: You already are familiar with the Dask ecosystem and are happy to stick with it.
     - Parsl: You want to run many workflows as fast as possible on one or more job scheduler-based HPC machines.
     - Prefect: You want a visual dashboard with a robust workflow management platform and are already familiar with the concepts of workflow orchestration.
     - Redun: You are running calculations on AWS.
-    - Jobflow: You are affiliated with the Materials Project or are already using Jobflow and/or FireWorks and don't mind not using all the features of `quacc`.
+    - Jobflow: You are affiliated with the Materials Project or are already using Jobflow and/or FireWorks.
 
 === "Covalent"
 
