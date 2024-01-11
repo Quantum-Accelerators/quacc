@@ -61,9 +61,9 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     Cons:
 
     - The number of different terms can be slightly overwhelming to those less familiar with HPC
-    - Understanding the various configuration options for your HPC setup can be an initial hurdle
     - Monitoring job progress is more challenging and less detailed than other solutions
     - Debugging failed workflows can be difficult
+    - The pilot job model is often a new concept to many HPC users that takes some time to understand
 
 === "Prefect"
 
