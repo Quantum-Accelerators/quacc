@@ -13,7 +13,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     - Parsl: You want to run many workflows as fast as possible on one or more job scheduler-based HPC machines.
     - Prefect: You want a visual dashboard with a robust workflow management platform and are already familiar with the concepts of workflow orchestration.
     - Redun: You are running calculations on AWS.
-    - Jobflow: You are affiliated with the Materials Project or are already using Jobflow and/or FireWorks.
+    - Jobflow: You are affiliated with the Materials Project or are already using Jobflow and/or FireWorks and don't mind not using all the features of `quacc`.
 
 === "Covalent"
 
