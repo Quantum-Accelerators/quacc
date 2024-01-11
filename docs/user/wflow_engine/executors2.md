@@ -54,7 +54,7 @@ If you haven't done so already:
     quacc set WORKFLOW_ENGINE parsl && quacc set CREATE_UNIQUE_DIR True
     ```
 
-=== "Prefect'
+=== "Prefect"
 
     On the remote machine:
 
