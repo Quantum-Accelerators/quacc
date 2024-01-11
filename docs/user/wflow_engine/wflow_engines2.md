@@ -186,6 +186,7 @@ graph LR
 
     ```python
     from ase.build import bulk
+    from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
 
 
@@ -203,6 +204,7 @@ graph LR
 
     # Run the workflow with Prefect tracking
     result = workflow(atoms).result()
+    print(result)
     ```
 
     1. Prefect `Task` objects will implicitly know to call `.result()` on any `PrefectFuture` it receives, and it is good to rely on this fact to avoid unnecessary blocking.
@@ -399,6 +401,7 @@ graph LR
 
     ```python
     from ase.build import bulk, molecule
+    from quacc import flow
     from quacc.recipes.emt.core import relax_job
 
 
@@ -421,6 +424,7 @@ graph LR
     # Fetch the results
     result1 = futures["result1"].result()
     result2 = futures["result2"].result()
+    print(result1, result2)
     ```
 
 === "Redun"
@@ -637,11 +641,13 @@ graph LR
 
     ```python
     from ase.build import bulk
+    from quacc import flow
     from quacc.recipes.emt.core import relax_job
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 
     # Define the workflow
+    @flow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
         relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)
