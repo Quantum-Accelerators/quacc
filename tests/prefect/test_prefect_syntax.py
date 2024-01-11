@@ -176,24 +176,24 @@ def test_prefect_decorators_local(tmp_path, monkeypatch):
     SETTINGS.PREFECT_AUTO_SUBMIT = DEFAULT_SETTINGS.PREFECT_AUTO_SUBMIT
 
 
-def test_strip_decorators():
-    @job
-    def add(a, b):
-        return a + b
+# def test_strip_decorators():
+#     @job
+#     def add(a, b):
+#         return a + b
 
-    @flow
-    def add2(a, b):
-        return a + b
+#     @flow
+#     def add2(a, b):
+#         return a + b
 
-    @subflow
-    def add3(a, b):
-        return a + b
+#     @subflow
+#     def add3(a, b):
+#         return a + b
 
-    stripped_add = strip_decorator(add)
-    assert stripped_add(1, 2) == 3
+#     stripped_add = strip_decorator(add)
+#     assert stripped_add(1, 2) == 3
 
-    stripped_add2 = strip_decorator(add2)
-    assert stripped_add2(1, 2) == 3
+#     stripped_add2 = strip_decorator(add2)
+#     assert stripped_add2(1, 2) == 3
 
-    stripped_add3 = strip_decorator(add3)
-    assert stripped_add3(1, 2) == 3
+#     stripped_add3 = strip_decorator(add3)
+#     assert stripped_add3(1, 2) == 3

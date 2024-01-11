@@ -310,7 +310,7 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
     elif SETTINGS.WORKFLOW_ENGINE == "prefect":
         from prefect import flow as prefect_flow
 
-        return prefect_flow(_func, **kwargs)
+        return prefect_flow(_func, validate_parameters=False, **kwargs)
     else:
         return _func
 
@@ -499,7 +499,7 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
     elif SETTINGS.WORKFLOW_ENGINE == "prefect":
         from prefect import flow as prefect_flow
 
-        return prefect_flow(_func, **kwargs)
+        return prefect_flow(_func, validate_parameters=False, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
         from redun import task
 
