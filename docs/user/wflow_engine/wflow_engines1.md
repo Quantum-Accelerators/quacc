@@ -59,6 +59,8 @@ graph LR
         covalent start
         ```
 
+        You may also wish to set the `RESULTS_DIR` to a fixed location as well.
+
     ```python
     import covalent as ct
     from ase.build import bulk

@@ -36,7 +36,7 @@ If you haven't done so already:
     covalent start
     ```
 
-    !!! Note "For NERSC Users"
+    ??? Note "For NERSC Users"
 
         If using Perlmutter at NERSC, modify your `~/.bashrc` on the remote machine as follows since only the `$SCRATCH` directory supports file locking mechanisms:
 
