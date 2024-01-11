@@ -129,18 +129,18 @@ class QuaccSettings(BaseSettings):
     ESPRESSO_BIN_DIR: Path = Field(
         Path(), description="Base path to the espresso binaries."
     )
-    ESPRESSO_BIN_PATHS: dict[str, Path] = Field(
+    ESPRESSO_BINARIES: dict[str, Path] = Field(
         {
-            "pw": Path("pw.x"),
-            "ph": Path("ph.x"),
-            "neb": Path("neb.x"),
-            "q2r": Path("q2r.x"),
-            "matdyn": Path("matdyn.x"),
-            "dynmat": Path("dynmat.x"),
-            "bands": Path("bands.x"),
-            "projwfc": Path("projwfc.x"),
-            "pp": Path("pp.x"),
-            "wannier90": Path("wannier90.x"),
+            "pw": "pw.x",
+            "ph": "ph.x",
+            "neb": "neb.x",
+            "q2r": "q2r.x",
+            "matdyn": "matdyn.x",
+            "dynmat": "dynmat.x",
+            "bands": "bands.x",
+            "projwfc": "projwfc.x",
+            "pp": "pp.x",
+            "wannier90": "wannier90.x",
         },
         description="Name for each espresso binary and its corresponding path. "
         "By default, the binaries are assumed to be in PATH.",
