@@ -63,6 +63,8 @@ def strip_decorator(func: Callable) -> Callable:
 
         if isinstance(func, (Task, PrefectFlow)):
             func = func.fn
+        elif hasattr(func, "__wrapped__"):
+            func = func.__wrapped__
 
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
         from redun import Task
