@@ -21,6 +21,7 @@ def static_job(
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
     parallel_info: dict[str] | None = None,
     copy_files: str | Path | list[str | Path] | None = None,
+    test_run: bool = False,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -64,7 +65,7 @@ def static_job(
     return base_fn(
         atoms,
         preset=preset,
-        template=EspressoTemplate("pw"),
+        template=EspressoTemplate("pw", test_run=test_run),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
@@ -80,6 +81,7 @@ def relax_job(
     relax_cell: bool = False,
     parallel_info: dict[str] | None = None,
     copy_files: str | Path | list[str | Path] | None = None,
+    test_run: bool = False,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -129,7 +131,7 @@ def relax_job(
     return base_fn(
         atoms,
         preset=preset,
-        template=EspressoTemplate("pw"),
+        template=EspressoTemplate("pw", test_run=test_run),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
@@ -140,7 +142,10 @@ def relax_job(
 
 @job
 def post_processing_job(
-    prev_dir: str | Path, parallel_info: dict[str] | None = None, **calc_kwargs
+    prev_dir: str | Path,
+    parallel_info: dict[str] | None = None,
+    test_run: bool = False,
+    **calc_kwargs,
 ) -> RunSchema:
     """
     Function to carry out a basic pp.x calculation (post-processing).
@@ -183,7 +188,7 @@ def post_processing_job(
     }
 
     return base_fn(
-        template=EspressoTemplate("pp"),
+        template=EspressoTemplate("pp", test_run=test_run),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,

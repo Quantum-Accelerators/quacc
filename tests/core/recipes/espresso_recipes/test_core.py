@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pathlib import Path
 from shutil import which
 
@@ -164,6 +166,19 @@ def test_static_job_dir_fail(tmp_path, monkeypatch):
 
     with pytest.raises(ValueError):
         static_job(atoms, directory=Path("fake_path"))
+
+
+def test_static_job_test_run(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+
+    atoms = bulk("Si")
+
+    results = static_job(atoms, input_data={"pseudo_dir": tmp_path}, test_run=True)
+
+    assert not Path(results["dir_name"], "pwscf.EXIT").exists()
+    assert_allclose(results["atoms"].positions, atoms.positions)
 
 
 def test_relax_job(tmp_path, monkeypatch):
