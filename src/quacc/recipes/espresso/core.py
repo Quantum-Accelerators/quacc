@@ -38,6 +38,9 @@ def static_job(
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
+    test_run
+        If True, a test run is performed to check that the calculation input_data is correct or
+        to generate some files/info if needed.
     copy_files
         List of files to copy to the calculation directory. Useful for copying
         files from a previous calculation. This parameter can either be a string
@@ -50,9 +53,6 @@ def static_job(
         If a list of strings is provided, each string point to a specific file. In this case
         it is important to note that no directory structure is going to be copied, everything
         is copied at the root of the temporary directory.
-    test_run
-        If True, a test run is performed to check that the calculation input_data is correct or
-        to generate some files/info if needed.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. See the
         docstring of [quacc.calculators.espresso.espresso.Espresso][] for more information.
