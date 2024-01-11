@@ -1,9 +1,16 @@
+from prefect.testing.utilities import prefect_test_harness
+from prefect import flow
+
+
+@pytest.fixture(autouse=True, scope="session")
+def prefect_test_fixture():
+    with prefect_test_harness():
+        yield
+
 def test_dummy():
-    from prefect import flow
 
     @flow
     def my_favorite_function():
-        print("What is your favorite number?")
         return 42
 
     assert my_favorite_function() == 42
