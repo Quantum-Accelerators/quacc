@@ -143,6 +143,7 @@ graph LR
 
     ```python
     from ase.build import bulk
+    from quacc import flow
     from quacc.recipes.emt.core import relax_job
 
     # Make an Atoms object of a bulk Cu structure
@@ -158,6 +159,7 @@ graph LR
 
     # Fetch the result
     result = future.result()  # (3)!
+    print(result)
     ```
 
     1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
