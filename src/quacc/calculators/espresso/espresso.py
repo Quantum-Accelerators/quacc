@@ -162,7 +162,7 @@ class EspressoTemplate(EspressoTemplate_):
                     prefix = input_data[section][key]
                     break
 
-        directory.touch(f"{prefix}.EXIT")
+        Path(directory, f"{prefix}.EXIT").touch()
 
     def read_results(self, directory: Path | str) -> dict[str, Any]:
         """

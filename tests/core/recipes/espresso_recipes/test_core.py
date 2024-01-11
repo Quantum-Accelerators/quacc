@@ -1,13 +1,13 @@
-from __future__ import annotations
-
 from pathlib import Path
 from shutil import which
+from subprocess import CalledProcessError
 
 import pytest
 from ase.build import bulk
 from numpy.testing import assert_allclose, assert_array_equal
 
 from quacc import SETTINGS
+from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.recipes.espresso.core import post_processing_job, relax_job, static_job
 from quacc.utils.files import copy_decompress_files
 
@@ -175,10 +175,21 @@ def test_static_job_test_run(tmp_path, monkeypatch):
 
     atoms = bulk("Si")
 
-    results = static_job(atoms, input_data={"pseudo_dir": tmp_path}, test_run=True)
+    pseudopotentials = {"Si": "Si.upf"}
 
-    assert not Path(results["dir_name"], "pwscf.EXIT").exists()
-    assert_allclose(results["atoms"].positions, atoms.positions)
+    EspressoTemplate._test_run(
+        {"input_data": {"control": {"prefix": "test"}}}, Path(".")
+    )
+
+    assert Path("test.EXIT").exists()
+
+    with pytest.raises(CalledProcessError):
+        static_job(
+            atoms,
+            pseudopotentials=pseudopotentials,
+            input_data={"pseudo_dir": tmp_path},
+            test_run=True,
+        )
 
 
 def test_relax_job(tmp_path, monkeypatch):
