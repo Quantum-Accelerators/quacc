@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0]
+
+### Added
+
+- A new `grid_phonon` recipe in Espresso (@tomdemeyere)
+- Preliminary support for the Prefect workflow engine, again, but this time without it breaking everything
+
+### Fixed
+
+- Fixed an error in the Espresso `phonon_flow` when using the `master` branch of ASE
+- Fixed a few erroneous type hints
+- Fixed the `typer` depenendecy in `pyproject.toml` to be `typer[all]` like it was supposed to be
+- Fixed a bug when passing decorator keyword arguments when using Dask
+
 ## [0.5.2]
 
 ### Changed
