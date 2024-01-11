@@ -3,8 +3,8 @@ from pathlib import Path
 
 from quacc.utils.files import (
     copy_decompress_files_from_dir,
-    make_unique_dir,
     copy_decompress_tree,
+    make_unique_dir,
 )
 
 

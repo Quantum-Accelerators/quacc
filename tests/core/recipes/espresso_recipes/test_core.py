@@ -222,4 +222,3 @@ def test_relax_job_cell(tmp_path, monkeypatch):
 
     new_input_data = results["parameters"]["input_data"]
     assert new_input_data["control"]["calculation"] == "vc-relax"
-
