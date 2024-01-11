@@ -89,7 +89,7 @@ To use quacc with Quantum ESPRESSO, you will first need to download and install 
 conda install -c conda-forge qe
 ```
 
-You will also need to download the relevant [pseudopotentials](https://www.quantum-espresso.org/pseudopotentials/).
+You will also need to download the relevant [pseudopotentials](https://www.materialscloud.org/discover/sssp/table/efficiency).
 
 Finally, you will need to define multiple environment variables. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md).
 

@@ -1,3 +1,4 @@
+"""Custom Espresso calculator and template."""
 from __future__ import annotations
 
 import os
@@ -31,7 +32,7 @@ class EspressoTemplate(EspressoTemplate_):
     of other binaries such as pw.x, ph.x, cp.x, etc.
     """
 
-    def __init__(self, binary: str = "pw") -> None:
+    def __init__(self, binary: str = "pw", test_run: bool = False) -> None:
         """
         Initialize the Espresso template.
 
@@ -39,7 +40,10 @@ class EspressoTemplate(EspressoTemplate_):
         ----------
         binary
             The name of the espresso binary to use. This is used to set the
-            input/output file names. By default we fall bacl on "pw".
+            input/output file names. By default we fall back to "pw".
+        test_run
+            If True, a test run is performed to check that the calculation
+            input_data is correct or to generate some files/info if needed.
 
         Returns
         -------
@@ -56,6 +60,8 @@ class EspressoTemplate(EspressoTemplate_):
             "outdir": os.environ.get("ESPRESSO_TMPDIR"),
             "wfcdir": os.environ.get("ESPRESSO_TMPDIR"),
         }
+
+        self.test_run = test_run
 
     def write_input(
         self,
@@ -90,6 +96,9 @@ class EspressoTemplate(EspressoTemplate_):
         directory = Path(directory)
         self._outdir_handler(parameters, directory)
 
+        if self.test_run:
+            parameters = self._test_run(parameters, directory)
+
         if self.binary == "pw":
             write(
                 directory / self.inputname,
@@ -107,6 +116,53 @@ class EspressoTemplate(EspressoTemplate_):
                 write_fortran_namelist(
                     fd, binary=self.binary, properties=properties, **parameters
                 )
+
+        if self.binary == "pw":
+            write(
+                directory / self.inputname,
+                atoms,
+                format="espresso-in",
+                pseudo_dir=str(profile.pseudo_path),
+                properties=properties,
+                **parameters,
+            )
+        elif self.binary == "ph":
+            with Path.open(directory / self.inputname, "w") as fd:
+                write_espresso_ph(fd=fd, properties=properties, **parameters)
+        else:
+            with Path.open(directory / self.inputname, "w") as fd:
+                write_fortran_namelist(
+                    fd, binary=self.binary, properties=properties, **parameters
+                )
+
+    @staticmethod
+    def _test_run(parameters: dict[str, Any], directory: Path) -> dict[str, Any]:
+        """
+        Almost all QE binaries will do a test run if a file named
+        <prefix>.EXIT is present in the working directory. This
+        function will create this file.
+
+        Parameters
+        ----------
+        parameters
+            input_data, which are needed to know the prefix
+        directory
+            The directory in which to write the EXIT file.
+
+        Returns
+        -------
+        None
+        """
+        input_data = parameters.get("input_data", {})
+        prefix = "pwscf"
+
+        for section in input_data:
+            for key in input_data[section]:
+                if key == "prefix":
+                    prefix = input_data[section][key]
+                    break
+
+        directory.touch(f"{prefix}.EXIT")
 
     def read_results(self, directory: Path | str) -> dict[str, Any]:
         """

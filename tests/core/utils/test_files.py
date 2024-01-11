@@ -1,7 +1,11 @@
 import os
 from pathlib import Path
 
-from quacc.utils.files import copy_decompress_files_from_dir, make_unique_dir
+from quacc.utils.files import (
+    copy_decompress_files_from_dir,
+    make_unique_dir,
+    copy_decompress_tree,
+)
 
 
 def test_make_unique_dir(tmp_path, monkeypatch):
@@ -36,6 +40,36 @@ def test_copy_decompress_files_from_dir(tmp_path):
     assert (dst / "dir1" / "file2").exists()
     assert Path(f"{dst}{'/nested' * 10}").exists()
     assert not (dst / "dir1" / "symlink1").exists()
+
+
+def test_copy_decompress_tree(tmp_path):
+    src = tmp_path / "src"
+    src.mkdir()
+
+    dst = tmp_path / "dst"
+    dst.mkdir()
+
+    Path(src / "file1").touch()
+    Path(src / "dir1").mkdir()
+    Path(src / "dir1" / "dir2").mkdir()
+    Path(src / "dir1" / "file2").touch()
+    Path(src / "dir1" / "file1").touch()
+    Path(src / "dir1" / "symlink1").symlink_to(src)
+
+    to_copy = {Path(src): ["dir1/file2", "dir1/symlink1"]}
+
+    copy_decompress_tree(to_copy, dst)
+
+    assert (dst / "dir1" / "file2").exists()
+    assert not (dst / "dir1" / "file1").exists()
+    assert not (dst / "dir1" / "symlink1").exists()
+
+    to_copy = {Path(src, "dir1", "dir2"): ["../file2", "../symlink1"]}
+
+    copy_decompress_tree(to_copy, dst / "dir1")
+
+    assert Path(dst, "file2").exists()
+    assert not Path(dst, "file1").exists()
 
 
 def test_copy_decompress_files_from_dir_v2(tmp_path, monkeypatch):
