@@ -1,6 +1,7 @@
+import pytest
 from prefect import flow
 from prefect.testing.utilities import prefect_test_harness
-import pytest
+
 
 @pytest.fixture(autouse=True, scope="session")
 def prefect_test_fixture():
