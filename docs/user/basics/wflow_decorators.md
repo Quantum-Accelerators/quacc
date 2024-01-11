@@ -66,7 +66,7 @@ A `#!Python @subflow` in quacc is any workflow that returns a list of job output
 
 === "Prefect"
 
-    Take a moment to read the Prefect documentation's ["Quickstart"](https://docs.prefect.io/latest/getting-started/quickstart/) and [Tutorials](https://docs.prefect.io/latest/tutorial/). Namely, you should understand the concept of a [`#!Python @task`](https://docs.prefect.io/latest/tutorial/tasks/) and a [`#!Python @flow`](https://docs.prefect.io/latest/tutorial/flows/), which describe individual compute tasks and workflows, respectively.
+    Take a moment to read the Prefect documentation's [Quickstart](https://docs.prefect.io/latest/getting-started/quickstart/) and [Tutorials](https://docs.prefect.io/latest/tutorial/). Namely, you should understand the concept of a [`#!Python @task`](https://docs.prefect.io/latest/tutorial/tasks/) and a [`#!Python @flow`](https://docs.prefect.io/latest/tutorial/flows/), which describe individual compute tasks and workflows, respectively.
 
     <center>
 
