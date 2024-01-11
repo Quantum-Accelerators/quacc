@@ -59,7 +59,7 @@ graph LR
         covalent start
         ```
 
-        While optional, it is advised to also set the `RESULTS_DIR` to a fixed location, e.g. `quacc set RESULTS_DIR /path/to/store/results`.
+        You may also wish to set the `RESULTS_DIR` to a fixed location as well.
 
     ```python
     import covalent as ct
