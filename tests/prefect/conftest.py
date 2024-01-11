@@ -21,7 +21,7 @@ if prefect:
         os.environ["QUACC_RESULTS_DIR"] = str(TEST_RESULTS_DIR)
         os.environ["QUACC_SCRATCH_DIR"] = str(TEST_SCRATCH_DIR)
 
-        @pytest.fixture(autouse=True, scope="module")
+        @pytest.fixture(autouse=True, scope="session")
         def prefect_test_fixture():
             with prefect_test_harness():
                 yield
