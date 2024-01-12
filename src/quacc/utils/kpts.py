@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
 def convert_pmg_kpts(
     pmg_kpts: PmgKpts, input_atoms: Atoms, force_gamma: bool = False
-) -> tuple[NDArray, bool]:
+) -> tuple[list[int], bool]:
     """
     Shortcuts for pymatgen k-point generation schemes.
 
@@ -107,4 +107,5 @@ def convert_pmg_kpts(
         kpts = max_pmg_kpts.kpts[0]
         gamma = max_pmg_kpts.style.name.lower() == "gamma"
 
+    kpts = [int(k) for k in kpts]
     return kpts, gamma

@@ -742,6 +742,7 @@ def test_kpoint_schemes():
     calc = Vasp(atoms, pmg_kpts={"kppa": 1000})
     assert calc.kpts == [10, 10, 10]
     assert calc.input_params["gamma"] is True
+    assert isinstance(calc.kpts[0], int)
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, preset="BulkSet", pmg_kpts={"kppa": 1000}, gamma=False)
