@@ -23,6 +23,7 @@ Additional contributions were made by the individuals listed [here](https://gith
 - [@samblau](https://github.com/samblau): Custom Q-Chem calculator, Q-Chem recipes.
 - [@tomdemeyere](https://github.com/tomdemeyere): Custom Espresso calculator, Espresso recipes.
 - [@ViktoriiaBaib](https://github.com/ViktoriiaBaib): Initial testing of quacc.
+- [@zulissimeta](https://github.com/zulissimeta): Dask support
 
 ## Inspiration
 
