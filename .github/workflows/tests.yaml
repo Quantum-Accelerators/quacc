@@ -119,8 +119,8 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install -r tests/requirements-${{ matrix.wflow_engine }}.txt
           pip install -r tests/requirements.txt
+          pip install -r tests/requirements-${{ matrix.wflow_engine }}.txt
           pip install starlette==0.32.0
           pip install pytest
 
