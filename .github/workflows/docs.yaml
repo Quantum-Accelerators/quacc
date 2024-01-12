@@ -35,7 +35,12 @@ jobs:
           pip install .[docs]
 
       - name: Build docs
-        run: mkdocs build --strict
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            mkdocs build --strict
+          else
+            mkdocs build
+          fi
         id: build_docs
 
       - name: Rebuild and deploy docs
