@@ -6,11 +6,11 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from ase import units
-from ase.filters import Filter
 from ase.io import read
 from ase.vibrations.data import VibrationsData
 
 from quacc import SETTINGS, __version__
+from quacc.atoms.core import get_final_atoms_from_dyn
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.schemas.prep import prep_next_run as prep_next_run_
 from quacc.utils.dicts import clean_task_doc, recursive_dict_merge
@@ -182,7 +182,7 @@ def summarize_opt_run(
         )
 
     initial_atoms = trajectory[0]
-    final_atoms = dyn.atoms.atoms if isinstance(dyn.atoms, Filter) else dyn.atoms
+    final_atoms = get_final_atoms_from_dyn(dyn)
 
     # Base task doc
     base_task_doc = summarize_run(

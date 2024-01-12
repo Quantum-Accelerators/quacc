@@ -10,16 +10,6 @@ In this section, we provide a few examples going through the entire process to d
 
 If you haven't done so already:
 
-=== "Parsl"
-
-    On the remote machine:
-
-    ```bash
-    pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
-    pip install quacc[parsl]
-    quacc set WORKFLOW_ENGINE parsl && quacc set CREATE_UNIQUE_DIR True
-    ```
-
 === "Covalent"
 
     On both the local and remote machines:
@@ -36,7 +26,7 @@ If you haven't done so already:
     covalent start
     ```
 
-    !!! Note "For NERSC Users"
+    ??? Note "For NERSC Users"
 
         If using Perlmutter at NERSC, modify your `~/.bashrc` on the remote machine as follows since only the `$SCRATCH` directory supports file locking mechanisms:
 
@@ -54,6 +44,26 @@ If you haven't done so already:
     quacc set WORKFLOW_ENGINE dask && quacc set CREATE_UNIQUE_DIR True
     ```
 
+=== "Parsl"
+
+    On the remote machine:
+
+    ```bash
+    pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
+    pip install quacc[parsl]
+    quacc set WORKFLOW_ENGINE parsl && quacc set CREATE_UNIQUE_DIR True
+    ```
+
+=== "Prefect"
+
+    On the remote machine:
+
+    ```bash
+    pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
+    pip install quacc[prefect]
+    quacc set WORKFLOW_ENGINE prefect && quacc set CREATE_UNIQUE_DIR True
+    ```
+
 === "Jobflow"
 
     On both the local and remote machines:
@@ -67,6 +77,113 @@ If you haven't done so already:
 ## Example
 
 When deploying calculations for the first time, it's important to start simple, which is why you should try to run a sample EMT workflow first.
+
+=== "Covalent"
+
+    Run the following code on the local machine:
+
+    ```python
+    import covalent as ct
+    from ase.build import bulk
+    from quacc import flow
+    from quacc.recipes.emt.core import relax_job, static_job
+
+    username = "MyUserName"
+    account = "MyAccountName"
+
+    executor = ct.executor.HPCExecutor(
+        username=username,
+        address="perlmutter-p1.nersc.gov",
+        ssh_key_file="~/.ssh/nersc",
+        cert_file="~/.ssh/nersc-cert.pub",
+        instance="slurm",
+        resource_spec_kwargs={
+            "node_count": 1,
+            "processes_per_node": 1,
+        },
+        job_attributes_kwargs={
+            "duration": 10,
+            "project_name": account,
+            "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
+        },
+        remote_conda_env="quacc",
+        remote_workdir="$SCRATCH/quacc",
+        create_unique_workdir=True,
+        cleanup=False,
+    )
+
+
+    @flow(executor=executor)
+    def workflow(atoms):
+        relax_output = relax_job(atoms)
+        return static_job(relax_output["atoms"])
+
+
+    atoms = bulk("Cu")
+    dispatch_id = ct.dispatch(workflow)(atoms)
+    result = ct.get_result(dispatch_id, wait=True)
+    print(result)
+    ```
+
+    ??? Tip "Debugging"
+
+        The most common cause of issues is related to the job scheduler details (i.e. the `resource_spec_kwargs` and the `job_attributes_kwargs`). If your job fails on the remote machine, check the files left behind in the working directory as well as the `~/.psij` directory for a history and various log files associated with your attempted job submissions.
+
+=== "Dask"
+
+    From an interactive resource like a Jupyter Notebook or IPython kernel on the login node of the remote machine, run the following to instantiate a Dask [`SLURMCluster`](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html):
+
+    ```python
+    from dask.distributed import Client
+    from dask_jobqueue import SLURMCluster
+
+    n_slurm_jobs = 1
+    n_nodes_per_calc = 1
+    n_cores_per_node = 48
+    mem_per_node = "64 GB"
+
+    cluster_kwargs = {
+        # Dask worker options
+        "n_workers": n_slurm_jobs,
+        "cores": n_cores_per_node,
+        "memory": mem_per_node,
+        # SLURM options
+        "shebang": "#!/bin/bash",
+        "account": "MyAccountName",  # (1)!
+        "walltime": "00:10:00",
+        "job_mem": "0",
+        "job_script_prologue": [
+            "source ~/.bashrc",
+            "conda activate quacc",
+        ],
+        "job_directives_skip": ["-n", "--cpus-per-task"],
+        "job_extra_directives": [f"-N {n_nodes_per_calc}", "-q debug", "-C cpu"],
+        "python": "python",
+    }
+
+    cluster = SLURMCluster(**cluster_kwargs)
+    client = Client(cluster)
+    ```
+
+    1. Make sure to replace this with the account name to charge.
+
+    Then run the following code:
+
+    ```python
+    from ase.build import bulk
+    from quacc.recipes.emt.core import relax_job, static_job
+
+
+    def workflow(atoms):
+        relax_output = relax_job(atoms)
+        return static_job(relax_output["atoms"])
+
+
+    atoms = bulk("Cu")
+    delayed = workflow(atoms)
+    result = client.submit(delayed).result()
+    print(result)
+    ```
 
 === "Parsl"
 
@@ -207,58 +324,7 @@ When deploying calculations for the first time, it's important to start simple, 
         )
     ```
 
-=== "Covalent"
-
-    Run the following code on the local machine:
-
-    ```python
-    import covalent as ct
-    from ase.build import bulk
-    from quacc import flow
-    from quacc.recipes.emt.core import relax_job, static_job
-
-    username = "MyUserName"
-    account = "MyAccountName"
-
-    executor = ct.executor.HPCExecutor(
-        username=username,
-        address="perlmutter-p1.nersc.gov",
-        ssh_key_file="~/.ssh/nersc",
-        cert_file="~/.ssh/nersc-cert.pub",
-        instance="slurm",
-        resource_spec_kwargs={
-            "node_count": 1,
-            "processes_per_node": 1,
-        },
-        job_attributes_kwargs={
-            "duration": 10,
-            "project_name": account,
-            "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
-        },
-        remote_conda_env="quacc",
-        remote_workdir="$SCRATCH/quacc",
-        create_unique_workdir=True,
-        cleanup=False,
-    )
-
-
-    @flow(executor=executor)
-    def workflow(atoms):
-        relax_output = relax_job(atoms)
-        return static_job(relax_output["atoms"])
-
-
-    atoms = bulk("Cu")
-    dispatch_id = ct.dispatch(workflow)(atoms)
-    result = ct.get_result(dispatch_id, wait=True)
-    print(result)
-    ```
-
-    !!! Tip "Debugging"
-
-        The most common cause of issues is related to the job scheduler details (i.e. the `resource_spec_kwargs` and the `job_attributes_kwargs`). If your job fails on the remote machine, check the files left behind in the working directory as well as the `~/.psij` directory for a history and various log files associated with your attempted job submissions.
-
-=== "Dask"
+=== "Prefect"
 
     From an interactive resource like a Jupyter Notebook or IPython kernel on the login node of the remote machine, run the following to instantiate a Dask [`SLURMCluster`](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html):
 
@@ -300,19 +366,22 @@ When deploying calculations for the first time, it's important to start simple, 
 
     ```python
     from ase.build import bulk
+    from prefect_dask import DaskTaskRunner
+    from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
 
-
+    @flow(task_runner=DaskTaskRunner(address=client.scheduler.address))  # (1)!
     def workflow(atoms):
         relax_output = relax_job(atoms)
         return static_job(relax_output["atoms"])
 
 
     atoms = bulk("Cu")
-    delayed = workflow(atoms)
-    result = client.submit(delayed).result()
-    print(result)
+    future = workflow(atoms)
+    print(future.result())
     ```
+
+    1. If preferred, it is also possible to instantiate a one-time, temporary Dask cluster via the `DaskTaskRunner` rather than connecting to an existing Dask cluster.
 
 === "Jobflow"
 
@@ -340,5 +409,3 @@ When deploying calculations for the first time, it's important to start simple, 
     ```bash
     qlaunch rapidfire -m 1
     ```
-
-For an example involving a code with more complex settings, refer to the [VASP example](../advanced/vasp_hpc.md).

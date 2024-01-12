@@ -11,7 +11,7 @@ If you are not yet familiar with the ASE [`Atoms`](https://wiki.fysik.dtu.dk/ase
     Since we are not using a workflow engine for these examples, run the following in the command line:
 
     ```bash
-    quacc set WORKFLOW_ENGINE local
+    quacc set WORKFLOW_ENGINE null
     ```
 
 ## Examples

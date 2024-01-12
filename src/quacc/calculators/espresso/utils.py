@@ -12,9 +12,8 @@ def get_pseudopotential_info(
     pp_dict: dict[str, Any], atoms: Atoms
 ) -> tuple[float, float, dict[str, str]]:
     """
-    Function that parses the pseudopotentials and cutoffs from a preset file.
-    The cutoffs are taken from the largest value of the cutoffs among the elements
-    present.
+    Function that parses the pseudopotentials and cutoffs from a preset file. The
+    cutoffs are taken from the largest value of the cutoffs among the elements present.
 
     Parameters
     ----------

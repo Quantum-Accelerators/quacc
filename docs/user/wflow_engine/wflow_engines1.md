@@ -14,40 +14,6 @@ graph LR
   A[Input] --> B(Relax) --> C[Output];
 ```
 
-=== "Parsl"
-
-    !!! Important
-
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md) and load the default Parsl configuration:
-
-        ```bash title="terminal"
-        quacc set WORKFLOW_ENGINE parsl
-        ```
-
-        ```python title="python"
-        import parsl
-
-        parsl.load()
-        ```
-
-    ```python
-    from ase.build import bulk
-    from quacc.recipes.emt.core import relax_job
-
-    # Make an Atoms object of a bulk Cu structure
-    atoms = bulk("Cu")
-
-    # Call the PythonApp
-    future = relax_job(atoms)  # (1)!
-
-    # Print result
-    print(future.result())  # (2)!
-    ```
-
-    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here. We also did not need to use a `#!Python @flow` decorator because Parsl does not have an analogous decorator.
-
-    2. The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object.
-
 === "Covalent"
 
     !!! Important
@@ -58,6 +24,8 @@ graph LR
         quacc set WORKFLOW_ENGINE covalent
         covalent start
         ```
+
+        You may also wish to set the `RESULTS_DIR` to a fixed location as well.
 
     ```python
     import covalent as ct
@@ -128,6 +96,77 @@ graph LR
     1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here. We also did not need to use a `#!Python @flow` decorator because Dask does not have an analogous decorator. At this point, we have a `Delayed` object.
 
     2. Calling `client.compute(delayed)` dispatches the compute job to the active Dask cluster and returns a `Future`. The use of `.result()` serves to block any further calculations from running and resolves the `Future`. You could also achieve the same result by doing `#!Python delayed.compute()`, which will dispatch and resolve the `Future` as one action. This is identical to `#!Python result = dask.compute(delayed)[0]`, where the `[0]` indexing is needed because `#!Python dask.compute` always returns a tuple.
+
+=== "Parsl"
+
+    !!! Important
+
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md) and load the default Parsl configuration:
+
+        ```bash title="terminal"
+        quacc set WORKFLOW_ENGINE parsl
+        ```
+
+        ```python title="python"
+        import parsl
+
+        parsl.load()
+        ```
+
+    ```python
+    from ase.build import bulk
+    from quacc.recipes.emt.core import relax_job
+
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
+
+    # Call the PythonApp
+    future = relax_job(atoms)  # (1)!
+
+    # Print result
+    print(future.result())  # (2)!
+    ```
+
+    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here. We also did not need to use a `#!Python @flow` decorator because Parsl does not have an analogous decorator.
+
+    2. The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object.
+
+=== "Prefect"
+
+    !!! Important
+
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md):
+
+        ```bash title="terminal"
+        quacc set WORKFLOW_ENGINE prefect
+        ```
+
+    ```python
+    from ase.build import bulk
+    from quacc import flow
+    from quacc.recipes.emt.core import relax_job
+
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
+
+    # Define the workflow
+    @flow
+    def workflow(atoms):
+        return relax_job(atoms)  # (1)!
+
+    # Dispatch the workflow
+    future = workflow(atoms)  # (2)!
+
+    # Fetch the result
+    result = future.result()  # (3)!
+    print(result)
+    ```
+
+    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
+
+    2. The workflow has been dispatched to the Prefect server at this point.
+
+    3. Finally, we fetch the result of the completed workflow.
 
 === "Redun"
 
@@ -203,22 +242,6 @@ graph LR
   B --> F(Slab Relax) --> J(Slab Static) --> K[Output];
 ```
 
-=== "Parsl"
-
-    ```python
-    from ase.build import bulk
-    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
-
-    # Define the Atoms object
-    atoms = bulk("Cu")
-
-    # Define the workflow
-    future = bulk_to_slabs_flow(atoms)
-
-    # Print the results
-    print(future.result())
-    ```
-
 === "Covalent"
 
     ```python
@@ -249,16 +272,44 @@ graph LR
     atoms = bulk("Cu")
 
     # Define the workflow
-    delayed = bulk_to_slabs_flow(atoms)  # (1)!
+    delayed = bulk_to_slabs_flow(atoms)
 
     # Print the results
-    result = client.gather(client.compute(delayed))  # (2)!
+    result = client.compute(delayed).result()
     print(result)
     ```
 
-    1. This has type `List[Delayed]`.
+=== "Parsl"
 
-    2. Running `#!Python client.compute(List[Delayed])` yields a `#!Python List[Future]` object. Calling `#!Python client.gather(List[Future])` will resolve the outputs from multiple `Future` objects. As an alternative, you could also do `#!Python result = dask.compute(delayed)[0]`, where the `[0]` indexing is needed because `#!Python dask.compute` always returns a tuple even when there is only one result.
+    ```python
+    from ase.build import bulk
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Define the workflow
+    future = bulk_to_slabs_flow(atoms)
+
+    # Print the results
+    print(future.result())
+    ```
+
+=== "Prefect"
+
+    ```python
+    from ase.build import bulk
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Dispatch the workflow
+    futures = bulk_to_slabs_flow(atoms)
+
+    # Print the results
+    results = [future.result() for future in futures]
+    ```
 
 === "Redun"
 

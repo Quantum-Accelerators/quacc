@@ -1,1 +1,1 @@
-"""Common workflows"""
+"""Common workflows."""

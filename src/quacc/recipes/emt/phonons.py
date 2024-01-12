@@ -1,10 +1,10 @@
-"""Phonon recipes for EMT"""
+"""Phonon recipes for EMT."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
 from quacc import flow
-from quacc.recipes.common.phonons import phonon_flow as phonon_flow_
+from quacc.recipes.common.phonons import phonon_flow as common_phonon_flow
 from quacc.recipes.emt.core import static_job
 from quacc.wflow_tools.customizers import customize_funcs
 
@@ -12,7 +12,6 @@ if TYPE_CHECKING:
     from typing import Any, Callable
 
     from ase.atoms import Atoms
-    from numpy.typing import ArrayLike
 
     from quacc.schemas._aliases.phonons import PhononSchema
 
@@ -20,7 +19,9 @@ if TYPE_CHECKING:
 @flow
 def phonon_flow(
     atoms: Atoms,
-    supercell_matrix: ArrayLike = ((2, 0, 0), (0, 2, 0), (0, 0, 2)),
+    supercell_matrix: tuple[
+        tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]
+    ] = ((2, 0, 0), (0, 2, 0), (0, 0, 2)),
     atom_disp: float = 0.01,
     symprec: float = 1e-5,
     t_step: float = 10,
@@ -72,7 +73,7 @@ def phonon_flow(
         "static_job", static_job, parameters=job_params, decorators=job_decorators
     )
 
-    return phonon_flow_(
+    return common_phonon_flow(
         atoms,
         static_job_,
         supercell_matrix=supercell_matrix,

@@ -20,20 +20,6 @@ A `#!Python @flow` in quacc is a collection of one or more jobs. It defines the 
 
 A `#!Python @subflow` in quacc is any workflow that returns a list of job outputs and where the number of jobs to be called is not necessarily known until runtime.
 
-=== "Parsl"
-
-    Take a moment to read the Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a [`#!Python python_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html#Python-Apps) and [`#!Python join_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html?highlight=join_app#Dynamic-workflows-with-apps-that-generate-other-apps), which describe individual compute tasks and dynamic job tasks, respectively.
-
-    <center>
-
-    | Quacc               | Parsl                  |
-    | ------------------- | ---------------------- |
-    | `#!Python @job`     | `#!Python @python_app` |
-    | `#!Python @flow`    | No effect              |
-    | `#!Python @subflow` | `#!Python @join_app`   |
-
-    </center>
-
 === "Covalent"
 
     Take a moment to learn about the main [Covalent Concepts](https://docs.covalent.xyz/docs/user-documentation/concepts/concepts-index), namely the [`#!Python @ct.electron`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#electron) and [`#!Python @ct.lattice`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#lattice) decorators, which describe individual compute tasks and workflows, respectively.
@@ -58,7 +44,37 @@ A `#!Python @subflow` in quacc is any workflow that returns a list of job output
     | ------------------- | --------------------------------- |
     | `#!Python @job`     | `#!Python @delayed`               |
     | `#!Python @flow`    | No effect                         |
-    | `#!Python @subflow` | `#!Python delayed(...).compute()` |
+    | `#!Python @subflow` | `#!Python @delayed`               |
+
+    </center>
+
+    Technically, there are some subtle differences between the `#!Python @delayed` decorator and the `quacc` equivalents, but for the purposes of this tutorial, you can think of them as similar.
+
+=== "Parsl"
+
+    Take a moment to read the Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a [`#!Python python_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html#Python-Apps) and [`#!Python join_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html?highlight=join_app#Dynamic-workflows-with-apps-that-generate-other-apps), which describe individual compute tasks and dynamic job tasks, respectively.
+
+    <center>
+
+    | Quacc               | Parsl                  |
+    | ------------------- | ---------------------- |
+    | `#!Python @job`     | `#!Python @python_app` |
+    | `#!Python @flow`    | No effect              |
+    | `#!Python @subflow` | `#!Python @join_app`   |
+
+    </center>
+
+=== "Prefect"
+
+    Take a moment to read the Prefect documentation's [Quickstart](https://docs.prefect.io/latest/getting-started/quickstart/) and [Tutorials](https://docs.prefect.io/latest/tutorial/). Namely, you should understand the concept of a [`#!Python @task`](https://docs.prefect.io/latest/tutorial/tasks/) and a [`#!Python @flow`](https://docs.prefect.io/latest/tutorial/flows/), which describe individual compute tasks and workflows, respectively.
+
+    <center>
+
+    | Quacc               | Prefect                |
+    | ------------------- | ---------------------- |
+    | `#!Python @job`     | `#!Python @task`       |
+    | `#!Python @flow`    | `#!Python @flow`       |
+    | `#!Python @subflow` | `#!Python @flow`       |
 
     </center>
 

@@ -1,6 +1,4 @@
-"""
-Parameter-related utilities for the Q-Chem calculator.
-"""
+"""Parameter-related utilities for the Q-Chem calculator."""
 from __future__ import annotations
 
 import logging
@@ -24,10 +22,10 @@ logger = logging.getLogger(__name__)
 
 def make_qc_input(qchem: QChem, atoms: Atoms) -> QCInput:
     """
-    Make a QCInput object. It will, by default, create a QCInput from
-    the QChem calculator kwargs. If `qchem.qchem_dict_set_params` is
-    specified, it will create a QCInput from a QChemDictSet, merging
-    the two QCInput objects and taking the latter as higher priority.
+    Make a QCInput object. It will, by default, create a QCInput from the QChem
+    calculator kwargs. If `qchem.qchem_dict_set_params` is specified, it will create a
+    QCInput from a QChemDictSet, merging the two QCInput objects and taking the latter
+    as higher priority.
 
     Parameters
     ----------

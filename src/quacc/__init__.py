@@ -1,6 +1,7 @@
 """Init data for quacc."""
 from __future__ import annotations
 
+import logging
 from importlib.metadata import version
 from typing import TYPE_CHECKING
 
@@ -57,8 +58,20 @@ Atoms.from_dict = atoms_from_dict
 # Load the settings
 SETTINGS = QuaccSettings()
 
-if SETTINGS.DEBUG:
-    import logging
+# Set logging info
+logger = logging.getLogger(__name__)
+level = logging.DEBUG if SETTINGS.DEBUG else logging.INFO
+logger.setLevel(level)
 
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
+# Monkeypatching for Prefect
+if SETTINGS.WORKFLOW_ENGINE == "prefect":
+    from prefect.futures import PrefectFuture
+
+    def _patched_getitem(self, index):
+        @job
+        def _getitem(future, index_):
+            return future[index_]
+
+        return _getitem(self, index)
+
+    PrefectFuture.__getitem__ = _patched_getitem

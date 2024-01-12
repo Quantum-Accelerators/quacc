@@ -1,1 +1,1 @@
-"""QE presets"""
+"""QE presets."""

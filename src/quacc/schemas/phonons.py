@@ -1,4 +1,4 @@
-"""Summarizer for phonopy"""
+"""Summarizer for phonopy."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -10,14 +10,21 @@ from quacc.utils.dicts import clean_task_doc, recursive_dict_merge
 from quacc.utils.files import get_uri
 from quacc.wflow_tools.db import results_to_db
 
+try:
+    import phonopy
+except ImportError:
+    phonopy = None
+
 if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
     from maggma.core import Store
-    from phonopy import Phonopy
 
     from quacc.schemas._aliases.phonons import PhononSchema
+
+    if phonopy:
+        from phonopy import Phonopy
 
 
 def summarize_phonopy(

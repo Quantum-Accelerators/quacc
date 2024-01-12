@@ -35,7 +35,7 @@ export QUACC_GULP_CMD="/path/to/gulp"
 export QUACC_GULP_LIB="/path/to/gulp-#.#.#/Libraries"
 ```
 
-!!! Tip "Receive a Compilation Error?"
+??? Tip "Receive a Compilation Error?"
 
     If you receive an error upon compilation, refer to [this forum post](https://matsci.org/t/installing-gulp/43158/18?u=arosen).
 
@@ -51,7 +51,6 @@ To use these potentials, you will need to install the corresponding packages. Th
 
 ```bash
 pip install quacc[ml]
-pip install git+https://github.com/ACEsuit/mace.git
 ```
 
 ## NewtonNet
@@ -84,17 +83,23 @@ conda install -c conda-forge openbabel
 
 ## Quantum ESPRESSO
 
-To use quacc with Quantum ESPRESSO, you will first need to download and compile [Quantum ESPRESSO](https://www.quantum-espresso.org/) or install it via conda as `conda install -c conda-forge qe`. You will also need to download the relevant [pseudopotentials](https://www.quantum-espresso.org/pseudopotentials/).
+To use quacc with Quantum ESPRESSO, you will first need to download and install [Quantum ESPRESSO](https://www.quantum-espresso.org/). This can be most easily down as follows:
 
-Additionally, you will need to define multiple environment variables. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md).
+```bash
+conda install -c conda-forge qe
+```
+
+You will also need to download the relevant [pseudopotentials](https://www.materialscloud.org/discover/sssp/table/efficiency).
+
+Finally, you will need to define multiple environment variables. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md).
 
 At minimum, you should define the `ESPRESSO_PSEUDO` setting:
 
 ```bash
-QUACC_ESPRESSO_PSEUDO="/path/to/pseudopotentials"
+export QUACC_ESPRESSO_PSEUDO="/path/to/pseudopotentials"
 ```
 
-Additionally, the various ESPRESSO binaries should be present in your `PATH`, or you should modify the `ESPRESSO_BIN_PATHS` quacc setting accordingly.
+The various ESPRESSO binaries should be present in your `PATH`, or you should modify the `ESPRESSO_BIN_PATHS` quacc setting accordingly.
 
 ## TBLite
 

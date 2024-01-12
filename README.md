@@ -4,10 +4,10 @@
 
 # `quacc` – The Quantum Accelerator 🦆
 
-![tests](https://github.com/quantum-accelerators/quacc/actions/workflows/tests.yaml/badge.svg)
 [![codecov](https://codecov.io/gh/Quantum-Accelerators/quacc/branch/main/graph/badge.svg?token=OJaOZAH30u)](https://codecov.io/gh/Quantum-Accelerators/quacc)
 [![DeepSource](https://app.deepsource.com/gh/Quantum-Accelerators/quacc.svg/?label=active+issues&token=Y1NxOLIuFFEqWdjawIYnJNde)](https://app.deepsource.com/gh/Quantum-Accelerators/quacc/?ref=repository-badge)
 ![Python - Version](https://img.shields.io/pypi/pyversions/quacc)
+![PyPI - Version](https://img.shields.io/pypi/v/quacc?color=blue&link=https%3A%2F%2Fpypi.org%2Fproject%2Fquacc%2F)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7720998.svg)](https://doi.org/10.5281/zenodo.7720998)
 
 `quacc` is a flexible platform for computational materials science 💎 and quantum chemistry 🧪 that is built for the big data era 🔥. It is maintained by the [Rosen Research Group](https://rosen.cbe.princeton.edu/) at Princeton University.

@@ -2,7 +2,7 @@ import os
 
 from ase.build import bulk, molecule
 
-from quacc import SETTINGS, Remove
+from quacc import SETTINGS
 from quacc.recipes.gulp.core import relax_job, static_job
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
@@ -46,7 +46,7 @@ def test_static_job(tmp_path, monkeypatch):
     assert "output xyz gulp.xyz" not in output["parameters"]["options"]
     assert "output cif gulp.cif" in output["parameters"]["options"]
 
-    output = static_job(atoms, keywords={"gwolf": Remove})
+    output = static_job(atoms, keywords={"#gwolf"})
     assert output["nsites"] == len(atoms)
     assert "gfnff" in output["parameters"]["keywords"]
     assert "gwolf" not in output["parameters"]["keywords"]

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import inspect
+import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -70,9 +71,9 @@ class QChem(FileIOCalculator):
         **fileiocalculator_kwargs,
     ) -> None:
         """
-        Initialize the Q-Chem calculator. Most of the input parameters here
-        are used to create a `pymatgen.io.qchem.inputs.QCInput` object. See
-        the documentation for that class for more information.
+        Initialize the Q-Chem calculator. Most of the input parameters here are used to
+        create a `pymatgen.io.qchem.inputs.QCInput` object. See the documentation for
+        that class for more information.
 
         Parameters
         ----------
@@ -281,8 +282,8 @@ class QChem(FileIOCalculator):
 
     def read_results(self) -> None:
         """
-        Read the Q-Chem output files. Update the .results and
-        .prev_orbital_coeffs attributes.
+        Read the Q-Chem output files. Update the .results and .prev_orbital_coeffs
+        attributes.
 
         Returns
         -------
@@ -304,7 +305,7 @@ class QChem(FileIOCalculator):
         """
 
         qchem_custodian_script = Path(inspect.getfile(qchem_custodian)).resolve()
-        return f"python {qchem_custodian_script}"
+        return f"{sys.executable} {qchem_custodian_script}"
 
     def _set_default_params(self) -> None:
         """

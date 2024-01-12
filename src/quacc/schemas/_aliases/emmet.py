@@ -138,7 +138,8 @@ class IonicStep(TypedDict):
 
 
 class FrequencyDependentDielectric(TypedDict):
-    """Type hint associated with emmet.core.vasp.calculation.FrequencyDependentDielectric."""
+    """Type hint associated with
+    emmet.core.vasp.calculation.FrequencyDependentDielectric."""
 
     real: list[list[float]]
     imaginary: list[list[float]]
@@ -146,7 +147,8 @@ class FrequencyDependentDielectric(TypedDict):
 
 
 class ElectronPhononDisplacedStructures(TypedDict):
-    """Type hint associated with emmet.core.vasp.calculation.ElectronPhononDisplacedStructures."""
+    """Type hint associated with
+    emmet.core.vasp.calculation.ElectronPhononDisplacedStructures."""
 
     temperatures: list[float]
     structures: list[Structure]

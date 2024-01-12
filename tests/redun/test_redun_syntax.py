@@ -1,12 +1,9 @@
 import pytest
 
-from quacc import SETTINGS, flow, job, strip_decorator, subflow
-
 redun = pytest.importorskip("redun")
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "redun",
-    reason="This test requires the Redun workflow engine",
-)
+
+
+from quacc import flow, job, strip_decorator, subflow
 
 
 @pytest.fixture()
@@ -33,6 +30,10 @@ def test_redun_decorators(tmp_path, monkeypatch, scheduler):
     def add_distributed(vals, c):
         return [add(val, c) for val in vals]
 
+    @subflow
+    def add_distributed2(vals, c, op):
+        return [op(val, c) for val in vals]
+
     @flow
     def workflow(a, b, c):
         return mult(add(a, b), c)
@@ -43,10 +44,26 @@ def test_redun_decorators(tmp_path, monkeypatch, scheduler):
         result2 = make_more(result1)
         return add_distributed(result2, c)
 
+    @flow
+    def dynamic_workflow2(a, b, c):
+        result1 = add(a, b)
+        result2 = make_more(result1)
+        return add_distributed2(result2, c, add)
+
+    @flow
+    def dynamic_workflow3(a, b, c):
+        result1 = add(a, b)
+        result2 = make_more(result1)
+        result3 = add_distributed(result2, c)
+        result4 = add_distributed(result3, c)
+        return add(result4[0], c)
+
     assert scheduler.run(add(1, 2)) == 3
     assert scheduler.run(mult(1, 2)) == 2
     assert scheduler.run(workflow(1, 2, 3)) == 9
     assert scheduler.run(dynamic_workflow(1, 2, 3)) == [6, 6, 6]
+    assert scheduler.run(dynamic_workflow2(1, 2, 3)) == [6, 6, 6]
+    assert scheduler.run(dynamic_workflow3(1, 2, 3)) == 12
 
 
 def test_strip_decorators():
