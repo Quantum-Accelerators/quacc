@@ -4,7 +4,6 @@
 
 # `quacc` – The Quantum Accelerator 🦆
 
-![tests](https://github.com/quantum-accelerators/quacc/actions/workflows/tests.yaml/badge.svg)
 [![codecov](https://codecov.io/gh/Quantum-Accelerators/quacc/branch/main/graph/badge.svg?token=OJaOZAH30u)](https://codecov.io/gh/Quantum-Accelerators/quacc)
 [![DeepSource](https://app.deepsource.com/gh/Quantum-Accelerators/quacc.svg/?label=active+issues&token=Y1NxOLIuFFEqWdjawIYnJNde)](https://app.deepsource.com/gh/Quantum-Accelerators/quacc/?ref=repository-badge)
 ![Python - Version](https://img.shields.io/pypi/pyversions/quacc)
