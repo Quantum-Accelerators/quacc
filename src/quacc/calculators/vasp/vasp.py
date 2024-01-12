@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import inspect
 import os
+import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -173,7 +174,7 @@ class Vasp(Vasp_):
         # Return Custodian executable command
         if self.use_custodian:
             run_vasp_custodian_file = Path(inspect.getfile(vasp_custodian)).resolve()
-            return f"python {run_vasp_custodian_file}"
+            return f"{sys.executable} {run_vasp_custodian_file}"
 
         # Return vanilla ASE command
         vasp_cmd = (
