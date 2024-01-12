@@ -6,7 +6,8 @@ from typing import TYPE_CHECKING
 from ase import Atoms
 
 ### Do we need to import from quacc at this point we can do it directly from ase
-from quacc.calculators.onetep.onetep import Onetep, OnetepProfile, OnetepTemplate
+from quacc.calculators.onetep.onetep import Onetep, OnetepProfile
+from ase.calculators.onetep import OnetepTemplate
 from quacc.runners.ase import run_calc
 from quacc.schemas.ase import summarize_run
 
