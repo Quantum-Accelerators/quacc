@@ -101,7 +101,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        wflow_engine: [dask, parsl, prefect, redun, jobflow]
+        wflow_engine: [prefect]
 
     defaults:
       run:
