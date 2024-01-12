@@ -38,7 +38,7 @@ def static_job(
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.vasp.vasp.Vasp`.
+        keys, refer to `ase.calculators.vasp.vasp.Vasp`.
 
     Returns
     -------
@@ -88,7 +88,7 @@ def relax_job(
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.vasp.vasp.Vasp`.
+        keys, refer to `ase.calculators.vasp.vasp.Vasp`.
 
     Returns
     -------
