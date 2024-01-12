@@ -18,8 +18,9 @@ if TYPE_CHECKING:
 @job
 def static_job(
     atoms: Atoms,
-    preset: str | None = "basic_pw",
+    preset: str | None = "sssp_1.3.0_pbe_efficiency",
     parallel_info: dict[str] | None = None,
+    test_run: bool = False,
     copy_files: str | Path | list[str | Path] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -37,6 +38,9 @@ def static_job(
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
+    test_run
+        If True, a test run is performed to check that the calculation input_data is correct or
+        to generate some files/info if needed.
     copy_files
         List of files to copy to the calculation directory. Useful for copying
         files from a previous calculation. This parameter can either be a string
@@ -64,7 +68,7 @@ def static_job(
     return base_fn(
         atoms,
         preset=preset,
-        template=EspressoTemplate("pw"),
+        template=EspressoTemplate("pw", test_run=test_run),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
@@ -76,9 +80,10 @@ def static_job(
 @job
 def relax_job(
     atoms: Atoms,
-    preset: str | None = "basic_pw",
+    preset: str | None = "sssp_1.3.0_pbe_efficiency",
     relax_cell: bool = False,
     parallel_info: dict[str] | None = None,
+    test_run: bool = False,
     copy_files: str | Path | list[str | Path] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -98,6 +103,9 @@ def relax_job(
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
+    test_run
+        If True, a test run is performed to check that the calculation input_data is correct or
+        to generate some files/info if needed.
     copy_files
         List of files to copy to the calculation directory. Useful for copying
         files from a previous calculation. This parameter can either be a string
@@ -129,7 +137,7 @@ def relax_job(
     return base_fn(
         atoms,
         preset=preset,
-        template=EspressoTemplate("pw"),
+        template=EspressoTemplate("pw", test_run=test_run),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
@@ -140,13 +148,16 @@ def relax_job(
 
 @job
 def post_processing_job(
-    prev_dir: str | Path, parallel_info: dict[str] | None = None, **calc_kwargs
+    prev_dir: str | Path,
+    parallel_info: dict[str] | None = None,
+    test_run: bool = False,
+    **calc_kwargs,
 ) -> RunSchema:
     """
     Function to carry out a basic pp.x calculation (post-processing).
     It is mainly used to extract the charge density from a previous pw.x calculation.
     and perform simple to complex post-processing on it. Fore more details please see
-    (https://www.quantum-espresso.org/Doc/INPUT_PP.html)
+    https://www.quantum-espresso.org/Doc/INPUT_PP.html
 
     Parameters
     ----------
@@ -183,7 +194,7 @@ def post_processing_job(
     }
 
     return base_fn(
-        template=EspressoTemplate("pp"),
+        template=EspressoTemplate("pp", test_run=test_run),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,

@@ -61,7 +61,7 @@ def qmof_relax_job(
         Recommended if starting from hypothetical structures or materials with
         very high starting forces.
     **calc_kwargs
-        Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
+        Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely. Applies for all jobs.
 
     Returns
@@ -115,7 +115,7 @@ def _prerelax(
     fmax
         Maximum force in eV/A.
     **kwargs
-        Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
+        Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely.
     Returns
     -------
@@ -153,7 +153,7 @@ def _loose_relax_positions(
     preset
         Preset to use from `quacc.calculators.vasp.presets`.
     **kwargs
-        Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
+        Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely.
 
     Returns
@@ -196,7 +196,7 @@ def _loose_relax_cell(
     preset
         Preset to use from `quacc.calculators.vasp.presets`.
     **calc_kwargs
-        Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
+        Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely.
 
     Returns
@@ -240,7 +240,7 @@ def _double_relax(
     relax_cell
         True if a volume relaxation should be performed.
     **calc_kwargs
-        Dictionary of custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
+        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely.
     Returns
     -------
@@ -296,7 +296,7 @@ def _static(atoms: Atoms, preset: str | None = "QMOFSet", **calc_kwargs) -> Vasp
     preset
         Preset to use from `quacc.calculators.presets.vasp`.
     **kwargs
-        Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
+        Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely.
 
     Returns

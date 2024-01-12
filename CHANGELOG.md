@@ -4,20 +4,54 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0]
+
+### Added
+
+- A new `grid_phonon` recipe in Espresso (@tomdemeyere)
+- Preliminary support for the Prefect workflow engine, again, but this time without it breaking everything
+
+### Changed
+
+- Raised the default logger level from `WARNING` to `INFO`
+
+### Fixed
+
+- Codes calling Custodian can be used in Jupyter Notebooks
+- Fixed an error in the Espresso `phonon_flow` when using the `master` branch of ASE
+- Fixed a few erroneous type hints
+- Fixed the `typer` depenendecy in `pyproject.toml` to be `typer[all]` like it was supposed to be
+- Fixed a bug when passing decorator keyword arguments when using Dask
+
+## [0.5.2]
+
+### Changed
+
+- ORCA and GULP recipes now use a more intuitive and concise `list[str]` input argument format instead of a `dict` format when overriding defaults
+
+### Fixed
+
+- Fixed concurrency issues with Dask subflows
+
 ## [0.5.1]
 
 ### Added
 
-- Adds `quacc.recipes.espresso.core.relax_job` and `quacc.recipes.espresso.core.post_processing_job`
+- Adds a new `ase_relax_job` for ORCA
+- Adds a new `relax_job` and `post_processing_job` for Quantum Espresso
 - `quacc.wflow_tools.customizers.strip_decorator` and `quacc.wflow_tools.customizers.redecorate` are imported in the base `__init__.py` for easy user access
+- The CLI now has _color_
 
 ### Changed
 
+- The test suite's SCRATCH_DIR and RESULTS_DIR are now fixed to a given location
+- The default Espresso preset has been changed to "sssp_1.3.0_pbe_efficiency"
 - To remove calculator defaults entirely, `quacc.Remove` is recommended in place of `None`
 - The `quacc.wflow_tools.customizers.strip_decorator` function is recommended instead of calling `.__wrapped__`
 
 ### Fixed
 
+- Fixed Dask subflows that were calling `.compute()`
 - Fixed various bugs in the Espresso calculator and recipes
 
 ## [0.5.0]

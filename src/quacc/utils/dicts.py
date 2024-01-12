@@ -1,6 +1,7 @@
 """Utility functions for dealing with dictionaries."""
 from __future__ import annotations
 
+from collections.abc import MutableMapping
 from copy import deepcopy
 from typing import TYPE_CHECKING
 
@@ -8,39 +9,61 @@ if TYPE_CHECKING:
     from typing import Any
 
 
-def recursive_dict_merge(*args) -> dict[str, Any]:
+class Remove:
     """
-    Recursively merge several dictionaries, taking the latter in the list as higher preference.
-    Also removes any entries that are `quacc.Remove` from the final dictionary.
+    A sentinel class used in quacc to mark a key in a dictionary for removal.
+
+    Note: This is more robust than using `None` as the sentinel value because
+    `None` is a valid value for many keyword arguments. Also, using `object()`
+    as the sentinel value is not robust because its value changes every time
+    it is instantiated, which means an `object()` provided by the user locally
+    will not match an `object()` instantiated on the remote machine.
+    """
+
+    def __init__(self):
+        raise NotImplementedError(
+            "Remove is a sentinel class and should not be instantiated."
+        )
+
+
+def recursive_dict_merge(
+    *dicts: dict[str, Any], remove_trigger: Any = Remove
+) -> dict[str, Any]:
+    """
+    Recursively merge several dictionaries, taking the latter in the list as higher
+    preference. Also removes any entries that have a valu of `remove_trigger` from the
+    final dictionary.
+
+    This function should be used instead of the | operator when merging nested dictionaries,
+    e.g. `{"a": {"b": 1}} | {"a": {"c": 2}}` will return `{"a": {"c": 2}}` whereas
+    `recursive_dict_merge({"a": {"b": 1}}, {"a": {"c": 2}})` will return `{"a": {"b": 1, "c": 2}}`.
 
     Parameters
     ----------
-    *args
+    *dicts
         Dictionaries to merge
+    remove_trigger
+        Value to that triggers removal of the entry
 
     Returns
     -------
     dict
         Merged dictionary
     """
-    old_dict = args[0]
-    for i in range(len(args) - 1):
-        merged = _recursive_dict_pair_merge(old_dict, args[i + 1])
+
+    old_dict = dicts[0]
+    for i in range(len(dicts) - 1):
+        merged = _recursive_dict_pair_merge(old_dict, dicts[i + 1])
         old_dict = safe_dict_copy(merged)
 
-    return remove_dict_entries(merged, Remove)
+    return remove_dict_entries(merged, remove_trigger=remove_trigger)
 
 
 def _recursive_dict_pair_merge(
-    dict1: dict[str, Any] | None, dict2: dict[str, Any] | None
-) -> dict[str, Any]:
+    dict1: MutableMapping[str, Any] | None, dict2: MutableMapping[str, Any] | None
+) -> MutableMapping[str, Any]:
     """
-    Recursively merges two dictionaries. If one of the inputs is `None`, then it is
-    treated as `{}`.
-
-    This function should be used instead of the | operator when merging nested dictionaries,
-    e.g. `{"a": {"b": 1}} | {"a": {"c": 2}}` will return `{"a": {"c": 2}}` whereas
-    `recursive_dict_merge({"a": {"b": 1}}, {"a": {"c": 2}})` will return `{"a": {"b": 1, "c": 2}}`.
+    Recursively merges two dictionaries.
 
     Parameters
     ----------
@@ -54,13 +77,16 @@ def _recursive_dict_pair_merge(
     dict
         Merged dictionary
     """
-    dict1 = dict1 or {}
-    dict2 = dict2 or {}
+
+    dict1 = dict1 or ({} if dict1 is None else dict1.__class__())
+    dict2 = dict2 or ({} if dict2 is None else dict2.__class__())
     merged = safe_dict_copy(dict1)
 
     for key, value in dict2.items():
         if key in merged:
-            if isinstance(merged[key], dict) and isinstance(value, dict):
+            if isinstance(merged[key], MutableMapping) and isinstance(
+                value, MutableMapping
+            ):
                 merged[key] = _recursive_dict_pair_merge(merged[key], value)
             else:
                 merged[key] = value
@@ -94,7 +120,7 @@ def remove_dict_entries(
     start_dict: dict[str, Any], remove_trigger: Any
 ) -> dict[str, Any]:
     """
-    For a given dictionary, recursively remove all items that are None.
+    For a given dictionary, recursively remove all items that are the `remove_trigger`.
 
     Parameters
     ----------
@@ -145,8 +171,8 @@ def sort_dict(start_dict: dict[str, Any]) -> dict[str, Any]:
 
 def clean_task_doc(start_dict: dict[str, Any]) -> dict[str, Any]:
     """
-    Clean up a task document dictionary by removing all entries
-    that are None and sorting the dictionary alphabetically by key.
+    Clean up a task document dictionary by removing all entries that are None and
+    sorting the dictionary alphabetically by key.
 
     Parameters
     ----------
@@ -159,20 +185,3 @@ def clean_task_doc(start_dict: dict[str, Any]) -> dict[str, Any]:
         Cleaned dictionary
     """
     return sort_dict(remove_dict_entries(start_dict, None))
-
-
-class Remove:
-    """
-    A sentinel class used in quacc to mark a key in a dictionary for removal.
-
-    Note: This is more robust than using `None` as the sentinel value because
-    `None` is a valid value for many keyword arguments. Also, using `object()`
-    as the sentinel value is not robust because its value changes every time
-    it is instantiated, which means an `object()` provided by the user locally
-    will not match an `object()` instantiated on the remote machine.
-    """
-
-    def __init__(self):
-        raise NotImplementedError(
-            "Remove is a sentinel class and should not be instantiated."
-        )

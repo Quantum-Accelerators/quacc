@@ -11,61 +11,6 @@ graph LR
   A[Input] --> B(Relax) --> C(Static) --> D[Output];
 ```
 
-=== "Parsl"
-
-    !!! Important
-
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md) and load the default Parsl configuration:
-
-        ```bash title="terminal"
-        quacc set WORKFLOW_ENGINE parsl
-        ```
-
-        ```python title="python"
-        import parsl
-
-        parsl.load()
-        ```
-
-    ```python
-    from ase.build import bulk
-    from quacc.recipes.emt.core import relax_job, static_job
-
-
-    # Define the workflow
-    def workflow(atoms):
-        # Define Job 1
-        future1 = relax_job(atoms)
-
-        # Define Job 2, which takes the output of Job 1 as input
-        future2 = static_job(future1["atoms"])  # (1)!
-
-        return future2
-
-
-    # Make an Atoms object of a bulk Cu structure
-    atoms = bulk("Cu")
-
-    # Dispatch the workflow
-    future = workflow(atoms)
-
-    # Fetch the result
-    result = future.result()
-    print(result)
-    ```
-
-    1. Parsl `PythonApp` objects will implicitly know to call `.result()` on any `AppFuture` it receives, and it is good to rely on this fact to avoid unnecessary blocking.
-
-    ??? Tip "Modifying the Decorator of a Pre-Made Job"
-
-        If you want to modify the decorator of a pre-made job, such as to modify the allowed executors of a given function, you can use the [quacc.wflow_tools.customizers.redecorate][] function:
-
-        ```python
-        from quacc import redecorate
-
-        relax_job = redecorate(relax_job, job(executors=["all"]))
-        ```
-
 === "Covalent"
 
     !!! Important
@@ -174,6 +119,106 @@ graph LR
     print(result)
     ```
 
+=== "Parsl"
+
+    !!! Important
+
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md) and load the default Parsl configuration:
+
+        ```bash title="terminal"
+        quacc set WORKFLOW_ENGINE parsl
+        ```
+
+        ```python title="python"
+        import parsl
+
+        parsl.load()
+        ```
+
+    ```python
+    from ase.build import bulk
+    from quacc.recipes.emt.core import relax_job, static_job
+
+
+    # Define the workflow
+    def workflow(atoms):
+        # Define Job 1
+        future1 = relax_job(atoms)
+
+        # Define Job 2, which takes the output of Job 1 as input
+        future2 = static_job(future1["atoms"])  # (1)!
+
+        return future2
+
+
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
+
+    # Dispatch the workflow
+    future = workflow(atoms)
+
+    # Fetch the result
+    result = future.result()
+    print(result)
+    ```
+
+    1. Parsl `PythonApp` objects will implicitly know to call `.result()` on any `AppFuture` it receives, and it is good to rely on this fact to avoid unnecessary blocking.
+
+    ??? Tip "Modifying the Decorator of a Pre-Made Job"
+
+        If you want to modify the decorator of a pre-made job, such as to modify the allowed executors of a given function, you can use the [quacc.wflow_tools.customizers.redecorate][] function:
+
+        ```python
+        from quacc import redecorate
+
+        relax_job = redecorate(relax_job, job(executors=["all"]))
+        ```
+
+=== "Prefect"
+
+    !!! Important
+
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md):
+
+        ```bash title="terminal"
+        quacc set WORKFLOW_ENGINE prefect
+        ```
+
+    ```python
+    from ase.build import bulk
+    from quacc import flow
+    from quacc.recipes.emt.core import relax_job, static_job
+
+
+    # Define the workflow
+    @flow
+    def workflow(atoms):
+        # Call Task 1
+        future1 = relax_job(atoms)
+
+        # Call Task 2, which takes the output of Task 1 as input
+        return static_job(future1["atoms"])  # (1)!
+
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
+
+    # Run the workflow with Prefect tracking
+    result = workflow(atoms).result()
+    print(result)
+    ```
+
+    1. Prefect `Task` objects will implicitly know to call `.result()` on any `PrefectFuture` it receives, and it is good to rely on this fact to avoid unnecessary blocking.
+
+    ??? Tip "Modifying the Decorator of a Pre-Made Job"
+
+        If you want to modify the decorator of a pre-made job, such as to modify the number of retries, you can use the [quacc.wflow_tools.customizers.redecorate][] function:
+
+        ```python
+        from quacc import redecorate
+
+        relax_job = redecorate(relax_job, job(retries=2))
+        ```
+
 === "Redun"
 
     !!! Important
@@ -265,35 +310,6 @@ graph LR
   A[Input] --> C(Relax) --> D[Output];
 ```
 
-=== "Parsl"
-
-    ```python
-    from ase.build import bulk, molecule
-    from quacc.recipes.emt.core import relax_job
-
-
-    # Define workflow
-    def workflow(atoms1, atoms2):
-        # Define two independent relaxation jobs
-        result1 = relax_job(atoms1)
-        result2 = relax_job(atoms2)
-
-        return {"result1": result1, "result2": result2}
-
-
-    # Define two Atoms objects
-    atoms1 = bulk("Cu")
-    atoms2 = molecule("N2")
-
-    # Define two independent relaxation jobs
-    futures = workflow(atoms1, atoms2)
-
-    # Fetch the results
-    result1 = futures["result1"].result()
-    result2 = futures["result2"].result()
-    print(result1, result2)
-    ```
-
 === "Covalent"
 
     ```python
@@ -350,6 +366,65 @@ graph LR
     # Fetch the results
     results = client.gather(client.compute(delayed))
     print(results)
+    ```
+
+=== "Parsl"
+
+    ```python
+    from ase.build import bulk, molecule
+    from quacc.recipes.emt.core import relax_job
+
+
+    # Define workflow
+    def workflow(atoms1, atoms2):
+        # Define two independent relaxation jobs
+        result1 = relax_job(atoms1)
+        result2 = relax_job(atoms2)
+
+        return {"result1": result1, "result2": result2}
+
+
+    # Define two Atoms objects
+    atoms1 = bulk("Cu")
+    atoms2 = molecule("N2")
+
+    # Define two independent relaxation jobs
+    futures = workflow(atoms1, atoms2)
+
+    # Fetch the results
+    result1 = futures["result1"].result()
+    result2 = futures["result2"].result()
+    print(result1, result2)
+    ```
+
+=== "Prefect"
+
+    ```python
+    from ase.build import bulk, molecule
+    from quacc import flow
+    from quacc.recipes.emt.core import relax_job
+
+
+    # Define workflow
+    @flow
+    def workflow(atoms1, atoms2):
+        # Define two independent relaxation jobs
+        result1 = relax_job(atoms1)
+        result2 = relax_job(atoms2)
+
+        return {"result1": result1, "result2": result2}
+
+    # Define two Atoms objects
+    atoms1 = bulk("Cu")
+    atoms2 = molecule("N2")
+
+    # Dispatch the workflow
+    futures = workflow(atoms1, atoms2)
+
+    # Fetch the results
+    result1 = futures["result1"].result()
+    result2 = futures["result2"].result()
+    print(result1, result2)
     ```
 
 === "Redun"
@@ -421,47 +496,6 @@ graph LR
   C(Make Slabs) --> F(Slab Relax) --> H[Output]
   C(Make Slabs) --> G(Slab Relax) --> H[Output];
 ```
-
-=== "Parsl"
-
-    ```python
-    from ase.build import bulk
-    from quacc.recipes.emt.core import relax_job
-    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
-
-
-    # Define the workflow
-    def workflow(atoms):
-        relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)
-
-        return relaxed_slabs
-
-
-    # Define the Atoms object
-    atoms = bulk("Cu")
-
-    # Dispatch the workflow
-    future = workflow(atoms)
-
-    # Fetch the results
-    result = future.result()
-    print(result)
-    ```
-
-    ??? Tip "Selectively Modifying Job Decorators in a Pre-Made Flow"
-
-        If you want to modify the decorators of select jobs in a pre-made workflow, such as to modify the allowed executors of a given function, you can use the `job_decorators` keyword argument:
-
-        ```python
-        bulk_to_slabs_flow(atoms, job_decorators={"static_job": job(executors=["MyFavoriteExecutor"])})
-        ```
-
-        As a shorthand, all of the decorators can be modified at once using the "all" keyword:
-
-        ```python
-        bulk_to_slabs_flow(atoms, job_decorators={"all": job(executors=["MyFavoriteExecutor"])})
-        ```
 
 === "Covalent"
 
@@ -558,9 +592,93 @@ graph LR
     delayed = workflow(atoms)
 
     # Fetch the results
-    result = client.gather(client.compute(delayed))
+    result = client.compute(delayed).result()
     print(result)
     ```
+
+=== "Parsl"
+
+    ```python
+    from ase.build import bulk
+    from quacc.recipes.emt.core import relax_job
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+
+    # Define the workflow
+    def workflow(atoms):
+        relaxed_bulk = relax_job(atoms)
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)
+
+        return relaxed_slabs
+
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Dispatch the workflow
+    future = workflow(atoms)
+
+    # Fetch the results
+    result = future.result()
+    print(result)
+    ```
+
+    ??? Tip "Selectively Modifying Job Decorators in a Pre-Made Flow"
+
+        If you want to modify the decorators of select jobs in a pre-made workflow, such as to modify the allowed executors of a given function, you can use the `job_decorators` keyword argument:
+
+        ```python
+        bulk_to_slabs_flow(atoms, job_decorators={"static_job": job(executors=["MyFavoriteExecutor"])})
+        ```
+
+        As a shorthand, all of the decorators can be modified at once using the "all" keyword:
+
+        ```python
+        bulk_to_slabs_flow(atoms, job_decorators={"all": job(executors=["MyFavoriteExecutor"])})
+        ```
+
+=== "Prefect"
+
+    ```python
+    from ase.build import bulk
+    from quacc import flow
+    from quacc.recipes.emt.core import relax_job
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+
+    # Define the workflow
+    @flow
+    def workflow(atoms):
+        relaxed_bulk = relax_job(atoms)
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)
+
+        return relaxed_slabs
+
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Dispatch the workflow
+    futures = workflow(atoms)
+
+    # Fetch the results
+    results = [future.result() for future in futures]
+    print(result)
+    ```
+
+    ??? Tip "Selectively Modifying Job Decorators in a Pre-Made Flow"
+
+        If you want to modify the decorators of select jobs in a pre-made workflow, such as to modify the number of retries, you can use the `job_decorators` keyword argument:
+
+        ```python
+        bulk_to_slabs_flow(atoms, job_decorators={"static_job": job(retries=2)})
+        ```
+
+        As a shorthand, all of the decorators can be modified at once using the "all" keyword:
+
+        ```python
+        bulk_to_slabs_flow(atoms, job_decorators={"all": job(retries=2)})
+        ```
 
 === "Redun"
 

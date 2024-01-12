@@ -1,4 +1,4 @@
-"""Base jobs for Gaussian"""
+"""Base jobs for Gaussian."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

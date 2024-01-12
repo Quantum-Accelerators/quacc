@@ -1,8 +1,10 @@
-"""A wrapper around ASE's Vasp calculator that makes it better suited for high-throughput DFT."""
+"""A wrapper around ASE's Vasp calculator that makes it better suited for high-
+throughput DFT."""
 from __future__ import annotations
 
 import inspect
 import os
+import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -14,10 +16,10 @@ from ase.constraints import FixAtoms
 from quacc.calculators.vasp import vasp_custodian
 from quacc.calculators.vasp.io import load_vasp_yaml_calc
 from quacc.calculators.vasp.params import (
-    convert_pmg_kpts,
     get_param_swaps,
     remove_unused_flags,
     set_auto_dipole,
+    set_pmg_kpts,
 )
 from quacc.schemas.prep import set_magmoms
 
@@ -28,11 +30,9 @@ if TYPE_CHECKING:
 
 
 class Vasp(Vasp_):
-    """
-    This is a wrapper around the ASE Vasp calculator that adjusts INCAR parameters
+    """This is a wrapper around the ASE Vasp calculator that adjusts INCAR parameters
     on-the-fly, allows for ASE to run VASP via Custodian, and supports several automatic
-    k-point generation schemes from Pymatgen.
-    """
+    k-point generation schemes from Pymatgen."""
 
     def __init__(
         self,
@@ -87,27 +87,8 @@ class Vasp(Vasp_):
             A dictionary of elemental initial magnetic moments to pass to
             [quacc.schemas.prep.set_magmoms][], e.g. `{"Fe": 5, "Ni": 4}`.
         pmg_kpts
-            An automatic k-point generation scheme from Pymatgen. Options include:
-
-            - {"line_density": float}. This will call
-            `pymatgen.symmetry.bandstructure.HighSymmKpath`
-                with `path_type="latimer_munro"`. The `line_density` value will be
-                set in the `.get_kpoints` attribute.
-
-            - {"kppvol": float}. This will call
-            `pymatgen.io.vasp.inputs.Kpoints.automatic_density_by_vol`
-                with the given value for `kppvol`.
-
-            - {"kppa": float}. This will call
-            `pymatgen.io.vasp.inputs.Kpoints.automatic_density`
-                with the given value for `kppa`.
-
-            - {"length_densities": [float, float, float]}. This will call
-            `pymatgen.io.vasp.inputs.Kpoints.automatic_density_by_lengths`
-                with the given value for `length_densities`.
-
-            If multiple options are specified, the most dense k-point scheme will be
-            chosen.
+            An automatic k-point generation scheme from Pymatgen. See
+            [quacc.utils.kpts.convert_pmg_kpts][] for details.
         auto_dipole
             If True, will automatically set dipole moment correction parameters
             based on the center of mass (in the c dimension by default).
@@ -192,7 +173,7 @@ class Vasp(Vasp_):
         # Return Custodian executable command
         if self.use_custodian:
             run_vasp_custodian_file = Path(inspect.getfile(vasp_custodian)).resolve()
-            return f"python {run_vasp_custodian_file}"
+            return f"{sys.executable} {run_vasp_custodian_file}"
 
         # Return vanilla ASE command
         vasp_cmd = (
@@ -260,7 +241,7 @@ class Vasp(Vasp_):
 
         # Make automatic k-point mesh
         if self.pmg_kpts and not self.user_calc_params.get("kpts"):
-            self.user_calc_params = convert_pmg_kpts(
+            self.user_calc_params = set_pmg_kpts(
                 self.user_calc_params, self.pmg_kpts, self.input_atoms
             )
 

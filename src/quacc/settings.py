@@ -36,7 +36,7 @@ class QuaccSettings(BaseSettings):
     do this as well.
 
     The variables can also be modified individually though environment variables by
-    using the "QUACC" prefix. e.g. QUACC_SCRATCH_DIR=/path/to/scratch.
+    using the "QUACC" prefix. e.g. `export QUACC_SCRATCH_DIR=/path/to/scratch`.
     """
 
     CONFIG_FILE: Path = Field(
@@ -54,7 +54,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
 
     WORKFLOW_ENGINE: Optional[
-        Literal["covalent", "dask", "parsl", "redun", "jobflow", "local"]
+        Literal["covalent", "dask", "parsl", "prefect", "redun", "jobflow", "local"]
     ] = Field(installed_engine, description=("The workflow manager to use, if any."))
 
     # ---------------------------
@@ -106,6 +106,13 @@ class QuaccSettings(BaseSettings):
     )
 
     # ---------------------------
+    # Prefect Settings
+    # ---------------------------
+    PREFECT_AUTO_SUBMIT: bool = Field(
+        True, description="Whether to auto-submit tasks to the task runner."
+    )
+
+    # ---------------------------
     # ORCA Settings
     # ---------------------------
     ORCA_CMD: Path = Field(
@@ -119,21 +126,23 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # ESPRESSO Settings
     # ---------------------------
-    ESPRESSO_BIN_PATHS: dict[str, Path] = Field(
+    ESPRESSO_BIN_DIR: Path = Field(
+        Path(), description="Base path to the espresso binaries."
+    )
+    ESPRESSO_BINARIES: dict[str, str] = Field(
         {
-            "pw": Path("pw.x"),
-            "ph": Path("ph.x"),
-            "neb": Path("neb.x"),
-            "q2r": Path("q2r.x"),
-            "matdyn": Path("matdyn.x"),
-            "dynmat": Path("dynmat.x"),
-            "bands": Path("bands.x"),
-            "projwfc": Path("projwfc.x"),
-            "pp": Path("pp.x"),
-            "wannier90": Path("wannier90.x"),
+            "pw": "pw.x",
+            "ph": "ph.x",
+            "neb": "neb.x",
+            "q2r": "q2r.x",
+            "matdyn": "matdyn.x",
+            "dynmat": "dynmat.x",
+            "bands": "bands.x",
+            "projwfc": "projwfc.x",
+            "pp": "pp.x",
+            "wannier90": "wannier90.x",
         },
-        description="Name for each espresso binary and its corresponding path. "
-        "By default, the binaries are assumed to be in PATH.",
+        description="Name for each espresso binary.",
     )
     ESPRESSO_PSEUDO: Optional[Path] = Field(
         None, description=("Path to a pseudopotential library for espresso.")
@@ -350,7 +359,7 @@ class QuaccSettings(BaseSettings):
     @field_validator("WORKFLOW_ENGINE")
     @classmethod
     def validate_workflow_engine(cls, v: Optional[str]) -> Optional[str]:
-        """Validate the workflow engine"""
+        """Validate the workflow engine."""
         return None if v and v.lower() == "local" else v
 
     @field_validator("RESULTS_DIR", "SCRATCH_DIR")
@@ -385,7 +394,7 @@ class QuaccSettings(BaseSettings):
 
     @field_validator("PRIMARY_STORE")
     def generate_store(cls, v: Union[str, Store]) -> Store:
-        """Generate the Maggma store"""
+        """Generate the Maggma store."""
         from monty.json import MontyDecoder
 
         return MontyDecoder().decode(v) if isinstance(v, str) else v

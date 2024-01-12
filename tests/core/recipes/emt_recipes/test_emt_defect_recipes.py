@@ -1,7 +1,8 @@
 import pytest
-from ase.build import bulk
 
 pytest.importorskip("pymatgen.analysis.defects")
+
+from ase.build import bulk
 
 from quacc.recipes.emt.defects import bulk_to_defects_flow
 

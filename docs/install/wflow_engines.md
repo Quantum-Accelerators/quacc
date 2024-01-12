@@ -8,18 +8,6 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     If you don't want to use a workflow engine, you can simply skip this section.
 
-=== "Parsl"
-
-    **Installation**
-
-    To install Parsl, run the following:
-
-    ```bash
-    pip install quacc[parsl]
-    ```
-
-    Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
-
 === "Covalent"
 
     **Installation**
@@ -40,7 +28,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
         Once you start scaling up your calculations, we recommend hosting the Covalent server on a dedicated machine or using [Covalent Cloud](https://www.covalent.xyz/cloud/). Refer to the [Covalent Deployment Guide](https://docs.covalent.xyz/docs/user-documentation/server-deployment) for details.
 
-    !!! Note "For NERSC Users"
+    ??? Note "For NERSC Users"
 
         If you are using Perlmutter at NERSC, you will need to adjust the Covalent configuration directory because the home directory does not support file locking:
 
@@ -56,6 +44,37 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     ```bash
     pip install quacc[dask]
+    ```
+
+=== "Parsl"
+
+    **Installation**
+
+    To install Parsl, run the following:
+
+    ```bash
+    pip install quacc[parsl]
+    ```
+
+    Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
+
+=== "Prefect"
+
+    **Installation**
+
+    To install Prefect, run the following:
+
+    ```bash
+    pip install quacc[prefect]
+    pip install starlette==0.32.0 # (1)!
+    ```
+
+    1. This is a temporary workaround to resolve a dependency conflict.
+
+    To connect to Prefect Cloud, run the following as well:
+
+    ```bash
+    prefect cloud login
     ```
 
 === "Redun"

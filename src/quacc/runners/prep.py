@@ -1,4 +1,4 @@
-"""Prepration for runners"""
+"""Prepration for runners."""
 from __future__ import annotations
 
 import os
@@ -12,7 +12,7 @@ from monty.shutil import gzip_dir, remove
 from quacc import SETTINGS
 from quacc.utils.files import (
     copy_decompress_files,
-    copy_decompress_files_from_dir,
+    copy_decompress_tree,
     make_unique_dir,
 )
 
@@ -64,13 +64,12 @@ def calc_setup(
         symlink.symlink_to(tmpdir, target_is_directory=True)
 
     # Copy files to tmpdir and decompress them if needed
+    if isinstance(copy_files, dict):
+        copy_decompress_tree(copy_files, tmpdir)
     if isinstance(copy_files, list):
         copy_decompress_files(copy_files, tmpdir)
     elif isinstance(copy_files, (str, Path)):
-        if Path(copy_files).is_dir():
-            copy_decompress_files_from_dir(copy_files, tmpdir)
-        else:
-            copy_decompress_files([copy_files], tmpdir)
+        copy_decompress_files([copy_files], tmpdir)
 
     os.chdir(tmpdir)
 

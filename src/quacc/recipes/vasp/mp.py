@@ -56,8 +56,8 @@ def mp_prerelax_job(
         File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
-        `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the [quacc.calculators.vasp.vasp.Vasp][] calculator.
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to `ase.calculators.vasp.vasp.Vasp`.
 
     Returns
     -------
@@ -106,8 +106,8 @@ def mp_relax_job(
         File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
     **calc_kwargs
         Dictionary of custom kwargs for the Vasp calculator. Set a value to
-        `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the [quacc.calculators.vasp.vasp.Vasp][] calculator.
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to `ase.calculators.vasp.vasp.Vasp`.
 
     Returns
     -------

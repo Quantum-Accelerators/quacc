@@ -4,6 +4,59 @@ As a complement to the [toy EMT example](../wflow_engine/executors2.md) describe
 
 First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc` of your remote machine as described in the [Calculator Setup guide](../../install/codes.md). When you're done, follow the steps below.
 
+=== "Covalent"
+
+    Run the following code on the local machine:
+
+    ```python
+    import covalent as ct
+    from ase.build import bulk
+    from quacc import flow
+    from quacc.recipes.vasp.core import relax_job, static_job
+
+    username = "MyUserName"
+    account = "MyAccountName"
+    n_nodes = 1
+    n_cores_per_node = 128
+
+    executor = ct.executor.HPCExecutor(
+        username=username,
+        address="perlmutter-p1.nersc.gov",
+        ssh_key_file="~/.ssh/nersc",
+        cert_file="~/.ssh/nersc-cert.pub",
+        instance="slurm",
+        resource_spec_kwargs={
+            "node_count": n_nodes,
+            "processes_per_node": n_cores_per_node,
+        },
+        job_attributes_kwargs={
+            "duration": 30,
+            "project_name": account,
+            "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
+        },
+        pre_launch_cmds=["module load vasp/6.4.1-cpu"],
+        environment={
+            "QUACC_VASP_PARALLEL_CMD": f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
+        },
+        remote_conda_env="quacc",
+        remote_workdir="$SCRATCH/quacc",
+        create_unique_workdir=True,
+        cleanup=False,
+    )
+
+
+    @flow(executor=executor)
+    def workflow(atoms):
+        relax_output = relax_job(atoms)
+        return static_job(relax_output["atoms"])
+
+
+    atoms = bulk("C")
+    dispatch_id = ct.dispatch(workflow)(atoms)
+    result = ct.get_result(dispatch_id, wait=True)
+    print(result)
+    ```
+
 === "Parsl"
 
     From an interactive resource like a Jupyter Notebook or IPython kernel from the login node on the remote machine:
@@ -61,59 +114,6 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     future1 = workflow(bulk("C"))
     future2 = workflow(bulk("Cu"))
     print(future1.result(), future2.result())
-    ```
-
-=== "Covalent"
-
-    Run the following code on the local machine:
-
-    ```python
-    import covalent as ct
-    from ase.build import bulk
-    from quacc import flow
-    from quacc.recipes.vasp.core import relax_job, static_job
-
-    username = "MyUserName"
-    account = "MyAccountName"
-    n_nodes = 1
-    n_cores_per_node = 128
-
-    executor = ct.executor.HPCExecutor(
-        username=username,
-        address="perlmutter-p1.nersc.gov",
-        ssh_key_file="~/.ssh/nersc",
-        cert_file="~/.ssh/nersc-cert.pub",
-        instance="slurm",
-        resource_spec_kwargs={
-            "node_count": n_nodes,
-            "processes_per_node": n_cores_per_node,
-        },
-        job_attributes_kwargs={
-            "duration": 30,
-            "project_name": account,
-            "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
-        },
-        pre_launch_cmds=["module load vasp/6.4.1-cpu"],
-        environment={
-            "QUACC_VASP_PARALLEL_CMD": f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
-        },
-        remote_conda_env="quacc",
-        remote_workdir="$SCRATCH/quacc",
-        create_unique_workdir=True,
-        cleanup=False,
-    )
-
-
-    @flow(executor=executor)
-    def workflow(atoms):
-        relax_output = relax_job(atoms)
-        return static_job(relax_output["atoms"])
-
-
-    atoms = bulk("C")
-    dispatch_id = ct.dispatch(workflow)(atoms)
-    result = ct.get_result(dispatch_id, wait=True)
-    print(result)
     ```
 
 === "Jobflow"

@@ -6,26 +6,14 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
 !!! Tip "Recommendations"
 
-    If you are new to workflow engines, we recommend trying either **Parsl** or **Covalent**. If you have a need for speed and appreciate flexibility, Parsl may be the choice for you. If you are looking for a visual dashboard with an emphasis on distributed compute resources, Covalent may be worth considering.
+    Not sure which to choose? In general, new users of workflow orchestration tools should probably start with **Parsl**. The more savvy HPC users can probably start with **Prefect** or **Covalent** depending on your needs. Some additional opinions on the matter:
 
-=== "Parsl"
-
-    [Parsl](https://github.com/Parsl/parsl) is a workflow management solution out of Argonne National Laboratory, the University of Chicago, and the University of Illinois. It is well-adapted for running on virtually any HPC environment with a job scheduler.
-
-    Pros:
-
-    - Extremely configurable and deployable for virtually any HPC environment
-    - Quite simple to define the workflows
-    - Active community, particularly across academia
-    - Well-suited for [pilot jobs](https://en.wikipedia.org/wiki/Pilot_job) and advanced queuing schemes
-    - Thorough documentation
-    - Does not rely on maintaining a centralized server
-
-    Cons:
-
-    - The number of different terms can be slightly overwhelming to those less familiar with HPC
-    - Understanding the various configuration options for your HPC setup can be an initial hurdle
-    - Monitoring job progress is more challenging and less detailed than other solutions
+    - Covalent: You want a visual dashboard and are prioritizing the use of distributed compute resources.
+    - Dask: You already are familiar with the Dask ecosystem and are happy to stick with it.
+    - Parsl: You want to run many workflows as fast as possible on one or more job scheduler-based HPC machines.
+    - Prefect: You want a visual dashboard with a robust workflow management platform and are already familiar with the concepts of workflow orchestration.
+    - Redun: You are running calculations on AWS.
+    - Jobflow: You are affiliated with the Materials Project or are already using Jobflow and/or FireWorks.
 
 === "Covalent"
 
@@ -33,17 +21,17 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
     Pros:
 
-    - Best-in-class visual dashboard for job monitoring
+    - Excellent visual dashboard for job monitoring
     - Easy to use in distributed, heterogeneous compute environments
     - Excellent documentation
     - Automatic and simple database integration
-    - The compute nodes do not need to be able to connect to the internet, unlike some of its competitors
+    - The compute nodes do not need to be able to connect to the internet
 
     Cons:
 
-    - Not as widely used as other workflow management solutions
-    - Only supports standard queuing schemes, limiting throughput
     - It requires a centralized server to be running continuously in order to manage the workflows
+    - Not as widely used as other workflow management solutions
+    - Only supports standard queuing schemes for job schedulers, limiting throughput
     - High-security HPC environments may be difficult to access via SSH with the centralized server approach
 
 === "Dask"
@@ -55,13 +43,53 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     - Extremely popular
     - Has significant support for running on HPC resources
     - It does not involve a centralized server or network connectivity
-    - Supports adaptive scaling of compute resources
+    - Supports adaptive scaling of compute resources and the powerful pilot job model
+    - The dashboard to monitor resource usage is very intuitive
 
     Cons:
 
-    - Retrieving the results of a workflow is not as straightforward as other solutions
+    - If the Dask cluster dies, there is no mechanism to gracefully recover the workflow history
     - Monitoring job progress is more challenging and less detailed than other solutions
     - The documentation, while comprehensive, can be difficult to follow given the various Dask components
+    - Calculations cannot be submitted remotely or across disparate compute resources
+
+=== "Parsl"
+
+    [Parsl](https://github.com/Parsl/parsl) is a workflow management solution out of Argonne National Laboratory, the University of Chicago, and the University of Illinois. It is well-adapted for running on virtually any HPC environment with a job scheduler.
+
+    Pros:
+
+    - Extremely configurable and deployable for virtually any HPC environment
+    - Quite simple to define the workflows and run them from a Jupyter Notebook
+    - Thorough documentation and active user community across academia
+    - Well-suited for [pilot jobs](https://en.wikipedia.org/wiki/Pilot_job) and advanced queuing schemes
+    - Does not rely on maintaining a centralized server
+
+    Cons:
+
+    - The number of different terms can be slightly overwhelming to those less familiar with HPC
+    - Monitoring job progress is more challenging and less detailed than other solutions
+    - Debugging failed workflows can be difficult
+    - The pilot job model is often a new concept to many HPC users that takes some time to understand
+
+=== "Prefect"
+
+    [Prefect](https://github.com/PrefectHQ/prefect) is a workflow orchestration tool that is popular in the data engineering community. It has an excellent dashboard for monitoring workflows.
+
+    Pros:
+
+    - Quite popular among the data engineering community
+    - Excellent web-based dashboard for monitoring workflow progress
+    - The free version of Prefect Cloud is reasonably generous
+    - Can use advanced queueing schemes to manage workflow execution
+    - New features are being added regularly and rapidly
+
+    Cons:
+
+    - For those who are less HPC-savvy, some of the concepts can be a bit technical
+    - If using Prefect Cloud, the compute nodes must have a network connection
+    - The dashboard, while useful for monitoring successes and failures, is not ideal for analyzing results
+    - The software is geared more towards data engineering than scientific computing, and that is reflected in the features and documentation
 
 === "Redun"
 
@@ -71,29 +99,34 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
     - Extremely simple syntax for defining workflows
     - Has strong support for task/result caching
-    - Useful console-based monitoring system
+    - Useful CLI-based monitoring system
+    - Very strong AWS support
 
     Cons:
 
-    - Currently lacks support for typical HPC job schedulers and platforms other than AWS
+    - Currently lacks support for typical HPC job schedulers
     - No user-friendly GUI for job monitoring
-    - Less active user community than some other options
+    - Does not have a particularly active user community
+    - Not updated frequently
 
 === "Jobflow"
 
     [Jobflow](https://github.com/materialsproject/jobflow) is developed and maintained by the Materials Project team at Lawrence Berkeley National Laboratory and serves as a seamless interface to [FireWorks](https://github.com/materialsproject/fireworks) or [Jobflow Remote](https://github.com/Matgenix/jobflow-remote) for dispatching and monitoring compute jobs.
 
-    **Jobflow**
+    !!! Warning
+
+        Jobflow is not currently compatible with the `#!Python @flow` or `#!Python @subflow` decorators used in many quacc recipes and so should only be used if necessary.
 
     Pros:
 
     - Native support for a variety of databases
     - Directly compatible with Atomate2
-    - Designed with materials science in mind
+    - Designed with materials science workflows in mind
     - Actively supported by the Materials Project team
 
     Cons:
 
-    - Is not compatible with the `#!Python @flow` decorator used in some quacc recipes
+    - Is not fully compatible with all the features of `quacc`
     - Parsing the output of a workflow is not as intuitive as other solutions
     - Defining dynamic workflows with Jobflow's `Response` object can be more complex than other solutions
+    - FireWorks is not the most user-friendly, and Jobflow Remote is in active development

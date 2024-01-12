@@ -7,11 +7,13 @@ from copy import deepcopy
 from typing import TYPE_CHECKING
 
 import numpy as np
+from ase.filters import Filter
 from ase.io.jsonio import encode
 from pymatgen.io.ase import AseAtomsAdaptor
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
+    from ase.optimize.optimize import Dynamics
 
 logger = logging.getLogger(__name__)
 
@@ -195,3 +197,20 @@ def check_charge_and_spin(
     )
 
     return mol.charge, mol.spin_multiplicity
+
+
+def get_final_atoms_from_dyn(dyn: Dynamics) -> Atoms:
+    """
+    Get the final atoms object from a dynamics run.
+
+    Parameters
+    ----------
+    dyn
+        ASE dynamics object
+
+    Returns
+    -------
+    atoms
+        Atoms object
+    """
+    return dyn.atoms.atoms if isinstance(dyn.atoms, Filter) else dyn.atoms

@@ -1,3 +1,4 @@
+"""Custom Espresso calculator and template."""
 from __future__ import annotations
 
 import os
@@ -9,7 +10,12 @@ from ase.calculators.espresso import Espresso as Espresso_
 from ase.calculators.espresso import EspressoProfile
 from ase.calculators.espresso import EspressoTemplate as EspressoTemplate_
 from ase.io import read, write
-from ase.io.espresso import read_espresso_ph, write_espresso_ph, write_fortran_namelist
+from ase.io.espresso import (
+    Namelist,
+    read_espresso_ph,
+    write_espresso_ph,
+    write_fortran_namelist,
+)
 
 from quacc import SETTINGS
 from quacc.calculators.espresso.utils import get_pseudopotential_info
@@ -21,12 +27,10 @@ if TYPE_CHECKING:
 
 
 class EspressoTemplate(EspressoTemplate_):
-    """
-    This is a wrapper around the ASE Espresso template that allows for the use
-    of other binaries such as pw.x, ph.x, cp.x, etc.
-    """
+    """This is a wrapper around the ASE Espresso template that allows for the use of
+    other binaries such as pw.x, ph.x, cp.x, etc."""
 
-    def __init__(self, binary: str = "pw") -> None:
+    def __init__(self, binary: str = "pw", test_run: bool = False) -> None:
         """
         Initialize the Espresso template.
 
@@ -34,7 +38,10 @@ class EspressoTemplate(EspressoTemplate_):
         ----------
         binary
             The name of the espresso binary to use. This is used to set the
-            input/output file names. By default we fall bacl on "pw".
+            input/output file names. By default we fall back to "pw".
+        test_run
+            If True, a test run is performed to check that the calculation
+            input_data is correct or to generate some files/info if needed.
 
         Returns
         -------
@@ -52,6 +59,8 @@ class EspressoTemplate(EspressoTemplate_):
             "wfcdir": os.environ.get("ESPRESSO_TMPDIR"),
         }
 
+        self.test_run = test_run
+
     def write_input(
         self,
         profile: EspressoProfile,
@@ -61,8 +70,8 @@ class EspressoTemplate(EspressoTemplate_):
         properties: Any,
     ) -> None:
         """
-        The function that should be used instead of the one in ASE EspressoTemplate
-        to write the input file. It calls a customly defined write function.
+        The function that should be used instead of the one in ASE EspressoTemplate to
+        write the input file. It calls a customly defined write function.
 
         Parameters
         ----------
@@ -85,10 +94,13 @@ class EspressoTemplate(EspressoTemplate_):
         directory = Path(directory)
         self._outdir_handler(parameters, directory)
 
+        if self.test_run:
+            self._test_run(parameters, directory)
+
         if self.binary == "pw":
             write(
-                filename=directory / self.inputname,
-                images=atoms,
+                directory / self.inputname,
+                atoms,
                 format="espresso-in",
                 pseudo_dir=str(profile.pseudo_path),
                 properties=properties,
@@ -103,12 +115,58 @@ class EspressoTemplate(EspressoTemplate_):
                     fd, binary=self.binary, properties=properties, **parameters
                 )
 
+        if self.binary == "pw":
+            write(
+                directory / self.inputname,
+                atoms,
+                format="espresso-in",
+                pseudo_dir=str(profile.pseudo_path),
+                properties=properties,
+                **parameters,
+            )
+        elif self.binary == "ph":
+            with Path.open(directory / self.inputname, "w") as fd:
+                write_espresso_ph(fd=fd, properties=properties, **parameters)
+        else:
+            with Path.open(directory / self.inputname, "w") as fd:
+                write_fortran_namelist(
+                    fd, binary=self.binary, properties=properties, **parameters
+                )
+
+    @staticmethod
+    def _test_run(parameters: dict[str, Any], directory: Path) -> dict[str, Any]:
+        """
+        Almost all QE binaries will do a test run if a file named <prefix>.EXIT is
+        present in the working directory. This function will create this file.
+
+        Parameters
+        ----------
+        parameters
+            input_data, which are needed to know the prefix
+        directory
+            The directory in which to write the EXIT file.
+
+        Returns
+        -------
+        None
+        """
+        input_data = parameters.get("input_data", {})
+        prefix = "pwscf"
+
+        for section in input_data:
+            for key in input_data[section]:
+                if key == "prefix":
+                    prefix = input_data[section][key]
+                    break
+
+        Path(directory, f"{prefix}.EXIT").touch()
+
     def read_results(self, directory: Path | str) -> dict[str, Any]:
         """
-        The function that should be used instead of the one in ASE EspressoTemplate
-        to read the output file. It calls a customly defined read function. It also
-        adds the "energy" key to the results dictionnary if it is not present. This
-        is needed if the calculation is not made with pw.x.
+        The function that should be used instead of the one in ASE EspressoTemplate to
+        read the output file. It calls a customly defined read function. It also adds
+        the "energy" key to the results dictionnary if it is not present. This is needed
+        if the calculation is not made with pw.x.
 
         Parameters
         ----------
@@ -139,11 +197,11 @@ class EspressoTemplate(EspressoTemplate_):
         self, parameters: dict[str, Any], directory: Path
     ) -> dict[str, Any]:
         """
-        Function that handles the various outdir of espresso binaries. If they are relative,
-        they are resolved against `directory`, which is the recommended approach.
-        If the user-supplied paths are absolute, they are resolved and checked
-        against `directory`, which is typically `os.getcwd()`. If they are not in `directory`,
-        they will be ignored.
+        Function that handles the various outdir of espresso binaries. If they are
+        relative, they are resolved against `directory`, which is the recommended
+        approach. If the user-supplied paths are absolute, they are resolved and checked
+        against `directory`, which is typically `os.getcwd()`. If they are not in
+        `directory`, they will be ignored.
 
         Parameters
         ----------
@@ -181,8 +239,9 @@ class EspressoTemplate(EspressoTemplate_):
 class Espresso(Espresso_):
     """
     This is a wrapper around the ASE Espresso calculator that adjusts input_data
-    parameters and allows for the use of presets. Templates are used to set
-    the binary and input/output file names.
+    parameters and allows for the use of presets.
+
+    Templates are used to set the binary and input/output file names.
     """
 
     def __init__(
@@ -237,7 +296,10 @@ class Espresso(Espresso_):
         self._user_calc_params = {}
 
         template = template or EspressoTemplate("pw")
-        self._bin_path = str(SETTINGS.ESPRESSO_BIN_PATHS[template.binary])
+        full_path = Path(
+            SETTINGS.ESPRESSO_BIN_DIR, SETTINGS.ESPRESSO_BINARIES[template.binary]
+        )
+        self._bin_path = str(full_path)
         self._binary = template.binary
         self._cleanup_params()
         self._pseudo_path = (
@@ -261,8 +323,8 @@ class Espresso(Espresso_):
 
     def _cleanup_params(self) -> None:
         """
-        Function that handles the kwargs. It will merge the user-supplied
-        kwargs with the preset values, using the former as priority.
+        Function that handles the kwargs. It will merge the user-supplied kwargs with
+        the preset values, using the former as priority.
 
         Parameters
         ----------
@@ -276,10 +338,15 @@ class Espresso(Espresso_):
         if self.kwargs.get("directory"):
             raise ValueError("quacc does not support the directory argument.")
 
+        self.kwargs["input_data"] = Namelist(self.kwargs.get("input_data"))
+        self.kwargs["input_data"].to_nested(binary=self._binary, **self.kwargs)
+
         if self.preset:
             calc_preset = load_yaml_calc(
                 SETTINGS.ESPRESSO_PRESET_DIR / f"{self.preset}"
             )
+            calc_preset["input_data"] = Namelist(calc_preset.get("input_data"))
+            calc_preset["input_data"].to_nested(binary=self._binary, **calc_preset)
             if "pseudopotentials" in calc_preset:
                 ecutwfc, ecutrho, pseudopotentials = get_pseudopotential_info(
                     calc_preset["pseudopotentials"], self.input_atoms
@@ -303,9 +370,6 @@ class Espresso(Espresso_):
                 self._user_calc_params = recursive_dict_merge(calc_preset, self.kwargs)
         else:
             self._user_calc_params = self.kwargs
-
-        if self._user_calc_params.get("kpts") == "gamma":
-            self._user_calc_params["kpts"] = None
 
         if self._user_calc_params.get("kpts") and self._user_calc_params.get(
             "kspacing"

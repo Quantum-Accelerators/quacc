@@ -1,12 +1,9 @@
 import pytest
 
-from quacc import SETTINGS, flow, job, strip_decorator, subflow
-
 jf = pytest.importorskip("jobflow")
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "jobflow",
-    reason="This test requires the Jobflow workflow engine",
-)
+
+
+from quacc import flow, job, strip_decorator, subflow
 
 
 def test_jobflow_decorators(tmp_path, monkeypatch):

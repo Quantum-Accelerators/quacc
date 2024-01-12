@@ -1,4 +1,4 @@
-"""Common slab workflows"""
+"""Common slab workflows."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

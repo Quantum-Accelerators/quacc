@@ -12,7 +12,7 @@ A: This is a big question. I'll explain with some points that were on my mind wh
 
 2. We should leverage tools that are widely used in the community. Python packages like ASE and Pymatgen are staples in the computational materials science community. Rather than reinvent the wheel, quacc takes advantage of what is already out there and — crucially — makes them play nicely together.
 
-3. Developers should be able to focus on the science, not the workflow architecturee. Many similar packages have the science closely intertwined with the workflow logic. This makes it difficult to write new workflows without learning the intricacies of the workflow stack. quacc solely relies on the use of function decorators that make it easy to transform typical functions into ones that are workflow-ready.
+3. Developers should be able to focus on the science, not the workflow architecture. Many similar packages have the science closely intertwined with the workflow logic. This makes it difficult to write new workflows without learning the intricacies of the workflow stack. quacc solely relies on the use of function decorators that make it easy to transform typical functions into ones that are workflow-ready.
 
 4. An overeliance on classes and inheritance can be confusing at the expense of conciseneess. I love classes, but in a computational materials science library, too much class inheritance can make it difficult to track down what parameters are getting set where. Students are also less familiar with classes and may have a difficult time in understanding how they work. The recipes in quacc take a more direct and familiar functional programming approach.
 
