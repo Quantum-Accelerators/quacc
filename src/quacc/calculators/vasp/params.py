@@ -96,7 +96,7 @@ def get_param_swaps(
         and (calc.int_params["nsw"] and calc.int_params["nsw"] > 0)
     ):
         logger.info(
-            "Copilot: You are relaxing a likely metal. Setting ISMEAR = 1 and SIGMA = 0.1."
+            "Copilot: Recommending ISMEAR = 1 and SIGMA = 0.1 because you are likely relaxing a metal."
         )
         calc.set(ismear=1, sigma=0.1)
 
@@ -129,7 +129,7 @@ def get_param_swaps(
         and calc.int_params["ismear"] == -5
     ):
         logger.info(
-            "Copilot: KSPACING is likely too large for ISMEAR = -5. Setting ISMEAR = 0."
+            "Copilot: Recocmmending ISMEAR = 0 because KSPACING is likely too large for ISMEAR = -5."
         )
         calc.set(ismear=0)
 
@@ -224,7 +224,9 @@ def get_param_swaps(
         calc.set(npar=1, ncore=None)
 
     if not calc.string_params["efermi"]:
-        logger.info("Copilot: Recommending EFERMI = MIDGAP per the VASP manual.")
+        logger.info(
+            "Copilot: Recommending EFERMI = MIDGAP per the VASP manual (available in VASP 6.4+)."
+        )
         calc.set(efermi="midgap")
 
     return (

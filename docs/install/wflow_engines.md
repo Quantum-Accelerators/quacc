@@ -66,8 +66,10 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     ```bash
     pip install quacc[prefect]
-    pip install starlette==0.32.0 # temporary workaround
+    pip install starlette==0.32.0 # (1)!
     ```
+
+    1. This is a temporary workaround to resolve a dependency conflict.
 
     To connect to Prefect Cloud, run the following as well:
 
