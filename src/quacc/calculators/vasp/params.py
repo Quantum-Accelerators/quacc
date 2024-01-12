@@ -224,7 +224,7 @@ def get_param_swaps(
         calc.set(npar=1, ncore=None)
 
     if not calc.string_params["efermi"]:
-        logger.info("Copilot: Recommending EFERMI = MIDGAP per the VASP manual (available in VASP 6.4+).)
+        logger.info("Copilot: Recommending EFERMI = MIDGAP per the VASP manual (available in VASP 6.4+).")
         calc.set(efermi="midgap")
 
     return (
