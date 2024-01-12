@@ -13,7 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- Raised the default logger level for most things from `.info` to `.warning`
+- Raised the default logger level from `WARNING` to `INFO`
 
 ### Fixed
 
