@@ -61,7 +61,8 @@ def static_job(
     Returns
     -------
     cclibSchema
-        Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][]
+        Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][].
+        See the type-hint for the data structure.
     """
 
     nprocs = nprocs or psutil.cpu_count(logical=False)
@@ -127,7 +128,8 @@ def relax_job(
     Returns
     -------
     cclibSchema
-        Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][]
+        Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][].
+        See the type-hint for the data structure.
     """
     nprocs = nprocs or psutil.cpu_count(logical=False)
 
@@ -195,7 +197,8 @@ def ase_relax_job(
     -------
     cclibASEOptSchema
         Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][] merged with
-        the results from [quacc.schemas.ase.summarize_opt_run][]
+        the results from [quacc.schemas.ase.summarize_opt_run][].
+        See the type-hint for the data structure.
     """
 
     nprocs = nprocs or psutil.cpu_count(logical=False)

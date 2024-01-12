@@ -77,7 +77,7 @@ def ts_job(
     Returns
     -------
     TSSchema
-        Dictionary of results
+        Dictionary of results. See the type-hint for the data structure.
     """
     freq_job_kwargs = freq_job_kwargs or {}
 
@@ -160,6 +160,7 @@ def irc_job(
     -------
     IRCSchema
         A dictionary containing the IRC summary and thermodynamic summary.
+        See the type-hint for the data structure.
     """
     freq_job_kwargs = freq_job_kwargs or {}
     default_settings = SETTINGS.model_copy()
@@ -238,6 +239,7 @@ def quasi_irc_job(
     QuasiIRCSchema
         A dictionary containing the IRC summary, optimization summary, and
         thermodynamic summary.
+        See the type-hint for the data structure.
     """
     relax_job_kwargs = relax_job_kwargs or {}
     freq_job_kwargs = freq_job_kwargs or {}

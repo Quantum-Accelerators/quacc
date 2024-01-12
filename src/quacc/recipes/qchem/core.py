@@ -74,7 +74,8 @@ def static_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][]
+        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        See the type-hint for the data structure.
     """
 
     calc_defaults = recursive_dict_merge(
@@ -133,7 +134,8 @@ def relax_job(
     Returns
     -------
     OptSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
+        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][].
+        See the type-hint for the data structure.
     """
 
     calc_defaults = recursive_dict_merge(
