@@ -119,7 +119,8 @@ def remove_dict_entries(
     start_dict: dict[str, Any], remove_trigger: Any
 ) -> dict[str, Any]:
     """
-    For a given dictionary, recursively remove all items that are None.
+    For a given dictionary, recursively remove all items that are the
+    `remove_trigger`.
 
     Parameters
     ----------

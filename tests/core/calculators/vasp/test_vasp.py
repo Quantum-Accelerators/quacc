@@ -19,14 +19,6 @@ FILE_DIR = Path(__file__).parent
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 
-def setup_module():
-    SETTINGS.VASP_INCAR_COPILOT = "aggressive"
-
-
-def teardown_module():
-    SETTINGS.VASP_INCAR_COPILOT = DEFAULT_SETTINGS.VASP_INCAR_COPILOT
-
-
 @pytest.fixture()
 def atoms_mag():
     return read(FILE_DIR / "OUTCAR_mag.gz")
@@ -142,7 +134,18 @@ def test_kspacing():
     assert calc.int_params["ismear"] == -5
 
     calc = Vasp(atoms, kspacing=100, ismear=-5)
+    assert calc.int_params["ismear"] == -5
+
+
+def test_kspacing_aggressive():
+    SETTINGS.VASP_INCAR_COPILOT = "aggressive"
+    atoms = bulk("Cu")
+    calc = Vasp(atoms, kspacing=0.1, ismear=-5)
+    assert calc.int_params["ismear"] == -5
+
+    calc = Vasp(atoms, kspacing=100, ismear=-5)
     assert calc.int_params["ismear"] == 0
+    SETTINGS.VASP_INCAR_COPILOT = DEFAULT_SETTINGS.VASP_INCAR_COPILOT
 
 
 def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
@@ -398,6 +401,26 @@ def test_lasph():
     assert calc.bool_params["lasph"] is True
 
     calc = Vasp(atoms, xc="m06l", lasph=False)
+    assert calc.bool_params["lasph"] is False
+
+    calc = Vasp(atoms, xc="hse06")
+    assert calc.bool_params["lasph"] is True
+
+    calc = Vasp(atoms, ldau_luj={"Cu": {"L": 2, "U": 5, "J": 0.0}})
+    assert calc.bool_params["lasph"] is True
+
+
+def test_lasph_aggressive():
+    SETTINGS.VASP_INCAR_COPILOT = "aggressive"
+    atoms = bulk("Cu")
+
+    calc = Vasp(atoms, xc="rpbe")
+    assert calc.bool_params["lasph"] is None
+
+    calc = Vasp(atoms, xc="m06l")
+    assert calc.bool_params["lasph"] is True
+
+    calc = Vasp(atoms, xc="m06l", lasph=False)
     assert calc.bool_params["lasph"] is True
 
     calc = Vasp(atoms, xc="hse06")
@@ -405,6 +428,7 @@ def test_lasph():
 
     calc = Vasp(atoms, ldau_luj={"Cu": {"L": 2, "U": 5, "J": 0.0}})
     assert calc.bool_params["lasph"] is True
+    SETTINGS.VASP_INCAR_COPILOT = DEFAULT_SETTINGS.VASP_INCAR_COPILOT
 
 
 def test_vdw():
@@ -433,11 +457,25 @@ def test_algo():
     calc = Vasp(atoms, xc="m06l")
     assert calc.string_params["algo"] == "all"
 
+    calc = Vasp(atoms, xc="hse06")
+    assert calc.string_params["algo"] == "normal"
+
+
+def test_algo_aggressive():
+    atoms = bulk("Cu")
+    SETTINGS.VASP_INCAR_COPILOT = "aggressive"
+    calc = Vasp(atoms, xc="rpbe")
+    assert calc.string_params["algo"] is None
+
+    calc = Vasp(atoms, xc="m06l")
+    assert calc.string_params["algo"] == "all"
+
     calc = Vasp(atoms, xc="m06l", algo="fast")
     assert calc.string_params["algo"] == "all"
 
     calc = Vasp(atoms, xc="hse06")
     assert calc.string_params["algo"] == "normal"
+    SETTINGS.VASP_INCAR_COPILOT = DEFAULT_SETTINGS.VASP_INCAR_COPILOT
 
 
 def test_kpar():
@@ -446,11 +484,17 @@ def test_kpar():
     calc = Vasp(atoms, kpts=[2, 2, 1], kpar=4)
     assert calc.int_params["kpar"] == 4
 
+    SETTINGS.VASP_INCAR_COPILOT = "aggressive"
+    calc = Vasp(atoms, kpts=[2, 2, 1], kpar=4)
+    assert calc.int_params["kpar"] == 4
+
     calc = Vasp(atoms, kpar=4)
     assert calc.int_params["kpar"] == 1
+    SETTINGS.VASP_INCAR_COPILOT = DEFAULT_SETTINGS.VASP_INCAR_COPILOT
 
 
-def test_isym():
+def test_isym_aggressive():
+    SETTINGS.VASP_INCAR_COPILOT = "aggressive"
     atoms = bulk("Cu")
 
     calc = Vasp(atoms, isym=2)
@@ -467,9 +511,11 @@ def test_isym():
 
     calc = Vasp(atoms, xc="hse06", isym=2, nsw=100)
     assert calc.int_params["isym"] == 3
+    SETTINGS.VASP_INCAR_COPILOT = DEFAULT_SETTINGS.VASP_INCAR_COPILOT
 
 
-def test_ncore():
+def test_ncore_aggressive():
+    SETTINGS.VASP_INCAR_COPILOT = "aggressive"
     atoms = bulk("Cu")
 
     atoms *= (2, 2, 2)
@@ -489,9 +535,24 @@ def test_ncore():
     calc = Vasp(atoms, ncore=4, lelf=True)
     assert calc.int_params["npar"] == 1
     assert calc.int_params["ncore"] is None
+    SETTINGS.VASP_INCAR_COPILOT = DEFAULT_SETTINGS.VASP_INCAR_COPILOT
 
 
 def test_ismear():
+    atoms = bulk("Cu")
+
+    calc = Vasp(atoms, nsw=10)
+    assert calc.int_params["ismear"] is None
+
+    calc = Vasp(atoms, nsw=0)
+    assert calc.int_params["ismear"] is None
+
+    calc = Vasp(atoms, kpts=(10, 10, 10), nsw=0)
+    assert calc.int_params["ismear"] == -5
+
+
+def test_ismear_aggressive():
+    SETTINGS.VASP_INCAR_COPILOT = "aggressive"
     atoms = bulk("Cu")
 
     calc = Vasp(atoms, nsw=10)
@@ -540,9 +601,11 @@ def test_ismear():
     atoms[0].symbol = "H"
     calc = Vasp(atoms, kpts=(10, 10, 10), ismear=-5, nsw=10)
     assert calc.int_params["ismear"] == -5
+    SETTINGS.VASP_INCAR_COPILOT = DEFAULT_SETTINGS.VASP_INCAR_COPILOT
 
 
-def test_laechg():
+def test_laechg_aggressive():
+    SETTINGS.VASP_INCAR_COPILOT = "aggressive"
     atoms = bulk("Cu")
     calc = Vasp(atoms, nsw=10, laechg=True)
     assert not calc.bool_params["laechg"]
@@ -555,9 +618,21 @@ def test_laechg():
 
     calc = Vasp(atoms, nsw=0, laechg=False)
     assert not calc.bool_params["laechg"]
+    SETTINGS.VASP_INCAR_COPILOT = DEFAULT_SETTINGS.VASP_INCAR_COPILOT
 
 
 def test_ldauprint():
+    atoms = bulk("Cu")
+
+    calc = Vasp(atoms, ldau=True)
+    assert calc.int_params["ldauprint"] == 1
+
+    calc = Vasp(atoms, ldau_luj={"Cu": {"L": 2, "U": 5, "J": 0.0}})
+    assert calc.int_params["ldauprint"] == 1
+
+
+def test_ldauprint_aggressive():
+    SETTINGS.VASP_INCAR_COPILOT = "aggressive"
     atoms = bulk("Cu")
 
     calc = Vasp(atoms, ldau=True)
@@ -571,9 +646,18 @@ def test_ldauprint():
 
     calc = Vasp(atoms, ldau_luj={"Cu": {"L": 2, "U": 5, "J": 0.0}})
     assert calc.int_params["ldauprint"] == 1
+    SETTINGS.VASP_INCAR_COPILOT = DEFAULT_SETTINGS.VASP_INCAR_COPILOT
 
 
 def test_lreal():
+    atoms = bulk("Cu")
+
+    calc = Vasp(atoms, nsw=10)
+    assert calc.special_params["lreal"] is None
+
+
+def test_lreal_aggressive():
+    SETTINGS.VASP_INCAR_COPILOT = "aggressive"
     atoms = bulk("Cu")
     calc = Vasp(atoms, lreal=True, nsw=0)
     assert calc.special_params["lreal"] is False
@@ -592,6 +676,7 @@ def test_lreal():
 
     calc = Vasp(atoms * (4, 4, 4), lreal=False, nsw=10)
     assert calc.special_params["lreal"] is False
+    SETTINGS.VASP_INCAR_COPILOT = DEFAULT_SETTINGS.VASP_INCAR_COPILOT
 
 
 def test_lorbit():
@@ -726,3 +811,10 @@ def test_bad():
 
     with pytest.raises(FileNotFoundError):
         Vasp(atoms, preset="BadRelaxSet")
+
+
+def test_preset_override():
+    atoms = bulk("Cu")
+
+    calc = Vasp(atoms, preset="BulkSet", efermi=None)
+    assert calc.parameters.get("efermi") is None

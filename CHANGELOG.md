@@ -11,8 +11,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - A new `grid_phonon` recipe in Espresso (@tomdemeyere)
 - Preliminary support for the Prefect workflow engine, again, but this time without it breaking everything
 
+### Changed
+
+- Raised the default logger level from `WARNING` to `INFO`
+
 ### Fixed
 
+- Codes calling Custodian can be used in Jupyter Notebooks
 - Fixed an error in the Espresso `phonon_flow` when using the `master` branch of ASE
 - Fixed a few erroneous type hints
 - Fixed the `typer` depenendecy in `pyproject.toml` to be `typer[all]` like it was supposed to be
