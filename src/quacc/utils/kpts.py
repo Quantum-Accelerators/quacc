@@ -104,8 +104,7 @@ def convert_pmg_kpts(
                 else max_pmg_kpts
             )
 
-        kpts = max_pmg_kpts.kpts[0]
+        kpts = [int(k) for k in max_pmg_kpts.kpts[0]]
         gamma = max_pmg_kpts.style.name.lower() == "gamma"
 
-    kpts = [int(k) for k in kpts]
     return kpts, gamma
