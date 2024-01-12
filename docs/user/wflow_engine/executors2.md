@@ -64,6 +64,12 @@ If you haven't done so already:
     quacc set WORKFLOW_ENGINE prefect && quacc set CREATE_UNIQUE_DIR True
     ```
 
+    Also make sure to connect to Prefect Cloud if you are not self-hosting:
+
+    ```bash
+    prefect cloud login
+    ```
+
 === "Jobflow"
 
     On both the local and remote machines:
