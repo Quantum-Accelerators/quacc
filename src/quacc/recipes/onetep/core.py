@@ -51,7 +51,7 @@ def static_job(
         is copied at the root of the temporary directory.
     **calc_kwargs
         Additional keyword arguments to pass to the ONETEP calculator. See the
-        docstring of [quacc.calculators.onetep.Onetep][] for more information.
+        docstring of [quacc.calculators.onetep.onetep][] for more information.
 
     Returns
     -------
