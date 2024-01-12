@@ -121,8 +121,8 @@ jobs:
         run: |
           pip install -r tests/requirements.txt
           pip install -r tests/requirements-${{ matrix.wflow_engine }}.txt
-          pip install starlette==0.32.0
-          pip install pytest
+          pip install .[dev]
+          # pip install starlette==0.32.0
 
       - name: Run tests with pytest
         run: |
