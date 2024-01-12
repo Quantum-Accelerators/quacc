@@ -123,7 +123,9 @@ jobs:
           pip install pytest
 
       - name: Run tests with pytest
-        run: pytest --durations=10 tests/${{ matrix.wflow_engine }}
+        run: |
+          prefect version
+          pytest --durations=10 tests/${{ matrix.wflow_engine }}
 
   tests-psi4:
     strategy:
