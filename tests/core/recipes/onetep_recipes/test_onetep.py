@@ -2,7 +2,6 @@ from ase.build import molecule
 from quacc import SETTINGS
 from pathlib import Path
 from quacc.recipes.onetep.core import static_job
-import pytest
 from quacc.utils.files import copy_decompress_files
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
@@ -35,7 +34,6 @@ def test_static_job(tmp_path, monkeypatch):
         ngwf_count=1,
     )
 
-    print(output)
     assert output["natoms"] == len(atoms)
     assert output["atoms"] == atoms
     assert output["parameters"]["keywords"] == keywords
