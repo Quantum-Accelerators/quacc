@@ -1,8 +1,9 @@
 """
-This module, 'phonons.py', contains recipes for performing phonon calculations
-using the ph.x binary from Quantum ESPRESSO via the quacc library. The recipes
-provided in this module are jobs and flows that can be used to perform phonon
-calculations in different fashion.
+This module, 'phonons.py', contains recipes for performing phonon calculations using the
+ph.x binary from Quantum ESPRESSO via the quacc library.
+
+The recipes provided in this module are jobs and flows that can be used to perform
+phonon calculations in different fashion.
 """
 from __future__ import annotations
 
@@ -94,8 +95,8 @@ def grid_phonon_flow(
 ) -> RunSchema:
     """
     This function performs grid parallelization of a ph.x calculation. Each
-    representation of each q-point is calculated in a separate job, allowing
-    for distributed computation across different machines and times.
+    representation of each q-point is calculated in a separate job, allowing for
+    distributed computation across different machines and times.
 
     The grid parallelization is a technique to make phonon calculation embarrassingly
     parallel. This function should return similar results to
@@ -183,7 +184,8 @@ def grid_phonon_flow(
         nblocks: int = 1,
     ) -> list[RunSchema]:
         """
-        This functions is a subflow used in [quacc.recipes.espresso.phonons.grid_phonon_flow][].
+        This functions is a subflow used in
+        [quacc.recipes.espresso.phonons.grid_phonon_flow][].
 
         Parameters
         ----------

@@ -52,13 +52,13 @@ class DoubleRelaxSchema(VaspSchema):
 
 
 class MPRelaxFlowSchema(VaspSchema):
-    """Type hint associated with the MP relaxation flows"""
+    """Type hint associated with the MP relaxation flows."""
 
     prerelax: VaspSchema
 
 
 class QMOFRelaxSchema(VaspSchema):
-    """Type hint associated with the QMOF relaxation jobs"""
+    """Type hint associated with the QMOF relaxation jobs."""
 
     prerelax_lowacc: VaspSchema | None
     position_relax_lowacc: VaspSchema

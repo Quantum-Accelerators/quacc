@@ -72,9 +72,9 @@ class QChem(FileIOCalculator):
         **fileiocalculator_kwargs,
     ) -> None:
         """
-        Initialize the Q-Chem calculator. Most of the input parameters here
-        are used to create a `pymatgen.io.qchem.inputs.QCInput` object. See
-        the documentation for that class for more information.
+        Initialize the Q-Chem calculator. Most of the input parameters here are used to
+        create a `pymatgen.io.qchem.inputs.QCInput` object. See the documentation for
+        that class for more information.
 
         Parameters
         ----------
@@ -283,8 +283,8 @@ class QChem(FileIOCalculator):
 
     def read_results(self) -> None:
         """
-        Read the Q-Chem output files. Update the .results and
-        .prev_orbital_coeffs attributes.
+        Read the Q-Chem output files. Update the .results and .prev_orbital_coeffs
+        attributes.
 
         Returns
         -------

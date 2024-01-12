@@ -1,1 +1,1 @@
-"""Recipes for Quantum Espresso"""
+"""Recipes for Quantum Espresso."""

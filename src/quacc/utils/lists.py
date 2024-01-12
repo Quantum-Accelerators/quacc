@@ -1,6 +1,4 @@
-"""
-Utilities for working with lists.
-"""
+"""Utilities for working with lists."""
 from __future__ import annotations
 
 
@@ -8,8 +6,8 @@ def merge_list_params(
     *lists: list[str], removal_prefix: str | None = "#", case_insensitive: bool = True
 ) -> list[str]:
     """
-    Merge list string parameters, taking list2 as the priority.
-    Also removes any entries that start with `removal_prefix` from the final list.
+    Merge list string parameters, taking list2 as the priority. Also removes any entries
+    that start with `removal_prefix` from the final list.
 
     Parameters
     ----------

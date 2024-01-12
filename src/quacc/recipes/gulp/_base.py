@@ -1,4 +1,4 @@
-"""Base jobs for GULP"""
+"""Base jobs for GULP."""
 from __future__ import annotations
 
 import logging

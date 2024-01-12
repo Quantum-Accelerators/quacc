@@ -1,4 +1,4 @@
-"""Common workflows for phonons"""
+"""Common workflows for phonons."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

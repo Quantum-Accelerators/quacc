@@ -347,7 +347,7 @@ class QuaccSettings(BaseSettings):
     @field_validator("WORKFLOW_ENGINE")
     @classmethod
     def validate_workflow_engine(cls, v: Optional[str]) -> Optional[str]:
-        """Validate the workflow engine"""
+        """Validate the workflow engine."""
         return None if v and v.lower() == "local" else v
 
     @field_validator("RESULTS_DIR", "SCRATCH_DIR")
@@ -382,7 +382,7 @@ class QuaccSettings(BaseSettings):
 
     @field_validator("PRIMARY_STORE")
     def generate_store(cls, v: Union[str, Store]) -> Store:
-        """Generate the Maggma store"""
+        """Generate the Maggma store."""
         from monty.json import MontyDecoder
 
         return MontyDecoder().decode(v) if isinstance(v, str) else v

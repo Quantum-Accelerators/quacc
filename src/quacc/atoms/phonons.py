@@ -1,4 +1,4 @@
-"""Atoms handling with Phonopy"""
+"""Atoms handling with Phonopy."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -30,8 +30,7 @@ def atoms_to_phonopy(
     phonopy_kwargs: dict | None = None,
 ) -> Phonopy:
     """
-    Convert an ASE atoms object to a phonopy object with displacements
-    generated.
+    Convert an ASE atoms object to a phonopy object with displacements generated.
 
     Parameters
     ----------

@@ -27,10 +27,8 @@ if TYPE_CHECKING:
 
 
 class EspressoTemplate(EspressoTemplate_):
-    """
-    This is a wrapper around the ASE Espresso template that allows for the use
-    of other binaries such as pw.x, ph.x, cp.x, etc.
-    """
+    """This is a wrapper around the ASE Espresso template that allows for the use of
+    other binaries such as pw.x, ph.x, cp.x, etc."""
 
     def __init__(self, binary: str = "pw", test_run: bool = False) -> None:
         """
@@ -72,8 +70,8 @@ class EspressoTemplate(EspressoTemplate_):
         properties: Any,
     ) -> None:
         """
-        The function that should be used instead of the one in ASE EspressoTemplate
-        to write the input file. It calls a customly defined write function.
+        The function that should be used instead of the one in ASE EspressoTemplate to
+        write the input file. It calls a customly defined write function.
 
         Parameters
         ----------
@@ -138,9 +136,8 @@ class EspressoTemplate(EspressoTemplate_):
     @staticmethod
     def _test_run(parameters: dict[str, Any], directory: Path) -> dict[str, Any]:
         """
-        Almost all QE binaries will do a test run if a file named
-        <prefix>.EXIT is present in the working directory. This
-        function will create this file.
+        Almost all QE binaries will do a test run if a file named <prefix>.EXIT is
+        present in the working directory. This function will create this file.
 
         Parameters
         ----------
@@ -166,10 +163,10 @@ class EspressoTemplate(EspressoTemplate_):
 
     def read_results(self, directory: Path | str) -> dict[str, Any]:
         """
-        The function that should be used instead of the one in ASE EspressoTemplate
-        to read the output file. It calls a customly defined read function. It also
-        adds the "energy" key to the results dictionnary if it is not present. This
-        is needed if the calculation is not made with pw.x.
+        The function that should be used instead of the one in ASE EspressoTemplate to
+        read the output file. It calls a customly defined read function. It also adds
+        the "energy" key to the results dictionnary if it is not present. This is needed
+        if the calculation is not made with pw.x.
 
         Parameters
         ----------
@@ -200,11 +197,11 @@ class EspressoTemplate(EspressoTemplate_):
         self, parameters: dict[str, Any], directory: Path
     ) -> dict[str, Any]:
         """
-        Function that handles the various outdir of espresso binaries. If they are relative,
-        they are resolved against `directory`, which is the recommended approach.
-        If the user-supplied paths are absolute, they are resolved and checked
-        against `directory`, which is typically `os.getcwd()`. If they are not in `directory`,
-        they will be ignored.
+        Function that handles the various outdir of espresso binaries. If they are
+        relative, they are resolved against `directory`, which is the recommended
+        approach. If the user-supplied paths are absolute, they are resolved and checked
+        against `directory`, which is typically `os.getcwd()`. If they are not in
+        `directory`, they will be ignored.
 
         Parameters
         ----------
@@ -242,8 +239,9 @@ class EspressoTemplate(EspressoTemplate_):
 class Espresso(Espresso_):
     """
     This is a wrapper around the ASE Espresso calculator that adjusts input_data
-    parameters and allows for the use of presets. Templates are used to set
-    the binary and input/output file names.
+    parameters and allows for the use of presets.
+
+    Templates are used to set the binary and input/output file names.
     """
 
     def __init__(
@@ -325,8 +323,8 @@ class Espresso(Espresso_):
 
     def _cleanup_params(self) -> None:
         """
-        Function that handles the kwargs. It will merge the user-supplied
-        kwargs with the preset values, using the former as priority.
+        Function that handles the kwargs. It will merge the user-supplied kwargs with
+        the preset values, using the former as priority.
 
         Parameters
         ----------

@@ -30,8 +30,9 @@ def recursive_dict_merge(
     *dicts: dict[str, Any], remove_trigger: Any = Remove
 ) -> dict[str, Any]:
     """
-    Recursively merge several dictionaries, taking the latter in the list as higher preference.
-    Also removes any entries that have a valu of `remove_trigger` from the final dictionary.
+    Recursively merge several dictionaries, taking the latter in the list as higher
+    preference. Also removes any entries that have a valu of `remove_trigger` from the
+    final dictionary.
 
     This function should be used instead of the | operator when merging nested dictionaries,
     e.g. `{"a": {"b": 1}} | {"a": {"c": 2}}` will return `{"a": {"c": 2}}` whereas
@@ -119,8 +120,7 @@ def remove_dict_entries(
     start_dict: dict[str, Any], remove_trigger: Any
 ) -> dict[str, Any]:
     """
-    For a given dictionary, recursively remove all items that are the
-    `remove_trigger`.
+    For a given dictionary, recursively remove all items that are the `remove_trigger`.
 
     Parameters
     ----------
@@ -171,8 +171,8 @@ def sort_dict(start_dict: dict[str, Any]) -> dict[str, Any]:
 
 def clean_task_doc(start_dict: dict[str, Any]) -> dict[str, Any]:
     """
-    Clean up a task document dictionary by removing all entries
-    that are None and sorting the dictionary alphabetically by key.
+    Clean up a task document dictionary by removing all entries that are None and
+    sorting the dictionary alphabetically by key.
 
     Parameters
     ----------

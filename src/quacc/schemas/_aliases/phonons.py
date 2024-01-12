@@ -8,7 +8,7 @@ from quacc.schemas._aliases.ase import AtomsSchema
 
 
 class ThermalProperties(TypedDict):
-    """Type hint associated with PhononSchema"""
+    """Type hint associated with PhononSchema."""
 
     temperatures: NDArray
     free_energy: NDArray
@@ -17,7 +17,7 @@ class ThermalProperties(TypedDict):
 
 
 class MeshProperties(TypedDict):
-    """Type hint associated with PhononSchema"""
+    """Type hint associated with PhononSchema."""
 
     qpoints: NDArray
     weights: NDArray

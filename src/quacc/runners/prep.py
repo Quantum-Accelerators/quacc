@@ -1,4 +1,4 @@
-"""Prepration for runners"""
+"""Prepration for runners."""
 from __future__ import annotations
 
 import os

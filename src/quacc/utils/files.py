@@ -79,8 +79,8 @@ def copy_decompress_tree(
     source_files: dict[str, str | Path | list[str | Path]], destination: str | Path
 ) -> None:
     """
-    Copy and decompress files from source to destination.
-    This function respects the directory tree.
+    Copy and decompress files from source to destination. This function respects the
+    directory tree.
 
     Parameters
     ----------
