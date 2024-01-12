@@ -38,7 +38,7 @@ def base_fn(
         Default parameters for the recipe.
     calc_swaps
         Dictionary of custom kwargs for the Vasp calculator. Set a value to
-        `quacc.Remove` to remove a pre-existing key entirely. For a list of available
+        `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to the [quacc.calculators.vasp.vasp.Vasp][] calculator.
     additional_fields
         Additional fields to supply to the summarizer.
