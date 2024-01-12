@@ -305,7 +305,7 @@ class QChem(FileIOCalculator):
         """
 
         qchem_custodian_script = Path(inspect.getfile(qchem_custodian)).resolve()
-        return f"python {qchem_custodian_script}"
+        return f"{sys.executable} {qchem_custodian_script}"
 
     def _set_default_params(self) -> None:
         """
