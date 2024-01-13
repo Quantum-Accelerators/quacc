@@ -40,7 +40,8 @@ def static_job(atoms: Atoms, **calc_kwargs) -> RunSchema:
     Returns
     -------
     RunSchema
-        Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
+        Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
+        See the type-hint for the data structure.
     """
     atoms.calc = EMT(**calc_kwargs)
     final_atoms = run_calc(atoms)
@@ -78,8 +79,8 @@ def relax_job(
     Returns
     -------
     OptSchema
-        Dictionary of results, specified in
-        [quacc.schemas.ase.summarize_opt_run][]
+        Dictionary of results, specified in [quacc.schemas.ase.summarize_opt_run][].
+        See the type-hint for the data structure.
     """
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)

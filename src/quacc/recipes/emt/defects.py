@@ -97,7 +97,8 @@ def bulk_to_defects_flow(
     -------
     list[RunSchema | OptSchema]
         List of dictionary of results from [quacc.schemas.ase.summarize_run][]
-        or [quacc.schemas.ase.summarize_opt_run][]
+        or [quacc.schemas.ase.summarize_opt_run][].
+        See the return type-hint for the data structure.
     """
     make_defects_kwargs = recursive_dict_merge(
         make_defects_kwargs, {"defect_gen": defect_gen, "defect_charge": defect_charge}

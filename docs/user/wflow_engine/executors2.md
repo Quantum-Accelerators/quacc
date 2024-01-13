@@ -4,7 +4,7 @@ In this section, we provide a few examples going through the entire process to d
 
 !!! Tip "First-Time Deployment"
 
-    Before deploying remote calculations for the first time, do `quacc set WORKFLOW_ENGINE local` on the remote machine and run your recipe as a standard Python script (e.g. by submitting it as a job to the scheduler). This preliminary test will help you identify potential issues early on. When you're done, you can re-set the `WORKFLOW_ENGINE` variable and continue with deployment via a workflow manager.
+    Before deploying remote calculations for the first time, do `quacc set WORKFLOW_ENGINE null` on the remote machine and run your recipe as a standard Python script (e.g. by submitting it as a job to the scheduler). This preliminary test will help you identify potential issues early on. When you're done, you can re-set the `WORKFLOW_ENGINE` variable and continue with deployment via a workflow manager.
 
 ## Pre-Requisites
 
@@ -62,6 +62,12 @@ If you haven't done so already:
     pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
     pip install quacc[prefect]
     quacc set WORKFLOW_ENGINE prefect && quacc set CREATE_UNIQUE_DIR True
+    ```
+
+    Also make sure to connect to Prefect Cloud if you are not self-hosting:
+
+    ```bash
+    prefect cloud login
     ```
 
 === "Jobflow"
@@ -409,3 +415,5 @@ When deploying calculations for the first time, it's important to start simple, 
     ```bash
     qlaunch rapidfire -m 1
     ```
+
+For an example involving a code with more complex settings, refer to the [VASP example](../advanced/vasp_hpc.md).

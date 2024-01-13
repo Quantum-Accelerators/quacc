@@ -50,7 +50,8 @@ def static_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][]
+        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        See the type-hint for the data structure.
     """
 
     calc_defaults = {"method": method}
@@ -95,7 +96,8 @@ def relax_job(
     Returns
     -------
     OptSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
+        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][].
+        See the type-hint for the data structure.
     """
 
     defaults = {"method": method}
@@ -146,7 +148,8 @@ def freq_job(
     Returns
     -------
     VibThermoSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_vib_and_thermo][]
+        Dictionary of results from [quacc.schemas.ase.summarize_vib_and_thermo][].
+        See the type-hint for the data structure.
     """
     vib_kwargs = vib_kwargs or {}
 

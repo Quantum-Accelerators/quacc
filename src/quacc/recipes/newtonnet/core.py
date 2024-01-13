@@ -63,7 +63,8 @@ def static_job(
     Returns
     -------
     RunSchema
-        Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
+        Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
+        See the type-hint for the data structure.
     """
 
     defaults = {
@@ -109,7 +110,8 @@ def relax_job(
     Returns
     -------
     OptSchema
-        Dictionary of results, specified in [quacc.schemas.ase.summarize_opt_run][]
+        Dictionary of results, specified in [quacc.schemas.ase.summarize_opt_run][].
+        See the type-hint for the data structure.
     """
 
     calc_defaults = {
@@ -159,7 +161,7 @@ def freq_job(
     Returns
     -------
     FreqSchema
-        Dictionary of results
+        Dictionary of results. See the type-hint for the data structure.
     """
 
     defaults = {

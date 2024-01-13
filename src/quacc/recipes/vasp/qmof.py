@@ -67,7 +67,7 @@ def qmof_relax_job(
     Returns
     -------
     QMOFRelaxSchema
-        Dictionary of results
+        Dictionary of results. See the type-hint for the data structure.
     """
 
     # 1. Pre-relaxation
@@ -120,7 +120,8 @@ def _prerelax(
     Returns
     -------
     OptSchema
-        Dictionary of results from quacc.schemas.ase.summarize_opt_run
+        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][].
+        See the type-hint for the data structure.
     """
 
     calc_defaults = {
@@ -159,7 +160,8 @@ def _loose_relax_positions(
     Returns
     -------
     VaspSchema
-        Dictionary of results from quacc.schemas.vasp.vasp_summarize_run
+        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
+        See the type-hint for the data structure.
     """
 
     calc_defaults = {
@@ -202,7 +204,8 @@ def _loose_relax_cell(
     Returns
     -------
     VaspSchema
-        Dictionary of results from quacc.schemas.vasp.vasp_summarize_run
+        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
+        See the type-hint for the data structure.
     """
 
     calc_defaults = {
@@ -246,6 +249,7 @@ def _double_relax(
     -------
     list[VaspSchema]
         List of dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
+        See the type-hint for the data structure.
     """
 
     # Run first relaxation
@@ -302,7 +306,8 @@ def _static(atoms: Atoms, preset: str | None = "QMOFSet", **calc_kwargs) -> Vasp
     Returns
     -------
     VaspSchema
-        Dictionary of results from quacc.schemas.vasp.vasp_summarize_run
+        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
+        See the type-hint for the data structure.
     """
 
     calc_defaults = {
