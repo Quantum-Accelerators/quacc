@@ -15,13 +15,7 @@ def test_static_job(tmp_path, monkeypatch):
 
     copy_decompress_files([DATA_DIR / "H.usp.gz"], tmp_path)
 
-    keywords = {
-        "output_detail": "verbose",
-        "do_properties": True,
-        "cutoff_energy": "300 eV",
-        "task": "SinglePoint",
-        "pseudo_path": str(tmp_path),
-    }
+    keywords = {"pseudo_path": str(tmp_path)}
     pseudopotentials = {"H": "H.usp"}
 
     atoms = molecule("H2")
@@ -38,4 +32,10 @@ def test_static_job(tmp_path, monkeypatch):
 
     assert output["natoms"] == len(atoms)
     assert output["atoms"] == atoms
-    assert output["parameters"]["keywords"] == keywords
+    assert output["parameters"]["keywords"] == {
+        "output_detail": "verbose",
+        "do_properties": True,
+        "cutoff_energy": "600 eV",
+        "task": "SinglePoint",
+        "pseudo_path": str(tmp_path),
+    }

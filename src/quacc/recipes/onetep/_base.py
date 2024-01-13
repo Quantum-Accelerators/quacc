@@ -8,6 +8,7 @@ from ase.calculators.onetep import Onetep, OnetepProfile
 from quacc import SETTINGS
 from quacc.runners.ase import run_calc
 from quacc.schemas.ase import summarize_run
+from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
     from typing import Any
@@ -47,6 +48,7 @@ def base_fn(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
+    calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
     atoms.calc = Onetep(
         input_atoms=atoms,
@@ -55,7 +57,7 @@ def base_fn(
         profile=OnetepProfile(
             SETTINGS.ONETEP_CMD
         ),  # TODO: Need to insert SETTINGS.ONETEP_PARLLEL_CMD here.
-        **calc_swaps,
+        **calc_flags,
     )
 
     final_atoms = run_calc(atoms, copy_files=copy_files)
