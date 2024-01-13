@@ -51,8 +51,10 @@ def base_fn(
     atoms.calc = Onetep(
         input_atoms=atoms,
         calc_defaults=calc_defaults,
-        pseudo_path=SETTINGS.ONETEP_PP_PATH,
-        profile=OnetepProfile(argv=SETTINGS.ONETEP_PARALLEL_CMD),
+        pseudo_path=str(SETTINGS.ONETEP_PP_PATH),
+        profile=OnetepProfile(
+            SETTINGS.ONETEP_CMD
+        ),  # TODO: Need to insert SETTINGS.ONETEP_PARLLEL_CMD here.
         **calc_swaps,
     )
 

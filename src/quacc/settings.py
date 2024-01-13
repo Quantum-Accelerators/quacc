@@ -158,15 +158,18 @@ class QuaccSettings(BaseSettings):
     GAUSSIAN_CMD: Path = Field(
         Path("g16"), description=("Path to the Gaussian executable.")
     )
+
     # ---------------------------
     # ONETEP Settings
     # ---------------------------
     ONETEP_CMD: Optional[Path] = Field(
-        None, description=("Path to the ONETEP executable.")
+        Path("onetep.arch"), description=("Path to the ONETEP executable.")
     )
-    ONETEP_PARALLEL_CMD: Optional[list[str]] = Field(
+    ONETEP_PARALLEL_CMD: Optional[str] = Field(
         None,
-        description=("Parallelization commands to run ONETEP, formatted as a list."),
+        description=(
+            "Parallelization commands to run ONETEP that are prepended to the executable."
+        ),
     )
     ONETEP_PP_PATH: Optional[Path] = Field(
         None, description=("Path to pseudopotentials.")
