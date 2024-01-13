@@ -144,6 +144,12 @@ class QuaccSettings(BaseSettings):
         },
         description="Name for each espresso binary.",
     )
+    ESPRESSO_PARALLEL_CMD: Optional[list[str]] = Field(
+        None,
+        description=(
+            "Parallel commands to run espresso, formatted as a list of strings."
+        ),
+    )
     ESPRESSO_PSEUDO: Optional[Path] = Field(
         None, description=("Path to a pseudopotential library for espresso.")
     )

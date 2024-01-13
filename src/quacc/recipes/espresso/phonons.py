@@ -30,10 +30,7 @@ if TYPE_CHECKING:
 
 @job
 def phonon_job(
-    prev_dir: str | Path,
-    parallel_info: dict[str] | None = None,
-    test_run: bool = False,
-    **calc_kwargs,
+    prev_dir: str | Path, test_run: bool = False, **calc_kwargs
 ) -> RunSchema:
     """
     Function to carry out a basic ph.x calculation. It should allow you to
@@ -48,9 +45,6 @@ def phonon_job(
         Outdir of the previously ran pw.x calculation. This is used to copy
         the entire tree structure of that directory to the working directory
         of this calculation.
-    parallel_info
-        Dictionary containing information about the parallelization of the
-        calculation. See the ASE documentation for more information.
     test_run
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
@@ -81,7 +75,6 @@ def phonon_job(
         template=EspressoTemplate("ph", test_run=test_run),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        parallel_info=parallel_info,
         additional_fields={"name": "ph.x Phonon"},
         copy_files=prev_dir,
     )

@@ -19,7 +19,6 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms,
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
-    parallel_info: dict[str] | None = None,
     test_run: bool = False,
     copy_files: str | Path | list[str | Path] | None = None,
     **calc_kwargs,
@@ -35,9 +34,6 @@ def static_job(
         The name of a YAML file containing a list of parameters to use as
         a "preset" for the calculator. quacc will automatically look in the
         `ESPRESSO_PRESET_DIR` (default: quacc/calculators/espresso/presets).
-    parallel_info
-        Dictionary containing information about the parallelization of the
-        calculation. See the ASE documentation for more information.
     test_run
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
@@ -72,7 +68,6 @@ def static_job(
         template=EspressoTemplate("pw", test_run=test_run),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        parallel_info=parallel_info,
         additional_fields={"name": "pw.x Static"},
         copy_files=copy_files,
     )
@@ -83,7 +78,6 @@ def relax_job(
     atoms: Atoms,
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
     relax_cell: bool = False,
-    parallel_info: dict[str] | None = None,
     test_run: bool = False,
     copy_files: str | Path | list[str | Path] | None = None,
     **calc_kwargs,
@@ -101,9 +95,6 @@ def relax_job(
         `ESPRESSO_PRESET_DIR` (default: quacc/calculators/espresso/presets).
     relax_cell
         Whether to relax the cell or not.
-    parallel_info
-        Dictionary containing information about the parallelization of the
-        calculation. See the ASE documentation for more information.
     test_run
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
@@ -142,7 +133,6 @@ def relax_job(
         template=EspressoTemplate("pw", test_run=test_run),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        parallel_info=parallel_info,
         additional_fields={"name": "pw.x Relax"},
         copy_files=copy_files,
     )
@@ -150,10 +140,7 @@ def relax_job(
 
 @job
 def post_processing_job(
-    prev_dir: str | Path,
-    parallel_info: dict[str] | None = None,
-    test_run: bool = False,
-    **calc_kwargs,
+    prev_dir: str | Path, test_run: bool = False, **calc_kwargs
 ) -> RunSchema:
     """
     Function to carry out a basic pp.x calculation (post-processing).
@@ -167,9 +154,6 @@ def post_processing_job(
         Outdir of the previously ran pw.x calculation. This is used to copy
         the entire tree structure of that directory to the working directory
         of this calculation.
-    parallel_info
-        Dictionary containing information about the parallelization of the
-        calculation. See the ASE documentation for more information.
     **calc_kwargs
         calc_kwargs dictionary possibly containing the following keys:
 
@@ -200,7 +184,6 @@ def post_processing_job(
         template=EspressoTemplate("pp", test_run=test_run),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        parallel_info=parallel_info,
         additional_fields={"name": "pp.x post-processing"},
         copy_files=prev_dir,
     )

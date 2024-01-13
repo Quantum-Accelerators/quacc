@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from ase import Atoms
 from ase.io.espresso import Namelist
 
+from quacc import SETTINGS
 from quacc.calculators.espresso.espresso import (
     Espresso,
     EspressoProfile,
@@ -25,10 +26,8 @@ def base_fn(
     atoms: Atoms = None,
     preset: str | None = None,
     template: EspressoTemplate | None = None,
-    profile: EspressoProfile | None = None,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
-    parallel_info: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
@@ -43,16 +42,12 @@ def base_fn(
         Name of the preset to use
     template
         EspressoTemplate to use
-    profile
-        EspressoProfile to use
     calc_defaults
         The default calculator parameters.
     calc_swaps
         Custom kwargs for the espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.espresso.Espresso` calculator.
-    parallel_info
-        Dictionary of parallelization information.
     additional_fields
         Any additional fields to supply to the summarizer.
     copy_files
@@ -79,9 +74,8 @@ def base_fn(
     atoms.calc = Espresso(
         input_atoms=atoms,
         preset=preset,
-        parallel_info=parallel_info,
         template=template,
-        profile=profile,
+        profile=EspressoProfile(argv=SETTINGS.ESPRESSO_PARALLEL_CMD),
         **calc_flags,
     )
 
