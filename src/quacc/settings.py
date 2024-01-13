@@ -167,10 +167,7 @@ class QuaccSettings(BaseSettings):
     ONETEP_PP_PATH: Optional[Path] = Field(
         None, description=("Path to pseudopotentials.")
     )
-    ONETEP_PRESET_DIR: Path = Field(
-        Path(__file__).parent / "calculators" / "onetep" / "presets",
-        description="Path to the onetep preset directory",
-    )
+
     # ---------------------------
     # GULP Settings
     # ---------------------------
