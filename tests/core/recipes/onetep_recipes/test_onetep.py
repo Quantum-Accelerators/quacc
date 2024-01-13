@@ -20,6 +20,7 @@ def test_static_job(tmp_path, monkeypatch):
 
     atoms = molecule("H2")
     atoms.set_cell([10, 10, 10])
+    atoms.pbc = True
     atoms.center()
 
     output = static_job(
