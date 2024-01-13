@@ -72,9 +72,7 @@ def base_fn(
 
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
-    bin_path = str(
-        Path(SETTINGS.ESPRESSO_BIN_DIR, SETTINGS.ESPRESSO_BINARIES[binary])
-    )
+    bin_path = str(Path(SETTINGS.ESPRESSO_BIN_DIR, SETTINGS.ESPRESSO_BINARIES[binary]))
     pseudo_path = (
         calc_flags.get("input_data", {})
         .get("control", {})
