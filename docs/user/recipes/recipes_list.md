@@ -115,6 +115,10 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 
 </center>
 
+## ONETEP
+
+<ONETEP content goes here>
+
 ## ORCA
 
 !!! Info
