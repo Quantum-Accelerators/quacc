@@ -12,7 +12,6 @@ if TYPE_CHECKING:
     from typing import TypedDict
 
     from ase.atoms import Atoms
-    from numpy.typing import NDArray
 
     class PmgKpts(TypedDict, total=False):
         line_density: float
