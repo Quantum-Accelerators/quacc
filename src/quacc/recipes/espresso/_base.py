@@ -91,7 +91,7 @@ def base_fn(
         **calc_flags,
     )
 
-    geom_file = template.outputname if template.binary == "pw" else Non
+    geom_file = template.outputname if template.binary == "pw" else None
     final_atoms = run_calc(atoms, geom_file=geom_file, copy_files=copy_files)
 
     return summarize_run(
