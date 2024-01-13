@@ -144,10 +144,10 @@ class QuaccSettings(BaseSettings):
         },
         description="Name for each espresso binary.",
     )
-    ESPRESSO_PARALLEL_CMD: Optional[list[str]] = Field(
+    ESPRESSO_PARALLEL_CMD: Optional[str] = Field(
         None,
         description=(
-            "Parallel commands to run espresso, formatted as a list of strings."
+            "Parallelelization commands to run espresso that are prepended to the executable."
         ),
     )
     ESPRESSO_PSEUDO: Optional[Path] = Field(

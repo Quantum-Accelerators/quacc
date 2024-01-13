@@ -80,14 +80,13 @@ def base_fn(
         .get("control", {})
         .get("pseudo_dir", str(SETTINGS.ESPRESSO_PSEUDO))
     )
+    # TODO: put the SETTINGS.ESPRESSO_PARALLEL_CMD in the Profile
 
     atoms.calc = Espresso(
         input_atoms=atoms,
         preset=preset,
         template=template,
-        profile=EspressoProfile(
-            bin_path, pseudo_path, argv=SETTINGS.ESPRESSO_PARALLEL_CMD
-        ),
+        profile=EspressoProfile(bin_path, pseudo_path),
         **calc_flags,
     )
 
