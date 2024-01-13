@@ -1,6 +1,8 @@
-from ase.build import molecule
-from quacc import SETTINGS
 from pathlib import Path
+
+from ase.build import molecule
+
+from quacc import SETTINGS
 from quacc.recipes.onetep.core import static_job
 from quacc.utils.files import copy_decompress_files
 
