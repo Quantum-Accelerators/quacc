@@ -1,6 +1,7 @@
 """Base jobs for espresso."""
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ase import Atoms
@@ -71,16 +72,26 @@ def base_fn(
 
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
+    bin_path = str(
+        Path(SETTINGS.ESPRESSO_BIN_DIR, SETTINGS.ESPRESSO_BINARIES[template.binary])
+    )
+    pseudo_path = (
+        calc_flags.get("input_data", {})
+        .get("control", {})
+        .get("pseudo_dir", str(SETTINGS.ESPRESSO_PSEUDO))
+    )
+
     atoms.calc = Espresso(
         input_atoms=atoms,
         preset=preset,
         template=template,
-        profile=EspressoProfile(argv=SETTINGS.ESPRESSO_PARALLEL_CMD),
+        profile=EspressoProfile(
+            bin_path, pseudo_path, argv=SETTINGS.ESPRESSO_PARALLEL_CMD
+        ),
         **calc_flags,
     )
 
-    geom_file = template.outputname if template.binary == "pw" else None
-
+    geom_file = template.outputname if template.binary == "pw" else Non
     final_atoms = run_calc(atoms, geom_file=geom_file, copy_files=copy_files)
 
     return summarize_run(
