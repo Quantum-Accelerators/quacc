@@ -164,6 +164,10 @@ class QuaccSettings(BaseSettings):
     ONETEP_CMD: Optional[Path] = Field(
         None, description=("Path to the ONETEP executable.")
     )
+    ONETEP_PARALLEL_CMD: Optional[list[str]] = Field(
+        None,
+        description=("Parallelization commands to run ONETEP, formatted as a list."),
+    )
     ONETEP_PP_PATH: Optional[Path] = Field(
         None, description=("Path to pseudopotentials.")
     )

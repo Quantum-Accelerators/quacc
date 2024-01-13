@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ase.calculators.onetep import Onetep
+from ase.calculators.onetep import Onetep, OnetepProfile
 
 from quacc import SETTINGS
 from quacc.runners.ase import run_calc
@@ -52,6 +52,7 @@ def base_fn(
         input_atoms=atoms,
         calc_defaults=calc_defaults,
         pseudo_path=SETTINGS.ONETEP_PP_PATH,
+        profile=OnetepProfile(argv=SETTINGS.ONETEP_PARALLEL_CMD),
         **calc_swaps,
     )
 
