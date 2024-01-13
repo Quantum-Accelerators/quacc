@@ -16,6 +16,7 @@ from quacc import SETTINGS
 from quacc.atoms.core import copy_atoms
 from quacc.runners.prep import calc_cleanup, calc_setup
 from quacc.utils.dicts import recursive_dict_merge
+from quacc.utils.opt import ASEOptimizerSuperCharged
 
 try:
     from sella import Internals, Sella
@@ -119,6 +120,7 @@ def run_opt(
     optimizer_kwargs: OptimizerKwargs | None = None,
     run_kwargs: dict[str, Any] | None = None,
     copy_files: str | Path | list[str | Path] | None = None,
+    task_to_attach: dict[str, Any] | None = None,
 ) -> Optimizer:
     """
     Run an ASE-based optimization in a scratch directory and copy the results back to
@@ -194,6 +196,10 @@ def run_opt(
 
     # Run calculation
     with traj, optimizer(atoms, **optimizer_kwargs) as dyn:
+        class QuaccedOptimizer(ASEOptimizerSuperCharged, dyn.__class__):
+            pass
+        dyn.__class__ = QuaccedOptimizer
+        dyn.attach_task(task_to_attach)
         dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
 
     # Store the trajectory atoms
