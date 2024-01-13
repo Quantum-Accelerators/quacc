@@ -50,7 +50,7 @@ Several pre-trained "universal" machine-learned potentials (MLPs) are natively s
 To use these potentials, you will need to install the corresponding packages. This can be done as follows:
 
 ```bash
-pip install quacc[ml]
+pip install quacc[mlp]
 ```
 
 ## NewtonNet
