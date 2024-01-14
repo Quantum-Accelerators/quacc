@@ -229,8 +229,6 @@ class EspressoTemplate(EspressoTemplate_):
                     path.mkdir(parents=True, exist_ok=True)
                     input_data[section][d_key] = path
 
-        self.outdirs = [path for path in self.outdirs.values() if path is not None]
-
         parameters["input_data"] = input_data
 
         return parameters
