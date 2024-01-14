@@ -16,7 +16,6 @@ from quacc import SETTINGS
 from quacc.atoms.core import copy_atoms
 from quacc.runners.prep import calc_cleanup, calc_setup
 from quacc.utils.dicts import recursive_dict_merge
-from quacc.calculators.espresso.opt_patchs import SchemaPatch
 
 try:
     from sella import Internals, Sella
@@ -117,7 +116,7 @@ def run_opt(
     fmax: float = 0.01,
     max_steps: int = 500,
     optimizer: Optimizer = FIRE,
-    optimizer_patch : SchemaPatch | None = None,
+    optimizer_patch: Any | None = None,
     optimizer_kwargs: OptimizerKwargs | None = None,
     run_kwargs: dict[str, Any] | None = None,
     copy_files: str | Path | list[str | Path] | None = None,
@@ -196,8 +195,8 @@ def run_opt(
 
     # Run calculation
     with traj, optimizer(atoms, **optimizer_kwargs) as dyn:
-
         if optimizer_patch is not None:
+
             class PatchedOptimizer(optimizer_patch, dyn.__class__):
                 pass
 

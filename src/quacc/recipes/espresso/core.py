@@ -9,7 +9,6 @@ from ase.optimize import LBFGS
 from quacc import job
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.recipes.espresso._base import base_fn, base_opt_fn
-from quacc.calculators.espresso.opt_patchs import SchemaPatch
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -160,7 +159,7 @@ def external_relax_job(
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     opt_params: dict[str, Any] | None = None,
-    opt_patch: SchemaPatch | None = None,
+    opt_patch: Any | None = None,
     copy_files: str | Path | list[str | Path] | None = None,
     **calc_kwargs,
 ) -> RunSchema:

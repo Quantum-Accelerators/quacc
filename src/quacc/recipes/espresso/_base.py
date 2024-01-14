@@ -14,7 +14,6 @@ from quacc.calculators.espresso.espresso import (
 from quacc.runners.ase import run_calc, run_opt
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import recursive_dict_merge
-from quacc.calculators.espresso.opt_patchs import SchemaPatch
 
 if TYPE_CHECKING:
     from typing import Any
@@ -104,7 +103,7 @@ def base_opt_fn(
     calc_swaps: dict[str, Any] | None = None,
     opt_defaults: dict[str, Any] | None = None,
     opt_params: dict[str, Any] | None = None,
-    opt_patch:  SchemaPatch | None = None,
+    opt_patch: Any | None = None,
     parallel_info: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
