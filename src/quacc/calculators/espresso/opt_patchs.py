@@ -20,9 +20,7 @@ class PostProcessingPatch:
         post_processing_job_params = self._calc_kwargs.get("post_processing_params", {})
         forced_params = {
             "input_data": {
-                "input_pp": {
-                    "fileout": f"pseudo_charge_density_{self.nsteps}.cube"
-                }
+                "plot": {"fileout": f"pseudo_charge_density_{self.nsteps}.cube"}
             }
         }
         self._calc_kwargs["post_processing_params"] = recursive_dict_merge(
