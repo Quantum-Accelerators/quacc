@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from quacc.recipes.espresso.core import post_processing_job
+from quacc.utils.dicts import recursive_dict_merge
 
 
 class PostProcessingPatch:
@@ -16,6 +17,17 @@ class PostProcessingPatch:
         # If the opt is fast compared to the post-processing, file could be
         # overwritten while being copied or something like that?
         # How to redecorate here?
+        post_processing_job_params = self._calc_kwargs.get("post_processing_params", {})
+        forced_params = {
+            "input_data": {
+                "input_pp": {
+                    "fileout": f"pseudo_charge_density_{self.nsteps}.cube"
+                }
+            }
+        }
+        self._calc_kwargs["post_processing_params"] = recursive_dict_merge(
+            post_processing_job_params, forced_params
+        )
         self._results["post_processing"][self.nsteps] = post_processing_job(
             prev_dir=Path().cwd(), **self._calc_kwargs.get("post_processing_params", {})
         )

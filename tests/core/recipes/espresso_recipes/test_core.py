@@ -8,6 +8,7 @@ from numpy.testing import assert_allclose, assert_array_equal
 
 from quacc import SETTINGS
 from quacc.calculators.espresso.espresso import EspressoTemplate
+from quacc.calculators.espresso.opt_patchs import PostProcessingPatch
 from quacc.recipes.espresso.core import (
     post_processing_job,
     relax_job,
@@ -259,7 +260,11 @@ def test_patched_external_relax_job(tmp_path, monkeypatch):
     input_data = {"control": {"pseudo_dir": tmp_path}}
 
     results = external_relax_job(
-        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=None
+        atoms,
+        opt_patch=PostProcessingPatch,
+        input_data=input_data,
+        pseudopotentials=pseudopotentials,
+        kpts=None,
     )
 
     with pytest.raises(AssertionError):
