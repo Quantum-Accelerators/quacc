@@ -16,6 +16,8 @@ if TYPE_CHECKING:
 
     from quacc.schemas._aliases.vasp import VaspSchema
 
+LOG_FILE = "OUTCAR"
+
 
 def base_fn(
     atoms: Atoms,
@@ -53,6 +55,6 @@ def base_fn(
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
     atoms.calc = Vasp(atoms, preset=preset, **calc_flags)
-    atoms = run_calc(atoms, copy_files=copy_files)
+    atoms = run_calc(atoms, geom_file=LOG_FILE, copy_files=copy_files)
 
     return vasp_summarize_run(atoms, additional_fields=additional_fields)

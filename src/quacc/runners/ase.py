@@ -59,10 +59,11 @@ def run_calc(
         The Atoms object to run the calculation on.
     geom_file
         The filename of the log file that contains the output geometry, used to
-        update the atoms object's positions and cell after a job. It is better
-        to specify this rather than relying on ASE's
-        atoms.get_potential_energy() function to update the positions, as this
-        varies between codes.
+        update the Atoms object after a job. The goal is to ensure the Atoms object
+        has the final positions and cell, as well as any relevant properties like
+        final magnetic moments. It is better to specify this rather than relying on
+        ASE's atoms.get_potential_energy() function to update the positions, as this
+        behavior varies between codes.
     copy_files
         Filenames to copy from source to scratch directory.
 
@@ -86,23 +87,7 @@ def run_calc(
     # used. This section is done to ensure that the atoms object is updated with
     # the correct positions and cell if a `geom_file` is provided.
     if geom_file:
-        # Note: We have to be careful to make sure we don't lose the converged
-        # magnetic moments, if present. That's why we simply update the
-        # positions and cell in-place.
-        atoms_new = read(zpath(tmpdir / geom_file))
-        if isinstance(atoms_new, list):
-            atoms_new = atoms_new[-1]
-
-        # Make sure the atom indices didn't get updated somehow (sanity check).
-        # If this happens, there is a serious problem.
-        if (
-            np.array_equal(atoms_new.get_atomic_numbers(), atoms.get_atomic_numbers())
-            is False
-        ):
-            raise ValueError("Atomic numbers do not match between atoms and geom_file.")
-
-        atoms.positions = atoms_new.positions
-        atoms.cell = atoms_new.cell
+        atoms = read(zpath(tmpdir / geom_file))
 
     # Perform cleanup operations
     calc_cleanup(tmpdir, job_results_dir)
