@@ -21,10 +21,7 @@ def _find_results_dir():
     pattern = str(Path(search_dir, "quacc-*"))
     matching_dirs = glob.glob(pattern)
     most_recent_directory = max(matching_dirs, key=os.path.getmtime, default=None)
-    if most_recent_directory is None:
-        return Path.cwd()
-    else:
-        return most_recent_directory
+    return Path.cwd() if most_recent_directory is None else most_recent_directory
 
 
 def prep_files():
