@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import cclib
+import logger
 from ase.atoms import Atoms
 from cclib.io import ccread
 from monty.json import jsanitize
@@ -30,6 +31,8 @@ if TYPE_CHECKING:
         cclibBaseSchema,
         cclibSchema,
     )
+
+logger = logging.getLogger(__name__)
 
 
 def cclib_summarize_run(
@@ -346,7 +349,7 @@ def _cclib_calculate(
     try:
         m.calculate()
     except Exception as e:
-        warnings.warn(f"Could not calculate {method}: {e}", UserWarning)
+        logger.warning(f"Could not calculate {method}: {e}")
         return None
 
     # The list of available attributes after a calculation. This is hardcoded

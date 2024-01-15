@@ -1,6 +1,7 @@
 """Base functions for universal machine-learned interatomic potentials."""
 from __future__ import annotations
 
+import logging
 import warnings
 from functools import lru_cache
 from typing import TYPE_CHECKING
@@ -9,6 +10,8 @@ if TYPE_CHECKING:
     from typing import Literal
 
     from ase.calculator.calculator import Calculator
+
+logger = logging.getLogger(__name__)
 
 
 @lru_cache
@@ -36,7 +39,7 @@ def _pick_calculator(
     import torch
 
     if not torch.cuda.is_available():
-        warnings.warn("CUDA is not available to PyTorch. Calculations will be slow.")
+        logger.warning("CUDA is not available to PyTorch. Calculations will be slow.")
 
     if calculator.lower().startswith("m3gnet"):
         import matgl
