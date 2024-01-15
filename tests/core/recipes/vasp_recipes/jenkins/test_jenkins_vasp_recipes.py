@@ -4,8 +4,9 @@ import pytest
 
 pytestmark = pytest.mark.skipif(which("vasp_std") is None, reason="VASP not installed")
 from ase.build import bulk
+from ase.io import read
+from monty.shutil import zpath
 from numpy.testing import assert_equal
-from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc import SETTINGS
 from quacc.recipes.vasp.core import static_job
@@ -44,10 +45,6 @@ def test_static_job_spin(tmp_path, monkeypatch):
     assert output["parameters"]["efermi"] == "midgap"
     assert output["parameters"]["kpts"] == [3, 3, 3]
     assert output["results"]["energy"] < 0
-    output_magmoms = (
-        AseAtomsAdaptor()
-        .get_atoms(output["output"]["structure"])
-        .get_magnetic_moments()
-    )
+    output_magmoms = read(zpath(tmp_path / "OUTCAR")).get_magnetic_moments()
     assert output_magmoms.all() is True
     assert_equal(output["atoms"].get_initial_magnetic_moments(), output_magmoms)
