@@ -110,7 +110,7 @@ def test_vasp_summarize_run(run1, monkeypatch):
     atoms.calc = calc
     atoms.calc.results = {"energy": -1.0}
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
-    results = vasp_summarize_run(atoms, dir_path=run1, prep_next_run=False)
+    results = vasp_summarize_run(atoms, dir_path=run1, move_magmoms=False)
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
     results_atoms = results["atoms"]
     assert results_atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)

@@ -97,10 +97,7 @@ def phonon_flow(
         phonon.run_thermal_properties(t_step=t_step, t_max=t_max, t_min=t_min)
 
         return summarize_phonopy(
-            phonon,
-            input_atoms=atoms,
-            parameters=parameters,
-            additional_fields=additional_fields,
+            phonon, atoms, parameters=parameters, additional_fields=additional_fields
         )
 
     force_job_results = _phonopy_forces_subflow(atoms)

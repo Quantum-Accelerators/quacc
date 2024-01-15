@@ -60,7 +60,7 @@ def static_job(
 
     final_atoms = run_calc(atoms)
     return summarize_run(
-        final_atoms, input_atoms=atoms, additional_fields={"name": "TBLite Static"}
+        final_atoms, atoms, additional_fields={"name": "TBLite Static"}
     )
 
 
