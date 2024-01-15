@@ -250,6 +250,10 @@ def test_ase_relax_job(tmp_path, monkeypatch):
         )
     assert_allclose(results["atoms"].get_cell(), atoms.get_cell(), atol=1.0e-3)
 
+    assert len(results["trajectory"]) == 3
+    assert_allclose(
+        results["trajectory_results"][-1]["free_energy"], -293.71198070497894
+    )
     new_input_data = results["parameters"]["input_data"]
     assert new_input_data["control"]["calculation"] == "scf"
 
