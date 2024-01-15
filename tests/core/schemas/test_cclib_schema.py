@@ -1,4 +1,5 @@
 import gzip
+import logging
 import os
 import shutil
 from pathlib import Path
@@ -16,6 +17,9 @@ from quacc.schemas.cclib import (
     _make_cclib_schema,
     cclib_summarize_run,
 )
+
+LOGGER = logging.getLogger(__name__)
+LOGGER.propagate = True
 
 FILE_DIR = Path(__file__).parent
 
@@ -234,7 +238,7 @@ def test_cclib_calculate(tmp_path, monkeypatch, cclib_obj):
         )
 
 
-def test_monkeypatches(tmp_path, monkeypatch, cclib_obj):
+def test_monkeypatches(tmp_path, monkeypatch, cclib_obj, caplog):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("PROATOM_DIR", str(FILE_DIR / "cclib_data" / "proatomdata"))
     with pytest.raises(FileNotFoundError):
@@ -245,7 +249,7 @@ def test_monkeypatches(tmp_path, monkeypatch, cclib_obj):
         )
 
     monkeypatch.setattr("cclib.method.Bader.calculate", bad_mock_cclib_calculate)
-    with pytest.warns(UserWarning):
+    with caplog.at_level(logging.WARNING):
         assert (
             _cclib_calculate(
                 cclib_obj,
