@@ -227,7 +227,7 @@ def ase_relax_job(
         atoms,
         preset=preset,
         relax_cell=relax_cell,
-        template=EspressoTemplate("pw", test_run=test_run),
+        template=EspressoTemplate("pw"),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         opt_defaults=opt_defaults,
