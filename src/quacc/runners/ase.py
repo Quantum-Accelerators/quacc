@@ -18,7 +18,7 @@ from quacc.runners.prep import calc_cleanup, calc_setup
 from quacc.utils.dicts import recursive_dict_merge
 
 try:
-    from sella import Internals, Sella
+    from sella import Sella
 
 except ImportError:
     Sella = None
