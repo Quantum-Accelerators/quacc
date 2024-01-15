@@ -34,7 +34,7 @@ def test_summarize_run():
     assert results["atoms"] == atoms
     assert results["results"]["energy"] == atoms.get_potential_energy()
     assert "pymatgen_version" in results["builder_meta"]
-    assert results["input_atoms"]["atoms"] == atoms
+    assert results["input_atoms"]["atoms"] == initial_atoms
 
 
 def test_summarize_run2():
@@ -349,7 +349,8 @@ def test_errors(tmp_path, monkeypatch):
     with pytest.raises(ValueError):
         summarize_run(atoms)
 
+    initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     atoms.calc.results = {}
     with pytest.raises(ValueError):
-        summarize_run(atoms)
+        summarize_run(atoms, initial_atoms)

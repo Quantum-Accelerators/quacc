@@ -6,7 +6,9 @@ import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from ase.io import read
 from emmet.core.tasks import TaskDoc
+from monty.os.path import zpath
 from pymatgen.command_line.bader_caller import bader_analysis_from_path
 from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
 
@@ -90,9 +92,12 @@ def vasp_summarize_run(
             f"VASP calculation did not converge. Will not store task data. Refer to {dir_path}"
         )
 
-    initial_atoms = vasp_task_doc["orig_inputs"]["poscar"]["structure"]
+    initial_atoms = read(zpath(dir_path / "POSCAR"))
     base_task_doc = summarize_run(
-        final_atoms, initial_atoms, prep_next_run=prep_next_run, store=False
+        final_atoms,
+        initial_atoms,
+        prep_next_run=prep_next_run,
+        store=False,
     )
 
     # Get Bader analysis
