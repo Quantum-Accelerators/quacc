@@ -29,7 +29,6 @@ logger = logging.getLogger(__name__)
 
 def vasp_summarize_run(
     final_atoms: Atoms,
-    input_atoms: Atoms | None = None,
     dir_path: str | Path | None = None,
     prep_next_run: bool = True,
     run_bader: bool | None = None,
@@ -45,9 +44,6 @@ def vasp_summarize_run(
     ----------
     final_atoms
         ASE Atoms object following a calculation.
-    input_atoms
-        ASE Atoms object used as input to the calculation. If None, this
-        data is not directly stored.
     dir_path
         Path to VASP outputs. A value of None specifies the current working
         directory
@@ -94,8 +90,9 @@ def vasp_summarize_run(
             f"VASP calculation did not converge. Will not store task data. Refer to {dir_path}"
         )
 
+    initial_atoms = vasp_task_doc["orig_inputs"]["poscar"]["structure"]
     base_task_doc = summarize_run(
-        final_atoms, input_atoms=input_atoms, prep_next_run=prep_next_run, store=False
+        final_atoms, initial_atoms, prep_next_run=prep_next_run, store=False
     )
 
     # Get Bader analysis

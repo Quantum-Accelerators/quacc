@@ -131,7 +131,7 @@ def cclib_summarize_run(
     # Get the base task document for the ASE run
     run_task_doc = summarize_run(
         final_atoms,
-        input_atoms=input_atoms,
+        input_atoms,
         charge_and_multiplicity=(attributes["charge"], attributes["mult"]),
         prep_next_run=prep_next_run,
         store=False,

@@ -38,7 +38,7 @@ if TYPE_CHECKING:
 
 def summarize_run(
     final_atoms: Atoms,
-    input_atoms: Atoms | None = None,
+    input_atoms: Atoms,
     charge_and_multiplicity: tuple[int, int] | None = None,
     prep_next_run: bool = True,
     additional_fields: dict[str, Any] | None = None,
@@ -187,7 +187,7 @@ def summarize_opt_run(
     # Base task doc
     base_task_doc = summarize_run(
         final_atoms,
-        input_atoms=initial_atoms,
+        initial_atoms,
         charge_and_multiplicity=charge_and_multiplicity,
         prep_next_run=prep_next_run,
         store=False,
