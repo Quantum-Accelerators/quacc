@@ -63,5 +63,5 @@ def base_fn(
     final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(
-        final_atoms, input_atoms=atoms, additional_fields=additional_fields
+        final_atoms, atoms, additional_fields=additional_fields
     )
