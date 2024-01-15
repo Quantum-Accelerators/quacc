@@ -83,12 +83,12 @@ def run_calc(
 
     # Most ASE calculators do not update the atoms object in-place with a call
     # to .get_potential_energy(), which is important if an internal optimizer is
-    # used. This section is done to ensure that the atoms object is updated with
-    # the correct positions and cell if a `geom_file` is provided.
+    # used. This section is done to ensure that the atoms object is updated to
+    # the final geometry if `geom_file` is provided.
+    # Note: We have to be careful to make sure we don't lose the calculator
+    # object, as this contains important information such as the parameters
+    # and output properties (e.g. final magnetic moments). 
     if geom_file:
-        # Note: We have to be careful to make sure we don't lose the converged
-        # magnetic moments, if present. That's why we simply update the
-        # positions and cell in-place.
         atoms_new = read(zpath(tmpdir / geom_file))
         if isinstance(atoms_new, list):
             atoms_new = atoms_new[-1]
