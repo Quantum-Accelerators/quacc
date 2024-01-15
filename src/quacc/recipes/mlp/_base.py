@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
     from ase.calculator.calculator import Calculator
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 @lru_cache
@@ -38,7 +38,7 @@ def _pick_calculator(
     import torch
 
     if not torch.cuda.is_available():
-        logger.warning("CUDA is not available to PyTorch. Calculations will be slow.")
+        LOGGER.WARNING("CUDA is not available to PyTorch. Calculations will be slow.")
 
     if calculator.lower().startswith("m3gnet"):
         import matgl

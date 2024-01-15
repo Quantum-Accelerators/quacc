@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
     from quacc.schemas._aliases.ase import RunSchema
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 GEOM_FILE_PBC = "gulp.cif"
 GEOM_FILE_NOPBC = "gulp.xyz"

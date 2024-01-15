@@ -35,7 +35,7 @@ if TYPE_CHECKING:
         no_obtuse_hollow: bool  # default = True
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 def flip_atoms(

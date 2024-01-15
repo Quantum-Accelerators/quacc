@@ -11,7 +11,7 @@ from quacc.atoms.core import copy_atoms, get_atoms_id
 if TYPE_CHECKING:
     from ase.atoms import Atoms
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 def prep_next_run(

@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 
     from quacc.schemas._aliases.vasp import BaderSchema, ChargemolSchema, VaspSchema
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 def vasp_summarize_run(

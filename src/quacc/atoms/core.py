@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from ase.optimize.optimize import Dynamics
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 def get_atoms_id(atoms: Atoms) -> str:
@@ -192,7 +192,7 @@ def check_charge_and_spin(
             f"Charge of {mol.charge} and spin multiplicity of {mol.spin_multiplicity} is"
             " not possible for this molecule."
         )
-    logger.info(
+    LOGGER.info(
         f"Setting charge to {mol.charge} and spin multiplicity to {mol.spin_multiplicity}"
     )
 
