@@ -18,7 +18,7 @@ from quacc.runners.prep import calc_cleanup, calc_setup
 from quacc.utils.dicts import recursive_dict_merge
 
 try:
-    from sella import Internals, Sella
+    from sella import Sella
 
 except ImportError:
     Sella = None
@@ -83,12 +83,12 @@ def run_calc(
 
     # Most ASE calculators do not update the atoms object in-place with a call
     # to .get_potential_energy(), which is important if an internal optimizer is
-    # used. This section is done to ensure that the atoms object is updated with
-    # the correct positions and cell if a `geom_file` is provided.
+    # used. This section is done to ensure that the atoms object is updated to
+    # the final geometry if `geom_file` is provided.
+    # Note: We have to be careful to make sure we don't lose the calculator
+    # object, as this contains important information such as the parameters
+    # and output properties (e.g. final magnetic moments).
     if geom_file:
-        # Note: We have to be careful to make sure we don't lose the converged
-        # magnetic moments, if present. That's why we simply update the
-        # positions and cell in-place.
         atoms_new = read(zpath(tmpdir / geom_file))
         if isinstance(atoms_new, list):
             atoms_new = atoms_new[-1]
@@ -181,7 +181,6 @@ def run_opt(
         _set_sella_kwargs(atoms, optimizer_kwargs)
     elif optimizer.__name__ == "IRC":
         optimizer_kwargs.pop("restart", None)
-    optimizer_kwargs.pop("use_TRICs", None)
 
     # Define the Trajectory object
     traj_filename = tmpdir / "opt.traj"
@@ -267,10 +266,6 @@ def _set_sella_kwargs(atoms: Atoms, optimizer_kwargs: dict[str, Any]) -> None:
 
     2. If `internal` is not defined and not `atoms.pbc.any()`, set it to `True`.
 
-    3. If `use_TRICs = True` and not `atoms.pbc.any()`, then `internal` is
-    built for the user via `find_all_bonds()`, `find_all_angles()`, and
-    `find_all_dihedral()`, unless the user has directly specified `internal`.
-
     Parameters
     ----------
     atoms
@@ -286,15 +281,5 @@ def _set_sella_kwargs(atoms: Atoms, optimizer_kwargs: dict[str, Any]) -> None:
     if "order" not in optimizer_kwargs:
         optimizer_kwargs["order"] = 0
 
-    if not atoms.pbc.any():
-        if "internal" not in optimizer_kwargs:
-            optimizer_kwargs["internal"] = True
-
-        if optimizer_kwargs.get("use_TRICs") and not isinstance(
-            optimizer_kwargs.get("internal"), Internals
-        ):
-            internals = Internals(atoms, allow_fragments=True)
-            internals.find_all_bonds()
-            internals.find_all_angles()
-            internals.find_all_dihedrals()
-            optimizer_kwargs["internal"] = internals
+    if not atoms.pbc.any() and "internal" not in optimizer_kwargs:
+        optimizer_kwargs["internal"] = True

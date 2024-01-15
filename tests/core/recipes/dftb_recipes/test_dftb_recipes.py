@@ -16,6 +16,7 @@ def test_static_job_water(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = molecule("H2O")
+    atoms.info = {"test": "hello"}
     output = static_job(atoms)
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
@@ -25,6 +26,8 @@ def test_static_job_water(tmp_path, monkeypatch):
     assert (
         np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is True
     )
+    assert output["atoms"].info["test"] == "hello"
+    assert output["atoms"].info.get("_id")
 
 
 def test_static_job_cu_supercell(tmp_path, monkeypatch):
