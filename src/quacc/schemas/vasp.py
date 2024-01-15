@@ -97,6 +97,7 @@ def vasp_summarize_run(
     base_task_doc = summarize_run(
         final_atoms, input_atoms=input_atoms, prep_next_run=prep_next_run, store=False
     )
+    del base_task_doc["structure"]
 
     # Get Bader analysis
     if run_bader:
@@ -121,9 +122,6 @@ def vasp_summarize_run(
         if chargemol_results:
             vasp_task_doc["chargemol"] = chargemol_results[0]
             struct = chargemol_results[1]
-
-    # Override the Structure to have the attached properties
-    del vasp_task_doc["structure"]
 
     # Make task document
     unsorted_task_doc = base_task_doc | vasp_task_doc | additional_fields

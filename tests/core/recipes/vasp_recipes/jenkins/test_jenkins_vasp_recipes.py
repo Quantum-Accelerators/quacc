@@ -5,7 +5,7 @@ import pytest
 pytestmark = pytest.mark.skipif(which("vasp_std") is None, reason="VASP not installed")
 from ase.build import bulk
 from ase.io import read
-from monty.shutil import zpath
+from monty.os.path import zpath
 from numpy.testing import assert_equal
 
 from quacc import SETTINGS
