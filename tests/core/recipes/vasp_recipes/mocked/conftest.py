@@ -46,7 +46,7 @@ def mock_summarize_run(atoms, **kwargs):
     prep_next_run = kwargs.get("prep_next_run", True)
     additional_fields = kwargs.get("additional_fields")
     output = calc_summarize_run(
-        atoms, prep_next_run=prep_next_run, additional_fields=additional_fields
+        atoms, Atoms(), prep_next_run=prep_next_run, additional_fields=additional_fields
     )
     output["output"] = {
         "energy": -1.0,

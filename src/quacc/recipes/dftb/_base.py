@@ -70,6 +70,4 @@ def base_fn(
             msg = f"Geometry optimization did not complete in {LOG_FILE}"
             raise RuntimeError(msg)
 
-    return summarize_run(
-        final_atoms, input_atoms=atoms, additional_fields=additional_fields
-    )
+    return summarize_run(final_atoms, atoms, additional_fields=additional_fields)

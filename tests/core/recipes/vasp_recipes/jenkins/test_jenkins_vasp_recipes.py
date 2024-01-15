@@ -3,8 +3,9 @@ from shutil import which
 import pytest
 
 pytestmark = pytest.mark.skipif(which("vasp_std") is None, reason="VASP not installed")
-
 from ase.build import bulk
+from numpy.testing import assert_equal
+from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc import SETTINGS
 from quacc.recipes.vasp.core import static_job
