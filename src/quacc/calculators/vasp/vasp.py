@@ -178,7 +178,8 @@ class Vasp(Vasp_):
         # Return vanilla ASE command
         vasp_cmd = (
             SETTINGS.VASP_GAMMA_CMD
-            if np.prod(self.user_calc_params.get("kpts", [1, 1, 1])) == 1
+            if (np.prod(self.user_calc_params.get("kpts", [1, 1, 1])) == 1
+            and not self.user_calc_params.get("kspacing", None))
             else SETTINGS.VASP_CMD
         )
 
