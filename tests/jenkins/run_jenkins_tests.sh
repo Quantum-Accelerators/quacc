@@ -7,5 +7,4 @@ pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/mas
 pip install -e .[dev]
 
 # Gaussian, ORCA, GULP
-cd /home/asrosen/
 salloc -N 1 -n 32 -t 00:10:00 tests/jenkins/hpc_tests.sh
