@@ -185,9 +185,7 @@ def test_static_job_test_run(tmp_path, monkeypatch):
 
     pseudopotentials = {"Si": "Si.upf"}
 
-    EspressoTemplate._test_run(
-        {"input_data": {"control": {"prefix": "test"}}}, Path(".")
-    )
+    EspressoTemplate._test_run({"input_data": {"control": {"prefix": "test"}}}, Path())
 
     assert Path("test.EXIT").exists()
 
@@ -256,6 +254,33 @@ def test_ase_relax_job(tmp_path, monkeypatch):
     )
     new_input_data = results["parameters"]["input_data"]
     assert new_input_data["control"]["calculation"] == "scf"
+
+
+def test_ase_relax_cell_job(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+
+    atoms = bulk("Si")
+    atoms[0].position += 0.05
+
+    pseudopotentials = {"Si": "Si.upf"}
+    input_data = {
+        "control": {"pseudo_dir": tmp_path},
+        "occupations": "smearing",
+        "smearing": "gaussian",
+        "degauss": 0.005,
+    }
+
+    with pytest.raises(RuntimeError):
+        ase_relax_job(
+            atoms,
+            relax_cell=True,
+            input_data=input_data,
+            pseudopotentials=pseudopotentials,
+            kpts=None,
+            opt_params={"max_steps": 2, "fmax": 1.0e-1, "optimizer": BFGS},
+        )
 
 
 def test_relax_job_cell(tmp_path, monkeypatch):
