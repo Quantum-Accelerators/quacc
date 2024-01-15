@@ -241,7 +241,7 @@ def test_ase_relax_job(tmp_path, monkeypatch):
         input_data=input_data,
         pseudopotentials=pseudopotentials,
         kpts=None,
-        opt_params={"maxiter": 10, "fmax": 1.0e-1, "optimizer": BFGS},
+        opt_params={"max_steps": 10, "fmax": 1.0e-1, "optimizer": BFGS},
     )
 
     with pytest.raises(AssertionError):
