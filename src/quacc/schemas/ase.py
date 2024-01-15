@@ -37,7 +37,7 @@ if TYPE_CHECKING:
 
 
 def summarize_run(
-    atoms: Atoms,
+    final_atoms: Atoms,
     input_atoms: Atoms | None = None,
     charge_and_multiplicity: tuple[int, int] | None = None,
     prep_next_run: bool = True,
@@ -50,7 +50,7 @@ def summarize_run(
 
     Parameters
     ----------
-    atoms
+    final_atoms
         ASE Atoms following a calculation. A calculator must be attached.
     input_atoms
         Input ASE Atoms object to store.
@@ -76,10 +76,10 @@ def summarize_run(
     additional_fields = additional_fields or {}
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
-    if not atoms.calc:
+    if not final_atoms.calc:
         msg = "ASE Atoms object has no attached calculator."
         raise ValueError(msg)
-    if not atoms.calc.results:
+    if not final_atoms.calc.results:
         msg = "ASE Atoms object's calculator has no results."
         raise ValueError(msg)
 
@@ -90,18 +90,18 @@ def summarize_run(
         else None
     )
     inputs = {
-        "parameters": atoms.calc.parameters,
+        "parameters": final_atoms.calc.parameters,
         "nid": uri.split(":")[0],
         "dir_name": ":".join(uri.split(":")[1:]),
         "input_atoms": input_atoms_metadata,
         "quacc_version": __version__,
     }
 
-    results = {"results": atoms.calc.results}
+    results = {"results": final_atoms.calc.results}
 
-    atoms_to_store = prep_next_run_(atoms) if prep_next_run else atoms
+    atoms_to_store = prep_next_run_(final_atoms) if prep_next_run else final_atoms
 
-    if atoms:
+    if final_atoms:
         final_atoms_metadata = atoms_to_metadata(
             atoms_to_store, charge_and_multiplicity=charge_and_multiplicity
         )
