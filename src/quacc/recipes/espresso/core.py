@@ -3,7 +3,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ase.filters import UnitCellFilter
 from ase.optimize import LBFGS
 
 from quacc import job
@@ -153,9 +152,10 @@ def relax_job(
 
 
 @job
-def external_relax_job(
-    atoms: Atoms | UnitCellFilter,
+def ase_relax_job(
+    atoms: Atoms,
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
+    relax_cell: bool = False,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     opt_params: dict[str, Any] | None = None,
@@ -209,7 +209,7 @@ def external_relax_job(
         "input_data": {
             "control": {
                 "calculation": "scf",
-                "tstress": True if isinstance(atoms, UnitCellFilter) else False,
+                "tstress": relax_cell,
                 "tprnfor": True,
             }
         }
@@ -217,14 +217,17 @@ def external_relax_job(
 
     opt_defaults = {
         "fmax": 0.01,
-        "max_steps": 500,
-        # LBFGS is very often the "best" optimizer for the general case.
-        "optimizer": LBFGS
+        "max_steps": 1000,
+        # https://wiki.fysik.dtu.dk/gpaw/devel/ase_optimize/ase_optimize.html
+        # To help guide the choice?
+        # GPMin probably best choice but eat a lot of RAM.
+        "optimizer": LBFGS,
     }
 
     return base_opt_fn(
         atoms,
         preset=preset,
+        relax_cell=relax_cell,
         template=EspressoTemplate("pw", test_run=test_run),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,

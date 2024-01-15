@@ -116,7 +116,6 @@ def run_opt(
     fmax: float = 0.01,
     max_steps: int = 500,
     optimizer: Optimizer = FIRE,
-    optimizer_patch: Any | None = None,
     optimizer_kwargs: OptimizerKwargs | None = None,
     run_kwargs: dict[str, Any] | None = None,
     copy_files: str | Path | list[str | Path] | None = None,
@@ -195,14 +194,6 @@ def run_opt(
 
     # Run calculation
     with traj, optimizer(atoms, **optimizer_kwargs) as dyn:
-        if optimizer_patch is not None:
-
-            class PatchedOptimizer(optimizer_patch, dyn.__class__):
-                pass
-
-            dyn.__class__ = PatchedOptimizer
-            dyn.__init__(**optimizer_kwargs)
-
         dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
 
     # Store the trajectory atoms

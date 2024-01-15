@@ -1,19 +1,21 @@
+from __future__ import annotations
+
 from pathlib import Path
 from shutil import which
 from subprocess import CalledProcessError
 
 import pytest
 from ase.build import bulk
+from ase.optimize import BFGS
 from numpy.testing import assert_allclose, assert_array_equal
 
 from quacc import SETTINGS
 from quacc.calculators.espresso.espresso import EspressoTemplate
-from quacc.calculators.espresso.opt_patchs import PostProcessingPatch
 from quacc.recipes.espresso.core import (
+    ase_relax_job,
     post_processing_job,
     relax_job,
     static_job,
-    external_relax_job,
 )
 from quacc.utils.files import copy_decompress_files
 
@@ -223,7 +225,7 @@ def test_relax_job(tmp_path, monkeypatch):
     assert new_input_data["control"]["calculation"] == "relax"
 
 
-def test_external_relax_job(tmp_path, monkeypatch):
+def test_ase_relax_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
@@ -234,37 +236,12 @@ def test_external_relax_job(tmp_path, monkeypatch):
     pseudopotentials = {"Si": "Si.upf"}
     input_data = {"control": {"pseudo_dir": tmp_path}}
 
-    results = external_relax_job(
-        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=None
-    )
-
-    with pytest.raises(AssertionError):
-        assert_allclose(
-            results["atoms"].get_positions(), atoms.get_positions(), atol=1.0e-4
-        )
-    assert_allclose(results["atoms"].get_cell(), atoms.get_cell(), atol=1.0e-3)
-
-    new_input_data = results["parameters"]["input_data"]
-    assert new_input_data["control"]["calculation"] == "scf"
-
-
-def test_patched_external_relax_job(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
-
-    atoms = bulk("Si")
-    atoms[0].position += 0.05
-
-    pseudopotentials = {"Si": "Si.upf"}
-    input_data = {"control": {"pseudo_dir": tmp_path}}
-
-    results = external_relax_job(
+    results = ase_relax_job(
         atoms,
-        opt_patch=PostProcessingPatch,
         input_data=input_data,
         pseudopotentials=pseudopotentials,
         kpts=None,
+        opt_params={"maxiter": 10, "fmax": 1.0e-1, "optimizer": BFGS},
     )
 
     with pytest.raises(AssertionError):

@@ -97,13 +97,13 @@ def base_fn(
 def base_opt_fn(
     atoms: Atoms = None,
     preset: str | None = None,
+    relax_cell: bool = False,
     template: EspressoTemplate | None = None,
     profile: EspressoProfile | None = None,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     opt_defaults: dict[str, Any] | None = None,
     opt_params: dict[str, Any] | None = None,
-    opt_patch: Any | None = None,
     parallel_info: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: list[str] | None = None,
@@ -117,6 +117,8 @@ def base_opt_fn(
         Atoms object
     preset
         Name of the preset to use
+    relax_cell
+        Whether to relax the cell or not.
     template
         EspressoTemplate to use
     profile
@@ -162,6 +164,6 @@ def base_opt_fn(
         **calc_flags,
     )
 
-    dyn = run_opt(atoms, optimizer_patch=opt_patch, copy_files=copy_files, **opt_flags)
+    dyn = run_opt(atoms, relax_cell=relax_cell, copy_files=copy_files, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields=additional_fields)
