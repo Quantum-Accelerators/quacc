@@ -63,8 +63,16 @@ pip install quacc[newtonnet]
 
 ## ONETEP
 
-<Description about ONETEP goes here>
+If you plan on using ONETEP with quacc, you will need to obtain and install ONETEP. This can be done as described in the [How to get Onetep](https://onetep.org/code/) section  of the software documentation.
 
+You will need to define and set `ONETEP_CMD` to be the full path to your ONETEP binary. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md). 
+
+An example is provided below on how to define the command in your `~/.bashrc`:
+
+```bash
+export ONETEP_CMD="/path/to/onetep/binary"
+```
+Other enviromental variables that could be set are `ONETEP_PARALLEL_CMD` and  `ONETEP_PP_PATH`
 ## ORCA
 
 To use quacc with ORCA, you will need to define the `ORCA_CMD` setting to be the full, absolute path to your ORCA executable. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md), such as by defining the following environment variable in your `~/.bashrc`:

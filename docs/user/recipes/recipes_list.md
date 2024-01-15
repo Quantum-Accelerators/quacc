@@ -117,7 +117,17 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 
 ## ONETEP
 
-<ONETEP content goes here>
+!!! Info
+
+    [ONETEP](https://onetep.org/) (Order-N Electronic Total Energy Package) is a linear-scaling code for quantum-mechanical calculations based on density-functional theory.
+
+<center>
+
+| Name           | Decorator       | Documentation                             | Req'd Extras |
+| -------------- | --------------- | ----------------------------------------- | ------------ |
+| ONETEP Static  | `#!Python @job` | [quacc.recipes.onetep.core.static_job][]  |              |
+
+</center>
 
 ## ORCA
 
