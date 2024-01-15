@@ -181,7 +181,6 @@ def run_opt(
         _set_sella_kwargs(atoms, optimizer_kwargs)
     elif optimizer.__name__ == "IRC":
         optimizer_kwargs.pop("restart", None)
-    optimizer_kwargs.pop("use_TRICs", None)
 
     # Define the Trajectory object
     traj_filename = tmpdir / "opt.traj"
@@ -267,10 +266,6 @@ def _set_sella_kwargs(atoms: Atoms, optimizer_kwargs: dict[str, Any]) -> None:
 
     2. If `internal` is not defined and not `atoms.pbc.any()`, set it to `True`.
 
-    3. If `use_TRICs = True` and not `atoms.pbc.any()`, then `internal` is
-    built for the user via `find_all_bonds()`, `find_all_angles()`, and
-    `find_all_dihedral()`, unless the user has directly specified `internal`.
-
     Parameters
     ----------
     atoms
@@ -286,15 +281,5 @@ def _set_sella_kwargs(atoms: Atoms, optimizer_kwargs: dict[str, Any]) -> None:
     if "order" not in optimizer_kwargs:
         optimizer_kwargs["order"] = 0
 
-    if not atoms.pbc.any():
-        if "internal" not in optimizer_kwargs:
-            optimizer_kwargs["internal"] = True
-
-        if optimizer_kwargs.get("use_TRICs") and not isinstance(
-            optimizer_kwargs.get("internal"), Internals
-        ):
-            internals = Internals(atoms, allow_fragments=True)
-            internals.find_all_bonds()
-            internals.find_all_angles()
-            internals.find_all_dihedrals()
-            optimizer_kwargs["internal"] = internals
+    if not atoms.pbc.any() and "internal" not in optimizer_kwargs:
+        optimizer_kwargs["internal"] = True

@@ -106,7 +106,7 @@ def ts_job(
         "fmax": 0.01,
         "max_steps": 1000,
         "optimizer": Sella,
-        "optimizer_kwargs": {"order": 1, "use_TRICs": False},
+        "optimizer_kwargs": {"order": 1},
     }
 
     if opt_params and opt_params.get("optimizer", Sella) is not Sella:
