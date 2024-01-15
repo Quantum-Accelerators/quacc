@@ -86,9 +86,11 @@ def run_calc(
     # used. This section is done to ensure that the atoms object is updated with
     # the correct positions and cell if a `geom_file` is provided.
     if geom_file:
-        # Note: We have to be careful to make sure we don't lose the converged
-        # magnetic moments, if present. That's why we simply update the
-        # positions and cell in-place.
+        # Note: We have to be careful to make sure we don't lose the calculator
+        # object, as this contains important information such as the parameters
+        # and output properties not necessarily in the geometry file, like the
+        # magnetic moments. That's why we use the new Atoms object from the
+        # geometry file and re-attach the calculator.
         atoms_new = read(zpath(tmpdir / geom_file))
         if isinstance(atoms_new, list):
             atoms_new = atoms_new[-1]
@@ -101,8 +103,8 @@ def run_calc(
         ):
             raise ValueError("Atomic numbers do not match between atoms and geom_file.")
 
-        atoms.positions = atoms_new.positions
-        atoms.cell = atoms_new.cell
+        atoms_new.calc = atoms.calc
+        atoms = atoms_new
 
     # Perform cleanup operations
     calc_cleanup(tmpdir, job_results_dir)
