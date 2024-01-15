@@ -88,6 +88,8 @@ def run_calc(
     # the correct positions and cell if a `geom_file` is provided.
     if geom_file:
         atoms = read(zpath(tmpdir / geom_file))
+        if isinstance(atoms_new, list):
+            atoms_new = atoms_new[-1]
 
     # Perform cleanup operations
     calc_cleanup(tmpdir, job_results_dir)
