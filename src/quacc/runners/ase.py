@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import sys
 from typing import TYPE_CHECKING
+
 from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read
 from ase.optimize import FIRE
