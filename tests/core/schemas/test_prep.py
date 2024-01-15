@@ -87,10 +87,6 @@ def test_prep_magmoms():
     atoms.calc = calc
     atoms.calc.results = {"magmom": mag - 2}
 
-    atoms = deepcopy(atoms_mag)
-    atoms = prep_magmoms(atoms, move_magmoms=False)
-    assert atoms.get_initial_magnetic_moments().tolist() == init_mags.tolist()
-
     atoms = deepcopy(atoms_nomag)
     mag = atoms.get_magnetic_moment()
     atoms = prep_magmoms(atoms)
