@@ -1,6 +1,7 @@
 from copy import deepcopy
 from pathlib import Path
 
+import numpy as np
 import pytest
 from ase import Atoms
 from ase.build import bulk, molecule
