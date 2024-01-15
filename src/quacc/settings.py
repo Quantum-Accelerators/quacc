@@ -135,6 +135,7 @@ class QuaccSettings(BaseSettings):
             "ph": "ph.x",
             "neb": "neb.x",
             "q2r": "q2r.x",
+            "dos": "dos.x",
             "matdyn": "matdyn.x",
             "dynmat": "dynmat.x",
             "bands": "bands.x",

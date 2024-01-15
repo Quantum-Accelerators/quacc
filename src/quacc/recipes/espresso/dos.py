@@ -64,7 +64,7 @@ def dos_job(
 
     calc_defaults = {
         "input_data": {
-            "DOS": {"fileout": "total_dos.dos"},
+            "dos": {"fileout": "total_dos.dos"},
             },
         }
 
@@ -98,7 +98,7 @@ def dos_flow(
         - job: [quacc.recipes.espresso.core.non_scf_job][]
 
     3. dos.x total density of states
-        - name: "ph_job"
+        - name: "dos_job"
         - job: [quacc.recipes.espresso.dos.dos_job][]
 
     Parameters
@@ -120,24 +120,28 @@ def dos_flow(
     """
     calc_defaults = {
         "static_job": {
-            "kspacing":0.05,
+            "kspacing":0.2,
             "input_data":{
                 "system":{
                     "occupations":"tetrahedra"
                 }
             }
             },
-        "non_scf_job": {
-            "kspacing":0.05,
+        "non_scf_job": recursive_dict_merge(job_params.get("static_job", {}), {
+            "kspacing":0.01,
             "input_data":{
+                "control":{
+                    "calculation":"nscf", # Unfortunately, we have to repeat that here.
+                    "verbosity": "high",
+                },
                 "system":{
                     "occupations":"tetrahedra"
                 }
             }
-        },
+        }),
         "dos_job": {
             "input_data": {
-                "DOS": {
+                "dos": {
                     "fileout": "total_dos.dos",
                     "bz_sum":"tetrahedra"
                     }
@@ -145,7 +149,7 @@ def dos_flow(
         },
         }
     job_params = recursive_dict_merge(calc_defaults, job_params)
-
+    
     pw_job, nscf_job, tdos_job= customize_funcs(
         ["static_job", "non_scf_job", "dos_job"],
         [static_job, non_scf_job, dos_job],
@@ -153,4 +157,7 @@ def dos_flow(
         decorators=job_decorators,
     )
 
-    return [pw_job(atoms),nscf_job(atoms),tdos_job(atoms)]
+    pw_results = pw_job(atoms)
+    nscf_results=nscf_job(atoms, prev_dir = pw_results["dir_name"])
+    dos_results = tdos_job(prev_dir = nscf_results["dir_name"])
+    return [pw_results,nscf_results,dos_results]
