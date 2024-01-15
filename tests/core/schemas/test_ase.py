@@ -347,7 +347,7 @@ def test_errors(tmp_path, monkeypatch):
 
     atoms = bulk("Cu")
     with pytest.raises(ValueError):
-        summarize_run(atoms)
+        summarize_run(atoms, atoms)
 
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
