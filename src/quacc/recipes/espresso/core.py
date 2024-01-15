@@ -206,22 +206,11 @@ def ase_relax_job(
 
     calc_defaults = {
         "input_data": {
-            "control": {
-                "calculation": "scf",
-                "tstress": relax_cell,
-                "tprnfor": True,
-            }
+            "control": {"calculation": "scf", "tstress": relax_cell, "tprnfor": True}
         }
     }
 
-    opt_defaults = {
-        "fmax": 0.01,
-        "max_steps": 1000,
-        # https://wiki.fysik.dtu.dk/gpaw/devel/ase_optimize/ase_optimize.html
-        # To help guide the choice?
-        # GPMin probably best choice but eat a lot of RAM.
-        "optimizer": LBFGS,
-    }
+    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": LBFGS}
 
     return base_opt_fn(
         atoms,
