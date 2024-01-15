@@ -74,33 +74,33 @@ def test_prep_magmoms():
     mag = atoms.get_magnetic_moment()
     init_mags = atoms.get_initial_magnetic_moments()
     mags = atoms.get_magnetic_moments()
-    atoms = prep_next_run(atoms)
+    atoms = prep_magmoms(atoms)
     assert atoms.info["test"] == "hi"
     assert atoms.calc is None
     assert atoms.get_initial_magnetic_moments().tolist() == mags.tolist()
 
     atoms = deepcopy(atoms_mag)
     atoms.info["test"] = "hi"
-    atoms = prep_next_run(atoms)
+    atoms = prep_magmoms(atoms)
     assert atoms.info.get("test", None) == "hi"
     calc = Vasp(atoms)
     atoms.calc = calc
     atoms.calc.results = {"magmom": mag - 2}
 
     atoms = deepcopy(atoms_mag)
-    atoms = prep_next_run(atoms, move_magmoms=False)
+    atoms = prep_magmoms(atoms, move_magmoms=False)
     assert atoms.get_initial_magnetic_moments().tolist() == init_mags.tolist()
 
     atoms = deepcopy(atoms_nomag)
     mag = atoms.get_magnetic_moment()
-    atoms = prep_next_run(atoms)
+    atoms = prep_magmoms(atoms)
     calc = Vasp(atoms)
     atoms.calc = calc
     atoms.calc.results = {"magmom": mag - 2}
-    atoms = prep_next_run(atoms)
+    atoms = prep_magmoms(atoms)
 
     atoms = deepcopy(atoms_nospin)
-    atoms = prep_next_run(atoms)
+    atoms = prep_magmoms(atoms)
     calc = Vasp(atoms)
     atoms.calc = calc
     atoms.calc.results = {"magmom": mag - 2}
