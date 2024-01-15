@@ -61,6 +61,10 @@ If you plan to use NewtonNet with Quacc, you will need to install it prior to us
 pip install quacc[newtonnet]
 ```
 
+## ONETEP
+
+<Description about ONETEP goes here>
+
 ## ORCA
 
 To use quacc with ORCA, you will need to define the `ORCA_CMD` setting to be the full, absolute path to your ORCA executable. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md), such as by defining the following environment variable in your `~/.bashrc`:
