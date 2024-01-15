@@ -8,7 +8,7 @@ from ase.io import read
 
 from quacc.atoms.core import get_atoms_id
 from quacc.calculators.vasp import Vasp
-from quacc.schemas.prep import prep_next_run
+from quacc.schemas.prep import prep_magmoms, prep_next_run
 
 
 @pytest.fixture()
@@ -67,6 +67,8 @@ def test_prep_next_run(
     assert atoms.info.get("_old_ids", None) == [md5hash, md5hash]
     assert atoms.info.get("_id", None) == new_md5hash
 
+
+def test_prep_magmoms():
     atoms = deepcopy(atoms_mag)
     atoms.info["test"] = "hi"
     mag = atoms.get_magnetic_moment()
