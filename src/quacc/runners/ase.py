@@ -87,7 +87,7 @@ def run_calc(
     # the final geometry if `geom_file` is provided.
     # Note: We have to be careful to make sure we don't lose the calculator
     # object, as this contains important information such as the parameters
-    # and output properties (e.g. final magnetic moments). 
+    # and output properties (e.g. final magnetic moments).
     if geom_file:
         atoms_new = read(zpath(tmpdir / geom_file))
         if isinstance(atoms_new, list):
