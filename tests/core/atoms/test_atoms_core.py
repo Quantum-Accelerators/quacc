@@ -1,4 +1,3 @@
-from copy import deepcopy
 from pathlib import Path
 
 import numpy as np
@@ -9,7 +8,6 @@ from ase.build import bulk, molecule
 from ase.io import read
 
 from quacc.atoms.core import check_charge_and_spin, check_is_metal, get_atoms_id
-from quacc.calculators.vasp import Vasp
 
 FILE_DIR = Path(__file__).parent
 
