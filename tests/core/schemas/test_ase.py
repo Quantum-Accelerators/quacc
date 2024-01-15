@@ -80,7 +80,9 @@ def test_summarize_run5():
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
-    results = summarize_run(atoms, initial_atoms, move_magmoms=False, additional_fields={"test": "hi"})
+    results = summarize_run(
+        atoms, initial_atoms, move_magmoms=False, additional_fields={"test": "hi"}
+    )
 
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
     assert results["atoms"].get_initial_magnetic_moments().tolist() == [3.14] * len(
