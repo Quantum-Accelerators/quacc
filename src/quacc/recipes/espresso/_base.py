@@ -129,6 +129,12 @@ def base_opt_fn(
         Custom kwargs for the espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `ase.calculators.espresso.Espresso` calculator.
+    opt_defaults
+        The default optimization parameters.
+    opt_params
+        Dictionary of parameters to pass to the optimizer. pass "optimizer"
+        to change the optimizer being used. "fmax" and "max_steps" are commonly
+        used keywords. See the ASE documentation for more information.
     parallel_info
         Dictionary of parallelization information.
     additional_fields

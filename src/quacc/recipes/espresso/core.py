@@ -157,9 +157,7 @@ def ase_relax_job(
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
     relax_cell: bool = False,
     parallel_info: dict[str] | None = None,
-    test_run: bool = False,
     opt_params: dict[str, Any] | None = None,
-    opt_patch: Any | None = None,
     copy_files: str | Path | list[str | Path] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -179,9 +177,10 @@ def ase_relax_job(
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
-    test_run
-        If True, a test run is performed to check that the calculation input_data is correct or
-        to generate some files/info if needed.
+    opt_params
+        Dictionary of parameters to pass to the optimizer. pass "optimizer"
+        to change the optimizer being used. "fmax" and "max_steps" are commonly
+        used keywords. See the ASE documentation for more information.
     copy_files
         List of files to copy to the calculation directory. Useful for copying
         files from a previous calculation. This parameter can either be a string
@@ -233,7 +232,6 @@ def ase_relax_job(
         calc_swaps=calc_kwargs,
         opt_defaults=opt_defaults,
         opt_params=opt_params,
-        opt_patch=opt_patch,
         parallel_info=parallel_info,
         additional_fields={"name": "pw.x ExternalRelax"},
         copy_files=copy_files,
