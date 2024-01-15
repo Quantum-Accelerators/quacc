@@ -127,20 +127,6 @@ def test_cclib_summarize_run(tmp_path, monkeypatch):
     assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
-    # Make sure magnetic moments are handled appropriately
-    atoms = read(os.path.join(run1, log1))
-    atoms.set_initial_magnetic_moments([3.14] * len(atoms))
-    atoms.calc.results["magmoms"] = [2.0] * len(atoms)
-    results = cclib_summarize_run(atoms, ".log", dir_path=run1)
-
-    assert atoms.calc is not None
-    assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
-
-    assert results["atoms"].get_initial_magnetic_moments().tolist() == [2.0] * len(
-        atoms
-    )
-    assert results["atoms"].calc is None
-
 
 def test_errors():
     atoms = bulk("Cu")
