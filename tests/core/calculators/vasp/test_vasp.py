@@ -12,7 +12,7 @@ from ase.io import read
 
 from quacc import SETTINGS
 from quacc.calculators.vasp import Vasp, presets
-from quacc.schemas.prep import move_magmoms
+from quacc.schemas.prep import prep_magmoms
 
 FILE_DIR = Path(__file__).parent
 
@@ -310,28 +310,28 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
 
     atoms = deepcopy(atoms_mag)
     mags = atoms.get_magnetic_moments()
-    atoms = move_magmoms(atoms)
+    atoms = prep_magmoms(atoms)
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
     assert atoms.has("initial_magmoms") is True
     assert atoms.get_initial_magnetic_moments().tolist() == mags.tolist()
 
     atoms = deepcopy(atoms_nomag)
-    atoms = move_magmoms(atoms)
+    atoms = prep_magmoms(atoms)
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = deepcopy(atoms_nospin)
-    atoms = move_magmoms(atoms)
+    atoms = prep_magmoms(atoms)
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = deepcopy(atoms_mag)
-    atoms = move_magmoms(atoms)
+    atoms = prep_magmoms(atoms)
     calc = Vasp(atoms, preset="BulkSet", mag_cutoff=10.0)
     atoms.calc = calc
     assert atoms.has("initial_magmoms") is True
@@ -341,7 +341,7 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
     calc = Vasp(atoms)
     atoms.calc = calc
     atoms.calc.results = {"energy": -1.0, "magmoms": [0.0] * len(atoms)}
-    atoms = move_magmoms(atoms)
+    atoms = prep_magmoms(atoms)
     atoms *= (2, 2, 2)
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
@@ -351,7 +351,7 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
     calc = Vasp(atoms)
     atoms.calc = calc
     atoms.calc.results = {"energy": -1.0, "magmoms": [-0.02] * len(atoms)}
-    atoms = move_magmoms(atoms)
+    atoms = prep_magmoms(atoms)
     atoms *= (2, 2, 2)
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
@@ -361,7 +361,7 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
     calc = Vasp(atoms)
     atoms.calc = calc
     atoms.calc.results = {"energy": -1.0}
-    atoms = move_magmoms(atoms)
+    atoms = prep_magmoms(atoms)
     atoms *= (2, 2, 2)
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
@@ -371,7 +371,7 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
     atoms.calc.results = {"energy": -1.0, "magmoms": [3.14] * len(atoms)}
-    atoms = move_magmoms(atoms)
+    atoms = prep_magmoms(atoms)
     atoms *= (2, 2, 2)
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
