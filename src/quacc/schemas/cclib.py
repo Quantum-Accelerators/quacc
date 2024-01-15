@@ -52,7 +52,6 @@ def cclib_summarize_run(
     ]
     | None = None,
     check_convergence: bool | None = None,
-    prep_next_run: bool = True,
     additional_fields: dict[str, Any] | None = None,
     store: Store | None = None,
 ) -> cclibSchema:
@@ -81,10 +80,6 @@ def cclib_summarize_run(
     check_convergence
          Whether to throw an error if geometry optimization convergence is not
          reached. Defaults to True in settings.
-    prep_next_run
-        Whether the Atoms object stored in {"atoms": atoms} should be prepared
-        for the next run. This clears out any attached calculator and moves the
-        final magmoms to the initial magmoms.
     additional_fields
         Additional fields to add to the task document.
     store
@@ -133,7 +128,6 @@ def cclib_summarize_run(
         atoms,
         input_atoms=input_atoms,
         charge_and_multiplicity=(attributes["charge"], attributes["mult"]),
-        prep_next_run=prep_next_run,
         store=False,
     )
 

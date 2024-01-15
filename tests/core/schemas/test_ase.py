@@ -74,9 +74,7 @@ def test_summarize_run(tmp_path, monkeypatch):
     # Make sure Atoms magmoms were not moved if specified
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
-    results = summarize_run(
-        atoms, prep_next_run=False, additional_fields={"test": "hi"}
-    )
+    results = summarize_run(atoms, move_magmoms=False, additional_fields={"test": "hi"})
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
     assert results["atoms"].get_initial_magnetic_moments().tolist() == [3.14] * len(
         atoms

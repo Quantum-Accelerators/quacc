@@ -141,15 +141,6 @@ def test_cclib_summarize_run(tmp_path, monkeypatch):
     )
     assert results["atoms"].calc is None
 
-    # Make sure Atoms magmoms were not moved if specified
-    atoms = read(os.path.join(run1, log1))
-    atoms.set_initial_magnetic_moments([3.14] * len(atoms))
-    results = cclib_summarize_run(atoms, ".log", dir_path=run1, prep_next_run=False)
-    assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
-    assert results["atoms"].get_initial_magnetic_moments().tolist() == [3.14] * len(
-        atoms
-    )
-
 
 def test_errors():
     atoms = bulk("Cu")

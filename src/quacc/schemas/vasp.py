@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 def vasp_summarize_run(
     atoms: Atoms,
     dir_path: str | Path | None = None,
-    prep_next_run: bool = True,
+    move_magmoms: bool = True,
     run_bader: bool | None = None,
     run_chargemol: bool | None = None,
     check_convergence: bool = True,
@@ -47,10 +47,9 @@ def vasp_summarize_run(
     dir_path
         Path to VASP outputs. A value of None specifies the current working
         directory
-    prep_next_run
-        Whether the Atoms object stored in {"atoms": atoms} should be prepared
-        for the next run. This clears out any attached calculator and moves the
-        final magmoms to the initial magmoms.
+    move_magmoms
+        Whether to move the final magmoms of the original Atoms object to the
+        initial magmoms of the returned Atoms object.
     run_bader
         Whether a Bader analysis should be performed. Will not run if bader
         executable is not in PATH even if bader is set to True. Defaults to
@@ -90,7 +89,7 @@ def vasp_summarize_run(
             f"VASP calculation did not converge. Will not store task data. Refer to {dir_path}"
         )
 
-    base_task_doc = summarize_run(atoms, prep_next_run=prep_next_run, store=False)
+    base_task_doc = summarize_run(atoms, move_magmoms=move_magmoms, store=False)
 
     # Get Bader analysis
     if run_bader:

@@ -43,10 +43,10 @@ def mock_summarize_run(atoms, **kwargs):
     # general calculator schema which does not require VASP files to be
     # in the working directory and will work with pytest.
 
-    prep_next_run = kwargs.get("prep_next_run", True)
+    move_magmoms = kwargs.get("move_magmoms", True)
     additional_fields = kwargs.get("additional_fields")
     output = calc_summarize_run(
-        atoms, prep_next_run=prep_next_run, additional_fields=additional_fields
+        atoms, move_magmoms=move_magmoms, additional_fields=additional_fields
     )
     output["output"] = {
         "energy": -1.0,
