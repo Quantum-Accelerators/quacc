@@ -61,7 +61,7 @@ def base_fn(
 
     return summarize_run(
         final_atoms,
-        input_atoms=atoms,
+        atoms,
         charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields=additional_fields,
     )

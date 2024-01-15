@@ -14,29 +14,15 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-def prep_next_run(
-    atoms: Atoms, assign_id: bool = True, move_magmoms: bool = True
-) -> Atoms:
+def prep_next_run(atoms: Atoms) -> Atoms:
     """
-    Prepares the Atoms object for a new run.
-
-    Depending on the arguments, this function will:
-        - Move the converged magnetic moments to the initial magnetic moments.
-        - Assign a unique ID to the Atoms object in atoms.info["_id"]. Any
-          existing IDs will be moved to atoms.info["_old_ids"].
-
-    In all cases, the calculator will be reset so new jobs can be run.
+    Prepares the Atoms object for a new run by stripping off the calculator and
+    assigning a unique ID.
 
     Parameters
     ----------
     atoms
         Atoms object
-    assign_id
-        Whether to assign a unique ID to the Atoms object in atoms.info["_id"].
-        Any existing IDs will be moved to atoms.info["_old_ids"].
-    move_magmoms
-        If True, move atoms.calc.results["magmoms"] to
-        atoms.get_initial_magnetic_moments()
 
     Returns
     -------
@@ -45,11 +31,42 @@ def prep_next_run(
     """
     atoms = copy_atoms(atoms)
 
-    if (
-        move_magmoms
-        and hasattr(atoms, "calc")
-        and getattr(atoms.calc, "results", None) is not None
-    ):
+    # Clear off the calculator so we can run a new job. If we don't do this,
+    # then something like atoms *= (2,2,2) still has a calculator attached,
+    # which is a bit confusing.
+    atoms.calc = None
+
+    # Give the Atoms object a unique ID. This will be helpful for querying
+    # later. Also store any old IDs somewhere else for future reference. Note:
+    # Keep this at the end of the function so that the ID is assigned based on
+    # the returned Atoms object.
+    if atoms.info.get("_id", None) is not None:
+        if atoms.info.get("_old_ids") is None:
+            atoms.info["_old_ids"] = []
+        atoms.info["_old_ids"].append(atoms.info["_id"])
+    atoms.info["_id"] = get_atoms_id(atoms)
+
+    return atoms
+
+
+def prep_magmoms(atoms: Atoms) -> Atoms:
+    """
+    Prepare the Atoms object for a new run by moving the converged magnetic
+    moments to the initial magnetic moments.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+
+    Returns
+    -------
+    Atoms
+        Updated Atoms object.
+    """
+
+    atoms = copy_atoms(atoms)
+    if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None) is not None:
         # If there are initial magmoms set, then we should see what the final
         # magmoms are. If they are present, move them to initial. If they are
         # not present, it means the calculator doesn't support the "magmoms"
@@ -65,23 +82,6 @@ def prep_next_run(
             atoms.set_initial_magnetic_moments(
                 atoms.calc.results.get("magmoms", [0.0] * len(atoms))
             )
-
-    # Clear off the calculator so we can run a new job. If we don't do this,
-    # then something like atoms *= (2,2,2) still has a calculator attached,
-    # which is a bit confusing.
-    atoms.calc = None
-
-    # Give the Atoms object a unique ID. This will be helpful for querying
-    # later. Also store any old IDs somewhere else for future reference. Note:
-    # Keep this at the end of the function so that the ID is assigned based on
-    # the returned Atoms object.
-    if assign_id:
-        if atoms.info.get("_id", None) is not None:
-            if atoms.info.get("_old_ids") is None:
-                atoms.info["_old_ids"] = []
-            atoms.info["_old_ids"].append(atoms.info["_id"])
-        atoms.info["_id"] = get_atoms_id(atoms)
-
     return atoms
 
 
@@ -97,9 +97,10 @@ def set_magmoms(
 
     This function deserves particular attention. The following logic is applied:
     - If there is a converged set of magnetic moments, those are moved to the
-    initial magmoms if copy_magmoms is True. - If there is no converged set of
-    magnetic moments but the user has set initial magmoms, those are simply used
-    as is. - If there are no converged magnetic moments or initial magnetic
+    initial magmoms if copy_magmoms is True.
+    - If there is no converged set of magnetic moments but the user has set initial magmoms, those are simply used
+    as is.
+    - If there are no converged magnetic moments or initial magnetic
     moments, then the default magnetic moments from the preset
     elemental_mags_dict (if specified) are set as the initial magnetic moments.
     - For any of the above scenarios, if mag_cutoff is not None, the newly set
