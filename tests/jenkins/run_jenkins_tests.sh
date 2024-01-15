@@ -8,4 +8,4 @@ pip install -e .[dev]
 
 # Gaussian, ORCA, GULP
 salloc -N 1 -n 32 -t 00:10:00 \
-    module purge && pytest tests/core/recipes/gulp_recipes --noconftest && \
+    module purge && pytest tests/core/recipes/gulp_recipes --noconftest
