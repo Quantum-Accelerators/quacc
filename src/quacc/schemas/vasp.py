@@ -94,10 +94,7 @@ def vasp_summarize_run(
 
     initial_atoms = read(zpath(dir_path / "POSCAR"))
     base_task_doc = summarize_run(
-        final_atoms,
-        initial_atoms,
-        prep_next_run=prep_next_run,
-        store=False,
+        final_atoms, initial_atoms, prep_next_run=prep_next_run, store=False
     )
 
     # Get Bader analysis
