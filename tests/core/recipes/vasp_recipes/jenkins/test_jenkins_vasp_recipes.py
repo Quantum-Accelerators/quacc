@@ -45,9 +45,9 @@ def test_static_job_spin(tmp_path, monkeypatch):
     assert output["parameters"]["kpts"] == [3, 3, 3]
     assert output["results"]["energy"] < 0
     assert_equal(
-        output["results"]["atoms"].get_initial_magnetic_moments(),
+        output["input_atoms"].get_initial_magnetic_moments(),
         atoms.get_initial_magnetic_moments(),
     )
-    output_magmoms = output["results"]["atoms"].get_magnetic_moments()
+    output_magmoms = output["input_atoms"].get_magnetic_moments()
     assert output_magmoms.all() is True
     assert_equal(output["atoms"].get_initial_magnetic_moments(), output_magmoms)
