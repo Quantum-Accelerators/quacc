@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 
 
 def cclib_summarize_run(
-    atoms: Atoms,
+    final_atoms: Atoms,
     logfile_extensions: str | list[str],
     dir_path: str | None = None,
     pop_analyses: list[
@@ -61,7 +61,7 @@ def cclib_summarize_run(
 
     Parameters
     ----------
-    atoms
+    final_atoms
         ASE Atoms object following a calculation.
     logfile_extensions
         Possible extensions of the log file (e.g. ".log", ".out", ".txt",
@@ -125,8 +125,8 @@ def cclib_summarize_run(
 
     # Get the base task document for the ASE run
     run_task_doc = summarize_run(
-        atoms,
-        input_atoms=input_atoms,
+        final_atoms,
+        input_atoms,
         charge_and_multiplicity=(attributes["charge"], attributes["mult"]),
         move_magmoms=False,
         store=False,

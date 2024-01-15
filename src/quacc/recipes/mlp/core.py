@@ -50,7 +50,7 @@ def static_job(
     atoms.calc = _pick_calculator(method, **calc_flags)
     final_atoms = run_calc(atoms)
     return summarize_run(
-        final_atoms, input_atoms=atoms, additional_fields={"name": f"{method} Static"}
+        final_atoms, atoms, additional_fields={"name": f"{method} Static"}
     )
 
 

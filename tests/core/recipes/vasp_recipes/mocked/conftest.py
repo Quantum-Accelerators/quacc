@@ -46,7 +46,7 @@ def mock_summarize_run(atoms, **kwargs):
     move_magmoms = kwargs.get("move_magmoms", True)
     additional_fields = kwargs.get("additional_fields")
     output = calc_summarize_run(
-        atoms, move_magmoms=move_magmoms, additional_fields=additional_fields
+        atoms, Atoms(), move_magmoms=move_magmoms, additional_fields=additional_fields
     )
     output["output"] = {
         "energy": -1.0,
