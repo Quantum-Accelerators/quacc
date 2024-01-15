@@ -55,6 +55,4 @@ def base_fn(
     atoms.calc = Vasp(atoms, preset=preset, **calc_flags)
     final_atoms = run_calc(atoms, copy_files=copy_files)
 
-    return vasp_summarize_run(
-        final_atoms, input_atoms=atoms, additional_fields=additional_fields
-    )
+    return vasp_summarize_run(final_atoms, additional_fields=additional_fields)

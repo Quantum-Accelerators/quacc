@@ -46,9 +46,7 @@ def static_job(atoms: Atoms, **calc_kwargs) -> RunSchema:
     atoms.calc = EMT(**calc_kwargs)
     final_atoms = run_calc(atoms)
 
-    return summarize_run(
-        final_atoms, input_atoms=atoms, additional_fields={"name": "EMT Static"}
-    )
+    return summarize_run(final_atoms, atoms, additional_fields={"name": "EMT Static"})
 
 
 @job
