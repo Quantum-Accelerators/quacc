@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import cclib
-import logger
 from ase.atoms import Atoms
 from cclib.io import ccread
 from monty.json import jsanitize
