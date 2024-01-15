@@ -23,9 +23,6 @@ def prep_next_run(atoms: Atoms) -> Atoms:
     ----------
     atoms
         Atoms object
-    move_magmoms
-        If True, move atoms.calc.results["magmoms"] to
-        atoms.get_initial_magnetic_moments()
 
     Returns
     -------
