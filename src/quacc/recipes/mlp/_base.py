@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import logging
-import warnings
 from functools import lru_cache
 from typing import TYPE_CHECKING
 
