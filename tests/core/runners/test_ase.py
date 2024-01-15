@@ -150,11 +150,11 @@ def test_bad_runs(tmp_path, monkeypatch):
     atoms.calc = EMT()
 
     # No file
-    with pytest.warns(UserWarning):
+    with pytest.raises(FileNotFoundError):
         run_calc(atoms, copy_files=["test_file.txt"])
 
     # No file again
-    with pytest.warns(UserWarning):
+    with pytest.raises(FileNotFoundError):
         run_opt(atoms, copy_files=["test_file.txt"])
 
     # No trajectory kwarg

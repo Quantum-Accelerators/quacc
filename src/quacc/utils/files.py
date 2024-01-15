@@ -72,7 +72,7 @@ def copy_decompress_files(
         elif f_path.is_dir():
             copy_decompress_files_from_dir(f_path, destination)
         else:
-            warnings.warn(f"Cannot find file {f_path}", UserWarning)
+            raise FileNotFoundError(f"Cannot find file {f_path}")
 
 
 def copy_decompress_tree(
@@ -141,7 +141,7 @@ def copy_decompress_files_from_dir(source: str | Path, destination: str | Path) 
                 (dst / f.name).mkdir(exist_ok=True)
                 copy_decompress_files_from_dir(src / f, dst / f.name)
     else:
-        warnings.warn(f"Cannot find {src}", UserWarning)
+        raise FileNotFoundError(f"Cannot find {src}")
 
 
 def make_unique_dir(base_path: str | None = None) -> Path:
