@@ -1,14 +1,15 @@
 from copy import deepcopy
 from pathlib import Path
 
+import numpy as np
 import pytest
 from ase import Atoms
 from ase.build import bulk, molecule
+from ase.calculators.emt import EMT
 from ase.io import read
 
 from quacc.atoms.core import get_atoms_id
-from quacc.calculators.vasp import Vasp
-from quacc.schemas.prep import prep_next_run
+from quacc.schemas.prep import prep_magmoms, prep_next_run
 
 
 @pytest.fixture()
@@ -50,14 +51,14 @@ def test_get_atoms_id():
     assert get_atoms_id(atoms) == md5maghash
 
 
-def test_prep_next_run(
-    atoms_mag, atoms_nomag, atoms_nospin
-):  # sourcery skip: extract-duplicate-method
+def test_prep_next_run():
     atoms = bulk("Cu")
+    atoms.calc = EMT()
     md5hash = "d4859270a1a67083343bec0ab783f774"
     atoms = prep_next_run(atoms)
     assert atoms.info.get("_id", None) == md5hash
     assert atoms.info.get("_old_ids", None) is None
+    assert atoms.calc is None
     atoms = prep_next_run(atoms)
     assert atoms.info.get("_id", None) == md5hash
     assert atoms.info.get("_old_ids", None) == [md5hash]
@@ -67,38 +68,20 @@ def test_prep_next_run(
     assert atoms.info.get("_old_ids", None) == [md5hash, md5hash]
     assert atoms.info.get("_id", None) == new_md5hash
 
+
+def test_prep_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
     atoms = deepcopy(atoms_mag)
-    atoms.info["test"] = "hi"
-    mag = atoms.get_magnetic_moment()
-    init_mags = atoms.get_initial_magnetic_moments()
     mags = atoms.get_magnetic_moments()
-    atoms = prep_next_run(atoms)
-    assert atoms.info["test"] == "hi"
-    assert atoms.calc is None
+    atoms = prep_magmoms(atoms)
+    assert atoms.has("initial_magmoms") is True
     assert atoms.get_initial_magnetic_moments().tolist() == mags.tolist()
 
-    atoms = deepcopy(atoms_mag)
-    atoms.info["test"] = "hi"
-    atoms = prep_next_run(atoms)
-    assert atoms.info.get("test", None) == "hi"
-    calc = Vasp(atoms)
-    atoms.calc = calc
-    atoms.calc.results = {"magmom": mag - 2}
-
-    atoms = deepcopy(atoms_mag)
-    atoms = prep_next_run(atoms, move_magmoms=False)
-    assert atoms.get_initial_magnetic_moments().tolist() == init_mags.tolist()
-
     atoms = deepcopy(atoms_nomag)
-    mag = atoms.get_magnetic_moment()
-    atoms = prep_next_run(atoms)
-    calc = Vasp(atoms)
-    atoms.calc = calc
-    atoms.calc.results = {"magmom": mag - 2}
-    atoms = prep_next_run(atoms)
+    atoms = prep_next_run(prep_magmoms(atoms))
+    assert atoms.has("initial_magmoms") is True
+    assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = deepcopy(atoms_nospin)
-    atoms = prep_next_run(atoms)
-    calc = Vasp(atoms)
-    atoms.calc = calc
-    atoms.calc.results = {"magmom": mag - 2}
+    atoms = prep_next_run(prep_magmoms(atoms))
+    assert atoms.has("initial_magmoms") is True
+    assert np.all(atoms.get_initial_magnetic_moments() == 0)
