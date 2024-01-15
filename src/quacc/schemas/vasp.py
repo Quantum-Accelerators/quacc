@@ -123,7 +123,7 @@ def vasp_summarize_run(
             struct = chargemol_results[1]
 
     # Override the Structure to have the attached properties
-    vasp_task_doc["structure"] = struct
+    del vasp_task_doc["structure"]
 
     # Make task document
     unsorted_task_doc = base_task_doc | vasp_task_doc | additional_fields
