@@ -53,7 +53,7 @@ def base_fn(
     atoms.calc = Onetep(
         input_atoms=atoms,
         calc_defaults=calc_defaults,
-        pseudo_path=str(SETTINGS.ONETEP_PP_PATH),
+        pseudo_path=str(SETTINGS.ONETEP_PP_PATH) if SETTINGS.ONETEP_PP_PATH else ".",
         profile=OnetepProfile(
             SETTINGS.ONETEP_CMD
         ),  # TODO: Need to insert SETTINGS.ONETEP_PARLLEL_CMD here.
