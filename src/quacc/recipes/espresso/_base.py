@@ -64,25 +64,14 @@ def base_fn(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
-    atoms = Atoms() if atoms is None else atoms
-
-    calc_defaults["input_data"] = Namelist(calc_defaults.get("input_data"))
-    calc_swaps["input_data"] = Namelist(calc_swaps.get("input_data"))
-
-    binary = template.binary if template else "pw"
-
-    calc_defaults["input_data"].to_nested(binary=binary, **calc_defaults)
-    calc_swaps["input_data"].to_nested(binary=binary, **calc_swaps)
-
-    calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
-
-    atoms.calc = Espresso(
-        input_atoms=atoms,
+    atoms = _prepare_atoms(
+        atoms=atoms,
         preset=preset,
-        parallel_info=parallel_info,
         template=template,
         profile=profile,
-        **calc_flags,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_swaps,
+        parallel_info=parallel_info,
     )
 
     geom_file = template.outputname if template.binary == "pw" else None
@@ -95,7 +84,7 @@ def base_fn(
 
 
 def base_opt_fn(
-    atoms: Atoms = None,
+    atoms: Atoms | None = None,
     preset: str | None = None,
     relax_cell: bool = False,
     template: EspressoTemplate | None = None,
@@ -148,6 +137,60 @@ def base_opt_fn(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
+    atoms = _prepare_atoms(
+        atoms=atoms,
+        preset=preset,
+        template=template,
+        profile=profile,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_swaps,
+        parallel_info=parallel_info,
+    )
+
+    opt_flags = recursive_dict_merge(opt_defaults, opt_params)
+
+    dyn = run_opt(atoms, relax_cell=relax_cell, copy_files=copy_files, **opt_flags)
+
+    return summarize_opt_run(dyn, additional_fields=additional_fields)
+
+
+def _prepare_atoms(
+    atoms: Atoms | None = None,
+    preset: str | None = None,
+    template: EspressoTemplate | None = None,
+    profile: EspressoProfile | None = None,
+    calc_defaults: dict[str, Any] | None = None,
+    calc_swaps: dict[str, Any] | None = None,
+    parallel_info: dict[str, Any] | None = None,
+) -> Atoms:
+    """
+    Base function to carry out espresso recipes.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+    preset
+        Name of the preset to use
+    template
+        EspressoTemplate to use
+    profile
+        EspressoProfile to use
+    calc_defaults
+        The default calculator parameters.
+    calc_swaps
+        Custom kwargs for the espresso calculator. Set a value to
+        `quacc.Remove` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `ase.calculators.espresso.Espresso` calculator.
+    parallel_info
+        Dictionary of parallelization information.
+
+    Returns
+    -------
+    Atoms
+        Dictionary of results from [quacc.schemas.ase.summarize_run][]
+    """
+
     atoms = Atoms() if atoms is None else atoms
 
     calc_defaults["input_data"] = Namelist(calc_defaults.get("input_data"))
@@ -159,7 +202,6 @@ def base_opt_fn(
     calc_swaps["input_data"].to_nested(binary=binary, **calc_swaps)
 
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
-    opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
     atoms.calc = Espresso(
         input_atoms=atoms,
@@ -170,6 +212,4 @@ def base_opt_fn(
         **calc_flags,
     )
 
-    dyn = run_opt(atoms, relax_cell=relax_cell, copy_files=copy_files, **opt_flags)
-
-    return summarize_opt_run(dyn, additional_fields=additional_fields)
+    return atoms

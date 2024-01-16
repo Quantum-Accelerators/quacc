@@ -162,7 +162,8 @@ def ase_relax_job(
     **calc_kwargs,
 ) -> RunSchema:
     """
-    Function to carry out a structure relaxation with pw.x.
+    Function to carry out a structure relaxation with pw.x using ASE
+    external optimizers.
 
     Parameters
     ----------
