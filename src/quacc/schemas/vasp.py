@@ -82,7 +82,6 @@ def vasp_summarize_run(
     # Fetch all tabulated results from VASP outputs files. Fortunately, emmet
     # already has a handy function for this
     vasp_task_doc = TaskDoc.from_directory(dir_path).model_dump()
-    struct = vasp_task_doc["output"]["structure"]
 
     # Check for calculation convergence
     if check_convergence and vasp_task_doc["state"] != "successful":
@@ -98,7 +97,7 @@ def vasp_summarize_run(
     # Get Bader analysis
     if run_bader:
         try:
-            bader_results = _bader_runner(dir_path, structure=struct)
+            bader_results = _bader_runner(dir_path)
         except Exception:
             bader_results = None
             logging.warning("Bader analysis could not be performed.", exc_info=True)
@@ -109,7 +108,7 @@ def vasp_summarize_run(
     # Get the Chargemol analysis
     if run_chargemol:
         try:
-            chargemol_results = _chargemol_runner(dir_path, structure=struct)
+            chargemol_results = _chargemol_runner(dir_path)
         except Exception:
             chargemol_results = None
             logging.warning("Chargemol analysis could not be performed.", exc_info=True)
