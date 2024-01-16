@@ -10,6 +10,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from ase.io.espresso import Namelist
+
 from quacc import flow, job
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.recipes.espresso._base import base_fn
@@ -62,11 +64,7 @@ def dos_job(
         See the type-hint for the data structure.
     """
 
-    calc_defaults = {
-        "input_data": {
-            "dos": {"fileout": "total_dos.dos"},
-            },
-        }
+    calc_defaults = {"input_data": {"dos": {"fildos": "total_dos.dos"}}}
 
     return base_fn(
         template=EspressoTemplate("dos", test_run=test_run),
@@ -120,37 +118,27 @@ def dos_flow(
     """
     calc_defaults = {
         "static_job": {
-            "kspacing":0.2,
-            "input_data":{
-                "system":{
-                    "occupations":"tetrahedra"
-                }
-            }
-            },
-        "non_scf_job": recursive_dict_merge(job_params.get("static_job", {}), {
-            "kspacing":0.01,
-            "input_data":{
-                "control":{
-                    "calculation":"nscf", # Unfortunately, we have to repeat that here.
-                    "verbosity": "high",
-                },
-                "system":{
-                    "occupations":"tetrahedra"
-                }
-            }
-        }),
-        "dos_job": {
-            "input_data": {
-                "dos": {
-                    "fileout": "total_dos.dos",
-                    "bz_sum":"tetrahedra"
-                    }
-            }
+            "kspacing": 0.2,
+            "input_data": {"system": {"occupations": "tetrahedra"}},
         },
-        }
+        "non_scf_job": recursive_dict_merge(
+            job_params.get("static_job", {}),
+            {
+                "kspacing": 0.01,
+                "input_data": {
+                    "control": {
+                        "calculation": "nscf",  # Unfortunately, we have to repeat that here.
+                        "verbosity": "high",
+                    },
+                    "system": {"occupations": "tetrahedra"},
+                },
+            },
+        ),
+        "dos_job": {"input_data": {"dos": {"fildos": "total_dos.dos"}}},
+    }
     job_params = recursive_dict_merge(calc_defaults, job_params)
-    
-    pw_job, nscf_job, tdos_job= customize_funcs(
+
+    pw_job, nscf_job, tdos_job = customize_funcs(
         ["static_job", "non_scf_job", "dos_job"],
         [static_job, non_scf_job, dos_job],
         parameters=job_params,
@@ -158,6 +146,37 @@ def dos_flow(
     )
 
     pw_results = pw_job(atoms)
-    nscf_results=nscf_job(atoms, prev_dir = pw_results["dir_name"])
-    dos_results = tdos_job(prev_dir = nscf_results["dir_name"])
-    return [pw_results,nscf_results,dos_results]
+
+    pw_input_data = Namelist(job_params["static_job"])
+    pw_input_data.to_nested(binary="pw")
+    prefix = pw_input_data["input_data"].get("prefix", "pwscf")
+    outdir = pw_input_data["input_data"].get("outdir", ".")
+    file_to_copy = {
+        pw_results["dir_name"]: [
+            f"{outdir}/{prefix}.save/charge-density.*",
+            f"{outdir}/{prefix}.save/data-file-schema.xml.*",
+            f"{outdir}/{prefix}.save/paw.txt.*",
+        ]
+    }
+
+    nscf_results = nscf_job(atoms, prev_dir=file_to_copy)
+
+    nscf_input_data = Namelist(job_params["non_scf_job"])
+    nscf_input_data.to_nested(binary="pw")
+    prefix = nscf_input_data["input_data"].get("prefix", "pwscf")
+    outdir = nscf_input_data["input_data"].get("outdir", ".")
+    file_to_copy = {
+        nscf_results["dir_name"]: [
+            f"{outdir}/{prefix}.save/charge-density.*",
+            f"{outdir}/{prefix}.save/data-file-schema.xml.*",
+            f"{outdir}/{prefix}.save/paw.txt.*",
+        ]
+    }
+
+    dos_results = tdos_job(prev_dir=file_to_copy)
+
+    return {
+        "static_job": pw_results,
+        "non_scf_job": nscf_results,
+        "dos_job": dos_results,
+    }
