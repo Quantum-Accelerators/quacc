@@ -22,7 +22,6 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
     from maggma.core import Store
-    from pymatgen.core import Structure
 
     from quacc.schemas._aliases.vasp import BaderSchema, ChargemolSchema, VaspSchema
 
@@ -129,7 +128,7 @@ def vasp_summarize_run(
     return task_doc
 
 
-def _bader_runner(path: str | None = None) -> tuple[BaderSchema, Structure | None]:
+def _bader_runner(path: str | None = None) -> BaderSchema:
     """
     Runs a Bader partial charge and spin moment analysis using the VASP output
     files in the given path. This function requires that `bader` is located in
@@ -178,7 +177,7 @@ def _bader_runner(path: str | None = None) -> tuple[BaderSchema, Structure | Non
 
 def _chargemol_runner(
     path: str | None = None, atomic_densities_path: str | None = None
-) -> tuple[ChargemolSchema, Structure | None]:
+) -> ChargemolSchema:
     """
     Runs a Chargemol (i.e. DDEC6 + CM5) analysis using the VASP output files in
     the given path. This function requires that the chargemol executable, given
