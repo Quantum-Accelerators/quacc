@@ -11,8 +11,8 @@ class BaderSchema(TypedDict, total=False):
     """Type hint associated with quacc.schemas.vasp._bader_runner."""
 
     atomic_volume: float
-    partial_charges: float
-    spin_moments: float
+    partial_charges: list[float]
+    spin_moments: list[float]
     bader_version: float
     min_dist: list[float]
     partial_charges: list[float]
