@@ -78,9 +78,7 @@ def base_fn(
 
     final_atoms = run_calc(atoms, geom_file=geom_file, copy_files=copy_files)
 
-    return summarize_run(
-        final_atoms, atoms, additional_fields=additional_fields
-    )
+    return summarize_run(final_atoms, atoms, additional_fields=additional_fields)
 
 
 def base_opt_fn(
