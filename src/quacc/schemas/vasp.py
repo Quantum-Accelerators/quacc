@@ -34,7 +34,7 @@ def vasp_summarize_run(
     move_magmoms: bool = True,
     run_bader: bool | None = None,
     run_chargemol: bool | None = None,
-    check_convergence: bool = True,
+    check_convergence: bool | None = None,
     additional_fields: dict[str, Any] | None = None,
     store: Store | None = None,
 ) -> VaspSchema:
@@ -60,7 +60,8 @@ def vasp_summarize_run(
         executable is not in PATH even if chargmeol is set to True. Defaults to
         VASP_CHARGEMOL in settings.
     check_convergence
-        Whether to throw an error if convergence is not reached.
+        Whether to throw an error if convergence is not reached. Defaults to True in
+        settings.
     additional_fields
         Additional fields to add to the task document.
     store
@@ -76,6 +77,9 @@ def vasp_summarize_run(
     additional_fields = additional_fields or {}
     run_bader = SETTINGS.VASP_BADER if run_bader is None else run_bader
     run_chargemol = SETTINGS.VASP_CHARGEMOL if run_chargemol is None else run_chargemol
+    check_convergence = (
+        SETTINGS.CHECK_CONVERGENCE if check_convergence is None else check_convergence
+    )
     dir_path = dir_path or Path.cwd()
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
