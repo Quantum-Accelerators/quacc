@@ -16,7 +16,6 @@ class BaderSchema(TypedDict, total=False):
     bader_version: float
     min_dist: list[float]
     partial_charges: list[float]
-    reference_used: list[float]
 
 
 class DDECSchema(TypedDict, total=False):
