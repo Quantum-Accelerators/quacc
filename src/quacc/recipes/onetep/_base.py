@@ -51,12 +51,13 @@ def base_fn(
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
     atoms.calc = Onetep(
-        input_atoms=atoms,
         calc_defaults=calc_defaults,
         pseudo_path=str(SETTINGS.ONETEP_PP_PATH) if SETTINGS.ONETEP_PP_PATH else ".",
+        parallel_info=SETTINGS.ONETEP_PARALLEL_CMD,
         profile=OnetepProfile(
             SETTINGS.ONETEP_CMD
-        ),  # TODO: Need to insert SETTINGS.ONETEP_PARLLEL_CMD here.
+        ),  # TODO: If the ASE merge is successful, we need to change ONETEP_PARALLEL_CMD to a list[str] and remove parallel info.
+            # If we also have access to post_args we can point not to the binary but to the launcher which takes -t nthreads as a post_args
         **calc_flags,
     )
 
