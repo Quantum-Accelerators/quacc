@@ -17,7 +17,7 @@ def static_job(
     atoms: Atoms, copy_files: list[str] | None = None, **calc_kwargs
 ) -> RunSchema:
     """
-    Function to carry out a basic SCF calculation with pw.x.
+    Function to carry out a basic SCF calculation with ONETEP.
 
     Parameters
     ----------
