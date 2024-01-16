@@ -102,7 +102,7 @@ class EspressoTemplate(EspressoTemplate_):
                 directory / self.inputname,
                 atoms,
                 format="espresso-in",
-                pseudo_dir=str(profile.pseudo_path),
+                pseudo_dir=str(profile.pseudo_dir),
                 properties=properties,
                 **parameters,
             )
@@ -120,7 +120,7 @@ class EspressoTemplate(EspressoTemplate_):
                 directory / self.inputname,
                 atoms,
                 format="espresso-in",
-                pseudo_dir=str(profile.pseudo_path),
+                pseudo_dir=str(profile.pseudo_dir),
                 properties=properties,
                 **parameters,
             )
