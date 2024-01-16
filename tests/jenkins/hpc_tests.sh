@@ -20,4 +20,5 @@ pytest tests/core/recipes/orca_recipes --noconftest
 # VASP
 module purge
 module load intel/2021.1.2 intel-mpi/intel/2021.3.1 hdf5/intel-2021.1/1.10.6
+export QUACC_VASP_PARALLEL_CMD="srun -N 1 --ntasks-per-node 32"
 pytest tests/core/recipes/vasp_recipes/jenkins --noconftest

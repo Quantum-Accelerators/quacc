@@ -3,11 +3,9 @@ from shutil import which
 import pytest
 
 pytestmark = pytest.mark.skipif(which("vasp_std") is None, reason="VASP not installed")
-from pathlib import Path
 
+import numpy as np
 from ase.build import bulk
-from ase.io import read
-from monty.os.path import zpath
 from numpy.testing import assert_equal
 
 from quacc import SETTINGS
@@ -47,8 +45,6 @@ def test_static_job_spin(tmp_path, monkeypatch):
     assert output["parameters"]["efermi"] == "midgap"
     assert output["parameters"]["kpts"] == [3, 3, 3]
     assert output["results"]["energy"] < 0
-    output_magmoms = read(
-        zpath(Path(output["dir_name"], "OUTCAR"))
-    ).get_magnetic_moments()
-    assert output_magmoms.all() is True
+    output_magmoms = np.array(output["structure"].site_properties["magmom"])
+    assert output_magmoms.all()
     assert_equal(output["atoms"].get_initial_magnetic_moments(), output_magmoms)
