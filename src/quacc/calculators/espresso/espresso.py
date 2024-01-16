@@ -310,7 +310,7 @@ class Espresso(Espresso_):
         self.profile = profile or EspressoProfile(
             binary=self._bin_path,
             parallel_info=parallel_info,
-            pseudo_path=self._pseudo_path,
+            pseudo_dir=self._pseudo_path,
         )
 
         super().__init__(
