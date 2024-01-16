@@ -164,7 +164,8 @@ def _prepare_atoms(
     parallel_info: dict[str, Any] | None = None,
 ) -> Atoms:
     """
-    Base function to carry out espresso recipes.
+    Commonly used preparation function to merge parameters
+    and attach an Esprseso calculator accordingly.
 
     Parameters
     ----------
@@ -188,7 +189,7 @@ def _prepare_atoms(
     Returns
     -------
     Atoms
-        Dictionary of results from [quacc.schemas.ase.summarize_run][]
+        Atoms object with attached Espresso calculator.
     """
 
     atoms = Atoms() if atoms is None else atoms
