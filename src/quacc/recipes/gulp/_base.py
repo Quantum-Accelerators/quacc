@@ -100,6 +100,4 @@ def base_fn(
         msg = "Optimization did not converge."
         raise RuntimeError(msg)
 
-    return summarize_run(
-        final_atoms, input_atoms=atoms, additional_fields=additional_fields
-    )
+    return summarize_run(final_atoms, atoms, additional_fields=additional_fields)

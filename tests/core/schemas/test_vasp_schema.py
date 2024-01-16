@@ -1,3 +1,4 @@
+import logging
 import os
 from shutil import copytree, move
 
@@ -8,6 +9,9 @@ from monty.json import MontyDecoder, jsanitize
 
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.vasp import vasp_summarize_run
+
+LOGGER = logging.getLogger(__name__)
+LOGGER.propagate = True
 
 
 @pytest.fixture()
@@ -190,17 +194,17 @@ def test_summarize_bader_and_chargemol_run(monkeypatch, run1, tmp_path):
     assert struct.site_properties["bader_spin"] == [0.0] * len(atoms)
 
 
-def test_no_bader(tmp_path, monkeypatch, run1):
+def test_no_bader(tmp_path, monkeypatch, run1, caplog):
     monkeypatch.chdir(tmp_path)
 
     atoms = read(run1 / "OUTCAR.gz")
-    with pytest.warns(UserWarning):
+    with caplog.at_level(logging.WARNING):
         vasp_summarize_run(atoms, dir_path=run1, run_bader=True, run_chargemol=False)
 
 
-def test_no_chargemol(tmp_path, monkeypatch, run1):
+def test_no_chargemol(tmp_path, monkeypatch, run1, caplog):
     monkeypatch.chdir(tmp_path)
 
     atoms = read(run1 / "OUTCAR.gz")
-    with pytest.warns(UserWarning):
+    with caplog.at_level(logging.WARNING):
         vasp_summarize_run(atoms, dir_path=run1, run_bader=False, run_chargemol=True)

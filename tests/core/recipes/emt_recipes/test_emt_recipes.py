@@ -12,11 +12,14 @@ def test_static_job(tmp_path, monkeypatch):
 
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += [0.1, 0.1, 0.1]
+    atoms.info = {"test": "hello"}
 
     output = static_job(atoms)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] is False
     assert output["results"]["energy"] == pytest.approx(0.07001766638245854)
+    assert output["atoms"].info["test"] == "hello"
+    assert output["atoms"].info.get("_id")
 
     output = static_job(atoms, asap_cutoff=True)
     assert output["nsites"] == len(atoms)
