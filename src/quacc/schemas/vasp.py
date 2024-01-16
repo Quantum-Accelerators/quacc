@@ -22,7 +22,6 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
     from maggma.core import Store
-    from pymatgen.core import Structure
 
     from quacc.schemas._aliases.vasp import BaderSchema, ChargemolSchema, VaspSchema
 
@@ -83,7 +82,6 @@ def vasp_summarize_run(
     # Fetch all tabulated results from VASP outputs files. Fortunately, emmet
     # already has a handy function for this
     vasp_task_doc = TaskDoc.from_directory(dir_path).model_dump()
-    struct = vasp_task_doc["output"]["structure"]
 
     # Check for calculation convergence
     if check_convergence and vasp_task_doc["state"] != "successful":
@@ -99,29 +97,24 @@ def vasp_summarize_run(
     # Get Bader analysis
     if run_bader:
         try:
-            bader_results = _bader_runner(dir_path, structure=struct)
+            bader_results = _bader_runner(dir_path)
         except Exception:
             bader_results = None
             logging.warning("Bader analysis could not be performed.", exc_info=True)
 
         if bader_results:
-            vasp_task_doc["bader"] = bader_results[0]
-            struct = bader_results[1]
+            vasp_task_doc["bader"] = bader_results
 
     # Get the Chargemol analysis
     if run_chargemol:
         try:
-            chargemol_results = _chargemol_runner(dir_path, structure=struct)
+            chargemol_results = _chargemol_runner(dir_path)
         except Exception:
             chargemol_results = None
             logging.warning("Chargemol analysis could not be performed.", exc_info=True)
 
         if chargemol_results:
-            vasp_task_doc["chargemol"] = chargemol_results[0]
-            struct = chargemol_results[1]
-
-    # Override the Structure to have the attached properties
-    vasp_task_doc["output"]["structure"] = struct
+            vasp_task_doc["chargemol"] = chargemol_results
 
     # Make task document
     unsorted_task_doc = base_task_doc | vasp_task_doc | additional_fields
@@ -134,9 +127,7 @@ def vasp_summarize_run(
     return task_doc
 
 
-def _bader_runner(
-    path: str | None = None, structure: Structure = None
-) -> tuple[BaderSchema, Structure | None]:
+def _bader_runner(path: str | None = None) -> BaderSchema:
     """
     Runs a Bader partial charge and spin moment analysis using the VASP output
     files in the given path. This function requires that `bader` is located in
@@ -156,8 +147,6 @@ def _bader_runner(
     -------
     BaderSchema
         Dictionary containing the Bader analysis summary
-    Structure
-        Structure object with the Bader charges and spins attached
     """
     path = path or Path.cwd()
 
@@ -182,20 +171,12 @@ def _bader_runner(
     for k in ["charge", "charge_transfer", "reference_used", "magmom"]:
         bader_stats.pop(k, None)
 
-    # Attach the Bader charges and spins to the structure
-    if structure:
-        structure.add_site_property("bader_charge", bader_stats["partial_charges"])
-        if "spin_moments" in bader_stats:
-            structure.add_site_property("bader_spin", bader_stats["spin_moments"])
-
-    return bader_stats, structure
+    return bader_stats
 
 
 def _chargemol_runner(
-    path: str | None = None,
-    atomic_densities_path: str | None = None,
-    structure: Structure | None = None,
-) -> tuple[ChargemolSchema, Structure | None]:
+    path: str | None = None, atomic_densities_path: str | None = None
+) -> ChargemolSchema:
     """
     Runs a Chargemol (i.e. DDEC6 + CM5) analysis using the VASP output files in
     the given path. This function requires that the chargemol executable, given
@@ -220,8 +201,6 @@ def _chargemol_runner(
     -------
     ChargemolSchema
         Dictionary containing the Chargemol analysis summary
-    Structure
-        Structure object with the Chargemol charges and spins attached
     """
     path = path or Path.cwd()
 
@@ -242,18 +221,4 @@ def _chargemol_runner(
         path=path, atomic_densities_path=atomic_densities_path
     )
 
-    # Attach the Chargemol charges and spins to the structure
-    if structure:
-        structure.add_site_property(
-            "ddec6_charge", chargemol_stats["ddec"]["partial_charges"]
-        )
-        if "spin_moments" in chargemol_stats["ddec"]:
-            structure.add_site_property(
-                "ddec6_spin", chargemol_stats["ddec"]["spin_moments"]
-            )
-        if "cm5" in chargemol_stats:
-            structure.add_site_property(
-                "cm5_charge", chargemol_stats["cm5"]["partial_charges"]
-            )
-
-    return chargemol_stats, structure
+    return chargemol_stats
