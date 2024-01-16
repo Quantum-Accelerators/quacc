@@ -139,8 +139,8 @@ def test_summarize_bader_run(monkeypatch, run1, tmp_path):
     atoms = read(str(p / "OUTCAR.gz"))
     results = vasp_summarize_run(atoms, dir_path=p, run_bader=True)
     struct = results["output"]["structure"]
-    assert struct.site_properties["bader_charge"] == [1.0] * len(atoms)
-    assert struct.site_properties["bader_spin"] == [0.0] * len(atoms)
+    assert results["bader"]["partial_charges"] == [1.0] * len(atoms)
+    assert results["bader"]["spin_moments"] == [0.0] * len(atoms)
 
 
 def test_summarize_chargemol_run(monkeypatch, run1, tmp_path):
@@ -160,10 +160,9 @@ def test_summarize_chargemol_run(monkeypatch, run1, tmp_path):
     # Make sure Bader works
     atoms = read(str(p / "OUTCAR.gz"))
     results = vasp_summarize_run(atoms, dir_path=p, run_bader=False, run_chargemol=True)
-    struct = results["output"]["structure"]
-    assert struct.site_properties["ddec6_charge"] == [1.0] * len(atoms)
-    assert struct.site_properties["cm5_charge"] == [1.0] * len(atoms)
-    assert struct.site_properties["ddec6_spin"] == [0.0] * len(atoms)
+    assert results["chargemol"]["ddec"]["partial_charges"] == [1.0] * len(atoms)
+    assert results["chargemol"]["cm5"]["partial_charges"] == [1.0] * len(atoms)
+    assert results["chargemol"]["ddec"]["spin_moments"] == [0.0] * len(atoms)
 
 
 def test_summarize_bader_and_chargemol_run(monkeypatch, run1, tmp_path):
@@ -186,12 +185,11 @@ def test_summarize_bader_and_chargemol_run(monkeypatch, run1, tmp_path):
     # Make sure Bader works
     atoms = read(str(p / "OUTCAR.gz"))
     results = vasp_summarize_run(atoms, dir_path=p, run_bader=True, run_chargemol=True)
-    struct = results["output"]["structure"]
-    assert struct.site_properties["ddec6_charge"] == [1.0] * len(atoms)
-    assert struct.site_properties["cm5_charge"] == [1.0] * len(atoms)
-    assert struct.site_properties["ddec6_spin"] == [0.0] * len(atoms)
-    assert struct.site_properties["bader_charge"] == [1.0] * len(atoms)
-    assert struct.site_properties["bader_spin"] == [0.0] * len(atoms)
+    assert results["chargemol"]["ddec"]["partial_charges"] == [1.0] * len(atoms)
+    assert results["chargemol"]["cm5"]["partial_charges"] == [1.0] * len(atoms)
+    assert results["chargemol"]["ddec"]["spin_moments"] == [0.0] * len(atoms)
+    assert results["bader"]["partial_charges"] == [1.0] * len(atoms)
+    assert results["bader"]["spin_moments"] == [0.0] * len(atoms)
 
 
 def test_no_bader(tmp_path, monkeypatch, run1, caplog):

@@ -11,12 +11,12 @@ class BaderSchema(TypedDict, total=False):
     """Type hint associated with quacc.schemas.vasp._bader_runner."""
 
     atomic_volume: float
-    bader_charge: float
-    bader_spin: float
+    partial_charges: float
+    spin_moments: float
     bader_version: float
     min_dist: list[float]
     partial_charges: list[float]
-    spin_moments: list[float]
+    reference_used: list[float]
 
 
 class DDECSchema(TypedDict, total=False):
@@ -34,8 +34,11 @@ class CM5Schema(TypedDict):
     partial_charges: list[float]
 
 
-class ChargemolSchema(DDECSchema, CM5Schema):
+class ChargemolSchema(TypedDict, total=False):
     """Type hint associated with quacc.schemas.chargemol._chargemol_runner."""
+
+    ddec: DDECSchema
+    cm5: CM5Schema
 
 
 class VaspSchema(RunSchema, TaskDoc):
