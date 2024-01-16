@@ -19,6 +19,7 @@ Additional contributions were made by the individuals listed [here](https://gith
     Don't see your name and want to update the list? Submit a PR and update this documentation page!
 
 - [@kumaranu](https://github.com/kumaranu): NewtonNet recipes.
+- [@nekkrad](https://github.com/nekkrad): ONETEP recipes.
 - [@rwexler](https://github.com/rwexler): Defect utilities and EMT defect recipe.
 - [@samblau](https://github.com/samblau): Custom Q-Chem calculator, Q-Chem recipes.
 - [@tomdemeyere](https://github.com/tomdemeyere): Custom Espresso calculator, Espresso recipes.
