@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.6.1]
 
+### Added
+
+- Support for ONETEP recipes (@nekkrad)
+
 ### Fixed
 
 - Fixed bug where autoamtic k-point schemes in VASP would return `kpts` as `list[float]` instead of `list[int]`
