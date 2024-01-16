@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 
 def summarize_phonopy(
     phonon: Phonopy,
-    input_atoms: Atoms | None = None,
+    input_atoms: Atoms,
     parameters: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     store: Store | bool | None = None,
@@ -76,7 +76,7 @@ def summarize_phonopy(
     }
     phonon.save(settings={"force_constants": True})
 
-    atoms_metadata = atoms_to_metadata(input_atoms) if input_atoms else {}
+    atoms_metadata = atoms_to_metadata(input_atoms)
     unsorted_task_doc = recursive_dict_merge(
         atoms_metadata, inputs, results, additional_fields
     )
