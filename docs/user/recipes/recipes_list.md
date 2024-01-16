@@ -123,9 +123,9 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 
 <center>
 
-| Name           | Decorator       | Documentation                             | Req'd Extras |
-| -------------- | --------------- | ----------------------------------------- | ------------ |
-| ONETEP Static  | `#!Python @job` | [quacc.recipes.onetep.core.static_job][]  |              |
+| Name          | Decorator       | Documentation                            | Req'd Extras |
+| ------------- | --------------- | ---------------------------------------- | ------------ |
+| ONETEP Static | `#!Python @job` | [quacc.recipes.onetep.core.static_job][] |              |
 
 </center>
 

@@ -57,12 +57,10 @@ def base_fn(
         profile=OnetepProfile(
             SETTINGS.ONETEP_CMD
         ),  # TODO: If the ASE merge is successful, we need to change ONETEP_PARALLEL_CMD to a list[str] and remove parallel info.
-            # If we also have access to post_args we can point not to the binary but to the launcher which takes -t nthreads as a post_args
+        # If we also have access to post_args we can point not to the binary but to the launcher which takes -t nthreads as a post_args
         **calc_flags,
     )
 
     final_atoms = run_calc(atoms, copy_files=copy_files)
 
-    return summarize_run(
-        final_atoms, atoms, additional_fields=additional_fields
-    )
+    return summarize_run(final_atoms, atoms, additional_fields=additional_fields)
