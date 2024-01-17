@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 
 
 def cclib_summarize_run(
-    atoms: Atoms,
+    final_atoms: Atoms,
     logfile_extensions: str | list[str],
     dir_path: str | None = None,
     pop_analyses: list[
@@ -52,7 +52,6 @@ def cclib_summarize_run(
     ]
     | None = None,
     check_convergence: bool | None = None,
-    prep_next_run: bool = True,
     additional_fields: dict[str, Any] | None = None,
     store: Store | None = None,
 ) -> cclibSchema:
@@ -62,7 +61,7 @@ def cclib_summarize_run(
 
     Parameters
     ----------
-    atoms
+    final_atoms
         ASE Atoms object following a calculation.
     logfile_extensions
         Possible extensions of the log file (e.g. ".log", ".out", ".txt",
@@ -81,10 +80,6 @@ def cclib_summarize_run(
     check_convergence
          Whether to throw an error if geometry optimization convergence is not
          reached. Defaults to True in settings.
-    prep_next_run
-        Whether the Atoms object stored in {"atoms": atoms} should be prepared
-        for the next run. This clears out any attached calculator and moves the
-        final magmoms to the initial magmoms.
     additional_fields
         Additional fields to add to the task document.
     store
@@ -130,10 +125,10 @@ def cclib_summarize_run(
 
     # Get the base task document for the ASE run
     run_task_doc = summarize_run(
-        atoms,
-        input_atoms=input_atoms,
+        final_atoms,
+        input_atoms,
         charge_and_multiplicity=(attributes["charge"], attributes["mult"]),
-        prep_next_run=prep_next_run,
+        move_magmoms=False,
         store=False,
     )
 

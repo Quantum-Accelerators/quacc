@@ -12,7 +12,7 @@ from ase.vibrations.data import VibrationsData
 from quacc import SETTINGS, __version__
 from quacc.atoms.core import get_final_atoms_from_dyn
 from quacc.schemas.atoms import atoms_to_metadata
-from quacc.schemas.prep import prep_next_run as prep_next_run_
+from quacc.schemas.prep import prep_magmoms, prep_next_run
 from quacc.utils.dicts import clean_task_doc, recursive_dict_merge
 from quacc.utils.files import get_uri
 from quacc.wflow_tools.db import results_to_db
@@ -37,10 +37,10 @@ if TYPE_CHECKING:
 
 
 def summarize_run(
-    atoms: Atoms,
-    input_atoms: Atoms | None = None,
+    final_atoms: Atoms,
+    input_atoms: Atoms,
     charge_and_multiplicity: tuple[int, int] | None = None,
-    prep_next_run: bool = True,
+    move_magmoms: bool = True,
     additional_fields: dict[str, Any] | None = None,
     store: Store | bool | None = None,
 ) -> RunSchema:
@@ -50,17 +50,16 @@ def summarize_run(
 
     Parameters
     ----------
-    atoms
+    final_atoms
         ASE Atoms following a calculation. A calculator must be attached.
     input_atoms
         Input ASE Atoms object to store.
     charge_and_multiplicity
         Charge and spin multiplicity of the Atoms object, only used for Molecule
         metadata.
-    prep_next_run
-        Whether the Atoms object stored in `{"atoms": atoms}` should be prepared
-        for the next run. This clears out any attached calculator and moves the
-        final magmoms to the initial magmoms.
+    move_magmoms
+        Whether to move the final magmoms of the original Atoms object to the
+        initial magmoms of the returned Atoms object.
     additional_fields
         Additional fields to add to the task document.
     store
@@ -76,10 +75,10 @@ def summarize_run(
     additional_fields = additional_fields or {}
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
-    if not atoms.calc:
+    if not final_atoms.calc:
         msg = "ASE Atoms object has no attached calculator."
         raise ValueError(msg)
-    if not atoms.calc.results:
+    if not final_atoms.calc.results:
         msg = "ASE Atoms object's calculator has no results."
         raise ValueError(msg)
 
@@ -90,18 +89,20 @@ def summarize_run(
         else None
     )
     inputs = {
-        "parameters": atoms.calc.parameters,
+        "parameters": final_atoms.calc.parameters,
         "nid": uri.split(":")[0],
         "dir_name": ":".join(uri.split(":")[1:]),
         "input_atoms": input_atoms_metadata,
         "quacc_version": __version__,
     }
 
-    results = {"results": atoms.calc.results}
+    results = {"results": final_atoms.calc.results}
 
-    atoms_to_store = prep_next_run_(atoms) if prep_next_run else atoms
+    if move_magmoms:
+        final_atoms = prep_magmoms(final_atoms)
+    atoms_to_store = prep_next_run(final_atoms)
 
-    if atoms:
+    if final_atoms:
         final_atoms_metadata = atoms_to_metadata(
             atoms_to_store, charge_and_multiplicity=charge_and_multiplicity
         )
@@ -124,7 +125,7 @@ def summarize_opt_run(
     trajectory: Trajectory | list[Atoms] = None,
     check_convergence: bool | None = None,
     charge_and_multiplicity: tuple[int, int] | None = None,
-    prep_next_run: bool = True,
+    move_magmoms: bool = True,
     additional_fields: dict[str, Any] | None = None,
     store: Store | bool | None = None,
 ) -> OptSchema:
@@ -145,10 +146,9 @@ def summarize_opt_run(
     charge_and_multiplicity
         Charge and spin multiplicity of the Atoms object, only used for Molecule
         metadata.
-    prep_next_run
-        Whether the Atoms object stored in {"atoms": atoms} should be prepared
-        for the next run This clears out any attached calculator and moves the
-        final magmoms to the initial magmoms.
+    move_magmoms
+        Whether to move the final magmoms of the original Atoms object to the
+        initial magmoms of the returned Atoms object.
     additional_fields
         Additional fields to add to the task document.
     store
@@ -187,9 +187,9 @@ def summarize_opt_run(
     # Base task doc
     base_task_doc = summarize_run(
         final_atoms,
-        input_atoms=initial_atoms,
+        initial_atoms,
         charge_and_multiplicity=charge_and_multiplicity,
-        prep_next_run=prep_next_run,
+        move_magmoms=move_magmoms,
         store=False,
     )
 

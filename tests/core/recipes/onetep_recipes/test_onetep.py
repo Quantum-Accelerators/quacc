@@ -31,7 +31,10 @@ def test_static_job(tmp_path, monkeypatch):
         ngwf_count=1,
     )
 
+<<<<<<< HEAD
     assert output["natoms"] == len(atoms)
+=======
+>>>>>>> origin
     assert output["atoms"] == atoms
     assert output["parameters"]["keywords"] == {
         "output_detail": "verbose",

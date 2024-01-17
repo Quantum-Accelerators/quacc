@@ -49,9 +49,7 @@ def static_job(atoms: Atoms, **calc_kwargs) -> RunSchema:
     atoms.calc = LennardJones(**calc_kwargs)
     final_atoms = run_calc(atoms)
 
-    return summarize_run(
-        final_atoms, input_atoms=atoms, additional_fields={"name": "LJ Static"}
-    )
+    return summarize_run(final_atoms, atoms, additional_fields={"name": "LJ Static"})
 
 
 @job

@@ -3,12 +3,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from ase.optimize import LBFGS
+
 from quacc import job
 from quacc.calculators.espresso.espresso import EspressoTemplate
-from quacc.recipes.espresso._base import base_fn
+from quacc.recipes.espresso._base import base_fn, base_opt_fn
 
 if TYPE_CHECKING:
     from pathlib import Path
+    from typing import Any
 
     from ase.atoms import Atoms
 
@@ -144,6 +147,83 @@ def relax_job(
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "pw.x Relax"},
+        copy_files=copy_files,
+    )
+
+
+@job
+def ase_relax_job(
+    atoms: Atoms,
+    preset: str | None = "sssp_1.3.0_pbe_efficiency",
+    relax_cell: bool = False,
+    parallel_info: dict[str] | None = None,
+    opt_params: dict[str, Any] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
+    **calc_kwargs,
+) -> RunSchema:
+    """
+    Function to carry out a structure relaxation with pw.x using ASE
+    external optimizers.
+
+    Parameters
+    ----------
+    atoms
+        The Atoms object.
+    preset
+        The name of a YAML file containing a list of parameters to use as
+        a "preset" for the calculator. quacc will automatically look in the
+        `ESPRESSO_PRESET_DIR` (default: quacc/calculators/espresso/presets).
+    relax_cell
+        Whether to relax the cell or not.
+    parallel_info
+        Dictionary containing information about the parallelization of the
+        calculation. See the ASE documentation for more information.
+    opt_params
+        Dictionary of parameters to pass to the optimizer. pass "optimizer"
+        to change the optimizer being used. "fmax" and "max_steps" are commonly
+        used keywords. See the ASE documentation for more information.
+    copy_files
+        List of files to copy to the calculation directory. Useful for copying
+        files from a previous calculation. This parameter can either be a string
+        or a list of strings.
+
+        If a string is provided, it is assumed to be a path to a directory,
+        all of the child tree structure of that directory is going to be copied to the
+        scratch of this calculation. For phonon_job this is what most users will want to do.
+
+        If a list of strings is provided, each string point to a specific file. In this case
+        it is important to note that no directory structure is going to be copied, everything
+        is copied at the root of the temporary directory.
+    **calc_kwargs
+        Additional keyword arguments to pass to the Espresso calculator. See the
+        docstring of [quacc.calculators.espresso.espresso.Espresso][] for more information.
+
+    Returns
+    -------
+    RunSchema
+        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        See the type-hint for the data structure.
+    """
+
+    calc_defaults = {
+        "input_data": {
+            "control": {"calculation": "scf", "tstress": relax_cell, "tprnfor": True}
+        }
+    }
+
+    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": LBFGS}
+
+    return base_opt_fn(
+        atoms,
+        preset=preset,
+        relax_cell=relax_cell,
+        template=EspressoTemplate("pw"),
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        opt_defaults=opt_defaults,
+        opt_params=opt_params,
+        parallel_info=parallel_info,
+        additional_fields={"name": "pw.x ExternalRelax"},
         copy_files=copy_files,
     )
 

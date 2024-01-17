@@ -25,43 +25,46 @@ FILE_DIR = Path(__file__).parent
 RUN1 = FILE_DIR / "vasp_run1"
 
 
-def test_summarize_run(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_summarize_run():
     # Make sure metadata is made
+    initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
-    results = summarize_run(atoms)
+    results = summarize_run(atoms, initial_atoms)
     assert results["nsites"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["results"]["energy"] == atoms.get_potential_energy()
     assert "pymatgen_version" in results["builder_meta"]
+    assert results["input_atoms"]["atoms"] == initial_atoms
 
+
+def test_summarize_run2():
     # Test DB
+    initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
+    atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     store = MemoryStore()
-    summarize_run(atoms, store=store)
+    summarize_run(atoms, initial_atoms, store=store)
     assert store.count() == 1
 
-    # Make sure initial atoms object is stored if specified
-    atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
-    results = summarize_run(atoms, atoms)
-    assert results["nsites"] == len(atoms)
-    assert results["atoms"] == atoms
-    assert results["input_atoms"]["atoms"] == atoms
 
+def test_summarize_run3():
     # Make sure info tags are handled appropriately
+    initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
-    results = summarize_run(atoms)
+    results = summarize_run(atoms, initial_atoms)
     assert atoms.info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results.get("atoms_info", {}) != {}
     assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
+
+def test_summarize_run4():
     # Make sure magnetic moments are handled appropriately
+    initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
     atoms.calc.results["magmoms"] = [2.0] * len(atoms)
-    results = summarize_run(atoms)
+    results = summarize_run(atoms, initial_atoms)
 
     assert atoms.calc is not None
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
@@ -71,12 +74,16 @@ def test_summarize_run(tmp_path, monkeypatch):
     )
     assert results["atoms"].calc is None
 
+
+def test_summarize_run5():
     # Make sure Atoms magmoms were not moved if specified
+    initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
     results = summarize_run(
-        atoms, prep_next_run=False, additional_fields={"test": "hi"}
+        atoms, initial_atoms, move_magmoms=False, additional_fields={"test": "hi"}
     )
+
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
     assert results["atoms"].get_initial_magnetic_moments().tolist() == [3.14] * len(
         atoms
@@ -341,9 +348,10 @@ def test_errors(tmp_path, monkeypatch):
 
     atoms = bulk("Cu")
     with pytest.raises(ValueError):
-        summarize_run(atoms)
+        summarize_run(atoms, atoms)
 
+    initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     atoms.calc.results = {}
     with pytest.raises(ValueError):
-        summarize_run(atoms)
+        summarize_run(atoms, initial_atoms)
