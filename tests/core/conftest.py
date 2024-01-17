@@ -15,5 +15,5 @@ def pytest_sessionstart():
 def pytest_sessionfinish():
     from shutil import rmtree
 
-    #rmtree(TEST_RESULTS_DIR, ignore_errors=True)
-    #rmtree(TEST_SCRATCH_DIR, ignore_errors=True)
+    rmtree(TEST_RESULTS_DIR, ignore_errors=True)
+    rmtree(TEST_SCRATCH_DIR, ignore_errors=True)

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from shutil import which
 
 import pytest
 from ase.build import bulk
@@ -9,6 +10,10 @@ from numpy.testing import assert_allclose
 from quacc import SETTINGS
 from quacc.recipes.espresso.dos import dos_flow
 from quacc.utils.files import copy_decompress_files
+
+pytestmark = pytest.mark.skipif(
+    which("pw.x") is None or which("ph.x") is None, reason="QE not installed"
+)
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 DATA_DIR = Path(__file__).parent / "data"
@@ -21,7 +26,7 @@ def test_dos_flow(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     SETTINGS.ESPRESSO_PSEUDO = tmp_path
     atoms = bulk("Si")
     input_data = {
-        "control": {"calculation": "scf"},
+        "control": {"calculation": "scf", "pseudo_dir": tmp_path},
         "electrons": {"mixing_mode": "TF", "mixing_beta": 0.7, "conv_thr": 1.0e-6},
     }
 
