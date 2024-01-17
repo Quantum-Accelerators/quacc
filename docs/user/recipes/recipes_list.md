@@ -201,7 +201,7 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 
 !!! Info
 
-    [tblite](https://github.com/tblite/tblite) is a code that interfaces with the xtb package for running GFN-xTB calculations.
+    [tblite](https://github.com/tblite/tblite) is a code for running GFN-xTB calculations.
 
 <center>
 
