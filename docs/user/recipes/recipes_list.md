@@ -194,6 +194,9 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 | Espresso Post Processing | `#!Python @job`  | [quacc.recipes.espresso.core.post_processing_job][] |              |
 | Espresso Phonon          | `#!Python @job`  | [quacc.recipes.espresso.phonons.phonon_job][]       |              |
 | Espresso Grid Phonon     | `#!Python @flow` | [quacc.recipes.espresso.phonons.grid_phonon_flow][] |              |
+| Espresso Non Scf         | `#!Python @job`  | [quacc.recipes.espresso.core.non_scf_job][]         |              |
+| Espresso DOS             | `#!Python @job`  | [quacc.recipes.espresso.dos.dos_job][]              |              |
+| Espresso DOS Flow        | `#!Python @flow`  | [quacc.recipes.espresso.dos.dos_flow][]            |              |
 
 </center>
 
