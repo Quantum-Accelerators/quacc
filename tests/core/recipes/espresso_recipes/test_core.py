@@ -9,7 +9,6 @@ from ase.build import bulk
 from ase.optimize import BFGS
 from numpy.testing import assert_allclose, assert_array_equal
 
-from quacc import SETTINGS
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.recipes.espresso.core import (
     ase_relax_job,
@@ -21,7 +20,6 @@ from quacc.utils.files import copy_decompress_files
 
 pytestmark = pytest.mark.skipif(which("pw.x") is None, reason="QE not installed")
 
-DEFAULT_SETTINGS = SETTINGS.model_copy()
 DATA_DIR = Path(__file__).parent / "data"
 
 

@@ -73,6 +73,8 @@ def test_phonon_job(tmp_path, monkeypatch):
     for key in sections:
         assert key in ph_results["results"][(0, 0, 0)]
 
+    SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO
+
 
 def test_phonon_job_list_to_do(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
@@ -137,6 +139,8 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
 
     for key in sections:
         assert key in ph_results["results"][(0, 0, 0)]
+
+    SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO
 
 
 def test_phonon_grid(tmp_path, monkeypatch):
