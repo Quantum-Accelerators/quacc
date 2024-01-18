@@ -120,12 +120,11 @@ def dos_flow(
         See the type-hint for the data structure.
     """
 
-    calc_defaults = {
-        "static_job": {
+    static_job_defaults = {
             "kspacing": 0.2,
             "input_data": {"system": {"occupations": "tetrahedra"}},
-        },
-        "non_scf_job": recursive_dict_merge(
+        }
+    non_scf_job_defaults = recursive_dict_merge(
             job_params.get("static_job", {}),
             {
                 "kspacing": 0.01,
@@ -137,8 +136,13 @@ def dos_flow(
                     "system": {"occupations": "tetrahedra"},
                 },
             },
-        ),
-        "dos_job": {"input_data": {"dos": {"fildos": "total_dos.dos"}}},
+        )
+    dos_job_defaults = {"input_data": {"dos": {"fildos": "total_dos.dos"}}}
+    
+    calc_defaults = {
+        "static_job": static_job_defaults,
+        "non_scf_job": non_scf_job_defaults,
+        "dos_job": dos_job_defaults,
     }
     job_params = recursive_dict_merge(calc_defaults, job_params)
 
