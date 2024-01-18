@@ -20,12 +20,17 @@ from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:
-    from typing import Any, Callable
+    from typing import Any, Callable,TypedDict
 
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
 
+
+    class DosSchema(TypedDict):
+        static_job: RunSchema
+        non_scf_job: RunSchema
+        dos_job: RunSchema
 
 @job
 def dos_job(
@@ -81,7 +86,7 @@ def dos_flow(
     atoms: Atoms,
     job_decorators: dict[str, Callable | None] | None = None,
     job_params: dict[str, Any] | None = None,
-) -> RunSchema:
+) -> DosSchema:
     """
     This function performs a total density of states calculations.
 
@@ -112,7 +117,7 @@ def dos_flow(
 
     Returns
     -------
-    RunSchema
+    DosSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
@@ -128,7 +133,7 @@ def dos_flow(
                 "kspacing": 0.01,
                 "input_data": {
                     "control": {
-                        "calculation": "nscf",  # Unfortunately, we have to repeat that here.
+                        "calculation": "nscf",
                         "verbosity": "high",
                     },
                     "system": {"occupations": "tetrahedra"},
@@ -139,45 +144,45 @@ def dos_flow(
     }
     job_params = recursive_dict_merge(calc_defaults, job_params)
 
-    pw_job, nscf_job, tdos_job = customize_funcs(
+    static_job_, non_scf_job_, dos_job_ = customize_funcs(
         ["static_job", "non_scf_job", "dos_job"],
         [static_job, non_scf_job, dos_job],
         parameters=job_params,
         decorators=job_decorators,
     )
 
-    pw_results = pw_job(atoms)
+    static_results = static_job_(atoms)
 
-    pw_input_data = Namelist(job_params["static_job"].get("input_data"))
-    pw_input_data.to_nested(binary="pw")
-    prefix = pw_input_data.get("prefix", "pwscf")
-    outdir = pw_input_data.get("outdir", ".")
+    static_input_data = Namelist(job_params["static_job"].get("input_data"))
+    static_input_data.to_nested(binary="pw")
+    prefix = static_input_data.get("prefix", "pwscf")
+    outdir = static_input_data.get("outdir", ".")
     file_to_copy = {
-        pw_results["dir_name"]: [
+        static_results["dir_name"]: [
             f"{outdir}/{prefix}.save/charge-density.*",
             f"{outdir}/{prefix}.save/data-file-schema.xml.*",
             f"{outdir}/{prefix}.save/paw.txt.*",
         ]
     }
 
-    nscf_results = nscf_job(atoms, prev_dir=file_to_copy)
+    non_scf_results = non_scf_job_(atoms, prev_dir=file_to_copy)
 
-    nscf_input_data = Namelist(job_params["non_scf_job"].get("input_data"))
-    nscf_input_data.to_nested(binary="pw")
-    prefix = nscf_input_data.get("prefix", "pwscf")
-    outdir = nscf_input_data.get("outdir", ".")
+    non_scf_input_data = Namelist(job_params["non_scf_job"].get("input_data"))
+    non_scf_input_data.to_nested(binary="pw")
+    prefix = non_scf_input_data.get("prefix", "pwscf")
+    outdir = non_scf_input_data.get("outdir", ".")
     file_to_copy = {
-        nscf_results["dir_name"]: [
+        non_scf_results["dir_name"]: [
             f"{outdir}/{prefix}.save/charge-density.*",
             f"{outdir}/{prefix}.save/data-file-schema.xml.*",
             f"{outdir}/{prefix}.save/paw.txt.*",
         ]
     }
 
-    dos_results = tdos_job(prev_dir=file_to_copy)
+    dos_results = dos_job_(prev_dir=file_to_copy)
 
     return {
-        "static_job": pw_results,
-        "non_scf_job": nscf_results,
+        "static_job": static_results,
+        "non_scf_job": non_scf_results,
         "dos_job": dos_results,
     }

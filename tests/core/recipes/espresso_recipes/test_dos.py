@@ -12,7 +12,7 @@ from quacc.recipes.espresso.dos import dos_flow
 from quacc.utils.files import copy_decompress_files
 
 pytestmark = pytest.mark.skipif(
-    which("pw.x") is None or which("ph.x") is None, reason="QE not installed"
+    which("pw.x") is None or which("dos.x") is None, reason="QE not installed"
 )
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
@@ -23,7 +23,6 @@ def test_dos_flow(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     monkeypatch.chdir(tmp_path)
 
     copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
-    SETTINGS.ESPRESSO_PSEUDO = tmp_path
     atoms = bulk("Si")
     input_data = {
         "control": {"calculation": "scf", "pseudo_dir": tmp_path},
