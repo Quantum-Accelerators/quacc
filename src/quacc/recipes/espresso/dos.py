@@ -116,6 +116,7 @@ def dos_flow(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
+
     calc_defaults = {
         "static_job": {
             "kspacing": 0.2,
@@ -147,10 +148,10 @@ def dos_flow(
 
     pw_results = pw_job(atoms)
 
-    pw_input_data = Namelist(job_params["static_job"])
+    pw_input_data = Namelist(job_params["static_job"].get("input_data"))
     pw_input_data.to_nested(binary="pw")
-    prefix = pw_input_data["input_data"].get("prefix", "pwscf")
-    outdir = pw_input_data["input_data"].get("outdir", ".")
+    prefix = pw_input_data.get("prefix", "pwscf")
+    outdir = pw_input_data.get("outdir", ".")
     file_to_copy = {
         pw_results["dir_name"]: [
             f"{outdir}/{prefix}.save/charge-density.*",
@@ -161,10 +162,10 @@ def dos_flow(
 
     nscf_results = nscf_job(atoms, prev_dir=file_to_copy)
 
-    nscf_input_data = Namelist(job_params["non_scf_job"])
+    nscf_input_data = Namelist(job_params["non_scf_job"].get("input_data"))
     nscf_input_data.to_nested(binary="pw")
-    prefix = nscf_input_data["input_data"].get("prefix", "pwscf")
-    outdir = nscf_input_data["input_data"].get("outdir", ".")
+    prefix = nscf_input_data.get("prefix", "pwscf")
+    outdir = nscf_input_data.get("outdir", ".")
     file_to_copy = {
         nscf_results["dir_name"]: [
             f"{outdir}/{prefix}.save/charge-density.*",
