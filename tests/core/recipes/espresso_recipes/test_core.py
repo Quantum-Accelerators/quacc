@@ -8,6 +8,7 @@ import pytest
 from ase.build import bulk
 from ase.optimize import BFGS
 from numpy.testing import assert_allclose, assert_array_equal
+
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.recipes.espresso.core import (
     ase_relax_job,
