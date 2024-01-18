@@ -1,5 +1,6 @@
-import pytest
 from shutil import which
+
+import pytest
 
 pytestmark = pytest.mark.skipif(which("pw.x") is None, reason="QE not installed")
 
@@ -18,7 +19,6 @@ from quacc.recipes.espresso.core import (
     static_job,
 )
 from quacc.utils.files import copy_decompress_files
-
 
 DATA_DIR = Path(__file__).parent / "data"
 

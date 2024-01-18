@@ -1,5 +1,6 @@
-import pytest
 from shutil import which
+
+import pytest
 
 pytestmark = pytest.mark.skipif(
     which("pw.x") is None or which("ph.x") is None, reason="QE not installed"
