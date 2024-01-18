@@ -1,5 +1,5 @@
-
 import pytest
+
 ct = pytest.importorskip("covalent")
 from shutil import which
 
@@ -16,7 +16,9 @@ from quacc.recipes.espresso.phonons import grid_phonon_flow
 from quacc.utils.files import copy_decompress_files
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
-DATA_DIR = Path(__file__).parent /".."/"core"/"recipes"/"espresso_recipes"/ "data"
+DATA_DIR = (
+    Path(__file__).parent / ".." / "core" / "recipes" / "espresso_recipes" / "data"
+)
 
 
 def test_phonon_grid(tmp_path, monkeypatch):
