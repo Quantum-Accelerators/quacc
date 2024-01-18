@@ -50,6 +50,10 @@ def test_dos_flow(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
         output["static_job"]["parameters"]["input_data"]["electrons"]["mixing_mode"]
         == "TF"
     )
+
+    assert output["static_job"]["results"]["nbands"] == 8
+    assert output["static_job"]["results"]["nspins"] == 1
+
     assert_allclose(
         output["non_scf_job"]["atoms"].get_positions(),
         atoms.get_positions(),
@@ -63,3 +67,7 @@ def test_dos_flow(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
         output["non_scf_job"]["parameters"]["input_data"]["electrons"]["mixing_mode"]
         == "TF"
     )
+    assert output["non_scf_job"]["results"]["nbands"] == 8
+    assert output["non_scf_job"]["results"]["nspins"] == 1
+
+    assert output["dos_job"]["results"] == {}

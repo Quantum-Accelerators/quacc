@@ -18,7 +18,7 @@ from quacc.recipes.espresso._base import base_fn
 from quacc.recipes.espresso.core import non_scf_job, static_job
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs
-
+from quacc.calculators.espresso.utils import pw_copy_files
 if TYPE_CHECKING:
     from typing import Any, Callable,TypedDict
 
@@ -152,32 +152,12 @@ def dos_flow(
     )
 
     static_results = static_job_(atoms)
-
-    static_input_data = Namelist(job_params["static_job"].get("input_data"))
-    static_input_data.to_nested(binary="pw")
-    prefix = static_input_data.get("prefix", "pwscf")
-    outdir = static_input_data.get("outdir", ".")
-    file_to_copy = {
-        static_results["dir_name"]: [
-            f"{outdir}/{prefix}.save/charge-density.*",
-            f"{outdir}/{prefix}.save/data-file-schema.xml.*",
-            f"{outdir}/{prefix}.save/paw.txt.*",
-        ]
-    }
+    file_to_copy =  pw_copy_files(job_params["static_job"].get("input_data"),static_results["dir_name"],include_wfc=False)
+        
 
     non_scf_results = non_scf_job_(atoms, prev_dir=file_to_copy)
-
-    non_scf_input_data = Namelist(job_params["non_scf_job"].get("input_data"))
-    non_scf_input_data.to_nested(binary="pw")
-    prefix = non_scf_input_data.get("prefix", "pwscf")
-    outdir = non_scf_input_data.get("outdir", ".")
-    file_to_copy = {
-        non_scf_results["dir_name"]: [
-            f"{outdir}/{prefix}.save/charge-density.*",
-            f"{outdir}/{prefix}.save/data-file-schema.xml.*",
-            f"{outdir}/{prefix}.save/paw.txt.*",
-        ]
-    }
+    file_to_copy =  pw_copy_files(job_params["non_scf_job"].get("input_data"),non_scf_results["dir_name"],include_wfc=False)
+    
 
     dos_results = dos_job_(prev_dir=file_to_copy)
 
