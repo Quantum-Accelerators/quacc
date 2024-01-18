@@ -1,10 +1,11 @@
-from __future__ import annotations
+import pytest
+from shutil import which
+
+pytestmark = pytest.mark.skipif(which("pw.x") is None, reason="QE not installed")
 
 from pathlib import Path
-from shutil import which
 from subprocess import CalledProcessError
 
-import pytest
 from ase.build import bulk
 from ase.optimize import BFGS
 from numpy.testing import assert_allclose, assert_array_equal
@@ -18,7 +19,6 @@ from quacc.recipes.espresso.core import (
 )
 from quacc.utils.files import copy_decompress_files
 
-pytestmark = pytest.mark.skipif(which("pw.x") is None, reason="QE not installed")
 
 DATA_DIR = Path(__file__).parent / "data"
 
