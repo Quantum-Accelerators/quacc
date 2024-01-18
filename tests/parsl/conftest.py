@@ -13,9 +13,10 @@ def pytest_sessionstart():
     os.environ["QUACC_SCRATCH_DIR"] = str(TEST_SCRATCH_DIR)
 
 
-def pytest_sessionfinish():
-    from shutil import rmtree
+def pytest_sessionfinish(exitstatus):
+    if exitstatus == 0:
+        from shutil import rmtree
 
-    rmtree(TEST_RESULTS_DIR, ignore_errors=True)
-    rmtree(TEST_SCRATCH_DIR, ignore_errors=True)
-    rmtree(TEST_RUNINFO, ignore_errors=True)
+        rmtree(TEST_RESULTS_DIR, ignore_errors=True)
+        rmtree(TEST_SCRATCH_DIR, ignore_errors=True)
+        rmtree(TEST_RUNINFO, ignore_errors=True)
