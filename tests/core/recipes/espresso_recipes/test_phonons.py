@@ -1,7 +1,13 @@
-from pathlib import Path
 from shutil import which
 
 import pytest
+
+pytestmark = pytest.mark.skipif(
+    which("pw.x") is None or which("ph.x") is None, reason="QE not installed"
+)
+
+from pathlib import Path
+
 from ase.build import bulk
 from numpy.testing import assert_allclose, assert_array_equal
 
@@ -9,10 +15,6 @@ from quacc import SETTINGS
 from quacc.recipes.espresso.core import static_job
 from quacc.recipes.espresso.phonons import grid_phonon_flow, phonon_job
 from quacc.utils.files import copy_decompress_files
-
-pytestmark = pytest.mark.skipif(
-    which("pw.x") is None or which("ph.x") is None, reason="QE not installed"
-)
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 DATA_DIR = Path(__file__).parent / "data"
