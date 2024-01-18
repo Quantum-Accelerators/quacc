@@ -14,9 +14,17 @@ except ImportError:
 def pytest_sessionstart():
     if parsl:
         import psutil
+        from parsl.config import Config
         from parsl.executors.threads import ThreadPoolExecutor
-
-        parsl.load(ThreadPoolExecutor(max_threads=psutil.cpu_count()))
+        config = Config(
+            executors=[
+                ThreadPoolExecutor(
+                    max_threads=psutil.cpu_count(),
+                    label='test_threads'
+                )
+            ]
+        )
+        parsl.load(config)
     file_dir = Path(__file__).parent
     os.environ["QUACC_CONFIG_FILE"] = str(file_dir / "quacc.yaml")
     os.environ["QUACC_RESULTS_DIR"] = str(TEST_RESULTS_DIR)
