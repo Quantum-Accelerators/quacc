@@ -16,12 +16,10 @@ def pytest_sessionstart():
         import psutil
         from parsl.config import Config
         from parsl.executors.threads import ThreadPoolExecutor
+
         config = Config(
             executors=[
-                ThreadPoolExecutor(
-                    max_threads=psutil.cpu_count(),
-                    label='test_threads'
-                )
+                ThreadPoolExecutor(max_threads=psutil.cpu_count(), label="test_threads")
             ]
         )
         parsl.load(config)
