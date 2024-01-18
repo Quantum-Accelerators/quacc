@@ -253,25 +253,31 @@ def grid_phonon_flow(
         return grid_results
 
     relax_job_defaults = {
-            "input_data": {
-                "control": {"forc_conv_thr": 5.0e-5},
-                "electrons": {"conv_thr": 1e-12},
-            }
+        "input_data": {
+            "control": {"forc_conv_thr": 5.0e-5},
+            "electrons": {"conv_thr": 1e-12},
+        }
     }
     ph_init_job_defaults = recursive_dict_merge(
-            {"input_data": {"inputph": {"lqdir": True, "only_init": True}}},
-            job_params.get("ph_job", {}))
+        {"input_data": {"inputph": {"lqdir": True, "only_init": True}}},
+        job_params.get("ph_job", {}),
+    )
     ph_job_defaults = {
-            "input_data": {
-                "inputph": {"lqdir": True, "low_directory_check": True, "recover": True}
-            }
+        "input_data": {
+            "inputph": {"lqdir": True, "low_directory_check": True, "recover": True}
+        }
     }
     ph_recover_job_defaults = recursive_dict_merge(
-            {"input_data": {"inputph": {"recover": True, "lqdir": True}}},
-            job_params.get("ph_job", {}),
-        )
-    
-    calc_defaults = {"relax_job": relax_job_defaults, "ph_init_job": ph_init_job_defaults, "ph_job": ph_job_defaults, "ph_recover_job": ph_recover_job_defaults} 
+        {"input_data": {"inputph": {"recover": True, "lqdir": True}}},
+        job_params.get("ph_job", {}),
+    )
+
+    calc_defaults = {
+        "relax_job": relax_job_defaults,
+        "ph_init_job": ph_init_job_defaults,
+        "ph_job": ph_job_defaults,
+        "ph_recover_job": ph_recover_job_defaults,
+    }
 
     job_params = recursive_dict_merge(calc_defaults, job_params)
 
