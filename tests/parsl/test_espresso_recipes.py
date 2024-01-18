@@ -1,5 +1,5 @@
-
 import pytest
+
 parsl = pytest.importorskip("parsl")
 from shutil import which
 
@@ -16,8 +16,9 @@ from quacc.recipes.espresso.phonons import grid_phonon_flow
 from quacc.utils.files import copy_decompress_files
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
-DATA_DIR = Path(__file__).parent /".."/"core"/"recipes"/"espresso_recipes"/ "data"
-
+DATA_DIR = (
+    Path(__file__).parent / ".." / "core" / "recipes" / "espresso_recipes" / "data"
+)
 
 
 def setup_module():
@@ -27,6 +28,8 @@ def setup_module():
 
 def teardown_module():
     parsl.clear()
+
+
 def test_phonon_grid(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
