@@ -6,9 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.6.1]
 
+### Added
+
+- Support for ONETEP recipes (@nekkrad)
+- New Espresso recipe for ASE external relaxations (@tomdemeyere)
+
 ### Fixed
 
-- Fixed autoamtic k-point schemes in VASP from return `kpts` as `list[float]` instead of `list[int]`
+- Fixed bug where autoamtic k-point schemes in VASP would return `kpts` as `list[float]` instead of `list[int]`
+- VASP runs now respect the `CHECK_CONVERGENCE` global setting when set to `False`
+- Fixed bug where the gamma-point only version of VASP was being called if `kpts` was `None` but `kspacing` was not `None`
+
+### Removed
+
+- Removed the broken TRICs support with Sella
+- Removed the `covalent_to_db` function
 
 ## [0.6.0]
 

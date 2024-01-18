@@ -160,6 +160,22 @@ class QuaccSettings(BaseSettings):
     )
 
     # ---------------------------
+    # ONETEP Settings
+    # ---------------------------
+    ONETEP_CMD: Optional[Path] = Field(
+        Path("onetep.arch"), description=("Path to the ONETEP executable.")
+    )
+    ONETEP_PARALLEL_CMD: Optional[dict] = Field(
+        None,
+        description=(
+            "Parallelization commands to run ONETEP that are prepended to the executable."
+        ),
+    )
+    ONETEP_PP_PATH: Optional[Path] = Field(
+        None, description=("Path to pseudopotentials.")
+    )
+
+    # ---------------------------
     # GULP Settings
     # ---------------------------
     GULP_CMD: Path = Field(Path("gulp"), description=("Path to the GULP executable."))

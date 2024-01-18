@@ -20,4 +20,4 @@ pytest tests/parsl # or `pytest .` from within `tests/parsl`
 
 ## Troubleshooting Tests
 
-If you ever need to inspect files from a failed test run, you can find them in the `.quacc_scratch` and `.quacc_results` directories that are created in the current working directory.
+If you ever need to inspect files from a failed test run, you can find them in the `_quacc_scratch` and `_quacc_results` directories that are created in the current working directory.
