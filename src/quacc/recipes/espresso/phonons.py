@@ -260,7 +260,7 @@ def grid_phonon_flow(
     }
     ph_init_job_defaults = recursive_dict_merge(
             {"input_data": {"inputph": {"lqdir": True, "only_init": True}}},
-            job_params.get("ph_job", {})
+            job_params.get("ph_job", {}))
     ph_job_defaults = {
             "input_data": {
                 "inputph": {"lqdir": True, "low_directory_check": True, "recover": True}
