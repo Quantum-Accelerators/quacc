@@ -13,7 +13,6 @@ from quacc.utils.files import copy_decompress_files
 
 pytestmark = pytest.mark.skipif(which("pw.x") is None, reason="QE not installed")
 
-DEFAULT_SETTINGS = SETTINGS.model_copy()
 DATA_DIR = Path(__file__).parent / "data"
 
 

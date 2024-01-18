@@ -4,11 +4,16 @@ parsl = pytest.importorskip("parsl")
 
 import contextlib
 from pathlib import Path
+from shutil import which
 
 from ase.build import bulk
 
 from quacc.recipes.espresso.phonons import grid_phonon_flow  # skipcq: PYL-C0412
 from quacc.utils.files import copy_decompress_files
+
+pytestmark = pytest.mark.skipif(
+    which("pw.x") is None or which("ph.x") is None, reason="QE not installed"
+)
 
 DATA_DIR = (
     Path(__file__).parent / ".." / "core" / "recipes" / "espresso_recipes" / "data"

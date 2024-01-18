@@ -125,6 +125,10 @@ jobs:
           pip install -r tests/requirements-phonopy.txt
           pip install .[dev]
 
+      - name: Install conda packages
+        run: |
+          conda install -c conda-forge qe
+
       - name: Run tests with pytest
         run: pytest --durations=10 tests/${{ matrix.wflow_engine }} --cov=quacc --cov-report=xml
 
@@ -174,7 +178,7 @@ jobs:
           name: ${{ github.job }} ${{ matrix.wflow_engine }} coverage report
           path: "coverage.xml"
           retention-days: 1
-  
+
   tests-psi4:
     strategy:
       fail-fast: true
