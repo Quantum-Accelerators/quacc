@@ -63,8 +63,8 @@ def test_results_dir(tmp_path, monkeypatch):
     os.remove("opt.traj")
 
 
-def test_env_var(monkeypatch):
-    p = FILE_DIR / "my/scratch/dir"
+def test_env_var(monkeypatch, tmp_path):
+    p = tmp_path / "my/scratch/dir"
     monkeypatch.setenv("QUACC_SCRATCH_DIR", p)
     assert p.expanduser().resolve() == QuaccSettings().SCRATCH_DIR
 
@@ -72,7 +72,7 @@ def test_env_var(monkeypatch):
 def test_yaml(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    p = FILE_DIR / "my/new/scratch/dir"
+    p = tmp_path / "my/new/scratch/dir"
     monkeypatch.delenv("QUACC_SCRATCH_DIR", raising=False)
     with open("quacc_test.yaml", "w") as f:
         f.write(f"SCRATCH_DIR: {p}")
