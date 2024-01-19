@@ -5,6 +5,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 from ase.io.espresso import read_espresso_ph
+from quacc.calculators.espresso.espresso import EspressoTemplate
 
 RUN_PATH = Path(__file__).parent / "test_runs"
 
@@ -39,3 +40,8 @@ def test_read_espresso_ph_1():
     assert np.unique(results[(0.75, -0.25, 0.75)]["freqs"])[2] == 8.791383
     assert len(results[(0.75, -0.25, 0.75)]["eqpoints"]) == 24
     assert results[(0.75, -0.25, 0.75)]["atoms"].symbols == ["Al"]
+
+def test_dos_output():
+    template = EspressoTemplate(binary='dos')
+    template.outdirs = {"fildos": Path(RUN_PATH, "test.dos")}
+    template.read_results(directory=".")
