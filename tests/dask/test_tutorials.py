@@ -3,12 +3,12 @@ import pytest
 dask = pytest.importorskip("dask")
 
 from ase.build import bulk, molecule
-from dask.distributed import default_client
+from dask.distributed import get_client
 
 from quacc.recipes.emt.core import relax_job, static_job  # skipcq: PYL-C0412
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow  # skipcq: PYL-C0412
 
-client = default_client()
+client = get_client()
 
 
 def test_tutorial1a(tmp_path, monkeypatch):
