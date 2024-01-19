@@ -7,7 +7,7 @@ pytestmark = pytest.mark.skipif(
     which("pw.x") is None or which("dos.x") is None, reason="QE not installed"
 )
 
-from dask.distributed import default_client
+from dask.distributed import get_client
 
 from pathlib import Path
 
@@ -17,7 +17,7 @@ from ase.build import bulk
 from quacc.recipes.espresso.dos import dos_flow
 from quacc.utils.files import copy_decompress_files
 
-client = default_client()
+client = get_client()
 
 DATA_DIR = (
     Path(__file__).parent / ".." / "core" / "recipes" / "espresso_recipes" / "data"
