@@ -2,12 +2,12 @@ import pytest
 
 dask = pytest.importorskip("dask")
 
-from dask.distributed import default_client
+from dask.distributed import get_client
 
 from quacc import flow, job, strip_decorator, subflow
 from quacc.wflow_tools.customizers import update_parameters
 
-client = default_client()
+client = get_client()
 
 
 def test_dask_decorators(tmp_path, monkeypatch):
