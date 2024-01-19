@@ -41,7 +41,11 @@ def test_read_espresso_ph_1():
     assert len(results[(0.75, -0.25, 0.75)]["eqpoints"]) == 24
     assert results[(0.75, -0.25, 0.75)]["atoms"].symbols == ["Al"]
 
+
 def test_dos_output():
-    template = EspressoTemplate(binary='dos')
-    template.outdirs = {"fildos": Path(RUN_PATH, "test.dos")}
+    template = EspressoTemplate(binary="dos")
+    template.outfiles = {"fildos": str(Path(RUN_PATH, "test.dos"))}
+    template.write_input(
+        atoms=None, profile=None, directory=".", parameters={}, properties=[]
+    )
     template.read_results(directory=".")
