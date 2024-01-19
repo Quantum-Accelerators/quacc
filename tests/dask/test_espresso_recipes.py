@@ -14,13 +14,11 @@ from pathlib import Path
 import pytest
 from ase.build import bulk
 
-from quacc import SETTINGS
 from quacc.recipes.espresso.dos import dos_flow
 from quacc.utils.files import copy_decompress_files
 
 client = default_client()
 
-DEFAULT_SETTINGS = SETTINGS.model_copy()
 DATA_DIR = (
     Path(__file__).parent / ".." / "core" / "recipes" / "espresso_recipes" / "data"
 )
