@@ -2,9 +2,11 @@
 from __future__ import annotations
 
 import os
+import re
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import numpy as np
 from ase import Atoms
 from ase.calculators.espresso import Espresso as Espresso_
 from ase.calculators.espresso import EspressoProfile
@@ -57,6 +59,7 @@ class EspressoTemplate(EspressoTemplate_):
         self.outdirs = {
             "outdir": os.environ.get("ESPRESSO_TMPDIR"),
             "wfcdir": os.environ.get("ESPRESSO_TMPDIR"),
+            "fildos": "pwscf.dos",
         }
 
         self.test_run = test_run
@@ -185,6 +188,13 @@ class EspressoTemplate(EspressoTemplate_):
         elif self.binary == "ph":
             with Path.open(directory / self.outputname, "r") as fd:
                 results = read_espresso_ph(fd)
+        elif self.binary == "dos":
+            fildos = self.outdirs["fildos"]
+            with Path.open(fildos, "r") as fd:
+                lines = fd.readlines()
+                fermi = re.search(r"-?\d+\.?\d*", lines[0]).group(0)
+                dos = np.loadtxt(lines[1:])
+            results = {fildos.name: {"dos": dos, "fermi": fermi}}
         else:
             results = {}
 
@@ -224,9 +234,9 @@ class EspressoTemplate(EspressoTemplate_):
                     path = Path(input_data[section][d_key])
                     path = path.expanduser().resolve()
                     if directory.expanduser().resolve() not in path.parents:
-                        self.outdirs[d_key] = path
                         continue
                     path.mkdir(parents=True, exist_ok=True)
+                    self.outdirs[d_key] = path
                     input_data[section][d_key] = path
 
         parameters["input_data"] = input_data
