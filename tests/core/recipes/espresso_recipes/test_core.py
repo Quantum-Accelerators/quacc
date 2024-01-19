@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from shutil import which
 
 import pytest
@@ -144,23 +146,10 @@ def test_static_job_outdir_abs(tmp_path, monkeypatch):
     }
     pseudopotentials = {"Si": "Si.upf"}
 
-    results = static_job(
-        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=None
-    )
-
-    assert_allclose(
-        results["atoms"].get_positions(), atoms.get_positions(), atol=1.0e-4
-    )
-    assert_allclose(results["atoms"].get_cell(), atoms.get_cell(), atol=1.0e-3)
-    assert_array_equal(
-        results["atoms"].get_chemical_symbols(), atoms.get_chemical_symbols()
-    )
-    assert results["results"]["energy"] == pytest.approx(-293.71195934404255)
-    new_input_data = results["parameters"]["input_data"]
-    assert new_input_data["system"]["degauss"] == 0.005
-    assert new_input_data["system"]["occupations"] == "smearing"
-    assert new_input_data["electrons"]["conv_thr"] == 1.0e-6
-    assert new_input_data["control"]["calculation"] == "scf"
+    with pytest.raises(ValueError):
+        static_job(
+            atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=None
+        )
 
 
 def test_static_job_dir_fail(tmp_path, monkeypatch):

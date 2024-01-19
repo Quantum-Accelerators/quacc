@@ -144,7 +144,7 @@ def test_espresso_kpts():
     assert calc.parameters["kspacing"] == 0.001
 
 
-def test_outdir_handler(tmp_path, monkeypatch):
+def test_output_handler(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     parameters = {"input_data": {"system": {"outdir": "../test3/test2/test1"}}}
@@ -152,18 +152,18 @@ def test_outdir_handler(tmp_path, monkeypatch):
     test_path = "../test3/test2/test1"
     fake_template = EspressoTemplate()
     with pytest.raises(ValueError):
-        new_parameters = fake_template._outdir_handler(parameters, Path())
+        new_parameters = fake_template._output_handler(parameters, Path())
 
     test_path = "/test3/test2/test1"
     parameters["input_data"]["system"]["outdir"] = test_path
     fake_template = EspressoTemplate()
     with pytest.raises(ValueError):
-        new_parameters = fake_template._outdir_handler(parameters, Path())
+        new_parameters = fake_template._output_handler(parameters, Path())
 
     test_path = Path("test3/test2/test1")
     parameters["input_data"]["system"]["outdir"] = test_path
     fake_template = EspressoTemplate()
-    new_parameters = fake_template._outdir_handler(parameters, Path())
+    new_parameters = fake_template._output_handler(parameters, Path())
     assert (
         new_parameters["input_data"]["system"]["outdir"]
         == test_path.expanduser().resolve()

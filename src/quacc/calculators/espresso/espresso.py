@@ -96,7 +96,7 @@ class EspressoTemplate(EspressoTemplate_):
         """
 
         directory = Path(directory)
-        self._outdir_handler(parameters, directory)
+        self._output_handler(parameters, directory)
 
         if self.test_run:
             self._test_run(parameters, directory)
@@ -204,15 +204,14 @@ class EspressoTemplate(EspressoTemplate_):
 
         return results
 
-    def _outdir_handler(
+    def _output_handler(
         self, parameters: dict[str, Any], directory: Path
     ) -> dict[str, Any]:
         """
-        Function that handles the various outdir of espresso binaries. If they are
-        relative, they are resolved against `directory`, which is the recommended
-        approach. If the user-supplied paths are absolute, they are resolved and checked
-        against `directory`, which is typically `os.getcwd()`. If they are not in
-        `directory`, they will be ignored.
+        Function that handles the various output of espresso binaries. If they are
+        relative, they are resolved against `directory`. In any other case the
+        function will raise a ValueError. This is to avoid the user to use absolute
+        paths that might lead to unexpected behaviour when using Quacc.
 
         Parameters
         ----------
@@ -226,6 +225,12 @@ class EspressoTemplate(EspressoTemplate_):
         dict[str, Any]
             The merged kwargs
         """
+
+        not_subpath_error = (
+            "Cannot use {key}={path} because it is not a subpath of"
+            "{working_dir}. When using Quacc please provide subpaths"
+            "relative to the working directory."
+        )
 
         input_data = parameters.get("input_data", {})
 
@@ -243,9 +248,10 @@ class EspressoTemplate(EspressoTemplate_):
                 path.relative_to(working_dir)
             except ValueError as e:
                 raise ValueError(
-                    f"Cannot use {key}={path} because it is not as subpath of {working_dir}. When using Quacc please provide subpaths relative to the working directory."
+                    not_subpath_error.format(
+                        key=key, path=path, working_dir=working_dir
+                    )
                 ) from e
-
             if key in self.outdirs:
                 path.mkdir(parents=True, exist_ok=True)
                 self.outdirs[key] = path
