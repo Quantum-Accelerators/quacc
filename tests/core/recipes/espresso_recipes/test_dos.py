@@ -1,25 +1,22 @@
-from __future__ import annotations
-
-from pathlib import Path
-from shutil import which
-
 import pytest
-from ase.build import bulk
-from numpy.testing import assert_allclose
-
-from quacc import SETTINGS
-from quacc.recipes.espresso.dos import dos_flow
-from quacc.utils.files import copy_decompress_files
+from shutil import which
 
 pytestmark = pytest.mark.skipif(
     which("pw.x") is None or which("dos.x") is None, reason="QE not installed"
 )
 
-DEFAULT_SETTINGS = SETTINGS.model_copy()
+from pathlib import Path
+
+from ase.build import bulk
+from numpy.testing import assert_allclose
+
+from quacc.recipes.espresso.dos import dos_flow
+from quacc.utils.files import copy_decompress_files
+
 DATA_DIR = Path(__file__).parent / "data"
 
 
-def test_dos_flow(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+def test_dos_flow(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
