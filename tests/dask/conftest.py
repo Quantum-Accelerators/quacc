@@ -27,13 +27,14 @@ if has_import:
         except ValueError:
             Client()
 
-    def pytest_sessionfinish():
-        from dask.distributed import default_client
+    def pytest_sessionfinish(exitstatus):
+        if exitstatus == 0:
+            from dask.distributed import default_client
 
-        try:
-            default_client().close()
-        except Exception:
-            pass
+            try:
+                default_client().close()
+            except Exception:
+                pass
 
-        rmtree(TEST_RESULTS_DIR, ignore_errors=True)
-        rmtree(TEST_SCRATCH_DIR, ignore_errors=True)
+            rmtree(TEST_RESULTS_DIR, ignore_errors=True)
+            rmtree(TEST_SCRATCH_DIR, ignore_errors=True)
