@@ -1,3 +1,2 @@
 CREATE_UNIQUE_DIR: true
-DEBUG: true
 WORKFLOW_ENGINE: dask
