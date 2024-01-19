@@ -15,7 +15,7 @@ except ImportError:
 if has_import:
 
     def pytest_sessionstart():
-        from dask.distributed import Client, default_client
+        from dask.distributed import Client, get_client
 
         file_dir = Path(__file__).parent
         os.environ["QUACC_CONFIG_FILE"] = str(file_dir / "quacc.yaml")
@@ -23,7 +23,7 @@ if has_import:
         os.environ["QUACC_SCRATCH_DIR"] = str(TEST_SCRATCH_DIR)
 
         try:
-            default_client()
+            get_client()
         except ValueError:
             Client()
 

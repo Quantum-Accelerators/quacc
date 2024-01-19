@@ -191,6 +191,10 @@ When deploying calculations for the first time, it's important to start simple, 
     print(result)
     ```
 
+    !!! Tip "Handling the Walltime Killing Workers"
+
+        The `dask-jobqueue` documentation has a [very helpful section](https://jobqueue.dask.org/en/latest/advanced-tips-and-tricks.html#how-to-handle-job-queueing-system-walltime-killing-workers) on how to ensure that workflows run to completion despite the finite walltime on a job scheduler system. Namely, you should use the `--lifetime` (and, potentially, the `--lifetime-stagger`) option alongside an adaptive Dask cluster to ensure that the cluster can always spin up new workers as-needed.
+
 === "Parsl"
 
     **Starting Small**
@@ -376,7 +380,7 @@ When deploying calculations for the first time, it's important to start simple, 
     from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
 
-    @flow(task_runner=DaskTaskRunner(address=client.scheduler.address))  # (1)!
+    @flow(task_runner=DaskTaskRunner(address=client.scheduler.address))
     def workflow(atoms):
         relax_output = relax_job(atoms)
         return static_job(relax_output["atoms"])
@@ -387,7 +391,7 @@ When deploying calculations for the first time, it's important to start simple, 
     print(future.result())
     ```
 
-    1. If preferred, it is also possible to instantiate a one-time, temporary Dask cluster via the `DaskTaskRunner` rather than connecting to an existing Dask cluster.
+    If you are connecting to an existing Dask cluster and want to ensure it is not killed when the walltime is reached, refer to the [corresponding section](https://jobqueue.dask.org/en/latest/advanced-tips-and-tricks.html#how-to-handle-job-queueing-system-walltime-killing-workers) in the `dask-jobqueue` manual. If preferred, it is also possible to instantiate a [one-time, temporary](https://prefecthq.github.io/prefect-dask/usage_guide/#using-a-temporary-cluster) Dask cluster via the `DaskTaskRunner` rather than connecting to an existing Dask cluster. This is the more conventional job scheduling approach, where each workflow will run on its own job allocation.
 
 === "Jobflow"
 
