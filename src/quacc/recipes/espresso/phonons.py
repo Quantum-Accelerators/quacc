@@ -233,15 +233,12 @@ def grid_phonon_flow(
                     f"{outdir}/{prefix}.save/data-file-schema.xml.*",
                     f"{outdir}/{prefix}.save/paw.txt.*",
                     f"{outdir}/{prefix}.save/wfc*.*",
-                ]
-            }
-            file_to_copy[ph_init_job_results["dir_name"]].extend(
-                [
                     f"{outdir}/_ph0/{prefix}.phsave/control_ph.xml*",
                     f"{outdir}/_ph0/{prefix}.phsave/status_run.xml*",
                     f"{outdir}/_ph0/{prefix}.phsave/patterns.*.xml*",
+                    f"{outdir}/_ph0/{prefix}.phsave/tensors.xml*",
                 ]
-            )
+            }
             if lqdir:
                 if qpoint != (0.0, 0.0, 0.0):
                     file_to_copy[ph_init_job_results["dir_name"]].extend(
