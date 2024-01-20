@@ -51,11 +51,11 @@ def calc_setup(
         if SETTINGS.CREATE_UNIQUE_DIR
         else SETTINGS.RESULTS_DIR
     )
-    tmpdir_base = SETTINGS.SCRATCH_DIR or SETTINGS.RESULTS_DIR
+    tmpdir_base = SETTINGS.SCRATCH_DIR or job_results_dir
 
     # Create a tmpdir for the calculation
-    time_now = datetime.now(timezone.utc).strftime("%Y-%m-%d-%H-%M-%S-%f")
-    tmpdir = Path(mkdtemp(prefix=f"quacc-tmp-{time_now}-", dir=tmpdir_base)).resolve()
+    prefix = f"quacc-tmp-{job_results_dir.split('quacc-')[-1]}"
+    tmpdir = Path(mkdtemp(prefix=prefix, dir=tmpdir_base)).resolve()
 
     # Create a symlink to the tmpdir in the results_dir
     if os.name != "nt" and SETTINGS.SCRATCH_DIR:
