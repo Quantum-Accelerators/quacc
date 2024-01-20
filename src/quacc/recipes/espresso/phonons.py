@@ -251,7 +251,7 @@ def grid_phonon_flow(
                 file_to_copy[ph_init_job_results["dir_name"]].extend(
                     [
                         f"{outdir}/_ph0/{prefix}.wfc*",
-                        f"{outdir}/_ph0/{prefix}.{prefix}.save/",
+                        f"{outdir}/_ph0/{prefix}.{prefix}.save/*",
                     ]
                 )
             for representation in repr_to_do:
