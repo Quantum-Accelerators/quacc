@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import os
-from datetime import datetime, timezone
 from pathlib import Path
 from shutil import move, rmtree
 from tempfile import mkdtemp
