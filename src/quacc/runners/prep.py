@@ -53,7 +53,10 @@ def calc_setup(
     tmpdir_base = SETTINGS.SCRATCH_DIR or job_results_dir
 
     # Create a tmpdir for the calculation
-    prefix = f"quacc-tmp-{job_results_dir.split('quacc-')[-1]}"
+    if SETTINGS.CREATE_UNIQUE_DIR:
+        prefix = f"quacc-tmp-{job_results_dir.name.split('quacc-')[-1]}-"
+    else:
+        prefix = "quacc-tmp-"
     tmpdir = Path(mkdtemp(prefix=prefix, dir=tmpdir_base)).resolve()
 
     # Create a symlink to the tmpdir in the results_dir
