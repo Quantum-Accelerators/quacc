@@ -260,22 +260,22 @@ class EspressoTemplate(EspressoTemplate_):
 
         if self.binary == "ph":
             input_ph = input_data.get("inputph", {})
+            qpts = parameters.get("qpts", (0, 0, 0))
 
             qplot = input_ph.get("qplot", False)
             lqdir = input_ph.get("lqdir", False)
             recover = input_ph.get("recover", False)
             ldisp = input_ph.get("ldisp", False)
 
-            is_grid = input_ph.get("start_q", None) or input_ph.get("start_irr", None)
+            is_grid = input_ph.get("start_q") or input_ph.get("start_irr")
             # Temporary patch for https://gitlab.com/QEF/q-e/-/issues/644
             if qplot and lqdir and recover and is_grid:
                 prefix = input_ph.get("prefix", "pwscf")
-                Path(self.outdirs["outdir"], "_ph0", f"{prefix}.q_1").mkdir(
-                    parents=True, exist_ok=True
-                )
-            if not (ldisp or qplot) and lqdir:
+                outdir = input_ph.get("outdir", ".")
+                Path(outdir, "_ph0", f"{prefix}.q_1").mkdir(parents=True, exist_ok=True)
+            if not (ldisp or qplot) and lqdir and is_grid and qpts != (0, 0, 0):
                 warnings.warn(
-                    "lqdir is set to True but ldisp and qplot are set to False. the band structure will still be computed at each. Please deactive lqdir"
+                    "lqdir is set to True but ldisp and qplot are set to False. the band structure will still be computed at each step. Please set lqdir to False"
                 )
 
 

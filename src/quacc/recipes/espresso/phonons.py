@@ -229,10 +229,6 @@ def grid_phonon_flow(
             )
             file_to_copy = {
                 ph_init_job_results["dir_name"]: [
-                    f"{outdir}/{prefix}.save/charge-density.*",
-                    f"{outdir}/{prefix}.save/data-file-schema.xml.*",
-                    f"{outdir}/{prefix}.save/paw.txt.*",
-                    f"{outdir}/{prefix}.save/wfc*.*",
                     f"{outdir}/_ph0/{prefix}.phsave/control_ph.xml*",
                     f"{outdir}/_ph0/{prefix}.phsave/status_run.xml*",
                     f"{outdir}/_ph0/{prefix}.phsave/patterns.*.xml*",
@@ -240,6 +236,14 @@ def grid_phonon_flow(
                 ]
             }
             if lqdir:
+                file_to_copy[ph_init_job_results["dir_name"]].extend(
+                    [
+                        f"{outdir}/{prefix}.save/charge-density.*",
+                        f"{outdir}/{prefix}.save/data-file-schema.xml.*",
+                        f"{outdir}/{prefix}.save/paw.txt.*",
+                        f"{outdir}/{prefix}.save/wfc*.*",
+                    ]
+                )
                 if qpoint != (0.0, 0.0, 0.0):
                     file_to_copy[ph_init_job_results["dir_name"]].extend(
                         [
@@ -248,9 +252,22 @@ def grid_phonon_flow(
                         ]
                     )
             else:
-                file_to_copy[ph_init_job_results["dir_name"]].extend(
-                    [f"{outdir}/_ph0/{prefix}.wfc*", f"{outdir}/_ph0/{prefix}.save/*"]
-                )
+                if qpoint == (0.0, 0.0, 0.0):
+                    file_to_copy[ph_init_job_results["dir_name"]].extend(
+                        [
+                            f"{outdir}/{prefix}.save/charge-density.*",
+                            f"{outdir}/{prefix}.save/data-file-schema.xml.*",
+                            f"{outdir}/{prefix}.save/paw.txt.*",
+                            f"{outdir}/{prefix}.save/wfc*.*",
+                        ]
+                    )
+                else:
+                    file_to_copy[ph_init_job_results["dir_name"]].extend(
+                        [
+                            f"{outdir}/_ph0/{prefix}.wfc*",
+                            f"{outdir}/_ph0/{prefix}.save/*",
+                        ]
+                    )
             for representation in repr_to_do:
                 ph_input_data["inputph"]["start_irr"] = representation[0]
                 ph_input_data["inputph"]["last_irr"] = representation[-1]
