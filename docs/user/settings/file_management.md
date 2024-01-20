@@ -16,7 +16,7 @@ At job runtime, the file structure looks like:
 
 ```text
 RESULTS_DIR
-├── quacc-tmp-12345
+├── tmp-quacc-12345
 │   ├── INPUT
     └── OUTPUT
 ```
@@ -38,7 +38,7 @@ RESULTS_DIR
 
 ### Job Failure
 
-If the job fails or does not complete, then the `quacc-tmp-12345` directory will remain in `RESULTS_DIR` so you can inspect the files.
+If the job fails or does not complete, then the `tmp-quacc-12345` directory will remain in `RESULTS_DIR` so you can inspect the files.
 
 ## Scenario 2: Specifying a `SCRATCH_DIR`
 
@@ -52,18 +52,18 @@ At job runtime, the file structure looks like:
 
 ```text
 RESULTS_DIR
-├── quacc-tmp-12345-symlink
+├── tmp-quacc-12345-symlink
 │
 ```
 
 ```text
 SCRATCH_DIR
-├── quacc-tmp-12345
+├── tmp-quacc-12345
 │   ├── INPUT
     └── OUTPUT
 ```
 
-Here, the `quacc-tmp-12345-symlink` is a temporary symbolic link that points to `SCRATCH_DIR/quacc-tmp-12345` so you can easily monitor the progress of the calculation.
+Here, the `tmp-quacc-12345-symlink` is a temporary symbolic link that points to `SCRATCH_DIR/tmp-quacc-12345` so you can easily monitor the progress of the calculation.
 
 ### Job Success
 
@@ -83,7 +83,7 @@ SCRATCH_DIR
 
 ### Job Failure
 
-If the job fails or does not complete, then the `quacc-tmp-12345` directory will remain in `SCRATCH_DIR` so you can inspect the files. The symbolic link in `RESULTS_DIR` will also remain.
+If the job fails or does not complete, then the `tmp-quacc-12345` directory will remain in `SCRATCH_DIR` so you can inspect the files. The symbolic link in `RESULTS_DIR` will also remain.
 
 ## Scenario 3: Setting `CREATE_UNIQUE_DIR` to `True`
 
@@ -98,12 +98,12 @@ At job runtime, the file structure looks like:
 ```text
 RESULTS_DIR
 ├── quacc-2023-12-08-67890
-│   └── quacc-tmp-12345-symlink
+│   └── tmp-quacc-2023-12-08-67890-symlink
 ```
 
 ```text
 SCRATCH_DIR
-├── quacc-tmp-12345
+├── tmp-quacc-2023-12-08-67890
 │   ├── INPUT
     └── OUTPUT
 ```
@@ -126,4 +126,4 @@ SCRATCH_DIR
 
 ### Job Failure
 
-If the job fails or does not complete, then the `quacc-tmp-12345` directory will remain in `SCRATCH_DIR` so you can inspect the files. The symbolic link in `RESULTS_DIR/quacc-2023-12-08-67890` will also remain.
+If the job fails or does not complete, then the `tmp-quacc-12345` directory will remain in `SCRATCH_DIR` so you can inspect the files. The symbolic link in `RESULTS_DIR/quacc-2023-12-08-67890` will also remain.
