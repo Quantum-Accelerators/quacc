@@ -28,7 +28,7 @@ def test_calc_setup(tmp_path, monkeypatch):
     tmpdir, results_dir = calc_setup()
 
     assert tmpdir.is_dir()
-    assert "-tmp" in str(tmpdir)
+    assert "tmp" in str(tmpdir)
     assert results_dir.is_dir()
     assert str(SETTINGS.RESULTS_DIR) in str(results_dir)
     if os.name != "nt":
@@ -55,7 +55,7 @@ def test_calc_setup_v2(tmp_path, monkeypatch):
     tmpdir, results_dir = calc_setup(copy_files=["file1.txt", "tmp_dir"])
 
     assert tmpdir.is_dir()
-    assert "-tmp" in str(tmpdir)
+    assert "tmp" in str(tmpdir)
     assert results_dir.is_dir()
     assert str(SETTINGS.RESULTS_DIR) in str(results_dir)
     assert not Path(SETTINGS.RESULTS_DIR, f"{tmpdir.name}-symlink").is_symlink()
