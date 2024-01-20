@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -93,6 +94,7 @@ class EspressoTemplate(EspressoTemplate_):
 
         directory = Path(directory)
         self._outdir_handler(parameters, directory)
+        self._sanity_checks(parameters)
 
         if self.test_run:
             self._test_run(parameters, directory)
@@ -134,6 +136,29 @@ class EspressoTemplate(EspressoTemplate_):
                 )
 
     @staticmethod
+    def _search_keyword(parameters: dict[str, Any], key_to_search: str) -> str:
+        """
+        Function that searches for a keyword in the input_data.
+
+        Parameters
+        ----------
+        parameters
+            input_data, to search for the keyword
+
+        Returns
+        -------
+        str
+            The value of the keyword
+        """
+        input_data = parameters.get("input_data", {})
+
+        for section in input_data:
+            for key in input_data[section]:
+                if key == key_to_search:
+                    return input_data[section][key]
+        return None
+
+    @staticmethod
     def _test_run(parameters: dict[str, Any], directory: Path) -> dict[str, Any]:
         """
         Almost all QE binaries will do a test run if a file named <prefix>.EXIT is
@@ -150,14 +175,8 @@ class EspressoTemplate(EspressoTemplate_):
         -------
         None
         """
-        input_data = parameters.get("input_data", {})
-        prefix = "pwscf"
 
-        for section in input_data:
-            for key in input_data[section]:
-                if key == "prefix":
-                    prefix = input_data[section][key]
-                    break
+        prefix = EspressoTemplate._search_keyword(parameters, "prefix"), "pwscf"
 
         Path(directory, f"{prefix}.EXIT").touch()
 
@@ -232,6 +251,32 @@ class EspressoTemplate(EspressoTemplate_):
         parameters["input_data"] = input_data
 
         return parameters
+
+    def _sanity_checks(self, parameters: dict[str, Any]) -> None:
+        """Function that performs sanity checks on the input_data. It is meant
+        to catch common mistakes that are not caught by the espresso binaries."""
+
+        input_data = parameters.get("input_data", {})
+
+        if self.binary == "ph":
+            input_ph = input_data.get("inputph", {})
+
+            qplot = input_ph.get("qplot", False)
+            lqdir = input_ph.get("lqdir", False)
+            recover = input_ph.get("recover", False)
+            ldisp = input_ph.get("ldisp", False)
+
+            is_grid = input_ph.get("start_q", None) or input_ph.get("start_irr", None)
+            # Temporary patch for https://gitlab.com/QEF/q-e/-/issues/644
+            if qplot and lqdir and recover and is_grid:
+                prefix = input_ph.get("prefix", "pwscf")
+                Path(self.outdirs["outdir"], "_ph0", f"{prefix}.q_1").mkdir(
+                    parents=True, exist_ok=True
+                )
+            if not (ldisp or qplot) and lqdir:
+                warnings.warn(
+                    "lqdir is set to True but ldisp and qplot are set to False. the band structure will still be computed at each. Please deactive lqdir"
+                )
 
 
 class Espresso(Espresso_):

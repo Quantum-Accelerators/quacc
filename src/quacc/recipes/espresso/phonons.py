@@ -7,6 +7,7 @@ phonon calculations in different fashion.
 """
 from __future__ import annotations
 
+from copy import deepcopy
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -214,9 +215,9 @@ def grid_phonon_flow(
         lqdir = ph_input_data["inputph"].get("lqdir", False)
 
         grid_results = []
-        for n, (qpoint, qdata) in enumerate(ph_init_job_results["results"].items()):
-            ph_input_data["inputph"]["start_q"] = n + 1
-            ph_input_data["inputph"]["last_q"] = n + 1
+        for qpoint, qdata in ph_init_job_results["results"].items():
+            ph_input_data["inputph"]["start_q"] = qdata["qnum"]
+            ph_input_data["inputph"]["last_q"] = qdata["qnum"]
             this_block = nblocks if nblocks > 0 else len(qdata["representations"])
             repr_to_do = [
                 r
@@ -234,20 +235,34 @@ def grid_phonon_flow(
                     f"{outdir}/{prefix}.save/wfc*.*",
                 ]
             }
-            if qpoint != (0.0, 0.0, 0.0) and lqdir:
+            file_to_copy[ph_init_job_results["dir_name"]].extend(
+                [
+                    f"{outdir}/_ph0/{prefix}.phsave/control_ph.xml*",
+                    f"{outdir}/_ph0/{prefix}.phsave/status_run.xml*",
+                    f"{outdir}/_ph0/{prefix}.phsave/patterns.*.xml*",
+                ]
+            )
+            if lqdir:
+                if qpoint != (0.0, 0.0, 0.0):
+                    file_to_copy[ph_init_job_results["dir_name"]].extend(
+                        [
+                            f"{outdir}/_ph0/{prefix}.q_{qdata['qnum']}/{prefix}.save/*",
+                            f"{outdir}/_ph0/{prefix}.q_{qdata['qnum']}/{prefix}.wfc*",
+                        ]
+                    )
+            else:
                 file_to_copy[ph_init_job_results["dir_name"]].extend(
                     [
-                        f"{outdir}/_ph0/{prefix}.q_{n + 1}/{prefix}.save/*",
-                        f"{outdir}/_ph0/{prefix}.q_{n + 1}/{prefix}.wfc*",
-                        f"{outdir}/_ph0/{prefix}.phsave/control_ph.xml*",
-                        f"{outdir}/_ph0/{prefix}.phsave/status_run.xml*",
-                        f"{outdir}/_ph0/{prefix}.phsave/patterns.*.xml*",
+                        f"{outdir}/_ph0/{prefix}.wfc*",
+                        f"{outdir}/_ph0/{prefix}.{prefix}.save/",
                     ]
                 )
             for representation in repr_to_do:
                 ph_input_data["inputph"]["start_irr"] = representation[0]
                 ph_input_data["inputph"]["last_irr"] = representation[-1]
-                ph_job_results = ph_job(file_to_copy, input_data=ph_input_data)
+                ph_job_results = ph_job(
+                    deepcopy(file_to_copy), input_data=deepcopy(ph_input_data)
+                )
                 grid_results.append(ph_job_results)
 
         return grid_results
