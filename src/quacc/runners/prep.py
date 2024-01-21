@@ -106,8 +106,9 @@ def calc_cleanup(tmpdir: Path, job_results_dir: Path) -> None:
         move(tmpdir / file_name, job_results_dir / file_name)
 
     # Remove symlink to tmpdir
-    symlink_path = SETTINGS.RESULTS_DIR / f"symlink-{tmpdir.name}"
-    symlink_path.unlink(missing_ok=True)
+    if os.name != "nt" and SETTINGS.SCRATCH_DIR:
+        symlink_path = SETTINGS.RESULTS_DIR / f"symlink-{tmpdir.name}"
+        symlink_path.unlink(missing_ok=True)
 
     # Remove the tmpdir
     rmtree(tmpdir, ignore_errors=True)
