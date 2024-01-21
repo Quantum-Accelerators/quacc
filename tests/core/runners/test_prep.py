@@ -1,6 +1,9 @@
 import os
 from pathlib import Path
 
+from ase.build import bulk
+from ase.calculators.emt import EMT
+
 from quacc.runners.prep import calc_cleanup, calc_setup
 
 
@@ -24,8 +27,10 @@ def test_calc_setup(tmp_path, monkeypatch):
 
     make_files()
     SETTINGS.SCRATCH_DIR = tmp_path
+    atoms = bulk("Cu")
+    atoms.calc = EMT()
 
-    tmpdir, results_dir = calc_setup()
+    tmpdir, results_dir = calc_setup(atoms)
 
     assert tmpdir.is_dir()
     assert "tmp" in str(tmpdir)
@@ -38,6 +43,7 @@ def test_calc_setup(tmp_path, monkeypatch):
     assert "file1.txt" not in os.listdir(tmpdir)
     assert "file2.txt" not in os.listdir(tmpdir)
     assert Path.cwd() == tmpdir
+    assert atoms.calc.directory == tmpdir
 
     SETTINGS.RESULTS_DIR = DEFAULT_SETTINGS.RESULTS_DIR
     SETTINGS.SCRATCH_DIR = DEFAULT_SETTINGS.SCRATCH_DIR
@@ -51,8 +57,10 @@ def test_calc_setup_v2(tmp_path, monkeypatch):
 
     make_files()
     SETTINGS.SCRATCH_DIR = None
+    atoms = bulk("Cu")
+    atoms.calc = EMT()
 
-    tmpdir, results_dir = calc_setup(copy_files=["file1.txt", "tmp_dir"])
+    tmpdir, results_dir = calc_setup(atoms, copy_files=["file1.txt", "tmp_dir"])
 
     assert tmpdir.is_dir()
     assert "tmp" in str(tmpdir)
