@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import os
-import logging
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -19,14 +18,12 @@ from ase.io.espresso import (
 )
 
 from quacc import SETTINGS
-from quacc.calculators.espresso.utils import get_pseudopotential_info
+from quacc.calculators.espresso.utils import get_pseudopotential_info, sanity_checks
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.utils.files import load_yaml_calc
 
 if TYPE_CHECKING:
     from typing import Any
-
-LOGGER = logging.getLogger(__name__)
 
 
 class EspressoTemplate(EspressoTemplate_):
@@ -96,7 +93,7 @@ class EspressoTemplate(EspressoTemplate_):
 
         directory = Path(directory)
         self._outdir_handler(parameters, directory)
-        self._sanity_checks(parameters)
+        sanity_checks(parameters, binary=self.binary)
 
         if self.test_run:
             self._test_run(parameters, directory)
@@ -253,32 +250,6 @@ class EspressoTemplate(EspressoTemplate_):
         parameters["input_data"] = input_data
 
         return parameters
-
-    def _sanity_checks(self, parameters: dict[str, Any]) -> None:
-        """Function that performs sanity checks on the input_data. It is meant
-        to catch common mistakes that are not caught by the espresso binaries."""
-
-        input_data = parameters.get("input_data", {})
-
-        if self.binary == "ph":
-            input_ph = input_data.get("inputph", {})
-            qpts = parameters.get("qpts", (0, 0, 0))
-
-            qplot = input_ph.get("qplot", False)
-            lqdir = input_ph.get("lqdir", False)
-            recover = input_ph.get("recover", False)
-            ldisp = input_ph.get("ldisp", False)
-
-            is_grid = input_ph.get("start_q") or input_ph.get("start_irr")
-            # Temporary patch for https://gitlab.com/QEF/q-e/-/issues/644
-            if qplot and lqdir and recover and is_grid:
-                prefix = input_ph.get("prefix", "pwscf")
-                outdir = input_ph.get("outdir", ".")
-                Path(outdir, "_ph0", f"{prefix}.q_1").mkdir(parents=True, exist_ok=True)
-            if not (ldisp or qplot) and lqdir and is_grid and qpts != (0, 0, 0):
-                LOGGER.warning(
-                    "lqdir is set to True but ldisp and qplot are set to False. the band structure will still be computed at each step. Please set lqdir to False"
-                )
 
 
 class Espresso(Espresso_):
