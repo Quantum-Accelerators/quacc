@@ -43,7 +43,7 @@ def test_calc_setup(tmp_path, monkeypatch):
     assert "file1.txt" not in os.listdir(tmpdir)
     assert "file2.txt" not in os.listdir(tmpdir)
     assert Path.cwd() == tmpdir
-    assert atoms.calc.directory == tmpdir
+    assert Path(atoms.calc.directory) == tmpdir
 
     SETTINGS.RESULTS_DIR = DEFAULT_SETTINGS.RESULTS_DIR
     SETTINGS.SCRATCH_DIR = DEFAULT_SETTINGS.SCRATCH_DIR
