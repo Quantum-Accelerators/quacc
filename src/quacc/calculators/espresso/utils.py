@@ -143,13 +143,15 @@ def sanity_checks(parameters: dict[str, Any], binary: str = "pw") -> None:
     Parameters
     ----------
     parameters
-        The parameters dictionary
+        The parameters dictionary which is assumed to already be in
+        the nested format.
     binary
-        The binary to check (default pw)
+        The binary to check (default pw).
 
     Returns
     -------
-    None
+    dict
+        The modified parameters dictionary.
     """
 
     input_data = parameters.get("input_data", {})
@@ -171,10 +173,19 @@ def sanity_checks(parameters: dict[str, Any], binary: str = "pw") -> None:
                 "outdir", "."
             )  # TODO: change to self.outdir when DOS PR is merged
             Path(outdir, "_ph0", f"{prefix}.q_1").mkdir(parents=True, exist_ok=True)
-        if not (ldisp or qplot) and lqdir and is_grid and qpts != (0, 0, 0):
-            LOGGER.warning(
-                "lqdir is set to True but ldisp and qplot are set to False. the band structure will still be computed at each step. Please set lqdir to False"
-            )  # Tom to Andrew: should we be intrusive and change the parameter? Or just warn?
-            # This warning will occur if someone use the grid_phonon_flow for a unique q-point
-            # and forgets to manually set lqdir to False. (which is set to True by default in the flow)
-            # This should be mentionned in the documentation of the flow
+        if not (ldisp or qplot):
+            if np.array(qpts).shape == (1, 4):
+                LOGGER.warning(
+                    "qpts is a 2D array despite ldisp and qplot being set to False. Converting to 1D array"
+                )
+                qpts = tuple(qpts[0])
+            if lqdir and is_grid and qpts != (0, 0, 0):
+                LOGGER.warning(
+                    "lqdir is set to True but ldisp and qplot are set to False. The band structure will still be computed at each step. Setting lqdir to False"
+                )
+                input_ph["lqdir"] = False
+
+        parameters["input_data"]["inputph"] = input_ph
+        parameters["qpts"] = qpts
+
+    return parameters
