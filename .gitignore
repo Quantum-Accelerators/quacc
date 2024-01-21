@@ -1,5 +1,5 @@
 # quacc specific ignores
-quacc-tmp*
+symlink*
 quacc-20*
 POTCAR*
 tmp*
