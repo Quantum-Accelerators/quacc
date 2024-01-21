@@ -126,4 +126,4 @@ SCRATCH_DIR
 
 ### Job Failure
 
-If the job fails or does not complete, then the `tmp-quacc-12345` directory will remain in `SCRATCH_DIR` so you can inspect the files. The symbolic link in `RESULTS_DIR/quacc-2023-12-08-67890` will also remain.
+If the job fails or does not complete, then the `tmp-quacc-2023-12-08-67890` directory will remain in `SCRATCH_DIR` so you can inspect the files. The symbolic link in `RESULTS_DIR/quacc-2023-12-08-67890` will also remain.
