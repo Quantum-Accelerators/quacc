@@ -28,6 +28,7 @@ if TYPE_CHECKING:
 
 LOGGER = logging.getLogger(__name__)
 
+
 class EspressoTemplate(EspressoTemplate_):
     """This is a wrapper around the ASE Espresso template that allows for the use of
     other binaries such as pw.x, ph.x, cp.x, etc."""
@@ -177,7 +178,7 @@ class EspressoTemplate(EspressoTemplate_):
         None
         """
 
-        prefix = EspressoTemplate._search_keyword(parameters, "prefix"), "pwscf"
+        prefix = EspressoTemplate._search_keyword(parameters, "prefix") or "pwscf"
 
         Path(directory, f"{prefix}.EXIT").touch()
 

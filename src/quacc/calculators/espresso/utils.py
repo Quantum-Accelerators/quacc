@@ -98,7 +98,7 @@ def grid_copy_files(
         if qpt != (0.0, 0.0, 0.0):
             file_to_copy[dir_name].extend(
                 [
-                    f"{outdir}/_ph0/{prefix}.q_{qnum}/{prefix}.phsave/*",
+                    f"{outdir}/_ph0/{prefix}.q_{qnum}/{prefix}.save/*",
                     f"{outdir}/_ph0/{prefix}.q_{qnum}/{prefix}.wfc*",
                 ]
             )
@@ -127,6 +127,7 @@ def grid_prepare_repr(patterns: dict[str, Any], nblocks: int) -> list:
     list
         The list of representations to do grouped in blocks if nblocks > 1
     """
+
     this_block = nblocks if nblocks > 0 else len(patterns)
     repr_to_do = [rep for rep in patterns if not patterns[rep]["done"]]
     return np.array_split(repr_to_do, np.ceil(len(repr_to_do) / this_block))
