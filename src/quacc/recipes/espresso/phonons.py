@@ -11,15 +11,14 @@ from copy import deepcopy
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import numpy as np
 from ase.io.espresso import Namelist
 
 from quacc import Job, flow, job, subflow
 from quacc.calculators.espresso.espresso import EspressoTemplate
+from quacc.calculators.espresso.utils import grid_copy_files, grid_prepare_repr
 from quacc.recipes.espresso._base import base_fn
 from quacc.recipes.espresso.core import relax_job
 from quacc.utils.dicts import recursive_dict_merge
-from quacc.calculators.espresso.utils import grid_copy_files, grid_prepare_repr
 from quacc.wflow_tools.customizers import customize_funcs, strip_decorator
 
 if TYPE_CHECKING:
