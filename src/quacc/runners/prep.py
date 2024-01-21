@@ -44,17 +44,17 @@ def calc_setup(
     """
 
     # Create a tmpdir for the calculation
-    tmpdir_base = SETTINGS.SCRATCH_DIR or None
-    tmpdir = make_unique_dir(base_path=tmpdir_base, prefix="quacc-tmp-")
+    tmpdir_base = SETTINGS.SCRATCH_DIR or SETTINGS.RESULTS_DIR
+    tmpdir = make_unique_dir(base_path=tmpdir_base, prefix="tmp-quacc-")
 
     # Define the results directory
     job_results_dir = SETTINGS.RESULTS_DIR
     if SETTINGS.CREATE_UNIQUE_DIR:
-        job_results_dir /= f"quacc-{tmpdir.name.split('quacc-tmp-')[-1]}"
+        job_results_dir /= f"{tmpdir.name.split('tmp-')[-1]}"
 
     # Create a symlink to the tmpdir
     if os.name != "nt" and SETTINGS.SCRATCH_DIR:
-        symlink = SETTINGS.RESULTS_DIR / f"{tmpdir.name}-symlink"
+        symlink = SETTINGS.RESULTS_DIR / f"symlink-{tmpdir.name}"
         symlink.unlink(missing_ok=True)
         symlink.symlink_to(tmpdir, target_is_directory=True)
 
@@ -106,7 +106,7 @@ def calc_cleanup(tmpdir: Path, job_results_dir: Path) -> None:
         move(tmpdir / file_name, job_results_dir / file_name)
 
     # Remove symlink to tmpdir
-    symlink_path = job_results_dir / f"{tmpdir.name}-symlink"
+    symlink_path = SETTINGS.RESULTS_DIR / f"symlink-{tmpdir.name}"
     symlink_path.unlink(missing_ok=True)
 
     # Remove the tmpdir
