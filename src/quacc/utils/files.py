@@ -144,7 +144,9 @@ def copy_decompress_files_from_dir(source: str | Path, destination: str | Path) 
         warnings.warn(f"Cannot find {src}", UserWarning)
 
 
-def make_unique_dir(base_path: str | None = None) -> Path:
+def make_unique_dir(
+    base_path: Path | str | None = None, prefix: str | None = None
+) -> Path:
     """
     Make a directory with a unique name. Uses the same format as Jobflow.
 
@@ -152,6 +154,8 @@ def make_unique_dir(base_path: str | None = None) -> Path:
     ----------
     base_path
         Path to the base directory.
+    prefix
+        Prefix to add to the directory name.
 
     Returns
     -------
@@ -159,7 +163,9 @@ def make_unique_dir(base_path: str | None = None) -> Path:
         Path to the job directory.
     """
     time_now = datetime.now(timezone.utc).strftime("%Y-%m-%d-%H-%M-%S-%f")
-    job_dir = Path(f"quacc-{time_now}-{randint(10000, 99999)}")
+    if prefix is None:
+        prefix = ""
+    job_dir = Path(f"{prefix}{time_now}-{randint(10000, 99999)}")
     if base_path:
         job_dir = Path(base_path, job_dir)
     job_dir.mkdir(parents=True)

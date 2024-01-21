@@ -29,10 +29,8 @@ def teardown_function():
 def test_file_v1(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    assert QuaccSettings().DEBUG is False
-
     with open("quacc_test.yaml", "w") as f:
-        f.write("GZIP_FILES: false\nWORKFLOW_ENGINE: local\nDEBUG: true")
+        f.write("GZIP_FILES: false\nWORKFLOW_ENGINE:\nDEBUG: true")
     monkeypatch.setenv(
         "QUACC_CONFIG_FILE", os.path.join(os.getcwd(), "quacc_test.yaml")
     )

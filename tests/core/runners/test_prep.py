@@ -28,13 +28,13 @@ def test_calc_setup(tmp_path, monkeypatch):
     tmpdir, results_dir = calc_setup()
 
     assert tmpdir.is_dir()
-    assert "-tmp" in str(tmpdir)
-    assert results_dir.is_dir()
+    assert "tmp" in str(tmpdir)
+    assert results_dir.name == tmpdir.name.split("tmp-")[-1]
     assert str(SETTINGS.RESULTS_DIR) in str(results_dir)
     if os.name != "nt":
-        assert Path(results_dir, f"{tmpdir.name}-symlink").is_symlink()
+        assert Path(SETTINGS.RESULTS_DIR, f"symlink-{tmpdir.name}").is_symlink()
     else:
-        assert not Path(results_dir, f"{tmpdir.name}-symlink").is_symlink()
+        assert not Path(SETTINGS.RESULTS_DIR, f"symlink-{tmpdir.name}").exists()
     assert "file1.txt" not in os.listdir(tmpdir)
     assert "file2.txt" not in os.listdir(tmpdir)
     assert Path.cwd() == tmpdir
@@ -55,10 +55,10 @@ def test_calc_setup_v2(tmp_path, monkeypatch):
     tmpdir, results_dir = calc_setup(copy_files=["file1.txt", "tmp_dir"])
 
     assert tmpdir.is_dir()
-    assert "-tmp" in str(tmpdir)
-    assert results_dir.is_dir()
+    assert "tmp" in str(tmpdir)
+    assert results_dir.name == tmpdir.name.split("tmp-")[-1]
     assert str(SETTINGS.RESULTS_DIR) in str(results_dir)
-    assert not Path(SETTINGS.RESULTS_DIR, f"{tmpdir.name}-symlink").is_symlink()
+    assert not Path(SETTINGS.RESULTS_DIR, f"symlink-{tmpdir.name}").exists()
     assert "file1.txt" in os.listdir(tmpdir)
     assert "file2.txt" not in os.listdir(tmpdir)
     assert Path.cwd() == tmpdir

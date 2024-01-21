@@ -1,2 +1,2 @@
-DEBUG: true
+CREATE_UNIQUE_DIR: false
 WORKFLOW_ENGINE: covalent

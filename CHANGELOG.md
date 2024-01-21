@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.2]
+
+### Changed
+
+- The `CREATE_UNIQUE_DIR` setting is now set to `True` by default.
+- The temporary directory name and its symlink have been slightly updated to have "tmp-" and "symlink-" at the front of the name instead of the end for easier file navigation.
+
+### Fixed
+
+- The temporary directory made when a `@job` runs now has a name consistent with the folder where the results will ultimately be stored.
+
 ## [0.6.1]
 
 ### Added
