@@ -4,7 +4,6 @@ from __future__ import annotations
 import os
 from pathlib import Path
 from shutil import move, rmtree
-from tempfile import mkdtemp
 
 from monty.shutil import gzip_dir, remove
 
@@ -32,36 +31,30 @@ def calc_setup(
     Returns
     -------
     Path
-        The path to the tmpdir, where the calculation will be run. It will be
+        The path to the unique tmpdir, where the calculation will be run. It will be
         deleted after the calculation is complete. By default, this will be
         located within the `SETTINGS.SCRATCH_DIR`, but if that is not set, it will
-        be located within the `SETTINGS.RESULTS_DIR`.
+        be located within the `SETTINGS.RESULTS_DIR`. For conenience, a symlink
+        to this directory will be made in the `SETTINGS.RESULTS_DIR`.
     Path
         The path to the results_dir, where the files will ultimately be stored.
-        A symlink to the tmpdir will be made here during the calculation for
-        convenience. By defualt, this will be the `SETTINGS.RESULTS_DIR`, but if
+        By defualt, this will be the `SETTINGS.RESULTS_DIR`, but if
         `SETTINGS.CREATE_UNIQUE_DIR` is set, it will be a unique directory
         within the `SETTINGS.RESULTS_DIR`.
     """
 
-    # Set where to store the results
-    job_results_dir = (
-        make_unique_dir(base_path=SETTINGS.RESULTS_DIR)
-        if SETTINGS.CREATE_UNIQUE_DIR
-        else SETTINGS.RESULTS_DIR
-    )
-    tmpdir_base = SETTINGS.SCRATCH_DIR or job_results_dir
-
     # Create a tmpdir for the calculation
-    if SETTINGS.CREATE_UNIQUE_DIR:
-        prefix = f"tmp-{job_results_dir.name}-"
-    else:
-        prefix = "tmp-quacc-"
-    tmpdir = Path(mkdtemp(prefix=prefix, dir=tmpdir_base)).resolve()
+    tmpdir_base = SETTINGS.SCRATCH_DIR or None
+    tmpdir = make_unique_dir(base_path=tmpdir_base, prefix="quacc-tmp-")
 
-    # Create a symlink to the tmpdir in the results_dir
+    # Define the results directory
+    job_results_dir = SETTINGS.RESULTS_DIR
+    if SETTINGS.CREATE_UNIQUE_DIR:
+        job_results_dir /= f"quacc-{tmpdir.name.split('quacc-tmp-')[-1]}"
+
+    # Create a symlink to the tmpdir
     if os.name != "nt" and SETTINGS.SCRATCH_DIR:
-        symlink = job_results_dir / f"{tmpdir.name}-symlink"
+        symlink = SETTINGS.RESULTS_DIR / f"{tmpdir.name}-symlink"
         symlink.unlink(missing_ok=True)
         symlink.symlink_to(tmpdir, target_is_directory=True)
 
@@ -98,7 +91,8 @@ def calc_cleanup(tmpdir: Path, job_results_dir: Path) -> None:
     None
     """
 
-    # Change to the results directory
+    # Make the results directory and cd into it
+    Path(job_results_dir).mkdir(parents=True, exist_ok=True)
     os.chdir(job_results_dir)
 
     # Gzip files in tmpdir
