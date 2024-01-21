@@ -19,6 +19,7 @@ from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.recipes.espresso._base import base_fn
 from quacc.recipes.espresso.core import relax_job
 from quacc.utils.dicts import recursive_dict_merge
+from quacc.calculators.espresso.utils import grid_copy_files, grid_prepare_repr
 from quacc.wflow_tools.customizers import customize_funcs, strip_decorator
 
 if TYPE_CHECKING:
@@ -210,64 +211,14 @@ def grid_phonon_flow(
         ph_input_data = Namelist(ph_input_data)
         ph_input_data.to_nested(binary="ph")
 
-        prefix = ph_input_data["inputph"].get("prefix", "pwscf")
-        outdir = ph_input_data["inputph"].get("outdir", ".")
-        lqdir = ph_input_data["inputph"].get("lqdir", False)
-
         grid_results = []
         for qpoint, qdata in ph_init_job_results["results"].items():
             ph_input_data["inputph"]["start_q"] = qdata["qnum"]
             ph_input_data["inputph"]["last_q"] = qdata["qnum"]
-            this_block = nblocks if nblocks > 0 else len(qdata["representations"])
-            repr_to_do = [
-                r
-                for r in qdata["representations"]
-                if not qdata["representations"][r]["done"]
-            ]
-            repr_to_do = np.array_split(
-                repr_to_do, np.ceil(len(repr_to_do) / this_block)
+            repr_to_do = grid_prepare_repr(qdata["representations"], nblocks)
+            file_to_copy = grid_copy_files(
+                ph_input_data, ph_init_job_results["dir_name"], qdata["qnum"], qpoint
             )
-            file_to_copy = {
-                ph_init_job_results["dir_name"]: [
-                    f"{outdir}/_ph0/{prefix}.phsave/control_ph.xml*",
-                    f"{outdir}/_ph0/{prefix}.phsave/status_run.xml*",
-                    f"{outdir}/_ph0/{prefix}.phsave/patterns.*.xml*",
-                    f"{outdir}/_ph0/{prefix}.phsave/tensors.xml*",
-                ]
-            }
-            if lqdir:
-                file_to_copy[ph_init_job_results["dir_name"]].extend(
-                    [
-                        f"{outdir}/{prefix}.save/charge-density.*",
-                        f"{outdir}/{prefix}.save/data-file-schema.xml.*",
-                        f"{outdir}/{prefix}.save/paw.txt.*",
-                        f"{outdir}/{prefix}.save/wfc*.*",
-                    ]
-                )
-                if qpoint != (0.0, 0.0, 0.0):
-                    file_to_copy[ph_init_job_results["dir_name"]].extend(
-                        [
-                            f"{outdir}/_ph0/{prefix}.q_{qdata['qnum']}/{prefix}.save/*",
-                            f"{outdir}/_ph0/{prefix}.q_{qdata['qnum']}/{prefix}.wfc*",
-                        ]
-                    )
-            else:
-                if qpoint == (0.0, 0.0, 0.0):
-                    file_to_copy[ph_init_job_results["dir_name"]].extend(
-                        [
-                            f"{outdir}/{prefix}.save/charge-density.*",
-                            f"{outdir}/{prefix}.save/data-file-schema.xml.*",
-                            f"{outdir}/{prefix}.save/paw.txt.*",
-                            f"{outdir}/{prefix}.save/wfc*.*",
-                        ]
-                    )
-                else:
-                    file_to_copy[ph_init_job_results["dir_name"]].extend(
-                        [
-                            f"{outdir}/_ph0/{prefix}.wfc*",
-                            f"{outdir}/_ph0/{prefix}.save/*",
-                        ]
-                    )
             for representation in repr_to_do:
                 ph_input_data["inputph"]["start_irr"] = representation[0]
                 ph_input_data["inputph"]["last_irr"] = representation[-1]

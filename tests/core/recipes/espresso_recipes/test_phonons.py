@@ -344,7 +344,7 @@ def test_phonon_grid_v2(tmp_path, monkeypatch):
             "pseudopotentials": pseudopotentials,
             "kspacing": 0.5,
         },
-        "ph_job": {"input_data": ph_loose, "qpts": (0.1, 0.0, 0.0)},
+        "ph_job": {"input_data": ph_loose, "qpts": (0.0, 0.0, 0.0)},
     }
 
     grid_results = grid_phonon_flow(atoms, job_params=job_params, nblocks=3)

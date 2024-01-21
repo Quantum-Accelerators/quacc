@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import os
-import warnings
+import logging
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -26,6 +26,7 @@ from quacc.utils.files import load_yaml_calc
 if TYPE_CHECKING:
     from typing import Any
 
+LOGGER = logging.getLogger(__name__)
 
 class EspressoTemplate(EspressoTemplate_):
     """This is a wrapper around the ASE Espresso template that allows for the use of
@@ -136,7 +137,7 @@ class EspressoTemplate(EspressoTemplate_):
                 )
 
     @staticmethod
-    def _search_keyword(parameters: dict[str, Any], key_to_search: str) -> str:
+    def _search_keyword(parameters: dict[str, Any], key_to_search: str) -> str | None:
         """
         Function that searches for a keyword in the input_data.
 
@@ -274,7 +275,7 @@ class EspressoTemplate(EspressoTemplate_):
                 outdir = input_ph.get("outdir", ".")
                 Path(outdir, "_ph0", f"{prefix}.q_1").mkdir(parents=True, exist_ok=True)
             if not (ldisp or qplot) and lqdir and is_grid and qpts != (0, 0, 0):
-                warnings.warn(
+                LOGGER.warning(
                     "lqdir is set to True but ldisp and qplot are set to False. the band structure will still be computed at each step. Please set lqdir to False"
                 )
 
