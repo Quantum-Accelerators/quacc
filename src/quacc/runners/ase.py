@@ -76,7 +76,7 @@ def run_calc(
     atoms = copy_atoms(atoms)
 
     # Perform staging operations
-    tmpdir, job_results_dir = calc_setup(copy_files=copy_files)
+    tmpdir, job_results_dir = calc_setup(atoms, copy_files=copy_files)
 
     # Run calculation via get_potential_energy()
     atoms.get_potential_energy()
@@ -159,7 +159,7 @@ def run_opt(
     atoms = copy_atoms(atoms)
 
     # Perform staging operations
-    tmpdir, job_results_dir = calc_setup(copy_files=copy_files)
+    tmpdir, job_results_dir = calc_setup(atoms, copy_files=copy_files)
 
     # Set defaults
     optimizer_kwargs = recursive_dict_merge(
@@ -239,7 +239,7 @@ def run_vib(
     vib_kwargs = vib_kwargs or {}
 
     # Perform staging operations
-    tmpdir, job_results_dir = calc_setup(copy_files=copy_files)
+    tmpdir, job_results_dir = calc_setup(atoms, copy_files=copy_files)
 
     # Run calculation
     vib = Vibrations(atoms, name=str(tmpdir / "vib"), **vib_kwargs)

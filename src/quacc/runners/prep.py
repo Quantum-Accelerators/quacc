@@ -4,6 +4,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 from shutil import move, rmtree
+from typing import TYPE_CHECKING
 
 from monty.shutil import gzip_dir, remove
 
@@ -14,9 +15,12 @@ from quacc.utils.files import (
     make_unique_dir,
 )
 
+if TYPE_CHECKING:
+    from ase.atoms import Atoms
+
 
 def calc_setup(
-    copy_files: str | Path | list[str | Path] | None = None,
+    atoms: Atoms, copy_files: str | Path | list[str | Path] | None = None
 ) -> tuple[Path, Path]:
     """
     Perform staging operations for a calculation, including copying files to the scratch
@@ -25,6 +29,9 @@ def calc_setup(
 
     Parameters
     ----------
+    atoms
+        The Atoms object to run the calculation on. Must have a calculator
+        attached.
     copy_files
         Filenames to copy from source to scratch directory.
 
@@ -46,6 +53,9 @@ def calc_setup(
     # Create a tmpdir for the calculation
     tmpdir_base = SETTINGS.SCRATCH_DIR or SETTINGS.RESULTS_DIR
     tmpdir = make_unique_dir(base_path=tmpdir_base, prefix="tmp-quacc-")
+
+    # Set the calculator's directory
+    atoms.calc.directory = str(tmpdir)
 
     # Define the results directory
     job_results_dir = SETTINGS.RESULTS_DIR
