@@ -118,6 +118,15 @@ jobs:
           cache: pip
           cache-dependency-path: tests/requirements**.txt
 
+      - name: Set up conda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+          activate-environment: quacc-env
+
+      - name: Install conda packages
+        run: conda install -c conda-forge qe
+
       - name: Install pip packages
         run: |
           pip install -r tests/requirements.txt
@@ -174,7 +183,7 @@ jobs:
           name: ${{ github.job }} ${{ matrix.wflow_engine }} coverage report
           path: "coverage.xml"
           retention-days: 1
-  
+
   tests-psi4:
     strategy:
       fail-fast: true
