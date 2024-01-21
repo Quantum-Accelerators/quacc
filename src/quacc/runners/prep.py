@@ -55,7 +55,7 @@ def calc_setup(
     tmpdir = make_unique_dir(base_path=tmpdir_base, prefix="tmp-quacc-")
 
     # Set the calculator's directory
-    atoms.calc.directory = str(tmpdir)
+    atoms.calc.directory = tmpdir
 
     # Define the results directory
     job_results_dir = SETTINGS.RESULTS_DIR
