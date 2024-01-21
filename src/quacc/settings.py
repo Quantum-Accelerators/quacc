@@ -79,10 +79,11 @@ class QuaccSettings(BaseSettings):
         ),
     )
     CREATE_UNIQUE_DIR: bool = Field(
-        False,
+        True,
         description=(
             "Whether to have a unique directory in RESULTS_DIR for each job."
-            "Some workflow engines have an option to do this for you already."
+            "Some workflow engines have an option to do this for you already,"
+            "in which case you should set this to False."
         ),
     )
     GZIP_FILES: bool = Field(

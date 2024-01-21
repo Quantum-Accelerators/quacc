@@ -16,93 +16,6 @@ At job runtime, the file structure looks like:
 
 ```text
 RESULTS_DIR
-├── tmp-quacc-12345
-│   ├── INPUT
-    └── OUTPUT
-```
-
-### Job Success
-
-Once the job successfully completes, the file structure looks like:
-
-```text
-RESULTS_DIR
-├── INPUT.gz
-├── OUTPUT.gz
-│
-```
-
-!!! Tip "Disabling Automated File Compression"
-
-    If you don't want the results to be gzipped, you can set the `GZIP_FILES` setting to `False`.
-
-### Job Failure
-
-If the job fails or does not complete, then the `tmp-quacc-12345` directory will remain in `RESULTS_DIR` so you can inspect the files.
-
-## Scenario 2: Specifying a `SCRATCH_DIR`
-
-By default, the `SCRATCH_DIR` setting is set to `None`. This means that all the calculations will be run somewhere within the `RESULTS_DIR`. Sometimes, the filesystem where you want to permanently store the results and where you want to run the calculations are different. In this case, you can specify a `SCRATCH_DIR` setting to distinguish between the two.
-
-Here, let's assume the user has specified the `SCRATCH_DIR` setting to be a custom `Path`.
-
-### Job Runtime
-
-At job runtime, the file structure looks like:
-
-```text
-RESULTS_DIR
-├── tmp-quacc-12345-symlink
-│
-```
-
-```text
-SCRATCH_DIR
-├── tmp-quacc-12345
-│   ├── INPUT
-    └── OUTPUT
-```
-
-Here, the `tmp-quacc-12345-symlink` is a temporary symbolic link that points to `SCRATCH_DIR/tmp-quacc-12345` so you can easily monitor the progress of the calculation.
-
-### Job Success
-
-Once the job successfully completes, the file structure looks like:
-
-```text
-RESULTS_DIR
-├── INPUT.gz
-├── OUTPUT.gz
-│
-```
-
-```text
-SCRATCH_DIR
-│
-```
-
-### Job Failure
-
-If the job fails or does not complete, then the `tmp-quacc-12345` directory will remain in `SCRATCH_DIR` so you can inspect the files. The symbolic link in `RESULTS_DIR` will also remain.
-
-## Scenario 3: Setting `CREATE_UNIQUE_DIR` to `True`
-
-If you run multiple jobs, the resulting files will start to overwrite each other in `RESULTS_DIR` by default. Some workflow engines have settings to circumvent this, but regardless, you can set the `CREATE_UNIQUE_DIR` setting to `True` in quacc to ensure no file clashes occur.
-
-Let's revisit Scenario 2 and assume the user has also set `CREATE_UNIQUE_DIR` to `True`.
-
-### Job Runtime
-
-At job runtime, the file structure looks like:
-
-```text
-RESULTS_DIR
-├── quacc-2023-12-08-67890
-│   └── tmp-quacc-2023-12-08-67890-symlink
-```
-
-```text
-SCRATCH_DIR
 ├── tmp-quacc-2023-12-08-67890
 │   ├── INPUT
     └── OUTPUT
@@ -114,9 +27,53 @@ Once the job successfully completes, the file structure looks like:
 
 ```text
 RESULTS_DIR
-├── quacc-2023-12-08-67890
+├── tmp-quacc-2023-12-08-67890
 │   ├── INPUT.gz
     └── OUTPUT.gz
+```
+
+!!! Tip "Disabling Automated File Compression"
+
+    If you don't want the results to be gzipped, you can set the `GZIP_FILES` setting to `False`.
+
+### Job Failure
+
+If the job fails or does not complete, then the `tmp-quacc-2023-12-08-67890` directory will remain in `RESULTS_DIR` so you can inspect the files.
+
+## Scenario 2: Specifying a `SCRATCH_DIR`
+
+By default, the `SCRATCH_DIR` setting is set to `None`. This means that all the calculations will be run somewhere within the `RESULTS_DIR`. Sometimes, the filesystem where you want to permanently store the results and where you want to run the calculations is different. In this case, you can specify a `SCRATCH_DIR` setting to distinguish between the two.
+
+Here, let's assume the user has specified the `SCRATCH_DIR` setting to be a custom path.
+
+### Job Runtime
+
+At job runtime, the file structure looks like:
+
+```text
+RESULTS_DIR
+├── symlink-tmp-quacc-2023-12-08-67890
+│
+```
+
+```text
+SCRATCH_DIR
+├── tmp-quacc-2023-12-08-67890
+│   ├── INPUT
+    └── OUTPUT
+```
+
+Here, the `symlink-tmp-quacc-2023-12-08-67890` is a temporary symbolic link that points to `SCRATCH_DIR/tmp-quacc-2023-12-08-67890` so you can easily monitor the progress of the calculation. On Windows, no symbolink link is created, but the `tmp-quacc-2023-12-08-67890` directory is still created in `SCRATCH_DIR`.
+
+### Job Success
+
+Once the job successfully completes, the file structure looks like:
+
+```text
+RESULTS_DIR
+├── quacc-2023-12-08-67890
+│   ├── INPUT.gz
+    ├── OUTPUT.gz
 ```
 
 ```text
@@ -126,4 +83,4 @@ SCRATCH_DIR
 
 ### Job Failure
 
-If the job fails or does not complete, then the `tmp-quacc-2023-12-08-67890` directory will remain in `SCRATCH_DIR` so you can inspect the files. The symbolic link in `RESULTS_DIR/quacc-2023-12-08-67890` will also remain.
+If the job fails or does not complete, then the `tmp-quacc-2023-12-08-67890` directory will remain in `SCRATCH_DIR` so you can inspect the files. The symbolic link in `RESULTS_DIR` will also remain.
