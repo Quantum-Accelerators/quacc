@@ -54,7 +54,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
 
     WORKFLOW_ENGINE: Optional[
-        Literal["covalent", "dask", "parsl", "prefect", "redun", "jobflow", "local"]
+        Literal["covalent", "dask", "parsl", "prefect", "redun", "jobflow"]
     ] = Field(installed_engine, description=("The workflow manager to use, if any."))
 
     # ---------------------------
@@ -360,12 +360,6 @@ class QuaccSettings(BaseSettings):
     )
 
     # --8<-- [end:settings]
-
-    @field_validator("WORKFLOW_ENGINE")
-    @classmethod
-    def validate_workflow_engine(cls, v: Optional[str]) -> Optional[str]:
-        """Validate the workflow engine."""
-        return None if v and v.lower() == "local" else v
 
     @field_validator("RESULTS_DIR", "SCRATCH_DIR")
     @classmethod
