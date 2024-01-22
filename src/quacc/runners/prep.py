@@ -6,7 +6,7 @@ from pathlib import Path
 from shutil import move, rmtree
 from typing import TYPE_CHECKING
 
-from monty.shutil import gzip_dir, remove
+from monty.shutil import gzip_dir
 
 from quacc import SETTINGS
 from quacc.utils.files import (
@@ -128,8 +128,6 @@ def calc_cleanup(atoms: Atoms, tmpdir: Path | str, job_results_dir: Path | str) 
 
     # Move files from tmpdir to job_results_dir
     for file_name in os.listdir(tmpdir):
-        if Path(job_results_dir / file_name).is_dir():
-            remove(job_results_dir / file_name)
         move(tmpdir / file_name, job_results_dir / file_name)
 
     # Remove symlink to tmpdir
