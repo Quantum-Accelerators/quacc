@@ -58,14 +58,7 @@ def summarize_phonopy(
     additional_fields = additional_fields or {}
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
-    uri = get_uri(Path.cwd())
-
-    inputs = {
-        "parameters": parameters,
-        "phonopy_metadata": {"version": phonon.version},
-        "nid": uri.split(":")[0],
-        "dir_name": ":".join(uri.split(":")[1:]),
-    }
+    inputs = {"parameters": parameters, "phonopy_metadata": {"version": phonon.version}}
 
     results = {
         "results": {

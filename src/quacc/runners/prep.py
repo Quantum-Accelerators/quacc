@@ -81,13 +81,16 @@ def calc_setup(
     return tmpdir, job_results_dir
 
 
-def calc_cleanup(tmpdir: Path, job_results_dir: Path) -> None:
+def calc_cleanup(atoms: Atoms, tmpdir: Path | str, job_results_dir: Path | str) -> None:
     """
     Perform cleanup operations for a calculation, including gzipping files, copying
     files back to the original directory, and removing the tmpdir.
 
     Parameters
     ----------
+    atoms
+        The Atoms object after the calculation. Must have a calculator
+        attached.
     tmpdir
         The path to the tmpdir, where the calculation will be run. It will be
         deleted after the calculation is complete.
@@ -101,9 +104,14 @@ def calc_cleanup(tmpdir: Path, job_results_dir: Path) -> None:
     None
     """
 
+    job_results_dir, tmpdir = Path(job_results_dir), Path(tmpdir)
+
     # Make the results directory and cd into it
-    Path(job_results_dir).mkdir(parents=True, exist_ok=True)
+    job_results_dir.mkdir(parents=True, exist_ok=True)
     os.chdir(job_results_dir)
+
+    # Reset the calculator's directory
+    atoms.calc.directory = job_results_dir
 
     # Gzip files in tmpdir
     if SETTINGS.GZIP_FILES:

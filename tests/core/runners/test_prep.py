@@ -80,14 +80,17 @@ def test_calc_cleanup(tmp_path, monkeypatch):
 
     DEFAULT_SETTINGS = SETTINGS.model_copy()
     monkeypatch.chdir(tmp_path)
+    atoms = bulk("Cu")
+    atoms.calc = EMT()
 
     make_files2()
     SETTINGS.SCRATCH_DIR = tmp_path
 
     p = Path(Path.cwd(), "quacc-tmp-1234").resolve()
     assert p.is_dir()
-    calc_cleanup(p, SETTINGS.RESULTS_DIR)
+    calc_cleanup(atoms, p, SETTINGS.RESULTS_DIR)
     assert not p.exists()
     assert Path.cwd() == SETTINGS.RESULTS_DIR
+    assert Path(atoms.calc.directory) == SETTINGS.RESULTS_DIR
 
     SETTINGS.SCRATCH_DIR = DEFAULT_SETTINGS.SCRATCH_DIR
