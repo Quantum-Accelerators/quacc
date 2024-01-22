@@ -54,7 +54,7 @@ def static_job(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "ONETEP Static"},
+        additional_fields={"name": "ONETEP ASE Relax"},
         copy_files=copy_files,
     )
 
