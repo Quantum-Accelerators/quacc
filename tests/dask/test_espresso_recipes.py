@@ -2,6 +2,7 @@ import pytest
 
 dask = pytest.importorskip("dask")
 from shutil import which
+
 from dask.distributed import default_client
 
 pytestmark = pytest.mark.skipif(
