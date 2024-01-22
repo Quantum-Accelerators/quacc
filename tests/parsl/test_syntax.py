@@ -5,8 +5,7 @@ parsl = pytest.importorskip("parsl")
 from quacc import flow, job, strip_decorator, subflow
 
 
-def setup_module():
-    parsl.clear()
+def setup_module(default_config):
     parsl.load()
 
 
