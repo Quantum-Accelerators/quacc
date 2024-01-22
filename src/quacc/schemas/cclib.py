@@ -205,10 +205,6 @@ def _make_cclib_schema(
     if cpu_time := attributes["metadata"].get("cpu_time"):
         attributes["metadata"]["cpu_time"] = [*map(str, cpu_time)]
 
-    # Store charge and multiplicity since we use it frequently
-    charge = cclib_obj.charge
-    mult = cclib_obj.mult
-
     # Construct the trajectory
     coords = cclib_obj.atomcoords
     trajectory = [
