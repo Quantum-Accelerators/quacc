@@ -193,9 +193,9 @@ class EspressoTemplate(EspressoTemplate_):
             fildos = self.outfiles["fildos"]
             with Path(fildos).open("r") as fd:
                 lines = fd.readlines()
-                fermi = re.search(r"-?\d+\.?\d*", lines[0]).group(0)
+                fermi = float(re.search(r"-?\d+\.?\d*", lines[0]).group(0))
                 dos = np.loadtxt(lines[1:])
-            results = {fildos.name: {"dos": dos, "fermi": float(fermi)}}
+            results = {fildos.name: {"dos": dos, "fermi": fermi}}
         else:
             results = {}
 
@@ -225,13 +225,6 @@ class EspressoTemplate(EspressoTemplate_):
         dict[str, Any]
             The merged kwargs
         """
-
-        not_subpath_error = (
-            "Cannot use {key}={path} because it is not a subpath of"
-            "{working_dir}. When using Quacc please provide subpaths"
-            "relative to the working directory."
-        )
-
         input_data = parameters.get("input_data", {})
 
         all_out = {**self.outdirs, **self.outfiles}
@@ -247,11 +240,7 @@ class EspressoTemplate(EspressoTemplate_):
             try:
                 path.relative_to(working_dir)
             except ValueError as e:
-                raise ValueError(
-                    not_subpath_error.format(
-                        key=key, path=path, working_dir=working_dir
-                    )
-                ) from e
+                raise ValueError(f"Cannot use {key}={path} because it is not a subpath of {working_dir}. When using Quacc please provide subpaths relative to the working directory.") from e
             if key in self.outdirs:
                 path.mkdir(parents=True, exist_ok=True)
                 self.outdirs[key] = path
