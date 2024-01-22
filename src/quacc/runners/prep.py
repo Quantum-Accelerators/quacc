@@ -6,7 +6,7 @@ from pathlib import Path
 from shutil import move, rmtree
 from typing import TYPE_CHECKING
 
-from monty.shutil import gzip_dir, remove
+from monty.shutil import gzip_dir
 
 from quacc import SETTINGS
 from quacc.utils.files import (
