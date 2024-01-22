@@ -270,8 +270,8 @@ def summarize_vib_run(
         uri = get_uri(directory)
 
         inputs = {
-            "parameters":  atoms.calc.parameters,
-            "parameters_vib":{
+            "parameters": atoms.calc.parameters,
+            "parameters_vib": {
                 "delta": vib.delta,
                 "direction": vib.direction,
                 "method": vib.method,
