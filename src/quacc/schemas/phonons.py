@@ -1,13 +1,10 @@
 """Summarizer for phonopy."""
 from __future__ import annotations
-
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.utils.dicts import clean_task_doc, recursive_dict_merge
-from quacc.utils.files import get_uri
 from quacc.wflow_tools.db import results_to_db
 
 try:
