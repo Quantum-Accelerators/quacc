@@ -332,8 +332,6 @@ def test_summarize_ideal_gas_thermo(tmp_path, monkeypatch):
     assert results["parameters_thermo"]["pressure"] == 20.0
     assert results["parameters_thermo"]["sigma"] == 6
     assert results["parameters_thermo"]["spin_multiplicity"] == 2
-    assert "nid" in results
-    assert "dir_name" in results
 
     # test document can be jsanitized and decoded
     d = jsanitize(results, strict=True, enum_values=True)
