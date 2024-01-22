@@ -100,8 +100,8 @@ def test_cclib_summarize_run(tmp_path, monkeypatch):
         7.6760596087545006
     )
     assert len(results["trajectory"]) == 7
-    assert results["trajectory"][0]["atoms"] == results["input_atoms"]["atoms"]
-    assert results["trajectory"][-1]["atoms"] == results["atoms"]
+    assert results["trajectory"][0] == results["input_atoms"]["atoms"]
+    assert results["trajectory"][-1] == results["atoms"]
     assert results["test"] == "hi"
 
     # test document can be jsanitized and decoded

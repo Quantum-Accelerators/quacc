@@ -31,7 +31,7 @@ if TYPE_CHECKING:
     from ase.optimize.optimize import Optimizer
 
     class OptimizerKwargs(TypedDict, total=False):
-        restart: str | None  # default = None
+        restart: Path | str | None  # default = None
         append_trajectory: bool  # default = False
 
     class VibKwargs(TypedDict, total=False):

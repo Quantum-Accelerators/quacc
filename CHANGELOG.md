@@ -10,10 +10,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - The `CREATE_UNIQUE_DIR` setting is now set to `True` by default.
 - The temporary directory name and its symlink have been slightly updated to have "tmp-" and "symlink-" at the front of the name instead of the end for easier file navigation.
+- Updated the "trajectory" entry in the `OptSchema` to be `list[Atoms]` instead of `list[AtomsSchema]`
 
 ### Fixed
 
+- Fixed an occasional race condition that occurs when running concurrent calculations in multi-threaded mode
 - The temporary directory made when a `@job` runs now has a name consistent with the folder where the results will ultimately be stored.
+- Significant speedup in generating the `OptSchema`
 
 ## [0.6.1]
 
