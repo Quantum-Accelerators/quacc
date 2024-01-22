@@ -138,4 +138,8 @@ def calc_cleanup(atoms: Atoms, tmpdir: Path | str, job_results_dir: Path | str) 
         symlink_path.unlink(missing_ok=True)
 
     # Remove the tmpdir
+    if "tmp-" not in tmpdir:
+        raise ValueError(
+            f"{tmpdir} does not appear to be a tmpdir... exiting for safety!"
+        )
     rmtree(tmpdir, ignore_errors=True)
