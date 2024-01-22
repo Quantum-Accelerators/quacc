@@ -129,7 +129,7 @@ class cclibBaseSchema(TypedDict):
     logfile: str
     attributes: AllAttributes
     pop_analysis: PopAnalysisAttributes | None
-    trajectory: list[AtomsSchema]
+    trajectory: list[Atoms]
 
 
 class cclibSchema(cclibBaseSchema, RunSchema):
