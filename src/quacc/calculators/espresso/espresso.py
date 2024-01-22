@@ -20,7 +20,7 @@ from ase.io.espresso import (
 )
 
 from quacc import SETTINGS
-from quacc.calculators.espresso.utils import get_pseudopotential_info
+from quacc.calculators.espresso.utils import get_pseudopotential_info, sanity_checks
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.utils.files import load_yaml_calc
 
@@ -96,7 +96,8 @@ class EspressoTemplate(EspressoTemplate_):
         """
 
         directory = Path(directory)
-        self._output_handler(parameters, directory)
+        self._outdir_handler(parameters, directory)
+        parameters = sanity_checks(parameters, binary=self.binary)
 
         if self.test_run:
             self._test_run(parameters, directory)
@@ -138,6 +139,29 @@ class EspressoTemplate(EspressoTemplate_):
                 )
 
     @staticmethod
+    def _search_keyword(parameters: dict[str, Any], key_to_search: str) -> str | None:
+        """
+        Function that searches for a keyword in the input_data.
+
+        Parameters
+        ----------
+        parameters
+            input_data, to search for the keyword
+
+        Returns
+        -------
+        str
+            The value of the keyword
+        """
+        input_data = parameters.get("input_data", {})
+
+        for section in input_data:
+            for key in input_data[section]:
+                if key == key_to_search:
+                    return input_data[section][key]
+        return None
+
+    @staticmethod
     def _test_run(parameters: dict[str, Any], directory: Path) -> dict[str, Any]:
         """
         Almost all QE binaries will do a test run if a file named <prefix>.EXIT is
@@ -154,14 +178,8 @@ class EspressoTemplate(EspressoTemplate_):
         -------
         None
         """
-        input_data = parameters.get("input_data", {})
-        prefix = "pwscf"
 
-        for section in input_data:
-            for key in input_data[section]:
-                if key == "prefix":
-                    prefix = input_data[section][key]
-                    break
+        prefix = EspressoTemplate._search_keyword(parameters, "prefix") or "pwscf"
 
         Path(directory, f"{prefix}.EXIT").touch()
 

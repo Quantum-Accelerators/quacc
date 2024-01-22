@@ -1,14 +1,11 @@
 import pytest
 
-dask = pytest.importorskip("dask")
+parsl = pytest.importorskip("parsl")
 from shutil import which
-
-from dask.distributed import default_client
 
 pytestmark = pytest.mark.skipif(
     which("pw.x") is None or which("ph.x") is None, reason="QE not installed"
 )
-
 from pathlib import Path
 
 from ase.build import bulk
@@ -19,7 +16,6 @@ from quacc.utils.files import copy_decompress_files
 DATA_DIR = (
     Path(__file__).parent / ".." / "core" / "recipes" / "espresso_recipes" / "data"
 )
-client = default_client()
 
 
 def test_phonon_grid(tmp_path, monkeypatch):
@@ -47,5 +43,6 @@ def test_phonon_grid(tmp_path, monkeypatch):
         "ph_job": {"input_data": ph_loose, "qpts": [(0, 0, 0, 1), (0.5, 0.0, 0.0, 1)]},
     }
 
-    future = grid_phonon_flow(atoms, job_params=job_params)
-    assert client.compute(future).result()
+    grid_results = grid_phonon_flow(atoms, job_params=job_params)
+
+    assert grid_results.result()
