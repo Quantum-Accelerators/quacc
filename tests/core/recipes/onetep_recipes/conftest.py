@@ -1,6 +1,4 @@
-import numpy as np
 import pytest
-from ase import Atoms
 from ase.calculators.emt import EMT
 from ase.calculators.onetep import OnetepTemplate
 from ase.io import read
