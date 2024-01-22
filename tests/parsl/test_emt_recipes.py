@@ -9,7 +9,7 @@ from quacc.recipes.emt.slabs import bulk_to_slabs_flow  # skipcq: PYL-C0412
 
 
 def setup_module(htex_cofig):
-    parsl.load(htex_cofig)
+    parsl.load(htex_cofig())
 
 
 def teardown_module():
