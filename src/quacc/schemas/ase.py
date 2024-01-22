@@ -263,27 +263,24 @@ def summarize_vib_run(
 
     if isinstance(vib, VibrationsData):
         atoms = vib._atoms
+        inputs = {}
     else:
         atoms = vib.atoms
         directory = atoms.calc.directory
         uri = get_uri(directory)
 
-    inputs = {
-        "parameters": None
-        if isinstance(vib, VibrationsData)
-        else atoms.calc.parameters,
-        "parameters_vib": None
-        if isinstance(vib, VibrationsData)
-        else {
-            "delta": vib.delta,
-            "direction": vib.direction,
-            "method": vib.method,
-            "ndof": vib.ndof,
-            "nfree": vib.nfree,
-        },
-        "nid": uri.split(":")[0],
-        "dir_name": ":".join(uri.split(":")[1:]),
-    }
+        inputs = {
+            "parameters":  atoms.calc.parameters,
+            "parameters_vib":{
+                "delta": vib.delta,
+                "direction": vib.direction,
+                "method": vib.method,
+                "ndof": vib.ndof,
+                "nfree": vib.nfree,
+            },
+            "nid": uri.split(":")[0],
+            "dir_name": ":".join(uri.split(":")[1:]),
+        }
 
     atoms_metadata = atoms_to_metadata(
         atoms, charge_and_multiplicity=charge_and_multiplicity
