@@ -13,7 +13,7 @@ except ImportError:
     parsl = None
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def htex_config():
     from parsl.config import Config
     from parsl.executors import HighThroughputExecutor
