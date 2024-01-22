@@ -68,11 +68,9 @@ def dos_job(
         See the type-hint for the data structure.
     """
 
-    calc_defaults = {}
-
     return base_fn(
         template=EspressoTemplate("dos", test_run=test_run),
-        calc_defaults=calc_defaults,
+        calc_defaults={},
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "dos.x Density-of-States"},
