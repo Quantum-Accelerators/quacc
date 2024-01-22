@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from typing import Any, TypedDict
 
+from ase.atoms import Atoms
 from numpy.typing import NDArray
 
 from quacc.schemas._aliases.atoms import AtomsSchema
@@ -29,7 +30,7 @@ class OptSchema(RunSchema):
     parameters_opt: dict[str, Any]  # from Optimizer.todict()
     converged: bool
     nsteps: int
-    trajectory: list[AtomsSchema]
+    trajectory: list[Atoms]
     trajectory_results: list[results]
 
 

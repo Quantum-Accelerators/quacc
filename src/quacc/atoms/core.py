@@ -192,7 +192,7 @@ def check_charge_and_spin(
             f"Charge of {mol.charge} and spin multiplicity of {mol.spin_multiplicity} is"
             " not possible for this molecule."
         )
-    logger.info(
+    logger.debug(
         f"Setting charge to {mol.charge} and spin multiplicity to {mol.spin_multiplicity}"
     )
 

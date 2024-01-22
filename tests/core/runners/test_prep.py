@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+import pytest
 from ase.build import bulk
 from ase.calculators.emt import EMT
 
@@ -94,3 +95,6 @@ def test_calc_cleanup(tmp_path, monkeypatch):
     assert Path(atoms.calc.directory) == SETTINGS.RESULTS_DIR
 
     SETTINGS.SCRATCH_DIR = DEFAULT_SETTINGS.SCRATCH_DIR
+
+    with pytest.raises(ValueError):
+        calc_cleanup(atoms, "quacc", SETTINGS.RESULTS_DIR)

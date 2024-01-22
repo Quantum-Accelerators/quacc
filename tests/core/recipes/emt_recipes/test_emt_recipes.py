@@ -40,8 +40,8 @@ def test_relax_job(tmp_path, monkeypatch):
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
     assert len(output["trajectory"]) == 30
     assert output["atoms"] != output["input_atoms"]["atoms"]
-    assert output["trajectory"][0]["atoms"] == output["input_atoms"]["atoms"]
-    assert output["trajectory"][-1]["atoms"] == output["atoms"]
+    assert output["trajectory"][0] == output["input_atoms"]["atoms"]
+    assert output["trajectory"][-1] == output["atoms"]
     assert (
         output["trajectory_results"][0]["energy"]
         > output["trajectory_results"][-1]["energy"]
