@@ -190,12 +190,12 @@ class EspressoTemplate(EspressoTemplate_):
             with Path.open(directory / self.outputname, "r") as fd:
                 results = read_espresso_ph(fd)
         elif self.binary == "dos":
-            fildos = self.outfiles["fildos"]
-            with Path.open(fildos, "r") as fd:
+            fildos = self.outdirs["fildos"]
+            with Path(fildos).open("r") as fd:
                 lines = fd.readlines()
                 fermi = re.search(r"-?\d+\.?\d*", lines[0]).group(0)
                 dos = np.loadtxt(lines[1:])
-            results = {fildos.name: {"dos": dos, "fermi": fermi}}
+            results = {fildos: {"dos": dos, "fermi": float(fermi)}}
         else:
             results = {}
 

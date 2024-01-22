@@ -7,20 +7,26 @@ import pytest
 pytestmark = pytest.mark.skipif(which("pw.x") is None, reason="QE not installed")
 
 from pathlib import Path
+from shutil import which
 from subprocess import CalledProcessError
 
+import pytest
 from ase.build import bulk
 from ase.optimize import BFGS
 from numpy.testing import assert_allclose, assert_array_equal
 
 from quacc.calculators.espresso.espresso import EspressoTemplate
+from quacc.calculators.espresso.utils import pw_copy_files
 from quacc.recipes.espresso.core import (
     ase_relax_job,
+    non_scf_job,
     post_processing_job,
     relax_job,
     static_job,
 )
 from quacc.utils.files import copy_decompress_files
+
+pytestmark = pytest.mark.skipif(which("pw.x") is None, reason="QE not installed")
 
 DATA_DIR = Path(__file__).parent / "data"
 
@@ -301,3 +307,40 @@ def test_relax_job_cell(tmp_path, monkeypatch):
 
     new_input_data = results["parameters"]["input_data"]
     assert new_input_data["control"]["calculation"] == "vc-relax"
+
+
+def test_non_scf_job(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+
+    atoms = bulk("Si")
+
+    pseudopotentials = {"Si": "Si.upf"}
+    input_data = {"control": {"pseudo_dir": tmp_path}}
+    static_result = static_job(
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=None
+    )
+    file_to_copy = pw_copy_files(
+        input_data, static_result["dir_name"], include_wfc=False
+    )
+    results = non_scf_job(
+        atoms, file_to_copy, input_data=input_data, pseudopotentials=pseudopotentials
+    )
+
+    assert_allclose(
+        results["atoms"].get_positions(), atoms.get_positions(), atol=1.0e-4
+    )
+    assert_allclose(results["atoms"].get_cell(), atoms.get_cell(), atol=1.0e-3)
+    assert_array_equal(
+        results["atoms"].get_chemical_symbols(), atoms.get_chemical_symbols()
+    )
+    assert results["parameters"]["input_data"]["control"]["calculation"] == "nscf"
+    assert results["results"]["nspins"] == 1
+    assert results["results"]["nbands"] == 4
+
+    new_input_data = results["parameters"]["input_data"]
+    assert new_input_data["system"]["ecutwfc"] == 30.0
+    assert new_input_data["system"]["ecutrho"] == 240.0
+    assert "kspacing" not in results["parameters"]
+    assert results["parameters"].get("kpts") is None

@@ -1,19 +1,29 @@
-import pytest
+from __future__ import annotations
+
+from pathlib import Path
 from shutil import which
+
+import pytest
+from ase.build import bulk
+from numpy.testing import assert_allclose
+
+from quacc.recipes.espresso.dos import dos_flow, dos_job
+from quacc.utils.files import copy_decompress_files, copy_decompress_tree
 
 pytestmark = pytest.mark.skipif(
     which("pw.x") is None or which("dos.x") is None, reason="QE not installed"
 )
 
-from pathlib import Path
-
-from ase.build import bulk
-from numpy.testing import assert_allclose
-
-from quacc.recipes.espresso.dos import dos_flow
-from quacc.utils.files import copy_decompress_files
-
 DATA_DIR = Path(__file__).parent / "data"
+
+
+def test_dos_job(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    copy_decompress_tree({DATA_DIR / "dos_test/": "pwscf.save/*.gz"}, tmp_path)
+    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+    output = dos_job(tmp_path)
+
+    assert output["dos_job"]["results"]["pwscf.dos"]["fermi"] == pytest.approx(6.772)
 
 
 def test_dos_flow(tmp_path, monkeypatch):
@@ -67,4 +77,4 @@ def test_dos_flow(tmp_path, monkeypatch):
     assert output["non_scf_job"]["results"]["nbands"] == 8
     assert output["non_scf_job"]["results"]["nspins"] == 1
 
-    assert output["dos_job"]["results"] == {}
+    assert output["dos_job"]["results"]["pwscf.dos"]["fermi"] == pytest.approx(6.772)

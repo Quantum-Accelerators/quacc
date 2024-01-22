@@ -12,23 +12,24 @@ from typing import TYPE_CHECKING
 
 from quacc import flow, job
 from quacc.calculators.espresso.espresso import EspressoTemplate
+from quacc.calculators.espresso.utils import pw_copy_files
 from quacc.recipes.espresso._base import base_fn
 from quacc.recipes.espresso.core import non_scf_job, static_job
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs
-from quacc.calculators.espresso.utils import pw_copy_files
+
 if TYPE_CHECKING:
-    from typing import Any, Callable,TypedDict
+    from typing import Any, Callable, TypedDict
 
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
 
-
     class DosSchema(TypedDict):
         static_job: RunSchema
         non_scf_job: RunSchema
         dos_job: RunSchema
+
 
 @job
 def dos_job(
@@ -67,7 +68,7 @@ def dos_job(
         See the type-hint for the data structure.
     """
 
-    calc_defaults = {"input_data": {"dos": {"fildos": "total_dos.dos"}}}
+    calc_defaults = {}
 
     return base_fn(
         template=EspressoTemplate("dos", test_run=test_run),
@@ -121,24 +122,21 @@ def dos_flow(
     """
 
     static_job_defaults = {
-            "kspacing": 0.2,
-            "input_data": {"system": {"occupations": "tetrahedra"}},
-        }
+        "kspacing": 0.2,
+        "input_data": {"system": {"occupations": "tetrahedra"}},
+    }
     non_scf_job_defaults = recursive_dict_merge(
-            job_params.get("static_job", {}),
-            {
-                "kspacing": 0.01,
-                "input_data": {
-                    "control": {
-                        "calculation": "nscf",
-                        "verbosity": "high",
-                    },
-                    "system": {"occupations": "tetrahedra"},
-                },
+        job_params.get("static_job", {}),
+        {
+            "kspacing": 0.01,
+            "input_data": {
+                "control": {"calculation": "nscf", "verbosity": "high"},
+                "system": {"occupations": "tetrahedra"},
             },
-        )
-    dos_job_defaults = {"input_data": {"dos": {"fildos": "total_dos.dos"}}}
-    
+        },
+    )
+    dos_job_defaults = {}
+
     calc_defaults = {
         "static_job": static_job_defaults,
         "non_scf_job": non_scf_job_defaults,
@@ -154,12 +152,18 @@ def dos_flow(
     )
 
     static_results = static_job_(atoms)
-    file_to_copy =  pw_copy_files(job_params["static_job"].get("input_data"),static_results["dir_name"],include_wfc=False)
-        
+    file_to_copy = pw_copy_files(
+        job_params["static_job"].get("input_data"),
+        static_results["dir_name"],
+        include_wfc=False,
+    )
 
     non_scf_results = non_scf_job_(atoms, prev_dir=file_to_copy)
-    file_to_copy =  pw_copy_files(job_params["non_scf_job"].get("input_data"),non_scf_results["dir_name"],include_wfc=False)
-    
+    file_to_copy = pw_copy_files(
+        job_params["non_scf_job"].get("input_data"),
+        non_scf_results["dir_name"],
+        include_wfc=False,
+    )
 
     dos_results = dos_job_(prev_dir=file_to_copy)
 
