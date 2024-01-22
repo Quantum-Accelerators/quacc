@@ -46,8 +46,7 @@ def vasp_summarize_run(
     final_atoms
         ASE Atoms object following a calculation.
     dir_path
-        Path to VASP outputs. A value of None specifies the current working
-        directory
+        Path to VASP outputs. A value of None specifies the calculator directory.
     move_magmoms
         Whether to move the final magmoms of the original Atoms object to the
         initial magmoms of the returned Atoms object.
@@ -80,7 +79,7 @@ def vasp_summarize_run(
     check_convergence = (
         SETTINGS.CHECK_CONVERGENCE if check_convergence is None else check_convergence
     )
-    dir_path = dir_path or Path.cwd()
+    dir_path = Path(dir_path or final_atoms.calc.directory)
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
     # Fetch all tabulated results from VASP outputs files. Fortunately, emmet
@@ -131,7 +130,7 @@ def vasp_summarize_run(
     return task_doc
 
 
-def _bader_runner(path: str | None = None) -> BaderSchema:
+def _bader_runner(path: Path | str) -> BaderSchema:
     """
     Runs a Bader partial charge and spin moment analysis using the VASP output
     files in the given path. This function requires that `bader` is located in
@@ -152,7 +151,6 @@ def _bader_runner(path: str | None = None) -> BaderSchema:
     BaderSchema
         Dictionary containing the Bader analysis summary
     """
-    path = path or Path.cwd()
 
     # Make sure files are present
     relevant_files = ["AECCAR0", "AECCAR2", "CHGCAR", "POTCAR"]
@@ -179,7 +177,7 @@ def _bader_runner(path: str | None = None) -> BaderSchema:
 
 
 def _chargemol_runner(
-    path: str | None = None, atomic_densities_path: str | None = None
+    path: str, atomic_densities_path: str | None = None
 ) -> ChargemolSchema:
     """
     Runs a Chargemol (i.e. DDEC6 + CM5) analysis using the VASP output files in
@@ -206,7 +204,6 @@ def _chargemol_runner(
     ChargemolSchema
         Dictionary containing the Chargemol analysis summary
     """
-    path = path or Path.cwd()
 
     # Make sure files are present
     relevant_files = ["AECCAR0", "AECCAR2", "CHGCAR", "POTCAR"]

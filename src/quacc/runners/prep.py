@@ -76,18 +76,25 @@ def calc_setup(
     elif isinstance(copy_files, (str, Path)):
         copy_decompress_files([copy_files], tmpdir)
 
+    # NOTE: Technically, this breaks thread-safety since it will change the cwd
+    # for all threads in the current process. However, elsewhere in the code,
+    # we use absolute paths to avoid issues. We keep this here for now because some
+    # old ASE calculators do not support the `directory` keyword argument.
     os.chdir(tmpdir)
 
     return tmpdir, job_results_dir
 
 
-def calc_cleanup(tmpdir: Path, job_results_dir: Path) -> None:
+def calc_cleanup(atoms: Atoms, tmpdir: Path | str, job_results_dir: Path | str) -> None:
     """
     Perform cleanup operations for a calculation, including gzipping files, copying
     files back to the original directory, and removing the tmpdir.
 
     Parameters
     ----------
+    atoms
+        The Atoms object after the calculation. Must have a calculator
+        attached.
     tmpdir
         The path to the tmpdir, where the calculation will be run. It will be
         deleted after the calculation is complete.
@@ -101,8 +108,18 @@ def calc_cleanup(tmpdir: Path, job_results_dir: Path) -> None:
     None
     """
 
-    # Make the results directory and cd into it
-    Path(job_results_dir).mkdir(parents=True, exist_ok=True)
+    job_results_dir, tmpdir = Path(job_results_dir), Path(tmpdir)
+
+    # Reset the calculator's directory
+    atoms.calc.directory = job_results_dir
+
+    # Make the results directory
+    job_results_dir.mkdir(parents=True, exist_ok=True)
+
+    # NOTE: Technically, this breaks thread-safety since it will change the cwd
+    # for all threads in the current process. However, elsewhere in the code,
+    # we use absolute paths to avoid issues. We keep this here for now because some
+    # old ASE calculators do not support the `directory` keyword argument.
     os.chdir(job_results_dir)
 
     # Gzip files in tmpdir

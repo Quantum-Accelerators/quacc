@@ -36,7 +36,7 @@ logger = logging.getLogger(__name__)
 def cclib_summarize_run(
     final_atoms: Atoms,
     logfile_extensions: str | list[str],
-    dir_path: str | None = None,
+    dir_path: Path | str | None = None,
     pop_analyses: list[
         Literal[
             "cpsa",
@@ -71,7 +71,7 @@ def cclib_summarize_run(
         used. For an exact match only, put in the full file name.
     dir_path
         The path to the folder containing the calculation outputs. A value of
-        None specifies the current working directory.
+        None specifies the calculator directory.
     pop_analyses
         The name(s) of any cclib post-processing analysis to run. Note that for
         bader, ddec6, and hirshfeld, a cube file (.cube, .cub) must reside in
@@ -92,7 +92,7 @@ def cclib_summarize_run(
         Dictionary representation of the task document
     """
 
-    dir_path = dir_path or Path.cwd()
+    dir_path = Path(dir_path or final_atoms.calc.directory)
     check_convergence = (
         SETTINGS.CHECK_CONVERGENCE if check_convergence is None else check_convergence
     )

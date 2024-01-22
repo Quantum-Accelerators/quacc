@@ -53,8 +53,6 @@ class VibResults(TypedDict):
 class VibSchema(AtomsSchema):
     """Schema for `quacc.schemas.ase.summarize_vib_run`"""
 
-    nid: str
-    dir_name: str
     parameters: parameters | None
     parameters_vib: ParametersVib | None
     results: VibResults
@@ -85,8 +83,6 @@ class ThermoResults(TypedDict):
 
 
 class ThermoSchema(AtomsSchema):
-    nid: str
-    dir_name: str
     parameters_thermo: ParametersThermo
     results: ThermoResults
 
