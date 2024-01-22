@@ -54,7 +54,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
 
     WORKFLOW_ENGINE: Optional[
-        Literal["covalent", "dask", "parsl", "prefect", "redun", "jobflow", "local"]
+        Literal["covalent", "dask", "parsl", "prefect", "redun", "jobflow"]
     ] = Field(installed_engine, description=("The workflow manager to use, if any."))
 
     # ---------------------------
@@ -79,10 +79,11 @@ class QuaccSettings(BaseSettings):
         ),
     )
     CREATE_UNIQUE_DIR: bool = Field(
-        False,
+        True,
         description=(
             "Whether to have a unique directory in RESULTS_DIR for each job."
-            "Some workflow engines have an option to do this for you already."
+            "Some workflow engines have an option to do this for you already,"
+            "in which case you should set this to False."
         ),
     )
     GZIP_FILES: bool = Field(
@@ -360,12 +361,6 @@ class QuaccSettings(BaseSettings):
 
     # --8<-- [end:settings]
 
-    @field_validator("WORKFLOW_ENGINE")
-    @classmethod
-    def validate_workflow_engine(cls, v: Optional[str]) -> Optional[str]:
-        """Validate the workflow engine."""
-        return None if v and v.lower() == "local" else v
-
     @field_validator("RESULTS_DIR", "SCRATCH_DIR")
     @classmethod
     def resolve_and_make_paths(cls, v: Optional[Path]) -> Optional[Path]:
@@ -375,7 +370,7 @@ class QuaccSettings(BaseSettings):
 
         v = Path(os.path.expandvars(v)).expanduser().resolve()
         if not v.exists():
-            os.makedirs(v)
+            v.mkdir(parents=True)
         return v
 
     @field_validator(
