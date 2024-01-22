@@ -3,10 +3,10 @@ from __future__ import annotations
 
 from typing import Any, TypedDict
 
+from ase.atoms import Atoms
 from numpy.typing import NDArray
 
 from quacc.schemas._aliases.ase import OptSchema, RunSchema
-from quacc.schemas._aliases.atoms import AtomsSchema
 
 
 class AdditionalAttributes(TypedDict, total=False):
@@ -129,7 +129,7 @@ class cclibBaseSchema(TypedDict):
     logfile: str
     attributes: AllAttributes
     pop_analysis: PopAnalysisAttributes | None
-    trajectory: list[AtomsSchema]
+    trajectory: list[Atoms]
 
 
 class cclibSchema(cclibBaseSchema, RunSchema):

@@ -219,17 +219,18 @@ def _add_stdev_and_hess(summary: dict[str, Any]) -> dict[str, Any]:
         Hessian values.
     """
 
-    for conf in summary["trajectory"]:
+    for i, atoms in enumerate(summary["trajectory"]):
         ml_calculator = NewtonNet(
             model_path=SETTINGS.NEWTONNET_MODEL_PATH,
             settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
         )
-        atoms = conf["atoms"]
         atoms.calc = ml_calculator
         results = run_calc(atoms).calc.results
-        conf["hessian"] = results["hessian"]
-        conf["energy_std"] = results["energy_disagreement"]
-        conf["forces_std"] = results["forces_disagreement"]
-        conf["hessian_std"] = results["hessian_disagreement"]
+        summary["trajectory_results"][i]["hessian"] = results["hessian"]
+        summary["trajectory_results"][i]["energy_std"] = results["energy_disagreement"]
+        summary["trajectory_results"][i]["forces_std"] = results["forces_disagreement"]
+        summary["trajectory_results"][i]["hessian_std"] = results[
+            "hessian_disagreement"
+        ]
 
     return summary
