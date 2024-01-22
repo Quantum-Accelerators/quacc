@@ -7,6 +7,7 @@ from ase.optimize import LBFGS
 
 from quacc import job
 from quacc.recipes.onetep._base import base_fn, base_opt_fn
+from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
     from typing import Any
@@ -15,6 +16,12 @@ if TYPE_CHECKING:
 
     from quacc.schemas._aliases.ase import RunSchema
 
+BASE_SET = {"keywords": {
+            "output_detail": "verbose",
+            "do_properties": True,
+            "cutoff_energy": "600 eV",
+            "task": "SinglePoint"}
+            }
 
 @job
 def static_job(
@@ -41,20 +48,13 @@ def static_job(
         See the type-hint for the data structure.
     """
 
-    calc_defaults = {
-        "keywords": {
-            "output_detail": "verbose",
-            "do_properties": True,
-            "cutoff_energy": "600 eV",
-            "task": "SinglePoint",
-        }
-    }
+    calc_defaults = BASE_SET
 
     return base_fn(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "ONETEP ASE Relax"},
+        additional_fields={"name": "ONETEP Static"},
         copy_files=copy_files,
     )
 
@@ -100,15 +100,7 @@ def ase_relax_job(
         See the type-hint for the data structure.
     """
 
-    calc_defaults = {
-        "keywords": {
-            "output_detail": "verbose",
-            "do_properties": True,
-            "cutoff_energy": "600 eV",
-            "task": "SinglePoint",
-            "write_forces": True,
-        }
-    }
+    calc_defaults = recursive_dict_merge(BASE_SET, {"keywords": {"write_forces": True}}
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": LBFGS}
 
@@ -118,6 +110,6 @@ def ase_relax_job(
         calc_swaps=calc_kwargs,
         opt_defaults=opt_defaults,
         opt_params=opt_params,
-        additional_fields={"name": "ONETEP Static"},
+        additional_fields={"name": "ONETEP ASE Relax"},
         copy_files=copy_files,
     )
