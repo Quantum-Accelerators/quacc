@@ -38,56 +38,44 @@ print(result)
 ```
 
 ??? Info "Printed Output"
-
-    ```python
     {'atoms': Atoms(symbols='Cu', pbc=True, cell=[[0.0, 1.805, 1.805], [1.805, 0.0, 1.805], [1.805, 1.805, 0.0]], initial_magmoms=...),
      'atoms_info': {'_id': 'f8d53f110f524872f30a5cc20e8befb1'},
-     'builder_meta': {'build_date': datetime.datetime(2023, 10, 19, 0, 46, 1, 742310),
-                      'emmet_version': '0.69.6',
-                      'pymatgen_version': '2023.10.4'},
+     'builder_meta': {'build_date': datetime.datetime(2024, 1, 22, 6, 53, 30, 342389),
+      'emmet_version': '0.76.2',
+      'pymatgen_version': '2023.12.18'},
      'chemsys': 'Cu',
      'composition': Composition('Cu1'),
      'composition_reduced': Composition('Cu1'),
      'converged': True,
      'density': 8.971719800606017,
      'density_atomic': 11.761470249999999,
-     'dir_name': '/home/rosen',
+     'dir_name': '/home/rosen/test/quacc-2024-01-22-06-53-30-305561-70901',
      'elements': [Element Cu],
      'fmax': 0.01,
      'formula_anonymous': 'A',
      'formula_pretty': 'Cu',
      'input_atoms': {'atoms': Atoms(symbols='Cu', pbc=True, cell=[[0.0, 1.805, 1.805], [1.805, 0.0, 1.805], [1.805, 1.805, 0.0]], calculator=SinglePointCalculator(...)),
-                     'atoms_info': {},
-                     'builder_meta': {'build_date': datetime.datetime(2023, 10, 19, 0, 46, 1, 725218),
-                                      'emmet_version': '0.69.6',
-                                      'pymatgen_version': '2023.10.4'},
-                     'chemsys': 'Cu',
-                     'composition': Composition('Cu1'),
-                     'composition_reduced': Composition('Cu1'),
-                     'density': 8.971719800606017,
-                     'density_atomic': 11.761470249999999,
-                     'elements': [Element Cu],
-                     'formula_anonymous': 'A',
-                     'formula_pretty': 'Cu',
-                     'nelements': 1,
-                     'nsites': 1,
-                     'structure': Structure Summary
-    Lattice
-        abc : 2.5526554800834367 2.5526554800834367 2.5526554800834367
-     angles : 60.00000000000001 60.00000000000001 60.00000000000001
-     volume : 11.761470249999999
-          A : 0.0 1.805 1.805
-          B : 1.805 0.0 1.805
-          C : 1.805 1.805 0.0
-        pbc : True True True
-    PeriodicSite: Cu (0.0, 0.0, 0.0) [0.0, 0.0, 0.0],
-                     'symmetry': {'crystal_system': <CrystalSystem.cubic: 'Cubic'>,
-                                  'number': 225,
-                                  'point_group': 'm-3m',
-                                  'symbol': 'Fm-3m',
-                                  'symprec': 0.1,
-                                  'version': '2.1.0'},
-                     'volume': 11.761470249999999},
+      'atoms_info': {},
+      'builder_meta': {'build_date': datetime.datetime(2024, 1, 22, 6, 53, 30, 330220),
+       'emmet_version': '0.76.2',
+       'pymatgen_version': '2023.12.18'},
+      'chemsys': 'Cu',
+      'composition': Composition('Cu1'),
+      'composition_reduced': Composition('Cu1'),
+      'density': 8.971719800606017,
+      'density_atomic': 11.761470249999999,
+      'elements': [Element Cu],
+      'formula_anonymous': 'A',
+      'formula_pretty': 'Cu',
+      'nelements': 1,
+      'nsites': 1,
+      'symmetry': {'crystal_system': <CrystalSystem.cubic: 'Cubic'>,
+       'number': 225,
+       'point_group': 'm-3m',
+       'symbol': 'Fm-3m',
+       'symprec': 0.1,
+       'version': '2.2.0'},
+      'volume': 11.761470249999999},
      'name': 'EMT Relax',
      'nelements': 1,
      'nid': 'rosen.',
@@ -95,65 +83,35 @@ print(result)
      'nsteps': 0,
      'parameters': {'asap_cutoff': False},
      'parameters_opt': {'max_steps': 1000,
-                        'maxstep': 0.2,
-                        'optimizer': 'FIRE',
-                        'type': 'optimization'},
+      'maxstep': 0.2,
+      'optimizer': 'FIRE',
+      'type': 'optimization'},
+     'quacc_version': '0.6.2',
      'results': {'energies': array([-0.00568151]),
-                 'energy': -0.005681511358588409,
-                 'forces': array([[0., 0., 0.]]),
-                 'free_energy': -0.005681511358588409},
+      'energy': -0.005681511358588409,
+      'forces': array([[0., 0., 0.]]),
+      'free_energy': -0.005681511358588409},
      'structure': Structure Summary
-    Lattice
-        abc : 2.5526554800834367 2.5526554800834367 2.5526554800834367
-     angles : 60.00000000000001 60.00000000000001 60.00000000000001
-     volume : 11.761470249999999
-          A : 0.0 1.805 1.805
-          B : 1.805 0.0 1.805
-          C : 1.805 1.805 0.0
-        pbc : True True True
-    PeriodicSite: Cu (0.0, 0.0, 0.0) [0.0, 0.0, 0.0],
+     Lattice
+         abc : 2.5526554800834367 2.5526554800834367 2.5526554800834367
+      angles : 60.00000000000001 60.00000000000001 60.00000000000001
+      volume : 11.761470249999999
+           A : 0.0 1.805 1.805
+           B : 1.805 0.0 1.805
+           C : 1.805 1.805 0.0
+         pbc : True True True
+     PeriodicSite: Cu (0.0, 0.0, 0.0) [0.0, 0.0, 0.0],
      'symmetry': {'crystal_system': <CrystalSystem.cubic: 'Cubic'>,
-                  'number': 225,
-                  'point_group': 'm-3m',
-                  'symbol': 'Fm-3m',
-                  'symprec': 0.1,
-                  'version': '2.1.0'},
-     'trajectory': [{'atoms': Atoms(symbols='Cu', pbc=True, cell=[[0.0, 1.805, 1.805], [1.805, 0.0, 1.805], [1.805, 1.805, 0.0]], calculator=SinglePointCalculator(...)),
-                     'atoms_info': {},
-                     'builder_meta': {'build_date': datetime.datetime(2023, 10, 19, 0, 46, 1, 744287),
-                                      'emmet_version': '0.69.6',
-                                      'pymatgen_version': '2023.10.4'},
-                     'chemsys': 'Cu',
-                     'composition': Composition('Cu1'),
-                     'composition_reduced': Composition('Cu1'),
-                     'density': 8.971719800606017,
-                     'density_atomic': 11.761470249999999,
-                     'elements': [Element Cu],
-                     'formula_anonymous': 'A',
-                     'formula_pretty': 'Cu',
-                     'nelements': 1,
-                     'nsites': 1,
-                     'structure': Structure Summary
-    Lattice
-        abc : 2.5526554800834367 2.5526554800834367 2.5526554800834367
-     angles : 60.00000000000001 60.00000000000001 60.00000000000001
-     volume : 11.761470249999999
-          A : 0.0 1.805 1.805
-          B : 1.805 0.0 1.805
-          C : 1.805 1.805 0.0
-        pbc : True True True
-    PeriodicSite: Cu (0.0, 0.0, 0.0) [0.0, 0.0, 0.0],
-                     'symmetry': {'crystal_system': <CrystalSystem.cubic: 'Cubic'>,
-                                  'number': 225,
-                                  'point_group': 'm-3m',
-                                  'symbol': 'Fm-3m',
-                                  'symprec': 0.1,
-                                  'version': '2.1.0'},
-                     'volume': 11.761470249999999}],
-     'trajectory_results': [{'energies': array([-0.00568151]),
-                             'energy': -0.005681511358588409,
-                             'forces': array([[0., 0., 0.]]),
-                             'free_energy': -0.005681511358588409}],
+      'number': 225,
+      'point_group': 'm-3m',
+      'symbol': 'Fm-3m',
+      'symprec': 0.1,
+      'version': '2.2.0'},
+     'trajectory': [Atoms(symbols='Cu', pbc=True, cell=[[0.0, 1.805, 1.805], [1.805, 0.0, 1.805], [1.805, 1.805, 0.0]], calculator=SinglePointCalculator(...))],
+     'trajectory_results': [{'energy': -0.005681511358588409,
+       'forces': array([[0., 0., 0.]]),
+       'free_energy': -0.005681511358588409,
+       'energies': array([-0.00568151])}],
      'volume': 11.761470249999999}
     ```
 
@@ -192,84 +150,75 @@ print(result2)
 
     ```python
     {'atoms': Atoms(symbols='Cu', pbc=True, cell=[[0.0, 1.805, 1.805], [1.805, 0.0, 1.805], [1.805, 1.805, 0.0]], initial_magmoms=...),
-    'atoms_info': {'_id': 'f8d53f110f524872f30a5cc20e8befb1',
-                    '_old_ids': ['f8d53f110f524872f30a5cc20e8befb1']},
-    'builder_meta': {'build_date': datetime.datetime(2023, 10, 18, 21, 22, 33, 352823),
-                    'emmet_version': '0.69.6',
-                    'pymatgen_version': '2023.10.4'},
-    'chemsys': 'Cu',
-    'composition': Composition('Cu1'),
-    'composition_reduced': Composition('Cu1'),
-    'density': 8.971719800606017,
-    'density_atomic': 11.761470249999999,
-    'dir_name': '/home/rosen',
-    'elements': [Element Cu],
-    'formula_anonymous': 'A',
-    'formula_pretty': 'Cu',
-    'input_atoms': {'atoms': Atoms(symbols='Cu', pbc=True, cell=[[0.0, 1.805, 1.805], [1.805, 0.0, 1.805], [1.805, 1.805, 0.0]], initial_magmoms=..., calculator=TBLite(...)),
-                    'atoms_info': {'_id': 'f8d53f110f524872f30a5cc20e8befb1'},
-                    'builder_meta': {'build_date': datetime.datetime(2023, 10, 18, 21, 22, 33, 348713),
-                                    'emmet_version': '0.69.6',
-                                    'pymatgen_version': '2023.10.4'},
-                    'chemsys': 'Cu',
-                    'composition': Composition('Cu1'),
-                    'composition_reduced': Composition('Cu1'),
-                    'density': 8.971719800606017,
-                    'density_atomic': 11.761470249999999,
-                    'elements': [Element Cu],
-                    'formula_anonymous': 'A',
-                    'formula_pretty': 'Cu',
-                    'nelements': 1,
-                    'nsites': 1,
-                    'structure': Structure Summary
-    Lattice
-        abc : 2.5526554800834367 2.5526554800834367 2.5526554800834367
-    angles : 60.00000000000001 60.00000000000001 60.00000000000001
-    volume : 11.761470249999999
-        A : 0.0 1.805 1.805
-        B : 1.805 0.0 1.805
-        C : 1.805 1.805 0.0
-        pbc : True True True
-    PeriodicSite: Cu (0.0, 0.0, 0.0) [0.0, 0.0, 0.0],
-                    'symmetry': {'crystal_system': <CrystalSystem.cubic: 'Cubic'>,
-                                'number': 225,
-                                'point_group': 'm-3m',
-                                'symbol': 'Fm-3m',
-                                'symprec': 0.1,
-                                'version': '2.1.0'},
-                    'volume': 11.761470249999999},
-    'name': 'TBLite Static',
-    'nelements': 1,
-    'nid': 'rosen.',
-    'nsites': 1,
-    'parameters': {'accuracy': 1.0,
-                    'cache_api': True,
-                    'electronic_temperature': 300.0,
-                    'max_iterations': 250,
-                    'method': 'GFN2-xTB',
-                    'verbosity': 1},
-    'results': {'charges': array([-4.63975525e-11]),
-                'dipole': array([-8.01874552e-08,  1.98737614e-07, -5.14192823e-08]),
-                'energy': -318.8584605831409,
-                'forces': array([[5.44452313e-20, 5.39007790e-19, 2.45003541e-19]]),
-                'free_energy': -318.8584605831409,
-                'stress': array([14.65181119, 14.65181119, 14.65181119,  1.40704868,  1.01943286,
-            0.63181703])},
-    'structure': Structure Summary
-    Lattice
-        abc : 2.5526554800834367 2.5526554800834367 2.5526554800834367
-    angles : 60.00000000000001 60.00000000000001 60.00000000000001
-    volume : 11.761470249999999
-        A : 0.0 1.805 1.805
-        B : 1.805 0.0 1.805
-        C : 1.805 1.805 0.0
-        pbc : True True True
-    PeriodicSite: Cu (0.0, 0.0, 0.0) [0.0, 0.0, 0.0],
-    'symmetry': {'crystal_system': <CrystalSystem.cubic: 'Cubic'>,
-                'number': 225,
-                'point_group': 'm-3m',
-                'symbol': 'Fm-3m',
-                'symprec': 0.1,
-                'version': '2.1.0'},
-    'volume': 11.761470249999999}
+     'atoms_info': {'_id': 'f8d53f110f524872f30a5cc20e8befb1',
+      '_old_ids': ['f8d53f110f524872f30a5cc20e8befb1']},
+     'builder_meta': {'build_date': datetime.datetime(2024, 1, 22, 7, 7, 50, 448307),
+      'emmet_version': '0.76.2',
+      'pymatgen_version': '2023.12.18'},
+     'chemsys': 'Cu',
+     'composition': Composition('Cu1'),
+     'composition_reduced': Composition('Cu1'),
+     'density': 8.971719800606017,
+     'density_atomic': 11.761470249999999,
+     'dir_name': '/mnt/c/Users/asros/github/quacc/quacc-2024-01-22-07-07-48-973444-54105',
+     'elements': [Element Cu],
+     'formula_anonymous': 'A',
+     'formula_pretty': 'Cu',
+     'input_atoms': {'atoms': Atoms(symbols='Cu', pbc=True, cell=[[0.0, 1.805, 1.805], [1.805, 0.0, 1.805], [1.805, 1.805, 0.0]], initial_magmoms=..., calculator=TBLite(...)),
+      'atoms_info': {'_id': 'f8d53f110f524872f30a5cc20e8befb1'},
+      'builder_meta': {'build_date': datetime.datetime(2024, 1, 22, 7, 7, 50, 444783),
+       'emmet_version': '0.76.2',
+       'pymatgen_version': '2023.12.18'},
+      'chemsys': 'Cu',
+      'composition': Composition('Cu1'),
+      'composition_reduced': Composition('Cu1'),
+      'density': 8.971719800606017,
+      'density_atomic': 11.761470249999999,
+      'elements': [Element Cu],
+      'formula_anonymous': 'A',
+      'formula_pretty': 'Cu',
+      'nelements': 1,
+      'nsites': 1,
+      'symmetry': {'crystal_system': <CrystalSystem.cubic: 'Cubic'>,
+       'number': 225,
+       'point_group': 'm-3m',
+       'symbol': 'Fm-3m',
+       'symprec': 0.1,
+       'version': '2.2.0'},
+      'volume': 11.761470249999999},
+     'name': 'TBLite Static',
+     'nelements': 1,
+     'nid': 'rosen.',
+     'nsites': 1,
+     'parameters': {'accuracy': 1.0,
+      'cache_api': True,
+      'electronic_temperature': 300.0,
+      'max_iterations': 250,
+      'method': 'GFN2-xTB',
+      'verbosity': 1},
+     'quacc_version': '0.6.2',
+     'results': {'charges': array([-4.63868943e-11]),
+      'dipole': array([-8.03135613e-08,  1.96843643e-07, -5.14599908e-08]),
+      'energy': -318.8584605831394,
+      'forces': array([[5.44452313e-20, 5.39007790e-19, 2.45003541e-19]]),
+      'free_energy': -318.8584605831394,
+      'stress': array([14.65181119, 14.65181119, 14.65181119,  1.40704868,  1.01943286,
+              0.63181703])},
+     'structure': Structure Summary
+     Lattice
+         abc : 2.5526554800834367 2.5526554800834367 2.5526554800834367
+      angles : 60.00000000000001 60.00000000000001 60.00000000000001
+      volume : 11.761470249999999
+           A : 0.0 1.805 1.805
+           B : 1.805 0.0 1.805
+           C : 1.805 1.805 0.0
+         pbc : True True True
+     PeriodicSite: Cu (0.0, 0.0, 0.0) [0.0, 0.0, 0.0],
+     'symmetry': {'crystal_system': <CrystalSystem.cubic: 'Cubic'>,
+      'number': 225,
+      'point_group': 'm-3m',
+      'symbol': 'Fm-3m',
+      'symprec': 0.1,
+      'version': '2.2.0'},
+     'volume': 11.761470249999999}
     ```
