@@ -1,9 +1,12 @@
+from __future__ import annotations
+
 from pathlib import Path
 
 from ase.build import molecule
+from ase.optimize import LBFGS
 
 from quacc import SETTINGS
-from quacc.recipes.onetep.core import static_job
+from quacc.recipes.onetep.core import ase_relax_job, static_job
 from quacc.utils.files import copy_decompress_files
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
@@ -39,3 +42,39 @@ def test_static_job(tmp_path, monkeypatch):
         "task": "SinglePoint",
         "pseudo_path": str(tmp_path),
     }
+
+
+def test_ase_relax_job(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    copy_decompress_files([DATA_DIR / "H.usp.gz"], tmp_path)
+
+    keywords = {"pseudo_path": str(tmp_path)}
+    pseudopotentials = {"H": "H.usp"}
+    opt_params = {"fmax": 0.05, "max_steps": 1000, "optimizer": LBFGS}
+    atoms = molecule("H2")
+    atoms.set_cell([10, 10, 10])
+    atoms.pbc = True
+    atoms.center()
+
+    output = ase_relax_job(
+        atoms,
+        opt_params=opt_params,
+        keywords=keywords,
+        pseudopotentials=pseudopotentials,
+        ngwf_radius=6.0,
+        ngwf_count=1,
+    )
+
+    assert output["atoms"] == atoms
+    assert output["parameters"]["keywords"] == {
+        "output_detail": "verbose",
+        "do_properties": True,
+        "cutoff_energy": "600 eV",
+        "task": "SinglePoint",
+        "write_forces": True,
+        "pseudo_path": str(tmp_path),
+    }
+    assert output["parameters_opt"]["max_steps"] == 1000
+    assert output["parameters_opt"]["optimizer"] == "LBFGS"
+    assert output["trajectory_results"][0]["energy"] == -1.0
