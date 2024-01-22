@@ -84,7 +84,11 @@ def summarize_run(
     directory = final_atoms.calc.directory
     uri = get_uri(directory)
     input_atoms_metadata = (
-        atoms_to_metadata(input_atoms, charge_and_multiplicity=charge_and_multiplicity)
+        atoms_to_metadata(
+            input_atoms,
+            charge_and_multiplicity=charge_and_multiplicity,
+            store_pmg=False,
+        )
         if input_atoms
         else None
     )
@@ -194,9 +198,14 @@ def summarize_opt_run(
         store=False,
     )
 
+    # Clean up the opt parameters
+    parameters_opt = dyn.todict()
+    parameters_opt.pop("logfile", None)
+    parameters_opt.pop("restart", None)
+
     opt_fields = {
         "fmax": getattr(dyn, "fmax", None),
-        "parameters_opt": dyn.todict(),
+        "parameters_opt": parameters_opt,
         "converged": is_converged,
         "nsteps": dyn.get_number_of_steps(),
         "trajectory": trajectory,
