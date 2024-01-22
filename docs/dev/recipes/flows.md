@@ -6,7 +6,9 @@
 
 A flow is a Python function decorated by `#!Python @flow` that contains a collection of jobs. Refer to the [Workflow Syntax](../../user/basics/wflow_syntax.md) page for more information on the syntax of flows.
 
-The flow itself does not contain computationally intensive tasks. It simply calls other jobs (and/or flows) and defines the workflow logic.
+!!! Important "The Most Important Rules of Flows"
+
+    The flow itself does not contain computationally intensive tasks. It simply calls other jobs (and/or flows) and defines the workflow logic. In general, essentially no operations can be done on the outputs of a job in a flow; they can only be passed as inputs to other jobs. This is because the output is a _future_ whose value is not resolved until runtime. Note that doing `result["atoms"]`, where `result` is the output of a job in the flow, returns a _future_ and not the actual `Atoms` object. When passed as an input to a subsequent job, however, it will know to automatically resolve the `Atoms` object before running.
 
 ### Production Example
 

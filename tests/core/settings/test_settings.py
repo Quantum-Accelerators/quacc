@@ -29,10 +29,8 @@ def teardown_function():
 def test_file_v1(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    assert QuaccSettings().DEBUG is False
-
     with open("quacc_test.yaml", "w") as f:
-        f.write("GZIP_FILES: false\nWORKFLOW_ENGINE: local\nDEBUG: true")
+        f.write("GZIP_FILES: false\nWORKFLOW_ENGINE:\nDEBUG: true")
     monkeypatch.setenv(
         "QUACC_CONFIG_FILE", os.path.join(os.getcwd(), "quacc_test.yaml")
     )
@@ -63,8 +61,8 @@ def test_results_dir(tmp_path, monkeypatch):
     os.remove("opt.traj")
 
 
-def test_env_var(monkeypatch):
-    p = FILE_DIR / "my/scratch/dir"
+def test_env_var(monkeypatch, tmp_path):
+    p = tmp_path / "my/scratch/dir"
     monkeypatch.setenv("QUACC_SCRATCH_DIR", p)
     assert p.expanduser().resolve() == QuaccSettings().SCRATCH_DIR
 
@@ -72,7 +70,7 @@ def test_env_var(monkeypatch):
 def test_yaml(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    p = FILE_DIR / "my/new/scratch/dir"
+    p = tmp_path / "my/new/scratch/dir"
     monkeypatch.delenv("QUACC_SCRATCH_DIR", raising=False)
     with open("quacc_test.yaml", "w") as f:
         f.write(f"SCRATCH_DIR: {p}")

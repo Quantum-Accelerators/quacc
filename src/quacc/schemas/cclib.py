@@ -14,7 +14,6 @@ from monty.json import jsanitize
 
 from quacc import SETTINGS
 from quacc.schemas.ase import summarize_run
-from quacc.schemas.atoms import atoms_to_metadata
 from quacc.utils.dicts import clean_task_doc
 from quacc.utils.files import find_recent_logfile
 from quacc.wflow_tools.db import results_to_db
@@ -36,7 +35,7 @@ logger = logging.getLogger(__name__)
 def cclib_summarize_run(
     final_atoms: Atoms,
     logfile_extensions: str | list[str],
-    dir_path: str | None = None,
+    dir_path: Path | str | None = None,
     pop_analyses: list[
         Literal[
             "cpsa",
@@ -71,7 +70,7 @@ def cclib_summarize_run(
         used. For an exact match only, put in the full file name.
     dir_path
         The path to the folder containing the calculation outputs. A value of
-        None specifies the current working directory.
+        None specifies the calculator directory.
     pop_analyses
         The name(s) of any cclib post-processing analysis to run. Note that for
         bader, ddec6, and hirshfeld, a cube file (.cube, .cub) must reside in
@@ -92,7 +91,7 @@ def cclib_summarize_run(
         Dictionary representation of the task document
     """
 
-    dir_path = dir_path or Path.cwd()
+    dir_path = Path(dir_path or final_atoms.calc.directory)
     check_convergence = (
         SETTINGS.CHECK_CONVERGENCE if check_convergence is None else check_convergence
     )
@@ -121,7 +120,7 @@ def cclib_summarize_run(
         positions = [row[1:] for row in coords_obj]
         input_atoms = Atoms(symbols=symbols, positions=positions)
     else:
-        input_atoms = cclib_task_doc["trajectory"][0]["atoms"]
+        input_atoms = cclib_task_doc["trajectory"][0]
 
     # Get the base task document for the ASE run
     run_task_doc = summarize_run(
@@ -206,18 +205,10 @@ def _make_cclib_schema(
     if cpu_time := attributes["metadata"].get("cpu_time"):
         attributes["metadata"]["cpu_time"] = [*map(str, cpu_time)]
 
-    # Store charge and multiplicity since we use it frequently
-    charge = cclib_obj.charge
-    mult = cclib_obj.mult
-
     # Construct the trajectory
     coords = cclib_obj.atomcoords
     trajectory = [
         Atoms(numbers=list(cclib_obj.atomnos), positions=coord) for coord in coords
-    ]
-    traj_metadata = [
-        atoms_to_metadata(traj, charge_and_multiplicity=(charge, mult))
-        for traj in trajectory
     ]
 
     # Get the final energy to store as its own key/value pair
@@ -265,7 +256,7 @@ def _make_cclib_schema(
         "logfile": str(logfile).split(":")[-1],
         "attributes": attributes | additional_attributes,
         "pop_analysis": popanalysis_attributes or None,
-        "trajectory": traj_metadata,
+        "trajectory": trajectory,
     }
 
 

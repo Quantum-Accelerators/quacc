@@ -1,7 +1,6 @@
 """Schemas for storing ASE-based data."""
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -82,9 +81,14 @@ def summarize_run(
         msg = "ASE Atoms object's calculator has no results."
         raise ValueError(msg)
 
-    uri = get_uri(Path.cwd())
+    directory = final_atoms.calc.directory
+    uri = get_uri(directory)
     input_atoms_metadata = (
-        atoms_to_metadata(input_atoms, charge_and_multiplicity=charge_and_multiplicity)
+        atoms_to_metadata(
+            input_atoms,
+            charge_and_multiplicity=charge_and_multiplicity,
+            store_pmg=False,
+        )
         if input_atoms
         else None
     )
@@ -167,12 +171,6 @@ def summarize_opt_run(
     additional_fields = additional_fields or {}
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
-    # Check convergence
-    is_converged = dyn.converged()
-    if check_convergence and not is_converged:
-        msg = f"Optimization did not converge. Refer to {Path.cwd()}"
-        raise RuntimeError(msg)
-
     # Get trajectory
     if not trajectory:
         trajectory = (
@@ -183,6 +181,13 @@ def summarize_opt_run(
 
     initial_atoms = trajectory[0]
     final_atoms = get_final_atoms_from_dyn(dyn)
+    directory = final_atoms.calc.directory
+
+    # Check convergence
+    is_converged = dyn.converged()
+    if check_convergence and not is_converged:
+        msg = f"Optimization did not converge. Refer to {directory}"
+        raise RuntimeError(msg)
 
     # Base task doc
     base_task_doc = summarize_run(
@@ -193,15 +198,17 @@ def summarize_opt_run(
         store=False,
     )
 
+    # Clean up the opt parameters
+    parameters_opt = dyn.todict()
+    parameters_opt.pop("logfile", None)
+    parameters_opt.pop("restart", None)
+
     opt_fields = {
         "fmax": getattr(dyn, "fmax", None),
-        "parameters_opt": dyn.todict(),
+        "parameters_opt": parameters_opt,
         "converged": is_converged,
         "nsteps": dyn.get_number_of_steps(),
-        "trajectory": [
-            atoms_to_metadata(atoms, charge_and_multiplicity=charge_and_multiplicity)
-            for atoms in trajectory
-        ],
+        "trajectory": trajectory,
         "trajectory_results": [atoms.calc.results for atoms in trajectory],
     }
 
@@ -218,7 +225,7 @@ def summarize_opt_run(
 
 
 def summarize_vib_run(
-    vib: Vibrations,
+    vib: Vibrations | VibrationsData,
     charge_and_multiplicity: tuple[int, int] | None = None,
     additional_fields: dict[str, Any] | None = None,
     store: Store | bool | None = None,
@@ -260,25 +267,26 @@ def summarize_vib_run(
             vib_freqs_raw[i] = np.abs(f)
             vib_energies_raw[i] = np.abs(vib_energies_raw[i])
 
-    atoms = vib._atoms if isinstance(vib, VibrationsData) else vib.atoms
+    if isinstance(vib, VibrationsData):
+        atoms = vib._atoms
+        inputs = {}
+    else:
+        atoms = vib.atoms
+        directory = atoms.calc.directory
+        uri = get_uri(directory)
 
-    uri = get_uri(Path.cwd())
-    inputs = {
-        "parameters": None
-        if isinstance(vib, VibrationsData)
-        else atoms.calc.parameters,
-        "parameters_vib": None
-        if isinstance(vib, VibrationsData)
-        else {
-            "delta": vib.delta,
-            "direction": vib.direction,
-            "method": vib.method,
-            "ndof": vib.ndof,
-            "nfree": vib.nfree,
-        },
-        "nid": uri.split(":")[0],
-        "dir_name": ":".join(uri.split(":")[1:]),
-    }
+        inputs = {
+            "parameters": atoms.calc.parameters,
+            "parameters_vib": {
+                "delta": vib.delta,
+                "direction": vib.direction,
+                "method": vib.method,
+                "ndof": vib.ndof,
+                "nfree": vib.nfree,
+            },
+            "nid": uri.split(":")[0],
+            "dir_name": ":".join(uri.split(":")[1:]),
+        }
 
     atoms_metadata = atoms_to_metadata(
         atoms, charge_and_multiplicity=charge_and_multiplicity
@@ -368,7 +376,6 @@ def summarize_ideal_gas_thermo(
     additional_fields = additional_fields or {}
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
-    uri = get_uri(Path.cwd())
     spin_multiplicity = round(2 * igt.spin + 1)
 
     inputs = {
@@ -380,9 +387,7 @@ def summarize_ideal_gas_thermo(
             "vib_freqs": [e / units.invcm for e in igt.vib_energies],
             "vib_energies": igt.vib_energies.tolist(),
             "n_imag": igt.n_imag,
-        },
-        "nid": uri.split(":")[0],
-        "dir_name": ":".join(uri.split(":")[1:]),
+        }
     }
 
     results = {
