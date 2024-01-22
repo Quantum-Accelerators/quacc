@@ -13,7 +13,17 @@ except ImportError:
 
 def pytest_sessionstart():
     if parsl:
-        parsl.load()
+        from parsl.config import Config
+        from parsl.executors import HighThroughputExecutor
+        from parsl.providers import LocalProvider
+
+        config = Config(
+            strategy="htex_auto_scale",
+            executors=[
+                HighThroughputExecutor(label="quacc_test", provider=LocalProvider())
+            ],
+        )
+        parsl.load(config)
     file_dir = Path(__file__).parent
     os.environ["QUACC_CONFIG_FILE"] = str(file_dir / "quacc.yaml")
     os.environ["QUACC_RESULTS_DIR"] = str(TEST_RESULTS_DIR)
