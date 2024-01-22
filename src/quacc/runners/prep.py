@@ -76,7 +76,7 @@ def calc_setup(
     elif isinstance(copy_files, (str, Path)):
         copy_decompress_files([copy_files], tmpdir)
 
-    os.chdir(tmpdir)
+    # os.chdir(tmpdir)
 
     return tmpdir, job_results_dir
 
@@ -108,7 +108,7 @@ def calc_cleanup(atoms: Atoms, tmpdir: Path | str, job_results_dir: Path | str) 
 
     # Make the results directory and cd into it
     job_results_dir.mkdir(parents=True, exist_ok=True)
-    os.chdir(job_results_dir)
+    # os.chdir(job_results_dir)
 
     # Reset the calculator's directory
     atoms.calc.directory = job_results_dir
