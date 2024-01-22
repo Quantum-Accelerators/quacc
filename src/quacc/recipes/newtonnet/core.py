@@ -227,8 +227,8 @@ def _add_stdev_and_hess(summary: dict[str, Any]) -> dict[str, Any]:
         atoms.calc = ml_calculator
         results = run_calc(atoms).calc.results
         summary["trajectory_results"][i]["hessian"] = results["hessian"]
-        conf["trajectory_results"][i]["energy_std"] = results["energy_disagreement"]
-        conf["trajectory_results"][i]["forces_std"] = results["forces_disagreement"]
-        conf["trajectory_results"][i]["hessian_std"] = results["hessian_disagreement"]
+        summary["trajectory_results"][i]["energy_std"] = results["energy_disagreement"]
+        summary["trajectory_results"][i]["forces_std"] = results["forces_disagreement"]
+        summary["trajectory_results"][i]["hessian_std"] = results["hessian_disagreement"]
 
     return summary
