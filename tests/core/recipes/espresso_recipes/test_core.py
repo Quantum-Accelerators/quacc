@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from shutil import which
 
 import pytest
