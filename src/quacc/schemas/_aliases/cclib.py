@@ -7,7 +7,6 @@ from ase.atoms import Atoms
 from numpy.typing import NDArray
 
 from quacc.schemas._aliases.ase import OptSchema, RunSchema
-from quacc.schemas._aliases.atoms import AtomsSchema
 
 
 class AdditionalAttributes(TypedDict, total=False):
