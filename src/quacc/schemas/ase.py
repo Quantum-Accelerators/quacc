@@ -261,8 +261,9 @@ def summarize_vib_run(
             vib_freqs_raw[i] = np.abs(f)
             vib_energies_raw[i] = np.abs(vib_energies_raw[i])
 
-    atoms = vib._atoms if isinstance(vib, VibrationsData) else vib.atoms
-    directory = atoms.calc.directory
+    is_vib_data = isinstance(vib, VibrationsData)
+    atoms = vib._atoms if is_vib_data else vib.atoms
+    directory = None if is_vib_data else atoms.calc.directory
 
     uri = get_uri(directory)
     inputs = {
