@@ -5,7 +5,7 @@ emmet-core==0.76.2
 maggma==0.60.2
 monty==2023.11.3
 numpy==1.26.3
-psutil==5.9.7
+psutil==5.9.8
 pydantic==2.5.3
 pydantic-settings==2.1.0
 pymatgen==2023.12.18
