@@ -96,7 +96,7 @@ class EspressoTemplate(EspressoTemplate_):
         """
 
         directory = Path(directory)
-        self._outdir_handler(parameters, directory)
+        self._output_handler(parameters, directory)
         parameters = sanity_checks(parameters, binary=self.binary)
 
         if self.test_run:
