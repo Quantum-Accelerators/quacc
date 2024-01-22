@@ -148,7 +148,7 @@ def make_unique_dir(
     base_path: Path | str | None = None, prefix: str | None = None
 ) -> Path:
     """
-    Make a directory with a unique name. Uses the same format as Jobflow.
+    Make a directory with a unique name.
 
     Parameters
     ----------
