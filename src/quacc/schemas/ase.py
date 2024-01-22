@@ -199,10 +199,7 @@ def summarize_opt_run(
         "parameters_opt": dyn.todict(),
         "converged": is_converged,
         "nsteps": dyn.get_number_of_steps(),
-        "trajectory": [
-            atoms_to_metadata(atoms, charge_and_multiplicity=charge_and_multiplicity)
-            for atoms in trajectory
-        ],
+        "trajectory": trajectory,
         "trajectory_results": [atoms.calc.results for atoms in trajectory],
     }
 
