@@ -13,7 +13,7 @@ def patch_execute(monkeypatch):
     monkeypatch.setattr(OnetepTemplate, "execute", mock_execute)
 
 
-def mock_read_results(self, directory):
+def mock_read_results(self, directory, *args, **kwargs):
     atoms = read(directory / "ONETEP.dat")
     atoms.calc = EMT()
     atoms.get_potential_energy()
