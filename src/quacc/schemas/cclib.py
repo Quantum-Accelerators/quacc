@@ -14,7 +14,6 @@ from monty.json import jsanitize
 
 from quacc import SETTINGS
 from quacc.schemas.ase import summarize_run
-from quacc.schemas.atoms import atoms_to_metadata
 from quacc.utils.dicts import clean_task_doc
 from quacc.utils.files import find_recent_logfile
 from quacc.wflow_tools.db import results_to_db
@@ -215,10 +214,6 @@ def _make_cclib_schema(
     trajectory = [
         Atoms(numbers=list(cclib_obj.atomnos), positions=coord) for coord in coords
     ]
-    traj_metadata = [
-        atoms_to_metadata(traj, charge_and_multiplicity=(charge, mult))
-        for traj in trajectory
-    ]
 
     # Get the final energy to store as its own key/value pair
     final_scf_energy = (
@@ -265,7 +260,7 @@ def _make_cclib_schema(
         "logfile": str(logfile).split(":")[-1],
         "attributes": attributes | additional_attributes,
         "pop_analysis": popanalysis_attributes or None,
-        "trajectory": traj_metadata,
+        "trajectory": trajectory,
     }
 
 
