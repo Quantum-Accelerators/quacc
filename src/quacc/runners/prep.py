@@ -114,7 +114,7 @@ def calc_cleanup(atoms: Atoms, tmpdir: Path | str, job_results_dir: Path | str) 
     if "tmp-" not in str(tmpdir):
         msg = f"{tmpdir} does not appear to be a tmpdir... exiting for safety!"
         raise ValueError(msg)
-    
+
     # Reset the calculator's directory
     atoms.calc.directory = job_results_dir
 
