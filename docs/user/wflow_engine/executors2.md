@@ -17,8 +17,10 @@ If you haven't done so already:
     ```bash
     pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
     pip install quacc[covalent]
-    quacc set WORKFLOW_ENGINE covalent
+    quacc set WORKFLOW_ENGINE covalent && quacc set CREATE_UNIQUE_DIR false  # (1)!
     ```
+
+    1. Many of the Covalent executors have their own mechanism for task isolation, which we will use instead.
 
     On the local machine:
 
@@ -41,7 +43,7 @@ If you haven't done so already:
     ```bash
     pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
     pip install quacc[dask]
-    quacc set WORKFLOW_ENGINE dask && quacc set CREATE_UNIQUE_DIR True
+    quacc set WORKFLOW_ENGINE dask
     ```
 
 === "Parsl"
@@ -51,7 +53,7 @@ If you haven't done so already:
     ```bash
     pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
     pip install quacc[parsl]
-    quacc set WORKFLOW_ENGINE parsl && quacc set CREATE_UNIQUE_DIR True
+    quacc set WORKFLOW_ENGINE parsl
     ```
 
 === "Prefect"
@@ -61,7 +63,7 @@ If you haven't done so already:
     ```bash
     pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
     pip install quacc[prefect]
-    quacc set WORKFLOW_ENGINE prefect && quacc set CREATE_UNIQUE_DIR True
+    quacc set WORKFLOW_ENGINE prefect
     ```
 
     Also make sure to connect to Prefect Cloud if you are not self-hosting:
@@ -77,8 +79,10 @@ If you haven't done so already:
     ```bash
     pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
     pip install quacc[jobflow]
-    quacc set WORKFLOW_ENGINE jobflow
+    quacc set WORKFLOW_ENGINE jobflow && quacc set CREATE_UNIQUE_DIR false  # (1)!
     ```
+
+    1. FireWorks has its own mechanisms for task isolation, which we will rely on instead.
 
 ## Example
 
