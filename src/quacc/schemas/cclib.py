@@ -120,7 +120,7 @@ def cclib_summarize_run(
         positions = [row[1:] for row in coords_obj]
         input_atoms = Atoms(symbols=symbols, positions=positions)
     else:
-        input_atoms = cclib_task_doc["trajectory"][0]["atoms"]
+        input_atoms = cclib_task_doc["trajectory"][0]
 
     # Get the base task document for the ASE run
     run_task_doc = summarize_run(
