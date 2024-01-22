@@ -1,20 +1,27 @@
 import numpy as np
 import pytest
 from ase import Atoms
+from ase.calculators.emt import EMT
+from ase.calculators.onetep import OnetepTemplate
+from ase.io import read
 
 
-def mock_get_potential_energy(self, **kwargs):
-    # Instead of running .get_potential_energy(), we mock it by attaching
-    # dummy results to the atoms object and returning a fake energy. This
-    # works because the real atoms.get_potential_energy() takes one argument
-    # (i.e. self) and that self object is the atoms object.
-    e = -1.0
-    self.calc.results = {"energy": e, "forces": np.array([[0.0, 0.0, 0.0]] * len(self))}
-    return e
+def mock_execute(self, *args, **kwargs):
+    pass
 
 
 @pytest.fixture(autouse=True)
-def patch_get_potential_energy(monkeypatch):
-    # Monkeypatch the .get_potential_energy() method of the Atoms object so
-    # we aren't running the actual calculation during testing.
-    monkeypatch.setattr(Atoms, "get_potential_energy", mock_get_potential_energy)
+def patch_execute(monkeypatch):
+    monkeypatch.setattr(OnetepTemplate, "execute", mock_execute)
+
+
+def mock_read_results(self, *args, **kwargs):
+    atoms = read("ONETEP.dat")
+    atoms.calc = EMT()
+    atoms.get_potential_energy()
+    return atoms.calc.results
+
+
+@pytest.fixture(autouse=True)
+def patch_read_results(monkeypatch):
+    monkeypatch.setattr(OnetepTemplate, "read_results", mock_read_results)
