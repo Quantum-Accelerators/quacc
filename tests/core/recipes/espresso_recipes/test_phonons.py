@@ -13,7 +13,7 @@ from numpy.testing import assert_allclose, assert_array_equal
 
 from quacc import SETTINGS
 from quacc.recipes.espresso.core import static_job
-from quacc.recipes.espresso.phonons import grid_phonon_flow, phonon_job
+from quacc.recipes.espresso.phonons import phonon_job
 from quacc.utils.files import copy_decompress_files
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
