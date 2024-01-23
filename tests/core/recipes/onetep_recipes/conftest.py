@@ -14,7 +14,7 @@ def patch_execute(monkeypatch):
 
 
 def mock_read_results(self, directory, *args, **kwargs):
-    atoms = read("ONETEP.dat") # NOTE: make this read(directory / "ONETEP.dat") after https://gitlab.com/ase/ase/-/merge_requests/3234
+    atoms = read(directory / "ONETEP.dat")
     atoms.calc = EMT()
     atoms.get_potential_energy()
     return atoms.calc.results
