@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 - Various bug fixes for the Espresso `grid_phonon_flow`
+- Fixed redundant `Structure` info in the `RunSchema`
 
 ## [0.6.2]
 
