@@ -140,7 +140,7 @@ jobs:
       - name: Combine Coverage Reports
         if: matrix.wflow_engine == 'dask'
         run: |
-          coverage combine
+          coverage combine -a
           coverage xml
 
       - name: Upload code coverage report to Artifact
