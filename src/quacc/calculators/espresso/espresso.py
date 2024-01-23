@@ -116,23 +116,6 @@ class EspressoTemplate(EspressoTemplate_):
                     fd, binary=self.binary, properties=properties, **parameters
                 )
 
-        if self.binary == "pw":
-            write(
-                directory / self.inputname,
-                atoms,
-                format="espresso-in",
-                pseudo_dir=str(profile.pseudo_dir),
-                properties=properties,
-                **parameters,
-            )
-        elif self.binary == "ph":
-            with Path.open(directory / self.inputname, "w") as fd:
-                write_espresso_ph(fd=fd, properties=properties, **parameters)
-        else:
-            with Path.open(directory / self.inputname, "w") as fd:
-                write_fortran_namelist(
-                    fd, binary=self.binary, properties=properties, **parameters
-                )
 
     @staticmethod
     def _search_keyword(parameters: dict[str, Any], key_to_search: str) -> str | None:
