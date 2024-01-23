@@ -3,8 +3,6 @@ import pytest
 dask = pytest.importorskip("dask")
 from shutil import which
 
-from dask.distributed import default_client
-
 pytestmark = pytest.mark.skipif(
     which("pw.x") is None or which("ph.x") is None, reason="QE not installed"
 )
@@ -12,6 +10,7 @@ pytestmark = pytest.mark.skipif(
 from pathlib import Path
 
 from ase.build import bulk
+from distributed.utils_test import *
 
 from quacc.recipes.espresso.phonons import grid_phonon_flow
 from quacc.utils.files import copy_decompress_files
@@ -19,10 +18,9 @@ from quacc.utils.files import copy_decompress_files
 DATA_DIR = (
     Path(__file__).parent / ".." / "core" / "recipes" / "espresso_recipes" / "data"
 )
-client = default_client()
 
 
-def test_phonon_grid(tmp_path, monkeypatch):
+def test_phonon_grid(tmp_path, monkeypatch, client):
     monkeypatch.chdir(tmp_path)
 
     copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)

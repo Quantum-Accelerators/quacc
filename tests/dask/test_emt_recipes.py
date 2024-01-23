@@ -3,15 +3,13 @@ import pytest
 dask = pytest.importorskip("dask")
 
 from ase.build import bulk
-from dask.distributed import get_client
+from distributed.utils_test import *
 
 from quacc.recipes.emt.core import relax_job  # skipcq: PYL-C0412
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow  # skipcq: PYL-C0412
 
-client = get_client()
 
-
-def test_dask_functools(tmp_path, monkeypatch):
+def test_dask_functools(tmp_path, monkeypatch, client):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
     delayed = bulk_to_slabs_flow(
@@ -23,7 +21,7 @@ def test_dask_functools(tmp_path, monkeypatch):
     assert result[-1]["fmax"] == 0.1
 
 
-def test_dask_phonon_flow(tmp_path, monkeypatch):
+def test_dask_phonon_flow(tmp_path, monkeypatch, client):
     pytest.importorskip("phonopy")
     from quacc.recipes.emt.phonons import phonon_flow
 
@@ -35,7 +33,7 @@ def test_dask_phonon_flow(tmp_path, monkeypatch):
     ].shape == (101,)
 
 
-def test_dask_phonon_flow_multistep(tmp_path, monkeypatch):
+def test_dask_phonon_flow_multistep(tmp_path, monkeypatch, client):
     pytest.importorskip("phonopy")
     from quacc.recipes.emt.phonons import phonon_flow
 

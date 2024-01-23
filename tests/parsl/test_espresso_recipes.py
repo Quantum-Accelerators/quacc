@@ -45,4 +45,4 @@ def test_phonon_grid(tmp_path, monkeypatch):
 
     grid_results = grid_phonon_flow(atoms, job_params=job_params)
 
-    assert grid_results.result()
+    assert isinstance(grid_results.result(), dict)

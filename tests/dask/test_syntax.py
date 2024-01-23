@@ -2,15 +2,13 @@ import pytest
 
 dask = pytest.importorskip("dask")
 
-from dask.distributed import get_client
+from distributed.utils_test import *
 
 from quacc import flow, job, strip_decorator, subflow
 from quacc.wflow_tools.customizers import update_parameters
 
-client = get_client()
 
-
-def test_dask_decorators(tmp_path, monkeypatch):
+def test_dask_decorators(tmp_path, monkeypatch, client):
     monkeypatch.chdir(tmp_path)
 
     @job
@@ -65,7 +63,7 @@ def test_dask_decorators(tmp_path, monkeypatch):
     assert client.compute(dynamic_workflow3(1, 2, 3)).result() == 12
 
 
-def test_dask_decorators_args(tmp_path, monkeypatch):
+def test_dask_decorators_args(tmp_path, monkeypatch, client):
     monkeypatch.chdir(tmp_path)
 
     @job()
@@ -134,7 +132,7 @@ def test_strip_decorators():
     assert stripped_add3(1, 2) == 3
 
 
-def test_customize_funcs(monkeypatch, tmp_path):
+def test_customize_funcs(monkeypatch, tmp_path, client):
     monkeypatch.chdir(tmp_path)
 
     @job

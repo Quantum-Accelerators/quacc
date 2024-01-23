@@ -3,15 +3,13 @@ import pytest
 dask = pytest.importorskip("dask")
 
 from ase.build import bulk, molecule
-from dask.distributed import get_client
+from distributed.utils_test import *
 
 from quacc.recipes.emt.core import relax_job, static_job  # skipcq: PYL-C0412
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow  # skipcq: PYL-C0412
 
-client = get_client()
 
-
-def test_tutorial1a(tmp_path, monkeypatch):
+def test_tutorial1a(tmp_path, monkeypatch, client):
     monkeypatch.chdir(tmp_path)
 
     # Make an Atoms object of a bulk Cu structure
@@ -25,7 +23,7 @@ def test_tutorial1a(tmp_path, monkeypatch):
     assert "atoms" in dask.compute(delayed)[0]
 
 
-def test_tutorial1b(tmp_path, monkeypatch):
+def test_tutorial1b(tmp_path, monkeypatch, client):
     monkeypatch.chdir(tmp_path)
 
     # Define the Atoms object
@@ -38,7 +36,7 @@ def test_tutorial1b(tmp_path, monkeypatch):
     assert "atoms" in client.compute(delayed).result()[0]
 
 
-def test_tutorial2a(tmp_path, monkeypatch):
+def test_tutorial2a(tmp_path, monkeypatch, client):
     monkeypatch.chdir(tmp_path)
 
     # Define the workflow
@@ -59,7 +57,7 @@ def test_tutorial2a(tmp_path, monkeypatch):
     assert "atoms" in client.compute(delayed).result()  # (2)!
 
 
-def test_tutorial2b(tmp_path, monkeypatch):
+def test_tutorial2b(tmp_path, monkeypatch, client):
     monkeypatch.chdir(tmp_path)
 
     # Define workflow
@@ -87,7 +85,7 @@ def test_tutorial2b(tmp_path, monkeypatch):
     assert "atoms" in result2
 
 
-def test_tutorial2c(tmp_path, monkeypatch):
+def test_tutorial2c(tmp_path, monkeypatch, client):
     monkeypatch.chdir(tmp_path)
 
     # Define the workflow
