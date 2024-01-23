@@ -1,5 +1,3 @@
-import os
-
 import pytest
 from ase.calculators.emt import EMT
 from ase.calculators.onetep import OnetepTemplate
