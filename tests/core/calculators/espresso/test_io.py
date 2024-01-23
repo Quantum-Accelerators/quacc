@@ -5,6 +5,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 from ase.io.espresso import read_espresso_ph
+
 from quacc.calculators.espresso.espresso import EspressoTemplate
 
 RUN_PATH = Path(__file__).parent / "test_runs"
@@ -45,8 +46,6 @@ def test_read_espresso_ph_1():
 def test_dos_output(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     template = EspressoTemplate(binary="dos")
-    template.outfiles = {"fildos": str(Path(RUN_PATH, "test.dos"))}
-    template.write_input(
-        atoms=None, profile=None, directory=".", parameters={}, properties=[]
-    )
-    template.read_results(directory=".")
+    template.outfiles = {"fildos": Path(RUN_PATH, "test.dos")}
+    results = template.read_results(directory=".")
+    assert results["test.dos"]["fermi"] == pytest.approx(5.98)
