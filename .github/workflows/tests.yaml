@@ -43,11 +43,11 @@ jobs:
           pip install -r tests/requirements.txt
           pip install .[dev]
 
-      - name: Run tests with pytest (with coverage)
+      - name: Run tests with pytest (w/ coverage)
         if: matrix.python_version != "3.12"
         run: pytest --durations=10 --cov=quacc --cov-report=xml
 
-      - name: Run tests with pytest (no coverage)
+      - name: Run tests with pytest (w/o coverage)
         if: matrix.python_version == "3.12"
         run: pytest --durations=10
 
