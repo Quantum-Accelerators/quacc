@@ -16,12 +16,15 @@ if TYPE_CHECKING:
 
     from quacc.schemas._aliases.ase import RunSchema
 
-BASE_SET = {"keywords": {
-            "output_detail": "verbose",
-            "do_properties": True,
-            "cutoff_energy": "600 eV",
-            "task": "SinglePoint"}
-            }
+BASE_SET = {
+    "keywords": {
+        "output_detail": "verbose",
+        "do_properties": True,
+        "cutoff_energy": "600 eV",
+        "task": "SinglePoint",
+    }
+}
+
 
 @job
 def static_job(
@@ -100,7 +103,10 @@ def ase_relax_job(
         See the type-hint for the data structure.
     """
 
-    calc_defaults = recursive_dict_merge(BASE_SET, {"keywords": {"write_forces": True}})
+    calc_defaults = recursive_dict_merge(
+        BASE_SET,
+        {"keywords": {"write_forces": True, "forces_output_detail": "verbose"}},
+    )
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": LBFGS}
 
