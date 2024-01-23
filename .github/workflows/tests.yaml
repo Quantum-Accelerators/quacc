@@ -20,7 +20,7 @@ jobs:
         os: [ubuntu-latest, windows-latest]
         exclude:
           - os: windows-latest
-            python-version: "3.12"
+            python-version: "3.9"
 
     runs-on: ${{ matrix.os }}
     defaults:
