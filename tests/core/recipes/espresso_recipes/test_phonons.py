@@ -281,13 +281,13 @@ def test_phonon_grid_disp(tmp_path, monkeypatch):
     atoms = bulk("Si")
 
     input_data = {
-        "electrons": {"conv_thr": 1.0e-5},
+        "electrons": {"conv_thr": 1.0e-1},
         "control": {"pseudo_dir": tmp_path},
     }
 
     ph_loose = {
         "inputph": {
-            "tr2_ph": 1e-6,
+            "tr2_ph": 1e-2,
             "qplot": False,
             "ldisp": True,
             "lqdir": True,
