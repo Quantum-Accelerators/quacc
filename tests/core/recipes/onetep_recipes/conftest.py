@@ -16,10 +16,7 @@ def patch_execute(monkeypatch):
 
 
 def mock_read_results(self, directory, *args, **kwargs):
-    try:
-        atoms = read(directory / "ONETEP.dat")
-    except Exception:
-        raise ValueError(os.listdir(directory), os.listdir(os.getcwd()))
+    atoms = read(directory / "onetep.dat")
     atoms.calc = EMT()
     atoms.get_potential_energy()
     return atoms.calc.results
