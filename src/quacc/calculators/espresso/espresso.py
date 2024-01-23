@@ -116,7 +116,6 @@ class EspressoTemplate(EspressoTemplate_):
                     fd, binary=self.binary, properties=properties, **parameters
                 )
 
-
     @staticmethod
     def _search_keyword(parameters: dict[str, Any], key_to_search: str) -> str | None:
         """
