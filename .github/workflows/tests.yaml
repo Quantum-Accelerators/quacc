@@ -121,7 +121,7 @@ jobs:
       - name: Set up conda
         uses: conda-incubator/setup-miniconda@v3
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.11"
           activate-environment: quacc-env
 
       - name: Install conda packages
@@ -136,6 +136,12 @@ jobs:
 
       - name: Run tests with pytest
         run: pytest --durations=10 tests/${{ matrix.wflow_engine }} --cov=quacc --cov-report=xml
+
+      - name: Combine Coverage Reports
+        if: matrix.wflow_engine == 'dask'
+        run: |
+          coverage combine -a
+          coverage xml
 
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v4
