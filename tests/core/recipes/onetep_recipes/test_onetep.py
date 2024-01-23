@@ -72,6 +72,7 @@ def test_ase_relax_job(tmp_path, monkeypatch):
         "task": "SinglePoint",
         "write_forces": True,
         "pseudo_path": str(tmp_path),
+        "forces_output_detail": "verbose",
     }
     assert output["parameters_opt"]["max_steps"] == 2
     assert output["parameters_opt"]["optimizer"] == "LBFGS"
