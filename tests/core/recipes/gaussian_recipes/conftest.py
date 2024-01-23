@@ -1,31 +1,33 @@
-import os
 from pathlib import Path
 from shutil import copy
 
-import numpy as np
 import pytest
-from ase import Atoms
+from ase.calculators.calculator import FileIOCalculator
+from ase.calculators.gaussian import Gaussian
+from ase.calculators.lj import LennardJones
+from ase.io import read
 
 FILE_DIR = Path(__file__).parent
-GAUSSIAN_DIR = os.path.join(FILE_DIR, "gaussian_run")
+GAUSSIAN_DIR = Path(FILE_DIR, "gaussian_run")
 
 
-def mock_get_potential_energy(self, **kwargs):
-    # Instead of running .get_potential_energy(), we mock it by attaching
-    # dummy results to the atoms object and returning a fake energy. This
-    # works because the real atoms.get_potential_energy() takes one argument
-    # (i.e. self) and that self object is the atoms object.
-    e = -1.0
-    self.calc.results = {"energy": e, "forces": np.array([[0.0, 0.0, 0.0]] * len(self))}
-
-    for f in os.listdir(GAUSSIAN_DIR):
-        copy(os.path.join(GAUSSIAN_DIR, f), f)
-
-    return e
+def mock_execute(self, *args, **kwargs):
+    copy(GAUSSIAN_DIR / "Gaussian.log.gz", "Gaussian.log.gz")
 
 
 @pytest.fixture(autouse=True)
-def patch_get_potential_energy(monkeypatch):
-    # Monkeypatch the .get_potential_energy() method of the Atoms object so
-    # we aren't running the actual calculation during testing.
-    monkeypatch.setattr(Atoms, "get_potential_energy", mock_get_potential_energy)
+def patch_execute(monkeypatch):
+    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute)
+
+
+def mock_read_results(self, *args, **kwargs):
+    atoms = read("Gaussian.com")
+    atoms.calc = LennardJones()
+    atoms.get_potential_energy()
+    self.calc = atoms.calc
+    self.results = atoms.calc.results
+
+
+@pytest.fixture(autouse=True)
+def patch_read_results(monkeypatch):
+    monkeypatch.setattr(Gaussian, "read_results", mock_read_results)

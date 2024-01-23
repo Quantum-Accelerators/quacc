@@ -57,8 +57,9 @@ def static_job(
         it is important to note that no directory structure is going to be copied, everything
         is copied at the root of the temporary directory.
     **calc_kwargs
-        Additional keyword arguments to pass to the Espresso calculator. See the
-        docstring of [quacc.calculators.espresso.espresso.Espresso][] for more information.
+        Additional keyword arguments to pass to the Espresso calculator. Set a value to
+        `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
+        [quacc.calculators.espresso.espresso.Espresso][] for more information.
 
     Returns
     -------
@@ -123,8 +124,9 @@ def relax_job(
         it is important to note that no directory structure is going to be copied, everything
         is copied at the root of the temporary directory.
     **calc_kwargs
-        Additional keyword arguments to pass to the Espresso calculator. See the
-        docstring of [quacc.calculators.espresso.espresso.Espresso][] for more information.
+        Additional keyword arguments to pass to the Espresso calculator. Set a value to
+        `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
+        [quacc.calculators.espresso.espresso.Espresso][] for more information.
 
     Returns
     -------
@@ -195,8 +197,9 @@ def ase_relax_job(
         it is important to note that no directory structure is going to be copied, everything
         is copied at the root of the temporary directory.
     **calc_kwargs
-        Additional keyword arguments to pass to the Espresso calculator. See the
-        docstring of [quacc.calculators.espresso.espresso.Espresso][] for more information.
+        Additional keyword arguments to pass to the Espresso calculator. Set a value to
+        `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
+        [quacc.calculators.espresso.espresso.Espresso][] for more information.
 
     Returns
     -------
