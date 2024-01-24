@@ -56,13 +56,13 @@ def phonon_job(
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
     **calc_kwargs
-        calc_kwargs dictionary possibly containing the following keys:
+        Additional keyword arguments to pass to the Espresso calculator. Set a value to
+        `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
+        `ase.io.espresso.write_espresso_ph` for more information. Some notable keys are:
 
         - input_data: dict
         - qpts: list[list[float]] | list[tuple[float]] | list[float]
         - nat_todo: list[int]
-
-        See the docstring of `ase.io.espresso.write_espresso_ph` for more information.
 
     Returns
     -------

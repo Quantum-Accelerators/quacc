@@ -6,9 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.6.3]
 
+### Added
+
+- Added an ASE relax job recipe for ONETEP
+
 ### Fixed
 
 - Various bug fixes for the Espresso `grid_phonon_flow`
+- Fixed redundant `Structure` info in the `RunSchema`
 
 ## [0.6.2]
 
