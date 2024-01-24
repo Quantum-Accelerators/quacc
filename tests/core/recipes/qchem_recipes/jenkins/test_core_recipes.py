@@ -1,8 +1,16 @@
+from shutil import which
+
+import pytest
+
+from quacc import SETTINGS
+
+pytestmark = pytest.mark.skipif(
+    which(SETTINGS.QCHEM_CMD) is None, reason="QChem not installed"
+)
 from pathlib import Path
 
 from ase.build import molecule
 
-from quacc import SETTINGS
 from quacc.recipes.qchem.core import relax_job, static_job
 
 FILE_DIR = Path(__file__).parent
