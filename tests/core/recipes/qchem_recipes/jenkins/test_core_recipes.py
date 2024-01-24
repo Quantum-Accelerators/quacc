@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 from ase import units
+from ase.io import read
 from pymatgen.io.qchem.inputs import QCInput
 
 from quacc import SETTINGS
@@ -12,6 +13,16 @@ FILE_DIR = Path(__file__).parent
 QCHEM_DIR = FILE_DIR / "qchem_examples"
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
+
+
+@pytest.fixture()
+def test_atoms():
+    return read(FILE_DIR / "test.xyz")
+
+
+@pytest.fixture()
+def os_atoms():
+    return read(FILE_DIR / "OS_test.xyz")
 
 
 def setup_module():

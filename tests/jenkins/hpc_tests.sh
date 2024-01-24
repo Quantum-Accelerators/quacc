@@ -25,4 +25,4 @@ pytest tests/core/recipes/vasp_recipes/jenkins --noconftest
 
 # QChem
 module purge
-pytest tests/core/recipes/jenkins/qchem_recipes --noconftest
+pytest tests/core/recipes/qchem_recipes/jenkins --noconftest
