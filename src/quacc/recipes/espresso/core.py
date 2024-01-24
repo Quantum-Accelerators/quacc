@@ -292,7 +292,7 @@ def post_processing_job(
 @job
 def non_scf_job(
     atoms: Atoms,
-    prev_dir: str | Path, 
+    prev_dir: str | Path,
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
