@@ -240,7 +240,9 @@ class EspressoTemplate(EspressoTemplate_):
             try:
                 path.relative_to(working_dir)
             except ValueError as e:
-                raise ValueError(f"Cannot use {key}={path} because it is not a subpath of {working_dir}. When using Quacc please provide subpaths relative to the working directory.") from e
+                raise ValueError(
+                    f"Cannot use {key}={path} because it is not a subpath of {working_dir}. When using Quacc please provide subpaths relative to the working directory."
+                ) from e
             if key in self.outdirs:
                 path.mkdir(parents=True, exist_ok=True)
                 self.outdirs[key] = path

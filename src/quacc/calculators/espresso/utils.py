@@ -4,9 +4,8 @@ import logging
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from ase.io.espresso import Namelist
-
 import numpy as np
+from ase.io.espresso import Namelist
 
 if TYPE_CHECKING:
     from typing import Any
