@@ -24,8 +24,6 @@ from quacc.recipes.espresso.core import (
 )
 from quacc.utils.files import copy_decompress_files
 
-pytestmark = pytest.mark.skipif(which("pw.x") is None, reason="QE not installed")
-
 DATA_DIR = Path(__file__).parent / "data"
 
 
