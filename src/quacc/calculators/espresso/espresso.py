@@ -2,9 +2,11 @@
 from __future__ import annotations
 
 import os
+import re
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import numpy as np
 from ase import Atoms
 from ase.calculators.espresso import Espresso as Espresso_
 from ase.calculators.espresso import EspressoProfile
@@ -55,9 +57,11 @@ class EspressoTemplate(EspressoTemplate_):
         self.binary = binary
 
         self.outdirs = {
-            "outdir": os.environ.get("ESPRESSO_TMPDIR"),
-            "wfcdir": os.environ.get("ESPRESSO_TMPDIR"),
+            "outdir": os.environ.get("ESPRESSO_TMPDIR", "."),
+            "wfcdir": os.environ.get("ESPRESSO_TMPDIR", "."),
         }
+
+        self.outfiles = {"fildos": "pwscf.dos"}
 
         self.test_run = test_run
 
@@ -92,7 +96,7 @@ class EspressoTemplate(EspressoTemplate_):
         """
 
         directory = Path(directory)
-        self._outdir_handler(parameters, directory)
+        self._output_handler(parameters, directory)
         parameters = sanity_checks(parameters, binary=self.binary)
 
         if self.test_run:
@@ -185,6 +189,13 @@ class EspressoTemplate(EspressoTemplate_):
         elif self.binary == "ph":
             with Path.open(directory / self.outputname, "r") as fd:
                 results = read_espresso_ph(fd)
+        elif self.binary == "dos":
+            fildos = self.outfiles["fildos"]
+            with Path(fildos).open("r") as fd:
+                lines = fd.readlines()
+                fermi = float(re.search(r"-?\d+\.?\d*", lines[0]).group(0))
+                dos = np.loadtxt(lines[1:])
+            results = {fildos.name: {"dos": dos, "fermi": fermi}}
         else:
             results = {}
 
@@ -193,15 +204,14 @@ class EspressoTemplate(EspressoTemplate_):
 
         return results
 
-    def _outdir_handler(
+    def _output_handler(
         self, parameters: dict[str, Any], directory: Path
     ) -> dict[str, Any]:
         """
-        Function that handles the various outdir of espresso binaries. If they are
-        relative, they are resolved against `directory`, which is the recommended
-        approach. If the user-supplied paths are absolute, they are resolved and checked
-        against `directory`, which is typically `os.getcwd()`. If they are not in
-        `directory`, they will be ignored.
+        Function that handles the various output of espresso binaries. If they are
+        relative, they are resolved against `directory`. In any other case the
+        function will raise a ValueError. This is to avoid the user to use absolute
+        paths that might lead to unexpected behaviour when using Quacc.
 
         Parameters
         ----------
@@ -215,19 +225,27 @@ class EspressoTemplate(EspressoTemplate_):
         dict[str, Any]
             The merged kwargs
         """
-
         input_data = parameters.get("input_data", {})
 
-        for section in input_data:
-            for d_key in self.outdirs:
-                if d_key in input_data[section]:
-                    path = Path(input_data[section][d_key])
-                    path = path.expanduser().resolve()
-                    if directory.expanduser().resolve() not in path.parents:
-                        self.outdirs[d_key] = path
-                        continue
-                    path.mkdir(parents=True, exist_ok=True)
-                    input_data[section][d_key] = path
+        all_out = {**self.outdirs, **self.outfiles}
+        working_dir = Path(directory).expanduser().resolve()
+
+        for key in all_out:
+            path = Path(all_out[key]).expanduser().resolve()
+            for section in input_data:
+                if key in input_data[section]:
+                    path = Path(input_data[section][key]).expanduser().resolve()
+                    input_data[section][key] = path
+
+            try:
+                path.relative_to(working_dir)
+            except ValueError as e:
+                raise ValueError(f"Cannot use {key}={path} because it is not a subpath of {working_dir}. When using Quacc please provide subpaths relative to the working directory.") from e
+            if key in self.outdirs:
+                path.mkdir(parents=True, exist_ok=True)
+                self.outdirs[key] = path
+            elif key in self.outfiles:
+                self.outfiles[key] = path
 
         parameters["input_data"] = input_data
 
