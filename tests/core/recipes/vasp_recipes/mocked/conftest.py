@@ -1,39 +1,37 @@
-import numpy as np
+from pathlib import Path
+
 import pytest
 from ase import Atoms
 from ase.calculators.emt import EMT
-from ase.optimize import BFGS
+from ase.calculators.vasp.vasp import Vasp
+from ase.io import write
+
+from quacc.atoms.core import check_is_metal
+
+FILE_DIR = Path(__file__).parent
+PSEUDO_DIR = FILE_DIR / "fake_pseudos"
 
 
-def mock_get_potential_energy(self, **kwargs):
-    # Instead of running .get_potential_energy(), we mock it by attaching
-    # dummy results to the atoms object and returning a fake energy. This
-    # works because the real atoms.get_potential_energy() takes one argument
-    # (i.e. self) and that self object is the atoms object.
-    e = -1.0
-    self.calc.results = {"energy": e, "forces": np.array([[0.0, 0.0, 0.0]] * len(self))}
-    return e
-
-
-@pytest.fixture(autouse=True)
-def patch_get_potential_energy(monkeypatch):
-    # Monkeypatch the .get_potential_energy() method of the Atoms object so
-    # we aren't running the actual calculation during testing.
-    monkeypatch.setattr(Atoms, "get_potential_energy", mock_get_potential_energy)
-
-
-def mock_dynrun(atoms, **kwargs):
-    dummy_atoms = atoms.copy()
-    dummy_atoms.calc = EMT()
-    dyn = BFGS(dummy_atoms, restart=False, trajectory="opt.traj")
-    dyn.run(fmax=100.0)
-    dyn.atoms.calc.parameters = atoms.calc.parameters
-    return dyn
+def mock_execute(self, *args, **kwargs):
+    write(Path(self.directory) / "CONTCAR", self.atoms)
 
 
 @pytest.fixture(autouse=True)
-def patch_dynrun(monkeypatch):
-    monkeypatch.setattr("quacc.recipes.vasp.qmof.run_opt", mock_dynrun)
+def patch_execute(monkeypatch):
+    monkeypatch.setenv("VASP_PP_PATH", str(PSEUDO_DIR))
+    monkeypatch.setattr(Vasp, "_run", mock_execute)
+
+
+def mock_read_results(self, *args, **kwargs):
+    atoms = self.atoms
+    atoms.calc = EMT()
+    atoms.get_potential_energy()
+    self.results.update(atoms.calc.results)
+
+
+@pytest.fixture(autouse=True)
+def patch_read_results(monkeypatch):
+    monkeypatch.setattr(Vasp, "read_results", mock_read_results)
 
 
 def mock_summarize_run(atoms, **kwargs):
@@ -50,7 +48,7 @@ def mock_summarize_run(atoms, **kwargs):
     )
     output["output"] = {
         "energy": -1.0,
-        "bandgap": 0.0 if "Al" in atoms.get_chemical_symbols() else 0.5,
+        "bandgap": 0.0 if check_is_metal(atoms) else 0.5,
     }
     return output
 

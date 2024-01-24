@@ -1,7 +1,6 @@
 # quacc specific ignores
 symlink*
 quacc-20*
-POTCAR*
 tmp*
 cache*
 *test_results
