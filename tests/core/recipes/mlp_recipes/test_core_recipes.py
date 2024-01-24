@@ -1,5 +1,10 @@
+import os
+
 import pytest
 
+pytestmark = pytest.mark.skipif(
+    os.name == "nt", reason="matgl not supported on windows"
+)
 torch = pytest.importorskip("torch")
 import numpy as np
 from ase.build import bulk
