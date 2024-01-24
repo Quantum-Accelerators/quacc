@@ -5,8 +5,8 @@ import pytest
 from ase.build import bulk
 from numpy.testing import assert_allclose
 
-from quacc.recipes.espresso.dos import dos_flow, dos_job
-from quacc.utils.files import copy_decompress_files, copy_decompress_tree
+from quacc.recipes.espresso.dos import dos_flow
+from quacc.utils.files import copy_decompress_files
 
 pytestmark = pytest.mark.skipif(
     which("pw.x") is None or which("dos.x") is None, reason="QE not installed"

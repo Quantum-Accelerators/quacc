@@ -342,3 +342,34 @@ def test_non_scf_job(tmp_path, monkeypatch):
     assert new_input_data["system"]["ecutrho"] == 240.0
     assert "kspacing" not in results["parameters"]
     assert results["parameters"].get("kpts") is None
+
+
+def test_pw_copy(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+
+    atoms = bulk("Si")
+
+    pseudopotentials = {"Si": "Si.upf"}
+    input_data = {"control": {"pseudo_dir": tmp_path, "max_seconds": 5}}
+
+    results = static_job(
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=None
+    )
+
+    new_input_data = results["parameters"]["input_data"]
+    new_input_data["restart"] = "restart"
+    new_input_data["max_seconds"] = 10**7
+
+    files_to_copy = pw_copy_files(new_input_data, results["dir_name"], include_wfc=True)
+
+    results = static_job(
+        atoms,
+        input_data=input_data,
+        pseudopotentials=pseudopotentials,
+        kpts=None,
+        copy_files=files_to_copy,
+    )
+    assert new_input_data["system"]["ecutwfc"] == 30.0
+    assert new_input_data["system"]["ecutrho"] == 240.0
