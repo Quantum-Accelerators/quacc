@@ -6,6 +6,8 @@ from ase.calculators.emt import EMT
 from ase.calculators.vasp.vasp import Vasp
 from ase.io import write
 
+from quacc.atoms.core import check_is_metal
+
 FILE_DIR = Path(__file__).parent
 PSEUDO_DIR = FILE_DIR / "fake_pseudos"
 
@@ -46,7 +48,7 @@ def mock_summarize_run(atoms, **kwargs):
     )
     output["output"] = {
         "energy": -1.0,
-        "bandgap": 0.0 if "Al" in atoms.get_chemical_symbols() else 0.5,
+        "bandgap": 0.0 if check_is_metal(atoms) else 0.5,
     }
     return output
 
