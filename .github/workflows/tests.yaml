@@ -124,12 +124,14 @@ jobs:
           cache-dependency-path: tests/requirements**.txt
 
       - name: Set up conda
+        if: matrix.wflow_engine == 'dask'
         uses: conda-incubator/setup-miniconda@v3
         with:
           python-version: "3.11"
           activate-environment: quacc-env
 
       - name: Install conda packages
+        if: matrix.wflow_engine == 'dask'
         run: conda install -c conda-forge qe
 
       - name: Install pip packages
