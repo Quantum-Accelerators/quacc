@@ -54,12 +54,9 @@ def dos_job(
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
     **calc_kwargs
-        calc_kwargs dictionary possibly containing the following keys:
-
-        - input_data: dict
-        - additional_fields: list[str] | str
-
-        See the docstring of ase.io.espresso.write_fortran_namelist for more information.
+        Additional keyword arguments to pass to the Espresso calculator. Set a value to
+        `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
+        `ase.io.espresso.write_fortran_namelist` for more information.
 
     Returns
     -------
