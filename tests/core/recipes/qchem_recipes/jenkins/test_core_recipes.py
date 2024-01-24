@@ -5,7 +5,7 @@ import pytest
 from quacc import SETTINGS
 
 pytestmark = pytest.mark.skipif(
-    which(SETTINGS.QCHEM_CMD) is None, reason="QChem not installed"
+    which(str(SETTINGS.QCHEM_CMD)) is None, reason="QChem not installed"
 )
 from pathlib import Path
 

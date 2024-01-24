@@ -5,7 +5,7 @@ import pytest
 from quacc import SETTINGS
 
 pytestmark = pytest.mark.skipif(
-    which(SETTINGS.VASP_CMD) is None, reason="VASP not installed"
+    which(str(SETTINGS.VASP_CMD)) is None, reason="VASP not installed"
 )
 
 import numpy as np

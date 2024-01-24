@@ -2,8 +2,12 @@ from shutil import which
 
 import pytest
 
+from quacc import SETTINGS
+
 pytestmark = pytest.mark.skipif(
-    which("pw.x") is None or which("ph.x") is None, reason="QE not installed"
+    which(str(SETTINGS.ESPRESSO_BIN_DIR / SETTINGS.ESPRESSO_BINARIES["pw"])) is None
+    or which(str(SETTINGS.ESPRESSO_BIN_DIR / SETTINGS.ESPRESSO_BINARIES["ph"])) is None,
+    reason="QE not installed",
 )
 
 from pathlib import Path
@@ -11,7 +15,6 @@ from pathlib import Path
 from ase.build import bulk
 from numpy.testing import assert_allclose, assert_array_equal
 
-from quacc import SETTINGS
 from quacc.recipes.espresso.core import static_job
 from quacc.recipes.espresso.phonons import phonon_job
 from quacc.utils.files import copy_decompress_files
