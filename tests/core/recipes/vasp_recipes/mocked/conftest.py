@@ -6,8 +6,6 @@ from ase.calculators.emt import EMT
 from ase.calculators.vasp.vasp import Vasp
 from ase.io import write
 
-from quacc.atoms.core import check_is_metal
-
 FILE_DIR = Path(__file__).parent
 PSEUDO_DIR = FILE_DIR / "fake_pseudos"
 
@@ -35,6 +33,7 @@ def patch_read_results(monkeypatch):
 
 
 def mock_summarize_run(atoms, **kwargs):
+    from quacc.atoms.core import check_is_metal
     from quacc.schemas.ase import summarize_run as calc_summarize_run
 
     # Instead of running the VASP-specific summarize_run(), we mock it with the
