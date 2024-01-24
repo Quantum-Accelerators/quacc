@@ -359,14 +359,14 @@ def test_pw_copy(tmp_path, monkeypatch):
     )
 
     new_input_data = results["parameters"]["input_data"]
-    new_input_data["restart"] = "restart"
+    new_input_data["restart_mode"] = "restart"
     new_input_data["max_seconds"] = 10**7
 
     files_to_copy = pw_copy_files(new_input_data, results["dir_name"], include_wfc=True)
 
     results = static_job(
         atoms,
-        input_data=input_data,
+        input_data=new_input_data,
         pseudopotentials=pseudopotentials,
         kpts=None,
         copy_files=files_to_copy,
