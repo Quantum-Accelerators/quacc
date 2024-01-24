@@ -17,12 +17,12 @@ DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 @pytest.fixture()
 def test_atoms():
-    return read(FILE_DIR / "test.xyz")
+    return read(FILE_DIR / "xyz" / "test.xyz")
 
 
 @pytest.fixture()
 def os_atoms():
-    return read(FILE_DIR / "OS_test.xyz")
+    return read(FILE_DIR / "xyz" / "OS_test.xyz")
 
 
 def setup_module():
