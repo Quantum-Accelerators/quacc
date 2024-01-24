@@ -18,7 +18,7 @@ except ImportError:
 try:
     import matgl
 
-    methods.append("matgl")
+    methods.append("m3gnet")
 except ImportError:
     matgl = None
 try:
