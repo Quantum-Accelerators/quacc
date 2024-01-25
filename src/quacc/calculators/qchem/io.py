@@ -10,7 +10,6 @@ from emmet.core.qc_tasks import TaskDoc
 from emmet.core.tasks import _parse_custodian
 from pymatgen.io.qchem.inputs import QCInput
 from pymatgen.io.qchem.outputs import (
-    QCOutput,
     gradient_parser,
     hessian_parser,
     orbital_coeffs_parser,
