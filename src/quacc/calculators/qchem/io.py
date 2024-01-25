@@ -16,7 +16,7 @@ from pymatgen.io.qchem.outputs import (
 )
 
 if TYPE_CHECKING:
-    from quacc.calculators._qchem_beta.qchem import Results
+    from quacc.calculators.qchem.qchem import Results
 
 
 def write_qchem(
