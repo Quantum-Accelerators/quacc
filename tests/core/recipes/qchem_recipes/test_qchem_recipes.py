@@ -130,7 +130,7 @@ def test_static_job_v1(monkeypatch, tmp_path, test_atoms):
     qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.basic"))
     qcinput_nearly_equal(qcin, ref_qcin)
-    qcinput_nearly_equal(ref_qcin, QCInput.from_dict(output["results"]["qc_input"]))
+    assert output["results"]["taskdoc"]
 
 
 def test_static_job_v2(monkeypatch, tmp_path, test_atoms):
@@ -160,7 +160,7 @@ def test_static_job_v2(monkeypatch, tmp_path, test_atoms):
     qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.intermediate"))
     qcinput_nearly_equal(qcin, ref_qcin)
-    qcinput_nearly_equal(ref_qcin, QCInput.from_dict(output["results"]["qc_input"]))
+    assert output["results"]["taskdoc"]
 
 
 def test_static_job_v3(monkeypatch, tmp_path, test_atoms):
@@ -187,7 +187,7 @@ def test_static_job_v3(monkeypatch, tmp_path, test_atoms):
     qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.alternate"))
     qcinput_nearly_equal(qcin, ref_qcin)
-    qcinput_nearly_equal(ref_qcin, QCInput.from_dict(output["results"]["qc_input"]))
+    assert output["results"]["taskdoc"]
 
 
 def test_static_job_v4(monkeypatch, tmp_path, os_atoms):
@@ -236,7 +236,7 @@ def test_relax_job_v1(monkeypatch, tmp_path, test_atoms):
     qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.basic.sella_opt_iter1"))
     qcinput_nearly_equal(qcin, ref_qcin)
-    assert len(output["results"]["qc_input"]) > 1
+    assert len(output["results"]["taskdoc"]["input"]) > 1
 
 
 def test_relax_job_v2(monkeypatch, tmp_path, test_atoms):

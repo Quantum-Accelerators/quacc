@@ -24,12 +24,7 @@ if TYPE_CHECKING:
         hessian: NDArray  # Hessian in eV/A^2/amu
         enthalpy: float  # total enthalpy in eV
         entropy: float  # total entropy in eV/K
-        qc_output: dict[
-            str, Any
-        ]  # Output from `pymatgen.io.qchem.outputs.QCOutput.data`
-        qc_input: dict[
-            str, Any
-        ]  # Input from `pymatgen.io.qchem.inputs.QCInput.as_dict()`
+        taskdoc: dict[str, Any]  # Output from `emmet.core.qc_tasks.TaskDoc`
         custodian: dict[str, Any]  # custodian.json file metadata
 
 
