@@ -157,6 +157,7 @@ def relax_job(
 def ase_relax_job(
     atoms: Atoms,
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
+    autorestart: bool = True,
     relax_cell: bool = False,
     parallel_info: dict[str] | None = None,
     opt_params: dict[str, Any] | None = None,
@@ -175,6 +176,10 @@ def ase_relax_job(
         The name of a YAML file containing a list of parameters to use as
         a "preset" for the calculator. quacc will automatically look in the
         `ESPRESSO_PRESET_DIR` (default: quacc/calculators/espresso/presets).
+    autorestart
+        Whether to automatically turn on the restart flag after the first
+        calculation. This avoids recomputing everything from scratch at each
+        step of the optimization.
     relax_cell
         Whether to relax the cell or not.
     parallel_info
@@ -220,7 +225,7 @@ def ase_relax_job(
         atoms,
         preset=preset,
         relax_cell=relax_cell,
-        template=EspressoTemplate("pw"),
+        template=EspressoTemplate("pw", autorestart=autorestart),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         opt_defaults=opt_defaults,
