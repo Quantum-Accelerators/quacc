@@ -327,12 +327,12 @@ def test_freq_job_v1(monkeypatch, tmp_path, test_atoms):
     assert output["results"]["energy"] == pytest.approx(-605.6859554019 * units.Hartree)
     assert output["results"].get("hessian") is not None
     assert output["results"]["enthalpy"] == pytest.approx(
-        output["results"]["taskdoc"]["output"]["total_enthalpy"]
+        output["results"]["taskdoc"]["output"]["enthalpy"]
         * (units.kcal / units.mol)
     )
     assert (
         output["results"]["entropy"]
-        == output["results"]["taskdoc"]["output"]["total_entropy"]
+        == output["results"]["taskdoc"]["output"]["entropy"]
         * 0.001
         * units.kcal
         / units.mol
