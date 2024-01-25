@@ -79,7 +79,16 @@ def static_job(
     """
 
     calc_defaults = recursive_dict_merge(
-        _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
+        _BASE_SET,
+        {
+            "rem": {
+                "job_type": "force",
+                "method": method,
+                "basis": basis,
+                "symmetry": True,
+                "sym_ignore": False,
+            }
+        },
     )
 
     return base_fn(
@@ -200,7 +209,16 @@ def freq_job(
     """
 
     calc_defaults = recursive_dict_merge(
-        _BASE_SET, {"rem": {"job_type": "freq", "method": method, "basis": basis}}
+        _BASE_SET,
+        {
+            "rem": {
+                "job_type": "freq",
+                "method": method,
+                "basis": basis,
+                "symmetry": True,
+                "sym_ignore": False,
+            }
+        },
     )
 
     return base_fn(

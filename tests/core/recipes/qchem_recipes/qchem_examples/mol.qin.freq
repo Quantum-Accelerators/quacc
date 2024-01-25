@@ -26,8 +26,8 @@ $rem
    s2thresh = 16
    scf_algorithm = diis
    resp_charges = true
-   symmetry = false
-   sym_ignore = true
+   symmetry = true
+   sym_ignore = false
    method = b97mv
    solvent_method = pcm
 $end
