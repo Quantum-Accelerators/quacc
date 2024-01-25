@@ -78,9 +78,9 @@ def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float]]:
     }
 
     # Parse thermo properties
-    if "total_enthalpy" in qc_output:
+    if "enthalpy" in qc_output:
         results["enthalpy"] = qc_output["enthalpy"] * (units.kcal / units.mol)
-    if "total_entropy" in qc_output:
+    if "entropy" in qc_output:
         results["entropy"] = qc_output["entropy"] * (0.001 * units.kcal / units.mol)
 
     # Read the gradient scratch file in 8 byte chunks
