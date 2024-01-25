@@ -26,8 +26,8 @@ $rem
    s2thresh = 16
    scf_algorithm = gdm
    resp_charges = true
-   symmetry = false
-   sym_ignore = true
+   symmetry = true
+   sym_ignore = false
    method = wb97mv
    mem_total = 170000
 $end
