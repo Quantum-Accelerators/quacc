@@ -32,7 +32,9 @@ class EspressoTemplate(EspressoTemplate_):
     """This is a wrapper around the ASE Espresso template that allows for the use of
     other binaries such as pw.x, ph.x, cp.x, etc."""
 
-    def __init__(self, binary: str = "pw", test_run: bool = False) -> None:
+    def __init__(
+        self, binary: str = "pw", test_run: bool = False, autorestart: bool = False
+    ) -> None:
         """
         Initialize the Espresso template.
 
@@ -44,6 +46,9 @@ class EspressoTemplate(EspressoTemplate_):
         test_run
             If True, a test run is performed to check that the calculation
             input_data is correct or to generate some files/info if needed.
+        autorestart
+            If True, the calculation will automatically switch to 'restart'
+            if this calculator performs more than one run. (ASE-relax/MD/NEB)
 
         Returns
         -------
@@ -64,6 +69,9 @@ class EspressoTemplate(EspressoTemplate_):
         self.outfiles = {"fildos": "pwscf.dos"}
 
         self.test_run = test_run
+
+        self.nruns = 0
+        self.autorestart = autorestart
 
     def write_input(
         self,
@@ -103,6 +111,9 @@ class EspressoTemplate(EspressoTemplate_):
             self._test_run(parameters, directory)
 
         if self.binary == "pw":
+            if self.autorestart and self.nruns > 0:
+                parameters["input_data"]["electrons"]["startingpot"] = "file"
+                parameters["input_data"]["electrons"]["startingwfc"] = "file"
             write(
                 directory / self.inputname,
                 atoms,
@@ -119,6 +130,10 @@ class EspressoTemplate(EspressoTemplate_):
                 write_fortran_namelist(
                     fd, binary=self.binary, properties=properties, **parameters
                 )
+
+    def execute(self, *args: Any, **kwargs: Any) -> None:
+        super().execute(*args, **kwargs)
+        self.nruns += 1
 
     @staticmethod
     def _search_keyword(parameters: dict[str, Any], key_to_search: str) -> str | None:
