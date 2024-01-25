@@ -112,7 +112,8 @@ class EspressoTemplate(EspressoTemplate_):
 
         if self.binary == "pw":
             if self.autorestart and self.nruns > 0:
-                parameters["input_data"]["control"]["restart_mode"] = "restart"
+                parameters["input_data"]["electrons"]["startingpot"] = "file"
+                parameters["input_data"]["electrons"]["startingwfc"] = "file"
             write(
                 directory / self.inputname,
                 atoms,
