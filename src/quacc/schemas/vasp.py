@@ -6,7 +6,9 @@ import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from ase.io import read
 from emmet.core.tasks import TaskDoc
+from monty.os.path import zpath
 from pymatgen.command_line.bader_caller import bader_analysis_from_path
 from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
 
@@ -20,7 +22,6 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
     from maggma.core import Store
-    from pymatgen.core import Structure
 
     from quacc.schemas._aliases.vasp import BaderSchema, ChargemolSchema, VaspSchema
 
@@ -28,12 +29,12 @@ logger = logging.getLogger(__name__)
 
 
 def vasp_summarize_run(
-    atoms: Atoms,
+    final_atoms: Atoms,
     dir_path: str | Path | None = None,
-    prep_next_run: bool = True,
+    move_magmoms: bool = True,
     run_bader: bool | None = None,
     run_chargemol: bool | None = None,
-    check_convergence: bool = True,
+    check_convergence: bool | None = None,
     additional_fields: dict[str, Any] | None = None,
     store: Store | None = None,
 ) -> VaspSchema:
@@ -42,15 +43,13 @@ def vasp_summarize_run(
 
     Parameters
     ----------
-    atoms
+    final_atoms
         ASE Atoms object following a calculation.
     dir_path
-        Path to VASP outputs. A value of None specifies the current working
-        directory
-    prep_next_run
-        Whether the Atoms object stored in {"atoms": atoms} should be prepared
-        for the next run. This clears out any attached calculator and moves the
-        final magmoms to the initial magmoms.
+        Path to VASP outputs. A value of None specifies the calculator directory.
+    move_magmoms
+        Whether to move the final magmoms of the original Atoms object to the
+        initial magmoms of the returned Atoms object.
     run_bader
         Whether a Bader analysis should be performed. Will not run if bader
         executable is not in PATH even if bader is set to True. Defaults to
@@ -60,7 +59,8 @@ def vasp_summarize_run(
         executable is not in PATH even if chargmeol is set to True. Defaults to
         VASP_CHARGEMOL in settings.
     check_convergence
-        Whether to throw an error if convergence is not reached.
+        Whether to throw an error if convergence is not reached. Defaults to True in
+        settings.
     additional_fields
         Additional fields to add to the task document.
     store
@@ -76,13 +76,15 @@ def vasp_summarize_run(
     additional_fields = additional_fields or {}
     run_bader = SETTINGS.VASP_BADER if run_bader is None else run_bader
     run_chargemol = SETTINGS.VASP_CHARGEMOL if run_chargemol is None else run_chargemol
-    dir_path = dir_path or Path.cwd()
+    check_convergence = (
+        SETTINGS.CHECK_CONVERGENCE if check_convergence is None else check_convergence
+    )
+    dir_path = Path(dir_path or final_atoms.calc.directory)
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
     # Fetch all tabulated results from VASP outputs files. Fortunately, emmet
     # already has a handy function for this
     vasp_task_doc = TaskDoc.from_directory(dir_path).model_dump()
-    struct = vasp_task_doc["output"]["structure"]
 
     # Check for calculation convergence
     if check_convergence and vasp_task_doc["state"] != "successful":
@@ -90,34 +92,32 @@ def vasp_summarize_run(
             f"VASP calculation did not converge. Will not store task data. Refer to {dir_path}"
         )
 
-    base_task_doc = summarize_run(atoms, prep_next_run=prep_next_run, store=False)
+    initial_atoms = read(zpath(dir_path / "POSCAR"))
+    base_task_doc = summarize_run(
+        final_atoms, initial_atoms, move_magmoms=move_magmoms, store=False
+    )
 
     # Get Bader analysis
     if run_bader:
         try:
-            bader_results = _bader_runner(dir_path, structure=struct)
+            bader_results = _bader_runner(dir_path)
         except Exception:
             bader_results = None
             logging.warning("Bader analysis could not be performed.", exc_info=True)
 
         if bader_results:
-            vasp_task_doc["bader"] = bader_results[0]
-            struct = bader_results[1]
+            vasp_task_doc["bader"] = bader_results
 
     # Get the Chargemol analysis
     if run_chargemol:
         try:
-            chargemol_results = _chargemol_runner(dir_path, structure=struct)
+            chargemol_results = _chargemol_runner(dir_path)
         except Exception:
             chargemol_results = None
             logging.warning("Chargemol analysis could not be performed.", exc_info=True)
 
         if chargemol_results:
-            vasp_task_doc["chargemol"] = chargemol_results[0]
-            struct = chargemol_results[1]
-
-    # Override the Structure to have the attached properties
-    vasp_task_doc["output"]["structure"] = struct
+            vasp_task_doc["chargemol"] = chargemol_results
 
     # Make task document
     unsorted_task_doc = base_task_doc | vasp_task_doc | additional_fields
@@ -130,9 +130,7 @@ def vasp_summarize_run(
     return task_doc
 
 
-def _bader_runner(
-    path: str | None = None, structure: Structure = None
-) -> tuple[BaderSchema, Structure | None]:
+def _bader_runner(path: Path | str) -> BaderSchema:
     """
     Runs a Bader partial charge and spin moment analysis using the VASP output
     files in the given path. This function requires that `bader` is located in
@@ -152,10 +150,7 @@ def _bader_runner(
     -------
     BaderSchema
         Dictionary containing the Bader analysis summary
-    Structure
-        Structure object with the Bader charges and spins attached
     """
-    path = path or Path.cwd()
 
     # Make sure files are present
     relevant_files = ["AECCAR0", "AECCAR2", "CHGCAR", "POTCAR"]
@@ -178,20 +173,12 @@ def _bader_runner(
     for k in ["charge", "charge_transfer", "reference_used", "magmom"]:
         bader_stats.pop(k, None)
 
-    # Attach the Bader charges and spins to the structure
-    if structure:
-        structure.add_site_property("bader_charge", bader_stats["partial_charges"])
-        if "spin_moments" in bader_stats:
-            structure.add_site_property("bader_spin", bader_stats["spin_moments"])
-
-    return bader_stats, structure
+    return bader_stats
 
 
 def _chargemol_runner(
-    path: str | None = None,
-    atomic_densities_path: str | None = None,
-    structure: Structure | None = None,
-) -> tuple[ChargemolSchema, Structure | None]:
+    path: str, atomic_densities_path: str | None = None
+) -> ChargemolSchema:
     """
     Runs a Chargemol (i.e. DDEC6 + CM5) analysis using the VASP output files in
     the given path. This function requires that the chargemol executable, given
@@ -216,10 +203,7 @@ def _chargemol_runner(
     -------
     ChargemolSchema
         Dictionary containing the Chargemol analysis summary
-    Structure
-        Structure object with the Chargemol charges and spins attached
     """
-    path = path or Path.cwd()
 
     # Make sure files are present
     relevant_files = ["AECCAR0", "AECCAR2", "CHGCAR", "POTCAR"]
@@ -238,18 +222,4 @@ def _chargemol_runner(
         path=path, atomic_densities_path=atomic_densities_path
     )
 
-    # Attach the Chargemol charges and spins to the structure
-    if structure:
-        structure.add_site_property(
-            "ddec6_charge", chargemol_stats["ddec"]["partial_charges"]
-        )
-        if "spin_moments" in chargemol_stats["ddec"]:
-            structure.add_site_property(
-                "ddec6_spin", chargemol_stats["ddec"]["spin_moments"]
-            )
-        if "cm5" in chargemol_stats:
-            structure.add_site_property(
-                "cm5_charge", chargemol_stats["cm5"]["partial_charges"]
-            )
-
-    return chargemol_stats, structure
+    return chargemol_stats

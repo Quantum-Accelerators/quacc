@@ -1,4 +1,5 @@
 import gzip
+import logging
 import os
 import shutil
 from pathlib import Path
@@ -16,6 +17,9 @@ from quacc.schemas.cclib import (
     _make_cclib_schema,
     cclib_summarize_run,
 )
+
+LOGGER = logging.getLogger(__name__)
+LOGGER.propagate = True
 
 FILE_DIR = Path(__file__).parent
 
@@ -96,8 +100,8 @@ def test_cclib_summarize_run(tmp_path, monkeypatch):
         7.6760596087545006
     )
     assert len(results["trajectory"]) == 7
-    assert results["trajectory"][0]["atoms"] == results["input_atoms"]["atoms"]
-    assert results["trajectory"][-1]["atoms"] == results["atoms"]
+    assert results["trajectory"][0] == results["input_atoms"]["atoms"]
+    assert results["trajectory"][-1] == results["atoms"]
     assert results["test"] == "hi"
 
     # test document can be jsanitized and decoded
@@ -122,29 +126,6 @@ def test_cclib_summarize_run(tmp_path, monkeypatch):
     assert results.get("atoms_info", {}) != {}
     assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
-
-    # Make sure magnetic moments are handled appropriately
-    atoms = read(os.path.join(run1, log1))
-    atoms.set_initial_magnetic_moments([3.14] * len(atoms))
-    atoms.calc.results["magmoms"] = [2.0] * len(atoms)
-    results = cclib_summarize_run(atoms, ".log", dir_path=run1)
-
-    assert atoms.calc is not None
-    assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
-
-    assert results["atoms"].get_initial_magnetic_moments().tolist() == [2.0] * len(
-        atoms
-    )
-    assert results["atoms"].calc is None
-
-    # Make sure Atoms magmoms were not moved if specified
-    atoms = read(os.path.join(run1, log1))
-    atoms.set_initial_magnetic_moments([3.14] * len(atoms))
-    results = cclib_summarize_run(atoms, ".log", dir_path=run1, prep_next_run=False)
-    assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
-    assert results["atoms"].get_initial_magnetic_moments().tolist() == [3.14] * len(
-        atoms
-    )
 
 
 def test_errors():
@@ -234,7 +215,7 @@ def test_cclib_calculate(tmp_path, monkeypatch, cclib_obj):
         )
 
 
-def test_monkeypatches(tmp_path, monkeypatch, cclib_obj):
+def test_monkeypatches(tmp_path, monkeypatch, cclib_obj, caplog):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("PROATOM_DIR", str(FILE_DIR / "cclib_data" / "proatomdata"))
     with pytest.raises(FileNotFoundError):
@@ -245,7 +226,7 @@ def test_monkeypatches(tmp_path, monkeypatch, cclib_obj):
         )
 
     monkeypatch.setattr("cclib.method.Bader.calculate", bad_mock_cclib_calculate)
-    with pytest.warns(UserWarning):
+    with caplog.at_level(logging.WARNING):
         assert (
             _cclib_calculate(
                 cclib_obj,

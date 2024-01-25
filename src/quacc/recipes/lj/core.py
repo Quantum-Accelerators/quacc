@@ -42,15 +42,14 @@ def static_job(atoms: Atoms, **calc_kwargs) -> RunSchema:
     Returns
     -------
     RunSchema
-        Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
+        Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
+        See the type-hint for the data structure.
     """
 
     atoms.calc = LennardJones(**calc_kwargs)
     final_atoms = run_calc(atoms)
 
-    return summarize_run(
-        final_atoms, input_atoms=atoms, additional_fields={"name": "LJ Static"}
-    )
+    return summarize_run(final_atoms, atoms, additional_fields={"name": "LJ Static"})
 
 
 @job
@@ -76,7 +75,8 @@ def relax_job(
     Returns
     -------
     OptSchema
-        Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
+        Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
+        See the type-hint for the data structure.
     """
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
@@ -119,7 +119,8 @@ def freq_job(
     Returns
     -------
     VibThermoSchema
-        Dictionary of results, specified in [quacc.schemas.ase.summarize_vib_and_thermo][]
+        Dictionary of results, specified in [quacc.schemas.ase.summarize_vib_and_thermo][].
+        See the type-hint for the data structure.
     """
     vib_kwargs = vib_kwargs or {}
 

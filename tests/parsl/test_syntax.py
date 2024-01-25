@@ -2,18 +2,7 @@ import pytest
 
 parsl = pytest.importorskip("parsl")
 
-import contextlib
-
 from quacc import flow, job, strip_decorator, subflow
-
-
-def setup_module():
-    with contextlib.suppress(Exception):
-        parsl.load()
-
-
-def teardown_module():
-    parsl.clear()
 
 
 def test_parsl_decorators(tmp_path, monkeypatch):

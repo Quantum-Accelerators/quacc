@@ -4,6 +4,49 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.3]
+
+### Added
+
+- Added an ASE relax job recipe for ONETEP
+
+### Fixed
+
+- Various bug fixes for the Espresso `grid_phonon_flow`
+- Fixed redundant `Structure` info in the `RunSchema`
+
+## [0.6.2]
+
+### Changed
+
+- The `CREATE_UNIQUE_DIR` setting is now set to `True` by default.
+- The temporary directory name and its symlink have been slightly updated to have "tmp-" and "symlink-" at the front of the name instead of the end for easier file navigation.
+- Updated the "trajectory" entry in the `OptSchema` to be `list[Atoms]` instead of `list[AtomsSchema]`
+
+### Fixed
+
+- Fixed an occasional race condition that occurs when running concurrent calculations in multi-threaded mode
+- The temporary directory made when a `@job` runs now has a name consistent with the folder where the results will ultimately be stored.
+- Significant speedup in generating the `OptSchema`
+
+## [0.6.1]
+
+### Added
+
+- Support for ONETEP recipes (@nekkrad)
+- New Espresso recipe for ASE external relaxations (@tomdemeyere)
+
+### Fixed
+
+- Fixed bug where autoamtic k-point schemes in VASP would return `kpts` as `list[float]` instead of `list[int]`
+- VASP runs now respect the `CHECK_CONVERGENCE` global setting when set to `False`
+- Fixed bug where the gamma-point only version of VASP was being called if `kpts` was `None` but `kspacing` was not `None`
+
+### Removed
+
+- Removed the broken TRICs support with Sella
+- Removed the `covalent_to_db` function
+
 ## [0.6.0]
 
 ### Added

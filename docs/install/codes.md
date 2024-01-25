@@ -50,7 +50,7 @@ Several pre-trained "universal" machine-learned potentials (MLPs) are natively s
 To use these potentials, you will need to install the corresponding packages. This can be done as follows:
 
 ```bash
-pip install quacc[ml]
+pip install quacc[mlp]
 ```
 
 ## NewtonNet
@@ -59,6 +59,19 @@ If you plan to use NewtonNet with Quacc, you will need to install it prior to us
 
 ```bash
 pip install quacc[newtonnet]
+```
+
+## ONETEP
+
+If you plan on using ONETEP with quacc, you will need to obtain and install ONETEP. This can be done as described in the [How to Get Onetep](https://onetep.org/code/) section of the software documentation.
+
+At minimum, you will need to define and set `ONETEP_CMD` to be the full path to your ONETEP binary. You can also specify the `ONETEP_PP_PATH` to be the path to the pseudopotentials. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md).
+
+An example is provided below on how to define the commands in your `~/.bashrc`:
+
+```bash
+export ONETEP_CMD="/path/to/onetep/binary"
+export ONETEP_PP_PATH="/path/to/my/pseudos"
 ```
 
 ## ORCA

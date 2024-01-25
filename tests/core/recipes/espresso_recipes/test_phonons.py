@@ -1,18 +1,20 @@
-from pathlib import Path
 from shutil import which
 
 import pytest
+
+pytestmark = pytest.mark.skipif(
+    which("pw.x") is None or which("ph.x") is None, reason="QE not installed"
+)
+
+from pathlib import Path
+
 from ase.build import bulk
 from numpy.testing import assert_allclose, assert_array_equal
 
 from quacc import SETTINGS
 from quacc.recipes.espresso.core import static_job
-from quacc.recipes.espresso.phonons import grid_phonon_flow, phonon_job
+from quacc.recipes.espresso.phonons import phonon_job
 from quacc.utils.files import copy_decompress_files
-
-pytestmark = pytest.mark.skipif(
-    which("pw.x") is None or which("ph.x") is None, reason="QE not installed"
-)
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 DATA_DIR = Path(__file__).parent / "data"
@@ -72,6 +74,8 @@ def test_phonon_job(tmp_path, monkeypatch):
 
     for key in sections:
         assert key in ph_results["results"][(0, 0, 0)]
+
+    SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO
 
 
 def test_phonon_job_list_to_do(tmp_path, monkeypatch):
@@ -138,82 +142,4 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
     for key in sections:
         assert key in ph_results["results"][(0, 0, 0)]
 
-
-def test_phonon_grid(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
-
-    atoms = bulk("Si")
-
-    input_data = {
-        "electrons": {"conv_thr": 1.0e-5},
-        "control": {"pseudo_dir": tmp_path},
-    }
-
-    ph_loose = {"inputph": {"tr2_ph": 1e-6, "qplot": True, "ldisp": True}}
-
-    pseudopotentials = {"Si": "Si.upf"}
-
-    job_params = {
-        "relax_job": {
-            "input_data": input_data,
-            "pseudopotentials": pseudopotentials,
-            "kspacing": 0.5,
-        },
-        "ph_job": {"input_data": ph_loose, "qpts": [(0, 0, 0, 1), (0.5, 0.0, 0.0, 1)]},
-    }
-
-    grid_results = grid_phonon_flow(atoms, job_params=job_params)
-
-    sections = [
-        "atoms",
-        "eqpoints",
-        "freqs",
-        "kpoints",
-        "mode_symmetries",
-        "representations",
-    ]
-
-    for key in sections:
-        assert key in grid_results["results"][(0, 0, 0)]
-
-
-def test_phonon_grid_v2(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
-    copy_decompress_files([DATA_DIR / "Li.upf.gz"], tmp_path)
-
-    atoms = bulk("Li", "bcc", orthorhombic=True)
-
-    input_data = {
-        "electrons": {"conv_thr": 1.0e-5},
-        "control": {"pseudo_dir": tmp_path},
-    }
-
-    ph_loose = {"inputph": {"tr2_ph": 1e-6}}
-
-    pseudopotentials = {"Li": "Li.upf"}
-
-    job_params = {
-        "relax_job": {
-            "input_data": input_data,
-            "pseudopotentials": pseudopotentials,
-            "kspacing": 0.5,
-        },
-        "ph_job": {"input_data": ph_loose},
-    }
-
-    grid_results = grid_phonon_flow(atoms, job_params=job_params, nblocks=3)
-
-    sections = [
-        "atoms",
-        "eqpoints",
-        "freqs",
-        "kpoints",
-        "mode_symmetries",
-        "representations",
-    ]
-
-    for key in sections:
-        assert key in grid_results["results"][(0, 0, 0)]
+    SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO

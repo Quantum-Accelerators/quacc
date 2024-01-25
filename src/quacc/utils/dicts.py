@@ -27,8 +27,8 @@ class Remove:
 
 
 def recursive_dict_merge(
-    *dicts: dict[str, Any], remove_trigger: Any = Remove
-) -> dict[str, Any]:
+    *dicts: MutableMapping[str, Any] | None, remove_trigger: Any = Remove
+) -> MutableMapping[str, Any]:
     """
     Recursively merge several dictionaries, taking the latter in the list as higher
     preference. Also removes any entries that have a valu of `remove_trigger` from the
@@ -47,7 +47,7 @@ def recursive_dict_merge(
 
     Returns
     -------
-    dict
+    MutableMapping[str, Any]
         Merged dictionary
     """
 

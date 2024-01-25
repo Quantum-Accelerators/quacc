@@ -41,7 +41,8 @@ def static_job(
     Returns
     -------
     RunSchema
-        Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
+        Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
+        See the return type-hint for the data structure.
     """
 
     calc_defaults = {
@@ -91,7 +92,8 @@ def relax_job(
     Returns
     -------
     RunSchema
-        Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
+        Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
+        See the return type-hint for the data structure.
     """
 
     calc_defaults = {

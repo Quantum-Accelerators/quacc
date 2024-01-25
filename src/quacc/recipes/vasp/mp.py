@@ -62,7 +62,8 @@ def mp_prerelax_job(
     Returns
     -------
     VaspSchema
-        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
+        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
+        See the type-hint for the data structure.
     """
 
     calc_defaults = {
@@ -112,7 +113,8 @@ def mp_relax_job(
     Returns
     -------
     VaspSchema
-        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
+        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
+        See the type-hint for the data structure.
     """
 
     calc_defaults = {"lcharg": True, "lwave": True} | _get_bandgap_swaps(bandgap)
@@ -157,7 +159,7 @@ def mp_relax_flow(
     Returns
     -------
     MPRelaxFlowSchema
-        Dictionary of results
+        Dictionary of results. See the type-hint for the data structure.
     """
     mp_prerelax_job_, mp_relax_job_ = customize_funcs(
         ["mp_prerelax_job", "mp_relax_job"],

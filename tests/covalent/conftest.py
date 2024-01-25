@@ -10,10 +10,12 @@ def pytest_sessionstart():
     os.environ["QUACC_CONFIG_FILE"] = str(file_dir / "quacc.yaml")
     os.environ["QUACC_RESULTS_DIR"] = str(TEST_RESULTS_DIR)
     os.environ["QUACC_SCRATCH_DIR"] = str(TEST_SCRATCH_DIR)
+    os.environ["COVALENT_CONFIG_DIR"] = str(file_dir)
 
 
-def pytest_sessionfinish():
-    from shutil import rmtree
+def pytest_sessionfinish(exitstatus):
+    if exitstatus == 0:
+        from shutil import rmtree
 
-    rmtree(TEST_RESULTS_DIR, ignore_errors=True)
-    rmtree(TEST_SCRATCH_DIR, ignore_errors=True)
+        rmtree(TEST_RESULTS_DIR, ignore_errors=True)
+        rmtree(TEST_SCRATCH_DIR, ignore_errors=True)

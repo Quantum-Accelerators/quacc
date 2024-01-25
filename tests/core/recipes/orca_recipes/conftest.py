@@ -1,49 +1,34 @@
-import os
 from pathlib import Path
 from shutil import copy
 
-import numpy as np
 import pytest
-from ase import Atoms
+from ase.calculators.lj import LennardJones
+from ase.calculators.orca import OrcaTemplate
+from ase.io import write
+from ase.io.orca import read_geom_orcainp
 
 FILE_DIR = Path(__file__).parent
-ORCA_DIR = os.path.join(FILE_DIR, "orca_run")
+ORCA_DIR = Path(FILE_DIR, "orca_run")
 
 
-def mock_get_potential_energy(self, **kwargs):
-    # Instead of running .get_potential_energy(), we mock it by attaching
-    # dummy results to the atoms object and returning a fake energy. This
-    # works because the real atoms.get_potential_energy() takes one argument
-    # (i.e. self) and that self object is the atoms object.
-    e = -1.0
-    self.calc.results = {"energy": e, "forces": np.array([[0.0, 0.0, 0.0]] * len(self))}
-    for f in os.listdir(ORCA_DIR):
-        copy(os.path.join(ORCA_DIR, f), f)
-    return e
-
-
-def mock_get_forces(self, **kwargs):
-    # Instead of running .get_forces(), we mock it by attaching
-    # dummy results to the atoms object and returning a fake energy. This
-    # works because the real atoms.get_forces() takes one argument
-    # (i.e. self) and that self object is the atoms object.
-    e = -1.0
-    forces = np.array([[0.0, 0.0, 0.0]] * len(self))
-    self.calc.results = {"energy": e, "free_energy": e, "forces": forces}
-    for f in os.listdir(ORCA_DIR):
-        copy(os.path.join(ORCA_DIR, f), f)
-    return forces
+def mock_execute(self, *args, **kwargs):
+    copy(ORCA_DIR / "orca.out.gz", "orca.out.gz")
+    pass
 
 
 @pytest.fixture(autouse=True)
-def patch_get_potential_energy(monkeypatch):
-    # Monkeypatch the .get_potential_energy() method of the Atoms object so
-    # we aren't running the actual calculation during testing.
-    monkeypatch.setattr(Atoms, "get_potential_energy", mock_get_potential_energy)
+def patch_execute(monkeypatch):
+    monkeypatch.setattr(OrcaTemplate, "execute", mock_execute)
+
+
+def mock_read_results(self, directory, *args, **kwargs):
+    atoms = read_geom_orcainp(directory / "orca.inp")
+    write(directory / "orca.xyz", atoms)
+    atoms.calc = LennardJones()
+    atoms.get_potential_energy()
+    return atoms.calc.results
 
 
 @pytest.fixture(autouse=True)
-def patch_get_forces(monkeypatch):
-    # Monkeypatch the .get_potential_energy() method of the Atoms object so
-    # we aren't running the actual calculation during testing.
-    monkeypatch.setattr(Atoms, "get_forces", mock_get_forces)
+def patch_read_results(monkeypatch):
+    monkeypatch.setattr(OrcaTemplate, "read_results", mock_read_results)

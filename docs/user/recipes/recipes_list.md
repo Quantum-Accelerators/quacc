@@ -115,6 +115,21 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 
 </center>
 
+## ONETEP
+
+!!! Info
+
+    [ONETEP](https://onetep.org/) (Order-N Electronic Total Energy Package) is a linear-scaling code for quantum-mechanical calculations based on density-functional theory.
+
+<center>
+
+| Name             | Decorator       | Documentation                               | Req'd Extras |
+| ---------------- | --------------- | ------------------------------------------- | ------------ |
+| ONETEP Static    | `#!Python @job` | [quacc.recipes.onetep.core.static_job][]    |              |
+| ONETEP ASE Relax | `#!Python @job` | [quacc.recipes.onetep.core.ase_relax_job][] |              |
+
+</center>
+
 ## ORCA
 
 !!! Info
@@ -176,9 +191,13 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 | ------------------------ | ---------------- | --------------------------------------------------- | ------------ |
 | Espresso Static          | `#!Python @job`  | [quacc.recipes.espresso.core.static_job][]          |              |
 | Espresso Relax           | `#!Python @job`  | [quacc.recipes.espresso.core.relax_job][]           |              |
+| Espresso ASE Relax       | `#!Python @job`  | [quacc.recipes.espresso.core.relax_job][]           |              |
 | Espresso Post Processing | `#!Python @job`  | [quacc.recipes.espresso.core.post_processing_job][] |              |
 | Espresso Phonon          | `#!Python @job`  | [quacc.recipes.espresso.phonons.phonon_job][]       |              |
 | Espresso Grid Phonon     | `#!Python @flow` | [quacc.recipes.espresso.phonons.grid_phonon_flow][] |              |
+| Espresso Non-SCF         | `#!Python @job`  | [quacc.recipes.espresso.core.non_scf_job][]         |              |
+| Espresso DOS             | `#!Python @job`  | [quacc.recipes.espresso.dos.dos_job][]              |              |
+| Espresso DOS Flow        | `#!Python @flow` | [quacc.recipes.espresso.dos.dos_flow][]             |              |
 
 </center>
 
@@ -186,7 +205,7 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 
 !!! Info
 
-    [tblite](https://github.com/tblite/tblite) is a code that interfaces with the xtb package for running GFN-xTB calculations.
+    [tblite](https://github.com/tblite/tblite) is a code for running GFN-xTB calculations.
 
 <center>
 

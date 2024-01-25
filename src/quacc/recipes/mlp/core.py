@@ -41,7 +41,8 @@ def static_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][]
+        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        See the type-hint for the data structure.
     """
     calc_defaults = {"default_dtype": "float64"} if method == "mace" else {}
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
@@ -49,7 +50,7 @@ def static_job(
     atoms.calc = _pick_calculator(method, **calc_flags)
     final_atoms = run_calc(atoms)
     return summarize_run(
-        final_atoms, input_atoms=atoms, additional_fields={"name": f"{method} Static"}
+        final_atoms, atoms, additional_fields={"name": f"{method} Static"}
     )
 
 
@@ -85,7 +86,8 @@ def relax_job(
     Returns
     -------
     OptSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
+        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][].
+        See the type-hint for the data structure.
     """
 
     calc_defaults = {"default_dtype": "float64"} if method == "mace" else {}

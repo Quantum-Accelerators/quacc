@@ -12,7 +12,6 @@ if TYPE_CHECKING:
     from typing import TypedDict
 
     from ase.atoms import Atoms
-    from numpy.typing import NDArray
 
     class PmgKpts(TypedDict, total=False):
         line_density: float
@@ -23,7 +22,7 @@ if TYPE_CHECKING:
 
 def convert_pmg_kpts(
     pmg_kpts: PmgKpts, input_atoms: Atoms, force_gamma: bool = False
-) -> tuple[NDArray, bool]:
+) -> tuple[list[int], bool]:
     """
     Shortcuts for pymatgen k-point generation schemes.
 
@@ -104,7 +103,7 @@ def convert_pmg_kpts(
                 else max_pmg_kpts
             )
 
-        kpts = max_pmg_kpts.kpts[0]
+        kpts = [int(k) for k in max_pmg_kpts.kpts[0]]
         gamma = max_pmg_kpts.style.name.lower() == "gamma"
 
     return kpts, gamma

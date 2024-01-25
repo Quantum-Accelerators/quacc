@@ -66,7 +66,8 @@ def phonon_flow(
     Returns
     -------
     PhononSchema
-        Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][]
+        Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][].
+        See the type-hint for the data structure.
     """
     static_job_ = customize_funcs(
         "static_job", static_job, parameters=job_params, decorators=job_decorators

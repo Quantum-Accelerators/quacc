@@ -1,3 +1,4 @@
+import logging
 import os
 from shutil import copytree, move
 
@@ -8,6 +9,9 @@ from monty.json import MontyDecoder, jsanitize
 
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.vasp import vasp_summarize_run
+
+LOGGER = logging.getLogger(__name__)
+LOGGER.propagate = True
 
 
 @pytest.fixture()
@@ -106,7 +110,7 @@ def test_vasp_summarize_run(run1, monkeypatch):
     atoms.calc = calc
     atoms.calc.results = {"energy": -1.0}
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
-    results = vasp_summarize_run(atoms, dir_path=run1, prep_next_run=False)
+    results = vasp_summarize_run(atoms, dir_path=run1, move_magmoms=False)
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
     results_atoms = results["atoms"]
     assert results_atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
@@ -135,8 +139,8 @@ def test_summarize_bader_run(monkeypatch, run1, tmp_path):
     atoms = read(str(p / "OUTCAR.gz"))
     results = vasp_summarize_run(atoms, dir_path=p, run_bader=True)
     struct = results["output"]["structure"]
-    assert struct.site_properties["bader_charge"] == [1.0] * len(atoms)
-    assert struct.site_properties["bader_spin"] == [0.0] * len(atoms)
+    assert results["bader"]["partial_charges"] == [1.0] * len(atoms)
+    assert results["bader"]["spin_moments"] == [0.0] * len(atoms)
 
 
 def test_summarize_chargemol_run(monkeypatch, run1, tmp_path):
@@ -156,10 +160,9 @@ def test_summarize_chargemol_run(monkeypatch, run1, tmp_path):
     # Make sure Bader works
     atoms = read(str(p / "OUTCAR.gz"))
     results = vasp_summarize_run(atoms, dir_path=p, run_bader=False, run_chargemol=True)
-    struct = results["output"]["structure"]
-    assert struct.site_properties["ddec6_charge"] == [1.0] * len(atoms)
-    assert struct.site_properties["cm5_charge"] == [1.0] * len(atoms)
-    assert struct.site_properties["ddec6_spin"] == [0.0] * len(atoms)
+    assert results["chargemol"]["ddec"]["partial_charges"] == [1.0] * len(atoms)
+    assert results["chargemol"]["cm5"]["partial_charges"] == [1.0] * len(atoms)
+    assert results["chargemol"]["ddec"]["spin_moments"] == [0.0] * len(atoms)
 
 
 def test_summarize_bader_and_chargemol_run(monkeypatch, run1, tmp_path):
@@ -182,25 +185,24 @@ def test_summarize_bader_and_chargemol_run(monkeypatch, run1, tmp_path):
     # Make sure Bader works
     atoms = read(str(p / "OUTCAR.gz"))
     results = vasp_summarize_run(atoms, dir_path=p, run_bader=True, run_chargemol=True)
-    struct = results["output"]["structure"]
-    assert struct.site_properties["ddec6_charge"] == [1.0] * len(atoms)
-    assert struct.site_properties["cm5_charge"] == [1.0] * len(atoms)
-    assert struct.site_properties["ddec6_spin"] == [0.0] * len(atoms)
-    assert struct.site_properties["bader_charge"] == [1.0] * len(atoms)
-    assert struct.site_properties["bader_spin"] == [0.0] * len(atoms)
+    assert results["chargemol"]["ddec"]["partial_charges"] == [1.0] * len(atoms)
+    assert results["chargemol"]["cm5"]["partial_charges"] == [1.0] * len(atoms)
+    assert results["chargemol"]["ddec"]["spin_moments"] == [0.0] * len(atoms)
+    assert results["bader"]["partial_charges"] == [1.0] * len(atoms)
+    assert results["bader"]["spin_moments"] == [0.0] * len(atoms)
 
 
-def test_no_bader(tmp_path, monkeypatch, run1):
+def test_no_bader(tmp_path, monkeypatch, run1, caplog):
     monkeypatch.chdir(tmp_path)
 
     atoms = read(run1 / "OUTCAR.gz")
-    with pytest.warns(UserWarning):
+    with caplog.at_level(logging.WARNING):
         vasp_summarize_run(atoms, dir_path=run1, run_bader=True, run_chargemol=False)
 
 
-def test_no_chargemol(tmp_path, monkeypatch, run1):
+def test_no_chargemol(tmp_path, monkeypatch, run1, caplog):
     monkeypatch.chdir(tmp_path)
 
     atoms = read(run1 / "OUTCAR.gz")
-    with pytest.warns(UserWarning):
+    with caplog.at_level(logging.WARNING):
         vasp_summarize_run(atoms, dir_path=run1, run_bader=False, run_chargemol=True)

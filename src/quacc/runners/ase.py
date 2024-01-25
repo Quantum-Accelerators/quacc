@@ -13,12 +13,12 @@ from monty.dev import requires
 from monty.os.path import zpath
 
 from quacc import SETTINGS
-from quacc.atoms.core import copy_atoms
+from quacc.atoms.core import copy_atoms, get_final_atoms_from_dyn
 from quacc.runners.prep import calc_cleanup, calc_setup
 from quacc.utils.dicts import recursive_dict_merge
 
 try:
-    from sella import Internals, Sella
+    from sella import Sella
 
 except ImportError:
     Sella = None
@@ -31,7 +31,7 @@ if TYPE_CHECKING:
     from ase.optimize.optimize import Optimizer
 
     class OptimizerKwargs(TypedDict, total=False):
-        restart: str | None  # default = None
+        restart: Path | str | None  # default = None
         append_trajectory: bool  # default = False
 
     class VibKwargs(TypedDict, total=False):
@@ -76,19 +76,19 @@ def run_calc(
     atoms = copy_atoms(atoms)
 
     # Perform staging operations
-    tmpdir, job_results_dir = calc_setup(copy_files=copy_files)
+    tmpdir, job_results_dir = calc_setup(atoms, copy_files=copy_files)
 
     # Run calculation via get_potential_energy()
     atoms.get_potential_energy()
 
     # Most ASE calculators do not update the atoms object in-place with a call
     # to .get_potential_energy(), which is important if an internal optimizer is
-    # used. This section is done to ensure that the atoms object is updated with
-    # the correct positions and cell if a `geom_file` is provided.
+    # used. This section is done to ensure that the atoms object is updated to
+    # the final geometry if `geom_file` is provided.
+    # Note: We have to be careful to make sure we don't lose the calculator
+    # object, as this contains important information such as the parameters
+    # and output properties (e.g. final magnetic moments).
     if geom_file:
-        # Note: We have to be careful to make sure we don't lose the converged
-        # magnetic moments, if present. That's why we simply update the
-        # positions and cell in-place.
         atoms_new = read(zpath(tmpdir / geom_file))
         if isinstance(atoms_new, list):
             atoms_new = atoms_new[-1]
@@ -105,7 +105,7 @@ def run_calc(
         atoms.cell = atoms_new.cell
 
     # Perform cleanup operations
-    calc_cleanup(tmpdir, job_results_dir)
+    calc_cleanup(atoms, tmpdir, job_results_dir)
 
     return atoms
 
@@ -159,7 +159,7 @@ def run_opt(
     atoms = copy_atoms(atoms)
 
     # Perform staging operations
-    tmpdir, job_results_dir = calc_setup(copy_files=copy_files)
+    tmpdir, job_results_dir = calc_setup(atoms, copy_files=copy_files)
 
     # Set defaults
     optimizer_kwargs = recursive_dict_merge(
@@ -181,7 +181,6 @@ def run_opt(
         _set_sella_kwargs(atoms, optimizer_kwargs)
     elif optimizer.__name__ == "IRC":
         optimizer_kwargs.pop("restart", None)
-    optimizer_kwargs.pop("use_TRICs", None)
 
     # Define the Trajectory object
     traj_filename = tmpdir / "opt.traj"
@@ -200,7 +199,7 @@ def run_opt(
     dyn.traj_atoms = read(traj_filename, index=":")
 
     # Perform cleanup operations
-    calc_cleanup(tmpdir, job_results_dir)
+    calc_cleanup(get_final_atoms_from_dyn(dyn), tmpdir, job_results_dir)
 
     return dyn
 
@@ -240,7 +239,7 @@ def run_vib(
     vib_kwargs = vib_kwargs or {}
 
     # Perform staging operations
-    tmpdir, job_results_dir = calc_setup(copy_files=copy_files)
+    tmpdir, job_results_dir = calc_setup(atoms, copy_files=copy_files)
 
     # Run calculation
     vib = Vibrations(atoms, name=str(tmpdir / "vib"), **vib_kwargs)
@@ -250,7 +249,7 @@ def run_vib(
     vib.summary(log=sys.stdout if SETTINGS.DEBUG else str(tmpdir / "vib_summary.log"))
 
     # Perform cleanup operations
-    calc_cleanup(tmpdir, job_results_dir)
+    calc_cleanup(vib.atoms, tmpdir, job_results_dir)
 
     return vib
 
@@ -267,10 +266,6 @@ def _set_sella_kwargs(atoms: Atoms, optimizer_kwargs: dict[str, Any]) -> None:
 
     2. If `internal` is not defined and not `atoms.pbc.any()`, set it to `True`.
 
-    3. If `use_TRICs = True` and not `atoms.pbc.any()`, then `internal` is
-    built for the user via `find_all_bonds()`, `find_all_angles()`, and
-    `find_all_dihedral()`, unless the user has directly specified `internal`.
-
     Parameters
     ----------
     atoms
@@ -286,15 +281,5 @@ def _set_sella_kwargs(atoms: Atoms, optimizer_kwargs: dict[str, Any]) -> None:
     if "order" not in optimizer_kwargs:
         optimizer_kwargs["order"] = 0
 
-    if not atoms.pbc.any():
-        if "internal" not in optimizer_kwargs:
-            optimizer_kwargs["internal"] = True
-
-        if optimizer_kwargs.get("use_TRICs") and not isinstance(
-            optimizer_kwargs.get("internal"), Internals
-        ):
-            internals = Internals(atoms, allow_fragments=True)
-            internals.find_all_bonds()
-            internals.find_all_angles()
-            internals.find_all_dihedrals()
-            optimizer_kwargs["internal"] = internals
+    if not atoms.pbc.any() and "internal" not in optimizer_kwargs:
+        optimizer_kwargs["internal"] = True

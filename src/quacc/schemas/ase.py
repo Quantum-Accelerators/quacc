@@ -1,7 +1,6 @@
 """Schemas for storing ASE-based data."""
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -12,7 +11,7 @@ from ase.vibrations.data import VibrationsData
 from quacc import SETTINGS, __version__
 from quacc.atoms.core import get_final_atoms_from_dyn
 from quacc.schemas.atoms import atoms_to_metadata
-from quacc.schemas.prep import prep_next_run as prep_next_run_
+from quacc.schemas.prep import prep_magmoms, prep_next_run
 from quacc.utils.dicts import clean_task_doc, recursive_dict_merge
 from quacc.utils.files import get_uri
 from quacc.wflow_tools.db import results_to_db
@@ -37,10 +36,10 @@ if TYPE_CHECKING:
 
 
 def summarize_run(
-    atoms: Atoms,
-    input_atoms: Atoms | None = None,
+    final_atoms: Atoms,
+    input_atoms: Atoms,
     charge_and_multiplicity: tuple[int, int] | None = None,
-    prep_next_run: bool = True,
+    move_magmoms: bool = True,
     additional_fields: dict[str, Any] | None = None,
     store: Store | bool | None = None,
 ) -> RunSchema:
@@ -50,17 +49,16 @@ def summarize_run(
 
     Parameters
     ----------
-    atoms
+    final_atoms
         ASE Atoms following a calculation. A calculator must be attached.
     input_atoms
         Input ASE Atoms object to store.
     charge_and_multiplicity
         Charge and spin multiplicity of the Atoms object, only used for Molecule
         metadata.
-    prep_next_run
-        Whether the Atoms object stored in `{"atoms": atoms}` should be prepared
-        for the next run. This clears out any attached calculator and moves the
-        final magmoms to the initial magmoms.
+    move_magmoms
+        Whether to move the final magmoms of the original Atoms object to the
+        initial magmoms of the returned Atoms object.
     additional_fields
         Additional fields to add to the task document.
     store
@@ -76,32 +74,39 @@ def summarize_run(
     additional_fields = additional_fields or {}
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
-    if not atoms.calc:
+    if not final_atoms.calc:
         msg = "ASE Atoms object has no attached calculator."
         raise ValueError(msg)
-    if not atoms.calc.results:
+    if not final_atoms.calc.results:
         msg = "ASE Atoms object's calculator has no results."
         raise ValueError(msg)
 
-    uri = get_uri(Path.cwd())
+    directory = final_atoms.calc.directory
+    uri = get_uri(directory)
     input_atoms_metadata = (
-        atoms_to_metadata(input_atoms, charge_and_multiplicity=charge_and_multiplicity)
+        atoms_to_metadata(
+            input_atoms,
+            charge_and_multiplicity=charge_and_multiplicity,
+            store_pmg=False,
+        )
         if input_atoms
         else None
     )
     inputs = {
-        "parameters": atoms.calc.parameters,
+        "parameters": final_atoms.calc.parameters,
         "nid": uri.split(":")[0],
         "dir_name": ":".join(uri.split(":")[1:]),
         "input_atoms": input_atoms_metadata,
         "quacc_version": __version__,
     }
 
-    results = {"results": atoms.calc.results}
+    results = {"results": final_atoms.calc.results}
 
-    atoms_to_store = prep_next_run_(atoms) if prep_next_run else atoms
+    if move_magmoms:
+        final_atoms = prep_magmoms(final_atoms)
+    atoms_to_store = prep_next_run(final_atoms)
 
-    if atoms:
+    if final_atoms:
         final_atoms_metadata = atoms_to_metadata(
             atoms_to_store, charge_and_multiplicity=charge_and_multiplicity
         )
@@ -124,7 +129,7 @@ def summarize_opt_run(
     trajectory: Trajectory | list[Atoms] = None,
     check_convergence: bool | None = None,
     charge_and_multiplicity: tuple[int, int] | None = None,
-    prep_next_run: bool = True,
+    move_magmoms: bool = True,
     additional_fields: dict[str, Any] | None = None,
     store: Store | bool | None = None,
 ) -> OptSchema:
@@ -145,10 +150,9 @@ def summarize_opt_run(
     charge_and_multiplicity
         Charge and spin multiplicity of the Atoms object, only used for Molecule
         metadata.
-    prep_next_run
-        Whether the Atoms object stored in {"atoms": atoms} should be prepared
-        for the next run This clears out any attached calculator and moves the
-        final magmoms to the initial magmoms.
+    move_magmoms
+        Whether to move the final magmoms of the original Atoms object to the
+        initial magmoms of the returned Atoms object.
     additional_fields
         Additional fields to add to the task document.
     store
@@ -167,12 +171,6 @@ def summarize_opt_run(
     additional_fields = additional_fields or {}
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
-    # Check convergence
-    is_converged = dyn.converged()
-    if check_convergence and not is_converged:
-        msg = f"Optimization did not converge. Refer to {Path.cwd()}"
-        raise RuntimeError(msg)
-
     # Get trajectory
     if not trajectory:
         trajectory = (
@@ -183,25 +181,34 @@ def summarize_opt_run(
 
     initial_atoms = trajectory[0]
     final_atoms = get_final_atoms_from_dyn(dyn)
+    directory = final_atoms.calc.directory
+
+    # Check convergence
+    is_converged = dyn.converged()
+    if check_convergence and not is_converged:
+        msg = f"Optimization did not converge. Refer to {directory}"
+        raise RuntimeError(msg)
 
     # Base task doc
     base_task_doc = summarize_run(
         final_atoms,
-        input_atoms=initial_atoms,
+        initial_atoms,
         charge_and_multiplicity=charge_and_multiplicity,
-        prep_next_run=prep_next_run,
+        move_magmoms=move_magmoms,
         store=False,
     )
 
+    # Clean up the opt parameters
+    parameters_opt = dyn.todict()
+    parameters_opt.pop("logfile", None)
+    parameters_opt.pop("restart", None)
+
     opt_fields = {
         "fmax": getattr(dyn, "fmax", None),
-        "parameters_opt": dyn.todict(),
+        "parameters_opt": parameters_opt,
         "converged": is_converged,
         "nsteps": dyn.get_number_of_steps(),
-        "trajectory": [
-            atoms_to_metadata(atoms, charge_and_multiplicity=charge_and_multiplicity)
-            for atoms in trajectory
-        ],
+        "trajectory": trajectory,
         "trajectory_results": [atoms.calc.results for atoms in trajectory],
     }
 
@@ -218,7 +225,7 @@ def summarize_opt_run(
 
 
 def summarize_vib_run(
-    vib: Vibrations,
+    vib: Vibrations | VibrationsData,
     charge_and_multiplicity: tuple[int, int] | None = None,
     additional_fields: dict[str, Any] | None = None,
     store: Store | bool | None = None,
@@ -260,25 +267,26 @@ def summarize_vib_run(
             vib_freqs_raw[i] = np.abs(f)
             vib_energies_raw[i] = np.abs(vib_energies_raw[i])
 
-    atoms = vib._atoms if isinstance(vib, VibrationsData) else vib.atoms
+    if isinstance(vib, VibrationsData):
+        atoms = vib._atoms
+        inputs = {}
+    else:
+        atoms = vib.atoms
+        directory = atoms.calc.directory
+        uri = get_uri(directory)
 
-    uri = get_uri(Path.cwd())
-    inputs = {
-        "parameters": None
-        if isinstance(vib, VibrationsData)
-        else atoms.calc.parameters,
-        "parameters_vib": None
-        if isinstance(vib, VibrationsData)
-        else {
-            "delta": vib.delta,
-            "direction": vib.direction,
-            "method": vib.method,
-            "ndof": vib.ndof,
-            "nfree": vib.nfree,
-        },
-        "nid": uri.split(":")[0],
-        "dir_name": ":".join(uri.split(":")[1:]),
-    }
+        inputs = {
+            "parameters": atoms.calc.parameters,
+            "parameters_vib": {
+                "delta": vib.delta,
+                "direction": vib.direction,
+                "method": vib.method,
+                "ndof": vib.ndof,
+                "nfree": vib.nfree,
+            },
+            "nid": uri.split(":")[0],
+            "dir_name": ":".join(uri.split(":")[1:]),
+        }
 
     atoms_metadata = atoms_to_metadata(
         atoms, charge_and_multiplicity=charge_and_multiplicity
@@ -368,7 +376,6 @@ def summarize_ideal_gas_thermo(
     additional_fields = additional_fields or {}
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
-    uri = get_uri(Path.cwd())
     spin_multiplicity = round(2 * igt.spin + 1)
 
     inputs = {
@@ -380,9 +387,7 @@ def summarize_ideal_gas_thermo(
             "vib_freqs": [e / units.invcm for e in igt.vib_energies],
             "vib_energies": igt.vib_energies.tolist(),
             "n_imag": igt.n_imag,
-        },
-        "nid": uri.split(":")[0],
-        "dir_name": ":".join(uri.split(":")[1:]),
+        }
     }
 
     results = {
