@@ -132,11 +132,7 @@ def test_run_scipy_opt(tmp_path, monkeypatch):
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
-    dyn = run_opt(
-        atoms,
-        optimizer=SciPyFminBFGS,
-        copy_files=["test_file.txt"],
-    )
+    dyn = run_opt(atoms, optimizer=SciPyFminBFGS)
     traj = dyn.traj_atoms
     assert traj[-1].calc.results is not None
     assert "restart" not in dyn.todict()
