@@ -99,7 +99,7 @@ def test_run_opt1(tmp_path, monkeypatch):
     assert os.path.exists(os.path.join(results_dir, "test_file.txt.gz"))
     assert np.array_equal(traj[-1].get_positions(), atoms.get_positions()) is False
     assert np.array_equal(traj[-1].cell.array, atoms.cell.array) is True
-    assert "restart" in dyn.todict()
+    assert dyn.todict().get("restart")
 
 
 def test_run_opt2(tmp_path, monkeypatch):
@@ -135,7 +135,7 @@ def test_run_scipy_opt(tmp_path, monkeypatch):
     dyn = run_opt(atoms, optimizer=SciPyFminBFGS)
     traj = dyn.traj_atoms
     assert traj[-1].calc.results is not None
-    assert "restart" not in dyn.todict()
+    assert dyn.todict().get("restart") is None
 
 def test_run_vib(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
