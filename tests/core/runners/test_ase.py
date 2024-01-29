@@ -9,6 +9,7 @@ from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
 from ase.optimize import BFGS, BFGSLineSearch
+from ase.optimize.sciopt import SciPyFminBFGS
 
 from quacc import SETTINGS
 from quacc.runners.ase import run_calc, run_opt, run_vib
@@ -98,6 +99,7 @@ def test_run_opt1(tmp_path, monkeypatch):
     assert os.path.exists(os.path.join(results_dir, "test_file.txt.gz"))
     assert np.array_equal(traj[-1].get_positions(), atoms.get_positions()) is False
     assert np.array_equal(traj[-1].cell.array, atoms.cell.array) is True
+    assert "restart" in dyn.todict()
 
 
 def test_run_opt2(tmp_path, monkeypatch):
@@ -124,6 +126,20 @@ def test_run_opt2(tmp_path, monkeypatch):
     traj = dyn.traj_atoms
     assert traj[-1].calc.results is not None
 
+def test_run_scipy_opt(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    atoms = bulk("Cu") * (2, 1, 1)
+    atoms[0].position += 0.1
+    atoms.calc = EMT()
+
+    dyn = run_opt(
+        traj[-1],
+        optimizer=SciPyFminBFGS,
+        copy_files=["test_file.txt"],
+    )
+    traj = dyn.traj_atoms
+    assert traj[-1].calc.results is not None
+    assert "restart" not in dyn.todict()
 
 def test_run_vib(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
