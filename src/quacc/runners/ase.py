@@ -176,8 +176,10 @@ def run_opt(
         msg = "Quacc does not support setting the `trajectory` kwarg."
         raise ValueError(msg)
 
-    # Set Sella kwargs
-    if optimizer.__name__ == "Sella":
+    # Handle optimizer kwargs
+    if optimizer.__name__.startswith("SciPy"):
+        optimizer_kwargs.pop("restart")
+    elif optimizer.__name__ == "Sella":
         _set_sella_kwargs(atoms, optimizer_kwargs)
     elif optimizer.__name__ == "IRC":
         optimizer_kwargs.pop("restart", None)
