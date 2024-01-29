@@ -9,9 +9,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - Added an ASE relax job recipe for ONETEP
+- Added a non-SCF job for Quantum Espresso
+- Added a DOS job for Quantum Espresso
+- Added a DOS flow for Quantum Espresso
 
 ### Fixed
 
+- Ensures the "restart" keyword argument is not set when a SciPy optimizer is used
+- Fixed the `ONETEP_CMD` setting to be `str` instead of `Path` when used to instantiate the calculator
+- Quantum Espresso restarts are now disabled between steps in ASE relaxations
 - Various bug fixes for the Espresso `grid_phonon_flow`
 - Fixed redundant `Structure` info in the `RunSchema`
 
