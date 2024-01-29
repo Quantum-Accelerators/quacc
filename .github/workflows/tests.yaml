@@ -425,8 +425,8 @@ jobs:
           path: "coverage.xml"
           retention-days: 1
 
-  dependabot:
-    name: 'Dependabot'
+  metamerge:
+    name: 'meta-automerge'
     needs:
       - tests-core
       - tests-engines-covalent
@@ -438,7 +438,7 @@ jobs:
       - tests-qchem-sella
       - tests-mlps
     runs-on: ubuntu-latest
-    if: ${{ github.actor == 'dependabot[bot]' && github.event_name == 'pull_request'}}
+    if: (github.actor == 'dependabot[bot]' || github.actor == 'deepsource-autofix[bot]') && github.event_name == 'pull_request'
     steps:
       - name: Dependabot metadata
         id: metadata
