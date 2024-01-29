@@ -425,13 +425,41 @@ jobs:
           path: "coverage.xml"
           retention-days: 1
 
+  dependabot:
+    name: 'Dependabot'
+    needs:
+      - tests-core
+      - tests-engines-covalent
+      - tests-engines
+      - tests-engines2
+      - tests-psi4
+      - tests-defects-phonons-espresso
+      - tests-tblite-dftbplus
+      - tests-qchem-sella
+      - tests-mlps
+    runs-on: ubuntu-latest
+    if: ${{ github.actor == 'dependabot[bot]' && github.event_name == 'pull_request'}}
+    steps:
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v1.3.1
+        with:
+          github-token: '${{ secrets.GITHUB_TOKEN }}'
+      - name: Enable auto-merge for Dependabot PRs
+        run: gh pr merge --auto --merge "$PR_URL"
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
   codecov:
     needs:
       - tests-core
       - tests-engines-covalent
       - tests-engines
+      - tests-engines2
       - tests-psi4
       - tests-defects-phonons-espresso
+      - tests-tblite-dftbplus
       - tests-qchem-sella
       - tests-mlps
     runs-on: ubuntu-latest
