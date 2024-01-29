@@ -126,6 +126,7 @@ def test_run_opt2(tmp_path, monkeypatch):
     traj = dyn.traj_atoms
     assert traj[-1].calc.results is not None
 
+
 def test_run_scipy_opt(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu") * (2, 1, 1)
@@ -136,6 +137,7 @@ def test_run_scipy_opt(tmp_path, monkeypatch):
     traj = dyn.traj_atoms
     assert traj[-1].calc.results is not None
     assert dyn.todict().get("restart") is None
+
 
 def test_run_vib(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
