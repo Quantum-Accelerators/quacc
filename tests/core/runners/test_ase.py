@@ -133,7 +133,7 @@ def test_run_scipy_opt(tmp_path, monkeypatch):
     atoms.calc = EMT()
 
     dyn = run_opt(
-        traj[-1],
+        atoms,
         optimizer=SciPyFminBFGS,
         copy_files=["test_file.txt"],
     )
