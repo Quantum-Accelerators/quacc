@@ -424,14 +424,16 @@ jobs:
           name: ${{ github.job }} coverage report
           path: "coverage.xml"
           retention-days: 1
-
+  
   codecov:
     needs:
       - tests-core
       - tests-engines-covalent
       - tests-engines
+      - tests-engines2
       - tests-psi4
       - tests-defects-phonons-espresso
+      - tests-tblite-dftbplus
       - tests-qchem-sella
       - tests-mlps
     runs-on: ubuntu-latest
