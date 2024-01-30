@@ -76,7 +76,6 @@ def phonon_flow(
     return common_phonon_flow(
         atoms,
         static_job_,
-        symmetrize=symmetrize,
         symprec=symprec,
         min_length=min_length,
         atom_disp=atom_disp,

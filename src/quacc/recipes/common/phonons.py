@@ -76,7 +76,6 @@ def phonon_flow(
         phonon = get_phonopy(
             atoms,
             min_length=min_length,
-            symmetrize=symmetrize,
             symprec=symprec,
             atom_disp=atom_disp,
             phonopy_kwargs=phonopy_kwargs,
@@ -95,7 +94,6 @@ def phonon_flow(
         phonon = get_phonopy(
             atoms,
             min_length=min_length,
-            symmetrize=symmetrize,
             symprec=symprec,
             atom_disp=atom_disp,
             phonopy_kwargs=phonopy_kwargs,
