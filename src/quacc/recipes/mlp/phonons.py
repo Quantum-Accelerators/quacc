@@ -1,4 +1,4 @@
-"""Phonon recipes for TBLite."""
+"""Phonon recipes for MLPs."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
