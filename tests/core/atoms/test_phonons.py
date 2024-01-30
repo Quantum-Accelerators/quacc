@@ -17,7 +17,7 @@ def test_get_phonopy():
     phonopy = get_phonopy(atoms, min_length=5)
     assert_array_equal(phonopy.supercell_matrix, [[2, 0, 0], [0, 2, 0], [0, 0, 2]])
 
-    phonopy = get_phonopy(atoms, atom_disp=1)
+    phonopy = get_phonopy(atoms, displacement=1)
     assert_almost_equal(
         phonopy.displacements, [[0, 0.0, np.sqrt(2) / 2, np.sqrt(2) / 2]]
     )

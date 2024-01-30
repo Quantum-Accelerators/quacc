@@ -27,7 +27,7 @@ def get_phonopy(
     atoms: Atoms,
     min_length: float | None = None,
     symprec: float = 1e-5,
-    atom_disp: float = 0.01,
+    displacement: float = 0.01,
     phonopy_kwargs: dict | None = None,
 ) -> Phonopy:
     """
@@ -41,7 +41,7 @@ def get_phonopy(
         Minimum length of each lattice dimension (A).
     symprec
         Precision for symmetry detection.
-    atom_disp
+    displacement
         Atomic displacement (A).
     phonopy_kwargs
         Additional kwargs to pass to the Phonopy class.
@@ -71,7 +71,7 @@ def get_phonopy(
         supercell_matrix=supercell_matrix,
         **phonopy_kwargs,
     )
-    phonon.generate_displacements(distance=atom_disp)
+    phonon.generate_displacements(distance=displacement)
     return phonon
 
 
