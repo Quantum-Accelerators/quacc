@@ -15,7 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- The `common_phonon_flow` will now symmetrize the input structure automatically. This can be disabled with `symmetrize = False`.
+- Redesigned the `common_phonon_flow` to accept new keyword arguments that enable symmetry reduction. A pre-relaxation step is now also carried out by default.
 
 ### Fixed
 
