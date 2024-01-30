@@ -101,7 +101,7 @@ def copy_decompress_tree(
 
         abs_files, rel_files = [], []
 
-        tree = _tree if isinstance(_tree, list) else list[_tree]
+        tree = [_tree] if not isinstance(_tree, list) else _tree
 
         for f in tree:
             glob_found = list(base.glob(f))
