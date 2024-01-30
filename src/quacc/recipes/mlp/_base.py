@@ -59,6 +59,8 @@ def _pick_calculator(
         from mace import __version__
         from mace.calculators import mace_mp
 
+        if "default_dtype" not in kwargs:
+            kwargs["default_dtype"] = "float64"
         calc = mace_mp(**kwargs)
 
     else:

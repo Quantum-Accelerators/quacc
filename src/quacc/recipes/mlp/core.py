@@ -90,13 +90,10 @@ def relax_job(
         See the type-hint for the data structure.
     """
 
-    calc_defaults = {"default_dtype": "float64"} if method == "mace" else {}
-    calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
-
     opt_defaults = {"fmax": 0.05, "max_steps": 1000, "optimizer": FIRE}
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
-    atoms.calc = _pick_calculator(method, **calc_flags)
+    atoms.calc = _pick_calculator(method, **calc_kwargs)
 
     dyn = run_opt(atoms, relax_cell=relax_cell, **opt_flags)
 
