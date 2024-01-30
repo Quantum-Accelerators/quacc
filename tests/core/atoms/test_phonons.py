@@ -23,4 +23,4 @@ def test_get_phonopy():
     )
 
     phonopy = get_phonopy(atoms, symprec=1e-8)
-    assert phonopy._symprec == 1e-8
+    assert phonopy.symmetry.tolerance == 1e-8
