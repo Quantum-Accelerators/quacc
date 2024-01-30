@@ -29,7 +29,7 @@ def phonon_flow(
     atoms: Atoms,
     static_job: Job,
     symprec: float = 1e-4,
-    min_length: float | None = 20.0,
+    min_length: float | None = 15.0,
     atom_disp: float = 0.01,
     t_step: float = 10,
     t_min: float = 0,
