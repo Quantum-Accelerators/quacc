@@ -78,8 +78,8 @@ def phonon_flow(
         See the type-hint for the data structure.
     """
     calc_defaults = {
-        "static_job": {"method": method},
         "relax_job": {"method": method, "opt_params": {"fmax": 1e-3}},
+        "static_job": {"method": method},
     }
     job_params = recursive_dict_merge(calc_defaults, job_params)
 
