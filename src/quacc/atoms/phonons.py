@@ -26,7 +26,6 @@ if TYPE_CHECKING:
 def get_phonopy(
     atoms: Atoms,
     min_length: float | None = None,
-    symmetrize: bool = False,
     symprec: float = 1e-5,
     atom_disp: float = 0.01,
     phonopy_kwargs: dict | None = None,
@@ -40,8 +39,6 @@ def get_phonopy(
         ASE atoms object.
     min_length
         Minimum length of each lattice dimension (A).
-    symmetrize
-        Whether to symmetrize the structure.
     symprec
         Precision for symmetry detection.
     atom_disp
@@ -57,10 +54,9 @@ def get_phonopy(
     phonopy_kwargs = phonopy_kwargs or {}
 
     structure = AseAtomsAdaptor().get_structure(atoms)
-    if symmetrize:
-        structure = SpacegroupAnalyzer(
-            structure, symprec=symprec
-        ).get_symmetrized_structure()
+    structure = SpacegroupAnalyzer(
+        structure, symprec=symprec
+    ).get_symmetrized_structure()
 
     if min_length:
         n_supercells = np.round(np.ceil(min_length / atoms.cell.lengths()))

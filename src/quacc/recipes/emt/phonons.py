@@ -19,7 +19,6 @@ if TYPE_CHECKING:
 @flow
 def phonon_flow(
     atoms: Atoms,
-    symmetrize: bool = True,
     symprec: float = 1e-4,
     min_length: float | None = 20.0,
     atom_disp: float = 0.01,
@@ -44,10 +43,6 @@ def phonon_flow(
     ----------
     atoms
         Atoms object
-    supercell_matrix
-        Supercell matrix to use. Defaults to 2x2x2 supercell.
-    symmetrize
-        Whether to symmetrize the structure.
     symprec
         Precision for symmetry detection.
     min_length

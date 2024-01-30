@@ -20,7 +20,6 @@ if TYPE_CHECKING:
 @flow
 def phonon_flow(
     atoms: Atoms,
-    symmetrize: bool = True,
     symprec: float = 1e-4,
     min_length: float | None = 20.0,
     atom_disp: float = 0.01,
@@ -47,8 +46,6 @@ def phonon_flow(
         Atoms object
     symprec
         Precision for symmetry detection.
-    symmetrize
-        Whether to symmetrize the structure.
     min_length
         Minimum length of each lattice dimension (A).
     atom_disp

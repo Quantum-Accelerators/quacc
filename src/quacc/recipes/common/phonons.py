@@ -28,7 +28,6 @@ if TYPE_CHECKING:
 def phonon_flow(
     atoms: Atoms,
     static_job: Job,
-    symmetrize: bool = True,
     symprec: float = 1e-4,
     min_length: float | None = 20.0,
     atom_disp: float = 0.01,
@@ -49,8 +48,6 @@ def phonon_flow(
         Atoms object with calculator attached.
     static_job
         The static job to calculate the forces.
-    symmetrize
-        Whether to symmetrize the structure.
     symprec
         Precision for symmetry detection.
     min_length
