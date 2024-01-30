@@ -13,6 +13,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added a DOS job for Quantum Espresso
 - Added a DOS flow for Quantum Espresso
 
+### Changed
+
+- The `common_phonon_flow` will now symmetrize the input structure automatically. This can be disabled with `symmetrize = False`.
+
 ### Fixed
 
 - Ensures the "restart" keyword argument is not set when a SciPy optimizer is used
