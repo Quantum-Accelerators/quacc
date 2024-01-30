@@ -32,7 +32,7 @@ def phonon_flow(
     relax_job: Job | None = None,
     symprec: float = 1e-4,
     min_length: float | None = 15.0,
-    atom_disp: float = 0.01,
+    displacement: float = 0.01,
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
@@ -56,7 +56,7 @@ def phonon_flow(
         Precision for symmetry detection.
     min_length
         Minimum length of each lattice dimension (A).
-    atom_disp
+    displacement
         Atomic displacement (A).
     t_step
         Temperature step (K).
@@ -81,7 +81,7 @@ def phonon_flow(
             atoms,
             min_length=min_length,
             symprec=symprec,
-            atom_disp=atom_disp,
+            displacement=displacement,
             phonopy_kwargs=phonopy_kwargs,
         )
         supercells = [
@@ -97,7 +97,7 @@ def phonon_flow(
             atoms,
             min_length=min_length,
             symprec=symprec,
-            atom_disp=atom_disp,
+            displacement=displacement,
             phonopy_kwargs=phonopy_kwargs,
         )
         parameters = force_job_results[-1].get("parameters")

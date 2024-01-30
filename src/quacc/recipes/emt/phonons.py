@@ -22,7 +22,7 @@ def phonon_flow(
     atoms: Atoms,
     symprec: float = 1e-4,
     min_length: float | None = 15.0,
-    atom_disp: float = 0.01,
+    displacement: float = 0.01,
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
@@ -53,7 +53,7 @@ def phonon_flow(
         Precision for symmetry detection.
     min_length
         Minimum length of each lattice dimension (A).
-    atom_disp
+    displacement
         Atomic displacement (A).
     t_step
         Temperature step (K).
@@ -92,7 +92,7 @@ def phonon_flow(
         relax_job=relax_job_ if run_relax else None,
         symprec=symprec,
         min_length=min_length,
-        atom_disp=atom_disp,
+        displacement=displacement,
         t_step=t_step,
         t_min=t_min,
         t_max=t_max,
