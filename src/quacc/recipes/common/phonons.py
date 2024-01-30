@@ -75,12 +75,8 @@ def phonon_flow(
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][]
     """
 
-    @job
-    def _relax_job(atoms: Atoms) -> RunSchema:
-        return relax_job(atoms)
-
     @subflow
-    def _phonopy_forces_subflow(atoms: Atoms) -> list[dict]:
+    def _get_forces_subflow(atoms: Atoms) -> list[dict]:
         phonon = get_phonopy(
             atoms,
             min_length=min_length,
@@ -96,9 +92,7 @@ def phonon_flow(
         ]
 
     @job
-    def _phonopy_thermo_job(
-        atoms: Atoms, force_job_results: list[dict]
-    ) -> PhononSchema:
+    def _thermo_job(atoms: Atoms, force_job_results: list[dict]) -> PhononSchema:
         phonon = get_phonopy(
             atoms,
             min_length=min_length,
@@ -118,7 +112,7 @@ def phonon_flow(
         )
 
     if relax_job is not None:
-        atoms = _relax_job(atoms)["atoms"]
+        atoms = relax_job(atoms)["atoms"]
 
-    force_job_results = _phonopy_forces_subflow(atoms)
-    return _phonopy_thermo_job(atoms, force_job_results)
+    force_job_results = _get_forces_subflow(atoms)
+    return _thermo_job(atoms, force_job_results)
