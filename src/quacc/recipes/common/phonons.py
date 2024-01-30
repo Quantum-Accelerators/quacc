@@ -20,6 +20,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc import Job
+    from quacc.schemas._aliases.ase import RunSchema
     from quacc.schemas._aliases.phonons import PhononSchema
 
 
@@ -27,7 +28,8 @@ if TYPE_CHECKING:
 @requires(phonopy, "Phonopy must be installed. Run `pip install quacc[phonons]`")
 def phonon_flow(
     atoms: Atoms,
-    static_job: Job,
+    force_job: Job,
+    relax_job: Job | None = None,
     symprec: float = 1e-4,
     min_length: float | None = 15.0,
     atom_disp: float = 0.01,
@@ -46,8 +48,10 @@ def phonon_flow(
     ----------
     atoms
         Atoms object with calculator attached.
-    static_job
+    force_job
         The static job to calculate the forces.
+    relax_job
+        The job used to relax the structure before calculating the forces.
     symprec
         Precision for symmetry detection.
     min_length
@@ -71,6 +75,10 @@ def phonon_flow(
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][]
     """
 
+    @job
+    def _relax_job(atoms: Atoms) -> RunSchema:
+        return relax_job(atoms)
+
     @subflow
     def _phonopy_forces_subflow(atoms: Atoms) -> list[dict]:
         phonon = get_phonopy(
@@ -84,7 +92,7 @@ def phonon_flow(
             phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
         ]
         return [
-            static_job(supercell) for supercell in supercells if supercell is not None
+            force_job(supercell) for supercell in supercells if supercell is not None
         ]
 
     @job
@@ -108,6 +116,9 @@ def phonon_flow(
         return summarize_phonopy(
             phonon, atoms, parameters=parameters, additional_fields=additional_fields
         )
+
+    if relax_job is not None:
+        atoms = _relax_job(atoms)["atoms"]
 
     force_job_results = _phonopy_forces_subflow(atoms)
     return _phonopy_thermo_job(atoms, force_job_results)
