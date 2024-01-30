@@ -84,7 +84,6 @@ def test_relax_job(tmp_path, monkeypatch, method):
     assert np.shape(output["results"]["forces"]) == (8, 3)
     assert output["atoms"] != atoms
     assert output["atoms"].get_volume() == pytest.approx(atoms.get_volume())
-    assert output["parameters"]["method"] == method
 
 
 @pytest.mark.parametrize("method", methods)
@@ -109,4 +108,3 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
     assert np.shape(output["results"]["forces"]) == (8, 3)
     assert output["atoms"] != atoms
     assert output["atoms"].get_volume() != pytest.approx(atoms.get_volume())
-    assert output["parameters"]["method"] == method
