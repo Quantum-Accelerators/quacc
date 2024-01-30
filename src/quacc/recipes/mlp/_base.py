@@ -15,14 +15,14 @@ logger = logging.getLogger(__name__)
 
 @lru_cache
 def _pick_calculator(
-    calculator: Literal["mace", "m3gnet", "chgnet"], **kwargs
+    method: Literal["mace", "m3gnet", "chgnet"], **kwargs
 ) -> Calculator:
     """
     Adapted from `matcalc.util.get_universal_calculator`.
 
     Parameters
     ----------
-    calculator
+    method
         Name of the calculator to use
     **kwargs
         Custom kwargs for the underlying calculator. Set a value to
@@ -40,7 +40,7 @@ def _pick_calculator(
     if not torch.cuda.is_available():
         logger.warning("CUDA is not available to PyTorch. Calculations will be slow.")
 
-    if calculator.lower().startswith("m3gnet"):
+    if method.lower().startswith("m3gnet"):
         import matgl
         from matgl import __version__
         from matgl.ext.ase import M3GNetCalculator
@@ -49,13 +49,13 @@ def _pick_calculator(
         kwargs.setdefault("stress_weight", 1.0 / 160.21766208)
         calc = M3GNetCalculator(potential=model, **kwargs)
 
-    elif calculator.lower() == "chgnet":
+    elif method.lower() == "chgnet":
         from chgnet import __version__
         from chgnet.model.dynamics import CHGNetCalculator
 
         calc = CHGNetCalculator(**kwargs)
 
-    elif calculator.lower() == "mace":
+    elif method.lower() == "mace":
         from mace import __version__
         from mace.calculators import mace_mp
 
@@ -64,8 +64,9 @@ def _pick_calculator(
         calc = mace_mp(**kwargs)
 
     else:
-        raise ValueError(f"Unrecognized {calculator=}.")
+        raise ValueError(f"Unrecognized {method=}.")
 
     calc.parameters["version"] = __version__
+    calc.parameters["model"] = method
 
     return calc
