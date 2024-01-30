@@ -67,6 +67,6 @@ def pick_calculator(
         raise ValueError(f"Unrecognized {method=}.")
 
     calc.parameters["version"] = __version__
-    calc.parameters["model"] = method
+    calc.parameters["method"] = method
 
     return calc
