@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from ase.optimize import FIRE
 
 from quacc import job
-from quacc.recipes.mlp._base import _pick_calculator
+from quacc.recipes.mlp._base import pick_calculator
 from quacc.runners.ase import run_calc, run_opt
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import recursive_dict_merge
@@ -47,7 +47,7 @@ def static_job(
     calc_defaults = {"default_dtype": "float64"} if method == "mace" else {}
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
 
-    atoms.calc = _pick_calculator(method, **calc_flags)
+    atoms.calc = pick_calculator(method, **calc_flags)
     final_atoms = run_calc(atoms)
     return summarize_run(
         final_atoms, atoms, additional_fields={"name": f"{method} Static"}
@@ -93,7 +93,7 @@ def relax_job(
     opt_defaults = {"fmax": 0.05, "max_steps": 1000, "optimizer": FIRE}
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
-    atoms.calc = _pick_calculator(method, **calc_kwargs)
+    atoms.calc = pick_calculator(method, **calc_kwargs)
 
     dyn = run_opt(atoms, relax_cell=relax_cell, **opt_flags)
 

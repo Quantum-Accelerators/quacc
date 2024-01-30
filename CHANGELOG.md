@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- Added phonon job for MLPs
 - Added an ASE relax job recipe for ONETEP
 - Added a non-SCF job for Quantum Espresso
 - Added a DOS job for Quantum Espresso
