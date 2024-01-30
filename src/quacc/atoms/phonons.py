@@ -58,7 +58,9 @@ def get_phonopy(
 
     structure = AseAtomsAdaptor().get_structure(structure)
     if symmetrize:
-        structure = SpacegroupAnalyzer(structure, symprec=symprec).get_symmetrized_structure()
+        structure = SpacegroupAnalyzer(
+            structure, symprec=symprec
+        ).get_symmetrized_structure()
 
     n_supercells = np.round(np.ceil(min_length / atoms.cell.lengths()))
     supercell_matrix = np.diag([n_supercells, n_supercells, n_supercells])
