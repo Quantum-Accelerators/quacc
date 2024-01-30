@@ -13,7 +13,6 @@ ORCA_DIR = Path(FILE_DIR, "orca_run")
 
 def mock_execute(self, *args, **kwargs):
     copy(ORCA_DIR / "orca.out.gz", "orca.out.gz")
-    pass
 
 
 @pytest.fixture(autouse=True)

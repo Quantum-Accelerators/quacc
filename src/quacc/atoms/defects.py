@@ -9,8 +9,8 @@ from pymatgen.entries.computed_entries import ComputedStructureEntry
 from pymatgen.io.ase import AseAtomsAdaptor
 
 try:
-    import shakenbreak
     from pymatgen.analysis.defects.generators import VacancyGenerator
+    from shakenbreak.input import Distortions
 
     has_deps = True
 except ImportError:
@@ -84,7 +84,6 @@ def make_defects_from_bulk(
     list[Atoms]
         All generated defects
     """
-    from shakenbreak.input import Distortions
 
     # Use pymatgen-analysis-defects and ShakeNBreak to generate defects
     struct = AseAtomsAdaptor.get_structure(atoms)

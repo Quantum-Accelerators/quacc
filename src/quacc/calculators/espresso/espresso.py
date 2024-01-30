@@ -208,7 +208,7 @@ class EspressoTemplate(EspressoTemplate_):
             fildos = self.outfiles["fildos"]
             with Path(fildos).open("r") as fd:
                 lines = fd.readlines()
-                fermi = float(re.search(r"-?\d+\.?\d*", lines[0]).group(0))
+                fermi = float(re.search(r"-?\d+\.?\d*", lines[0])[0])
                 dos = np.loadtxt(lines[1:])
             results = {fildos.name: {"dos": dos, "fermi": fermi}}
         else:

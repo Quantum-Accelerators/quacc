@@ -13,7 +13,6 @@ if TYPE_CHECKING:
     from typing import Any, Callable
 
     from ase.atoms import Atoms
-    from numpy.typing import ArrayLike
 
     from quacc.schemas._aliases.phonons import PhononSchema
 
