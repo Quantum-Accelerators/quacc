@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from monty.dev import requires
 
 from quacc import flow, job, subflow
-from quacc.atoms.phonons import atoms_to_phonopy, phonopy_atoms_to_ase_atoms
+from quacc.atoms.phonons import get_phonopy, phonopy_atoms_to_ase_atoms
 from quacc.schemas.phonons import summarize_phonopy
 
 try:
@@ -28,9 +28,9 @@ if TYPE_CHECKING:
 def phonon_flow(
     atoms: Atoms,
     static_job: Job,
-    supercell_matrix: tuple[
-        tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]
-    ] = ((2, 0, 0), (0, 2, 0), (0, 0, 2)),
+    symmetrize: bool = True,
+    symprec: float = 1e-4,
+    min_length: float | None = 20.0,
     atom_disp: float = 0.01,
     t_step: float = 10,
     t_min: float = 0,
@@ -49,8 +49,12 @@ def phonon_flow(
         Atoms object with calculator attached.
     static_job
         The static job to calculate the forces.
-    supercell_matrix
-        Supercell matrix to use. Defaults to 2x2x2 supercell.
+    symmetrize
+        Whether to symmetrize the structure.
+    symprec
+        Precision for symmetry detection.
+    min_length
+        Minimum length of each lattice dimension (A).
     atom_disp
         Atomic displacement (A).
     t_step
@@ -72,8 +76,13 @@ def phonon_flow(
 
     @subflow
     def _phonopy_forces_subflow(atoms: Atoms) -> list[dict]:
-        phonon = atoms_to_phonopy(
-            atoms, supercell_matrix, atom_disp, phonopy_kwargs=phonopy_kwargs
+        phonon = get_phonopy(
+            atoms,
+            min_length=min_length,
+            symmetrize=symmetrize,
+            symprec=symprec,
+            atom_disp=atom_disp,
+            phonopy_kwargs=phonopy_kwargs,
         )
         supercells = [
             phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
@@ -86,8 +95,13 @@ def phonon_flow(
     def _phonopy_thermo_job(
         atoms: Atoms, force_job_results: list[dict]
     ) -> PhononSchema:
-        phonon = atoms_to_phonopy(
-            atoms, supercell_matrix, atom_disp, phonopy_kwargs=phonopy_kwargs
+        phonon = get_phonopy(
+            atoms,
+            min_length=min_length,
+            symmetrize=symmetrize,
+            symprec=symprec,
+            atom_disp=atom_disp,
+            phonopy_kwargs=phonopy_kwargs,
         )
         parameters = force_job_results[-1].get("parameters")
         forces = [output["results"]["forces"] for output in force_job_results]

@@ -19,12 +19,10 @@ if TYPE_CHECKING:
 @flow
 def phonon_flow(
     atoms: Atoms,
-    supercell_matrix: tuple[
-        tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]
-    ] = ((2, 0, 0), (0, 2, 0), (0, 0, 2)),
-    atom_disp: float = 0.01,
-    symprec: float = 1e-5,
     symmetrize: bool = True,
+    symprec: float = 1e-4,
+    min_length: float | None = 20.0,
+    atom_disp: float = 0.01,
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
@@ -48,12 +46,14 @@ def phonon_flow(
         Atoms object
     supercell_matrix
         Supercell matrix to use. Defaults to 2x2x2 supercell.
-    atom_disp
-        Atomic displacement (A).
-    symprec
-        Precision for symmetry detection.
     symmetrize
         Whether to symmetrize the structure.
+    symprec
+        Precision for symmetry detection.
+    min_length
+        Minimum length of each lattice dimension (A).
+    atom_disp
+        Atomic displacement (A).
     t_step
         Temperature step (K).
     t_min
@@ -80,11 +80,12 @@ def phonon_flow(
     return common_phonon_flow(
         atoms,
         static_job_,
-        supercell_matrix=supercell_matrix,
+        symmetrize=symmetrize,
+        symprec=symprec,
+        min_length=min_length,
         atom_disp=atom_disp,
         t_step=t_step,
         t_min=t_min,
         t_max=t_max,
-        phonopy_kwargs={"symprec": symprec, "is_symmetry": symmetrize},
         additional_fields={"name": "EMT Phonons"},
     )
