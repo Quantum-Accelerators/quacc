@@ -20,9 +20,6 @@ if TYPE_CHECKING:
 @flow
 def phonon_flow(
     atoms: Atoms,
-    supercell_matrix: tuple[
-        tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]
-    ] = ((2, 0, 0), (0, 2, 0), (0, 0, 2)),
     symmetrize: bool = True,
     symprec: float = 1e-4,
     min_length: float | None = 20.0,
