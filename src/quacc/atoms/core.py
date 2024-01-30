@@ -214,8 +214,3 @@ def get_final_atoms_from_dyn(dyn: Dynamics) -> Atoms:
         Atoms object
     """
     return dyn.atoms.atoms if isinstance(dyn.atoms, Filter) else dyn.atoms
-
-
-def get_number_supercells(atoms: Atoms, min_length: float) -> Atoms:
-    factors = 
-    
