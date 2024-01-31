@@ -303,7 +303,7 @@ def projwfc_flow(
         include_wfc=True,
     )
 
-    projwfc_results = projwfc_job(prev_dir=file_to_copy)
+    projwfc_results = projwfc_job_(prev_dir=file_to_copy)
 
     return {
         "static_job": static_results,
