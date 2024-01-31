@@ -380,8 +380,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Upload coverage to Codecov
-        env:
-          token: ${{ secrets.CODECOV_TOKEN }}
         uses: codecov/codecov-action@v4
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
