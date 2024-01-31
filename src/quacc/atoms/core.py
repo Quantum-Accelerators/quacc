@@ -108,7 +108,7 @@ def get_charge_attribute(atoms: Atoms) -> int:
 
     Returns
     -------
-    charge
+    int
         Charge of the Atoms object
     """
     return (
@@ -131,7 +131,7 @@ def get_spin_multiplicity_attribute(atoms: Atoms) -> int:
 
     Returns
     -------
-    spin_multiplicity
+    int
         Spin multiplicity of the Atoms object
     """
     return (
