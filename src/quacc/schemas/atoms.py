@@ -10,7 +10,6 @@ from monty.json import jsanitize
 from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc.atoms.core import (
-    check_charge_and_spin,
     copy_atoms,
     get_charge_attribute,
     get_spin_multiplicity_attribute,
@@ -114,11 +113,16 @@ def _set_charge_and_spin(
     """
 
     if charge_and_multiplicity:
-        atoms.charge = charge_and_multiplicity[0]
-        atoms.spin_multiplicity = charge_and_multiplicity[1]
+        charge = charge_and_multiplicity[0]
+        spin_multiplicity = charge_and_multiplicity[1]
     else:
-        atoms.charge = get_charge_attribute(atoms)
-        atoms.spin_multiplicity = get_spin_multiplicity_attribute(atoms)
+        charge = get_charge_attribute(atoms)
+        spin_multiplicity = get_spin_multiplicity_attribute(atoms)
+
+    if charge is not None:
+        atoms.charge = charge
+    if spin_multiplicity is not None:
+        atoms.spin_multiplicity = spin_multiplicity
 
 
 def _quacc_sanitize(obj: Any) -> Any:
