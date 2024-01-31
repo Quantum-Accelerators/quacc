@@ -35,6 +35,7 @@ if TYPE_CHECKING:
         non_scf_job: RunSchema
         projwfc_job: RunSchema
 
+
 @job
 def dos_job(
     prev_dir: str | Path,
@@ -77,6 +78,7 @@ def dos_job(
         additional_fields={"name": "dos.x Density-of-States"},
         copy_files=prev_dir,
     )
+
 
 @job
 def projwfc_job(
