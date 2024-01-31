@@ -442,12 +442,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download coverage artifacts
-        uses: actions/download-artifact@v4
-
       - name: Upload coverage to Codecov
-        uses: Wandalen/wretry.action@v1
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
-          action: codecov/codecov-action@v3
-          attempt_limit: 10
-          attempt_delay: 30000
+          fail_ci_if_error: true
