@@ -51,13 +51,6 @@ jobs:
         if: matrix.python-version == '3.12'
         run: pytest --durations=10
 
-      - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.job }} ${{ matrix.python-version }} ${{ matrix.os }} coverage report
-          path: "coverage.xml"
-          retention-days: 1
-
   tests-engines-covalent:
     runs-on: ubuntu-latest
     strategy:
@@ -93,13 +86,6 @@ jobs:
 
       - name: Stop Covalent server
         run: covalent stop
-
-      - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.job }} coverage report
-          path: "coverage.xml"
-          retention-days: 1
 
   tests-engines:
     runs-on: ubuntu-latest
@@ -150,13 +136,6 @@ jobs:
           coverage combine -a
           coverage xml
 
-      - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.job }} ${{ matrix.wflow_engine }} coverage report
-          path: "coverage.xml"
-          retention-days: 1
-
   tests-engines2:
     runs-on: ubuntu-latest
     strategy:
@@ -189,13 +168,6 @@ jobs:
 
       - name: Run tests with pytest
         run: pytest --durations=10 tests/${{ matrix.wflow_engine }} --cov=quacc --cov-report=xml
-
-      - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.job }} ${{ matrix.wflow_engine }} coverage report
-          path: "coverage.xml"
-          retention-days: 1
 
   tests-psi4:
     strategy:
@@ -236,13 +208,6 @@ jobs:
       - name: Run tests with pytest
         run: pytest -k 'psi4' --durations=10 --cov=quacc --cov-report=xml
 
-      - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.job }} coverage report
-          path: "coverage.xml"
-          retention-days: 1
-
   tests-defects-phonons-espresso:
     strategy:
       fail-fast: true
@@ -282,13 +247,6 @@ jobs:
       - name: Run tests with pytest
         run: pytest -k 'defects or phonon or espresso' --durations=10 --cov=quacc --cov-report=xml
 
-      - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.job }} coverage report
-          path: "coverage.xml"
-          retention-days: 1
-
   tests-tblite-dftbplus:
     strategy:
       fail-fast: true
@@ -327,13 +285,6 @@ jobs:
 
       - name: Run tests with pytest
         run: pytest -k 'dftb or tblite' --durations=10 --cov=quacc --cov-report=xml
-
-      - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.job }} coverage report
-          path: "coverage.xml"
-          retention-days: 1
 
   tests-qchem-sella:
     strategy:
@@ -375,13 +326,6 @@ jobs:
       - name: Run tests with pytest
         run: pytest -k 'qchem or sella' --durations=10 --cov=quacc --cov-report=xml
 
-      - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.job }} coverage report
-          path: "coverage.xml"
-          retention-days: 1
-
   tests-mlps:
     strategy:
       fail-fast: true
@@ -419,13 +363,6 @@ jobs:
       - name: Run tests with pytest
         run: pytest -k 'mlp or newtonnet' --durations=10 --cov=quacc --cov-report=xml
 
-      - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.job }} coverage report
-          path: "coverage.xml"
-          retention-days: 1
-
   codecov:
     needs:
       - tests-core
@@ -441,9 +378,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Download coverage artifacts
-        uses: actions/download-artifact@v4
 
       - name: Upload coverage to Codecov
         env:
