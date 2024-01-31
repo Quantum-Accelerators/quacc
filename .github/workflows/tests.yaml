@@ -446,10 +446,8 @@ jobs:
         uses: actions/download-artifact@v4
 
       - name: Upload coverage to Codecov
-        uses: Wandalen/wretry.action@v1
         env:
           token: ${{ secrets.CODECOV_TOKEN }}
+        uses: codecov/codecov-action@v4
         with:
-          action: codecov/codecov-action@v4
-          attempt_limit: 10
-          attempt_delay: 30000
+          fail_ci_if_error: true
