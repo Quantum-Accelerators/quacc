@@ -97,7 +97,7 @@ def copy_atoms(atoms: Atoms) -> Atoms:
     return atoms
 
 
-def get_charge_attribute(atoms: Atoms) -> int:
+def get_charge_attribute(atoms: Atoms) -> int | None:
     """
     Get the charge of an Atoms object.
 
@@ -108,7 +108,7 @@ def get_charge_attribute(atoms: Atoms) -> int:
 
     Returns
     -------
-    int
+    int | None
         Charge of the Atoms object
     """
     return (
@@ -120,7 +120,7 @@ def get_charge_attribute(atoms: Atoms) -> int:
     )
 
 
-def get_spin_multiplicity_attribute(atoms: Atoms) -> int:
+def get_spin_multiplicity_attribute(atoms: Atoms) -> int | None:
     """
     Get the spin multiplicity of an Atoms object.
 
@@ -131,7 +131,7 @@ def get_spin_multiplicity_attribute(atoms: Atoms) -> int:
 
     Returns
     -------
-    int
+    int | None
         Spin multiplicity of the Atoms object
     """
     return (
