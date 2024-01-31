@@ -67,7 +67,7 @@ def check_is_metal(atoms: Atoms) -> bool:
     if atoms.pbc.any():
         struct = AseAtomsAdaptor.get_structure(atoms)
     else:
-        struct = AseAtomsAdaptor.get_molecule(atoms)
+        struct = AseAtomsAdaptor.get_molecule(atoms, charge_spin_check=False)
 
     return all(k.is_metal for k in struct.composition)
 
