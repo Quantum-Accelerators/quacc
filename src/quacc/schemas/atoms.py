@@ -9,7 +9,12 @@ from emmet.core.structure import MoleculeMetadata, StructureMetadata
 from monty.json import jsanitize
 from pymatgen.io.ase import AseAtomsAdaptor
 
-from quacc.atoms.core import check_charge_and_spin, copy_atoms
+from quacc.atoms.core import (
+    check_charge_and_spin,
+    copy_atoms,
+    get_charge_attribute,
+    get_spin_multiplicity_attribute,
+)
 from quacc.utils.dicts import clean_task_doc
 
 if TYPE_CHECKING:
@@ -54,7 +59,7 @@ def atoms_to_metadata(
     results = {}
 
     # Set any charge or multiplicity keys
-    if charge_and_multiplicity:
+    if atoms.pbc.any():
         _set_charge_and_spin(atoms, charge_and_multiplicity=charge_and_multiplicity)
 
     # Strip the dummy atoms, if present
@@ -112,20 +117,8 @@ def _set_charge_and_spin(
         atoms.charge = charge_and_multiplicity[0]
         atoms.spin_multiplicity = charge_and_multiplicity[1]
     else:
-        charge = getattr(atoms, "charge", None)
-        spin_multiplicity = getattr(atoms, "spin_multiplicity", None)
-        if charge is None and spin_multiplicity is None:
-            charge, spin_multiplicity = check_charge_and_spin(atoms)
-            atoms.charge = charge
-            atoms.spin_multiplicity = spin_multiplicity
-        elif charge is None:
-            charge, _ = check_charge_and_spin(
-                atoms, spin_multiplicity=spin_multiplicity
-            )
-            atoms.charge = charge
-        else:
-            _, spin_multiplicity = check_charge_and_spin(atoms, charge=charge)
-            atoms.spin_multiplicity = spin_multiplicity
+        atoms.charge = get_charge_attribute(atoms)
+        atoms.spin_multiplicity = get_spin_multiplicity_attribute(atoms)
 
 
 def _quacc_sanitize(obj: Any) -> Any:
