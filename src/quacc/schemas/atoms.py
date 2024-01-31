@@ -54,7 +54,7 @@ def atoms_to_metadata(
     results = {}
 
     # Set any charge or multiplicity keys
-    if not atoms.pbc.any():
+    if charge_and_multiplicity:
         _set_charge_and_spin(atoms, charge_and_multiplicity=charge_and_multiplicity)
 
     # Strip the dummy atoms, if present
@@ -69,7 +69,7 @@ def atoms_to_metadata(
             if store_pmg:
                 results["structure"] = struct
         else:
-            mol = AseAtomsAdaptor().get_molecule(atoms)
+            mol = AseAtomsAdaptor().get_molecule(atoms, charge_spin_check=False)
             metadata = MoleculeMetadata().from_molecule(mol).model_dump()
             if store_pmg:
                 results["molecule"] = mol
