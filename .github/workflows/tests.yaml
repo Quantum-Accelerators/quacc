@@ -442,6 +442,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Download coverage artifacts
+        uses: actions/download-artifact@v4
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         env:
