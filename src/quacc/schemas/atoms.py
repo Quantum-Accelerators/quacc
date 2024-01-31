@@ -59,7 +59,7 @@ def atoms_to_metadata(
     results = {}
 
     # Set any charge or multiplicity keys
-    if atoms.pbc.any():
+    if not atoms.pbc.any():
         _set_charge_and_spin(atoms, charge_and_multiplicity=charge_and_multiplicity)
 
     # Strip the dummy atoms, if present
