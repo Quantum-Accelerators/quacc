@@ -40,7 +40,6 @@ class Vasp(Vasp_):
         preset: None | str = None,
         use_custodian: bool | None = None,
         incar_copilot: Literal["off", "on", "aggressive"] | None = None,
-        copy_magmoms: bool | None = None,
         preset_mag_default: float | None = None,
         mag_cutoff: None | float = None,
         elemental_magmoms: dict[str, float] | None = None,
@@ -72,10 +71,6 @@ class Vasp(Vasp_):
             off: Do not use co-pilot mode. INCAR parameters will be unmodified.
             on: Use co-pilot mode. This will only modify INCAR flags not already set by the user.
             aggressive: Use co-pilot mode in aggressive mode. This will modify INCAR flags even if they are already set by the user.
-        copy_magmoms
-            If True, any pre-existing `atoms.get_magnetic_moments()` will be set in
-            `atoms.set_initial_magnetic_moments()`. Set this to False if you want to
-            use a preset's magnetic moments every time. Default is True in settings.
         preset_mag_default
             Default magmom value for sites without one explicitly specified in the
             preset. Only used if a preset is specified with an elemental_mags_dict
@@ -109,9 +104,6 @@ class Vasp(Vasp_):
         incar_copilot = (
             SETTINGS.VASP_INCAR_COPILOT if incar_copilot is None else incar_copilot
         )
-        copy_magmoms = (
-            SETTINGS.VASP_COPY_MAGMOMS if copy_magmoms is None else copy_magmoms
-        )
         preset_mag_default = (
             SETTINGS.VASP_PRESET_MAG_DEFAULT
             if preset_mag_default is None
@@ -124,7 +116,6 @@ class Vasp(Vasp_):
         self.preset = preset
         self.use_custodian = use_custodian
         self.incar_copilot = incar_copilot
-        self.copy_magmoms = copy_magmoms
         self.preset_mag_default = preset_mag_default
         self.mag_cutoff = mag_cutoff
         self.elemental_magmoms = elemental_magmoms
@@ -258,7 +249,6 @@ class Vasp(Vasp_):
         self.input_atoms = set_magmoms(
             self.input_atoms,
             elemental_mags_dict=self.elemental_magmoms,
-            copy_magmoms=self.copy_magmoms,
             elemental_mags_default=self.preset_mag_default,
             mag_cutoff=self.mag_cutoff,
         )

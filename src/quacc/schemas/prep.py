@@ -89,15 +89,12 @@ def set_magmoms(
     atoms: Atoms,
     elemental_mags_dict: dict[str, float] | None = None,
     elemental_mags_default: float = 1.0,
-    copy_magmoms: bool = True,
     mag_cutoff: float | None = 0.05,
 ) -> Atoms:  # sourcery skip
     """
     Sets the initial magnetic moments in the Atoms object.
 
     This function deserves particular attention. The following logic is applied:
-    - If there is a converged set of magnetic moments, those are moved to the
-    initial magmoms if copy_magmoms is True.
     - If there is no converged set of magnetic moments but the user has set initial magmoms, those are simply used
     as is.
     - If there are no converged magnetic moments or initial magnetic
@@ -119,9 +116,6 @@ def set_magmoms(
         in the elemental_mags_dict. Only used if elemental_mags_dict is not
         None. This kwarg is mainly a convenience so that you don't need to list
         every single element in the elemental_mags_dict.
-    copy_magmoms
-        Whether to copy the magnetic moments from the converged set of magnetic
-        moments to the initial magnetic moments.
     mag_cutoff
         Magnitude below which the magnetic moments are considered to be zero. If
         None, no cutoff will be applied
@@ -162,8 +156,6 @@ def set_magmoms(
                 atoms.set_initial_magnetic_moments(initial_mags)
         else:
             pass
-    elif copy_magmoms:
-        atoms.set_initial_magnetic_moments(mags)
 
     # If all the set mags are below mag_cutoff, set them to 0
     if mag_cutoff:
