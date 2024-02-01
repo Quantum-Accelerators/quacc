@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from ase.calculators.vasp import Vasp as Vasp_
+from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc.atoms.core import check_is_metal
 from quacc.utils.kpts import convert_pmg_kpts
@@ -14,6 +15,7 @@ if TYPE_CHECKING:
     from typing import Any, Literal
 
     from ase.atoms import Atoms
+    from pymatgen.io.vasp.sets import DictSet
 
     from quacc.utils.kpts import PmgKpts
 
@@ -346,3 +348,32 @@ def set_pmg_kpts(
         user_calc_params["gamma"] = gamma
 
     return user_calc_params
+
+
+def get_pmg_input_set_params(dict_set: DictSet, atoms: Atoms | None = None) -> dict:
+    """
+    Convert a Pymatgen VASP input set into an ASE-compatible set of
+    calculator parameters.
+
+    Parameters
+    ----------
+    pmg_input_set
+        The Pymatgen VASP input set.
+    atoms
+        The input atoms.
+
+    Returns
+    -------
+    dict
+        The ASE-compatible set of calculator parameters.
+    """
+    structure = AseAtomsAdaptor.get_structure(atoms)
+    pmg_input_set = dict_set(structure=structure)
+    kpoints_dict = pmg_input_set.kpoints.as_dict()
+    potcar_symbols = pmg_input_set.potcar_symbols
+    potcar_setups = {symbol.split("_")[0]: symbol for symbol in potcar_symbols}
+    return pmg_input_set.incar | {
+        "kpts": kpoints_dict["kpoints"][0],
+        "gamma": kpoints_dict["generation_style"] == "Gamma",
+        "setups": potcar_setups,
+    }
