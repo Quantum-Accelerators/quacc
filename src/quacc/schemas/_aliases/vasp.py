@@ -53,8 +53,8 @@ class DoubleRelaxSchema(VaspSchema):
     relax1: VaspSchema
 
 
-class MPRelaxFlowSchema(VaspSchema):
-    """Type hint associated with the MP relaxation flows."""
+class MPMetaGGARelaxFlowSchema(VaspSchema):
+    """Type hint associated with the MP meta-GGA relaxation flows."""
 
     prerelax: VaspSchema
 

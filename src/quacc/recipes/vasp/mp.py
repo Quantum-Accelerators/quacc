@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.schemas._aliases.vasp import MPRelaxFlowSchema, VaspSchema
+    from quacc.schemas._aliases.vasp import MPMetaGGARelaxFlowSchema, VaspSchema
 
 
 @job
@@ -134,7 +134,7 @@ def mp_relax_flow(
     atoms: Atoms,
     job_params: dict[str, dict[str, Any]] | None = None,
     job_decorators: dict[str, Callable | None] | None = None,
-) -> MPRelaxFlowSchema:
+) -> MPMetaGGARelaxFlowSchema:
     """
     Workflow consisting of:
 
@@ -161,7 +161,7 @@ def mp_relax_flow(
 
     Returns
     -------
-    MPRelaxFlowSchema
+    MPMetaGGARelaxFlowSchema
         Dictionary of results. See the type-hint for the data structure.
     """
     mp_metagga_prerelax_job_, mp_metagga_relax_job_ = customize_funcs(
