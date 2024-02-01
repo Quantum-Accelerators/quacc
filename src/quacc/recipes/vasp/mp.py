@@ -18,7 +18,6 @@ from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import numpy as np
 from pymatgen.io.vasp.sets import MPScanRelaxSet
 
 from quacc import flow, job
