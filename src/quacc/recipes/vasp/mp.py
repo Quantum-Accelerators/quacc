@@ -66,6 +66,7 @@ def mp_prerelax_job(
     """
 
     calc_defaults = {
+        "pmg_input_set": partial(MPScanRelaxSet, bandgap=bandgap),
         "ediffg": -0.05,
         "xc": "pbesol",
         "lwave": True,
@@ -113,12 +114,15 @@ def mp_relax_job(
         See the type-hint for the data structure.
     """
 
-    calc_defaults = {"lcharg": True, "lwave": True} | _get_bandgap_swaps(bandgap)
+    calc_defaults = {
+        "pmg_input_set": partial(MPScanRelaxSet, bandgap=bandgap),
+        "lcharg": True,
+        "lwave": True,
+    } | _get_bandgap_swaps(bandgap)
     return base_fn(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        pmg_input_set=partial(MPScanRelaxSet, bandgap=bandgap),
         additional_fields={"name": "MP Relax"},
         copy_files=copy_files,
     )
