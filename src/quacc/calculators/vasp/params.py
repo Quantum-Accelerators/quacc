@@ -369,10 +369,11 @@ def get_pmg_input_set_params(dict_set: DictSet, atoms: Atoms | None = None) -> d
     """
     structure = AseAtomsAdaptor.get_structure(atoms)
     pmg_input_set = dict_set(structure=structure)
+    incar_dict = {k.lower(): v for k, v in pmg_input_set.incar.items()}
     kpoints_dict = pmg_input_set.kpoints.as_dict()
     potcar_symbols = pmg_input_set.potcar_symbols
     potcar_setups = {symbol.split("_")[0]: symbol for symbol in potcar_symbols}
-    return pmg_input_set.incar | {
+    return incar_dict | {
         "kpts": kpoints_dict["kpoints"][0],
         "gamma": kpoints_dict["generation_style"] == "Gamma",
         "setups": potcar_setups,

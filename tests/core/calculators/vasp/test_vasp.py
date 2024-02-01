@@ -9,6 +9,7 @@ from ase.calculators.singlepoint import SinglePointDFTCalculator
 from ase.calculators.vasp import Vasp as Vasp_
 from ase.constraints import FixAtoms, FixBondLength
 from ase.io import read
+from pymatgen.io.vasp.sets import MPRelaxSet
 
 from quacc import SETTINGS
 from quacc.calculators.vasp import Vasp, presets
@@ -821,3 +822,30 @@ def test_preset_override():
 
     calc = Vasp(atoms, preset="BulkSet", efermi=None)
     assert calc.parameters.get("efermi") is None
+
+
+def test_pmg_input_set():
+    atoms = bulk("Cu")
+    calc = Vasp(atoms, pmg_input_set=MPRelaxSet, incar_copilot="off")
+    assert calc.parameters == {
+        "algo": "Fast",
+        "ediff": 5e-05,
+        "encut": 520,
+        "ibrion": 2,
+        "isif": 3,
+        "ismear": -5,
+        "ispin": 2,
+        "lasph": True,
+        "lorbit": 11,
+        "lreal": "Auto",
+        "lwave": False,
+        "nelm": 100,
+        "nsw": 99,
+        "prec": "Accurate",
+        "sigma": 0.05,
+        "magmom": [0.6],
+        "lmaxmix": 4,
+        "kpts": [11, 11, 11],
+        "gamma": True,
+        "setups": {"Cu": "Cu_pv"},
+    }
