@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "quacc"
-description="A platform to enable high-throughput, database-driven quantum chemistry and computational materials science"
+description="A flexible platform for computational materials science and quantum chemistry that is built for the big data era."
 version = "0.6.4"
 readme = "README.md"
 license = { text = "BSD-3" }
