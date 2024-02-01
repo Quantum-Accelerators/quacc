@@ -9,7 +9,7 @@ from ase.calculators.singlepoint import SinglePointDFTCalculator
 from ase.calculators.vasp import Vasp as Vasp_
 from ase.constraints import FixAtoms, FixBondLength
 from ase.io import read
-from pymatgen.io.vasp.sets import MPRelaxSet
+from pymatgen.io.vasp.sets import MPRelaxSet, MPScanRelaxSet
 
 from quacc import SETTINGS
 from quacc.calculators.vasp import Vasp, presets
@@ -848,4 +848,38 @@ def test_pmg_input_set():
         "kpts": [11, 11, 11],
         "gamma": True,
         "setups": {"Cu": "Cu_pv"},
+    }
+
+
+def test_pmg_input_set2():
+    atoms = bulk("Fe") * (2, 1, 1)
+    atoms[0].symbol = "O"
+    calc = Vasp(atoms, pmg_input_set=MPRelaxSet, incar_copilot="off")
+    assert calc.parameters == {
+        "algo": "Fast",
+        "ediff": 0.0001,
+        "encut": 520,
+        "ibrion": 2,
+        "isif": 3,
+        "ismear": -5,
+        "ispin": 2,
+        "lasph": True,
+        "ldau": True,
+        "ldauj": [0, 0],
+        "ldaul": [2, 0],
+        "ldautype": 2,
+        "ldauu": [5.3, 0],
+        "ldauprint": 1,
+        "lorbit": 11,
+        "lreal": "Auto",
+        "lwave": False,
+        "nelm": 100,
+        "nsw": 99,
+        "prec": "Accurate",
+        "sigma": 0.05,
+        "magmom": [2.3, 2.3],
+        "lmaxmix": 4,
+        "kpts": [5, 11, 11],
+        "gamma": True,
+        "setups": {"Fe": "Fe_pv", "O": "O"},
     }
