@@ -76,7 +76,7 @@ def mp_metagga_prerelax_job(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "MP Pre-Relax"},
+        additional_fields={"name": "MP Meta-GGA Pre-Relax"},
         copy_files=copy_files,
     )
 
@@ -123,7 +123,7 @@ def mp_metagga_relax_job(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "MP Relax"},
+        additional_fields={"name": "MP Meta-GGA Relax"},
         copy_files=copy_files,
     )
 
