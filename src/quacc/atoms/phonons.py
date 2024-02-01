@@ -3,9 +3,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import numpy as np
 from monty.dev import requires
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.phonopy import get_phonopy_structure, get_pmg_structure
+from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 
 try:
     import phonopy
@@ -21,12 +23,11 @@ if TYPE_CHECKING:
 
 
 @requires(phonopy, "Phonopy is not installed.")
-def atoms_to_phonopy(
+def get_phonopy(
     atoms: Atoms,
-    supercell_matrix: tuple[
-        tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]
-    ],
-    atom_disp: float,
+    min_length: float | None = None,
+    symprec: float = 1e-5,
+    displacement: float = 0.01,
     phonopy_kwargs: dict | None = None,
 ) -> Phonopy:
     """
@@ -35,10 +36,12 @@ def atoms_to_phonopy(
     Parameters
     ----------
     atoms
-        ASE atoms object
-    supercell_matrix
-        Supercell matrix to use.
-    atom_disp
+        ASE atoms object.
+    min_length
+        Minimum length of each lattice dimension (A).
+    symprec
+        Precision for symmetry detection.
+    displacement
         Atomic displacement (A).
     phonopy_kwargs
         Additional kwargs to pass to the Phonopy class.
@@ -49,12 +52,26 @@ def atoms_to_phonopy(
         Phonopy object
     """
     phonopy_kwargs = phonopy_kwargs or {}
+
     structure = AseAtomsAdaptor().get_structure(atoms)
+    structure = SpacegroupAnalyzer(
+        structure, symprec=symprec
+    ).get_symmetrized_structure()
+
+    if min_length:
+        n_supercells = np.round(np.ceil(min_length / atoms.cell.lengths()))
+        supercell_matrix = np.diag([n_supercells, n_supercells, n_supercells])
+    else:
+        supercell_matrix = None
+
     phonopy_atoms = get_phonopy_structure(structure)
     phonon = phonopy.Phonopy(
-        phonopy_atoms, supercell_matrix=supercell_matrix, **phonopy_kwargs
+        phonopy_atoms,
+        symprec=symprec,
+        supercell_matrix=supercell_matrix,
+        **phonopy_kwargs,
     )
-    phonon.generate_displacements(distance=atom_disp)
+    phonon.generate_displacements(distance=displacement)
     return phonon
 
 

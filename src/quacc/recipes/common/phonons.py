@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from monty.dev import requires
 
 from quacc import flow, job, subflow
-from quacc.atoms.phonons import atoms_to_phonopy, phonopy_atoms_to_ase_atoms
+from quacc.atoms.phonons import get_phonopy, phonopy_atoms_to_ase_atoms
 from quacc.schemas.phonons import summarize_phonopy
 
 try:
@@ -27,11 +27,11 @@ if TYPE_CHECKING:
 @requires(phonopy, "Phonopy must be installed. Run `pip install quacc[phonons]`")
 def phonon_flow(
     atoms: Atoms,
-    static_job: Job,
-    supercell_matrix: tuple[
-        tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]
-    ] = ((2, 0, 0), (0, 2, 0), (0, 0, 2)),
-    atom_disp: float = 0.01,
+    force_job: Job,
+    relax_job: Job | None = None,
+    symprec: float = 1e-4,
+    min_length: float | None = 15.0,
+    displacement: float = 0.01,
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
@@ -47,11 +47,15 @@ def phonon_flow(
     ----------
     atoms
         Atoms object with calculator attached.
-    static_job
+    force_job
         The static job to calculate the forces.
-    supercell_matrix
-        Supercell matrix to use. Defaults to 2x2x2 supercell.
-    atom_disp
+    relax_job
+        The job used to relax the structure before calculating the forces.
+    symprec
+        Precision for symmetry detection.
+    min_length
+        Minimum length of each lattice dimension (A).
+    displacement
         Atomic displacement (A).
     t_step
         Temperature step (K).
@@ -71,23 +75,29 @@ def phonon_flow(
     """
 
     @subflow
-    def _phonopy_forces_subflow(atoms: Atoms) -> list[dict]:
-        phonon = atoms_to_phonopy(
-            atoms, supercell_matrix, atom_disp, phonopy_kwargs=phonopy_kwargs
+    def _get_forces_subflow(atoms: Atoms) -> list[dict]:
+        phonon = get_phonopy(
+            atoms,
+            min_length=min_length,
+            symprec=symprec,
+            displacement=displacement,
+            phonopy_kwargs=phonopy_kwargs,
         )
         supercells = [
             phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
         ]
         return [
-            static_job(supercell) for supercell in supercells if supercell is not None
+            force_job(supercell) for supercell in supercells if supercell is not None
         ]
 
     @job
-    def _phonopy_thermo_job(
-        atoms: Atoms, force_job_results: list[dict]
-    ) -> PhononSchema:
-        phonon = atoms_to_phonopy(
-            atoms, supercell_matrix, atom_disp, phonopy_kwargs=phonopy_kwargs
+    def _thermo_job(atoms: Atoms, force_job_results: list[dict]) -> PhononSchema:
+        phonon = get_phonopy(
+            atoms,
+            min_length=min_length,
+            symprec=symprec,
+            displacement=displacement,
+            phonopy_kwargs=phonopy_kwargs,
         )
         parameters = force_job_results[-1].get("parameters")
         forces = [output["results"]["forces"] for output in force_job_results]
@@ -100,5 +110,8 @@ def phonon_flow(
             phonon, atoms, parameters=parameters, additional_fields=additional_fields
         )
 
-    force_job_results = _phonopy_forces_subflow(atoms)
-    return _phonopy_thermo_job(atoms, force_job_results)
+    if relax_job is not None:
+        atoms = relax_job(atoms)["atoms"]
+
+    force_job_results = _get_forces_subflow(atoms)
+    return _thermo_job(atoms, force_job_results)

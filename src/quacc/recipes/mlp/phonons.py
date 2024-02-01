@@ -1,16 +1,16 @@
-"""Phonon recipes for TBLite."""
+"""Phonon recipes for MLPs."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
 from quacc import flow
 from quacc.recipes.common.phonons import phonon_flow as common_phonon_flow
-from quacc.recipes.tblite.core import relax_job, static_job
+from quacc.recipes.mlp.core import relax_job, static_job
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:
-    from typing import Any, Callable
+    from typing import Any, Callable, Literal
 
     from ase.atoms import Atoms
 
@@ -20,6 +20,7 @@ if TYPE_CHECKING:
 @flow
 def phonon_flow(
     atoms: Atoms,
+    method: Literal["mace", "m3gnet", "chgnet"],
     symprec: float = 1e-4,
     min_length: float | None = 15.0,
     displacement: float = 0.01,
@@ -35,13 +36,13 @@ def phonon_flow(
 
     1. Optional relaxation.
         - name: "relax_job"
-        - job: [quacc.recipes.tblite.core.relax_job][]
+        - job: [quacc.recipes.mlp.core.relax_job][]
 
     2. Generation of supercells.
 
     3. Static calculations on supercells
         - name: "static_job"
-        - job: [quacc.recipes.tblite.core.static_job][]
+        - job: [quacc.recipes.mlp.core.static_job][]
 
     4. Calculation of thermodynamic properties.
 
@@ -49,6 +50,8 @@ def phonon_flow(
     ----------
     atoms
         Atoms object
+    method
+        Universal ML interatomic potential method to use
     symprec
         Precision for symmetry detection.
     min_length
@@ -74,7 +77,10 @@ def phonon_flow(
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][].
         See the type-hint for the data structure.
     """
-    calc_defaults = {"relax_job": {"opt_params": {"fmax": 1e-3}}}
+    calc_defaults = {
+        "relax_job": {"method": method, "opt_params": {"fmax": 1e-3}},
+        "static_job": {"method": method},
+    }
     job_params = recursive_dict_merge(calc_defaults, job_params)
 
     relax_job_, static_job_ = customize_funcs(
@@ -94,5 +100,5 @@ def phonon_flow(
         t_step=t_step,
         t_min=t_min,
         t_max=t_max,
-        additional_fields={"name": "TBLite Phonons"},
+        additional_fields={"name": f"{method} Phonons"},
     )
