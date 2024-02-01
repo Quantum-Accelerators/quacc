@@ -439,7 +439,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 - VASP: Fixed a scenario where SIGMA was set to 0.05 if the user provided SIGMA > 0.05. This was supposed to happen when ISMEAR = 0 but was previously done when ISMEAR = -5, which is not influenced by SIGMA.
-- Fixed `mp_relax_flow` to use a `#!Python @flow` decorator instead of `#!Python @job`
+- Fixed `mp_metagga_relax_flow` to use a `#!Python @flow` decorator instead of `#!Python @job`
 - Fixed the Q-Chem Quasi-IRC job to run as one `#!Python @job` instead of two.
 
 ## [0.2.3]

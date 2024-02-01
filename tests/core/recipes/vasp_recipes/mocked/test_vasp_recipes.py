@@ -5,8 +5,8 @@ from quacc import SETTINGS
 from quacc.recipes.vasp.core import double_relax_job, relax_job, static_job
 from quacc.recipes.vasp.mp import (
     mp_metagga_prerelax_job,
+    mp_metagga_relax_flow,
     mp_metagga_relax_job,
-    mp_relax_flow,
 )
 from quacc.recipes.vasp.qmof import qmof_relax_job
 from quacc.recipes.vasp.slabs import bulk_to_slabs_flow
@@ -420,12 +420,12 @@ def test_mp_metagga_relax_job(tmp_path, monkeypatch):
     assert output["parameters"]["sigma"] == 0.05
 
 
-def test_mp_relax_flow(tmp_path, monkeypatch):
+def test_mp_metagga_relax_flow(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Al")
 
-    output = mp_relax_flow(atoms)
+    output = mp_metagga_relax_flow(atoms)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["xc"] == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
@@ -437,7 +437,7 @@ def test_mp_relax_flow(tmp_path, monkeypatch):
     assert output["prerelax"]["parameters"]["ismear"] == 0
 
     atoms = bulk("C")
-    output = mp_relax_flow(atoms)
+    output = mp_metagga_relax_flow(atoms)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["xc"] == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
@@ -449,7 +449,7 @@ def test_mp_relax_flow(tmp_path, monkeypatch):
     atoms = molecule("O2")
     atoms.center(vacuum=10)
     atoms.pbc = True
-    output = mp_relax_flow(atoms)
+    output = mp_metagga_relax_flow(atoms)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["xc"] == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02

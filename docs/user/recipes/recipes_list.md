@@ -238,7 +238,7 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 | VASP Slab to Adsorbates | `#!Python @flow` | [quacc.recipes.vasp.slabs.slab_to_ads_flow][]   |              |
 | VASP MP Prerelax        | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_metagga_relax_job][]  |              |
 | VASP MP Relax           | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_metagga_relax_job][]  |              |
-| VASP MP Relax Workflow  | `#!Python @flow` | [quacc.recipes.vasp.mp.mp_relax_flow][]         |              |
+| VASP MP Relax Workflow  | `#!Python @flow` | [quacc.recipes.vasp.mp.mp_metagga_relax_flow][] |              |
 | VASP QMOF Relax         | `#!Python @job`  | [quacc.recipes.vasp.qmof.qmof_relax_job][]      |              |
 
 </center>

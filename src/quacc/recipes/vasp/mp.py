@@ -130,7 +130,7 @@ def mp_metagga_relax_job(
 
 
 @flow
-def mp_relax_flow(
+def mp_metagga_relax_flow(
     atoms: Atoms,
     job_params: dict[str, dict[str, Any]] | None = None,
     job_decorators: dict[str, Callable | None] | None = None,
