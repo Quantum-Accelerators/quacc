@@ -2,7 +2,6 @@
 Materials Project-compatible recipes.
 
 This set of recipes is meant to be compatible with the Materials Project
-Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
 
 !!! Info
 
@@ -44,6 +43,8 @@ def mp_metagga_prerelax_job(
     """
     Function to pre-relax a structure with Materials Project settings. By default, this
     uses a PBEsol pre-relax step.
+
+    Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
 
     Parameters
     ----------
@@ -91,6 +92,8 @@ def mp_metagga_relax_job(
     """
     Function to relax a structure with Materials Project settings. By default, this uses
     an r2SCAN relax step.
+
+    Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
 
     Parameters
     ----------
@@ -142,6 +145,8 @@ def mp_relax_flow(
     2. MP-compatible relax
         - name: "mp_metagga_relax_job"
         - job: [quacc.recipes.vasp.mp.mp_metagga_relax_job][]
+
+    Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
 
     Parameters
     ----------
