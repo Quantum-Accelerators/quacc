@@ -77,7 +77,6 @@ def mp_prerelax_job(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        pmg_input_set=partial(MPScanRelaxSet, bandgap=bandgap),
         additional_fields={"name": "MP Pre-Relax"},
         copy_files=copy_files,
     )
