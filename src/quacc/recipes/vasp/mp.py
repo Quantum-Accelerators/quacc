@@ -17,6 +17,7 @@ from __future__ import annotations
 from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING
+
 from pymatgen.io.vasp.sets import MPScanRelaxSet
 
 from quacc import flow, job
