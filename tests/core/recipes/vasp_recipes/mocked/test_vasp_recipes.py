@@ -3,7 +3,11 @@ from ase.build import bulk, molecule
 
 from quacc import SETTINGS
 from quacc.recipes.vasp.core import double_relax_job, relax_job, static_job
-from quacc.recipes.vasp.mp import mp_prerelax_job, mp_relax_flow, mp_relax_job
+from quacc.recipes.vasp.mp import (
+    mp_metagga_prerelax_job,
+    mp_metagga_relax_job,
+    mp_relax_flow,
+)
 from quacc.recipes.vasp.qmof import qmof_relax_job
 from quacc.recipes.vasp.slabs import bulk_to_slabs_flow
 from quacc.recipes.vasp.slabs import relax_job as slab_relax_job
@@ -351,11 +355,11 @@ def test_qmof(tmp_path, monkeypatch):
     assert output["double_relax"][1]["parameters"]["isif"] == 2
 
 
-def test_mp_prerelax_job(tmp_path, monkeypatch):
+def test_mp_metagga_prerelax_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Al")
-    output = mp_prerelax_job(atoms)
+    output = mp_metagga_prerelax_job(atoms)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["xc"] == "pbesol"
     assert output["parameters"]["ediffg"] == -0.05
@@ -364,7 +368,7 @@ def test_mp_prerelax_job(tmp_path, monkeypatch):
     assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["sigma"] == 0.05
 
-    output = mp_prerelax_job(atoms, bandgap=0)
+    output = mp_metagga_prerelax_job(atoms, bandgap=0)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["xc"] == "pbesol"
     assert output["parameters"]["ediffg"] == -0.05
@@ -373,7 +377,7 @@ def test_mp_prerelax_job(tmp_path, monkeypatch):
     assert output["parameters"]["ismear"] == 2
     assert output["parameters"]["sigma"] == 0.2
 
-    output = mp_prerelax_job(atoms, bandgap=100)
+    output = mp_metagga_prerelax_job(atoms, bandgap=100)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["xc"] == "pbesol"
     assert output["parameters"]["ediffg"] == -0.05
@@ -383,12 +387,12 @@ def test_mp_prerelax_job(tmp_path, monkeypatch):
     assert output["parameters"]["sigma"] == 0.05
 
 
-def test_mp_relax_job(tmp_path, monkeypatch):
+def test_mp_metagga_relax_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Al")
 
-    output = mp_relax_job(atoms)
+    output = mp_metagga_relax_job(atoms)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["xc"] == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
@@ -397,7 +401,7 @@ def test_mp_relax_job(tmp_path, monkeypatch):
     assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["sigma"] == 0.05
 
-    output = mp_relax_job(atoms, bandgap=0)
+    output = mp_metagga_relax_job(atoms, bandgap=0)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["xc"] == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
@@ -406,7 +410,7 @@ def test_mp_relax_job(tmp_path, monkeypatch):
     assert output["parameters"]["ismear"] == 2
     assert output["parameters"]["sigma"] == 0.2
 
-    output = mp_relax_job(atoms, bandgap=100)
+    output = mp_metagga_relax_job(atoms, bandgap=100)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["xc"] == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02

@@ -35,7 +35,7 @@ if TYPE_CHECKING:
 
 
 @job
-def mp_prerelax_job(
+def mp_metagga_prerelax_job(
     atoms: Atoms,
     bandgap: float | None = None,
     copy_files: str | Path | list[str | Path] | None = None,
@@ -82,7 +82,7 @@ def mp_prerelax_job(
 
 
 @job
-def mp_relax_job(
+def mp_metagga_relax_job(
     atoms: Atoms,
     bandgap: float | None = None,
     copy_files: str | Path | list[str | Path] | None = None,
@@ -136,12 +136,12 @@ def mp_relax_flow(
     Workflow consisting of:
 
     1. MP-compatible pre-relax
-        - name: "mp_prerelax_job"
-        - job: [quacc.recipes.vasp.mp.mp_prerelax_job][]
+        - name: "mp_metagga_prerelax_job"
+        - job: [quacc.recipes.vasp.mp.mp_metagga_prerelax_job][]
 
     2. MP-compatible relax
-        - name: "mp_relax_job"
-        - job: [quacc.recipes.vasp.mp.mp_relax_job][]
+        - name: "mp_metagga_relax_job"
+        - job: [quacc.recipes.vasp.mp.mp_metagga_relax_job][]
 
     Parameters
     ----------
@@ -159,18 +159,18 @@ def mp_relax_flow(
     MPRelaxFlowSchema
         Dictionary of results. See the type-hint for the data structure.
     """
-    mp_prerelax_job_, mp_relax_job_ = customize_funcs(
-        ["mp_prerelax_job", "mp_relax_job"],
-        [mp_prerelax_job, mp_relax_job],
+    mp_metagga_prerelax_job_, mp_metagga_relax_job_ = customize_funcs(
+        ["mp_metagga_prerelax_job", "mp_metagga_relax_job"],
+        [mp_metagga_prerelax_job, mp_metagga_relax_job],
         parameters=job_params,
         decorators=job_decorators,
     )
 
     # Run the prerelax
-    prerelax_results = mp_prerelax_job_(atoms)
+    prerelax_results = mp_metagga_prerelax_job_(atoms)
 
     # Run the relax
-    relax_results = mp_relax_job_(
+    relax_results = mp_metagga_relax_job_(
         prerelax_results["atoms"],
         bandgap=prerelax_results["output"]["bandgap"],
         copy_files=[
