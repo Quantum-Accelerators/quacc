@@ -15,10 +15,12 @@ Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
 """
 from __future__ import annotations
 
+from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
+from pymatgen.io.vasp.sets import MPScanRelaxSet
 
 from quacc import flow, job
 from quacc.recipes.vasp._base import base_fn
@@ -35,7 +37,6 @@ if TYPE_CHECKING:
 @job
 def mp_prerelax_job(
     atoms: Atoms,
-    preset: str | None = "MPScanSet",
     bandgap: float | None = None,
     copy_files: str | Path | list[str | Path] | None = None,
     **calc_kwargs,
@@ -48,8 +49,6 @@ def mp_prerelax_job(
     ----------
     atoms
         Atoms object
-    preset
-        Preset to use from `quacc.calculators.vasp.presets`.
     bandgap
         Estimate for the bandgap in eV.
     copy_files
@@ -75,9 +74,9 @@ def mp_prerelax_job(
 
     return base_fn(
         atoms,
-        preset=preset,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
+        pmg_input_set=partial(MPScanRelaxSet, bandgap=bandgap),
         additional_fields={"name": "MP Pre-Relax"},
         copy_files=copy_files,
     )
@@ -86,7 +85,6 @@ def mp_prerelax_job(
 @job
 def mp_relax_job(
     atoms: Atoms,
-    preset: str | None = "MPScanSet",
     bandgap: float | None = None,
     copy_files: str | Path | list[str | Path] | None = None,
     **calc_kwargs,
@@ -99,8 +97,6 @@ def mp_relax_job(
     ----------
     atoms
         Atoms object
-    preset
-        Preset to use from `quacc.calculators.vasp.presets`.
     bandgap
         Estimate for the bandgap in eV.
     copy_files
@@ -120,9 +116,9 @@ def mp_relax_job(
     calc_defaults = {"lcharg": True, "lwave": True} | _get_bandgap_swaps(bandgap)
     return base_fn(
         atoms,
-        preset=preset,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
+        pmg_input_set=partial(MPScanRelaxSet, bandgap=bandgap),
         additional_fields={"name": "MP Relax"},
         copy_files=copy_files,
     )

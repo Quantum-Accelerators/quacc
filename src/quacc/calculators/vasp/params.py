@@ -357,9 +357,9 @@ def get_pmg_input_set_params(dict_set: DictSet, atoms: Atoms | None = None) -> d
 
     Parameters
     ----------
-    pmg_input_set
+    dict_set
         The Pymatgen VASP input set.
-    atoms
+    atoms | None
         The input atoms.
 
     Returns
