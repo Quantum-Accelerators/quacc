@@ -71,8 +71,7 @@ def mp_prerelax_job(
         "xc": "pbesol",
         "lwave": True,
         "lcharg": True,
-    } | _get_bandgap_swaps(bandgap)
-
+    }
     return base_fn(
         atoms,
         calc_defaults=calc_defaults,
@@ -117,7 +116,7 @@ def mp_relax_job(
         "pmg_input_set": partial(MPScanRelaxSet, bandgap=bandgap),
         "lcharg": True,
         "lwave": True,
-    } | _get_bandgap_swaps(bandgap)
+    }
     return base_fn(
         atoms,
         calc_defaults=calc_defaults,
@@ -182,27 +181,3 @@ def mp_relax_flow(
     relax_results["prerelax"] = prerelax_results
 
     return relax_results
-
-
-def _get_bandgap_swaps(bandgap: float | None = None) -> dict[str, float]:
-    """
-    Get bandgap-related swaps.
-
-    Parameters
-    ---------
-    bandgap
-        The bandgap, in units of eV.
-
-    Returns
-    -------
-    dict
-        Dictionary of swaps.
-    """
-
-    if bandgap is None:
-        return {"kspacing": 0.22, "ismear": 0, "sigma": 0.05}
-    if bandgap <= 1e-4:
-        return {"kspacing": 0.22, "ismear": 2, "sigma": 0.2}
-    rmin = max(1.5, 25.22 - 2.87 * bandgap)
-    kspacing = 2 * np.pi * 1.0265 / (rmin - 1.0183)
-    return {"kspacing": min(kspacing, 0.44), "ismear": -5, "sigma": 0.05}
