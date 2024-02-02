@@ -29,16 +29,17 @@ def test_phonon_flow(tmp_path, monkeypatch):
     assert output["results"]["thermal_properties"]["temperatures"][-1] == 1000
     assert output["results"]["force_constants"].shape == (8, 8, 3, 3)
     assert "mesh_properties" in output["results"]
+    assert "total_dos" in output["results"]
 
 
 def test_phonon_flow_v2(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    atoms = bulk("Cu")
+    atoms = bulk("Cu") * (2, 2, 2)
     output = phonon_flow(atoms, min_lengths=None, t_min=10, t_max=20, t_step=5)
     assert output["results"]["thermal_properties"]["temperatures"].shape == (3,)
     assert output["results"]["thermal_properties"]["temperatures"][0] == 10
     assert output["results"]["thermal_properties"]["temperatures"][-1] == 20
-    assert output["results"]["force_constants"].shape == (1, 1, 3, 3)
+    assert output["results"]["force_constants"].shape == (8, 8, 3, 3)
     assert "mesh_properties" in output["results"]
 
 
