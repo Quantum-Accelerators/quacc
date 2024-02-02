@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
@@ -110,16 +109,15 @@ def phonon_flow(
             phonopy_kwargs=phonopy_kwargs,
         )
         parameters = force_job_results[-1].get("parameters")
-        results_dir = Path(force_job_results[-1]["dir_name"])
         forces = [output["results"]["forces"] for output in force_job_results]
         phonon.forces = forces
         phonon.produce_force_constants()
         phonon.run_mesh()
         phonon.run_total_dos()
         phonon.run_thermal_properties(t_step=t_step, t_max=t_max, t_min=t_min)
-        phonon.save(results_dir / "phonopy.yaml", settings={"force_constants": True})
+        phonon.save("phonopy.yaml", settings={"force_constants": True})
         phonon.auto_band_structure(
-            write_yaml=True, filename=results_dir / "phonopy_auto_band_structure.yaml"
+            write_yaml=True, filename="phonopy_auto_band_structure.yaml"
         )
 
         return summarize_phonopy(
