@@ -1,4 +1,5 @@
 """Phonon recipes for MLPs."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -23,6 +24,9 @@ def phonon_flow(
     method: Literal["mace", "m3gnet", "chgnet"],
     symprec: float = 1e-4,
     min_length: float | None = 15.0,
+    supercell_matrix: (
+        tuple[tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]] | None
+    ) = None,
     displacement: float = 0.01,
     t_step: float = 10,
     t_min: float = 0,
@@ -56,6 +60,9 @@ def phonon_flow(
         Precision for symmetry detection.
     min_length
         Minimum length of each lattice dimension (A).
+    supercell_matrix
+        The supercell matrix to use. If specified, it will override any
+        value specified by `min_lengths`.
     displacement
         Atomic displacement (A).
     t_step
@@ -96,6 +103,7 @@ def phonon_flow(
         relax_job=relax_job_ if run_relax else None,
         symprec=symprec,
         min_length=min_length,
+        supercell_matrix=supercell_matrix,
         displacement=displacement,
         t_step=t_step,
         t_min=t_min,
