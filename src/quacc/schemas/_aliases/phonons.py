@@ -26,9 +26,17 @@ class MeshProperties(TypedDict):
     group_velocities: NDArray
 
 
+class DosProperties(TypedDict):
+    """Type hint associated with PhononSchema."""
+
+    frequency_points: NDArray
+    total_dos: NDArray
+
+
 class PhononResults(TypedDict):
     thermal_properties: ThermalProperties
     mesh_properties: MeshProperties
+    total_dos: DosProperties
     force_constants: NDArray
 
 

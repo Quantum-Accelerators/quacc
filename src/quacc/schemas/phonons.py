@@ -62,6 +62,7 @@ def summarize_phonopy(
         "results": {
             "thermal_properties": phonon.get_thermal_properties_dict(),
             "mesh_properties": phonon.get_mesh_dict(),
+            "total_dos": phonon.get_total_dos_dict(),
             "force_constants": phonon.force_constants,
         }
     }
