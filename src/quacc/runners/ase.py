@@ -67,7 +67,7 @@ def run_calc(
         varies between codes.
     copy_files
         Filenames to copy from source to scratch directory.
-    forces
+    get_forces
         Whether to use `atoms.get_forces()` instead of `atoms.get_potential_energy()`.
 
     Returns
