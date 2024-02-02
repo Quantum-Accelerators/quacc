@@ -32,6 +32,9 @@ def phonon_flow(
     relax_job: Job | None = None,
     symprec: float = 1e-4,
     min_lengths: float | tuple[float, float, float] | None = 20.0,
+    supercell_matrix: (
+        tuple[tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]] | None
+    ) = None,
     displacement: float = 0.01,
     t_step: float = 10,
     t_min: float = 0,
@@ -56,6 +59,9 @@ def phonon_flow(
         Precision for symmetry detection.
     min_lengths
         Minimum length of each lattice dimension (A).
+    supercell_matrix
+        The supercell matrix to use. If specified, it will override any
+        value specified by `min_lengths`.
     displacement
         Atomic displacement (A).
     t_step
@@ -80,6 +86,7 @@ def phonon_flow(
         phonon = get_phonopy(
             atoms,
             min_lengths=min_lengths,
+            supercell_matrix=supercell_matrix,
             symprec=symprec,
             displacement=displacement,
             phonopy_kwargs=phonopy_kwargs,
@@ -96,6 +103,7 @@ def phonon_flow(
         phonon = get_phonopy(
             atoms,
             min_lengths=min_lengths,
+            supercell_matrix=supercell_matrix,
             symprec=symprec,
             displacement=displacement,
             phonopy_kwargs=phonopy_kwargs,
