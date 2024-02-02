@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 - Fixed occasional edge cases where the charge/spin multiplicity checker would raise a `ValueError` in generating the `RunSchema`
+- Fixed phonon flow with MACE-MP-0 when `dispersion=True`
 
 ## [0.6.3]
 
