@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 
 pytest.importorskip("phonopy")
@@ -15,6 +17,8 @@ def test_phonon_flow(tmp_path, monkeypatch):
     assert output["results"]["thermal_properties"]["temperatures"][-1] == 1000
     assert output["results"]["force_constants"].shape == (8, 8, 3, 3)
     assert "mesh_properties" in output["results"]
+    assert Path(tmp_path / "phonopy.yaml").is_file()
+    assert Path(tmp_path, "phonopy_auto_band_structure.yaml").is_file()
 
 
 def test_phonon_flow_v2(tmp_path, monkeypatch):
