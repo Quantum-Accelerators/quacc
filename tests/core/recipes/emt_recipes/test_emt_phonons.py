@@ -17,8 +17,9 @@ def test_phonon_flow(tmp_path, monkeypatch):
     assert output["results"]["thermal_properties"]["temperatures"][-1] == 1000
     assert output["results"]["force_constants"].shape == (8, 8, 3, 3)
     assert "mesh_properties" in output["results"]
-    assert Path(tmp_path / "phonopy.yaml").is_file()
-    assert Path(tmp_path, "phonopy_auto_band_structure.yaml").is_file()
+    results_dir = Path(output["dir_name"])
+    assert Path(results_dir / "phonopy.yaml").is_file()
+    assert Path(results_dir, "phonopy_auto_band_structure.yaml").is_file()
 
     atoms = bulk("Cu")
     output = phonon_flow(atoms, supercell_matrix=((2, 0, 0), (0, 2, 0), (0, 0, 2)))
