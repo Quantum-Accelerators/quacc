@@ -104,6 +104,7 @@ def phonon_flow(
             atoms,
             min_lengths=min_lengths,
             symprec=symprec,
+            supercell_matrix=supercell_matrix,
             displacement=displacement,
             phonopy_kwargs=phonopy_kwargs,
         )
