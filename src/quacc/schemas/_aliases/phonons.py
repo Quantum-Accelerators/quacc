@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TypedDict
+from typing import Any, TypedDict
 
 from numpy.typing import NDArray
 
@@ -40,7 +40,18 @@ class PhononResults(TypedDict):
     force_constants: NDArray
 
 
+class PhonopyMetadata(TypedDict):
+    """Type hint associated with PhononSchema."""
+
+    version: str
+
+
 class PhononSchema(AtomsSchema):
     """Type hint associated with `quacc.schemas.phonons.summarize_phonopy`"""
 
+    parameters: dict[str, Any] | None
+    nid: str
+    dir_name: str
+    phonopy_metadata: PhonopyMetadata
     results: PhononResults
+    quacc_version: str
