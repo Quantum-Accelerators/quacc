@@ -1,1 +1,2 @@
 phonopy==2.21.0
+seekpath==2.1.0
