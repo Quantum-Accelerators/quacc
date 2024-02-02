@@ -107,6 +107,7 @@ def phonon_flow(
         phonon.forces = forces
         phonon.produce_force_constants()
         phonon.run_mesh()
+        phonon.run_total_dos()
         phonon.run_thermal_properties(t_step=t_step, t_max=t_max, t_min=t_min)
         phonon.save(results_dir / "phonopy.yaml", settings={"force_constants": True})
         phonon.auto_band_structure(
