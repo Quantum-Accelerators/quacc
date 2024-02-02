@@ -31,7 +31,7 @@ def phonon_flow(
     force_job: Job,
     relax_job: Job | None = None,
     symprec: float = 1e-4,
-    min_length: float | None = 15.0,
+    min_lengths: float | tuple[float, float, float] | None = 20.0,
     supercell_matrix: (
         tuple[tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]] | None
     ) = None,
@@ -57,7 +57,7 @@ def phonon_flow(
         The job used to relax the structure before calculating the forces.
     symprec
         Precision for symmetry detection.
-    min_length
+    min_lengths
         Minimum length of each lattice dimension (A).
     supercell_matrix
         The supercell matrix to use. If specified, it will override any
@@ -85,7 +85,7 @@ def phonon_flow(
     def _get_forces_subflow(atoms: Atoms) -> list[dict]:
         phonon = get_phonopy(
             atoms,
-            min_length=min_length,
+            min_lengths=min_lengths,
             supercell_matrix=supercell_matrix,
             symprec=symprec,
             displacement=displacement,
@@ -102,7 +102,7 @@ def phonon_flow(
     def _thermo_job(atoms: Atoms, force_job_results: list[dict]) -> PhononSchema:
         phonon = get_phonopy(
             atoms,
-            min_length=min_length,
+            min_lengths=min_lengths,
             symprec=symprec,
             displacement=displacement,
             phonopy_kwargs=phonopy_kwargs,

@@ -23,7 +23,7 @@ def phonon_flow(
     atoms: Atoms,
     method: Literal["mace", "m3gnet", "chgnet"],
     symprec: float = 1e-4,
-    min_length: float | None = 15.0,
+    min_lengths: float | tuple[float, float, float] | None = 20.0,
     supercell_matrix: (
         tuple[tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]] | None
     ) = None,
@@ -58,7 +58,7 @@ def phonon_flow(
         Universal ML interatomic potential method to use
     symprec
         Precision for symmetry detection.
-    min_length
+    min_lengths
         Minimum length of each lattice dimension (A).
     supercell_matrix
         The supercell matrix to use. If specified, it will override any
@@ -102,7 +102,7 @@ def phonon_flow(
         static_job_,
         relax_job=relax_job_ if run_relax else None,
         symprec=symprec,
-        min_length=min_length,
+        min_lengths=min_lengths,
         supercell_matrix=supercell_matrix,
         displacement=displacement,
         t_step=t_step,
