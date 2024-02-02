@@ -55,7 +55,7 @@ def phonon_flow(
         Universal ML interatomic potential method to use
     symprec
         Precision for symmetry detection.
-    min_length
+    min_lengths
         Minimum length of each lattice dimension (A).
     displacement
         Atomic displacement (A).
