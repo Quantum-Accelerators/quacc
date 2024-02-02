@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.6.4]
 
+### Added
+
+- Added a `supercell_matrix` keyword argument to the phonon recipes.
+
 ### Changed
 
 - Changed the `min_length: float | None` keyword argument in phonon flows to `min_lengths: float | tuple[float, float, float] | None` for greater flexibility. The default value is now set to 20.0 instead of 15.0 as well.
