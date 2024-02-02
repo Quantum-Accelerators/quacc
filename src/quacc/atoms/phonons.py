@@ -1,4 +1,5 @@
 """Atoms handling with Phonopy."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -25,7 +26,7 @@ if TYPE_CHECKING:
 @requires(phonopy, "Phonopy is not installed.")
 def get_phonopy(
     atoms: Atoms,
-    min_length: float | None = None,
+    min_lengths: float | tuple[float, float, float] | None = None,
     symprec: float = 1e-5,
     displacement: float = 0.01,
     phonopy_kwargs: dict | None = None,
@@ -37,7 +38,7 @@ def get_phonopy(
     ----------
     atoms
         ASE atoms object.
-    min_length
+    min_lengths
         Minimum length of each lattice dimension (A).
     symprec
         Precision for symmetry detection.
@@ -58,8 +59,8 @@ def get_phonopy(
         structure, symprec=symprec
     ).get_symmetrized_structure()
 
-    if min_length:
-        n_supercells = np.round(np.ceil(min_length / atoms.cell.lengths()))
+    if min_lengths:
+        n_supercells = np.round(np.ceil(min_lengths / atoms.cell.lengths()))
         supercell_matrix = np.diag([n_supercells, n_supercells, n_supercells])
     else:
         supercell_matrix = None

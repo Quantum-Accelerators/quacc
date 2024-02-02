@@ -1,4 +1,5 @@
 """Phonon recipes for MLPs."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -22,7 +23,7 @@ def phonon_flow(
     atoms: Atoms,
     method: Literal["mace", "m3gnet", "chgnet"],
     symprec: float = 1e-4,
-    min_length: float | None = 15.0,
+    min_lengths: float | tuple[float, float, float] | None = 20.0,
     displacement: float = 0.01,
     t_step: float = 10,
     t_min: float = 0,
@@ -95,7 +96,7 @@ def phonon_flow(
         static_job_,
         relax_job=relax_job_ if run_relax else None,
         symprec=symprec,
-        min_length=min_length,
+        min_lengths=min_lengths,
         displacement=displacement,
         t_step=t_step,
         t_min=t_min,
