@@ -22,3 +22,14 @@ def test_phonon_flow(tmp_path, monkeypatch):
     output = phonon_flow(atoms, method="mace", min_lengths=5.0)
     assert output["results"]["force_constants"].shape == (8, 8, 3, 3)
     assert len(output["results"]["thermal_properties"]["temperatures"]) == 101
+
+
+def test_phonon_flow_dispersion(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    _set_dtype(64)
+    atoms = bulk("Cu")
+    output = phonon_flow(
+        atoms, method="mace", min_lengths=5.0, job_params={"all": {"dispersion": True}}
+    )
+    assert output["results"]["force_constants"].shape == (8, 8, 3, 3)
+    assert len(output["results"]["thermal_properties"]["temperatures"]) == 101

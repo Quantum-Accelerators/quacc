@@ -1,4 +1,5 @@
 """Core recipes for universal machine-learned interatomic potentials."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -48,7 +49,7 @@ def static_job(
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
 
     atoms.calc = pick_calculator(method, **calc_flags)
-    final_atoms = run_calc(atoms)
+    final_atoms = run_calc(atoms, get_forces=True)
     return summarize_run(
         final_atoms, atoms, additional_fields={"name": f"{method} Static"}
     )
