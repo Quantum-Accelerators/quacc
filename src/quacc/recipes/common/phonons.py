@@ -1,4 +1,5 @@
 """Common workflows for phonons."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -30,7 +31,7 @@ def phonon_flow(
     force_job: Job,
     relax_job: Job | None = None,
     symprec: float = 1e-4,
-    min_length: float | None = 15.0,
+    min_lengths: float | tuple[float, float, float] | None = 20.0,
     displacement: float = 0.01,
     t_step: float = 10,
     t_min: float = 0,
@@ -53,7 +54,7 @@ def phonon_flow(
         The job used to relax the structure before calculating the forces.
     symprec
         Precision for symmetry detection.
-    min_length
+    min_lengths
         Minimum length of each lattice dimension (A).
     displacement
         Atomic displacement (A).
@@ -78,7 +79,7 @@ def phonon_flow(
     def _get_forces_subflow(atoms: Atoms) -> list[dict]:
         phonon = get_phonopy(
             atoms,
-            min_length=min_length,
+            min_lengths=min_lengths,
             symprec=symprec,
             displacement=displacement,
             phonopy_kwargs=phonopy_kwargs,
@@ -94,7 +95,7 @@ def phonon_flow(
     def _thermo_job(atoms: Atoms, force_job_results: list[dict]) -> PhononSchema:
         phonon = get_phonopy(
             atoms,
-            min_length=min_length,
+            min_lengths=min_lengths,
             symprec=symprec,
             displacement=displacement,
             phonopy_kwargs=phonopy_kwargs,
