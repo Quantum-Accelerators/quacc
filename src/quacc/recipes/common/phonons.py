@@ -102,7 +102,7 @@ def phonon_flow(
             phonopy_kwargs=phonopy_kwargs,
         )
         parameters = force_job_results[-1].get("parameters")
-        results_dir = Path(force_job_results[-1].get("dir_name"))
+        results_dir = Path(force_job_results[-1]["dir_name"])
         forces = [output["results"]["forces"] for output in force_job_results]
         phonon.forces = forces
         phonon.produce_force_constants()
