@@ -23,6 +23,7 @@ def test_phonon_flow(tmp_path, monkeypatch):
     assert output["results"]["force_constants"].shape == (8, 8, 3, 3)
     assert len(output["results"]["thermal_properties"]["temperatures"]) == 101
 
+
 def test_phonon_flow_dispersion(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     _set_dtype(64)
