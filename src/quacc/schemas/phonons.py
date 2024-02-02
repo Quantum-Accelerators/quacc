@@ -63,11 +63,12 @@ def summarize_phonopy(
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
     uri = get_uri(Path.cwd())
+    directory = ":".join(uri.split(":")[1:])
 
     inputs = {
         "parameters": parameters,
         "nid": uri.split(":")[0],
-        "dir_name": ":".join(uri.split(":")[1:]),
+        "dir_name": directory,
         "phonopy_metadata": {"version": phonon.version},
         "quacc_version": __version__,
     }
@@ -80,7 +81,7 @@ def summarize_phonopy(
             "force_constants": phonon.force_constants,
         }
     }
-    phonon.save(settings={"force_constants": True})
+    phonon.save(Path(directory, "phonopy.yaml"), settings={"force_constants": True})
 
     atoms_metadata = atoms_to_metadata(input_atoms)
     unsorted_task_doc = recursive_dict_merge(
