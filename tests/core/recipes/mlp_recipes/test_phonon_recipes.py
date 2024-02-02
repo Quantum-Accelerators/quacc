@@ -33,4 +33,4 @@ def test_phonon_flow_dispersion(tmp_path, monkeypatch):
     )
     assert output["results"]["force_constants"].shape == (8, 8, 3, 3)
     assert len(output["results"]["thermal_properties"]["temperatures"]) == 101
-    assert output["parameters"]["dispersion"] == True
+    assert output["parameters"]["dispersion"] is True

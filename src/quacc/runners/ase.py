@@ -45,7 +45,7 @@ def run_calc(
     atoms: Atoms,
     geom_file: str | None = None,
     copy_files: str | Path | list[str | Path] | None = None,
-    forces: bool = True,
+    get_forces: bool = False,
 ) -> Atoms:
     """
     Run a calculation in a scratch directory and copy the results back to the original
@@ -68,7 +68,7 @@ def run_calc(
     copy_files
         Filenames to copy from source to scratch directory.
     forces
-        Whether to calculate forces.
+        Whether to use `atoms.get_forces()` instead of `atoms.get_potential_energy()`.
 
     Returns
     -------
@@ -83,7 +83,7 @@ def run_calc(
     tmpdir, job_results_dir = calc_setup(atoms, copy_files=copy_files)
 
     # Run calculation
-    if forces:
+    if get_forces:
         atoms.get_forces()
     else:
         atoms.get_potential_energy()
