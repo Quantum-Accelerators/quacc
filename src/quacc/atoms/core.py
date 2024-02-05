@@ -67,7 +67,7 @@ def check_is_metal(atoms: Atoms) -> bool:
     if atoms.pbc.any():
         struct = AseAtomsAdaptor.get_structure(atoms)
     else:
-        struct = AseAtomsAdaptor.get_molecule(atoms)
+        struct = AseAtomsAdaptor.get_molecule(atoms, charge_spin_check=False)
 
     return all(k.is_metal for k in struct.composition)
 
@@ -95,6 +95,52 @@ def copy_atoms(atoms: Atoms) -> Atoms:
         atoms.calc = calc
 
     return atoms
+
+
+def get_charge_attribute(atoms: Atoms) -> int | None:
+    """
+    Get the charge of an Atoms object.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+
+    Returns
+    -------
+    int | None
+        Charge of the Atoms object
+    """
+    return (
+        atoms.charge
+        if getattr(atoms, "charge", None)
+        else round(atoms.get_initial_charges().sum())
+        if atoms.has("initial_charges")
+        else None
+    )
+
+
+def get_spin_multiplicity_attribute(atoms: Atoms) -> int | None:
+    """
+    Get the spin multiplicity of an Atoms object.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+
+    Returns
+    -------
+    int | None
+        Spin multiplicity of the Atoms object
+    """
+    return (
+        atoms.spin_multiplicity
+        if getattr(atoms, "spin_multiplicity", None)
+        else round(np.abs(atoms.get_initial_magnetic_moments().sum()) + 1)
+        if atoms.has("initial_magmoms")
+        else None
+    )
 
 
 def check_charge_and_spin(
@@ -145,26 +191,14 @@ def check_charge_and_spin(
     Returns
     -------
     charge, multiplicity
+
     """
 
-    charge = (
-        charge
-        if charge is not None
-        else atoms.charge
-        if getattr(atoms, "charge", None)
-        else round(atoms.get_initial_charges().sum())
-        if atoms.has("initial_charges")
-        else None
-    )
-
+    charge = charge if charge is not None else get_charge_attribute(atoms)
     spin_multiplicity = (
         spin_multiplicity
         if spin_multiplicity is not None
-        else atoms.spin_multiplicity
-        if getattr(atoms, "spin_multiplicity", None)
-        else round(np.abs(atoms.get_initial_magnetic_moments().sum()) + 1)
-        if atoms.has("initial_magmoms")
-        else None
+        else get_spin_multiplicity_attribute(atoms)
     )
 
     if charge is None and spin_multiplicity is not None:

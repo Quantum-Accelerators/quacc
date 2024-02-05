@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.4]
+
+### Added
+
+- Added a `supercell_matrix` keyword argument to the phonon recipes.
+- More data is now generated, parsed, and stored in phonon workflows, including total DOS and the automatically generated band structure
+
+### Changed
+
+- The `seekpath` dependency is now required for phonon workflows, as reflected in the `quacc[phonons]` optional dependencies
+- Changed the `min_length: float | None` keyword argument in phonon flows to `min_lengths: float | tuple[float, float, float] | None` for greater flexibility. The default value is now set to 20.0 instead of 15.0 as well.
+
+### Fixed
+
+- Fixed occasional edge cases where the charge/spin multiplicity checker would raise a `ValueError` in generating the `RunSchema`
+- Fixed phonon flow with MACE-MP-0 when `dispersion=True`
+
 ## [0.6.3]
 
 ### Added
