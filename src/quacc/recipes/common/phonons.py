@@ -11,6 +11,7 @@ from quacc import flow, job, subflow
 from quacc.atoms.phonons import get_phonopy, phonopy_atoms_to_ase_atoms
 from quacc.schemas.phonons import summarize_phonopy
 from quacc.utils.dicts import recursive_dict_merge
+from ase.units import _c as c
 
 try:
     import phonopy
@@ -82,7 +83,6 @@ def phonon_flow(
     """
 
     force_constants_kwargs = force_constants_kwargs or {}
-    mesh_kwargs = mesh_kwargs or {}
     thermal_properties_kwargs = thermal_properties_kwargs or {}
 
     auto_band_structure_defaults = {
@@ -94,12 +94,16 @@ def phonon_flow(
         auto_band_structure_defaults, auto_band_structure_kwargs
     )
 
+    total_dos_defaults = {"freq_pitch": c*100*1.0e-12}
+    total_dos_kwargs = recursive_dict_merge(total_dos_defaults, total_dos_kwargs)
+
     if not set.intersection(
         set(thermal_properties_kwargs.keys()),
         {"t_step", "t_min", "t_max", "temperatures"},
     ):
-        temperatures = np.linspace(0, 1000, 100, endpoint=True)
-        np.append(temperatures, [273.15, 293.15, 298.15])
+        temperatures = np.append(
+            np.linspace(0, 1000, 100, endpoint=True), [273.15, 293.15, 298.15]
+        )
         thermal_properties_kwargs["temperatures"] = np.sort(temperatures)
 
     @subflow
@@ -129,9 +133,7 @@ def phonon_flow(
         phonon.run_mesh(**mesh_kwargs)
         phonon.run_total_dos(**total_dos_kwargs)
         phonon.run_thermal_properties(**thermal_properties_kwargs)
-        phonon.auto_band_structure(
-            **auto_band_structure_kwargs,
-        )
+        phonon.auto_band_structure(**auto_band_structure_kwargs)
 
         return summarize_phonopy(
             phonon, atoms, parameters=parameters, additional_fields=additional_fields
