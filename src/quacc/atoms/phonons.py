@@ -27,12 +27,8 @@ if TYPE_CHECKING:
 def get_phonopy(
     atoms: Atoms,
     min_lengths: float | tuple[float, float, float] | None = None,
-    supercell_matrix: (
-        tuple[tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]] | None
-    ) = None,
-    symprec: float = 1e-5,
-    displacement: float = 0.01,
     phonopy_kwargs: dict | None = None,
+    generate_displacements_kwargs: dict | None = None,
 ) -> Phonopy:
     """
     Convert an ASE atoms object to a phonopy object with displacements generated.
@@ -59,6 +55,11 @@ def get_phonopy(
         Phonopy object
     """
     phonopy_kwargs = phonopy_kwargs or {}
+    generate_displacements_kwargs = generate_displacements_kwargs or {}
+
+    symprec = phonopy_kwargs.pop("symprec", 1e-5)
+
+    supercell_matrix = phonopy_kwargs.pop("supercell_matrix", None)
 
     structure = AseAtomsAdaptor().get_structure(atoms)
     structure = SpacegroupAnalyzer(
@@ -76,7 +77,7 @@ def get_phonopy(
         supercell_matrix=supercell_matrix,
         **phonopy_kwargs,
     )
-    phonon.generate_displacements(distance=displacement)
+    phonon.generate_displacements(**generate_displacements_kwargs)
     return phonon
 
 
