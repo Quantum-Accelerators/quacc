@@ -7,7 +7,7 @@ import pytest
 from ase.build import bulk
 from numpy.testing import assert_allclose
 
-from quacc.recipes.espresso.dos import dos_flow, projwfc_flow, projwfc_job
+from quacc.recipes.espresso.dos import dos_flow, dos_job, projwfc_flow, projwfc_job
 from quacc.utils.files import copy_decompress_files, copy_decompress_tree
 
 pytestmark = pytest.mark.skipif(
@@ -16,14 +16,14 @@ pytestmark = pytest.mark.skipif(
 
 DATA_DIR = Path(__file__).parent / "data"
 
-# For info on why this test has been commented look @ https://github.com/Quantum-Accelerators/quacc/pull/1557
-# def test_dos_job(tmp_path, monkeypatch):
-#    monkeypatch.chdir(tmp_path)
-#    copy_decompress_tree({DATA_DIR / "dos_test/": "pwscf.save/*.gz"}, tmp_path)
-#    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
-#    output = dos_job(tmp_path)
 
-#    assert output["results"]["pwscf.dos"]["fermi"] == pytest.approx(7.199)
+def test_dos_job(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    copy_decompress_tree({DATA_DIR / "dos_test/": "pwscf.save/*.gz"}, tmp_path)
+    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+    output = dos_job(tmp_path)
+
+    assert output["results"]["pwscf.dos"]["fermi"] == pytest.approx(7.199)
 
 
 def test_projwfc_job(tmp_path, monkeypatch):
