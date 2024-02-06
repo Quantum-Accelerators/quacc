@@ -5,13 +5,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
+from ase.units import _c as c
 from monty.dev import requires
 
 from quacc import flow, job, subflow
 from quacc.atoms.phonons import get_phonopy, phonopy_atoms_to_ase_atoms
 from quacc.schemas.phonons import summarize_phonopy
 from quacc.utils.dicts import recursive_dict_merge
-from ase.units import _c as c
 
 try:
     import phonopy
