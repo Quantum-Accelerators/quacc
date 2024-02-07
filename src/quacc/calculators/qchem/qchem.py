@@ -22,8 +22,6 @@ if TYPE_CHECKING:
         energy: float  # electronic energy in eV
         forces: NDArray  # forces in eV/A
         hessian: NDArray  # Hessian in eV/A^2/amu
-        enthalpy: float  # total enthalpy in eV
-        entropy: float  # total entropy in eV/K
         taskdoc: dict[str, Any]  # Output from `emmet.core.qc_tasks.TaskDoc`
         custodian: dict[str, Any]  # custodian.json file metadata
 
@@ -35,8 +33,6 @@ class QChem(FileIOCalculator):
         "energy",
         "forces",
         "hessian",
-        "enthalpy",
-        "entropy",
         "taskdoc",
         "custodian",
     ]
