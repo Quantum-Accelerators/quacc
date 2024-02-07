@@ -218,8 +218,4 @@ def _chargemol_runner(
         raise OSError(msg)
 
     # Run Chargemol analysis
-    chargemol_stats = ChargemolAnalysis(
-        path=path, atomic_densities_path=atomic_densities_path
-    )
-
-    return chargemol_stats
+    return ChargemolAnalysis(path=path, atomic_densities_path=atomic_densities_path)

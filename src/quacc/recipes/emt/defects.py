@@ -12,15 +12,12 @@ from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs
 
 try:
-    import shakenbreak
-    from pymatgen.analysis import defects
+    import shakenbreak  # noqa: F401
+    from pymatgen.analysis.defects.generators import VacancyGenerator
 
     has_deps = True
 except ImportError:
     has_deps = False
-
-if has_deps:
-    from pymatgen.analysis.defects.generators import VacancyGenerator
 
 
 if TYPE_CHECKING:
