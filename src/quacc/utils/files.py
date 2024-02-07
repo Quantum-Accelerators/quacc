@@ -96,13 +96,12 @@ def copy_decompress_tree(
     """
 
     # Work with glob pattern, work if the glob pattern return nothing
-    for base, tree in source_files.items():
-        base = Path(base).expanduser()
+    for _base, _tree in source_files.items():
+        base = Path(_base).expanduser()
 
         abs_files, rel_files = [], []
 
-        if not isinstance(tree, list):
-            tree = [tree]
+        tree = [_tree] if not isinstance(_tree, list) else _tree
 
         for f in tree:
             glob_found = list(base.glob(f))
