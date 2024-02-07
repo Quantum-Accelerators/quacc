@@ -102,7 +102,7 @@ def phonon_flow(
         {"t_step", "t_min", "t_max", "temperatures"},
     ):
         temperatures = np.append(
-            np.linspace(0, 1000, 100, endpoint=True), [273.15, 293.15, 298.15]
+            np.linspace(0, 1000, 101, endpoint=True), [273.15, 293.15, 298.15]
         )
         thermal_properties_kwargs["temperatures"] = np.sort(temperatures)
 
