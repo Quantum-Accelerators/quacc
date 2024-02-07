@@ -261,6 +261,6 @@ def test_qchem_read_results_freq(tmp_path, monkeypatch, test_atoms):
     assert len(calc.results["hessian"][0]) == 42
     assert calc.results["taskdoc"]["output"]["frequencies"][0] == -340.2
     assert len(calc.results["taskdoc"]["output"]["frequencies"]) == 36
-    assert len(calc.results["taskdoc"]["output"]["frequency_mode_vectors"]) == 36
-    assert len(calc.results["taskdoc"]["output"]["frequency_mode_vectors"][0]) == 14
-    assert len(calc.results["taskdoc"]["output"]["frequency_mode_vectors"][0][0]) == 3
+    assert len(calc.results["taskdoc"]["output"]["frequency_modes"]) == 36
+    assert len(calc.results["taskdoc"]["output"]["frequency_modes"][0]) == 14
+    assert len(calc.results["taskdoc"]["output"]["frequency_modes"][0][0]) == 3
