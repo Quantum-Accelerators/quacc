@@ -27,7 +27,7 @@ Once the job successfully completes, the file structure looks like:
 
 ```text
 RESULTS_DIR
-├── tmp-quacc-2023-12-08-67890
+├── quacc-2023-12-08-67890
 │   ├── INPUT.gz
     └── OUTPUT.gz
 ```
