@@ -69,10 +69,9 @@ def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float]]:
     directory = Path(directory)
 
     task_doc = TaskDoc.from_directory(directory).model_dump()
-    qc_output = task_doc["output"]
 
     results: Results = {
-        "energy": qc_output["final_energy"] * units.Hartree,
+        "energy": task_doc["output"]["final_energy"] * units.Hartree,
         "taskdoc": task_doc,
         "custodian": _parse_custodian(directory),
     }
