@@ -30,7 +30,7 @@ dependencies = [
     "ase>3.22.1", # for Atoms object and calculators
     "cclib>=1.8", # for I/O parsing of molecular DFT codes
     "custodian>=2023.6.5", # for automated error corrections
-    "emmet-core>=0.69.6", # for pre-made schemas
+    "emmet-core>=0.77.1", # for pre-made schemas
     "maggma>=0.57.0", # for database handling
     "monty>=2023.9.25", # miscellaneous Python utilities
     "numpy>=1.25.0", # for array handling
