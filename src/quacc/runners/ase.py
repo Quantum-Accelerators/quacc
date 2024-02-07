@@ -1,4 +1,5 @@
 """Utility functions for running ASE calculators with ASE-based methods."""
+
 from __future__ import annotations
 
 import sys
@@ -44,6 +45,7 @@ def run_calc(
     atoms: Atoms,
     geom_file: str | None = None,
     copy_files: str | Path | list[str | Path] | None = None,
+    get_forces: bool = False,
 ) -> Atoms:
     """
     Run a calculation in a scratch directory and copy the results back to the original
@@ -65,6 +67,8 @@ def run_calc(
         varies between codes.
     copy_files
         Filenames to copy from source to scratch directory.
+    get_forces
+        Whether to use `atoms.get_forces()` instead of `atoms.get_potential_energy()`.
 
     Returns
     -------
@@ -78,8 +82,11 @@ def run_calc(
     # Perform staging operations
     tmpdir, job_results_dir = calc_setup(atoms, copy_files=copy_files)
 
-    # Run calculation via get_potential_energy()
-    atoms.get_potential_energy()
+    # Run calculation
+    if get_forces:
+        atoms.get_forces()
+    else:
+        atoms.get_potential_energy()
 
     # Most ASE calculators do not update the atoms object in-place with a call
     # to .get_potential_energy(), which is important if an internal optimizer is
@@ -176,8 +183,10 @@ def run_opt(
         msg = "Quacc does not support setting the `trajectory` kwarg."
         raise ValueError(msg)
 
-    # Set Sella kwargs
-    if optimizer.__name__ == "Sella":
+    # Handle optimizer kwargs
+    if optimizer.__name__.startswith("SciPy"):
+        optimizer_kwargs.pop("restart")
+    elif optimizer.__name__ == "Sella":
         _set_sella_kwargs(atoms, optimizer_kwargs)
     elif optimizer.__name__ == "IRC":
         optimizer_kwargs.pop("restart", None)

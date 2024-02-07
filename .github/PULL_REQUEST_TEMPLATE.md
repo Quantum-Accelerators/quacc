@@ -2,8 +2,6 @@
 
 \>> Describe your changes here. Make sure to reference any associated issues. <<
 
-## Requirements
-
 ### Checklist
 
 - [ ] I have read the ["Guidelines" section](https://quantum-accelerators.github.io/quacc/dev/contributing.html#guidelines) of the contributing guide. Don't lie! 😉

@@ -4,6 +4,7 @@
 source ~/.bashrc
 conda activate quacc
 pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
+pip install -r tests/requirements.txt
 pip install -e .[dev]
 
 # Request and run Slurm job

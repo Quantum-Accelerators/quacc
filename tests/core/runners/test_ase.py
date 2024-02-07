@@ -9,6 +9,7 @@ from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
 from ase.optimize import BFGS, BFGSLineSearch
+from ase.optimize.sciopt import SciPyFminBFGS
 
 from quacc import SETTINGS
 from quacc.runners.ase import run_calc, run_opt, run_vib
@@ -42,6 +43,8 @@ def teardown_function():
 
 def test_run_calc(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
+    SETTINGS.RESULTS_DIR = tmp_path
+
     prep_files()
 
     atoms = bulk("Cu") * (2, 1, 1)
@@ -58,8 +61,12 @@ def test_run_calc(tmp_path, monkeypatch):
     assert np.array_equal(new_atoms.get_positions(), atoms.get_positions()) is True
     assert np.array_equal(new_atoms.cell.array, atoms.cell.array) is True
 
+    SETTINGS.RESULTS_DIR = DEFAULT_SETTINGS.RESULTS_DIR
+
 
 def test_run_calc_no_gzip(tmp_path, monkeypatch):
+    SETTINGS.RESULTS_DIR = tmp_path
+
     monkeypatch.chdir(tmp_path)
     prep_files()
 
@@ -79,9 +86,11 @@ def test_run_calc_no_gzip(tmp_path, monkeypatch):
     assert np.array_equal(new_atoms.get_positions(), atoms.get_positions()) is True
     assert np.array_equal(new_atoms.cell.array, atoms.cell.array) is True
     SETTINGS.GZIP_FILES = DEFAULT_SETTINGS.GZIP_FILES
+    SETTINGS.RESULTS_DIR = DEFAULT_SETTINGS.RESULTS_DIR
 
 
 def test_run_opt1(tmp_path, monkeypatch):
+    SETTINGS.RESULTS_DIR = tmp_path
     monkeypatch.chdir(tmp_path)
     prep_files()
 
@@ -98,6 +107,8 @@ def test_run_opt1(tmp_path, monkeypatch):
     assert os.path.exists(os.path.join(results_dir, "test_file.txt.gz"))
     assert np.array_equal(traj[-1].get_positions(), atoms.get_positions()) is False
     assert np.array_equal(traj[-1].cell.array, atoms.cell.array) is True
+    assert dyn.todict().get("restart")
+    SETTINGS.RESULTS_DIR = DEFAULT_SETTINGS.RESULTS_DIR
 
 
 def test_run_opt2(tmp_path, monkeypatch):
@@ -123,6 +134,18 @@ def test_run_opt2(tmp_path, monkeypatch):
     )
     traj = dyn.traj_atoms
     assert traj[-1].calc.results is not None
+
+
+def test_run_scipy_opt(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    atoms = bulk("Cu") * (2, 1, 1)
+    atoms[0].position += 0.1
+    atoms.calc = EMT()
+
+    dyn = run_opt(atoms, optimizer=SciPyFminBFGS)
+    traj = dyn.traj_atoms
+    assert traj[-1].calc.results is not None
+    assert dyn.todict().get("restart") is None
 
 
 def test_run_vib(tmp_path, monkeypatch):
@@ -165,6 +188,7 @@ def test_bad_runs(tmp_path, monkeypatch):
 
 def test_unique_workdir(tmp_path, monkeypatch):
     SETTINGS.CREATE_UNIQUE_DIR = True
+    SETTINGS.RESULTS_DIR = tmp_path
     monkeypatch.chdir(tmp_path)
     prep_files()
 
@@ -190,3 +214,4 @@ def test_unique_workdir(tmp_path, monkeypatch):
     assert os.path.exists(os.path.join(results_dir, "test_file.txt.gz"))
 
     SETTINGS.CREATE_UNIQUE_DIR = DEFAULT_SETTINGS.CREATE_UNIQUE_DIR
+    SETTINGS.RESULTS_DIR = DEFAULT_SETTINGS.RESULTS_DIR

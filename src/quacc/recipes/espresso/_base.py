@@ -163,7 +163,7 @@ def _prepare_atoms(
 ) -> Atoms:
     """
     Commonly used preparation function to merge parameters
-    and attach an Esprseso calculator accordingly.
+    and attach an Espresso calculator accordingly.
 
     Parameters
     ----------

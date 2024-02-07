@@ -3,6 +3,9 @@
 # Fail fast
 set -e
 
+# Ensure results are purged
+export QUACC_RESULTS_DIR=/tmp/jenkins
+
 # GULP
 module purge
 pytest tests/core/recipes/gulp_recipes --noconftest

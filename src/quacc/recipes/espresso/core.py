@@ -157,6 +157,7 @@ def relax_job(
 def ase_relax_job(
     atoms: Atoms,
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
+    autorestart: bool = True,
     relax_cell: bool = False,
     parallel_info: dict[str] | None = None,
     opt_params: dict[str, Any] | None = None,
@@ -175,6 +176,10 @@ def ase_relax_job(
         The name of a YAML file containing a list of parameters to use as
         a "preset" for the calculator. quacc will automatically look in the
         `ESPRESSO_PRESET_DIR` (default: quacc/calculators/espresso/presets).
+    autorestart
+        Whether to automatically turn on the restart flag after the first
+        calculation. This avoids recomputing everything from scratch at each
+        step of the optimization.
     relax_cell
         Whether to relax the cell or not.
     parallel_info
@@ -220,7 +225,7 @@ def ase_relax_job(
         atoms,
         preset=preset,
         relax_cell=relax_cell,
-        template=EspressoTemplate("pw"),
+        template=EspressoTemplate("pw", autorestart=autorestart),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         opt_defaults=opt_defaults,
@@ -285,5 +290,62 @@ def post_processing_job(
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "pp.x post-processing"},
+        copy_files=prev_dir,
+    )
+
+
+@job
+def non_scf_job(
+    atoms: Atoms,
+    prev_dir: str | Path,
+    preset: str | None = "sssp_1.3.0_pbe_efficiency",
+    parallel_info: dict[str] | None = None,
+    test_run: bool = False,
+    **calc_kwargs,
+) -> RunSchema:
+    """
+    Function to carry out a basic NSCF calculation with pw.x.
+
+    Parameters
+    ----------
+    atoms
+        The Atoms object.
+    prev_dir
+        Outdir of the previously ran pw.x calculation. This is used to copy
+        the entire tree structure of that directory to the working directory
+        of this calculation.
+    preset
+        The name of a YAML file containing a list of parameters to use as
+        a "preset" for the calculator. quacc will automatically look in the
+        `ESPRESSO_PRESET_DIR` (default: quacc/calculators/espresso/presets).
+    parallel_info
+        Dictionary containing information about the parallelization of the
+        calculation. See the ASE documentation for more information.
+    test_run
+        If True, a test run is performed to check that the calculation input_data is correct or
+        to generate some files/info if needed.
+
+    **calc_kwargs
+        Additional keyword arguments to pass to the Espresso calculator. Set a value to
+        `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
+        [quacc.calculators.espresso.espresso.Espresso][] for more information.
+
+    Returns
+    -------
+    RunSchema
+        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        See the type-hint for the data structure.
+    """
+
+    calc_defaults = {"input_data": {"control": {"calculation": "nscf"}}}
+
+    return base_fn(
+        atoms,
+        preset=preset,
+        template=EspressoTemplate("pw", test_run=test_run),
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        parallel_info=parallel_info,
+        additional_fields={"name": "pw.x Non SCF"},
         copy_files=prev_dir,
     )
