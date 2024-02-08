@@ -1,4 +1,5 @@
 """Parameter-related utilities for the Vasp calculator."""
+
 from __future__ import annotations
 
 import logging
@@ -234,9 +235,11 @@ def get_param_swaps(
     return (
         calc.parameters
         if incar_copilot == "aggressive"
-        else calc.parameters | user_calc_params
-        if incar_copilot == "on"
-        else user_calc_params
+        else (
+            calc.parameters | user_calc_params
+            if incar_copilot == "on"
+            else user_calc_params
+        )
     )
 
 
@@ -370,11 +373,15 @@ def get_pmg_input_set_params(dict_set: DictSet, atoms: Atoms | None = None) -> d
     structure = AseAtomsAdaptor.get_structure(atoms)
     pmg_input_set = dict_set(structure=structure)
     incar_dict = {k.lower(): v for k, v in pmg_input_set.incar.items()}
-    kpoints_dict = pmg_input_set.kpoints.as_dict()
     potcar_symbols = pmg_input_set.potcar_symbols
     potcar_setups = {symbol.split("_")[0]: symbol for symbol in potcar_symbols}
-    return incar_dict | {
-        "kpts": kpoints_dict["kpoints"][0],
-        "gamma": kpoints_dict["generation_style"] == "Gamma",
-        "setups": potcar_setups,
-    }
+    full_input_params = incar_dict | {"setups": potcar_setups}
+    pmg_kpts = pmg_input_set.kpoints
+    if pmg_kpts is not None:
+        kpoints_dict = pmg_input_set.kpoints.as_dict()
+        full_input_params = incar_dict | {
+            "kpts": kpoints_dict["kpoints"][0],
+            "gamma": kpoints_dict["generation_style"] == "Gamma",
+        }
+
+    return full_input_params
