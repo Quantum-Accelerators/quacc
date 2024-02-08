@@ -720,6 +720,11 @@ def test_setups():
     assert calc.parameters["setups"]["Cu"] == ""
 
     atoms = bulk("Cu")
+    calc = Vasp(atoms, setups="minimal", preset="BulkSet")
+    assert isinstance(calc.parameters["setups"], str)
+    assert calc.parameters["setups"] == "minimal"
+
+    atoms = bulk("Cu")
     calc = Vasp(atoms, setups="minimal", pmg_input_set=MPScanRelaxSet)
     assert isinstance(calc.parameters["setups"], str)
     assert calc.parameters["setups"] == "minimal"
