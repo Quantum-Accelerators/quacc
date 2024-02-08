@@ -383,7 +383,7 @@ def test_mp_metagga_prerelax_job(tmp_path, monkeypatch):
 
     output = mp_metagga_prerelax_job(atoms, bandgap=100)
     assert output["nsites"] == len(atoms)
-    assert output["parameters"]["gga"] == "{S}"
+    assert output["parameters"]["gga"] == "PS"
     assert output["parameters"]["ediffg"] == -0.05
     assert output["parameters"]["encut"] == 680
     assert output["parameters"]["kspacing"] == 0.44
