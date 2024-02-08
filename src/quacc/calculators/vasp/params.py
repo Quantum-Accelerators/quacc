@@ -235,11 +235,9 @@ def get_param_swaps(
     return (
         calc.parameters
         if incar_copilot == "aggressive"
-        else (
-            calc.parameters | user_calc_params
-            if incar_copilot == "on"
-            else user_calc_params
-        )
+        else calc.parameters | user_calc_params
+        if incar_copilot == "on"
+        else user_calc_params
     )
 
 
