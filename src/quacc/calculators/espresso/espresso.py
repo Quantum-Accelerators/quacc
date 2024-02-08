@@ -66,7 +66,7 @@ class EspressoTemplate(EspressoTemplate_):
             "wfcdir": os.environ.get("ESPRESSO_TMPDIR", "."),
         }
 
-        self.outfiles = {"fildos": "pwscf.dos"}
+        self.outfiles = {"fildos": "pwscf.dos", "filpdos": "pwscf.pdos_tot"}
 
         self.test_run = test_run
 
@@ -208,9 +208,17 @@ class EspressoTemplate(EspressoTemplate_):
             fildos = self.outfiles["fildos"]
             with Path(fildos).open("r") as fd:
                 lines = fd.readlines()
-                fermi = float(re.search(r"-?\d+\.?\d*", lines[0])[0])
+                fermi = float(re.search(r"-?\d+\.?\d*", lines[0]).group(0))
                 dos = np.loadtxt(lines[1:])
             results = {fildos.name: {"dos": dos, "fermi": fermi}}
+        elif self.binary == "projwfc":
+            filpdos = self.outfiles["filpdos"]
+            with Path(filpdos).open("r") as fd:
+                lines = np.loadtxt(fd.readlines())
+                energy = lines[1:, 0]
+                dos = lines[1:, 1]
+                pdos = lines[1:, 2]
+            results = {filpdos.name: {"energy": energy, "dos": dos, "pdos": pdos}}
         else:
             results = {}
 

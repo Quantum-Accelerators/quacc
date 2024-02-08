@@ -2,7 +2,11 @@ from shutil import which
 
 import pytest
 
-pytestmark = pytest.mark.skipif(which("pw.x") is None, reason="QE not installed")
+from quacc import SETTINGS
+
+pytestmark = pytest.mark.skipif(
+    which(str(SETTINGS.ESPRESSO_BINARIES["pw"])) is None, reason="QE not installed"
+)
 
 from pathlib import Path
 from shutil import which

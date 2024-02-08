@@ -5,8 +5,12 @@ from shutil import which
 
 from dask.distributed import default_client
 
+from quacc import SETTINGS
+
 pytestmark = pytest.mark.skipif(
-    which("pw.x") is None or which("ph.x") is None, reason="QE not installed"
+    which(str(SETTINGS.ESPRESSO_BIN_DIR / SETTINGS.ESPRESSO_BINARIES["pw"])) is None
+    or which(str(SETTINGS.ESPRESSO_BIN_DIR / SETTINGS.ESPRESSO_BINARIES["ph"])) is None,
+    reason="QE not installed",
 )
 
 from pathlib import Path
