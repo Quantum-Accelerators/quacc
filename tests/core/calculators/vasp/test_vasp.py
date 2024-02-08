@@ -72,7 +72,7 @@ def test_presets():
 
     calc = Vasp(atoms, xc="scan", pmg_input_set=MPScanRelaxSet)
     assert calc.xc.lower() == "scan"
-    assert calc.string_params["algo"] == "all"
+    assert calc.string_params["algo"].lower() == "all"
     assert calc.exp_params["ediff"] == 1e-5
 
 
@@ -165,6 +165,7 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
     atoms[-1].symbol = "Fe"
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
+    assert atoms.get_chemical_symbols() == ["Cu", "Cu", "Cu", "Fe"]
     assert atoms.get_initial_magnetic_moments().tolist() == [2.0] * (len(atoms) - 1) + [
         5.0
     ]
@@ -189,9 +190,8 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
     atoms[-1].symbol = "Fe"
     calc = Vasp(atoms, pmg_input_set=MPScanRelaxSet)
     atoms.calc = calc
-    assert atoms.get_initial_magnetic_moments().tolist() == [1.0] * (len(atoms) - 1) + [
-        5.0
-    ]
+    assert atoms.get_chemical_symbols() == ["Cu", "Cu", "Cu", "Fe"]
+    assert calc.parameters["magmom"] == [0.6, 0.6, 0.6, 5.0]
 
     atoms = bulk("Cu") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
@@ -846,13 +846,14 @@ def test_pmg_input_set():
         "lwave": False,
         "nelm": 100,
         "nsw": 99,
+        "pp": "PBE",
         "prec": "Accurate",
         "sigma": 0.05,
         "magmom": [0.6],
         "lmaxmix": 4,
         "kpts": [11, 11, 11],
         "gamma": True,
-        "setups": {"Cu": "Cu_pv"},
+        "setups": {"Cu": "_pv"},
     }
 
 
@@ -871,20 +872,21 @@ def test_pmg_input_set2():
         "lasph": True,
         "ldau": True,
         "ldauj": [0, 0],
-        "ldaul": [2, 0],
+        "ldaul": [0, 2.0],
         "ldautype": 2,
-        "ldauu": [5.3, 0],
+        "ldauu": [0, 5.3],
         "ldauprint": 1,
         "lorbit": 11,
         "lreal": "Auto",
         "lwave": False,
         "nelm": 100,
         "nsw": 99,
+        "pp": "PBE",
         "prec": "Accurate",
         "sigma": 0.05,
         "magmom": [2.3, 2.3],
         "lmaxmix": 4,
         "kpts": [5, 11, 11],
         "gamma": True,
-        "setups": {"Fe": "Fe_pv", "O": "O"},
+        "setups": {"Fe": "_pv", "O": ""},
     }

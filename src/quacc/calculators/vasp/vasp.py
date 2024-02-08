@@ -46,9 +46,11 @@ class Vasp(Vasp_):
         preset_mag_default: float | None = None,
         mag_cutoff: None | float = None,
         elemental_magmoms: dict[str, float] | None = None,
-        pmg_kpts: dict[Literal["line_density", "kppvol", "kppa"], float]
-        | dict[Literal["length_densities"], list[float]]
-        | None = None,
+        pmg_kpts: (
+            dict[Literal["line_density", "kppvol", "kppa"], float]
+            | dict[Literal["length_densities"], list[float]]
+            | None
+        ) = None,
         auto_dipole: bool | None = None,
         pmg_input_set: DictSet | None = None,
         **kwargs,
@@ -214,11 +216,12 @@ class Vasp(Vasp_):
             raise ValueError(msg)
 
         # Get Pymatgen VASP input set parameters
-        pmg_calc_params = (
-            get_pmg_input_set_params(self.pmg_input_set, atoms=self.input_atoms)
-            if self.pmg_input_set
-            else {}
-        )
+        if self.pmg_input_set:
+            pmg_calc_params, self.input_atoms = get_pmg_input_set_params(
+                self.pmg_input_set, self.input_atoms
+            )
+        else:
+            pmg_calc_params = {}
 
         # Get user-defined preset parameters for the calculator
         if self.preset:

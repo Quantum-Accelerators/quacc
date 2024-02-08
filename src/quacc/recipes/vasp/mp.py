@@ -35,7 +35,7 @@ if TYPE_CHECKING:
 @job
 def mp_metagga_prerelax_job(
     atoms: Atoms,
-    bandgap: float | None = None,
+    bandgap: float = 0.0,
     copy_files: str | Path | list[str | Path] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
@@ -68,9 +68,12 @@ def mp_metagga_prerelax_job(
     calc_defaults = {
         "pmg_input_set": partial(MPScanRelaxSet, bandgap=bandgap),
         "ediffg": -0.05,
-        "xc": "pbesol",
-        "lwave": True,
+        "gga": "PS",
+        "laechg": False,
         "lcharg": True,
+        "lvtot": False,
+        "lwave": True,
+        "metagga": None,
     }
     return base_fn(
         atoms,
@@ -84,7 +87,7 @@ def mp_metagga_prerelax_job(
 @job
 def mp_metagga_relax_job(
     atoms: Atoms,
-    bandgap: float | None = None,
+    bandgap: float = 0.0,
     copy_files: str | Path | list[str | Path] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
@@ -116,7 +119,9 @@ def mp_metagga_relax_job(
 
     calc_defaults = {
         "pmg_input_set": partial(MPScanRelaxSet, bandgap=bandgap),
+        "laechg": False,
         "lcharg": True,
+        "lvtot": False,
         "lwave": True,
     }
     return base_fn(

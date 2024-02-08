@@ -353,7 +353,7 @@ def set_pmg_kpts(
     return user_calc_params
 
 
-def get_pmg_input_set_params(dict_set: DictSet, atoms: Atoms | None = None) -> dict:
+def get_pmg_input_set_params(dict_set: DictSet, atoms: Atoms) -> tuple[dict, Atoms]:
     """
     Convert a Pymatgen VASP input set into an ASE-compatible set of
     calculator parameters.
@@ -362,26 +362,45 @@ def get_pmg_input_set_params(dict_set: DictSet, atoms: Atoms | None = None) -> d
     ----------
     dict_set
         The Pymatgen VASP input set.
-    atoms | None
+    atoms
         The input atoms.
 
     Returns
     -------
     dict
         The ASE-compatible set of calculator parameters.
+    Atoms
+        The input atoms to match the pymatgen input set.
     """
     structure = AseAtomsAdaptor.get_structure(atoms)
-    pmg_input_set = dict_set(structure=structure)
+    pmg_input_set = dict_set(structure=structure, sort_structure=False)
     incar_dict = {k.lower(): v for k, v in pmg_input_set.incar.items()}
+
     potcar_symbols = pmg_input_set.potcar_symbols
     potcar_setups = {symbol.split("_")[0]: symbol for symbol in potcar_symbols}
-    full_input_params = incar_dict | {"setups": potcar_setups}
+    potcar_functional = pmg_input_set.potcar_functional.split("_")[0]
+    if "PBE" in potcar_functional:
+        pp = "PBE"
+    elif "PW91" in potcar_functional:
+        pp = "PW91"
+    elif "LDA" in potcar_functional or "Perdew-Zunger81" in potcar_functional:
+        pp = "LDA"
+    else:
+        raise ValueError(f"Unknown POTCAR functional: {potcar_functional}")
+    for k, v in potcar_setups.items():
+        if k in v:
+            potcar_setups[k] = v.split(k)[-1]
+
+    full_input_params = incar_dict | {"setups": potcar_setups, "pp": pp}
+
     pmg_kpts = pmg_input_set.kpoints
     if pmg_kpts is not None:
         kpoints_dict = pmg_input_set.kpoints.as_dict()
-        full_input_params = incar_dict | {
+        full_input_params |= {
             "kpts": kpoints_dict["kpoints"][0],
             "gamma": kpoints_dict["generation_style"] == "Gamma",
         }
 
-    return full_input_params
+    return full_input_params, AseAtomsAdaptor().get_atoms(
+        pmg_input_set.poscar.structure
+    )
