@@ -376,7 +376,7 @@ def get_pmg_input_set_params(dict_set: DictSet, atoms: Atoms) -> tuple[dict, Ato
 
     potcar_symbols = pmg_input_set.potcar_symbols
     potcar_setups = {symbol.split("_")[0]: symbol for symbol in potcar_symbols}
-    potcar_functional = pmg_input_set.potcar_functional.split("_")[0]
+    potcar_functional = pmg_input_set.potcar_functional
     if "PBE" in potcar_functional:
         pp = "PBE"
     elif "PW91" in potcar_functional:
