@@ -9,7 +9,7 @@ from ase.calculators.singlepoint import SinglePointDFTCalculator
 from ase.calculators.vasp import Vasp as Vasp_
 from ase.constraints import FixAtoms, FixBondLength
 from ase.io import read
-from pymatgen.io.vasp.sets import MPRelaxSet, MPScanRelaxSet
+from pymatgen.io.vasp.sets import MPRelaxSet
 
 from quacc import SETTINGS
 from quacc.calculators.vasp import Vasp, presets

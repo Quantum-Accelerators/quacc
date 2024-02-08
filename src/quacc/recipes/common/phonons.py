@@ -1,4 +1,5 @@
 """Common workflows for phonons."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -30,7 +31,10 @@ def phonon_flow(
     force_job: Job,
     relax_job: Job | None = None,
     symprec: float = 1e-4,
-    min_length: float | None = 15.0,
+    min_lengths: float | tuple[float, float, float] | None = 20.0,
+    supercell_matrix: (
+        tuple[tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]] | None
+    ) = None,
     displacement: float = 0.01,
     t_step: float = 10,
     t_min: float = 0,
@@ -53,8 +57,11 @@ def phonon_flow(
         The job used to relax the structure before calculating the forces.
     symprec
         Precision for symmetry detection.
-    min_length
+    min_lengths
         Minimum length of each lattice dimension (A).
+    supercell_matrix
+        The supercell matrix to use. If specified, it will override any
+        value specified by `min_lengths`.
     displacement
         Atomic displacement (A).
     t_step
@@ -78,7 +85,8 @@ def phonon_flow(
     def _get_forces_subflow(atoms: Atoms) -> list[dict]:
         phonon = get_phonopy(
             atoms,
-            min_length=min_length,
+            min_lengths=min_lengths,
+            supercell_matrix=supercell_matrix,
             symprec=symprec,
             displacement=displacement,
             phonopy_kwargs=phonopy_kwargs,
@@ -94,7 +102,8 @@ def phonon_flow(
     def _thermo_job(atoms: Atoms, force_job_results: list[dict]) -> PhononSchema:
         phonon = get_phonopy(
             atoms,
-            min_length=min_length,
+            min_lengths=min_lengths,
+            supercell_matrix=supercell_matrix,
             symprec=symprec,
             displacement=displacement,
             phonopy_kwargs=phonopy_kwargs,
@@ -104,7 +113,11 @@ def phonon_flow(
         phonon.forces = forces
         phonon.produce_force_constants()
         phonon.run_mesh()
+        phonon.run_total_dos()
         phonon.run_thermal_properties(t_step=t_step, t_max=t_max, t_min=t_min)
+        phonon.auto_band_structure(
+            write_yaml=True, filename="phonopy_auto_band_structure.yaml"
+        )
 
         return summarize_phonopy(
             phonon, atoms, parameters=parameters, additional_fields=additional_fields
