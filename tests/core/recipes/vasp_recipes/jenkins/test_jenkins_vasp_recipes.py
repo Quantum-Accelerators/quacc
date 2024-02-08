@@ -2,13 +2,16 @@ from shutil import which
 
 import pytest
 
-pytestmark = pytest.mark.skipif(which("vasp_std") is None, reason="VASP not installed")
+from quacc import SETTINGS
+
+pytestmark = pytest.mark.skipif(
+    which(str(SETTINGS.VASP_CMD)) is None, reason="VASP not installed"
+)
 
 import numpy as np
 from ase.build import bulk
 from numpy.testing import assert_equal
 
-from quacc import SETTINGS
 from quacc.recipes.vasp.core import static_job
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
