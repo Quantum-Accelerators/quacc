@@ -1,4 +1,5 @@
 import glob
+import logging
 import os
 from pathlib import Path
 from shutil import rmtree
@@ -13,6 +14,9 @@ from ase.optimize.sciopt import SciPyFminBFGS
 
 from quacc import SETTINGS
 from quacc.runners.ase import run_calc, run_opt, run_vib
+
+LOGGER = logging.getLogger(__name__)
+LOGGER.propagate = True
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 
@@ -163,18 +167,18 @@ def test_run_vib(tmp_path, monkeypatch):
     assert os.path.exists(os.path.join(results_dir, "test_file.txt.gz"))
 
 
-def test_bad_runs(tmp_path, monkeypatch):
+def test_bad_runs(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Cu")
     atoms.calc = EMT()
 
     # No file
-    with pytest.warns(UserWarning):
+    with caplog.at_level(logging.WARNING):
         run_calc(atoms, copy_files=["test_file.txt"])
 
     # No file again
-    with pytest.warns(UserWarning):
+    with caplog.at_level(logging.WARNING):
         run_opt(atoms, copy_files=["test_file.txt"])
 
     # No trajectory kwarg
