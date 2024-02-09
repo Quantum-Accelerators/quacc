@@ -70,7 +70,6 @@ def mp_metagga_prerelax_job(
         "ediffg": -0.05,
         "gga": "PS",
         "laechg": False,
-        "lcharg": True,
         "lvtot": False,
         "lwave": True,
         "metagga": None,
@@ -120,7 +119,6 @@ def mp_metagga_relax_job(
     calc_defaults = {
         "pmg_input_set": partial(MPScanRelaxSet, bandgap=bandgap),
         "laechg": False,
-        "lcharg": True,
         "lvtot": False,
         "lwave": True,
     }
@@ -129,6 +127,56 @@ def mp_metagga_relax_job(
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "MP Meta-GGA Relax"},
+        copy_files=copy_files,
+    )
+
+
+@job
+def mp_metagga_static_job(
+    atoms: Atoms,
+    bandgap: float = 0.0,
+    copy_files: str | Path | list[str | Path] | None = None,
+    **calc_kwargs,
+) -> VaspSchema:
+    """
+    Function to run a static calculation on a structure with Materials Project settings. By default, this uses
+    an r2SCAN static step.
+
+    Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+    bandgap
+        Estimate for the bandgap in eV.
+    copy_files
+        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+    **calc_kwargs
+        Dictionary of custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to `ase.calculators.vasp.vasp.Vasp`.
+
+    Returns
+    -------
+    VaspSchema
+        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
+        See the type-hint for the data structure.
+    """
+
+    calc_defaults = {
+        "pmg_input_set": partial(MPScanRelaxSet, bandgap=bandgap),
+        "algo": "fast",
+        "ismear": -5,
+        "lreal": False,
+        "lwave": True,
+        "nsw": 0,
+    }
+    return base_fn(
+        atoms,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        additional_fields={"name": "MP Meta-GGA Static"},
         copy_files=copy_files,
     )
 
@@ -150,6 +198,10 @@ def mp_metagga_relax_flow(
         - name: "mp_metagga_relax_job"
         - job: [quacc.recipes.vasp.mp.mp_metagga_relax_job][]
 
+    3. MP-compatible static
+        - name: "mp_metagga_static_job"
+        - job: [quacc.recipes.vasp.mp.mp_metagga_static_job][]
+
     Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
 
     Parameters
@@ -168,11 +220,17 @@ def mp_metagga_relax_flow(
     MPMetaGGARelaxFlowSchema
         Dictionary of results. See the type-hint for the data structure.
     """
-    mp_metagga_prerelax_job_, mp_metagga_relax_job_ = customize_funcs(
-        ["mp_metagga_prerelax_job", "mp_metagga_relax_job"],
-        [mp_metagga_prerelax_job, mp_metagga_relax_job],
-        parameters=job_params,
-        decorators=job_decorators,
+    mp_metagga_prerelax_job_, mp_metagga_relax_job_, mp_metagga_static_job_ = (
+        customize_funcs(
+            [
+                "mp_metagga_prerelax_job",
+                "mp_metagga_relax_job",
+                "mp_metagga_static_job",
+            ],
+            [mp_metagga_prerelax_job, mp_metagga_relax_job, mp_metagga_static_job],
+            parameters=job_params,
+            decorators=job_decorators,
+        )
     )
 
     # Run the prerelax
@@ -189,4 +247,18 @@ def mp_metagga_relax_flow(
     )
     relax_results["prerelax"] = prerelax_results
 
-    return relax_results
+    # Run the static
+    static_results = mp_metagga_static_job_(
+        relax_results["atoms"],
+        bandgap=relax_results["output"]["bandgap"],
+        copy_files=[
+            Path(relax_results["dir_name"]) / "CHGCAR",
+            Path(relax_results["dir_name"]) / "WAVECAR",
+        ],
+    )
+
+    return {
+        "prerelax": prerelax_results,
+        "relax": relax_results,
+        "static": static_results,
+    }
