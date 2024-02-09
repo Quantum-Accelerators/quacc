@@ -235,11 +235,9 @@ def get_param_swaps(
     return (
         calc.parameters
         if incar_copilot == "aggressive"
-        else (
-            calc.parameters | user_calc_params
-            if incar_copilot == "on"
-            else user_calc_params
-        )
+        else calc.parameters | user_calc_params
+        if incar_copilot == "on"
+        else user_calc_params
     )
 
 
@@ -378,7 +376,11 @@ def get_pmg_input_set_params(dict_set: DictSet, atoms: Atoms) -> tuple[dict, Ato
 
     potcar_symbols = pmg_input_set.potcar_symbols
     potcar_setups = {symbol.split("_")[0]: symbol for symbol in potcar_symbols}
-    potcar_functional = pmg_input_set.potcar_functional.split("_")[0]
+    for k, v in potcar_setups.items():
+        if k in v:
+            potcar_setups[k] = v.split(k)[-1]
+
+    potcar_functional = pmg_input_set.potcar_functional
     if "PBE" in potcar_functional:
         pp = "PBE"
     elif "PW91" in potcar_functional:
@@ -387,9 +389,6 @@ def get_pmg_input_set_params(dict_set: DictSet, atoms: Atoms) -> tuple[dict, Ato
         pp = "LDA"
     else:
         raise ValueError(f"Unknown POTCAR functional: {potcar_functional}")
-    for k, v in potcar_setups.items():
-        if k in v:
-            potcar_setups[k] = v.split(k)[-1]
 
     full_input_params = incar_dict | {"setups": potcar_setups, "pp": pp}
 
