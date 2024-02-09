@@ -5,7 +5,6 @@ from __future__ import annotations
 import contextlib
 import logging
 import socket
-import warnings
 from copy import deepcopy
 from datetime import datetime, timezone
 from pathlib import Path
