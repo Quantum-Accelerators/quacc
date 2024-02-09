@@ -12,6 +12,7 @@ This set of recipes is meant to be compatible with the Materials Project
     and up-to-date. This module is a best effort to be used at your own
     discretion.
 """
+
 from __future__ import annotations
 
 from functools import partial
@@ -66,7 +67,7 @@ def mp_metagga_prerelax_job(
     """
 
     calc_defaults = {
-        "pmg_input_set": partial(MPScanRelaxSet, bandgap=bandgap),
+        "pmg_input_set": partial(MPScanRelaxSet, bandgap=bandgap, auto_ismear=False),
         "ediffg": -0.05,
         "gga": "PS",
         "laechg": False,
@@ -117,7 +118,7 @@ def mp_metagga_relax_job(
     """
 
     calc_defaults = {
-        "pmg_input_set": partial(MPScanRelaxSet, bandgap=bandgap),
+        "pmg_input_set": partial(MPScanRelaxSet, bandgap=bandgap, auto_ismear=False),
         "laechg": False,
         "lvtot": False,
         "lwave": True,
@@ -163,7 +164,7 @@ def mp_metagga_static_job(
     """
 
     calc_defaults = {
-        "pmg_input_set": partial(MPScanRelaxSet, bandgap=bandgap),
+        "pmg_input_set": partial(MPScanRelaxSet, bandgap=bandgap, auto_ismear=False),
         "algo": "fast",
         "ismear": -5,
         "lreal": False,
