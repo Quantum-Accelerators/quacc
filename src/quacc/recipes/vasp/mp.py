@@ -142,8 +142,6 @@ def mp_metagga_static_job(
     Function to run a static calculation on a structure with Materials Project settings. By default, this uses
     an r2SCAN static step.
 
-    Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
-
     Parameters
     ----------
     atoms
