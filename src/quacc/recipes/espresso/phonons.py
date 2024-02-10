@@ -212,12 +212,12 @@ def grid_phonon_flow(
         ph_input_data.to_nested(binary="ph")
 
         grid_results = []
-        for qpoint, qdata in ph_init_job_results["results"].items():
-            ph_input_data["inputph"]["start_q"] = qdata["qnum"]
-            ph_input_data["inputph"]["last_q"] = qdata["qnum"]
+        for qnum, qdata in ph_init_job_results["results"].items():
+            ph_input_data["inputph"]["start_q"] = qnum
+            ph_input_data["inputph"]["last_q"] = qnum
             repr_to_do = grid_prepare_repr(qdata["representations"], nblocks)
             file_to_copy = grid_copy_files(
-                ph_input_data, ph_init_job_results["dir_name"], qdata["qnum"], qpoint
+                ph_input_data, ph_init_job_results["dir_name"], qnum, qdata["qpoint"]
             )
             for representation in repr_to_do:
                 ph_input_data["inputph"]["start_irr"] = representation[0]
