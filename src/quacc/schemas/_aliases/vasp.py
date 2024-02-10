@@ -35,14 +35,14 @@ class CM5Schema(TypedDict):
 
 
 class ChargemolSchema(TypedDict, total=False):
-    """Type hint associated with quacc.schemas.chargemol._chargemol_runner."""
+    """Type hint associated with quacc.schemas.vasp._chargemol_runner`"""
 
     ddec: DDECSchema
     cm5: CM5Schema
 
 
 class VaspSchema(RunSchema, TaskDoc):
-    """Type hint associated with quacc.schemas.vasp.vasp_summarize_run."""
+    """Type hint associated with [quacc.schemas.vasp.vasp_summarize_run][]"""
 
     bader: BaderSchema
     chargemol: ChargemolSchema
