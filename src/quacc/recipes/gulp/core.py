@@ -1,4 +1,5 @@
 """Core recipes for GULP."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -32,11 +33,11 @@ def static_job(
     keywords
         List of custom `keyword` kwargs for the GULP calculator. To remove entries
         from the defaults, put a `#` in front of the name. For a list of
-        available keys, refer to the [ase.calculators.gulp.GULP][] calculator.
+        available keys, refer to the `ase.calculators.gulp.GULP` calculator.
     options
         List of custom `options` kwargs for the GULP calculator. To remove entries
         from the defaults, put a `#` in front of the name. For a list of
-        available keys, refer to the [ase.calculators.gulp.GULP][] calculator.
+        available keys, refer to the `ase.calculators.gulp.GULP` calculator.
     library
         Filename of the potential library file, if required.
 
@@ -84,11 +85,11 @@ def relax_job(
     keywords
         List of custom `keyword` kwargs for the GULP calculator. To remove entries
         from the defaults, put a `#` in front of the name. For a list of
-        available keys, refer to the [ase.calculators.gulp.GULP][] calculator.
+        available keys, refer to the `ase.calculators.gulp.GULP` calculator.
     options
         Dictionary of custom `options` kwargs for the GULP calculator. To remove entries
         from the defaults, put a `#` in front of the name. For a list of
-        available keys, refer to the [ase.calculators.gulp.GULP][] calculator.
+        available keys, refer to the `ase.calculators.gulp.GULP` calculator.
     library
         Filename of the potential library file, if required.
 

@@ -5,6 +5,7 @@ ph.x binary from Quantum ESPRESSO via the quacc library.
 The recipes provided in this module are jobs and flows that can be used to perform
 phonon calculations in different fashion.
 """
+
 from __future__ import annotations
 
 from copy import deepcopy
@@ -58,7 +59,7 @@ def phonon_job(
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
-        [ase.io.espresso.write_espresso_ph][] for more information. Some notable keys are:
+        `ase.io.espresso.write_espresso_ph` for more information. Some notable keys are:
 
         - input_data: dict
         - qpts: list[list[float]] | list[tuple[float]] | list[float]

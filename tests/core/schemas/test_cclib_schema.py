@@ -37,9 +37,10 @@ def cclib_obj():
 def setup_module():
     p = FILE_DIR / "cclib_data"
 
-    with gzip.open(p / "psi_test.cube.gz", "r") as f_in, open(
-        p / "psi_test.cube", "wb"
-    ) as f_out:
+    with (
+        gzip.open(p / "psi_test.cube.gz", "r") as f_in,
+        open(p / "psi_test.cube", "wb") as f_out,
+    ):
         shutil.copyfileobj(f_in, f_out)
 
 
