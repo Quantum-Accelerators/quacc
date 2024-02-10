@@ -145,6 +145,7 @@ plugins:
             docstring_options:
               ignore_init_summary: true
             show_signature_annotations: true
+            signature_crossrefs: true
   - gen-files:
       scripts:
         - docs/gen_ref_pages.py
