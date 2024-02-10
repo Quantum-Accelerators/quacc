@@ -11,7 +11,7 @@ from quacc.schemas._aliases.emmet import MoleculeMetadata, StructureMetadata
 
 
 class AtomsSchema(StructureMetadata, MoleculeMetadata):
-    """Type hint associated with [quacc.schemas.atoms.atoms_to_metadata]"""
+    """Type hint associated with [quacc.schemas.atoms.atoms_to_metadata][]"""
 
     atoms: Atoms
     atoms_info: dict[str, Any]  # from atoms.info
