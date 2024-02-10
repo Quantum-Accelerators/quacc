@@ -1,4 +1,5 @@
 """Base jobs for DFTB+"""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

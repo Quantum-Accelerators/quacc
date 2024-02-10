@@ -5,6 +5,7 @@ ph.x binary from Quantum ESPRESSO via the quacc library.
 The recipes provided in this module are jobs and flows that can be used to perform
 phonon calculations in different fashion.
 """
+
 from __future__ import annotations
 
 from copy import deepcopy
