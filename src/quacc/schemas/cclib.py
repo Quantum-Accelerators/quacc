@@ -102,7 +102,7 @@ def cclib_summarize_run(
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
     # Get the cclib base task document
-    cclib_task_doc = make_cclib_task_doc(
+    cclib_task_doc = _make_cclib_schema(
         dir_path, logfile_extensions, analysis=pop_analyses
     )
     attributes = cclib_task_doc["attributes"]
@@ -145,7 +145,7 @@ def cclib_summarize_run(
     return task_doc
 
 
-def make_cclib_task_doc(
+def _make_cclib_schema(
     dir_name: str | Path,
     logfile_extensions: str | list[str],
     analysis: str | list[str] | None = None,
