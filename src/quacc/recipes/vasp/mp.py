@@ -13,6 +13,7 @@ Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
     and up-to-date. This module is a best effort to be used at your own
     discretion.
 """
+
 from __future__ import annotations
 
 from pathlib import Path

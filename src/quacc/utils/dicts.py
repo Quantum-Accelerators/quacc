@@ -1,4 +1,5 @@
 """Utility functions for dealing with dictionaries."""
+
 from __future__ import annotations
 
 from collections.abc import MutableMapping

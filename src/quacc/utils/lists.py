@@ -1,4 +1,5 @@
 """Utilities for working with lists."""
+
 from __future__ import annotations
 
 

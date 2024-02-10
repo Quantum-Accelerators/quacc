@@ -1,4 +1,5 @@
 """Transition state recipes for the NewtonNet code."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -90,9 +91,9 @@ def ts_job(
         "fmax": 0.01,
         "max_steps": 1000,
         "optimizer": Sella,
-        "optimizer_kwargs": {"diag_every_n": 0, "order": 1}
-        if use_custom_hessian
-        else {"order": 1},
+        "optimizer_kwargs": (
+            {"diag_every_n": 0, "order": 1} if use_custom_hessian else {"order": 1}
+        ),
     }
 
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)

@@ -1,4 +1,5 @@
 """Init data for quacc."""
+
 from __future__ import annotations
 
 import logging
