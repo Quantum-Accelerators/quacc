@@ -73,7 +73,7 @@ def test_phonon_job(tmp_path, monkeypatch):
     ]
 
     for key in sections:
-        assert key in ph_results["results"][(0, 0, 0)]
+        assert key in ph_results["results"][1]
 
     SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO
 
@@ -137,6 +137,6 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
     ]
 
     for key in sections:
-        assert key in ph_results["results"][(0, 0, 0)]
+        assert key in ph_results["results"][1]
 
     SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO
