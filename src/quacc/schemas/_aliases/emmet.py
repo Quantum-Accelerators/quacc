@@ -1,4 +1,5 @@
 """Aliases for type hinting for emmet."""
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -41,7 +42,7 @@ class PointGroupData(TypedDict):
 
 
 class EmmetBase(TypedDict):
-    """Type hint associated with [emmet.core.base.EmmetBaseModel][]."""
+    """Type hint associated with `emmet.core.base.EmmetBaseModel`."""
 
     emmet_version: str
     pymatgen_version: str

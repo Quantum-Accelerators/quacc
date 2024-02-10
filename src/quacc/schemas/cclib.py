@@ -1,4 +1,5 @@
 """Schemas for molecular DFT codes parsed by cclib."""
+
 from __future__ import annotations
 
 import logging
@@ -36,20 +37,22 @@ def cclib_summarize_run(
     final_atoms: Atoms,
     logfile_extensions: str | list[str],
     dir_path: Path | str | None = None,
-    pop_analyses: list[
-        Literal[
-            "cpsa",
-            "mpa",
-            "lpa",
-            "bickelhaupt",
-            "density",
-            "mbo",
-            "bader",
-            "ddec6",
-            "hirshfeld",
+    pop_analyses: (
+        list[
+            Literal[
+                "cpsa",
+                "mpa",
+                "lpa",
+                "bickelhaupt",
+                "density",
+                "mbo",
+                "bader",
+                "ddec6",
+                "hirshfeld",
+            ]
         ]
-    ]
-    | None = None,
+        | None
+    ) = None,
     check_convergence: bool | None = None,
     additional_fields: dict[str, Any] | None = None,
     store: Store | None = None,
@@ -99,7 +102,7 @@ def cclib_summarize_run(
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
     # Get the cclib base task document
-    cclib_task_doc = _make_cclib_schema(
+    cclib_task_doc = make_cclib_task_doc(
         dir_path, logfile_extensions, analysis=pop_analyses
     )
     attributes = cclib_task_doc["attributes"]
@@ -142,7 +145,7 @@ def cclib_summarize_run(
     return task_doc
 
 
-def _make_cclib_schema(
+def make_cclib_task_doc(
     dir_name: str | Path,
     logfile_extensions: str | list[str],
     analysis: str | list[str] | None = None,
