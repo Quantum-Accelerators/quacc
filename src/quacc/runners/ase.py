@@ -231,7 +231,7 @@ def run_vib(
     atoms
         The Atoms object to run the calculation on.
     vib_kwargs
-        Dictionary of kwargs for the `ase.vibrations.Vibrations` class.
+        Dictionary of kwargs for the [ase.vibrations.Vibrations][] class.
     copy_files
         Filenames to copy from source to scratch directory.
 

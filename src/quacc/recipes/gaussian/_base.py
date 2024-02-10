@@ -42,7 +42,7 @@ def base_fn(
     calc_swaps
         Dictionary of custom kwargs for the Gaussian calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.gaussian.Gaussian` calculator.
+        keys, refer to the [ase.calculators.gaussian.Gaussian][] calculator.
     additional_fields
         Additional fields to supply to the summarizer.
     copy_files

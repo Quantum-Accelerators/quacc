@@ -30,7 +30,7 @@ def get_atoms_id(atoms: Atoms) -> str:
 
     Returns
     -------
-    md5hash
+    str
         MD5 hash of the Atoms object
     """
 
@@ -244,7 +244,7 @@ def get_final_atoms_from_dyn(dyn: Dynamics) -> Atoms:
 
     Returns
     -------
-    atoms
+    Atoms
         Atoms object
     """
     return dyn.atoms.atoms if isinstance(dyn.atoms, Filter) else dyn.atoms

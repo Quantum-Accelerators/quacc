@@ -51,11 +51,11 @@ def base_fn(
     keyword_swaps
         List of custom `keyword` kwargs for the GULP calculator. To remove entries
         from the defaults, put a `#` in front of the name. For a list of
-        available keys, refer to the `ase.calculators.gulp.GULP` calculator.
+        available keys, refer to the [ase.calculators.gulp.GULP][] calculator.
     option_swaps
         Dictionary of custom `options` kwargs for the GULP calculator. To remove entries
         from the defaults, put a `#` in front of the name. For a list of
-        available keys, refer to the `ase.calculators.gulp.GULP` calculator.
+        available keys, refer to the [ase.calculators.gulp.GULP][] calculator.
     additional_fields
         Additional field to supply to the summarizer.
 

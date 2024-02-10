@@ -322,7 +322,7 @@ class Espresso(Espresso_):
         **kwargs
             Additional arguments to be passed to the Espresso calculator. Takes all valid
             ASE calculator arguments, such as `input_data` and `kpts`. Refer to
-            `ase.calculators.espresso.Espresso` for details. Note that the full input
+            [ase.calculators.espresso.Espresso][] for details. Note that the full input
             must be described; use `{"system":{"ecutwfc": 60}}` and not the `{"ecutwfc": 60}`
             short-hand.
 

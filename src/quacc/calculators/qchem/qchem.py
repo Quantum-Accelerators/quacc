@@ -198,7 +198,7 @@ class QChem(FileIOCalculator):
             default to 6 if not specified in `qchem_dict_set_params`.
         **fileiocalculator_kwargs
             Additional arguments to be passed to
-            `ase.calculators.calculator.FileIOCalculator`.
+            [ase.calculators.calculator.FileIOCalculator][].
 
         Returns
         -------

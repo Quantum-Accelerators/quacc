@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from typing import Literal, TypedDict
 
     from numpy.typing import ArrayLike
-    from pymatgen.core import Structure
+    from pymatgen.core.structure import Structure
 
     class AdsSiteFinderKwargs(TypedDict, total=False):
         selective_dynamics: bool  # default = False

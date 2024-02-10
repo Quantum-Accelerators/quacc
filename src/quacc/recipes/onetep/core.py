@@ -42,7 +42,7 @@ def static_job(
     **calc_kwargs
         Custom kwargs for the ONETEP calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.onetep.Onetep` calculator.
+        keys, refer to the [ase.calculators.onetep.Onetep][] calculator.
 
     Returns
     -------

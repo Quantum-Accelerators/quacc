@@ -43,7 +43,7 @@ def base_fn(
         Dictionary of custom kwargs for the calculator that would override the
         calculator defaults. Set a value to `quacc.Remove` to remove a pre-existing key
         entirely. For a list of available keys, refer to the
-        `ase.calculators.dftb.Dftb` calculator.
+        [ase.calculators.dftb.Dftb][] calculator.
     additional_fields
         Any additional fields to supply to the summarizer.
     copy_files

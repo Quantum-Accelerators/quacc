@@ -37,7 +37,7 @@ def base_fn(
     calc_swaps
         Custom kwargs for the ONETEP calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.onetep.Onetep` calculator.
+        keys, refer to the [ase.calculators.onetep.Onetep][] calculator.
     additional_fields
         Any additional fields to supply to the summarizer.
     copy_files
@@ -87,7 +87,7 @@ def base_opt_fn(
     calc_swaps
         Custom kwargs for the ONETEP calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.onetep.Onetep` calculator.
+        keys, refer to the [ase.calculators.onetep.Onetep][] calculator.
     opt_defaults
         The default optimization parameters.
     opt_params
