@@ -1,4 +1,5 @@
 """Schemas for molecular DFT codes parsed by cclib."""
+
 from __future__ import annotations
 
 import logging
@@ -36,20 +37,22 @@ def cclib_summarize_run(
     final_atoms: Atoms,
     logfile_extensions: str | list[str],
     dir_path: Path | str | None = None,
-    pop_analyses: list[
-        Literal[
-            "cpsa",
-            "mpa",
-            "lpa",
-            "bickelhaupt",
-            "density",
-            "mbo",
-            "bader",
-            "ddec6",
-            "hirshfeld",
+    pop_analyses: (
+        list[
+            Literal[
+                "cpsa",
+                "mpa",
+                "lpa",
+                "bickelhaupt",
+                "density",
+                "mbo",
+                "bader",
+                "ddec6",
+                "hirshfeld",
+            ]
         ]
-    ]
-    | None = None,
+        | None
+    ) = None,
     check_convergence: bool | None = None,
     additional_fields: dict[str, Any] | None = None,
     store: Store | None = None,

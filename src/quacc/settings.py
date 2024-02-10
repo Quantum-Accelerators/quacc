@@ -1,4 +1,5 @@
 """Settings for quacc."""
+
 from __future__ import annotations
 
 import os
