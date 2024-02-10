@@ -184,6 +184,11 @@ In the previous examples, we have been running calculations on our local machine
     !!! Tip "Example Configurations"
 
         To configure Parsl for the high-performance computing environment of your choice, refer to the executor [Configuration page in the Parsl documentation](https://parsl.readthedocs.io/en/stable/userguide/configuring.html) for many examples.
+        
+        Some helpful terminology based on the [Parsl documentation](https://parsl.readthedocs.io/en/stable/userguide/execution.html#blocks):
+        - Blocks: Individual Slurm jobs that are queued up and can run in parallel.
+        - Nodes: The compute nodes, which typically contain individual compute cores.
+        - Workers: Agents that run individual compute tasks on each node.
 
     Let's imagine a scenario where we want to run a series of compute-intensive DFT calculations. Each DFT calculation requires 2 CPU nodes (each node having 48 cores). We want to run DFT calculations on 4 unique structures, all in parallel. We also want this to be done in a single Slurm allocation, meaning that this allocation must request 8 total nodes.
 
@@ -196,9 +201,6 @@ In the previous examples, we have been running calculations on our local machine
     from parsl.launchers import SimpleLauncher
     from parsl.providers import SlurmProvider
 
-    max_slurm_jobs = 1  # Maximum number of Slurm jobs (blocks) to allocate
-    n_calcs_per_job = 4  # Number of calculations to run in parallel (per block)
-    n_nodes_per_calc = 2  # Number of nodes to reserve for each calculation
 
     config = Config(
         max_idletime=60,  # (1)!
@@ -206,18 +208,18 @@ In the previous examples, we have been running calculations on our local machine
         executors=[
             HighThroughputExecutor(
                 label="quacc_parsl",  # (3)!
-                max_workers=n_calcs_per_job,  # (4)!
-                cores_per_worker=1e-6,  # (5)!
+                max_workers=32,  # (4)!
+                cpu_affinity="block",  # (5)!
                 provider=SlurmProvider(
                     account="MyAccountName",
                     qos="debug",
                     constraint="cpu",
                     worker_init=f"source ~/.bashrc && conda activate quacc",  # (6)!
                     walltime="00:10:00",  # (7)!
-                    nodes_per_block=n_nodes_per_calc * n_calcs_per_job,  # (8)!
+                    nodes_per_block=2,  # (8)!
                     init_blocks=0,  # (9)!
                     min_blocks=0,  # (10)!
-                    max_blocks=max_slurm_jobs,  # (11)!
+                    max_blocks=1,  # (11)!
                     launcher=SimpleLauncher(),  # (12)!
                     cmd_timeout=120,  # (13)!
                 ),
@@ -234,13 +236,11 @@ In the previous examples, we have been running calculations on our local machine
 
     3. This is just an arbitrary label for file I/O.
 
-    4. Sets the maximum number of workers per block, which should generally be the number of tasks per block.
+    4. Sets the maximum number of workers per block, which should generally be the number of concurrent tasks to run per block. If you are running a single-core `Job`, this value will be the number of physical cores per node. If we are running a `Job` that uses up a full node, this parameter can be omitted entirely.
 
-    5. This prevents the `HighThroughputExecutor` from reducing the number of workers if you request more workers than cores. It is [recommended](https://parsl.readthedocs.io/en/stable/userguide/mpi_apps.html#configuring-the-executor) for codes that run via MPI.
+    5. This is recommended for increased efficiency when running many tasks per node.
 
-    6. Any additional `#SBATCH` options not captured elsewhere can be included here.
-
-    7. Any commands to run before carrying out any of the Parsl tasks. This is useful for setting environment variables, activating a given Conda environment, and loading modules.
+    6. Any commands to run before carrying out any of the Parsl tasks. This is useful for setting environment variables, activating a given Conda environment, and loading modules.
 
     7. The walltime for each block (i.e. Slurm job).
 
