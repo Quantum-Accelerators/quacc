@@ -152,7 +152,7 @@ def test_phonon_grid_qplot(tmp_path, monkeypatch):
 
     for key in sections:
         assert key in grid_results["results"][1]
-        assert key in grid_results["results"][-1]
+        assert key in grid_results["results"][2]
 
 
 def test_phonon_grid_disp(tmp_path, monkeypatch):
