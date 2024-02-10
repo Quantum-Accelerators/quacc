@@ -43,8 +43,10 @@ class QuaccSettings(BaseSettings):
     CONFIG_FILE: Path = Field(
         _DEFAULT_CONFIG_FILE_PATH,
         description=(
-            "Path to the YAML file to load alternative quacc configuration "
-            "defaults from."
+            """
+            Path to the YAML file to load alternative quacc configuration 
+            defaults from.
+            """
         ),
     )
 
@@ -65,26 +67,32 @@ class QuaccSettings(BaseSettings):
     RESULTS_DIR: Path = Field(
         Path.cwd(),
         description=(
-            "Directory to permanently store I/O-based calculation results in."
-            "Note that this behavior may be modified by the chosen workflow engine."
+            """
+            Directory to permanently store I/O-based calculation results in. 
+            Note that this behavior may be modified by the chosen workflow engine.
+            """
         ),
     )
     SCRATCH_DIR: Optional[Path] = Field(
         None,
         description=(
-            "The base directory where calculations are run. If set to None, calculations will be run in a "
-            "temporary directory within `RESULTS_DIR`. If a `Path` is supplied, calculations will "
-            "be run in a temporary directory within `SCRATCH_DIR`. Files are always moved back "
-            "to `RESULTS_DIR` after the calculation is complete, and the temporary directory "
-            "in `SCRATCH_DIR` is removed."
+            """
+            The base directory where calculations are run. If set to None, calculations will be run in a 
+            temporary directory within `RESULTS_DIR`. If a `Path` is supplied, calculations will 
+            be run in a temporary directory within `SCRATCH_DIR`. Files are always moved back 
+            to `RESULTS_DIR` after the calculation is complete, and the temporary directory 
+            in `SCRATCH_DIR` is removed.
+            """
         ),
     )
     CREATE_UNIQUE_DIR: bool = Field(
         True,
         description=(
-            "Whether to have a unique directory in RESULTS_DIR for each job."
-            "Some workflow engines have an option to do this for you already,"
-            "in which case you should set this to False."
+            """
+            Whether to have a unique directory in RESULTS_DIR for each job. 
+            Some workflow engines have an option to do this for you already, 
+            in which case you should set this to False.
+            """
         ),
     )
     GZIP_FILES: bool = Field(
@@ -98,12 +106,26 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # Data Store Settings
     # ---------------------------
-    PRIMARY_STORE: Optional[Union[str, Store]] = Field(
+    STORE: Optional[Union[dict[str, dict], Store]] = Field(
         None,
         description=(
-            "String-based JSON representation of the primary Maggma data store "
-            "where calculation results will be stored."
-            "Taken from the `.to_json()` method of the corresponding Store object."
+            """
+            The desired Maggma data store where calculation results will be stored. All data stores listed in 
+            `maggma.stores.__init__.py` are supported. If a dictionary is provided, the first key must be set 
+            to the desired store type. The sub-parameters are the keyword arguments accepted by the Store.
+            An example is shown below: 
+
+            ```yaml
+            STORE:
+              MongoStore:
+                database: my_db
+                collection_name: my_collection
+                username: my_username
+                password: my_password
+                host: localhost
+                port: 27017
+            ```
+            """
         ),
     )
 
@@ -120,8 +142,10 @@ class QuaccSettings(BaseSettings):
     ORCA_CMD: Path = Field(
         Path(which("orca") or "orca"),
         description=(
-            "Path to the ORCA executable. This must be the full, absolute path "
-            "for parallel calculations to work."
+            """
+            Path to the ORCA executable. This must be the full, absolute path 
+            for parallel calculations to work.
+            """
         ),
     )
 
@@ -197,9 +221,11 @@ class QuaccSettings(BaseSettings):
     VASP_PARALLEL_CMD: str = Field(
         "",
         description=(
-            "Parallel command to run VASP with Custodian."
-            "For example: srun -N 2 --ntasks-per-node 48"
-            "Note that this does not include the executable name."
+            """
+            Parallel command to run VASP with Custodian.
+            For example: `"srun -N 2 --ntasks-per-node 48"`.
+            Note that this does not include the executable name.
+            """
         ),
     )
     VASP_CMD: str = Field(
@@ -220,45 +246,57 @@ class QuaccSettings(BaseSettings):
     VASP_INCAR_COPILOT: Literal["off", "on", "aggressive"] = Field(
         "on",
         description=(
-            "Controls VASP co-pilot mode for automated INCAR parameter handling."
-            "off: Do not use co-pilot mode. INCAR parameters will be unmodified."
-            "on: Use co-pilot mode. This will only modify INCAR flags not already set by the user."
-            "aggressive: Use co-pilot mode in aggressive mode. This will modify INCAR flags even if they are already set by the user."
+            """
+            Controls VASP co-pilot mode for automated INCAR parameter handling.
+            off: Do not use co-pilot mode. INCAR parameters will be unmodified.
+            on: Use co-pilot mode. This will only modify INCAR flags not already set by the user.
+            aggressive: Use co-pilot mode in aggressive mode. This will modify INCAR flags even if they are already set by the user.
+            """
         ),
     )
     VASP_BADER: bool = Field(
         bool(which("bader")),
         description=(
-            "Whether to run a Bader analysis when summarizing VASP results."
-            "Requires bader to be in PATH."
+            """"
+            Whether to run a Bader analysis when summarizing VASP results.
+            Requires bader to be in PATH.
+            """
         ),
     )
     VASP_CHARGEMOL: bool = Field(
         bool(os.environ.get("DDEC6_ATOMIC_DENSITIES_DIR")),
         description=(
-            "Whether to run a Chargemol (i.e. DDEC6, CM5) analysis when summarizing VASP results."
-            "Requires the Chargemol executable to be in PATH and the DDEC6_ATOMIC_DENSITIES_DIR environment variable."
+            """
+            Whether to run a Chargemol (i.e. DDEC6, CM5) analysis when summarizing VASP results.
+            Requires the Chargemol executable to be in PATH and the DDEC6_ATOMIC_DENSITIES_DIR environment variable.
+            """
         ),
     )
     VASP_PRESET_MAG_DEFAULT: float = Field(
         1.0,
         description=(
-            "Default initial magmom to use for a given element if a preset "
-            "with magmoms is provided but an element is missing from the list"
+            """
+            Default initial magmom to use for a given element if a preset 
+            with magmoms is provided but an element is missing from the list.
+            """
         ),
     )
     VASP_MAG_CUTOFF: float = Field(
         0.05,
         description=(
-            "If the absolute value of all magnetic moments are below this value, "
-            "they will be set to 0 such that a spin-unpolarized calculation will be performed"
+            """
+            If the absolute value of all magnetic moments are below this value, 
+            they will be set to 0 such that a spin-unpolarized calculation will be performed.
+            """
         ),
     )
     VASP_COPY_MAGMOMS: bool = Field(
         True,
         description=(
-            "If True, any pre-existing atoms.get_magnetic_moments() will be set"
-            "in atoms.set_initial_magnetic_moments()."
+            """
+            If True, any pre-existing atoms.get_magnetic_moments() will be set 
+            in atoms.set_initial_magnetic_moments().
+            """
         ),
     )
     VASP_PRESET_DIR: Path = Field(
@@ -273,8 +311,10 @@ class QuaccSettings(BaseSettings):
     VASP_CUSTODIAN_VTST: bool = Field(
         False,
         description=(
-            "If VTST-related input swaps should be used when running Custodian."
-            "Requires VASP to be compiled with VTST"
+            """
+            If VTST-related input swaps should be used when running Custodian. 
+            Requires VASP to be compiled with VTST
+            """
         ),
     )
     VASP_CUSTODIAN_MAX_ERRORS: int = Field(
@@ -302,8 +342,10 @@ class QuaccSettings(BaseSettings):
     VASP_CUSTODIAN_WALL_TIME: Optional[int] = Field(
         None,
         description=(
-            "After this many seconds, Custodian will stop running "
-            "and ensure that VASP writes a STOPCAR"
+            """
+            After this many seconds, Custodian will stop running 
+            and ensure that VASP writes a STOPCAR
+            """
         ),
     )
 
@@ -356,8 +398,10 @@ class QuaccSettings(BaseSettings):
     DEBUG: bool = Field(
         False,
         description=(
-            "Whether to run in debug mode. This will set the logging level to DEBUG, "
-            "ASE logs (e.g. optimizations, vibrations, thermo) are printed to stdout."
+            """
+            Whether to run in debug mode. This will set the logging level to DEBUG, 
+            ASE logs (e.g. optimizations, vibrations, thermo) are printed to stdout.
+            """
         ),
     )
 
@@ -393,12 +437,18 @@ class QuaccSettings(BaseSettings):
         """Expand ~/ in paths."""
         return v.expanduser() if v is not None else v
 
-    @field_validator("PRIMARY_STORE")
-    def generate_store(cls, v: Union[str, Store]) -> Store:
+    @field_validator("STORE")
+    def generate_store(cls, v: Union[dict[str, dict[str, Any]], Store]) -> Store:
         """Generate the Maggma store."""
-        from monty.json import MontyDecoder
+        from maggma import stores
 
-        return MontyDecoder().decode(v) if isinstance(v, str) else v
+        if isinstance(v, dict):
+            store_name = list(v.keys())[0]
+            store = getattr(stores, store_name)
+
+            return store(**v[store_name])
+        else:
+            return v
 
     model_config = SettingsConfigDict(env_prefix="quacc_")
 

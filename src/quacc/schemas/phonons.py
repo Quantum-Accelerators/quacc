@@ -60,7 +60,7 @@ def summarize_phonopy(
         The PhononSchema.
     """
     additional_fields = additional_fields or {}
-    store = SETTINGS.PRIMARY_STORE if store is None else store
+    store = SETTINGS.STORE if store is None else store
 
     uri = get_uri(Path.cwd())
     directory = ":".join(uri.split(":")[1:])

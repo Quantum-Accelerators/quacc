@@ -10,6 +10,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - PDOS jobs and flows for Espresso
 
+### Changed
+
+- The `PRIMARY_STORE` setting has changed to `STORE` and is now formatted more intuitively
+
+### Fixed
+
+- Fixed usage of `MontyStore` as the data store option
+
 ### Removed
 
 - Removed the deprecated "q-chem legacy" recipes
