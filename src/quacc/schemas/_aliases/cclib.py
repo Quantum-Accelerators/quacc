@@ -125,7 +125,7 @@ class AllAttributes(Attributes, AdditionalAttributes):
 
 
 class cclibBaseSchema(TypedDict):
-    """Type hint associated with [quacc.schemas.cclib._make_cclib_schema][]"""
+    """Type hint associated with quacc.schemas.cclib._make_cclib_schema`"""
 
     logfile: str
     attributes: AllAttributes

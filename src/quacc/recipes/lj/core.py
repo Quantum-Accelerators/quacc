@@ -38,7 +38,7 @@ def static_job(atoms: Atoms, **calc_kwargs) -> RunSchema:
     **calc_kwargs
         Dictionary of custom kwargs for the LJ calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the [ase.calculators.lj.LJ][] calculator.
+        keys, refer to the [ase.calculators.lj.LennardJones] calculator.
 
     Returns
     -------
@@ -71,7 +71,7 @@ def relax_job(
     **calc_kwargs
         Custom kwargs for the LJ calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the [ase.calculators.lj.LJ][] calculator.
+        keys, refer to the [ase.calculators.lj.LennardJones] calculator.
 
     Returns
     -------
@@ -115,7 +115,7 @@ def freq_job(
     **calc_kwargs
         Dictionary of custom kwargs for the LJ calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the [ase.calculators.lj.LJ][] calculator.
+        keys, refer to the [ase.calculators.lj.LennardJones] calculator.
 
     Returns
     -------

@@ -42,7 +42,7 @@ class PointGroupData(TypedDict):
 
 
 class EmmetBase(TypedDict):
-    """Type hint associated with [emmet.core.base.EmmetBaseModel][]."""
+    """Type hint associated with `emmet.core.base.EmmetBaseModel`."""
 
     emmet_version: str
     pymatgen_version: str
