@@ -47,7 +47,7 @@ Here, we describe how to set up quacc with a database of your choosing.
         # Define your database details
         store = MongoStore(
             database="my_db_name",
-            collection="my_collection_name",
+            collection_name="my_collection_name",
             username="my_username",
             password="my_password",
             host="localhost",
