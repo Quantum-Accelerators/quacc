@@ -21,7 +21,7 @@ def test_dos_job(tmp_path, monkeypatch):
     copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
     output = dos_job(tmp_path)
 
-    assert output["results"]["pwscf.dos"]["fermi"] == pytest.approx(7.199)
+    assert output["results"]["pwscf_dos"]["fermi"] == pytest.approx(7.199)
 
 
 def test_projwfc_job(tmp_path, monkeypatch):
