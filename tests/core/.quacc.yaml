@@ -1,5 +1,5 @@
 DEBUG: true
 WORKFLOW_ENGINE: null
 STORE:
-  type: MemoryStore
-  collection_name: test_store
+  MemoryStore:
+    collection_name: test_store
