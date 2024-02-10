@@ -25,13 +25,13 @@ Here, we describe how to set up quacc with a database of your choosing.
 
     ```yaml title="~/.quacc.yaml"
     STORE:
-      type: MongoStore
-      database: my_db_name
-      collection_name: my_collection_name
-      username: my_username
-      password: my_password
-      host: localhost
-      port: 27017
+      MongoStore:
+        database: my_db_name
+        collection_name: my_collection_name
+        username: my_username
+        password: my_password
+        host: localhost
+        port: 27017
     ```
 
     ??? "How to Manually Upload to a Data Store"

@@ -111,19 +111,19 @@ class QuaccSettings(BaseSettings):
         description=(
             """
             The desired Maggma data store where calculation results will be stored. All data stores listed in 
-            `maggma.stores.__init__.py` are supported. If a dictionary is provided, the `type` key must be set 
-            to the desired store type. The remaining parameters are the keyword arguments accepted by the Store.
+            `maggma.stores.__init__.py` are supported. If a dictionary is provided, the first key must be set 
+            to the desired store type. The sub-parameters are the keyword arguments accepted by the Store.
             An example is shown below: 
 
             ```yaml
             STORE:
-              type: MongoStore
-              database: my_db
-              collection_name: my_collection
-              username: my_username
-              password: my_password
-              host: localhost
-              port: 27017
+              MongoStore:
+                database: my_db
+                collection_name: my_collection
+                username: my_username
+                password: my_password
+                host: localhost
+                port: 27017
             ```
             """
         ),
@@ -438,14 +438,15 @@ class QuaccSettings(BaseSettings):
         return v.expanduser() if v is not None else v
 
     @field_validator("STORE")
-    def generate_store(cls, v: Union[dict[str, Any], Store]) -> Store:
+    def generate_store(cls, v: Union[dict[str, dict[str, Any]], Store]) -> Store:
         """Generate the Maggma store."""
         from maggma import stores
 
         if isinstance(v, dict):
-            store = getattr(stores, v.pop("type"))
+            store_name = list(v.keys())[0]
+            store = getattr(stores, store_name)
 
-            return store(**v)
+            return store(**v[store_name])
         else:
             return v
 
