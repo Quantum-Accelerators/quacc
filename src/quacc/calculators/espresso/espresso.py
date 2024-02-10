@@ -211,7 +211,7 @@ class EspressoTemplate(EspressoTemplate_):
                 lines = fd.readlines()
                 fermi = float(re.search(r"-?\d+\.?\d*", lines[0]).group(0))
                 dos = np.loadtxt(lines[1:])
-            results = {fildos.name: {"dos": dos, "fermi": fermi}}
+            results = {fildos.name.replace(".", "_"): {"dos": dos, "fermi": fermi}}
         elif self.binary == "projwfc":
             filpdos = self.outfiles["filpdos"]
             with Path(filpdos).open("r") as fd:
@@ -219,7 +219,13 @@ class EspressoTemplate(EspressoTemplate_):
                 energy = lines[1:, 0]
                 dos = lines[1:, 1]
                 pdos = lines[1:, 2]
-            results = {filpdos.name: {"energy": energy, "dos": dos, "pdos": pdos}}
+            results = {
+                filpdos.name.replace(".", "_"): {
+                    "energy": energy,
+                    "dos": dos,
+                    "pdos": pdos,
+                }
+            }
         else:
             results = {}
 

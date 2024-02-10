@@ -85,7 +85,7 @@ def test_dos_flow(tmp_path, monkeypatch):
     assert output["non_scf_job"]["results"]["nbands"] == 8
     assert output["non_scf_job"]["results"]["nspins"] == 1
 
-    assert output["dos_job"]["results"]["pwscf.dos"]["fermi"] == pytest.approx(6.772)
+    assert output["dos_job"]["results"]["pwscf_dos"]["fermi"] == pytest.approx(6.772)
 
 
 def test_projwfc_flow(tmp_path, monkeypatch):
