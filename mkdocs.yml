@@ -126,6 +126,7 @@ plugins:
             - https://docs.python.org/3/objects.inv
             - https://wiki.fysik.dtu.dk/ase/objects.inv
             - https://pymatgen.org/objects.inv
+            - https://materialsproject.github.io/pymatgen-analysis-defects/objects.inv
             - https://cclib.github.io/objects.inv
             - https://materialsproject.github.io/maggma/objects.inv
             - https://materialsproject.github.io/emmet/objects.inv
@@ -137,6 +138,16 @@ plugins:
             - https://docs.pydantic.dev/latest/objects.inv
             - https://covalent.readthedocs.io/en/latest/objects.inv
             - https://click.palletsprojects.com/en/latest/objects.inv
+            - https://psutil.readthedocs.io/en/latest/objects.inv
+            - https://docs.dask.org/en/stable/objects.inv
+            - https://distributed.dask.org/en/stable/objects.inv
+            - https://jobqueue.dask.org/en/latest/objects.inv
+            - https://shakenbreak.readthedocs.io/en/latest/objects.inv
+            - https://matgl.ai/objects.inv
+            - https://phonopy.github.io/phonopy/objects.inv
+            - https://docs.prefect.io/latest/objects.inv
+            - https://prefecthq.github.io/prefect-dask/objects.inv
+            - https://insitro.github.io/redun/objects.inv
           options:
             docstring_style: numpy
             docstring_section_style: list
