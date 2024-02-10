@@ -184,7 +184,7 @@ In the previous examples, we have been running calculations on our local machine
     !!! Tip "Example Configurations"
 
         To configure Parsl for the high-performance computing environment of your choice, refer to the executor [Configuration page in the Parsl documentation](https://parsl.readthedocs.io/en/stable/userguide/configuring.html) for many examples.
-        
+
         Some helpful terminology based on the [Parsl documentation](https://parsl.readthedocs.io/en/stable/userguide/execution.html#blocks):
         - Blocks: Individual Slurm jobs that are queued up and can run in parallel.
         - Nodes: The compute nodes, which typically contain individual compute cores.
