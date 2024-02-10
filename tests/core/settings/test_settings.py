@@ -15,13 +15,13 @@ FILE_DIR = Path(__file__).parent
 
 
 def setup_function():
-    SETTINGS.PRIMARY_STORE = None
+    SETTINGS.STORE = None
     SETTINGS.GZIP_FILES = True
     SETTINGS.CREATE_UNIQUE_DIR = False
 
 
 def teardown_function():
-    SETTINGS.PRIMARY_STORE = DEFAULT_SETTINGS.PRIMARY_STORE
+    SETTINGS.STORE = DEFAULT_SETTINGS.STORE
     SETTINGS.GZIP_FILES = DEFAULT_SETTINGS.GZIP_FILES
     SETTINGS.CREATE_UNIQUE_DIR = DEFAULT_SETTINGS.CREATE_UNIQUE_DIR
 
@@ -43,7 +43,7 @@ def test_file_v1(tmp_path, monkeypatch):
 
 def test_store(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    SETTINGS.PRIMARY_STORE = MemoryStore()
+    SETTINGS.STORE = MemoryStore()
     atoms = bulk("Cu")
     static_job(atoms)
 
