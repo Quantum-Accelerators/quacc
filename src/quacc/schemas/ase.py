@@ -10,7 +10,7 @@ from ase.io import read
 from ase.vibrations.data import VibrationsData
 
 from quacc import SETTINGS, __version__
-from quacc.atoms.core import copy_atoms, get_final_atoms_from_dyn
+from quacc.atoms.core import get_final_atoms_from_dyn
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.schemas.prep import prep_magmoms, prep_next_run
 from quacc.utils.dicts import clean_task_doc, recursive_dict_merge
@@ -74,7 +74,6 @@ def summarize_run(
 
     additional_fields = additional_fields or {}
     store = SETTINGS.STORE if store is None else store
-    input_atoms = copy_atoms(input_atoms)
 
     if not final_atoms.calc:
         msg = "ASE Atoms object has no attached calculator."
@@ -83,7 +82,6 @@ def summarize_run(
         msg = "ASE Atoms object's calculator has no results."
         raise ValueError(msg)
 
-    input_atoms.calc = None
     directory = final_atoms.calc.directory
     uri = get_uri(directory)
     input_atoms_metadata = (
