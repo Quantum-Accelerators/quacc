@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- The `PRIMARY_STORE` setting has changed to `STORE` and is now formatted more intuitively.
+- The `PRIMARY_STORE` setting has changed to `STORE` and is now formatted more intuitively
 
 ### Fixed
 
