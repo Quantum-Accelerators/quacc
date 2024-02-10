@@ -35,10 +35,10 @@ def test_read_espresso_ph_1():
     assert len(results[1]["eqpoints"]) == 1
     assert results[1]["atoms"].symbols == ["Al"]
 
-    assert np.unique(results[2]["freqs"]).shape[0] == 3
-    assert np.unique(results[2]["freqs"])[2] == 8.791383
-    assert len(results[2]["eqpoints"]) == 24
-    assert results[2]["atoms"].symbols == ["Al"]
+    assert np.unique(results[5]["freqs"]).shape[0] == 3
+    assert np.unique(results[5]["freqs"])[2] == 8.791383
+    assert len(results[5]["eqpoints"]) == 24
+    assert results[5]["atoms"].symbols == ["Al"]
 
 
 def test_dos_output(tmp_path, monkeypatch):
