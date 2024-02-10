@@ -30,17 +30,15 @@ def test_read_espresso_ph_1():
     results = read_espresso_ph(fd)
 
     assert len(results) == 8
-    assert (0, 0, 0) in results
-    assert np.unique(results[(0, 0, 0)]["freqs"]).shape[0] == 1
-    assert np.unique(results[(0, 0, 0)]["freqs"])[0] == 0.173268
-    assert len(results[(0, 0, 0)]["eqpoints"]) == 1
-    assert results[(0, 0, 0)]["atoms"].symbols == ["Al"]
+    assert np.unique(results[1]["freqs"]).shape[0] == 1
+    assert np.unique(results[1]["freqs"])[0] == 0.173268
+    assert len(results[1]["eqpoints"]) == 1
+    assert results[1]["atoms"].symbols == ["Al"]
 
-    assert (0.75, -0.25, 0.75) in results
-    assert np.unique(results[(0.75, -0.25, 0.75)]["freqs"]).shape[0] == 3
-    assert np.unique(results[(0.75, -0.25, 0.75)]["freqs"])[2] == 8.791383
-    assert len(results[(0.75, -0.25, 0.75)]["eqpoints"]) == 24
-    assert results[(0.75, -0.25, 0.75)]["atoms"].symbols == ["Al"]
+    assert np.unique(results[5]["freqs"]).shape[0] == 3
+    assert np.unique(results[5]["freqs"])[2] == 8.791383
+    assert len(results[5]["eqpoints"]) == 24
+    assert results[5]["atoms"].symbols == ["Al"]
 
 
 def test_dos_output(tmp_path, monkeypatch):
@@ -48,4 +46,4 @@ def test_dos_output(tmp_path, monkeypatch):
     template = EspressoTemplate(binary="dos")
     template.outfiles = {"fildos": Path(RUN_PATH, "test.dos")}
     results = template.read_results(directory=".")
-    assert results["test.dos"]["fermi"] == pytest.approx(5.98)
+    assert results["test_dos"]["fermi"] == pytest.approx(5.98)
