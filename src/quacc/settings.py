@@ -106,7 +106,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # Data Store Settings
     # ---------------------------
-    STORE: Optional[Union[dict, Store]] = Field(
+    STORE: Optional[Union[dict[str, dict], Store]] = Field(
         None,
         description=(
             """
