@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- Modified to the Espresso results schema to be DB-compatible
+- Modified the Espresso results schema to be DB-compatible
 - The `PRIMARY_STORE` setting has changed to `STORE` and is now formatted more intuitively
 - Uses 2024 stable release of `black`
 
