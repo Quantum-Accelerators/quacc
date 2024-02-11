@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read
+from ase.md.verlet import VelocityVerlet
 from ase.optimize import FIRE
 from ase.vibrations import Vibrations
 from monty.dev import requires
@@ -29,7 +30,7 @@ if TYPE_CHECKING:
     from typing import Any, TypedDict
 
     from ase.atoms import Atoms
-    from ase.optimize.optimize import Optimizer
+    from ase.optimize.optimize import Dynamics, Optimizer
 
     class OptimizerKwargs(TypedDict, total=False):
         restart: Path | str | None  # default = None
@@ -203,6 +204,86 @@ def run_opt(
     # Run calculation
     with traj, optimizer(atoms, **optimizer_kwargs) as dyn:
         dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
+
+    # Store the trajectory atoms
+    dyn.traj_atoms = read(traj_filename, index=":")
+
+    # Perform cleanup operations
+    calc_cleanup(get_final_atoms_from_dyn(dyn), tmpdir, job_results_dir)
+
+    return dyn
+
+
+def run_md(
+    atoms: Atoms,
+    timestep: float = 1.0,
+    max_steps: int = 500,
+    dynamics: Dynamics = VelocityVerlet,
+    dynamics_kwargs: OptimizerKwargs | None = None,
+    run_kwargs: dict[str, Any] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
+) -> Optimizer:
+    """
+    Run an ASE-based MD in a scratch directory and copy the results back to
+    the original directory. This can be useful if file I/O is slow in the working
+    directory, so long as file transfer speeds are reasonable.
+
+    This is a wrapper around the dynamical object in ASE. Note: This function does not
+    modify the atoms object in-place.
+
+    Parameters
+    ----------
+    atoms
+        The Atoms object to run the calculation on.
+    max_steps
+        Maximum number of steps to take.
+    optimizer
+        Optimizer class to use.
+    optimizer_kwargs
+        Dictionary of kwargs for the optimizer. Takes all valid kwargs for ASE
+        Optimizer classes. Refer to `_set_sella_kwargs` for Sella-related
+        kwargs and how they are set.
+    run_kwargs
+        Dictionary of kwargs for the run() method of the optimizer.
+    copy_files
+        Filenames to copy from source to scratch directory.
+
+    Returns
+    -------
+    Optimizer
+        The ASE Optimizer object.
+    """
+
+    # Copy atoms so we don't modify it in-place
+    atoms = copy_atoms(atoms)
+
+    # Perform staging operations
+    tmpdir, job_results_dir = calc_setup(atoms, copy_files=copy_files)
+
+    # Set defaults
+    dynamics_kwargs = recursive_dict_merge(
+        {
+            "logfile": "-" if SETTINGS.DEBUG else tmpdir / "dyn.log",
+            "restart": tmpdir / "dyn.pckl",
+        },
+        dynamics_kwargs,
+    )
+    run_kwargs = run_kwargs or {}
+
+    # Check if trajectory kwarg is specified
+    if "trajectory" in dynamics_kwargs:
+        msg = "Quacc does not support setting the `trajectory` kwarg."
+        raise ValueError(msg)
+
+    traj_filename = tmpdir / "opt.traj"
+    traj = Trajectory(traj_filename, "w", atoms=atoms)
+    dynamics_kwargs["trajectory"] = traj
+
+    # Set volume relaxation constraints, if relevant
+
+    # Run calculation
+    with traj, dynamics(atoms, **dynamics_kwargs) as dyn:
+        dyn.run(steps=max_steps, **run_kwargs)
 
     # Store the trajectory atoms
     dyn.traj_atoms = read(traj_filename, index=":")

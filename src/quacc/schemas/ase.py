@@ -1,4 +1,5 @@
 """Schemas for storing ASE-based data."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -222,6 +223,9 @@ def summarize_opt_run(
         results_to_db(store, task_doc)
 
     return task_doc
+
+
+summarize_md_run = summarize_opt_run
 
 
 def summarize_vib_run(

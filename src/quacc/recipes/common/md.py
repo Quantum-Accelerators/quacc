@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from ase.units import fs
+
 
 @job
 def microcanonical_flow(
@@ -7,7 +10,7 @@ def microcanonical_flow(
     time_step: float = fs,
     initial_temperature: float | None = None,
     equilibration_jobs: dict[Any, dict] | None = None,
-) -> MdSchema:
+) -> DynSchema:
     """
     Perform a microcanonical flow calculation with optional equilibration runs.
 
