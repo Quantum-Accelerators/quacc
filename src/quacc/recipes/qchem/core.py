@@ -1,4 +1,5 @@
 """Core recipes for Q-Chem."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -68,7 +69,7 @@ def static_job(
         File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
     **calc_kwargs
         Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
-        a pre-existing key entirely. See [quacc.calculators._qchem_legacy.qchem.QChem][] for more
+        a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
         details.
 
     Returns
@@ -128,7 +129,7 @@ def relax_job(
         File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
     **calc_kwargs
         Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
-        a pre-existing key entirely. See [quacc.calculators._qchem_legacy.qchem.QChem][] for more
+        a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
         details.
 
     Returns
@@ -190,7 +191,7 @@ def freq_job(
         File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
     **calc_kwargs
         Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
-        a pre-existing key entirely. See [quacc.calculators._qchem_legacy.qchem.QChem][] for more
+        a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
         details.
 
     Returns

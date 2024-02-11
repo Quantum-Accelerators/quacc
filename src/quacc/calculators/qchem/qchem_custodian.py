@@ -1,4 +1,5 @@
 """Custodian handlers for QChem."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -46,7 +47,7 @@ def run_custodian(
     -------
     None
     """
-    # Adapted from atomate._qchem_legacy.firetasks.run_calc
+    # Adapted from atomate.qchem.firetasks.run_calc
     from custodian import Custodian
     from custodian.qchem.handlers import QChemErrorHandler
     from custodian.qchem.jobs import QCJob

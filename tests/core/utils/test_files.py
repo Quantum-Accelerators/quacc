@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 
+import pytest
+
 from quacc.utils.files import (
     copy_decompress_files_from_dir,
     copy_decompress_tree,
@@ -20,6 +22,7 @@ def test_make_unique_dir(tmp_path, monkeypatch):
     assert os.path.exists(jobdir)
 
 
+@pytest.mark.skipif(os.name == "nt", reason="Windows doesn't support symlinks")
 def test_copy_decompress_files_from_dir(tmp_path):
     src = tmp_path / "src"
     src.mkdir()
@@ -42,6 +45,7 @@ def test_copy_decompress_files_from_dir(tmp_path):
     assert not (dst / "dir1" / "symlink1").exists()
 
 
+@pytest.mark.skipif(os.name == "nt", reason="Windows doesn't support symlinks")
 def test_copy_decompress_tree(tmp_path):
     src = tmp_path / "src"
     src.mkdir()
@@ -72,6 +76,7 @@ def test_copy_decompress_tree(tmp_path):
     assert not Path(dst, "file1").exists()
 
 
+@pytest.mark.skipif(os.name == "nt", reason="Windows doesn't support symlinks")
 def test_copy_decompress_files_from_dir_v2(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     src = Path(os.getcwd())

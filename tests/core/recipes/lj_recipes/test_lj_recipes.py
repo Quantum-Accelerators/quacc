@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from ase.build import molecule
+from ase.build import bulk, molecule
 from maggma.stores import MemoryStore
 
 from quacc import SETTINGS
@@ -10,11 +10,11 @@ DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 
 def setup_module():
-    SETTINGS.PRIMARY_STORE = MemoryStore()
+    SETTINGS.STORE = MemoryStore()
 
 
 def teardown_module():
-    SETTINGS.PRIMARY_STORE = DEFAULT_SETTINGS.PRIMARY_STORE
+    SETTINGS.STORE = DEFAULT_SETTINGS.STORE
 
 
 def test_static_job(tmp_path, monkeypatch):
@@ -37,6 +37,21 @@ def test_static_job(tmp_path, monkeypatch):
     assert output["parameters"]["rc"] == 0.5
     assert output["parameters"]["ro"] == 0.66 * 0.5
     assert output["results"]["energy"] == pytest.approx(0.0)
+
+
+def test_static_job_v2(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    atoms = bulk("Pt")
+    atoms[0].symbol = "Au"
+    assert static_job(atoms)
+
+
+def test_static_job_v3(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    atoms = bulk("Pt")
+    atoms.pbc = False
+    atoms[0].symbol = "Au"
+    assert static_job(atoms)
 
 
 def test_relax_job(tmp_path, monkeypatch):

@@ -1,4 +1,5 @@
 """Schemas for VASP."""
+
 from __future__ import annotations
 
 import logging
@@ -65,7 +66,7 @@ def vasp_summarize_run(
         Additional fields to add to the task document.
     store
         Maggma Store object to store the results in. If None,
-        `SETTINGS.PRIMARY_STORE` will be used.
+        `SETTINGS.STORE` will be used.
 
     Returns
     -------
@@ -80,7 +81,7 @@ def vasp_summarize_run(
         SETTINGS.CHECK_CONVERGENCE if check_convergence is None else check_convergence
     )
     dir_path = Path(dir_path or final_atoms.calc.directory)
-    store = SETTINGS.PRIMARY_STORE if store is None else store
+    store = SETTINGS.STORE if store is None else store
 
     # Fetch all tabulated results from VASP outputs files. Fortunately, emmet
     # already has a handy function for this
@@ -218,8 +219,4 @@ def _chargemol_runner(
         raise OSError(msg)
 
     # Run Chargemol analysis
-    chargemol_stats = ChargemolAnalysis(
-        path=path, atomic_densities_path=atomic_densities_path
-    )
-
-    return chargemol_stats
+    return ChargemolAnalysis(path=path, atomic_densities_path=atomic_densities_path)

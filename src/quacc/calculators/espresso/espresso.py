@@ -1,10 +1,13 @@
 """Custom Espresso calculator and template."""
+
 from __future__ import annotations
 
 import os
+import re
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import numpy as np
 from ase import Atoms
 from ase.calculators.espresso import Espresso as Espresso_
 from ase.calculators.espresso import EspressoProfile
@@ -30,7 +33,9 @@ class EspressoTemplate(EspressoTemplate_):
     """This is a wrapper around the ASE Espresso template that allows for the use of
     other binaries such as pw.x, ph.x, cp.x, etc."""
 
-    def __init__(self, binary: str = "pw", test_run: bool = False) -> None:
+    def __init__(
+        self, binary: str = "pw", test_run: bool = False, autorestart: bool = False
+    ) -> None:
         """
         Initialize the Espresso template.
 
@@ -42,6 +47,9 @@ class EspressoTemplate(EspressoTemplate_):
         test_run
             If True, a test run is performed to check that the calculation
             input_data is correct or to generate some files/info if needed.
+        autorestart
+            If True, the calculation will automatically switch to 'restart'
+            if this calculator performs more than one run. (ASE-relax/MD/NEB)
 
         Returns
         -------
@@ -55,11 +63,16 @@ class EspressoTemplate(EspressoTemplate_):
         self.binary = binary
 
         self.outdirs = {
-            "outdir": os.environ.get("ESPRESSO_TMPDIR"),
-            "wfcdir": os.environ.get("ESPRESSO_TMPDIR"),
+            "outdir": os.environ.get("ESPRESSO_TMPDIR", "."),
+            "wfcdir": os.environ.get("ESPRESSO_TMPDIR", "."),
         }
 
+        self.outfiles = {"fildos": "pwscf.dos", "filpdos": "pwscf.pdos_tot"}
+
         self.test_run = test_run
+
+        self.nruns = 0
+        self.autorestart = autorestart
 
     def write_input(
         self,
@@ -92,13 +105,16 @@ class EspressoTemplate(EspressoTemplate_):
         """
 
         directory = Path(directory)
-        self._outdir_handler(parameters, directory)
+        self._output_handler(parameters, directory)
         parameters = sanity_checks(parameters, binary=self.binary)
 
         if self.test_run:
             self._test_run(parameters, directory)
 
         if self.binary == "pw":
+            if self.autorestart and self.nruns > 0:
+                parameters["input_data"]["electrons"]["startingpot"] = "file"
+                parameters["input_data"]["electrons"]["startingwfc"] = "file"
             write(
                 directory / self.inputname,
                 atoms,
@@ -116,23 +132,9 @@ class EspressoTemplate(EspressoTemplate_):
                     fd, binary=self.binary, properties=properties, **parameters
                 )
 
-        if self.binary == "pw":
-            write(
-                directory / self.inputname,
-                atoms,
-                format="espresso-in",
-                pseudo_dir=str(profile.pseudo_dir),
-                properties=properties,
-                **parameters,
-            )
-        elif self.binary == "ph":
-            with Path.open(directory / self.inputname, "w") as fd:
-                write_espresso_ph(fd=fd, properties=properties, **parameters)
-        else:
-            with Path.open(directory / self.inputname, "w") as fd:
-                write_fortran_namelist(
-                    fd, binary=self.binary, properties=properties, **parameters
-                )
+    def execute(self, *args: Any, **kwargs: Any) -> None:
+        super().execute(*args, **kwargs)
+        self.nruns += 1
 
     @staticmethod
     def _search_keyword(parameters: dict[str, Any], key_to_search: str) -> str | None:
@@ -203,6 +205,27 @@ class EspressoTemplate(EspressoTemplate_):
         elif self.binary == "ph":
             with Path.open(directory / self.outputname, "r") as fd:
                 results = read_espresso_ph(fd)
+        elif self.binary == "dos":
+            fildos = self.outfiles["fildos"]
+            with Path(fildos).open("r") as fd:
+                lines = fd.readlines()
+                fermi = float(re.search(r"-?\d+\.?\d*", lines[0]).group(0))
+                dos = np.loadtxt(lines[1:])
+            results = {fildos.name.replace(".", "_"): {"dos": dos, "fermi": fermi}}
+        elif self.binary == "projwfc":
+            filpdos = self.outfiles["filpdos"]
+            with Path(filpdos).open("r") as fd:
+                lines = np.loadtxt(fd.readlines())
+                energy = lines[1:, 0]
+                dos = lines[1:, 1]
+                pdos = lines[1:, 2]
+            results = {
+                filpdos.name.replace(".", "_"): {
+                    "energy": energy,
+                    "dos": dos,
+                    "pdos": pdos,
+                }
+            }
         else:
             results = {}
 
@@ -211,15 +234,14 @@ class EspressoTemplate(EspressoTemplate_):
 
         return results
 
-    def _outdir_handler(
+    def _output_handler(
         self, parameters: dict[str, Any], directory: Path
     ) -> dict[str, Any]:
         """
-        Function that handles the various outdir of espresso binaries. If they are
-        relative, they are resolved against `directory`, which is the recommended
-        approach. If the user-supplied paths are absolute, they are resolved and checked
-        against `directory`, which is typically `os.getcwd()`. If they are not in
-        `directory`, they will be ignored.
+        Function that handles the various output of espresso binaries. If they are
+        relative, they are resolved against `directory`. In any other case the
+        function will raise a ValueError. This is to avoid the user to use absolute
+        paths that might lead to unexpected behaviour when using Quacc.
 
         Parameters
         ----------
@@ -233,19 +255,29 @@ class EspressoTemplate(EspressoTemplate_):
         dict[str, Any]
             The merged kwargs
         """
-
         input_data = parameters.get("input_data", {})
 
-        for section in input_data:
-            for d_key in self.outdirs:
-                if d_key in input_data[section]:
-                    path = Path(input_data[section][d_key])
-                    path = path.expanduser().resolve()
-                    if directory.expanduser().resolve() not in path.parents:
-                        self.outdirs[d_key] = path
-                        continue
-                    path.mkdir(parents=True, exist_ok=True)
-                    input_data[section][d_key] = path
+        all_out = {**self.outdirs, **self.outfiles}
+        working_dir = Path(directory).expanduser().resolve()
+
+        for key in all_out:
+            path = Path(all_out[key]).expanduser().resolve()
+            for section in input_data:
+                if key in input_data[section]:
+                    path = Path(input_data[section][key]).expanduser().resolve()
+                    input_data[section][key] = path
+
+            try:
+                path.relative_to(working_dir)
+            except ValueError as e:
+                raise ValueError(
+                    f"Cannot use {key}={path} because it is not a subpath of {working_dir}. When using Quacc please provide subpaths relative to the working directory."
+                ) from e
+            if key in self.outdirs:
+                path.mkdir(parents=True, exist_ok=True)
+                self.outdirs[key] = path
+            elif key in self.outfiles:
+                self.outfiles[key] = path
 
         parameters["input_data"] = input_data
 
@@ -297,7 +329,7 @@ class Espresso(Espresso_):
         **kwargs
             Additional arguments to be passed to the Espresso calculator. Takes all valid
             ASE calculator arguments, such as `input_data` and `kpts`. Refer to
-            `ase.calculators.espresso.Espresso` for details. Note that the full input
+            [ase.calculators.espresso.Espresso][] for details. Note that the full input
             must be described; use `{"system":{"ecutwfc": 60}}` and not the `{"ecutwfc": 60}`
             short-hand.
 

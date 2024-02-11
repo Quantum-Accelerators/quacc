@@ -5,6 +5,7 @@ ph.x binary from Quantum ESPRESSO via the quacc library.
 The recipes provided in this module are jobs and flows that can be used to perform
 phonon calculations in different fashion.
 """
+
 from __future__ import annotations
 
 from copy import deepcopy
@@ -56,13 +57,13 @@ def phonon_job(
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
     **calc_kwargs
-        calc_kwargs dictionary possibly containing the following keys:
+        Additional keyword arguments to pass to the Espresso calculator. Set a value to
+        `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
+        `ase.io.espresso.write_espresso_ph` for more information. Some notable keys are:
 
         - input_data: dict
         - qpts: list[list[float]] | list[tuple[float]] | list[float]
         - nat_todo: list[int]
-
-        See the docstring of `ase.io.espresso.write_espresso_ph` for more information.
 
     Returns
     -------
@@ -211,12 +212,12 @@ def grid_phonon_flow(
         ph_input_data.to_nested(binary="ph")
 
         grid_results = []
-        for qpoint, qdata in ph_init_job_results["results"].items():
-            ph_input_data["inputph"]["start_q"] = qdata["qnum"]
-            ph_input_data["inputph"]["last_q"] = qdata["qnum"]
+        for qnum, qdata in ph_init_job_results["results"].items():
+            ph_input_data["inputph"]["start_q"] = qnum
+            ph_input_data["inputph"]["last_q"] = qnum
             repr_to_do = grid_prepare_repr(qdata["representations"], nblocks)
             file_to_copy = grid_copy_files(
-                ph_input_data, ph_init_job_results["dir_name"], qdata["qnum"], qpoint
+                ph_input_data, ph_init_job_results["dir_name"], qnum, qdata["qpoint"]
             )
             for representation in repr_to_do:
                 ph_input_data["inputph"]["start_irr"] = representation[0]

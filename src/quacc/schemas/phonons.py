@@ -1,11 +1,16 @@
 """Summarizer for phonopy."""
+
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
-from quacc import SETTINGS
+from monty.dev import requires
+
+from quacc import SETTINGS, __version__
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.utils.dicts import clean_task_doc, recursive_dict_merge
+from quacc.utils.files import get_uri
 from quacc.wflow_tools.db import results_to_db
 
 try:
@@ -25,6 +30,7 @@ if TYPE_CHECKING:
         from phonopy import Phonopy
 
 
+@requires(phonopy, "This schema relies on phonopy")
 def summarize_phonopy(
     phonon: Phonopy,
     input_atoms: Atoms,
@@ -54,18 +60,28 @@ def summarize_phonopy(
         The PhononSchema.
     """
     additional_fields = additional_fields or {}
-    store = SETTINGS.PRIMARY_STORE if store is None else store
+    store = SETTINGS.STORE if store is None else store
 
-    inputs = {"parameters": parameters, "phonopy_metadata": {"version": phonon.version}}
+    uri = get_uri(Path.cwd())
+    directory = ":".join(uri.split(":")[1:])
+
+    inputs = {
+        "parameters": parameters,
+        "nid": uri.split(":")[0],
+        "dir_name": directory,
+        "phonopy_metadata": {"version": phonon.version},
+        "quacc_version": __version__,
+    }
 
     results = {
         "results": {
             "thermal_properties": phonon.get_thermal_properties_dict(),
             "mesh_properties": phonon.get_mesh_dict(),
+            "total_dos": phonon.get_total_dos_dict(),
             "force_constants": phonon.force_constants,
         }
     }
-    phonon.save(settings={"force_constants": True})
+    phonon.save(Path(directory, "phonopy.yaml"), settings={"force_constants": True})
 
     atoms_metadata = atoms_to_metadata(input_atoms)
     unsorted_task_doc = recursive_dict_merge(

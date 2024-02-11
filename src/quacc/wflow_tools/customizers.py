@@ -1,4 +1,5 @@
 """Functions to customize workflow steps."""
+
 from __future__ import annotations
 
 from copy import deepcopy
@@ -139,7 +140,7 @@ def customize_funcs(
     funcs: list[Callable] | Callable,
     parameters: dict[str, dict[str, Any]] | None = None,
     decorators: dict[str, Callable | None] | None = None,
-) -> tuple[Callable] | Callable:
+) -> tuple[Callable, ...] | Callable:
     """
     Customize a set of functions with decorators and common parameters.
 
@@ -160,7 +161,7 @@ def customize_funcs(
 
     Returns
     -------
-    tuple[Callable] | Callable
+    tuple[Callable, ...] | Callable
         The customized functions, returned in the same order as provided in `funcs`.
     """
 

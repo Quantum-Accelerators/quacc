@@ -4,6 +4,7 @@ QMOF-compatible recipes.
 This set of recipes is meant to be compatible with the QMOF Database workflow.
 Reference: https://doi.org/10.1016/j.matt.2021.02.015
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

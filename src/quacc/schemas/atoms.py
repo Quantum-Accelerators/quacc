@@ -1,4 +1,5 @@
 """Schemas for storing metadata about Atoms objects."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -9,7 +10,11 @@ from emmet.core.structure import MoleculeMetadata, StructureMetadata
 from monty.json import jsanitize
 from pymatgen.io.ase import AseAtomsAdaptor
 
-from quacc.atoms.core import check_charge_and_spin, copy_atoms
+from quacc.atoms.core import (
+    copy_atoms,
+    get_charge_attribute,
+    get_spin_multiplicity_attribute,
+)
 from quacc.utils.dicts import clean_task_doc
 
 if TYPE_CHECKING:
@@ -69,7 +74,7 @@ def atoms_to_metadata(
             if store_pmg:
                 results["structure"] = struct
         else:
-            mol = AseAtomsAdaptor().get_molecule(atoms)
+            mol = AseAtomsAdaptor().get_molecule(atoms, charge_spin_check=False)
             metadata = MoleculeMetadata().from_molecule(mol).model_dump()
             if store_pmg:
                 results["molecule"] = mol
@@ -109,23 +114,16 @@ def _set_charge_and_spin(
     """
 
     if charge_and_multiplicity:
-        atoms.charge = charge_and_multiplicity[0]
-        atoms.spin_multiplicity = charge_and_multiplicity[1]
+        charge = charge_and_multiplicity[0]
+        spin_multiplicity = charge_and_multiplicity[1]
     else:
-        charge = getattr(atoms, "charge", None)
-        spin_multiplicity = getattr(atoms, "spin_multiplicity", None)
-        if charge is None and spin_multiplicity is None:
-            charge, spin_multiplicity = check_charge_and_spin(atoms)
-            atoms.charge = charge
-            atoms.spin_multiplicity = spin_multiplicity
-        elif charge is None:
-            charge, _ = check_charge_and_spin(
-                atoms, spin_multiplicity=spin_multiplicity
-            )
-            atoms.charge = charge
-        else:
-            _, spin_multiplicity = check_charge_and_spin(atoms, charge=charge)
-            atoms.spin_multiplicity = spin_multiplicity
+        charge = get_charge_attribute(atoms)
+        spin_multiplicity = get_spin_multiplicity_attribute(atoms)
+
+    if charge is not None:
+        atoms.charge = charge
+    if spin_multiplicity is not None:
+        atoms.spin_multiplicity = spin_multiplicity
 
 
 def _quacc_sanitize(obj: Any) -> Any:

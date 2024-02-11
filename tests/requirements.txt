@@ -1,12 +1,12 @@
 git+https://gitlab.com/ase/ase.git
 cclib==1.8
 custodian==2023.10.9
-emmet-core==0.76.2
-maggma==0.61.0
-monty==2023.11.3
+emmet-core==0.77.0
+maggma==0.62.1
+monty==2024.2.2
 numpy==1.26.3
 psutil==5.9.8
-pydantic==2.5.3
+pydantic==2.6.1
 pydantic-settings==2.1.0
-pymatgen==2023.12.18
+pymatgen==2024.2.8
 typer[all]==0.9.0

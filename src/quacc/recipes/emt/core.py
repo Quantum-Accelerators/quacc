@@ -3,6 +3,7 @@ Core recipes for EMT.
 
 NOTE: This set of minimal recipes is mainly for demonstration purposes.
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -35,7 +36,7 @@ def static_job(atoms: Atoms, **calc_kwargs) -> RunSchema:
     **calc_kwargs
         Custom kwargs for the EMT calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.emt.EMT` calculator.
+        keys, refer to the [ase.calculators.emt.EMT][] calculator.
 
     Returns
     -------
@@ -72,7 +73,7 @@ def relax_job(
     **calc_kwargs
         Custom kwargs for the EMT calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.emt.EMT` calculator.
+        keys, refer to the [ase.calculators.emt.EMT][] calculator.
 
     Returns
     -------

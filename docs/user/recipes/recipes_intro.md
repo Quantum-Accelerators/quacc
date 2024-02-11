@@ -38,90 +38,91 @@ print(result)
 ```
 
 ??? Info "Printed Output"
-{'atoms': Atoms(symbols='Cu', pbc=True, cell=[[0.0, 1.805, 1.805], [1.805, 0.0, 1.805], [1.805, 1.805, 0.0]], initial_magmoms=...),
-'atoms_info': {'\_id': 'f8d53f110f524872f30a5cc20e8befb1'},
-'builder_meta': {'build_date': datetime.datetime(2024, 1, 22, 6, 53, 30, 342389),
-'emmet_version': '0.76.2',
-'pymatgen_version': '2023.12.18'},
-'chemsys': 'Cu',
-'composition': Composition('Cu1'),
-'composition_reduced': Composition('Cu1'),
-'converged': True,
-'density': 8.971719800606017,
-'density_atomic': 11.761470249999999,
-'dir_name': '/home/rosen/test/quacc-2024-01-22-06-53-30-305561-70901',
-'elements': [Element Cu],
-'fmax': 0.01,
-'formula_anonymous': 'A',
-'formula_pretty': 'Cu',
-'input_atoms': {'atoms': Atoms(symbols='Cu', pbc=True, cell=[[0.0, 1.805, 1.805], [1.805, 0.0, 1.805], [1.805, 1.805, 0.0]], calculator=SinglePointCalculator(...)),
-'atoms_info': {},
-'builder_meta': {'build_date': datetime.datetime(2024, 1, 22, 6, 53, 30, 330220),
-'emmet_version': '0.76.2',
-'pymatgen_version': '2023.12.18'},
-'chemsys': 'Cu',
-'composition': Composition('Cu1'),
-'composition_reduced': Composition('Cu1'),
-'density': 8.971719800606017,
-'density_atomic': 11.761470249999999,
-'elements': [Element Cu],
-'formula_anonymous': 'A',
-'formula_pretty': 'Cu',
-'nelements': 1,
-'nsites': 1,
-'symmetry': {'crystal_system': <CrystalSystem.cubic: 'Cubic'>,
-'number': 225,
-'point_group': 'm-3m',
-'symbol': 'Fm-3m',
-'symprec': 0.1,
-'version': '2.2.0'},
-'volume': 11.761470249999999},
-'name': 'EMT Relax',
-'nelements': 1,
-'nid': 'rosen.',
-'nsites': 1,
-'nsteps': 0,
-'parameters': {'asap_cutoff': False},
-'parameters_opt': {'max_steps': 1000,
-'maxstep': 0.2,
-'optimizer': 'FIRE',
-'type': 'optimization'},
-'quacc_version': '0.6.2',
-'results': {'energies': array([-0.00568151]),
-'energy': -0.005681511358588409,
-'forces': array([[0., 0., 0.]]),
-'free_energy': -0.005681511358588409},
-'structure': Structure Summary
-Lattice
-abc : 2.5526554800834367 2.5526554800834367 2.5526554800834367
-angles : 60.00000000000001 60.00000000000001 60.00000000000001
-volume : 11.761470249999999
-A : 0.0 1.805 1.805
-B : 1.805 0.0 1.805
-C : 1.805 1.805 0.0
-pbc : True True True
-PeriodicSite: Cu (0.0, 0.0, 0.0) [0.0, 0.0, 0.0],
-'symmetry': {'crystal_system': <CrystalSystem.cubic: 'Cubic'>,
-'number': 225,
-'point_group': 'm-3m',
-'symbol': 'Fm-3m',
-'symprec': 0.1,
-'version': '2.2.0'},
-'trajectory': [Atoms(symbols='Cu', pbc=True, cell=[[0.0, 1.805, 1.805], [1.805, 0.0, 1.805], [1.805, 1.805, 0.0]], calculator=SinglePointCalculator(...))],
-'trajectory_results': [{'energy': -0.005681511358588409,
-'forces': array([[0., 0., 0.]]),
-'free_energy': -0.005681511358588409,
-'energies': array([-0.00568151])}],
-'volume': 11.761470249999999}
 
-````
+    ```python
+    {'atoms': Atoms(symbols='Cu', pbc=True, cell=[[0.0, 1.805, 1.805], [1.805, 0.0, 1.805], [1.805, 1.805, 0.0]], initial_magmoms=...),
+    'atoms_info': {'\_id': 'f8d53f110f524872f30a5cc20e8befb1'},
+    'builder_meta': {'build_date': datetime.datetime(2024, 1, 22, 6, 53, 30, 342389),
+    'emmet_version': '0.76.2',
+    'pymatgen_version': '2023.12.18'},
+    'chemsys': 'Cu',
+    'composition': Composition('Cu1'),
+    'composition_reduced': Composition('Cu1'),
+    'converged': True,
+    'density': 8.971719800606017,
+    'density_atomic': 11.761470249999999,
+    'dir_name': '/home/rosen/test/quacc-2024-01-22-06-53-30-305561-70901',
+    'elements': [Element Cu],
+    'fmax': 0.01,
+    'formula_anonymous': 'A',
+    'formula_pretty': 'Cu',
+    'input_atoms': {'atoms': Atoms(symbols='Cu', pbc=True, cell=[[0.0, 1.805, 1.805], [1.805, 0.0, 1.805], [1.805, 1.805, 0.0]], calculator=SinglePointCalculator(...)),
+    'atoms_info': {},
+    'builder_meta': {'build_date': datetime.datetime(2024, 1, 22, 6, 53, 30, 330220),
+    'emmet_version': '0.76.2',
+    'pymatgen_version': '2023.12.18'},
+    'chemsys': 'Cu',
+    'composition': Composition('Cu1'),
+    'composition_reduced': Composition('Cu1'),
+    'density': 8.971719800606017,
+    'density_atomic': 11.761470249999999,
+    'elements': [Element Cu],
+    'formula_anonymous': 'A',
+    'formula_pretty': 'Cu',
+    'nelements': 1,
+    'nsites': 1,
+    'symmetry': {'crystal_system': <CrystalSystem.cubic: 'Cubic'>,
+    'number': 225,
+    'point_group': 'm-3m',
+    'symbol': 'Fm-3m',
+    'symprec': 0.1,
+    'version': '2.2.0'},
+    'volume': 11.761470249999999},
+    'name': 'EMT Relax',
+    'nelements': 1,
+    'nid': 'rosen.',
+    'nsites': 1,
+    'nsteps': 0,
+    'parameters': {'asap_cutoff': False},
+    'parameters_opt': {'max_steps': 1000,
+    'maxstep': 0.2,
+    'optimizer': 'FIRE',
+    'type': 'optimization'},
+    'quacc_version': '0.6.2',
+    'results': {'energies': array([-0.00568151]),
+    'energy': -0.005681511358588409,
+    'forces': array([[0., 0., 0.]]),
+    'free_energy': -0.005681511358588409},
+    'structure': Structure Summary
+    Lattice
+    abc : 2.5526554800834367 2.5526554800834367 2.5526554800834367
+    angles : 60.00000000000001 60.00000000000001 60.00000000000001
+    volume : 11.761470249999999
+    A : 0.0 1.805 1.805
+    B : 1.805 0.0 1.805
+    C : 1.805 1.805 0.0
+    pbc : True True True
+    PeriodicSite: Cu (0.0, 0.0, 0.0) [0.0, 0.0, 0.0],
+    'symmetry': {'crystal_system': <CrystalSystem.cubic: 'Cubic'>,
+    'number': 225,
+    'point_group': 'm-3m',
+    'symbol': 'Fm-3m',
+    'symprec': 0.1,
+    'version': '2.2.0'},
+    'trajectory': [Atoms(symbols='Cu', pbc=True, cell=[[0.0, 1.805, 1.805], [1.805, 0.0, 1.805], [1.805, 1.805, 0.0]], calculator=SinglePointCalculator(...))],
+    'trajectory_results': [{'energy': -0.005681511358588409,
+    'forces': array([[0., 0., 0.]]),
+    'free_energy': -0.005681511358588409,
+    'energies': array([-0.00568151])}],
+    'volume': 11.761470249999999}
+    ```
 
 ### A Mixed-Code Workflow
 
 ```mermaid
 graph LR
   A[Input] --> B(EMT Relax) --> C(GFN2-xTB Static) --> D[Output]
-````
+```
 
 Now let's return to our bulk Cu example from above and start adding on some complexity. Here, we will use EMT to run a relaxation on the bulk Cu structure and then use the output of this calculation as the input to a static calculation with the semi-empirical quantum mechanics method GFN2-xTB as implemented in [quacc.recipes.tblite.core.static_job][].
 

@@ -1,4 +1,5 @@
 """Base jobs for GULP."""
+
 from __future__ import annotations
 
 import logging
@@ -72,9 +73,11 @@ def base_fn(
         keyword_defaults = [k for k in keyword_defaults if k not in ["gwolf", "conp"]]
 
     option_defaults += [
-        f"output cif {GEOM_FILE_PBC}"
-        if atoms.pbc.any()
-        else f"output xyz {GEOM_FILE_NOPBC}"
+        (
+            f"output cif {GEOM_FILE_PBC}"
+            if atoms.pbc.any()
+            else f"output xyz {GEOM_FILE_NOPBC}"
+        )
     ]
 
     keywords = merge_list_params(keyword_defaults, keyword_swaps)

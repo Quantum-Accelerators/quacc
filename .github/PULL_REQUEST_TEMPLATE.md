@@ -2,11 +2,9 @@
 
 \>> Describe your changes here. Make sure to reference any associated issues. <<
 
-## Requirements
-
 ### Checklist
 
-- [ ] I have read the [Contributing Guide](https://quantum-accelerators.github.io/quacc/dev/contributing.html). Don't lie! 😉
+- [ ] I have read the ["Guidelines" section](https://quantum-accelerators.github.io/quacc/dev/contributing.html#guidelines) of the contributing guide. Don't lie! 😉
 - [ ] My PR is on a custom branch and is _not_ named `main`.
 - [ ] I have used `black`, `isort`, and `ruff` as described in the [style guide](https://quantum-accelerators.github.io/quacc/dev/contributing.html#style).
 - [ ] I have added relevant, comprehensive [unit tests](https://quantum-accelerators.github.io/quacc/dev/contributing.html#unit-tests).

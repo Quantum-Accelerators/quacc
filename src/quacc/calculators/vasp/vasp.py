@@ -1,5 +1,5 @@
-"""A wrapper around ASE's Vasp calculator that makes it better suited for high-
-throughput DFT."""
+"""A wrapper around ASE's Vasp calculator that makes it better suited for high-throughput DFT."""
+
 from __future__ import annotations
 
 import inspect
@@ -44,9 +44,11 @@ class Vasp(Vasp_):
         preset_mag_default: float | None = None,
         mag_cutoff: None | float = None,
         elemental_magmoms: dict[str, float] | None = None,
-        pmg_kpts: dict[Literal["line_density", "kppvol", "kppa"], float]
-        | dict[Literal["length_densities"], list[float]]
-        | None = None,
+        pmg_kpts: (
+            dict[Literal["line_density", "kppvol", "kppa"], float]
+            | dict[Literal["length_densities"], list[float]]
+            | None
+        ) = None,
         auto_dipole: bool | None = None,
         **kwargs,
     ) -> None:

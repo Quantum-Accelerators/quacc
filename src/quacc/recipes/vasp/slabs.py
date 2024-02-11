@@ -1,4 +1,5 @@
 """Recipes for slabs."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -38,7 +39,7 @@ def static_job(
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to `ase.calculators.vasp.vasp.Vasp`.
+        keys, refer to [ase.calculators.vasp.vasp.Vasp][].
 
     Returns
     -------
@@ -89,7 +90,7 @@ def relax_job(
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to `ase.calculators.vasp.vasp.Vasp`.
+        keys, refer to [ase.calculators.vasp.vasp.Vasp][].
 
     Returns
     -------

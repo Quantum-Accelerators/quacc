@@ -43,8 +43,13 @@ jobs:
           pip install -r tests/requirements.txt
           pip install .[dev]
 
-      - name: Run tests with pytest
+      - name: Run tests with pytest (w/ coverage)
+        if: matrix.python-version != '3.12'
         run: pytest --durations=10 --cov=quacc --cov-report=xml
+
+      - name: Run tests with pytest (w/o coverage)
+        if: matrix.python-version == '3.12'
+        run: pytest --durations=10
 
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v4
@@ -119,12 +124,14 @@ jobs:
           cache-dependency-path: tests/requirements**.txt
 
       - name: Set up conda
+        if: matrix.wflow_engine == 'dask'
         uses: conda-incubator/setup-miniconda@v3
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.11"
           activate-environment: quacc-env
 
       - name: Install conda packages
+        if: matrix.wflow_engine == 'dask'
         run: conda install -c conda-forge qe
 
       - name: Install pip packages
@@ -136,6 +143,12 @@ jobs:
 
       - name: Run tests with pytest
         run: pytest --durations=10 tests/${{ matrix.wflow_engine }} --cov=quacc --cov-report=xml
+
+      - name: Combine Coverage Reports
+        if: matrix.wflow_engine == 'dask'
+        run: |
+          coverage combine -a
+          coverage xml
 
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v4
@@ -400,6 +413,7 @@ jobs:
           pip install -r tests/requirements.txt
           pip install -r tests/requirements-mlp.txt
           pip install -r tests/requirements-newtonnet.txt
+          pip install -r tests/requirements-phonopy.txt
           pip install .[dev]
 
       - name: Run tests with pytest
@@ -417,8 +431,10 @@ jobs:
       - tests-core
       - tests-engines-covalent
       - tests-engines
+      - tests-engines2
       - tests-psi4
       - tests-defects-phonons-espresso
+      - tests-tblite-dftbplus
       - tests-qchem-sella
       - tests-mlps
     runs-on: ubuntu-latest
@@ -430,8 +446,19 @@ jobs:
         uses: actions/download-artifact@v4
 
       - name: Upload coverage to Codecov
-        uses: Wandalen/wretry.action@v1
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
-          action: codecov/codecov-action@v3
-          attempt_limit: 10
-          attempt_delay: 30000
+          fail_ci_if_error: true
+
+  automerge:
+    needs: [codecov]
+    runs-on: ubuntu-latest
+
+    permissions:
+      pull-requests: write
+      contents: write
+
+    steps:
+      - uses: fastify/github-action-merge-dependabot@v3

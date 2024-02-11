@@ -1,9 +1,10 @@
 """Utility functions for file and path handling."""
+
 from __future__ import annotations
 
 import contextlib
+import logging
 import socket
-import warnings
 from copy import deepcopy
 from datetime import datetime, timezone
 from pathlib import Path
@@ -18,6 +19,8 @@ from monty.shutil import decompress_file
 
 if TYPE_CHECKING:
     from typing import Any
+
+logger = logging.getLogger(__name__)
 
 
 def check_logfile(logfile: str, check_str: str) -> bool:
@@ -72,7 +75,7 @@ def copy_decompress_files(
         elif f_path.is_dir():
             copy_decompress_files_from_dir(f_path, destination)
         else:
-            warnings.warn(f"Cannot find file {f_path}", UserWarning)
+            logger.warning(f"Cannot find file {f_path}")
 
 
 def copy_decompress_tree(
@@ -96,13 +99,12 @@ def copy_decompress_tree(
     """
 
     # Work with glob pattern, work if the glob pattern return nothing
-    for base, tree in source_files.items():
-        base = Path(base).expanduser()
+    for _base, _tree in source_files.items():
+        base = Path(_base).expanduser()
 
         abs_files, rel_files = [], []
 
-        if not isinstance(tree, list):
-            tree = [tree]
+        tree = [_tree] if not isinstance(_tree, list) else _tree
 
         for f in tree:
             glob_found = list(base.glob(f))
@@ -141,7 +143,7 @@ def copy_decompress_files_from_dir(source: str | Path, destination: str | Path) 
                 (dst / f.name).mkdir(exist_ok=True)
                 copy_decompress_files_from_dir(src / f, dst / f.name)
     else:
-        warnings.warn(f"Cannot find {src}", UserWarning)
+        logger.warning(f"Cannot find {src}")
 
 
 def make_unique_dir(

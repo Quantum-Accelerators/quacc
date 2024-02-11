@@ -1,4 +1,5 @@
 """Base jobs for Q-Chem."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -43,7 +44,7 @@ def base_fn(
     calc_swaps
         Dictionary of custom kwargs for the Q-Chem calculator. Set a value to `quacc.Remove` to
         remove a pre-existing key entirely. For a list of available keys, refer to the
-        `quacc.calculators._qchem_legacy.qchem.QChem` calculator.
+        `quacc.calculators.qchem.qchem.QChem` calculator.
     additional_fields
         Any additional fields to set in the summary.
     copy_files
@@ -96,7 +97,7 @@ def base_opt_fn(
     calc_swaps
         Dictionary of custom kwargs for the Q-Chem calculator. Set a value to `quacc.Remove` to
         remove a pre-existing key entirely. For a list of available keys, refer to the
-        `quacc.calculators._qchem_legacy.qchem.QChem` calculator.
+        `quacc.calculators.qchem.qchem.QChem` calculator.
     opt_defaults
         Default arguments for the ASE optimizer.
     opt_params
