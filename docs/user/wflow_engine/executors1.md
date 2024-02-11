@@ -45,6 +45,7 @@ In the previous examples, we have been running calculations on our local machine
 
     static_job.electron_object.executor = "local"
 
+
     @flow
     def workflow(atoms):
         output1 = relax_job(atoms)
@@ -66,6 +67,7 @@ In the previous examples, we have been running calculations on our local machine
         from ase.build import bulk
         from quacc import flow
         from quacc.recipes.emt.core import relax_job, static_job
+
 
         @ct.electron(executor="local")
         def local_static_job(*args, **kwargs):
@@ -259,8 +261,8 @@ In the previous examples, we have been running calculations on our local machine
     from parsl.providers import SlurmProvider
 
     concurrent_jobs = 4
-    nodes_per_job = 2   # (1)!
-    cores_per_node = 64   # (2)!
+    nodes_per_job = 2  # (1)!
+    cores_per_node = 64  # (2)!
     min_slurm_allocations = 0
     max_slurm_allocations = 1
 

@@ -390,6 +390,7 @@ When deploying calculations for the first time, it's important to start simple, 
     from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
 
+
     @flow(task_runner=DaskTaskRunner(address=client.scheduler.address))
     def workflow(atoms):
         relax_output = relax_job(atoms)
