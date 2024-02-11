@@ -75,6 +75,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     concurrent_jobs = 2
     nodes_per_job = 1
     cores_per_node = 128
+    vasp_parallel_cmd = f"srun -N {nodes_per_job} --ntasks-per-node={cores_per_node} --cpu_bind=cores"
     min_slurm_allocations = 0
     max_slurm_allocations = 1
 
@@ -89,7 +90,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
                     account=account,
                     qos="debug",
                     constraint="cpu",
-                    worker_init=f"source ~/.bashrc && conda activate quacc && module load vasp/6.4.1-cpu && export QUACC_VASP_PARALLEL_CMD='srun -N {nodes_per_job} --ntasks-per-node={cores_per_node} --cpu_bind=cores'",
+                    worker_init=f"source ~/.bashrc && conda activate quacc && module load vasp/6.4.1-cpu && export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}",
                     walltime="00:10:00",
                     nodes_per_block=concurrent_jobs * nodes_per_job,
                     init_blocks=0,
