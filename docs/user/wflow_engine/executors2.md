@@ -217,8 +217,6 @@ When deploying calculations for the first time, it's important to start simple, 
     account = "MyAccountName"
 
     config = Config(
-        max_idletime=60,
-        strategy="htex_auto_scale",
         executors=[
             HighThroughputExecutor(
                 label="quacc_parsl",
@@ -229,9 +227,6 @@ When deploying calculations for the first time, it's important to start simple, 
                     worker_init="source ~/.bashrc && conda activate quacc",
                     walltime="00:10:00",
                     nodes_per_block=1,
-                    init_blocks=0,
-                    min_blocks=0,
-                    max_blocks=1,
                     launcher=SimpleLauncher(),
                     cmd_timeout=120,
                 ),
@@ -279,25 +274,29 @@ When deploying calculations for the first time, it's important to start simple, 
 
     account = "MyAccountName"
 
+    concurrent_jobs = 128
+    cores_per_node = 64
+    min_slurm_allocations = 0
+    max_slurm_allocations = 1
+
     config = Config(
-        max_idletime=60,
         strategy="htex_auto_scale",
         executors=[
             HighThroughputExecutor(
                 label="quacc_parsl",
-                max_workers=64,
+                max_workers=cores_per_node,
                 provider=SlurmProvider(
                     account=account,
                     qos="debug",
                     constraint="cpu",
                     worker_init="source ~/.bashrc && conda activate quacc",
                     walltime="00:10:00",
-                    nodes_per_block=2,
+                    nodes_per_block=concurrent_jobs // cores_per_node,
                     init_blocks=0,
-                    min_blocks=0,
-                    max_blocks=1,
+                    min_blocks=min_slurm_allocations,
+                    max_blocks=max_slurm_allocations,
                     launcher=SimpleLauncher(),
-                    cmd_timeout=120,
+                    cmd_timeout=60,
                 ),
             )
         ],
