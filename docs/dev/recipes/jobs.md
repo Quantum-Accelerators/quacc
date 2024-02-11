@@ -16,7 +16,7 @@ In quacc, jobs are defined as Python functions that are decorated with `#!Python
 
 The following are typical guidelines for jobs:
 
-- The function inputs and outputs must be serializable with [pickle](https://docs.python.org/3/library/pickle.html).
+- The function inputs and outputs must be serializable with [pickle](https://docs.python.org/3/library/pickle.html). If a dictionary is returned, the keys cannot have "." in them.
 
 - The function generally should take an `Atoms` object as the input, along with any other keyword arguments needed to set calculator parameters and define the logic flow.
 
