@@ -286,7 +286,6 @@ When deploying calculations for the first time, it's important to start simple, 
             HighThroughputExecutor(
                 label="quacc_parsl",
                 max_workers=64,
-                cpu_affinity="block",
                 provider=SlurmProvider(
                     account=account,
                     qos="debug",
