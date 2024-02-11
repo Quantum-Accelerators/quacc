@@ -59,6 +59,8 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
 
 === "Parsl"
 
+    Let's consider a scenario where we want to run concurrent VASP jobs that each use run on half of a compute node's CPU cores. Let's assume that a full CPU node is 128 cores.
+
     From an interactive resource like a Jupyter Notebook or IPython kernel from the login node on the remote machine:
 
     ```python
