@@ -183,16 +183,11 @@ In the previous examples, we have been running calculations on our local machine
 
     !!! Tip "Example Configurations"
 
-        To configure Parsl for the high-performance computing environment of your choice, refer to the executor [Configuration page in the Parsl documentation](https://parsl.readthedocs.io/en/stable/userguide/configuring.html) for many examples.
+        To configure Parsl for the high-performance computing environment of your choice, refer to the [executor configuration page in the Parsl documentation](https://parsl.readthedocs.io/en/stable/userguide/configuring.html) for many examples.
 
-        Some helpful terminology based on the [Parsl documentation](https://parsl.readthedocs.io/en/stable/userguide/execution.html#blocks):
-        - Blocks: Individual Slurm jobs that are queued up and can run in parallel.
-        - Nodes: The compute nodes, which typically contain individual compute cores.
-        - Workers: Agents that run individual compute tasks on each node.
+    Here, we describe several representative [`HighThroughputExecutor`](https://parsl.readthedocs.io/en/stable/stubs/parsl.executors.HighThroughputExecutor.html#parsl.executors.HighThroughputExecutor) configurations that will orchestrate jobs from the login node of NERSC's Perlmutter machine. There is no one-size-fits-all approach, so you will need to adjust the configuration to suit your specific needs.
 
-    Let's imagine a scenario where we want to run a series of compute-intensive DFT calculations. Each DFT calculation requires 2 CPU nodes (each node having 48 cores). We want to run DFT calculations on 4 unique structures, all in parallel. We also want this to be done in a single Slurm allocation, meaning that this allocation must request 8 total nodes.
-
-    An example [`HighThroughputExecutor`](https://parsl.readthedocs.io/en/stable/stubs/parsl.executors.HighThroughputExecutor.html#parsl.executors.HighThroughputExecutor) that will orchestrate jobs from the login node of NERSC's Perlmutter machine to carry out the above example is as follows:
+    Let's imagine a scenario where we want to concurrently run a large number single-core, CPU-based compute tasks. A sample configuration for this purpose is shown below. The configuration ensures that we have at most one active Slurm job (`max_blocks=1`), we request two nodes in that Slurm job (`nodes_per_block=2`), run no more than 64 tasks at a time per node (`max_workers=64`) since that's how many physical CPU cores there are, and that there will be no Slurm jobs queued or running when there are no tasks to run (`min_blocks=0`). This configuration ensures that 128 tasks can be run concurrently.
 
     ```python
     import parsl
@@ -208,7 +203,7 @@ In the previous examples, we have been running calculations on our local machine
         executors=[
             HighThroughputExecutor(
                 label="quacc_parsl",  # (3)!
-                max_workers=32,  # (4)!
+                max_workers=64,  # (4)!
                 cpu_affinity="block",  # (5)!
                 provider=SlurmProvider(
                     account="MyAccountName",
@@ -238,7 +233,7 @@ In the previous examples, we have been running calculations on our local machine
 
     4. Sets the maximum number of workers per block, which should generally be the number of concurrent tasks to run per block. If you are running a single-core `Job`, this value will be the number of physical cores per node. If we are running a `Job` that uses up a full node, this parameter can be omitted entirely.
 
-    5. This is recommended for increased efficiency when running many tasks per node.
+    5. This is recommended for increased efficiency when running many tasks per node. It does not need to be specified otherwise.
 
     6. Any commands to run before carrying out any of the Parsl tasks. This is useful for setting environment variables, activating a given Conda environment, and loading modules.
 
@@ -255,6 +250,86 @@ In the previous examples, we have been running calculations on our local machine
     12. The type of Launcher to use. `SimpleLauncher()` must be used instead of the commonly used `SrunLauncher()` to allow quacc subprocesses to launch their own `srun` commands.
 
     13. The maximum time to wait (in seconds) for the job scheduler info to be retrieved/sent.
+
+    Now let's consider a similar configuration but for tasks where the underlying executable distributes work over multiple cores, as is the case for MPI jobs. The configuration ensures that we have at most one active Slurm jobs (`max_blocks=1`), request two nodes in each Slurm job (`nodes_per_block=4`), run no more than 1 tasks at a time per node (`max_workers=1`) since each task requires the full node of resources, and that there will be no Slurm jobs queued or running when there are no tasks to run (`min_blocks=0`). This configuration ensures that 4 MPI-based compute tasks can be run concurrently, where each task uses up a full node.
+
+    ```python
+    import parsl
+    from parsl.config import Config
+    from parsl.executors import HighThroughputExecutor
+    from parsl.launchers import SimpleLauncher
+    from parsl.providers import SlurmProvider
+
+
+    config = Config(
+        max_idletime=60,
+        strategy="htex_auto_scale",
+        executors=[
+            HighThroughputExecutor(
+                label="quacc_parsl",
+                max_workers=1,  # (1)!
+                cores_per_worker=1e-6,  # (2)!
+                provider=SlurmProvider(
+                    account="MyAccountName",
+                    qos="debug",
+                    constraint="cpu",
+                    worker_init=f"source ~/.bashrc && conda activate quacc",
+                    walltime="00:10:00",
+                    nodes_per_block=4,
+                    init_blocks=0,
+                    min_blocks=0,
+                    max_blocks=1,
+                    launcher=SimpleLauncher(),
+                    cmd_timeout=120,
+                ),
+            )
+        ],
+    )
+
+    parsl.load(config)
+    ```
+
+    1. We set `max_workers=1` since each node should only run one task each in this scenario.
+
+    2. This is recommended in the Parsl manual for jobs that run via MPI.
+
+    Finally, let's consider the same scenario as above except now each MPI-based compute task uses half of the compute cores per node, rather than the full node. This configuration ensures that 8 MPI-based compute tasks can be run concurrently, where each task uses 32 CPU cores on a 64-core node.
+
+    ```python
+    import parsl
+    from parsl.config import Config
+    from parsl.executors import HighThroughputExecutor
+    from parsl.launchers import SimpleLauncher
+    from parsl.providers import SlurmProvider
+
+
+    config = Config(
+        max_idletime=60,
+        strategy="htex_auto_scale",
+        executors=[
+            HighThroughputExecutor(
+                label="quacc_parsl",
+                max_workers=2,
+                cores_per_worker=1e-6,
+                provider=SlurmProvider(
+                    account="MyAccountName",
+                    qos="debug",
+                    constraint="cpu",
+                    worker_init=f"source ~/.bashrc && conda activate quacc",
+                    walltime="00:10:00",
+                    nodes_per_block=4,
+                    init_blocks=0,
+                    min_blocks=0,
+                    max_blocks=1,
+                    launcher=SimpleLauncher(),
+                    cmd_timeout=120,
+                ),
+            )
+        ],
+    )
+
+    parsl.load(config)
+    ```
 
     **Practical Deployment**
 

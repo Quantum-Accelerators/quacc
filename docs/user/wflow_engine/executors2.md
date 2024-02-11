@@ -203,6 +203,8 @@ When deploying calculations for the first time, it's important to start simple, 
 
     **Starting Small**
 
+    We will start with a minimal example to get started. No concurrency will be achieved here, but it will demonstrate the basic setup.
+
     From an interactive resource like a Jupyter Notebook or IPython kernel on the remote machine:
 
     ```python
@@ -260,9 +262,13 @@ When deploying calculations for the first time, it's important to start simple, 
 
     Now it's time to scale things up and show off Parsl's true power. Let's run a TBLite relaxation and frequency calculation for 162 molecules in the so-called "g2" collection of small, neutral molecules.
 
-    On the remote machine, make sure to run `pip install quacc[tblite]`. Then run the following example, adjusting the configuration as necessary for your machine.
+    On the remote machine, make sure to install the necessary dependencies:
 
-    First we initialize a Parsl configuration. For this example, we will request 2 Slurm jobs (blocks), each of which will run tasks over 2 nodes that will be dynamically scaled.
+    ```
+    pip install quacc[tblite]
+    ```
+
+    First we initialize a Parsl configuration. For this example, we will request one Slurm job (block), which will run single-core compute tasks over two nodes.
 
     ```python
     import parsl
@@ -279,6 +285,8 @@ When deploying calculations for the first time, it's important to start simple, 
         executors=[
             HighThroughputExecutor(
                 label="quacc_parsl",
+                max_workers=64,
+                cpu_affinity="block",
                 provider=SlurmProvider(
                     account=account,
                     qos="debug",
@@ -288,7 +296,7 @@ When deploying calculations for the first time, it's important to start simple, 
                     nodes_per_block=2,
                     init_blocks=0,
                     min_blocks=0,
-                    max_blocks=2,
+                    max_blocks=1,
                     launcher=SimpleLauncher(),
                     cmd_timeout=120,
                 ),
@@ -306,7 +314,7 @@ When deploying calculations for the first time, it's important to start simple, 
 
     def workflow(atoms):
         relax_output = relax_job(atoms)
-        return freq_job(relax_output["atoms"], energy=relax_output["energy"])
+        return freq_job(relax_output["atoms"], energy=relax_output["results"]["energy"])
     ```
 
     We now loop over all molecules in the "g2" collection and apply our workflow.
