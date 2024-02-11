@@ -204,19 +204,18 @@ In the previous examples, we have been running calculations on our local machine
             HighThroughputExecutor(
                 label="quacc_parsl",  # (3)!
                 max_workers=64,  # (4)!
-                cpu_affinity="block",  # (5)!
                 provider=SlurmProvider(
                     account="MyAccountName",
                     qos="debug",
                     constraint="cpu",
-                    worker_init=f"source ~/.bashrc && conda activate quacc",  # (6)!
-                    walltime="00:10:00",  # (7)!
-                    nodes_per_block=2,  # (8)!
-                    init_blocks=0,  # (9)!
-                    min_blocks=0,  # (10)!
-                    max_blocks=1,  # (11)!
-                    launcher=SimpleLauncher(),  # (12)!
-                    cmd_timeout=120,  # (13)!
+                    worker_init=f"source ~/.bashrc && conda activate quacc",  # (5)!
+                    walltime="00:10:00",  # (6)!
+                    nodes_per_block=2,  # (7)!
+                    init_blocks=0,  # (8)!
+                    min_blocks=0,  # (9)!
+                    max_blocks=1,  # (10)!
+                    launcher=SimpleLauncher(),  # (11)!
+                    cmd_timeout=120,  # (12)!
                 ),
             )
         ],
@@ -233,23 +232,21 @@ In the previous examples, we have been running calculations on our local machine
 
     4. Sets the maximum number of workers per block, which should generally be the number of concurrent tasks to run per block. If you are running a single-core `Job`, this value will be the number of physical cores per node. If we are running a `Job` that uses up a full node, this parameter can be omitted entirely.
 
-    5. This is recommended for increased efficiency when running many tasks per node. It does not need to be specified otherwise.
+    5. Any commands to run before carrying out any of the Parsl tasks. This is useful for setting environment variables, activating a given Conda environment, and loading modules.
 
-    6. Any commands to run before carrying out any of the Parsl tasks. This is useful for setting environment variables, activating a given Conda environment, and loading modules.
+    6. The walltime for each block (i.e. Slurm job).
 
-    7. The walltime for each block (i.e. Slurm job).
+    7. The number of nodes that each block (i.e. Slurm job) should allocate.
 
-    8. The number of nodes that each block (i.e. Slurm job) should allocate.
+    8. Sets the number of blocks (e.g. Slurm jobs) to provision during initialization of the workflow. We set this to a value of 0 so that there isn't a running Slurm job before any tasks have been submitted to Parsl.
 
-    9. Sets the number of blocks (e.g. Slurm jobs) to provision during initialization of the workflow. We set this to a value of 0 so that there isn't a running Slurm job before any tasks have been submitted to Parsl.
+    9. Sets the minimum number of blocks (e.g. Slurm jobs) to maintain during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 0 so that Slurm jobs aren't running when there are no remaining tasks.
 
-    10. Sets the minimum number of blocks (e.g. Slurm jobs) to maintain during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 0 so that Slurm jobs aren't running when there are no remaining tasks.
+    10. Sets the maximum number of active blocks (e.g. Slurm jobs) during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 1 here, but it can be increased to have multiple Slurm jobs running simultaneously. Raising `max_blocks` to a larger value will allow the "htex_auto_scale" strategy to upscale resources as needed.
 
-    11. Sets the maximum number of active blocks (e.g. Slurm jobs) during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 1 here, but it can be increased to have multiple Slurm jobs running simultaneously. Raising `max_blocks` to a larger value will allow the "htex_auto_scale" strategy to upscale resources as needed.
+    11. The type of Launcher to use. `SimpleLauncher()` must be used instead of the commonly used `SrunLauncher()` to allow quacc subprocesses to launch their own `srun` commands.
 
-    12. The type of Launcher to use. `SimpleLauncher()` must be used instead of the commonly used `SrunLauncher()` to allow quacc subprocesses to launch their own `srun` commands.
-
-    13. The maximum time to wait (in seconds) for the job scheduler info to be retrieved/sent.
+    12. The maximum time to wait (in seconds) for the job scheduler info to be retrieved/sent.
 
     Now let's consider a similar configuration but for tasks where the underlying executable distributes work over multiple cores, as is the case for MPI jobs. The configuration ensures that we have at most one active Slurm jobs (`max_blocks=1`), request two nodes in each Slurm job (`nodes_per_block=4`), run no more than 1 tasks at a time per node (`max_workers=1`) since each task requires the full node of resources, and that there will be no Slurm jobs queued or running when there are no tasks to run (`min_blocks=0`). This configuration ensures that 4 MPI-based compute tasks can be run concurrently, where each task uses up a full node.
 
