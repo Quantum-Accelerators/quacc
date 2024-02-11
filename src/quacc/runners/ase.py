@@ -32,10 +32,18 @@ if TYPE_CHECKING:
     from ase.optimize.optimize import Optimizer
 
     class OptimizerKwargs(TypedDict, total=False):
+        """
+        Type hint for `optimizer_kwargs` in [quacc.runners.ase.run_opt][].
+        """
+
         restart: Path | str | None  # default = None
         append_trajectory: bool  # default = False
 
     class VibKwargs(TypedDict, total=False):
+        """
+        Type hint for `vib_kwargs` in [quacc.runners.ase.run_vib][].
+        """
+
         indices: list[int] | None  # default = None
         delta: float  # default = 0.01
         nfree: int  # default = 2

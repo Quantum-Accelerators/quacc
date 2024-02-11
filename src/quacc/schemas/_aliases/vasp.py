@@ -20,6 +20,8 @@ class BaderSchema(TypedDict, total=False):
 
 
 class DDECSchema(TypedDict, total=False):
+    """Type hint associated with quacc.schemas.vasp._ddec_runner."""
+
     partial_charges: list[float]
     spin_moments: list[float]
     dipoles: list[float]
@@ -31,6 +33,8 @@ class DDECSchema(TypedDict, total=False):
 
 
 class CM5Schema(TypedDict):
+    """Type hint used in DDECSchema"""
+
     partial_charges: list[float]
 
 

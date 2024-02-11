@@ -28,6 +28,10 @@ if TYPE_CHECKING:
     from typing import Callable, TypedDict
 
     class VaspJobKwargs(TypedDict, total=False):
+        """
+        Type hint for `vasp_job_kwargs` in in [quacc.calculators.vasp.vasp_custodian.run_custodian][].
+        """
+
         output_file: str  # default = "vasp.out"
         stderr_file: str  # default = "std_err.txt"
         suffix: str  # default = ""
@@ -40,6 +44,10 @@ if TYPE_CHECKING:
         auto_continue: bool  # default = False
 
     class CustodianKwargs(TypedDict, total=False):
+        """
+        Type hint for `custodian_kwargs` in [quacc.calculators.vasp.vasp_custodian.run_custodian][].
+        """
+
         max_errors_per_job: int | None  # default = None
         polling_time_step: int  # default = 10
         monitor_freq: int  # default = 10

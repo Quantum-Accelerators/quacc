@@ -21,11 +21,19 @@ if TYPE_CHECKING:
     from pymatgen.core.structure import Structure
 
     class AdsSiteFinderKwargs(TypedDict, total=False):
+        """
+        Type hint for `ads_site_finder_kwargs` in [quacc.atoms.slabs.make_adsorbate_structures][].
+        """
+
         selective_dynamics: bool  # default = False
         height: float  # default = 0.9
         mi_vec: ArrayLike | None  # default = None
 
     class FindAdsSitesKwargs(TypedDict, total=False):
+        """
+        Type hint for `find_ads_sites_kwargs` in [quacc.atoms.slabs.make_adsorbate_structures][].
+        """
+
         distance: float  # default = 2.0
         put_inside: bool  # default = True
         symm_reduce: float  # default = 1e-2

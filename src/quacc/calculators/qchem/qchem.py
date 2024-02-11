@@ -20,6 +20,10 @@ if TYPE_CHECKING:
     from numpy.typing import NDArray
 
     class Results(TypedDict, total=False):
+        """
+        Type hint for the `results` attribute in [quacc.calculators.qchem.qchem.QChem][].
+        """
+
         energy: float  # electronic energy in eV
         forces: NDArray  # forces in eV/A
         hessian: NDArray  # Hessian in eV/A^2/amu
