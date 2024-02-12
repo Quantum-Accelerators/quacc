@@ -25,7 +25,6 @@ def teardown_function():
     SETTINGS.GZIP_FILES = DEFAULT_SETTINGS.GZIP_FILES
     SETTINGS.CREATE_UNIQUE_DIR = DEFAULT_SETTINGS.CREATE_UNIQUE_DIR
 
-
 def test_file_v1(tmp_path, monkeypatch):
     with open(tmp_path / "quacc_test.yaml", "w") as f:
         f.write("GZIP_FILES: false\nWORKFLOW_ENGINE: None\nDEBUG: True\nSTORE: null")
@@ -73,7 +72,6 @@ def test_env_var2(monkeypatch):
 
     monkeypatch.setenv("QUACC_WORKFLOW_ENGINE", "none")
     assert QuaccSettings().WORKFLOW_ENGINE is None
-
 
 def test_yaml(tmp_path, monkeypatch):
     p = tmp_path / "my/new/scratch/dir"

@@ -47,7 +47,6 @@ def test_set(runner):
             if "WORKFLOW_ENGINE" in line:
                 val = line.split(":")[-1].strip()
     assert val == "covalent"
-
     response = runner.invoke(app, ["set", "VASP_PARALLEL_CMD", "dummy"])
     assert response.exit_code == 0
     assert "dummy" in response.stdout
