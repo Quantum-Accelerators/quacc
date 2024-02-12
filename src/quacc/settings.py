@@ -450,7 +450,7 @@ class QuaccSettings(BaseSettings):
         else:
             return v
 
-    model_config = SettingsConfigDict(env_prefix="quacc_")
+    model_config = SettingsConfigDict(env_prefix="quacc_", env_nested_delimiter="__")
 
     @model_validator(mode="before")
     @classmethod
