@@ -40,15 +40,6 @@ def test_help(runner):
 
 
 def test_set(runner):
-    response = runner.invoke(app, ["set", "WORKFLOW_ENGINE", "None"])
-    assert response.exit_code == 0
-    assert "None" in response.stdout
-    val = None
-    with open(TEST_YAML) as f:
-        for line in f:
-            if "WORKFLOW_ENGINE" in line:
-                val = line.split(":")[-1].strip()
-    assert not val
 
     response = runner.invoke(app, ["set", "WORKFLOW_ENGINE", "covalent"])
     assert response.exit_code == 0
@@ -69,16 +60,6 @@ def test_set(runner):
             if "VASP_PARALLEL_CMD" in line:
                 val = line.split(":")[-1].strip()
     assert val == "dummy"
-
-    response = runner.invoke(app, ["set", "GZIP_FILES", "True"])
-    assert response.exit_code == 0
-    assert "True" in response.stdout
-    val = None
-    with open(TEST_YAML) as f:
-        for line in f:
-            if "GZIP_FILES" in line:
-                val = line.split(":")[-1].strip()
-    assert val == "true"
 
 
 def test_unset(runner):
