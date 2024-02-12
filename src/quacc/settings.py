@@ -450,18 +450,23 @@ class QuaccSettings(BaseSettings):
         else:
             return v
 
-    model_config = SettingsConfigDict(env_prefix="quacc_", env_nested_delimiter="__")
+    model_config = SettingsConfigDict(
+        env_prefix="quacc_",
+        env_nested_delimiter="__",
+        extra="forbid",
+        validate_assignment=True,
+    )
 
     @model_validator(mode="before")
     @classmethod
-    def load_default_settings(cls, values: dict[str, Any]) -> dict[str, Any]:
+    def load_default_settings(cls, settings: dict[str, Any]) -> dict[str, Any]:
         """
         Loads settings from a root file if available and uses that as defaults in place
         of built in defaults.
 
         Parameters
         ----------
-        values
+        settings
             Settings to load.
 
         Returns
@@ -473,14 +478,25 @@ class QuaccSettings(BaseSettings):
         from monty.serialization import loadfn
 
         config_file_path = (
-            Path(values.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH))
+            Path(settings.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH))
             .expanduser()
             .resolve()
         )
 
-        new_values = {}  # type: dict
+        new_settings = {}  # type: dict
         if config_file_path.exists() and config_file_path.stat().st_size > 0:
-            new_values |= loadfn(config_file_path)
+            new_settings |= loadfn(config_file_path)
 
-        new_values.update(values)
-        return new_values
+        new_settings.update(settings)
+        return new_settings
+
+    @model_validator(mode="before")
+    @classmethod
+    def type_handler(cls, settings: dict[str, Any]) -> dict[str, Any]:
+        for key, value in settings.items():
+            if isinstance(value, str):
+                if value.lower() in {"null", "none"}:
+                    settings[key] = None
+                elif value.lower() in ("true", "false"):
+                    settings[key] = value.lower() == "true"
+        return settings

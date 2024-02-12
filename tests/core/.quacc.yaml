@@ -1,5 +1,5 @@
-DEBUG: true
-WORKFLOW_ENGINE: null
+DEBUG: True
+WORKFLOW_ENGINE: None
 STORE:
   MemoryStore:
     collection_name: test_store

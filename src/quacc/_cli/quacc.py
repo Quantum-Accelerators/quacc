@@ -166,26 +166,6 @@ def _parameter_handler(parameter: str, settings_dict: dict) -> None:
         raise ValueError(msg)
 
 
-def _type_handler(value: str) -> Any:
-    """
-    Convert the string value to the appropriate type.
-
-    Parameters
-    ----------
-    value
-        The value to convert.
-
-    Returns
-    -------
-    Any
-    """
-    if value.lower() in {"null", "none"}:
-        value = None
-    elif value.lower() in ("true", "false"):
-        value = value.lower() == "true"
-    return value
-
-
 def _delete_setting(key: str, config_file: Path) -> None:
     """
     Remove the quacc setting from the configuration file.
