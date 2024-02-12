@@ -40,7 +40,6 @@ def test_help(runner):
 
 
 def test_set(runner):
-
     response = runner.invoke(app, ["set", "WORKFLOW_ENGINE", "covalent"])
     assert response.exit_code == 0
     assert "covalent" in response.stdout
