@@ -83,7 +83,6 @@ def set_(parameter: str, new_value: str) -> None:
     parameter = parameter.upper()
 
     _parameter_handler(parameter, SETTINGS.model_dump())
-    new_value = _type_handler(new_value)
 
     rich_print(f"Setting `{parameter}` to `{new_value}` in {CONFIG_FILE}")
     _update_setting(parameter, new_value, CONFIG_FILE)
