@@ -497,6 +497,6 @@ class QuaccSettings(BaseSettings):
             if isinstance(value, str):
                 if value.lower() in {"null", "none"}:
                     settings[key] = None
-                elif value.lower() in ("true", "false"):
+                elif value.lower() in {"true", "false"}:
                     settings[key] = value.lower() == "true"
         return settings
