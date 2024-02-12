@@ -37,6 +37,8 @@ def test_version(runner):
 def test_help(runner):
     response = runner.invoke(app, ["--help"])
     assert response.exit_code == 0
+
+
 def test_set(runner):
     response = runner.invoke(app, ["set", "WORKFLOW_ENGINE", "covalent"])
     assert response.exit_code == 0
