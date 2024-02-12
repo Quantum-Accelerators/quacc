@@ -89,6 +89,118 @@ def phonon_job(
     )
 
 
+@job
+def q2r_job(
+    prev_dir: str | Path, parallel_info: dict[str] | None = None, **calc_kwargs
+) -> RunSchema:
+    """
+    Function to carry out a basic q2r.x calculation. It should allow you to
+    use all the features of the [q2r.x binary](https://www.quantum-espresso.org/Doc/INPUT_Q2R.html#idm51)
+
+    This job requires the results of a previous ph.x calculation, you might
+    want to create your own flow to run both jobs in sequence.
+
+    Parameters
+    ----------
+    prev_dir
+        Outdir of the previously ran ph.x calculation. This is used to copy
+        the the dynamical matrix files.
+    parallel_info
+        Dictionary containing information about the parallelization of the
+        calculation. See the ASE documentation for more information.
+    **calc_kwargs
+        Additional keyword arguments to pass to the Espresso calculator. Set a value to
+        `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
+        `ase.io.espresso.write_espresso_ph` for more information. Some notable keys are:
+
+        - input_data: dict
+
+
+    Returns
+    -------
+    RunSchema
+        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        See the type-hint for the data structure.
+    """
+
+    calc_defaults = {"input_data": {"input": {"fildyn": "matdyn", "flfrc": "realfc"}}}
+
+    # We are not gonna potentially copy TB of files when we can get away with a few KB :/
+
+    input_data = Namelist(calc_kwargs.get("input_data", {}))
+    input_data.to_nested(binary="q2r")
+
+    input_data = recursive_dict_merge(calc_defaults["input_data"], input_data)
+
+    fildyn = input_data["input"]["fildyn"]
+
+    prev_dir = {prev_dir: [f"{fildyn}*"]}
+
+    return base_fn(
+        template=EspressoTemplate("q2r"),
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        parallel_info=parallel_info,
+        additional_fields={"name": "q2r.x Phonon"},
+        copy_files=prev_dir,
+    )
+
+
+@job
+def matdyn_job(
+    prev_dir: str | Path, parallel_info: dict[str] | None = None, **calc_kwargs
+) -> RunSchema:
+    """
+    Function to carry out a basic matdyn.x calculation. It should allow you to
+    use all the features of the [matdyn.x binary](https://www.quantum-espresso.org/Doc/INPUT_MATDYN.html#idm138)
+
+    This job requires the results of a previous q2r.x calculation, you might
+    want to create your own flow to run both jobs in sequence.
+
+    Parameters
+    ----------
+    prev_dir
+        Outdir of the previously ran q2r.x calculation. This is used to copy
+        the the force constant file.
+    parallel_info
+        Dictionary containing information about the parallelization of the
+        calculation. See the ASE documentation for more information.
+    **calc_kwargs
+        Additional keyword arguments to pass to the Espresso calculator. Set a value to
+        `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
+        `ase.io.espresso.write_espresso_ph` for more information. Some notable keys are:
+
+        - input_data: dict
+
+
+    Returns
+    -------
+    RunSchema
+        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        See the type-hint for the data structure.
+    """
+
+    calc_defaults = {"input_data": {"input": {"flfrc": "realfc"}}}
+
+    input_data = Namelist(calc_kwargs.get("input_data", {}))
+    input_data.to_nested(binary="matdyn")
+
+    input_data = recursive_dict_merge(calc_defaults["input_data"], input_data)
+
+    flfrc = input_data["input"]["flfrc"]
+
+    prev_dir = {prev_dir: flfrc}
+
+    return base_fn(
+        template=EspressoTemplate("matdyn"),
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        parallel_info=parallel_info,
+        additional_fields={"name": "matdyn Phonon"},
+        copy_files=prev_dir,
+    )
+
+
 @flow
 def grid_phonon_flow(
     atoms: Atoms,

@@ -67,7 +67,15 @@ class EspressoTemplate(EspressoTemplate_):
             "wfcdir": os.environ.get("ESPRESSO_TMPDIR", "."),
         }
 
-        self.outfiles = {"fildos": "pwscf.dos", "filpdos": "pwscf.pdos_tot"}
+        self.outfiles = {
+            "fildos": "pwscf.dos",
+            "filpdos": "pwscf.pdos_tot",
+            "flfrc": "realfc",
+            "fldos": "matdyn.dos",
+            "flfrq": "matdyn.freq",
+            "flvec": "matdyn.modes",
+            "fleig": "matdyn.eig",
+        }
 
         self.test_run = test_run
 
@@ -128,8 +136,16 @@ class EspressoTemplate(EspressoTemplate_):
                 write_espresso_ph(fd=fd, properties=properties, **parameters)
         else:
             with Path.open(directory / self.inputname, "w") as fd:
+                input_data = parameters.pop("input_data", None)
+                additional_cards = parameters.pop("additional_cards", None)
+
                 write_fortran_namelist(
-                    fd, binary=self.binary, properties=properties, **parameters
+                    fd,
+                    binary=self.binary,
+                    properties=properties,
+                    input_data=input_data,
+                    additional_cards=additional_cards,
+                    **parameters,
                 )
 
     def execute(self, *args: Any, **kwargs: Any) -> None:
@@ -207,14 +223,14 @@ class EspressoTemplate(EspressoTemplate_):
                 results = read_espresso_ph(fd)
         elif self.binary == "dos":
             fildos = self.outfiles["fildos"]
-            with Path(fildos).open("r") as fd:
+            with fildos.open("r") as fd:
                 lines = fd.readlines()
                 fermi = float(re.search(r"-?\d+\.?\d*", lines[0]).group(0))
                 dos = np.loadtxt(lines[1:])
             results = {fildos.name.replace(".", "_"): {"dos": dos, "fermi": fermi}}
         elif self.binary == "projwfc":
             filpdos = self.outfiles["filpdos"]
-            with Path(filpdos).open("r") as fd:
+            with filpdos.open("r") as fd:
                 lines = np.loadtxt(fd.readlines())
                 energy = lines[1:, 0]
                 dos = lines[1:, 1]
