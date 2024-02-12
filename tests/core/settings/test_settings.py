@@ -8,22 +8,7 @@ from quacc import SETTINGS
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.settings import QuaccSettings
 
-DEFAULT_SETTINGS = SETTINGS.model_copy()
-
-
 FILE_DIR = Path(__file__).parent
-
-
-def setup_function():
-    SETTINGS.STORE = None
-    SETTINGS.GZIP_FILES = True
-    SETTINGS.CREATE_UNIQUE_DIR = False
-
-
-def teardown_function():
-    SETTINGS.STORE = DEFAULT_SETTINGS.STORE
-    SETTINGS.GZIP_FILES = DEFAULT_SETTINGS.GZIP_FILES
-    SETTINGS.CREATE_UNIQUE_DIR = DEFAULT_SETTINGS.CREATE_UNIQUE_DIR
 
 
 def test_file_v1(tmp_path, monkeypatch):
