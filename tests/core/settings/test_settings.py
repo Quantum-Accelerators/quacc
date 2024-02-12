@@ -27,7 +27,6 @@ def teardown_function():
 
 
 def test_file_v1(tmp_path, monkeypatch):
-
     with open(tmp_path / "quacc_test.yaml", "w") as f:
         f.write("GZIP_FILES: false\nWORKFLOW_ENGINE: None\nDEBUG: True\nSTORE: null")
     monkeypatch.setenv("QUACC_CONFIG_FILE", os.path.join(tmp_path, "quacc_test.yaml"))
@@ -77,7 +76,6 @@ def test_env_var2(monkeypatch):
 
 
 def test_yaml(tmp_path, monkeypatch):
-
     p = tmp_path / "my/new/scratch/dir"
     monkeypatch.delenv("QUACC_SCRATCH_DIR", raising=False)
     with open(tmp_path / "quacc_test.yaml", "w") as f:
