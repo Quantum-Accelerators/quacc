@@ -1,4 +1,5 @@
 """Schemas for molecular DFT codes parsed by cclib."""
+
 from __future__ import annotations
 
 import logging
@@ -36,20 +37,22 @@ def cclib_summarize_run(
     final_atoms: Atoms,
     logfile_extensions: str | list[str],
     dir_path: Path | str | None = None,
-    pop_analyses: list[
-        Literal[
-            "cpsa",
-            "mpa",
-            "lpa",
-            "bickelhaupt",
-            "density",
-            "mbo",
-            "bader",
-            "ddec6",
-            "hirshfeld",
+    pop_analyses: (
+        list[
+            Literal[
+                "cpsa",
+                "mpa",
+                "lpa",
+                "bickelhaupt",
+                "density",
+                "mbo",
+                "bader",
+                "ddec6",
+                "hirshfeld",
+            ]
         ]
-    ]
-    | None = None,
+        | None
+    ) = None,
     check_convergence: bool | None = None,
     additional_fields: dict[str, Any] | None = None,
     store: Store | None = None,
@@ -83,7 +86,7 @@ def cclib_summarize_run(
         Additional fields to add to the task document.
     store
         Maggma Store object to store the results in. If None,
-        `SETTINGS.PRIMARY_STORE` will be used.
+        `SETTINGS.STORE` will be used.
 
     Returns
     -------
@@ -96,7 +99,7 @@ def cclib_summarize_run(
         SETTINGS.CHECK_CONVERGENCE if check_convergence is None else check_convergence
     )
     additional_fields = additional_fields or {}
-    store = SETTINGS.PRIMARY_STORE if store is None else store
+    store = SETTINGS.STORE if store is None else store
 
     # Get the cclib base task document
     cclib_task_doc = _make_cclib_schema(

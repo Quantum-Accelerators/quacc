@@ -199,6 +199,8 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 | Espresso Non-SCF         | `#!Python @job`  | [quacc.recipes.espresso.core.non_scf_job][]         |              |
 | Espresso DOS             | `#!Python @job`  | [quacc.recipes.espresso.dos.dos_job][]              |              |
 | Espresso DOS Flow        | `#!Python @flow` | [quacc.recipes.espresso.dos.dos_flow][]             |              |
+| Espresso Projwfc         | `#!Python @job`  | [quacc.recipes.espresso.dos.projwfc_job][]          |              |
+| Espresso Projwfc Flow    | `#!Python @flow` | [quacc.recipes.espresso.dos.projwfc_flow][]         |              |
 
 </center>
 

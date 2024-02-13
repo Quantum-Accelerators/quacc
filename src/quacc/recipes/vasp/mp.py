@@ -13,6 +13,7 @@ Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
     and up-to-date. This module is a best effort to be used at your own
     discretion.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -57,7 +58,7 @@ def mp_prerelax_job(
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to `ase.calculators.vasp.vasp.Vasp`.
+        keys, refer to [ase.calculators.vasp.vasp.Vasp][].
 
     Returns
     -------
@@ -108,7 +109,7 @@ def mp_relax_job(
     **calc_kwargs
         Dictionary of custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to `ase.calculators.vasp.vasp.Vasp`.
+        keys, refer to [ase.calculators.vasp.vasp.Vasp][].
 
     Returns
     -------

@@ -1,4 +1,5 @@
 """Q-Chem calculator IO."""
+
 from __future__ import annotations
 
 import struct

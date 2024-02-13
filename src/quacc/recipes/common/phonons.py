@@ -45,8 +45,6 @@ def phonon_flow(
     """
     Calculate phonon properties.
 
-    This module is adapted from `matcalc` (https://github.com/materialsvirtuallab/matcalc)
-
     Parameters
     ----------
     atoms

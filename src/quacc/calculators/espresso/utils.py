@@ -179,7 +179,7 @@ def grid_prepare_repr(patterns: dict[str, Any], nblocks: int) -> list:
     patterns
         The representation patterns dictionary from the ph_init_job_results
     nblocks
-        The number of blocks to group the representations in (default 1) see
+        The number of blocks to group the representations in. See
         [quacc.recipes.espresso.phonons.grid_phonon_flow][].
 
     Returns

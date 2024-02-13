@@ -36,10 +36,12 @@ graph LR
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
 
+
     # Define the workflow
     @flow  # (1)!
     def workflow(atoms):
         return relax_job(atoms)  # (2)!
+
 
     # Dispatch the workflow to the Covalent server
     # with the bulk Cu Atoms object as the input
@@ -149,10 +151,12 @@ graph LR
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
 
+
     # Define the workflow
     @flow
     def workflow(atoms):
         return relax_job(atoms)  # (1)!
+
 
     # Dispatch the workflow
     future = workflow(atoms)  # (2)!

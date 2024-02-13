@@ -3,6 +3,7 @@ Core recipes for Lennard-Jones Potential.
 
 NOTE: This set of minimal recipes is mainly for demonstration purposes
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -37,7 +38,7 @@ def static_job(atoms: Atoms, **calc_kwargs) -> RunSchema:
     **calc_kwargs
         Dictionary of custom kwargs for the LJ calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.lj.LJ` calculator.
+        keys, refer to the [ase.calculators.lj.LennardJones] calculator.
 
     Returns
     -------
@@ -70,7 +71,7 @@ def relax_job(
     **calc_kwargs
         Custom kwargs for the LJ calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.lj.LJ` calculator.
+        keys, refer to the [ase.calculators.lj.LennardJones] calculator.
 
     Returns
     -------
@@ -110,11 +111,11 @@ def freq_job(
     pressure
         Pressure in bar.
     vib_kwargs
-        Dictionary of kwargs for the `ase.vibrations.Vibrations` class.
+        Dictionary of kwargs for the [ase.vibrations.Vibrations][] class.
     **calc_kwargs
         Dictionary of custom kwargs for the LJ calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.lj.LJ` calculator.
+        keys, refer to the [ase.calculators.lj.LennardJones] calculator.
 
     Returns
     -------

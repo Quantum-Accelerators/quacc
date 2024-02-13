@@ -64,7 +64,7 @@ def summarize_run(
         Additional fields to add to the task document.
     store
         Maggma Store object to store the results in. If None,
-        `SETTINGS.PRIMARY_STORE` will be used.
+        `SETTINGS.STORE` will be used.
 
     Returns
     -------
@@ -73,7 +73,7 @@ def summarize_run(
     """
 
     additional_fields = additional_fields or {}
-    store = SETTINGS.PRIMARY_STORE if store is None else store
+    store = SETTINGS.STORE if store is None else store
 
     if not final_atoms.calc:
         msg = "ASE Atoms object has no attached calculator."
@@ -158,7 +158,7 @@ def summarize_opt_run(
         Additional fields to add to the task document.
     store
         Maggma Store object to store the results in. If None,
-        `SETTINGS.PRIMARY_STORE` will be used.
+        `SETTINGS.STORE` will be used.
 
     Returns
     -------
@@ -170,7 +170,7 @@ def summarize_opt_run(
         SETTINGS.CHECK_CONVERGENCE if check_convergence is None else check_convergence
     )
     additional_fields = additional_fields or {}
-    store = SETTINGS.PRIMARY_STORE if store is None else store
+    store = SETTINGS.STORE if store is None else store
 
     # Get trajectory
     if not trajectory:
@@ -249,7 +249,7 @@ def summarize_vib_run(
         Additional fields to add to the task document.
     store
         Maggma Store object to store the results in. If None,
-        `SETTINGS.PRIMARY_STORE` will be used.
+        `SETTINGS.STORE` will be used.
 
     Returns
     -------
@@ -257,7 +257,7 @@ def summarize_vib_run(
         Dictionary representation of the task document
     """
     additional_fields = additional_fields or {}
-    store = SETTINGS.PRIMARY_STORE if store is None else store
+    store = SETTINGS.STORE if store is None else store
 
     vib_freqs_raw = vib.get_frequencies().tolist()
     vib_energies_raw = vib.get_energies().tolist()
@@ -369,7 +369,7 @@ def summarize_ideal_gas_thermo(
         Additional fields to add to the task document.
     store
         Maggma Store object to store the results in. If None,
-        `SETTINGS.PRIMARY_STORE` will be used.
+        `SETTINGS.STORE` will be used.
 
     Returns
     -------
@@ -378,7 +378,7 @@ def summarize_ideal_gas_thermo(
     """
 
     additional_fields = additional_fields or {}
-    store = SETTINGS.PRIMARY_STORE if store is None else store
+    store = SETTINGS.STORE if store is None else store
 
     spin_multiplicity = round(2 * igt.spin + 1)
 
@@ -459,7 +459,7 @@ def summarize_vib_and_thermo(
         Additional fields to add to the task document.
     store
         Maggma Store object to store the results in. If None,
-        `SETTINGS.PRIMARY_STORE` will be used.
+        `SETTINGS.STORE` will be used.
 
     Returns
     -------
@@ -467,7 +467,7 @@ def summarize_vib_and_thermo(
         A dictionary that merges the `VibSchema` and `ThermoSchema`.
     """
     additional_fields = additional_fields or {}
-    store = SETTINGS.PRIMARY_STORE if store is None else store
+    store = SETTINGS.STORE if store is None else store
 
     vib_task_doc = summarize_vib_run(
         vib, charge_and_multiplicity=charge_and_multiplicity, store=False

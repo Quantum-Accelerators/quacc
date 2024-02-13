@@ -47,7 +47,7 @@ class PhonopyMetadata(TypedDict):
 
 
 class PhononSchema(AtomsSchema):
-    """Type hint associated with `quacc.schemas.phonons.summarize_phonopy`"""
+    """Type hint associated with [quacc.schemas.phonons.summarize_phonopy][]"""
 
     parameters: dict[str, Any] | None
     nid: str

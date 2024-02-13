@@ -1,4 +1,5 @@
 """Core recipes for ORCA."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -48,11 +49,11 @@ def static_job(
     orcasimpleinput
         List of `orcasimpleinput` swaps for the calculator. To remove entries
         from the defaults, put a `#` in front of the name. Refer to the
-        `ase.calculators.orca.ORCA` calculator for details on `orcasimpleinput`.
+        [ase.calculators.orca.ORCA][] calculator for details on `orcasimpleinput`.
     orcablocks
         List of `orcablocks` swaps for the calculator. To remove entries
         from the defaults, put a `#` in front of the name. Refer to the
-        `ase.calculators.orca.ORCA` calculator for details on `orcablocks`.
+        [ase.calculators.orca.ORCA][] calculator for details on `orcablocks`.
     nprocs
         Number of processors to use. Defaults to the number of physical cores.
     copy_files
@@ -115,11 +116,11 @@ def relax_job(
     orcasimpleinput
         List of `orcasimpleinput` swaps for the calculator. To remove entries
         from the defaults, put a `#` in front of the name. Refer to the
-        `ase.calculators.orca.ORCA` calculator for details on `orcasimpleinput`.
+        [ase.calculators.orca.ORCA][] calculator for details on `orcasimpleinput`.
     orcablocks
         List of `orcablocks` swaps for the calculator. To remove entries
         from the defaults, put a `#` in front of the name. Refer to the
-        `ase.calculators.orca.ORCA` calculator for details on `orcablocks`.
+        [ase.calculators.orca.ORCA][] calculator for details on `orcablocks`.
     nprocs
         Number of processors to use. Defaults to the number of physical cores.
     copy_files
@@ -183,11 +184,11 @@ def ase_relax_job(
     orcasimpleinput
         List of `orcasimpleinput` swaps for the calculator. To remove entries
         from the defaults, put a `#` in front of the name. Refer to the
-        `ase.calculators.orca.ORCA` calculator for details on `orcasimpleinput`.
+        [ase.calculators.orca.ORCA][] calculator for details on `orcasimpleinput`.
     orcablocks
         List of `orcablocks` swaps for the calculator. To remove entries
         from the defaults, put a `#` in front of the name. Refer to the
-        `ase.calculators.orca.ORCA` calculator for details on `orcablocks`.
+        [ase.calculators.orca.ORCA][] calculator for details on `orcablocks`.
     nprocs
         Number of processors to use. Defaults to the number of physical cores.
     copy_files

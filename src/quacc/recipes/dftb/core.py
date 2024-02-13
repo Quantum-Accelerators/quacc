@@ -1,4 +1,5 @@
 """Core recipes for DFTB+"""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -36,7 +37,7 @@ def static_job(
         Custom kwargs for the calculator that would override the
         calculator defaults. Set a value to `quacc.Remove` to remove a pre-existing key
         entirely. For a list of available keys, refer to the
-        `ase.calculators.dftb.Dftb` calculator.
+        [ase.calculators.dftb.Dftb][] calculator.
 
     Returns
     -------
@@ -87,7 +88,7 @@ def relax_job(
         Custom kwargs for the calculator that would override the
         calculator defaults. Set a value to `quacc.Remove` to remove a pre-existing key
         entirely. For a list of available keys, refer to the
-        `ase.calculators.dftb.Dftb` calculator.
+        [ase.calculators.dftb.Dftb][] calculator.
 
     Returns
     -------

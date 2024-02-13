@@ -1,4 +1,5 @@
 """Transition state recipes for Q-Chem."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

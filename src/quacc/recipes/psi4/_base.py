@@ -1,4 +1,5 @@
 """Base jobs for Psi4."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -43,7 +44,7 @@ def base_fn(
     calc_swaps
         Custom kwargs for the Psi4 calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.psi4.Psi4` calculator.
+        keys, refer to the [ase.calculators.psi4.Psi4][] calculator.
     additional_fields
         Any additional fields to supply to the summarizer.
     copy_files

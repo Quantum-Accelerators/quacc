@@ -33,10 +33,18 @@ if TYPE_CHECKING:
     from ase.optimize.optimize import Dynamics, Optimizer
 
     class OptimizerKwargs(TypedDict, total=False):
+        """
+        Type hint for `optimizer_kwargs` in [quacc.runners.ase.run_opt][].
+        """
+
         restart: Path | str | None  # default = None
         append_trajectory: bool  # default = False
 
     class VibKwargs(TypedDict, total=False):
+        """
+        Type hint for `vib_kwargs` in [quacc.runners.ase.run_vib][].
+        """
+
         indices: list[int] | None  # default = None
         delta: float  # default = 0.01
         nfree: int  # default = 2
@@ -312,7 +320,7 @@ def run_vib(
     atoms
         The Atoms object to run the calculation on.
     vib_kwargs
-        Dictionary of kwargs for the `ase.vibrations.Vibrations` class.
+        Dictionary of kwargs for the [ase.vibrations.Vibrations][] class.
     copy_files
         Filenames to copy from source to scratch directory.
 

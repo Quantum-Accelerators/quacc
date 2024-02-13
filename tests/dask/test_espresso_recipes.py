@@ -5,8 +5,12 @@ from shutil import which
 
 from dask.distributed import default_client
 
+from quacc import SETTINGS
+
 pytestmark = pytest.mark.skipif(
-    which("pw.x") is None or which("ph.x") is None, reason="QE not installed"
+    which(str(SETTINGS.ESPRESSO_BIN_DIR / SETTINGS.ESPRESSO_BINARIES["pw"])) is None
+    or which(str(SETTINGS.ESPRESSO_BIN_DIR / SETTINGS.ESPRESSO_BINARIES["ph"])) is None,
+    reason="QE not installed",
 )
 
 from pathlib import Path
@@ -62,7 +66,7 @@ def test_phonon_grid_single(tmp_path, monkeypatch):
     ]
 
     for key in sections:
-        assert key in grid_results["results"][(0.1, 0, 0)]
+        assert key in grid_results["results"][1]
 
 
 def test_phonon_grid_single_gamma(tmp_path, monkeypatch):
@@ -104,7 +108,7 @@ def test_phonon_grid_single_gamma(tmp_path, monkeypatch):
     ]
 
     for key in sections:
-        assert key in grid_results["results"][(0, 0, 0)]
+        assert key in grid_results["results"][1]
 
 
 def test_phonon_grid_qplot(tmp_path, monkeypatch):
@@ -147,8 +151,8 @@ def test_phonon_grid_qplot(tmp_path, monkeypatch):
     ]
 
     for key in sections:
-        assert key in grid_results["results"][(0.1, 0, 0)]
-        assert key in grid_results["results"][(0.2, 0, 0)]
+        assert key in grid_results["results"][1]
+        assert key in grid_results["results"][2]
 
 
 def test_phonon_grid_disp(tmp_path, monkeypatch):
@@ -199,7 +203,7 @@ def test_phonon_grid_disp(tmp_path, monkeypatch):
     ]
 
     for key in sections:
-        assert key in grid_results["results"][(0, 0, 0)]
+        assert key in grid_results["results"][1]
 
 
 def test_phonon_grid_v2(tmp_path, monkeypatch):
@@ -240,4 +244,4 @@ def test_phonon_grid_v2(tmp_path, monkeypatch):
     ]
 
     for key in sections:
-        assert key in grid_results["results"][(0, 0, 0)]
+        assert key in grid_results["results"][1]

@@ -17,14 +17,14 @@ If you are planning to modify a given set of parameters for all of your calculat
 ```yaml title="~/.quacc.yaml"
 SCRATCH_DIR: $SCRATCH # (1)!
 CREATE_UNIQUE_DIR: false # (2)!
-WORKFLOW_ENGINE: # (3)!
+WORKFLOW_ENGINE: None # (3)!
 ```
 
 1. In YAML, you do not need to put quotation marks around strings. In this case, the quacc scratch directory would be set to the environment variable `$SCRATCH` on whatever machine the calculations are run on.
 
 2. In YAML, booleans are lowercase.
 
-3. In YAML, a blank value is interpreted as `None` in Python. A value of `null` is equivalent to `None` too. In this case, no workflow engine would be used.
+3. In YAML, a blank value or `null` is interpreted as `None` in Python. We also support "None" for convenience.
 
 ??? Tip "When is This Method Ideal?"
 
@@ -32,7 +32,15 @@ WORKFLOW_ENGINE: # (3)!
 
 ## Using Environment Variables
 
-If you want to define quacc settings without writing them to a YAML file, you can instead modify the desired settings by defining individual environment variables with `QUACC` as the prefix. For instance, to modify the `SCRATCH_DIR` setting to be `$SCRATCH`, simply define `QUACC_SCRATCH_DIR=$SCRATCH` as a new environment variable. The environment variable takes precedence over any value specified in the YAML file.
+If you want to define quacc settings without writing them to a YAML file, you can instead modify the desired settings by defining individual environment variables with `QUACC` as the prefix. The environment variable takes precedence over any value specified in the YAML file. Most simple field types (e.g. `int`, `bool`, `float`, `str`) will be automatically inferred from the environment variable. To achieve the same results as the aforementioned YAML file, you would define the following environment variables:
+
+```bash
+export QUACC_SCRATCH_DIR=$SCRATCH
+export QUACC_CREATE_UNIQUE_DIR=False
+export QUACC_WORKFLOW_ENGINE=None
+```
+
+For more complex types, such as lists or dictionaries, refer to the corresponding section in the [pydantic-settings](https://docs.pydantic.dev/latest/concepts/pydantic_settings/#parsing-environment-variable-values) documentation. We use `__` as the delimiter for nested settings.
 
 ??? Tip "When is This Method Ideal?"
 
