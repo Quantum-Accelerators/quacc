@@ -1,3 +1,4 @@
+import logging
 import os
 from pathlib import Path
 
@@ -8,6 +9,9 @@ from quacc.utils.files import (
     copy_decompress_tree,
     make_unique_dir,
 )
+
+LOGGER = logging.getLogger(__name__)
+LOGGER.propagate = True
 
 
 def test_make_unique_dir(tmp_path, monkeypatch):
@@ -97,3 +101,8 @@ def test_copy_decompress_files_from_dir_v2(tmp_path, monkeypatch):
     assert (dst / "dir1" / "file2").exists()
     assert Path(f"{dst}{'/nested' * 10}").exists()
     assert not (dst / "dir1" / "symlink1").exists()
+
+
+def test_copy_decompress_files_from_dir_v3(caplog):
+    with caplog.at_level(logging.WARNING):
+        copy_decompress_files_from_dir("fake", "test")
