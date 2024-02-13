@@ -38,7 +38,7 @@ if TYPE_CHECKING:
     class BandsSchema(TypedDict):
         static_job: RunSchema
         non_scf_job: RunSchema
-        dos_job: RunSchema
+        bands_job_job: RunSchema
 
 
 @job
@@ -451,5 +451,5 @@ def bands_flow(
     return {
         "static_job": static_results,
         "non_scf_job": non_scf_results,
-        "dos_job": bands_results,
+        "bands_job": bands_results,
     }
