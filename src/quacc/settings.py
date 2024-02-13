@@ -409,12 +409,12 @@ class QuaccSettings(BaseSettings):
 
     @field_validator("RESULTS_DIR", "SCRATCH_DIR")
     @classmethod
-    def resolve_and_make_paths(cls, v: Optional[Path]) -> Optional[Path]:
+    def expand_and_make_paths(cls, v: Optional[Path]) -> Optional[Path]:
         """Resolve and make paths."""
         if v is None:
             return v
 
-        v = Path(os.path.expandvars(v)).expanduser().resolve()
+        v = Path(os.path.expandvars(v)).expanduser()
         if not v.exists():
             v.mkdir(parents=True)
         return v
