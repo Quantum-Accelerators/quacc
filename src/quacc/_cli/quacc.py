@@ -83,7 +83,6 @@ def set_(parameter: str, new_value: str) -> None:
     parameter = parameter.upper()
 
     _parameter_handler(parameter, SETTINGS.model_dump())
-    new_value = _type_handler(new_value)
 
     rich_print(f"Setting `{parameter}` to `{new_value}` in {CONFIG_FILE}")
     _update_setting(parameter, new_value, CONFIG_FILE)
@@ -164,26 +163,6 @@ def _parameter_handler(parameter: str, settings_dict: dict) -> None:
     if parameter == "CONFIG_FILE":
         msg = "Cannot set the CONFIG_FILE parameter via the CLI."
         raise ValueError(msg)
-
-
-def _type_handler(value: str) -> Any:
-    """
-    Convert the string value to the appropriate type.
-
-    Parameters
-    ----------
-    value
-        The value to convert.
-
-    Returns
-    -------
-    Any
-    """
-    if value.lower() in {"null", "none"}:
-        value = None
-    elif value.lower() in ("true", "false"):
-        value = value.lower() == "true"
-    return value
 
 
 def _delete_setting(key: str, config_file: Path) -> None:

@@ -32,7 +32,13 @@ WORKFLOW_ENGINE: # (3)!
 
 ## Using Environment Variables
 
-If you want to define quacc settings without writing them to a YAML file, you can instead modify the desired settings by defining individual environment variables with `QUACC` as the prefix. For instance, to modify the `SCRATCH_DIR` setting to be `$SCRATCH`, simply define `QUACC_SCRATCH_DIR=$SCRATCH` as a new environment variable. The environment variable takes precedence over any value specified in the YAML file. Most simple field types (e.g. `int`, `float`, `str`) will be automatically inferred from the environment variable.
+If you want to define quacc settings without writing them to a YAML file, you can instead modify the desired settings by defining individual environment variables with `QUACC` as the prefix. The environment variable takes precedence over any value specified in the YAML file. Most simple field types (e.g. `int`, `bool`, `float`, `str`) will be automatically inferred from the environment variable. To achieve the same results as the aforementioned YAML file, you would define the following environment variables:
+
+```bash
+export QUACC_SCRATCH_DIR=$SCRATCH
+export QUACC_CREATE_UNIQUE_DIR=False
+export QUACC_WORKFLOW_ENGINE=None
+```
 
 For more complex types, such as lists or dictionaries, refer to the corresponding section in the [pydantic-settings](https://docs.pydantic.dev/latest/concepts/pydantic_settings/#parsing-environment-variable-values) documentation. We use `__` as the delimiter for nested settings.
 

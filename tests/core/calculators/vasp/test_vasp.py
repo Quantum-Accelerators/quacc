@@ -794,13 +794,13 @@ def test_constraints():
 
 def test_envvars():
     DEFAULT_SETTINGS = SETTINGS.model_copy()
-    SETTINGS.VASP_PP_PATH = "/path/to/pseudos"
-    SETTINGS.VASP_VDW = "/path/to/kernel"
+    SETTINGS.VASP_PP_PATH = str(Path("/path/to/pseudos"))
+    SETTINGS.VASP_VDW = str(Path("/path/to/kernel"))
 
     atoms = bulk("Cu")
     atoms.calc = Vasp(atoms, xc="beef-vdw")
-    assert os.environ.get("VASP_PP_PATH") == "/path/to/pseudos"
-    assert os.environ.get("ASE_VASP_VDW") == "/path/to/kernel"
+    assert os.environ.get("VASP_PP_PATH") == str(Path("/path/to/pseudos"))
+    assert os.environ.get("ASE_VASP_VDW") == str(Path("/path/to/kernel"))
 
     SETTINGS.VASP_PP_PATH = DEFAULT_SETTINGS.VASP_PP_PATH
     SETTINGS.VASP_VDW = DEFAULT_SETTINGS.VASP_VDW
