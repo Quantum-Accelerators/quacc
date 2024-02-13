@@ -35,7 +35,11 @@ if TYPE_CHECKING:
         static_job: RunSchema
         non_scf_job: RunSchema
         projwfc_job: RunSchema
-
+    
+    class BandsSchema(TypedDict):
+        static_job: RunSchema
+        non_scf_job: RunSchema
+        dos_job: RunSchema
 
 @job
 def dos_job(
@@ -124,6 +128,48 @@ def projwfc_job(
         copy_files=prev_dir,
     )
 
+@job
+def bands_job(
+    prev_dir: str | Path,
+    parallel_info: dict[str] | None = None,
+    test_run: bool = False,
+    **calc_kwargs,
+) -> RunSchema:
+    """
+    Function to carry out a basic bands.x calculation (bands plot).
+    It is mainly used to re-order bands and to compute band-related properties.
+    Fore more details please see
+    https://www.quantum-espresso.org/Doc/INPUT_BANDS.html
+
+    Parameters
+    ----------
+    prev_dir
+        Outdir of the previously ran pw.x calculation. This is used to copy
+        the entire tree structure of that directory to the working directory
+        of this calculation.
+    parallel_info
+        Dictionary containing information about the parallelization of the
+        calculation. See the ASE documentation for more information.
+    **calc_kwargs
+        Additional keyword arguments to pass to the Espresso calculator. Set a value to
+        `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
+        `ase.io.espresso.write_fortran_namelist` for more information.
+
+    Returns
+    -------
+    RunSchema
+        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        See the type-hint for the data structure.
+    """
+
+    return base_fn(
+        template=EspressoTemplate("bands", test_run=test_run),
+        calc_defaults={},
+        calc_swaps=calc_kwargs,
+        parallel_info=parallel_info,
+        additional_fields={"name": "bands.x Bands"},
+        copy_files=prev_dir,
+    )
 
 @flow
 def dos_flow(
@@ -310,4 +356,98 @@ def projwfc_flow(
         "static_job": static_results,
         "non_scf_job": non_scf_results,
         "projwfc_job": projwfc_results,
+    }
+
+
+@flow
+def bands_flow(
+    atoms: Atoms,
+    job_decorators: dict[str, Callable | None] | None = None,
+    job_params: dict[str, Any] | None = None,
+) -> BandsSchema:
+    """
+    This function performs a bands calculation.
+
+    Consists of following jobs that can be modified:
+
+    1. pw.x static
+        - name: "static_job"
+        - job: [quacc.recipes.espresso.core.static_job][]
+
+    2. pw.x non self-consistent
+        - name: "non_scf_job"
+        - job: [quacc.recipes.espresso.core.non_scf_job][]
+
+    3. bands.x bands plot
+        - name: "bands_job"
+        - job: [quacc.recipes.espresso.dos.bands_job][]
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+    job_params
+        Custom parameters to pass to each Job in the Flow. This is a dictinoary where
+        the keys are the names of the jobs and the values are dictionaries of parameters.
+    job_decorators
+        Custom decorators to apply to each Job in the Flow. This is a dictionary where
+        the keys are the names of the jobs and the values are decorators.
+
+    Returns
+    -------
+    BandsSchema
+        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        See the type-hint for the data structure.
+    """
+
+    static_job_defaults = {
+        "kspacing": 0.2,
+        "input_data": {"system": {"occupations": "tetrahedra"}},
+    }
+    non_scf_job_defaults = recursive_dict_merge(
+        job_params.get("static_job", {}),
+        {
+            "kspacing": 0.01,
+            "input_data": {
+                "control": {"calculation": "nscf", "verbosity": "high"},
+                "system": {"occupations": "tetrahedra"},
+            },
+        },
+    )
+    bands_job_defaults = {}
+
+    calc_defaults = {
+        "static_job": static_job_defaults,
+        "non_scf_job": non_scf_job_defaults,
+        "bands_job": bands_job_defaults,
+    }
+    job_params = recursive_dict_merge(calc_defaults, job_params)
+
+    static_job_, non_scf_job_, bands_job_ = customize_funcs(
+        ["static_job", "non_scf_job", "bands_job"],
+        [static_job, non_scf_job, bands_job],
+        parameters=job_params,
+        decorators=job_decorators,
+    )
+
+    static_results = static_job_(atoms)
+    file_to_copy = pw_copy_files(
+        job_params["static_job"].get("input_data"),
+        static_results["dir_name"],
+        include_wfc=False,
+    )
+
+    non_scf_results = non_scf_job_(atoms, prev_dir=file_to_copy)
+    file_to_copy = pw_copy_files(
+        job_params["non_scf_job"].get("input_data"),
+        non_scf_results["dir_name"],
+        include_wfc=True,
+    )
+
+    bands_results = bands_job_(prev_dir=file_to_copy)
+
+    return {
+        "static_job": static_results,
+        "non_scf_job": non_scf_results,
+        "dos_job": bands_results,
     }
