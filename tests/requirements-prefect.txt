@@ -1,3 +1,3 @@
 dask-jobqueue==0.8.2
-prefect==2.14.20
+prefect==2.14.21
 prefect-dask==0.2.6
