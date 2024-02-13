@@ -59,6 +59,9 @@ def test_env_var2(monkeypatch):
     monkeypatch.setenv("QUACC_WORKFLOW_ENGINE", "none")
     assert QuaccSettings().WORKFLOW_ENGINE is None
 
+    monkeypatch.setenv("GZIP_FILES", "FaLsE")
+    assert QuaccSettings().WORKFLOW_ENGINE is False
+
 
 def test_yaml(tmp_path, monkeypatch):
     p = tmp_path / "my/new/scratch/dir"
