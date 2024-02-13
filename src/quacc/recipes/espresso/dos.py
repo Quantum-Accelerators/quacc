@@ -5,6 +5,7 @@ dos.x binary from Quantum ESPRESSO via the quacc library.
 The recipes provided in this module are jobs and flows that can be used to perform
 dos calculations.
 """
+from __future__ import annotations
 
 from pathlib import Path
 from typing import TYPE_CHECKING
