@@ -60,7 +60,7 @@ def test_env_var2(monkeypatch):
     assert QuaccSettings().WORKFLOW_ENGINE is None
 
     monkeypatch.setenv("GZIP_FILES", "FaLsE")
-    assert QuaccSettings().WORKFLOW_ENGINE is False
+    assert QuaccSettings().GZIP_FILES is False
 
 
 def test_yaml(tmp_path, monkeypatch):
