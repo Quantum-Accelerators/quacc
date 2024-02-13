@@ -526,4 +526,5 @@ def _type_handler(settings: dict[str, Any]) -> dict[str, Any]:
                 settings[key] = None
             elif value.lower() in {"true", "false"}:
                 settings[key] = value.lower() == "true"
+
     return settings

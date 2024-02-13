@@ -49,7 +49,15 @@ def test_env_var(monkeypatch, tmp_path):
     assert QuaccSettings().SCRATCH_DIR == p.expanduser().resolve()
 
 
-def test_env_var2(monkeypatch):
+def test_env_var2(monkeypatch, tmp_path):
+    with open(tmp_path / "quacc_test.yaml", "w") as f:
+        f.write("")
+
+    monkeypatch.setenv("QUACC_CONFIG_FILE", os.path.join(tmp_path, "quacc_test.yaml"))
+    assert str(QuaccSettings().CONFIG_FILE) == str(
+        Path(os.path.join(tmp_path, "quacc_test.yaml"))
+    )
+
     monkeypatch.setenv("QUACC_WORKFLOW_ENGINE", "None")
     assert QuaccSettings().WORKFLOW_ENGINE is None
 
@@ -59,7 +67,7 @@ def test_env_var2(monkeypatch):
     monkeypatch.setenv("QUACC_WORKFLOW_ENGINE", "none")
     assert QuaccSettings().WORKFLOW_ENGINE is None
 
-    monkeypatch.setenv("GZIP_FILES", "FaLsE")
+    monkeypatch.setenv("QUACC_GZIP_FILES", "FaLsE")
     assert QuaccSettings().GZIP_FILES is False
 
 
