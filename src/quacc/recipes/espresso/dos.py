@@ -6,8 +6,6 @@ The recipes provided in this module are jobs and flows that can be used to perfo
 dos calculations.
 """
 
-from __future__ import annotations
-
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -35,11 +33,12 @@ if TYPE_CHECKING:
         static_job: RunSchema
         non_scf_job: RunSchema
         projwfc_job: RunSchema
-    
+
     class BandsSchema(TypedDict):
         static_job: RunSchema
         non_scf_job: RunSchema
         dos_job: RunSchema
+
 
 @job
 def dos_job(
@@ -128,6 +127,7 @@ def projwfc_job(
         copy_files=prev_dir,
     )
 
+
 @job
 def bands_job(
     prev_dir: str | Path,
@@ -170,6 +170,7 @@ def bands_job(
         additional_fields={"name": "bands.x Bands"},
         copy_files=prev_dir,
     )
+
 
 @flow
 def dos_flow(
