@@ -14,7 +14,7 @@ from quacc import flow, job
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.calculators.espresso.utils import pw_copy_files
 from quacc.recipes.espresso._base import base_fn
-from quacc.recipes.espresso.core import non_scf_job, static_job
+from quacc.recipes.espresso.core import bands_job, non_scf_job, static_job
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs
 
@@ -37,8 +37,8 @@ if TYPE_CHECKING:
 
     class BandsSchema(TypedDict):
         static_job: RunSchema
-        non_scf_job: RunSchema
-        bands_job_job: RunSchema
+        bands_job: RunSchema
+        bands_pp_job: RunSchema
 
 
 @job
@@ -130,16 +130,15 @@ def projwfc_job(
 
 
 @job
-def bands_job(
+def bands_pp_job(
     prev_dir: str | Path,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
 ) -> RunSchema:
     """
-    Function to carry out a basic bands.x calculation (bands plot).
-    It is mainly used to re-order bands and to compute band-related properties.
-    Fore more details please see
+    Function to carry out a basic bands.x calculation.
+    It re-orders bands, computes band-related properties and more. Fore more details please see
     https://www.quantum-espresso.org/Doc/INPUT_BANDS.html
 
     Parameters
@@ -168,7 +167,7 @@ def bands_job(
         calc_defaults={},
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
-        additional_fields={"name": "bands.x Bands"},
+        additional_fields={"name": "bands.x Bands-post-processing"},
         copy_files=prev_dir,
     )
 
@@ -376,13 +375,13 @@ def bands_flow(
         - name: "static_job"
         - job: [quacc.recipes.espresso.core.static_job][]
 
-    2. pw.x non self-consistent
-        - name: "non_scf_job"
-        - job: [quacc.recipes.espresso.core.non_scf_job][]
-
-    3. bands.x bands plot
+    2. pw.x bands
         - name: "bands_job"
-        - job: [quacc.recipes.espresso.dos.bands_job][]
+        - job: [quacc.recipes.espresso.core.bands_job][]
+
+    3. bands.x post processing
+        - name: "bands_pp_job"
+        - job: [quacc.recipes.espresso.dos.bands_pp_job][]
 
     Parameters
     ----------
@@ -402,32 +401,23 @@ def bands_flow(
         See the type-hint for the data structure.
     """
 
-    static_job_defaults = {
-        "kspacing": 0.2,
-        "input_data": {"system": {"occupations": "tetrahedra"}},
-    }
-    non_scf_job_defaults = recursive_dict_merge(
+    static_job_defaults = {"kspacing": 0.2}
+    bands_job_defaults = recursive_dict_merge(
         job_params.get("static_job", {}),
-        {
-            "kspacing": 0.01,
-            "input_data": {
-                "control": {"calculation": "nscf", "verbosity": "high"},
-                "system": {"occupations": "tetrahedra"},
-            },
-        },
+        {"input_data": {"control": {"calculation": "bands", "verbosity": "high"}}},
     )
-    bands_job_defaults = {}
+    bands_pp_job_defaults = {}
 
     calc_defaults = {
         "static_job": static_job_defaults,
-        "non_scf_job": non_scf_job_defaults,
         "bands_job": bands_job_defaults,
+        "bands_pp_job": bands_pp_job_defaults,
     }
     job_params = recursive_dict_merge(calc_defaults, job_params)
 
-    static_job_, non_scf_job_, bands_job_ = customize_funcs(
-        ["static_job", "non_scf_job", "bands_job"],
-        [static_job, non_scf_job, bands_job],
+    static_job_, bands_job_, bands_pp_job_ = customize_funcs(
+        ["static_job", "bands_job", "bands_pp_job"],
+        [static_job, bands_job, bands_pp_job],
         parameters=job_params,
         decorators=job_decorators,
     )
@@ -439,17 +429,17 @@ def bands_flow(
         include_wfc=False,
     )
 
-    non_scf_results = non_scf_job_(atoms, prev_dir=file_to_copy)
+    bands_results = bands_job_(atoms, prev_dir=file_to_copy)
     file_to_copy = pw_copy_files(
-        job_params["non_scf_job"].get("input_data"),
-        non_scf_results["dir_name"],
+        job_params["bands_job"].get("input_data"),
+        bands_results["dir_name"],
         include_wfc=True,
     )
 
-    bands_results = bands_job_(prev_dir=file_to_copy)
+    bands_pp_results = bands_pp_job_(prev_dir=file_to_copy)
 
     return {
         "static_job": static_results,
-        "non_scf_job": non_scf_results,
         "bands_job": bands_results,
+        "bands_pp_job": bands_pp_results,
     }

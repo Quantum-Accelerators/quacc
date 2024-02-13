@@ -21,6 +21,7 @@ from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.calculators.espresso.utils import pw_copy_files
 from quacc.recipes.espresso.core import (
     ase_relax_job,
+    bands_job,
     non_scf_job,
     post_processing_job,
     relax_job,
@@ -344,6 +345,45 @@ def test_non_scf_job(tmp_path, monkeypatch):
     assert new_input_data["system"]["ecutrho"] == 240.0
     assert "kspacing" not in results["parameters"]
     assert results["parameters"].get("kpts") is None
+
+
+def test_bands_job(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+
+    atoms = bulk("Si")
+
+    pseudopotentials = {"Si": "Si.upf"}
+    input_data = {"control": {"pseudo_dir": tmp_path}}
+    static_result = static_job(
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=None
+    )
+    file_to_copy = pw_copy_files(
+        input_data, static_result["dir_name"], include_wfc=False
+    )
+    results = bands_job(
+        atoms,
+        file_to_copy,
+        input_data=input_data,
+        pseudopotentials=pseudopotentials,
+        kpts=[2, 2, 2],
+    )
+
+    assert_allclose(
+        results["atoms"].get_positions(), atoms.get_positions(), atol=1.0e-4
+    )
+    assert_allclose(results["atoms"].get_cell(), atoms.get_cell(), atol=1.0e-3)
+    assert_array_equal(
+        results["atoms"].get_chemical_symbols(), atoms.get_chemical_symbols()
+    )
+    assert results["parameters"]["input_data"]["control"]["calculation"] == "bands"
+    assert results["results"]["nspins"] == 1
+    assert results["results"]["nbands"] == 4
+
+    new_input_data = results["parameters"]["input_data"]
+    assert new_input_data["system"]["ecutwfc"] == 30.0
+    assert new_input_data["system"]["ecutrho"] == 240.0
 
 
 def test_pw_copy(tmp_path, monkeypatch):

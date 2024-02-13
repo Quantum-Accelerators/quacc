@@ -7,7 +7,7 @@ from numpy.testing import assert_allclose
 
 from quacc.recipes.espresso.dos import (
     bands_flow,
-    bands_job,
+    bands_pp_job,
     dos_flow,
     dos_job,
     projwfc_flow,
@@ -41,13 +41,13 @@ def test_projwfc_job(tmp_path, monkeypatch):
     assert output["parameters"]["input_data"]["projwfc"] == {}
 
 
-def test_bands_job(tmp_path, monkeypatch):
+def test_bands_pp_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     copy_decompress_tree({DATA_DIR / "dos_test/": "pwscf.save/*.gz"}, tmp_path)
     copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
-    output = bands_job(tmp_path)
+    output = bands_pp_job(tmp_path)
 
-    assert output["name"] == "bands.x Bands"
+    assert output["name"] == "bands.x Bands-post-processing"
     assert output["parameters"]["input_data"]["bands"] == {}
 
 
@@ -171,7 +171,7 @@ def test_bands_flow(tmp_path, monkeypatch):
 
     job_params = {
         "static_job": {"input_data": input_data, "pseudopotentials": pseudopotentials},
-        "non_scf_job": {"kspacing": 0.05},
+        "bands_job": {"kspacing": 0.05},
     }
 
     output = bands_flow(atoms, job_params=job_params)
@@ -189,21 +189,19 @@ def test_bands_flow(tmp_path, monkeypatch):
         == "TF"
     )
 
-    assert output["static_job"]["results"]["nbands"] == 8
+    assert output["static_job"]["results"]["nbands"] == 4
     assert output["static_job"]["results"]["nspins"] == 1
 
     assert_allclose(
-        output["non_scf_job"]["atoms"].get_positions(),
-        atoms.get_positions(),
-        atol=1.0e-4,
+        output["bands_job"]["atoms"].get_positions(), atoms.get_positions(), atol=1.0e-4
     )
     assert (
-        output["non_scf_job"]["parameters"]["input_data"]["control"]["calculation"]
-        == "nscf"
+        output["bands_job"]["parameters"]["input_data"]["control"]["calculation"]
+        == "bands"
     )
     assert (
-        output["non_scf_job"]["parameters"]["input_data"]["electrons"]["mixing_mode"]
+        output["bands_job"]["parameters"]["input_data"]["electrons"]["mixing_mode"]
         == "TF"
     )
-    assert output["non_scf_job"]["results"]["nbands"] == 8
-    assert output["non_scf_job"]["results"]["nspins"] == 1
+    assert output["bands_job"]["results"]["nbands"] == 4
+    assert output["bands_job"]["results"]["nspins"] == 1
