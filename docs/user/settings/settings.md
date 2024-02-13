@@ -22,9 +22,9 @@ WORKFLOW_ENGINE: None # (3)!
 
 1. In YAML, you do not need to put quotation marks around strings. In this case, the quacc scratch directory would be set to the environment variable `$SCRATCH` on whatever machine the calculations are run on.
 
-2. In YAML, booleans are lowercase, although `quacc` will be fine with `False` in the YAML as well.
+2. In YAML, booleans are lowercase.
 
-3. In YAML, a blank value or `null` is interpreted as `None` in Python. That said, `quacc` will also parse `None` in YAML in the same way.
+3. In YAML, a blank value or `null` is interpreted as `None` in Python. We also support "None" for convenience.
 
 ??? Tip "When is This Method Ideal?"
 
