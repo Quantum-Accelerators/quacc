@@ -9,6 +9,7 @@ import numpy as np
 from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read
 from ase.md.verlet import VelocityVerlet
+from ase.units import fs
 from ase.optimize import FIRE
 from ase.vibrations import Vibrations
 from monty.dev import requires
@@ -225,7 +226,7 @@ def run_opt(
 def run_md(
     atoms: Atoms,
     timestep: float = 1.0,
-    max_steps: int = 500,
+    steps: int = 500,
     dynamics: Dynamics = VelocityVerlet,
     dynamics_kwargs: OptimizerKwargs | None = None,
     run_kwargs: dict[str, Any] | None = None,
@@ -272,7 +273,6 @@ def run_md(
     dynamics_kwargs = recursive_dict_merge(
         {
             "logfile": "-" if SETTINGS.DEBUG else tmpdir / "dyn.log",
-            "restart": tmpdir / "dyn.pckl",
         },
         dynamics_kwargs,
     )
@@ -290,8 +290,8 @@ def run_md(
     # Set volume relaxation constraints, if relevant
 
     # Run calculation
-    with traj, dynamics(atoms, **dynamics_kwargs) as dyn:
-        dyn.run(steps=max_steps, **run_kwargs)
+    with traj, dynamics(atoms, timestep=timestep * fs, **dynamics_kwargs) as dyn:
+        dyn.run(steps=steps, **run_kwargs)
 
     # Store the trajectory atoms
     dyn.traj_atoms = read(traj_filename, index=":")
