@@ -4,7 +4,7 @@
 set -e
 
 # Ensure results are purged
-export QUACC_RESULTS_DIR=/tmp/jenkins
+export QUACC_RESULTS_DIR=/scratch/network/asrosen
 
 # GULP
 module purge
