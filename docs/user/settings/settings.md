@@ -17,14 +17,14 @@ If you are planning to modify a given set of parameters for all of your calculat
 ```yaml title="~/.quacc.yaml"
 SCRATCH_DIR: $SCRATCH # (1)!
 CREATE_UNIQUE_DIR: false # (2)!
-WORKFLOW_ENGINE: # (3)!
+WORKFLOW_ENGINE: None # (3)!
 ```
 
 1. In YAML, you do not need to put quotation marks around strings. In this case, the quacc scratch directory would be set to the environment variable `$SCRATCH` on whatever machine the calculations are run on.
 
 2. In YAML, booleans are lowercase.
 
-3. In YAML, a blank value is interpreted as `None` in Python. A value of `null` is equivalent to `None` too. In this case, no workflow engine would be used.
+3. In YAML, a blank value or `null` is interpreted as `None` in Python. We also support "None" for convenience.
 
 ??? Tip "When is This Method Ideal?"
 
