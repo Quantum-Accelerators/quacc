@@ -16,11 +16,10 @@ from ase.md.velocitydistribution import (
 )
 from ase.md.verlet import VelocityVerlet
 from ase.optimize import FIRE
-from ase.units import fs
 
 from quacc import job
 from quacc.runners.ase import run_calc, run_md, run_opt
-from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_md_run
+from quacc.schemas.ase import summarize_md_run, summarize_opt_run, summarize_run
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
@@ -101,7 +100,7 @@ def relax_job(
 @job
 def microcanonical_job(
     atoms: Atoms,
-    initial_temperature_params: float = None,
+    initial_temperature_params: dict[str, Any] | None = None,
     md_params: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> DynSchema:
@@ -121,10 +120,10 @@ def microcanonical_job(
         `{"temperature": None, "fixcm": True, "fixrot": True}`. If `temperature` is set to
         `None`, the initial temperature will not be set. For an improved change of success when performing a microcanonical ensemble calculation, the initial temperature should be set to a value twice the
         target temperature.
-    opt_params
+    md_params
         Dictionary of custom kwargs for the optimization process. Set a value
         to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [quacc.runners.ase.run_opt][].
+        keys, refer to [quacc.runners.ase.run_md][].
     **calc_kwargs
         Custom kwargs for the EMT calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -132,8 +131,8 @@ def microcanonical_job(
 
     Returns
     -------
-    OptSchema
-        Dictionary of results, specified in [quacc.schemas.ase.summarize_opt_run][].
+    DynSchema
+        Dictionary of results, specified in [quacc.schemas.ase.summarize_md_run][].
         See the type-hint for the data structure.
     """
 
@@ -145,13 +144,17 @@ def microcanonical_job(
         initial_temperature_defaults, initial_temperature_params
     )
 
-    temperature = initial_temperature_params.get("temperature")
+    temperature = initial_temperature_params.pop("temperature", None)
+    fixcm = initial_temperature_params.pop("fixcm", False)
+    fixrot = initial_temperature_params.pop("fixrot", False)
 
     if temperature:
-        MaxwellBoltzmannDistribution(atoms, temperature_K=temperature)
-        if initial_temperature_params.get("fixcm"):
+        MaxwellBoltzmannDistribution(
+            atoms, temperature_K=temperature, **initial_temperature_params
+        )
+        if fixcm:
             Stationary(atoms)
-        if initial_temperature_params.get("fixrot"):
+        if fixrot:
             ZeroRotation(atoms)
 
     md_flags = recursive_dict_merge(md_defaults, md_params)

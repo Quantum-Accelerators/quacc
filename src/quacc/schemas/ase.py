@@ -22,12 +22,13 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
     from ase.io import Trajectory
-    from ase.optimize.optimize import Optimizer
+    from ase.optimize.optimize import Dynamics, Optimizer
     from ase.thermochemistry import IdealGasThermo
     from ase.vibrations import Vibrations
     from maggma.core import Store
 
     from quacc.schemas._aliases.ase import (
+        DynSchema,
         OptSchema,
         RunSchema,
         ThermoSchema,
@@ -225,7 +226,111 @@ def summarize_opt_run(
     return task_doc
 
 
-summarize_md_run = summarize_opt_run
+def summarize_md_run(
+    dyn: Dynamics,
+    trajectory: Trajectory | list[Atoms] = None,
+    check_convergence: bool | None = None,
+    charge_and_multiplicity: tuple[int, int] | None = None,
+    move_magmoms: bool = True,
+    additional_fields: dict[str, Any] | None = None,
+    store: Store | bool | None = None,
+) -> DynSchema:
+    """
+    Get tabulated results from an ASE Atoms trajectory and store them in a database-
+    friendly format. This is meant to be compatible with all calculator types.
+
+    Parameters
+    ----------
+    dyn
+        ASE Dynamics object.
+    trajectory
+        ASE Trajectory object or list[Atoms] from reading a trajectory file. If
+        None, the trajectory must be found in dyn.traj_atoms.
+    check_convergence
+        Whether to check the convergence of the calculation. Defaults to True in
+        settings. For MD this is restricted to the number of steps.
+    charge_and_multiplicity
+        Charge and spin multiplicity of the Atoms object, only used for Molecule
+        metadata.
+    move_magmoms
+        Whether to move the final magmoms of the original Atoms object to the
+        initial magmoms of the returned Atoms object.
+    additional_fields
+        Additional fields to add to the task document.
+    store
+        Maggma Store object to store the results in. If None,
+        `SETTINGS.STORE` will be used.
+
+    Returns
+    -------
+    DynSchema
+        Dictionary representation of the task document
+    """
+
+    check_convergence = (
+        SETTINGS.CHECK_CONVERGENCE if check_convergence is None else check_convergence
+    )
+    additional_fields = additional_fields or {}
+    store = SETTINGS.STORE if store is None else store
+
+    # Get trajectory
+    if not trajectory:
+        trajectory = (
+            dyn.traj_atoms
+            if hasattr(dyn, "traj_atoms")
+            else read(dyn.trajectory.filename, index=":")
+        )
+
+    initial_atoms = trajectory[0]
+    final_atoms = get_final_atoms_from_dyn(dyn)
+    directory = final_atoms.calc.directory
+
+    # Check convergence
+    is_converged = dyn.converged()
+    if check_convergence and not is_converged:
+        msg = f"Optimization did not converge. Refer to {directory}"
+        raise RuntimeError(msg)
+
+    # Base task doc
+    base_task_doc = summarize_run(
+        final_atoms,
+        initial_atoms,
+        charge_and_multiplicity=charge_and_multiplicity,
+        move_magmoms=move_magmoms,
+        store=False,
+    )
+
+    # Clean up the opt parameters
+    parameters_md = dyn.todict()
+    parameters_md.pop("logfile", None)
+
+    # Please let's change to fs or ps base units, what in the world is even
+    # Angstroms per square root of Dalton/eV (ASE time unit)
+
+    parameters_md["timestep"] = parameters_md["timestep"] / units.fs
+
+    for t, atoms in enumerate(trajectory):
+        atoms.calc.results["temperature"] = atoms.get_temperature()
+        atoms.calc.results["kinetic_energy"] = atoms.get_kinetic_energy()
+        atoms.calc.results["time"] = parameters_md["timestep"] * t / 1000
+
+    opt_fields = {
+        "parameters_md": parameters_md,
+        "nsteps": dyn.get_number_of_steps(),
+        "trajectory": trajectory,
+        "trajectory_results": [atoms.calc.results for atoms in trajectory],
+    }
+
+    # Create a dictionary of the inputs/outputs
+    unsorted_task_doc = recursive_dict_merge(
+        base_task_doc, opt_fields, additional_fields
+    )
+    task_doc = clean_task_doc(unsorted_task_doc)
+
+    if store:
+        results_to_db(store, task_doc)
+
+    return task_doc
 
 
 def summarize_vib_run(

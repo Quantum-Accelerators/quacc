@@ -9,8 +9,8 @@ import numpy as np
 from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read
 from ase.md.verlet import VelocityVerlet
-from ase.units import fs
 from ase.optimize import FIRE
+from ase.units import fs
 from ase.vibrations import Vibrations
 from monty.dev import requires
 from monty.os.path import zpath
@@ -231,7 +231,7 @@ def run_md(
     dynamics_kwargs: OptimizerKwargs | None = None,
     run_kwargs: dict[str, Any] | None = None,
     copy_files: str | Path | list[str | Path] | None = None,
-) -> Optimizer:
+) -> Dynamics:
     """
     Run an ASE-based MD in a scratch directory and copy the results back to
     the original directory. This can be useful if file I/O is slow in the working
@@ -244,23 +244,24 @@ def run_md(
     ----------
     atoms
         The Atoms object to run the calculation on.
-    max_steps
-        Maximum number of steps to take.
-    optimizer
-        Optimizer class to use.
-    optimizer_kwargs
-        Dictionary of kwargs for the optimizer. Takes all valid kwargs for ASE
-        Optimizer classes. Refer to `_set_sella_kwargs` for Sella-related
-        kwargs and how they are set.
+    timestep
+        The time step in femtoseconds.
+    steps
+        Maximum of steps to run
+    dynamics
+        Dynamics class to use.
+    dynamics_kwargs
+        Dictionary of kwargs for the dynamics. Takes all valid kwargs for ASE
+        Dynamics classes.
     run_kwargs
-        Dictionary of kwargs for the run() method of the optimizer.
+        Dictionary of kwargs for the run() method of the dynamics object.
     copy_files
         Filenames to copy from source to scratch directory.
 
     Returns
     -------
-    Optimizer
-        The ASE Optimizer object.
+    Dymamics
+        The ASE Dynamics object.
     """
 
     # Copy atoms so we don't modify it in-place
@@ -271,10 +272,7 @@ def run_md(
 
     # Set defaults
     dynamics_kwargs = recursive_dict_merge(
-        {
-            "logfile": "-" if SETTINGS.DEBUG else tmpdir / "dyn.log",
-        },
-        dynamics_kwargs,
+        {"logfile": "-" if SETTINGS.DEBUG else tmpdir / "dyn.log"}, dynamics_kwargs
     )
     run_kwargs = run_kwargs or {}
 

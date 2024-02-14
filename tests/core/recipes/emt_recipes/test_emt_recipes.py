@@ -3,7 +3,7 @@ import pytest
 from ase.build import bulk, molecule
 from ase.constraints import FixAtoms
 
-from quacc.recipes.emt.core import relax_job, static_job
+from quacc.recipes.emt.core import microcanonical_job, relax_job, static_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 
@@ -78,6 +78,45 @@ def test_relax_job(tmp_path, monkeypatch):
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] is True
     assert output["results"]["energy"] == pytest.approx(0.04996032884581858)
+
+
+def test_slab_md_jobs(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    atoms = molecule("H2O")
+    old_positions = atoms.positions.copy()
+    output = microcanonical_job(atoms)
+
+    assert output["parameters"]["asap_cutoff"] is False
+    assert len(output["trajectory"]) == 501
+    assert output["name"] == "EMT Microcanonical"
+    assert output["parameters_md"]["timestep"] == pytest.approx(1.0)
+    assert output["trajectory_results"][-1]["temperature"] == pytest.approx(1575.886)
+    assert output["trajectory_results"][0]["temperature"] == pytest.approx(0.0)
+    assert output["trajectory_results"][1]["temperature"] == pytest.approx(759.680)
+    assert output["trajectory_results"][10]["time"] == pytest.approx(0.01)
+    assert atoms.positions == pytest.approx(old_positions)
+
+    atoms = molecule("H2O")
+    old_positions = atoms.positions.copy()
+
+    rng = np.random.default_rng(seed=42)
+
+    output = microcanonical_job(
+        atoms,
+        initial_temperature_params={"temperature": 1000, "rng": rng},
+        md_params={"timestep": 0.5, "steps": 20},
+    )
+
+    assert output["parameters"]["asap_cutoff"] is False
+    assert len(output["trajectory"]) == 21
+    assert output["name"] == "EMT Microcanonical"
+    assert output["parameters_md"]["timestep"] == pytest.approx(0.5)
+    assert output["trajectory_results"][-1]["temperature"] == pytest.approx(1023.384)
+    assert output["trajectory_results"][0]["temperature"] == pytest.approx(915.678)
+    assert output["trajectory_results"][1]["temperature"] == pytest.approx(1060.650)
+    assert output["trajectory_results"][10]["time"] == pytest.approx(0.005)
+    assert atoms.positions == pytest.approx(old_positions)
 
 
 def test_slab_dynamic_jobs(tmp_path, monkeypatch):
