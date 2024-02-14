@@ -1,4 +1,4 @@
-matgl==0.9.2
+matgl==1.0.0
 chgnet==0.3.4
 mace-torch==0.3.4
 torch-dftd==0.4.0
