@@ -288,7 +288,7 @@ def summarize_md_run(
     # Check convergence
     is_converged = dyn.converged()
     if check_convergence and not is_converged:
-        msg = f"Optimization did not converge. Refer to {directory}"
+        msg = f"Dynamics did not converge. Refer to {directory}"
         raise RuntimeError(msg)
 
     # Base task doc

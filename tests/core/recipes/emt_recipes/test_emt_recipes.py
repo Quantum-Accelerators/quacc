@@ -1,10 +1,13 @@
 import numpy as np
 import pytest
 from ase.build import bulk, molecule
+from ase.calculators.emt import EMT
 from ase.constraints import FixAtoms
 
 from quacc.recipes.emt.core import microcanonical_job, relax_job, static_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+from quacc.runners.ase import run_md
+from quacc.schemas.ase import summarize_md_run
 
 
 def test_static_job(tmp_path, monkeypatch):
@@ -80,7 +83,7 @@ def test_relax_job(tmp_path, monkeypatch):
     assert output["results"]["energy"] == pytest.approx(0.04996032884581858)
 
 
-def test_slab_md_jobs(tmp_path, monkeypatch):
+def test_md_jobs(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = molecule("H2O")
@@ -117,6 +120,24 @@ def test_slab_md_jobs(tmp_path, monkeypatch):
     assert output["trajectory_results"][1]["temperature"] == pytest.approx(1060.650)
     assert output["trajectory_results"][10]["time"] == pytest.approx(0.005)
     assert atoms.positions == pytest.approx(old_positions)
+
+    with pytest.raises(ValueError, match="Quacc does not support"):
+        output = microcanonical_job(
+            atoms, md_params={"dynamics_kwargs": {"trajectory": "md.traj"}}
+        )
+
+
+def test_md_converged(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    atoms = molecule("H2O")
+    atoms.calc = EMT()
+
+    dyn = run_md(atoms)
+    dyn.nsteps = 400
+
+    with pytest.raises(RuntimeError, match="Dynamics did not converge"):
+        summarize_md_run(dyn)
 
 
 def test_slab_dynamic_jobs(tmp_path, monkeypatch):
