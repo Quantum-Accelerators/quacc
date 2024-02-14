@@ -15,12 +15,12 @@ try:
 
 except ImportError:
     mace = None
-# try:
-#     import matgl
+try:
+    import matgl
 
-#     methods.append("m3gnet")
-# except ImportError:
-#     matgl = None
+    methods.append("m3gnet")
+except ImportError:
+    matgl = None
 try:
     import chgnet
 
