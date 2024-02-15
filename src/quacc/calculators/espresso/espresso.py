@@ -384,7 +384,7 @@ class Espresso(Espresso_):
         """
 
         if self.kwargs.get("directory"):
-            raise ValueError("quacc does not support the directory argument.")
+            raise NotImplementedError("quacc does not support the directory argument.")
 
         self.kwargs["input_data"] = Namelist(self.kwargs.get("input_data"))
         self.kwargs["input_data"].to_nested(binary=self._binary, **self.kwargs)
