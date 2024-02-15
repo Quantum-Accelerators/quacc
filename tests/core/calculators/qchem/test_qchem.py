@@ -47,7 +47,7 @@ def test_qchem_write_input_basic(tmp_path, monkeypatch, test_atoms):
 
     with pytest.raises(
         NotImplementedError,
-        match="Do not specify `molecule` in `qchem_dict_set_params`F",
+        match="Do not specify `molecule` in `qchem_dict_set_params`",
     ):
         calc = QChem(
             test_atoms, job_type="freq", qchem_dict_set_params={"molecule": "test"}
