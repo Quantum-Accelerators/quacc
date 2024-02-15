@@ -160,7 +160,7 @@ class EspressoTemplate(EspressoTemplate_):
         return None
 
     @staticmethod
-    def _test_run(parameters: dict[str, Any], directory: Path) -> dict[str, Any]:
+    def _test_run(parameters: dict[str, Any], directory: Path) -> None:
         """
         Almost all QE binaries will do a test run if a file named <prefix>.EXIT is
         present in the working directory. This function will create this file.
