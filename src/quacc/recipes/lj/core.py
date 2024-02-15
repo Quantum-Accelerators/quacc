@@ -9,7 +9,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from ase.calculators.lj import LennardJones
-from ase.optimize import FIRE
 
 from quacc import job
 from quacc.runners.ase import run_calc, run_opt, run_vib
