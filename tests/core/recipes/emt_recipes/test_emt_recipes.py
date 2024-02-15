@@ -4,7 +4,8 @@ from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.constraints import FixAtoms
 
-from quacc.recipes.emt.core import microcanonical_job, relax_job, static_job
+from quacc.recipes.emt.core import relax_job, static_job
+from quacc.recipes.emt.md import microcanonical_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 from quacc.runners.ase import run_md
 from quacc.schemas.ase import summarize_md_run
@@ -94,10 +95,10 @@ def test_md_jobs(tmp_path, monkeypatch):
     assert len(output["trajectory"]) == 501
     assert output["name"] == "EMT Microcanonical"
     assert output["parameters_md"]["timestep"] == pytest.approx(1.0)
-    assert output["trajectory_results"][-1]["temperature"] == pytest.approx(1575.886)
-    assert output["trajectory_results"][0]["temperature"] == pytest.approx(0.0)
-    assert output["trajectory_results"][1]["temperature"] == pytest.approx(759.680)
-    assert output["trajectory_results"][10]["time"] == pytest.approx(0.01)
+    assert output["trajectory_log"]["temperature"][-1] == pytest.approx(1575.886)
+    assert output["trajectory_log"]["temperature"][0] == pytest.approx(0.0)
+    assert output["trajectory_log"]["temperature"][1] == pytest.approx(759.680)
+    assert output["trajectory_log"]["time"][10] == pytest.approx(0.01)
     assert atoms.positions == pytest.approx(old_positions)
 
     atoms = molecule("H2O")
@@ -107,7 +108,7 @@ def test_md_jobs(tmp_path, monkeypatch):
 
     output = microcanonical_job(
         atoms,
-        initial_temperature_params={"temperature": 1000, "rng": rng},
+        maxwell_boltzmann_params={"temperature": 1000, "rng": rng},
         md_params={"timestep": 0.5, "steps": 20},
     )
 
@@ -115,10 +116,10 @@ def test_md_jobs(tmp_path, monkeypatch):
     assert len(output["trajectory"]) == 21
     assert output["name"] == "EMT Microcanonical"
     assert output["parameters_md"]["timestep"] == pytest.approx(0.5)
-    assert output["trajectory_results"][-1]["temperature"] == pytest.approx(1023.384)
-    assert output["trajectory_results"][0]["temperature"] == pytest.approx(915.678)
-    assert output["trajectory_results"][1]["temperature"] == pytest.approx(1060.650)
-    assert output["trajectory_results"][10]["time"] == pytest.approx(0.005)
+    assert output["trajectory_log"]["temperature"][-1] == pytest.approx(1023.384)
+    assert output["trajectory_log"]["temperature"][0] == pytest.approx(915.678)
+    assert output["trajectory_log"]["temperature"][1] == pytest.approx(1060.650)
+    assert output["trajectory_log"]["time"][10] == pytest.approx(0.005)
     assert atoms.positions == pytest.approx(old_positions)
 
     with pytest.raises(ValueError, match="Quacc does not support"):

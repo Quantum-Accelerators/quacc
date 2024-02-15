@@ -31,7 +31,8 @@ if TYPE_CHECKING:
     from typing import Any, TypedDict
 
     from ase.atoms import Atoms
-    from ase.optimize.optimize import Dynamics, Optimizer
+    from ase.optimize.optimize import Optimizer
+    from ase.md.md import MolecularDynamics
 
     class OptimizerKwargs(TypedDict, total=False):
         """
@@ -227,11 +228,10 @@ def run_md(
     atoms: Atoms,
     timestep: float = 1.0,
     steps: int = 500,
-    dynamics: Dynamics = VelocityVerlet,
+    dynamics: MolecularDynamics = VelocityVerlet,
     dynamics_kwargs: OptimizerKwargs | None = None,
-    run_kwargs: dict[str, Any] | None = None,
     copy_files: str | Path | list[str | Path] | None = None,
-) -> Dynamics:
+) -> MolecularDynamics:
     """
     Run an ASE-based MD in a scratch directory and copy the results back to
     the original directory. This can be useful if file I/O is slow in the working
@@ -247,21 +247,19 @@ def run_md(
     timestep
         The time step in femtoseconds.
     steps
-        Maximum of steps to run
+        Maximum number of steps to run
     dynamics
-        Dynamics class to use.
+        MolecularDynamics class [ase.md.md.MolecularDynamics] to use.
     dynamics_kwargs
         Dictionary of kwargs for the dynamics. Takes all valid kwargs for ASE
-        Dynamics classes.
-    run_kwargs
-        Dictionary of kwargs for the run() method of the dynamics object.
+        MolecularDynamics classes.
     copy_files
         Filenames to copy from source to scratch directory.
 
     Returns
     -------
     Dymamics
-        The ASE Dynamics object.
+        The ASE MolecularDynamics object.
     """
 
     # Copy atoms so we don't modify it in-place
@@ -274,7 +272,6 @@ def run_md(
     dynamics_kwargs = recursive_dict_merge(
         {"logfile": "-" if SETTINGS.DEBUG else tmpdir / "dyn.log"}, dynamics_kwargs
     )
-    run_kwargs = run_kwargs or {}
 
     # Check if trajectory kwarg is specified
     if "trajectory" in dynamics_kwargs:
@@ -285,11 +282,9 @@ def run_md(
     traj = Trajectory(traj_filename, "w", atoms=atoms)
     dynamics_kwargs["trajectory"] = traj
 
-    # Set volume relaxation constraints, if relevant
-
     # Run calculation
     with traj, dynamics(atoms, timestep=timestep * fs, **dynamics_kwargs) as dyn:
-        dyn.run(steps=steps, **run_kwargs)
+        dyn.run(steps=steps)
 
     # Store the trajectory atoms
     dyn.traj_atoms = read(traj_filename, index=":")

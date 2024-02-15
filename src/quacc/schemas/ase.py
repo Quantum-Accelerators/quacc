@@ -22,7 +22,8 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
     from ase.io import Trajectory
-    from ase.optimize.optimize import Dynamics, Optimizer
+    from ase.optimize.optimize import Optimizer
+    from ase.md.md import MolecularDynamics
     from ase.thermochemistry import IdealGasThermo
     from ase.vibrations import Vibrations
     from maggma.core import Store
@@ -227,7 +228,7 @@ def summarize_opt_run(
 
 
 def summarize_md_run(
-    dyn: Dynamics,
+    dyn: MolecularDynamics,
     trajectory: Trajectory | list[Atoms] = None,
     check_convergence: bool | None = None,
     charge_and_multiplicity: tuple[int, int] | None = None,
@@ -242,7 +243,7 @@ def summarize_md_run(
     Parameters
     ----------
     dyn
-        ASE Dynamics object.
+        ASE MolecularDynamics object.
     trajectory
         ASE Trajectory object or list[Atoms] from reading a trajectory file. If
         None, the trajectory must be found in dyn.traj_atoms.
@@ -288,7 +289,7 @@ def summarize_md_run(
     # Check convergence
     is_converged = dyn.converged()
     if check_convergence and not is_converged:
-        msg = f"Dynamics did not converge. Refer to {directory}"
+        msg = f"MolecularDynamics did not converge. Refer to {directory}"
         raise RuntimeError(msg)
 
     # Base task doc
@@ -309,15 +310,18 @@ def summarize_md_run(
 
     parameters_md["timestep"] = parameters_md["timestep"] / units.fs
 
+    trajectory_log = {"temperature": [], "kinetic_energy": [], "time": []}
+
     for t, atoms in enumerate(trajectory):
-        atoms.calc.results["temperature"] = atoms.get_temperature()
-        atoms.calc.results["kinetic_energy"] = atoms.get_kinetic_energy()
-        atoms.calc.results["time"] = parameters_md["timestep"] * t / 1000
+        trajectory_log["temperature"].append(atoms.get_temperature())
+        trajectory_log["kinetic_energy"].append(atoms.get_kinetic_energy())
+        trajectory_log["time"].append(t * parameters_md["timestep"] / 1000)
 
     opt_fields = {
         "parameters_md": parameters_md,
         "nsteps": dyn.get_number_of_steps(),
         "trajectory": trajectory,
+        "trajectory_log": trajectory_log,
         "trajectory_results": [atoms.calc.results for atoms in trajectory],
     }
 
