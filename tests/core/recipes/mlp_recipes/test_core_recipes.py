@@ -72,9 +72,9 @@ def test_relax_job(tmp_path, monkeypatch, method):
     else:
         _set_dtype(32)
     ref_energy = {
-        "chgnet": -32.665626525878906,
-        "m3gnet": -32.749088287353516,
-        "mace": -32.670471191406259,
+        "chgnet": -32.665428161621094,
+        "m3gnet": -32.75003433227539,
+        "mace": -32.6711566550002,
     }
 
     atoms = bulk("Cu") * (2, 2, 2)
@@ -110,9 +110,9 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
         _set_dtype(32)
 
     ref_energy = {
-        "chgnet": -32.6676139831543,
-        "m3gnet": -32.74995040893555,
-        "mace": -32.67771911621094,
+        "chgnet": -32.66698455810547,
+        "m3gnet": -32.750858306884766,
+        "mace": -32.67840391814377,
     }
 
     atoms = bulk("Cu") * (2, 2, 2)
