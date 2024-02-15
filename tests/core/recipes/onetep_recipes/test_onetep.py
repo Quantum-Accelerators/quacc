@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from ase.build import molecule
+from ase.optimize import LBFGS
 
 from quacc import SETTINGS
 from quacc.recipes.onetep.core import ase_relax_job, static_job
