@@ -305,9 +305,6 @@ def summarize_md_run(
     parameters_md = dyn.todict()
     parameters_md.pop("logfile", None)
 
-    # Please let's change to fs or ps base units, what in the world is even
-    # Angstroms per square root of Dalton/eV (ASE time unit)
-
     parameters_md["timestep"] = parameters_md["timestep"] / units.fs
 
     trajectory_log = {"temperature": [], "kinetic_energy": [], "time": []}
