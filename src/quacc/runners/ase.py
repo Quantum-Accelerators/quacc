@@ -216,9 +216,9 @@ def run_opt(
 
     # Run optimization
     with traj, optimizer(atoms, **optimizer_kwargs) as dyn:
-        opt = dyn.irun(fmax=fmax, steps=max_steps, **run_kwargs)
-        for i, _ in enumerate(opt):
-            if store_intermediate_files:
+        if store_intermediate_files:
+            opt = dyn.irun(fmax=fmax, steps=max_steps, **run_kwargs)
+            for i, _ in enumerate(opt):
                 _copy_intermediate_files(
                     tmpdir,
                     i,
@@ -228,6 +228,8 @@ def run_opt(
                         optimizer_kwargs["logfile"],
                     ],
                 )
+        else:
+            dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
 
     # Store the trajectory atoms
     dyn.traj_atoms = read(traj_file, index=":")
