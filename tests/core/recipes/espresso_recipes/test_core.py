@@ -165,7 +165,7 @@ def test_static_job_dir_fail(tmp_path, monkeypatch):
 
     atoms = bulk("Si")
 
-    with pytest.raises(ValueError):
+    with pytest.raises(NotImplementedError):
         static_job(atoms, directory=Path("fake_path"))
 
 
