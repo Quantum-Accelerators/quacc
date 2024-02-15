@@ -48,7 +48,7 @@ def test_ase_relax_job(tmp_path, monkeypatch):
 
     keywords = {"pseudo_path": str(tmp_path)}
     pseudopotentials = {"H": "H.usp"}
-    opt_params = {"fmax": 5.0, "max_steps": 2, "optimizer": "LBFGS"}
+    opt_params = {"fmax": 5.0, "max_steps": 2, "optimizer": LBFGS}
     atoms = molecule("H2")
     atoms.set_cell([10, 10, 10])
     atoms.pbc = True
