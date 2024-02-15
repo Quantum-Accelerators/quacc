@@ -36,7 +36,7 @@ def test_relax_job(tmp_path, monkeypatch):
     output = relax_job(atoms)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] is False
-    assert output["results"]["energy"] == pytest.approx(-0.04543069081693929)
+    assert output["results"]["energy"] == pytest.approx(-0.045446842063617154)
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
     assert len(output["trajectory"]) == 30
     assert output["atoms"] != output["input_atoms"]["atoms"]

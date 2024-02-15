@@ -94,7 +94,7 @@ def test_relax_job_dispersion(tmp_path, monkeypatch):
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += 0.1
     output = relax_job(atoms, method="mace", dispersion=True)
-    assert output["results"]["energy"] == pytest.approx(-37.33948477096204)
+    assert output["results"]["energy"] == pytest.approx(-37.340311589504076)
     assert np.shape(output["results"]["forces"]) == (8, 3)
     assert output["atoms"] != atoms
     assert output["atoms"].get_volume() == pytest.approx(atoms.get_volume())
