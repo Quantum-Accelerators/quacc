@@ -131,7 +131,7 @@ def base_opt_fn(
 
     Returns
     -------
-    cclibSchema
+    cclibASEOptSchema
         Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][]
     """
     inputs = merge_list_params(default_inputs, input_swaps)
