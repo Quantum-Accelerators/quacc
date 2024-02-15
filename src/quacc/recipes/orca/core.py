@@ -206,7 +206,7 @@ def ase_relax_job(
     default_inputs = [xc, basis, "slowconv", "normalprint", "xyzfile", "engrad"]
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
-    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
+    opt_defaults = {"fmax": 0.01, "max_steps": 1000}
 
     return base_opt_fn(
         atoms,

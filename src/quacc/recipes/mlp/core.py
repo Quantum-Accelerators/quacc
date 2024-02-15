@@ -91,7 +91,7 @@ def relax_job(
         See the type-hint for the data structure.
     """
 
-    opt_defaults = {"fmax": 0.05, "max_steps": 1000, "optimizer": FIRE}
+    opt_defaults = {"fmax": 0.05, "max_steps": 1000}
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
     atoms.calc = pick_calculator(method, **calc_kwargs)
