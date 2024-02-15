@@ -6,11 +6,9 @@ from typing import TYPE_CHECKING
 
 from ase.calculators.dftb import Dftb
 
-from quacc import SETTINGS
 from quacc.runners.ase import run_calc
 from quacc.schemas.ase import summarize_run
 from quacc.utils.dicts import recursive_dict_merge
-from quacc.utils.files import check_logfile
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -60,15 +58,5 @@ def base_fn(
 
     atoms.calc = Dftb(**calc_flags)
     final_atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
-
-    if SETTINGS.CHECK_CONVERGENCE:
-        if check_logfile(LOG_FILE, "SCC is NOT converged"):
-            msg = f"SCC is not converged in {LOG_FILE}"
-            raise RuntimeError(msg)
-        if calc_flags.get("Driver_") == "GeometryOptimization" and not check_logfile(
-            LOG_FILE, "Geometry converged"
-        ):
-            msg = f"Geometry optimization did not complete in {LOG_FILE}"
-            raise RuntimeError(msg)
 
     return summarize_run(final_atoms, atoms, additional_fields=additional_fields)

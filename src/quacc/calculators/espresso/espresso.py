@@ -160,7 +160,7 @@ class EspressoTemplate(EspressoTemplate_):
         return None
 
     @staticmethod
-    def _test_run(parameters: dict[str, Any], directory: Path) -> dict[str, Any]:
+    def _test_run(parameters: dict[str, Any], directory: Path) -> None:
         """
         Almost all QE binaries will do a test run if a file named <prefix>.EXIT is
         present in the working directory. This function will create this file.
@@ -384,7 +384,7 @@ class Espresso(Espresso_):
         """
 
         if self.kwargs.get("directory"):
-            raise ValueError("quacc does not support the directory argument.")
+            raise NotImplementedError("quacc does not support the directory argument.")
 
         self.kwargs["input_data"] = Namelist(self.kwargs.get("input_data"))
         self.kwargs["input_data"].to_nested(binary=self._binary, **self.kwargs)
