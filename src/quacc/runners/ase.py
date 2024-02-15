@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sys
+from shutil import copy, copytree
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -132,6 +133,7 @@ def run_opt(
     max_steps: int = 500,
     optimizer: Optimizer = FIRE,
     optimizer_kwargs: OptimizerKwargs | None = None,
+    store_intermediate_files: bool = False,
     run_kwargs: dict[str, Any] | None = None,
     copy_files: str | Path | list[str | Path] | None = None,
 ) -> Optimizer:
@@ -159,6 +161,10 @@ def run_opt(
         Dictionary of kwargs for the optimizer. Takes all valid kwargs for ASE
         Optimizer classes. Refer to `_set_sella_kwargs` for Sella-related
         kwargs and how they are set.
+    store_intermediate_files
+        Whether to store the files generated at each intermediate step in the
+        optimization. If enabled, they will be stored in a directory named
+        `stepN` where `N` is the step number, starting at 0.
     run_kwargs
         Dictionary of kwargs for the run() method of the optimizer.
     copy_files
@@ -200,20 +206,31 @@ def run_opt(
         optimizer_kwargs.pop("restart", None)
 
     # Define the Trajectory object
-    traj_filename = tmpdir / "opt.traj"
-    traj = Trajectory(traj_filename, "w", atoms=atoms)
+    traj_file = tmpdir / "opt.traj"
+    traj = Trajectory(traj_file, "w", atoms=atoms)
     optimizer_kwargs["trajectory"] = traj
 
     # Set volume relaxation constraints, if relevant
     if relax_cell and atoms.pbc.any():
         atoms = FrechetCellFilter(atoms)
 
-    # Run calculation
+    # Run optimization
     with traj, optimizer(atoms, **optimizer_kwargs) as dyn:
-        dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
+        opt = dyn.irun(fmax=fmax, steps=max_steps, **run_kwargs)
+        for i, _ in enumerate(opt):
+            if store_intermediate_files:
+                _copy_intermediate_files(
+                    tmpdir,
+                    i,
+                    files_to_ignore=[
+                        traj_file,
+                        optimizer_kwargs["restart"],
+                        optimizer_kwargs["logfile"],
+                    ],
+                )
 
     # Store the trajectory atoms
-    dyn.traj_atoms = read(traj_filename, index=":")
+    dyn.traj_atoms = read(traj_file, index=":")
 
     # Perform cleanup operations
     calc_cleanup(get_final_atoms_from_dyn(dyn), tmpdir, job_results_dir)
@@ -300,3 +317,35 @@ def _set_sella_kwargs(atoms: Atoms, optimizer_kwargs: dict[str, Any]) -> None:
 
     if not atoms.pbc.any() and "internal" not in optimizer_kwargs:
         optimizer_kwargs["internal"] = True
+
+
+def _copy_intermediate_files(
+    tmpdir: Path, step_number: int, files_to_ignore: list[Path] | None = None
+) -> None:
+    """
+    Copy all files in the working directory to a subdirectory named `stepN` where `N`
+    is the step number. This is useful for storing intermediate files generated during
+    an ASE relaaxation.
+
+    Parameters
+    ----------
+    tmpdir
+        The working directory.
+    step_number
+        The step number.
+    files_to_ignore
+        A list of files to ignore when copying files to the subdirectory.
+
+    Returns
+    -------
+    None
+    """
+    files_to_ignore = files_to_ignore or []
+    store_path = tmpdir / f"step{step_number}"
+    store_path.mkdir()
+    for item in tmpdir.iterdir():
+        if not item.name.startswith("step") and item not in files_to_ignore:
+            if item.is_file():
+                copy(item, store_path)
+            elif item.is_dir():
+                copytree(item, store_path / item.name)
