@@ -40,10 +40,15 @@ def test_qchem_write_input_basic(tmp_path, monkeypatch, test_atoms):
     assert qcinp.as_dict() == ref_qcinp.as_dict()
     assert not Path(FILE_DIR / "53.0").exists()
 
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(
+        NotImplementedError, match="The directory kwarg is not supported"
+    ):
         QChem(test_atoms, directory="notsupported")
 
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(
+        NotImplementedError,
+        match="Do not specify `molecule` in `qchem_dict_set_params`F",
+    ):
         calc = QChem(
             test_atoms, job_type="freq", qchem_dict_set_params={"molecule": "test"}
         )

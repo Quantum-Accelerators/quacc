@@ -190,13 +190,21 @@ def test_errors():
     atoms.set_tags(None)
     atoms.center(vacuum=10, axis=2)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError,
+        match="Cannot specify both min_distance and find_ads_sites_kwargs['distance']",
+    ):
         make_adsorbate_structures(
             atoms, h2o, min_distance=1.0, find_ads_sites_kwargs={"distance": 1.0}
         )
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError,
+        match="Cannot specify both modes and find_ads_sites_kwargs['positions']",
+    ):
         make_adsorbate_structures(
             atoms, h2o, modes=["ontop"], find_ads_sites_kwargs={"positions": ["ontop"]}
         )
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match="All indices in allowed_surface_indices must be in atoms"
+    ):
         make_adsorbate_structures(atoms, h2o, allowed_surface_indices=[100])

@@ -139,7 +139,7 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
     dyn.run(steps=5)
     traj = read("test.traj", index=":")
 
-    with pytest.raises(RuntimeError):
+    with pytest.raises(RuntimeError, match="Optimization did not converge"):
         summarize_opt_run(dyn)
 
     # Make sure info tags are handled appropriately

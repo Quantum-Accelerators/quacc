@@ -79,7 +79,7 @@ def test_static_job_cu_kpts(tmp_path, monkeypatch):
 def test_static_errors(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    with pytest.raises(RuntimeError, match="SCC is not converged in dftb.out"):
+    with pytest.raises(RuntimeError, match="failed with command"):
         atoms = molecule("H2O")
         static_job(atoms, Hamiltonian_MaxSccIterations=1)
 
@@ -152,9 +152,7 @@ def test_relax_job_cu_supercell_cell_relax(tmp_path, monkeypatch):
 
 def test_relax_job_cu_supercell_errors(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    with pytest.raises(
-        RuntimeError, reason="Geometry optimization did not complete in dftb.out"
-    ):
+    with pytest.raises(RuntimeError, match="failed with command"):
         atoms = bulk("Cu") * (2, 1, 1)
         atoms[0].position += 0.5
         relax_job(atoms, kpts=(3, 3, 3), MaxSteps=1, Hamiltonian_MaxSccIterations=100)
@@ -162,10 +160,10 @@ def test_relax_job_cu_supercell_errors(tmp_path, monkeypatch):
 
 def test_child_errors(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    with pytest.raises(RuntimeError):
+    with pytest.raises(RuntimeError, match="failed with command"):
         atoms = bulk("Cu")
         static_job(atoms)
 
-    with pytest.raises(RuntimeError):
+    with pytest.raises(RuntimeError, match="failed with command"):
         atoms = bulk("Cu")
         relax_job(atoms)

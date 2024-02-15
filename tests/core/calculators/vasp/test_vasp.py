@@ -436,7 +436,7 @@ def test_lasph_aggressive():
 def test_vdw():
     atoms = bulk("Cu")
 
-    with pytest.raises(OSError):
+    with pytest.raises(OSError, match="VASP_VDW setting was not provided"):
         Vasp(atoms, xc="beef-vdw")
 
 
@@ -788,7 +788,9 @@ def test_constraints():
 
     atoms = bulk("Cu") * (2, 1, 1)
     atoms.set_constraint(FixBondLength(0, 1))
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match="Atoms object has a constraint that is not compatible"
+    ):
         calc = Vasp(atoms)
 
 
