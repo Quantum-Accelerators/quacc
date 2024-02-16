@@ -3,17 +3,16 @@ Core recipes for EMT.
 
 NOTE: This set of minimal recipes is mainly for demonstration purposes.
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
 from ase.calculators.emt import EMT
-from ase.optimize import FIRE
 
 from quacc import job
 from quacc.runners.ase import run_calc, run_opt
 from quacc.schemas.ase import summarize_opt_run, summarize_run
-from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
     from typing import Any
@@ -35,7 +34,7 @@ def static_job(atoms: Atoms, **calc_kwargs) -> RunSchema:
     **calc_kwargs
         Custom kwargs for the EMT calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.emt.EMT` calculator.
+        keys, refer to the [ase.calculators.emt.EMT][] calculator.
 
     Returns
     -------
@@ -72,7 +71,7 @@ def relax_job(
     **calc_kwargs
         Custom kwargs for the EMT calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.emt.EMT` calculator.
+        keys, refer to the [ase.calculators.emt.EMT][] calculator.
 
     Returns
     -------
@@ -80,11 +79,9 @@ def relax_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_opt_run][].
         See the type-hint for the data structure.
     """
-    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
-    opt_flags = recursive_dict_merge(opt_defaults, opt_params)
+    opt_params = opt_params or {}
 
     atoms.calc = EMT(**calc_kwargs)
-
-    dyn = run_opt(atoms, relax_cell=relax_cell, **opt_flags)
+    dyn = run_opt(atoms, relax_cell=relax_cell, **opt_params)
 
     return summarize_opt_run(dyn, additional_fields={"name": "EMT Relax"})

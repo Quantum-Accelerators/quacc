@@ -1,4 +1,5 @@
 """Parameter-related utilities for the Q-Chem calculator."""
+
 from __future__ import annotations
 
 import logging

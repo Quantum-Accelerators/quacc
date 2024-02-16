@@ -1,4 +1,5 @@
 """Utility functions for dealing with defects."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -19,7 +20,7 @@ except ImportError:
 if TYPE_CHECKING:
     from ase.atoms import Atoms
     from numpy.typing import NDArray
-    from pymatgen.core import Structure
+    from pymatgen.core.structure import Structure
 
     if has_deps:
         from pymatgen.analysis.defects.core import Defect

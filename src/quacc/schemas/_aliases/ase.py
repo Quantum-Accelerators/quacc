@@ -1,4 +1,5 @@
 """Aliases for type hinting `quacc.schemas.ase`"""
+
 from __future__ import annotations
 
 from typing import Any, TypedDict
@@ -13,7 +14,7 @@ parameters = dict[str, Any]  # from atoms.calc.parameters
 
 
 class RunSchema(AtomsSchema):
-    """Schema for `quacc.schemas.ase.summarize_run`"""
+    """Schema for [quacc.schemas.ase.summarize_run][]"""
 
     input_atoms: AtomsSchema | None
     nid: str
@@ -24,7 +25,7 @@ class RunSchema(AtomsSchema):
 
 
 class OptSchema(RunSchema):
-    """Schema for `quacc.schemas.ase.summarize_opt_run`"""
+    """Schema for [quacc.schemas.ase.summarize_opt_run][]"""
 
     fmax: float | None
     parameters_opt: dict[str, Any]  # from Optimizer.todict()
@@ -52,7 +53,7 @@ class VibResults(TypedDict):
 
 
 class VibSchema(AtomsSchema):
-    """Schema for `quacc.schemas.ase.summarize_vib_run`"""
+    """Schema for [quacc.schemas.ase.summarize_vib_run][]"""
 
     parameters: parameters | None
     parameters_vib: ParametersVib | None
@@ -60,7 +61,7 @@ class VibSchema(AtomsSchema):
 
 
 class PhononSchema(RunSchema):
-    """Schema for `quacc.schemas.ase.summarize_phonon_run`"""
+    """Schema for [quacc.schemas.phonons.summarize_phonopy][]"""
 
     force_constant: NDArray
 
@@ -89,4 +90,4 @@ class ThermoSchema(AtomsSchema):
 
 
 class VibThermoSchema(VibSchema, ThermoSchema):
-    """Schema for `quacc.schemas.ase.summarize_vib_and_thermo`"""
+    """Schema for [quacc.schemas.ase.summarize_vib_and_thermo][]"""

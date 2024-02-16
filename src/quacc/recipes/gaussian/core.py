@@ -1,4 +1,5 @@
 """Core recipes for Gaussian."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -46,7 +47,7 @@ def static_job(
     **calc_kwargs
         Custom kwargs for the Gaussian calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.gaussian.Gaussian` calculator.
+        keys, refer to the [ase.calculators.gaussian.Gaussian][] calculator.
 
     Returns
     -------
@@ -113,7 +114,7 @@ def relax_job(
     **calc_kwargs
         Custom kwargs for the Gaussian calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.gaussian.Gaussian` calculator.
+        keys, refer to the [ase.calculators.gaussian.Gaussian][] calculator.
 
     Returns
     -------

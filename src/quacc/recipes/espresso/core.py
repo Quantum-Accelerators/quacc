@@ -1,4 +1,5 @@
 """Core recipes for espresso."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -219,7 +220,7 @@ def ase_relax_job(
         }
     }
 
-    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": LBFGS}
+    opt_defaults = {"optimizer": LBFGS}
 
     return base_opt_fn(
         atoms,

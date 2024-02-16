@@ -1,4 +1,5 @@
 """Utility functions for interfacing with databases."""
+
 from __future__ import annotations
 
 import uuid

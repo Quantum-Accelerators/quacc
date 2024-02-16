@@ -1,4 +1,5 @@
 """Base jobs for espresso."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -50,7 +51,7 @@ def base_fn(
     calc_swaps
         Custom kwargs for the espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.espresso.Espresso` calculator.
+        keys, refer to the [ase.calculators.espresso.Espresso][] calculator.
     parallel_info
         Dictionary of parallelization information.
     additional_fields
@@ -115,7 +116,7 @@ def base_opt_fn(
     calc_swaps
         Custom kwargs for the espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.espresso.Espresso` calculator.
+        keys, refer to the [ase.calculators.espresso.Espresso][] calculator.
     opt_defaults
         The default optimization parameters.
     opt_params
@@ -180,7 +181,7 @@ def _prepare_atoms(
     calc_swaps
         Custom kwargs for the espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.espresso.Espresso` calculator.
+        keys, refer to the [ase.calculators.espresso.Espresso][] calculator.
     parallel_info
         Dictionary of parallelization information.
 

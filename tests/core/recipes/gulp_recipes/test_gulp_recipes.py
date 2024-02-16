@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from ase.build import bulk, molecule
 
@@ -141,7 +142,7 @@ def test_envvars(tmp_path, monkeypatch):
 
     atoms = molecule("H2O")
 
-    SETTINGS.GULP_LIB = "/path/to/lib"
+    SETTINGS.GULP_LIB = str(Path("/path/to/lib"))
     assert static_job(atoms)
-    assert os.environ.get("GULP_LIB") == "/path/to/lib"
+    assert os.environ.get("GULP_LIB") == str(Path("/path/to/lib"))
     SETTINGS.GULP_LIB = DEFAULT_SETTINGS.GULP_LIB

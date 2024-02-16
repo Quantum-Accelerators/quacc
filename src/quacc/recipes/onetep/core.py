@@ -1,4 +1,5 @@
 """Core recipes for Onetep."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -42,7 +43,7 @@ def static_job(
     **calc_kwargs
         Custom kwargs for the ONETEP calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.onetep.Onetep` calculator.
+        keys, refer to the [ase.calculators.onetep.Onetep][] calculator.
 
     Returns
     -------
@@ -108,7 +109,7 @@ def ase_relax_job(
         {"keywords": {"write_forces": True, "forces_output_detail": "verbose"}},
     )
 
-    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": LBFGS}
+    opt_defaults = {"optimizer": LBFGS}
 
     return base_opt_fn(
         atoms,

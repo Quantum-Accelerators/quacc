@@ -1,9 +1,9 @@
 """Core recipes for the tblite code."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ase.optimize import FIRE
 from monty.dev import requires
 
 from quacc import job
@@ -100,14 +100,11 @@ def relax_job(
         See the type-hint for the data structure.
     """
 
-    defaults = {"method": method}
-    calc_flags = recursive_dict_merge(defaults, calc_kwargs)
+    opt_params = opt_params or {}
+    calc_defaults = {"method": method}
+    calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
     atoms.calc = TBLite(**calc_flags)
-
-    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
-    opt_flags = recursive_dict_merge(opt_defaults, opt_params)
-
-    dyn = run_opt(atoms, relax_cell=relax_cell, **opt_flags)
+    dyn = run_opt(atoms, relax_cell=relax_cell, **opt_params)
 
     return summarize_opt_run(dyn, additional_fields={"name": "TBLite Relax"})
 
@@ -153,8 +150,8 @@ def freq_job(
     """
     vib_kwargs = vib_kwargs or {}
 
-    defaults = {"method": method}
-    calc_flags = recursive_dict_merge(defaults, calc_kwargs)
+    calc_defaults = {"method": method}
+    calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
     atoms.calc = TBLite(**calc_flags)
 
     vibrations = run_vib(atoms, vib_kwargs=vib_kwargs)

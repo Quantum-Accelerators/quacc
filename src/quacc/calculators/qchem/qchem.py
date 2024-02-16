@@ -1,4 +1,5 @@
 """A Q-Chem calculator built on Pymatgen and Custodian functionality."""
+
 from __future__ import annotations
 
 import inspect
@@ -19,6 +20,10 @@ if TYPE_CHECKING:
     from numpy.typing import NDArray
 
     class Results(TypedDict, total=False):
+        """
+        Type hint for the `results` attribute in [quacc.calculators.qchem.qchem.QChem][].
+        """
+
         energy: float  # electronic energy in eV
         forces: NDArray  # forces in eV/A
         hessian: NDArray  # Hessian in eV/A^2/amu
@@ -198,7 +203,7 @@ class QChem(FileIOCalculator):
             default to 6 if not specified in `qchem_dict_set_params`.
         **fileiocalculator_kwargs
             Additional arguments to be passed to
-            `ase.calculators.calculator.FileIOCalculator`.
+            [ase.calculators.calculator.FileIOCalculator][].
 
         Returns
         -------

@@ -1,4 +1,5 @@
 """Core recipes for VASP."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -39,7 +40,7 @@ def base_fn(
     calc_swaps
         Dictionary of custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to `ase.calculators.vasp.vasp.Vasp`.
+        keys, refer to [ase.calculators.vasp.vasp.Vasp][].
     additional_fields
         Additional fields to supply to the summarizer.
     copy_files

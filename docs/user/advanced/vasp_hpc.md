@@ -59,6 +59,8 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
 
 === "Parsl"
 
+    Let's consider a scenario where we want to run concurrent VASP jobs that each run on a full CPU node of 128 cores. We will run two concurrent VASP jobs in a single Slurm allocation.
+
     From an interactive resource like a Jupyter Notebook or IPython kernel from the login node on the remote machine:
 
     ```python
@@ -69,30 +71,33 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     from parsl.providers import SlurmProvider
 
     account = "MyAccountName"
-    max_slurm_jobs = 1
-    n_calcs_per_job = 2
-    n_nodes_per_calc = 1
-    n_cores_per_node = 128
+
+    concurrent_jobs = 2
+    nodes_per_job = 1
+    cores_per_node = 128
+    vasp_parallel_cmd = f"srun -N {nodes_per_job} --ntasks-per-node={cores_per_node} --cpu_bind=cores"
+    min_slurm_allocations = 0
+    max_slurm_allocations = 1
 
     config = Config(
         strategy="htex_auto_scale",
         executors=[
             HighThroughputExecutor(
                 label="quacc_parsl",
-                max_workers=n_calcs_per_job,
+                max_workers=concurrent_jobs,
                 cores_per_worker=1e-6,
                 provider=SlurmProvider(
                     account=account,
                     qos="debug",
                     constraint="cpu",
-                    worker_init=f"source ~/.bashrc && conda activate quacc && module load vasp/6.4.1-cpu && export QUACC_VASP_PARALLEL_CMD='srun -N {n_nodes_per_calc} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'",
+                    worker_init=f"source ~/.bashrc && conda activate quacc && module load vasp/6.4.1-cpu && export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}",
                     walltime="00:10:00",
-                    nodes_per_block=n_nodes_per_calc * n_calcs_per_job,
+                    nodes_per_block=concurrent_jobs * nodes_per_job,
                     init_blocks=0,
-                    min_blocks=0,
-                    max_blocks=max_slurm_jobs,
+                    min_blocks=min_slurm_allocations,
+                    max_blocks=max_slurm_allocations,
                     launcher=SimpleLauncher(),
-                    cmd_timeout=120,
+                    cmd_timeout=60,
                 ),
             )
         ],

@@ -1,4 +1,5 @@
 """Workflow decorators."""
+
 from __future__ import annotations
 
 from functools import partial, wraps

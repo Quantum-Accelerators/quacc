@@ -1,4 +1,5 @@
 """Utilities for k-point handling."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -14,6 +15,10 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     class PmgKpts(TypedDict, total=False):
+        """
+        Type hint for `pmg_kpts` in [quacc.utils.kpts.convert_pmg_kpts][].
+        """
+
         line_density: float
         kppvol: float
         kppa: float

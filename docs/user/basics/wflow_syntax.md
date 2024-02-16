@@ -47,7 +47,7 @@ graph LR
         return output2
 
 
-    dispatch_id = ct.dispatch(workflow)(1, 2, 3)   #  (3)!
+    dispatch_id = ct.dispatch(workflow)(1, 2, 3)  #  (3)!
     result = ct.get_result(dispatch_id, wait=True)  #  (4)!
     print(result)  # 9
     ```
@@ -226,6 +226,7 @@ graph LR
     ```python
     from quacc import flow, job
 
+
     @job  #  (1)!
     def add(a, b):
         return a + b
@@ -283,7 +284,7 @@ graph LR
     flow = jf.Flow([job1, job2])  #  (2)!
 
     responses = jf.run_locally(flow)  #  (3)!
-    result = responses[job2.uuid][1].output   #  (4)!
+    result = responses[job2.uuid][1].output  #  (4)!
     print(result)  # 9
     ```
 

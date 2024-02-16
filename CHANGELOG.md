@@ -4,11 +4,38 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.7]
+
+### Added
+
+- Added a `store_intermediate_files` keyword option to `quacc.runners.ase.run_opt()` to allow for storing of the logfiles in intermediate geometry optimization steps.
+
+### Changed
+
+- Changed the default ASE optimizer from `FIRE` to `BFGS` for most recipes
+
+## [0.6.6]
+
+### Fixed
+
+- Using environment variables to set a setting to `None` now works as expected
+- Overall, more intuitive and robust handling of settings across the various input methods
+
 ## [0.6.5]
 
 ### Added
 
 - PDOS jobs and flows for Espresso
+
+### Changed
+
+- Modified the Espresso results schema to be DB-compatible
+- The `PRIMARY_STORE` setting has changed to `STORE` and is now formatted more intuitively
+- Uses 2024 stable release of `black`
+
+### Fixed
+
+- Fixed usage of `MontyStore` as the data store option
 
 ### Removed
 

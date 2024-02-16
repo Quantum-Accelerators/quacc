@@ -437,7 +437,7 @@ def test_lasph_aggressive():
 def test_vdw():
     atoms = bulk("Cu")
 
-    with pytest.raises(OSError):
+    with pytest.raises(OSError, match="VASP_VDW setting was not provided"):
         Vasp(atoms, xc="beef-vdw")
 
 
@@ -794,19 +794,21 @@ def test_constraints():
 
     atoms = bulk("Cu") * (2, 1, 1)
     atoms.set_constraint(FixBondLength(0, 1))
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match="Atoms object has a constraint that is not compatible"
+    ):
         calc = Vasp(atoms)
 
 
 def test_envvars():
     DEFAULT_SETTINGS = SETTINGS.model_copy()
-    SETTINGS.VASP_PP_PATH = "/path/to/pseudos"
-    SETTINGS.VASP_VDW = "/path/to/kernel"
+    SETTINGS.VASP_PP_PATH = str(Path("/path/to/pseudos"))
+    SETTINGS.VASP_VDW = str(Path("/path/to/kernel"))
 
     atoms = bulk("Cu")
     atoms.calc = Vasp(atoms, xc="beef-vdw")
-    assert os.environ.get("VASP_PP_PATH") == "/path/to/pseudos"
-    assert os.environ.get("ASE_VASP_VDW") == "/path/to/kernel"
+    assert os.environ.get("VASP_PP_PATH") == str(Path("/path/to/pseudos"))
+    assert os.environ.get("ASE_VASP_VDW") == str(Path("/path/to/kernel"))
 
     SETTINGS.VASP_PP_PATH = DEFAULT_SETTINGS.VASP_PP_PATH
     SETTINGS.VASP_VDW = DEFAULT_SETTINGS.VASP_VDW

@@ -66,7 +66,7 @@ def test_phonon_grid_single(tmp_path, monkeypatch):
     ]
 
     for key in sections:
-        assert key in grid_results["results"][(0.1, 0, 0)]
+        assert key in grid_results["results"][1]
 
 
 def test_phonon_grid_single_gamma(tmp_path, monkeypatch):
@@ -108,7 +108,7 @@ def test_phonon_grid_single_gamma(tmp_path, monkeypatch):
     ]
 
     for key in sections:
-        assert key in grid_results["results"][(0, 0, 0)]
+        assert key in grid_results["results"][1]
 
 
 def test_phonon_grid_qplot(tmp_path, monkeypatch):
@@ -151,8 +151,8 @@ def test_phonon_grid_qplot(tmp_path, monkeypatch):
     ]
 
     for key in sections:
-        assert key in grid_results["results"][(0.1, 0, 0)]
-        assert key in grid_results["results"][(0.2, 0, 0)]
+        assert key in grid_results["results"][1]
+        assert key in grid_results["results"][2]
 
 
 def test_phonon_grid_disp(tmp_path, monkeypatch):
@@ -203,7 +203,7 @@ def test_phonon_grid_disp(tmp_path, monkeypatch):
     ]
 
     for key in sections:
-        assert key in grid_results["results"][(0, 0, 0)]
+        assert key in grid_results["results"][1]
 
 
 def test_phonon_grid_v2(tmp_path, monkeypatch):
@@ -244,4 +244,4 @@ def test_phonon_grid_v2(tmp_path, monkeypatch):
     ]
 
     for key in sections:
-        assert key in grid_results["results"][(0, 0, 0)]
+        assert key in grid_results["results"][1]

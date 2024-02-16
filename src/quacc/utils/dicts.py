@@ -1,4 +1,5 @@
 """Utility functions for dealing with dictionaries."""
+
 from __future__ import annotations
 
 from collections.abc import MutableMapping
@@ -135,7 +136,7 @@ def remove_dict_entries(
         Cleaned dictionary
     """
 
-    if isinstance(start_dict, dict):
+    if isinstance(start_dict, MutableMapping):
         return {
             k: remove_dict_entries(v, remove_trigger)
             for k, v in start_dict.items()
@@ -164,7 +165,7 @@ def sort_dict(start_dict: dict[str, Any]) -> dict[str, Any]:
     """
 
     return {
-        k: sort_dict(v) if isinstance(v, dict) else v
+        k: sort_dict(v) if isinstance(v, MutableMapping) else v
         for k, v in sorted(start_dict.items())
     }
 
