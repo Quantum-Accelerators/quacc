@@ -88,8 +88,6 @@ def ts_job(
         "hess_method": "autograd",
     }
     opt_defaults = {
-        "fmax": 0.01,
-        "max_steps": 1000,
         "optimizer": Sella,
         "optimizer_kwargs": (
             {"diag_every_n": 0, "order": 1} if use_custom_hessian else {"order": 1}
@@ -171,8 +169,6 @@ def irc_job(
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
     }
     opt_defaults = {
-        "fmax": 0.01,
-        "max_steps": 1000,
         "optimizer": IRC,
         "optimizer_kwargs": {"dx": 0.1, "eta": 1e-4, "gamma": 0.4, "keep_going": True},
         "run_kwargs": {"direction": direction},
