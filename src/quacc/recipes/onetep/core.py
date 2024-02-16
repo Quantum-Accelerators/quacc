@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ase.optimize import LBFGS
-
 from quacc import job
 from quacc.recipes.onetep._base import base_fn, base_opt_fn
+from ase.optimize import LBFGS
+
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:

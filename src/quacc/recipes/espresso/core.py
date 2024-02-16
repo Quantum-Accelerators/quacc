@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from ase.optimize import LBFGS
-
 from typing import TYPE_CHECKING
+
+from ase.optimize import LBFGS
 
 from quacc import job
 from quacc.calculators.espresso.espresso import EspressoTemplate
