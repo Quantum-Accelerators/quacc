@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import psutil
-from ase.optimize import FIRE
 
 from quacc import job
 from quacc.recipes.orca._base import base_fn, base_opt_fn
