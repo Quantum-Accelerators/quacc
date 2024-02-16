@@ -133,7 +133,7 @@ def test_espresso_presets_gamma():
 
 
 def test_espresso_bad_kpts():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Cannot specify both kpts and kspacing"):
         Espresso(kpts=(1, 1, 1), kspacing=0.5)
 
 
@@ -151,13 +151,13 @@ def test_output_handler(tmp_path, monkeypatch):
 
     test_path = "../test3/test2/test1"
     fake_template = EspressoTemplate()
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="because it is not a subpath"):
         new_parameters = fake_template._output_handler(parameters, Path())
 
     test_path = "/test3/test2/test1"
     parameters["input_data"]["system"]["outdir"] = test_path
     fake_template = EspressoTemplate()
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="because it is not a subpath"):
         new_parameters = fake_template._output_handler(parameters, Path())
 
     test_path = Path("test3/test2/test1")
@@ -174,5 +174,5 @@ def test_output_handler(tmp_path, monkeypatch):
 def test_bad_calculator_params():
     atoms = Atoms(symbols="LiLaOZr")
 
-    with pytest.raises(ValueError):
+    with pytest.raises(NotImplementedError, match="does not support the directory"):
         Espresso(input_atoms=atoms, kpts=(1, 1, 1), directory="bad")

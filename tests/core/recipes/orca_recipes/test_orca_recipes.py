@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 import pytest
 from ase.build import molecule
@@ -127,3 +128,14 @@ def test_ase_relax_job(tmp_path, monkeypatch):
     assert output.get("trajectory")
     assert output.get("trajectory_results")
     assert output.get("attributes")
+
+
+def test_ase_relax_job_store(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    atoms = molecule("H2O")
+    output = ase_relax_job(atoms, opt_params={"store_intermediate_files": True})
+    nsteps = len(output["trajectory"])
+    for i in range(nsteps):
+        assert f"step{i}" in os.listdir(output["dir_name"])
+        assert "orca.xyz.gz" in os.listdir(Path(output["dir_name"], f"step{i}"))

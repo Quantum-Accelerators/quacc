@@ -45,12 +45,12 @@ def md_job(
         Dictionary of custom kwargs for the initial temperature distribution. Set a value
         to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to [ase.md.velocitydistribution.MaxwellBoltzmannDistribution][].
-        Quacc has two additional parameters `fixcm` and `fixrot` to fix the center of mass
+        Quacc has two additional parameters `fix_com` and `fix_rot` to fix the center of mass
         and rotation, respectively when setting the initial temperature. The default is
         `{"temperature": None, "fix_com": True, "fix_rot": True}`. If `temperature` is set to
         `None`, the initial temperature will not be set. For an improved chance of
         success when performing a microcanonical ensemble calculation, the initial
-        temperature should be set to a value twice the target temperature.
+        temperature (units of K) should be set to a value twice the target temperature.
     md_params
         Dictionary of custom kwargs for the optimization process. Set a value
         to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -76,16 +76,16 @@ def md_job(
     )
 
     initial_temperature = maxwell_boltzmann_params.pop("temperature", None)
-    fixcm = maxwell_boltzmann_params.pop("fix_com", False)
-    fixrot = maxwell_boltzmann_params.pop("fix_rot", False)
+    fix_com = maxwell_boltzmann_params.pop("fix_com", False)
+    fix_rot = maxwell_boltzmann_params.pop("fix_rot", False)
 
     if initial_temperature:
         MaxwellBoltzmannDistribution(
             atoms, temperature_K=initial_temperature, **maxwell_boltzmann_params
         )
-        if fixcm:
+        if fix_com:
             Stationary(atoms)
-        if fixrot:
+        if fix_rot:
             ZeroRotation(atoms)
 
     md_flags = recursive_dict_merge(md_defaults, md_params)
