@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
-
-from ase.optimize import FIRE
 from ase.vibrations.data import VibrationsData
 from monty.dev import requires
 
