@@ -268,7 +268,7 @@ def run_md(
     steps
         Maximum number of steps to run
     dynamics
-        MolecularDynamics class [ase.md.md.MolecularDynamics][] to use.
+        MolecularDynamics class to use, from [ase.md.md.MolecularDynamics][].
     dynamics_kwargs
         Dictionary of kwargs for the dynamics. Takes all valid kwargs for ASE
         MolecularDynamics classes.
