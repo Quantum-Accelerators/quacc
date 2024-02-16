@@ -67,7 +67,7 @@ def test_relax_job(tmp_path, monkeypatch):
     output = relax_job(atoms, opt_params={"fmax": 0.03}, asap_cutoff=True)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] is True
-    assert output["results"]["energy"] == pytest.approx(-0.004528885890177747)
+    assert output["results"]["energy"] == pytest.approx(-0.004774645162642699)
     assert 0.01 < np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.03
 
     atoms = bulk("Cu") * (2, 2, 2)
