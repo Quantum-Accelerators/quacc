@@ -119,7 +119,7 @@ def relax_job(
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
     }
-    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella or FIRE}
+    opt_defaults = {"optimizer": Sella} if Sella else {}
 
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)

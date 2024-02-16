@@ -104,11 +104,7 @@ def relax_job(
     defaults = {"method": method}
     calc_flags = recursive_dict_merge(defaults, calc_kwargs)
     atoms.calc = TBLite(**calc_flags)
-
-    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
-    opt_flags = recursive_dict_merge(opt_defaults, opt_params)
-
-    dyn = run_opt(atoms, relax_cell=relax_cell, **opt_flags)
+    dyn = run_opt(atoms, relax_cell=relax_cell, **opt_params)
 
     return summarize_opt_run(dyn, additional_fields={"name": "TBLite Relax"})
 

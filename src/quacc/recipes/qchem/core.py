@@ -142,11 +142,7 @@ def relax_job(
     calc_defaults = recursive_dict_merge(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
-    opt_defaults = {
-        "fmax": 0.01,
-        "max_steps": 1000,
-        "optimizer": Sella if has_sella else FIRE,
-    }
+    opt_defaults = {"optimizer": Sella} if has_sella else {}
 
     return base_opt_fn(
         atoms,
