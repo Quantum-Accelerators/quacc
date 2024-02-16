@@ -131,7 +131,7 @@ def run_opt(
     relax_cell: bool = False,
     fmax: float = 0.01,
     max_steps: int = 500,
-    optimizer: Optimizer = LBFGS,
+    optimizer: Optimizer = BFGS,
     optimizer_kwargs: OptimizerKwargs | None = None,
     store_intermediate_files: bool = False,
     run_kwargs: dict[str, Any] | None = None,
