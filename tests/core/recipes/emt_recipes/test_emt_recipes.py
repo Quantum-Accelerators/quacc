@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 from ase.build import bulk, molecule
 from ase.constraints import FixAtoms
+from ase.optimize import FIRE
 
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
@@ -74,7 +75,9 @@ def test_relax_job(tmp_path, monkeypatch):
     atoms[0].position += [0.1, 0.1, 0.1]
     c = FixAtoms(indices=[0, 1])
     atoms.set_constraint(c)
-    output = relax_job(atoms, opt_params={"fmax": 0.03}, asap_cutoff=True)
+    output = relax_job(
+        atoms, opt_params={"fmax": 0.03, "optimizer": FIRE}, asap_cutoff=True
+    )
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] is True
     assert output["results"]["energy"] == pytest.approx(0.04996032884581858)
