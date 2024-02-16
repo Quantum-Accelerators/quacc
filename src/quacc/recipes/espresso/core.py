@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from ase.optimize import LBFGS
+
 from typing import TYPE_CHECKING
 
 from quacc import job
