@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from ase.optimize import LBFGS
+
 from quacc import job
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.recipes.espresso._base import base_fn, base_opt_fn
@@ -218,7 +220,7 @@ def ase_relax_job(
         }
     }
 
-    opt_defaults = {"fmax": 0.01, "max_steps": 1000}
+    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": LBFGS}
 
     return base_opt_fn(
         atoms,

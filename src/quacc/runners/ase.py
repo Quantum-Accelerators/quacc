@@ -130,7 +130,7 @@ def run_opt(
     atoms: Atoms,
     relax_cell: bool = False,
     fmax: float = 0.01,
-    max_steps: int = 500,
+    max_steps: int = 1000,
     optimizer: Optimizer = BFGS,
     optimizer_kwargs: OptimizerKwargs | None = None,
     store_intermediate_files: bool = False,
