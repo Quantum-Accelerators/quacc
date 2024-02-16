@@ -8,5 +8,5 @@ numpy==1.26.3
 psutil==5.9.8
 pydantic==2.6.1
 pydantic-settings==2.1.0
-pymatgen==2024.2.8
+git+https://github.com/materialsproject/pymatgen.git
 typer[all]==0.9.0
