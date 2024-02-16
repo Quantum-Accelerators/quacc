@@ -50,7 +50,7 @@ def microcanonical_job(
         `{"temperature": None, "fix_com": True, "fix_rot": True}`. If `temperature` is set to
         `None`, the initial temperature will not be set. For an improved chance of
         success when performing a microcanonical ensemble calculation, the initial
-        temperature should be set to a value twice the target temperature.
+        temperature (units of K) should be set to a value twice the target temperature.
     md_params
         Dictionary of custom kwargs for the optimization process. Set a value
         to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
