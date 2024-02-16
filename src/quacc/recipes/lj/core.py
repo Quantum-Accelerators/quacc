@@ -79,6 +79,7 @@ def relax_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
+    opt_params = opt_params or {}
 
     atoms.calc = LennardJones(**calc_kwargs)
     dyn = run_opt(atoms, **opt_params)

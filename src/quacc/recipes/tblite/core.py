@@ -101,8 +101,9 @@ def relax_job(
         See the type-hint for the data structure.
     """
 
-    defaults = {"method": method}
-    calc_flags = recursive_dict_merge(defaults, calc_kwargs)
+    opt_params = opt_params or {}
+    calc_defaults = {"method": method}
+    calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
     atoms.calc = TBLite(**calc_flags)
     dyn = run_opt(atoms, relax_cell=relax_cell, **opt_params)
 
@@ -150,8 +151,8 @@ def freq_job(
     """
     vib_kwargs = vib_kwargs or {}
 
-    defaults = {"method": method}
-    calc_flags = recursive_dict_merge(defaults, calc_kwargs)
+    calc_defaults = {"method": method}
+    calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
     atoms.calc = TBLite(**calc_flags)
 
     vibrations = run_vib(atoms, vib_kwargs=vib_kwargs)
