@@ -14,7 +14,6 @@ from quacc import job
 from quacc.runners.ase import run_calc, run_opt, run_vib
 from quacc.runners.thermo import run_ideal_gas
 from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
-from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
     from typing import Any
@@ -78,11 +77,10 @@ def relax_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    opt_defaults = {"fmax": 0.01, "max_steps": 1000}
-    opt_flags = recursive_dict_merge(opt_defaults, opt_params)
+    opt_params = opt_params or {}
 
     atoms.calc = LennardJones(**calc_kwargs)
-    dyn = run_opt(atoms, **opt_flags)
+    dyn = run_opt(atoms, **opt_params)
 
     return summarize_opt_run(dyn, additional_fields={"name": "LJ Relax"})
 

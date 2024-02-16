@@ -205,8 +205,6 @@ def ase_relax_job(
     default_inputs = [xc, basis, "slowconv", "normalprint", "xyzfile", "engrad"]
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
-    opt_defaults = {"fmax": 0.01, "max_steps": 1000}
-
     return base_opt_fn(
         atoms,
         charge=charge,
@@ -215,7 +213,6 @@ def ase_relax_job(
         default_blocks=default_blocks,
         input_swaps=orcasimpleinput,
         block_swaps=orcablocks,
-        opt_defaults=opt_defaults,
         opt_params=opt_params,
         additional_fields={"name": "ORCA ASE Relax"},
         copy_files=copy_files,

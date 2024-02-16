@@ -75,12 +75,7 @@ def ts_job(
     calc_defaults = recursive_dict_merge(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
-    opt_defaults = {
-        "fmax": 0.01,
-        "max_steps": 1000,
-        "optimizer": Sella,
-        "optimizer_kwargs": {"order": 1},
-    }
+    opt_defaults = {"optimizer": Sella, "optimizer_kwargs": {"order": 1}}
 
     if opt_params and opt_params.get("optimizer", Sella) is not Sella:
         raise ValueError("Only Sella should be used for TS optimization.")
@@ -150,8 +145,6 @@ def irc_job(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
     opt_defaults = {
-        "fmax": 0.01,
-        "max_steps": 1000,
         "optimizer": IRC,
         "optimizer_kwargs": {"keep_going": True},
         "run_kwargs": {"direction": direction},
