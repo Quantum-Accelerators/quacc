@@ -1,14 +1,15 @@
+from __future__ import annotations
+
 import numpy as np
 import pytest
 from ase.build import bulk, molecule
-from ase.calculators.emt import EMT
 from ase.constraints import FixAtoms
+from ase.md.npt import NPT
+from ase.units import fs
 
 from quacc.recipes.emt.core import relax_job, static_job
-from quacc.recipes.emt.md import microcanonical_job
+from quacc.recipes.emt.md import md_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
-from quacc.runners.ase import run_md
-from quacc.schemas.ase import summarize_md_run
 
 
 def test_static_job(tmp_path, monkeypatch):
@@ -89,7 +90,7 @@ def test_md_jobs(tmp_path, monkeypatch):
 
     atoms = molecule("H2O")
     old_positions = atoms.positions.copy()
-    output = microcanonical_job(atoms)
+    output = md_job(atoms)
 
     assert output["parameters"]["asap_cutoff"] is False
     assert len(output["trajectory"]) == 501
@@ -106,7 +107,7 @@ def test_md_jobs(tmp_path, monkeypatch):
 
     rng = np.random.default_rng(seed=42)
 
-    output = microcanonical_job(
+    output = md_job(
         atoms,
         maxwell_boltzmann_params={"temperature": 1000, "rng": rng},
         md_params={"timestep": 0.5, "steps": 20},
@@ -123,22 +124,22 @@ def test_md_jobs(tmp_path, monkeypatch):
     assert atoms.positions == pytest.approx(old_positions)
 
     with pytest.raises(ValueError, match="Quacc does not support"):
-        output = microcanonical_job(
-            atoms, md_params={"dynamics_kwargs": {"trajectory": "md.traj"}}
-        )
+        output = md_job(atoms, md_params={"dynamics_kwargs": {"trajectory": "md.traj"}})
 
+    atoms = molecule("H2O", vacuum=10.0)
+    old_positions = atoms.positions.copy()
+    output = md_job(
+        atoms,
+        md_params={
+            "timestep": 1.0,
+            "dynamics": NPT,
+            "dynamics_kwargs": {"temperature": 1000, "ttime": 50 * fs},
+        },
+    )
 
-def test_md_converged(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
-    atoms = molecule("H2O")
-    atoms.calc = EMT()
-
-    dyn = run_md(atoms)
-    dyn.nsteps = 400
-
-    with pytest.raises(RuntimeError, match="Dynamics did not converge"):
-        summarize_md_run(dyn)
+    assert output["parameters"]["asap_cutoff"] is False
+    assert len(output["trajectory"]) == 500
+    assert output["name"] == "EMT Microcanonical"
 
 
 def test_slab_dynamic_jobs(tmp_path, monkeypatch):

@@ -28,14 +28,14 @@ if TYPE_CHECKING:
 
 
 @job
-def microcanonical_job(
+def md_job(
     atoms: Atoms,
     maxwell_boltzmann_params: dict[str, Any] | None = None,
     md_params: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> DynSchema:
     """
-    Carry out a microcanonical ensemble calculation.
+    Carry out a md calculation.
 
     Parameters
     ----------
@@ -75,13 +75,13 @@ def microcanonical_job(
         maxwell_boltzmann_defaults, maxwell_boltzmann_params
     )
 
-    temperature = maxwell_boltzmann_params.pop("temperature", None)
+    initial_temperature = maxwell_boltzmann_params.pop("temperature", None)
     fixcm = maxwell_boltzmann_params.pop("fix_com", False)
     fixrot = maxwell_boltzmann_params.pop("fix_rot", False)
 
-    if temperature:
+    if initial_temperature:
         MaxwellBoltzmannDistribution(
-            atoms, temperature_K=temperature, **maxwell_boltzmann_params
+            atoms, temperature_K=initial_temperature, **maxwell_boltzmann_params
         )
         if fixcm:
             Stationary(atoms)

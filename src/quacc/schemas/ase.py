@@ -22,8 +22,8 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
     from ase.io import Trajectory
-    from ase.optimize.optimize import Optimizer
     from ase.md.md import MolecularDynamics
+    from ase.optimize.optimize import Optimizer
     from ase.thermochemistry import IdealGasThermo
     from ase.vibrations import Vibrations
     from maggma.core import Store
@@ -230,7 +230,6 @@ def summarize_opt_run(
 def summarize_md_run(
     dyn: MolecularDynamics,
     trajectory: Trajectory | list[Atoms] = None,
-    check_convergence: bool | None = None,
     charge_and_multiplicity: tuple[int, int] | None = None,
     move_magmoms: bool = True,
     additional_fields: dict[str, Any] | None = None,
@@ -247,9 +246,6 @@ def summarize_md_run(
     trajectory
         ASE Trajectory object or list[Atoms] from reading a trajectory file. If
         None, the trajectory must be found in dyn.traj_atoms.
-    check_convergence
-        Whether to check the convergence of the calculation. Defaults to True in
-        settings. For MD this is restricted to the number of steps.
     charge_and_multiplicity
         Charge and spin multiplicity of the Atoms object, only used for Molecule
         metadata.
@@ -268,9 +264,6 @@ def summarize_md_run(
         Dictionary representation of the task document
     """
 
-    check_convergence = (
-        SETTINGS.CHECK_CONVERGENCE if check_convergence is None else check_convergence
-    )
     additional_fields = additional_fields or {}
     store = SETTINGS.STORE if store is None else store
 
@@ -284,13 +277,6 @@ def summarize_md_run(
 
     initial_atoms = trajectory[0]
     final_atoms = get_final_atoms_from_dyn(dyn)
-    directory = final_atoms.calc.directory
-
-    # Check convergence
-    is_converged = dyn.converged()
-    if check_convergence and not is_converged:
-        msg = f"MolecularDynamics did not converge. Refer to {directory}"
-        raise RuntimeError(msg)
 
     # Base task doc
     base_task_doc = summarize_run(

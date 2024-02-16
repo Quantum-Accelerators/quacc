@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sys
+import logging
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -19,6 +20,8 @@ from quacc import SETTINGS
 from quacc.atoms.core import copy_atoms, get_final_atoms_from_dyn
 from quacc.runners.prep import calc_cleanup, calc_setup
 from quacc.utils.dicts import recursive_dict_merge
+
+LOGGER = logging.getLogger(__name__)
 
 try:
     from sella import Sella
@@ -229,7 +232,7 @@ def run_md(
     timestep: float = 1.0,
     steps: int = 500,
     dynamics: MolecularDynamics = VelocityVerlet,
-    dynamics_kwargs: OptimizerKwargs | None = None,
+    dynamics_kwargs: dict[str, Any] | None = None,
     copy_files: str | Path | list[str | Path] | None = None,
 ) -> MolecularDynamics:
     """
@@ -277,6 +280,36 @@ def run_md(
     if "trajectory" in dynamics_kwargs:
         msg = "Quacc does not support setting the `trajectory` kwarg."
         raise ValueError(msg)
+
+    if "temperature" in dynamics_kwargs or "temp" in dynamics_kwargs:
+        LOGGER.warning(
+            "The `temperature`\`temp` kwargs are ASE deprecated and will"
+            "be interpreted as `temperature_K` in Quacc."
+        )
+        dynamics_kwargs["temperature_K"] = dynamics_kwargs.pop(
+            "temperature", None
+        ) or dynamics_kwargs.pop("temp", None)
+
+    if "pressure" in dynamics_kwargs:
+        LOGGER.warning(
+            "The `pressure` kwarg is ASE deprecated and will"
+            "be interpreted as `pressure_au` in Quacc."
+        )
+        dynamics_kwargs["pressure_au"] = dynamics_kwargs.pop("pressure")
+
+    if "compressibility" in dynamics_kwargs:
+        LOGGER.warning(
+            "The `compressibility` kwarg is ASE deprecated and will"
+            "be interpreted as `compressibility_au` in Quacc."
+        )
+        dynamics_kwargs["compressibility_au"] = dynamics_kwargs.pop("compressibility")
+
+    if "dt" in dynamics_kwargs:
+        LOGGER.warning(
+            "The `dt` kwarg is ASE deprecated and will"
+            "be interpreted as `timestep` in Quacc."
+        )
+        dynamics_kwargs["timestep"] = dynamics_kwargs.pop("dt")
 
     traj_filename = tmpdir / "opt.traj"
     traj = Trajectory(traj_filename, "w", atoms=atoms)
