@@ -9,13 +9,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from ase.calculators.lj import LennardJones
-from ase.optimize import FIRE
 
 from quacc import job
 from quacc.runners.ase import run_calc, run_opt, run_vib
 from quacc.runners.thermo import run_ideal_gas
 from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
-from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
     from typing import Any

@@ -9,12 +9,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from ase.calculators.emt import EMT
-from ase.optimize import FIRE
 
 from quacc import job
 from quacc.runners.ase import run_calc, run_opt
 from quacc.schemas.ase import summarize_opt_run, summarize_run
-from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
     from typing import Any

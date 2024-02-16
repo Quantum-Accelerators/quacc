@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read
-from ase.optimize import FIRE
+from ase.optimize import BFGS
 from ase.vibrations import Vibrations
 from monty.dev import requires
 from monty.os.path import zpath
@@ -130,8 +130,8 @@ def run_opt(
     atoms: Atoms,
     relax_cell: bool = False,
     fmax: float = 0.01,
-    max_steps: int = 500,
-    optimizer: Optimizer = FIRE,
+    max_steps: int = 1000,
+    optimizer: Optimizer = BFGS,
     optimizer_kwargs: OptimizerKwargs | None = None,
     store_intermediate_files: bool = False,
     run_kwargs: dict[str, Any] | None = None,
