@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import psutil
-from ase.optimize import FIRE
 
 from quacc import job
 from quacc.recipes.orca._base import base_fn, base_opt_fn
@@ -206,7 +205,7 @@ def ase_relax_job(
     default_inputs = [xc, basis, "slowconv", "normalprint", "xyzfile", "engrad"]
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
-    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
+    opt_defaults = {"fmax": 0.01, "max_steps": 1000}
 
     return base_opt_fn(
         atoms,

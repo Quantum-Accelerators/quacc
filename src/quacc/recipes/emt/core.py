@@ -9,7 +9,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from ase.calculators.emt import EMT
-from ase.optimize import FIRE
 
 from quacc import job
 from quacc.runners.ase import run_calc, run_opt
@@ -81,7 +80,7 @@ def relax_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_opt_run][].
         See the type-hint for the data structure.
     """
-    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
+    opt_defaults = {"fmax": 0.01, "max_steps": 1000}
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
     atoms.calc = EMT(**calc_kwargs)
