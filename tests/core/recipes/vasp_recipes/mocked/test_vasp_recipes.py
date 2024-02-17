@@ -3,7 +3,12 @@ from ase.build import bulk, molecule
 
 from quacc import SETTINGS
 from quacc.recipes.vasp.core import double_relax_job, relax_job, static_job
-from quacc.recipes.vasp.mp import mp_prerelax_job, mp_relax_flow, mp_relax_job
+from quacc.recipes.vasp.mp import (
+    mp_metagga_prerelax_job,
+    mp_metagga_relax_flow,
+    mp_metagga_relax_job,
+    mp_metagga_static_job,
+)
 from quacc.recipes.vasp.qmof import qmof_relax_job
 from quacc.recipes.vasp.slabs import bulk_to_slabs_flow
 from quacc.recipes.vasp.slabs import relax_job as slab_relax_job
@@ -351,105 +356,208 @@ def test_qmof(tmp_path, monkeypatch):
     assert output["double_relax"][1]["parameters"]["isif"] == 2
 
 
-def test_mp_prerelax_job(tmp_path, monkeypatch):
+def test_mp_metagga_prerelax_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Al")
-    output = mp_prerelax_job(atoms)
+    output = mp_metagga_prerelax_job(atoms)
     assert output["nsites"] == len(atoms)
-    assert output["parameters"]["xc"] == "pbesol"
+    assert output["parameters"] == {
+        "algo": "All",
+        "ediff": 1e-5,
+        "ediffg": -0.05,
+        "efermi": "midgap",  # added by copilot
+        "enaug": 1360,
+        "encut": 680,
+        "gga": "PS",
+        "ibrion": 2,
+        "isif": 3,
+        "ismear": 0,
+        "ispin": 2,
+        "kspacing": 0.22,
+        "laechg": False,  # disabled by us
+        "lasph": True,
+        "lcharg": True,
+        "lelf": False,
+        "lmixtau": True,
+        "lorbit": 11,
+        "lreal": "Auto",
+        "lvtot": False,  # disabled by us
+        "lwave": True,
+        "magmom": [0.6],
+        "nelm": 200,
+        "nsw": 99,
+        "prec": "Accurate",
+        "setups": {"Al": ""},
+        "sigma": 0.05,
+        "pp": "PBE",
+    }
+
+    output = mp_metagga_prerelax_job(atoms, bandgap=0)
+    assert output["nsites"] == len(atoms)
+    assert output["parameters"]["gga"] == "PS"
     assert output["parameters"]["ediffg"] == -0.05
     assert output["parameters"]["encut"] == 680
     assert output["parameters"]["kspacing"] == 0.22
     assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["sigma"] == 0.05
+    assert output["parameters"]["pp"] == "PBE"
+    assert "metagga" not in output["parameters"]
 
-    output = mp_prerelax_job(atoms, bandgap=0)
+    output = mp_metagga_prerelax_job(atoms, bandgap=100)
     assert output["nsites"] == len(atoms)
-    assert output["parameters"]["xc"] == "pbesol"
-    assert output["parameters"]["ediffg"] == -0.05
-    assert output["parameters"]["encut"] == 680
-    assert output["parameters"]["kspacing"] == 0.22
-    assert output["parameters"]["ismear"] == 2
-    assert output["parameters"]["sigma"] == 0.2
-
-    output = mp_prerelax_job(atoms, bandgap=100)
-    assert output["nsites"] == len(atoms)
-    assert output["parameters"]["xc"] == "pbesol"
+    assert output["parameters"]["gga"] == "PS"
     assert output["parameters"]["ediffg"] == -0.05
     assert output["parameters"]["encut"] == 680
     assert output["parameters"]["kspacing"] == 0.44
-    assert output["parameters"]["ismear"] == -5
+    assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["sigma"] == 0.05
+    assert output["parameters"]["pp"] == "PBE"
+    assert "metagga" not in output["parameters"]
 
 
-def test_mp_relax_job(tmp_path, monkeypatch):
+def test_mp_metagga_relax_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Al")
 
-    output = mp_relax_job(atoms)
+    output = mp_metagga_relax_job(atoms)
     assert output["nsites"] == len(atoms)
-    assert output["parameters"]["xc"] == "r2scan"
+    assert output["parameters"] == {
+        "algo": "All",
+        "ediff": 1e-5,
+        "ediffg": -0.02,
+        "efermi": "midgap",  # added by copilot
+        "enaug": 1360,
+        "encut": 680,
+        "ibrion": 2,
+        "isif": 3,
+        "ismear": 0,
+        "ispin": 2,
+        "kspacing": 0.22,
+        "laechg": False,  # disabled by us
+        "lasph": True,
+        "lcharg": True,
+        "lelf": False,
+        "lmixtau": True,
+        "lorbit": 11,
+        "lreal": "Auto",
+        "lvtot": False,  # disabled by us
+        "lwave": True,
+        "magmom": [0.6],
+        "metagga": "R2scan",
+        "nelm": 200,
+        "nsw": 99,
+        "prec": "Accurate",
+        "sigma": 0.05,
+        "pp": "PBE",
+        "setups": {"Al": ""},
+    }
+
+    output = mp_metagga_relax_job(atoms, bandgap=0)
+    assert output["nsites"] == len(atoms)
+    assert output["parameters"]["metagga"].lower() == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
     assert output["parameters"]["encut"] == 680
     assert output["parameters"]["kspacing"] == 0.22
     assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["sigma"] == 0.05
+    assert output["parameters"]["pp"] == "PBE"
 
-    output = mp_relax_job(atoms, bandgap=0)
+    output = mp_metagga_relax_job(atoms, bandgap=100)
     assert output["nsites"] == len(atoms)
-    assert output["parameters"]["xc"] == "r2scan"
-    assert output["parameters"]["ediffg"] == -0.02
-    assert output["parameters"]["encut"] == 680
-    assert output["parameters"]["kspacing"] == 0.22
-    assert output["parameters"]["ismear"] == 2
-    assert output["parameters"]["sigma"] == 0.2
-
-    output = mp_relax_job(atoms, bandgap=100)
-    assert output["nsites"] == len(atoms)
-    assert output["parameters"]["xc"] == "r2scan"
+    assert output["parameters"]["metagga"].lower() == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
     assert output["parameters"]["encut"] == 680
     assert output["parameters"]["kspacing"] == 0.44
-    assert output["parameters"]["ismear"] == -5
+    assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["sigma"] == 0.05
+    assert output["parameters"]["pp"] == "PBE"
 
 
-def test_mp_relax_flow(tmp_path, monkeypatch):
+def test_mp_metagga_static_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Al")
 
-    output = mp_relax_flow(atoms)
+    output = mp_metagga_static_job(atoms)
     assert output["nsites"] == len(atoms)
-    assert output["parameters"]["xc"] == "r2scan"
-    assert output["parameters"]["ediffg"] == -0.02
-    assert output["parameters"]["encut"] == 680
-    assert output["parameters"]["ismear"] == 2
-    assert output["parameters"]["sigma"] == 0.2
-    assert output["parameters"]["kspacing"] == 0.22
-    assert output["prerelax"]["parameters"]["xc"] == "pbesol"
+    assert output["parameters"] == {
+        "algo": "fast",
+        "ediff": 1e-05,
+        "efermi": "midgap",  # added by copilot
+        "enaug": 1360,
+        "encut": 680,
+        "ismear": -5,
+        "ispin": 2,
+        "kspacing": 0.22,
+        "laechg": True,
+        "lasph": True,
+        "lcharg": True,
+        "lelf": False,
+        "lmixtau": True,
+        "lorbit": 11,
+        "lreal": False,
+        "lvtot": True,
+        "lwave": True,  # enabled by us
+        "magmom": [0.6],
+        "metagga": "R2scan",
+        "nelm": 200,
+        "nsw": 0,
+        "prec": "Accurate",
+        "sigma": 0.05,
+        "pp": "PBE",
+        "setups": {"Al": ""},
+    }
+
+
+def test_mp_metagga_relax_flow(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    atoms = bulk("Al")
+
+    output = mp_metagga_relax_flow(atoms)
+    assert output["static"]["nsites"] == len(atoms)
+    assert output["relax"]["parameters"]["metagga"].lower() == "r2scan"
+    assert output["relax"]["parameters"]["ediffg"] == -0.02
+    assert output["relax"]["parameters"]["encut"] == 680
+    assert output["relax"]["parameters"]["ismear"] == 0
+    assert output["relax"]["parameters"]["sigma"] == 0.05
+    assert output["relax"]["parameters"]["kspacing"] == 0.22
+    assert output["relax"]["parameters"]["pp"] == "PBE"
+    assert output["prerelax"]["parameters"]["gga"] == "PS"
     assert output["prerelax"]["parameters"]["ismear"] == 0
+    assert output["prerelax"]["parameters"]["pp"] == "PBE"
 
     atoms = bulk("C")
-    output = mp_relax_flow(atoms)
-    assert output["nsites"] == len(atoms)
-    assert output["parameters"]["xc"] == "r2scan"
-    assert output["parameters"]["ediffg"] == -0.02
-    assert output["parameters"]["encut"] == 680
-    assert output["parameters"]["ismear"] == -5
-    assert output["parameters"]["kspacing"] == pytest.approx(0.28329488761304206)
+    output = mp_metagga_relax_flow(atoms)
+    assert output["static"]["nsites"] == len(atoms)
+    assert output["relax"]["parameters"]["metagga"].lower() == "r2scan"
+    assert output["relax"]["parameters"]["ediffg"] == -0.02
+    assert output["relax"]["parameters"]["encut"] == 680
+    assert output["relax"]["parameters"]["ismear"] == 0
+    assert output["relax"]["parameters"]["kspacing"] == pytest.approx(
+        0.28329488761304206
+    )
+    assert output["relax"]["parameters"]["pp"] == "PBE"
     assert output["prerelax"]["parameters"]["ismear"] == 0
+    assert output["prerelax"]["parameters"]["pp"] == "PBE"
 
     atoms = molecule("O2")
     atoms.center(vacuum=10)
     atoms.pbc = True
-    output = mp_relax_flow(atoms)
-    assert output["nsites"] == len(atoms)
-    assert output["parameters"]["xc"] == "r2scan"
-    assert output["parameters"]["ediffg"] == -0.02
-    assert output["parameters"]["encut"] == 680
-    assert output["parameters"]["ismear"] == -5
-    assert output["parameters"]["kspacing"] == pytest.approx(0.28329488761304206)
+    output = mp_metagga_relax_flow(atoms)
+    assert output["static"]["nsites"] == len(atoms)
+    assert output["static"]["parameters"]["ismear"] == -5
+    assert output["static"]["parameters"]["nsw"] == 0
+    assert output["static"]["parameters"]["algo"] == "fast"
+    assert output["relax"]["parameters"]["metagga"].lower() == "r2scan"
+    assert output["relax"]["parameters"]["ediffg"] == -0.02
+    assert output["relax"]["parameters"]["encut"] == 680
+    assert output["relax"]["parameters"]["ismear"] == 0
+    assert output["relax"]["parameters"]["kspacing"] == pytest.approx(
+        0.28329488761304206
+    )
+    assert output["relax"]["parameters"]["pp"] == "PBE"
     assert output["prerelax"]["parameters"]["ismear"] == 0
+    assert output["prerelax"]["parameters"]["pp"] == "PBE"

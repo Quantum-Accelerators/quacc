@@ -9,6 +9,7 @@ from ase.calculators.singlepoint import SinglePointDFTCalculator
 from ase.calculators.vasp import Vasp as Vasp_
 from ase.constraints import FixAtoms, FixBondLength
 from ase.io import read
+from pymatgen.io.vasp.sets import MPRelaxSet, MPScanRelaxSet
 
 from quacc import SETTINGS
 from quacc.calculators.vasp import Vasp, presets
@@ -69,9 +70,9 @@ def test_presets():
     assert calc.exp_params["ediff"] == 1e-5
     assert calc.float_params["encut"] == 450
 
-    calc = Vasp(atoms, xc="scan", preset="MPScanSet")
+    calc = Vasp(atoms, xc="scan", pmg_input_set=MPScanRelaxSet)
     assert calc.xc.lower() == "scan"
-    assert calc.string_params["algo"] == "all"
+    assert calc.string_params["algo"].lower() == "all"
     assert calc.exp_params["ediff"] == 1e-5
 
 
@@ -164,6 +165,7 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
     atoms[-1].symbol = "Fe"
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
+    assert atoms.get_chemical_symbols() == ["Cu", "Cu", "Cu", "Fe"]
     assert atoms.get_initial_magnetic_moments().tolist() == [2.0] * (len(atoms) - 1) + [
         5.0
     ]
@@ -186,16 +188,15 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
 
     atoms = bulk("Cu") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
-    calc = Vasp(atoms, preset="MPScanSet")
+    calc = Vasp(atoms, pmg_input_set=MPScanRelaxSet)
     atoms.calc = calc
-    assert atoms.get_initial_magnetic_moments().tolist() == [1.0] * (len(atoms) - 1) + [
-        5.0
-    ]
+    assert atoms.get_chemical_symbols() == ["Cu", "Cu", "Cu", "Fe"]
+    assert calc.parameters["magmom"] == [0.6, 0.6, 0.6, 5.0]
 
     atoms = bulk("Cu") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
     atoms.set_initial_magnetic_moments([3.14] * (len(atoms) - 1) + [1.0])
-    calc = Vasp(atoms, preset="BulkSet")
+    calc = Vasp(atoms, pmg_input_set=MPScanRelaxSet)
     atoms.calc = calc
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * (
         len(atoms) - 1
@@ -707,7 +708,7 @@ def test_setups():
     assert calc.parameters["setups"]["Cu"] == ""
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, preset="MPScanSet")
+    calc = Vasp(atoms, pmg_input_set=MPScanRelaxSet)
     assert calc.parameters["setups"]["Cu"] == "_pv"
 
     atoms = bulk("Cu")
@@ -719,7 +720,12 @@ def test_setups():
     assert calc.parameters["setups"]["Cu"] == ""
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, setups="minimal", preset="MPScanSet")
+    calc = Vasp(atoms, setups="minimal", preset="BulkSet")
+    assert isinstance(calc.parameters["setups"], str)
+    assert calc.parameters["setups"] == "minimal"
+
+    atoms = bulk("Cu")
+    calc = Vasp(atoms, setups="minimal", pmg_input_set=MPScanRelaxSet)
     assert isinstance(calc.parameters["setups"], str)
     assert calc.parameters["setups"] == "minimal"
 
@@ -823,3 +829,66 @@ def test_preset_override():
 
     calc = Vasp(atoms, preset="BulkSet", efermi=None)
     assert calc.parameters.get("efermi") is None
+
+
+def test_pmg_input_set():
+    atoms = bulk("Cu")
+    calc = Vasp(atoms, pmg_input_set=MPRelaxSet, incar_copilot="off")
+    assert calc.parameters == {
+        "algo": "Fast",
+        "ediff": 5e-05,
+        "encut": 520,
+        "ibrion": 2,
+        "isif": 3,
+        "ismear": -5,
+        "ispin": 2,
+        "lasph": True,
+        "lorbit": 11,
+        "lreal": "Auto",
+        "lwave": False,
+        "nelm": 100,
+        "nsw": 99,
+        "pp": "PBE",
+        "prec": "Accurate",
+        "sigma": 0.05,
+        "magmom": [0.6],
+        "lmaxmix": 4,
+        "kpts": [11, 11, 11],
+        "gamma": True,
+        "setups": {"Cu": "_pv"},
+    }
+
+
+def test_pmg_input_set2():
+    atoms = bulk("Fe") * (2, 1, 1)
+    atoms[0].symbol = "O"
+    calc = Vasp(atoms, pmg_input_set=MPRelaxSet, incar_copilot="off")
+    assert calc.parameters == {
+        "algo": "Fast",
+        "ediff": 0.0001,
+        "encut": 520,
+        "ibrion": 2,
+        "isif": 3,
+        "ismear": -5,
+        "ispin": 2,
+        "lasph": True,
+        "ldau": True,
+        "ldauj": [0, 0],
+        "ldaul": [0, 2.0],
+        "ldautype": 2,
+        "ldauu": [0, 5.3],
+        "ldauprint": 1,
+        "lorbit": 11,
+        "lreal": "Auto",
+        "lwave": False,
+        "nelm": 100,
+        "nsw": 99,
+        "pp": "PBE",
+        "prec": "Accurate",
+        "sigma": 0.05,
+        "magmom": [2.3, 2.3],
+        "lmaxmix": 4,
+        "kpts": [5, 11, 11],
+        "gamma": True,
+        "setups": {"Fe": "_pv", "O": ""},
+    }

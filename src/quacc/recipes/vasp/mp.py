@@ -2,7 +2,6 @@
 Materials Project-compatible recipes.
 
 This set of recipes is meant to be compatible with the Materials Project
-Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
 
 !!! Info
 
@@ -16,10 +15,11 @@ Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
 
 from __future__ import annotations
 
+from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import numpy as np
+from pymatgen.io.vasp.sets import MPScanRelaxSet
 
 from quacc import flow, job
 from quacc.recipes.vasp._base import base_fn
@@ -30,14 +30,13 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.schemas._aliases.vasp import MPRelaxFlowSchema, VaspSchema
+    from quacc.schemas._aliases.vasp import MPMetaGGARelaxFlowSchema, VaspSchema
 
 
 @job
-def mp_prerelax_job(
+def mp_metagga_prerelax_job(
     atoms: Atoms,
-    preset: str | None = "MPScanSet",
-    bandgap: float | None = None,
+    bandgap: float = 0.0,
     copy_files: str | Path | list[str | Path] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
@@ -45,12 +44,12 @@ def mp_prerelax_job(
     Function to pre-relax a structure with Materials Project settings. By default, this
     uses a PBEsol pre-relax step.
 
+    Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
+
     Parameters
     ----------
     atoms
         Atoms object
-    preset
-        Preset to use from `quacc.calculators.vasp.presets`.
     bandgap
         Estimate for the bandgap in eV.
     copy_files
@@ -68,27 +67,27 @@ def mp_prerelax_job(
     """
 
     calc_defaults = {
+        "pmg_input_set": partial(MPScanRelaxSet, bandgap=bandgap, auto_ismear=False),
         "ediffg": -0.05,
-        "xc": "pbesol",
+        "gga": "PS",
+        "laechg": False,  # Deviation from MP (but logical)
+        "lvtot": False,  # Deviation from MP (but logical)
         "lwave": True,
-        "lcharg": True,
-    } | _get_bandgap_swaps(bandgap)
-
+        "metagga": None,
+    }
     return base_fn(
         atoms,
-        preset=preset,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "MP Pre-Relax"},
+        additional_fields={"name": "MP Meta-GGA Pre-Relax"},
         copy_files=copy_files,
     )
 
 
 @job
-def mp_relax_job(
+def mp_metagga_relax_job(
     atoms: Atoms,
-    preset: str | None = "MPScanSet",
-    bandgap: float | None = None,
+    bandgap: float = 0.0,
     copy_files: str | Path | list[str | Path] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
@@ -96,12 +95,12 @@ def mp_relax_job(
     Function to relax a structure with Materials Project settings. By default, this uses
     an r2SCAN relax step.
 
+    Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
+
     Parameters
     ----------
     atoms
         Atoms object
-    preset
-        Preset to use from `quacc.calculators.vasp.presets`.
     bandgap
         Estimate for the bandgap in eV.
     copy_files
@@ -118,33 +117,91 @@ def mp_relax_job(
         See the type-hint for the data structure.
     """
 
-    calc_defaults = {"lcharg": True, "lwave": True} | _get_bandgap_swaps(bandgap)
+    calc_defaults = {
+        "pmg_input_set": partial(MPScanRelaxSet, bandgap=bandgap, auto_ismear=False),
+        "laechg": False,  # Deviation from MP (but logical)
+        "lvtot": False,  # Deviation from MP (but logical)
+        "lwave": True,
+    }
     return base_fn(
         atoms,
-        preset=preset,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "MP Relax"},
+        additional_fields={"name": "MP Meta-GGA Relax"},
+        copy_files=copy_files,
+    )
+
+
+@job
+def mp_metagga_static_job(
+    atoms: Atoms,
+    bandgap: float = 0.0,
+    copy_files: str | Path | list[str | Path] | None = None,
+    **calc_kwargs,
+) -> VaspSchema:
+    """
+    Function to run a static calculation on a structure with Materials Project settings. By default, this uses
+    an r2SCAN static step.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+    bandgap
+        Estimate for the bandgap in eV.
+    copy_files
+        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+    **calc_kwargs
+        Dictionary of custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to `ase.calculators.vasp.vasp.Vasp`.
+
+    Returns
+    -------
+    VaspSchema
+        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
+        See the type-hint for the data structure.
+    """
+
+    calc_defaults = {
+        "pmg_input_set": partial(MPScanRelaxSet, bandgap=bandgap, auto_ismear=False),
+        "algo": "fast",
+        "ismear": -5,
+        "lreal": False,
+        "lwave": True,  # Deviation from MP (but logical)
+        "nsw": 0,
+    }
+    return base_fn(
+        atoms,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        additional_fields={"name": "MP Meta-GGA Static"},
         copy_files=copy_files,
     )
 
 
 @flow
-def mp_relax_flow(
+def mp_metagga_relax_flow(
     atoms: Atoms,
     job_params: dict[str, dict[str, Any]] | None = None,
     job_decorators: dict[str, Callable | None] | None = None,
-) -> MPRelaxFlowSchema:
+) -> MPMetaGGARelaxFlowSchema:
     """
     Workflow consisting of:
 
     1. MP-compatible pre-relax
-        - name: "mp_prerelax_job"
-        - job: [quacc.recipes.vasp.mp.mp_prerelax_job][]
+        - name: "mp_metagga_prerelax_job"
+        - job: [quacc.recipes.vasp.mp.mp_metagga_prerelax_job][]
 
     2. MP-compatible relax
-        - name: "mp_relax_job"
-        - job: [quacc.recipes.vasp.mp.mp_relax_job][]
+        - name: "mp_metagga_relax_job"
+        - job: [quacc.recipes.vasp.mp.mp_metagga_relax_job][]
+
+    3. MP-compatible static
+        - name: "mp_metagga_static_job"
+        - job: [quacc.recipes.vasp.mp.mp_metagga_static_job][]
+
+    Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
 
     Parameters
     ----------
@@ -159,21 +216,25 @@ def mp_relax_flow(
 
     Returns
     -------
-    MPRelaxFlowSchema
+    MPMetaGGARelaxFlowSchema
         Dictionary of results. See the type-hint for the data structure.
     """
-    mp_prerelax_job_, mp_relax_job_ = customize_funcs(
-        ["mp_prerelax_job", "mp_relax_job"],
-        [mp_prerelax_job, mp_relax_job],
+    (
+        mp_metagga_prerelax_job_,
+        mp_metagga_relax_job_,
+        mp_metagga_static_job_,
+    ) = customize_funcs(
+        ["mp_metagga_prerelax_job", "mp_metagga_relax_job", "mp_metagga_static_job"],
+        [mp_metagga_prerelax_job, mp_metagga_relax_job, mp_metagga_static_job],
         parameters=job_params,
         decorators=job_decorators,
     )
 
     # Run the prerelax
-    prerelax_results = mp_prerelax_job_(atoms)
+    prerelax_results = mp_metagga_prerelax_job_(atoms)
 
     # Run the relax
-    relax_results = mp_relax_job_(
+    relax_results = mp_metagga_relax_job_(
         prerelax_results["atoms"],
         bandgap=prerelax_results["output"]["bandgap"],
         copy_files=[
@@ -183,28 +244,18 @@ def mp_relax_flow(
     )
     relax_results["prerelax"] = prerelax_results
 
-    return relax_results
+    # Run the static
+    static_results = mp_metagga_static_job_(
+        relax_results["atoms"],
+        bandgap=relax_results["output"]["bandgap"],
+        copy_files=[
+            Path(relax_results["dir_name"]) / "CHGCAR",
+            Path(relax_results["dir_name"]) / "WAVECAR",
+        ],
+    )
 
-
-def _get_bandgap_swaps(bandgap: float | None = None) -> dict[str, float]:
-    """
-    Get bandgap-related swaps.
-
-    Parameters
-    ---------
-    bandgap
-        The bandgap, in units of eV.
-
-    Returns
-    -------
-    dict
-        Dictionary of swaps.
-    """
-
-    if bandgap is None:
-        return {"kspacing": 0.22, "ismear": 0, "sigma": 0.05}
-    if bandgap <= 1e-4:
-        return {"kspacing": 0.22, "ismear": 2, "sigma": 0.2}
-    rmin = max(1.5, 25.22 - 2.87 * bandgap)
-    kspacing = 2 * np.pi * 1.0265 / (rmin - 1.0183)
-    return {"kspacing": min(kspacing, 0.44), "ismear": -5, "sigma": 0.05}
+    return {
+        "prerelax": prerelax_results,
+        "relax": relax_results,
+        "static": static_results,
+    }
