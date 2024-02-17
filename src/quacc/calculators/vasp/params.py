@@ -382,15 +382,7 @@ def get_pmg_input_set_params(dict_set: DictSet, atoms: Atoms) -> tuple[dict, Ato
         if k in v:
             potcar_setups[k] = v.split(k)[-1]
 
-    potcar_functional = pmg_input_set.potcar_functional
-    if "PBE" in potcar_functional:
-        pp = "PBE"
-    elif "PW91" in potcar_functional:
-        pp = "PW91"
-    elif "LDA" in potcar_functional or "Perdew-Zunger81" in potcar_functional:
-        pp = "LDA"
-    else:
-        raise ValueError(f"Unknown POTCAR functional: {potcar_functional}")
+    pp = pmg_input_set.potcar_functional.split("_")[0]
 
     full_input_params = incar_dict | {"setups": potcar_setups, "pp": pp}
 
