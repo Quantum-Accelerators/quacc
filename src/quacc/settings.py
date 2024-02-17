@@ -474,7 +474,7 @@ class QuaccSettings(BaseSettings):
         dict
             Loaded settings.
         """
-        return _type_handler(_use_custom_config_settings(settings))
+        return _use_custom_config_settings(settings)
 
 
 def _use_custom_config_settings(settings: dict[str, Any]) -> dict[str, Any]:
