@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Optional
 import typer
 from rich import print as rich_print
 
-from quacc.settings import QuaccSettings, _type_handler
+from quacc.settings import QuaccSettings
 
 app = typer.Typer()
 
@@ -84,8 +84,7 @@ def set_(parameter: str, new_value: str) -> None:
     CONFIG_FILE = SETTINGS.CONFIG_FILE or _DEFAULT_CONFIG_FILE_PATH
     parameter = parameter.upper()
 
-    settings = _type_handler({parameter: new_value})
-    new_value = settings[parameter]
+    new_value = _type_handler(new_value)
     _parameter_handler(parameter, SETTINGS.model_dump(), value=new_value)
 
     rich_print(f"Setting `{parameter}` to `{new_value}` in {CONFIG_FILE}")
@@ -234,6 +233,26 @@ def _update_setting(key: str, value: Any, config_file: Path) -> None:
     yaml_content[key] = value
     with config_file.open(mode="w") as yaml_file:
         yaml.dump(yaml_content, yaml_file)
+
+
+def _type_handler(value: str) -> Any:
+    """
+    Convert the string value to the appropriate type.
+
+    Parameters
+    ----------
+    value
+        The value to convert.
+
+    Returns
+    -------
+    Any
+    """
+    if value.lower() in {"null", "none"}:
+        value = None
+    elif value.lower() in {"true", "false"}:
+        value = value.lower() == "true"
+    return value
 
 
 if __name__ == "__main__":

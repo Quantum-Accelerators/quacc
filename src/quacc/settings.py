@@ -504,27 +504,3 @@ def _use_custom_config_settings(settings: dict[str, Any]) -> dict[str, Any]:
 
     new_settings.update(settings)
     return new_settings
-
-
-def _type_handler(settings: dict[str, Any]) -> dict[str, Any]:
-    """
-    Convert common strings to their proper types.
-
-    Parameters
-    ----------
-    settings : dict
-        Initial settings.
-
-    Returns
-    -------
-    dict
-        Updated settings.
-    """
-    for key, value in settings.items():
-        if isinstance(value, str):
-            if value.lower() in {"null", "none"}:
-                settings[key] = None
-            elif value.lower() in {"true", "false"}:
-                settings[key] = value.lower() == "true"
-
-    return settings

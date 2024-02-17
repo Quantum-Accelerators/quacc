@@ -13,7 +13,7 @@ FILE_DIR = Path(__file__).parent
 
 def test_file(tmp_path, monkeypatch):
     with open(tmp_path / "quacc_test.yaml", "w") as f:
-        f.write("GZIP_FILES: false\nWORKFLOW_ENGINE: None\nDEBUG: True\nSTORE: null")
+        f.write("GZIP_FILES: false\nWORKFLOW_ENGINE: None\nDEBUG: true\nSTORE: null")
     monkeypatch.setenv("QUACC_CONFIG_FILE", os.path.join(tmp_path, "quacc_test.yaml"))
 
     assert QuaccSettings().GZIP_FILES is False
@@ -61,13 +61,10 @@ def test_env_var2(monkeypatch, tmp_path):
     monkeypatch.setenv("QUACC_WORKFLOW_ENGINE", "None")
     assert QuaccSettings().WORKFLOW_ENGINE is None
 
-    monkeypatch.setenv("QUACC_WORKFLOW_ENGINE", "null")
-    assert QuaccSettings().WORKFLOW_ENGINE is None
+    monkeypatch.setenv("QUACC_GZIP_FILES", "false")
+    assert QuaccSettings().GZIP_FILES is False
 
-    monkeypatch.setenv("QUACC_WORKFLOW_ENGINE", "none")
-    assert QuaccSettings().WORKFLOW_ENGINE is None
-
-    monkeypatch.setenv("QUACC_GZIP_FILES", "FaLsE")
+    monkeypatch.setenv("QUACC_GZIP_FILES", "False")
     assert QuaccSettings().GZIP_FILES is False
 
 
