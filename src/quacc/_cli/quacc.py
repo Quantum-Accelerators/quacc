@@ -7,8 +7,7 @@ from typing import TYPE_CHECKING, Optional
 import typer
 from rich import print as rich_print
 
-from quacc import QuaccSettings
-from quacc.settings import _type_handler
+from quacc.settings import QuaccSettings, _type_handler
 
 app = typer.Typer()
 
