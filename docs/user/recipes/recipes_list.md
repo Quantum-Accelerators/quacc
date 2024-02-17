@@ -238,6 +238,9 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 | VASP Slab Relax                 | `#!Python @job`  | [quacc.recipes.vasp.slabs.relax_job][]          |              |
 | VASP Bulk to Slabs              | `#!Python @flow` | [quacc.recipes.vasp.slabs.bulk_to_slabs_flow][] |              |
 | VASP Slab to Adsorbates         | `#!Python @flow` | [quacc.recipes.vasp.slabs.slab_to_ads_flow][]   |              |
+| VASP MP GGA Relax               | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_gga_relax_job][]      |              |
+| VASP MP GGA Static              | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_gga_static_job][]     |              |
+| VASP MP GGA Relax Workflow      | `#!Python @flow` | [quacc.recipes.vasp.mp.mp_gga_relax_flow][]     |              |
 | VASP MP Meta-GGA Prerelax       | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_metagga_relax_job][]  |              |
 | VASP MP Meta-GGA Relax          | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_metagga_relax_job][]  |              |
 | VASP MP Meta-GGA Static         | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_metagga_static_job][] |              |

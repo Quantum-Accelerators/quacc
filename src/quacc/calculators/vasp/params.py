@@ -286,6 +286,26 @@ def remove_unused_flags(user_calc_params: dict[str, Any]) -> dict[str, Any]:
     return user_calc_params
 
 
+def normalize_params(user_calc_params: dict[str, Any]) -> dict[str, Any]:
+    """
+    Normalizes the user-provided calculator parameters.
+
+    Parameters
+    -------
+    user_calc_params
+        The user-provided calculator parameters.
+
+    Returns
+    -------
+    dict
+        The updated user-provided calculator parameters.
+    """
+    for k, v in user_calc_params.items():
+        if isinstance(v, str):
+            user_calc_params[k] = v.lower()
+    return user_calc_params
+
+
 def set_auto_dipole(
     user_calc_params: dict[str, Any], input_atoms: Atoms
 ) -> dict[str, Any]:
