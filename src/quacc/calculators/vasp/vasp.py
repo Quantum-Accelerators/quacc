@@ -23,6 +23,7 @@ from quacc.calculators.vasp.params import (
     set_pmg_kpts,
 )
 from quacc.schemas.prep import set_magmoms
+from quacc.utils.dicts import sort_dict
 
 if TYPE_CHECKING:
     from typing import Literal
@@ -286,4 +287,4 @@ class Vasp(Vasp_):
         )
 
         # Remove unused INCAR flags
-        self.user_calc_params = remove_unused_flags(self.user_calc_params)
+        self.user_calc_params = sort_dict(remove_unused_flags(self.user_calc_params))

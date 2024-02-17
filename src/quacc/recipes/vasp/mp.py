@@ -70,8 +70,8 @@ def mp_metagga_prerelax_job(
         "pmg_input_set": partial(MPScanRelaxSet, bandgap=bandgap, auto_ismear=False),
         "ediffg": -0.05,
         "gga": "PS",
-        "laechg": False,
-        "lvtot": False,
+        "laechg": False,  # Deviation from MP (but logical)
+        "lvtot": False,  # Deviation from MP (but logical)
         "lwave": True,
         "metagga": None,
     }
@@ -119,8 +119,8 @@ def mp_metagga_relax_job(
 
     calc_defaults = {
         "pmg_input_set": partial(MPScanRelaxSet, bandgap=bandgap, auto_ismear=False),
-        "laechg": False,
-        "lvtot": False,
+        "laechg": False,  # Deviation from MP (but logical)
+        "lvtot": False,  # Deviation from MP (but logical)
         "lwave": True,
     }
     return base_fn(
@@ -168,7 +168,7 @@ def mp_metagga_static_job(
         "algo": "fast",
         "ismear": -5,
         "lreal": False,
-        "lwave": True,
+        "lwave": True,  # Deviation from MP (but logical)
         "nsw": 0,
     }
     return base_fn(
@@ -219,15 +219,17 @@ def mp_metagga_relax_flow(
     MPMetaGGARelaxFlowSchema
         Dictionary of results. See the type-hint for the data structure.
     """
-    (
-        mp_metagga_prerelax_job_,
-        mp_metagga_relax_job_,
-        mp_metagga_static_job_,
-    ) = customize_funcs(
-        ["mp_metagga_prerelax_job", "mp_metagga_relax_job", "mp_metagga_static_job"],
-        [mp_metagga_prerelax_job, mp_metagga_relax_job, mp_metagga_static_job],
-        parameters=job_params,
-        decorators=job_decorators,
+    (mp_metagga_prerelax_job_, mp_metagga_relax_job_, mp_metagga_static_job_) = (
+        customize_funcs(
+            [
+                "mp_metagga_prerelax_job",
+                "mp_metagga_relax_job",
+                "mp_metagga_static_job",
+            ],
+            [mp_metagga_prerelax_job, mp_metagga_relax_job, mp_metagga_static_job],
+            parameters=job_params,
+            decorators=job_decorators,
+        )
     )
 
     # Run the prerelax
