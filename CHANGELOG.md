@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added a `store_intermediate_files` keyword option to `quacc.runners.ase.run_opt()` to allow for storing of the logfiles in intermediate geometry optimization steps.
 - Added support for Pymatgen-based input sets in VASP jobs
 - Added an MP meta-GGA VASP static job
+- Added a validity checker on CLI parameters
 
 ### Changed
 
