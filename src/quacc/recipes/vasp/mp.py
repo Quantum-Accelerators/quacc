@@ -121,7 +121,7 @@ def mp_gga_static_job(
 
     calc_defaults = {
         "pmg_input_set": partial(
-            MPStaticSet, bandgap=bandgap, small_gap_multply=[1e-4, 3.125]
+            MPStaticSet, bandgap=bandgap, small_gap_multiply=[1e-4, 3.125]
         ),
         "algo": "fast",
         "lwave": True,  # Deviation from MP (but logical)
@@ -354,10 +354,10 @@ def mp_gga_relax_flow(
     # Run the static
     static_results = mp_gga_static_job_(
         relax_results["relax2"]["atoms"],
-        bandgap=relax_results["output"]["bandgap"],
+        bandgap=relax_results["relax2"]["output"]["bandgap"],
         copy_files=[
-            Path(relax_results["dir_name"]) / "CHGCAR",
-            Path(relax_results["dir_name"]) / "WAVECAR",
+            Path(relax_results["relax2"]["dir_name"]) / "CHGCAR",
+            Path(relax_results["relax2"]["dir_name"]) / "WAVECAR",
         ],
     )
 
@@ -403,15 +403,17 @@ def mp_metagga_relax_flow(
     MPMetaGGARelaxFlowSchema
         Dictionary of results. See the type-hint for the data structure.
     """
-    (
-        mp_metagga_prerelax_job_,
-        mp_metagga_relax_job_,
-        mp_metagga_static_job_,
-    ) = customize_funcs(
-        ["mp_metagga_prerelax_job", "mp_metagga_relax_job", "mp_metagga_static_job"],
-        [mp_metagga_prerelax_job, mp_metagga_relax_job, mp_metagga_static_job],
-        parameters=job_params,
-        decorators=job_decorators,
+    (mp_metagga_prerelax_job_, mp_metagga_relax_job_, mp_metagga_static_job_) = (
+        customize_funcs(
+            [
+                "mp_metagga_prerelax_job",
+                "mp_metagga_relax_job",
+                "mp_metagga_static_job",
+            ],
+            [mp_metagga_prerelax_job, mp_metagga_relax_job, mp_metagga_static_job],
+            parameters=job_params,
+            decorators=job_decorators,
+        )
     )
 
     # Run the prerelax
