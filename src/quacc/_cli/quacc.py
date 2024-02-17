@@ -157,6 +157,8 @@ def _parameter_handler(
         The quacc parameter to check.
     settings_dict
         The quacc settings.
+    value
+        The value to set the parameter to.
 
     Returns
     -------
