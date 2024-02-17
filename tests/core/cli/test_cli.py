@@ -3,6 +3,7 @@ import platform
 from pathlib import Path
 
 import pytest
+from pydantic import ValidationError
 from typer.testing import CliRunner
 
 from quacc import SETTINGS, __version__
@@ -58,6 +59,8 @@ def test_set(runner):
             if "VASP_PARALLEL_CMD" in line:
                 val = line.split(":")[-1].strip()
     assert val == "dummy"
+    response = runner.invoke(app, ["set", "WORKFLOW_ENGINE", "invalid"])
+    assert response.exit_code == 1
 
 
 def test_unset(runner):
