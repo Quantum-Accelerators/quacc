@@ -12,7 +12,7 @@ from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read
 from ase.md.verlet import VelocityVerlet
 from ase.optimize import BFGS
-from ase.units import fs
+from ase.units import GPa, fs
 from ase.vibrations import Vibrations
 from monty.dev import requires
 from monty.os.path import zpath
@@ -302,7 +302,7 @@ def run_md(
 
     if "temperature" in dynamics_kwargs or "temp" in dynamics_kwargs:
         LOGGER.warning(
-            "The `temperature`\`temp` kwargs are ASE deprecated and will"
+            r"The `temperature`\`temp` kwargs are ASE deprecated and will"
             "be interpreted as `temperature_K` in Quacc."
         )
         dynamics_kwargs["temperature_K"] = dynamics_kwargs.pop(
@@ -329,6 +329,31 @@ def run_md(
             "be interpreted as `timestep` in Quacc."
         )
         dynamics_kwargs["timestep"] = dynamics_kwargs.pop("dt")
+
+    # Convert units so that Quacc ALWAYS use the same units, for
+    # every MD classes.
+    # Users will have to always input time in fs, pressure in GPa
+    # temperature in K, and compressibility in 1/GPa.
+
+    if "ttime" in dynamics_kwargs:
+        dynamics_kwargs["ttime"] = dynamics_kwargs.pop("ttime") * fs
+
+    if "friction" in dynamics_kwargs:
+        dynamics_kwargs["friction"] = dynamics_kwargs.pop("friction") / fs
+
+    if "taut" in dynamics_kwargs:
+        dynamics_kwargs["taut"] = dynamics_kwargs.pop("taut") * fs
+
+    if "taup" in dynamics_kwargs:
+        dynamics_kwargs["taup"] = dynamics_kwargs.pop("taup") * fs
+
+    if "pfactor" in dynamics_kwargs:
+        dynamics_kwargs["pfactor"] = dynamics_kwargs.pop("pfactor") * GPa
+
+    if "compressibility_au" in dynamics_kwargs:
+        dynamics_kwargs["compressibility"] = (
+            dynamics_kwargs.pop("compressibility") / GPa
+        )
 
     traj_filename = tmpdir / "opt.traj"
     traj = Trajectory(traj_filename, "w", atoms=atoms)

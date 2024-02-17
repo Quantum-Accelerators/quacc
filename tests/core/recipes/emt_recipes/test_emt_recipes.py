@@ -99,10 +99,10 @@ def test_md_jobs(tmp_path, monkeypatch):
     assert len(output["trajectory"]) == 501
     assert output["name"] == "EMT Microcanonical"
     assert output["parameters_md"]["timestep"] == pytest.approx(1.0)
-    assert output["trajectory_log"]["temperature"][-1] == pytest.approx(1575.886)
-    assert output["trajectory_log"]["temperature"][0] == pytest.approx(0.0)
-    assert output["trajectory_log"]["temperature"][1] == pytest.approx(759.680)
-    assert output["trajectory_log"]["time"][10] == pytest.approx(0.01)
+    assert output["trajectory_log"][-1]["temperature"] == pytest.approx(1575.886)
+    assert output["trajectory_log"][0]["temperature"] == pytest.approx(0.0)
+    assert output["trajectory_log"][1]["temperature"] == pytest.approx(759.680)
+    assert output["trajectory_log"][10]["time"] == pytest.approx(0.01)
     assert atoms.positions == pytest.approx(old_positions)
 
     atoms = molecule("H2O")
@@ -120,10 +120,10 @@ def test_md_jobs(tmp_path, monkeypatch):
     assert len(output["trajectory"]) == 21
     assert output["name"] == "EMT Microcanonical"
     assert output["parameters_md"]["timestep"] == pytest.approx(0.5)
-    assert output["trajectory_log"]["temperature"][-1] == pytest.approx(1023.384)
-    assert output["trajectory_log"]["temperature"][0] == pytest.approx(915.678)
-    assert output["trajectory_log"]["temperature"][1] == pytest.approx(1060.650)
-    assert output["trajectory_log"]["time"][10] == pytest.approx(0.005)
+    assert output["trajectory_log"][-1]["temperature"] == pytest.approx(1023.384)
+    assert output["trajectory_log"][0]["temperature"] == pytest.approx(915.678)
+    assert output["trajectory_log"][1]["temperature"] == pytest.approx(1060.650)
+    assert output["trajectory_log"][10]["time"] == pytest.approx(0.005)
     assert atoms.positions == pytest.approx(old_positions)
 
     with pytest.raises(ValueError, match="Quacc does not support"):
@@ -136,13 +136,15 @@ def test_md_jobs(tmp_path, monkeypatch):
         md_params={
             "timestep": 1.0,
             "dynamics": NPT,
-            "dynamics_kwargs": {"temperature": 1000, "ttime": 50 * fs},
+            "dynamics_kwargs": {"temperature": 1000, "ttime": 50},
         },
     )
 
     assert output["parameters"]["asap_cutoff"] is False
     assert len(output["trajectory"]) == 500
     assert output["name"] == "EMT Microcanonical"
+    assert output["trajectory_log"][0]["temperature"] == pytest.approx(759.8829)
+    assert output["trajectory_results"][-1]["energy"] == pytest.approx(2.0363759)
 
 
 def test_slab_dynamic_jobs(tmp_path, monkeypatch):

@@ -293,12 +293,16 @@ def summarize_md_run(
 
     parameters_md["timestep"] = parameters_md["timestep"] / units.fs
 
-    trajectory_log = {"temperature": [], "kinetic_energy": [], "time": []}
+    trajectory_log = []
 
     for t, atoms in enumerate(trajectory):
-        trajectory_log["temperature"].append(atoms.get_temperature())
-        trajectory_log["kinetic_energy"].append(atoms.get_kinetic_energy())
-        trajectory_log["time"].append(t * parameters_md["timestep"] / 1000)
+        trajectory_log.append(
+            {
+                "kinetic_energy": atoms.get_kinetic_energy(),
+                "temperature": atoms.get_temperature(),
+                "time": t * parameters_md["timestep"] / 1000,
+            }
+        )
 
     opt_fields = {
         "parameters_md": parameters_md,
