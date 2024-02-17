@@ -453,7 +453,16 @@ jobs:
           fail_ci_if_error: true
 
   automerge:
-    needs: [codecov]
+    needs:
+      - tests-core
+      - tests-engines-covalent
+      - tests-engines
+      - tests-engines2
+      - tests-psi4
+      - tests-defects-phonons-espresso
+      - tests-tblite-dftbplus
+      - tests-qchem-sella
+      - tests-mlps
     runs-on: ubuntu-latest
 
     permissions:
