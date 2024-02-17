@@ -35,9 +35,7 @@ if TYPE_CHECKING:
 
 @job
 def mp_gga_relax_job(
-    atoms: Atoms,
-    copy_files: str | Path | list[str | Path] | None = None,
-    **calc_kwargs,
+    atoms: Atoms, copy_files: str | Path | list[str | Path] | None = None, **calc_kwargs
 ) -> VaspSchema:
     """
     Function to relax a structure with the original Materials Project GGA(+U) settings.
@@ -58,9 +56,7 @@ def mp_gga_relax_job(
     VaspSchema
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
     """
-    calc_defaults = {
-        "pmg_input_set": MPRelaxSet
-    }
+    calc_defaults = {"pmg_input_set": MPRelaxSet}
     return base_fn(
         atoms,
         calc_defaults=calc_defaults,
