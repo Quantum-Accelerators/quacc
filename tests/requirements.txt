@@ -2,7 +2,7 @@ git+https://gitlab.com/ase/ase.git
 cclib==1.8
 custodian==2024.2.15
 emmet-core==0.77.1
-maggma==0.62.1
+maggma==0.63.2
 monty==2024.2.2
 numpy==1.26.4
 psutil==5.9.8
