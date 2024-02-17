@@ -8,6 +8,7 @@ import typer
 from rich import print as rich_print
 
 from quacc import QuaccSettings
+from quacc.settings import _type_handler
 
 app = typer.Typer()
 
@@ -84,6 +85,8 @@ def set_(parameter: str, new_value: str) -> None:
     CONFIG_FILE = SETTINGS.CONFIG_FILE or _DEFAULT_CONFIG_FILE_PATH
     parameter = parameter.upper()
 
+    settings = _type_handler({parameter: new_value})
+    new_value = settings[parameter]
     _parameter_handler(parameter, SETTINGS.model_dump(), value=new_value)
 
     rich_print(f"Setting `{parameter}` to `{new_value}` in {CONFIG_FILE}")
