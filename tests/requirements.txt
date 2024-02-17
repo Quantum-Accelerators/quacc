@@ -1,6 +1,6 @@
 git+https://gitlab.com/ase/ase.git
 cclib==1.8
-custodian==2023.10.9
+custodian==2024.2.15
 emmet-core==0.77.1
 maggma==0.62.1
 monty==2024.2.2
