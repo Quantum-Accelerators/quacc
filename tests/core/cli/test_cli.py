@@ -3,7 +3,6 @@ import platform
 from pathlib import Path
 
 import pytest
-from pydantic import ValidationError
 from typer.testing import CliRunner
 
 from quacc import SETTINGS, __version__
