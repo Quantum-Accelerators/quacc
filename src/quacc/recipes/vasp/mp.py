@@ -19,7 +19,7 @@ from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from pymatgen.io.vasp.sets import MPScanRelaxSet
+from pymatgen.io.vasp.sets import MPRelaxSet, MPScanRelaxSet, MPStaticSet
 
 from quacc import flow, job
 from quacc.recipes.vasp._base import base_fn
@@ -34,6 +34,90 @@ if TYPE_CHECKING:
 
 
 @job
+def mp_gga_relax_job(
+    atoms: Atoms,
+    bandgap: float | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
+    **calc_kwargs,
+) -> VaspSchema:
+    """
+    Function to relax a structure with the original Materials Project GGA(+U) settings.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+    copy_files
+        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+    **calc_kwargs
+        Custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to [ase.calculators.vasp.vasp.Vasp][].
+
+    Returns
+    -------
+    VaspSchema
+        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
+    """
+    calc_defaults = {
+        "pmg_input_set": MPRelaxSet if bandgap is None else partial(MPRelaxSet)
+    }
+    return base_fn(
+        atoms,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        additional_fields={"name": "MP GGA Relax"},
+        copy_files=copy_files,
+    )
+
+
+@job
+def mp_gga_static_job(
+    atoms: Atoms,
+    bandgap: float | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
+    **calc_kwargs,
+) -> VaspSchema:
+    """
+    Function to run a static calculation on a structure with the original Materials Project GGA(+U) settings.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+    bandgap
+        The bandgap in eV, if known from a prior calculation.
+    copy_files
+        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+    **calc_kwargs
+        Custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to [ase.calculators.vasp.vasp.Vasp][].
+
+    Returns
+    -------
+    VaspSchema
+        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
+    """
+
+    calc_defaults = {
+        "pmg_input_set": partial(
+            MPStaticSet, bandgap=bandgap, small_gap_multply=[1e-4, 3.125]
+        ),
+        "algo": "fast",
+        "lwave": True,  # Deviation from MP (but logical)
+        "lreal": False,
+    }
+    return base_fn(
+        atoms,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        additional_fields={"name": "MP GGA Static"},
+        copy_files=copy_files,
+    )
+
+
+@job
 def mp_metagga_prerelax_job(
     atoms: Atoms,
     bandgap: float = 0.0,
@@ -41,7 +125,7 @@ def mp_metagga_prerelax_job(
     **calc_kwargs,
 ) -> VaspSchema:
     """
-    Function to pre-relax a structure with Materials Project settings. By default, this
+    Function to pre-relax a structure with Materials Project r2SCAN workflow settings. By default, this
     uses a PBEsol pre-relax step.
 
     Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
@@ -67,7 +151,7 @@ def mp_metagga_prerelax_job(
     """
 
     calc_defaults = {
-        "pmg_input_set": partial(MPScanRelaxSet, bandgap=bandgap, auto_ismear=False),
+        "pmg_input_set": partial(MPScanRelaxSet, bandgap=bandgap),
         "ediffg": -0.05,
         "gga": "PS",
         "laechg": False,  # Deviation from MP (but logical)
@@ -92,7 +176,7 @@ def mp_metagga_relax_job(
     **calc_kwargs,
 ) -> VaspSchema:
     """
-    Function to relax a structure with Materials Project settings. By default, this uses
+    Function to relax a structure with Materials Project r2SCAN workflow settings. By default, this uses
     an r2SCAN relax step.
 
     Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
@@ -140,8 +224,8 @@ def mp_metagga_static_job(
     **calc_kwargs,
 ) -> VaspSchema:
     """
-    Function to run a static calculation on a structure with Materials Project settings. By default, this uses
-    an r2SCAN static step.
+    Function to run a static calculation on a structure with r2SCAN workflow Materials Project settings.
+    By default, this uses an r2SCAN static step.
 
     Parameters
     ----------
@@ -187,7 +271,7 @@ def mp_metagga_relax_flow(
     job_decorators: dict[str, Callable | None] | None = None,
 ) -> MPMetaGGARelaxFlowSchema:
     """
-    Workflow consisting of:
+    Materials Project r2SCAN workflow consisting of:
 
     1. MP-compatible pre-relax
         - name: "mp_metagga_prerelax_job"
@@ -219,15 +303,17 @@ def mp_metagga_relax_flow(
     MPMetaGGARelaxFlowSchema
         Dictionary of results. See the type-hint for the data structure.
     """
-    (
-        mp_metagga_prerelax_job_,
-        mp_metagga_relax_job_,
-        mp_metagga_static_job_,
-    ) = customize_funcs(
-        ["mp_metagga_prerelax_job", "mp_metagga_relax_job", "mp_metagga_static_job"],
-        [mp_metagga_prerelax_job, mp_metagga_relax_job, mp_metagga_static_job],
-        parameters=job_params,
-        decorators=job_decorators,
+    (mp_metagga_prerelax_job_, mp_metagga_relax_job_, mp_metagga_static_job_) = (
+        customize_funcs(
+            [
+                "mp_metagga_prerelax_job",
+                "mp_metagga_relax_job",
+                "mp_metagga_static_job",
+            ],
+            [mp_metagga_prerelax_job, mp_metagga_relax_job, mp_metagga_static_job],
+            parameters=job_params,
+            decorators=job_decorators,
+        )
     )
 
     # Run the prerelax
