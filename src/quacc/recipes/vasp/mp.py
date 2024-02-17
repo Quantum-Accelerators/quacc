@@ -36,7 +36,6 @@ if TYPE_CHECKING:
 @job
 def mp_gga_relax_job(
     atoms: Atoms,
-    bandgap: float | None = None,
     copy_files: str | Path | list[str | Path] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
@@ -60,7 +59,7 @@ def mp_gga_relax_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
     """
     calc_defaults = {
-        "pmg_input_set": MPRelaxSet if bandgap is None else partial(MPRelaxSet)
+        "pmg_input_set": MPRelaxSet
     }
     return base_fn(
         atoms,
