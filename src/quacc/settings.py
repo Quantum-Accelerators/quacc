@@ -43,6 +43,7 @@ class QuaccSettings(BaseSettings):
     model_config = SettingsConfigDict(
         env_prefix="quacc_",
         env_nested_delimiter="__",
+        env_parse_none_str="None",
         extra="forbid",
         validate_assignment=True,
     )
