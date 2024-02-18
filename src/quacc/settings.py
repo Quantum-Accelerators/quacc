@@ -458,7 +458,6 @@ class QuaccSettings(BaseSettings):
         else:
             return v
 
-
     @model_validator(mode="before")
     @classmethod
     def load_user_settings(cls, settings: dict[str, Any]) -> dict[str, Any]:
