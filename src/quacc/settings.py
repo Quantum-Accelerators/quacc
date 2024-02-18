@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 installed_engine = next(
     (
         wflow_engine
-        for wflow_engine in ["parsl", "covalent", "dask", "redun", "jobflow"]
+        for wflow_engine in ["parsl", "covalent", "prefect", "dask", "redun", "jobflow"]
         if util.find_spec(wflow_engine)
     ),
     None,
@@ -39,6 +39,14 @@ class QuaccSettings(BaseSettings):
     The variables can also be modified individually though environment variables by
     using the "QUACC" prefix. e.g. `export QUACC_SCRATCH_DIR=/path/to/scratch`.
     """
+
+    model_config = SettingsConfigDict(
+        env_prefix="quacc_",
+        env_nested_delimiter="__",
+        env_parse_none_str="None",
+        extra="forbid",
+        validate_assignment=True,
+    )
 
     CONFIG_FILE: Path = Field(
         _DEFAULT_CONFIG_FILE_PATH,
@@ -450,13 +458,6 @@ class QuaccSettings(BaseSettings):
         else:
             return v
 
-    model_config = SettingsConfigDict(
-        env_prefix="quacc_",
-        env_nested_delimiter="__",
-        env_parse_none_str="None",
-        extra="forbid",
-        validate_assignment=True,
-    )
 
     @model_validator(mode="before")
     @classmethod

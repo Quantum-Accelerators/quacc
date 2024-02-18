@@ -18,6 +18,7 @@ from quacc.calculators.vasp.io import load_vasp_yaml_calc
 from quacc.calculators.vasp.params import (
     get_param_swaps,
     get_pmg_input_set_params,
+    normalize_params,
     remove_unused_flags,
     set_auto_dipole,
     set_pmg_kpts,
@@ -286,5 +287,7 @@ class Vasp(Vasp_):
             self.user_calc_params, self.pmg_kpts, self.input_atoms, self.incar_copilot
         )
 
-        # Remove unused INCAR flags
-        self.user_calc_params = sort_dict(remove_unused_flags(self.user_calc_params))
+        # Clean up the user calc parameters
+        self.user_calc_params = sort_dict(
+            normalize_params(remove_unused_flags(self.user_calc_params))
+        )

@@ -11,14 +11,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added a `store_intermediate_files` keyword option to `quacc.runners.ase.run_opt()` to allow for storing of the logfiles in intermediate geometry optimization steps.
 - Added support for Pymatgen-based input sets in VASP jobs
 - Added an MP meta-GGA VASP static job
+- Added MP GGA relax job, MP GGA static job, and MP GGA relax flow
 - Added a validity checker on CLI parameters
 
 ### Changed
 
 - Changed the default ASE optimizer from `FIRE` to `BFGS` for most recipes
+- Changed the VASP `DoubleRelaxSchema` to be consistent between flows
 
 ### Fixed
 
+- Fixed auto-detection of the Prefect workflow engine in settings
 - Fixed compatability of MP meta-GGA workflow with that in atomate2
 
 ## [0.6.6]

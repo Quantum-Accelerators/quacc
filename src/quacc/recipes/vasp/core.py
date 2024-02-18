@@ -173,6 +173,5 @@ def double_relax_job(
         copy_files=[Path(summary1["dir_name"]) / "WAVECAR"],
         **relax2_kwargs,
     )
-    summary2["relax1"] = summary1
 
-    return summary2
+    return {"relax1": summary1, "relax2": summary2}

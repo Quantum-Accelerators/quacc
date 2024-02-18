@@ -835,7 +835,7 @@ def test_pmg_input_set():
     atoms = bulk("Cu")
     calc = Vasp(atoms, pmg_input_set=MPRelaxSet, incar_copilot="off")
     assert calc.parameters == {
-        "algo": "Fast",
+        "algo": "fast",
         "ediff": 5e-05,
         "encut": 520,
         "ibrion": 2,
@@ -844,12 +844,12 @@ def test_pmg_input_set():
         "ispin": 2,
         "lasph": True,
         "lorbit": 11,
-        "lreal": "Auto",
+        "lreal": "auto",
         "lwave": False,
         "nelm": 100,
         "nsw": 99,
-        "pp": "PBE",
-        "prec": "Accurate",
+        "pp": "pbe",
+        "prec": "accurate",
         "sigma": 0.05,
         "magmom": [0.6],
         "lmaxmix": 4,
@@ -864,7 +864,7 @@ def test_pmg_input_set2():
     atoms[0].symbol = "O"
     calc = Vasp(atoms, pmg_input_set=MPRelaxSet, incar_copilot="off")
     assert calc.parameters == {
-        "algo": "Fast",
+        "algo": "fast",
         "ediff": 0.0001,
         "encut": 520,
         "ibrion": 2,
@@ -879,12 +879,12 @@ def test_pmg_input_set2():
         "ldauu": [0, 5.3],
         "ldauprint": 1,
         "lorbit": 11,
-        "lreal": "Auto",
+        "lreal": "auto",
         "lwave": False,
         "nelm": 100,
         "nsw": 99,
-        "pp": "PBE",
-        "prec": "Accurate",
+        "pp": "pbe",
+        "prec": "accurate",
         "sigma": 0.05,
         "magmom": [2.3, 2.3],
         "lmaxmix": 4,
