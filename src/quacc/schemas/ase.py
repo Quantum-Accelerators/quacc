@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import pickle
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -119,6 +120,10 @@ def summarize_run(
     )
     task_doc = clean_task_doc(unsorted_task_doc)
 
+    if SETTINGS.PICKLE:
+        with open(f"{directory}/results.pkl", "wb") as f:
+            pickle.dump(task_doc, f)
+
     if store:
         results_to_db(store, task_doc)
 
@@ -218,6 +223,10 @@ def summarize_opt_run(
         base_task_doc, opt_fields, additional_fields
     )
     task_doc = clean_task_doc(unsorted_task_doc)
+
+    if SETTINGS.PICKLE:
+        with open(f"{directory}/results.pkl", "wb") as f:
+            pickle.dump(task_doc, f)
 
     if store:
         results_to_db(store, task_doc)
@@ -332,6 +341,10 @@ def summarize_vib_run(
         atoms_metadata, inputs, results, additional_fields
     )
     task_doc = clean_task_doc(unsorted_task_doc)
+
+    if SETTINGS.PICKLE:
+        with open(f"{directory}/results.pkl", "wb") as f:
+            pickle.dump(task_doc, f)
 
     if store:
         results_to_db(store, task_doc)

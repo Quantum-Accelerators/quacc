@@ -103,6 +103,9 @@ class QuaccSettings(BaseSettings):
             """
         ),
     )
+    PICKLE: bool = Field(
+        True, description="Whether the results schema should be written to a pickle file."
+    )
     GZIP_FILES: bool = Field(
         True, description="Whether generated files should be gzip'd."
     )
