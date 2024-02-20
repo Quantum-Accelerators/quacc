@@ -4,7 +4,7 @@ In this section, we provide a few examples going through the entire process to d
 
 !!! Tip "First-Time Deployment"
 
-    Before deploying remote calculations for the first time, do `quacc set WORKFLOW_ENGINE null` on the remote machine and run your recipe as a standard Python script (e.g. by submitting it as a job to the scheduler). This preliminary test will help you identify potential issues early on. When you're done, you can re-set the `WORKFLOW_ENGINE` variable and continue with deployment via a workflow manager.
+    Before deploying remote calculations for the first time, do `quacc set WORKFLOW_ENGINE None` on the remote machine and run your recipe as a standard Python script (e.g. by submitting it as a job to the scheduler). This preliminary test will help you identify potential issues early on. When you're done, you can re-set the `WORKFLOW_ENGINE` variable and continue with deployment via a workflow manager.
 
 ## Pre-Requisites
 
