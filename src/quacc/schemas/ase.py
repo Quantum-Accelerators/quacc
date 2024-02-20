@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-import pickle
 from typing import TYPE_CHECKING
 
 import numpy as np
 from ase import units
 from ase.io import read
 from ase.vibrations.data import VibrationsData
+from monty.serialization import dumpfn
 
 from quacc import SETTINGS, __version__
 from quacc.atoms.core import get_final_atoms_from_dyn
@@ -120,9 +120,8 @@ def summarize_run(
     )
     task_doc = clean_task_doc(unsorted_task_doc)
 
-    if SETTINGS.PICKLE:
-        with open(f"{directory}/results.pkl", "wb") as f:
-            pickle.dump(task_doc, f)
+    if SETTINGS.WRITE_JSON:
+        dumpfn(task_doc, "results.json")
 
     if store:
         results_to_db(store, task_doc)
@@ -224,9 +223,8 @@ def summarize_opt_run(
     )
     task_doc = clean_task_doc(unsorted_task_doc)
 
-    if SETTINGS.PICKLE:
-        with open(f"{directory}/results.pkl", "wb") as f:
-            pickle.dump(task_doc, f)
+    if SETTINGS.WRITE_JSON:
+        dumpfn(task_doc, "results.json")
 
     if store:
         results_to_db(store, task_doc)
@@ -342,9 +340,8 @@ def summarize_vib_run(
     )
     task_doc = clean_task_doc(unsorted_task_doc)
 
-    if SETTINGS.PICKLE:
-        with open(f"{directory}/results.pkl", "wb") as f:
-            pickle.dump(task_doc, f)
+    if SETTINGS.WRITE_JSON:
+        dumpfn(task_doc, "results.json")
 
     if store:
         results_to_db(store, task_doc)
