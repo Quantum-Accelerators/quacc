@@ -451,23 +451,3 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           fail_ci_if_error: true
-
-  automerge:
-    needs:
-      - tests-core
-      - tests-engines-covalent
-      - tests-engines
-      - tests-engines2
-      - tests-psi4
-      - tests-defects-phonons-espresso
-      - tests-tblite-dftbplus
-      - tests-qchem-sella
-      - tests-mlps
-    runs-on: ubuntu-latest
-
-    permissions:
-      pull-requests: write
-      contents: write
-
-    steps:
-      - uses: fastify/github-action-merge-dependabot@v3
