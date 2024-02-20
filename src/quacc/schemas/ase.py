@@ -96,7 +96,7 @@ def summarize_run(
     inputs = {
         "parameters": final_atoms.calc.parameters,
         "nid": uri.split(":")[0],
-        "dir_name": ":".join(uri.split(":")[1:]),
+        "dir_name": directory,
         "input_atoms": input_atoms_metadata,
         "quacc_version": __version__,
     }
