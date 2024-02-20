@@ -67,7 +67,10 @@ def test_env_var2(monkeypatch, tmp_path):
     monkeypatch.setenv("QUACC_WORKFLOW_ENGINE", "none")
     assert QuaccSettings().WORKFLOW_ENGINE is None
 
-    monkeypatch.setenv("QUACC_GZIP_FILES", "FaLsE")
+    monkeypatch.setenv("QUACC_GZIP_FILES", "False")
+    assert QuaccSettings().GZIP_FILES is False
+
+    monkeypatch.setenv("QUACC_GZIP_FILES", "false")
     assert QuaccSettings().GZIP_FILES is False
 
 

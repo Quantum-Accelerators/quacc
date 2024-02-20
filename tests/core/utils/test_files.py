@@ -1,3 +1,4 @@
+import gzip
 import logging
 import os
 from pathlib import Path
@@ -5,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from quacc.utils.files import (
+    check_logfile,
     copy_decompress_files_from_dir,
     copy_decompress_tree,
     make_unique_dir,
@@ -106,3 +108,15 @@ def test_copy_decompress_files_from_dir_v2(tmp_path, monkeypatch):
 def test_copy_decompress_files_from_dir_v3(caplog):
     with caplog.at_level(logging.WARNING):
         copy_decompress_files_from_dir("fake", "test")
+
+
+def test_check_logfile(tmp_path):
+    with open(tmp_path / "logs.out", "w") as f:
+        f.write("trigger")
+    assert check_logfile(str(tmp_path / "logs.out"), "trigger") is True
+    assert check_logfile(str(tmp_path / "logs.out"), "test") is False
+
+    with gzip.open(tmp_path / "logs2.out.gz", "wb") as gf:
+        gf.write(b"trigger")
+    assert check_logfile(str(tmp_path / "logs2.out"), "trigger") is True
+    assert check_logfile(str(tmp_path / "logs2.out"), "test") is False
