@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import inspect
 import os
+import subprocess
 import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -23,6 +24,7 @@ from quacc.calculators.vasp.params import (
     set_auto_dipole,
     set_pmg_kpts,
 )
+from quacc.calculators.vasp.vasp_custodian import run_custodian
 from quacc.schemas.prep import set_magmoms
 from quacc.utils.dicts import sort_dict
 
@@ -291,3 +293,39 @@ class Vasp(Vasp_):
         self.user_calc_params = sort_dict(
             normalize_params(remove_unused_flags(self.user_calc_params))
         )
+
+    def _run(
+        self,
+        command: list[str] = None,
+        out: Path | str = None,
+        directory: Path | str = None,
+    ) -> int | list[list[dict]]:
+        """
+        Override the Vasp calculator's run method to use Custodian if necessary.
+
+        Parameters
+        ----------
+        command
+            The command to run the VASP calculation. If None, will use the
+            self.command attribute.
+        out
+            The stdout file path.
+        directory
+            The directory to run the calculation in. If None, will use the
+            self.directory attribute.
+
+        Returns
+        -------
+        int | list[list[dict]]
+            The return code of the VASP calculation, or a list of errors from
+            each Custodian job.
+        """
+        if command is None:
+            command = self.command
+        if directory is None:
+            directory = self.directory
+
+        if not self.use_custodian:
+            return run_custodian()
+        else:
+            return subprocess.call(command, shell=True, stdout=out, cwd=directory)
