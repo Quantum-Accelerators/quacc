@@ -15,7 +15,7 @@ from custodian.vasp.handlers import (
     NonConvergingErrorHandler,
     PositiveEnergyErrorHandler,
     PotimErrorHandler,
-    ScanMetalHandler,
+    KspacingMetalHandler,
     StdErrHandler,
     UnconvergedErrorHandler,
     VaspErrorHandler,
