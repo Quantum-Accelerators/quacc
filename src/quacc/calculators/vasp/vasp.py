@@ -308,9 +308,8 @@ class Vasp(Vasp_):
 
         Returns
         -------
-        int | list[list[dict]]
-            The return code of the VASP calculation, or a list of errors from
-            each Custodian job.
+        int
+            The return code
         """
         if command is None:
             command = self.command
