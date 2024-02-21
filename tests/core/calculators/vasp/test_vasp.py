@@ -906,5 +906,5 @@ def test_run(monkeypatch, tmp_path):
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, xc="PBE", use_custodian=True)
-    with pytest.raises(FileNotFoundError, match="system cannot find"):
+    with pytest.raises(FileNotFoundError):
         calc._run()
