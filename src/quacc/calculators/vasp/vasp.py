@@ -1,6 +1,7 @@
 """A wrapper around ASE's Vasp calculator that makes it better suited for high-throughput DFT."""
 
 from __future__ import annotations
+
 import os
 import subprocess
 from pathlib import Path
@@ -10,6 +11,7 @@ import numpy as np
 from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.vasp import setups as ase_setups
 from ase.constraints import FixAtoms
+
 from quacc.calculators.vasp.io import load_vasp_yaml_calc
 from quacc.calculators.vasp.params import (
     get_param_swaps,
