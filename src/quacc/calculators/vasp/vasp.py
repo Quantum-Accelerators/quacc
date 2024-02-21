@@ -323,7 +323,7 @@ class Vasp(Vasp_):
         if command is None:
             command = self.command
         if directory is None:
-            directory = self.directory
+            directory = str(self.directory)
 
         return (
             run_custodian()
