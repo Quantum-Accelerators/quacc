@@ -1,5 +1,6 @@
 import logging
 import os
+from pathlib import Path
 from shutil import copytree, move
 
 import pytest
@@ -63,6 +64,7 @@ def test_vasp_summarize_run(run1, monkeypatch):
     cwd = os.getcwd()
     monkeypatch.chdir(run1)
     vasp_summarize_run(atoms)
+    assert Path(results["output"]["dir_name"]) == Path(run1)
     monkeypatch.chdir(cwd)
 
     # Test DB
