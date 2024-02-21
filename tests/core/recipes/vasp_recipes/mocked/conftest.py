@@ -3,19 +3,19 @@ from pathlib import Path
 import pytest
 from ase import Atoms
 from ase.calculators.emt import EMT
-from ase.calculators.vasp.vasp import Vasp
+from quacc.calculators.vasp.vasp import Vasp
 from ase.io import write
 
 FILE_DIR = Path(__file__).parent
 PSEUDO_DIR = FILE_DIR / "fake_pseudos"
 
 
-def mock_execute(self, *args, **kwargs):
+def mock_run(self, *args, **kwargs):
     write(Path(self.directory) / "CONTCAR", self.atoms)
 
 
 @pytest.fixture(autouse=True)
-def patch_execute(monkeypatch):
+def patch_run(monkeypatch):
     monkeypatch.setenv("VASP_PP_PATH", str(PSEUDO_DIR))
     monkeypatch.setattr(Vasp, "_run", mock_execute)
 
