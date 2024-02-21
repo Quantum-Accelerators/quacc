@@ -247,7 +247,6 @@ class QChem(FileIOCalculator):
         # Instantiate the calculator
         super().__init__(
             restart=None,
-            ignore_bad_restart_file=FileIOCalculator._deprecated,
             label=None,
             atoms=self.atoms,
             profile=None,
