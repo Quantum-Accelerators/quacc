@@ -3,7 +3,6 @@ from shutil import copy
 
 import pytest
 from ase import units
-from ase.calculators.calculator import FileIOCalculator
 from ase.calculators.lj import LennardJones
 from ase.io import read
 from ase.optimize import FIRE
@@ -116,7 +115,7 @@ def mock_read(self, **kwargs):
 
 def test_static_job_v1(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
+    monkeypatch.setattr(Qchem, "execute", mock_execute1)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
     output = static_job(test_atoms, charge=charge, spin_multiplicity=spin_multiplicity)
     assert output["atoms"] == test_atoms
@@ -139,7 +138,7 @@ def test_static_job_v1(monkeypatch, tmp_path, test_atoms):
 def test_static_job_v2(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
 
-    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
+    monkeypatch.setattr(Qchem, "execute", mock_execute2)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms, charge=-1)
     output = static_job(
         test_atoms,
@@ -169,7 +168,7 @@ def test_static_job_v2(monkeypatch, tmp_path, test_atoms):
 def test_static_job_v3(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
 
-    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
+    monkeypatch.setattr(Qchem, "execute", mock_execute3)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
     output = static_job(
         test_atoms,
@@ -196,7 +195,7 @@ def test_static_job_v3(monkeypatch, tmp_path, test_atoms):
 def test_static_job_v4(monkeypatch, tmp_path, os_atoms):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(QChem, "read_results", mock_read)
-    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
+    monkeypatch.setattr(Qchem, "execute", mock_execute4)
     charge, spin_multiplicity = check_charge_and_spin(os_atoms)
     assert static_job(os_atoms, charge=charge, spin_multiplicity=spin_multiplicity)
 
@@ -217,7 +216,7 @@ def test_static_job_v5(tmp_path, monkeypatch, test_atoms):
 def test_relax_job_v1(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
 
-    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
+    monkeypatch.setattr(Qchem, "execute", mock_execute1)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
     output = relax_job(
         test_atoms,
@@ -246,7 +245,7 @@ def test_relax_job_v1(monkeypatch, tmp_path, test_atoms):
 @pytest.mark.skipif(sella is None, reason="Does not have Sella")
 def test_relax_job_v2(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
+    monkeypatch.setattr(Qchem, "execute", mock_execute2)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms, charge=-1)
     output = relax_job(
         test_atoms,
@@ -277,7 +276,7 @@ def test_relax_job_v2(monkeypatch, tmp_path, test_atoms):
 @pytest.mark.skipif(sella is None, reason="Does not have Sella")
 def test_relax_job_v3(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
+    monkeypatch.setattr(Qchem, "execute", mock_execute3)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
     output = relax_job(
         test_atoms,
@@ -313,7 +312,7 @@ def test_relax_job_v4(tmp_path, monkeypatch, test_atoms):
 
 def test_freq_job_v1(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute5)
+    monkeypatch.setattr(Qchem, "execute", mock_execute5)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms, charge=-1)
     output = freq_job(
         test_atoms,
@@ -349,7 +348,7 @@ def test_freq_job_v1(monkeypatch, tmp_path, test_atoms):
 def test_ts_job_v1(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
 
-    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
+    monkeypatch.setattr(Qchem, "execute", mock_execute1)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
     output = ts_job(
         test_atoms,
@@ -377,7 +376,7 @@ def test_ts_job_v1(monkeypatch, tmp_path, test_atoms):
 @pytest.mark.skipif(sella is None, reason="Does not have Sella")
 def test_ts_job_v2(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
+    monkeypatch.setattr(Qchem, "execute", mock_execute2)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms, charge=-1)
     output = ts_job(
         test_atoms,
@@ -408,7 +407,7 @@ def test_ts_job_v2(monkeypatch, tmp_path, test_atoms):
 @pytest.mark.skipif(sella is None, reason="Does not have Sella")
 def test_ts_job_v3(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
+    monkeypatch.setattr(Qchem, "execute", mock_execute3)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
     output = ts_job(
         test_atoms,
@@ -456,7 +455,7 @@ def test_irc_job_v1(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
 
     monkeypatch.setattr(QChem, "read_results", mock_read)
-    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
+    monkeypatch.setattr(Qchem, "execute", mock_execute4)
 
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
     output = irc_job(
@@ -548,7 +547,7 @@ def test_quasi_irc_job(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
 
     monkeypatch.setattr(QChem, "read_results", mock_read)
-    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
+    monkeypatch.setattr(Qchem, "execute", mock_execute4)
 
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
     output = quasi_irc_job(
