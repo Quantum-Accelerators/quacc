@@ -1,5 +1,5 @@
 """
-This module, 'dos.py', contains recipes for performing phonon calculations using the
+This module, 'dos.py', contains recipes for performing dos calculations using the
 dos.x binary from Quantum ESPRESSO via the quacc library.
 
 The recipes provided in this module are jobs and flows that can be used to perform
@@ -14,7 +14,7 @@ from quacc import flow, job
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.calculators.espresso.utils import pw_copy_files
 from quacc.recipes.espresso._base import base_fn
-from quacc.recipes.espresso.core import bands_job, non_scf_job, static_job
+from quacc.recipes.espresso.core import non_scf_job, static_job
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs
 
@@ -125,49 +125,6 @@ def projwfc_job(
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "projwfc.x Projects-wavefunctions"},
-        copy_files=prev_dir,
-    )
-
-
-@job
-def bands_pp_job(
-    prev_dir: str | Path,
-    parallel_info: dict[str] | None = None,
-    test_run: bool = False,
-    **calc_kwargs,
-) -> RunSchema:
-    """
-    Function to carry out a basic bands.x calculation.
-    It re-orders bands, computes band-related properties and more. Fore more details please see
-    https://www.quantum-espresso.org/Doc/INPUT_BANDS.html
-
-    Parameters
-    ----------
-    prev_dir
-        Outdir of the previously ran pw.x calculation. This is used to copy
-        the entire tree structure of that directory to the working directory
-        of this calculation.
-    parallel_info
-        Dictionary containing information about the parallelization of the
-        calculation. See the ASE documentation for more information.
-    **calc_kwargs
-        Additional keyword arguments to pass to the Espresso calculator. Set a value to
-        `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
-        `ase.io.espresso.write_fortran_namelist` for more information.
-
-    Returns
-    -------
-    RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
-        See the type-hint for the data structure.
-    """
-
-    return base_fn(
-        template=EspressoTemplate("bands", test_run=test_run),
-        calc_defaults={},
-        calc_swaps=calc_kwargs,
-        parallel_info=parallel_info,
-        additional_fields={"name": "bands.x Bands-post-processing"},
         copy_files=prev_dir,
     )
 
@@ -357,89 +314,4 @@ def projwfc_flow(
         "static_job": static_results,
         "non_scf_job": non_scf_results,
         "projwfc_job": projwfc_results,
-    }
-
-
-@flow
-def bands_flow(
-    atoms: Atoms,
-    job_decorators: dict[str, Callable | None] | None = None,
-    job_params: dict[str, Any] | None = None,
-) -> BandsSchema:
-    """
-    This function performs a bands calculation.
-
-    Consists of following jobs that can be modified:
-
-    1. pw.x static
-        - name: "static_job"
-        - job: [quacc.recipes.espresso.core.static_job][]
-
-    2. pw.x bands
-        - name: "bands_job"
-        - job: [quacc.recipes.espresso.core.bands_job][]
-
-    3. bands.x post processing
-        - name: "bands_pp_job"
-        - job: [quacc.recipes.espresso.dos.bands_pp_job][]
-
-    Parameters
-    ----------
-    atoms
-        Atoms object
-    job_params
-        Custom parameters to pass to each Job in the Flow. This is a dictinoary where
-        the keys are the names of the jobs and the values are dictionaries of parameters.
-    job_decorators
-        Custom decorators to apply to each Job in the Flow. This is a dictionary where
-        the keys are the names of the jobs and the values are decorators.
-
-    Returns
-    -------
-    BandsSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
-        See the type-hint for the data structure.
-    """
-
-    static_job_defaults = {"kspacing": 0.2}
-    bands_job_defaults = recursive_dict_merge(
-        job_params.get("static_job", {}),
-        {"input_data": {"control": {"calculation": "bands", "verbosity": "high"}}},
-    )
-    bands_pp_job_defaults = {}
-
-    calc_defaults = {
-        "static_job": static_job_defaults,
-        "bands_job": bands_job_defaults,
-        "bands_pp_job": bands_pp_job_defaults,
-    }
-    job_params = recursive_dict_merge(calc_defaults, job_params)
-
-    static_job_, bands_job_, bands_pp_job_ = customize_funcs(
-        ["static_job", "bands_job", "bands_pp_job"],
-        [static_job, bands_job, bands_pp_job],
-        parameters=job_params,
-        decorators=job_decorators,
-    )
-
-    static_results = static_job_(atoms)
-    file_to_copy = pw_copy_files(
-        job_params["static_job"].get("input_data"),
-        static_results["dir_name"],
-        include_wfc=False,
-    )
-
-    bands_results = bands_job_(atoms, prev_dir=file_to_copy)
-    file_to_copy = pw_copy_files(
-        job_params["bands_job"].get("input_data"),
-        bands_results["dir_name"],
-        include_wfc=True,
-    )
-
-    bands_pp_results = bands_pp_job_(prev_dir=file_to_copy)
-
-    return {
-        "static_job": static_results,
-        "bands_job": bands_results,
-        "bands_pp_job": bands_pp_results,
     }
