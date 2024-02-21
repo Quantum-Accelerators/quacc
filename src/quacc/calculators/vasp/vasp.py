@@ -318,7 +318,7 @@ class Vasp(Vasp_):
             directory = self.directory
 
         raise ValueError(run_custodian())
-        
+
         return (
             run_custodian()
             if self.use_custodian
