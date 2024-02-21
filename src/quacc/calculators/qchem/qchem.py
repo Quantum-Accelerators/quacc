@@ -1,6 +1,7 @@
 """A Q-Chem calculator built on Pymatgen and Custodian functionality."""
 
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 from ase.calculators.calculator import FileIOCalculator
