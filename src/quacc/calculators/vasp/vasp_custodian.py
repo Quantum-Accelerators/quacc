@@ -10,12 +10,12 @@ from custodian import Custodian
 from custodian.vasp.handlers import (
     FrozenJobErrorHandler,
     IncorrectSmearingHandler,
+    KspacingMetalHandler,
     LargeSigmaHandler,
     MeshSymmetryErrorHandler,
     NonConvergingErrorHandler,
     PositiveEnergyErrorHandler,
     PotimErrorHandler,
-    ScanMetalHandler,
     StdErrHandler,
     UnconvergedErrorHandler,
     VaspErrorHandler,
@@ -154,7 +154,7 @@ def run_custodian(
         "StdErrHandler": StdErrHandler(),
         "UnconvergedErrorHandler": UnconvergedErrorHandler(),
         "WalltimeHandler": WalltimeHandler(),
-        "ScanMetalHandler": ScanMetalHandler(),
+        "KspacingMetalHandler": KspacingMetalHandler(),
     }
     validators_dict = {
         "VaspFilesValidator": VaspFilesValidator(),
