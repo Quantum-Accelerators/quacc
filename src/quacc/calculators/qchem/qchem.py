@@ -282,7 +282,8 @@ class QChem(FileIOCalculator):
 
         write_qchem(qc_input, prev_orbital_coeffs=self.prev_orbital_coeffs)
 
-    def execute(self) -> int:
+    @staticmethod
+    def execute() -> int:
         """
         Execute Q-Chem.
 
