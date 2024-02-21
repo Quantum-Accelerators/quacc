@@ -291,7 +291,7 @@ class Vasp(Vasp_):
         command: list[str] | None = None,
         out: Path | str | None = None,
         directory: Path | str = None,
-    ) -> int | None:
+    ) -> int:
         """
         Override the Vasp calculator's run method to use Custodian if necessary.
 
