@@ -160,13 +160,13 @@ class Vasp(Vasp_):
             atoms=self.input_atoms, command=command, **self.user_calc_params
         )
 
-    def _manage_environment(self) -> str:
+    def _manage_environment(self) -> str | None:
         """
         Manage the environment for the VASP calculator.
 
         Returns
         -------
-        str
+        str | None
             The command flag to pass to the Vasp calculator.
         """
         from quacc import SETTINGS
@@ -185,8 +185,7 @@ class Vasp(Vasp_):
 
         # Return Custodian executable command
         if self.use_custodian:
-            run_vasp_custodian_file = Path(inspect.getfile(vasp_custodian)).resolve()
-            return f"{sys.executable} {run_vasp_custodian_file}"
+            return None
 
         # Return vanilla ASE command
         vasp_cmd = (
