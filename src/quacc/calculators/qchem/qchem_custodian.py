@@ -3,11 +3,14 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
 from quacc import SETTINGS
 
+if TYPE_CHECKING:
+    from subprocess import Popen
 try:
     import openbabel as ob
 except ImportError:
@@ -22,7 +25,7 @@ def run_custodian(
     qchem_use_error_handlers: bool | None = None,
     qchem_custodian_max_errors: int | None = None,
     qchem_nbo_exe: str | Path | None = None,
-) -> None:
+) -> Popen:
     """
     Function to run QChem Custodian.
 
@@ -45,7 +48,8 @@ def run_custodian(
 
     Returns
     -------
-    None
+    Popen
+        Popen object.
     """
     # Adapted from atomate.qchem.firetasks.run_calc
     from custodian import Custodian
@@ -92,8 +96,4 @@ def run_custodian(
         terminate_on_nonzero_returncode=False,
     )
 
-    c.run()
-
-
-if __name__ == "__main__":
-    run_custodian()
+    return c.run()
