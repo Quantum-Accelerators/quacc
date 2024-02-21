@@ -59,7 +59,7 @@ def test_vasp_summarize_run(run1, monkeypatch):
     assert results["nsites"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["output"]["energy"] == -33.15807349
-    assert Path(results["output"]["dir_name"]).is_dir()
+    assert Path(results["dir_name"]).is_dir()
 
     # Make sure default dir works
     cwd = os.getcwd()
