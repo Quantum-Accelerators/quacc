@@ -18,7 +18,7 @@ def mock_run(self, *args, **kwargs):
 @pytest.fixture(autouse=True)
 def patch_run(monkeypatch):
     monkeypatch.setenv("VASP_PP_PATH", str(PSEUDO_DIR))
-    monkeypatch.setattr(Vasp, "_run", mock_execute)
+    monkeypatch.setattr(Vasp, "_run", mock_run)
 
 
 def mock_read_results(self, *args, **kwargs):
