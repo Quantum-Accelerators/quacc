@@ -9,9 +9,9 @@ from typing import TYPE_CHECKING
 
 from ase.calculators.calculator import FileIOCalculator
 
-from quacc.calculators.qchem.qchem_custodian import run_custodian
 from quacc.calculators.qchem.io import read_qchem, write_qchem
 from quacc.calculators.qchem.params import cleanup_attrs, make_qc_input
+from quacc.calculators.qchem.qchem_custodian import run_custodian
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Literal, TypedDict
@@ -294,7 +294,7 @@ class QChem(FileIOCalculator):
 
         run_custodian()
         return 0
-    
+
     def read_results(self) -> None:
         """
         Read the Q-Chem output files. Update the .results and .prev_orbital_coeffs
