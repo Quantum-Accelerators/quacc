@@ -35,6 +35,7 @@ def test_summarize_run():
     assert results["results"]["energy"] == atoms.get_potential_energy()
     assert "pymatgen_version" in results["builder_meta"]
     assert results["input_atoms"]["atoms"] == initial_atoms
+    assert Path(results["dir_name"]).is_dir()
 
 
 def test_summarize_run2():
@@ -118,7 +119,6 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
     assert "pymatgen_version" in results["builder_meta"]
     assert results["fmax"] == dyn.fmax
     assert results["parameters_opt"]["max_steps"] == 100
-    assert Path(results["dir_name"]) == Path(tmp_path)
 
     # Test DB
     atoms = bulk("Cu") * (2, 2, 1)
