@@ -297,7 +297,7 @@ class Vasp(Vasp_):
     def _run(
         self,
         command: list[str] | None = None,
-        out: Path | str = None,
+        out: Path | str | None = None,
         directory: Path | str = None,
     ) -> int | list[list[dict]]:
         """
@@ -323,7 +323,7 @@ class Vasp(Vasp_):
         if command is None:
             command = self.command
         if directory is None:
-            directory = str(self.directory)
+            directory = self.directory
 
         return (
             run_custodian()
