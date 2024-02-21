@@ -206,8 +206,4 @@ def run_custodian(
         **custodian_kwargs,
     )
 
-    try:
-        c.run()
-        return 0
-    except Exception:
-        return 1
+    return c.run()
