@@ -154,7 +154,7 @@ def run_custodian(
         "StdErrHandler": StdErrHandler(),
         "UnconvergedErrorHandler": UnconvergedErrorHandler(),
         "WalltimeHandler": WalltimeHandler(),
-        "ScanMetalHandler": ScanMetalHandler(),
+        "KspacingMetalHandler": KspacingMetalHandler(),
     }
     validators_dict = {
         "VaspFilesValidator": VaspFilesValidator(),
