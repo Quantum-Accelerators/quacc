@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 
 from ase.calculators.calculator import FileIOCalculator
 
-from quacc.calculators.qchem import qchem_custodian
+from quacc.calculators.qchem.qchem_custodian import run_custodian
 from quacc.calculators.qchem.io import read_qchem, write_qchem
 from quacc.calculators.qchem.params import cleanup_attrs, make_qc_input
 
@@ -244,16 +244,12 @@ class QChem(FileIOCalculator):
         # Set default params
         self._set_default_params()
 
-        # Get Q-Chem executable command
-        command = self._manage_environment()
-
         # Instantiate the calculator
         super().__init__(
             restart=None,
             ignore_bad_restart_file=FileIOCalculator._deprecated,
             label=None,
             atoms=self.atoms,
-            command=command,
             profile=None,
             **self.fileiocalculator_kwargs,
         )
@@ -286,6 +282,19 @@ class QChem(FileIOCalculator):
 
         write_qchem(qc_input, prev_orbital_coeffs=self.prev_orbital_coeffs)
 
+    def execute(self) -> int:
+        """
+        Execute Q-Chem.
+
+        Returns
+        -------
+        int
+            The return code.
+        """
+
+        run_custodian()
+        return 0
+    
     def read_results(self) -> None:
         """
         Read the Q-Chem output files. Update the .results and .prev_orbital_coeffs
@@ -298,20 +307,6 @@ class QChem(FileIOCalculator):
         results, prev_orbital_coeffs = read_qchem()
         self.results = results
         self.prev_orbital_coeffs = prev_orbital_coeffs
-
-    @staticmethod
-    def _manage_environment() -> str:
-        """
-        Return the command to run the Q-Chem calculator via Custodian.
-
-        Returns
-        -------
-        str
-            The command flag to run Q-Chem with Custodian.
-        """
-
-        qchem_custodian_script = Path(inspect.getfile(qchem_custodian)).resolve()
-        return f"{sys.executable} {qchem_custodian_script}"
 
     def _set_default_params(self) -> None:
         """
