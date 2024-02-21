@@ -18,9 +18,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Changed the default ASE optimizer from `FIRE` to `BFGS` for most recipes
 - Changed the VASP `DoubleRelaxSchema` to be consistent between flows
+- Refactored VASP and Q-Chem execution commands in custom calculators
 
 ### Fixed
 
+- Fixed `dir_name` in VASP output schema
 - Fixed auto-detection of the Prefect workflow engine in settings
 - Fixed compatability of MP meta-GGA workflow with that in atomate2
 
