@@ -3,8 +3,9 @@ from pathlib import Path
 import pytest
 from ase import Atoms
 from ase.calculators.emt import EMT
-from quacc.calculators.vasp.vasp import Vasp
 from ase.io import write
+
+from quacc.calculators.vasp.vasp import Vasp
 
 FILE_DIR = Path(__file__).parent
 PSEUDO_DIR = FILE_DIR / "fake_pseudos"
