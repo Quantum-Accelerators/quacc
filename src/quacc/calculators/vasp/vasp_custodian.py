@@ -202,7 +202,12 @@ def run_custodian(
         validators=validators,
         max_errors=vasp_custodian_max_errors,
         scratch_dir=scratch_dir,
+        terminate_on_nonzero_returncode=True,
         **custodian_kwargs,
     )
 
-    return c.run()
+    try:
+        c.run()
+        return 0
+    except Exception:
+        return 1
