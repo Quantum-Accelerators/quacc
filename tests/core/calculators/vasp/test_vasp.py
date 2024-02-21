@@ -1,6 +1,7 @@
 import os
 from copy import deepcopy
 from pathlib import Path
+from shutil import which
 
 import numpy as np
 import pytest
@@ -16,6 +17,7 @@ from quacc.calculators.vasp import Vasp, presets
 from quacc.schemas.prep import prep_magmoms, prep_next_run
 
 FILE_DIR = Path(__file__).parent
+PSEUDO_DIR = FILE_DIR / "fake_pseudos"
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 
@@ -892,3 +894,20 @@ def test_pmg_input_set2():
         "gamma": True,
         "setups": {"Fe": "_pv", "O": ""},
     }
+
+
+@pytest.mark.skipif(which(SETTINGS.VASP_CMD), reason="VASP is installed")
+def test_run(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
+    from ase.build import bulk
+
+    from quacc.calculators.vasp import Vasp
+
+    atoms = bulk("Cu")
+    calc = Vasp(atoms, xc="PBE", use_custodian=False)
+    assert calc._run() == 1
+
+    atoms = bulk("Cu")
+    calc = Vasp(atoms, xc="PBE", use_custodian=True)
+    with pytest.raises(FileNotFoundError, match="system cannot find"):
+        calc._run()
