@@ -180,10 +180,6 @@ class Vasp(Vasp_):
                 "VASP_VDW setting was not provided, yet you requested a vdW functional."
             )
 
-        # Return Custodian executable command
-        if self.use_custodian:
-            return ""
-
         # Return vanilla ASE command
         vasp_cmd = (
             SETTINGS.VASP_GAMMA_CMD
