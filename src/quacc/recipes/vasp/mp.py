@@ -244,7 +244,9 @@ def mp_metagga_relax_job(
             copy_files=copy_files,
         )
 
-    summary1 = _relax(atoms, copy_files=copy_files, bandgap=bandgap, calc_kwargs=calc_kwargs)
+    summary1 = _relax(
+        atoms, copy_files=copy_files, bandgap=bandgap, calc_kwargs=calc_kwargs
+    )
     summary2 = _relax(
         atoms,
         copy_files=[
