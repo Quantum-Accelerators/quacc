@@ -91,7 +91,10 @@ def phonon_job(
 
 @job
 def q2r_job(
-    prev_dir: str | Path, parallel_info: dict[str] | None = None, **calc_kwargs
+    prev_dir: str | Path,
+    fildyn: str = "matdyn",
+    parallel_info: dict[str] | None = None,
+    **calc_kwargs,
 ) -> RunSchema:
     """
     Function to carry out a basic q2r.x calculation. It should allow you to
@@ -105,6 +108,9 @@ def q2r_job(
     prev_dir
         Outdir of the previously ran ph.x calculation. This is used to copy
         the the dynamical matrix files.
+    fildyn
+        The name of the file containing the dynamical matrix. Defaults to "matdyn".
+        If you changed it in the ph.x calculation, you should change it here too.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -115,7 +121,6 @@ def q2r_job(
 
         - input_data: dict
 
-
     Returns
     -------
     RunSchema
@@ -123,16 +128,7 @@ def q2r_job(
         See the type-hint for the data structure.
     """
 
-    calc_defaults = {"input_data": {"input": {"fildyn": "matdyn", "flfrc": "realfc"}}}
-
-    # We are not gonna potentially copy TB of files when we can get away with a few KB :/
-
-    input_data = Namelist(calc_kwargs.get("input_data", {}))
-    input_data.to_nested(binary="q2r")
-
-    input_data = recursive_dict_merge(calc_defaults["input_data"], input_data)
-
-    fildyn = input_data["input"]["fildyn"]
+    calc_defaults = {"input_data": {"input": {"fildyn": fildyn, "flfrc": "q2r.fc"}}}
 
     prev_dir = {prev_dir: [f"{fildyn}*"]}
 
@@ -148,7 +144,10 @@ def q2r_job(
 
 @job
 def matdyn_job(
-    prev_dir: str | Path, parallel_info: dict[str] | None = None, **calc_kwargs
+    prev_dir: str | Path,
+    flfrc: str = "q2r.fc",
+    parallel_info: dict[str] | None = None,
+    **calc_kwargs,
 ) -> RunSchema:
     """
     Function to carry out a basic matdyn.x calculation. It should allow you to
@@ -162,6 +161,10 @@ def matdyn_job(
     prev_dir
         Outdir of the previously ran q2r.x calculation. This is used to copy
         the the force constant file.
+    flfrc
+        The name of the file containing the force constants produced by q2r.x.
+        Defaults to "q2r.fc". If you changed it in the q2r.x calculation, you should
+        change it here too.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -172,7 +175,6 @@ def matdyn_job(
 
         - input_data: dict
 
-
     Returns
     -------
     RunSchema
@@ -180,14 +182,7 @@ def matdyn_job(
         See the type-hint for the data structure.
     """
 
-    calc_defaults = {"input_data": {"input": {"flfrc": "realfc"}}}
-
-    input_data = Namelist(calc_kwargs.get("input_data", {}))
-    input_data.to_nested(binary="matdyn")
-
-    input_data = recursive_dict_merge(calc_defaults["input_data"], input_data)
-
-    flfrc = input_data["input"]["flfrc"]
+    calc_defaults = {"input_data": {"input": {"flfrc": flfrc}}}
 
     prev_dir = {prev_dir: flfrc}
 

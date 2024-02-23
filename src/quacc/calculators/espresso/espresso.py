@@ -70,7 +70,7 @@ class EspressoTemplate(EspressoTemplate_):
         self.outfiles = {
             "fildos": "pwscf.dos",
             "filpdos": "pwscf.pdos_tot",
-            "flfrc": "realfc",
+            "flfrc": "q2r.fc",
             "fldos": "matdyn.dos",
             "flfrq": "matdyn.freq",
             "flvec": "matdyn.modes",
@@ -242,6 +242,13 @@ class EspressoTemplate(EspressoTemplate_):
                     "pdos": pdos,
                 }
             }
+        elif self.binary == "matdyn":
+            fldos = self.outfiles["fldos"]
+            if fldos.exists():
+                phonon_dos = np.loadtxt(fldos)
+                results = {fldos.name.replace(".", "_"): {"phonon_dos": phonon_dos}}
+            else:
+                results = {}
         else:
             results = {}
 
