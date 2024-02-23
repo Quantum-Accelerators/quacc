@@ -361,6 +361,7 @@ class Espresso(Espresso_):
                 f"the binary you requested `{self._binary}` is not supported by ASE, this means that presets and usual checks will not be carried, your input_data must be sent in nested format."
             )
 
+            template.binary = None
             self.kwargs["input_data"] = Namelist(self.kwargs.get("input_data"))
             self._user_calc_params = self.kwargs
 
