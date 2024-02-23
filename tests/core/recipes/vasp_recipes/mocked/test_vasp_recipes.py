@@ -713,9 +713,9 @@ def test_mp_relax_flow_custom():
     atoms = bulk("Ni") * (2, 1, 1)
     atoms[0].symbol = "O"
     output = mp_metagga_relax_flow(
-        mp_gga_relax_flow(
-            atoms, job_params={"relax_job": {"nsw": 0}}
-        )["static"]["atoms"],
+        mp_gga_relax_flow(atoms, job_params={"relax_job": {"nsw": 0}})["static"][
+            "atoms"
+        ],
         job_params={"relax_job": {"nsw": 0}},
     )
     assert output["relax"]["parameters"]["nsw"] == 0
