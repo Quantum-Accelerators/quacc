@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ase.optimize import FIRE
-
 from quacc import job
 from quacc.recipes.qchem._base import base_fn, base_opt_fn
 from quacc.utils.dicts import recursive_dict_merge
@@ -142,11 +140,7 @@ def relax_job(
     calc_defaults = recursive_dict_merge(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
-    opt_defaults = {
-        "fmax": 0.01,
-        "max_steps": 1000,
-        "optimizer": Sella if has_sella else FIRE,
-    }
+    opt_defaults = {"optimizer": Sella} if has_sella else {}
 
     return base_opt_fn(
         atoms,

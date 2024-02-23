@@ -86,6 +86,7 @@ def vasp_summarize_run(
     # Fetch all tabulated results from VASP outputs files. Fortunately, emmet
     # already has a handy function for this
     vasp_task_doc = TaskDoc.from_directory(dir_path).model_dump()
+    vasp_task_doc["dir_name"] = dir_path
 
     # Check for calculation convergence
     if check_convergence and vasp_task_doc["state"] != "successful":

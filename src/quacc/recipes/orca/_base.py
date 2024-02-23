@@ -131,7 +131,7 @@ def base_opt_fn(
 
     Returns
     -------
-    cclibSchema
+    cclibASEOptSchema
         Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][]
     """
     inputs = merge_list_params(default_inputs, input_swaps)
@@ -147,14 +147,15 @@ def base_opt_fn(
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )
-    dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
 
-    final_atoms = get_final_atoms_from_dyn(dyn)
+    dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
     opt_run_summary = summarize_opt_run(
         dyn,
         charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields=additional_fields,
     )
+
+    final_atoms = get_final_atoms_from_dyn(dyn)
     cclib_summary = cclib_summarize_run(
         final_atoms, LOG_FILE, additional_fields=additional_fields
     )

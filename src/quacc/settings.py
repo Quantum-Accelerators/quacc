@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 installed_engine = next(
     (
         wflow_engine
-        for wflow_engine in ["parsl", "covalent", "dask", "redun", "jobflow"]
+        for wflow_engine in ["parsl", "covalent", "prefect", "dask", "redun", "jobflow"]
         if util.find_spec(wflow_engine)
     ),
     None,
@@ -39,6 +39,14 @@ class QuaccSettings(BaseSettings):
     The variables can also be modified individually though environment variables by
     using the "QUACC" prefix. e.g. `export QUACC_SCRATCH_DIR=/path/to/scratch`.
     """
+
+    model_config = SettingsConfigDict(
+        env_prefix="quacc_",
+        env_nested_delimiter="__",
+        env_parse_none_str="None",
+        extra="forbid",
+        validate_assignment=True,
+    )
 
     CONFIG_FILE: Path = Field(
         _DEFAULT_CONFIG_FILE_PATH,
@@ -450,18 +458,16 @@ class QuaccSettings(BaseSettings):
         else:
             return v
 
-    model_config = SettingsConfigDict(env_prefix="quacc_")
-
     @model_validator(mode="before")
     @classmethod
-    def load_default_settings(cls, values: dict[str, Any]) -> dict[str, Any]:
+    def load_user_settings(cls, settings: dict[str, Any]) -> dict[str, Any]:
         """
         Loads settings from a root file if available and uses that as defaults in place
-        of built in defaults.
+        of built in defaults. Will also convert common strings to their proper types.
 
         Parameters
         ----------
-        values
+        settings
             Settings to load.
 
         Returns
@@ -469,18 +475,57 @@ class QuaccSettings(BaseSettings):
         dict
             Loaded settings.
         """
+        return _type_handler(_use_custom_config_settings(settings))
 
-        from monty.serialization import loadfn
 
-        config_file_path = (
-            Path(values.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH))
-            .expanduser()
-            .resolve()
-        )
+def _use_custom_config_settings(settings: dict[str, Any]) -> dict[str, Any]:
+    """Parse user settings from a custom YAML.
 
-        new_values = {}  # type: dict
-        if config_file_path.exists() and config_file_path.stat().st_size > 0:
-            new_values |= loadfn(config_file_path)
+    Parameters
+    ----------
+    settings : dict
+        Initial settings.
 
-        new_values.update(values)
-        return new_values
+    Returns
+    -------
+    dict
+        Updated settings based on the custom YAML.
+    """
+    from monty.serialization import loadfn
+
+    config_file_path = (
+        Path(settings.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH))
+        .expanduser()
+        .resolve()
+    )
+
+    new_settings = {}  # type: dict
+    if config_file_path.exists() and config_file_path.stat().st_size > 0:
+        new_settings |= loadfn(config_file_path)
+
+    new_settings.update(settings)
+    return new_settings
+
+
+def _type_handler(settings: dict[str, Any]) -> dict[str, Any]:
+    """
+    Convert common strings to their proper types.
+
+    Parameters
+    ----------
+    settings : dict
+        Initial settings.
+
+    Returns
+    -------
+    dict
+        Updated settings.
+    """
+    for key, value in settings.items():
+        if isinstance(value, str):
+            if value.lower() in {"null", "none"}:
+                settings[key] = None
+            elif value.lower() in {"true", "false"}:
+                settings[key] = value.lower() == "true"
+
+    return settings
