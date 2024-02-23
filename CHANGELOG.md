@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
-- Fixed MP VASP double relaxes, where the same relaxation was done twice by mistake 
+- Fixed MP VASP double relaxes, where the same relaxation was done twice by mistake
 - Fixed use of `**calc_kwargs` in MP flow recipes
 
 ## [0.6.7]
