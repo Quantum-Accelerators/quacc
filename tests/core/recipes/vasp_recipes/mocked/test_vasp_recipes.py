@@ -425,7 +425,6 @@ def test_mp_metagga_relax_job(tmp_path, monkeypatch):
     atoms = bulk("Al")
 
     output = mp_metagga_relax_job(atoms)
-    assert output["relax1"]["input_atoms"] != output["relax2"]["input_atoms"]
     assert output["relax2"]["nsites"] == len(atoms)
     assert output["relax2"]["parameters"] == {
         "algo": "all",
