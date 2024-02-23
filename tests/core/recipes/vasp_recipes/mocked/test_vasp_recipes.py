@@ -455,8 +455,8 @@ def test_mp_metagga_relax_job(tmp_path, monkeypatch):
         "setups": {"Al": ""},
     }
     ref_parameters2 = ref_parameters.copy()
-    ref_parameters2["magmom"]= [0.0]
-    
+    ref_parameters2["magmom"] = [0.0]
+
     output = mp_metagga_relax_job(atoms)
     assert output["relax1"]["parameters"] == ref_parameters
     assert output["relax2"]["nsites"] == len(atoms)
