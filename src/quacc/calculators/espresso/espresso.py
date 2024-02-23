@@ -362,6 +362,7 @@ class Espresso(Espresso_):
             )
 
             template.binary = None
+
             self.kwargs["input_data"] = Namelist(self.kwargs.get("input_data"))
             self._user_calc_params = self.kwargs
 
