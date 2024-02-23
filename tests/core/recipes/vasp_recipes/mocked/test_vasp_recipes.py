@@ -606,14 +606,12 @@ def test_mp_gga_relax_job():
         "pp": "pbe",
         "setups": {"O": "", "Ni": "_pv"},
     }
-    ref_parameters2 = ref_parameters.copy()
-    ref_parameters2["magmom"] = [0.0]
 
     assert output["relax2"]["nsites"] == len(atoms)
     assert output["relax1"]["parameters"] == ref_parameters
     assert output["relax1"]["atoms"].get_chemical_symbols() == ["O", "Ni"]
     assert output["relax2"]["atoms"].get_chemical_symbols() == ["O", "Ni"]
-    assert output["relax2"]["parameters"] == ref_parameters2
+    assert output["relax2"]["parameters"] == ref_parameters
 
 
 def test_mp_gga_static_job():
