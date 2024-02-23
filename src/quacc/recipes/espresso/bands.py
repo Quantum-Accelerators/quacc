@@ -17,6 +17,7 @@ from quacc import job
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.recipes.espresso._base import base_fn
 from quacc.utils.kpts import convert_pmg_kpts
+from quacc.wflow_tools.customizers import strip_decorator
 
 if TYPE_CHECKING:
     from typing import Any, TypedDict
@@ -25,7 +26,7 @@ if TYPE_CHECKING:
 
     from quacc.schemas._aliases.ase import RunSchema
 
-    class BandsSchema(TypedDict):
+    class BandsSchema(TypedDict,total=False):
         bands: RunSchema
         bands_pp: RunSchema
         fermi_surface: RunSchema
@@ -36,8 +37,8 @@ def bands_job(
     atoms: Atoms,
     prev_dir: str | Path,
     run_bands_pp: bool = True,
-    run_fermi_surface: bool = False,
-    primitive: bool = True,
+    run_fermi_surface: bool = True,
+    make_bandpath: bool = True,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     job_params: dict[str, Any] | None = None,
@@ -48,12 +49,15 @@ def bands_job(
 
     1. A pw.x non-self consistent calculation
         - name: "bands"
+        - job : [quacc.recipes.espresso.bands.bands][]
 
     2. A bands.x post-processing calculation
         - name: "bands_pp"
+        - job : [quacc.recipes.espresso.bands.bands_pp][]
 
     3. A fs.x calculation to obtain the fermi surface
         - name: "fermi_surface"
+        - job : [quacc.recipes.espresso.bands.fermi_surface][]
 
     Parameters
     ----------
@@ -69,11 +73,11 @@ def bands_job(
     run_fermi_surface
         If True, a fs.x calculation will be carried out.
         This allows to generate the fermi surface of your structure.
-    primitive
-        If True, it gets the primitive cell for your structure and generate
-        the high symmetry k-path using Latimer-Munro approach.
+    make_bandpath
+        If True, it returns the primitive cell for your structure and generates
+        the high symmetry k-path using Latmer-Munro approach.
         For more information look at
-        https://pymatgen.org/pymatgen.symmetry.html#pymatgen.symmetry.bandstructure.HighSymmKpath
+        [pymatgen.symmetry.bandstructure.HighSymmKpath][]
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -94,40 +98,41 @@ def bands_job(
     results = {}
     bands_kwargs = job_params.get("bands", {})
 
-    bands_result = _bands(
-        atoms=atoms,
-        prev_dir=prev_dir,
-        primitive=primitive,
+    bands_result = strip_decorator(bands(
+        atoms,
+        prev_dir,
+        make_bandpath=make_bandpath,
         parallel_info=parallel_info,
         test_run=test_run,
         **bands_kwargs,
-    )
+    ))
+
+    results["bands"] = bands_result
 
     if run_bands_pp:
         bands_pp_kwargs = job_params.get("bands_pp", {})
         prev_dir = bands_result["dir_name"]
-        bands_pp_results = _bands_pp(
-            atoms, prev_dir, parallel_info, test_run, **bands_pp_kwargs
-        )
+        bands_pp_results = strip_decorator(bands_pp(
+            atoms, prev_dir, parallel_info=parallel_info, test_run=test_run, **bands_pp_kwargs
+        ))
+        results["bands_pp"] = bands_pp_results
 
     if run_fermi_surface:
         fermi_kwargs = job_params.get("fermi_surface", {})
         prev_dir = bands_result["dir_name"]
-        fermi_results = _fermi_surface(
-            atoms, prev_dir, parallel_info, test_run, **fermi_kwargs
-        )
+        fermi_results = strip_decorator(fermi_surface(
+            atoms, prev_dir, parallel_info=parallel_info, test_run=test_run, **fermi_kwargs
+        ))
+        results["fermi_surface"] = fermi_results
 
-    results["bands"] = bands_result
-    results["bands_pp"] = bands_pp_results if run_bands_pp else None
-    results["fermi_surface"] = fermi_results if run_fermi_surface else None
 
     return results
 
-
-def _bands(
+@job
+def bands(
     atoms: Atoms,
     prev_dir: str | Path,
-    primitive: bool = True,
+    make_bandpath: bool = True,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -143,6 +148,11 @@ def _bands(
         Outdir of the previously ran pw.x calculation. This is used to copy
         the entire tree structure of that directory to the working directory
         of this calculation.
+    make_bandpath
+        If True, it returns the primitive cell for your structure and generates
+        the high symmetry k-path using Latmer-Munro approach.
+        For more information look at
+        [pymatgen.symmetry.bandstructure.HighSymmKpath][]
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -165,7 +175,7 @@ def _bands(
     calc_defaults = {
         "input_data": {"control": {"calculation": "bands", "verbosity": "high"}}
     }
-    if primitive:
+    if make_bandpath:
         structure = AseAtomsAdaptor.get_structure(atoms)
         primitive = SpacegroupAnalyzer(structure).get_primitive_standard_structure()
         atoms = AseAtomsAdaptor.get_atoms(primitive)
@@ -183,8 +193,8 @@ def _bands(
         copy_files=prev_dir,
     )
 
-
-def _bands_pp(
+@job
+def bands_pp(
     atoms: Atoms,
     prev_dir: str | Path,
     parallel_info: dict[str] | None = None,
@@ -221,20 +231,18 @@ def _bands_pp(
         See the type-hint for the data structure.
     """
 
-    calc_defaults = {}
-
     return base_fn(
         atoms,
         template=EspressoTemplate("bands", test_run=test_run),
-        calc_defaults=calc_defaults,
+        calc_defaults={},
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "bands.x post-processing"},
         copy_files=prev_dir,
     )
 
-
-def _fermi_surface(
+@job
+def fermi_surface(
     atoms: Atoms,
     prev_dir: str | Path,
     parallel_info: dict[str] | None = None,
@@ -271,12 +279,10 @@ def _fermi_surface(
         See the type-hint for the data structure.
     """
 
-    calc_defaults = {}
-
     return base_fn(
         atoms,
         template=EspressoTemplate("fs", test_run=test_run),
-        calc_defaults=calc_defaults,
+        calc_defaults={},
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "fs.x fermi_surface"},

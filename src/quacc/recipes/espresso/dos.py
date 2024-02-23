@@ -33,13 +33,6 @@ if TYPE_CHECKING:
     class ProjwfcSchema(TypedDict):
         static_job: RunSchema
         non_scf_job: RunSchema
-        projwfc_job: RunSchema
-
-    class BandsSchema(TypedDict):
-        static_job: RunSchema
-        bands_job: RunSchema
-        bands_pp_job: RunSchema
-
 
 @job
 def dos_job(
