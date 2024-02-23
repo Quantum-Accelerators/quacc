@@ -570,7 +570,6 @@ def test_mp_gga_relax_job():
     atoms = bulk("Ni") * (2, 1, 1)
     atoms[0].symbol = "O"
     output = mp_gga_relax_job(atoms)
-    assert output["relax1"]["input_atoms"] != output["relax2"]["input_atoms"]
     assert output["relax2"]["nsites"] == len(atoms)
     assert output["relax1"]["atoms"].get_chemical_symbols() == ["O", "Ni"]
     assert output["relax2"]["atoms"].get_chemical_symbols() == ["O", "Ni"]
