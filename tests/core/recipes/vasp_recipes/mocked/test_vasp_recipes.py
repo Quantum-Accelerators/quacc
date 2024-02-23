@@ -718,4 +718,4 @@ def test_mp_relax_flow_custom():
         ],
         job_params={"mp_metagga_relax_job": {"nsw": 0}},
     )
-    assert output["relax"]["parameters"]["nsw"] == 0
+    assert output["relax"]["relax2"]["parameters"]["nsw"] == 0
