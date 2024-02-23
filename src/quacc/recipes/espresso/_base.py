@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING
 
 from ase import Atoms
 from ase.io.espresso import Namelist
+from ase.io.espresso_namelist.keys import ALL_KEYS
 
 from quacc.calculators.espresso.espresso import (
     Espresso,
@@ -20,6 +22,9 @@ if TYPE_CHECKING:
     from typing import Any
 
     from quacc.schemas._aliases.ase import RunSchema
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 def base_fn(
@@ -198,8 +203,9 @@ def _prepare_atoms(
 
     binary = template.binary if template else "pw"
 
-    calc_defaults["input_data"].to_nested(binary=binary, **calc_defaults)
-    calc_swaps["input_data"].to_nested(binary=binary, **calc_swaps)
+    if binary in ALL_KEYS:
+        calc_defaults["input_data"].to_nested(binary=binary, **calc_defaults)
+        calc_swaps["input_data"].to_nested(binary=binary, **calc_swaps)
 
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 

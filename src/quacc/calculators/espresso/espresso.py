@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import logging
 import os
 import re
 from pathlib import Path
@@ -20,7 +19,6 @@ from ase.io.espresso import (
     write_espresso_ph,
     write_fortran_namelist,
 )
-from ase.io.espresso_namelist.keys import ALL_KEYS
 
 from quacc import SETTINGS
 from quacc.calculators.espresso.utils import get_pseudopotential_info, sanity_checks
@@ -29,8 +27,6 @@ from quacc.utils.files import load_yaml_calc
 
 if TYPE_CHECKING:
     from typing import Any
-
-LOGGER = logging.getLogger(__name__)
 
 
 class EspressoTemplate(EspressoTemplate_):
@@ -354,15 +350,10 @@ class Espresso(Espresso_):
         self._bin_path = str(full_path)
         self._binary = template.binary
 
-        if self._binary in ALL_KEYS:
-            self._cleanup_params()
-        else:
-            LOGGER.warning(
-                f"the binary you requested `{self._binary}` is not supported by ASE, this means that presets and usual checks will not be carried, your input_data must be sent in nested format."
-            )
+        self._cleanup_params()
 
-            self.kwargs["input_data"] = Namelist(self.kwargs.get("input_data"))
-            self._user_calc_params = self.kwargs
+        self.kwargs["input_data"] = Namelist(self.kwargs.get("input_data"))
+        self._user_calc_params = self.kwargs
 
         self._pseudo_path = (
             self._user_calc_params.get("input_data", {})
@@ -399,9 +390,6 @@ class Espresso(Espresso_):
 
         if self.kwargs.get("directory"):
             raise NotImplementedError("quacc does not support the directory argument.")
-
-        self.kwargs["input_data"] = Namelist(self.kwargs.get("input_data"))
-        self.kwargs["input_data"].to_nested(binary=self._binary, **self.kwargs)
 
         if self.preset:
             calc_preset = load_yaml_calc(
