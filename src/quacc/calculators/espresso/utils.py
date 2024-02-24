@@ -93,15 +93,15 @@ def pw_copy_files(
     basics_to_copy = ["charge-density.*", "data-file-schema.*", "paw.*"]
 
     if restart_mode == "restart":
-        file_to_copy[prev_dir].append(f"{wfcdir}/{prefix}.wfc*")
-        file_to_copy[prev_dir].append(f"{wfcdir}/{prefix}.mix*")
-        file_to_copy[prev_dir].append(f"{wfcdir}/{prefix}.restart_k*")
-        file_to_copy[prev_dir].append(f"{wfcdir}/{prefix}.restart_scf*")
+        file_to_copy[prev_dir].append(Path(wfcdir, f"{prefix}.wfc*"))
+        file_to_copy[prev_dir].append(Path(wfcdir, f"{prefix}.mix*"))
+        file_to_copy[prev_dir].append(Path(wfcdir, f"{prefix}.restart_k*"))
+        file_to_copy[prev_dir].append(Path(wfcdir, f"{prefix}.restart_scf*"))
     elif include_wfc:
         basics_to_copy.append("wfc*.*")
 
     file_to_copy[prev_dir].extend(
-        [f"{outdir}/{prefix}.save/{i}" for i in basics_to_copy]
+        [Path(outdir, f"{prefix}.save", i) for i in basics_to_copy]
     )
 
     return file_to_copy
@@ -139,32 +139,35 @@ def grid_copy_files(
 
     file_to_copy = {
         dir_name: [
-            f"{outdir}/_ph0/{prefix}.phsave/control_ph.xml*",
-            f"{outdir}/_ph0/{prefix}.phsave/status_run.xml*",
-            f"{outdir}/_ph0/{prefix}.phsave/patterns.*.xml*",
-            f"{outdir}/_ph0/{prefix}.phsave/tensors.xml*",
+            Path(outdir, "_ph0", f"{prefix}.phsave/control_ph.xml*"),
+            Path(outdir, "_ph0", f"{prefix}.phsave/status_run.xml*"),
+            Path(outdir, f"_ph0", f"{prefix}.phsave/patterns.*.xml*"),
+            Path(outdir, f"_ph0", f"{prefix}.phsave/tensors.xml*"),
         ]
     }
 
     if lqdir or qpt == (0.0, 0.0, 0.0):
         file_to_copy[dir_name].extend(
             [
-                f"{outdir}/{prefix}.save/charge-density.*",
-                f"{outdir}/{prefix}.save/data-file-schema.xml.*",
-                f"{outdir}/{prefix}.save/paw.txt.*",
-                f"{outdir}/{prefix}.save/wfc*.*",
+                Path(outdir, f"{prefix}.save/charge-density.*"),
+                Path(outdir, f"{prefix}.save/data-file-schema.xml.*"),
+                Path(outdir, f"{prefix}.save/paw.txt.*"),
+                Path(outdir, f"{prefix}.save/wfc*.*"),
             ]
         )
         if qpt != (0.0, 0.0, 0.0):
             file_to_copy[dir_name].extend(
                 [
-                    f"{outdir}/_ph0/{prefix}.q_{qnum}/{prefix}.save/*",
-                    f"{outdir}/_ph0/{prefix}.q_{qnum}/{prefix}.wfc*",
+                    Path(outdir, "_ph0", f"{prefix}.q_{qnum}/{prefix}.save/*"),
+                    Path(outdir, "_ph0", f"{prefix}.q_{qnum}/{prefix}.wfc*"),
                 ]
             )
     else:
         file_to_copy[dir_name].extend(
-            [f"{outdir}/_ph0/{prefix}.wfc*", f"{outdir}/_ph0/{prefix}.save/*"]
+            [
+                Path(outdir, "_ph0", f"{prefix}.wfc*"),
+                Path(outdir, "_ph0", f"{prefix}.save/*"),
+            ]
         )
 
     return file_to_copy
