@@ -38,7 +38,6 @@ def patch_read_results(monkeypatch):
 
 
 def mock_taskdoc(*args, **kwargs):
-
     return MOCK_TASKDOC
 
 
