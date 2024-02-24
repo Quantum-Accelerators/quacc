@@ -139,34 +139,34 @@ def grid_copy_files(
 
     file_to_copy = {
         dir_name: [
-            Path(outdir, "_ph0", f"{prefix}.phsave/control_ph.xml*"),
-            Path(outdir, "_ph0", f"{prefix}.phsave/status_run.xml*"),
-            Path(outdir, f"_ph0", f"{prefix}.phsave/patterns.*.xml*"),
-            Path(outdir, f"_ph0", f"{prefix}.phsave/tensors.xml*"),
+            Path(outdir, "_ph0", f"{prefix}.phsave", "control_ph.xml*"),
+            Path(outdir, "_ph0", f"{prefix}.phsave", "status_run.xml*"),
+            Path(outdir, "_ph0", f"{prefix}.phsave", "patterns.*.xml*"),
+            Path(outdir, "_ph0", f"{prefix}.phsave", "tensors.xml*"),
         ]
     }
 
     if lqdir or qpt == (0.0, 0.0, 0.0):
         file_to_copy[dir_name].extend(
             [
-                Path(outdir, f"{prefix}.save/charge-density.*"),
-                Path(outdir, f"{prefix}.save/data-file-schema.xml.*"),
-                Path(outdir, f"{prefix}.save/paw.txt.*"),
-                Path(outdir, f"{prefix}.save/wfc*.*"),
+                Path(outdir, f"{prefix}.save", "charge-density.*"),
+                Path(outdir, f"{prefix}.save", "data-file-schema.xml.*"),
+                Path(outdir, f"{prefix}.save", "paw.txt.*"),
+                Path(outdir, f"{prefix}.save", "wfc*.*"),
             ]
         )
         if qpt != (0.0, 0.0, 0.0):
             file_to_copy[dir_name].extend(
                 [
-                    Path(outdir, "_ph0", f"{prefix}.q_{qnum}/{prefix}.save/*"),
-                    Path(outdir, "_ph0", f"{prefix}.q_{qnum}/{prefix}.wfc*"),
+                    Path(outdir, "_ph0", f"{prefix}.q_{qnum}", f"{prefix}.save", "*"),
+                    Path(outdir, "_ph0", f"{prefix}.q_{qnum}", f"{prefix}.wfc*"),
                 ]
             )
     else:
         file_to_copy[dir_name].extend(
             [
                 Path(outdir, "_ph0", f"{prefix}.wfc*"),
-                Path(outdir, "_ph0", f"{prefix}.save/*"),
+                Path(outdir, "_ph0", f"{prefix}.save", "*"),
             ]
         )
 
