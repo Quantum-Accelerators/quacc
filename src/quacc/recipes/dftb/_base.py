@@ -27,7 +27,7 @@ def base_fn(
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: list[str | Path] | dict[str | Path] = None,
+    copy_files: list[str | Path] | dict[str | Path] | None = None,
 ) -> RunSchema:
     """
     Base job function for DFTB+ recipes.

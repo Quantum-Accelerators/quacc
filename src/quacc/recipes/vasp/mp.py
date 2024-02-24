@@ -40,7 +40,9 @@ if TYPE_CHECKING:
 
 @job
 def mp_gga_relax_job(
-    atoms: Atoms, copy_files: list[str | Path] | dict[str | Path] = None, **calc_kwargs
+    atoms: Atoms,
+    copy_files: list[str | Path] | dict[str | Path] | None = None,
+    **calc_kwargs,
 ) -> DoubleRelaxSchema:
     """
     Function to (double) relax a structure with the original Materials Project GGA(+U) settings.
@@ -67,7 +69,7 @@ def mp_gga_relax_job(
 
     def _relax(
         atoms: Atoms,
-        copy_files: list[str | Path] | dict[str | Path] = None,
+        copy_files: list[str | Path] | dict[str | Path] | None = None,
         calc_kwargs: dict[str, Any] | None = None,
     ) -> VaspSchema:
         """A helper function to run a relaxation with the MP GGA settings."""
@@ -97,7 +99,7 @@ def mp_gga_relax_job(
 def mp_gga_static_job(
     atoms: Atoms,
     bandgap: float | None = None,
-    copy_files: list[str | Path] | dict[str | Path] = None,
+    copy_files: list[str | Path] | dict[str | Path] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """
@@ -146,7 +148,7 @@ def mp_gga_static_job(
 def mp_metagga_prerelax_job(
     atoms: Atoms,
     bandgap: float | None = None,
-    copy_files: list[str | Path] | dict[str | Path] = None,
+    copy_files: list[str | Path] | dict[str | Path] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """
@@ -202,7 +204,7 @@ def mp_metagga_prerelax_job(
 def mp_metagga_relax_job(
     atoms: Atoms,
     bandgap: float | None = None,
-    copy_files: list[str | Path] | dict[str | Path] = None,
+    copy_files: list[str | Path] | dict[str | Path] | None = None,
     **calc_kwargs,
 ) -> DoubleRelaxSchema:
     """
@@ -235,7 +237,7 @@ def mp_metagga_relax_job(
 
     def _relax(
         atoms: Atoms,
-        copy_files: list[str | Path] | dict[str | Path] = None,
+        copy_files: list[str | Path] | dict[str | Path] | None = None,
         bandgap: float | None = None,
         calc_kwargs: dict[str, Any] | None = None,
     ) -> VaspSchema:
@@ -276,7 +278,7 @@ def mp_metagga_relax_job(
 def mp_metagga_static_job(
     atoms: Atoms,
     bandgap: float | None = None,
-    copy_files: list[str | Path] | dict[str | Path] = None,
+    copy_files: list[str | Path] | dict[str | Path] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """

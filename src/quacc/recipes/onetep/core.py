@@ -29,7 +29,9 @@ BASE_SET = {
 
 @job
 def static_job(
-    atoms: Atoms, copy_files: list[str | Path] | dict[str | Path] = None, **calc_kwargs
+    atoms: Atoms,
+    copy_files: list[str | Path] | dict[str | Path] | None = None,
+    **calc_kwargs,
 ) -> RunSchema:
     """
     Function to carry out a basic SCF calculation with ONETEP.
@@ -69,7 +71,7 @@ def static_job(
 @job
 def ase_relax_job(
     atoms: Atoms,
-    copy_files: list[str | Path] | dict[str | Path] = None,
+    copy_files: list[str | Path] | dict[str | Path] | None = None,
     opt_params: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
