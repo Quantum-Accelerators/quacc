@@ -5,8 +5,6 @@ from ase import Atoms
 from ase.calculators.emt import EMT
 from ase.io import write
 
-from quacc.calculators.vasp.vasp import Vasp
-
 FILE_DIR = Path(__file__).parent
 PSEUDO_DIR = FILE_DIR / "fake_pseudos"
 
@@ -17,6 +15,8 @@ def mock_run(self, *args, **kwargs):
 
 @pytest.fixture(autouse=True)
 def patch_run(monkeypatch):
+    from quacc.calculators.vasp.vasp import Vasp
+
     monkeypatch.setenv("VASP_PP_PATH", str(PSEUDO_DIR))
     monkeypatch.setattr(Vasp, "_run", mock_run)
 
@@ -30,6 +30,8 @@ def mock_read_results(self, *args, **kwargs):
 
 @pytest.fixture(autouse=True)
 def patch_read_results(monkeypatch):
+    from quacc.calculators.vasp.vasp import Vasp
+
     monkeypatch.setattr(Vasp, "read_results", mock_read_results)
 
 
