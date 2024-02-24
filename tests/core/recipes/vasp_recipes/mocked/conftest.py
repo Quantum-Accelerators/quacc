@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 from ase.calculators.emt import EMT
-from ase.io import write
+from ase.io import read, write
 from emmet.core.tasks import TaskDoc
 
 FILE_DIR = Path(__file__).parent
@@ -38,7 +38,9 @@ def patch_read_results(monkeypatch):
 
 
 def mock_taskdoc(*args, **kwargs):
+    from quacc.atoms.core import check_is_metal
 
+    MOCK_TASKDOC.output.bandgap = 0.0 if check_is_metal(read("POSCAR.gz")) else 0.5
     return MOCK_TASKDOC
 
 
