@@ -424,9 +424,7 @@ def test_mp_metagga_relax_job(tmp_path, monkeypatch):
 
     atoms = bulk("Al")
 
-    output = mp_metagga_relax_job(atoms)
-    assert output["relax2"]["nsites"] == len(atoms)
-    assert output["relax2"]["parameters"] == {
+    ref_parameters = {
         "algo": "all",
         "ediff": 1e-5,
         "ediffg": -0.02,
@@ -456,6 +454,13 @@ def test_mp_metagga_relax_job(tmp_path, monkeypatch):
         "pp": "pbe",
         "setups": {"Al": ""},
     }
+    ref_parameters2 = ref_parameters.copy()
+    ref_parameters2["magmom"] = [0.0]
+
+    output = mp_metagga_relax_job(atoms)
+    assert output["relax1"]["parameters"] == ref_parameters
+    assert output["relax2"]["nsites"] == len(atoms)
+    assert output["relax2"]["parameters"] == ref_parameters2
 
     output = mp_metagga_relax_job(atoms, bandgap=0)
     assert output["relax2"]["nsites"] == len(atoms)
@@ -570,10 +575,8 @@ def test_mp_gga_relax_job():
     atoms = bulk("Ni") * (2, 1, 1)
     atoms[0].symbol = "O"
     output = mp_gga_relax_job(atoms)
-    assert output["relax2"]["nsites"] == len(atoms)
-    assert output["relax1"]["atoms"].get_chemical_symbols() == ["O", "Ni"]
-    assert output["relax2"]["atoms"].get_chemical_symbols() == ["O", "Ni"]
-    assert output["relax2"]["parameters"] == {
+
+    ref_parameters = {
         "algo": "fast",
         "ediff": 0.0001,
         "efermi": "midgap",  # added by copilot
@@ -603,6 +606,12 @@ def test_mp_gga_relax_job():
         "pp": "pbe",
         "setups": {"O": "", "Ni": "_pv"},
     }
+
+    assert output["relax2"]["nsites"] == len(atoms)
+    assert output["relax1"]["parameters"] == ref_parameters
+    assert output["relax1"]["atoms"].get_chemical_symbols() == ["O", "Ni"]
+    assert output["relax2"]["atoms"].get_chemical_symbols() == ["O", "Ni"]
+    assert output["relax2"]["parameters"] == ref_parameters
 
 
 def test_mp_gga_static_job():
