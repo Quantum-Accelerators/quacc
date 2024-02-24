@@ -30,7 +30,7 @@ def static_job(
     spin_multiplicity: int = 1,
     method: str = "wb97x-v",
     basis: str = "def2-tzvp",
-    copy_files: list[str | Path] | dict[str | Path] | None = None,
+    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
     **kwargs,
 ) -> RunSchema:
     """

@@ -36,7 +36,7 @@ def base_fn(
     input_swaps: list[str] | None = None,
     block_swaps: list[str] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: list[str | Path] | dict[str | Path] | None = None,
+    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
 ) -> cclibSchema:
     """
     Base job function for ORCA recipes.
@@ -100,7 +100,7 @@ def base_opt_fn(
     opt_defaults: dict[str, Any] | None = None,
     opt_params: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: list[str | Path] | dict[str | Path] | None = None,
+    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
 ) -> cclibASEOptSchema:
     """
     Base job function for ORCA recipes with ASE optimizer.

@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms,
     preset: str | None = "BulkSet",
-    copy_files: list[str | Path] | dict[str | Path] | None = None,
+    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """
@@ -73,7 +73,7 @@ def relax_job(
     atoms: Atoms,
     preset: str | None = "BulkSet",
     relax_cell: bool = True,
-    copy_files: list[str | Path] | dict[str | Path] | None = None,
+    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """

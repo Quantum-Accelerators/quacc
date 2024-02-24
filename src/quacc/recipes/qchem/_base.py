@@ -25,7 +25,7 @@ def base_fn(
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: list[str | Path] | dict[str | Path] | None = None,
+    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
 ) -> RunSchema:
     """
     Base job function used for Q-Chem recipes that don't rely on ASE optimizers or other
@@ -82,7 +82,7 @@ def base_opt_fn(
     opt_defaults: dict[str, Any] | None = None,
     opt_params: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: list[str | Path] | dict[str | Path] | None = None,
+    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
 ) -> OptSchema:
     """
     Base function for Q-Chem recipes that involve ASE optimizers.

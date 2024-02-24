@@ -32,7 +32,7 @@ def base_fn(
     calc_swaps: dict[str, Any] | None = None,
     parallel_info: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: list[str | Path] | dict[str | Path] | None = None,
+    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
 ) -> RunSchema:
     """
     Base function to carry out espresso recipes.
@@ -98,7 +98,7 @@ def base_opt_fn(
     opt_params: dict[str, Any] | None = None,
     parallel_info: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: list[str | Path] | dict[str | Path] | None = None,
+    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
 ) -> RunSchema:
     """
     Base function to carry out espresso recipes.
