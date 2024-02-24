@@ -172,11 +172,11 @@ def grid_phonon_flow(
         prev_dirs = {}
         for result in grid_results:
             prev_dirs[result["dir_name"]] = [
-                "**/*.xml.*",
-                "**/data-file-schema.xml.*",
-                "**/charge-density.*",
-                "**/wfc*.*",
-                "**/paw.txt.*",
+                Path("**", "*.xml.*"),
+                Path("**", "data-file-schema.xml.*"),
+                Path("**", "charge-density.*"),
+                Path("**", "wfc*.*"),
+                Path("**", "paw.txt.*"),
             ]
         return strip_decorator(ph_recover_job)(prev_dirs)
 
