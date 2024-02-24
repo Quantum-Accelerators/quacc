@@ -12,6 +12,7 @@ from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from typing import Any
 
     from ase import Atoms
@@ -24,7 +25,7 @@ def base_fn(
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
+    copy_files: list[str | Path] | dict[str | Path] = None,
 ) -> RunSchema:
     """
     Base function to carry out Onetep recipes.
@@ -42,7 +43,10 @@ def base_fn(
     additional_fields
         Any additional fields to supply to the summarizer.
     copy_files
-        Files to copy to the runtime directory.
+        Files to copy from source to scratch directory. If a list, the files will be
+        copied as-specified. If a dictionary, the keys are the base directory and the
+        values are the individual files to copy within that directory. If None, no files will
+        be copied.
 
     Returns
     -------
@@ -74,7 +78,7 @@ def base_opt_fn(
     opt_defaults: dict[str, Any] | None = None,
     opt_params: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
+    copy_files: list[str | Path] | dict[str | Path] = None,
 ) -> RunSchema:
     """
     Base function to carry out Onetep recipes.
@@ -98,7 +102,10 @@ def base_opt_fn(
     additional_fields
         Any additional fields to supply to the summarizer.
     copy_files
-        Files to copy to the runtime directory.
+        Files to copy from source to scratch directory. If a list, the files will be
+        copied as-specified. If a dictionary, the keys are the base directory and the
+        values are the individual files to copy within that directory. If None, no files will
+        be copied.
 
     Returns
     -------

@@ -21,7 +21,8 @@ if TYPE_CHECKING:
 
 
 def calc_setup(
-    atoms: Atoms, copy_files: str | Path | list[str | Path] | None = None
+    atoms: Atoms,
+    copy_files: list[str | Path] | dict[str | Path, str | Path] | None = None,
 ) -> tuple[Path, Path]:
     """
     Perform staging operations for a calculation, including copying files to the scratch
@@ -34,7 +35,10 @@ def calc_setup(
         The Atoms object to run the calculation on. Must have a calculator
         attached.
     copy_files
-        Filenames to copy from source to scratch directory.
+        Files to copy from source to scratch directory. If a list, the files will be
+        copied as-specified. If a dictionary, the keys are the base directory and the
+        values are the individual files to copy within that directory. If None, no files will
+        be copied.
 
     Returns
     -------

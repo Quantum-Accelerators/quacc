@@ -44,7 +44,7 @@ def static_job(
     spin_multiplicity: int = 1,
     method: str | None = "wb97mv",
     basis: str | None = "def2-tzvpd",
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: list[str | Path] | dict[str | Path] = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -64,7 +64,10 @@ def static_job(
     basis
         Basis set.
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy from source to scratch directory. If a list, the files will be
+        copied as-specified. If a dictionary, the keys are the base directory and the
+        values are the individual files to copy within that directory. If None, no files will
+        be copied.
     **calc_kwargs
         Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
         a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
@@ -100,7 +103,7 @@ def relax_job(
     method: str = "wb97mv",
     basis: str = "def2-svpd",
     opt_params: dict[str, Any] | None = None,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: list[str | Path] | dict[str | Path] = None,
     **calc_kwargs,
 ) -> OptSchema:
     """
@@ -124,7 +127,10 @@ def relax_job(
         to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy from source to scratch directory. If a list, the files will be
+        copied as-specified. If a dictionary, the keys are the base directory and the
+        values are the individual files to copy within that directory. If None, no files will
+        be copied.
     **calc_kwargs
         Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
         a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
@@ -162,7 +168,7 @@ def freq_job(
     spin_multiplicity: int = 1,
     method: str = "wb97mv",
     basis: str = "def2-svpd",
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: list[str | Path] | dict[str | Path] = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -182,8 +188,10 @@ def freq_job(
     basis
         Basis set. Defaults to def2-SVPD.
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
-    **calc_kwargs
+        Files to copy from source to scratch directory. If a list, the files will be
+        copied as-specified. If a dictionary, the keys are the base directory and the
+        values are the individual files to copy within that directory. If None, no files will
+        be copied.    **calc_kwargs
         Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
         a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
         details.

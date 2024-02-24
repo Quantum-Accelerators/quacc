@@ -24,7 +24,7 @@ def static_job(
     spin_multiplicity: int = 1,
     xc: str = "wb97xd",
     basis: str = "def2tzvp",
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: list[str | Path] | dict[str | Path] = None,
     **calc_kwargs,
 ) -> cclibSchema:
     """
@@ -43,7 +43,10 @@ def static_job(
     basis
         Basis set
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy from source to scratch directory. If a list, the files will be
+        copied as-specified. If a dictionary, the keys are the base directory and the
+        values are the individual files to copy within that directory. If None, no files will
+        be copied.
     **calc_kwargs
         Custom kwargs for the Gaussian calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -89,7 +92,7 @@ def relax_job(
     xc: str = "wb97xd",
     basis: str = "def2tzvp",
     freq: bool = False,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: list[str | Path] | dict[str | Path] = None,
     **calc_kwargs,
 ) -> cclibSchema:
     """
@@ -110,7 +113,10 @@ def relax_job(
     freq
         If a frequency calculation should be carried out.
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy from source to scratch directory. If a list, the files will be
+        copied as-specified. If a dictionary, the keys are the base directory and the
+        values are the individual files to copy within that directory. If None, no files will
+        be copied.
     **calc_kwargs
         Custom kwargs for the Gaussian calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available

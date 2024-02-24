@@ -11,12 +11,12 @@ from quacc.recipes.onetep._base import base_fn, base_opt_fn
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from typing import Any
 
     from ase import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
-
 BASE_SET = {
     "keywords": {
         "output_detail": "verbose",
@@ -29,7 +29,7 @@ BASE_SET = {
 
 @job
 def static_job(
-    atoms: Atoms, copy_files: list[str] | None = None, **calc_kwargs
+    atoms: Atoms, copy_files: list[str | Path] | dict[str | Path] = None, **calc_kwargs
 ) -> RunSchema:
     """
     Function to carry out a basic SCF calculation with ONETEP.
@@ -39,7 +39,10 @@ def static_job(
     atoms
         The Atoms object.
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy from source to scratch directory. If a list, the files will be
+        copied as-specified. If a dictionary, the keys are the base directory and the
+        values are the individual files to copy within that directory. If None, no files will
+        be copied.
     **calc_kwargs
         Custom kwargs for the ONETEP calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -66,7 +69,7 @@ def static_job(
 @job
 def ase_relax_job(
     atoms: Atoms,
-    copy_files: list[str] | None = None,
+    copy_files: list[str | Path] | dict[str | Path] = None,
     opt_params: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -83,17 +86,10 @@ def ase_relax_job(
         to change the optimizer being used. "fmax" and "max_steps" are commonly
         used keywords. See the ASE documentation for more information.
     copy_files
-        List of files to copy to the calculation directory. Useful for copying
-        files from a previous calculation. This parameter can either be a string
-        or a list of strings.
-
-        If a string is provided, it is assumed to be a path to a directory,
-        all of the child tree structure of that directory is going to be copied to the
-        scratch of this calculation.
-
-        If a list of strings is provided, each string point to a specific file. In this case
-        it is important to note that no directory structure is going to be copied, everything
-        is copied at the root of the temporary directory.
+        Files to copy from source to scratch directory. If a list, the files will be
+        copied as-specified. If a dictionary, the keys are the base directory and the
+        values are the individual files to copy within that directory. If None, no files will
+        be copied.
     **calc_kwargs
         Additional keyword arguments to pass to the ONETEP calculator.
 
