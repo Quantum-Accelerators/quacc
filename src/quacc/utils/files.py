@@ -53,6 +53,7 @@ def copy_decompress_files(
 ) -> None:
     """
     Copy and decompress files from source to destination.
+    Supports glob patterns.
 
     Parameters
     ----------
@@ -65,8 +66,15 @@ def copy_decompress_files(
     -------
     None
     """
+
+    globbed_source_files = []
     for f in source_files:
+        glob_found = list(f.parent.glob(str(f.name)))
+        globbed_source_files.extend(glob_found)
+
+    for f in globbed_source_files:
         f_path = Path(zpath(f)).expanduser()
+
         if f_path.is_symlink():
             continue
         if f_path.is_file():
