@@ -209,7 +209,7 @@ def test_phonon_grid_disp(tmp_path, monkeypatch):
 def test_phonon_grid_v2(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    copy_decompress_files([DATA_DIR / "Li.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Li.upf.gz"], tmp_path)
 
     atoms = bulk("Li", "bcc", orthorhombic=True)
 
