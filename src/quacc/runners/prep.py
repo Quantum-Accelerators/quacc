@@ -75,10 +75,9 @@ def calc_setup(
     # Copy files to tmpdir and decompress them if needed
     if copy_files:
         if isinstance(copy_files, (str, Path)):
-            copy_files = [{Path(copy_files).parent: Path(copy_files).name}]
+            copy_files = {Path(copy_files).parent: Path(copy_files).name}
         elif isinstance(copy_files, list):
-            for i in range(len(copy_files)):
-                copy_files[i] = {Path(copy_files[i]).parent: Path(copy_files[i]).name}
+            copy_files = {Path(file).parent: Path(file).name for file in copy_files}
         for source_directory, filenames in copy_files.items():
             copy_decompress_files(source_directory, filenames, tmpdir)
 
