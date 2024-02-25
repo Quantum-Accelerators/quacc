@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-def check_logfile(logfile: str, check_str: str) -> bool:
+def check_logfile(logfile: str | Path, check_str: str) -> bool:
     """
     Check if a logfile has a given string (case-insensitive).
 
@@ -39,7 +39,7 @@ def check_logfile(logfile: str, check_str: str) -> bool:
     bool
         True if the string is found in the logfile, False otherwise.
     """
-    zlog = Path(zpath(logfile)).expanduser()
+    zlog = Path(zpath(Path(logfile).expanduser()))
     with zopen(zlog, "r") as f:
         for line in f:
             clean_line = line if isinstance(line, str) else line.decode("utf-8")
@@ -68,10 +68,13 @@ def copy_decompress_files(
     """
 
     destination = Path(destination).expanduser()
-    globbed_source_files = [list(f.parent.glob(str(f.name))) for f in source_files]
+    globbed_source_files = []
+    for f in source_files:
+        globs_found = list(f.parent.glob(str(f.name)))
+        globbed_source_files.extend(globs_found)
 
     for f in globbed_source_files:
-        f_path = Path(zpath(f)).expanduser()
+        f_path = Path(zpath(f.expanduser()))
 
         if f_path.is_symlink():
             continue
