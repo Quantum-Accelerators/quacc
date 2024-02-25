@@ -20,7 +20,7 @@ def test_dos_job(tmp_path, monkeypatch):
     copy_decompress_files(
         {DATA_DIR / "dos_test": [Path("pwscf.save", "*.gz")]}, tmp_path
     )
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
     output = dos_job(tmp_path)
 
     assert output["results"]["pwscf_dos"]["fermi"] == pytest.approx(7.199)
@@ -31,7 +31,7 @@ def test_projwfc_job(tmp_path, monkeypatch):
     copy_decompress_files(
         {DATA_DIR / "dos_test": [Path("pwscf.save", "*.gz")]}, tmp_path
     )
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
     output = projwfc_job(tmp_path)
     assert output["name"] == "projwfc.x Projects-wavefunctions"
     assert output["parameters"]["input_data"]["projwfc"] == {}
@@ -40,7 +40,7 @@ def test_projwfc_job(tmp_path, monkeypatch):
 def test_dos_flow(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
     atoms = bulk("Si")
     input_data = {
         "control": {"calculation": "scf", "pseudo_dir": tmp_path},
@@ -94,7 +94,7 @@ def test_dos_flow(tmp_path, monkeypatch):
 def test_projwfc_flow(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
     atoms = bulk("Si")
     input_data = {
         "control": {"calculation": "scf", "pseudo_dir": tmp_path},
