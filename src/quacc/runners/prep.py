@@ -19,7 +19,10 @@ if TYPE_CHECKING:
 
 
 def calc_setup(
-    atoms: Atoms, copy_files: dict[SourceDirectory, Filenames] | None = None
+    atoms: Atoms,
+    copy_files: (
+        dict[SourceDirectory, Filenames] | Filenames | list[Filenames] | None
+    ) = None,
 ) -> tuple[Path, Path]:
     """
     Perform staging operations for a calculation, including copying files to the scratch
