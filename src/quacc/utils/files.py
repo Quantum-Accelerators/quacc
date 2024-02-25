@@ -176,7 +176,7 @@ def copy_decompress_files_from_dir(source: str | Path, destination: str | Path) 
             if f.resolve() == dst.resolve() or f.is_symlink():
                 continue
             if f.is_file():
-                copy_decompress_files([f], dst)
+                copy_decompress_files(f.parent, [f.name], dst)
             elif f.is_dir():
                 (dst / f.name).mkdir(exist_ok=True)
                 copy_decompress_files_from_dir(src / f, dst / f.name)
