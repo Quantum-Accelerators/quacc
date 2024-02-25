@@ -150,8 +150,8 @@ def copy_decompress_files(
                 copy(source_filepath, current_destination / source_filepath.name)
                 decompress_file(current_destination / source_filepath.name)
             elif source_filepath.is_dir():
-                copy_r(f_path, destination / f_path.name)
-                decompress_dir(destination / f_path.name)
+                copy_r(source_filepath, destination / source_filepath.name)
+                decompress_dir(destination / source_filepath.name)
             else:
                 logger.warning(f"Cannot find file {source_filepath}")
 
