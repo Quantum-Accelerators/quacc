@@ -68,10 +68,7 @@ def copy_decompress_files(
     """
 
     destination = Path(destination).expanduser()
-    globbed_source_files = []
-    for f in source_files:
-        glob_found = list(f.parent.glob(str(f.name)))
-        globbed_source_files.extend(glob_found)
+    globbed_source_files = [list(f.parent.glob(str(f.name))) for f in source_files]
 
     for f in globbed_source_files:
         f_path = Path(zpath(f)).expanduser()
