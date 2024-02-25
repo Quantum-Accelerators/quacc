@@ -141,7 +141,6 @@ def copy_decompress_files(
         f_path = Path(source_directory, f).expanduser()
         globs_found = list(f_path.parent.glob(f_path.name))
         for source_file in globs_found:
-
             source_filepath = Path(zpath(source_file))
 
             if source_filepath.is_symlink():
