@@ -132,14 +132,15 @@ def copy_decompress_files(
         filenames = [filenames]
 
     for f in filenames:
-        if len(Path(f).parts) > 1:
-            current_destination = destination / f.parent
+        f_path = Path(f)
+        if len(f_path.parts) > 1:
+            current_destination = destination / f_path.parent
             Path(current_destination).mkdir(parents=True, exist_ok=True)
         else:
             current_destination = destination
 
-        f_path = Path(source_directory, f).expanduser()
-        globs_found = list(f_path.parent.glob(f_path.name))
+        full_f_path = Path(source_directory, f).expanduser()
+        globs_found = list(full_f_path.parent.glob(full_f_path.name))
         for source_file in globs_found:
             source_filepath = Path(zpath(source_file))
 
