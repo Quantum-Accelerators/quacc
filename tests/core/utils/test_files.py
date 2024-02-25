@@ -37,7 +37,7 @@ def test_copy_decompress_files_from_dir(tmp_path):
     Path(src / "dir1" / "file2").touch()
     Path(src / "dir1" / "symlink1").symlink_to(src)
 
-    copy_decompress_files(src, dst)
+    copy_decompress_files(tmp_path, "src", dst)
 
     assert (dst / "src" / "file1").exists()
     assert (dst / "src" / "dir1").exists()
@@ -48,7 +48,7 @@ def test_copy_decompress_files_from_dir(tmp_path):
 
 def test_copy_decompress_files_from_dir_v2(caplog):
     with caplog.at_level(logging.WARNING):
-        copy_decompress_files("fake", "test")
+        copy_decompress_files("fake", "file", "test")
 
 
 @pytest.mark.skipif(os.name == "nt", reason="Windows doesn't support symlinks")
