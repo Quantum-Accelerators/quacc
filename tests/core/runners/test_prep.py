@@ -61,7 +61,9 @@ def test_calc_setup_v2(tmp_path, monkeypatch):
     atoms = bulk("Cu")
     atoms.calc = EMT()
 
-    tmpdir, results_dir = calc_setup(atoms, copy_files=["file1.txt", "tmp_dir"])
+    tmpdir, results_dir = calc_setup(
+        atoms, copy_files={Path(): ["file1.txt", "tmp_dir"]}
+    )
 
     assert tmpdir.is_dir()
     assert "tmp" in str(tmpdir)

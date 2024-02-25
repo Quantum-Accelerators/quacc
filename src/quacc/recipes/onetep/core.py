@@ -11,12 +11,13 @@ from quacc.recipes.onetep._base import base_fn, base_opt_fn
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from typing import Any
 
     from ase import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
+    from quacc.utils.files import Filenames, SourceDirectory
+
 BASE_SET = {
     "keywords": {
         "output_detail": "verbose",
@@ -30,7 +31,7 @@ BASE_SET = {
 @job
 def static_job(
     atoms: Atoms,
-    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -41,10 +42,9 @@ def static_job(
     atoms
         The Atoms object.
     copy_files
-        Files to copy from source to scratch directory. If a list, the files will be
-        copied as-specified. If a dictionary, the keys are the base directory and the
-        values are the individual files to copy within that directory. If None, no files will
-        be copied.
+        Files to copy from source to scratch directory. The keys are the be directories and the
+        values are the individual files to copy within those directories. If None, no files will
+        be copied. Refer to [quacc.utils.files.copy_decompress_files][] for more details.
     **calc_kwargs
         Custom kwargs for the ONETEP calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -71,7 +71,7 @@ def static_job(
 @job
 def ase_relax_job(
     atoms: Atoms,
-    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
     opt_params: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -88,10 +88,9 @@ def ase_relax_job(
         to change the optimizer being used. "fmax" and "max_steps" are commonly
         used keywords. See the ASE documentation for more information.
     copy_files
-        Files to copy from source to scratch directory. If a list, the files will be
-        copied as-specified. If a dictionary, the keys are the base directory and the
-        values are the individual files to copy within that directory. If None, no files will
-        be copied.
+        Files to copy from source to scratch directory. The keys are the be directories and the
+        values are the individual files to copy within those directories. If None, no files will
+        be copied. Refer to [quacc.utils.files.copy_decompress_files][] for more details.
     **calc_kwargs
         Additional keyword arguments to pass to the ONETEP calculator.
 

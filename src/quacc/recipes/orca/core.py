@@ -10,12 +10,12 @@ from quacc import job
 from quacc.recipes.orca._base import base_fn, base_opt_fn
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from typing import Any
 
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.cclib import cclibSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
 
 @job
@@ -28,7 +28,7 @@ def static_job(
     orcasimpleinput: list[str] | None = None,
     orcablocks: list[str] | None = None,
     nprocs: int | None = None,
-    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
 ) -> cclibSchema:
     """
     Carry out a single-point calculation.
@@ -56,10 +56,9 @@ def static_job(
     nprocs
         Number of processors to use. Defaults to the number of physical cores.
     copy_files
-        Files to copy from source to scratch directory. If a list, the files will be
-        copied as-specified. If a dictionary, the keys are the base directory and the
-        values are the individual files to copy within that directory. If None, no files will
-        be copied.
+        Files to copy from source to scratch directory. The keys are the be directories and the
+        values are the individual files to copy within those directories. If None, no files will
+        be copied. Refer to [quacc.utils.files.copy_decompress_files][] for more details.
 
     Returns
     -------
@@ -96,7 +95,7 @@ def relax_job(
     orcasimpleinput: list[str] | None = None,
     orcablocks: list[str] | None = None,
     nprocs: int | None = None,
-    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
 ) -> cclibSchema:
     """
     Carry out a geometry optimization.
@@ -126,10 +125,9 @@ def relax_job(
     nprocs
         Number of processors to use. Defaults to the number of physical cores.
     copy_files
-        Files to copy from source to scratch directory. If a list, the files will be
-        copied as-specified. If a dictionary, the keys are the base directory and the
-        values are the individual files to copy within that directory. If None, no files will
-        be copied.
+        Files to copy from source to scratch directory. The keys are the be directories and the
+        values are the individual files to copy within those directories. If None, no files will
+        be copied. Refer to [quacc.utils.files.copy_decompress_files][] for more details.
 
     Returns
     -------
@@ -169,7 +167,7 @@ def ase_relax_job(
     orcablocks: list[str] | None = None,
     opt_params: dict[str, Any] | None = None,
     nprocs: int | None = None,
-    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
 ) -> cclibSchema:
     """
     Carry out a geometry optimization.
@@ -197,10 +195,9 @@ def ase_relax_job(
     nprocs
         Number of processors to use. Defaults to the number of physical cores.
     copy_files
-        Files to copy from source to scratch directory. If a list, the files will be
-        copied as-specified. If a dictionary, the keys are the base directory and the
-        values are the individual files to copy within that directory. If None, no files will
-        be copied.
+        Files to copy from source to scratch directory. The keys are the be directories and the
+        values are the individual files to copy within those directories. If None, no files will
+        be copied. Refer to [quacc.utils.files.copy_decompress_files][] for more details.
 
     Returns
     -------
