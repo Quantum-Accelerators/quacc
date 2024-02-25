@@ -33,10 +33,9 @@ def static_job(
     preset
         Preset to use from `quacc.calculators.vasp.presets`.
     copy_files
-        Files to copy from source to scratch directory. If a list, the files will be
-        copied as-specified. If a dictionary, the keys are the base directory and the
-        values are the individual files to copy within that directory. If None, no files will
-        be copied.
+        Files to copy from source to scratch directory. The keys are the be directories and the
+        values are the individual files to copy within those directories. If None, no files will
+        be copied. Refer to [quacc.utils.files.copy_decompress_files][] for more details.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -89,10 +88,9 @@ def relax_job(
         True if a volume relaxation (ISIF = 3) should be performed. False if
         only the positions (ISIF = 2) should be updated.
     copy_files
-        Files to copy from source to scratch directory. If a list, the files will be
-        copied as-specified. If a dictionary, the keys are the base directory and the
-        values are the individual files to copy within that directory. If None, no files will
-        be copied.
+        Files to copy from source to scratch directory. The keys are the be directories and the
+        values are the individual files to copy within those directories. If None, no files will
+        be copied. Refer to [quacc.utils.files.copy_decompress_files][] for more details.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available

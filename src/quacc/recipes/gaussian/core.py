@@ -42,10 +42,9 @@ def static_job(
     basis
         Basis set
     copy_files
-        Files to copy from source to scratch directory. If a list, the files will be
-        copied as-specified. If a dictionary, the keys are the base directory and the
-        values are the individual files to copy within that directory. If None, no files will
-        be copied.
+        Files to copy from source to scratch directory. The keys are the be directories and the
+        values are the individual files to copy within those directories. If None, no files will
+        be copied. Refer to [quacc.utils.files.copy_decompress_files][] for more details.
     **calc_kwargs
         Custom kwargs for the Gaussian calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -112,10 +111,9 @@ def relax_job(
     freq
         If a frequency calculation should be carried out.
     copy_files
-        Files to copy from source to scratch directory. If a list, the files will be
-        copied as-specified. If a dictionary, the keys are the base directory and the
-        values are the individual files to copy within that directory. If None, no files will
-        be copied.
+        Files to copy from source to scratch directory. The keys are the be directories and the
+        values are the individual files to copy within those directories. If None, no files will
+        be copied. Refer to [quacc.utils.files.copy_decompress_files][] for more details.
     **calc_kwargs
         Custom kwargs for the Gaussian calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
