@@ -70,11 +70,11 @@ def copy_decompress_files(
     destination = Path(destination).expanduser()
     globbed_source_files = []
     for f in source_files:
-        globs_found = list(f.parent.glob(str(f.name)))
+        globs_found = list(f.expanduser().parent.glob(str(f.name)))
         globbed_source_files.extend(globs_found)
 
     for f in globbed_source_files:
-        f_path = Path(zpath(f.expanduser()))
+        f_path = Path(zpath(f))
 
         if f_path.is_symlink():
             continue
