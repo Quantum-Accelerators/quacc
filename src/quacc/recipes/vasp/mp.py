@@ -16,7 +16,6 @@ This set of recipes is meant to be compatible with the Materials Project
 from __future__ import annotations
 
 from functools import partial
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from pymatgen.io.vasp.sets import MPRelaxSet, MPScanRelaxSet, MPStaticSet
@@ -36,12 +35,13 @@ if TYPE_CHECKING:
         MPMetaGGARelaxFlowSchema,
         VaspSchema,
     )
+    from quacc.utils.files import Filenames, SourceDirectory
 
 
 @job
 def mp_gga_relax_job(
     atoms: Atoms,
-    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> DoubleRelaxSchema:
     """
@@ -69,7 +69,7 @@ def mp_gga_relax_job(
 
     def _relax(
         atoms: Atoms,
-        copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+        copy_files: dict[SourceDirectory, Filenames] | None = None,
         calc_kwargs: dict[str, Any] | None = None,
     ) -> VaspSchema:
         """A helper function to run a relaxation with the MP GGA settings."""
@@ -85,10 +85,7 @@ def mp_gga_relax_job(
     summary1 = _relax(atoms, copy_files=copy_files, calc_kwargs=calc_kwargs)
     summary2 = _relax(
         summary1["atoms"],
-        copy_files=[
-            Path(summary1["dir_name"]) / "CHGCAR",
-            Path(summary1["dir_name"]) / "WAVECAR",
-        ],
+        copy_files={summary1["dir_name"]: ["CHGCAR", "WAVECAR"]},
         calc_kwargs=calc_kwargs,
     )
 
@@ -99,7 +96,7 @@ def mp_gga_relax_job(
 def mp_gga_static_job(
     atoms: Atoms,
     bandgap: float | None = None,
-    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """
@@ -148,7 +145,7 @@ def mp_gga_static_job(
 def mp_metagga_prerelax_job(
     atoms: Atoms,
     bandgap: float | None = None,
-    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """
@@ -204,7 +201,7 @@ def mp_metagga_prerelax_job(
 def mp_metagga_relax_job(
     atoms: Atoms,
     bandgap: float | None = None,
-    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> DoubleRelaxSchema:
     """
@@ -237,7 +234,7 @@ def mp_metagga_relax_job(
 
     def _relax(
         atoms: Atoms,
-        copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+        copy_files: dict[SourceDirectory, Filenames] | None = None,
         bandgap: float | None = None,
         calc_kwargs: dict[str, Any] | None = None,
     ) -> VaspSchema:
@@ -263,10 +260,7 @@ def mp_metagga_relax_job(
     )
     summary2 = _relax(
         summary1["atoms"],
-        copy_files=[
-            Path(summary1["dir_name"]) / "CHGCAR",
-            Path(summary1["dir_name"]) / "WAVECAR",
-        ],
+        copy_files={summary1["dir_name"]: ["CHGCAR", "WAVECAR"]},
         bandgap=bandgap,
         calc_kwargs=calc_kwargs,
     )
@@ -278,7 +272,7 @@ def mp_metagga_relax_job(
 def mp_metagga_static_job(
     atoms: Atoms,
     bandgap: float | None = None,
-    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """
@@ -374,10 +368,7 @@ def mp_gga_relax_flow(
     static_results = mp_gga_static_job_(
         relax_results["relax2"]["atoms"],
         bandgap=relax_results["relax2"]["output"]["bandgap"],
-        copy_files=[
-            Path(relax_results["relax2"]["dir_name"]) / "CHGCAR",
-            Path(relax_results["relax2"]["dir_name"]) / "WAVECAR",
-        ],
+        copy_files={relax_results["relax2"]["dir_name"]: ["CHGCAR", "WAVECAR"]},
     )
 
     return {"relax": relax_results, "static": static_results}
@@ -422,15 +413,17 @@ def mp_metagga_relax_flow(
     MPMetaGGARelaxFlowSchema
         Dictionary of results. See the type-hint for the data structure.
     """
-    (
-        mp_metagga_prerelax_job_,
-        mp_metagga_relax_job_,
-        mp_metagga_static_job_,
-    ) = customize_funcs(
-        ["mp_metagga_prerelax_job", "mp_metagga_relax_job", "mp_metagga_static_job"],
-        [mp_metagga_prerelax_job, mp_metagga_relax_job, mp_metagga_static_job],
-        parameters=job_params,
-        decorators=job_decorators,
+    (mp_metagga_prerelax_job_, mp_metagga_relax_job_, mp_metagga_static_job_) = (
+        customize_funcs(
+            [
+                "mp_metagga_prerelax_job",
+                "mp_metagga_relax_job",
+                "mp_metagga_static_job",
+            ],
+            [mp_metagga_prerelax_job, mp_metagga_relax_job, mp_metagga_static_job],
+            parameters=job_params,
+            decorators=job_decorators,
+        )
     )
 
     # Run the prerelax
@@ -440,20 +433,14 @@ def mp_metagga_relax_flow(
     relax_results = mp_metagga_relax_job_(
         prerelax_results["atoms"],
         bandgap=prerelax_results["output"]["bandgap"],
-        copy_files=[
-            Path(prerelax_results["dir_name"]) / "CHGCAR",
-            Path(prerelax_results["dir_name"]) / "WAVECAR",
-        ],
+        copy_files={prerelax_results["dir_name"]: ["CHGCAR", "WAVECAR"]},
     )
 
     # Run the static
     static_results = mp_metagga_static_job_(
         relax_results["relax2"]["atoms"],
         bandgap=relax_results["relax2"]["output"]["bandgap"],
-        copy_files=[
-            Path(relax_results["relax2"]["dir_name"]) / "CHGCAR",
-            Path(relax_results["relax2"]["dir_name"]) / "WAVECAR",
-        ],
+        copy_files={relax_results["relax2"]["dir_name"]: ["CHGCAR", "WAVERCAR"]},
     )
 
     return {

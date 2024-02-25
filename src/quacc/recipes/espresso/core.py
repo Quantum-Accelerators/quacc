@@ -17,6 +17,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
 
 @job
@@ -25,7 +26,7 @@ def static_job(
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
-    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -90,7 +91,7 @@ def relax_job(
     relax_cell: bool = False,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
-    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -162,7 +163,7 @@ def ase_relax_job(
     relax_cell: bool = False,
     parallel_info: dict[str] | None = None,
     opt_params: dict[str, Any] | None = None,
-    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """

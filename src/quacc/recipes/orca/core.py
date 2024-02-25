@@ -10,12 +10,12 @@ from quacc import job
 from quacc.recipes.orca._base import base_fn, base_opt_fn
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from typing import Any
 
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.cclib import cclibSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
 
 @job
@@ -28,7 +28,7 @@ def static_job(
     orcasimpleinput: list[str] | None = None,
     orcablocks: list[str] | None = None,
     nprocs: int | None = None,
-    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
 ) -> cclibSchema:
     """
     Carry out a single-point calculation.
@@ -96,7 +96,7 @@ def relax_job(
     orcasimpleinput: list[str] | None = None,
     orcablocks: list[str] | None = None,
     nprocs: int | None = None,
-    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
 ) -> cclibSchema:
     """
     Carry out a geometry optimization.
@@ -169,7 +169,7 @@ def ase_relax_job(
     orcablocks: list[str] | None = None,
     opt_params: dict[str, Any] | None = None,
     nprocs: int | None = None,
-    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
 ) -> cclibSchema:
     """
     Carry out a geometry optimization.

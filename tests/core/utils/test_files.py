@@ -7,8 +7,8 @@ import pytest
 
 from quacc.utils.files import (
     check_logfile,
+    copy_decompress_files,
     copy_decompress_files_from_dir,
-    copy_decompress_tree,
     make_unique_dir,
 )
 
@@ -68,7 +68,7 @@ def test_copy_decompress_tree(tmp_path):
 
     to_copy = {Path(src): ["dir1/file2", "dir1/symlink1"]}
 
-    copy_decompress_tree(to_copy, dst)
+    copy_decompress_files(to_copy, dst)
 
     assert (dst / "dir1" / "file2").exists()
     assert not (dst / "dir1" / "file1").exists()
@@ -76,7 +76,7 @@ def test_copy_decompress_tree(tmp_path):
 
     to_copy = {Path(src, "dir1", "dir2"): ["../file2", "../symlink1"]}
 
-    copy_decompress_tree(to_copy, dst / "dir1")
+    copy_decompress_files(to_copy, dst / "dir1")
 
     assert Path(dst, "file2").exists()
     assert not Path(dst, "file1").exists()

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from quacc import job, strip_decorator
@@ -14,13 +13,14 @@ if TYPE_CHECKING:
     from ase import Atoms
 
     from quacc.schemas._aliases.vasp import DoubleRelaxSchema, VaspSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
 
 @job
 def static_job(
     atoms: Atoms,
     preset: str | None = "BulkSet",
-    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """
@@ -73,7 +73,7 @@ def relax_job(
     atoms: Atoms,
     preset: str | None = "BulkSet",
     relax_cell: bool = True,
-    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """
@@ -176,7 +176,7 @@ def double_relax_job(
         summary1["atoms"],
         preset=preset,
         relax_cell=relax_cell,
-        copy_files=[Path(summary1["dir_name"]) / "WAVECAR"],
+        copy_files={summary1["dir_name"]: ["WAVECAR"]},
         **relax2_kwargs,
     )
 

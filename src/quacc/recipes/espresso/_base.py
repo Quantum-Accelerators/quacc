@@ -17,10 +17,10 @@ from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from typing import Any
 
     from quacc.schemas._aliases.ase import RunSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
 
 def base_fn(
@@ -32,7 +32,7 @@ def base_fn(
     calc_swaps: dict[str, Any] | None = None,
     parallel_info: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
 ) -> RunSchema:
     """
     Base function to carry out espresso recipes.
@@ -98,7 +98,7 @@ def base_opt_fn(
     opt_params: dict[str, Any] | None = None,
     parallel_info: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
 ) -> RunSchema:
     """
     Base function to carry out espresso recipes.

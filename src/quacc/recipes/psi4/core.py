@@ -15,11 +15,10 @@ except ImportError:
     psi4 = None
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
 
 @job
@@ -30,7 +29,7 @@ def static_job(
     spin_multiplicity: int = 1,
     method: str = "wb97x-v",
     basis: str = "def2-tzvp",
-    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
     **kwargs,
 ) -> RunSchema:
     """

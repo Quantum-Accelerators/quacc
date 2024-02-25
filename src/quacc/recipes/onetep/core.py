@@ -11,12 +11,13 @@ from quacc.recipes.onetep._base import base_fn, base_opt_fn
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from typing import Any
 
     from ase import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
+    from quacc.utils.files import Filenames, SourceDirectory
+
 BASE_SET = {
     "keywords": {
         "output_detail": "verbose",
@@ -30,7 +31,7 @@ BASE_SET = {
 @job
 def static_job(
     atoms: Atoms,
-    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -71,7 +72,7 @@ def static_job(
 @job
 def ase_relax_job(
     atoms: Atoms,
-    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
     opt_params: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:

@@ -10,19 +10,19 @@ from quacc.recipes.vasp._base import base_fn
 from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from typing import Any, Callable
 
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.vasp import VaspSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
 
 @job
 def static_job(
     atoms: Atoms,
     preset: str | None = "SlabSet",
-    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """
@@ -76,7 +76,7 @@ def static_job(
 def relax_job(
     atoms: Atoms,
     preset: str | None = "SlabSet",
-    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """

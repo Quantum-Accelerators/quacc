@@ -16,12 +16,12 @@ except ImportError:
     has_sella = False
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from typing import Any
 
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import OptSchema, RunSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
 _BASE_SET = {
     "rem": {
@@ -44,7 +44,7 @@ def static_job(
     spin_multiplicity: int = 1,
     method: str | None = "wb97mv",
     basis: str | None = "def2-tzvpd",
-    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -103,7 +103,7 @@ def relax_job(
     method: str = "wb97mv",
     basis: str = "def2-svpd",
     opt_params: dict[str, Any] | None = None,
-    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
     """
@@ -168,7 +168,7 @@ def freq_job(
     spin_multiplicity: int = 1,
     method: str = "wb97mv",
     basis: str = "def2-svpd",
-    copy_files: list[str | Path] | dict[str | Path, list[str | Path]] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """

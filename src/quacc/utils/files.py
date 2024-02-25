@@ -20,6 +20,10 @@ from monty.shutil import decompress_file
 if TYPE_CHECKING:
     from typing import Any
 
+    Filenames = str | Path | list[str | Path]
+    SourceDirectory = str | Path
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -49,16 +53,71 @@ def check_logfile(logfile: str | Path, check_str: str) -> bool:
 
 
 def copy_decompress_files(
-    source_files: list[str | Path], destination: str | Path
+    source_directory: SourceDirectory, filenames: Filenames, destination: str | Path
 ) -> None:
     """
-    Copy and decompress files from source to destination.
-    Supports glob patterns.
+    Copy and decompress `filenames` from the `source_directory` to the `destination`
+    directory.
+
+    For example, to copy the files `CHGCAR` and `WAVECAR` from the `source_directory` to
+    the `destination` directory, use the following:
+
+    ```python
+    copy_decompress_files(
+        source_directory="/path/to/source",
+        filenames=["CHGCAR", "WAVECAR"],
+        destination="/path/to/destination",
+    )
+    ```
+
+    This function also supports glob patterns for any of the entries within `filenames`.
+
+    For example, to copy and decompress all files in the `source_directory` with the
+    extension `.gz` to the `destination` directory, use the following:
+
+    ```python
+    copy_decompress_files(
+        source_directory="/path/to/source",
+        filenames=["*.gz"],
+        destination="/path/to/destination",
+    )
+    ```
+
+    If a directory is specified in `filenames`, that directory and its contents will be
+    copied and decompressed to the `destination` directory.
+
+    For example, to recursively copy the entire directory `prior_run` and decompress its
+    files from the `source_directory` to the `destination` directory, use the following:
+
+    ```python
+    copy_decompress_files(
+        source_directory="/path/to/source",
+        filenames=["prior_run"],
+        destination="/path/to/destination",
+    )
+    ```
+
+    Sometimes, you may want to copy a directory but only keep some of the files for the
+    sake of saving space. In other words, you want to retain the tree structure of the
+    files with respect to some parent directory. To do this, you can specify the
+    tree to retain in the `filenames` argument. For example, to copy and decompress the
+    files `prior_run/CHGCAR` and `prior_run/WAVECAR` from the `source_directory` to the
+    `destination` directory while the tree structure, use the following:
+
+    ```python
+    copy_decompress_files(
+        source_directory="/path/to/source",
+        filenames=["prior_run/CHGCAR", "prior_run/WAVECAR"],
+        destination="/path/to/destination",
+    )
+    ```
 
     Parameters
     ----------
-    source_files
-        List of files to copy and decompress.
+    source_directory
+        Directory to copy files from.
+    filenames
+        Files to copy and decompress. Glob patterns are supported.
     destination
         Destination directory.
 
@@ -68,60 +127,32 @@ def copy_decompress_files(
     """
 
     destination = Path(destination).expanduser()
-    globbed_source_files = []
-    for f in source_files:
-        f_path = Path(f).expanduser()
-        globs_found = list(f_path.parent.glob(f_path.name))
-        globbed_source_files.extend(globs_found)
 
-    for f in globbed_source_files:
-        f_path = Path(zpath(f))
+    if not isinstance(filenames, list):
+        filenames = [filenames]
 
-        if f_path.is_symlink():
-            continue
-        if f_path.is_file():
-            copy(f_path, destination / f_path.name)
-            decompress_file(destination / f_path.name)
-        elif f_path.is_dir():
-            copy_decompress_files_from_dir(f_path, destination)
+    for f in filenames:
+        if len(Path(f).parts) > 1:
+            current_destination = destination / f.parent
+            Path(current_destination).mkdir(parents=True, exist_ok=True)
         else:
-            logger.warning(f"Cannot find file {f_path}")
+            current_destination = destination
 
+        f_path = Path(source_directory, f).expanduser()
+        globs_found = list(f_path.parent.glob(f_path.name))
+        for source_file in globs_found:
 
-def copy_decompress_tree(
-    source_files: dict[str | Path, list[str | Path]], destination: str | Path
-) -> None:
-    """
-    Copy and decompress files from source to destination. This function respects the
-    directory tree.
+            source_filepath = Path(zpath(source_file))
 
-    Parameters
-    ----------
-    source_files
-        Dict, key is the base_dir, values are the tree to
-        be respected
-    destination
-        Destination directory.
-
-    Returns
-    -------
-    None
-    """
-
-    destination = Path(destination).expanduser()
-    for _base, tree in source_files.items():
-        base = Path(_base).expanduser()
-
-        abs_files, rel_files = [], []
-
-        for f in tree:
-            glob_found = list(base.glob(str(f)))
-            abs_files.extend(glob_found)
-            rel_files.extend([i.relative_to(base) for i in glob_found])
-
-        for abs_f, rel_f in zip(abs_files, rel_files):
-            Path(destination, rel_f.parent).mkdir(parents=True, exist_ok=True)
-            copy_decompress_files([abs_f], destination / rel_f.parent)
+            if source_filepath.is_symlink():
+                continue
+            if source_filepath.is_file():
+                copy(source_filepath, current_destination / source_filepath.name)
+                decompress_file(current_destination / source_filepath.name)
+            elif source_filepath.is_dir():
+                copy_decompress_files_from_dir(source_filepath, current_destination)
+            else:
+                logger.warning(f"Cannot find file {source_filepath}")
 
 
 def copy_decompress_files_from_dir(source: str | Path, destination: str | Path) -> None:

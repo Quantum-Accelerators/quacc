@@ -4,9 +4,9 @@
 
 ### Transfers from a Known File Location
 
-Sometimes, you may want to transfer files between jobs. Many recipes within quacc take an optional keyword argument, `copy_files`, that is a list of absolute filepaths to files you wish to have copied to the directory where the calculation is ultimately run.
+Sometimes, you may want to transfer files between jobs. Many recipes within quacc take an optional keyword argument, `copy_files`, that is a dictionary where the keys are the source folders and the values are the source filenames for the files you wish to have copied to the directory where the calculation is ultimately run.
 
-For instance, if you have a file `WAVECAR` stored in `/path/to/my/file/stage`, then you could ensure that is present in the calculation's working directory:
+For instance, if you have the files `CHGCAR` and `WAVECAR` stored in `/my/folder`, then you could ensure that is present in the calculation's working directory:
 
 ```python
 from pathlib import Path
@@ -14,8 +14,10 @@ from ase.build import bulk
 from quacc.recipes.vasp.core import relax_job
 
 atoms = bulk("Cu")
-relax_job(atoms, copy_files=[Path("path/to/my/file/stage/WAVECAR")])
+relax_job(atoms, copy_files={Path("/my/folder"): ["CHGCAR", "WAVECAR"]})
 ```
+
+The `copy_files` keyword argument also supports glob patterns, such as `WAVECAR*` to copy all files that start with `WAVECAR` from the source.
 
 ### Transfers Between Jobs
 
@@ -28,7 +30,7 @@ from quacc.recipes.vasp.core import relax_job, static_job
 
 atoms = bulk("Cu")
 results1 = relax_job(atoms)
-static_job(results1["atoms"], copy_files=[Path(results1["dir_name"], "WAVECAR")])
+static_job(results1["atoms"], copy_files={results1["dir_name"]: ["WAVECAR"]})
 ```
 
 ## Non-Local File Transfers

@@ -10,19 +10,16 @@ from typing import TYPE_CHECKING
 from monty.shutil import gzip_dir
 
 from quacc import SETTINGS
-from quacc.utils.files import (
-    copy_decompress_files,
-    copy_decompress_tree,
-    make_unique_dir,
-)
+from quacc.utils.files import copy_decompress_files, make_unique_dir
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
 
+    from quacc.utils.files import Filenames, SourceDirectory
+
 
 def calc_setup(
-    atoms: Atoms,
-    copy_files: list[str | Path] | dict[str | Path, str | Path] | None = None,
+    atoms: Atoms, copy_files: dict[SourceDirectory, Filenames] | None = None
 ) -> tuple[Path, Path]:
     """
     Perform staging operations for a calculation, including copying files to the scratch
@@ -74,12 +71,9 @@ def calc_setup(
         symlink.symlink_to(tmpdir, target_is_directory=True)
 
     # Copy files to tmpdir and decompress them if needed
-    if isinstance(copy_files, dict):
-        copy_decompress_tree(copy_files, tmpdir)
-    if isinstance(copy_files, list):
-        copy_decompress_files(copy_files, tmpdir)
-    elif isinstance(copy_files, (str, Path)):
-        copy_decompress_files([copy_files], tmpdir)
+    if copy_files:
+        for source_directory, filenames in copy_files.items():
+            copy_decompress_files(source_directory, filenames, tmpdir)
 
     # NOTE: Technically, this breaks thread-safety since it will change the cwd
     # for all threads in the current process. However, elsewhere in the code,
