@@ -128,6 +128,9 @@ def copy_decompress_files(
 
     destination = Path(destination).expanduser()
 
+    if not isinstance(filenames, list):
+        filenames = [filenames]
+
     for f in filenames:
         if len(Path(f).parts) > 1:
             current_destination = destination / f.parent
