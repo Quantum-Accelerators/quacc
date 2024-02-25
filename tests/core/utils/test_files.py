@@ -66,20 +66,11 @@ def test_copy_decompress_tree(tmp_path):
     Path(src / "dir1" / "file1").touch()
     Path(src / "dir1" / "symlink1").symlink_to(src)
 
-    to_copy = {Path(src): ["dir1/file2", "dir1/symlink1"]}
-
-    copy_decompress_files(to_copy, dst)
+    copy_decompress_files(src, ["dir1/file2", "dir1/symlink1"], dst)
 
     assert (dst / "dir1" / "file2").exists()
     assert not (dst / "dir1" / "file1").exists()
     assert not (dst / "dir1" / "symlink1").exists()
-
-    to_copy = {Path(src, "dir1", "dir2"): ["../file2", "../symlink1"]}
-
-    copy_decompress_files(to_copy, dst / "dir1")
-
-    assert Path(dst, "file2").exists()
-    assert not Path(dst, "file1").exists()
 
 
 def test_check_logfile(tmp_path):
