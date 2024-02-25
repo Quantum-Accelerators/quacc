@@ -67,6 +67,7 @@ def copy_decompress_files(
     None
     """
 
+    destination = Path(destination).expanduser()
     globbed_source_files = []
     for f in source_files:
         glob_found = list(f.parent.glob(str(f.name)))
@@ -78,8 +79,8 @@ def copy_decompress_files(
         if f_path.is_symlink():
             continue
         if f_path.is_file():
-            copy(f_path, Path(destination, f_path.name))
-            decompress_file(Path(destination, f_path.name))
+            copy(f_path, destination / f_path.name)
+            decompress_file(destination / f_path.name)
         elif f_path.is_dir():
             copy_decompress_files_from_dir(f_path, destination)
         else:
@@ -106,7 +107,7 @@ def copy_decompress_tree(
     None
     """
 
-    # Work with glob pattern, work if the glob pattern return nothing
+    destination = Path(destination).expanduser()
     for _base, tree in source_files.items():
         base = Path(_base).expanduser()
 
@@ -119,7 +120,7 @@ def copy_decompress_tree(
 
         for abs_f, rel_f in zip(abs_files, rel_files):
             Path(destination, rel_f.parent).mkdir(parents=True, exist_ok=True)
-            copy_decompress_files([abs_f], Path(destination, rel_f.parent))
+            copy_decompress_files([abs_f], destination / rel_f.parent)
 
 
 def copy_decompress_files_from_dir(source: str | Path, destination: str | Path) -> None:
