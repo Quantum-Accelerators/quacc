@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING
 import yaml
 from monty.io import zopen
 from monty.os.path import zpath
-from monty.shutil import decompress_file
+from monty.shutil import copy_r, decompress_dir, decompress_file
 
 if TYPE_CHECKING:
     from typing import Any
@@ -49,10 +49,13 @@ def check_logfile(logfile: str | Path, check_str: str) -> bool:
 
 
 def copy_decompress_files(
-    source_files: list[str | Path], destination: str | Path
+    source_files: str | Path | list[str | Path], destination: str | Path
 ) -> None:
     """
-    Copy and decompress files from source to destination.
+    Copy and decompress files from source to destination. If one of
+    the source files is a directory, the entire directory is copied and
+    its files decompressed.
+
     Supports glob patterns.
 
     Parameters
@@ -66,6 +69,9 @@ def copy_decompress_files(
     -------
     None
     """
+
+    if not isinstance(source_files, list):
+        source_files = [source_files]
 
     destination = Path(destination).expanduser()
     globbed_source_files = []
@@ -83,7 +89,8 @@ def copy_decompress_files(
             copy(f_path, destination / f_path.name)
             decompress_file(destination / f_path.name)
         elif f_path.is_dir():
-            copy_decompress_files_from_dir(f_path, destination)
+            copy_r(f_path, destination / f_path.name)
+            decompress_dir(destination / f_path.name)
         else:
             logger.warning(f"Cannot find file {f_path}")
 
@@ -122,36 +129,6 @@ def copy_decompress_tree(
         for abs_f, rel_f in zip(abs_files, rel_files):
             Path(destination, rel_f.parent).mkdir(parents=True, exist_ok=True)
             copy_decompress_files([abs_f], destination / rel_f.parent)
-
-
-def copy_decompress_files_from_dir(source: str | Path, destination: str | Path) -> None:
-    """
-    Copy and decompress files recursively from source to destination.
-
-    Parameters
-    ----------
-    source
-        Directory to walk and copy files from.
-    destination
-        Destination directory.
-
-    Returns
-    -------
-    None
-    """
-    src, dst = Path(source).expanduser(), Path(destination).expanduser()
-
-    if src.is_dir():
-        for f in src.iterdir():
-            if f.resolve() == dst.resolve() or f.is_symlink():
-                continue
-            if f.is_file():
-                copy_decompress_files([f], dst)
-            elif f.is_dir():
-                (dst / f.name).mkdir(exist_ok=True)
-                copy_decompress_files_from_dir(src / f, dst / f.name)
-    else:
-        logger.warning(f"Cannot find {src}")
 
 
 def make_unique_dir(

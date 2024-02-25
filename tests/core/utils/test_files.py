@@ -7,7 +7,7 @@ import pytest
 
 from quacc.utils.files import (
     check_logfile,
-    copy_decompress_files_from_dir,
+    copy_decompress_files,
     copy_decompress_tree,
     make_unique_dir,
 )
@@ -38,17 +38,22 @@ def test_copy_decompress_files_from_dir(tmp_path):
 
     Path(src / "file1").touch()
     Path(src / "dir1").mkdir()
-    Path(f"{src}{'/nested' * 10}").mkdir(parents=True)
+    Path(src / "nested" / "nested").mkdir(parents=True)
     Path(src / "dir1" / "file2").touch()
     Path(src / "dir1" / "symlink1").symlink_to(src)
 
-    copy_decompress_files_from_dir(src, dst)
+    copy_decompress_files(src, dst)
 
-    assert (dst / "file1").exists()
-    assert (dst / "dir1").exists()
-    assert (dst / "dir1" / "file2").exists()
-    assert Path(f"{dst}{'/nested' * 10}").exists()
-    assert not (dst / "dir1" / "symlink1").exists()
+    assert (dst / "src" / "file1").exists()
+    assert (dst / "src" / "dir1").exists()
+    assert (dst / "src" / "dir1" / "file2").exists()
+    assert (dst / "src" / "nested" / "nested").exists()
+    assert not (dst / "src" / "dir1" / "symlink1").exists()
+
+
+def test_copy_decompress_files_from_dir_v2(caplog):
+    with caplog.at_level(logging.WARNING):
+        copy_decompress_files("fake", "test")
 
 
 @pytest.mark.skipif(os.name == "nt", reason="Windows doesn't support symlinks")
@@ -80,34 +85,6 @@ def test_copy_decompress_tree(tmp_path):
 
     assert Path(dst, "file2").exists()
     assert not Path(dst, "file1").exists()
-
-
-@pytest.mark.skipif(os.name == "nt", reason="Windows doesn't support symlinks")
-def test_copy_decompress_files_from_dir_v2(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-    src = Path(os.getcwd())
-
-    dst = tmp_path / "dst"
-    dst.mkdir()
-
-    Path(src / "file1").touch()
-    Path(src / "dir1").mkdir()
-    Path(f"{src}{'/nested' * 10}").mkdir(parents=True)
-    Path(src / "dir1" / "file2").touch()
-    Path(src / "dir1" / "symlink1").symlink_to(src)
-
-    copy_decompress_files_from_dir(src, dst)
-
-    assert (dst / "file1").exists()
-    assert (dst / "dir1").exists()
-    assert (dst / "dir1" / "file2").exists()
-    assert Path(f"{dst}{'/nested' * 10}").exists()
-    assert not (dst / "dir1" / "symlink1").exists()
-
-
-def test_copy_decompress_files_from_dir_v3(caplog):
-    with caplog.at_level(logging.WARNING):
-        copy_decompress_files_from_dir("fake", "test")
 
 
 def test_check_logfile(tmp_path):
