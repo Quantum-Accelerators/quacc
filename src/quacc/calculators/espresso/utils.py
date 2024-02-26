@@ -199,7 +199,8 @@ def grid_prepare_repr(patterns: dict[str, Any], nblocks: int) -> list:
 
 
 def sanity_checks(parameters: dict[str, Any], binary: str = "pw") -> None:
-    """Function that performs sanity checks on the input_data. It is meant
+    """
+    Function that performs sanity checks on the input_data. It is meant
     to catch common mistakes that are not caught by the espresso binaries.
 
     Parameters
