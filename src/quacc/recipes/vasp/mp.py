@@ -77,14 +77,14 @@ def mp_gga_relax_job(
             copy_files=copy_files,
         )
 
-    summary1 = _relax(atoms, copy_files=copy_files, **calc_kwargs)
+    summary1 = _relax(atoms, copy_files=copy_files, calc_kwargs=calc_kwargs)
     summary2 = _relax(
-        atoms,
+        summary1["atoms"],
         copy_files=[
             Path(summary1["dir_name"]) / "CHGCAR",
             Path(summary1["dir_name"]) / "WAVECAR",
         ],
-        **calc_kwargs,
+        calc_kwargs=calc_kwargs,
     )
 
     return {"relax1": summary1, "relax2": summary2}
@@ -244,15 +244,17 @@ def mp_metagga_relax_job(
             copy_files=copy_files,
         )
 
-    summary1 = _relax(atoms, copy_files=copy_files, bandgap=bandgap, **calc_kwargs)
+    summary1 = _relax(
+        atoms, copy_files=copy_files, bandgap=bandgap, calc_kwargs=calc_kwargs
+    )
     summary2 = _relax(
-        atoms,
+        summary1["atoms"],
         copy_files=[
             Path(summary1["dir_name"]) / "CHGCAR",
             Path(summary1["dir_name"]) / "WAVECAR",
         ],
         bandgap=bandgap,
-        **calc_kwargs,
+        calc_kwargs=calc_kwargs,
     )
 
     return {"relax1": summary1, "relax2": summary2}

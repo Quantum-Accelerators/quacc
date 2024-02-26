@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.8]
+
+### Fixed
+
+- Fixed MP VASP double relaxes, where the same relaxation was done twice by mistake
+- Fixed use of `**calc_kwargs` in MP flow recipes
+
 ## [0.6.7]
 
 ### Added

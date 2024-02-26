@@ -60,6 +60,8 @@ def test_vasp_summarize_run(run1, monkeypatch):
     assert results["atoms"] == atoms
     assert results["output"]["energy"] == -33.15807349
     assert Path(results["dir_name"]).is_dir()
+    assert "calcs_reversed" in results
+    assert "orig_inputs" in results
 
     # Make sure default dir works
     cwd = os.getcwd()

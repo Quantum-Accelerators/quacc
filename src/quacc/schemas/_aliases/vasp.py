@@ -16,7 +16,6 @@ class BaderSchema(TypedDict, total=False):
     spin_moments: list[float]
     bader_version: float
     min_dist: list[float]
-    partial_charges: list[float]
 
 
 class DDECSchema(TypedDict, total=False):
