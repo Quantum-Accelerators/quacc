@@ -176,10 +176,12 @@ def test_bad_runs(tmp_path, monkeypatch, caplog):
     # No file
     with caplog.at_level(logging.WARNING):
         run_calc(atoms, copy_files=["test_file.txt"])
+    assert "Cannot find file" in caplog.text
 
     # No file again
     with caplog.at_level(logging.WARNING):
         run_opt(atoms, copy_files=["test_file.txt"])
+    assert "Cannot find file" in caplog.text
 
     # No trajectory kwarg
     with pytest.raises(ValueError):

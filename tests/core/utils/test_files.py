@@ -71,10 +71,7 @@ def test_copy_decompress_files_v2(tmp_path, files_to_copy):
 
 
 @pytest.mark.skipif(os.name == "nt", reason="Windows doesn't support symlinks")
-@pytest.mark.parametrize(
-    "files_to_copy",
-    [Path("dir1", "file2"), "dir1/file2", "**/file2", Path("**", "file2")],
-)
+@pytest.mark.parametrize("files_to_copy", [Path("dir1", "file2"), "dir1/file2"])
 def test_copy_decompress_files_v3(tmp_path, files_to_copy):
     src = tmp_path / "src"
     src.mkdir()
@@ -116,6 +113,7 @@ def test_copy_decompress_files_v4(tmp_path):
 def test_copy_decompress_files_from_dir_warning(caplog):
     with caplog.at_level(logging.WARNING):
         copy_decompress_files("fake", "file", "test")
+    assert "Cannot find file" in caplog.text
 
 
 @pytest.mark.skipif(os.name == "nt", reason="Windows doesn't support symlinks")

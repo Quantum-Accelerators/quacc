@@ -137,6 +137,8 @@ def copy_decompress_files(
     for f in filenames:
         f_path = Path(f)
         globs_found = list(source_directory.glob(str(f)))
+        if not globs_found:
+            logger.warning(f"Cannot find file {f} in {source_directory}")
         for source_file in globs_found:
             source_filepath = Path(zpath(source_file))
 
@@ -154,8 +156,6 @@ def copy_decompress_files(
             elif source_filepath.is_dir():
                 copy_r(source_filepath, destination_filepath)
                 decompress_dir(destination_filepath)
-            else:
-                logger.warning(f"Cannot find file {source_filepath}")
 
 
 def make_unique_dir(
