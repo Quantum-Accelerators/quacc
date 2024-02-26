@@ -24,7 +24,7 @@ def test_make_unique_dir(tmp_path, monkeypatch):
 
 
 @pytest.mark.skipif(os.name == "nt", reason="Windows doesn't support symlinks")
-@pytest.mark.parametrize("files_to_copy", ["src", ["src"]])
+@pytest.mark.parametrize("files_to_copy", ["src", ["src"], "sr*"])
 def test_copy_decompress_files(tmp_path, files_to_copy):
     src = tmp_path / "src"
     src.mkdir()
@@ -47,7 +47,7 @@ def test_copy_decompress_files(tmp_path, files_to_copy):
 
 
 @pytest.mark.skipif(os.name == "nt", reason="Windows doesn't support symlinks")
-@pytest.mark.parametrize("files_to_copy", ["file1", ["file1"]])
+@pytest.mark.parametrize("files_to_copy", ["file1", ["file1"], "file*"])
 def test_copy_decompress_files_v2(tmp_path, files_to_copy):
     src = tmp_path / "src"
     src.mkdir()

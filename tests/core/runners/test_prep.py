@@ -51,7 +51,7 @@ def test_calc_setup(tmp_path, monkeypatch):
 
 
 @pytest.mark.parametrize(
-    "copy_files", [{Path(): ["file1.txt"]}, ["file1.txt"], "file1.txt"]
+    "copy_files", [{Path(): ["file1.txt"]}, ["file1.txt"], "file1.txt", "file1*"]
 )
 def test_calc_setup_v2(tmp_path, monkeypatch, copy_files):
     from quacc import SETTINGS
