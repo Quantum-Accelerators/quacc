@@ -7,7 +7,6 @@ Reference: https://doi.org/10.1016/j.matt.2021.02.015
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ase.optimize import BFGSLineSearch
@@ -226,7 +225,7 @@ def _loose_relax_cell(
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "QMOF Loose Relax Volume"},
-        copy_files={Path(): ["WAVECAR"]},
+        copy_files=["WAVECAR"],
     )
 
 
@@ -270,7 +269,7 @@ def _double_relax(
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "QMOF DoubleRelax 1"},
-        copy_files={Path(): ["WAVECAR"]},
+        copy_files=["WAVECAR"],
     )
 
     # Update atoms for Relaxation 2
@@ -286,7 +285,7 @@ def _double_relax(
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "QMOF DoubleRelax 2"},
-        copy_files={Path(): ["WAVECAR"]},
+        copy_files=["WAVECAR"],
     )
     return [summary1, summary2]
 
@@ -325,5 +324,5 @@ def _static(atoms: Atoms, preset: str | None = "QMOFSet", **calc_kwargs) -> Vasp
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "QMOF Static"},
-        copy_files={Path(): ["WAVECAR"]},
+        copy_files=["WAVECAR"],
     )
