@@ -97,7 +97,7 @@ def test_static_job_v2(tmp_path, monkeypatch):
     assert "kpts" not in results["parameters"]
     assert results["parameters"]["kspacing"] == 0.5
 
-    pp_results = post_processing_job(prev_dir=results["dir_name"])
+    pp_results = post_processing_job(Path(results["dir_name"], "*"))
     assert Path(pp_results["dir_name"], "pseudo_charge_density.cube.gz").is_file()
 
 
@@ -321,11 +321,11 @@ def test_non_scf_job(tmp_path, monkeypatch):
     static_result = static_job(
         atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=None
     )
-    file_to_copy = pw_copy_files(
+    files_to_copy = pw_copy_files(
         input_data, static_result["dir_name"], include_wfc=False
     )
     results = non_scf_job(
-        atoms, file_to_copy, input_data=input_data, pseudopotentials=pseudopotentials
+        atoms, files_to_copy, input_data=input_data, pseudopotentials=pseudopotentials
     )
 
     assert_allclose(
