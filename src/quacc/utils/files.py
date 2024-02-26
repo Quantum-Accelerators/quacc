@@ -53,7 +53,9 @@ def check_logfile(logfile: str | Path, check_str: str) -> bool:
 
 
 def copy_decompress_files(
-    source_directory: SourceDirectory, filenames: Filenames, destination: str | Path
+    source_directory: SourceDirectory,
+    filenames: Filenames,
+    destination_directory: str | Path,
 ) -> None:
     """
     Copy and decompress `filenames` from the `source_directory` to the `destination`
@@ -118,7 +120,7 @@ def copy_decompress_files(
         Directory to copy files from.
     filenames
         Files to copy and decompress. Glob patterns are supported.
-    destination
+    destination_directory
         Destination directory.
 
     Returns
@@ -126,32 +128,32 @@ def copy_decompress_files(
     None
     """
 
-    destination = Path(destination).expanduser()
+    source_directory = Path(source_directory).expanduser()
+    destination_directory = Path(destination_directory).expanduser()
 
     if not isinstance(filenames, list):
         filenames = [filenames]
 
     for f in filenames:
         f_path = Path(f)
-        if len(f_path.parts) > 1:
-            current_destination = destination / f_path.parent
-            Path(current_destination).mkdir(parents=True, exist_ok=True)
-        else:
-            current_destination = destination
-
-        full_f_path = Path(source_directory, f).expanduser()
-        globs_found = list(full_f_path.parent.glob(full_f_path.name))
+        globs_found = list(source_directory.glob(str(f)))
         for source_file in globs_found:
             source_filepath = Path(zpath(source_file))
+
+            n_parts_to_keep = len(f_path.parts)
+            destination_filepath = destination_directory / Path(
+                "/".join(source_filepath.parts[-n_parts_to_keep:])
+            )
+            Path(destination_filepath.parent).mkdir(parents=True, exist_ok=True)
 
             if source_filepath.is_symlink():
                 continue
             if source_filepath.is_file():
-                copy(source_filepath, current_destination / source_filepath.name)
-                decompress_file(current_destination / source_filepath.name)
+                copy(source_filepath, destination_filepath)
+                decompress_file(destination_filepath)
             elif source_filepath.is_dir():
-                copy_r(source_filepath, destination / source_filepath.name)
-                decompress_dir(destination / source_filepath.name)
+                copy_r(source_filepath, destination_filepath)
+                decompress_dir(destination_filepath)
             else:
                 logger.warning(f"Cannot find file {source_filepath}")
 
