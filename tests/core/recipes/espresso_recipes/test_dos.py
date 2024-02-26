@@ -19,7 +19,7 @@ def test_dos_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     copy_decompress_files(DATA_DIR / "dos_test", [Path("pwscf.save", "*.gz")], tmp_path)
     copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
-    output = dos_job(Path(tmp_path, "*"))
+    output = dos_job({tmp_path: "*"})
 
     assert output["results"]["pwscf_dos"]["fermi"] == pytest.approx(7.199)
 
@@ -28,7 +28,7 @@ def test_projwfc_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     copy_decompress_files(DATA_DIR / "dos_test", [Path("pwscf.save", "*.gz")], tmp_path)
     copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
-    output = projwfc_job(Path(tmp_path, "*"))
+    output = projwfc_job({tmp_path: "*"})
     assert output["name"] == "projwfc.x Projects-wavefunctions"
     assert output["parameters"]["input_data"]["projwfc"] == {}
 
