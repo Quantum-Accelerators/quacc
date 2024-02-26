@@ -59,11 +59,7 @@ def phonon_job(
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
-        `ase.io.espresso.write_espresso_ph` for more information. Some notable keys are:
-
-        - input_data: dict
-        - qpts: list[list[float]] | list[tuple[float]] | list[float]
-        - nat_todo: list[int]
+        [quacc.calculators.espresso.espresso.Espresso][] for more information.
 
     Returns
     -------
