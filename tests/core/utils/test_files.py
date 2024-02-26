@@ -71,7 +71,10 @@ def test_copy_decompress_files_v2(tmp_path, files_to_copy):
 
 
 @pytest.mark.skipif(os.name == "nt", reason="Windows doesn't support symlinks")
-@pytest.mark.parametrize("files_to_copy", [Path("dir1", "file2"), "dir1/file2"])
+@pytest.mark.parametrize(
+    "files_to_copy",
+    [Path("dir1", "file2"), "dir1/file2", "**/file2", Path("**", "file2")],
+)
 def test_copy_decompress_files_v3(tmp_path, files_to_copy):
     src = tmp_path / "src"
     src.mkdir()
