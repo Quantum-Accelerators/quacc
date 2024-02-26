@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
     from quacc.schemas._aliases.ase import RunSchema
 
-    class BandsSchema(TypedDict,total=False):
+    class BandsSchema(TypedDict, total=False):
         bands: RunSchema
         bands_pp: RunSchema
         fermi_surface: RunSchema
@@ -37,7 +37,7 @@ def bands_job(
     atoms: Atoms,
     prev_dir: str | Path,
     run_bands_pp: bool = True,
-    run_fermi_surface: bool = True,
+    run_fermi_surface: bool = False,
     make_bandpath: bool = True,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
@@ -73,6 +73,7 @@ def bands_job(
     run_fermi_surface
         If True, a fs.x calculation will be carried out.
         This allows to generate the fermi surface of your structure.
+        It requires a uniform unshifted k-point grid bands calculation.
     make_bandpath
         If True, it returns the primitive cell for your structure and generates
         the high symmetry k-path using Latmer-Munro approach.
@@ -98,35 +99,49 @@ def bands_job(
     results = {}
     bands_kwargs = job_params.get("bands", {})
 
-    bands_result = strip_decorator(bands(
-        atoms,
-        prev_dir,
-        make_bandpath=make_bandpath,
-        parallel_info=parallel_info,
-        test_run=test_run,
-        **bands_kwargs,
-    ))
+    bands_result = strip_decorator(
+        bands(
+            atoms,
+            prev_dir,
+            make_bandpath=make_bandpath,
+            parallel_info=parallel_info,
+            test_run=test_run,
+            **bands_kwargs,
+        )
+    )
 
     results["bands"] = bands_result
 
     if run_bands_pp:
         bands_pp_kwargs = job_params.get("bands_pp", {})
         prev_dir = bands_result["dir_name"]
-        bands_pp_results = strip_decorator(bands_pp(
-            atoms, prev_dir, parallel_info=parallel_info, test_run=test_run, **bands_pp_kwargs
-        ))
+        bands_pp_results = strip_decorator(
+            bands_pp(
+                atoms,
+                prev_dir,
+                parallel_info=parallel_info,
+                test_run=test_run,
+                **bands_pp_kwargs,
+            )
+        )
         results["bands_pp"] = bands_pp_results
 
     if run_fermi_surface:
         fermi_kwargs = job_params.get("fermi_surface", {})
         prev_dir = bands_result["dir_name"]
-        fermi_results = strip_decorator(fermi_surface(
-            atoms, prev_dir, parallel_info=parallel_info, test_run=test_run, **fermi_kwargs
-        ))
+        fermi_results = strip_decorator(
+            fermi_surface(
+                atoms,
+                prev_dir,
+                parallel_info=parallel_info,
+                test_run=test_run,
+                **fermi_kwargs,
+            )
+        )
         results["fermi_surface"] = fermi_results
 
-
     return results
+
 
 @job
 def bands(
@@ -193,6 +208,7 @@ def bands(
         copy_files=prev_dir,
     )
 
+
 @job
 def bands_pp(
     atoms: Atoms,
@@ -241,6 +257,7 @@ def bands_pp(
         copy_files=prev_dir,
     )
 
+
 @job
 def fermi_surface(
     atoms: Atoms,
@@ -251,6 +268,7 @@ def fermi_surface(
 ) -> RunSchema:
     """
     Function to retrieve the fermi surface with fs.x
+    It requires a previous uniform unshifted k-point grid bands calculation.
 
     Parameters
     ----------
