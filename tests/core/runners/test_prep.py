@@ -50,7 +50,10 @@ def test_calc_setup(tmp_path, monkeypatch):
     SETTINGS.SCRATCH_DIR = DEFAULT_SETTINGS.SCRATCH_DIR
 
 
-def test_calc_setup_v2(tmp_path, monkeypatch):
+@pytest.mark.parametrize(
+    "copy_files", [{Path(): ["file1.txt"]}, ["file1.txt"], "file1.txt"]
+)
+def test_calc_setup_v2(tmp_path, monkeypatch, copy_files):
     from quacc import SETTINGS
 
     DEFAULT_SETTINGS = SETTINGS.model_copy()
@@ -61,9 +64,7 @@ def test_calc_setup_v2(tmp_path, monkeypatch):
     atoms = bulk("Cu")
     atoms.calc = EMT()
 
-    tmpdir, results_dir = calc_setup(
-        atoms, copy_files={Path(): ["file1.txt", "tmp_dir"]}
-    )
+    tmpdir, results_dir = calc_setup(atoms, copy_files=copy_files)
 
     assert tmpdir.is_dir()
     assert "tmp" in str(tmpdir)

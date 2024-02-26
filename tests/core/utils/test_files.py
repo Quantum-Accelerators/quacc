@@ -24,7 +24,8 @@ def test_make_unique_dir(tmp_path, monkeypatch):
 
 
 @pytest.mark.skipif(os.name == "nt", reason="Windows doesn't support symlinks")
-def test_copy_decompress_files_from_dir(tmp_path):
+@pytest.mark.parametrize("files_to_copy", ["src", ["src"]])
+def test_copy_decompress_files(tmp_path, files_to_copy):
     src = tmp_path / "src"
     src.mkdir()
 
@@ -37,7 +38,7 @@ def test_copy_decompress_files_from_dir(tmp_path):
     Path(src / "dir1" / "file2").touch()
     Path(src / "dir1" / "symlink1").symlink_to(src)
 
-    copy_decompress_files(tmp_path, "src", dst)
+    copy_decompress_files(tmp_path, files_to_copy, dst)
 
     assert os.listdir(dst) == ["src"]
     assert sorted(os.listdir(dst / "src")) == ["dir1", "file1", "nested"]
@@ -46,7 +47,8 @@ def test_copy_decompress_files_from_dir(tmp_path):
 
 
 @pytest.mark.skipif(os.name == "nt", reason="Windows doesn't support symlinks")
-def test_copy_decompress_files_from_dir_list(tmp_path):
+@pytest.mark.parametrize("files_to_copy", ["file1", ["file1"]])
+def test_copy_decompress_files_v2(tmp_path, files_to_copy):
     src = tmp_path / "src"
     src.mkdir()
 
@@ -59,29 +61,7 @@ def test_copy_decompress_files_from_dir_list(tmp_path):
     Path(src / "dir1" / "file2").touch()
     Path(src / "dir1" / "symlink1").symlink_to(src)
 
-    copy_decompress_files(tmp_path, ["src"], dst)
-
-    assert os.listdir(dst) == ["src"]
-    assert sorted(os.listdir(dst / "src")) == ["dir1", "file1", "nested"]
-    assert sorted(os.listdir(dst / "src" / "dir1")) == ["file2"]
-    assert sorted(os.listdir(dst / "src" / "nested")) == ["nested"]
-
-
-@pytest.mark.skipif(os.name == "nt", reason="Windows doesn't support symlinks")
-def test_copy_decompress_files_v2(tmp_path):
-    src = tmp_path / "src"
-    src.mkdir()
-
-    dst = tmp_path / "dst"
-    dst.mkdir()
-
-    Path(src / "file1").touch()
-    Path(src / "dir1").mkdir()
-    Path(src / "nested" / "nested").mkdir(parents=True)
-    Path(src / "dir1" / "file2").touch()
-    Path(src / "dir1" / "symlink1").symlink_to(src)
-
-    copy_decompress_files(src, "file1", dst)
+    copy_decompress_files(src, files_to_copy, dst)
 
     assert os.listdir(dst) == ["file1"]
 
@@ -91,7 +71,8 @@ def test_copy_decompress_files_v2(tmp_path):
 
 
 @pytest.mark.skipif(os.name == "nt", reason="Windows doesn't support symlinks")
-def test_copy_decompress_files_v2_list(tmp_path):
+@pytest.mark.parametrize("files_to_copy", [Path("dir1", "file2"), "dir1/file2"])
+def test_copy_decompress_files_v3(tmp_path, files_to_copy):
     src = tmp_path / "src"
     src.mkdir()
 
@@ -104,30 +85,7 @@ def test_copy_decompress_files_v2_list(tmp_path):
     Path(src / "dir1" / "file2").touch()
     Path(src / "dir1" / "symlink1").symlink_to(src)
 
-    copy_decompress_files(src, ["file1"], dst)
-
-    assert os.listdir(dst) == ["file1"]
-
-    copy_decompress_files(src / "dir1", ["file2"], dst)
-
-    assert sorted(os.listdir(dst)) == ["file1", "file2"]
-
-
-@pytest.mark.skipif(os.name == "nt", reason="Windows doesn't support symlinks")
-def test_copy_decompress_files_v3(tmp_path):
-    src = tmp_path / "src"
-    src.mkdir()
-
-    dst = tmp_path / "dst"
-    dst.mkdir()
-
-    Path(src / "file1").touch()
-    Path(src / "dir1").mkdir()
-    Path(src / "nested" / "nested").mkdir(parents=True)
-    Path(src / "dir1" / "file2").touch()
-    Path(src / "dir1" / "symlink1").symlink_to(src)
-
-    copy_decompress_files(src, Path("dir1", "file2"), dst)
+    copy_decompress_files(src, files_to_copy, dst)
 
     assert os.listdir(dst) == ["dir1"]
     assert os.listdir(dst / "dir1") == ["file2"]
