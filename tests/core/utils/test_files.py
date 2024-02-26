@@ -91,6 +91,25 @@ def test_copy_decompress_files_v3(tmp_path, files_to_copy):
     assert os.listdir(dst / "dir1") == ["file2"]
 
 
+@pytest.mark.skipif(os.name == "nt", reason="Windows doesn't support symlinks")
+def test_copy_decompress_files_v4(tmp_path):
+    src = tmp_path / "src"
+    src.mkdir()
+
+    dst = tmp_path / "dst"
+    dst.mkdir()
+
+    Path(src / "file1").touch()
+    Path(src / "dir1").mkdir()
+    Path(src / "nested" / "nested").mkdir(parents=True)
+    Path(src / "dir1" / "file2").touch()
+    Path(src / "dir1" / "symlink1").symlink_to(src)
+
+    copy_decompress_files(src / "dir1", "*", dst)
+
+    assert os.listdir(dst) == ["file2"]
+
+
 def test_copy_decompress_files_from_dir_warning(caplog):
     with caplog.at_level(logging.WARNING):
         copy_decompress_files("fake", "file", "test")
