@@ -117,7 +117,7 @@ exclude_also = [
 ]
 
 [tool.ruff]
-lint.select = [
+select = [
   "E", "F", "W", # flake8
   "B",           # flake8-bugbear
   "I",           # isort
@@ -142,7 +142,7 @@ lint.select = [
   "NPY",         # NumPy specific rules
   "PD",          # pandas-vet
 ]
-lint.extend-ignore = [
+extend-ignore = [
   "PLR",    # Design related pylint codes
   "E501",   # Line too long
   "B028",   # No explicit stacklevel
@@ -152,18 +152,18 @@ lint.extend-ignore = [
   "RUF015", # Prefer next(iter())
   "RET505", # Unnecessary `elif` after `return`
 ]
-lint.typing-modules = ["mypackage._compat.typing"]
+typing-modules = ["mypackage._compat.typing"]
 src = ["src"]
-lint.unfixable = [
+unfixable = [
   "T20",  # Removes print statements
   "F841", # Removes unused variables
 ]
 exclude = []
-lint.flake8-unused-arguments.ignore-variadic-names = true
+flake8-unused-arguments.ignore-variadic-names = true
 extend-exclude = ["tests", "src/quacc/settings.py", "src/quacc/schemas/cclib.py"]
-lint.pydocstyle.convention = "numpy"
-lint.isort.required-imports = ["from __future__ import annotations"]
-lint.isort.known-first-party = ["quacc"]
+pydocstyle.convention = "numpy"
+isort.required-imports = ["from __future__ import annotations"]
+isort.known-first-party = ["quacc"]
 
 [tool.docformatter]
 pre-summary-newline = true
