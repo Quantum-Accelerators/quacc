@@ -47,17 +47,9 @@ def static_job(
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
     copy_files
-        List of files to copy to the calculation directory. Useful for copying
-        files from a previous calculation. This parameter can either be a string
-        or a list of strings.
-
-        If a string is provided, it is assumed to be a path to a directory,
-        all of the child tree structure of that directory is going to be copied to the
-        scratch of this calculation. For phonon_job this is what most users will want to do.
-
-        If a list of strings is provided, each string point to a specific file. In this case
-        it is important to note that no directory structure is going to be copied, everything
-        is copied at the root of the temporary directory.
+        Files to copy from source to scratch directory. The keys are the be directories and the
+        values are the individual files to copy within those directories. If None, no files will
+        be copied. Refer to [quacc.utils.files.copy_decompress_files][] for more details.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -114,17 +106,9 @@ def relax_job(
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
     copy_files
-        List of files to copy to the calculation directory. Useful for copying
-        files from a previous calculation. This parameter can either be a string
-        or a list of strings.
-
-        If a string is provided, it is assumed to be a path to a directory,
-        all of the child tree structure of that directory is going to be copied to the
-        scratch of this calculation. For phonon_job this is what most users will want to do.
-
-        If a list of strings is provided, each string point to a specific file. In this case
-        it is important to note that no directory structure is going to be copied, everything
-        is copied at the root of the temporary directory.
+        Files to copy from source to scratch directory. The keys are the be directories and the
+        values are the individual files to copy within those directories. If None, no files will
+        be copied. Refer to [quacc.utils.files.copy_decompress_files][] for more details.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -192,17 +176,9 @@ def ase_relax_job(
         to change the optimizer being used. "fmax" and "max_steps" are commonly
         used keywords. See the ASE documentation for more information.
     copy_files
-        List of files to copy to the calculation directory. Useful for copying
-        files from a previous calculation. This parameter can either be a string
-        or a list of strings.
-
-        If a string is provided, it is assumed to be a path to a directory,
-        all of the child tree structure of that directory is going to be copied to the
-        scratch of this calculation. For phonon_job this is what most users will want to do.
-
-        If a list of strings is provided, each string point to a specific file. In this case
-        it is important to note that no directory structure is going to be copied, everything
-        is copied at the root of the temporary directory.
+        Files to copy from source to scratch directory. The keys are the be directories and the
+        values are the individual files to copy within those directories. If None, no files will
+        be copied. Refer to [quacc.utils.files.copy_decompress_files][] for more details.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -326,7 +302,6 @@ def non_scf_job(
     test_run
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
-
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of

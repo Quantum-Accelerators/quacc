@@ -12,6 +12,8 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
+    from quacc.utils.files import Filenames, SourceDirectory
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -53,7 +55,7 @@ def get_pseudopotential_info(
 
 def pw_copy_files(
     input_data: dict[str, Any], prev_dir: str | Path, include_wfc: bool = True
-) -> dict[str, list[str | Path]]:
+) -> dict[SourceDirectory, Filenames]:
     """
     Function that take care of copying the correct files from a previous pw.x
     to a current pw.x/bands.x/dos.x... calculation. wfc in collected format
@@ -112,7 +114,7 @@ def grid_copy_files(
     dir_name: str | Path,
     qnum: int,
     qpt: tuple[float, float, float],
-) -> dict[str, list[str]]:
+) -> dict[SourceDirectory, Filenames]:
     """
     Function that returns a dictionary of files to copy for the grid calculation.
 
