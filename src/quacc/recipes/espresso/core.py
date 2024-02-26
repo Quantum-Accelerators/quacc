@@ -216,7 +216,7 @@ def ase_relax_job(
 
 @job
 def post_processing_job(
-    prev_dir: str | Path,
+    copy_files: dict[SourceDirectory, Filenames],
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -229,10 +229,10 @@ def post_processing_job(
 
     Parameters
     ----------
-    prev_dir
-        Outdir of the previously ran pw.x calculation. This is used to copy
-        the entire tree structure of that directory to the working directory
-        of this calculation.
+    copy_files
+        Files to copy from source to scratch directory. The keys are the be directories and the
+        values are the individual files to copy within those directories. If None, no files will
+        be copied. Refer to [quacc.utils.files.copy_decompress_files][] for more details.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -265,14 +265,14 @@ def post_processing_job(
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "pp.x post-processing"},
-        copy_files=prev_dir,
+        copy_files=copy_files,
     )
 
 
 @job
 def non_scf_job(
     atoms: Atoms,
-    prev_dir: str | Path,
+    copy_files: dict[SourceDirectory, Filenames],
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
@@ -285,10 +285,10 @@ def non_scf_job(
     ----------
     atoms
         The Atoms object.
-    prev_dir
-        Outdir of the previously ran pw.x calculation. This is used to copy
-        the entire tree structure of that directory to the working directory
-        of this calculation.
+    copy_files
+        Files to copy from source to scratch directory. The keys are the be directories and the
+        values are the individual files to copy within those directories. If None, no files will
+        be copied. Refer to [quacc.utils.files.copy_decompress_files][] for more details.
     preset
         The name of a YAML file containing a list of parameters to use as
         a "preset" for the calculator. quacc will automatically look in the
@@ -321,5 +321,5 @@ def non_scf_job(
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "pw.x Non SCF"},
-        copy_files=prev_dir,
+        copy_files=copy_files,
     )

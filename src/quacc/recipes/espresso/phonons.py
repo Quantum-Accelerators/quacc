@@ -28,11 +28,12 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
 
 @job
 def phonon_job(
-    prev_dir: str | Path,
+    copy_files: dict[SourceDirectory, Filenames],
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -46,10 +47,10 @@ def phonon_job(
 
     Parameters
     ----------
-    prev_dir
-        Outdir of the previously ran pw.x calculation. This is used to copy
-        the entire tree structure of that directory to the working directory
-        of this calculation.
+    copy_files
+        Files to copy from source to scratch directory. The keys are the be directories and the
+        values are the individual files to copy within those directories. If None, no files will
+        be copied. Refer to [quacc.utils.files.copy_decompress_files][] for more details.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -81,7 +82,7 @@ def phonon_job(
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "ph.x Phonon"},
-        copy_files=prev_dir,
+        copy_files=copy_files,
     )
 
 
@@ -212,14 +213,14 @@ def grid_phonon_flow(
             ph_input_data["inputph"]["start_q"] = qnum
             ph_input_data["inputph"]["last_q"] = qnum
             repr_to_do = grid_prepare_repr(qdata["representations"], nblocks)
-            file_to_copy = grid_copy_files(
+            files_to_copy = grid_copy_files(
                 ph_input_data, ph_init_job_results["dir_name"], qnum, qdata["qpoint"]
             )
             for representation in repr_to_do:
                 ph_input_data["inputph"]["start_irr"] = representation[0]
                 ph_input_data["inputph"]["last_irr"] = representation[-1]
                 ph_job_results = ph_job(
-                    deepcopy(file_to_copy), input_data=deepcopy(ph_input_data)
+                    deepcopy(files_to_copy), input_data=deepcopy(ph_input_data)
                 )
                 grid_results.append(ph_job_results)
 
@@ -263,7 +264,7 @@ def grid_phonon_flow(
 
     pw_job_results = pw_job(atoms)
 
-    ph_init_job_results = ph_init_job(pw_job_results["dir_name"])
+    ph_init_job_results = ph_init_job({pw_job_results["dir_name"]: "*"})
 
     grid_results = _grid_phonon_subflow(
         job_params["ph_job"]["input_data"], ph_init_job_results, ph_job, nblocks=nblocks

@@ -90,23 +90,23 @@ def pw_copy_files(
     outdir = control.get("outdir", ".")
     wfcdir = control.get("wfcdir", outdir)
 
-    file_to_copy = {prev_dir: []}
+    files_to_copy = {prev_dir: []}
 
     basics_to_copy = ["charge-density.*", "data-file-schema.*", "paw.*"]
 
     if restart_mode == "restart":
-        file_to_copy[prev_dir].append(Path(wfcdir, f"{prefix}.wfc*"))
-        file_to_copy[prev_dir].append(Path(wfcdir, f"{prefix}.mix*"))
-        file_to_copy[prev_dir].append(Path(wfcdir, f"{prefix}.restart_k*"))
-        file_to_copy[prev_dir].append(Path(wfcdir, f"{prefix}.restart_scf*"))
+        files_to_copy[prev_dir].append(Path(wfcdir, f"{prefix}.wfc*"))
+        files_to_copy[prev_dir].append(Path(wfcdir, f"{prefix}.mix*"))
+        files_to_copy[prev_dir].append(Path(wfcdir, f"{prefix}.restart_k*"))
+        files_to_copy[prev_dir].append(Path(wfcdir, f"{prefix}.restart_scf*"))
     elif include_wfc:
         basics_to_copy.append("wfc*.*")
 
-    file_to_copy[prev_dir].extend(
+    files_to_copy[prev_dir].extend(
         [Path(outdir, f"{prefix}.save", i) for i in basics_to_copy]
     )
 
-    return file_to_copy
+    return files_to_copy
 
 
 def grid_copy_files(
@@ -139,7 +139,7 @@ def grid_copy_files(
     outdir = ph_input_data["inputph"].get("outdir", ".")
     lqdir = ph_input_data["inputph"].get("lqdir", False)
 
-    file_to_copy = {
+    files_to_copy = {
         dir_name: [
             Path(outdir, "_ph0", f"{prefix}.phsave", "control_ph.xml*"),
             Path(outdir, "_ph0", f"{prefix}.phsave", "status_run.xml*"),
@@ -149,7 +149,7 @@ def grid_copy_files(
     }
 
     if lqdir or qpt == (0.0, 0.0, 0.0):
-        file_to_copy[dir_name].extend(
+        files_to_copy[dir_name].extend(
             [
                 Path(outdir, f"{prefix}.save", "charge-density.*"),
                 Path(outdir, f"{prefix}.save", "data-file-schema.xml.*"),
@@ -158,21 +158,21 @@ def grid_copy_files(
             ]
         )
         if qpt != (0.0, 0.0, 0.0):
-            file_to_copy[dir_name].extend(
+            files_to_copy[dir_name].extend(
                 [
                     Path(outdir, "_ph0", f"{prefix}.q_{qnum}", f"{prefix}.save", "*"),
                     Path(outdir, "_ph0", f"{prefix}.q_{qnum}", f"{prefix}.wfc*"),
                 ]
             )
     else:
-        file_to_copy[dir_name].extend(
+        files_to_copy[dir_name].extend(
             [
                 Path(outdir, "_ph0", f"{prefix}.wfc*"),
                 Path(outdir, "_ph0", f"{prefix}.save", "*"),
             ]
         )
 
-    return file_to_copy
+    return files_to_copy
 
 
 def grid_prepare_repr(patterns: dict[str, Any], nblocks: int) -> list:
@@ -199,7 +199,8 @@ def grid_prepare_repr(patterns: dict[str, Any], nblocks: int) -> list:
 
 
 def sanity_checks(parameters: dict[str, Any], binary: str = "pw") -> None:
-    """Function that performs sanity checks on the input_data. It is meant
+    """
+    Function that performs sanity checks on the input_data. It is meant
     to catch common mistakes that are not caught by the espresso binaries.
 
     Parameters

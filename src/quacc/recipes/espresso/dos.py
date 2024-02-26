@@ -8,7 +8,6 @@ dos calculations.
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from quacc import flow, job
@@ -25,6 +24,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
     class DosSchema(TypedDict):
         static_job: RunSchema
@@ -39,7 +39,7 @@ if TYPE_CHECKING:
 
 @job
 def dos_job(
-    prev_dir: str | Path,
+    copy_files: dict[SourceDirectory, Filenames],
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -52,10 +52,10 @@ def dos_job(
 
     Parameters
     ----------
-    prev_dir
-        Outdir of the previously ran pw.x calculation. This is used to copy
-        the entire tree structure of that directory to the working directory
-        of this calculation.
+    copy_files
+        Files to copy from source to scratch directory. The keys are the be directories and the
+        values are the individual files to copy within those directories. If None, no files will
+        be copied. Refer to [quacc.utils.files.copy_decompress_files][] for more details.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -77,13 +77,13 @@ def dos_job(
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "dos.x Density-of-States"},
-        copy_files=prev_dir,
+        copy_files=copy_files,
     )
 
 
 @job
 def projwfc_job(
-    prev_dir: str | Path,
+    copy_files: dict[SourceDirectory, Filenames],
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -96,10 +96,10 @@ def projwfc_job(
 
     Parameters
     ----------
-    prev_dir
-        Outdir of the previously ran pw.x calculation. This is used to copy
-        the entire tree structure of that directory to the working directory
-        of this calculation.
+    copy_files
+        Files to copy from source to scratch directory. The keys are the be directories and the
+        values are the individual files to copy within those directories. If None, no files will
+        be copied. Refer to [quacc.utils.files.copy_decompress_files][] for more details.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -121,7 +121,7 @@ def projwfc_job(
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "projwfc.x Projects-wavefunctions"},
-        copy_files=prev_dir,
+        copy_files=copy_files,
     )
 
 
@@ -197,20 +197,20 @@ def dos_flow(
     )
 
     static_results = static_job_(atoms)
-    file_to_copy = pw_copy_files(
+    files_to_copy = pw_copy_files(
         job_params["static_job"].get("input_data"),
         static_results["dir_name"],
         include_wfc=False,
     )
 
-    non_scf_results = non_scf_job_(atoms, prev_dir=file_to_copy)
-    file_to_copy = pw_copy_files(
+    non_scf_results = non_scf_job_(atoms, files_to_copy)
+    files_to_copy = pw_copy_files(
         job_params["non_scf_job"].get("input_data"),
         non_scf_results["dir_name"],
         include_wfc=False,
     )
 
-    dos_results = dos_job_(prev_dir=file_to_copy)
+    dos_results = dos_job_(files_to_copy)
 
     return {
         "static_job": static_results,
@@ -291,20 +291,20 @@ def projwfc_flow(
     )
 
     static_results = static_job_(atoms)
-    file_to_copy = pw_copy_files(
+    files_to_copy = pw_copy_files(
         job_params["static_job"].get("input_data"),
         static_results["dir_name"],
         include_wfc=False,
     )
 
-    non_scf_results = non_scf_job_(atoms, prev_dir=file_to_copy)
-    file_to_copy = pw_copy_files(
+    non_scf_results = non_scf_job_(atoms, files_to_copy)
+    files_to_copy = pw_copy_files(
         job_params["non_scf_job"].get("input_data"),
         non_scf_results["dir_name"],
         include_wfc=True,
     )
 
-    projwfc_results = projwfc_job_(prev_dir=file_to_copy)
+    projwfc_results = projwfc_job_(files_to_copy)
 
     return {
         "static_job": static_results,
