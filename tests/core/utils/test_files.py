@@ -5,12 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from quacc.utils.files import (
-    check_logfile,
-    copy_decompress_files,
-    copy_decompress_files_from_dir,
-    make_unique_dir,
-)
+from quacc.utils.files import check_logfile, copy_decompress_files, make_unique_dir
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.propagate = True
@@ -29,7 +24,8 @@ def test_make_unique_dir(tmp_path, monkeypatch):
 
 
 @pytest.mark.skipif(os.name == "nt", reason="Windows doesn't support symlinks")
-def test_copy_decompress_files_from_dir(tmp_path):
+@pytest.mark.parametrize("files_to_copy", ["src", ["src"], "sr*"])
+def test_copy_decompress_files(tmp_path, files_to_copy):
     src = tmp_path / "src"
     src.mkdir()
 
@@ -38,17 +34,85 @@ def test_copy_decompress_files_from_dir(tmp_path):
 
     Path(src / "file1").touch()
     Path(src / "dir1").mkdir()
-    Path(f"{src}{'/nested' * 10}").mkdir(parents=True)
+    Path(src / "nested" / "nested").mkdir(parents=True)
     Path(src / "dir1" / "file2").touch()
     Path(src / "dir1" / "symlink1").symlink_to(src)
 
-    copy_decompress_files_from_dir(src, dst)
+    copy_decompress_files(tmp_path, files_to_copy, dst)
 
-    assert (dst / "file1").exists()
-    assert (dst / "dir1").exists()
-    assert (dst / "dir1" / "file2").exists()
-    assert Path(f"{dst}{'/nested' * 10}").exists()
-    assert not (dst / "dir1" / "symlink1").exists()
+    assert os.listdir(dst) == ["src"]
+    assert sorted(os.listdir(dst / "src")) == ["dir1", "file1", "nested"]
+    assert sorted(os.listdir(dst / "src" / "dir1")) == ["file2"]
+    assert sorted(os.listdir(dst / "src" / "nested")) == ["nested"]
+
+
+@pytest.mark.skipif(os.name == "nt", reason="Windows doesn't support symlinks")
+@pytest.mark.parametrize("files_to_copy", ["file1", ["file1"], "file*"])
+def test_copy_decompress_files_v2(tmp_path, files_to_copy):
+    src = tmp_path / "src"
+    src.mkdir()
+
+    dst = tmp_path / "dst"
+    dst.mkdir()
+
+    Path(src / "file1").touch()
+    Path(src / "dir1").mkdir()
+    Path(src / "nested" / "nested").mkdir(parents=True)
+    Path(src / "dir1" / "file2").touch()
+    Path(src / "dir1" / "symlink1").symlink_to(src)
+
+    copy_decompress_files(src, files_to_copy, dst)
+
+    assert os.listdir(dst) == ["file1"]
+
+    copy_decompress_files(src / "dir1", "file2", dst)
+
+    assert sorted(os.listdir(dst)) == ["file1", "file2"]
+
+
+@pytest.mark.skipif(os.name == "nt", reason="Windows doesn't support symlinks")
+@pytest.mark.parametrize("files_to_copy", [Path("dir1", "file2"), "dir1/file2"])
+def test_copy_decompress_files_v3(tmp_path, files_to_copy):
+    src = tmp_path / "src"
+    src.mkdir()
+
+    dst = tmp_path / "dst"
+    dst.mkdir()
+
+    Path(src / "file1").touch()
+    Path(src / "dir1").mkdir()
+    Path(src / "nested" / "nested").mkdir(parents=True)
+    Path(src / "dir1" / "file2").touch()
+    Path(src / "dir1" / "symlink1").symlink_to(src)
+
+    copy_decompress_files(src, files_to_copy, dst)
+
+    assert os.listdir(dst) == ["dir1"]
+    assert os.listdir(dst / "dir1") == ["file2"]
+
+
+@pytest.mark.skipif(os.name == "nt", reason="Windows doesn't support symlinks")
+def test_copy_decompress_files_v4(tmp_path):
+    src = tmp_path / "src"
+    src.mkdir()
+
+    dst = tmp_path / "dst"
+    dst.mkdir()
+
+    Path(src / "file1").touch()
+    Path(src / "dir1").mkdir()
+    Path(src / "nested" / "nested").mkdir(parents=True)
+    Path(src / "dir1" / "file2").touch()
+    Path(src / "dir1" / "symlink1").symlink_to(src)
+
+    copy_decompress_files(src / "dir1", "*", dst)
+
+    assert os.listdir(dst) == ["file2"]
+
+
+def test_copy_decompress_files_from_dir_warning(caplog):
+    with caplog.at_level(logging.WARNING):
+        copy_decompress_files("fake", "file", "test")
 
 
 @pytest.mark.skipif(os.name == "nt", reason="Windows doesn't support symlinks")
@@ -71,34 +135,6 @@ def test_copy_decompress_tree(tmp_path):
     assert (dst / "dir1" / "file2").exists()
     assert not (dst / "dir1" / "file1").exists()
     assert not (dst / "dir1" / "symlink1").exists()
-
-
-@pytest.mark.skipif(os.name == "nt", reason="Windows doesn't support symlinks")
-def test_copy_decompress_files_from_dir_v2(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-    src = Path(os.getcwd())
-
-    dst = tmp_path / "dst"
-    dst.mkdir()
-
-    Path(src / "file1").touch()
-    Path(src / "dir1").mkdir()
-    Path(f"{src}{'/nested' * 10}").mkdir(parents=True)
-    Path(src / "dir1" / "file2").touch()
-    Path(src / "dir1" / "symlink1").symlink_to(src)
-
-    copy_decompress_files_from_dir(src, dst)
-
-    assert (dst / "file1").exists()
-    assert (dst / "dir1").exists()
-    assert (dst / "dir1" / "file2").exists()
-    assert Path(f"{dst}{'/nested' * 10}").exists()
-    assert not (dst / "dir1" / "symlink1").exists()
-
-
-def test_copy_decompress_files_from_dir_v3(caplog):
-    with caplog.at_level(logging.WARNING):
-        copy_decompress_files_from_dir("fake", "test")
 
 
 def test_check_logfile(tmp_path):

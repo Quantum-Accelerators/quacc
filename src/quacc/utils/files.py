@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING
 import yaml
 from monty.io import zopen
 from monty.os.path import zpath
-from monty.shutil import decompress_file
+from monty.shutil import copy_r, decompress_dir, decompress_file
 
 if TYPE_CHECKING:
     from typing import Any
@@ -150,39 +150,10 @@ def copy_decompress_files(
                 copy(source_filepath, current_destination / source_filepath.name)
                 decompress_file(current_destination / source_filepath.name)
             elif source_filepath.is_dir():
-                copy_decompress_files_from_dir(source_filepath, current_destination)
+                copy_r(source_filepath, destination / source_filepath.name)
+                decompress_dir(destination / source_filepath.name)
             else:
                 logger.warning(f"Cannot find file {source_filepath}")
-
-
-def copy_decompress_files_from_dir(source: str | Path, destination: str | Path) -> None:
-    """
-    Copy and decompress files recursively from source to destination.
-
-    Parameters
-    ----------
-    source
-        Directory to walk and copy files from.
-    destination
-        Destination directory.
-
-    Returns
-    -------
-    None
-    """
-    src, dst = Path(source).expanduser(), Path(destination).expanduser()
-
-    if src.is_dir():
-        for f in src.iterdir():
-            if f.resolve() == dst.resolve() or f.is_symlink():
-                continue
-            if f.is_file():
-                copy_decompress_files(f.parent, [f.name], dst)
-            elif f.is_dir():
-                (dst / f.name).mkdir(exist_ok=True)
-                copy_decompress_files_from_dir(src / f, dst / f.name)
-    else:
-        logger.warning(f"Cannot find {src}")
 
 
 def make_unique_dir(
