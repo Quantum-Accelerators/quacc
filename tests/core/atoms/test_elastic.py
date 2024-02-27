@@ -19,3 +19,4 @@ def test_make_deformations_from_bulk():
     assert [
         deformation.get_chemical_formula() == "Te4Zn4" for deformation in deformations
     ]
+    assert [atoms.info["test"] == "hi" for deformation in deformations]
