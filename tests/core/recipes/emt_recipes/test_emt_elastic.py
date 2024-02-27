@@ -1,5 +1,4 @@
 from ase.build import bulk
-from numpy.testing import assert_equal
 
 from quacc.recipes.emt.elastic import bulk_to_deformations_flow
 
