@@ -49,15 +49,15 @@ def bands_job(
 
     1. A pw.x non-self consistent calculation
         - name: "bands"
-        - job : [quacc.recipes.espresso.bands.bands][]
+        - job : [quacc.recipes.espresso.bands.bands_pw_job][]
 
     2. A bands.x post-processing calculation
         - name: "bands_pp"
-        - job : [quacc.recipes.espresso.bands.bands_pp][]
+        - job : [quacc.recipes.espresso.bands.bands_pp_job][]
 
     3. A fs.x calculation to obtain the fermi surface
         - name: "fermi_surface"
-        - job : [quacc.recipes.espresso.bands.fermi_surface][]
+        - job : [quacc.recipes.espresso.bands.fermi_surface_job][]
 
     Parameters
     ----------
@@ -100,7 +100,7 @@ def bands_job(
     bands_kwargs = job_params.get("bands", {})
 
     bands_result = strip_decorator(
-        bands(
+        bands_pw_job(
             atoms,
             prev_dir,
             make_bandpath=make_bandpath,
@@ -116,7 +116,7 @@ def bands_job(
         bands_pp_kwargs = job_params.get("bands_pp", {})
         prev_dir = bands_result["dir_name"]
         bands_pp_results = strip_decorator(
-            bands_pp(
+            bands_pp_job(
                 atoms,
                 prev_dir,
                 parallel_info=parallel_info,
@@ -130,7 +130,7 @@ def bands_job(
         fermi_kwargs = job_params.get("fermi_surface", {})
         prev_dir = bands_result["dir_name"]
         fermi_results = strip_decorator(
-            fermi_surface(
+            fermi_surface_job(
                 atoms,
                 prev_dir,
                 parallel_info=parallel_info,
@@ -144,7 +144,7 @@ def bands_job(
 
 
 @job
-def bands(
+def bands_pw_job(
     atoms: Atoms,
     prev_dir: str | Path,
     make_bandpath: bool = True,
@@ -210,7 +210,7 @@ def bands(
 
 
 @job
-def bands_pp(
+def bands_pp_job(
     atoms: Atoms,
     prev_dir: str | Path,
     parallel_info: dict[str] | None = None,
@@ -259,7 +259,7 @@ def bands_pp(
 
 
 @job
-def fermi_surface(
+def fermi_surface_job(
     atoms: Atoms,
     prev_dir: str | Path,
     parallel_info: dict[str] | None = None,

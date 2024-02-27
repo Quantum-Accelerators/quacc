@@ -358,7 +358,7 @@ class Espresso(Espresso_):
             self._cleanup_params()
         else:
             LOGGER.warning(
-                f"the binary you requested `{self._binary}` is not supported by ASE, this means that presets and usual checks will not be carried, your input_data must be sent in nested format."
+                f"the binary you requested, `{self._binary}`, is not supported by ASE. This means that presets and usual checks will not be carried out, your `input_data` must be provided in nested format."
             )
 
             template.binary = None

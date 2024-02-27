@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import logging
 from typing import TYPE_CHECKING
 
 from ase import Atoms
@@ -22,9 +21,6 @@ if TYPE_CHECKING:
     from typing import Any
 
     from quacc.schemas._aliases.ase import RunSchema
-
-
-LOGGER = logging.getLogger(__name__)
 
 
 def base_fn(
