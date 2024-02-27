@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import numpy as np
 from ase.io import read
 from numpy.testing import assert_equal
 
