@@ -31,8 +31,12 @@ def bulk_to_deformations_flow(
     1. Deformed structures generation
 
     2. Deformed structures relaxations
+        - name: "relax_job"
+        - job: [quacc.recipes.emt.core.relax_job][]
 
     3. Deformed structures statics (optional)
+        - name: "static_job"
+        - job: [quacc.recipes.emt.core.static_job][]
 
     Parameters
     ----------
