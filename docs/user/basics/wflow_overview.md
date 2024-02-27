@@ -6,7 +6,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
 !!! Tip "Recommendations"
 
-    Not sure which to choose? In general, new users of workflow orchestration tools should probably start with **Parsl**. The more savvy HPC users can probably start with **Prefect** or **Covalent** depending on your needs. Some additional opinions on the matter:
+    Not sure which to choose? In general, we recommend starting with **Parsl** for most HPC users. For a more feature-rich workflow orchestration platform, we recommend trying **Covalent** or **Prefect** depending on your needs. Some additional opinions on the matter:
 
     - Covalent: You want a visual dashboard and are prioritizing the use of distributed compute resources.
     - Dask: You already are familiar with the Dask ecosystem and are happy to stick with it.
