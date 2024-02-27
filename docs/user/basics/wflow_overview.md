@@ -17,7 +17,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
 === "Covalent"
 
-    [Covalent](https://github.com/AgnostiqHQ/covalent/) is a user-friendly workflow management solution from the company [Agnostiq](https://agnostiq.ai/). 
+    [Covalent](https://github.com/AgnostiqHQ/covalent/) is a user-friendly workflow management solution from the company [Agnostiq](https://agnostiq.ai/).
 
     Pros:
 
