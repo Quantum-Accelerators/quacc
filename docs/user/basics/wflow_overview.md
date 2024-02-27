@@ -17,7 +17,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
 === "Covalent"
 
-    [Covalent](https://github.com/AgnostiqHQ/covalent/) is a workflow management solution from the company [Agnostiq](https://agnostiq.ai/).
+    [Covalent](https://github.com/AgnostiqHQ/covalent/) is a user-friendly workflow management solution from the company [Agnostiq](https://agnostiq.ai/). 
 
     Pros:
 
@@ -29,9 +29,9 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
     Cons:
 
-    - It requires a centralized server to be running continuously in order to manage the workflows
+    - It requires a centralized server to be running continuously in order to manage the workflows unless using [Covalent Cloud](https://www.covalent.xyz/cloud/)
     - Not as widely used as other workflow management solutions
-    - Only supports standard queuing schemes for job schedulers, limiting throughput
+    - Only supports standard queuing schemes for job schedulers (e.g. no pilot job model)
     - High-security HPC environments may be difficult to access via SSH with the centralized server approach
 
 === "Dask"
@@ -86,7 +86,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
     Cons:
 
-    - For those who are less HPC-savvy, some of the concepts can be a bit technical
+    - For those who are less HPC-savvy, some of the concepts can be quite technical
     - If using Prefect Cloud, the compute nodes must have a network connection
     - The dashboard, while useful for monitoring successes and failures, is not ideal for analyzing results
     - The software is geared more towards data engineering than scientific computing, and that is reflected in the features and documentation
