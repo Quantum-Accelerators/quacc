@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
+
 from ase import Atoms
 from pymatgen.analysis.elasticity.strain import DeformedStructureSet
 from pymatgen.io.ase import AseAtomsAdaptor
@@ -9,8 +11,8 @@ from pymatgen.io.ase import AseAtomsAdaptor
 
 def make_deformations_from_bulk(
     atoms: Atoms,
-    norm_strains: list[float] = (-0.01, -0.005, 0.005, 0.01),
-    shear_strains: list[float] = (-0.06, -0.03, 0.03, 0.0),
+    norm_strains: Sequence[float] = (-0.01, -0.005, 0.005, 0.01),
+    shear_strains: Sequence[float] = (-0.06, -0.03, 0.03, 0.0),
     symmetry: bool = False,
 ) -> list[Atoms]:
     """
@@ -26,6 +28,7 @@ def make_deformations_from_bulk(
         strain values to apply to each shear mode.
     symmetry
         whether or not to use symmetry reduction
+
     Returns
     -------
     list[Atoms]
@@ -34,16 +37,11 @@ def make_deformations_from_bulk(
 
     struct = AseAtomsAdaptor.get_structure(atoms)
 
-    deformed_structures = []
-
-    deformedset = DeformedStructureSet(
+    deformed_set = DeformedStructureSet(
         struct,
         norm_strains=norm_strains,
         shear_strains=shear_strains,
         symmetry=symmetry,
     )
 
-    for structure in deformedset:
-        deformed_structures.append(AseAtomsAdaptor.get_atoms(structure))
-
-    return deformed_structures
+    return [AseAtomsAdaptor.get_atoms(structure) for structure in deformed_set]
