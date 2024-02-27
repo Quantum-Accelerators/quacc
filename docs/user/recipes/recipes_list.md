@@ -25,13 +25,14 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 
 <center>
 
-| Name                | Decorator        | Documentation                                      | Req'd Extras     |
-| ------------------- | ---------------- | -------------------------------------------------- | ---------------- |
-| EMT Static          | `#!Python @job`  | [quacc.recipes.emt.core.static_job][]              |                  |
-| EMT Relax           | `#!Python @job`  | [quacc.recipes.emt.core.relax_job][]               |                  |
-| EMT Bulk to Defects | `#!Python @flow` | [quacc.recipes.emt.defects.bulk_to_defects_flow][] | `quacc[defects]` |
-| EMT Bulk to Slabs   | `#!Python @flow` | [quacc.recipes.emt.slabs.bulk_to_slabs_flow][]     |                  |
-| EMT Phonons         | `#!Python @flow` | [quacc.recipes.emt.phonons.phonon_flow][]          | `quacc[phonons]` |
+| Name                      | Decorator        | Documentation                                           | Req'd Extras     |
+| ------------------------- | ---------------- | ------------------------------------------------------- | ---------------- |
+| EMT Static                | `#!Python @job`  | [quacc.recipes.emt.core.static_job][]                   |                  |
+| EMT Relax                 | `#!Python @job`  | [quacc.recipes.emt.core.relax_job][]                    |                  |
+| EMT Bulk to Defects       | `#!Python @flow` | [quacc.recipes.emt.defects.bulk_to_defects_flow][]      | `quacc[defects]` |
+| EMT Bulk to Slabs         | `#!Python @flow` | [quacc.recipes.emt.slabs.bulk_to_slabs_flow][]          |                  |
+| EMT Phonons               | `#!Python @flow` | [quacc.recipes.emt.phonons.phonon_flow][]               | `quacc[phonons]` |
+| EMT Bulk to Deformations  | `#!Python @flow` | [quacc.recipes.emt.elastic.bulk_to_deformations_flow][] |                  |
 
 </center>
 
