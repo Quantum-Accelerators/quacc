@@ -126,10 +126,12 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
     assert output["atoms"] != atoms
     assert output["atoms"].get_volume() != pytest.approx(atoms.get_volume())
 
+
 def test_relax_job_threads(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     from quacc import SETTINGS
+
     SETTINGS.CHDIR = False
 
     _set_dtype(64)
@@ -138,5 +140,5 @@ def test_relax_job_threads(tmp_path, monkeypatch):
     atoms[0].position += 0.1
     output = relax_job(atoms, method=method)
     assert output["results"]["energy"] == pytest.approx(-32.6711566550002)
-    
+
     SETTINGS.MODEL_COPY = False
