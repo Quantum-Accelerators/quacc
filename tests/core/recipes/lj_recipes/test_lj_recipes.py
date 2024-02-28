@@ -94,6 +94,7 @@ def test_freq_job(tmp_path, monkeypatch):
     assert len(output["parameters_thermo"]["vib_freqs"]) == 3 * len(atoms) - 6
     assert output["parameters_thermo"]["n_imag"] == 0
 
+
 def test_freq_job_threads(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
