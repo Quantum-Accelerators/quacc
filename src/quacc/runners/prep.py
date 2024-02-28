@@ -77,6 +77,13 @@ def calc_setup(
     elif isinstance(copy_files, (str, Path)):
         copy_decompress_files([copy_files], tmpdir)
 
+    # NOTE: Technically, this breaks thread-safety since it will change the cwd
+    # for all threads in the current process. However, elsewhere in the code,
+    # we use absolute paths to avoid issues. We keep this here for now because some
+    # old ASE calculators do not support the `directory` keyword argument.
+    if SETTINGS.CHDIR:
+        os.chdir(tmpdir)
+
     return tmpdir, job_results_dir
 
 
@@ -115,6 +122,13 @@ def calc_cleanup(atoms: Atoms, tmpdir: Path | str, job_results_dir: Path | str) 
 
     # Make the results directory
     job_results_dir.mkdir(parents=True, exist_ok=True)
+
+    # NOTE: Technically, this breaks thread-safety since it will change the cwd
+    # for all threads in the current process. However, elsewhere in the code,
+    # we use absolute paths to avoid issues. We keep this here for now because some
+    # old ASE calculators do not support the `directory` keyword argument.
+    if SETTINGS.CHDIR:
+        os.chdir(job_results_dir)
 
     # Gzip files in tmpdir
     if SETTINGS.GZIP_FILES:
