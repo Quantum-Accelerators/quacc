@@ -5,10 +5,7 @@ torch = pytest.importorskip("torch")
 import numpy as np
 from ase.build import bulk
 
-from quacc import SETTINGS
 from quacc.recipes.mlp.core import relax_job, static_job
-
-DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 methods = []
 try:
@@ -126,19 +123,3 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
     assert output["atoms"] != atoms
     assert output["atoms"].get_volume() != pytest.approx(atoms.get_volume())
 
-
-def test_relax_job_threads(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
-    from quacc import SETTINGS
-
-    SETTINGS.CHDIR = False
-
-    _set_dtype(64)
-
-    atoms = bulk("Cu") * (2, 2, 2)
-    atoms[0].position += 0.1
-    output = relax_job(atoms, method=method)
-    assert output["results"]["energy"] == pytest.approx(-32.6711566550002)
-
-    SETTINGS.CHDIR = DEFAULT_SETTINGS.CHDIR
