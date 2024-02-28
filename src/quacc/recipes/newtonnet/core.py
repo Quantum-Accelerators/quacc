@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ase.optimize import FIRE
 from ase.vibrations.data import VibrationsData
 from monty.dev import requires
 
@@ -68,11 +67,11 @@ def static_job(
         See the type-hint for the data structure.
     """
 
-    defaults = {
+    calc_defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
     }
-    calc_flags = recursive_dict_merge(defaults, calc_kwargs)
+    calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
 
     atoms.calc = NewtonNet(**calc_flags)
     final_atoms = run_calc(atoms, copy_files=copy_files)
@@ -119,7 +118,7 @@ def relax_job(
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
     }
-    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella or FIRE}
+    opt_defaults = {"optimizer": Sella} if Sella else {}
 
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
@@ -165,12 +164,12 @@ def freq_job(
         Dictionary of results. See the type-hint for the data structure.
     """
 
-    defaults = {
+    calc_defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
         "hess_method": "autograd",
     }
-    calc_flags = recursive_dict_merge(defaults, calc_kwargs)
+    calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
 
     ml_calculator = NewtonNet(**calc_flags)
     atoms.calc = ml_calculator

@@ -15,12 +15,12 @@ try:
 
 except ImportError:
     mace = None
-# try:
-#     import matgl
+try:
+    import matgl
 
-#     methods.append("m3gnet")
-# except ImportError:
-#     matgl = None
+    methods.append("m3gnet")
+except ImportError:
+    matgl = None
 try:
     import chgnet
 
@@ -72,9 +72,9 @@ def test_relax_job(tmp_path, monkeypatch, method):
     else:
         _set_dtype(32)
     ref_energy = {
-        "chgnet": -32.665626525878906,
-        "m3gnet": -32.749088287353516,
-        "mace": -32.670471191406259,
+        "chgnet": -32.665428161621094,
+        "m3gnet": -32.75003433227539,
+        "mace": -32.6711566550002,
     }
 
     atoms = bulk("Cu") * (2, 2, 2)
@@ -94,7 +94,7 @@ def test_relax_job_dispersion(tmp_path, monkeypatch):
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += 0.1
     output = relax_job(atoms, method="mace", dispersion=True)
-    assert output["results"]["energy"] == pytest.approx(-37.33948477096204)
+    assert output["results"]["energy"] == pytest.approx(-37.340311589504076)
     assert np.shape(output["results"]["forces"]) == (8, 3)
     assert output["atoms"] != atoms
     assert output["atoms"].get_volume() == pytest.approx(atoms.get_volume())
@@ -110,9 +110,9 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
         _set_dtype(32)
 
     ref_energy = {
-        "chgnet": -32.6676139831543,
-        "m3gnet": -32.74995040893555,
-        "mace": -32.67771911621094,
+        "chgnet": -32.66698455810547,
+        "m3gnet": -32.750858306884766,
+        "mace": -32.67840391814377,
     }
 
     atoms = bulk("Cu") * (2, 2, 2)

@@ -109,7 +109,7 @@ def ase_relax_job(
         {"keywords": {"write_forces": True, "forces_output_detail": "verbose"}},
     )
 
-    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": LBFGS}
+    opt_defaults = {"optimizer": LBFGS}
 
     return base_opt_fn(
         atoms,

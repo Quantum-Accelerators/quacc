@@ -35,6 +35,7 @@ def test_summarize_run():
     assert results["results"]["energy"] == atoms.get_potential_energy()
     assert "pymatgen_version" in results["builder_meta"]
     assert results["input_atoms"]["atoms"] == initial_atoms
+    assert Path(results["dir_name"]).is_dir()
 
 
 def test_summarize_run2():
@@ -139,7 +140,7 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
     dyn.run(steps=5)
     traj = read("test.traj", index=":")
 
-    with pytest.raises(RuntimeError):
+    with pytest.raises(RuntimeError, match="Optimization did not converge"):
         summarize_opt_run(dyn)
 
     # Make sure info tags are handled appropriately
