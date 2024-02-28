@@ -104,16 +104,12 @@ class QuaccSettings(BaseSettings):
         ),
     )
     CHDIR: bool = Field(
-        True,
+        False,
         description=(
             """
             Whether quacc will make `os.chdir` calls to change the working directory
             to be the location where the calculation is run. By default, we leave this
-            as `True` because not all ASE calculators properly support a `directory`
-            parameter. In most cases, this is fine, but it breaks thread safety.
-            If you need to run multiple, parallel calculations in a single Python process,
-            such as in a multithreaded job execution mode, then this setting needs
-            to be `False`. Note that not all calculators properly support this, however.
+            as `False` to ensure thread safety.
             """
         ),
     )
