@@ -4,7 +4,7 @@
 
 ### Transfers from a Known File Location
 
-Sometimes, you may want to transfer files between jobs. Many recipes within quacc take an optional keyword argument, `copy_files`, that is a dictionary where the keys are the source folders and the values are the source filenames for the files you wish to have copied to the directory where the calculation is ultimately run.
+Sometimes, you may want to transfer files between jobs. Many recipes within quacc take an optional keyword argument, `copy_files`, that is a dictionary where the keys are the source folders and the names for the files you wish to have copied to the directory where the calculation is ultimately run.
 
 For instance, if you have the files `CHGCAR.gz` and `WAVECAR.gz` stored in `/my/folder`, then you could ensure that is present in the calculation's working directory:
 
