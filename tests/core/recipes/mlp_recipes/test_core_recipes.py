@@ -141,4 +141,4 @@ def test_relax_job_threads(tmp_path, monkeypatch):
     output = relax_job(atoms, method=method)
     assert output["results"]["energy"] == pytest.approx(-32.6711566550002)
 
-    SETTINGS.MODEL_COPY = False
+    SETTINGS.CHDIR = DEFAULT_SETTINGS.CHDIR
