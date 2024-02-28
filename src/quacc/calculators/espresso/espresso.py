@@ -136,16 +136,8 @@ class EspressoTemplate(EspressoTemplate_):
                 write_espresso_ph(fd=fd, properties=properties, **parameters)
         else:
             with Path.open(directory / self.inputname, "w") as fd:
-                input_data = parameters.pop("input_data", None)
-                additional_cards = parameters.pop("additional_cards", None)
-
                 write_fortran_namelist(
-                    fd,
-                    binary=self.binary,
-                    properties=properties,
-                    input_data=input_data,
-                    additional_cards=additional_cards,
-                    **parameters,
+                    fd, binary=self.binary, properties=properties, **parameters,
                 )
 
     def execute(self, *args: Any, **kwargs: Any) -> None:
