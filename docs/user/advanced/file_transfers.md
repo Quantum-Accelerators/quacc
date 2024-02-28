@@ -4,20 +4,29 @@
 
 ### Transfers from a Known File Location
 
-Sometimes, you may want to transfer files between jobs. Many recipes within quacc take an optional keyword argument, `copy_files`, that is a dictionary where the keys are the source folders and the values are the source filenames for the files you wish to have copied to the directory where the calculation is ultimately run.
+Sometimes, you may want to transfer files between jobs. Many recipes within quacc take an optional keyword argument, `copy_files`, that is a dictionary where the keys are the source folders and the values are the source filenames for the files you wish to have copied to the directory where the calculation is ultimately run. During the copying process, the files will be automatically decompressed.
 
-For instance, if you have the files `CHGCAR.gz` and `WAVECAR.gz` stored in `/my/folder`, then you could ensure that is present in the calculation's working directory:
+For instance, if you have the files `CHGCAR.gz` and `WAVECAR.gz` stored in `/my/folder`, then you could ensure that they are present (and decompressed) in the calculation's working directory as follows:
 
 ```python
-from pathlib import Path
 from ase.build import bulk
 from quacc.recipes.vasp.core import relax_job
 
 atoms = bulk("Cu")
-relax_job(atoms, copy_files={Path("/my/folder"): ["CHGCAR.gz", "WAVECAR.gz"]})
+relax_job(atoms, copy_files={"/my/folder": ["CHGCAR.gz", "WAVECAR.gz"]})
 ```
 
-During the copying process, the files will also be automatically decompressed. The `copy_files` keyword argument also supports glob patterns, such as `WAVECAR*` to copy all files that start with `WAVECAR` from the source.
+The `copy_files` keyword argument also supports glob patterns, such as `WAVECAR*` to copy all files that start with `WAVECAR` from the source. If you want to copy the entire contents of a directory `/my/folder` but not the parent directory itself, you can do so with the `*` glob pattern as well:
+
+```python
+relax_job(atoms, copy_files={"/my/folder": "*"})
+```
+
+You can also copy a specific file from a directory while retaining the directory structure. For instance, if you have the file `/my/folder/WAVECAR.gz` and you want to copy it to the calculation's working directory as `folder/WAVECAR.gz`, you can do so as follows:
+
+```python
+relax_job(atoms, copy_files={"/my": ["folder/WAVECAR.gz"]})
+```
 
 ### Transfers Between Jobs
 
