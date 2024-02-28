@@ -79,7 +79,7 @@ def relax_job(
         Dictionary of custom kwargs for the optimization process. Set a value
         to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
-     copy_files
+    copy_files
         Files to copy (and decompress) from source to scratch directory. The keys are the
         directories and the values are the individual files to copy within those directories.
         If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
