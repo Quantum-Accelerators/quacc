@@ -16,7 +16,7 @@ from ase.build import bulk
 from numpy.testing import assert_allclose, assert_array_equal
 
 from quacc.recipes.espresso.core import static_job
-from quacc.recipes.espresso.phonons import phonon_job
+from quacc.recipes.espresso.phonons import matdyn_job, phonon_job, q2r_job
 from quacc.utils.files import copy_decompress_files
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
@@ -140,3 +140,13 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
         assert key in ph_results["results"][1]
 
     SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO
+
+
+def test_matdyn_job(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    copy_decompress_files(f"{DATA_DIR}/matdyn_test/matdyn*", tmp_path)
+
+    matdyn_results = matdyn_job(tmp_path)
+
+    assert Path(matdyn_results["dir_name"], "q2r.fc").exists()
