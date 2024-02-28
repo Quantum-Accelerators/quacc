@@ -25,7 +25,7 @@ def test_parsl_functools(tmp_path, monkeypatch, chdir):
     assert "atoms" in result[-1]
     assert result[-1]["fmax"] == 0.1
 
-    SETTINGS.CHDIR = DEFAULT_SETTINGS.chdir
+    SETTINGS.CHDIR = DEFAULT_SETTINGS.CHDIR
 
 
 @pytest.mark.parametrize("chdir", [True, False])
@@ -42,7 +42,7 @@ def test_phonon_flow(tmp_path, monkeypatch, chdir):
         101,
     )
 
-    SETTINGS.CHDIR = DEFAULT_SETTINGS.chdir
+    SETTINGS.CHDIR = DEFAULT_SETTINGS.CHDIR
 
 
 @pytest.mark.parametrize("chdir", [True, False])
@@ -60,4 +60,4 @@ def test_phonon_flow_multistep(tmp_path, monkeypatch, chdir):
         101,
     )
 
-    SETTINGS.CHDIR = DEFAULT_SETTINGS.chdir
+    SETTINGS.CHDIR = DEFAULT_SETTINGS.CHDIR
