@@ -1,7 +1,6 @@
 """
 This module, 'bands.py', contains recipes for performing bands and fermi surface calculations using the
 bands.x and fs.x binaries from Quantum ESPRESSO via the quacc library.
-
 """
 
 from __future__ import annotations
