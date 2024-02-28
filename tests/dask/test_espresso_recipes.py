@@ -1,6 +1,8 @@
 import pytest
 
 dask = pytest.importorskip("dask")
+pytest.importorskip("distributed")
+
 from shutil import which
 
 from dask.distributed import default_client

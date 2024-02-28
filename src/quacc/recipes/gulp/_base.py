@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
-
+    from quacc.utils.files import Filenames, SourceDirectory
 logger = logging.getLogger(__name__)
 
 GEOM_FILE_PBC = "gulp.cif"
@@ -35,6 +35,7 @@ def base_fn(
     keyword_swaps: list[str] | None = None,
     option_swaps: list[str] | None = None,
     additional_fields: dict[str, Any] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
 ) -> RunSchema:
     """
     Base job function for GULP recipes.
@@ -59,6 +60,11 @@ def base_fn(
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
     additional_fields
         Additional field to supply to the summarizer.
+    copy_files
+        Files to copy (and decompress) from source to scratch directory. The keys are the
+        directories and the values are the individual files to copy within those directories.
+        If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
+        for more details.
 
     Returns
     -------
@@ -92,7 +98,9 @@ def base_fn(
         command=GULP_CMD, keywords=gulp_keywords, options=gulp_options, library=library
     )
     final_atoms = run_calc(
-        atoms, geom_file=GEOM_FILE_PBC if atoms.pbc.any() else GEOM_FILE_NOPBC
+        atoms,
+        geom_file=GEOM_FILE_PBC if atoms.pbc.any() else GEOM_FILE_NOPBC,
+        copy_files=copy_files,
     )
 
     if (

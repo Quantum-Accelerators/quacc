@@ -22,10 +22,15 @@ if TYPE_CHECKING:
 
     from quacc.runners.ase import VibKwargs
     from quacc.schemas._aliases.ase import OptSchema, RunSchema, VibThermoSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
 
 @job
-def static_job(atoms: Atoms, **calc_kwargs) -> RunSchema:
+def static_job(
+    atoms: Atoms,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
+    **calc_kwargs,
+) -> RunSchema:
     """
     Function to carry out a static calculation.
 
@@ -33,6 +38,11 @@ def static_job(atoms: Atoms, **calc_kwargs) -> RunSchema:
     ----------
     atoms
         Atoms object
+    copy_files
+        Files to copy (and decompress) from source to scratch directory. The keys are the
+        directories and the values are the individual files to copy within those directories.
+        If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
+        for more details.
     **calc_kwargs
         Dictionary of custom kwargs for the LJ calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -46,14 +56,17 @@ def static_job(atoms: Atoms, **calc_kwargs) -> RunSchema:
     """
 
     atoms.calc = LennardJones(**calc_kwargs)
-    final_atoms = run_calc(atoms)
+    final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(final_atoms, atoms, additional_fields={"name": "LJ Static"})
 
 
 @job
 def relax_job(
-    atoms: Atoms, opt_params: dict[str, Any] | None = None, **calc_kwargs
+    atoms: Atoms,
+    opt_params: dict[str, Any] | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
+    **calc_kwargs,
 ) -> OptSchema:
     """
     Function to carry out a geometry optimization.
@@ -66,6 +79,11 @@ def relax_job(
         Dictionary of custom kwargs for the optimization process. Set a value
         to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
+     copy_files
+        Files to copy (and decompress) from source to scratch directory. The keys are the
+        directories and the values are the individual files to copy within those directories.
+        If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
+        for more details.
     **calc_kwargs
         Custom kwargs for the LJ calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -80,7 +98,7 @@ def relax_job(
     opt_params = opt_params or {}
 
     atoms.calc = LennardJones(**calc_kwargs)
-    dyn = run_opt(atoms, **opt_params)
+    dyn = run_opt(atoms, copy_files=copy_files, **opt_params)
 
     return summarize_opt_run(dyn, additional_fields={"name": "LJ Relax"})
 
@@ -92,6 +110,7 @@ def freq_job(
     temperature: float = 298.15,
     pressure: float = 1.0,
     vib_kwargs: VibKwargs | None = None,
+    copy_files: dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> VibThermoSchema:
     """
@@ -109,6 +128,11 @@ def freq_job(
         Pressure in bar.
     vib_kwargs
         Dictionary of kwargs for the [ase.vibrations.Vibrations][] class.
+    copy_files
+        Files to copy (and decompress) from source to scratch directory. The keys are the
+        directories and the values are the individual files to copy within those directories.
+        If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
+        for more details.
     **calc_kwargs
         Dictionary of custom kwargs for the LJ calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -123,7 +147,7 @@ def freq_job(
     vib_kwargs = vib_kwargs or {}
 
     atoms.calc = LennardJones(**calc_kwargs)
-    vibrations = run_vib(atoms, vib_kwargs=vib_kwargs)
+    vibrations = run_vib(atoms, vib_kwargs=vib_kwargs, copy_files=copy_files)
     igt = run_ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)
 
     return summarize_vib_and_thermo(

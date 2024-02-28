@@ -46,9 +46,10 @@ def static_job(
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
     copy_files
-        Files to copy from source to scratch directory. The keys are the be directories and the
-        values are the individual files to copy within those directories. If None, no files will
-        be copied. Refer to [quacc.utils.files.copy_decompress_files][] for more details.
+        Files to copy (and decompress) from source to scratch directory. The keys are the
+        directories and the values are the individual files to copy within those directories.
+        If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
+        for more details.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -105,9 +106,10 @@ def relax_job(
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
     copy_files
-        Files to copy from source to scratch directory. The keys are the be directories and the
-        values are the individual files to copy within those directories. If None, no files will
-        be copied. Refer to [quacc.utils.files.copy_decompress_files][] for more details.
+        Files to copy (and decompress) from source to scratch directory. The keys are the
+        directories and the values are the individual files to copy within those directories.
+        If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
+        for more details.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -175,9 +177,10 @@ def ase_relax_job(
         to change the optimizer being used. "fmax" and "max_steps" are commonly
         used keywords. See the ASE documentation for more information.
     copy_files
-        Files to copy from source to scratch directory. The keys are the be directories and the
-        values are the individual files to copy within those directories. If None, no files will
-        be copied. Refer to [quacc.utils.files.copy_decompress_files][] for more details.
+        Files to copy (and decompress) from source to scratch directory. The keys are the
+        directories and the values are the individual files to copy within those directories.
+        If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
+        for more details.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -229,9 +232,10 @@ def post_processing_job(
     Parameters
     ----------
     copy_files
-        Files to copy from source to scratch directory. The keys are the be directories and the
-        values are the individual files to copy within those directories. If None, no files will
-        be copied. Refer to [quacc.utils.files.copy_decompress_files][] for more details.
+        Files to copy (and decompress) from source to scratch directory. The keys are the
+        directories and the values are the individual files to copy within those directories.
+        If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
+        for more details.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -285,9 +289,10 @@ def non_scf_job(
     atoms
         The Atoms object.
     copy_files
-        Files to copy from source to scratch directory. The keys are the be directories and the
-        values are the individual files to copy within those directories. If None, no files will
-        be copied. Refer to [quacc.utils.files.copy_decompress_files][] for more details.
+        Files to copy (and decompress) from source to scratch directory. The keys are the
+        directories and the values are the individual files to copy within those directories.
+        If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
+        for more details.
     preset
         The name of a YAML file containing a list of parameters to use as
         a "preset" for the calculator. quacc will automatically look in the

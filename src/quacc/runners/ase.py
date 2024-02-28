@@ -77,9 +77,10 @@ def run_calc(
         atoms.get_potential_energy() function to update the positions, as this
         varies between codes.
     copy_files
-        Files to copy from source to scratch directory. The keys are the be directories and the
-        values are the individual files to copy within those directories. If None, no files will
-        be copied. Refer to [quacc.utils.files.copy_decompress_files][] for more details.
+        Files to copy (and decompress) from source to scratch directory. The keys are the
+        directories and the values are the individual files to copy within those directories.
+        If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
+        for more details.
     get_forces
         Whether to use `atoms.get_forces()` instead of `atoms.get_potential_energy()`.
 
@@ -172,9 +173,10 @@ def run_opt(
     run_kwargs
         Dictionary of kwargs for the run() method of the optimizer.
     copy_files
-        Files to copy from source to scratch directory. The keys are the be directories and the
-        values are the individual files to copy within those directories. If None, no files will
-        be copied. Refer to [quacc.utils.files.copy_decompress_files][] for more details.
+        Files to copy (and decompress) from source to scratch directory. The keys are the
+        directories and the values are the individual files to copy within those directories.
+        If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
+        for more details.
 
     Returns
     -------
@@ -266,9 +268,10 @@ def run_vib(
     vib_kwargs
         Dictionary of kwargs for the [ase.vibrations.Vibrations][] class.
     copy_files
-        Files to copy from source to scratch directory. The keys are the be directories and the
-        values are the individual files to copy within those directories. If None, no files will
-        be copied. Refer to [quacc.utils.files.copy_decompress_files][] for more details.
+        Files to copy (and decompress) from source to scratch directory. The keys are the
+        directories and the values are the individual files to copy within those directories.
+        If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
+        for more details.
 
     Returns
     -------

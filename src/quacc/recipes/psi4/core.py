@@ -48,9 +48,10 @@ def static_job(
     basis
         Basis set
     copy_files
-        Files to copy from source to scratch directory. The keys are the be directories and the
-        values are the individual files to copy within those directories. If None, no files will
-        be copied. Refer to [quacc.utils.files.copy_decompress_files][] for more details.
+        Files to copy (and decompress) from source to scratch directory. The keys are the
+        directories and the values are the individual files to copy within those directories.
+        If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
+        for more details.
     **kwargs
         Custom kwargs for the Psi4 calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
