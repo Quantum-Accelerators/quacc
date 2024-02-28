@@ -30,6 +30,8 @@ logger = logging.getLogger(__name__)
 def check_logfile(logfile: str | Path, check_str: str) -> bool:
     """
     Check if a logfile has a given string (case-insensitive).
+    The compression suffix, e.g. `.gz`, is automatically handled
+    and does not need to be specified.
 
     Parameters
     ----------
