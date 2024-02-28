@@ -81,7 +81,7 @@ def calc_setup(
     # for all threads in the current process. However, elsewhere in the code,
     # we use absolute paths to avoid issues. We keep this here for now because some
     # old ASE calculators do not support the `directory` keyword argument.
-    if SETTINGS.THREAD_SAFE:
+    if SETTINGS.CHDIR:
         os.chdir(tmpdir)
 
     return tmpdir, job_results_dir
@@ -127,7 +127,7 @@ def calc_cleanup(atoms: Atoms, tmpdir: Path | str, job_results_dir: Path | str) 
     # for all threads in the current process. However, elsewhere in the code,
     # we use absolute paths to avoid issues. We keep this here for now because some
     # old ASE calculators do not support the `directory` keyword argument.
-    if SETTINGS.THREAD_SAFE:
+    if SETTINGS.CHDIR:
         os.chdir(job_results_dir)
 
     # Gzip files in tmpdir
