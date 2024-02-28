@@ -103,16 +103,17 @@ class QuaccSettings(BaseSettings):
             """
         ),
     )
-    THREAD_SAFE: bool = Field(
-        False,
+    CHDIR: bool = Field(
+        True,
         description=(
             """
-            Whether quacc needs to be thread-safe. Setting this parameter to True
-            will ensure that `os.chdir` calls are not made during the calculation.
-            The `os.chdir` call is necessary for some ASE calculators that don't
-            have proper `directory` handling, but this breaks thread-safety.
-            In general, we recommend leaving this parameter as `False` unless you
-            are sure that you need it.
+            Whether quacc will make `os.chdir` calls to change the working directory
+            to be the location where the calculation is run. By default, we leave this
+            as `True` because not all ASE calculators properly support a `directory`
+            parameter. In most cases, this is fine, but it breaks thread safety.
+            If you need to run multiple, parallel calculations in a single Python process,
+            such as in a multithreaded job execution mode, then this setting needs
+            to be `False`. Note that not all calculators properly support this, however.
             """
         ),
     )
