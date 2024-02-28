@@ -108,7 +108,6 @@ def bands_job(
             **bands_kwargs,
         )
     )
-
     results["bands"] = bands_result
 
     if run_bands_pp:
