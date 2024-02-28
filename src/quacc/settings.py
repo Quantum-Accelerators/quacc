@@ -103,6 +103,19 @@ class QuaccSettings(BaseSettings):
             """
         ),
     )
+    THREAD_SAFE: bool = Field(
+        False,
+        description=(
+            """
+            Whether quacc needs to be thread-safe. Setting this parameter to True
+            will ensure that `os.chdir` calls are not made during the calculation.
+            The `os.chdir` call is necessary for some ASE calculators that don't
+            have proper `directory` handling, but this breaks thread-safety.
+            In general, we recommend leaving this parameter as `False` unless you
+            are sure that you need it.
+            """
+        ),
+    )
     GZIP_FILES: bool = Field(
         True, description="Whether generated files should be gzip'd."
     )
