@@ -6,7 +6,6 @@ from ase import units
 from ase.calculators.lj import LennardJones
 from ase.io import read
 from ase.optimize import FIRE
-from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.qchem.inputs import QCInput
 
 from quacc import SETTINGS
