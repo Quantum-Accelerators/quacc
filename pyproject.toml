@@ -18,7 +18,7 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12", 
+    "Programming Language :: Python :: 3.12",
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering",
     "Operating System :: Microsoft :: Windows",
@@ -32,7 +32,7 @@ dependencies = [
     "custodian>=2024.2.15", # for automated error corrections
     "emmet-core>=0.69.6", # for pre-made schemas
     "maggma>=0.57.0", # for database handling
-    "monty>=2024.2.2", # miscellaneous Python utilities
+    "monty>=2024.2.26", # miscellaneous Python utilities
     "numpy>=1.25.0", # for array handling
     "psutil", # for getting compute architecture details
     "pydantic>=2.0.1", # for settings management
@@ -55,7 +55,7 @@ prefect = ["prefect>=2.14.14", "prefect-dask>=0.2.6", "dask-jobqueue>=0.8.2"]
 redun = ["redun>=0.16.2"]
 sella = ["sella>=2.3.2", "jax<=0.4.24", "jaxlib<=0.4.24"]
 tblite = ["tblite[ase]>=0.3.0; platform_system=='Linux'"]
-dev = ["black>=23.7.0", "codecov-cli>=0.4.1", "isort>=5.12.0", "pytest>=7.4.0", "pytest-cov>=3.0.0", "ruff>=0.0.285"]
+dev = ["codecov-cli>=0.4.1", "pytest>=7.4.0", "pytest-cov>=3.0.0", "ruff>=0.0.285"]
 docs = [
     "blacken-docs>=1.16.0",
     "mkdocs-material>=9.1.21",

@@ -30,7 +30,7 @@ QCFILEPREF:  /tmp/scratch
 QCSAVEDIR:   /global/home/groups/lr_mp/smblau/direct_testing/for_quacc/block_2023-06-10-00-21-42-629762/launcher_2023-09-15-15-56-41-644099/scratch
 workdirs:    /tmp/scratch
 workdir0:    /tmp/scratch
-partmpdirs =  
+partmpdirs =
 #
 # parallel setting
 #
