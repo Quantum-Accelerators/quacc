@@ -1,10 +1,7 @@
 from pathlib import Path
 
 import pytest
-from ase.calculators.emt import EMT
-from ase.io import read, write
 from emmet.core.tasks import TaskDoc
-from monty.os.path import zpath
 
 FILE_DIR = Path(__file__).parent
 PSEUDO_DIR = FILE_DIR / "fake_pseudos"
@@ -13,6 +10,8 @@ MOCK_TASKDOC = TaskDoc.from_directory(FILE_DIR / "mocked_vasp_run")
 
 
 def mock_run(self, *args, **kwargs):
+    from ase.io import write
+
     write(Path(self.directory) / "CONTCAR", self.atoms)
 
 
@@ -25,6 +24,8 @@ def patch_run(monkeypatch):
 
 
 def mock_read_results(self, *args, **kwargs):
+    from ase.calculators.emt import EMT
+
     atoms = self.atoms
     atoms.calc = EMT()
     atoms.get_potential_energy()
@@ -39,6 +40,9 @@ def patch_read_results(monkeypatch):
 
 
 def mock_taskdoc(*args, **kwargs):
+    from ase.io import read
+    from monty.os.path import zpath
+
     from quacc.atoms.core import check_is_metal
 
     MOCK_TASKDOC.output.bandgap = 0.0 if check_is_metal(read(zpath("CONTCAR"))) else 0.5
@@ -47,4 +51,5 @@ def mock_taskdoc(*args, **kwargs):
 
 @pytest.fixture(autouse=True)
 def patch_taskdoc(monkeypatch):
+
     monkeypatch.setattr("quacc.schemas.vasp.TaskDoc.from_directory", mock_taskdoc)
