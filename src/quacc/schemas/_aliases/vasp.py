@@ -51,13 +51,6 @@ class VaspSchema(RunSchema, TaskDoc):
     chargemol: ChargemolSchema
 
 
-class DoubleRelaxSchema(VaspSchema):
-    """Type hint associated with double relaxation jobs."""
-
-    relax1: VaspSchema
-    relax2: VaspSchema
-
-
 class MPGGARelaxFlowSchema(VaspSchema):
     """Type hint associated with the MP GGA relaxation flows."""
 
