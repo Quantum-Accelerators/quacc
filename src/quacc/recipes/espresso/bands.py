@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 
 
 @flow
-def bands_job(
+def bands_flow(
     atoms: Atoms,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     run_bands_pp: bool = True,
