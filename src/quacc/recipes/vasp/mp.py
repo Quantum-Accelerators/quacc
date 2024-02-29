@@ -41,6 +41,7 @@ if TYPE_CHECKING:
     from typing import Any, Callable
 
     from ase.atoms import Atoms
+    from emmet.core.base import EmmetBaseModel
 
     from quacc.schemas._aliases.vasp import (
         DoubleRelaxSchema,
@@ -52,9 +53,19 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-def _validate_mp_compatability(directory: Path | str) -> bool | None:
+def _validate_mp_compatability(directory: Path | str) -> EmmetBaseModel:
     """
     Validate the output of a VASP calculation for Materials Project compatibility.
+
+    Parameters
+    ----------
+    directory
+        Path to the directory containing the VASP calculation.
+
+    Returns
+    -------
+    EmmetBaseModel
+        The validation document.
     """
     if ValidationDoc is None:
         logger.warning(
@@ -62,7 +73,6 @@ def _validate_mp_compatability(directory: Path | str) -> bool | None:
         )
         return None
     validation_doc = ValidationDoc.from_directory(dir_name=directory)
-    is_valid = validation_doc.valid
     if not validation_doc.valid:
         logger.warning(
             f"Calculation in {directory} is not MP-compatible for the following reasons: {validation_doc.reasons}"
@@ -71,7 +81,7 @@ def _validate_mp_compatability(directory: Path | str) -> bool | None:
         logger.warning(
             f"Calculation in {directory} has the following MP-related warnings: {validation_doc.warnings}"
         )
-    return is_valid
+    return validation_doc
 
 
 @job
