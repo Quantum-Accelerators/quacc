@@ -78,41 +78,6 @@ def mp_gga_relax_job(
 
 
 @job
-def mp_gga_relax_job(
-    atoms: Atoms, copy_files: str | Path | list[str | Path] | None = None, **calc_kwargs
-) -> VaspSchema:
-    """
-    Function to relax a structure with the original Materials Project GGA(+U) settings.
-
-    Parameters
-    ----------
-    atoms
-        Atoms object
-    copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
-    **calc_kwargs
-        Custom kwargs for the Vasp calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [ase.calculators.vasp.vasp.Vasp][].
-
-    Returns
-    -------
-    VaspSchema
-        Dictionary of results.
-    """
-
-    calc_defaults = {"pmg_input_set": MPRelaxSet}
-
-    return base_fn(
-        atoms,
-        calc_defaults=calc_defaults,
-        calc_swaps=calc_kwargs,
-        additional_fields={"name": "MP GGA Relax"},
-        copy_files=copy_files,
-    )
-
-
-@job
 def mp_gga_static_job(
     atoms: Atoms,
     bandgap: float | None = None,
