@@ -11,8 +11,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added an option to prevent `os.chdir` calls for multithread safety
 - Added a common elastic calculation
 
+### Changed
+
+- Changed VASP double relaxes to be flows and not jobs
+- Changed the behavior of `quacc.utils.files.copy_decompress_files`
+
 ### Fixed
 
+- Fixed `copy_files` handling with workflow engines
 - Fixed MP VASP double relaxes, where the same relaxation was done twice by mistake
 - Fixed use of `**calc_kwargs` in MP flow recipes
 
