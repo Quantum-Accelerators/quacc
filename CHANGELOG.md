@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.6.8]
 
+### Added
+
+- Added an option to prevent `os.chdir` calls for multithread safety
+- Added a common elastic calculation
+
 ### Fixed
 
 - Fixed MP VASP double relaxes, where the same relaxation was done twice by mistake
