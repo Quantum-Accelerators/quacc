@@ -1,1 +1,1 @@
-pip install git+https://github.com/materialsproject/pymatgen-io-validation
+git+https://github.com/materialsproject/pymatgen-io-validation
