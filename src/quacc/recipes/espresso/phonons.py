@@ -123,7 +123,7 @@ def q2r_job(
 
     calc_defaults = {"input_data": {"input": {"fildyn": fildyn, "flfrc": "q2r.fc"}}}
 
-    prev_dir = {prev_dir: [f"{fildyn}*"]}
+    copy_files = {prev_dir: [f"{fildyn}*"]}
 
     return base_fn(
         template=EspressoTemplate("q2r"),
@@ -131,7 +131,7 @@ def q2r_job(
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "q2r.x Phonon"},
-        copy_files=prev_dir,
+        copy_files=copy_files,
     )
 
 
@@ -175,7 +175,7 @@ def matdyn_job(
 
     calc_defaults = {"input_data": {"input": {"flfrc": flfrc}}}
 
-    prev_dir = {prev_dir: flfrc}
+    copy_files = {prev_dir: flfrc}
 
     return base_fn(
         template=EspressoTemplate("matdyn"),
@@ -183,7 +183,7 @@ def matdyn_job(
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "matdyn Phonon"},
-        copy_files=prev_dir,
+        copy_files=copy_files,
     )
 
 
