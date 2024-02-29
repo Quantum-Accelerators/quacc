@@ -22,7 +22,6 @@ This set of recipes is meant to be compatible with the Materials Project
 from __future__ import annotations
 
 from functools import partial
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from pymatgen.io.vasp.sets import MPRelaxSet, MPScanRelaxSet, MPStaticSet
@@ -42,11 +41,14 @@ if TYPE_CHECKING:
         MPMetaGGARelaxFlowSchema,
         VaspSchema,
     )
+    from quacc.utils.files import Filenames, SourceDirectory
 
 
 @job
 def mp_gga_relax_job(
-    atoms: Atoms, copy_files: str | Path | list[str | Path] | None = None, **calc_kwargs
+    atoms: Atoms,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    **calc_kwargs,
 ) -> DoubleRelaxSchema:
     """
     Function to (double) relax a structure with the original Materials Project GGA(+U) settings.
@@ -56,7 +58,7 @@ def mp_gga_relax_job(
     atoms
         Atoms object
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -70,7 +72,7 @@ def mp_gga_relax_job(
 
     def _relax(
         atoms: Atoms,
-        copy_files: str | Path | list[str | Path] | None = None,
+        copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
         calc_kwargs: dict[str, Any] | None = None,
     ) -> VaspSchema:
         """A helper function to run a relaxation with the MP GGA settings."""
@@ -86,10 +88,7 @@ def mp_gga_relax_job(
     summary1 = _relax(atoms, copy_files=copy_files, calc_kwargs=calc_kwargs)
     summary2 = _relax(
         summary1["atoms"],
-        copy_files=[
-            Path(summary1["dir_name"]) / "CHGCAR",
-            Path(summary1["dir_name"]) / "WAVECAR",
-        ],
+        copy_files={summary1["dir_name"]: ["CHGCAR*", "WAVECAR*"]},
         calc_kwargs=calc_kwargs,
     )
 
@@ -100,7 +99,7 @@ def mp_gga_relax_job(
 def mp_gga_static_job(
     atoms: Atoms,
     bandgap: float | None = None,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """
@@ -113,7 +112,7 @@ def mp_gga_static_job(
     bandgap
         The bandgap in eV, if known from a prior calculation.
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -146,7 +145,7 @@ def mp_gga_static_job(
 def mp_metagga_prerelax_job(
     atoms: Atoms,
     bandgap: float | None = None,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """
@@ -162,7 +161,7 @@ def mp_metagga_prerelax_job(
     bandgap
         Estimate for the bandgap in eV.
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -199,7 +198,7 @@ def mp_metagga_prerelax_job(
 def mp_metagga_relax_job(
     atoms: Atoms,
     bandgap: float | None = None,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> DoubleRelaxSchema:
     """
@@ -215,7 +214,7 @@ def mp_metagga_relax_job(
     bandgap
         Estimate for the bandgap in eV.
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Dictionary of custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -229,7 +228,7 @@ def mp_metagga_relax_job(
 
     def _relax(
         atoms: Atoms,
-        copy_files: str | Path | list[str | Path] | None = None,
+        copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
         bandgap: float | None = None,
         calc_kwargs: dict[str, Any] | None = None,
     ) -> VaspSchema:
@@ -255,10 +254,7 @@ def mp_metagga_relax_job(
     )
     summary2 = _relax(
         summary1["atoms"],
-        copy_files=[
-            Path(summary1["dir_name"]) / "CHGCAR",
-            Path(summary1["dir_name"]) / "WAVECAR",
-        ],
+        copy_files={summary1["dir_name"]: ["CHGCAR*", "WAVECAR*"]},
         bandgap=bandgap,
         calc_kwargs=calc_kwargs,
     )
@@ -270,7 +266,7 @@ def mp_metagga_relax_job(
 def mp_metagga_static_job(
     atoms: Atoms,
     bandgap: float | None = None,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """
@@ -284,7 +280,7 @@ def mp_metagga_static_job(
     bandgap
         Estimate for the bandgap in eV.
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Dictionary of custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -363,10 +359,7 @@ def mp_gga_relax_flow(
     static_results = mp_gga_static_job_(
         relax_results["relax2"]["atoms"],
         bandgap=relax_results["relax2"]["output"]["bandgap"],
-        copy_files=[
-            Path(relax_results["relax2"]["dir_name"]) / "CHGCAR",
-            Path(relax_results["relax2"]["dir_name"]) / "WAVECAR",
-        ],
+        copy_files={relax_results["relax2"]["dir_name"]: ["CHGCAR*", "WAVECAR*"]},
     )
 
     return {"relax": relax_results, "static": static_results}
@@ -429,20 +422,14 @@ def mp_metagga_relax_flow(
     relax_results = mp_metagga_relax_job_(
         prerelax_results["atoms"],
         bandgap=prerelax_results["output"]["bandgap"],
-        copy_files=[
-            Path(prerelax_results["dir_name"]) / "CHGCAR",
-            Path(prerelax_results["dir_name"]) / "WAVECAR",
-        ],
+        copy_files={prerelax_results["dir_name"]: ["CHGCAR*", "WAVECAR*"]},
     )
 
     # Run the static
     static_results = mp_metagga_static_job_(
         relax_results["relax2"]["atoms"],
         bandgap=relax_results["relax2"]["output"]["bandgap"],
-        copy_files=[
-            Path(relax_results["relax2"]["dir_name"]) / "CHGCAR",
-            Path(relax_results["relax2"]["dir_name"]) / "WAVECAR",
-        ],
+        copy_files={relax_results["relax2"]["dir_name"]: ["CHGCAR*", "WAVECAR*"]},
     )
 
     return {

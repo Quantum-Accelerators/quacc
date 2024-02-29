@@ -10,19 +10,19 @@ from quacc.recipes.vasp._base import base_fn
 from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from typing import Any, Callable
 
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.vasp import VaspSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
 
 @job
 def static_job(
     atoms: Atoms,
     preset: str | None = "SlabSet",
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """
@@ -35,7 +35,7 @@ def static_job(
     preset
         Preset to use from `quacc.calculators.vasp.presets`.
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -73,7 +73,7 @@ def static_job(
 def relax_job(
     atoms: Atoms,
     preset: str | None = "SlabSet",
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """
@@ -86,7 +86,7 @@ def relax_job(
     preset
         Preset to use from `quacc.calculators.vasp.presets`.
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available

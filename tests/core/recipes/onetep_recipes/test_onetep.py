@@ -14,7 +14,7 @@ DATA_DIR = Path(__file__).parent / "data"
 def test_static_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    copy_decompress_files([DATA_DIR / "H.usp.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["H.usp.gz"], tmp_path)
 
     keywords = {"pseudo_path": str(tmp_path)}
     pseudopotentials = {"H": "H.usp"}
@@ -45,7 +45,7 @@ def test_static_job(tmp_path, monkeypatch):
 def test_ase_relax_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    copy_decompress_files([DATA_DIR / "H.usp.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["H.usp.gz"], tmp_path)
 
     keywords = {"pseudo_path": str(tmp_path)}
     pseudopotentials = {"H": "H.usp"}

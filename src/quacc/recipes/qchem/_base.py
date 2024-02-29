@@ -10,12 +10,12 @@ from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from typing import Any
 
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import OptSchema, RunSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
 
 def base_fn(
@@ -25,7 +25,7 @@ def base_fn(
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> RunSchema:
     """
     Base job function used for Q-Chem recipes that don't rely on ASE optimizers or other
@@ -48,7 +48,7 @@ def base_fn(
     additional_fields
         Any additional fields to set in the summary.
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy (and decompress) from source to the runtime directory.
 
     Returns
     -------
@@ -79,7 +79,7 @@ def base_opt_fn(
     opt_defaults: dict[str, Any] | None = None,
     opt_params: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> OptSchema:
     """
     Base function for Q-Chem recipes that involve ASE optimizers.
@@ -103,7 +103,7 @@ def base_opt_fn(
     opt_params
         Dictionary of custom kwargs for [quacc.runners.ase.run_opt][]
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy (and decompress) from source to the runtime directory.
 
     Returns
     -------
