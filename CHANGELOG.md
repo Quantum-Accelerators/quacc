@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- Switched to `ruff` for formatting, replacing the need for `black` and `isort`
 - Changed VASP double relaxes to be flows and not jobs
 - Changed the behavior of `quacc.utils.files.copy_decompress_files`
 
