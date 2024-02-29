@@ -1,4 +1,5 @@
 """Custodian handlers for VASP."""
+
 from __future__ import annotations
 
 import os
@@ -9,12 +10,12 @@ from custodian import Custodian
 from custodian.vasp.handlers import (
     FrozenJobErrorHandler,
     IncorrectSmearingHandler,
+    KspacingMetalHandler,
     LargeSigmaHandler,
     MeshSymmetryErrorHandler,
     NonConvergingErrorHandler,
     PositiveEnergyErrorHandler,
     PotimErrorHandler,
-    ScanMetalHandler,
     StdErrHandler,
     UnconvergedErrorHandler,
     VaspErrorHandler,
@@ -27,6 +28,10 @@ if TYPE_CHECKING:
     from typing import Callable, TypedDict
 
     class VaspJobKwargs(TypedDict, total=False):
+        """
+        Type hint for `vasp_job_kwargs` in in [quacc.calculators.vasp.vasp_custodian.run_custodian][].
+        """
+
         output_file: str  # default = "vasp.out"
         stderr_file: str  # default = "std_err.txt"
         suffix: str  # default = ""
@@ -39,6 +44,10 @@ if TYPE_CHECKING:
         auto_continue: bool  # default = False
 
     class CustodianKwargs(TypedDict, total=False):
+        """
+        Type hint for `custodian_kwargs` in [quacc.calculators.vasp.vasp_custodian.run_custodian][].
+        """
+
         max_errors_per_job: int | None  # default = None
         polling_time_step: int  # default = 10
         monitor_freq: int  # default = 10
@@ -61,7 +70,7 @@ def run_custodian(
     scratch_dir: str | None = None,
     vasp_job_kwargs: VaspJobKwargs | None = None,
     custodian_kwargs: CustodianKwargs | None = None,
-) -> None:
+) -> list[list[dict]]:
     """
     Function to run VASP Custodian.
 
@@ -95,7 +104,8 @@ def run_custodian(
 
     Returns
     -------
-    None
+    list[list[dict]]
+        List of errors from each Custodian job.
     """
     # Adapted from atomate2.vasp.run.run_vasp
 
@@ -145,7 +155,7 @@ def run_custodian(
         "StdErrHandler": StdErrHandler(),
         "UnconvergedErrorHandler": UnconvergedErrorHandler(),
         "WalltimeHandler": WalltimeHandler(),
-        "ScanMetalHandler": ScanMetalHandler(),
+        "KspacingMetalHandler": KspacingMetalHandler(),
     }
     validators_dict = {
         "VaspFilesValidator": VaspFilesValidator(),
@@ -195,8 +205,4 @@ def run_custodian(
         **custodian_kwargs,
     )
 
-    c.run()
-
-
-if __name__ == "__main__":
-    run_custodian()
+    return c.run()

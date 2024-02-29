@@ -1,4 +1,5 @@
 """Transition state recipes for Q-Chem."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -17,12 +18,12 @@ except ImportError:
     Sella = False
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from typing import Any, Literal
 
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import OptSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
 
 @job
@@ -34,7 +35,7 @@ def ts_job(
     method: str = "wb97mv",
     basis: str = "def2-svpd",
     opt_params: dict[str, Any] | None = None,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
     """
@@ -58,7 +59,7 @@ def ts_job(
         to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
         a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
@@ -74,12 +75,7 @@ def ts_job(
     calc_defaults = recursive_dict_merge(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
-    opt_defaults = {
-        "fmax": 0.01,
-        "max_steps": 1000,
-        "optimizer": Sella,
-        "optimizer_kwargs": {"order": 1},
-    }
+    opt_defaults = {"optimizer": Sella, "optimizer_kwargs": {"order": 1}}
 
     if opt_params and opt_params.get("optimizer", Sella) is not Sella:
         raise ValueError("Only Sella should be used for TS optimization.")
@@ -107,7 +103,7 @@ def irc_job(
     method: str = "wb97mv",
     basis: str = "def2-svpd",
     opt_params: dict[str, Any] | None = None,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
     """
@@ -133,7 +129,7 @@ def irc_job(
         to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
         a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
@@ -149,8 +145,6 @@ def irc_job(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
     opt_defaults = {
-        "fmax": 0.01,
-        "max_steps": 1000,
         "optimizer": IRC,
         "optimizer_kwargs": {"keep_going": True},
         "run_kwargs": {"direction": direction},
@@ -182,7 +176,7 @@ def quasi_irc_job(
     basis: str = "def2-svpd",
     irc_job_kwargs: dict[str, Any] | None = None,
     relax_job_kwargs: dict[str, Any] | None = None,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> OptSchema:
     """
     Quasi-IRC optimize a molecular structure. Runs `irc_job` for 10 steps (default)
@@ -203,7 +197,7 @@ def quasi_irc_job(
     relax_job_kwargs
         Dictionary of kwargs for the `relax_job`.
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy (and decompress) from source to the runtime directory.
 
     Returns
     -------

@@ -28,7 +28,7 @@ def test_phonon_job(tmp_path, monkeypatch):
 
     atoms = bulk("Li")
 
-    copy_decompress_files([DATA_DIR / "Li.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Li.upf.gz"], tmp_path)
 
     SETTINGS.ESPRESSO_PSEUDO = tmp_path
 
@@ -48,21 +48,18 @@ def test_phonon_job(tmp_path, monkeypatch):
 
     ph_results = phonon_job(pw_results["dir_name"], input_data=ph_loose)
 
-    assert (0, 0, 0) in ph_results["results"]
     assert_allclose(
-        ph_results["results"][(0, 0, 0)]["atoms"].get_positions(),
+        ph_results["results"][1]["atoms"].get_positions(),
         atoms.get_positions(),
         atol=1.0e-4,
     )
     # ph.x cell param are not defined to a very high level of accuracy,
     # atol = 1.0e-3 is needed here...
     assert_allclose(
-        ph_results["results"][(0, 0, 0)]["atoms"].get_cell(),
-        atoms.get_cell(),
-        atol=1.0e-3,
+        ph_results["results"][1]["atoms"].get_cell(), atoms.get_cell(), atol=1.0e-3
     )
     assert_array_equal(
-        ph_results["results"][(0, 0, 0)]["atoms"].get_chemical_symbols(),
+        ph_results["results"][1]["atoms"].get_chemical_symbols(),
         atoms.get_chemical_symbols(),
     )
 
@@ -76,7 +73,7 @@ def test_phonon_job(tmp_path, monkeypatch):
     ]
 
     for key in sections:
-        assert key in ph_results["results"][(0, 0, 0)]
+        assert key in ph_results["results"][1]
 
     SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO
 
@@ -86,7 +83,7 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
 
     atoms = bulk("Li")
 
-    copy_decompress_files([DATA_DIR / "Li.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Li.upf.gz"], tmp_path)
 
     SETTINGS.ESPRESSO_PSEUDO = tmp_path
 
@@ -115,21 +112,18 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
         nat_todo_indices=nat_todo,
     )
 
-    assert (0, 0, 0) in ph_results["results"]
     assert_allclose(
-        ph_results["results"][(0, 0, 0)]["atoms"].get_positions(),
+        ph_results["results"][1]["atoms"].get_positions(),
         atoms.get_positions(),
         atol=1.0e-4,
     )
     # ph.x cell param are not defined to a very high level of accuracy,
     # atol = 1.0e-3 is needed here...
     assert_allclose(
-        ph_results["results"][(0, 0, 0)]["atoms"].get_cell(),
-        atoms.get_cell(),
-        atol=1.0e-3,
+        ph_results["results"][1]["atoms"].get_cell(), atoms.get_cell(), atol=1.0e-3
     )
     assert_array_equal(
-        ph_results["results"][(0, 0, 0)]["atoms"].get_chemical_symbols(),
+        ph_results["results"][1]["atoms"].get_chemical_symbols(),
         atoms.get_chemical_symbols(),
     )
 
@@ -143,6 +137,6 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
     ]
 
     for key in sections:
-        assert key in ph_results["results"][(0, 0, 0)]
+        assert key in ph_results["results"][1]
 
     SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO

@@ -1,4 +1,5 @@
 """Base jobs for GULP."""
+
 from __future__ import annotations
 
 import logging
@@ -18,7 +19,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
-
+    from quacc.utils.files import Filenames, SourceDirectory
 logger = logging.getLogger(__name__)
 
 GEOM_FILE_PBC = "gulp.cif"
@@ -34,6 +35,7 @@ def base_fn(
     keyword_swaps: list[str] | None = None,
     option_swaps: list[str] | None = None,
     additional_fields: dict[str, Any] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> RunSchema:
     """
     Base job function for GULP recipes.
@@ -58,6 +60,8 @@ def base_fn(
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
     additional_fields
         Additional field to supply to the summarizer.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
 
     Returns
     -------
@@ -72,9 +76,11 @@ def base_fn(
         keyword_defaults = [k for k in keyword_defaults if k not in ["gwolf", "conp"]]
 
     option_defaults += [
-        f"output cif {GEOM_FILE_PBC}"
-        if atoms.pbc.any()
-        else f"output xyz {GEOM_FILE_NOPBC}"
+        (
+            f"output cif {GEOM_FILE_PBC}"
+            if atoms.pbc.any()
+            else f"output xyz {GEOM_FILE_NOPBC}"
+        )
     ]
 
     keywords = merge_list_params(keyword_defaults, keyword_swaps)
@@ -89,7 +95,9 @@ def base_fn(
         command=GULP_CMD, keywords=gulp_keywords, options=gulp_options, library=library
     )
     final_atoms = run_calc(
-        atoms, geom_file=GEOM_FILE_PBC if atoms.pbc.any() else GEOM_FILE_NOPBC
+        atoms,
+        geom_file=GEOM_FILE_PBC if atoms.pbc.any() else GEOM_FILE_NOPBC,
+        copy_files=copy_files,
     )
 
     if (

@@ -1,4 +1,5 @@
 """Core recipes for Gaussian."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -9,11 +10,10 @@ from quacc import job
 from quacc.recipes.gaussian._base import base_fn
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.cclib import cclibSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
 
 @job
@@ -23,7 +23,7 @@ def static_job(
     spin_multiplicity: int = 1,
     xc: str = "wb97xd",
     basis: str = "def2tzvp",
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> cclibSchema:
     """
@@ -42,11 +42,11 @@ def static_job(
     basis
         Basis set
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Custom kwargs for the Gaussian calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.gaussian.Gaussian` calculator.
+        keys, refer to the [ase.calculators.gaussian.Gaussian][] calculator.
 
     Returns
     -------
@@ -88,7 +88,7 @@ def relax_job(
     xc: str = "wb97xd",
     basis: str = "def2tzvp",
     freq: bool = False,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> cclibSchema:
     """
@@ -109,11 +109,11 @@ def relax_job(
     freq
         If a frequency calculation should be carried out.
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Custom kwargs for the Gaussian calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.gaussian.Gaussian` calculator.
+        keys, refer to the [ase.calculators.gaussian.Gaussian][] calculator.
 
     Returns
     -------

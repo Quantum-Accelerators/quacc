@@ -1,4 +1,5 @@
 """Type hints for quacc.schemas.cclib."""
+
 from __future__ import annotations
 
 from typing import Any, TypedDict
@@ -124,7 +125,7 @@ class AllAttributes(Attributes, AdditionalAttributes):
 
 
 class cclibBaseSchema(TypedDict):
-    """Type hint associated with quacc.schemas.cclib._make_cclib_schema."""
+    """Type hint associated with `quacc.schemas.cclib._make_cclib_schema`"""
 
     logfile: str
     attributes: AllAttributes
@@ -133,7 +134,7 @@ class cclibBaseSchema(TypedDict):
 
 
 class cclibSchema(cclibBaseSchema, RunSchema):
-    """Type hint associated with quacc.schemas.cclib.cclib_summarize_run."""
+    """Type hint associated with [quacc.schemas.cclib.cclib_summarize_run][]."""
 
 
 class cclibASEOptSchema(cclibSchema, OptSchema):

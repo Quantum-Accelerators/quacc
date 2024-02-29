@@ -1,5 +1,6 @@
 import logging
 import os
+from pathlib import Path
 from shutil import copytree, move
 
 import pytest
@@ -58,6 +59,9 @@ def test_vasp_summarize_run(run1, monkeypatch):
     assert results["nsites"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["output"]["energy"] == -33.15807349
+    assert Path(results["dir_name"]).is_dir()
+    assert "calcs_reversed" in results
+    assert "orig_inputs" in results
 
     # Make sure default dir works
     cwd = os.getcwd()
@@ -198,6 +202,7 @@ def test_no_bader(tmp_path, monkeypatch, run1, caplog):
     atoms = read(run1 / "OUTCAR.gz")
     with caplog.at_level(logging.WARNING):
         vasp_summarize_run(atoms, dir_path=run1, run_bader=True, run_chargemol=False)
+    assert "Bader analysis could not be performed." in caplog.text
 
 
 def test_no_chargemol(tmp_path, monkeypatch, run1, caplog):
@@ -206,3 +211,4 @@ def test_no_chargemol(tmp_path, monkeypatch, run1, caplog):
     atoms = read(run1 / "OUTCAR.gz")
     with caplog.at_level(logging.WARNING):
         vasp_summarize_run(atoms, dir_path=run1, run_bader=False, run_chargemol=True)
+    assert "Chargemol analysis could not be performed." in caplog.text

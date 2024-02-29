@@ -12,6 +12,8 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
+    from quacc.utils.files import Filenames, SourceDirectory
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -53,7 +55,7 @@ def get_pseudopotential_info(
 
 def pw_copy_files(
     input_data: dict[str, Any], prev_dir: str | Path, include_wfc: bool = True
-) -> dict[str, list[str | Path]]:
+) -> dict[SourceDirectory, Filenames]:
     """
     Function that take care of copying the correct files from a previous pw.x
     to a current pw.x/bands.x/dos.x... calculation. wfc in collected format
@@ -88,23 +90,23 @@ def pw_copy_files(
     outdir = control.get("outdir", ".")
     wfcdir = control.get("wfcdir", outdir)
 
-    file_to_copy = {prev_dir: []}
+    files_to_copy = {prev_dir: []}
 
     basics_to_copy = ["charge-density.*", "data-file-schema.*", "paw.*"]
 
     if restart_mode == "restart":
-        file_to_copy[prev_dir].append(f"{wfcdir}/{prefix}.wfc*")
-        file_to_copy[prev_dir].append(f"{wfcdir}/{prefix}.mix*")
-        file_to_copy[prev_dir].append(f"{wfcdir}/{prefix}.restart_k*")
-        file_to_copy[prev_dir].append(f"{wfcdir}/{prefix}.restart_scf*")
+        files_to_copy[prev_dir].append(Path(wfcdir, f"{prefix}.wfc*"))
+        files_to_copy[prev_dir].append(Path(wfcdir, f"{prefix}.mix*"))
+        files_to_copy[prev_dir].append(Path(wfcdir, f"{prefix}.restart_k*"))
+        files_to_copy[prev_dir].append(Path(wfcdir, f"{prefix}.restart_scf*"))
     elif include_wfc:
         basics_to_copy.append("wfc*.*")
 
-    file_to_copy[prev_dir].extend(
-        [f"{outdir}/{prefix}.save/{i}" for i in basics_to_copy]
+    files_to_copy[prev_dir].extend(
+        [Path(outdir, f"{prefix}.save", i) for i in basics_to_copy]
     )
 
-    return file_to_copy
+    return files_to_copy
 
 
 def grid_copy_files(
@@ -112,7 +114,7 @@ def grid_copy_files(
     dir_name: str | Path,
     qnum: int,
     qpt: tuple[float, float, float],
-) -> dict[str, list[str]]:
+) -> dict[SourceDirectory, Filenames]:
     """
     Function that returns a dictionary of files to copy for the grid calculation.
 
@@ -137,37 +139,40 @@ def grid_copy_files(
     outdir = ph_input_data["inputph"].get("outdir", ".")
     lqdir = ph_input_data["inputph"].get("lqdir", False)
 
-    file_to_copy = {
+    files_to_copy = {
         dir_name: [
-            f"{outdir}/_ph0/{prefix}.phsave/control_ph.xml*",
-            f"{outdir}/_ph0/{prefix}.phsave/status_run.xml*",
-            f"{outdir}/_ph0/{prefix}.phsave/patterns.*.xml*",
-            f"{outdir}/_ph0/{prefix}.phsave/tensors.xml*",
+            Path(outdir, "_ph0", f"{prefix}.phsave", "control_ph.xml*"),
+            Path(outdir, "_ph0", f"{prefix}.phsave", "status_run.xml*"),
+            Path(outdir, "_ph0", f"{prefix}.phsave", "patterns.*.xml*"),
+            Path(outdir, "_ph0", f"{prefix}.phsave", "tensors.xml*"),
         ]
     }
 
     if lqdir or qpt == (0.0, 0.0, 0.0):
-        file_to_copy[dir_name].extend(
+        files_to_copy[dir_name].extend(
             [
-                f"{outdir}/{prefix}.save/charge-density.*",
-                f"{outdir}/{prefix}.save/data-file-schema.xml.*",
-                f"{outdir}/{prefix}.save/paw.txt.*",
-                f"{outdir}/{prefix}.save/wfc*.*",
+                Path(outdir, f"{prefix}.save", "charge-density.*"),
+                Path(outdir, f"{prefix}.save", "data-file-schema.xml.*"),
+                Path(outdir, f"{prefix}.save", "paw.txt.*"),
+                Path(outdir, f"{prefix}.save", "wfc*.*"),
             ]
         )
         if qpt != (0.0, 0.0, 0.0):
-            file_to_copy[dir_name].extend(
+            files_to_copy[dir_name].extend(
                 [
-                    f"{outdir}/_ph0/{prefix}.q_{qnum}/{prefix}.save/*",
-                    f"{outdir}/_ph0/{prefix}.q_{qnum}/{prefix}.wfc*",
+                    Path(outdir, "_ph0", f"{prefix}.q_{qnum}", f"{prefix}.save", "*"),
+                    Path(outdir, "_ph0", f"{prefix}.q_{qnum}", f"{prefix}.wfc*"),
                 ]
             )
     else:
-        file_to_copy[dir_name].extend(
-            [f"{outdir}/_ph0/{prefix}.wfc*", f"{outdir}/_ph0/{prefix}.save/*"]
+        files_to_copy[dir_name].extend(
+            [
+                Path(outdir, "_ph0", f"{prefix}.wfc*"),
+                Path(outdir, "_ph0", f"{prefix}.save", "*"),
+            ]
         )
 
-    return file_to_copy
+    return files_to_copy
 
 
 def grid_prepare_repr(patterns: dict[str, Any], nblocks: int) -> list:
@@ -179,7 +184,7 @@ def grid_prepare_repr(patterns: dict[str, Any], nblocks: int) -> list:
     patterns
         The representation patterns dictionary from the ph_init_job_results
     nblocks
-        The number of blocks to group the representations in (default 1) see
+        The number of blocks to group the representations in. See
         [quacc.recipes.espresso.phonons.grid_phonon_flow][].
 
     Returns
@@ -194,7 +199,8 @@ def grid_prepare_repr(patterns: dict[str, Any], nblocks: int) -> list:
 
 
 def sanity_checks(parameters: dict[str, Any], binary: str = "pw") -> None:
-    """Function that performs sanity checks on the input_data. It is meant
+    """
+    Function that performs sanity checks on the input_data. It is meant
     to catch common mistakes that are not caught by the espresso binaries.
 
     Parameters

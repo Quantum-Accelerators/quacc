@@ -1,4 +1,5 @@
 """Type hints for quacc.schemas.vasp."""
+
 from __future__ import annotations
 
 from typing import TypedDict
@@ -15,10 +16,11 @@ class BaderSchema(TypedDict, total=False):
     spin_moments: list[float]
     bader_version: float
     min_dist: list[float]
-    partial_charges: list[float]
 
 
 class DDECSchema(TypedDict, total=False):
+    """Type hint associated with quacc.schemas.vasp._ddec_runner."""
+
     partial_charges: list[float]
     spin_moments: list[float]
     dipoles: list[float]
@@ -30,31 +32,35 @@ class DDECSchema(TypedDict, total=False):
 
 
 class CM5Schema(TypedDict):
+    """Type hint used in DDECSchema"""
+
     partial_charges: list[float]
 
 
 class ChargemolSchema(TypedDict, total=False):
-    """Type hint associated with quacc.schemas.chargemol._chargemol_runner."""
+    """Type hint associated with quacc.schemas.vasp._chargemol_runner`"""
 
     ddec: DDECSchema
     cm5: CM5Schema
 
 
 class VaspSchema(RunSchema, TaskDoc):
-    """Type hint associated with quacc.schemas.vasp.vasp_summarize_run."""
+    """Type hint associated with [quacc.schemas.vasp.vasp_summarize_run][]"""
 
     bader: BaderSchema
     chargemol: ChargemolSchema
 
 
-class DoubleRelaxSchema(VaspSchema):
-    """Type hint associated with double relaxation jobs."""
+class MPGGARelaxFlowSchema(VaspSchema):
+    """Type hint associated with the MP GGA relaxation flows."""
 
     relax1: VaspSchema
+    relax2: VaspSchema
+    static: VaspSchema
 
 
-class MPRelaxFlowSchema(VaspSchema):
-    """Type hint associated with the MP relaxation flows."""
+class MPMetaGGARelaxFlowSchema(MPGGARelaxFlowSchema):
+    """Type hint associated with the MP meta-GGA relaxation flows."""
 
     prerelax: VaspSchema
 

@@ -6,7 +6,7 @@ from ase.build import bulk
 from numpy.testing import assert_allclose
 
 from quacc.recipes.espresso.dos import dos_flow, dos_job, projwfc_flow, projwfc_job
-from quacc.utils.files import copy_decompress_files, copy_decompress_tree
+from quacc.utils.files import copy_decompress_files
 
 pytestmark = pytest.mark.skipif(
     which("pw.x") is None or which("dos.x") is None, reason="QE not installed"
@@ -17,19 +17,18 @@ DATA_DIR = Path(__file__).parent / "data"
 
 def test_dos_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    copy_decompress_tree({DATA_DIR / "dos_test/": "pwscf.save/*.gz"}, tmp_path)
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR / "dos_test", [Path("pwscf.save", "*.gz")], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
     output = dos_job(tmp_path)
 
-    assert output["results"]["pwscf.dos"]["fermi"] == pytest.approx(7.199)
+    assert output["results"]["pwscf_dos"]["fermi"] == pytest.approx(7.199)
 
 
 def test_projwfc_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    copy_decompress_tree({DATA_DIR / "dos_test/": "pwscf.save/*.gz"}, tmp_path)
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR / "dos_test", [Path("pwscf.save", "*.gz")], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
     output = projwfc_job(tmp_path)
-    print(output)
     assert output["name"] == "projwfc.x Projects-wavefunctions"
     assert output["parameters"]["input_data"]["projwfc"] == {}
 
@@ -37,7 +36,7 @@ def test_projwfc_job(tmp_path, monkeypatch):
 def test_dos_flow(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
     atoms = bulk("Si")
     input_data = {
         "control": {"calculation": "scf", "pseudo_dir": tmp_path},
@@ -85,13 +84,13 @@ def test_dos_flow(tmp_path, monkeypatch):
     assert output["non_scf_job"]["results"]["nbands"] == 8
     assert output["non_scf_job"]["results"]["nspins"] == 1
 
-    assert output["dos_job"]["results"]["pwscf.dos"]["fermi"] == pytest.approx(6.772)
+    assert output["dos_job"]["results"]["pwscf_dos"]["fermi"] == pytest.approx(6.772)
 
 
 def test_projwfc_flow(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
     atoms = bulk("Si")
     input_data = {
         "control": {"calculation": "scf", "pseudo_dir": tmp_path},

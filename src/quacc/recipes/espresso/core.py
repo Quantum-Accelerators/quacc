@@ -1,4 +1,5 @@
 """Core recipes for espresso."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -10,12 +11,12 @@ from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.recipes.espresso._base import base_fn, base_opt_fn
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from typing import Any
 
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
 
 @job
@@ -24,7 +25,7 @@ def static_job(
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -45,17 +46,7 @@ def static_job(
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
     copy_files
-        List of files to copy to the calculation directory. Useful for copying
-        files from a previous calculation. This parameter can either be a string
-        or a list of strings.
-
-        If a string is provided, it is assumed to be a path to a directory,
-        all of the child tree structure of that directory is going to be copied to the
-        scratch of this calculation. For phonon_job this is what most users will want to do.
-
-        If a list of strings is provided, each string point to a specific file. In this case
-        it is important to note that no directory structure is going to be copied, everything
-        is copied at the root of the temporary directory.
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -89,7 +80,7 @@ def relax_job(
     relax_cell: bool = False,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -112,17 +103,7 @@ def relax_job(
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
     copy_files
-        List of files to copy to the calculation directory. Useful for copying
-        files from a previous calculation. This parameter can either be a string
-        or a list of strings.
-
-        If a string is provided, it is assumed to be a path to a directory,
-        all of the child tree structure of that directory is going to be copied to the
-        scratch of this calculation. For phonon_job this is what most users will want to do.
-
-        If a list of strings is provided, each string point to a specific file. In this case
-        it is important to note that no directory structure is going to be copied, everything
-        is copied at the root of the temporary directory.
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -161,7 +142,7 @@ def ase_relax_job(
     relax_cell: bool = False,
     parallel_info: dict[str] | None = None,
     opt_params: dict[str, Any] | None = None,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -190,17 +171,7 @@ def ase_relax_job(
         to change the optimizer being used. "fmax" and "max_steps" are commonly
         used keywords. See the ASE documentation for more information.
     copy_files
-        List of files to copy to the calculation directory. Useful for copying
-        files from a previous calculation. This parameter can either be a string
-        or a list of strings.
-
-        If a string is provided, it is assumed to be a path to a directory,
-        all of the child tree structure of that directory is going to be copied to the
-        scratch of this calculation. For phonon_job this is what most users will want to do.
-
-        If a list of strings is provided, each string point to a specific file. In this case
-        it is important to note that no directory structure is going to be copied, everything
-        is copied at the root of the temporary directory.
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -219,7 +190,7 @@ def ase_relax_job(
         }
     }
 
-    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": LBFGS}
+    opt_defaults = {"optimizer": LBFGS}
 
     return base_opt_fn(
         atoms,
@@ -238,7 +209,7 @@ def ase_relax_job(
 
 @job
 def post_processing_job(
-    prev_dir: str | Path,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -251,20 +222,15 @@ def post_processing_job(
 
     Parameters
     ----------
-    prev_dir
-        Outdir of the previously ran pw.x calculation. This is used to copy
-        the entire tree structure of that directory to the working directory
-        of this calculation.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
     **calc_kwargs
-        calc_kwargs dictionary possibly containing the following keys:
-
-        - input_data: dict
-        - additional_fields: list[str] | str
-
-        See the docstring of ase.io.espresso.write_fortran_namelist for more information.
+        Additional keyword arguments to pass to the Espresso calculator. Set a value to
+        `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
+        [quacc.calculators.espresso.espresso.Espresso][] for more information.
 
     Returns
     -------
@@ -290,14 +256,14 @@ def post_processing_job(
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "pp.x post-processing"},
-        copy_files=prev_dir,
+        copy_files=copy_files,
     )
 
 
 @job
 def non_scf_job(
     atoms: Atoms,
-    prev_dir: str | Path,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
@@ -310,10 +276,8 @@ def non_scf_job(
     ----------
     atoms
         The Atoms object.
-    prev_dir
-        Outdir of the previously ran pw.x calculation. This is used to copy
-        the entire tree structure of that directory to the working directory
-        of this calculation.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
     preset
         The name of a YAML file containing a list of parameters to use as
         a "preset" for the calculator. quacc will automatically look in the
@@ -324,7 +288,6 @@ def non_scf_job(
     test_run
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
-
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -347,5 +310,5 @@ def non_scf_job(
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "pw.x Non SCF"},
-        copy_files=prev_dir,
+        copy_files=copy_files,
     )

@@ -12,7 +12,7 @@ A flow is a Python function decorated by `#!Python @flow` that contains a collec
 
 ### Production Example
 
-A simple, representative flow can be found in [quacc.recipes.vasp.mp.mp_relax_flow][].
+A simple, representative flow can be found in [quacc.recipes.vasp.mp.mp_metagga_relax_flow][].
 
 !!! Note
 
@@ -44,13 +44,16 @@ quacc fully supports complex, dynamic flows where the number of jobs is not know
     from random import randint
     from quacc import flow, job, subflow
 
+
     @job
     def add(a, b):
         return a + b
 
+
     @job
     def make_list(val):
         return [val] * randint(2, 5)
+
 
     @subflow
     def add_distributed(vals, c):
@@ -59,6 +62,7 @@ quacc fully supports complex, dynamic flows where the number of jobs is not know
             output = add(val, c)
             outputs.append(output)
         return outputs
+
 
     @flow
     def workflow(a, b, c):

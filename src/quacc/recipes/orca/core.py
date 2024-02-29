@@ -1,21 +1,21 @@
 """Core recipes for ORCA."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
 import psutil
-from ase.optimize import FIRE
 
 from quacc import job
 from quacc.recipes.orca._base import base_fn, base_opt_fn
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from typing import Any
 
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.cclib import cclibSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
 
 @job
@@ -28,7 +28,7 @@ def static_job(
     orcasimpleinput: list[str] | None = None,
     orcablocks: list[str] | None = None,
     nprocs: int | None = None,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> cclibSchema:
     """
     Carry out a single-point calculation.
@@ -48,15 +48,15 @@ def static_job(
     orcasimpleinput
         List of `orcasimpleinput` swaps for the calculator. To remove entries
         from the defaults, put a `#` in front of the name. Refer to the
-        `ase.calculators.orca.ORCA` calculator for details on `orcasimpleinput`.
+        [ase.calculators.orca.ORCA][] calculator for details on `orcasimpleinput`.
     orcablocks
         List of `orcablocks` swaps for the calculator. To remove entries
         from the defaults, put a `#` in front of the name. Refer to the
-        `ase.calculators.orca.ORCA` calculator for details on `orcablocks`.
+        [ase.calculators.orca.ORCA][] calculator for details on `orcablocks`.
     nprocs
         Number of processors to use. Defaults to the number of physical cores.
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy (and decompress) from source to the runtime directory.
 
     Returns
     -------
@@ -93,7 +93,7 @@ def relax_job(
     orcasimpleinput: list[str] | None = None,
     orcablocks: list[str] | None = None,
     nprocs: int | None = None,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> cclibSchema:
     """
     Carry out a geometry optimization.
@@ -115,15 +115,15 @@ def relax_job(
     orcasimpleinput
         List of `orcasimpleinput` swaps for the calculator. To remove entries
         from the defaults, put a `#` in front of the name. Refer to the
-        `ase.calculators.orca.ORCA` calculator for details on `orcasimpleinput`.
+        [ase.calculators.orca.ORCA][] calculator for details on `orcasimpleinput`.
     orcablocks
         List of `orcablocks` swaps for the calculator. To remove entries
         from the defaults, put a `#` in front of the name. Refer to the
-        `ase.calculators.orca.ORCA` calculator for details on `orcablocks`.
+        [ase.calculators.orca.ORCA][] calculator for details on `orcablocks`.
     nprocs
         Number of processors to use. Defaults to the number of physical cores.
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy (and decompress) from source to the runtime directory.
 
     Returns
     -------
@@ -163,7 +163,7 @@ def ase_relax_job(
     orcablocks: list[str] | None = None,
     opt_params: dict[str, Any] | None = None,
     nprocs: int | None = None,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> cclibSchema:
     """
     Carry out a geometry optimization.
@@ -183,15 +183,15 @@ def ase_relax_job(
     orcasimpleinput
         List of `orcasimpleinput` swaps for the calculator. To remove entries
         from the defaults, put a `#` in front of the name. Refer to the
-        `ase.calculators.orca.ORCA` calculator for details on `orcasimpleinput`.
+        [ase.calculators.orca.ORCA][] calculator for details on `orcasimpleinput`.
     orcablocks
         List of `orcablocks` swaps for the calculator. To remove entries
         from the defaults, put a `#` in front of the name. Refer to the
-        `ase.calculators.orca.ORCA` calculator for details on `orcablocks`.
+        [ase.calculators.orca.ORCA][] calculator for details on `orcablocks`.
     nprocs
         Number of processors to use. Defaults to the number of physical cores.
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy (and decompress) from source to the runtime directory.
 
     Returns
     -------
@@ -205,8 +205,6 @@ def ase_relax_job(
     default_inputs = [xc, basis, "slowconv", "normalprint", "xyzfile", "engrad"]
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
-    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
-
     return base_opt_fn(
         atoms,
         charge=charge,
@@ -215,7 +213,6 @@ def ase_relax_job(
         default_blocks=default_blocks,
         input_swaps=orcasimpleinput,
         block_swaps=orcablocks,
-        opt_defaults=opt_defaults,
         opt_params=opt_params,
         additional_fields={"name": "ORCA ASE Relax"},
         copy_files=copy_files,

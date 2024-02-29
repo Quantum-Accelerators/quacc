@@ -1,4 +1,5 @@
 """Base jobs for Onetep."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -16,6 +17,7 @@ if TYPE_CHECKING:
     from ase import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
 
 def base_fn(
@@ -23,7 +25,7 @@ def base_fn(
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> RunSchema:
     """
     Base function to carry out Onetep recipes.
@@ -37,11 +39,11 @@ def base_fn(
     calc_swaps
         Custom kwargs for the ONETEP calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.onetep.Onetep` calculator.
+        keys, refer to the [ase.calculators.onetep.Onetep][] calculator.
     additional_fields
         Any additional fields to supply to the summarizer.
     copy_files
-        Files to copy to the runtime directory.
+        Files to copy (and decompress) from source to the runtime directory.
 
     Returns
     -------
@@ -73,7 +75,7 @@ def base_opt_fn(
     opt_defaults: dict[str, Any] | None = None,
     opt_params: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> RunSchema:
     """
     Base function to carry out Onetep recipes.
@@ -87,7 +89,7 @@ def base_opt_fn(
     calc_swaps
         Custom kwargs for the ONETEP calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.onetep.Onetep` calculator.
+        keys, refer to the [ase.calculators.onetep.Onetep][] calculator.
     opt_defaults
         The default optimization parameters.
     opt_params
@@ -97,7 +99,7 @@ def base_opt_fn(
     additional_fields
         Any additional fields to supply to the summarizer.
     copy_files
-        Files to copy to the runtime directory.
+        Files to copy (and decompress) from source to the runtime directory.
 
     Returns
     -------

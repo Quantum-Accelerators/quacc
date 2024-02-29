@@ -1,6 +1,8 @@
 import pytest
 
 dask = pytest.importorskip("dask")
+pytest.importorskip("distributed")
+
 from shutil import which
 
 from dask.distributed import default_client
@@ -29,7 +31,7 @@ client = default_client()
 def test_phonon_grid_single(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
 
     atoms = bulk("Si")
 
@@ -66,13 +68,13 @@ def test_phonon_grid_single(tmp_path, monkeypatch):
     ]
 
     for key in sections:
-        assert key in grid_results["results"][(0.1, 0, 0)]
+        assert key in grid_results["results"][1]
 
 
 def test_phonon_grid_single_gamma(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
 
     atoms = bulk("Si")
 
@@ -108,13 +110,13 @@ def test_phonon_grid_single_gamma(tmp_path, monkeypatch):
     ]
 
     for key in sections:
-        assert key in grid_results["results"][(0, 0, 0)]
+        assert key in grid_results["results"][1]
 
 
 def test_phonon_grid_qplot(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
 
     atoms = bulk("Si")
 
@@ -151,14 +153,14 @@ def test_phonon_grid_qplot(tmp_path, monkeypatch):
     ]
 
     for key in sections:
-        assert key in grid_results["results"][(0.1, 0, 0)]
-        assert key in grid_results["results"][(0.2, 0, 0)]
+        assert key in grid_results["results"][1]
+        assert key in grid_results["results"][2]
 
 
 def test_phonon_grid_disp(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
 
     atoms = bulk("Si")
 
@@ -203,13 +205,13 @@ def test_phonon_grid_disp(tmp_path, monkeypatch):
     ]
 
     for key in sections:
-        assert key in grid_results["results"][(0, 0, 0)]
+        assert key in grid_results["results"][1]
 
 
 def test_phonon_grid_v2(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    copy_decompress_files([DATA_DIR / "Li.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Li.upf.gz"], tmp_path)
 
     atoms = bulk("Li", "bcc", orthorhombic=True)
 
@@ -244,4 +246,4 @@ def test_phonon_grid_v2(tmp_path, monkeypatch):
     ]
 
     for key in sections:
-        assert key in grid_results["results"][(0, 0, 0)]
+        assert key in grid_results["results"][1]

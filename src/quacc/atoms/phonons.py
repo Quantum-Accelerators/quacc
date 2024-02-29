@@ -95,4 +95,4 @@ def phonopy_atoms_to_ase_atoms(phonpy_atoms: PhonopyAtoms) -> Atoms:
         ASE atoms object
     """
     pmg_structure = get_pmg_structure(phonpy_atoms)
-    return AseAtomsAdaptor().get_atoms(pmg_structure)
+    return pmg_structure.to_ase_atoms()

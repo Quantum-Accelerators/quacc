@@ -4,26 +4,34 @@ Here, we describe how to set up quacc with a database of your choosing.
 
 === "General Purpose"
 
-    For a given recipe, you can have quacc automatically store the final output summaries in your desired database by defining a [Maggma data store](https://materialsproject.github.io/maggma/reference/stores/) in the `PRIMARY_STORE` [quacc setting](../settings/settings.md).
+    For a given recipe, you can have quacc automatically store the final output summaries in your desired database by defining a [Maggma data store](https://materialsproject.github.io/maggma/reference/stores/) in the `STORE` [quacc setting](../settings/settings.md).
 
-    For instance, let's pretend you have decided to make a [`MongoStore`](https://materialsproject.github.io/maggma/reference/stores/#maggma.stores.mongolike.MongoStore) be your database of choice. After defining or loading your Maggma store, you would call `.to_json()` to get a dictionary representation. You can then store this JSON, formatted as a string, in the `PRIMARY_STORE` global quacc setting.
+    For instance, let's pretend you have decided to make a [`MongoStore`](https://materialsproject.github.io/maggma/reference/stores/#maggma.stores.mongolike.MongoStore) be your database of choice. In your Python code, it might look like the following
 
     ```python
     from maggma.stores import MongoStore
 
     store = MongoStore(
-        "my_db_name",
-        "my_collection_name",
+        database="my_db_name",
+        collection_name="my_collection_name",
         username="my_username",
         password="my_password",
         host="localhost",
         port=27017,
     )
-    print(store.to_json())  # This is the JSON string you would store in PRIMARY_STORE
     ```
 
+    To replicate the same behavior, simply specify the `STORE` setting in your `~/.quacc.yaml` file using `type` as the name of the `Store` and all arguments provided as key-value pairs.
+
     ```yaml title="~/.quacc.yaml"
-    PRIMARY_STORE: '{"@module": "maggma.stores.mongolike", "@class": "MongoStore", "@version": "0.51.19", "database": "my_db_name", "collection_name": "my_collection_name", "host": "localhost", "port": 27017, "username": "my_username", "password": "my_password", "ssh_tunnel": null, "safe_update": false, "auth_source": "my_db_name", "mongoclient_kwargs": {}, "default_sort": null}'
+    STORE:
+      MongoStore:
+        database: my_db_name
+        collection_name: my_collection_name
+        username: my_username
+        password: my_password
+        host: localhost
+        port: 27017
     ```
 
     ??? "How to Manually Upload to a Data Store"
@@ -38,8 +46,8 @@ Here, we describe how to set up quacc with a database of your choosing.
 
         # Define your database details
         store = MongoStore(
-            "my_db_name",
-            "my_collection_name",
+            database="my_db_name",
+            collection_name="my_collection_name",
             username="my_username",
             password="my_password",
             host="localhost",

@@ -1,10 +1,13 @@
 """Quacc CLI module."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
 import typer
 from rich import print as rich_print
+
+from quacc.settings import QuaccSettings, _type_handler
 
 app = typer.Typer()
 
@@ -42,7 +45,7 @@ def main(
         help="Show the application's version and exit.",
         callback=callback,
         is_eager=True,
-    )
+    ),
 ) -> None:
     """
     The main CLI interface, with an option to return the version.
@@ -81,8 +84,9 @@ def set_(parameter: str, new_value: str) -> None:
     CONFIG_FILE = SETTINGS.CONFIG_FILE or _DEFAULT_CONFIG_FILE_PATH
     parameter = parameter.upper()
 
-    _parameter_handler(parameter, SETTINGS.model_dump())
-    new_value = _type_handler(new_value)
+    settings = _type_handler({parameter: new_value})
+    new_value = settings[parameter]
+    _parameter_handler(parameter, SETTINGS.model_dump(), value=new_value)
 
     rich_print(f"Setting `{parameter}` to `{new_value}` in {CONFIG_FILE}")
     _update_setting(parameter, new_value, CONFIG_FILE)
@@ -143,7 +147,9 @@ quacc settings: {settings}
     )
 
 
-def _parameter_handler(parameter: str, settings_dict: dict) -> None:
+def _parameter_handler(
+    parameter: str, settings_dict: dict, value: Any | None = object
+) -> None:
     """
     Check if the parameter is a valid quacc configuration variable.
 
@@ -153,6 +159,8 @@ def _parameter_handler(parameter: str, settings_dict: dict) -> None:
         The quacc parameter to check.
     settings_dict
         The quacc settings.
+    value
+        The value to set the parameter to.
 
     Returns
     -------
@@ -163,26 +171,8 @@ def _parameter_handler(parameter: str, settings_dict: dict) -> None:
     if parameter == "CONFIG_FILE":
         msg = "Cannot set the CONFIG_FILE parameter via the CLI."
         raise ValueError(msg)
-
-
-def _type_handler(value: str) -> Any:
-    """
-    Convert the string value to the appropriate type.
-
-    Parameters
-    ----------
-    value
-        The value to convert.
-
-    Returns
-    -------
-    Any
-    """
-    if value.lower() in {"null", "none"}:
-        value = None
-    elif value.lower() in ("true", "false"):
-        value = value.lower() == "true"
-    return value
+    if value is not object:
+        QuaccSettings(**{f"{parameter}": value})
 
 
 def _delete_setting(key: str, config_file: Path) -> None:

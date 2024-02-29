@@ -1,4 +1,5 @@
 """Base functions for universal machine-learned interatomic potentials."""
+
 from __future__ import annotations
 
 import logging

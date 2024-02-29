@@ -1,4 +1,5 @@
 """Custom Espresso calculator and template."""
+
 from __future__ import annotations
 
 import os
@@ -159,7 +160,7 @@ class EspressoTemplate(EspressoTemplate_):
         return None
 
     @staticmethod
-    def _test_run(parameters: dict[str, Any], directory: Path) -> dict[str, Any]:
+    def _test_run(parameters: dict[str, Any], directory: Path) -> None:
         """
         Almost all QE binaries will do a test run if a file named <prefix>.EXIT is
         present in the working directory. This function will create this file.
@@ -210,7 +211,7 @@ class EspressoTemplate(EspressoTemplate_):
                 lines = fd.readlines()
                 fermi = float(re.search(r"-?\d+\.?\d*", lines[0]).group(0))
                 dos = np.loadtxt(lines[1:])
-            results = {fildos.name: {"dos": dos, "fermi": fermi}}
+            results = {fildos.name.replace(".", "_"): {"dos": dos, "fermi": fermi}}
         elif self.binary == "projwfc":
             filpdos = self.outfiles["filpdos"]
             with Path(filpdos).open("r") as fd:
@@ -218,7 +219,13 @@ class EspressoTemplate(EspressoTemplate_):
                 energy = lines[1:, 0]
                 dos = lines[1:, 1]
                 pdos = lines[1:, 2]
-            results = {filpdos.name: {"energy": energy, "dos": dos, "pdos": pdos}}
+            results = {
+                filpdos.name.replace(".", "_"): {
+                    "energy": energy,
+                    "dos": dos,
+                    "pdos": pdos,
+                }
+            }
         else:
             results = {}
 
@@ -322,7 +329,7 @@ class Espresso(Espresso_):
         **kwargs
             Additional arguments to be passed to the Espresso calculator. Takes all valid
             ASE calculator arguments, such as `input_data` and `kpts`. Refer to
-            `ase.calculators.espresso.Espresso` for details. Note that the full input
+            [ase.calculators.espresso.Espresso][] for details. Note that the full input
             must be described; use `{"system":{"ecutwfc": 60}}` and not the `{"ecutwfc": 60}`
             short-hand.
 
@@ -377,7 +384,7 @@ class Espresso(Espresso_):
         """
 
         if self.kwargs.get("directory"):
-            raise ValueError("quacc does not support the directory argument.")
+            raise NotImplementedError("quacc does not support the directory argument.")
 
         self.kwargs["input_data"] = Namelist(self.kwargs.get("input_data"))
         self.kwargs["input_data"].to_nested(binary=self._binary, **self.kwargs)

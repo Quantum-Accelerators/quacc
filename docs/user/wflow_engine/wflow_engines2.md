@@ -71,6 +71,7 @@ graph LR
         ```python
         from quacc import job
 
+
         @job(executor="local")
         def relax_job_(*args, **kwargs):
             return relax_job(*args, **kwargs)
@@ -198,6 +199,7 @@ graph LR
 
         # Call Task 2, which takes the output of Task 1 as input
         return static_job(future1["atoms"])  # (1)!
+
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -414,6 +416,7 @@ graph LR
 
         return {"result1": result1, "result2": result2}
 
+
     # Define two Atoms objects
     atoms1 = bulk("Cu")
     atoms2 = molecule("N2")
@@ -548,13 +551,17 @@ graph LR
         If you want to modify the decorators of select jobs in a pre-made workflow, such as to modify the executor of a given function, you can use the `job_decorators` keyword argument:
 
         ```python
-        ct.dispatch(bulk_to_slabs_flow)(atoms, job_decorators={"static_job": job(executor="local")})
+        ct.dispatch(bulk_to_slabs_flow)(
+            atoms, job_decorators={"static_job": job(executor="local")}
+        )
         ```
 
         As a shorthand, all of the decorators can be modified at once using the "all" keyword:
 
         ```python
-        ct.dispatch(bulk_to_slabs_flow)(atoms, job_decorators={"all": job(executor="local")})  # (1)!
+        ct.dispatch(bulk_to_slabs_flow)(
+            atoms, job_decorators={"all": job(executor="local")}
+        )  # (1)!
         ```
 
         1. Alternatively, you can simply modify the `#!Python @flow` decorator itself:
@@ -562,9 +569,11 @@ graph LR
             ```python
             from quacc import flow
 
+
             @flow(executor="local")
             def bulk_to_slabs_flow_(*args, **kwargs):
                 return bulk_to_slabs_flow(*args, **kwargs)
+
 
             ct.dispatch(bulk_to_slabs_flow_)(atoms)
             ```
@@ -628,7 +637,9 @@ graph LR
         If you want to modify the decorators of select jobs in a pre-made workflow, such as to modify the allowed executors of a given function, you can use the `job_decorators` keyword argument:
 
         ```python
-        bulk_to_slabs_flow(atoms, job_decorators={"static_job": job(executors=["MyFavoriteExecutor"])})
+        bulk_to_slabs_flow(
+            atoms, job_decorators={"static_job": job(executors=["MyFavoriteExecutor"])}
+        )
         ```
 
         As a shorthand, all of the decorators can be modified at once using the "all" keyword:
