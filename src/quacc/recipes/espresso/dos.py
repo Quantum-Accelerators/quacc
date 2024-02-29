@@ -5,6 +5,7 @@ dos.x binary from Quantum ESPRESSO via the quacc library.
 The recipes provided in this module are jobs and flows that can be used to perform
 dos calculations.
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -33,6 +34,7 @@ if TYPE_CHECKING:
     class ProjwfcSchema(TypedDict):
         static_job: RunSchema
         non_scf_job: RunSchema
+
 
 @job
 def dos_job(
