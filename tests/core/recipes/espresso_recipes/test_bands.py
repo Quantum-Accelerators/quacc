@@ -6,7 +6,7 @@ from ase.build import bulk
 from numpy.testing import assert_allclose
 
 from quacc.recipes.espresso.bands import bands_job
-from quacc.utils.files import copy_decompress_files, copy_decompress_tree
+from quacc.utils.files import copy_decompress_files
 
 pytestmark = pytest.mark.skipif(
     which("pw.x") is None or which("bands.x") is None, reason="QE not installed"
@@ -18,8 +18,8 @@ DATA_DIR = Path(__file__).parent / "data"
 def test_bands_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    copy_decompress_tree({DATA_DIR / "dos_test/": "pwscf.save/*.gz"}, tmp_path)
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR / "dos_test", Path("pwscf.save", "*.gz"), tmp_path)
+    copy_decompress_files(DATA_DIR, "Si.upf.gz", tmp_path)
     atoms = bulk("Si")
     pseudopotentials = {"Si": "Si.upf"}
     job_params = {
@@ -52,8 +52,8 @@ def test_bands_job(tmp_path, monkeypatch):
 def test_bands_job_with_fermi(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    copy_decompress_tree({DATA_DIR / "dos_test/": "pwscf.save/*.gz"}, tmp_path)
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR / "dos_test", Path("pwscf.save", "*.gz"), tmp_path)
+    copy_decompress_files(DATA_DIR, "Si.upf.gz", tmp_path)
     atoms = bulk("Si")
     pseudopotentials = {"Si": "Si.upf"}
     job_params = {
