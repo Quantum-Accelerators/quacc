@@ -36,10 +36,7 @@ def static_job(
     kpts
         k-point grid to use.
     copy_files
-        Files to copy (and decompress) from source to scratch directory. The keys are the
-        directories and the values are the individual files to copy within those directories.
-        If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
-        for more details.
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Custom kwargs for the calculator that would override the
         calculator defaults. Set a value to `quacc.Remove` to remove a pre-existing key
@@ -94,10 +91,7 @@ def relax_job(
         Whether to relax the unit cell shape/volume in addition to the
         positions.
     copy_files
-        Files to copy (and decompress) from source to scratch directory. The keys are the
-        directories and the values are the individual files to copy within those directories.
-        If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
-        for more details.
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Custom kwargs for the calculator that would override the
         calculator defaults. Set a value to `quacc.Remove` to remove a pre-existing key

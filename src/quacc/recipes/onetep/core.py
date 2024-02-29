@@ -42,10 +42,7 @@ def static_job(
     atoms
         The Atoms object.
     copy_files
-        Files to copy (and decompress) from source to scratch directory. The keys are the
-        directories and the values are the individual files to copy within those directories.
-        If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
-        for more details.
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Custom kwargs for the ONETEP calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -89,10 +86,7 @@ def ase_relax_job(
         to change the optimizer being used. "fmax" and "max_steps" are commonly
         used keywords. See the ASE documentation for more information.
     copy_files
-        Files to copy (and decompress) from source to scratch directory. The keys are the
-        directories and the values are the individual files to copy within those directories.
-        If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
-        for more details.
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Additional keyword arguments to pass to the ONETEP calculator.
 

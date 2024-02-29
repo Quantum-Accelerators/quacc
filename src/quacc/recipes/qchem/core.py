@@ -64,10 +64,7 @@ def static_job(
     basis
         Basis set.
     copy_files
-        Files to copy (and decompress) from source to scratch directory. The keys are the
-        directories and the values are the individual files to copy within those directories.
-        If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
-        for more details.
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
         a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
@@ -127,10 +124,7 @@ def relax_job(
         to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
     copy_files
-        Files to copy (and decompress) from source to scratch directory. The keys are the
-        directories and the values are the individual files to copy within those directories.
-        If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
-        for more details.
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
         a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
@@ -188,10 +182,7 @@ def freq_job(
     basis
         Basis set. Defaults to def2-SVPD.
     copy_files
-        Files to copy (and decompress) from source to scratch directory. The keys are the
-        directories and the values are the individual files to copy within those directories.
-        If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
-        for more details.    **calc_kwargs
+        Files to copy (and decompress) from source to the runtime directory.    **calc_kwargs
         Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
         a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
         details.
