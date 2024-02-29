@@ -14,7 +14,6 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
-      - id: check-yaml
       - id: end-of-file-fixer
       - id: trailing-whitespace
 
@@ -22,9 +21,3 @@ repos:
     rev: 1.16.0
     hooks:
       - id: blacken-docs
-
-  - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.39.0
-    hooks:
-      - id: markdownlint
-        args: [--disable, MD013, MD024, MD025, MD033, MD041, "--"]

@@ -67,10 +67,7 @@ def flip_atoms(
         Inverted slab
     """
 
-    if isinstance(atoms, Atoms):
-        new_atoms = copy_atoms(atoms)
-    else:
-        new_atoms = atoms.to_ase_atoms()
+    new_atoms = copy_atoms(atoms) if isinstance(atoms, Atoms) else atoms
 
     new_atoms.rotate(180, "x")
     new_atoms.wrap()
