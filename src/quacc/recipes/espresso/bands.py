@@ -26,111 +26,9 @@ if TYPE_CHECKING:
     from quacc.utils.files import Filenames, SourceDirectory
 
     class BandsSchema(TypedDict, total=False):
-        bands: RunSchema
+        bands_pw: RunSchema
         bands_pp: RunSchema
         fermi_surface: RunSchema
-
-
-@flow
-def bands_flow(
-    atoms: Atoms,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
-    run_bands_pp: bool = True,
-    run_fermi_surface: bool = False,
-    make_bandpath: bool = True,
-    parallel_info: dict[str] | None = None,
-    test_run: bool = False,
-    job_params: dict[str, Any] | None = None,
-    job_decorators: dict[str, Callable | None] | None = None,
-) -> BandsSchema:
-    """
-    Function to compute bands structure and fermi surface using pw.x, bands.x and fs.x.
-
-    Consists of the following steps:
-
-    1. A pw.x non-self consistent calculation
-        - name: "bands_pw_job"
-        - job : [quacc.recipes.espresso.bands.bands_pw_job][]
-
-    2. A bands.x post-processing calculation
-        - name: "bands_pp_job"
-        - job : [quacc.recipes.espresso.bands.bands_pp_job][]
-
-    3. A fs.x calculation to obtain the fermi surface
-        - name: "fermi_surface_job"
-        - job : [quacc.recipes.espresso.bands.fermi_surface_job][]
-
-    Parameters
-    ----------
-    atoms
-        The Atoms object.
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
-    run_bands_pp
-        If True, a bands.x post-processing calculation will be carried out.
-        This allows to re-order bands and computes band-related properties.
-    run_fermi_surface
-        If True, a fs.x calculation will be carried out.
-        This allows to generate the fermi surface of your structure.
-        It requires a uniform unshifted k-point grid bands calculation.
-    make_bandpath
-        If True, it returns the primitive cell for your structure and generates
-        the high symmetry k-path using Latmer-Munro approach.
-        For more information look at
-        [pymatgen.symmetry.bandstructure.HighSymmKpath][]
-    parallel_info
-        Dictionary containing information about the parallelization of the
-        calculation. See the ASE documentation for more information.
-    test_run
-        If True, a test run is performed to check that the calculation input_data is correct or
-        to generate some files/info if needed.
-    job_params
-        Custom parameters to pass to each Job in the Flow. This is a dictinoary where
-        the keys are the names of the jobs and the values are dictionaries of parameters.
-
-    Returns
-    -------
-    BandsSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
-        See the type-hint for the data structure.
-    """
-
-    results = {}
-    (bands_pw_job_, bands_pp_job_, fermi_surface_job_) = customize_funcs(
-        ["bands_pw_job", "bands_pp_job", "fermi_surface_job"],
-        [bands_pw_job, bands_pp_job, fermi_surface_job],
-        parameters=job_params,
-        decorators=job_decorators,
-    )
-
-    bands_result = bands_pw_job_(
-        atoms,
-        copy_files,
-        make_bandpath=make_bandpath,
-        parallel_info=parallel_info,
-        test_run=test_run,
-    )
-    results["bands"] = bands_result
-
-    if run_bands_pp:
-        bands_pp_results = bands_pp_job_(
-            atoms,
-            bands_result["dir_name"],
-            parallel_info=parallel_info,
-            test_run=test_run,
-        )
-        results["bands_pp"] = bands_pp_results
-
-    if run_fermi_surface:
-        fermi_results = fermi_surface_job_(
-            atoms,
-            bands_result["dir_name"],
-            parallel_info=parallel_info,
-            test_run=test_run,
-        )
-        results["fermi_surface"] = fermi_results
-
-    return results
 
 
 @job
@@ -289,3 +187,108 @@ def fermi_surface_job(
         additional_fields={"name": "fs.x fermi_surface"},
         copy_files=copy_files,
     )
+
+
+@flow
+def bands_flow(
+    atoms: Atoms,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
+    run_bands_pp: bool = True,
+    run_fermi_surface: bool = False,
+    make_bandpath: bool = True,
+    parallel_info: dict[str] | None = None,
+    test_run: bool = False,
+    job_params: dict[str, Any] | None = None,
+    job_decorators: dict[str, Callable | None] | None = None,
+) -> BandsSchema:
+    """
+    Function to compute bands structure and fermi surface using pw.x, bands.x and fs.x.
+
+    Consists of the following steps:
+
+    1. A pw.x non-self consistent calculation
+        - name: "bands_pw_job"
+        - job : [quacc.recipes.espresso.bands.bands_pw_job][]
+
+    2. A bands.x post-processing calculation
+        - name: "bands_pp_job"
+        - job : [quacc.recipes.espresso.bands.bands_pp_job][]
+
+    3. A fs.x calculation to obtain the fermi surface
+        - name: "fermi_surface_job"
+        - job : [quacc.recipes.espresso.bands.fermi_surface_job][]
+
+    Parameters
+    ----------
+    atoms
+        The Atoms object.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
+    run_bands_pp
+        If True, a bands.x post-processing calculation will be carried out.
+        This allows to re-order bands and computes band-related properties.
+    run_fermi_surface
+        If True, a fs.x calculation will be carried out.
+        This allows to generate the fermi surface of your structure.
+        It requires a uniform unshifted k-point grid bands calculation.
+    make_bandpath
+        If True, it returns the primitive cell for your structure and generates
+        the high symmetry k-path using Latmer-Munro approach.
+        For more information look at
+        [pymatgen.symmetry.bandstructure.HighSymmKpath][]
+    parallel_info
+        Dictionary containing information about the parallelization of the
+        calculation. See the ASE documentation for more information.
+    test_run
+        If True, a test run is performed to check that the calculation input_data is correct or
+        to generate some files/info if needed.
+    job_params
+        Custom parameters to pass to each Job in the Flow. This is a dictinoary where
+        the keys are the names of the jobs and the values are dictionaries of parameters.
+    job_decorators
+        Custom decorators to apply to each Job in the Flow. This is a dictionary where
+        the keys are the names of the jobs and the values are decorators.
+
+    Returns
+    -------
+    BandsSchema
+        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        See the type-hint for the data structure.
+    """
+
+    results = {}
+    (bands_pw_job_, bands_pp_job_, fermi_surface_job_) = customize_funcs(
+        ["bands_pw_job", "bands_pp_job", "fermi_surface_job"],
+        [bands_pw_job, bands_pp_job, fermi_surface_job],
+        parameters=job_params,
+        decorators=job_decorators,
+    )
+
+    bands_result = bands_pw_job_(
+        atoms,
+        copy_files,
+        make_bandpath=make_bandpath,
+        parallel_info=parallel_info,
+        test_run=test_run,
+    )
+    results["bands_pw"] = bands_result
+
+    if run_bands_pp:
+        bands_pp_results = bands_pp_job_(
+            atoms,
+            bands_result["dir_name"],
+            parallel_info=parallel_info,
+            test_run=test_run,
+        )
+        results["bands_pp"] = bands_pp_results
+
+    if run_fermi_surface:
+        fermi_results = fermi_surface_job_(
+            atoms,
+            bands_result["dir_name"],
+            parallel_info=parallel_info,
+            test_run=test_run,
+        )
+        results["fermi_surface"] = fermi_results
+
+    return results

@@ -57,7 +57,7 @@ def test_bands_flow_with_fermi(tmp_path, monkeypatch):
     atoms = bulk("Si")
     pseudopotentials = {"Si": "Si.upf"}
     job_params = {
-        "bands": {
+        "bands_pw_job": {
             "input_data": {"control": {"pseudo_dir": tmp_path}},
             "pseudopotentials": pseudopotentials,
             "kspacing": 0.1,
@@ -74,13 +74,14 @@ def test_bands_flow_with_fermi(tmp_path, monkeypatch):
         job_params=job_params,
     )
     assert (
-        output["bands"]["parameters"]["input_data"]["control"]["calculation"] == "bands"
+        output["bands_pw"]["parameters"]["input_data"]["control"]["calculation"]
+        == "bands"
     )
 
     assert_allclose(
-        output["bands"]["atoms"].get_positions(), atoms.get_positions(), atol=1.0e-4
+        output["bands_pw"]["atoms"].get_positions(), atoms.get_positions(), atol=1.0e-4
     )
 
-    assert output["bands"]["results"]["nbands"] == 4
+    assert output["bands_pw"]["results"]["nbands"] == 4
 
     assert output["fermi_surface"]["name"] == "fs.x fermi_surface"
