@@ -86,7 +86,7 @@ def phonon_job(
 
 @job
 def q2r_job(
-    prev_dir: str | Path,
+    prev_dir: SourceDirectory,
     fildyn: str = "matdyn",
     parallel_info: dict[str] | None = None,
     **calc_kwargs,
