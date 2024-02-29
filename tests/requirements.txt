@@ -1,4 +1,4 @@
-git+https://gitlab.com/ase/ase.git
+ase @ git+https://gitlab.com/ase/ase.git
 cclib==1.8
 custodian==2024.2.15
 emmet-core==0.77.1
