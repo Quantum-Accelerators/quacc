@@ -408,7 +408,7 @@ def mp_metagga_relax_flow(
     double_relax_results = mp_metagga_relax_job_(
         relax_results["atoms"],
         bandgap=relax_results["output"]["bandgap"],
-        copy_files={relax_results["dir_name"]): ["CHGCAR*", "WAVECAR*"],
+        copy_files={relax_results["dir_name"]: ["CHGCAR*", "WAVECAR*"]},
     )
 
     # Run the static
