@@ -196,7 +196,6 @@ def check_charge_and_spin(
     Returns
     -------
     charge, multiplicity
-
     """
 
     charge = charge if charge is not None else get_charge_attribute(atoms)

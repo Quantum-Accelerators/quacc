@@ -18,7 +18,7 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12", 
+    "Programming Language :: Python :: 3.12",
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering",
     "Operating System :: Microsoft :: Windows",
@@ -32,7 +32,7 @@ dependencies = [
     "custodian>=2024.2.15", # for automated error corrections
     "emmet-core>=0.69.6", # for pre-made schemas
     "maggma>=0.57.0", # for database handling
-    "monty>=2024.2.2", # miscellaneous Python utilities
+    "monty>=2024.2.26", # miscellaneous Python utilities
     "numpy>=1.25.0", # for array handling
     "psutil", # for getting compute architecture details
     "pydantic>=2.0.1", # for settings management
@@ -52,9 +52,9 @@ parsl = ["parsl[monitoring]>=2023.10.23"]
 phonons = ["phonopy>=2.20.0", "seekpath>=2.1.0"]
 prefect = ["prefect>=2.14.14", "prefect-dask>=0.2.6", "dask-jobqueue>=0.8.2"]
 redun = ["redun>=0.16.2"]
-sella = ["sella>=2.3.2"]
+sella = ["sella>=2.3.2", "jax<=0.4.24", "jaxlib<=0.4.24"]
 tblite = ["tblite[ase]>=0.3.0; platform_system=='Linux'"]
-dev = ["black>=23.7.0", "codecov-cli>=0.4.1", "isort>=5.12.0", "pytest>=7.4.0", "pytest-cov>=3.0.0", "ruff>=0.0.285"]
+dev = ["codecov-cli>=0.4.1", "pytest>=7.4.0", "pytest-cov>=3.0.0", "ruff>=0.0.285"]
 docs = [
     "blacken-docs>=1.16.0",
     "mkdocs-material>=9.1.21",
@@ -117,7 +117,7 @@ exclude_also = [
 ]
 
 [tool.ruff]
-select = [
+lint.select = [
   "E", "F", "W", # flake8
   "B",           # flake8-bugbear
   "I",           # isort
@@ -142,7 +142,7 @@ select = [
   "NPY",         # NumPy specific rules
   "PD",          # pandas-vet
 ]
-extend-ignore = [
+lint.extend-ignore = [
   "PLR",    # Design related pylint codes
   "E501",   # Line too long
   "B028",   # No explicit stacklevel
@@ -152,18 +152,18 @@ extend-ignore = [
   "RUF015", # Prefer next(iter())
   "RET505", # Unnecessary `elif` after `return`
 ]
-typing-modules = ["mypackage._compat.typing"]
+lint.typing-modules = ["mypackage._compat.typing"]
 src = ["src"]
-unfixable = [
+lint.unfixable = [
   "T20",  # Removes print statements
   "F841", # Removes unused variables
 ]
 exclude = []
-flake8-unused-arguments.ignore-variadic-names = true
+lint.flake8-unused-arguments.ignore-variadic-names = true
 extend-exclude = ["tests", "src/quacc/settings.py", "src/quacc/schemas/cclib.py"]
-pydocstyle.convention = "numpy"
-isort.required-imports = ["from __future__ import annotations"]
-isort.known-first-party = ["quacc"]
+lint.pydocstyle.convention = "numpy"
+lint.isort.required-imports = ["from __future__ import annotations"]
+lint.isort.known-first-party = ["quacc"]
 
 [tool.docformatter]
 pre-summary-newline = true
