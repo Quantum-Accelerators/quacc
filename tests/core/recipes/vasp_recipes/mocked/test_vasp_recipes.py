@@ -460,7 +460,6 @@ def test_mp_metagga_relax_job(tmp_path, monkeypatch):
     output = mp_metagga_relax_job(atoms)
     assert output["parameters"] == ref_parameters
     assert output["nsites"] == len(atoms)
-    assert output["parameters"] == ref_parameters2
 
     output = mp_metagga_relax_job(atoms, bandgap=0)
     assert output["nsites"] == len(atoms)
