@@ -24,7 +24,7 @@ def base_fn(
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> VaspSchema:
     """
     Base job function for VASP recipes.
@@ -40,14 +40,11 @@ def base_fn(
     calc_swaps
         Dictionary of custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [ase.calculators.vasp.vasp.Vasp][].
+        keys, refer to [quacc.calculators.vasp.vasp.Vasp][].
     additional_fields
         Additional fields to supply to the summarizer.
     copy_files
-        Files to copy (and decompress) from source to scratch directory. The keys are the
-        directories and the values are the individual files to copy within those directories.
-        If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
-        for more details.
+        Files to copy (and decompress) from source to the runtime directory.
 
     Returns
     -------

@@ -29,7 +29,7 @@ def static_job(
     spin_multiplicity: int = 1,
     method: str = "wb97x-v",
     basis: str = "def2-tzvp",
-    copy_files: dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **kwargs,
 ) -> RunSchema:
     """
@@ -48,10 +48,7 @@ def static_job(
     basis
         Basis set
     copy_files
-        Files to copy (and decompress) from source to scratch directory. The keys are the
-        directories and the values are the individual files to copy within those directories.
-        If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
-        for more details.
+        Files to copy (and decompress) from source to the runtime directory.
     **kwargs
         Custom kwargs for the Psi4 calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available

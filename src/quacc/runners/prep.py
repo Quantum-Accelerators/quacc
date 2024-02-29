@@ -20,9 +20,7 @@ if TYPE_CHECKING:
 
 def calc_setup(
     atoms: Atoms,
-    copy_files: (
-        dict[SourceDirectory, Filenames] | Filenames | list[Filenames] | None
-    ) = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> tuple[Path, Path]:
     """
     Perform staging operations for a calculation, including copying files to the scratch
@@ -35,10 +33,7 @@ def calc_setup(
         The Atoms object to run the calculation on. Must have a calculator
         attached.
     copy_files
-        Files to copy (and decompress) from source to scratch directory. The keys are the
-        directories and the values are the individual files to copy within those directories.
-        If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
-        for more details.
+        Files to copy (and decompress) from source to the runtime directory.
 
     Returns
     -------
@@ -76,9 +71,7 @@ def calc_setup(
     # Copy files to tmpdir and decompress them if needed
     if copy_files:
         if isinstance(copy_files, (str, Path)):
-            copy_files = {Path(copy_files).parent: Path(copy_files).name}
-        elif isinstance(copy_files, list):
-            copy_files = {Path(file).parent: Path(file).name for file in copy_files}
+            copy_files = {copy_files: "*"}
 
         for source_directory, filenames in copy_files.items():
             copy_decompress_files(source_directory, filenames, tmpdir)

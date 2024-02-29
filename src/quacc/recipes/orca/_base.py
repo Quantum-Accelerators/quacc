@@ -36,7 +36,7 @@ def base_fn(
     input_swaps: list[str] | None = None,
     block_swaps: list[str] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> cclibSchema:
     """
     Base job function for ORCA recipes.
@@ -62,10 +62,7 @@ def base_fn(
     additional_fields
         Any additional fields to supply to the summarizer.
     copy_files
-        Files to copy (and decompress) from source to scratch directory. The keys are the
-        directories and the values are the individual files to copy within those directories.
-        If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
-        for more details.
+        Files to copy (and decompress) from source to the runtime directory.
 
     Returns
     -------
@@ -100,7 +97,7 @@ def base_opt_fn(
     opt_defaults: dict[str, Any] | None = None,
     opt_params: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> cclibASEOptSchema:
     """
     Base job function for ORCA recipes with ASE optimizer.
@@ -130,10 +127,7 @@ def base_opt_fn(
     additional_fields
         Any additional fields to supply to the summarizer.
     copy_files
-        Files to copy (and decompress) from source to scratch directory. The keys are the
-        directories and the values are the individual files to copy within those directories.
-        If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
-        for more details.
+        Files to copy (and decompress) from source to the runtime directory.
 
     Returns
     -------

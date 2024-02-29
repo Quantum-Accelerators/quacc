@@ -55,7 +55,7 @@ if TYPE_CHECKING:
 def run_calc(
     atoms: Atoms,
     geom_file: str | None = None,
-    copy_files: dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     get_forces: bool = False,
 ) -> Atoms:
     """
@@ -77,10 +77,7 @@ def run_calc(
         atoms.get_potential_energy() function to update the positions, as this
         varies between codes.
     copy_files
-        Files to copy (and decompress) from source to scratch directory. The keys are the
-        directories and the values are the individual files to copy within those directories.
-        If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
-        for more details.
+        Files to copy (and decompress) from source to the runtime directory.
     get_forces
         Whether to use `atoms.get_forces()` instead of `atoms.get_potential_energy()`.
 
@@ -140,7 +137,7 @@ def run_opt(
     optimizer_kwargs: OptimizerKwargs | None = None,
     store_intermediate_files: bool = False,
     run_kwargs: dict[str, Any] | None = None,
-    copy_files: dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> Optimizer:
     """
     Run an ASE-based optimization in a scratch directory and copy the results back to
@@ -173,10 +170,7 @@ def run_opt(
     run_kwargs
         Dictionary of kwargs for the run() method of the optimizer.
     copy_files
-        Files to copy (and decompress) from source to scratch directory. The keys are the
-        directories and the values are the individual files to copy within those directories.
-        If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
-        for more details.
+        Files to copy (and decompress) from source to the runtime directory.
 
     Returns
     -------
@@ -251,7 +245,7 @@ def run_opt(
 def run_vib(
     atoms: Atoms,
     vib_kwargs: VibKwargs | None = None,
-    copy_files: dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> Vibrations:
     """
     Run an ASE-based vibration analysis in a scratch directory and copy the results back
@@ -268,10 +262,7 @@ def run_vib(
     vib_kwargs
         Dictionary of kwargs for the [ase.vibrations.Vibrations][] class.
     copy_files
-        Files to copy (and decompress) from source to scratch directory. The keys are the
-        directories and the values are the individual files to copy within those directories.
-        If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
-        for more details.
+        Files to copy (and decompress) from source to the runtime directory.
 
     Returns
     -------

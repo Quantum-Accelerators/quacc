@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 
 @job
 def phonon_job(
-    copy_files: dict[SourceDirectory, Filenames],
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -48,10 +48,7 @@ def phonon_job(
     Parameters
     ----------
     copy_files
-        Files to copy (and decompress) from source to scratch directory. The keys are the
-        directories and the values are the individual files to copy within those directories.
-        If None, no files will be copied. Refer to [quacc.utils.files.copy_decompress_files][]
-        for more details.
+        Files to copy (and decompress) from source to the runtime directory.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -265,7 +262,7 @@ def grid_phonon_flow(
 
     pw_job_results = pw_job(atoms)
 
-    ph_init_job_results = ph_init_job({pw_job_results["dir_name"]: "*"})
+    ph_init_job_results = ph_init_job(pw_job_results["dir_name"])
 
     grid_results = _grid_phonon_subflow(
         job_params["ph_job"]["input_data"], ph_init_job_results, ph_job, nblocks=nblocks
