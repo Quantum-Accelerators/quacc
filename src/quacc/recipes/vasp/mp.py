@@ -36,7 +36,6 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.vasp import (
-        DoubleRelaxSchema,
         MPGGARelaxFlowSchema,
         MPMetaGGARelaxFlowSchema,
         VaspSchema,
@@ -49,9 +48,9 @@ def mp_gga_relax_job(
     atoms: Atoms,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
-) -> DoubleRelaxSchema:
+) -> VaspSchema:
     """
-    Function to (double) relax a structure with the original Materials Project GGA(+U) settings.
+    Function to relax a structure with the original Materials Project GGA(+U) settings.
 
     Parameters
     ----------
@@ -66,33 +65,18 @@ def mp_gga_relax_job(
 
     Returns
     -------
-    DoubleRelaxSchema
+    VaspSchema
         Dictionary of results.
     """
 
-    def _relax(
-        atoms: Atoms,
-        copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-        calc_kwargs: dict[str, Any] | None = None,
-    ) -> VaspSchema:
-        """A helper function to run a relaxation with the MP GGA settings."""
-        calc_defaults = {"pmg_input_set": MPRelaxSet}
-        return base_fn(
-            atoms,
-            calc_defaults=calc_defaults,
-            calc_swaps=calc_kwargs,
-            additional_fields={"name": "MP GGA Relax"},
-            copy_files=copy_files,
-        )
-
-    summary1 = _relax(atoms, copy_files=copy_files, calc_kwargs=calc_kwargs)
-    summary2 = _relax(
-        summary1["atoms"],
-        copy_files={summary1["dir_name"]: ["CHGCAR*", "WAVECAR*"]},
-        calc_kwargs=calc_kwargs,
+    calc_defaults = {"pmg_input_set": MPRelaxSet}
+    return base_fn(
+        atoms,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        additional_fields={"name": "MP GGA Relax"},
+        copy_files=copy_files,
     )
-
-    return {"relax1": summary1, "relax2": summary2}
 
 
 @job
@@ -200,9 +184,9 @@ def mp_metagga_relax_job(
     bandgap: float | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
-) -> DoubleRelaxSchema:
+) -> VaspSchema:
     """
-    Function to (double) relax a structure with Materials Project r2SCAN workflow settings. By default, this uses
+    Function to relax a structure with Materials Project r2SCAN workflow settings. By default, this uses
     an r2SCAN relax step.
 
     Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
@@ -222,44 +206,25 @@ def mp_metagga_relax_job(
 
     Returns
     -------
-    DoubleRelaxSchema
+    VaspSchema
         Dictionary of results.
     """
 
-    def _relax(
-        atoms: Atoms,
-        copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-        bandgap: float | None = None,
-        calc_kwargs: dict[str, Any] | None = None,
-    ) -> VaspSchema:
-        """A helper function to run a relaxation with the MP r2SCAN settings."""
-        calc_defaults = {
-            "pmg_input_set": partial(
-                MPScanRelaxSet, bandgap=bandgap or 0.0, auto_ismear=False
-            ),
-            "laechg": False,  # Deviation from MP (but logical)
-            "lvtot": False,  # Deviation from MP (but logical)
-            "lwave": True,
-        }
-        return base_fn(
-            atoms,
-            calc_defaults=calc_defaults,
-            calc_swaps=calc_kwargs,
-            additional_fields={"name": "MP Meta-GGA Relax"},
-            copy_files=copy_files,
-        )
-
-    summary1 = _relax(
-        atoms, copy_files=copy_files, bandgap=bandgap, calc_kwargs=calc_kwargs
+    calc_defaults = {
+        "pmg_input_set": partial(
+            MPScanRelaxSet, bandgap=bandgap or 0.0, auto_ismear=False
+        ),
+        "laechg": False,  # Deviation from MP (but logical)
+        "lvtot": False,  # Deviation from MP (but logical)
+        "lwave": True,
+    }
+    return base_fn(
+        atoms,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        additional_fields={"name": "MP Meta-GGA Relax"},
+        copy_files=copy_files,
     )
-    summary2 = _relax(
-        summary1["atoms"],
-        copy_files={summary1["dir_name"]: ["CHGCAR*", "WAVECAR*"]},
-        bandgap=bandgap,
-        calc_kwargs=calc_kwargs,
-    )
-
-    return {"relax1": summary1, "relax2": summary2}
 
 
 @job
@@ -321,11 +286,15 @@ def mp_gga_relax_flow(
     """
     Materials Project GGA workflow consisting of:
 
-    1. MP-compatible (double) relax
+    1. MP-compatible relax
         - name: "mp_gga_relax_job"
         - job: [quacc.recipes.vasp.mp.mp_gga_relax_job][]
 
-    2. MP-compatible static
+    2. MP-compatible (second) relax
+        - name: "mp_gga_relax_job"
+        - job: [quacc.recipes.vasp.mp.mp_gga_relax_job][]
+
+    3. MP-compatible static
         - name: "mp_gga_static_job"
         - job: [quacc.recipes.vasp.mp.mp_gga_static_job][]
 
@@ -355,14 +324,24 @@ def mp_gga_relax_flow(
     # Run the relax
     relax_results = mp_gga_relax_job_(atoms)
 
-    # Run the static
-    static_results = mp_gga_static_job_(
-        relax_results["relax2"]["atoms"],
-        bandgap=relax_results["relax2"]["output"]["bandgap"],
-        copy_files={relax_results["relax2"]["dir_name"]: ["CHGCAR*", "WAVECAR*"]},
+    # Run the second relax
+    double_relax_results = mp_gga_relax_job_(
+        relax_results["atoms"],
+        copy_files={relax_results["dir_name"]: ["CHGCAR*", "WAVECAR*"]},
     )
 
-    return {"relax": relax_results, "static": static_results}
+    # Run the static
+    static_results = mp_gga_static_job_(
+        double_relax_results["atoms"],
+        bandgap=double_relax_results["output"]["bandgap"],
+        copy_files={double_relax_results["dir_name"]: ["CHGCAR*", "WAVECAR*"]},
+    )
+
+    return {
+        "relax1": relax_results,
+        "relax2": double_relax_results,
+        "static": static_results,
+    }
 
 
 @flow
@@ -378,11 +357,15 @@ def mp_metagga_relax_flow(
         - name: "mp_metagga_prerelax_job"
         - job: [quacc.recipes.vasp.mp.mp_metagga_prerelax_job][]
 
-    2. MP-compatible (double) relax
+    2. MP-compatible relax
         - name: "mp_metagga_relax_job"
         - job: [quacc.recipes.vasp.mp.mp_metagga_relax_job][]
 
-    3. MP-compatible static
+    3. MP-compatible (second) relax
+        - name: "mp_metagga_relax_job"
+        - job: [quacc.recipes.vasp.mp.mp_metagga_relax_job][]
+
+    4. MP-compatible static
         - name: "mp_metagga_static_job"
         - job: [quacc.recipes.vasp.mp.mp_metagga_static_job][]
 
@@ -425,15 +408,23 @@ def mp_metagga_relax_flow(
         copy_files={prerelax_results["dir_name"]: ["CHGCAR*", "WAVECAR*"]},
     )
 
+    # Run the second relax
+    double_relax_results = mp_metagga_relax_job_(
+        relax_results["atoms"],
+        bandgap=relax_results["output"]["bandgap"],
+        copy_files={relax_results["dir_name"]: ["CHGCAR*", "WAVECAR*"]},
+    )
+
     # Run the static
     static_results = mp_metagga_static_job_(
-        relax_results["relax2"]["atoms"],
-        bandgap=relax_results["relax2"]["output"]["bandgap"],
-        copy_files={relax_results["relax2"]["dir_name"]: ["CHGCAR*", "WAVECAR*"]},
+        double_relax_results["atoms"],
+        bandgap=double_relax_results["output"]["bandgap"],
+        copy_files={double_relax_results["dir_name"]: ["CHGCAR*", "WAVECAR*"]},
     )
 
     return {
         "prerelax": prerelax_results,
-        "relax": relax_results,
+        "relax1": relax_results,
+        "relax2": double_relax_results,
         "static": static_results,
     }
