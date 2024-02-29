@@ -6,7 +6,6 @@ from ase import units
 from ase.calculators.lj import LennardJones
 from ase.io import read
 from ase.optimize import FIRE
-from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.qchem.inputs import QCInput
 
 from quacc import SETTINGS
@@ -95,7 +94,7 @@ def mock_execute3(_self, **kwargs):
 def mock_execute4(self, **kwargs):
     qcin = QCInput.from_file("mol.qin")
     mol = qcin.molecule
-    atoms = AseAtomsAdaptor.get_atoms(mol)
+    atoms = mol.to_ase_atoms()
     atoms.calc = LennardJones()
     atoms.get_potential_energy()
     self.results = atoms.calc.results

@@ -8,11 +8,14 @@ from quacc import SETTINGS
 from quacc.recipes.emt.core import relax_job  # skipcq: PYL-C0412
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow  # skipcq: PYL-C0412
 
+# from quacc import flow
+
+
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 
 @pytest.mark.parametrize("chdir", [True, False])
-def test_parsl_functools(tmp_path, monkeypatch, chdir):
+def test_functools(tmp_path, monkeypatch, chdir):
     monkeypatch.chdir(tmp_path)
 
     SETTINGS.CHDIR = chdir
@@ -26,6 +29,18 @@ def test_parsl_functools(tmp_path, monkeypatch, chdir):
     assert result[-1]["fmax"] == 0.1
 
     SETTINGS.CHDIR = DEFAULT_SETTINGS.CHDIR
+
+
+# def test_copy_files(tmp_path, monkeypatch):
+#     monkeypatch.chdir(tmp_path)
+#     atoms = bulk("Cu")
+
+#     @flow
+#     def myflow(atoms):
+#         result1 = relax_job(atoms)
+#         return relax_job(result1["atoms"], copy_files={result1["dir_name"]: "opt.*"})
+
+#     assert "atoms" in myflow(atoms).result()
 
 
 @pytest.mark.parametrize("chdir", [True, False])
