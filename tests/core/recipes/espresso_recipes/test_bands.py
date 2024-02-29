@@ -33,14 +33,15 @@ def test_bands_flow(tmp_path, monkeypatch):
 
     output = bands_flow(atoms, tmp_path, job_params=job_params)
     assert (
-        output["bands"]["parameters"]["input_data"]["control"]["calculation"] == "bands"
+        output["bands_pw"]["parameters"]["input_data"]["control"]["calculation"]
+        == "bands"
     )
 
     assert_allclose(
-        output["bands"]["atoms"].get_positions(), atoms.get_positions(), atol=1.0e-4
+        output["bands_pw"]["atoms"].get_positions(), atoms.get_positions(), atol=1.0e-4
     )
 
-    assert output["bands"]["results"]["nbands"] == 4
+    assert output["bands_pw"]["results"]["nbands"] == 4
 
     assert_allclose(
         output["bands_pp"]["atoms"].get_positions(), atoms.get_positions(), atol=1.0e-4
