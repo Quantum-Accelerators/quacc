@@ -150,7 +150,7 @@ def copy_decompress_files(
 
             if source_filepath.is_symlink():
                 continue
-            if source_filepath.is_file():
+            elif source_filepath.is_file():
                 copy(source_filepath, destination_filepath)
                 decompress_file(destination_filepath)
             elif source_filepath.is_dir():

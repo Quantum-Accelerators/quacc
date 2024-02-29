@@ -47,7 +47,7 @@ def dos_job(
     """
     Function to carry out a basic dos.x calculation (density of states).
     It is mainly used to extract the charge density and wavefunction from a previous pw.x calculation.
-    It generates the total density of states. Fore more details please see
+    It generates the total density of states. For more details, please see
     https://www.quantum-espresso.org/Doc/INPUT_DOS.html
 
     Parameters
