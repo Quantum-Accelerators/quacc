@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from ase import Atoms
 from pymatgen.analysis.adsorption import AdsorbateSiteFinder
+from pymatgen.core.structure import Structure
 from pymatgen.core.surface import Slab, center_slab, generate_all_slabs
 from pymatgen.io.ase import AseAtomsAdaptor
 
@@ -18,7 +19,6 @@ if TYPE_CHECKING:
     from typing import Literal, TypedDict
 
     from numpy.typing import ArrayLike
-    from pymatgen.core.structure import Structure
 
     class AdsSiteFinderKwargs(TypedDict, total=False):
         """
@@ -67,7 +67,9 @@ def flip_atoms(
         Inverted slab
     """
 
-    new_atoms = copy_atoms(atoms) if isinstance(atoms, Atoms) else atoms.get_ase_atoms()
+    new_atoms = (
+        atoms.get_ase_atoms() if isinstance(atoms, Structure) else copy_atoms(atoms)
+    )
 
     new_atoms.rotate(180, "x")
     new_atoms.wrap()
