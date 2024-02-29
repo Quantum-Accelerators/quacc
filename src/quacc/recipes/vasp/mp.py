@@ -62,7 +62,7 @@ def mp_gga_relax_job(
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [ase.calculators.vasp.vasp.Vasp][].
+        keys, refer to [quacc.calculators.vasp.vasp.Vasp][].
 
     Returns
     -------
@@ -116,7 +116,7 @@ def mp_gga_static_job(
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [ase.calculators.vasp.vasp.Vasp][].
+        keys, refer to [quacc.calculators.vasp.vasp.Vasp][].
 
     Returns
     -------
@@ -165,7 +165,7 @@ def mp_metagga_prerelax_job(
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [ase.calculators.vasp.vasp.Vasp][].
+        keys, refer to [quacc.calculators.vasp.vasp.Vasp][].
 
     Returns
     -------
@@ -218,7 +218,7 @@ def mp_metagga_relax_job(
     **calc_kwargs
         Dictionary of custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [ase.calculators.vasp.vasp.Vasp][].
+        keys, refer to [quacc.calculators.vasp.vasp.Vasp][].
 
     Returns
     -------
@@ -404,17 +404,15 @@ def mp_metagga_relax_flow(
     MPMetaGGARelaxFlowSchema
         Dictionary of results. See the type-hint for the data structure.
     """
-    (mp_metagga_prerelax_job_, mp_metagga_relax_job_, mp_metagga_static_job_) = (
-        customize_funcs(
-            [
-                "mp_metagga_prerelax_job",
-                "mp_metagga_relax_job",
-                "mp_metagga_static_job",
-            ],
-            [mp_metagga_prerelax_job, mp_metagga_relax_job, mp_metagga_static_job],
-            parameters=job_params,
-            decorators=job_decorators,
-        )
+    (
+        mp_metagga_prerelax_job_,
+        mp_metagga_relax_job_,
+        mp_metagga_static_job_,
+    ) = customize_funcs(
+        ["mp_metagga_prerelax_job", "mp_metagga_relax_job", "mp_metagga_static_job"],
+        [mp_metagga_prerelax_job, mp_metagga_relax_job, mp_metagga_static_job],
+        parameters=job_params,
+        decorators=job_decorators,
     )
 
     # Run the prerelax
