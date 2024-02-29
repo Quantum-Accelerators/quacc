@@ -124,7 +124,6 @@ jobs:
           cache-dependency-path: tests/requirements**.txt
 
       - name: Set up conda
-        if: matrix.wflow_engine == 'dask'
         uses: conda-incubator/setup-miniconda@v3
         with:
           python-version: "3.11"
