@@ -3,11 +3,9 @@ from pathlib import Path
 from ase.build import molecule
 from ase.optimize import LBFGS
 
-from quacc import SETTINGS
 from quacc.recipes.onetep.core import ase_relax_job, static_job
 from quacc.utils.files import copy_decompress_files
 
-DEFAULT_SETTINGS = SETTINGS.model_copy()
 DATA_DIR = Path(__file__).parent / "data"
 
 
