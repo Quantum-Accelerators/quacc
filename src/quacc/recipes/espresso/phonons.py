@@ -137,13 +137,14 @@ def q2r_job(
 
 @job
 def matdyn_job(
-    prev_dir: str | Path,
+    prev_dir: SourceDirectory,
     flfrc: str = "q2r.fc",
     parallel_info: dict[str] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
-    Function to carry out a basic matdyn.x calculation. It should allow you to use all the features of the [matdyn.x binary](https://www.quantum-espresso.org/Doc/INPUT_MATDYN.html#idm138)
+    Function to carry out a basic matdyn.x calculation. It should allow you to use
+    all the features of the [matdyn.x binary](https://www.quantum-espresso.org/Doc/INPUT_MATDYN.html#idm138)
 
     This job requires the results of a previous q2r.x calculation, you might
     want to create your own flow to run both jobs in sequence.
@@ -163,9 +164,7 @@ def matdyn_job(
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
-        `ase.io.espresso.write_espresso_ph` for more information. Some notable keys are:
-
-        - input_data: dict
+        [quacc.calculators.espresso.espresso.Espresso][] for more information.
 
     Returns
     -------
@@ -191,8 +190,8 @@ def matdyn_job(
 @flow
 def phonon_dos_flow(
     atoms: Atoms,
-    job_decorators: dict[str, Callable | None] | None = None,
     job_params: dict[str, Any] | None = None,
+    job_decorators: dict[str, Callable | None] | None = None,
 ) -> RunSchema:
     """
     Function to carry out a phonon DOS calculation. The phonon calculation is carried out on a coarse q-grid, the force constants are calculated
@@ -278,8 +277,8 @@ def phonon_dos_flow(
 def grid_phonon_flow(
     atoms: Atoms,
     nblocks: int = 1,
-    job_decorators: dict[str, Callable | None] | None = None,
     job_params: dict[str, Any] | None = None,
+    job_decorators: dict[str, Callable | None] | None = None,
 ) -> RunSchema:
     """
     This function performs grid parallelization of a ph.x calculation. Each
