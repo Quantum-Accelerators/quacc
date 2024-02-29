@@ -118,9 +118,8 @@ def mp_gga_relax_job(
         copy_files=copy_files,
     )
     _validate_mp_compatability(output["dir_name"])
-    
-    return output
 
+    return output
 
 
 @job
@@ -275,7 +274,7 @@ def mp_metagga_relax_job(
         copy_files=copy_files,
     )
     _validate_mp_compatability(output["dir_name"])
-    
+
     return output
 
 
