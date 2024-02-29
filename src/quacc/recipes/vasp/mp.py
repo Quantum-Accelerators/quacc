@@ -74,6 +74,7 @@ def mp_gga_relax_job(
         calc_swaps=calc_kwargs,
         additional_fields={"name": "MP GGA Relax"},
         copy_files=copy_files,
+    )
 
 
 @job
