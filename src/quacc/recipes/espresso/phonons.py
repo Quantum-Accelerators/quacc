@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 
 @job
 def phonon_job(
-    copy_files: dict[SourceDirectory, Filenames],
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -265,7 +265,7 @@ def grid_phonon_flow(
 
     pw_job_results = pw_job(atoms)
 
-    ph_init_job_results = ph_init_job({pw_job_results["dir_name"]: "*"})
+    ph_init_job_results = ph_init_job(pw_job_results["dir_name"])
 
     grid_results = _grid_phonon_subflow(
         job_params["ph_job"]["input_data"], ph_init_job_results, ph_job, nblocks=nblocks

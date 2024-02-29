@@ -23,7 +23,7 @@ def static_job(
     spin_multiplicity: int = 1,
     xc: str = "wb97xd",
     basis: str = "def2tzvp",
-    copy_files: dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> cclibSchema:
     """
@@ -91,7 +91,7 @@ def relax_job(
     xc: str = "wb97xd",
     basis: str = "def2tzvp",
     freq: bool = False,
-    copy_files: dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> cclibSchema:
     """

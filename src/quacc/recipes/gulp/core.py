@@ -21,7 +21,7 @@ def static_job(
     keywords: list[str] | None = None,
     options: list[str] | None = None,
     library: str | None = None,
-    copy_files: dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -78,7 +78,7 @@ def relax_job(
     keywords: list[str] | None = None,
     options: list[str] | None = None,
     library: str | None = None,
-    copy_files: dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> RunSchema:
     """
     Carry out a structure relaxation.

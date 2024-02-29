@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
-    copy_files: dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     kpts: tuple | list[tuple] | dict | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -76,7 +76,7 @@ def relax_job(
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
     kpts: tuple | list[tuple] | dict | None = None,
     relax_cell: bool = False,
-    copy_files: dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """

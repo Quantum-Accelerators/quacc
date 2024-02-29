@@ -31,7 +31,7 @@ BASE_SET = {
 @job
 def static_job(
     atoms: Atoms,
-    copy_files: dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -72,7 +72,7 @@ def static_job(
 @job
 def ase_relax_job(
     atoms: Atoms,
-    copy_files: dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     opt_params: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:

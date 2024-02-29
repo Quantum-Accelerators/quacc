@@ -25,7 +25,7 @@ def static_job(
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
-    copy_files: dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -83,7 +83,7 @@ def relax_job(
     relax_cell: bool = False,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
-    copy_files: dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -148,7 +148,7 @@ def ase_relax_job(
     relax_cell: bool = False,
     parallel_info: dict[str] | None = None,
     opt_params: dict[str, Any] | None = None,
-    copy_files: dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -218,7 +218,7 @@ def ase_relax_job(
 
 @job
 def post_processing_job(
-    copy_files: dict[SourceDirectory, Filenames],
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -275,7 +275,7 @@ def post_processing_job(
 @job
 def non_scf_job(
     atoms: Atoms,
-    copy_files: dict[SourceDirectory, Filenames],
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
     parallel_info: dict[str] | None = None,
     test_run: bool = False,

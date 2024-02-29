@@ -35,7 +35,7 @@ def base_fn(
     keyword_swaps: list[str] | None = None,
     option_swaps: list[str] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> RunSchema:
     """
     Base job function for GULP recipes.

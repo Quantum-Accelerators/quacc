@@ -39,7 +39,7 @@ if TYPE_CHECKING:
 
 @job
 def dos_job(
-    copy_files: dict[SourceDirectory, Filenames],
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -84,7 +84,7 @@ def dos_job(
 
 @job
 def projwfc_job(
-    copy_files: dict[SourceDirectory, Filenames],
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,

@@ -45,7 +45,7 @@ if TYPE_CHECKING:
 @requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
 def static_job(
     atoms: Atoms,
-    copy_files: dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -91,7 +91,7 @@ def static_job(
 def relax_job(
     atoms: Atoms,
     opt_params: dict[str, Any] | None = None,
-    copy_files: dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
     """
@@ -145,7 +145,7 @@ def freq_job(
     atoms: Atoms,
     temperature: float = 298.15,
     pressure: float = 1.0,
-    copy_files: dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> FreqSchema:
     """
