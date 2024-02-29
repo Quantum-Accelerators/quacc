@@ -413,6 +413,7 @@ jobs:
           pip install -r tests/requirements.txt
           pip install -r tests/requirements-mlp.txt
           pip install -r tests/requirements-newtonnet.txt
+          pip install -r tests/requirements-sella.txt
           pip install -r tests/requirements-phonopy.txt
           pip install .[dev]
 

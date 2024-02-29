@@ -32,6 +32,8 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from ase.optimize.optimize import Optimizer
 
+    from quacc.utils.files import Filenames, SourceDirectory
+
     class OptimizerKwargs(TypedDict, total=False):
         """
         Type hint for `optimizer_kwargs` in [quacc.runners.ase.run_opt][].
@@ -53,7 +55,7 @@ if TYPE_CHECKING:
 def run_calc(
     atoms: Atoms,
     geom_file: str | None = None,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     get_forces: bool = False,
 ) -> Atoms:
     """
@@ -75,7 +77,7 @@ def run_calc(
         atoms.get_potential_energy() function to update the positions, as this
         varies between codes.
     copy_files
-        Filenames to copy from source to scratch directory.
+        Files to copy (and decompress) from source to the runtime directory.
     get_forces
         Whether to use `atoms.get_forces()` instead of `atoms.get_potential_energy()`.
 
@@ -135,7 +137,7 @@ def run_opt(
     optimizer_kwargs: OptimizerKwargs | None = None,
     store_intermediate_files: bool = False,
     run_kwargs: dict[str, Any] | None = None,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> Optimizer:
     """
     Run an ASE-based optimization in a scratch directory and copy the results back to
@@ -168,7 +170,7 @@ def run_opt(
     run_kwargs
         Dictionary of kwargs for the run() method of the optimizer.
     copy_files
-        Filenames to copy from source to scratch directory.
+        Files to copy (and decompress) from source to the runtime directory.
 
     Returns
     -------
@@ -243,7 +245,7 @@ def run_opt(
 def run_vib(
     atoms: Atoms,
     vib_kwargs: VibKwargs | None = None,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> Vibrations:
     """
     Run an ASE-based vibration analysis in a scratch directory and copy the results back
@@ -260,7 +262,7 @@ def run_vib(
     vib_kwargs
         Dictionary of kwargs for the [ase.vibrations.Vibrations][] class.
     copy_files
-        Filenames to copy from source to scratch directory.
+        Files to copy (and decompress) from source to the runtime directory.
 
     Returns
     -------

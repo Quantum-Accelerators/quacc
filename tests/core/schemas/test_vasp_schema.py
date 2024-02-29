@@ -202,6 +202,7 @@ def test_no_bader(tmp_path, monkeypatch, run1, caplog):
     atoms = read(run1 / "OUTCAR.gz")
     with caplog.at_level(logging.WARNING):
         vasp_summarize_run(atoms, dir_path=run1, run_bader=True, run_chargemol=False)
+    assert "Bader analysis could not be performed." in caplog.text
 
 
 def test_no_chargemol(tmp_path, monkeypatch, run1, caplog):
@@ -210,3 +211,4 @@ def test_no_chargemol(tmp_path, monkeypatch, run1, caplog):
     atoms = read(run1 / "OUTCAR.gz")
     with caplog.at_level(logging.WARNING):
         vasp_summarize_run(atoms, dir_path=run1, run_bader=False, run_chargemol=True)
+    assert "Chargemol analysis could not be performed." in caplog.text

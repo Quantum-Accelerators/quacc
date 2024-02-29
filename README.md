@@ -21,7 +21,7 @@
 ## Documentation 📖
 
 <p align="center">
-     <a href="https://quantum-accelerators.github.io/quacc/"><b><i>Learn More Here!</i></b></a> 
+     <a href="https://quantum-accelerators.github.io/quacc/"><b><i>Learn More Here!</i></b></a>
 </p>
 
 ... or skip straight to one of the following sections:

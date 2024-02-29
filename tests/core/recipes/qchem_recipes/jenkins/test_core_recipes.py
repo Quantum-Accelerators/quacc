@@ -16,8 +16,6 @@ from quacc.recipes.qchem.core import relax_job, static_job
 FILE_DIR = Path(__file__).parent
 QCHEM_DIR = FILE_DIR / "qchem_examples"
 
-DEFAULT_SETTINGS = SETTINGS.model_copy()
-
 
 def test_static_job_simple(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)

@@ -29,12 +29,12 @@ except ImportError:
     NewtonNet = None
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from typing import Any
 
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
     class FreqSchema(RunSchema):
         vib: VibSchema
@@ -44,7 +44,9 @@ if TYPE_CHECKING:
 @job
 @requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
 def static_job(
-    atoms: Atoms, copy_files: str | Path | list[str | Path] | None = None, **calc_kwargs
+    atoms: Atoms,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    **calc_kwargs,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -54,7 +56,7 @@ def static_job(
     atoms
         Atoms object
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Custom kwargs for the NewtonNet calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -86,7 +88,7 @@ def static_job(
 def relax_job(
     atoms: Atoms,
     opt_params: dict[str, Any] | None = None,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
     """
@@ -101,7 +103,7 @@ def relax_job(
         to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Dictionary of custom kwargs for the NewtonNet calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -137,7 +139,7 @@ def freq_job(
     atoms: Atoms,
     temperature: float = 298.15,
     pressure: float = 1.0,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> FreqSchema:
     """
@@ -152,7 +154,7 @@ def freq_job(
     pressure
         The pressure for the thermodynamic analysis.
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Custom kwargs for the NewtonNet calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available

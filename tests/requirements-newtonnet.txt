@@ -1,2 +1,1 @@
 newtonnet==1.1.1
-sella==2.3.2

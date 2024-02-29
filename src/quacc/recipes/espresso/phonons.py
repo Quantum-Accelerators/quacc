@@ -28,11 +28,12 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
 
 @job
 def phonon_job(
-    prev_dir: str | Path,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -46,10 +47,8 @@ def phonon_job(
 
     Parameters
     ----------
-    prev_dir
-        Outdir of the previously ran pw.x calculation. This is used to copy
-        the entire tree structure of that directory to the working directory
-        of this calculation.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -59,11 +58,7 @@ def phonon_job(
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
-        `ase.io.espresso.write_espresso_ph` for more information. Some notable keys are:
-
-        - input_data: dict
-        - qpts: list[list[float]] | list[tuple[float]] | list[float]
-        - nat_todo: list[int]
+        [quacc.calculators.espresso.espresso.Espresso][] for more information.
 
     Returns
     -------
@@ -85,7 +80,7 @@ def phonon_job(
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "ph.x Phonon"},
-        copy_files=prev_dir,
+        copy_files=copy_files,
     )
 
 
@@ -364,11 +359,11 @@ def grid_phonon_flow(
         prev_dirs = {}
         for result in grid_results:
             prev_dirs[result["dir_name"]] = [
-                "**/*.xml.*",
-                "**/data-file-schema.xml.*",
-                "**/charge-density.*",
-                "**/wfc*.*",
-                "**/paw.txt.*",
+                Path("**", "*.xml.*"),
+                Path("**", "data-file-schema.xml.*"),
+                Path("**", "charge-density.*"),
+                Path("**", "wfc*.*"),
+                Path("**", "paw.txt.*"),
             ]
         return strip_decorator(ph_recover_job)(prev_dirs)
 
@@ -408,14 +403,14 @@ def grid_phonon_flow(
             ph_input_data["inputph"]["start_q"] = qnum
             ph_input_data["inputph"]["last_q"] = qnum
             repr_to_do = grid_prepare_repr(qdata["representations"], nblocks)
-            file_to_copy = grid_copy_files(
+            files_to_copy = grid_copy_files(
                 ph_input_data, ph_init_job_results["dir_name"], qnum, qdata["qpoint"]
             )
             for representation in repr_to_do:
                 ph_input_data["inputph"]["start_irr"] = representation[0]
                 ph_input_data["inputph"]["last_irr"] = representation[-1]
                 ph_job_results = ph_job(
-                    deepcopy(file_to_copy), input_data=deepcopy(ph_input_data)
+                    deepcopy(files_to_copy), input_data=deepcopy(ph_input_data)
                 )
                 grid_results.append(ph_job_results)
 
