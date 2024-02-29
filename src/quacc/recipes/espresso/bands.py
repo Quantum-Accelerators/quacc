@@ -136,7 +136,7 @@ def bands_flow(
 @job
 def bands_pw_job(
     atoms: Atoms,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
     make_bandpath: bool = True,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
@@ -199,7 +199,7 @@ def bands_pw_job(
 @job
 def bands_pp_job(
     atoms: Atoms,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -246,7 +246,7 @@ def bands_pp_job(
 @job
 def fermi_surface_job(
     atoms: Atoms,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
