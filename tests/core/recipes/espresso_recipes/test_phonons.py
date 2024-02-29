@@ -13,6 +13,8 @@ pytestmark = pytest.mark.skipif(
 from pathlib import Path
 
 from ase.build import bulk
+from ase.io.espresso import read_fortran_namelist
+from monty.shutil import decompress_file
 from numpy.testing import assert_allclose, assert_array_equal
 
 from quacc.recipes.espresso.core import static_job
@@ -142,11 +144,47 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
     SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO
 
 
+def test_q2r_job(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    copy_decompress_files([f"{DATA_DIR}/q2r_test/matdyn"], tmp_path)
+
+    additional_cards = ["1 1 1", "1", "matdyn"]
+
+    q2r_results = q2r_job(tmp_path, additional_cards=additional_cards)
+
+    assert Path(q2r_results["dir_name"], "q2r.fc.gz").exists()
+
+    decompress_file(Path(q2r_results["dir_name"], "q2r.in.gz"))
+
+    with Path(q2r_results["dir_name"], "q2r.in").open() as f:
+        recycled_input = read_fortran_namelist(f)
+
+    assert Path(recycled_input[0]["input"].pop("flfrc")).is_absolute()
+
+    assert recycled_input[0]["input"] == {"fildyn": "matdyn"}
+    assert recycled_input[1] == additional_cards + ["EOF"]
+
+
 def test_matdyn_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    copy_decompress_files(f"{DATA_DIR}/matdyn_test/matdyn*", tmp_path)
+    copy_decompress_files([f"{DATA_DIR}/matdyn_test/q2r.fc"], tmp_path)
 
-    matdyn_results = matdyn_job(tmp_path)
+    input_data = {"input": {"dos": True, "nk1": 4, "nk2": 4, "nk3": 4}}
+    matdyn_results = matdyn_job(tmp_path, input_data=input_data)
 
-    assert Path(matdyn_results["dir_name"], "q2r.fc").exists()
+    assert Path(matdyn_results["dir_name"], "q2r.fc.gz").exists()
+    assert Path(matdyn_results["dir_name"], "matdyn.dos.gz").exists()
+    assert Path(matdyn_results["dir_name"], "matdyn.freq.gz").exists()
+    assert Path(matdyn_results["dir_name"], "matdyn.modes.gz").exists()
+    assert matdyn_results["results"]["matdyn_dos"]["phonon_dos"].shape == (561, 3)
+
+    decompress_file(Path(matdyn_results["dir_name"], "matdyn.in.gz"))
+
+    with Path(matdyn_results["dir_name"], "matdyn.in").open() as f:
+        recycled_input = read_fortran_namelist(f)
+
+    assert Path(recycled_input[0]["input"].pop("flfrc")).is_absolute()
+
+    assert recycled_input[0]["input"] == input_data["input"]

@@ -150,8 +150,7 @@ def matdyn_job(
     **calc_kwargs,
 ) -> RunSchema:
     """
-    Function to carry out a basic matdyn.x calculation. It should allow you to
-    use all the features of the [matdyn.x binary](https://www.quantum-espresso.org/Doc/INPUT_MATDYN.html#idm138)
+    Function to carry out a basic matdyn.x calculation. It should allow you to use all the features of the [matdyn.x binary](https://www.quantum-espresso.org/Doc/INPUT_MATDYN.html#idm138)
 
     This job requires the results of a previous q2r.x calculation, you might
     want to create your own flow to run both jobs in sequence.
@@ -194,6 +193,92 @@ def matdyn_job(
         additional_fields={"name": "matdyn Phonon"},
         copy_files=prev_dir,
     )
+
+
+@flow
+def phonon_dos_flow(
+    atoms: Atoms,
+    job_decorators: dict[str, Callable | None] | None = None,
+    job_params: dict[str, Any] | None = None,
+) -> RunSchema:
+    """
+    Function to carry out a phonon DOS calculation. The phonon calculation is carried out on a coarse q-grid, the force constants are calculated
+    and extrapolated to a finer q-grid, and the phonon DOS is calculated.
+
+    Consists of following jobs that can be modified:
+
+    1. pw.x relaxation
+        - name: "relax_job"
+        - job: [quacc.recipes.espresso.core.relax_job][]
+    2. ph.x calculation
+        - name: "ph_job"
+        - job: [quacc.recipes.espresso.phonons.phonon_job][]
+    3. q2r.x calculation
+        - name: "q2r_job"
+        - job: [quacc.recipes.espresso.phonons.q2r_job][]
+    4. matdyn.x calculation
+        - name: "matdyn_job"
+        - job: [quacc.recipes.espresso.phonons.matdyn_job][]
+
+    Parameters
+    ----------
+    atoms
+        Atoms object to calculate the phonon DOS.
+    job_params
+        Custom parameters to pass to each Job in the Flow. This is a dictionary where the keys are the names of the jobs and the values are dictionaries of parameters.
+    job_decorators
+        Custom decorators to apply to each Job in the Flow. This is a dictionary where the keys are the names of the jobs and the values are decorators.
+
+    Returns
+    -------
+    RunSchema
+        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        See the type-hint for the data structure.
+    """
+
+    relax_job_defaults = {
+        "input_data": {
+            "control": {"forc_conv_thr": 5.0e-5},
+            "electrons": {"conv_thr": 1e-12},
+        }
+    }
+    ph_job_defaults = {
+        "input_data": {
+            "input_ph": {
+                "tr2_ph": 1e-12,
+                "alpha_mix(1)": 0.1,
+                "verbosity": "high",
+                "ldisp": True,
+                "nq1": 4,
+                "nq2": 4,
+                "nq3": 4,
+            }  # It would be nice to introduce a qspacing parameter. This would require modification in ASE though.
+        }
+    }
+    matdyn_job_defaults = {
+        "input_data": {"input": {"dos": True, "nk1": 32, "nk2": 32, "nk3": 32}}
+    }
+
+    calc_defaults = {
+        "relax_job": relax_job_defaults,
+        "ph_job": ph_job_defaults,
+        "matdyn_job": matdyn_job_defaults,
+    }
+
+    job_params = recursive_dict_merge(calc_defaults, job_params)
+
+    pw_job, ph_job, fc_job, dos_job = customize_funcs(
+        ["relax_job", "ph_job", "q2r_job", "matdyn_job"],
+        [relax_job, phonon_job, q2r_job, matdyn_job],
+        parameters=job_params,
+        decorators=job_decorators,
+    )
+
+    pw_job_results = pw_job(atoms)
+    ph_job_results = ph_job(pw_job_results["dir_name"])
+    fc_job_results = fc_job(ph_job_results["dir_name"])
+
+    return dos_job(fc_job_results["dir_name"])
 
 
 @flow
