@@ -41,6 +41,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install -r tests/requirements.txt
+          pip install -r tests/requirements-mp.txt
           pip install .[dev]
 
       - name: Run tests with pytest (w/ coverage)

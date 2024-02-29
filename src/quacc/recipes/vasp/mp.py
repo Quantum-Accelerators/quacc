@@ -21,6 +21,7 @@ This set of recipes is meant to be compatible with the Materials Project
 
 from __future__ import annotations
 
+import logging
 from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -30,6 +31,11 @@ from pymatgen.io.vasp.sets import MPRelaxSet, MPScanRelaxSet, MPStaticSet
 from quacc import flow, job
 from quacc.recipes.vasp._base import base_fn
 from quacc.wflow_tools.customizers import customize_funcs
+
+try:
+    from pymatgen.io.validation import ValidationDoc
+except ImportError:
+    ValidationDoc = None
 
 if TYPE_CHECKING:
     from typing import Any, Callable
@@ -42,6 +48,30 @@ if TYPE_CHECKING:
         MPMetaGGARelaxFlowSchema,
         VaspSchema,
     )
+
+logger = logging.getLogger(__name__)
+
+
+def _validate_mp_compatability(directory: Path | str) -> bool | None:
+    """
+    Validate the output of a VASP calculation for Materials Project compatibility.
+    """
+    if ValidationDoc is None:
+        logger.warning(
+            "pymatgen-io-validation is not installed. Skipping MP compatability check."
+        )
+        return None
+    validation_doc = ValidationDoc.from_directory(dir_name=directory)
+    is_valid = validation_doc.valid
+    if not validation_doc.valid:
+        logger.warning(
+            f"Calculation is not MP-compatible for the following reasons: {validation_doc.reasons}"
+        )
+    if validation_doc.warnings:
+        logger.warning(
+            f"Calculation has the following MP-related warnings: {validation_doc.warnings}"
+        )
+    return is_valid
 
 
 @job
@@ -75,13 +105,15 @@ def mp_gga_relax_job(
     ) -> VaspSchema:
         """A helper function to run a relaxation with the MP GGA settings."""
         calc_defaults = {"pmg_input_set": MPRelaxSet}
-        return base_fn(
+        output = base_fn(
             atoms,
             calc_defaults=calc_defaults,
             calc_swaps=calc_kwargs,
             additional_fields={"name": "MP GGA Relax"},
             copy_files=copy_files,
         )
+        _validate_mp_compatability(output["dir_name"])
+        return output
 
     summary1 = _relax(atoms, copy_files=copy_files, calc_kwargs=calc_kwargs)
     summary2 = _relax(
@@ -133,13 +165,16 @@ def mp_gga_static_job(
         "lwave": True,  # Deviation from MP (but logical)
         "lreal": False,
     }
-    return base_fn(
+    output = base_fn(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "MP GGA Static"},
         copy_files=copy_files,
     )
+    _validate_mp_compatability(output["dir_name"])
+
+    return output
 
 
 @job
@@ -186,13 +221,15 @@ def mp_metagga_prerelax_job(
         "lwave": True,
         "metagga": None,
     }
-    return base_fn(
+    output = base_fn(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "MP Meta-GGA Pre-Relax"},
         copy_files=copy_files,
     )
+    _validate_mp_compatability(output["dir_name"])
+    return output
 
 
 @job
@@ -242,13 +279,15 @@ def mp_metagga_relax_job(
             "lvtot": False,  # Deviation from MP (but logical)
             "lwave": True,
         }
-        return base_fn(
+        output = base_fn(
             atoms,
             calc_defaults=calc_defaults,
             calc_swaps=calc_kwargs,
             additional_fields={"name": "MP Meta-GGA Relax"},
             copy_files=copy_files,
         )
+        _validate_mp_compatability(output["dir_name"])
+        return output
 
     summary1 = _relax(
         atoms, copy_files=copy_files, bandgap=bandgap, calc_kwargs=calc_kwargs
@@ -307,13 +346,15 @@ def mp_metagga_static_job(
         "lwave": True,  # Deviation from MP (but logical)
         "nsw": 0,
     }
-    return base_fn(
+    output = base_fn(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "MP Meta-GGA Static"},
         copy_files=copy_files,
     )
+    _validate_mp_compatability(output["dir_name"])
+    return output
 
 
 @flow
@@ -411,15 +452,17 @@ def mp_metagga_relax_flow(
     MPMetaGGARelaxFlowSchema
         Dictionary of results. See the type-hint for the data structure.
     """
-    (
-        mp_metagga_prerelax_job_,
-        mp_metagga_relax_job_,
-        mp_metagga_static_job_,
-    ) = customize_funcs(
-        ["mp_metagga_prerelax_job", "mp_metagga_relax_job", "mp_metagga_static_job"],
-        [mp_metagga_prerelax_job, mp_metagga_relax_job, mp_metagga_static_job],
-        parameters=job_params,
-        decorators=job_decorators,
+    (mp_metagga_prerelax_job_, mp_metagga_relax_job_, mp_metagga_static_job_) = (
+        customize_funcs(
+            [
+                "mp_metagga_prerelax_job",
+                "mp_metagga_relax_job",
+                "mp_metagga_static_job",
+            ],
+            [mp_metagga_prerelax_job, mp_metagga_relax_job, mp_metagga_static_job],
+            parameters=job_params,
+            decorators=job_decorators,
+        )
     )
 
     # Run the prerelax
