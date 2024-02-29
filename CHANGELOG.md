@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.8]
+
+### Added
+
+- Added an option to prevent `os.chdir` calls for multithread safety
+- Added a common elastic calculation
+
+### Changed
+
+- Switched to `ruff` for formatting, replacing the need for `black` and `isort`
+- Changed VASP double relaxes to be flows and not jobs
+- Changed the behavior of `quacc.utils.files.copy_decompress_files`
+
+### Fixed
+
+- Fixed `copy_files` handling with workflow engines
+- Fixed MP VASP double relaxes, where the same relaxation was done twice by mistake
+- Fixed use of `**calc_kwargs` in MP flow recipes
+
 ## [0.6.7]
 
 ### Added
@@ -18,9 +37,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Changed the default ASE optimizer from `FIRE` to `BFGS` for most recipes
 - Changed the VASP `DoubleRelaxSchema` to be consistent between flows
+- Refactored VASP and Q-Chem execution commands in custom calculators
 
 ### Fixed
 
+- Fixed `dir_name` in VASP output schema
 - Fixed auto-detection of the Prefect workflow engine in settings
 - Fixed compatability of MP meta-GGA workflow with that in atomate2
 

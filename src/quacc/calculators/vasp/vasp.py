@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-import inspect
 import os
-import sys
+import subprocess
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -13,7 +12,6 @@ from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.vasp import setups as ase_setups
 from ase.constraints import FixAtoms
 
-from quacc.calculators.vasp import vasp_custodian
 from quacc.calculators.vasp.io import load_vasp_yaml_calc
 from quacc.calculators.vasp.params import (
     get_param_swaps,
@@ -23,6 +21,7 @@ from quacc.calculators.vasp.params import (
     set_auto_dipole,
     set_pmg_kpts,
 )
+from quacc.calculators.vasp.vasp_custodian import run_custodian
 from quacc.schemas.prep import set_magmoms
 from quacc.utils.dicts import sort_dict
 
@@ -181,11 +180,6 @@ class Vasp(Vasp_):
                 "VASP_VDW setting was not provided, yet you requested a vdW functional."
             )
 
-        # Return Custodian executable command
-        if self.use_custodian:
-            run_vasp_custodian_file = Path(inspect.getfile(vasp_custodian)).resolve()
-            return f"{sys.executable} {run_vasp_custodian_file}"
-
         # Return vanilla ASE command
         vasp_cmd = (
             SETTINGS.VASP_GAMMA_CMD
@@ -291,3 +285,39 @@ class Vasp(Vasp_):
         self.user_calc_params = sort_dict(
             normalize_params(remove_unused_flags(self.user_calc_params))
         )
+
+    def _run(
+        self,
+        command: list[str] | None = None,
+        out: Path | str | None = None,
+        directory: Path | str | None = None,
+    ) -> int:
+        """
+        Override the Vasp calculator's run method to use Custodian if necessary.
+
+        Parameters
+        ----------
+        command
+            The command to run the VASP calculation. If None, will use the
+            self.command attribute.
+        out
+            The stdout file path.
+        directory
+            The directory to run the calculation in. If None, will use the
+            self.directory attribute.
+
+        Returns
+        -------
+        int
+            The return code.
+        """
+        if command is None:
+            command = self.command
+        if directory is None:
+            directory = self.directory
+
+        if self.use_custodian:
+            run_custodian()
+            return 0
+        else:
+            return subprocess.call(command, shell=True, stdout=out, cwd=directory)

@@ -11,7 +11,7 @@ If you are not yet familiar with the ASE [`Atoms`](https://wiki.fysik.dtu.dk/ase
     Since we are not using a workflow engine for these examples, run the following in the command line:
 
     ```bash
-    quacc set WORKFLOW_ENGINE null
+    quacc set WORKFLOW_ENGINE None
     ```
 
 ## Examples
@@ -39,7 +39,7 @@ print(result)
 
 ??? Info "Printed Output"
 
-    ```python
+    ```
     {'atoms': Atoms(symbols='Cu', pbc=True, cell=[[0.0, 1.805, 1.805], [1.805, 0.0, 1.805], [1.805, 1.805, 0.0]], initial_magmoms=...),
     'atoms_info': {'\_id': 'f8d53f110f524872f30a5cc20e8befb1'},
     'builder_meta': {'build_date': datetime.datetime(2024, 1, 22, 6, 53, 30, 342389),
@@ -150,7 +150,7 @@ print(result2)
 
 ??? Info "Printed Output"
 
-    ```python
+    ```
     {'atoms': Atoms(symbols='Cu', pbc=True, cell=[[0.0, 1.805, 1.805], [1.805, 0.0, 1.805], [1.805, 1.805, 0.0]], initial_magmoms=...),
      'atoms_info': {'_id': 'f8d53f110f524872f30a5cc20e8befb1',
       '_old_ids': ['f8d53f110f524872f30a5cc20e8befb1']},

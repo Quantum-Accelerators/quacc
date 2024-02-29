@@ -35,6 +35,7 @@ def test_summarize_run():
     assert results["results"]["energy"] == atoms.get_potential_energy()
     assert "pymatgen_version" in results["builder_meta"]
     assert results["input_atoms"]["atoms"] == initial_atoms
+    assert Path(results["dir_name"]).is_dir()
 
 
 def test_summarize_run2():

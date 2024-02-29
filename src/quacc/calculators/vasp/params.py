@@ -414,6 +414,4 @@ def get_pmg_input_set_params(dict_set: DictSet, atoms: Atoms) -> tuple[dict, Ato
             "gamma": kpoints_dict["generation_style"] == "Gamma",
         }
 
-    return full_input_params, AseAtomsAdaptor().get_atoms(
-        pmg_input_set.poscar.structure
-    )
+    return full_input_params, pmg_input_set.poscar.structure.to_ase_atoms()

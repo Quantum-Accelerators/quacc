@@ -20,10 +20,15 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import OptSchema, RunSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
 
 @job
-def static_job(atoms: Atoms, **calc_kwargs) -> RunSchema:
+def static_job(
+    atoms: Atoms,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    **calc_kwargs,
+) -> RunSchema:
     """
     Carry out a static calculation.
 
@@ -31,6 +36,8 @@ def static_job(atoms: Atoms, **calc_kwargs) -> RunSchema:
     ----------
     atoms
         Atoms object
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Custom kwargs for the EMT calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -43,7 +50,7 @@ def static_job(atoms: Atoms, **calc_kwargs) -> RunSchema:
         See the type-hint for the data structure.
     """
     atoms.calc = EMT(**calc_kwargs)
-    final_atoms = run_calc(atoms)
+    final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(final_atoms, atoms, additional_fields={"name": "EMT Static"})
 
@@ -53,6 +60,7 @@ def relax_job(
     atoms: Atoms,
     relax_cell: bool = False,
     opt_params: dict[str, Any] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
     """
@@ -68,6 +76,8 @@ def relax_job(
         Dictionary of custom kwargs for the optimization process. Set a value
         to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_opt][].
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Custom kwargs for the EMT calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -82,6 +92,6 @@ def relax_job(
     opt_params = opt_params or {}
 
     atoms.calc = EMT(**calc_kwargs)
-    dyn = run_opt(atoms, relax_cell=relax_cell, **opt_params)
+    dyn = run_opt(atoms, relax_cell=relax_cell, copy_files=copy_files, **opt_params)
 
     return summarize_opt_run(dyn, additional_fields={"name": "EMT Relax"})

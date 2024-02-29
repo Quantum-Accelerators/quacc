@@ -121,7 +121,7 @@ def vasp_summarize_run(
             vasp_task_doc["chargemol"] = chargemol_results
 
     # Make task document
-    unsorted_task_doc = base_task_doc | vasp_task_doc | additional_fields
+    unsorted_task_doc = vasp_task_doc | base_task_doc | additional_fields
     task_doc = clean_task_doc(unsorted_task_doc)
 
     # Store the results

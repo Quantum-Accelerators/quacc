@@ -10,12 +10,12 @@ from custodian import Custodian
 from custodian.vasp.handlers import (
     FrozenJobErrorHandler,
     IncorrectSmearingHandler,
+    KspacingMetalHandler,
     LargeSigmaHandler,
     MeshSymmetryErrorHandler,
     NonConvergingErrorHandler,
     PositiveEnergyErrorHandler,
     PotimErrorHandler,
-    ScanMetalHandler,
     StdErrHandler,
     UnconvergedErrorHandler,
     VaspErrorHandler,
@@ -70,7 +70,7 @@ def run_custodian(
     scratch_dir: str | None = None,
     vasp_job_kwargs: VaspJobKwargs | None = None,
     custodian_kwargs: CustodianKwargs | None = None,
-) -> None:
+) -> list[list[dict]]:
     """
     Function to run VASP Custodian.
 
@@ -104,7 +104,8 @@ def run_custodian(
 
     Returns
     -------
-    None
+    list[list[dict]]
+        List of errors from each Custodian job.
     """
     # Adapted from atomate2.vasp.run.run_vasp
 
@@ -154,7 +155,7 @@ def run_custodian(
         "StdErrHandler": StdErrHandler(),
         "UnconvergedErrorHandler": UnconvergedErrorHandler(),
         "WalltimeHandler": WalltimeHandler(),
-        "ScanMetalHandler": ScanMetalHandler(),
+        "KspacingMetalHandler": KspacingMetalHandler(),
     }
     validators_dict = {
         "VaspFilesValidator": VaspFilesValidator(),
@@ -204,8 +205,4 @@ def run_custodian(
         **custodian_kwargs,
     )
 
-    c.run()
-
-
-if __name__ == "__main__":
-    run_custodian()
+    return c.run()
