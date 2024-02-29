@@ -30,6 +30,7 @@ from pymatgen.io.vasp.sets import MPRelaxSet, MPScanRelaxSet, MPStaticSet
 from quacc import flow, job
 from quacc.recipes.vasp._base import base_fn
 from quacc.wflow_tools.customizers import customize_funcs
+from pathlib import Path
 
 try:
     from pymatgen.io.validation import ValidationDoc
