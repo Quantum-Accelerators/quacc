@@ -124,7 +124,7 @@ def make_defects_from_bulk(
 
         # Make atoms objects and store defect stats
         for distortions, defect_struct in distortion_dict.items():
-            final_defect = AseAtomsAdaptor.get_atoms(defect_struct)
+            final_defect = defect_struct.to_ase_atoms()
             defect_stats = {
                 "defect_symbol": defect_symbol,
                 "defect_charge": defect_charge,

@@ -44,4 +44,4 @@ def make_deformations_from_bulk(
         symmetry=symmetry,
     )
 
-    return [AseAtomsAdaptor.get_atoms(structure) for structure in deformed_set]
+    return [structure.to_ase_atoms() for structure in deformed_set]

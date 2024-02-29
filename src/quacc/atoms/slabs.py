@@ -70,7 +70,7 @@ def flip_atoms(
     if isinstance(atoms, Atoms):
         new_atoms = copy_atoms(atoms)
     else:
-        new_atoms = AseAtomsAdaptor.get_atoms(atoms)
+        new_atoms = atoms.to_ase_atoms()
 
     new_atoms.rotate(180, "x")
     new_atoms.wrap()
@@ -211,7 +211,7 @@ def make_slabs_from_bulk(
 
     # Make atoms objects and store slab stats
     for slab_with_props in slabs_with_props:
-        final_slab = AseAtomsAdaptor.get_atoms(slab_with_props)
+        final_slab = slab_with_props.to_ase_atoms()
         slab_stats = {
             "bulk": atoms,
             "miller_index": slab_with_props.miller_index,
@@ -322,7 +322,7 @@ def make_adsorbate_structures(
             struct_with_adsorbate = ads_finder.add_adsorbate(mol, ads_coord)
 
             # Convert back to Atoms object
-            atoms_with_adsorbate = AseAtomsAdaptor.get_atoms(struct_with_adsorbate)
+            atoms_with_adsorbate = struct_with_adsorbate.to_ase_atoms()
 
             # Get distance matrix between adsorbate binding atom and surface
             d = atoms_with_adsorbate.get_all_distances(mic=True)[
