@@ -45,7 +45,9 @@ if TYPE_CHECKING:
 
 @job
 def mp_gga_relax_job(
-    atoms: Atoms, copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None, **calc_kwargs
+    atoms: Atoms,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    **calc_kwargs,
 ) -> VaspSchema:
     """
     Function to relax a structure with the original Materials Project GGA(+U) settings.
@@ -224,6 +226,7 @@ def mp_metagga_relax_job(
         copy_files=copy_files,
     )
 
+
 @job
 def mp_metagga_static_job(
     atoms: Atoms,
@@ -324,7 +327,7 @@ def mp_gga_relax_flow(
     # Run the second relax
     double_relax_results = mp_gga_relax_job_(
         relax_results["atoms"],
-        copy_files={relax_results["dir_name"]: ["CHGCAR*", "WAVECAR*"]}
+        copy_files={relax_results["dir_name"]: ["CHGCAR*", "WAVECAR*"]},
     )
 
     # Run the static
