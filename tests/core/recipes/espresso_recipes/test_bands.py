@@ -31,7 +31,7 @@ def test_bands_job(tmp_path, monkeypatch):
         "fermi_surface": {"input_data": {"fermi": {}}},
     }
 
-    output = bands_job(atoms, prev_dir=tmp_path, job_params=job_params)
+    output = bands_job(atoms, tmp_path, job_params=job_params)
     assert (
         output["bands"]["parameters"]["input_data"]["control"]["calculation"] == "bands"
     )
@@ -67,7 +67,7 @@ def test_bands_job_with_fermi(tmp_path, monkeypatch):
 
     output = bands_job(
         atoms,
-        prev_dir=tmp_path,
+        tmp_path,
         run_fermi_surface=True,
         make_bandpath=False,
         run_bands_pp=False,
