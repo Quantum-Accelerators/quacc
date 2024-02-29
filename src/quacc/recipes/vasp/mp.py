@@ -334,7 +334,7 @@ def mp_gga_relax_flow(
     static_results = mp_gga_static_job_(
         double_relax_results["atoms"],
         bandgap=double_relax_results["output"]["bandgap"],
-        copy_files={relax_results["relax2"]["dir_name"]: ["CHGCAR*", "WAVECAR*"]},
+        copy_files={double_relax_results["dir_name"]: ["CHGCAR*", "WAVECAR*"]},
     )
 
     return {
@@ -419,7 +419,7 @@ def mp_metagga_relax_flow(
     static_results = mp_metagga_static_job_(
         double_relax_results["atoms"],
         bandgap=double_relax_results["output"]["bandgap"],
-        copy_files={relax_results["relax2"]["dir_name"]: ["CHGCAR*", "WAVECAR*"]},
+        copy_files={double_relax_results["dir_name"]: ["CHGCAR*", "WAVECAR*"]},
     )
 
     return {
