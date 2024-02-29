@@ -23,12 +23,12 @@ def test_bands_flow(tmp_path, monkeypatch):
     atoms = bulk("Si")
     pseudopotentials = {"Si": "Si.upf"}
     job_params = {
-        "bands": {
+        "bands_pw_job": {
             "input_data": {"control": {"pseudo_dir": tmp_path}},
             "pseudopotentials": pseudopotentials,
         },
-        "bands_pp": {},
-        "fermi_surface": {"input_data": {"fermi": {}}},
+        "bands_pp_job": {},
+        "fermi_surface_job": {"input_data": {"fermi": {}}},
     }
 
     output = bands_flow(atoms, tmp_path, job_params=job_params)
@@ -62,7 +62,7 @@ def test_bands_flow_with_fermi(tmp_path, monkeypatch):
             "pseudopotentials": pseudopotentials,
             "kspacing": 0.1,
         },
-        "fermi_surface": {"input_data": {"fermi": {}}},
+        "fermi_surface_job": {"input_data": {"fermi": {}}},
     }
 
     output = bands_flow(
