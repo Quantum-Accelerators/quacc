@@ -42,7 +42,7 @@ jobs:
         run: |
           pip install uv
           uv pip install -r tests/requirements.txt
-          uv pip install .[dev]
+          uv pip install quacc @ .[dev]
 
       - name: Run tests with pytest (w/ coverage)
         if: matrix.python-version != '3.12'
@@ -85,7 +85,7 @@ jobs:
           uv pip install -r tests/requirements.txt
           uv pip install -r tests/requirements-covalent.txt
           uv pip install -r tests/requirements-phonopy.txt
-          uv pip install .[dev]
+          uv pip install quacc @ .[dev]
 
       - name: Start Covalent server
         run: covalent start
@@ -142,7 +142,7 @@ jobs:
           uv pip install -r tests/requirements.txt
           uv pip install -r tests/requirements-${{ matrix.wflow_engine }}.txt
           uv pip install -r tests/requirements-phonopy.txt
-          uv pip install .[dev]
+          uv pip install quacc @ .[dev]
 
       - name: Run tests with pytest
         run: pytest --durations=10 tests/${{ matrix.wflow_engine }} --cov=quacc --cov-report=xml
@@ -188,7 +188,7 @@ jobs:
           uv pip install -r tests/requirements.txt
           uv pip install -r tests/requirements-${{ matrix.wflow_engine }}.txt
           uv pip install -r tests/requirements-phonopy.txt
-          uv pip install .[dev]
+          uv pip install quacc @ .[dev]
           uv pip install starlette==0.32.0
 
       - name: Run tests with pytest
@@ -236,7 +236,7 @@ jobs:
         run: |
           pip install uv
           uv pip install -r tests/requirements.txt
-          uv pip install .[dev]
+          uv pip install quacc @ .[dev]
 
       - name: Run tests with pytest
         run: pytest -k 'psi4' --durations=10 --cov=quacc --cov-report=xml
@@ -283,7 +283,7 @@ jobs:
           uv pip install -r tests/requirements.txt
           uv pip install -r tests/requirements-defects.txt
           uv pip install -r tests/requirements-phonopy.txt
-          uv pip install .[dev]
+          uv pip install quacc @ .[dev]
 
       - name: Run tests with pytest
         run: pytest -k 'defects or phonon or espresso' --durations=10 --cov=quacc --cov-report=xml
@@ -330,7 +330,7 @@ jobs:
           uv pip install -r tests/requirements.txt
           uv pip install -r tests/requirements-tblite.txt
           uv pip install -r tests/requirements-phonopy.txt
-          uv pip install .[dev]
+          uv pip install quacc @ .[dev]
 
       - name: Run tests with pytest
         run: pytest -k 'dftb or tblite' --durations=10 --cov=quacc --cov-report=xml
@@ -378,7 +378,7 @@ jobs:
           pip install uv
           uv pip install -r tests/requirements.txt
           uv pip install -r tests/requirements-sella.txt
-          uv pip install .[dev]
+          uv pip install quacc @ .[dev]
 
       - name: Run tests with pytest
         run: pytest -k 'qchem or sella' --durations=10 --cov=quacc --cov-report=xml
@@ -424,7 +424,7 @@ jobs:
           uv pip install -r tests/requirements-newtonnet.txt
           uv pip install -r tests/requirements-sella.txt
           uv pip install -r tests/requirements-phonopy.txt
-          uv pip install .[dev]
+          uv pip install quacc @ .[dev]
 
       - name: Run tests with pytest
         run: pytest -k 'mlp or newtonnet' --durations=10 --cov=quacc --cov-report=xml
