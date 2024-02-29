@@ -20,6 +20,7 @@ if TYPE_CHECKING:
     from typing import Any
 
     from quacc.schemas._aliases.ase import RunSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
 
 def base_fn(
@@ -31,7 +32,7 @@ def base_fn(
     calc_swaps: dict[str, Any] | None = None,
     parallel_info: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> RunSchema:
     """
     Base function to carry out espresso recipes.
@@ -57,7 +58,7 @@ def base_fn(
     additional_fields
         Any additional fields to supply to the summarizer.
     copy_files
-        Files to copy to the runtime directory.
+        Files to copy (and decompress) from source to the runtime directory.
 
     Returns
     -------
@@ -94,7 +95,7 @@ def base_opt_fn(
     opt_params: dict[str, Any] | None = None,
     parallel_info: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: list[str] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> RunSchema:
     """
     Base function to carry out espresso recipes.
@@ -128,7 +129,7 @@ def base_opt_fn(
     additional_fields
         Any additional fields to supply to the summarizer.
     copy_files
-        Files to copy to the runtime directory.
+        Files to copy (and decompress) from source to the runtime directory.
 
     Returns
     -------

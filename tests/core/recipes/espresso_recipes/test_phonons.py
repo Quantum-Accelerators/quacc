@@ -28,7 +28,7 @@ def test_phonon_job(tmp_path, monkeypatch):
 
     atoms = bulk("Li")
 
-    copy_decompress_files([DATA_DIR / "Li.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Li.upf.gz"], tmp_path)
 
     SETTINGS.ESPRESSO_PSEUDO = tmp_path
 
@@ -83,7 +83,7 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
 
     atoms = bulk("Li")
 
-    copy_decompress_files([DATA_DIR / "Li.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Li.upf.gz"], tmp_path)
 
     SETTINGS.ESPRESSO_PSEUDO = tmp_path
 
