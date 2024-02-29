@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from quacc import job, strip_decorator
+from quacc import job
 from quacc.recipes.vasp._base import base_fn
 
 if TYPE_CHECKING:
@@ -120,7 +120,7 @@ def relax_job(
 
 
 @job
-def double_relax_job(
+def double_relax_flow(
     atoms: Atoms,
     preset: str | None = "BulkSet",
     relax_cell: bool = True,
@@ -161,12 +161,10 @@ def double_relax_job(
     relax2_kwargs = relax2_kwargs or {}
 
     # Run first relaxation
-    summary1 = strip_decorator(relax_job)(
-        atoms, preset=preset, relax_cell=relax_cell, **relax1_kwargs
-    )
+    summary1 = relax_job(atoms, preset=preset, relax_cell=relax_cell, **relax1_kwargs)
 
     # Run second relaxation
-    summary2 = strip_decorator(relax_job)(
+    summary2 = relax_job(
         summary1["atoms"],
         preset=preset,
         relax_cell=relax_cell,
