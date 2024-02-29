@@ -45,7 +45,7 @@ if TYPE_CHECKING:
 
 @job
 def mp_gga_relax_job(
-    atoms: Atoms, SourceDirectory | dict[SourceDirectory, Filenames] | None = None, **calc_kwargs
+    atoms: Atoms, copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None, **calc_kwargs
 ) -> VaspSchema:
     """
     Function to relax a structure with the original Materials Project GGA(+U) settings.
