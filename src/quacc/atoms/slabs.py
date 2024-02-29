@@ -68,7 +68,7 @@ def flip_atoms(
     """
 
     new_atoms = (
-        atoms.get_ase_atoms() if isinstance(atoms, Structure) else copy_atoms(atoms)
+        atoms.to_ase_atoms() if isinstance(atoms, Structure) else copy_atoms(atoms)
     )
 
     new_atoms.rotate(180, "x")
