@@ -33,7 +33,7 @@ jobs:
         run: |
           pip install uv
           uv pip install --system -r tests/requirements.txt
-          uv pip install --system "quacc @ .[docs]"
+          uv pip install --system "quacc[docs] @ ."
 
       - name: Build docs
         run: |
