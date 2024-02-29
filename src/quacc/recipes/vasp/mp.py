@@ -323,7 +323,7 @@ def mp_gga_relax_flow(
     # Run the second relax
     double_relax_results = mp_gga_relax_job_(
         relax_results["atoms"],
-        copy_files={relax_results["dir_name"]): ["CHGCAR*", "WAVECAR*"]}
+        copy_files={relax_results["dir_name"]: ["CHGCAR*", "WAVECAR*"]}
     )
 
     # Run the static
