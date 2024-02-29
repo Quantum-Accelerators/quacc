@@ -323,10 +323,7 @@ def mp_gga_relax_flow(
     # Run the second relax
     double_relax_results = mp_gga_relax_job_(
         relax_results["atoms"],
-        copy_files=[
-            Path(relax_results["dir_name"]) / "CHGCAR",
-            Path(relax_results["dir_name"]) / "WAVECAR",
-        ],
+        copy_files={relax_results["dir_name"]): ["CHGCAR*", "WAVECAR*"]}
     )
 
     # Run the static
@@ -411,10 +408,7 @@ def mp_metagga_relax_flow(
     double_relax_results = mp_metagga_relax_job_(
         relax_results["atoms"],
         bandgap=relax_results["output"]["bandgap"],
-        copy_files=[
-            Path(relax_results["dir_name"]) / "CHGCAR",
-            Path(relax_results["dir_name"]) / "WAVECAR",
-        ],
+        copy_files={relax_results["dir_name"]): ["CHGCAR*", "WAVECAR*"],
     )
 
     # Run the static
