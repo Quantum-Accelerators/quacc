@@ -53,7 +53,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-def _validate_mp_compatability(directory: Path | str) -> EmmetBaseModel:
+def _validate_mp_compatability(directory: Path | str) -> EmmetBaseModel | None:
     """
     Validate the output of a VASP calculation for Materials Project compatibility.
 
@@ -64,7 +64,7 @@ def _validate_mp_compatability(directory: Path | str) -> EmmetBaseModel:
 
     Returns
     -------
-    EmmetBaseModel
+    EmmetBaseModel | None
         The validation document.
     """
     if ValidationDoc is None:
