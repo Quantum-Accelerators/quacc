@@ -11,6 +11,7 @@ The `copy_files` keyword argument takes two forms. The first form is simply a `S
 ```python
 from ase.build import bulk
 from quacc.recipes.vasp.core import relax_job
+
 relax_job(atoms, copy_files="/my/folder")
 ```
 
