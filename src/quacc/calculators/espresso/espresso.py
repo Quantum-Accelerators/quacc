@@ -59,6 +59,7 @@ class EspressoTemplate(EspressoTemplate_):
 
         self.inputname = f"{binary}.in"
         self.outputname = f"{binary}.out"
+        self.errorname = f"{binary}.err"
 
         self.binary = binary
 
