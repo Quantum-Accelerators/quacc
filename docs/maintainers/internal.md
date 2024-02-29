@@ -16,7 +16,7 @@ For a pull request opened by a contributor not on the whitelist, [@buildbot-prin
 
 To upload to PyPI manually in the case of a GitHub Actions failure:
 
-```python
+```bash
 pip install -e .
 python -m build
 twine check dist/*

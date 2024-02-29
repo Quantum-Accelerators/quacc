@@ -4,15 +4,46 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.8]
+
+### Added
+
+- Added an option to prevent `os.chdir` calls for multithread safety
+- Added a common elastic calculation
+
+### Changed
+
+- Switched to `ruff` for formatting, replacing the need for `black` and `isort`
+- Changed VASP double relaxes to be flows and not jobs
+- Changed the behavior of `quacc.utils.files.copy_decompress_files`
+
+### Fixed
+
+- Fixed `copy_files` handling with workflow engines
+- Fixed MP VASP double relaxes, where the same relaxation was done twice by mistake
+- Fixed use of `**calc_kwargs` in MP flow recipes
+
 ## [0.6.7]
 
 ### Added
 
 - Added a `store_intermediate_files` keyword option to `quacc.runners.ase.run_opt()` to allow for storing of the logfiles in intermediate geometry optimization steps.
+- Added support for Pymatgen-based input sets in VASP jobs
+- Added an MP meta-GGA VASP static job
+- Added MP GGA relax job, MP GGA static job, and MP GGA relax flow
+- Added a validity checker on CLI parameters
 
 ### Changed
 
 - Changed the default ASE optimizer from `FIRE` to `BFGS` for most recipes
+- Changed the VASP `DoubleRelaxSchema` to be consistent between flows
+- Refactored VASP and Q-Chem execution commands in custom calculators
+
+### Fixed
+
+- Fixed `dir_name` in VASP output schema
+- Fixed auto-detection of the Prefect workflow engine in settings
+- Fixed compatability of MP meta-GGA workflow with that in atomate2
 
 ## [0.6.6]
 
@@ -493,7 +524,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 - VASP: Fixed a scenario where SIGMA was set to 0.05 if the user provided SIGMA > 0.05. This was supposed to happen when ISMEAR = 0 but was previously done when ISMEAR = -5, which is not influenced by SIGMA.
-- Fixed `mp_relax_flow` to use a `#!Python @flow` decorator instead of `#!Python @job`
+- Fixed `mp_metagga_relax_flow` to use a `#!Python @flow` decorator instead of `#!Python @job`
 - Fixed the Q-Chem Quasi-IRC job to run as one `#!Python @job` instead of two.
 
 ## [0.2.3]

@@ -16,7 +16,6 @@ class BaderSchema(TypedDict, total=False):
     spin_moments: list[float]
     bader_version: float
     min_dist: list[float]
-    partial_charges: list[float]
 
 
 class DDECSchema(TypedDict, total=False):
@@ -52,14 +51,16 @@ class VaspSchema(RunSchema, TaskDoc):
     chargemol: ChargemolSchema
 
 
-class DoubleRelaxSchema(VaspSchema):
-    """Type hint associated with double relaxation jobs."""
+class MPGGARelaxFlowSchema(VaspSchema):
+    """Type hint associated with the MP GGA relaxation flows."""
 
     relax1: VaspSchema
+    relax2: VaspSchema
+    static: VaspSchema
 
 
-class MPRelaxFlowSchema(VaspSchema):
-    """Type hint associated with the MP relaxation flows."""
+class MPMetaGGARelaxFlowSchema(MPGGARelaxFlowSchema):
+    """Type hint associated with the MP meta-GGA relaxation flows."""
 
     prerelax: VaspSchema
 

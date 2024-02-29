@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 installed_engine = next(
     (
         wflow_engine
-        for wflow_engine in ["parsl", "covalent", "dask", "redun", "jobflow"]
+        for wflow_engine in ["parsl", "covalent", "prefect", "dask", "redun", "jobflow"]
         if util.find_spec(wflow_engine)
     ),
     None,
@@ -40,11 +40,19 @@ class QuaccSettings(BaseSettings):
     using the "QUACC" prefix. e.g. `export QUACC_SCRATCH_DIR=/path/to/scratch`.
     """
 
+    model_config = SettingsConfigDict(
+        env_prefix="quacc_",
+        env_nested_delimiter="__",
+        env_parse_none_str="None",
+        extra="forbid",
+        validate_assignment=True,
+    )
+
     CONFIG_FILE: Path = Field(
         _DEFAULT_CONFIG_FILE_PATH,
         description=(
             """
-            Path to the YAML file to load alternative quacc configuration 
+            Path to the YAML file to load alternative quacc configuration
             defaults from.
             """
         ),
@@ -68,7 +76,7 @@ class QuaccSettings(BaseSettings):
         Path.cwd(),
         description=(
             """
-            Directory to permanently store I/O-based calculation results in. 
+            Directory to permanently store I/O-based calculation results in.
             Note that this behavior may be modified by the chosen workflow engine.
             """
         ),
@@ -77,10 +85,10 @@ class QuaccSettings(BaseSettings):
         None,
         description=(
             """
-            The base directory where calculations are run. If set to None, calculations will be run in a 
-            temporary directory within `RESULTS_DIR`. If a `Path` is supplied, calculations will 
-            be run in a temporary directory within `SCRATCH_DIR`. Files are always moved back 
-            to `RESULTS_DIR` after the calculation is complete, and the temporary directory 
+            The base directory where calculations are run. If set to None, calculations will be run in a
+            temporary directory within `RESULTS_DIR`. If a `Path` is supplied, calculations will
+            be run in a temporary directory within `SCRATCH_DIR`. Files are always moved back
+            to `RESULTS_DIR` after the calculation is complete, and the temporary directory
             in `SCRATCH_DIR` is removed.
             """
         ),
@@ -89,9 +97,23 @@ class QuaccSettings(BaseSettings):
         True,
         description=(
             """
-            Whether to have a unique directory in RESULTS_DIR for each job. 
-            Some workflow engines have an option to do this for you already, 
+            Whether to have a unique directory in RESULTS_DIR for each job.
+            Some workflow engines have an option to do this for you already,
             in which case you should set this to False.
+            """
+        ),
+    )
+    CHDIR: bool = Field(
+        True,
+        description=(
+            """
+            Whether quacc will make `os.chdir` calls to change the working directory
+            to be the location where the calculation is run. By default, we leave this
+            as `True` because not all ASE calculators properly support a `directory`
+            parameter. In most cases, this is fine, but it breaks thread safety.
+            If you need to run multiple, parallel calculations in a single Python process,
+            such as in a multithreaded job execution mode, then this setting needs
+            to be `False`. Note that not all calculators properly support this, however.
             """
         ),
     )
@@ -110,10 +132,10 @@ class QuaccSettings(BaseSettings):
         None,
         description=(
             """
-            The desired Maggma data store where calculation results will be stored. All data stores listed in 
-            `maggma.stores.__init__.py` are supported. If a dictionary is provided, the first key must be set 
+            The desired Maggma data store where calculation results will be stored. All data stores listed in
+            `maggma.stores.__init__.py` are supported. If a dictionary is provided, the first key must be set
             to the desired store type. The sub-parameters are the keyword arguments accepted by the Store.
-            An example is shown below: 
+            An example is shown below:
 
             ```yaml
             STORE:
@@ -143,7 +165,7 @@ class QuaccSettings(BaseSettings):
         Path(which("orca") or "orca"),
         description=(
             """
-            Path to the ORCA executable. This must be the full, absolute path 
+            Path to the ORCA executable. This must be the full, absolute path
             for parallel calculations to work.
             """
         ),
@@ -276,7 +298,7 @@ class QuaccSettings(BaseSettings):
         1.0,
         description=(
             """
-            Default initial magmom to use for a given element if a preset 
+            Default initial magmom to use for a given element if a preset
             with magmoms is provided but an element is missing from the list.
             """
         ),
@@ -285,7 +307,7 @@ class QuaccSettings(BaseSettings):
         0.05,
         description=(
             """
-            If the absolute value of all magnetic moments are below this value, 
+            If the absolute value of all magnetic moments are below this value,
             they will be set to 0 such that a spin-unpolarized calculation will be performed.
             """
         ),
@@ -294,7 +316,7 @@ class QuaccSettings(BaseSettings):
         True,
         description=(
             """
-            If True, any pre-existing atoms.get_magnetic_moments() will be set 
+            If True, any pre-existing atoms.get_magnetic_moments() will be set
             in atoms.set_initial_magnetic_moments().
             """
         ),
@@ -312,7 +334,7 @@ class QuaccSettings(BaseSettings):
         False,
         description=(
             """
-            If VTST-related input swaps should be used when running Custodian. 
+            If VTST-related input swaps should be used when running Custodian.
             Requires VASP to be compiled with VTST
             """
         ),
@@ -343,7 +365,7 @@ class QuaccSettings(BaseSettings):
         None,
         description=(
             """
-            After this many seconds, Custodian will stop running 
+            After this many seconds, Custodian will stop running
             and ensure that VASP writes a STOPCAR
             """
         ),
@@ -399,7 +421,7 @@ class QuaccSettings(BaseSettings):
         False,
         description=(
             """
-            Whether to run in debug mode. This will set the logging level to DEBUG, 
+            Whether to run in debug mode. This will set the logging level to DEBUG,
             ASE logs (e.g. optimizations, vibrations, thermo) are printed to stdout.
             """
         ),
@@ -449,13 +471,6 @@ class QuaccSettings(BaseSettings):
             return store(**v[store_name])
         else:
             return v
-
-    model_config = SettingsConfigDict(
-        env_prefix="quacc_",
-        env_nested_delimiter="__",
-        extra="forbid",
-        validate_assignment=True,
-    )
 
     @model_validator(mode="before")
     @classmethod

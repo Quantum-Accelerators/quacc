@@ -1,6 +1,7 @@
 import pytest
 
 dask = pytest.importorskip("dask")
+pytest.importorskip("distributed")
 
 from dask.distributed import get_client
 

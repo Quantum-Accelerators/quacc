@@ -8,77 +8,77 @@ qchem mol.qin_143383.0 /tmp/scratch/ 0
 
  Q-Chem 6.0, Q-Chem, Inc., Pleasanton, CA (2022)
 
- E. Epifanovsky,  A. T. B. Gilbert,  Xintian Feng,  Joonho Lee,  Yuezhi Mao,  
- N. Mardirossian,  P. Pokhilko,  A. White,  M. Wormit,  M. P. Coons,  
- A. L. Dempwolff,  Zhengting Gan,  D. Hait,  P. R. Horn,  L. D. Jacobson,  
- I. Kaliman,  J. Kussmann,  A. W. Lange,  Ka Un Lao,  D. S. Levine,  Jie Liu,  
- S. C. McKenzie,  A. F. Morrison,  K. Nanda,  F. Plasser,  D. R. Rehn,  
- M. L. Vidal,  Zhi-Qiang You,  Ying Zhu,  B. Alam,  B. Albrecht,  
- A. Aldossary,  E. Alguire,  J. H. Andersen,  V. Athavale,  D. Barton,  
- K. Begam,  A. Behn,  N. Bellonzi,  Y. A. Bernard,  E. J. Berquist,  
- H. Burton,  A. Carreras,  K. Carter-Fenk,  Romit Chakraborty,  
- Chandrima Chakravarty,  Junhan Chen,  A. D. Chien,  K. D. Closser,  
- V. Cofer-Shabica,  L. Cunha,  S. Dasgupta,  Jia Deng,  M. de Wergifosse,  
- M. Diedenhofen,  Hainam Do,  S. Ehlert,  Po-Tung Fang,  S. Fatehi,  
- Qingguo Feng,  T. Friedhoff,  B. Ganoe,  J. Gayvert,  Qinghui Ge,  
- G. Gidofalvi,  M. Goldey,  J. Gomes,  C. Gonzalez-Espinoza,  S. Gulania,  
- A. Gunina,  J. A. Gyamfi,  M. W. D. Hanson-Heine,  P. H. P. Harbach,  
- A. W. Hauser,  M. F. Herbst,  M. Hernandez Vera,  M. Hodecker,  
- Z. C. Holden,  S. Houck,  Xunkun Huang,  Kerwin Hui,  B. C. Huynh,  
- K. Ikeda,  M. Ivanov,  Hyunjun Ji,  Zuxin Jin,  Hanjie Jiang,  B. Kaduk,  
- S. Kaehler,  R. Kang,  K. Khistyaev,  Jaehoon Kim,  Yongbin Kim,  
- P. Klunzinger,  Z. Koczor-Benda,  Joong Hoon Koh,  D. Kosenkov,  
- Saikiran Kotaru,  L. Koulias,  T. Kowalczyk,  C. M. Krauter,  K. Kue,  
- A. Kunitsa,  T. Kus,  A. Landau,  K. V. Lawler,  D. Lefrancois,  S. Lehtola,  
- Rain Li,  Shaozhi Li,  Yi-Pei Li,  Jiashu Liang,  M. Liebenthal,  
- Hung-Hsuan Lin,  You-Sheng Lin,  Fenglai Liu,  Kuan-Yu Liu,  
- M. Loipersberger,  A. Luenser,  C. Malbon,  A. Manjanath,  P. Manohar,  
- E. Mansoor,  S. F. Manzer,  Shan-Ping Mao,  A. V. Marenich,  T. Markovich,  
- S. Mason,  F. Matz,  S. A. Maurer,  P. F. McLaughlin,  M. F. S. J. Menger,  
- J.-M. Mewes,  S. A. Mewes,  P. Morgante,  Mohammad Mostafanejad,  
- J. W. Mullinax,  K. J. Oosterbaan,  G. Paran,  V. Parravicini,  
- Alexander C. Paul,  Suranjan K. Paul,  F. Pavosevic,  Zheng Pei,  S. Prager,  
- E. I. Proynov,  E. Ramos,  B. Rana,  A. E. Rask,  A. Rettig,  R. M. Richard,  
- F. Rob,  E. Rossomme,  T. Scheele,  M. Scheurer,  M. Schneider,  
- P. E. Schneider,  N. Sergueev,  S. M. Sharada,  Hengyuan Shen,  
- W. Skomorowski,  D. W. Small,  C. J. Stein,  Yingli Su,  Yu-Chuan Su,  
- E. J. Sundstrom,  Zhen Tao,  J. Thirman,  Hung-Yi Tsai,  T. Tsuchimochi,  
- N. M. Tubman,  C. Utku,  S. P. Veccham,  O. Vydrov,  J. Wenzel,  
- Jonathan Wong,  J. Witte,  A. Yamada,  Chou-Hsun Yang,  Kun Yao,  
- S. Yeganeh,  S. R. Yost,  A. Zech,  F. Zeller,  Igor Ying Zhang,  
- Xing Zhang,  Yu Zhang,  D. Zuev,  A. Aspuru-Guzik,  A. T. Bell,  
- N. A. Besley,  K. B. Bravaya,  B. R. Brooks,  D. Casanova,  Jeng-Da Chai,  
- Hsing-Ta Chen,  S. Coriani,  C. J. Cramer,  A. E. DePrince, III,  
- R. A. DiStasio Jr.,  A. Dreuw,  B. D. Dunietz,  T. R. Furlani,  
- W. A. Goddard III,  S. Grimme,  S. Hammes-Schiffer,  T. Head-Gordon,  
- W. J. Hehre,  Chao-Ping Hsu,  T.-C. Jagau,  Yousung Jung,  A. Klamt,  
- Jing Kong,  D. S. Lambrecht,  Xiangyuan Li,  WanZhen Liang,  N. J. Mayhall,  
- C. W. McCurdy,  J. B. Neaton,  T. Neudecker,  C. Ochsenfeld,  
- J. A. Parkhill,  R. Peverati,  V. A. Rassolov,  Haisheng Ren,  Yihan Shao,  
- L. V. Slipchenko,  R. P. Steele,  J. E. Subotnik,  A. J. W. Thom,  
- A. Tkatchenko,  D. G. Truhlar,  T. Van Voorhis,  Fan Wang,  
- T. A. Wesolowski,  K. B. Whaley,  H. L. Woodcock III,  P. M. Zimmerman,  
+ E. Epifanovsky,  A. T. B. Gilbert,  Xintian Feng,  Joonho Lee,  Yuezhi Mao,
+ N. Mardirossian,  P. Pokhilko,  A. White,  M. Wormit,  M. P. Coons,
+ A. L. Dempwolff,  Zhengting Gan,  D. Hait,  P. R. Horn,  L. D. Jacobson,
+ I. Kaliman,  J. Kussmann,  A. W. Lange,  Ka Un Lao,  D. S. Levine,  Jie Liu,
+ S. C. McKenzie,  A. F. Morrison,  K. Nanda,  F. Plasser,  D. R. Rehn,
+ M. L. Vidal,  Zhi-Qiang You,  Ying Zhu,  B. Alam,  B. Albrecht,
+ A. Aldossary,  E. Alguire,  J. H. Andersen,  V. Athavale,  D. Barton,
+ K. Begam,  A. Behn,  N. Bellonzi,  Y. A. Bernard,  E. J. Berquist,
+ H. Burton,  A. Carreras,  K. Carter-Fenk,  Romit Chakraborty,
+ Chandrima Chakravarty,  Junhan Chen,  A. D. Chien,  K. D. Closser,
+ V. Cofer-Shabica,  L. Cunha,  S. Dasgupta,  Jia Deng,  M. de Wergifosse,
+ M. Diedenhofen,  Hainam Do,  S. Ehlert,  Po-Tung Fang,  S. Fatehi,
+ Qingguo Feng,  T. Friedhoff,  B. Ganoe,  J. Gayvert,  Qinghui Ge,
+ G. Gidofalvi,  M. Goldey,  J. Gomes,  C. Gonzalez-Espinoza,  S. Gulania,
+ A. Gunina,  J. A. Gyamfi,  M. W. D. Hanson-Heine,  P. H. P. Harbach,
+ A. W. Hauser,  M. F. Herbst,  M. Hernandez Vera,  M. Hodecker,
+ Z. C. Holden,  S. Houck,  Xunkun Huang,  Kerwin Hui,  B. C. Huynh,
+ K. Ikeda,  M. Ivanov,  Hyunjun Ji,  Zuxin Jin,  Hanjie Jiang,  B. Kaduk,
+ S. Kaehler,  R. Kang,  K. Khistyaev,  Jaehoon Kim,  Yongbin Kim,
+ P. Klunzinger,  Z. Koczor-Benda,  Joong Hoon Koh,  D. Kosenkov,
+ Saikiran Kotaru,  L. Koulias,  T. Kowalczyk,  C. M. Krauter,  K. Kue,
+ A. Kunitsa,  T. Kus,  A. Landau,  K. V. Lawler,  D. Lefrancois,  S. Lehtola,
+ Rain Li,  Shaozhi Li,  Yi-Pei Li,  Jiashu Liang,  M. Liebenthal,
+ Hung-Hsuan Lin,  You-Sheng Lin,  Fenglai Liu,  Kuan-Yu Liu,
+ M. Loipersberger,  A. Luenser,  C. Malbon,  A. Manjanath,  P. Manohar,
+ E. Mansoor,  S. F. Manzer,  Shan-Ping Mao,  A. V. Marenich,  T. Markovich,
+ S. Mason,  F. Matz,  S. A. Maurer,  P. F. McLaughlin,  M. F. S. J. Menger,
+ J.-M. Mewes,  S. A. Mewes,  P. Morgante,  Mohammad Mostafanejad,
+ J. W. Mullinax,  K. J. Oosterbaan,  G. Paran,  V. Parravicini,
+ Alexander C. Paul,  Suranjan K. Paul,  F. Pavosevic,  Zheng Pei,  S. Prager,
+ E. I. Proynov,  E. Ramos,  B. Rana,  A. E. Rask,  A. Rettig,  R. M. Richard,
+ F. Rob,  E. Rossomme,  T. Scheele,  M. Scheurer,  M. Schneider,
+ P. E. Schneider,  N. Sergueev,  S. M. Sharada,  Hengyuan Shen,
+ W. Skomorowski,  D. W. Small,  C. J. Stein,  Yingli Su,  Yu-Chuan Su,
+ E. J. Sundstrom,  Zhen Tao,  J. Thirman,  Hung-Yi Tsai,  T. Tsuchimochi,
+ N. M. Tubman,  C. Utku,  S. P. Veccham,  O. Vydrov,  J. Wenzel,
+ Jonathan Wong,  J. Witte,  A. Yamada,  Chou-Hsun Yang,  Kun Yao,
+ S. Yeganeh,  S. R. Yost,  A. Zech,  F. Zeller,  Igor Ying Zhang,
+ Xing Zhang,  Yu Zhang,  D. Zuev,  A. Aspuru-Guzik,  A. T. Bell,
+ N. A. Besley,  K. B. Bravaya,  B. R. Brooks,  D. Casanova,  Jeng-Da Chai,
+ Hsing-Ta Chen,  S. Coriani,  C. J. Cramer,  A. E. DePrince, III,
+ R. A. DiStasio Jr.,  A. Dreuw,  B. D. Dunietz,  T. R. Furlani,
+ W. A. Goddard III,  S. Grimme,  S. Hammes-Schiffer,  T. Head-Gordon,
+ W. J. Hehre,  Chao-Ping Hsu,  T.-C. Jagau,  Yousung Jung,  A. Klamt,
+ Jing Kong,  D. S. Lambrecht,  Xiangyuan Li,  WanZhen Liang,  N. J. Mayhall,
+ C. W. McCurdy,  J. B. Neaton,  T. Neudecker,  C. Ochsenfeld,
+ J. A. Parkhill,  R. Peverati,  V. A. Rassolov,  Haisheng Ren,  Yihan Shao,
+ L. V. Slipchenko,  R. P. Steele,  J. E. Subotnik,  A. J. W. Thom,
+ A. Tkatchenko,  D. G. Truhlar,  T. Van Voorhis,  Fan Wang,
+ T. A. Wesolowski,  K. B. Whaley,  H. L. Woodcock III,  P. M. Zimmerman,
  S. Faraji,  P. M. W. Gill,  M. Head-Gordon,  J. M. Herbert,  A. I. Krylov
 
- Contributors to earlier versions of Q-Chem not listed above: 
- R. D. Adamson,  B. Austin,  R. Baer,  J. Baker,  G. J. O. Beran,  
- K. Brandhorst,  S. T. Brown,  E. F. C. Byrd,  Arup K. Chakraborty,  
- G. K. L. Chan,  Chun-Min Chang,  Yunqing Chen,  C.-L. Cheng,  
- Siu Hung Chien,  D. M. Chipman,  D. L. Crittenden,  H. Dachsel,  
- R. J. Doerksen,  A. D. Dutoi,  R. G. Edgar,  J. Fosso-Tande,  
- L. Fusti-Molnar,  D. Ghosh,  A. Ghysels,  A. Golubeva-Zadorozhnaya,  
- J. Gonthier,  M. S. Gordon,  S. R. Gwaltney,  G. Hawkins,  J. E. Herr,  
- A. Heyden,  S. Hirata,  E. G. Hohenstein,  G. Kedziora,  F. J. Keil,  
- C. Kelley,  Jihan Kim,  R. A. King,  R. Z. Khaliullin,  P. P. Korambath,  
- W. Kurlancheek,  A. Laurent,  A. M. Lee,  M. S. Lee,  S. V. Levchenko,  
- Ching Yeh Lin,  D. Liotard,  E. Livshits,  R. C. Lochan,  I. Lotan,  
- L. A. Martinez-Martinez,  P. E. Maslen,  N. Nair,  D. P. O'Neill,  
- D. Neuhauser,  E. Neuscamman,  C. M. Oana,  R. Olivares-Amaya,  R. Olson,  
- T. M. Perrine,  B. Peters,  P. A. Pieniazek,  A. Prociuk,  Y. M. Rhee,  
- J. Ritchie,  M. A. Rohrdanz,  E. Rosta,  N. J. Russ,  H. F. Schaefer III,  
- M. W. Schmidt,  N. E. Schultz,  S. Sharma,  N. Shenvi,  C. D. Sherrill,  
- A. C. Simmonett,  A. Sodt,  T. Stein,  D. Stuck,  K. S. Thanthiriwatte,  
- V. Vanovschi,  L. Vogt,  Tao Wang,  A. Warshel,  M. A. Watson,  
+ Contributors to earlier versions of Q-Chem not listed above:
+ R. D. Adamson,  B. Austin,  R. Baer,  J. Baker,  G. J. O. Beran,
+ K. Brandhorst,  S. T. Brown,  E. F. C. Byrd,  Arup K. Chakraborty,
+ G. K. L. Chan,  Chun-Min Chang,  Yunqing Chen,  C.-L. Cheng,
+ Siu Hung Chien,  D. M. Chipman,  D. L. Crittenden,  H. Dachsel,
+ R. J. Doerksen,  A. D. Dutoi,  R. G. Edgar,  J. Fosso-Tande,
+ L. Fusti-Molnar,  D. Ghosh,  A. Ghysels,  A. Golubeva-Zadorozhnaya,
+ J. Gonthier,  M. S. Gordon,  S. R. Gwaltney,  G. Hawkins,  J. E. Herr,
+ A. Heyden,  S. Hirata,  E. G. Hohenstein,  G. Kedziora,  F. J. Keil,
+ C. Kelley,  Jihan Kim,  R. A. King,  R. Z. Khaliullin,  P. P. Korambath,
+ W. Kurlancheek,  A. Laurent,  A. M. Lee,  M. S. Lee,  S. V. Levchenko,
+ Ching Yeh Lin,  D. Liotard,  E. Livshits,  R. C. Lochan,  I. Lotan,
+ L. A. Martinez-Martinez,  P. E. Maslen,  N. Nair,  D. P. O'Neill,
+ D. Neuhauser,  E. Neuscamman,  C. M. Oana,  R. Olivares-Amaya,  R. Olson,
+ T. M. Perrine,  B. Peters,  P. A. Pieniazek,  A. Prociuk,  Y. M. Rhee,
+ J. Ritchie,  M. A. Rohrdanz,  E. Rosta,  N. J. Russ,  H. F. Schaefer III,
+ M. W. Schmidt,  N. E. Schultz,  S. Sharma,  N. Shenvi,  C. D. Sherrill,
+ A. C. Simmonett,  A. Sodt,  T. Stein,  D. Stuck,  K. S. Thanthiriwatte,
+ V. Vanovschi,  L. Vogt,  Tao Wang,  A. Warshel,  M. A. Watson,
  C. F. Williams,  Q. Wu,  X. Xu,  Jun Yang,  W. Zhang,  Yan Zhao
 
    Please cite Q-Chem as follows:
@@ -92,9 +92,9 @@ qchem mol.qin_143383.0 /tmp/scratch/ 0
  Parts of Q-Chem use Armadillo 9.900.5 (Nocturnal Misbehaviour).
  http://arma.sourceforge.net/
 
- Q-Chem begins on Fri Sep 15 08:56:51 2023  
+ Q-Chem begins on Fri Sep 15 08:56:51 2023
 
- Host: 
+ Host:
 0
 
      Scratch files written to /tmp/scratch//
@@ -218,7 +218,7 @@ $end
    H ( 14)  4.632642  4.571895  2.108949  1.098071  5.514870  3.046066
              H ( 13)
    H ( 14)  1.768032
- 
+
  A cutoff of  1.0D-16 yielded   4913 shell pairs
  There are     29823 function pairs (     34806 Cartesian)
  Smallest overlap matrix eigenvalue = 6.01E-05
@@ -239,8 +239,8 @@ $end
  Grid used for NLC:  SG-1 standard quadrature
  using 40 threads for integral computing
  -------------------------------------------------------
- OpenMP Integral computing Module                
- Release: version 1.0, May 2013, Q-Chem Inc. Pittsburgh 
+ OpenMP Integral computing Module
+ Release: version 1.0, May 2013, Q-Chem Inc. Pittsburgh
  -------------------------------------------------------
  C-PCM solvent model [f = (eps-1)/eps], solve by matrix inversion
  A unrestricted SCF calculation will be
@@ -249,25 +249,25 @@ $end
  ---------------------------------------
   Cycle       Energy         DIIS error
  ---------------------------------------
-    1    -607.4629664517      2.12e-02  
-    2    -605.3729037881      3.54e-03  
-    3    -603.5281392141      7.52e-03  
-    4    -605.5614969090      2.03e-03  
-    5    -605.6746969836      5.61e-04  
-    6    -605.6811471449      4.33e-04  
-    7    -605.6858555142      5.78e-05  
-    8    -605.6859081854      4.21e-05  
-    9    -605.6859501092      1.30e-05  
-   10    -605.6859533204      8.29e-06  
-   11    -605.6859551959      2.33e-06  
-   12    -605.6859553318      1.54e-06  
-   13    -605.6859553927      5.68e-07  
-   14    -605.6859554001      2.49e-07  
-   15    -605.6859554015      1.16e-07  
-   16    -605.6859554018      4.34e-08  
+    1    -607.4629664517      2.12e-02
+    2    -605.3729037881      3.54e-03
+    3    -603.5281392141      7.52e-03
+    4    -605.5614969090      2.03e-03
+    5    -605.6746969836      5.61e-04
+    6    -605.6811471449      4.33e-04
+    7    -605.6858555142      5.78e-05
+    8    -605.6859081854      4.21e-05
+    9    -605.6859501092      1.30e-05
+   10    -605.6859533204      8.29e-06
+   11    -605.6859551959      2.33e-06
+   12    -605.6859553318      1.54e-06
+   13    -605.6859553927      5.68e-07
+   14    -605.6859554001      2.49e-07
+   15    -605.6859554015      1.16e-07
+   16    -605.6859554018      4.34e-08
    17    -605.6859554019      9.15e-09  Convergence criterion met
  ---------------------------------------
- SCF time:   CPU 923.81s  wall 30.00s 
+ SCF time:   CPU 923.81s  wall 30.00s
 <S^2> =          0.754496005
 
 ************** Final PCM Free Energy Summary **************
@@ -279,20 +279,20 @@ $end
  Non-electrostatic Free Energy =       0.00000000 hartree =       0.00000000 kcal/mol
  Total                         =      -0.07365052 hartree =     -46.21640179 kcal/mol
  --------------------------------------------------
- SCF Energy (H0 + V/2)                       =    -605.68595540 
- Solute Internal Energy (H0)                 =    -605.61230488 
+ SCF Energy (H0 + V/2)                       =    -605.68595540
+ Solute Internal Energy (H0)                 =    -605.61230488
  Total Free Energy (H0 + V/2 + non-elec)     =    -605.68595540 hartree
                                              = -380073.67346635 kcal/mol
 ***********************************************************
 
  SCF   energy in the final basis set =     -605.6859554019
  Total energy in the final basis set =     -605.6859554019
- 
+
  --------------------------------------------------------------
- 
+
                     Orbital Energies (a.u.)
  --------------------------------------------------------------
- 
+
  Alpha MOs
  -- Occupied --
 -19.2180 -19.1937 -19.1513 -19.1221 -19.0301 -19.0262 -10.3579 -10.2435
@@ -328,7 +328,7 @@ $end
   3.1813   3.2104   3.2527   3.2938   3.3236   3.4198   3.4219   3.4467
   3.4582   3.4693   3.5966   3.7060   3.7562   3.8691   3.8823   3.9473
   4.0581   4.0818   4.1037
- 
+
  Beta MOs
  -- Occupied --
 -19.2174 -19.1916 -19.1508 -19.1222 -19.0297 -19.0262 -10.3563 -10.2436
@@ -365,7 +365,7 @@ $end
   3.4522   3.4610   3.4712   3.6021   3.7079   3.7640   3.8702   3.8936
   3.9480   4.0587   4.0874   4.1069
  --------------------------------------------------------------
- 
+
           Ground-State Mulliken Net Atomic Charges
 
      Atom                 Charge (a.u.)    Spin (a.u.)
@@ -450,14 +450,14 @@ $end
     1-130.5664611  21.7468679   0.8845843
     2  21.7468679-103.3165776  -0.2646352
     3   0.8845843  -0.2646352 -73.8641572
- 
+
  Direct stationary perturbation theory relativistic correction:
- 
+
  rels  =       0.211986108666
  relv  =      -0.985312228005
  rel2e =       0.000000000000
  E_rel =      -0.773326119339
- 
+
  Computing fast CPCM-SWIG hessian
  Gradient time:  CPU 14013.83 s  wall 395.15 s
  **********************************************************************
@@ -470,7 +470,7 @@ $end
  **                  INFRARED INTENSITIES (KM/MOL)                   **
  **                                                                  **
  **********************************************************************
- 
+
 
  Mode:                 1                      2                      3
  Frequency:      -340.20                -131.79                 -78.38
@@ -798,7 +798,7 @@ $end
 
    Total Enthalpy:               61.047 kcal/mol
    Total Entropy:                92.167  cal/mol.K
- Total job time:  426.03s(wall), 14974.09s(cpu) 
+ Total job time:  426.03s(wall), 14974.09s(cpu)
  Fri Sep 15 09:03:57 2023
 
         *************************************************************
@@ -806,5 +806,3 @@ $end
         *  Thank you very much for using Q-Chem.  Have a nice day.  *
         *                                                           *
         *************************************************************
-
-

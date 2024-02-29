@@ -9,8 +9,8 @@ from numpy.typing import NDArray
 
 from quacc.schemas._aliases.atoms import AtomsSchema
 
-results = dict[str, Any]  # from atoms.calc.results
-parameters = dict[str, Any]  # from atoms.calc.parameters
+Results = dict[str, Any]  # from atoms.calc.results
+Parameters = dict[str, Any]  # from atoms.calc.parameters
 
 
 class RunSchema(AtomsSchema):
@@ -19,8 +19,8 @@ class RunSchema(AtomsSchema):
     input_atoms: AtomsSchema | None
     nid: str
     dir_name: str
-    parameters: parameters
-    results: results
+    parameters: Parameters
+    results: Results
     quacc_version: str
 
 
@@ -32,7 +32,7 @@ class OptSchema(RunSchema):
     converged: bool
     nsteps: int
     trajectory: list[Atoms]
-    trajectory_results: list[results]
+    trajectory_results: list[Results]
 
 
 class DynSchema(RunSchema):
@@ -65,7 +65,7 @@ class VibResults(TypedDict):
 class VibSchema(AtomsSchema):
     """Schema for [quacc.schemas.ase.summarize_vib_run][]"""
 
-    parameters: parameters | None
+    parameters: Parameters | None
     parameters_vib: ParametersVib | None
     results: VibResults
 

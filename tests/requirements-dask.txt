@@ -1,2 +1,2 @@
-dask[distributed]==2024.2.0
-dask-jobqueue==0.8.2
+dask[distributed]==2024.2.1
+dask-jobqueue==0.8.5

@@ -413,6 +413,7 @@ jobs:
           pip install -r tests/requirements.txt
           pip install -r tests/requirements-mlp.txt
           pip install -r tests/requirements-newtonnet.txt
+          pip install -r tests/requirements-sella.txt
           pip install -r tests/requirements-phonopy.txt
           pip install .[dev]
 
@@ -451,14 +452,3 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           fail_ci_if_error: true
-
-  automerge:
-    needs: [codecov]
-    runs-on: ubuntu-latest
-
-    permissions:
-      pull-requests: write
-      contents: write
-
-    steps:
-      - uses: fastify/github-action-merge-dependabot@v3
