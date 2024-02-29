@@ -65,11 +65,11 @@ def _validate_mp_compatability(directory: Path | str) -> bool | None:
     is_valid = validation_doc.valid
     if not validation_doc.valid:
         logger.warning(
-            f"Calculation is not MP-compatible for the following reasons: {validation_doc.reasons}"
+            f"Calculation in {directory} is not MP-compatible for the following reasons: {validation_doc.reasons}"
         )
     if validation_doc.warnings:
         logger.warning(
-            f"Calculation has the following MP-related warnings: {validation_doc.warnings}"
+            f"Calculation in {directory} has the following MP-related warnings: {validation_doc.warnings}"
         )
     return is_valid
 
