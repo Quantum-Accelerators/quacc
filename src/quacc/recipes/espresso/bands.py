@@ -36,6 +36,8 @@ def bands_pw_job(
     atoms: Atoms,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
     make_bandpath: bool = True,
+    line_density : float = 20,
+    force_gamma: bool = True,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -54,6 +56,12 @@ def bands_pw_job(
         the high symmetry k-path using Latmer-Munro approach.
         For more information look at
         [pymatgen.symmetry.bandstructure.HighSymmKpath][]
+    line_density
+        Density of kpoints along the band path if make_bandpath is True
+        For more information [quacc.utils.kpts.convert_pmg_kpts][]
+    force_gamma
+        Forces gamma-centered k-points when using make_bandpath
+        For more information [quacc.utils.kpts.convert_pmg_kpts][]
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -80,7 +88,7 @@ def bands_pw_job(
         primitive = SpacegroupAnalyzer(structure).get_primitive_standard_structure()
         atoms = primitive.to_ase_atoms()
         calc_defaults["kpts"] = bandpath(
-            convert_pmg_kpts({"line_density": 20}, atoms)[0], cell=atoms.get_cell()
+            convert_pmg_kpts({"line_density": line_density}, atoms,force_gamma)[0], cell=atoms.get_cell()
         )
 
     return base_fn(
@@ -196,6 +204,8 @@ def bands_flow(
     run_bands_pp: bool = True,
     run_fermi_surface: bool = False,
     make_bandpath: bool = True,
+    line_density : float = 20,
+    force_gamma: bool = True,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     job_params: dict[str, Any] | None = None,
@@ -236,6 +246,12 @@ def bands_flow(
         the high symmetry k-path using Latmer-Munro approach.
         For more information look at
         [pymatgen.symmetry.bandstructure.HighSymmKpath][]
+    line_density
+        Density of kpoints along the band path if make_bandpath is True
+        For more information [quacc.utils.kpts.convert_pmg_kpts][]
+    force_gamma
+        Forces gamma-centered k-points when using make_bandpath
+        For more information [quacc.utils.kpts.convert_pmg_kpts][]
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -268,6 +284,8 @@ def bands_flow(
         atoms,
         copy_files,
         make_bandpath=make_bandpath,
+        line_density=line_density,
+        force_gamma=force_gamma,
         parallel_info=parallel_info,
         test_run=test_run,
     )
