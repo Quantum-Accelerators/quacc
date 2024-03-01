@@ -36,7 +36,7 @@ def bands_pw_job(
     atoms: Atoms,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
     make_bandpath: bool = True,
-    line_density : float = 20,
+    line_density: float = 20,
     force_gamma: bool = True,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
@@ -88,7 +88,8 @@ def bands_pw_job(
         primitive = SpacegroupAnalyzer(structure).get_primitive_standard_structure()
         atoms = primitive.to_ase_atoms()
         calc_defaults["kpts"] = bandpath(
-            convert_pmg_kpts({"line_density": line_density}, atoms,force_gamma)[0], cell=atoms.get_cell()
+            convert_pmg_kpts({"line_density": line_density}, atoms, force_gamma)[0],
+            cell=atoms.get_cell(),
         )
 
     return base_fn(
@@ -204,7 +205,7 @@ def bands_flow(
     run_bands_pp: bool = True,
     run_fermi_surface: bool = False,
     make_bandpath: bool = True,
-    line_density : float = 20,
+    line_density: float = 20,
     force_gamma: bool = True,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
