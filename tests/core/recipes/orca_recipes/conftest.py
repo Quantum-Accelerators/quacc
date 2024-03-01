@@ -6,8 +6,9 @@ FILE_DIR = Path(__file__).parent
 ORCA_DIR = Path(FILE_DIR, "orca_run")
 
 
-def mock_execute(self, *args, **kwargs):
+def mock_execute(self, directory, *args, **kwargs):
     from shutil import copy
+
     copy(ORCA_DIR / "orca.out.gz", Path(directory, "orca.out.gz"))
 
 
