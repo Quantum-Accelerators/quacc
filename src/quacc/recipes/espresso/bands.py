@@ -88,7 +88,9 @@ def bands_pw_job(
         primitive = SpacegroupAnalyzer(structure).get_primitive_standard_structure()
         atoms = primitive.to_ase_atoms()
         calc_defaults["kpts"] = bandpath(
-            convert_pmg_kpts({"line_density": line_density}, atoms, force_gamma=force_gamma)[0],
+            convert_pmg_kpts(
+                {"line_density": line_density}, atoms, force_gamma=force_gamma
+            )[0],
             cell=atoms.get_cell(),
         )
 
