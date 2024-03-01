@@ -110,7 +110,7 @@ def phonon_flow(
         forces = [output["results"]["forces"] for output in force_job_results]
         phonon.forces = forces
         phonon.produce_force_constants()
-        phonon.run_mesh()
+        phonon.run_mesh(with_eigenvectors=True)
         phonon.run_total_dos()
         phonon.run_thermal_properties(t_step=t_step, t_max=t_max, t_min=t_min)
         phonon.auto_band_structure(
