@@ -1,3 +1,4 @@
+import warnings
 from pathlib import Path
 
 import pytest
@@ -6,7 +7,9 @@ from emmet.core.tasks import TaskDoc
 FILE_DIR = Path(__file__).parent
 PSEUDO_DIR = FILE_DIR / "fake_pseudos"
 
-MOCK_TASKDOC = TaskDoc.from_directory(FILE_DIR / "mocked_vasp_run")
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    MOCK_TASKDOC = TaskDoc.from_directory(FILE_DIR / "mocked_vasp_run")
 
 
 def mock_run(self, *args, **kwargs):
