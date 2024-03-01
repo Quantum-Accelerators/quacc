@@ -92,7 +92,7 @@ def mock_execute3(_self, **kwargs):
 
 
 def mock_execute4(self, **kwargs):
-    qcin = QCInput.from_file("mol.qin")
+    qcin = QCInput.from_file(str(self.directory / "mol.qin"))
     mol = qcin.molecule
     atoms = mol.to_ase_atoms()
     atoms.calc = LennardJones()
