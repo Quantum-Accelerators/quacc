@@ -128,7 +128,7 @@ def test_static_job_v1(monkeypatch, tmp_path, test_atoms):
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826330655069403)
     assert output["results"]["custodian"][0]["job"]["max_cores"] == 40
 
-    qcin = QCInput.from_file(output["dir_name"] / "mol.qin.gz")
+    qcin = QCInput.from_file(str(output["dir_name"] / "mol.qin.gz"))
     ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.basic"))
     qcinput_nearly_equal(qcin, ref_qcin)
     qcinput_nearly_equal(ref_qcin, QCInput.from_dict(output["results"]["qc_input"]))
