@@ -126,7 +126,6 @@ def bands_pp_job(
     test_run
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
-
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -174,7 +173,6 @@ def fermi_surface_job(
     test_run
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
-
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
