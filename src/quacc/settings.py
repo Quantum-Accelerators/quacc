@@ -190,6 +190,7 @@ class QuaccSettings(BaseSettings):
             "projwfc": "projwfc.x",
             "pp": "pp.x",
             "wannier90": "wannier90.x",
+            "fs": "fs.x"
         },
         description="Name for each espresso binary.",
     )

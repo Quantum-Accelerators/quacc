@@ -88,8 +88,8 @@ def phonon_job(
 def grid_phonon_flow(
     atoms: Atoms,
     nblocks: int = 1,
-    job_decorators: dict[str, Callable | None] | None = None,
     job_params: dict[str, Any] | None = None,
+    job_decorators: dict[str, Callable | None] | None = None,
 ) -> RunSchema:
     """
     This function performs grid parallelization of a ph.x calculation. Each
