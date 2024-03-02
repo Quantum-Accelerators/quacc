@@ -92,10 +92,7 @@ def phonon_job(
 
 @job
 def q2r_job(
-    prev_dir: SourceDirectory,
-    fildyn: str = "matdyn",
-    parallel_info: dict[str] | None = None,
-    **calc_kwargs,
+    prev_dir: SourceDirectory, parallel_info: dict[str] | None = None, **calc_kwargs
 ) -> RunSchema:
     """
     Function to carry out a basic q2r.x calculation. It should allow you to
@@ -109,9 +106,6 @@ def q2r_job(
     prev_dir
         Outdir of the previously ran ph.x calculation. This is used to copy
         the the dynamical matrix files.
-    fildyn
-        The name of the file containing the dynamical matrix. Defaults to "matdyn".
-        If you changed it in the ph.x calculation, you should change it here too.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -127,7 +121,12 @@ def q2r_job(
         See the type-hint for the data structure.
     """
 
-    calc_defaults = {"input_data": {"input": {"fildyn": fildyn, "flfrc": "q2r.fc"}}}
+    input_data = Namelist(calc_kwargs.get("input_data"))
+    input_data.to_nested(binary="q2r")
+
+    fildyn = input_data["input"].get("fildyn", "matdyn")
+
+    calc_defaults = {"input_data": {"input": {"flfrc": "q2r.fc"}}}
 
     copy_files = {prev_dir: [f"{fildyn}*"]}
 
@@ -143,10 +142,7 @@ def q2r_job(
 
 @job
 def matdyn_job(
-    prev_dir: SourceDirectory,
-    flfrc: str = "q2r.fc",
-    parallel_info: dict[str] | None = None,
-    **calc_kwargs,
+    prev_dir: SourceDirectory, parallel_info: dict[str] | None = None, **calc_kwargs
 ) -> RunSchema:
     """
     Function to carry out a basic matdyn.x calculation. It should allow you to use
@@ -160,10 +156,6 @@ def matdyn_job(
     prev_dir
         Outdir of the previously ran q2r.x calculation. This is used to copy
         the the force constant file.
-    flfrc
-        The name of the file containing the force constants produced by q2r.x.
-        Defaults to "q2r.fc". If you changed it in the q2r.x calculation, you should
-        change it here too.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -178,6 +170,11 @@ def matdyn_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
+
+    input_data = Namelist(calc_kwargs.get("input_data"))
+    input_data.to_nested(binary="matdyn")
+
+    flfrc = input_data["input"].get("flfrc", "q2r.fc")
 
     calc_defaults = {"input_data": {"input": {"flfrc": flfrc}}}
 
@@ -250,7 +247,7 @@ def phonon_dos_flow(
                 "nq1": 4,
                 "nq2": 4,
                 "nq3": 4,
-            }  # It would be nice to introduce a qspacing parameter. This would require modification in ASE though.
+            }
         }
     }
     matdyn_job_defaults = {
