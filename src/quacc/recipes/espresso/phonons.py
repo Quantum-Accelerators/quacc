@@ -126,7 +126,7 @@ def q2r_job(
 
     fildyn = input_data["input"].get("fildyn", "matdyn")
 
-    calc_defaults = {"input_data": {"input": {"flfrc": "q2r.fc"}}}
+    calc_defaults = {"input_data": {"input": {"flfrc": "q2r.fc", "fildyn": fildyn}}}
 
     copy_files = {prev_dir: [f"{fildyn}*"]}
 
