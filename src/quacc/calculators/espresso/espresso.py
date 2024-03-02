@@ -63,6 +63,7 @@ class EspressoTemplate(EspressoTemplate_):
 
         self.inputname = f"{binary}.in"
         self.outputname = f"{binary}.out"
+        self.errorname = f"{binary}.err"
 
         self.binary = binary
 
@@ -71,7 +72,15 @@ class EspressoTemplate(EspressoTemplate_):
             "wfcdir": os.environ.get("ESPRESSO_TMPDIR", "."),
         }
 
-        self.outfiles = {"fildos": "pwscf.dos", "filpdos": "pwscf.pdos_tot"}
+        self.outfiles = {
+            "fildos": "pwscf.dos",
+            "filpdos": "pwscf.pdos_tot",
+            "flfrc": "q2r.fc",
+            "fldos": "matdyn.dos",
+            "flfrq": "matdyn.freq",
+            "flvec": "matdyn.modes",
+            "fleig": "matdyn.eig",
+        }
 
         self.test_run = test_run
 
@@ -203,6 +212,7 @@ class EspressoTemplate(EspressoTemplate_):
             The results dictionnary
         """
 
+        results = {}
         if self.binary == "pw":
             atoms = read(directory / self.outputname, format="espresso-out")
             results = dict(atoms.calc.properties())
@@ -211,14 +221,14 @@ class EspressoTemplate(EspressoTemplate_):
                 results = read_espresso_ph(fd)
         elif self.binary == "dos":
             fildos = self.outfiles["fildos"]
-            with Path(fildos).open("r") as fd:
+            with fildos.open("r") as fd:
                 lines = fd.readlines()
                 fermi = float(re.search(r"-?\d+\.?\d*", lines[0]).group(0))
                 dos = np.loadtxt(lines[1:])
             results = {fildos.name.replace(".", "_"): {"dos": dos, "fermi": fermi}}
         elif self.binary == "projwfc":
             filpdos = self.outfiles["filpdos"]
-            with Path(filpdos).open("r") as fd:
+            with filpdos.open("r") as fd:
                 lines = np.loadtxt(fd.readlines())
                 energy = lines[1:, 0]
                 dos = lines[1:, 1]
@@ -230,8 +240,11 @@ class EspressoTemplate(EspressoTemplate_):
                     "pdos": pdos,
                 }
             }
-        else:
-            results = {}
+        elif self.binary == "matdyn":
+            fldos = self.outfiles["fldos"]
+            if fldos.exists():
+                phonon_dos = np.loadtxt(fldos)
+                results = {fldos.name.replace(".", "_"): {"phonon_dos": phonon_dos}}
 
         if "energy" not in results:
             results["energy"] = None
