@@ -212,6 +212,7 @@ class EspressoTemplate(EspressoTemplate_):
             The results dictionnary
         """
 
+        results = {}
         if self.binary == "pw":
             atoms = read(directory / self.outputname, format="espresso-out")
             results = dict(atoms.calc.properties())
@@ -244,10 +245,6 @@ class EspressoTemplate(EspressoTemplate_):
             if fldos.exists():
                 phonon_dos = np.loadtxt(fldos)
                 results = {fldos.name.replace(".", "_"): {"phonon_dos": phonon_dos}}
-            else:
-                results = {}
-        else:
-            results = {}
 
         if "energy" not in results:
             results["energy"] = None
