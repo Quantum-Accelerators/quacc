@@ -23,11 +23,17 @@ from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs, strip_decorator
 
 if TYPE_CHECKING:
-    from typing import Any, Callable
+    from typing import Any, Callable, TypedDict
 
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
+
+    class PhononDosSchema(TypedDict):
+        relax_job: RunSchema
+        phonon_job: RunSchema
+        q2r_job: RunSchema
+        matdyn_job: RunSchema
 
 
 @job
@@ -200,7 +206,7 @@ def phonon_dos_flow(
     atoms: Atoms,
     job_decorators: dict[str, Callable | None] | None = None,
     job_params: dict[str, Any] | None = None,
-) -> RunSchema:
+) -> PhononDosSchema:
     """
     Function to carry out a phonon DOS calculation. The phonon calculation is carried out on a coarse q-grid, the force constants are calculated
     and extrapolated to a finer q-grid, and the phonon DOS is calculated.
@@ -211,7 +217,7 @@ def phonon_dos_flow(
         - name: "relax_job"
         - job: [quacc.recipes.espresso.core.relax_job][]
     2. ph.x calculation
-        - name: "ph_job"
+        - name: "phonon_job"
         - job: [quacc.recipes.espresso.phonons.phonon_job][]
     3. q2r.x calculation
         - name: "q2r_job"
@@ -268,7 +274,7 @@ def phonon_dos_flow(
     job_params = recursive_dict_merge(calc_defaults, job_params)
 
     pw_job, ph_job, fc_job, dos_job = customize_funcs(
-        ["relax_job", "ph_job", "q2r_job", "matdyn_job"],
+        ["relax_job", "phonon_job", "q2r_job", "matdyn_job"],
         [relax_job, phonon_job, q2r_job, matdyn_job],
         parameters=job_params,
         decorators=job_decorators,
@@ -277,8 +283,14 @@ def phonon_dos_flow(
     pw_job_results = pw_job(atoms)
     ph_job_results = ph_job(pw_job_results["dir_name"])
     fc_job_results = fc_job(ph_job_results["dir_name"])
+    dos_job_results = dos_job(fc_job_results["dir_name"])
 
-    return dos_job(fc_job_results["dir_name"])
+    return {
+        "relax_job": pw_job_results,
+        "phonon_job": ph_job_results,
+        "q2r_job": fc_job_results,
+        "matdyn_job": dos_job_results,
+    }
 
 
 @flow

@@ -18,7 +18,12 @@ from monty.shutil import decompress_file
 from numpy.testing import assert_allclose, assert_array_equal
 
 from quacc.recipes.espresso.core import static_job
-from quacc.recipes.espresso.phonons import matdyn_job, phonon_job, q2r_job
+from quacc.recipes.espresso.phonons import (
+    matdyn_job,
+    phonon_dos_flow,
+    phonon_job,
+    q2r_job,
+)
 from quacc.utils.files import copy_decompress_files
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
@@ -188,3 +193,27 @@ def test_matdyn_job(tmp_path, monkeypatch):
     assert Path(recycled_input[0]["input"].pop("flfrc")).is_absolute()
 
     assert recycled_input[0]["input"] == input_data["input"]
+
+
+def test_phonon_dos_flow(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    atoms = bulk("Li")
+
+    copy_decompress_files([DATA_DIR / "Li.upf.gz"], tmp_path)
+
+    SETTINGS.ESPRESSO_PSEUDO = tmp_path
+
+    input_data = {
+        "control": {"calculation": "scf"},
+        "system": {"occupations": "smearing", "smearing": "cold", "degauss": 0.02},
+        "electrons": {"mixing_mode": "TF", "mixing_beta": 0.7, "conv_thr": 1.0e-6},
+    }
+
+    pseudopotentials = {"Li": "Li.upf"}
+
+    job_params = {
+        "relax_job": {"pseudopotentials": pseudopotentials, "input_data": input_data}
+    }
+
+    phonon_dos_results = phonon_dos_flow(atoms, job_params=job_params)
