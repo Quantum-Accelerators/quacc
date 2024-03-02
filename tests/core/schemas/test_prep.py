@@ -9,7 +9,7 @@ from ase.calculators.emt import EMT
 from ase.io import read
 
 from quacc.atoms.core import get_atoms_id
-from quacc.schemas.prep import prep_magmoms, prep_next_run
+from quacc.schemas.prep import prep_next_run
 
 
 @pytest.fixture()
@@ -55,11 +55,11 @@ def test_prep_next_run():
     atoms = bulk("Cu")
     atoms.calc = EMT()
     md5hash = "d4859270a1a67083343bec0ab783f774"
-    atoms = prep_next_run(atoms)
+    atoms = prep_next_run(atoms, move_magmoms=False)
     assert atoms.info.get("_id", None) == md5hash
     assert atoms.info.get("_old_ids", None) is None
     assert atoms.calc is None
-    atoms = prep_next_run(atoms)
+    atoms = prep_next_run(atoms, move_magmoms=False)
     assert atoms.info.get("_id", None) == md5hash
     assert atoms.info.get("_old_ids", None) == [md5hash]
     atoms[0].symbol = "Pt"
@@ -72,16 +72,21 @@ def test_prep_next_run():
 def test_prep_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
     atoms = deepcopy(atoms_mag)
     mags = atoms.get_magnetic_moments()
-    atoms = prep_magmoms(atoms)
+    atoms = prep_next_run(atoms)
     assert atoms.has("initial_magmoms") is True
     assert atoms.get_initial_magnetic_moments().tolist() == mags.tolist()
 
     atoms = deepcopy(atoms_nomag)
-    atoms = prep_next_run(prep_magmoms(atoms))
+    atoms = prep_next_run(atoms)
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = deepcopy(atoms_nospin)
-    atoms = prep_next_run(prep_magmoms(atoms))
+    atoms = prep_next_run(atoms)
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
+
+    atoms = deepcopy(atoms_mag)
+    mags = atoms.get_magnetic_moments()
+    atoms = prep_next_run(atoms, move_magmoms=False)
+    assert atoms.has("initial_magmoms") is False

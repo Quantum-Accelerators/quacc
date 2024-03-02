@@ -12,7 +12,7 @@ from ase.vibrations.data import VibrationsData
 from quacc import SETTINGS, __version__
 from quacc.atoms.core import get_final_atoms_from_dyn
 from quacc.schemas.atoms import atoms_to_metadata
-from quacc.schemas.prep import prep_magmoms, prep_next_run
+from quacc.schemas.prep import prep_next_run
 from quacc.utils.dicts import clean_task_doc, recursive_dict_merge
 from quacc.utils.files import get_uri
 from quacc.wflow_tools.db import results_to_db
@@ -103,9 +103,7 @@ def summarize_run(
 
     results = {"results": final_atoms.calc.results}
 
-    if move_magmoms:
-        final_atoms = prep_magmoms(final_atoms)
-    atoms_to_store = prep_next_run(final_atoms)
+    atoms_to_store = prep_next_run(final_atoms, move_magmoms=move_magmoms)
 
     if final_atoms:
         final_atoms_metadata = atoms_to_metadata(
