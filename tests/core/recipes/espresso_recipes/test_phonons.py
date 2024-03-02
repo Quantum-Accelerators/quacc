@@ -29,8 +29,6 @@ from quacc.utils.files import copy_decompress_files
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 DATA_DIR = Path(__file__).parent / "data"
 
-DEFAULT_PARALLEL_INFO = {"binary": "mpirun", "-np": 2}
-
 
 def test_phonon_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
