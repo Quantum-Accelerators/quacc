@@ -162,7 +162,7 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO
 
 
-def test_q2r_job(tmp_path, monkeypatch):
+def test_q2r_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -171,7 +171,7 @@ def test_q2r_job(tmp_path, monkeypatch):
     additional_cards = ["1 1 1", "1", "matdyn"]
 
     q2r_results = q2r_job(
-        tmp_path, additional_cards=additional_cards, parallel_info=DEFAULT_PARALLEL_INFO
+        tmp_path, additional_cards=additional_cards, parallel_info=ESPRESSO_PARALLEL_INFO
     )
 
     assert Path(q2r_results["dir_name"], "q2r.fc.gz").exists()
@@ -187,7 +187,7 @@ def test_q2r_job(tmp_path, monkeypatch):
     assert recycled_input[1] == additional_cards + ["EOF"]
 
 
-def test_matdyn_job(tmp_path, monkeypatch):
+def test_matdyn_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -195,7 +195,7 @@ def test_matdyn_job(tmp_path, monkeypatch):
 
     input_data = {"input": {"dos": True, "nk1": 4, "nk2": 4, "nk3": 4}}
     matdyn_results = matdyn_job(
-        tmp_path, input_data=input_data, parallel_info=DEFAULT_PARALLEL_INFO
+        tmp_path, input_data=input_data, parallel_info=ESPRESSO_PARALLEL_INFO
     )
 
     assert Path(matdyn_results["dir_name"], "q2r.fc.gz").exists()
@@ -214,7 +214,7 @@ def test_matdyn_job(tmp_path, monkeypatch):
     assert recycled_input[0]["input"] == input_data["input"]
 
 
-def test_phonon_dos_flow(tmp_path, monkeypatch):
+def test_phonon_dos_flow(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -237,11 +237,11 @@ def test_phonon_dos_flow(tmp_path, monkeypatch):
             "pseudopotentials": pseudopotentials,
             "input_data": input_data,
             "kspacing": 1.0,
-            "parallel_info": DEFAULT_PARALLEL_INFO,
+            "parallel_info": ESPRESSO_PARALLEL_INFO,
         },
-        "phonon_job": {"parallel_info": DEFAULT_PARALLEL_INFO},
-        "q2r_job": {"parallel_info": DEFAULT_PARALLEL_INFO},
-        "matdyn_job": {"parallel_info": DEFAULT_PARALLEL_INFO},
+        "phonon_job": {"parallel_info": ESPRESSO_PARALLEL_INFO},
+        "q2r_job": {"parallel_info": ESPRESSO_PARALLEL_INFO},
+        "matdyn_job": {"parallel_info": ESPRESSO_PARALLEL_INFO},
     }
 
     phonon_dos_results = phonon_dos_flow(atoms, job_params=job_params)
