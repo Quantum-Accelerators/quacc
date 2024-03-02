@@ -35,7 +35,7 @@ def test_phonon_job(tmp_path, monkeypatch):
 
     atoms = bulk("Li")
 
-    copy_decompress_files([DATA_DIR / "Li.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Li.upf.gz"], tmp_path)
 
     SETTINGS.ESPRESSO_PSEUDO = tmp_path
 
@@ -90,7 +90,7 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
 
     atoms = bulk("Li")
 
-    copy_decompress_files([DATA_DIR / "Li.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Li.upf.gz"], tmp_path)
 
     SETTINGS.ESPRESSO_PSEUDO = tmp_path
 
@@ -152,7 +152,7 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
 def test_q2r_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    copy_decompress_files([f"{DATA_DIR}/q2r_test/matdyn"], tmp_path)
+    copy_decompress_files(DATA_DIR / "q2r_test", "matdyn", tmp_path)
 
     additional_cards = ["1 1 1", "1", "matdyn"]
 
@@ -174,7 +174,7 @@ def test_q2r_job(tmp_path, monkeypatch):
 def test_matdyn_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    copy_decompress_files([f"{DATA_DIR}/matdyn_test/q2r.fc"], tmp_path)
+    copy_decompress_files(DATA_DIR / "matdyn_test", "q2r.fc", tmp_path)
 
     input_data = {"input": {"dos": True, "nk1": 4, "nk2": 4, "nk3": 4}}
     matdyn_results = matdyn_job(tmp_path, input_data=input_data)

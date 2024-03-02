@@ -93,3 +93,18 @@ def test_freq_job(tmp_path, monkeypatch):
     assert len(output["results"]["vib_freqs"]) == 3 * len(atoms) - 6
     assert len(output["parameters_thermo"]["vib_freqs"]) == 3 * len(atoms) - 6
     assert output["parameters_thermo"]["n_imag"] == 0
+
+
+def test_freq_job_threads(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    SETTINGS.CHDIR = False
+
+    atoms = molecule("H2O")
+
+    output = freq_job(relax_job(atoms)["atoms"])
+    assert output["natoms"] == len(atoms)
+    assert len(output["results"]["vib_freqs_raw"]) == 3 * len(atoms)
+    assert output["parameters_thermo"]["n_imag"] == 0
+
+    SETTINGS.CHDIR = DEFAULT_SETTINGS.CHDIR = True

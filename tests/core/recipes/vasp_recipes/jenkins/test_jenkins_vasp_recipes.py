@@ -14,8 +14,6 @@ from numpy.testing import assert_equal
 
 from quacc.recipes.vasp.core import static_job
 
-DEFAULT_SETTINGS = SETTINGS.model_copy()
-
 
 def test_static_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)

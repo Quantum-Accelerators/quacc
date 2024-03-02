@@ -45,7 +45,7 @@ def main(
         help="Show the application's version and exit.",
         callback=callback,
         is_eager=True,
-    )
+    ),
 ) -> None:
     """
     The main CLI interface, with an option to return the version.

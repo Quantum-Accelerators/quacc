@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from ase import Atoms
 from pymatgen.analysis.adsorption import AdsorbateSiteFinder
+from pymatgen.core.structure import Structure
 from pymatgen.core.surface import Slab, center_slab, generate_all_slabs
 from pymatgen.io.ase import AseAtomsAdaptor
 
@@ -18,7 +19,6 @@ if TYPE_CHECKING:
     from typing import Literal, TypedDict
 
     from numpy.typing import ArrayLike
-    from pymatgen.core.structure import Structure
 
     class AdsSiteFinderKwargs(TypedDict, total=False):
         """
@@ -67,10 +67,9 @@ def flip_atoms(
         Inverted slab
     """
 
-    if isinstance(atoms, Atoms):
-        new_atoms = copy_atoms(atoms)
-    else:
-        new_atoms = AseAtomsAdaptor.get_atoms(atoms)
+    new_atoms = (
+        atoms.to_ase_atoms() if isinstance(atoms, Structure) else copy_atoms(atoms)
+    )
 
     new_atoms.rotate(180, "x")
     new_atoms.wrap()
@@ -211,7 +210,7 @@ def make_slabs_from_bulk(
 
     # Make atoms objects and store slab stats
     for slab_with_props in slabs_with_props:
-        final_slab = AseAtomsAdaptor.get_atoms(slab_with_props)
+        final_slab = slab_with_props.to_ase_atoms()
         slab_stats = {
             "bulk": atoms,
             "miller_index": slab_with_props.miller_index,
@@ -322,7 +321,7 @@ def make_adsorbate_structures(
             struct_with_adsorbate = ads_finder.add_adsorbate(mol, ads_coord)
 
             # Convert back to Atoms object
-            atoms_with_adsorbate = AseAtomsAdaptor.get_atoms(struct_with_adsorbate)
+            atoms_with_adsorbate = struct_with_adsorbate.to_ase_atoms()
 
             # Get distance matrix between adsorbate binding atom and surface
             d = atoms_with_adsorbate.get_all_distances(mic=True)[

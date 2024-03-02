@@ -10,12 +10,3 @@ name = "python"
 
   [analyzers.meta]
   runtime_version = "3.x.x"
-
-[[transformers]]
-name = "prettier"
-
-[[transformers]]
-name = "isort"
-
-[[transformers]]
-name = "black"
