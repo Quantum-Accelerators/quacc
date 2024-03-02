@@ -7,7 +7,7 @@ def DEFAULT_PARALLEL_INFO():
 
     import psutil
 
-    if which("mpirun") and psutil.cpu_count(logical=False) > 2:
+    if which("mpirun") and psutil.cpu_count(logical=False) >= 2:
         return {"binary": "mpirun", "-np": 2}
     else:
         return {}
