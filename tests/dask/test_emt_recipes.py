@@ -25,7 +25,7 @@ def test_functools(tmp_path, monkeypatch):
     assert result[-1]["fmax"] == 0.1
 
 
-def test_copy_files(tmp_path, monkeypatch, caplog):
+def test_copy_files(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
 
