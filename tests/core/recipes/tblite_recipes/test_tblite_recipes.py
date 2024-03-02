@@ -22,6 +22,7 @@ def test_static_job_v1(tmp_path, monkeypatch):
     assert output["results"]["energy"] == pytest.approx(-137.96777594361672)
     assert np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
     assert_array_equal(output["atoms"].get_initial_magnetic_moments(), [0.0, 0.0, 0.0])
+    assert output["spin_multiplicity"] == 1
 
 
 def test_static_job_v2(tmp_path, monkeypatch):
@@ -32,6 +33,20 @@ def test_static_job_v2(tmp_path, monkeypatch):
     assert output["parameters"]["method"] == "GFN1-xTB"
     assert output["results"]["energy"] == pytest.approx(-156.96750578831137)
     assert np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
+    assert output["spin_multiplicity"] == 1
+
+
+def test_static_job_v3(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    atoms = molecule("H")
+    atoms.set_initial_magnetic_moments([1.0])
+    output = static_job(atoms, method="GFN1-xTB")
+    assert output["parameters"]["method"] == "GFN1-xTB"
+    assert output["results"]["energy"] == pytest.approx(-10.92345239113973)
+    assert np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
+    assert output["spin_multiplicity"] == 2
+    assert_array_equal(output["atoms"].get_initial_magnetic_moments(), [1.0])
 
 
 def test_relax_job(tmp_path, monkeypatch):

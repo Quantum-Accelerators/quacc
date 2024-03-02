@@ -64,7 +64,7 @@ def test_prep_next_run():
     assert atoms.info.get("_old_ids", None) == [md5hash]
     atoms[0].symbol = "Pt"
     new_md5hash = "52087d50a909572d58e01cfb49d4911b"
-    atoms = prep_next_run(atoms)
+    atoms = prep_next_run(atoms, move_magmoms=True)
     assert atoms.info.get("_old_ids", None) == [md5hash, md5hash]
     assert atoms.info.get("_id", None) == new_md5hash
 
@@ -72,17 +72,17 @@ def test_prep_next_run():
 def test_prep_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
     atoms = deepcopy(atoms_mag)
     mags = atoms.get_magnetic_moments()
-    atoms = prep_next_run(atoms)
+    atoms = prep_next_run(atoms, move_magmoms=True)
     assert atoms.has("initial_magmoms") is True
     assert atoms.get_initial_magnetic_moments().tolist() == mags.tolist()
 
     atoms = deepcopy(atoms_nomag)
-    atoms = prep_next_run(atoms)
+    atoms = prep_next_run(atoms, move_magmoms=True)
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = deepcopy(atoms_nospin)
-    atoms = prep_next_run(atoms)
+    atoms = prep_next_run(atoms, move_magmoms=True)
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 

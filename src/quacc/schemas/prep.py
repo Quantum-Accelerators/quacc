@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-def prep_next_run(atoms: Atoms, move_magmoms: bool = True) -> Atoms:
+def prep_next_run(atoms: Atoms, move_magmoms: bool = False) -> Atoms:
     """
     Prepares the Atoms object for a new run by stripping off the calculator and
     assigning a unique ID.

@@ -40,7 +40,7 @@ def summarize_run(
     final_atoms: Atoms,
     input_atoms: Atoms,
     charge_and_multiplicity: tuple[int, int] | None = None,
-    move_magmoms: bool = True,
+    move_magmoms: bool = False,
     additional_fields: dict[str, Any] | None = None,
     store: Store | bool | None = None,
 ) -> RunSchema:
@@ -128,7 +128,7 @@ def summarize_opt_run(
     trajectory: Trajectory | list[Atoms] = None,
     check_convergence: bool | None = None,
     charge_and_multiplicity: tuple[int, int] | None = None,
-    move_magmoms: bool = True,
+    move_magmoms: bool = False,
     additional_fields: dict[str, Any] | None = None,
     store: Store | bool | None = None,
 ) -> OptSchema:
