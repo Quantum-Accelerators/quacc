@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from quacc import job
+from quacc import flow, job
 from quacc.recipes.vasp._base import base_fn
 
 if TYPE_CHECKING:
@@ -119,7 +119,7 @@ def relax_job(
     )
 
 
-@job
+@flow
 def double_relax_flow(
     atoms: Atoms,
     preset: str | None = "BulkSet",

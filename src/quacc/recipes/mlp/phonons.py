@@ -2,13 +2,18 @@
 
 from __future__ import annotations
 
+from importlib.util import find_spec
 from typing import TYPE_CHECKING
+
+from monty.dev import requires
 
 from quacc import flow
 from quacc.recipes.common.phonons import phonon_flow as common_phonon_flow
 from quacc.recipes.mlp.core import relax_job, static_job
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs
+
+has_deps = find_spec("phonopy") is not None and find_spec("seekpath") is not None
 
 if TYPE_CHECKING:
     from typing import Any, Callable, Literal
@@ -19,6 +24,10 @@ if TYPE_CHECKING:
 
 
 @flow
+@requires(
+    has_deps,
+    message="Phonopy and seekpath must be installed. Run `pip install quacc[phonons]`",
+)
 def phonon_flow(
     atoms: Atoms,
     method: Literal["mace", "m3gnet", "chgnet"],

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import os
 import re
 from pathlib import Path
@@ -19,6 +20,7 @@ from ase.io.espresso import (
     write_espresso_ph,
     write_fortran_namelist,
 )
+from ase.io.espresso_namelist.keys import ALL_KEYS
 
 from quacc import SETTINGS
 from quacc.calculators.espresso.utils import get_pseudopotential_info, sanity_checks
@@ -27,6 +29,8 @@ from quacc.utils.files import load_yaml_calc
 
 if TYPE_CHECKING:
     from typing import Any
+
+LOGGER = logging.getLogger(__name__)
 
 
 class EspressoTemplate(EspressoTemplate_):
@@ -365,7 +369,19 @@ class Espresso(Espresso_):
         )
         self._bin_path = str(full_path)
         self._binary = template.binary
-        self._cleanup_params()
+
+        if self._binary in ALL_KEYS:
+            self._cleanup_params()
+        else:
+            LOGGER.warning(
+                f"the binary you requested, `{self._binary}`, is not supported by ASE. This means that presets and usual checks will not be carried out, your `input_data` must be provided in nested format."
+            )
+
+            template.binary = None
+
+            self.kwargs["input_data"] = Namelist(self.kwargs.get("input_data"))
+            self._user_calc_params = self.kwargs
+
         self._pseudo_path = (
             self._user_calc_params.get("input_data", {})
             .get("control", {})

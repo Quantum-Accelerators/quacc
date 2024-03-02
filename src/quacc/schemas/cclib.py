@@ -130,7 +130,6 @@ def cclib_summarize_run(
         final_atoms,
         input_atoms,
         charge_and_multiplicity=(attributes["charge"], attributes["mult"]),
-        move_magmoms=False,
         store=False,
     )
 
