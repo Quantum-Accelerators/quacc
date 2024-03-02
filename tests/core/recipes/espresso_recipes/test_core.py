@@ -31,7 +31,7 @@ from quacc.utils.files import copy_decompress_files
 DATA_DIR = Path(__file__).parent / "data"
 
 
-def test_static_job(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
+def test_static_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -47,7 +47,7 @@ def test_static_job(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
         input_data=input_data,
         pseudopotentials=pseudopotentials,
         kpts=None,
-        parallel_info=DEFAULT_PARALLEL_INFO,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
     )
 
     assert_allclose(
@@ -66,7 +66,7 @@ def test_static_job(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
     assert results["parameters"].get("kpts") is None
 
 
-def test_static_job_v2(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
+def test_static_job_v2(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -87,7 +87,7 @@ def test_static_job_v2(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
         input_data=input_data,
         pseudopotentials=pseudopotentials,
         kspacing=0.5,
-        parallel_info=DEFAULT_PARALLEL_INFO,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
     )
 
     assert_allclose(
@@ -111,7 +111,7 @@ def test_static_job_v2(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
     assert Path(pp_results["dir_name"], "pseudo_charge_density.cube.gz").is_file()
 
 
-def test_static_job_outdir(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
+def test_static_job_outdir(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -132,7 +132,7 @@ def test_static_job_outdir(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
         input_data=input_data,
         pseudopotentials=pseudopotentials,
         kpts=None,
-        parallel_info=DEFAULT_PARALLEL_INFO,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
     )
 
     assert_allclose(
@@ -150,7 +150,7 @@ def test_static_job_outdir(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
     assert new_input_data["control"]["calculation"] == "scf"
 
 
-def test_static_job_outdir_abs(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
+def test_static_job_outdir_abs(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -174,7 +174,7 @@ def test_static_job_outdir_abs(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
             input_data=input_data,
             pseudopotentials=pseudopotentials,
             kpts=None,
-            parallel_info=DEFAULT_PARALLEL_INFO,
+            parallel_info=ESPRESSO_PARALLEL_INFO,
         )
 
 
@@ -211,7 +211,7 @@ def test_static_job_test_run(tmp_path, monkeypatch):
         )
 
 
-def test_relax_job(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
+def test_relax_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -228,7 +228,7 @@ def test_relax_job(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
         input_data=input_data,
         pseudopotentials=pseudopotentials,
         kpts=None,
-        parallel_info=DEFAULT_PARALLEL_INFO,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
     )
 
     with pytest.raises(AssertionError):
@@ -241,7 +241,7 @@ def test_relax_job(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
     assert new_input_data["control"]["calculation"] == "relax"
 
 
-def test_ase_relax_job(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
+def test_ase_relax_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -259,7 +259,7 @@ def test_ase_relax_job(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
         pseudopotentials=pseudopotentials,
         kpts=None,
         opt_params={"max_steps": 10, "fmax": 1.0e-1, "optimizer": BFGS},
-        parallel_info=DEFAULT_PARALLEL_INFO,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
     )
 
     with pytest.raises(AssertionError):
@@ -276,7 +276,7 @@ def test_ase_relax_job(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
     assert new_input_data["control"]["calculation"] == "scf"
 
 
-def test_ase_relax_cell_job(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
+def test_ase_relax_cell_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -301,11 +301,11 @@ def test_ase_relax_cell_job(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
             pseudopotentials=pseudopotentials,
             kpts=None,
             opt_params={"max_steps": 2, "fmax": 1.0e-1, "optimizer": BFGS},
-            parallel_info=DEFAULT_PARALLEL_INFO,
+            parallel_info=ESPRESSO_PARALLEL_INFO,
         )
 
 
-def test_relax_job_cell(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
+def test_relax_job_cell(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -326,7 +326,7 @@ def test_relax_job_cell(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
         input_data=input_data,
         pseudopotentials=pseudopotentials,
         kpts=None,
-        parallel_info=DEFAULT_PARALLEL_INFO,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
     )
 
     with pytest.raises(AssertionError):
@@ -340,7 +340,7 @@ def test_relax_job_cell(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
     assert new_input_data["control"]["calculation"] == "vc-relax"
 
 
-def test_non_scf_job(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
+def test_non_scf_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -355,7 +355,7 @@ def test_non_scf_job(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
         input_data=input_data,
         pseudopotentials=pseudopotentials,
         kpts=None,
-        parallel_info=DEFAULT_PARALLEL_INFO,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
     )
     files_to_copy = pw_copy_files(
         input_data, static_result["dir_name"], include_wfc=False
@@ -365,7 +365,7 @@ def test_non_scf_job(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
         files_to_copy,
         input_data=input_data,
         pseudopotentials=pseudopotentials,
-        parallel_info=DEFAULT_PARALLEL_INFO,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
     )
 
     assert_allclose(
@@ -386,7 +386,7 @@ def test_non_scf_job(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
     assert results["parameters"].get("kpts") is None
 
 
-def test_pw_copy(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
+def test_pw_copy(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -402,7 +402,7 @@ def test_pw_copy(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
         input_data=input_data,
         pseudopotentials=pseudopotentials,
         kpts=None,
-        parallel_info=DEFAULT_PARALLEL_INFO,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
     )
 
     new_input_data = results["parameters"]["input_data"]
@@ -417,7 +417,7 @@ def test_pw_copy(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
         pseudopotentials=pseudopotentials,
         kpts=None,
         copy_files=files_to_copy,
-        parallel_info=DEFAULT_PARALLEL_INFO,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
     )
     assert new_input_data["system"]["ecutwfc"] == 30.0
     assert new_input_data["system"]["ecutrho"] == 240.0

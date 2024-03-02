@@ -23,7 +23,7 @@ DEFAULT_SETTINGS = SETTINGS.model_copy()
 DATA_DIR = Path(__file__).parent / "data"
 
 
-def test_phonon_job(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
+def test_phonon_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -48,11 +48,13 @@ def test_phonon_job(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
         input_data=input_data,
         pseudopotentials=pseudopotentials,
         kspacing=0.5,
-        parallel_info=DEFAULT_PARALLEL_INFO,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
     )
 
     ph_results = phonon_job(
-        pw_results["dir_name"], input_data=ph_loose, parallel_info=DEFAULT_PARALLEL_INFO
+        pw_results["dir_name"],
+        input_data=ph_loose,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
     )
 
     assert_allclose(
@@ -85,7 +87,7 @@ def test_phonon_job(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
     SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO
 
 
-def test_phonon_job_list_to_do(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
+def test_phonon_job_list_to_do(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -110,7 +112,7 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
         input_data=input_data,
         pseudopotentials=pseudopotentials,
         kspacing=0.5,
-        parallel_info=DEFAULT_PARALLEL_INFO,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
     )
 
     qpts = [(0, 0, 0, 1), (1 / 3, 0, 0, 1), (1 / 2, 0, 0, 1)]
@@ -122,7 +124,7 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
         input_data=ph_loose,
         qpts=qpts,
         nat_todo_indices=nat_todo,
-        parallel_info=DEFAULT_PARALLEL_INFO,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
     )
 
     assert_allclose(

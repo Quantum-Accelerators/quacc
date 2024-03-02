@@ -2,7 +2,7 @@ import pytest
 
 
 @pytest.fixture
-def DEFAULT_PARALLEL_INFO():
+def ESPRESSO_PARALLEL_INFO():
     from shutil import which
 
     import psutil

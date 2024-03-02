@@ -13,7 +13,7 @@ from quacc.recipes.emt.slabs import bulk_to_slabs_flow  # skipcq: PYL-C0412
 client = get_client()
 
 
-def test_functools(tmp_path, monkeypatch):
+def test_functools(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
     delayed = bulk_to_slabs_flow(
