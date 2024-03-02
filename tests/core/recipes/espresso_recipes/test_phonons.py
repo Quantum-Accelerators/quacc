@@ -29,9 +29,12 @@ from quacc.utils.files import copy_decompress_files
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 DATA_DIR = Path(__file__).parent / "data"
 
+DEFAULT_PARALLEL_INFO = {"binary": "mpirun", "-np": 2}
+
 
 def test_phonon_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
     atoms = bulk("Li")
 
@@ -50,10 +53,16 @@ def test_phonon_job(tmp_path, monkeypatch):
     pseudopotentials = {"Li": "Li.upf"}
 
     pw_results = static_job(
-        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.5
+        atoms,
+        input_data=input_data,
+        pseudopotentials=pseudopotentials,
+        kspacing=0.5,
+        parallel_info=DEFAULT_PARALLEL_INFO,
     )
 
-    ph_results = phonon_job(pw_results["dir_name"], input_data=ph_loose)
+    ph_results = phonon_job(
+        pw_results["dir_name"], input_data=ph_loose, parallel_info=DEFAULT_PARALLEL_INFO
+    )
 
     assert_allclose(
         ph_results["results"][1]["atoms"].get_positions(),
@@ -87,6 +96,7 @@ def test_phonon_job(tmp_path, monkeypatch):
 
 def test_phonon_job_list_to_do(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
     atoms = bulk("Li")
 
@@ -105,7 +115,11 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
     pseudopotentials = {"Li": "Li.upf"}
 
     pw_results = static_job(
-        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.5
+        atoms,
+        input_data=input_data,
+        pseudopotentials=pseudopotentials,
+        kspacing=0.5,
+        parallel_info=DEFAULT_PARALLEL_INFO,
     )
 
     qpts = [(0, 0, 0, 1), (1 / 3, 0, 0, 1), (1 / 2, 0, 0, 1)]
@@ -117,6 +131,7 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
         input_data=ph_loose,
         qpts=qpts,
         nat_todo_indices=nat_todo,
+        parallel_info=DEFAULT_PARALLEL_INFO,
     )
 
     assert_allclose(
@@ -151,12 +166,15 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
 
 def test_q2r_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
     copy_decompress_files(DATA_DIR / "q2r_test", "matdyn", tmp_path)
 
     additional_cards = ["1 1 1", "1", "matdyn"]
 
-    q2r_results = q2r_job(tmp_path, additional_cards=additional_cards)
+    q2r_results = q2r_job(
+        tmp_path, additional_cards=additional_cards, parallel_info=DEFAULT_PARALLEL_INFO
+    )
 
     assert Path(q2r_results["dir_name"], "q2r.fc.gz").exists()
 
@@ -173,11 +191,14 @@ def test_q2r_job(tmp_path, monkeypatch):
 
 def test_matdyn_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
     copy_decompress_files(DATA_DIR / "matdyn_test", "q2r.fc", tmp_path)
 
     input_data = {"input": {"dos": True, "nk1": 4, "nk2": 4, "nk3": 4}}
-    matdyn_results = matdyn_job(tmp_path, input_data=input_data)
+    matdyn_results = matdyn_job(
+        tmp_path, input_data=input_data, parallel_info=DEFAULT_PARALLEL_INFO
+    )
 
     assert Path(matdyn_results["dir_name"], "q2r.fc.gz").exists()
     assert Path(matdyn_results["dir_name"], "matdyn.dos.gz").exists()
@@ -197,6 +218,7 @@ def test_matdyn_job(tmp_path, monkeypatch):
 
 def test_phonon_dos_flow(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
     atoms = bulk("Li")
 
@@ -217,7 +239,11 @@ def test_phonon_dos_flow(tmp_path, monkeypatch):
             "pseudopotentials": pseudopotentials,
             "input_data": input_data,
             "kspacing": 1.0,
-        }
+            "parallel_info": DEFAULT_PARALLEL_INFO,
+        },
+        "phonon_job": {"parallel_info": DEFAULT_PARALLEL_INFO},
+        "q2r_job": {"parallel_info": DEFAULT_PARALLEL_INFO},
+        "matdyn_job": {"parallel_info": DEFAULT_PARALLEL_INFO},
     }
 
     phonon_dos_results = phonon_dos_flow(atoms, job_params=job_params)
