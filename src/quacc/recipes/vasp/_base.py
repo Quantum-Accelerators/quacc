@@ -23,6 +23,7 @@ def base_fn(
     preset: str | None = None,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
+    mp_corrections: bool = False,
     additional_fields: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> VaspSchema:
@@ -41,6 +42,8 @@ def base_fn(
         Dictionary of custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.calculators.vasp.vasp.Vasp][].
+    mp_corrections
+        Whether to report the Materials Project corrections in the results.
     additional_fields
         Additional fields to supply to the summarizer.
     copy_files
@@ -56,4 +59,6 @@ def base_fn(
     atoms.calc = Vasp(atoms, preset=preset, **calc_flags)
     final_atoms = run_calc(atoms, copy_files=copy_files)
 
-    return vasp_summarize_run(final_atoms, additional_fields=additional_fields)
+    return vasp_summarize_run(
+        final_atoms, mp_corrections=mp_corrections, additional_fields=additional_fields
+    )
