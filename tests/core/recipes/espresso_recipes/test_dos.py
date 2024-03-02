@@ -29,6 +29,7 @@ def test_projwfc_job(tmp_path, monkeypatch):
     copy_decompress_files(DATA_DIR / "dos_test", [Path("pwscf.save", "*.gz")], tmp_path)
     copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
     output = projwfc_job(tmp_path)
+
     assert output["name"] == "projwfc.x Projects-wavefunctions"
     assert output["parameters"]["input_data"]["projwfc"] == {}
 

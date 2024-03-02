@@ -202,6 +202,10 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 | Espresso DOS Flow        | `#!Python @flow` | [quacc.recipes.espresso.dos.dos_flow][]             |              |
 | Espresso Projwfc         | `#!Python @job`  | [quacc.recipes.espresso.dos.projwfc_job][]          |              |
 | Espresso Projwfc Flow    | `#!Python @flow` | [quacc.recipes.espresso.dos.projwfc_flow][]         |              |
+| Espresso Bands Flow      | `#!Python @flow` | [quacc.recipes.espresso.bands.bands_flow][]         |              |
+| Espresso Bands PW        | `#!Python @job`  | [quacc.recipes.espresso.bands.bands_pw_job][]       |              |
+| Espresso Bands PP        | `#!Python @job`  | [quacc.recipes.espresso.bands.bands_pp_job][]       |              |
+| Espresso Fermi Surface   | `#!Python @job`  | [quacc.recipes.espresso.bands.fermi_surface_job][]  |              |
 
 </center>
 
