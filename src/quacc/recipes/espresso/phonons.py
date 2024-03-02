@@ -259,7 +259,7 @@ def phonon_dos_flow(
 
     calc_defaults = {
         "relax_job": relax_job_defaults,
-        "ph_job": ph_job_defaults,
+        "phonon_job": ph_job_defaults,
         "matdyn_job": matdyn_job_defaults,
     }
 
