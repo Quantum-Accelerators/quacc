@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
@@ -10,10 +11,7 @@ from quacc import flow, job, subflow
 from quacc.atoms.phonons import get_phonopy, phonopy_atoms_to_ase_atoms
 from quacc.schemas.phonons import summarize_phonopy
 
-try:
-    import phonopy
-except ImportError:
-    phonopy = None
+has_deps = find_spec("phonopy") is not None and find_spec("seekpath") is not None
 
 if TYPE_CHECKING:
     from typing import Any
@@ -25,7 +23,9 @@ if TYPE_CHECKING:
 
 
 @flow
-@requires(phonopy, "Phonopy must be installed. Run `pip install quacc[phonons]`")
+@requires(
+    has_deps, "Phonopy and seekpath must be installed. Run `pip install quacc[phonons]`"
+)
 def phonon_flow(
     atoms: Atoms,
     force_job: Job,
