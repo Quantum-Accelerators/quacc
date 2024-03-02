@@ -217,3 +217,5 @@ def test_phonon_dos_flow(tmp_path, monkeypatch):
     }
 
     phonon_dos_results = phonon_dos_flow(atoms, job_params=job_params)
+
+    SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO

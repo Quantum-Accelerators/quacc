@@ -242,7 +242,7 @@ def phonon_dos_flow(
     }
     ph_job_defaults = {
         "input_data": {
-            "input_ph": {
+            "inputph": {
                 "tr2_ph": 1e-12,
                 "alpha_mix(1)": 0.1,
                 "verbosity": "high",
