@@ -121,7 +121,7 @@ def summarize_run(
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_JSON:
-        dumpfn(task_doc, "results.json")
+        dumpfn(task_doc, "quacc_results.json")
 
     if store:
         results_to_db(store, task_doc)
@@ -224,7 +224,7 @@ def summarize_opt_run(
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_JSON:
-        dumpfn(task_doc, "results.json")
+        dumpfn(task_doc, "quacc_results.json")
 
     if store:
         results_to_db(store, task_doc)
@@ -341,7 +341,7 @@ def summarize_vib_run(
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_JSON:
-        dumpfn(task_doc, "results.json")
+        dumpfn(task_doc, "quacc_results.json")
 
     if store:
         results_to_db(store, task_doc)
