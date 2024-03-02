@@ -23,9 +23,9 @@ LOGGER.propagate = True
 
 FILE_DIR = Path(__file__).parent
 
-run1 = FILE_DIR / "gaussian_run1"
+run1 = FILE_DIR / "test_files" / "gaussian_run1"
 log1 = run1 / "Gaussian.log"
-run2 = FILE_DIR / "cclib_data"
+run2 = FILE_DIR / "test_files" / "cclib_data"
 log2 = run2 / "gau_testopt.log.gz"
 
 
@@ -35,7 +35,7 @@ def cclib_obj():
 
 
 def setup_module():
-    p = FILE_DIR / "cclib_data"
+    p = FILE_DIR / "test_data" / "cclib_data"
 
     with (
         gzip.open(p / "psi_test.cube.gz", "r") as f_in,
@@ -45,7 +45,7 @@ def setup_module():
 
 
 def teardown_module():
-    p = FILE_DIR / "cclib_data"
+    p = FILE_DIR / "test_files" / "cclib_data"
 
     if os.path.exists(p / "psi_test.cube"):
         os.remove(p / "psi_test.cube")
@@ -143,7 +143,7 @@ def test_errors():
 def test_cclib_taskdoc(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    p = FILE_DIR / "cclib_data"
+    p = FILE_DIR / "test_files" / "cclib_data"
 
     # Now we will try two possible extensions, but we will make sure that
     # it fails because the newest log file (.txt) is not valid
@@ -196,7 +196,7 @@ def test_cclib_calculate(tmp_path, monkeypatch, cclib_obj):
         _cclib_calculate(
             cclib_obj,
             method="ddec6",
-            cube_file=FILE_DIR / "cclib_data" / "psi_test.cube",
+            cube_file=FILE_DIR / "test_files" / "cclib_data" / "psi_test.cube",
             proatom_dir="does_not_exists",
         )
 
@@ -204,26 +204,28 @@ def test_cclib_calculate(tmp_path, monkeypatch, cclib_obj):
         _cclib_calculate(
             cclib_obj,
             method="ddec6",
-            cube_file=FILE_DIR / "cclib_data" / "psi_test.cube",
+            cube_file=FILE_DIR / "test_files" / "cclib_data" / "psi_test.cube",
         )
 
     with pytest.raises(Exception):
         _cclib_calculate(
             cclib_obj,
             method="ddec6",
-            cube_file=FILE_DIR / "cclib_data" / "psi_test.cube",
-            proatom_dir=FILE_DIR / "cclib_data" / "psi_test.cube",
+            cube_file=FILE_DIR / "test_files" / "cclib_data" / "psi_test.cube",
+            proatom_dir=FILE_DIR / "test_files" / "cclib_data" / "psi_test.cube",
         )
 
 
 def test_monkeypatches(tmp_path, monkeypatch, cclib_obj, caplog):
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setenv("PROATOM_DIR", str(FILE_DIR / "cclib_data" / "proatomdata"))
+    monkeypatch.setenv(
+        "PROATOM_DIR", str(FILE_DIR / "test_files" / "cclib_data" / "proatomdata")
+    )
     with pytest.raises(FileNotFoundError):
         _cclib_calculate(
             cclib_obj,
             method="ddec6",
-            cube_file=FILE_DIR / "cclib_data" / "psi_test.cube",
+            cube_file=FILE_DIR / "test_files" / "cclib_data" / "psi_test.cube",
         )
 
     monkeypatch.setattr("cclib.method.Bader.calculate", bad_mock_cclib_calculate)
@@ -232,7 +234,7 @@ def test_monkeypatches(tmp_path, monkeypatch, cclib_obj, caplog):
             _cclib_calculate(
                 cclib_obj,
                 method="bader",
-                cube_file=FILE_DIR / "cclib_data" / "psi_test.cube",
+                cube_file=FILE_DIR / "test_files" / "cclib_data" / "psi_test.cube",
             )
             is None
         )

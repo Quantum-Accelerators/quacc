@@ -17,11 +17,18 @@ LOGGER.propagate = True
 
 @pytest.fixture()
 def run1():
-    from pathlib import Path
 
     FILE_DIR = Path(__file__).parent
 
-    return FILE_DIR / "vasp_run1"
+    return FILE_DIR / "test_files" / "vasp_run1"
+
+
+@pytest.fixture()
+def mp_run1():
+
+    FILE_DIR = Path(__file__).parent
+
+    return FILE_DIR / "test_files" / "mp_vasp_run1"
 
 
 def mock_bader_analysis(*args, **kwargs):
@@ -194,6 +201,15 @@ def test_summarize_bader_and_chargemol_run(monkeypatch, run1, tmp_path):
     assert results["chargemol"]["ddec"]["spin_moments"] == [0.0] * len(atoms)
     assert results["bader"]["partial_charges"] == [1.0] * len(atoms)
     assert results["bader"]["spin_moments"] == [0.0] * len(atoms)
+
+
+def test_summarize_mp(monkeypatch, mp_run1, tmp_path):
+    monkeypatch.chdir(tmp_path)
+    p = tmp_path / "vasp_run"
+    copytree(mp_run1, p)
+    atoms = read(p / "OUTCAR.gz")
+    results = vasp_summarize_run(atoms, dir_path=p, report_mp_corrections=True)
+    assert results["entry"]["correction"] != 0.0
 
 
 def test_no_bader(tmp_path, monkeypatch, run1, caplog):

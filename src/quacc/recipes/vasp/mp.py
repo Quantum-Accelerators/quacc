@@ -74,7 +74,7 @@ def mp_gga_relax_job(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        mp_corrections=True,
+        report_mp_corrections=True,
         additional_fields={"name": "MP GGA Relax"},
         copy_files=copy_files,
     )
@@ -121,7 +121,7 @@ def mp_gga_static_job(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        mp_corrections=True,
+        report_mp_corrections=True,
         additional_fields={"name": "MP GGA Static"},
         copy_files=copy_files,
     )
@@ -175,7 +175,7 @@ def mp_metagga_prerelax_job(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        mp_corrections=True,
+        report_mp_corrections=True,
         additional_fields={"name": "MP Meta-GGA Pre-Relax"},
         copy_files=copy_files,
     )
@@ -225,7 +225,7 @@ def mp_metagga_relax_job(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        mp_corrections=True,
+        report_mp_corrections=True,
         additional_fields={"name": "MP Meta-GGA Relax"},
         copy_files=copy_files,
     )
@@ -276,7 +276,7 @@ def mp_metagga_static_job(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        mp_corrections=True,
+        report_mp_corrections=True,
         additional_fields={"name": "MP Meta-GGA Static"},
         copy_files=copy_files,
     )
