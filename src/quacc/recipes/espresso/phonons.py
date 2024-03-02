@@ -181,7 +181,7 @@ def matdyn_job(
 
     calc_defaults = {"input_data": {"input": {"flfrc": flfrc}}}
 
-    copy_files = {prev_dir: flfrc}
+    copy_files = {prev_dir: [f"{flfrc}*"]}
 
     return base_fn(
         template=EspressoTemplate("matdyn"),
