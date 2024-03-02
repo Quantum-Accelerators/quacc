@@ -14,9 +14,12 @@ pytestmark = pytest.mark.skipif(
 
 DATA_DIR = Path(__file__).parent / "data"
 
+DEFAULT_PARALLEL_INFO = {"binary": "mpirun", "-np": 2}
+
 
 def test_bands_flow(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
     copy_decompress_files(DATA_DIR / "dos_test", Path("pwscf.save", "*.gz"), tmp_path)
     copy_decompress_files(DATA_DIR, "Si.upf.gz", tmp_path)
@@ -26,12 +29,16 @@ def test_bands_flow(tmp_path, monkeypatch):
         "bands_pw_job": {
             "input_data": {"control": {"pseudo_dir": tmp_path}},
             "pseudopotentials": pseudopotentials,
+            "parallel_info": DEFAULT_PARALLEL_INFO,
         },
-        "bands_pp_job": {},
-        "fermi_surface_job": {"input_data": {"fermi": {}}},
+        "bands_pp_job": {"parallel_info": DEFAULT_PARALLEL_INFO},
+        "fermi_surface_job": {
+            "input_data": {"fermi": {}},
+            "parallel_info": DEFAULT_PARALLEL_INFO,
+        },
     }
 
-    output = bands_flow(atoms, tmp_path, line_density=1,job_params=job_params)
+    output = bands_flow(atoms, tmp_path, line_density=1, job_params=job_params)
     assert (
         output["bands_pw"]["parameters"]["input_data"]["control"]["calculation"]
         == "bands"
