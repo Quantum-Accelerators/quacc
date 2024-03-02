@@ -1,5 +1,5 @@
 """
-This module, 'dos.py', contains recipes for performing phonon calculations using the
+This module, 'dos.py', contains recipes for performing dos calculations using the
 dos.x binary from Quantum ESPRESSO via the quacc library.
 
 The recipes provided in this module are jobs and flows that can be used to perform
@@ -34,7 +34,6 @@ if TYPE_CHECKING:
     class ProjwfcSchema(TypedDict):
         static_job: RunSchema
         non_scf_job: RunSchema
-        projwfc_job: RunSchema
 
 
 @job

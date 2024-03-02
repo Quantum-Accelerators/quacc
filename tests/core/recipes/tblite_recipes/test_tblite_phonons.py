@@ -2,6 +2,8 @@ import pytest
 
 pytest.importorskip("tblite.ase")
 pytest.importorskip("phonopy")
+pytest.importorskip("seekpath")
+
 from ase.build import bulk
 
 from quacc.recipes.tblite.phonons import phonon_flow
