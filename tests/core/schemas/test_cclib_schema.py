@@ -35,7 +35,7 @@ def cclib_obj():
 
 
 def setup_module():
-    p = FILE_DIR / "test_data" / "cclib_data"
+    p = FILE_DIR / "test_files" / "cclib_data"
 
     with (
         gzip.open(p / "psi_test.cube.gz", "r") as f_in,
