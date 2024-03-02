@@ -213,7 +213,7 @@ def test_phonon_dos_flow(tmp_path, monkeypatch):
     pseudopotentials = {"Li": "Li.upf"}
 
     job_params = {
-        "relax_job": {"pseudopotentials": pseudopotentials, "input_data": input_data}
+        "relax_job": {"pseudopotentials": pseudopotentials, "input_data": input_data, "kspacing": 1.0},
     }
 
     phonon_dos_results = phonon_dos_flow(atoms, job_params=job_params)
