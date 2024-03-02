@@ -12,8 +12,11 @@ from quacc.schemas.phonons import summarize_phonopy
 
 try:
     import phonopy
+    import seekpath
+
+    has_deps = True
 except ImportError:
-    phonopy = None
+    has_deps = False
 
 if TYPE_CHECKING:
     from typing import Any
@@ -25,7 +28,10 @@ if TYPE_CHECKING:
 
 
 @flow
-@requires(phonopy, "Phonopy must be installed. Run `pip install quacc[phonons]`")
+@requires(
+    has_deps is True,
+    "Phonopy and seekpath must be installed. Run `pip install quacc[phonons]`",
+)
 def phonon_flow(
     atoms: Atoms,
     force_job: Job,

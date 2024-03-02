@@ -4,8 +4,18 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from monty.dev import requires
+
 from quacc import subflow
 from quacc.atoms.defects import make_defects_from_bulk
+
+try:
+    import shakenbreak
+    from pymatgen.analysis import defects
+
+    has_deps = True
+except ImportError:
+    has_deps = False
 
 if TYPE_CHECKING:
     from typing import Any
@@ -16,6 +26,10 @@ if TYPE_CHECKING:
 
 
 @subflow
+@requires(
+    has_deps is True,
+    "shakenbreak and pymatgen-analysis-defects must be installed. Run `pip install quacc[defects]`",
+)
 def bulk_to_defects_subflow(
     atoms: Atoms,
     relax_job: Job,

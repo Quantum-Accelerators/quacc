@@ -4,11 +4,26 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from monty.dev import requires
+
 from quacc import flow
 from quacc.recipes.common.phonons import phonon_flow as common_phonon_flow
 from quacc.recipes.tblite.core import relax_job, static_job
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs
+
+try:
+    from tblite.ase import TBLite
+except ImportError:
+    TBLite = None
+
+try:
+    import phonopy
+    import seekpath
+
+    has_phonon_deps = True
+except ImportError:
+    has_phonon_deps = False
 
 if TYPE_CHECKING:
     from typing import Any, Callable
@@ -19,6 +34,11 @@ if TYPE_CHECKING:
 
 
 @flow
+@requires(TBLite, "tblite must be installed. Refer to the quacc documentation.")
+@requires(
+    has_phonon_deps is True,
+    reason="Phonopy and seekpath must be installed. Run `pip install quacc[phonons]`",
+)
 def phonon_flow(
     atoms: Atoms,
     symprec: float = 1e-4,
