@@ -14,10 +14,8 @@ pytestmark = pytest.mark.skipif(
 
 DATA_DIR = Path(__file__).parent / "data"
 
-DEFAULT_PARALLEL_INFO = {"binary": "mpirun", "-np": 2}
 
-
-def test_bands_flow(tmp_path, monkeypatch):
+def test_bands_flow(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -57,7 +55,7 @@ def test_bands_flow(tmp_path, monkeypatch):
     assert output["bands_pp"]["name"] == "bands.x post-processing"
 
 
-def test_bands_flow_with_fermi(tmp_path, monkeypatch):
+def test_bands_flow_with_fermi(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 

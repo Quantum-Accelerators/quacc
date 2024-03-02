@@ -14,10 +14,8 @@ pytestmark = pytest.mark.skipif(
 
 DATA_DIR = Path(__file__).parent / "data"
 
-DEFAULT_PARALLEL_INFO = {"binary": "mpirun", "-np": 2}
 
-
-def test_dos_job(tmp_path, monkeypatch):
+def test_dos_job(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -28,7 +26,7 @@ def test_dos_job(tmp_path, monkeypatch):
     assert output["results"]["pwscf_dos"]["fermi"] == pytest.approx(7.199)
 
 
-def test_projwfc_job(tmp_path, monkeypatch):
+def test_projwfc_job(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -40,7 +38,7 @@ def test_projwfc_job(tmp_path, monkeypatch):
     assert output["parameters"]["input_data"]["projwfc"] == {}
 
 
-def test_dos_flow(tmp_path, monkeypatch):
+def test_dos_flow(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -99,7 +97,7 @@ def test_dos_flow(tmp_path, monkeypatch):
     assert output["dos_job"]["results"]["pwscf_dos"]["fermi"] == pytest.approx(6.772)
 
 
-def test_projwfc_flow(tmp_path, monkeypatch):
+def test_projwfc_flow(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 

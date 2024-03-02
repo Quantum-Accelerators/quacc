@@ -30,10 +30,8 @@ from quacc.utils.files import copy_decompress_files
 
 DATA_DIR = Path(__file__).parent / "data"
 
-DEFAULT_PARALLEL_INFO = {"binary": "mpirun", "-np": 2}
 
-
-def test_static_job(tmp_path, monkeypatch):
+def test_static_job(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -68,7 +66,7 @@ def test_static_job(tmp_path, monkeypatch):
     assert results["parameters"].get("kpts") is None
 
 
-def test_static_job_v2(tmp_path, monkeypatch):
+def test_static_job_v2(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -113,7 +111,7 @@ def test_static_job_v2(tmp_path, monkeypatch):
     assert Path(pp_results["dir_name"], "pseudo_charge_density.cube.gz").is_file()
 
 
-def test_static_job_outdir(tmp_path, monkeypatch):
+def test_static_job_outdir(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -152,7 +150,7 @@ def test_static_job_outdir(tmp_path, monkeypatch):
     assert new_input_data["control"]["calculation"] == "scf"
 
 
-def test_static_job_outdir_abs(tmp_path, monkeypatch):
+def test_static_job_outdir_abs(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -213,7 +211,7 @@ def test_static_job_test_run(tmp_path, monkeypatch):
         )
 
 
-def test_relax_job(tmp_path, monkeypatch):
+def test_relax_job(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -243,7 +241,7 @@ def test_relax_job(tmp_path, monkeypatch):
     assert new_input_data["control"]["calculation"] == "relax"
 
 
-def test_ase_relax_job(tmp_path, monkeypatch):
+def test_ase_relax_job(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -278,7 +276,7 @@ def test_ase_relax_job(tmp_path, monkeypatch):
     assert new_input_data["control"]["calculation"] == "scf"
 
 
-def test_ase_relax_cell_job(tmp_path, monkeypatch):
+def test_ase_relax_cell_job(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -307,7 +305,7 @@ def test_ase_relax_cell_job(tmp_path, monkeypatch):
         )
 
 
-def test_relax_job_cell(tmp_path, monkeypatch):
+def test_relax_job_cell(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -342,7 +340,7 @@ def test_relax_job_cell(tmp_path, monkeypatch):
     assert new_input_data["control"]["calculation"] == "vc-relax"
 
 
-def test_non_scf_job(tmp_path, monkeypatch):
+def test_non_scf_job(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -388,7 +386,7 @@ def test_non_scf_job(tmp_path, monkeypatch):
     assert results["parameters"].get("kpts") is None
 
 
-def test_pw_copy(tmp_path, monkeypatch):
+def test_pw_copy(tmp_path, monkeypatch, DEFAULT_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
