@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.6.9]
 
+### Added
+
+- Added various DOS recipes for Espresso
+
 ### Fixed
 
 - Fixed an edge case where final magmoms would not be moved to initial magmoms of next run in MP VASP recipes
