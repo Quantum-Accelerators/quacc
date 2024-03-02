@@ -81,7 +81,9 @@ def base_fn(
 
     final_atoms = run_calc(atoms, geom_file=geom_file, copy_files=copy_files)
 
-    return summarize_run(final_atoms, atoms, additional_fields=additional_fields)
+    return summarize_run(
+        final_atoms, atoms, move_magmoms=True, additional_fields=additional_fields
+    )
 
 
 def base_opt_fn(
@@ -152,7 +154,9 @@ def base_opt_fn(
 
     dyn = run_opt(atoms, relax_cell=relax_cell, copy_files=copy_files, **opt_flags)
 
-    return summarize_opt_run(dyn, additional_fields=additional_fields)
+    return summarize_opt_run(
+        dyn, move_magmoms=True, additional_fields=additional_fields
+    )
 
 
 def _prepare_atoms(
