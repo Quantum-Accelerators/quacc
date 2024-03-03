@@ -617,7 +617,7 @@ def test_mp_gga_relax_job():
         "nsw": 99,
         "prec": "accurate",
         "sigma": 0.05,
-        "pp": "pbe",
+        "pp": "PBE",
         "setups": {"O": "", "Ni": "_pv"},
         "xc": "pbe",
     }
@@ -657,7 +657,7 @@ def test_mp_gga_static_job():
         "nsw": 0,
         "prec": "accurate",
         "sigma": 0.05,
-        "pp": "pbe",
+        "pp": "PBE",
         "setups": {"Ni": "_pv", "O": ""},
         "xc": "pbe",
     }
@@ -674,7 +674,7 @@ def test_mp_gga_relax_flow():
         "efermi": "midgap",  # added by copilot
         "encut": 520,
         "gamma": True,
-        "gga": "pe",
+        "gga": "PE",
         "ibrion": 2,
         "isif": 3,
         "ismear": -5,
@@ -696,7 +696,7 @@ def test_mp_gga_relax_flow():
         "nsw": 99,
         "prec": "accurate",
         "sigma": 0.05,
-        "pp": "pbe",
+        "pp": "PBE",
         "setups": {"O": "", "Ni": "_pv"},
         "xc": "pbe",
     }
@@ -711,6 +711,7 @@ def test_mp_gga_relax_flow():
         "efermi": "midgap",  # added by copilot
         "encut": 520,
         "gamma": True,
+        "gga": "PE",
         "ismear": -5,
         "ispin": 2,
         "kpts": [6, 13, 13],
@@ -731,8 +732,9 @@ def test_mp_gga_relax_flow():
         "nsw": 0,
         "prec": "accurate",
         "sigma": 0.05,
-        "pp": "pbe",
+        "pp": "PBE",
         "setups": {"Ni": "_pv", "O": ""},
+        "xc": "pbe",
     }
 
 
