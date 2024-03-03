@@ -278,7 +278,8 @@ class EspressoTemplate(EspressoTemplate_):
         working_dir = Path(directory).expanduser().resolve()
 
         for key in all_out:
-            path = Path(all_out[key])
+            path = Path(working_dir, all_out[key])
+
             for section in input_data:
                 if key in input_data[section]:
                     path = Path(input_data[section][key])
@@ -286,8 +287,8 @@ class EspressoTemplate(EspressoTemplate_):
                         raise ValueError(
                             f"Cannot use {key}={path} because it is an absolute path. When using Quacc please provide relative paths."
                         )
+                    path = working_dir / path
                     input_data[section][key] = path
-            path = working_dir / path
 
             try:
                 path.relative_to(working_dir)
