@@ -287,7 +287,7 @@ class EspressoTemplate(EspressoTemplate_):
                         raise ValueError(
                             f"Cannot use {key}={path} because it is an absolute path. When using Quacc please provide relative paths."
                         )
-                    path = working_dir / path
+                    path = (working_dir / path).resolve()
                     input_data[section][key] = path
 
             try:
