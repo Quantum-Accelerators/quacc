@@ -22,7 +22,7 @@ from quacc.schemas.ase import (
 
 FILE_DIR = Path(__file__).parent
 
-RUN1 = FILE_DIR / "vasp_run1"
+RUN1 = FILE_DIR / "test_files" / "vasp_run1"
 
 
 def test_summarize_run():
@@ -65,7 +65,7 @@ def test_summarize_run4():
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
     atoms.calc.results["magmoms"] = [2.0] * len(atoms)
-    results = summarize_run(atoms, initial_atoms)
+    results = summarize_run(atoms, initial_atoms, move_magmoms=True)
 
     assert atoms.calc is not None
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)

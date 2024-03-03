@@ -189,7 +189,7 @@ In the previous examples, we have been running calculations on our local machine
 
     Here, we describe several representative [`HighThroughputExecutor`](https://parsl.readthedocs.io/en/stable/stubs/parsl.executors.HighThroughputExecutor.html#parsl.executors.HighThroughputExecutor) configurations that will orchestrate jobs from the login node of NERSC's Perlmutter machine. There is no one-size-fits-all approach, so you will need to adjust the configuration to suit your specific needs.
 
-    Let's imagine a scenario where we want to concurrently run a large number single-core, CPU-based compute tasks. A sample configuration for this purpose is shown below. The configuration ensures that we have at most one active Slurm allocation (`max_blocks=1`), we request four nodes in that Slurm allocation (`nodes_per_block=4`), run no more than 64 tasks at a time per node (`max_workers=64`) since that's how many physical CPU cores there are, and that there will be no Slurm allocations queued or running when there are no tasks to run (`min_blocks=0`). This configuration ensures that up to 256 single-core tasks can be run concurrently.
+    Let's imagine a scenario where we want to concurrently run a large number single-core, CPU-based compute tasks. A sample configuration for this purpose is shown below. The configuration ensures that we have at most one active Slurm allocation (`max_blocks=1`), we request four nodes in that Slurm allocation (`nodes_per_block=4`), run no more than 64 tasks at a time per node (`max_workers_per_node=64`) since that's how many physical CPU cores there are, and that there will be no Slurm allocations queued or running when there are no tasks to run (`min_blocks=0`). This configuration ensures that up to 256 single-core tasks can be run concurrently.
 
     ```python
     import parsl
@@ -208,7 +208,7 @@ In the previous examples, we have been running calculations on our local machine
         executors=[
             HighThroughputExecutor(
                 label="quacc_parsl",  # (2)!
-                max_workers=cores_per_node,  # (3)!
+                max_workers_per_node=cores_per_node,  # (3)!
                 provider=SlurmProvider(
                     account="MyAccountName",
                     qos="debug",
@@ -271,7 +271,7 @@ In the previous examples, we have been running calculations on our local machine
         executors=[
             HighThroughputExecutor(
                 label="quacc_parsl",
-                max_workers=concurrent_jobs,  # (3)!
+                max_workers_per_node=concurrent_jobs,  # (3)!
                 cores_per_worker=1e-6,  # (4)!
                 provider=SlurmProvider(
                     account="MyAccountName",
