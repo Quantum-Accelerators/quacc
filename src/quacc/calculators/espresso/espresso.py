@@ -23,7 +23,7 @@ from ase.io.espresso import (
 from ase.io.espresso_namelist.keys import ALL_KEYS
 
 from quacc import SETTINGS
-from quacc.calculators.espresso.utils import get_pseudopotential_info, sanity_checks
+from quacc.calculators.espresso.utils import get_pseudopotential_info
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.utils.files import load_yaml_calc
 
@@ -119,7 +119,7 @@ class EspressoTemplate(EspressoTemplate_):
 
         directory = Path(directory)
         self._output_handler(parameters, directory)
-        parameters = sanity_checks(parameters, binary=self.binary)
+        parameters = self._sanity_checks(parameters, binary=self.binary)
 
         if self.test_run:
             self._test_run(parameters, directory)
@@ -303,6 +303,58 @@ class EspressoTemplate(EspressoTemplate_):
                 self.outfiles[key] = path
 
         parameters["input_data"] = input_data
+
+        return parameters
+
+    def _sanity_checks(self, parameters: dict[str, Any]) -> None:
+        """
+        Function that performs sanity checks on the input_data. It is meant
+        to catch common mistakes that are not caught by the espresso binaries.
+
+        Parameters
+        ----------
+        parameters
+            The parameters dictionary which is assumed to already be in
+            the nested format.
+
+        Returns
+        -------
+        dict
+            The modified parameters dictionary.
+        """
+
+        input_data = parameters.get("input_data", {})
+
+        if self.binary == "ph":
+            input_ph = input_data.get("inputph", {})
+            qpts = parameters.get("qpts", (0, 0, 0))
+
+            qplot = input_ph.get("qplot", False)
+            lqdir = input_ph.get("lqdir", False)
+            recover = input_ph.get("recover", False)
+            ldisp = input_ph.get("ldisp", False)
+
+            is_grid = input_ph.get("start_q") or input_ph.get("start_irr")
+            # Temporary patch for https://gitlab.com/QEF/q-e/-/issues/644
+            if qplot and lqdir and recover and is_grid:
+                prefix = input_ph.get("prefix", "pwscf")
+                outdir = self.outdirs["outdir"]
+
+                Path(outdir, "_ph0", f"{prefix}.q_1").mkdir(parents=True, exist_ok=True)
+            if not (ldisp or qplot):
+                if np.array(qpts).shape == (1, 4):
+                    LOGGER.warning(
+                        "qpts is a 2D array despite ldisp and qplot being set to False. Converting to 1D array"
+                    )
+                    qpts = tuple(qpts[0])
+                if lqdir and is_grid and qpts != (0, 0, 0):
+                    LOGGER.warning(
+                        "lqdir is set to True but ldisp and qplot are set to False. The band structure will still be computed at each step. Setting lqdir to False"
+                    )
+                    input_ph["lqdir"] = False
+
+            parameters["input_data"]["inputph"] = input_ph
+            parameters["qpts"] = qpts
 
         return parameters
 
