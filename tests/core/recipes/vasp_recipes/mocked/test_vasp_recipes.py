@@ -13,9 +13,8 @@ from quacc.recipes.vasp.mp import (
     mp_metagga_static_job,
 )
 from quacc.recipes.vasp.qmof import qmof_relax_job
-from quacc.recipes.vasp.slabs import bulk_to_slabs_flow
+from quacc.recipes.vasp.slabs import bulk_to_slabs_flow, slab_to_ads_flow
 from quacc.recipes.vasp.slabs import relax_job as slab_relax_job
-from quacc.recipes.vasp.slabs import slab_to_ads_flow
 from quacc.recipes.vasp.slabs import static_job as slab_static_job
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
@@ -525,6 +524,12 @@ def test_mp_metagga_relax_flow(tmp_path, monkeypatch):
 
     output = mp_metagga_relax_flow(atoms)
     assert output["static"]["nsites"] == len(atoms)
+    assert output["prerelax"]["parameters"]["gga"] == "ps"
+    assert output["prerelax"]["parameters"]["ismear"] == 0
+    assert output["prerelax"]["parameters"]["pp"] == "pbe"
+    assert output["prerelax"]["parameters"]["magmom"] == [0.6]
+    assert output["relax1"]["parameters"]["magmom"] == [0.0]
+    assert output["relax2"]["parameters"]["magmom"] == [0.0]
     assert output["relax2"]["parameters"]["metagga"].lower() == "r2scan"
     assert output["relax2"]["parameters"]["ediffg"] == -0.02
     assert output["relax2"]["parameters"]["encut"] == 680
@@ -532,13 +537,15 @@ def test_mp_metagga_relax_flow(tmp_path, monkeypatch):
     assert output["relax2"]["parameters"]["sigma"] == 0.05
     assert output["relax2"]["parameters"]["kspacing"] == 0.22
     assert output["relax2"]["parameters"]["pp"] == "pbe"
-    assert output["prerelax"]["parameters"]["gga"] == "ps"
-    assert output["prerelax"]["parameters"]["ismear"] == 0
-    assert output["prerelax"]["parameters"]["pp"] == "pbe"
 
     atoms = bulk("C")
+    atoms.set_initial_magnetic_moments([0.0, 0.0])
     output = mp_metagga_relax_flow(atoms)
-    assert output["static"]["nsites"] == len(atoms)
+    assert output["prerelax"]["parameters"]["ismear"] == 0
+    assert output["prerelax"]["parameters"]["pp"] == "pbe"
+    assert output["prerelax"]["parameters"]["magmom"] == [0.0, 0.0]
+    assert output["relax1"]["parameters"]["magmom"] == [0.0, 0.0]
+    assert output["relax2"]["parameters"]["magmom"] == [0.0, 0.0]
     assert output["relax2"]["parameters"]["metagga"].lower() == "r2scan"
     assert output["relax2"]["parameters"]["ediffg"] == -0.02
     assert output["relax2"]["parameters"]["encut"] == 680
@@ -547,32 +554,37 @@ def test_mp_metagga_relax_flow(tmp_path, monkeypatch):
         0.28329488761304206
     )
     assert output["relax2"]["parameters"]["pp"] == "pbe"
-    assert output["prerelax"]["parameters"]["ismear"] == 0
-    assert output["prerelax"]["parameters"]["pp"] == "pbe"
+    assert output["static"]["nsites"] == len(atoms)
 
     atoms = molecule("O2")
+    atoms.set_initial_magnetic_moments([1.0, 0.0])
     atoms.center(vacuum=10)
     atoms.pbc = True
     output = mp_metagga_relax_flow(atoms)
+    assert output["prerelax"]["parameters"]["ismear"] == 0
+    assert output["prerelax"]["parameters"]["pp"] == "pbe"
+    assert output["prerelax"]["parameters"]["magmom"] == [1.0, 0.0]
+    assert output["relax1"]["parameters"]["magmom"] == [0.0, 0.0]
+    assert output["relax2"]["parameters"]["metagga"].lower() == "r2scan"
+    assert output["relax2"]["parameters"]["ediffg"] == -0.02
+    assert output["relax2"]["parameters"]["encut"] == 680
+    assert output["relax2"]["parameters"]["ismear"] == 0
+    assert output["relax2"]["parameters"]["kspacing"] == pytest.approx(
+        0.28329488761304206
+    )
+    assert output["relax2"]["parameters"]["pp"] == "pbe"
+    assert output["relax2"]["parameters"]["magmom"] == [0.0, 0.0]
     assert output["static"]["nsites"] == len(atoms)
     assert output["static"]["parameters"]["ismear"] == -5
     assert output["static"]["parameters"]["nsw"] == 0
     assert output["static"]["parameters"]["algo"] == "fast"
-    assert output["relax2"]["parameters"]["metagga"].lower() == "r2scan"
-    assert output["relax2"]["parameters"]["ediffg"] == -0.02
-    assert output["relax2"]["parameters"]["encut"] == 680
-    assert output["relax2"]["parameters"]["ismear"] == 0
-    assert output["relax2"]["parameters"]["kspacing"] == pytest.approx(
-        0.28329488761304206
-    )
-    assert output["relax2"]["parameters"]["pp"] == "pbe"
-    assert output["prerelax"]["parameters"]["ismear"] == 0
-    assert output["prerelax"]["parameters"]["pp"] == "pbe"
+    assert output["static"]["parameters"]["magmom"] == [0.0, 0.0]
 
 
 def test_mp_gga_relax_job():
     atoms = bulk("Ni") * (2, 1, 1)
     atoms[0].symbol = "O"
+    del atoms.arrays["initial_magmoms"]
     output = mp_gga_relax_job(atoms)
 
     assert output["nsites"] == len(atoms)
@@ -598,7 +610,7 @@ def test_mp_gga_relax_job():
         "lorbit": 11,
         "lreal": "auto",
         "lwave": False,
-        "magmom": [0.6, 0.6],
+        "magmom": [0.6, 5.0],
         "nelm": 100,
         "nsw": 99,
         "prec": "accurate",
@@ -612,6 +624,7 @@ def test_mp_gga_relax_job():
 def test_mp_gga_static_job():
     atoms = bulk("Ni") * (2, 1, 1)
     atoms[0].symbol = "O"
+    del atoms.arrays["initial_magmoms"]
     output = mp_gga_static_job(atoms)
     assert output["nsites"] == len(atoms)
     assert output["parameters"] == {
@@ -635,7 +648,7 @@ def test_mp_gga_static_job():
         "lorbit": 11,
         "lreal": False,
         "lwave": True,  # modified by us (sensible)
-        "magmom": [0.6, 0.6],
+        "magmom": [0.6, 5.0],
         "nelm": 100,
         "nsw": 0,
         "prec": "accurate",
@@ -648,8 +661,8 @@ def test_mp_gga_static_job():
 def test_mp_gga_relax_flow():
     atoms = bulk("Ni") * (2, 1, 1)
     atoms[0].symbol = "O"
+    del atoms.arrays["initial_magmoms"]
     output = mp_gga_relax_flow(atoms)
-    assert output["static"]["nsites"] == len(atoms)
     relax_params = {
         "algo": "fast",
         "ediff": 0.0001,
@@ -672,7 +685,7 @@ def test_mp_gga_relax_flow():
         "lorbit": 11,
         "lreal": "auto",
         "lwave": False,
-        "magmom": [0.6, 0.6],
+        "magmom": [0.6, 5.0],
         "nelm": 100,
         "nsw": 99,
         "prec": "accurate",
@@ -680,8 +693,11 @@ def test_mp_gga_relax_flow():
         "pp": "pbe",
         "setups": {"O": "", "Ni": "_pv"},
     }
+    relax2_params = relax_params.copy()
+    relax2_params["magmom"] = [0.0, 0.0]
+
     assert output["relax1"]["parameters"] == relax_params
-    assert output["relax2"]["parameters"] == relax_params
+    assert output["relax2"]["parameters"] == relax2_params
     assert output["static"]["parameters"] == {
         "algo": "fast",
         "ediff": 0.0001,
@@ -703,7 +719,7 @@ def test_mp_gga_relax_flow():
         "lorbit": 11,
         "lreal": False,
         "lwave": True,  # modified by us (sensible)
-        "magmom": [0.6, 0.6],
+        "magmom": [0.0, 0.0],
         "nelm": 100,
         "nsw": 0,
         "prec": "accurate",
@@ -716,6 +732,7 @@ def test_mp_gga_relax_flow():
 def test_mp_relax_flow_custom():
     atoms = bulk("Ni") * (2, 1, 1)
     atoms[0].symbol = "O"
+    del atoms.arrays["initial_magmoms"]
     output = mp_metagga_relax_flow(
         mp_gga_relax_flow(atoms, job_params={"mp_gga_relax_job": {"nsw": 0}})["static"][
             "atoms"

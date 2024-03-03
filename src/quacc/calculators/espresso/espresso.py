@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import os
 import re
 from pathlib import Path
@@ -19,6 +20,7 @@ from ase.io.espresso import (
     write_espresso_ph,
     write_fortran_namelist,
 )
+from ase.io.espresso_namelist.keys import ALL_KEYS
 
 from quacc import SETTINGS
 from quacc.calculators.espresso.utils import get_pseudopotential_info, sanity_checks
@@ -27,6 +29,8 @@ from quacc.utils.files import load_yaml_calc
 
 if TYPE_CHECKING:
     from typing import Any
+
+LOGGER = logging.getLogger(__name__)
 
 
 class EspressoTemplate(EspressoTemplate_):
@@ -59,6 +63,7 @@ class EspressoTemplate(EspressoTemplate_):
 
         self.inputname = f"{binary}.in"
         self.outputname = f"{binary}.out"
+        self.errorname = f"{binary}.err"
 
         self.binary = binary
 
@@ -67,7 +72,15 @@ class EspressoTemplate(EspressoTemplate_):
             "wfcdir": os.environ.get("ESPRESSO_TMPDIR", "."),
         }
 
-        self.outfiles = {"fildos": "pwscf.dos", "filpdos": "pwscf.pdos_tot"}
+        self.outfiles = {
+            "fildos": "pwscf.dos",
+            "filpdos": "pwscf.pdos_tot",
+            "flfrc": "q2r.fc",
+            "fldos": "matdyn.dos",
+            "flfrq": "matdyn.freq",
+            "flvec": "matdyn.modes",
+            "fleig": "matdyn.eig",
+        }
 
         self.test_run = test_run
 
@@ -199,6 +212,7 @@ class EspressoTemplate(EspressoTemplate_):
             The results dictionnary
         """
 
+        results = {}
         if self.binary == "pw":
             atoms = read(directory / self.outputname, format="espresso-out")
             results = dict(atoms.calc.properties())
@@ -207,14 +221,14 @@ class EspressoTemplate(EspressoTemplate_):
                 results = read_espresso_ph(fd)
         elif self.binary == "dos":
             fildos = self.outfiles["fildos"]
-            with Path(fildos).open("r") as fd:
+            with fildos.open("r") as fd:
                 lines = fd.readlines()
                 fermi = float(re.search(r"-?\d+\.?\d*", lines[0]).group(0))
                 dos = np.loadtxt(lines[1:])
             results = {fildos.name.replace(".", "_"): {"dos": dos, "fermi": fermi}}
         elif self.binary == "projwfc":
             filpdos = self.outfiles["filpdos"]
-            with Path(filpdos).open("r") as fd:
+            with filpdos.open("r") as fd:
                 lines = np.loadtxt(fd.readlines())
                 energy = lines[1:, 0]
                 dos = lines[1:, 1]
@@ -226,8 +240,11 @@ class EspressoTemplate(EspressoTemplate_):
                     "pdos": pdos,
                 }
             }
-        else:
-            results = {}
+        elif self.binary == "matdyn":
+            fldos = self.outfiles["fldos"]
+            if fldos.exists():
+                phonon_dos = np.loadtxt(fldos)
+                results = {fldos.name.replace(".", "_"): {"phonon_dos": phonon_dos}}
 
         if "energy" not in results:
             results["energy"] = None
@@ -261,10 +278,16 @@ class EspressoTemplate(EspressoTemplate_):
         working_dir = Path(directory).expanduser().resolve()
 
         for key in all_out:
-            path = Path(all_out[key]).expanduser().resolve()
+            path = Path(working_dir, all_out[key])
+
             for section in input_data:
                 if key in input_data[section]:
-                    path = Path(input_data[section][key]).expanduser().resolve()
+                    path = Path(input_data[section][key])
+                    if path.is_absolute():
+                        raise ValueError(
+                            f"Cannot use {key}={path} because it is an absolute path. When using Quacc please provide relative paths."
+                        )
+                    path = (working_dir / path).resolve()
                     input_data[section][key] = path
 
             try:
@@ -349,7 +372,19 @@ class Espresso(Espresso_):
         )
         self._bin_path = str(full_path)
         self._binary = template.binary
-        self._cleanup_params()
+
+        if self._binary in ALL_KEYS:
+            self._cleanup_params()
+        else:
+            LOGGER.warning(
+                f"the binary you requested, `{self._binary}`, is not supported by ASE. This means that presets and usual checks will not be carried out, your `input_data` must be provided in nested format."
+            )
+
+            template.binary = None
+
+            self.kwargs["input_data"] = Namelist(self.kwargs.get("input_data"))
+            self._user_calc_params = self.kwargs
+
         self._pseudo_path = (
             self._user_calc_params.get("input_data", {})
             .get("control", {})

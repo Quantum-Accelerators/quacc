@@ -8,6 +8,7 @@ GAUSSIAN_DIR = Path(FILE_DIR, "gaussian_run")
 
 def mock_execute(self, *args, **kwargs):
     from shutil import copy
+
     copy(GAUSSIAN_DIR / "Gaussian.log.gz", Path(self.directory, "Gaussian.log.gz"))
 
 
@@ -21,6 +22,7 @@ def patch_execute(monkeypatch):
 def mock_read_results(self, *args, **kwargs):
     from ase.calculators.lj import LennardJones
     from ase.io import read
+
     atoms = read(Path(self.directory, "Gaussian.com"))
     atoms.calc = LennardJones()
     atoms.get_potential_energy()

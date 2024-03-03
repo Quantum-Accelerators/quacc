@@ -3,6 +3,8 @@ from pathlib import Path
 import pytest
 
 pytest.importorskip("phonopy")
+pytest.importorskip("seekpath")
+
 from ase.build import bulk
 
 from quacc.recipes.emt.phonons import phonon_flow

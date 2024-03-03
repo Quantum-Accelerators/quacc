@@ -86,7 +86,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
         executors=[
             HighThroughputExecutor(
                 label="quacc_parsl",
-                max_workers=concurrent_jobs,
+                max_workers_per_node=concurrent_jobs,
                 cores_per_worker=1e-6,
                 provider=SlurmProvider(
                     account=account,
