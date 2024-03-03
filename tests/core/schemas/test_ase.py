@@ -22,7 +22,7 @@ from quacc.schemas.ase import (
 
 FILE_DIR = Path(__file__).parent
 
-RUN1 = FILE_DIR / "vasp_run1"
+RUN1 = FILE_DIR / "test_files" / "vasp_run1"
 
 
 def test_summarize_run():

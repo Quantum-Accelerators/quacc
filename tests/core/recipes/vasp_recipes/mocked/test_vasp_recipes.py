@@ -13,9 +13,8 @@ from quacc.recipes.vasp.mp import (
     mp_metagga_static_job,
 )
 from quacc.recipes.vasp.qmof import qmof_relax_job
-from quacc.recipes.vasp.slabs import bulk_to_slabs_flow
+from quacc.recipes.vasp.slabs import bulk_to_slabs_flow, slab_to_ads_flow
 from quacc.recipes.vasp.slabs import relax_job as slab_relax_job
-from quacc.recipes.vasp.slabs import slab_to_ads_flow
 from quacc.recipes.vasp.slabs import static_job as slab_static_job
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()

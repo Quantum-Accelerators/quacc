@@ -1,7 +1,7 @@
 import pytest
 
 
-@pytest.fixture
+@pytest.fixture()
 def ESPRESSO_PARALLEL_INFO():
     from shutil import which
 
