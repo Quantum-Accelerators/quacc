@@ -54,5 +54,4 @@ def mock_taskdoc(*args, **kwargs):
 
 @pytest.fixture(autouse=True)
 def patch_taskdoc(monkeypatch):
-
     monkeypatch.setattr("quacc.schemas.vasp.TaskDoc.from_directory", mock_taskdoc)

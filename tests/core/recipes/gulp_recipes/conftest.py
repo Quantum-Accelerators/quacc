@@ -16,6 +16,7 @@ def mock_settings_env_vars():
 
 def mock_execute(self, *args, **kwargs):
     from shutil import copy
+
     copy(GULP_DIR / "gulp.got.gz", Path(self.directory, "gulp.got.gz"))
     copy(GULP_DIR / "gulp.cif.gz", Path(self.directory, "gulp.cif.gz"))
     copy(GULP_DIR / "gulp.xyz.gz", Path(self.directory, "gulp.xyz.gz"))
@@ -31,6 +32,7 @@ def patch_execute(monkeypatch):
 def mock_read_results(self, *args, **kwargs):
     from ase.calculators.lj import LennardJones
     from ase.io import read
+
     atoms = read(Path(self.directory, "gulp.xyz.gz"))
     atoms.calc = LennardJones()
     atoms.get_potential_energy()

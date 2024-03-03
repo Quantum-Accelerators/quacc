@@ -59,7 +59,9 @@ def test_phonon_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     )
 
     ph_results = phonon_job(
-        pw_results["dir_name"], input_data=ph_loose, parallel_info=ESPRESSO_PARALLEL_INFO,
+        pw_results["dir_name"],
+        input_data=ph_loose,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
     )
 
     assert_allclose(
@@ -171,7 +173,9 @@ def test_q2r_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     additional_cards = ["1 1 1", "1", "matdyn"]
 
     q2r_results = q2r_job(
-        tmp_path, additional_cards=additional_cards, parallel_info=ESPRESSO_PARALLEL_INFO
+        tmp_path,
+        additional_cards=additional_cards,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
     )
 
     assert Path(q2r_results["dir_name"], "q2r.fc.gz").exists()

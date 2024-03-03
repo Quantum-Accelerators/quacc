@@ -17,7 +17,6 @@ LOGGER.propagate = True
 
 @pytest.fixture()
 def run1():
-
     FILE_DIR = Path(__file__).parent
 
     return FILE_DIR / "test_files" / "vasp_run1"
@@ -25,7 +24,6 @@ def run1():
 
 @pytest.fixture()
 def mp_run1():
-
     FILE_DIR = Path(__file__).parent
 
     return FILE_DIR / "test_files" / "vasp_mp_run1"
