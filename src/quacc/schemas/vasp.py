@@ -98,7 +98,10 @@ def vasp_summarize_run(
     if report_mp_corrections:
         mp_compat = MaterialsProject2020Compatibility()
         try:
-            mp_compat.process_entry(vasp_task_model.structure_entry, on_error="raise")
+            corrected_entry = mp_compat.process_entry(
+                vasp_task_model.structure_entry, on_error="raise"
+            )
+            vasp_task_model.entry = corrected_entry
         except CompatibilityError as err:
             logger.warning(err)
 

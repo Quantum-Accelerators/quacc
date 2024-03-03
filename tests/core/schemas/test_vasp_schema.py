@@ -28,7 +28,7 @@ def mp_run1():
 
     FILE_DIR = Path(__file__).parent
 
-    return FILE_DIR / "test_files" / "mp_vasp_run1"
+    return FILE_DIR / "test_files" / "vasp_mp_run1"
 
 
 def mock_bader_analysis(*args, **kwargs):
@@ -209,7 +209,7 @@ def test_summarize_mp(monkeypatch, mp_run1, tmp_path):
     copytree(mp_run1, p)
     atoms = read(p / "OUTCAR.gz")
     results = vasp_summarize_run(atoms, dir_path=p, report_mp_corrections=True)
-    assert results["entry"]["correction"] != 0.0
+    assert results["entry"].correction == pytest.approx(-3.2279999999999998)
 
 
 def test_no_bader(tmp_path, monkeypatch, run1, caplog):
