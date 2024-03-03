@@ -593,7 +593,7 @@ def test_mp_gga_relax_job():
         "ediff": 0.0001,
         "efermi": "midgap",  # added by copilot
         "encut": 520,
-        "gamma": True,  
+        "gamma": True,
         "ibrion": 2,
         "isif": 3,
         "ismear": -5,
