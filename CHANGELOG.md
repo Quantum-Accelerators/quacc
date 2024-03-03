@@ -4,10 +4,34 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.6.8]
+## [0.6.9]
+
+### Added
+
+- Added MP compatability corrections in VASP MP recipes
+- Added various phonon recipes for Espresso
+- Added various DOS recipes for Espresso
 
 ### Fixed
 
+- Fixed a rare edge case where final magmoms would not be moved to initial magmoms of next run in MP VASP recipes
+
+## [0.6.8]
+
+### Added
+
+- Added an option to prevent `os.chdir` calls for multithread safety
+- Added a common elastic calculation
+
+### Changed
+
+- Switched to `ruff` for formatting, replacing the need for `black` and `isort`
+- Changed VASP double relaxes to be flows and not jobs
+- Changed the behavior of `quacc.utils.files.copy_decompress_files`
+
+### Fixed
+
+- Fixed `copy_files` handling with workflow engines
 - Fixed MP VASP double relaxes, where the same relaxation was done twice by mistake
 - Fixed use of `**calc_kwargs` in MP flow recipes
 

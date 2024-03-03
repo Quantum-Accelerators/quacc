@@ -17,11 +17,16 @@ LOGGER.propagate = True
 
 @pytest.fixture()
 def run1():
-    from pathlib import Path
-
     FILE_DIR = Path(__file__).parent
 
-    return FILE_DIR / "vasp_run1"
+    return FILE_DIR / "test_files" / "vasp_run1"
+
+
+@pytest.fixture()
+def mp_run1():
+    FILE_DIR = Path(__file__).parent
+
+    return FILE_DIR / "test_files" / "vasp_mp_run1"
 
 
 def mock_bader_analysis(*args, **kwargs):
@@ -196,12 +201,32 @@ def test_summarize_bader_and_chargemol_run(monkeypatch, run1, tmp_path):
     assert results["bader"]["spin_moments"] == [0.0] * len(atoms)
 
 
+def test_summarize_mp(monkeypatch, mp_run1, tmp_path):
+    monkeypatch.chdir(tmp_path)
+    p = tmp_path / "vasp_run"
+    copytree(mp_run1, p)
+    atoms = read(p / "OUTCAR.gz")
+    results = vasp_summarize_run(atoms, dir_path=p, report_mp_corrections=True)
+    assert results["entry"].correction == pytest.approx(-3.2279999999999998)
+
+
+def test_summarize_mp_bad(monkeypatch, run1, tmp_path, caplog):
+    monkeypatch.chdir(tmp_path)
+    p = tmp_path / "vasp_run"
+    copytree(run1, p)
+    atoms = read(p / "OUTCAR.gz")
+    with caplog.at_level(logging.WARNING):
+        vasp_summarize_run(atoms, dir_path=p, report_mp_corrections=True)
+    assert "invalid run type" in caplog.text
+
+
 def test_no_bader(tmp_path, monkeypatch, run1, caplog):
     monkeypatch.chdir(tmp_path)
 
     atoms = read(run1 / "OUTCAR.gz")
     with caplog.at_level(logging.WARNING):
         vasp_summarize_run(atoms, dir_path=run1, run_bader=True, run_chargemol=False)
+    assert "Bader analysis could not be performed." in caplog.text
 
 
 def test_no_chargemol(tmp_path, monkeypatch, run1, caplog):
@@ -210,3 +235,4 @@ def test_no_chargemol(tmp_path, monkeypatch, run1, caplog):
     atoms = read(run1 / "OUTCAR.gz")
     with caplog.at_level(logging.WARNING):
         vasp_summarize_run(atoms, dir_path=run1, run_bader=False, run_chargemol=True)
+    assert "Chargemol analysis could not be performed." in caplog.text

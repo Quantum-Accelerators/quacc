@@ -23,16 +23,23 @@ from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs, strip_decorator
 
 if TYPE_CHECKING:
-    from typing import Any, Callable
+    from typing import Any, Callable, TypedDict
 
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
+    from quacc.utils.files import Filenames, SourceDirectory
+
+    class PhononDosSchema(TypedDict):
+        relax_job: RunSchema
+        phonon_job: RunSchema
+        q2r_job: RunSchema
+        matdyn_job: RunSchema
 
 
 @job
 def phonon_job(
-    prev_dir: str | Path,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -46,10 +53,8 @@ def phonon_job(
 
     Parameters
     ----------
-    prev_dir
-        Outdir of the previously ran pw.x calculation. This is used to copy
-        the entire tree structure of that directory to the working directory
-        of this calculation.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -59,11 +64,7 @@ def phonon_job(
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
-        `ase.io.espresso.write_espresso_ph` for more information. Some notable keys are:
-
-        - input_data: dict
-        - qpts: list[list[float]] | list[tuple[float]] | list[float]
-        - nat_todo: list[int]
+        [quacc.calculators.espresso.espresso.Espresso][] for more information.
 
     Returns
     -------
@@ -85,16 +86,208 @@ def phonon_job(
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "ph.x Phonon"},
-        copy_files=prev_dir,
+        copy_files=copy_files,
     )
+
+
+@job
+def q2r_job(
+    prev_dir: SourceDirectory, parallel_info: dict[str] | None = None, **calc_kwargs
+) -> RunSchema:
+    """
+    Function to carry out a basic q2r.x calculation. It should allow you to
+    use all the features of the [q2r.x binary](https://www.quantum-espresso.org/Doc/INPUT_Q2R.html#idm51)
+
+    This job requires the results of a previous ph.x calculation, you might
+    want to create your own flow to run both jobs in sequence.
+
+    Parameters
+    ----------
+    prev_dir
+        Outdir of the previously ran ph.x calculation. This is used to copy
+        the the dynamical matrix files.
+    parallel_info
+        Dictionary containing information about the parallelization of the
+        calculation. See the ASE documentation for more information.
+    **calc_kwargs
+        Additional keyword arguments to pass to the Espresso calculator. Set a value to
+        `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
+        [quacc.calculators.espresso.espresso.Espresso][] for more information.
+
+    Returns
+    -------
+    RunSchema
+        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        See the type-hint for the data structure.
+    """
+
+    input_data = Namelist(calc_kwargs.get("input_data"))
+    input_data.to_nested(binary="q2r")
+
+    fildyn = input_data["input"].get("fildyn", "matdyn")
+
+    calc_defaults = {"input_data": {"input": {"flfrc": "q2r.fc", "fildyn": fildyn}}}
+
+    copy_files = {prev_dir: [f"{fildyn}*"]}
+
+    return base_fn(
+        template=EspressoTemplate("q2r"),
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        parallel_info=parallel_info,
+        additional_fields={"name": "q2r.x Phonon"},
+        copy_files=copy_files,
+    )
+
+
+@job
+def matdyn_job(
+    prev_dir: SourceDirectory, parallel_info: dict[str] | None = None, **calc_kwargs
+) -> RunSchema:
+    """
+    Function to carry out a basic matdyn.x calculation. It should allow you to use
+    all the features of the [matdyn.x binary](https://www.quantum-espresso.org/Doc/INPUT_MATDYN.html#idm138)
+
+    This job requires the results of a previous q2r.x calculation, you might
+    want to create your own flow to run both jobs in sequence.
+
+    Parameters
+    ----------
+    prev_dir
+        Outdir of the previously ran q2r.x calculation. This is used to copy
+        the the force constant file.
+    parallel_info
+        Dictionary containing information about the parallelization of the
+        calculation. See the ASE documentation for more information.
+    **calc_kwargs
+        Additional keyword arguments to pass to the Espresso calculator. Set a value to
+        `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
+        [quacc.calculators.espresso.espresso.Espresso][] for more information.
+
+    Returns
+    -------
+    RunSchema
+        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        See the type-hint for the data structure.
+    """
+
+    input_data = Namelist(calc_kwargs.get("input_data"))
+    input_data.to_nested(binary="matdyn")
+
+    flfrc = input_data["input"].get("flfrc", "q2r.fc")
+
+    calc_defaults = {"input_data": {"input": {"flfrc": flfrc}}}
+
+    copy_files = {prev_dir: [f"{flfrc}*"]}
+
+    return base_fn(
+        template=EspressoTemplate("matdyn"),
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        parallel_info=parallel_info,
+        additional_fields={"name": "matdyn Phonon"},
+        copy_files=copy_files,
+    )
+
+
+@flow
+def phonon_dos_flow(
+    atoms: Atoms,
+    job_params: dict[str, Any] | None = None,
+    job_decorators: dict[str, Callable | None] | None = None,
+) -> PhononDosSchema:
+    """
+    Function to carry out a phonon DOS calculation. The phonon calculation is carried out on a coarse q-grid, the force constants are calculated
+    and extrapolated to a finer q-grid, and the phonon DOS is calculated.
+
+    Consists of following jobs that can be modified:
+
+    1. pw.x relaxation
+        - name: "relax_job"
+        - job: [quacc.recipes.espresso.core.relax_job][]
+    2. ph.x calculation
+        - name: "phonon_job"
+        - job: [quacc.recipes.espresso.phonons.phonon_job][]
+    3. q2r.x calculation
+        - name: "q2r_job"
+        - job: [quacc.recipes.espresso.phonons.q2r_job][]
+    4. matdyn.x calculation
+        - name: "matdyn_job"
+        - job: [quacc.recipes.espresso.phonons.matdyn_job][]
+
+    Parameters
+    ----------
+    atoms
+        Atoms object to calculate the phonon DOS.
+    job_params
+        Custom parameters to pass to each Job in the Flow. This is a dictionary where the keys are the names of the jobs and the values are dictionaries of parameters.
+    job_decorators
+        Custom decorators to apply to each Job in the Flow. This is a dictionary where the keys are the names of the jobs and the values are decorators.
+
+    Returns
+    -------
+    RunSchema
+        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        See the type-hint for the data structure.
+    """
+
+    relax_job_defaults = {
+        "input_data": {
+            "control": {"forc_conv_thr": 5.0e-5},
+            "electrons": {"conv_thr": 1e-12},
+        }
+    }
+    ph_job_defaults = {
+        "input_data": {
+            "inputph": {
+                "tr2_ph": 1e-12,
+                "alpha_mix(1)": 0.1,
+                "verbosity": "high",
+                "ldisp": True,
+                "nq1": 4,
+                "nq2": 4,
+                "nq3": 4,
+            }
+        }
+    }
+    matdyn_job_defaults = {
+        "input_data": {"input": {"dos": True, "nk1": 32, "nk2": 32, "nk3": 32}}
+    }
+
+    calc_defaults = {
+        "relax_job": relax_job_defaults,
+        "phonon_job": ph_job_defaults,
+        "matdyn_job": matdyn_job_defaults,
+    }
+
+    job_params = recursive_dict_merge(calc_defaults, job_params)
+
+    pw_job, ph_job, fc_job, dos_job = customize_funcs(
+        ["relax_job", "phonon_job", "q2r_job", "matdyn_job"],
+        [relax_job, phonon_job, q2r_job, matdyn_job],
+        parameters=job_params,
+        decorators=job_decorators,
+    )
+
+    pw_job_results = pw_job(atoms)
+    ph_job_results = ph_job(pw_job_results["dir_name"])
+    fc_job_results = fc_job(ph_job_results["dir_name"])
+    dos_job_results = dos_job(fc_job_results["dir_name"])
+
+    return {
+        "relax_job": pw_job_results,
+        "phonon_job": ph_job_results,
+        "q2r_job": fc_job_results,
+        "matdyn_job": dos_job_results,
+    }
 
 
 @flow
 def grid_phonon_flow(
     atoms: Atoms,
     nblocks: int = 1,
-    job_decorators: dict[str, Callable | None] | None = None,
     job_params: dict[str, Any] | None = None,
+    job_decorators: dict[str, Callable | None] | None = None,
 ) -> RunSchema:
     """
     This function performs grid parallelization of a ph.x calculation. Each
@@ -172,11 +365,11 @@ def grid_phonon_flow(
         prev_dirs = {}
         for result in grid_results:
             prev_dirs[result["dir_name"]] = [
-                "**/*.xml.*",
-                "**/data-file-schema.xml.*",
-                "**/charge-density.*",
-                "**/wfc*.*",
-                "**/paw.txt.*",
+                Path("**", "*.xml.*"),
+                Path("**", "data-file-schema.xml.*"),
+                Path("**", "charge-density.*"),
+                Path("**", "wfc*.*"),
+                Path("**", "paw.txt.*"),
             ]
         return strip_decorator(ph_recover_job)(prev_dirs)
 
@@ -216,14 +409,14 @@ def grid_phonon_flow(
             ph_input_data["inputph"]["start_q"] = qnum
             ph_input_data["inputph"]["last_q"] = qnum
             repr_to_do = grid_prepare_repr(qdata["representations"], nblocks)
-            file_to_copy = grid_copy_files(
+            files_to_copy = grid_copy_files(
                 ph_input_data, ph_init_job_results["dir_name"], qnum, qdata["qpoint"]
             )
             for representation in repr_to_do:
                 ph_input_data["inputph"]["start_irr"] = representation[0]
                 ph_input_data["inputph"]["last_irr"] = representation[-1]
                 ph_job_results = ph_job(
-                    deepcopy(file_to_copy), input_data=deepcopy(ph_input_data)
+                    deepcopy(files_to_copy), input_data=deepcopy(ph_input_data)
                 )
                 grid_results.append(ph_job_results)
 

@@ -1,5 +1,5 @@
 """
-This module, 'dos.py', contains recipes for performing phonon calculations using the
+This module, 'dos.py', contains recipes for performing dos calculations using the
 dos.x binary from Quantum ESPRESSO via the quacc library.
 
 The recipes provided in this module are jobs and flows that can be used to perform
@@ -8,7 +8,6 @@ dos calculations.
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from quacc import flow, job
@@ -25,6 +24,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
     class DosSchema(TypedDict):
         static_job: RunSchema
@@ -34,12 +34,11 @@ if TYPE_CHECKING:
     class ProjwfcSchema(TypedDict):
         static_job: RunSchema
         non_scf_job: RunSchema
-        projwfc_job: RunSchema
 
 
 @job
 def dos_job(
-    prev_dir: str | Path,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -47,15 +46,13 @@ def dos_job(
     """
     Function to carry out a basic dos.x calculation (density of states).
     It is mainly used to extract the charge density and wavefunction from a previous pw.x calculation.
-    It generates the total density of states. Fore more details please see
+    It generates the total density of states. For more details, please see
     https://www.quantum-espresso.org/Doc/INPUT_DOS.html
 
     Parameters
     ----------
-    prev_dir
-        Outdir of the previously ran pw.x calculation. This is used to copy
-        the entire tree structure of that directory to the working directory
-        of this calculation.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -77,13 +74,13 @@ def dos_job(
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "dos.x Density-of-States"},
-        copy_files=prev_dir,
+        copy_files=copy_files,
     )
 
 
 @job
 def projwfc_job(
-    prev_dir: str | Path,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -96,10 +93,8 @@ def projwfc_job(
 
     Parameters
     ----------
-    prev_dir
-        Outdir of the previously ran pw.x calculation. This is used to copy
-        the entire tree structure of that directory to the working directory
-        of this calculation.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -121,7 +116,7 @@ def projwfc_job(
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "projwfc.x Projects-wavefunctions"},
-        copy_files=prev_dir,
+        copy_files=copy_files,
     )
 
 
@@ -197,20 +192,20 @@ def dos_flow(
     )
 
     static_results = static_job_(atoms)
-    file_to_copy = pw_copy_files(
+    files_to_copy = pw_copy_files(
         job_params["static_job"].get("input_data"),
         static_results["dir_name"],
         include_wfc=False,
     )
 
-    non_scf_results = non_scf_job_(atoms, prev_dir=file_to_copy)
-    file_to_copy = pw_copy_files(
+    non_scf_results = non_scf_job_(atoms, files_to_copy)
+    files_to_copy = pw_copy_files(
         job_params["non_scf_job"].get("input_data"),
         non_scf_results["dir_name"],
         include_wfc=False,
     )
 
-    dos_results = dos_job_(prev_dir=file_to_copy)
+    dos_results = dos_job_(files_to_copy)
 
     return {
         "static_job": static_results,
@@ -291,20 +286,20 @@ def projwfc_flow(
     )
 
     static_results = static_job_(atoms)
-    file_to_copy = pw_copy_files(
+    files_to_copy = pw_copy_files(
         job_params["static_job"].get("input_data"),
         static_results["dir_name"],
         include_wfc=False,
     )
 
-    non_scf_results = non_scf_job_(atoms, prev_dir=file_to_copy)
-    file_to_copy = pw_copy_files(
+    non_scf_results = non_scf_job_(atoms, files_to_copy)
+    files_to_copy = pw_copy_files(
         job_params["non_scf_job"].get("input_data"),
         non_scf_results["dir_name"],
         include_wfc=True,
     )
 
-    projwfc_results = projwfc_job_(prev_dir=file_to_copy)
+    projwfc_results = projwfc_job_(files_to_copy)
 
     return {
         "static_job": static_results,

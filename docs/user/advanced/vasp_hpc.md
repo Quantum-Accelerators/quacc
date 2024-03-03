@@ -75,7 +75,9 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     concurrent_jobs = 2
     nodes_per_job = 1
     cores_per_node = 128
-    vasp_parallel_cmd = f"srun -N {nodes_per_job} --ntasks-per-node={cores_per_node} --cpu_bind=cores"
+    vasp_parallel_cmd = (
+        f"srun -N {nodes_per_job} --ntasks-per-node={cores_per_node} --cpu_bind=cores"
+    )
     min_slurm_allocations = 0
     max_slurm_allocations = 1
 

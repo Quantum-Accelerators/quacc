@@ -31,10 +31,11 @@ from quacc.utils.files import copy_decompress_files
 DATA_DIR = Path(__file__).parent / "data"
 
 
-def test_static_job(tmp_path, monkeypatch):
+def test_static_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
 
     atoms = bulk("Si")
 
@@ -42,7 +43,11 @@ def test_static_job(tmp_path, monkeypatch):
     input_data = {"control": {"pseudo_dir": tmp_path}}
 
     results = static_job(
-        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=None
+        atoms,
+        input_data=input_data,
+        pseudopotentials=pseudopotentials,
+        kpts=None,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
     )
 
     assert_allclose(
@@ -61,10 +66,11 @@ def test_static_job(tmp_path, monkeypatch):
     assert results["parameters"].get("kpts") is None
 
 
-def test_static_job_v2(tmp_path, monkeypatch):
+def test_static_job_v2(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
 
     atoms = bulk("Si")
 
@@ -77,7 +83,11 @@ def test_static_job_v2(tmp_path, monkeypatch):
     pseudopotentials = {"Si": "Si.upf"}
 
     results = static_job(
-        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.5
+        atoms,
+        input_data=input_data,
+        pseudopotentials=pseudopotentials,
+        kspacing=0.5,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
     )
 
     assert_allclose(
@@ -97,14 +107,15 @@ def test_static_job_v2(tmp_path, monkeypatch):
     assert "kpts" not in results["parameters"]
     assert results["parameters"]["kspacing"] == 0.5
 
-    pp_results = post_processing_job(prev_dir=results["dir_name"])
+    pp_results = post_processing_job(results["dir_name"])
     assert Path(pp_results["dir_name"], "pseudo_charge_density.cube.gz").is_file()
 
 
-def test_static_job_outdir(tmp_path, monkeypatch):
+def test_static_job_outdir(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
 
     atoms = bulk("Si")
 
@@ -117,7 +128,11 @@ def test_static_job_outdir(tmp_path, monkeypatch):
     pseudopotentials = {"Si": "Si.upf"}
 
     results = static_job(
-        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=None
+        atoms,
+        input_data=input_data,
+        pseudopotentials=pseudopotentials,
+        kpts=None,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
     )
 
     assert_allclose(
@@ -135,10 +150,11 @@ def test_static_job_outdir(tmp_path, monkeypatch):
     assert new_input_data["control"]["calculation"] == "scf"
 
 
-def test_static_job_outdir_abs(tmp_path, monkeypatch):
+def test_static_job_outdir_abs(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
 
     atoms = bulk("Si")
 
@@ -154,14 +170,18 @@ def test_static_job_outdir_abs(tmp_path, monkeypatch):
 
     with pytest.raises(ValueError):
         static_job(
-            atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=None
+            atoms,
+            input_data=input_data,
+            pseudopotentials=pseudopotentials,
+            kpts=None,
+            parallel_info=ESPRESSO_PARALLEL_INFO,
         )
 
 
 def test_static_job_dir_fail(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
 
     atoms = bulk("Si")
 
@@ -172,7 +192,7 @@ def test_static_job_dir_fail(tmp_path, monkeypatch):
 def test_static_job_test_run(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
 
     atoms = bulk("Si")
 
@@ -191,10 +211,11 @@ def test_static_job_test_run(tmp_path, monkeypatch):
         )
 
 
-def test_relax_job(tmp_path, monkeypatch):
+def test_relax_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
 
     atoms = bulk("Si")
     atoms[0].position += 0.05
@@ -203,7 +224,11 @@ def test_relax_job(tmp_path, monkeypatch):
     input_data = {"control": {"pseudo_dir": tmp_path}}
 
     results = relax_job(
-        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=None
+        atoms,
+        input_data=input_data,
+        pseudopotentials=pseudopotentials,
+        kpts=None,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
     )
 
     with pytest.raises(AssertionError):
@@ -216,10 +241,11 @@ def test_relax_job(tmp_path, monkeypatch):
     assert new_input_data["control"]["calculation"] == "relax"
 
 
-def test_ase_relax_job(tmp_path, monkeypatch):
+def test_ase_relax_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
 
     atoms = bulk("Si")
     atoms[0].position += 0.05
@@ -233,6 +259,7 @@ def test_ase_relax_job(tmp_path, monkeypatch):
         pseudopotentials=pseudopotentials,
         kpts=None,
         opt_params={"max_steps": 10, "fmax": 1.0e-1, "optimizer": BFGS},
+        parallel_info=ESPRESSO_PARALLEL_INFO,
     )
 
     with pytest.raises(AssertionError):
@@ -249,10 +276,11 @@ def test_ase_relax_job(tmp_path, monkeypatch):
     assert new_input_data["control"]["calculation"] == "scf"
 
 
-def test_ase_relax_cell_job(tmp_path, monkeypatch):
+def test_ase_relax_cell_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
 
     atoms = bulk("Si")
     atoms[0].position += 0.05
@@ -273,13 +301,15 @@ def test_ase_relax_cell_job(tmp_path, monkeypatch):
             pseudopotentials=pseudopotentials,
             kpts=None,
             opt_params={"max_steps": 2, "fmax": 1.0e-1, "optimizer": BFGS},
+            parallel_info=ESPRESSO_PARALLEL_INFO,
         )
 
 
-def test_relax_job_cell(tmp_path, monkeypatch):
+def test_relax_job_cell(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
 
     atoms = bulk("Si")
 
@@ -296,6 +326,7 @@ def test_relax_job_cell(tmp_path, monkeypatch):
         input_data=input_data,
         pseudopotentials=pseudopotentials,
         kpts=None,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
     )
 
     with pytest.raises(AssertionError):
@@ -309,23 +340,32 @@ def test_relax_job_cell(tmp_path, monkeypatch):
     assert new_input_data["control"]["calculation"] == "vc-relax"
 
 
-def test_non_scf_job(tmp_path, monkeypatch):
+def test_non_scf_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
 
     atoms = bulk("Si")
 
     pseudopotentials = {"Si": "Si.upf"}
     input_data = {"control": {"pseudo_dir": tmp_path}}
     static_result = static_job(
-        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=None
+        atoms,
+        input_data=input_data,
+        pseudopotentials=pseudopotentials,
+        kpts=None,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
     )
-    file_to_copy = pw_copy_files(
+    files_to_copy = pw_copy_files(
         input_data, static_result["dir_name"], include_wfc=False
     )
     results = non_scf_job(
-        atoms, file_to_copy, input_data=input_data, pseudopotentials=pseudopotentials
+        atoms,
+        files_to_copy,
+        input_data=input_data,
+        pseudopotentials=pseudopotentials,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
     )
 
     assert_allclose(
@@ -346,10 +386,11 @@ def test_non_scf_job(tmp_path, monkeypatch):
     assert results["parameters"].get("kpts") is None
 
 
-def test_pw_copy(tmp_path, monkeypatch):
+def test_pw_copy(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
 
     atoms = bulk("Si")
 
@@ -357,7 +398,11 @@ def test_pw_copy(tmp_path, monkeypatch):
     input_data = {"control": {"pseudo_dir": tmp_path, "max_seconds": 5}}
 
     results = static_job(
-        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=None
+        atoms,
+        input_data=input_data,
+        pseudopotentials=pseudopotentials,
+        kpts=None,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
     )
 
     new_input_data = results["parameters"]["input_data"]
@@ -372,6 +417,7 @@ def test_pw_copy(tmp_path, monkeypatch):
         pseudopotentials=pseudopotentials,
         kpts=None,
         copy_files=files_to_copy,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
     )
     assert new_input_data["system"]["ecutwfc"] == 30.0
     assert new_input_data["system"]["ecutrho"] == 240.0

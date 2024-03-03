@@ -9,7 +9,6 @@ from quacc import SETTINGS, __version__
 from quacc._cli.quacc import app
 
 TEST_YAML = Path.cwd() / "test_quacc.yaml"
-DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 
 def setup_module():

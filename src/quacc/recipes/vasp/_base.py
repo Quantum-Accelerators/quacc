@@ -10,12 +10,12 @@ from quacc.schemas.vasp import vasp_summarize_run
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from typing import Any
 
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.vasp import VaspSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
 
 def base_fn(
@@ -23,8 +23,9 @@ def base_fn(
     preset: str | None = None,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
+    report_mp_corrections: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> VaspSchema:
     """
     Base job function for VASP recipes.
@@ -40,11 +41,13 @@ def base_fn(
     calc_swaps
         Dictionary of custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [ase.calculators.vasp.vasp.Vasp][].
+        keys, refer to [quacc.calculators.vasp.vasp.Vasp][].
+    report_mp_corrections
+        Whether to report the Materials Project corrections in the results.
     additional_fields
         Additional fields to supply to the summarizer.
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy (and decompress) from source to the runtime directory.
 
     Returns
     -------
@@ -56,4 +59,8 @@ def base_fn(
     atoms.calc = Vasp(atoms, preset=preset, **calc_flags)
     final_atoms = run_calc(atoms, copy_files=copy_files)
 
-    return vasp_summarize_run(final_atoms, additional_fields=additional_fields)
+    return vasp_summarize_run(
+        final_atoms,
+        report_mp_corrections=report_mp_corrections,
+        additional_fields=additional_fields,
+    )

@@ -124,7 +124,7 @@ def make_defects_from_bulk(
 
         # Make atoms objects and store defect stats
         for distortions, defect_struct in distortion_dict.items():
-            final_defect = AseAtomsAdaptor.get_atoms(defect_struct)
+            final_defect = defect_struct.to_ase_atoms()
             defect_stats = {
                 "defect_symbol": defect_symbol,
                 "defect_charge": defect_charge,
@@ -167,7 +167,8 @@ def _get_defect_entry_from_defect(
     defect_supercell.remove(dummy_site)
 
     computed_structure_entry = ComputedStructureEntry(
-        structure=defect_supercell, energy=0.0  # needs to be set, so set to 0.0
+        structure=defect_supercell,
+        energy=0.0,  # needs to be set, so set to 0.0
     )
 
     return DefectEntry(
