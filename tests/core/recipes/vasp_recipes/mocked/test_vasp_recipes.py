@@ -595,6 +595,7 @@ def test_mp_gga_relax_job():
         "efermi": "midgap",  # added by copilot
         "encut": 520,
         "gamma": True,
+        "gga": "PE",
         "ibrion": 2,
         "isif": 3,
         "ismear": -5,
@@ -618,6 +619,7 @@ def test_mp_gga_relax_job():
         "sigma": 0.05,
         "pp": "pbe",
         "setups": {"O": "", "Ni": "_pv"},
+        "xc": "pbe",
     }
     assert output["atoms"].get_chemical_symbols() == ["O", "Ni"]
 
@@ -634,6 +636,7 @@ def test_mp_gga_static_job():
         "efermi": "midgap",  # added by copilot
         "encut": 520,
         "gamma": True,
+        "gga": "PE",
         "ismear": -5,
         "ispin": 2,
         "kpts": [6, 13, 13],
@@ -656,6 +659,7 @@ def test_mp_gga_static_job():
         "sigma": 0.05,
         "pp": "pbe",
         "setups": {"Ni": "_pv", "O": ""},
+        "xc": "pbe",
     }
 
 
@@ -670,6 +674,7 @@ def test_mp_gga_relax_flow():
         "efermi": "midgap",  # added by copilot
         "encut": 520,
         "gamma": True,
+        "gga": "pe",
         "ibrion": 2,
         "isif": 3,
         "ismear": -5,
@@ -693,6 +698,7 @@ def test_mp_gga_relax_flow():
         "sigma": 0.05,
         "pp": "pbe",
         "setups": {"O": "", "Ni": "_pv"},
+        "xc": "pbe",
     }
     relax2_params = relax_params.copy()
     relax2_params["magmom"] = [0.0, 0.0]

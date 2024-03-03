@@ -69,7 +69,7 @@ def mp_gga_relax_job(
         Dictionary of results.
     """
 
-    calc_defaults = {"pmg_input_set": MPRelaxSet}
+    calc_defaults = {"pmg_input_set": MPRelaxSet, "xc": "pbe"}
     return base_fn(
         atoms,
         calc_defaults=calc_defaults,
@@ -116,6 +116,7 @@ def mp_gga_static_job(
         "algo": "fast",
         "lwave": True,  # Deviation from MP (but logical)
         "lreal": False,
+        "xc": "pbe",
     }
     return base_fn(
         atoms,
