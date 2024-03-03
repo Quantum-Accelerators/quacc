@@ -212,6 +212,16 @@ def test_summarize_mp(monkeypatch, mp_run1, tmp_path):
     assert results["entry"].correction == pytest.approx(-3.2279999999999998)
 
 
+def test_summarize_mp_bad(monkeypatch, run1, tmp_path, caplog):
+    monkeypatch.chdir(tmp_path)
+    p = tmp_path / "vasp_run"
+    copytree(run1, p)
+    atoms = read(p / "OUTCAR.gz")
+    with caplog.at_level(logging.WARNING):
+        vasp_summarize_run(atoms, dir_path=p, report_mp_corrections=True)
+    assert "invalid run type" in caplog.text
+
+
 def test_no_bader(tmp_path, monkeypatch, run1, caplog):
     monkeypatch.chdir(tmp_path)
 
