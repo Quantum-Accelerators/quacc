@@ -119,7 +119,7 @@ class EspressoTemplate(EspressoTemplate_):
 
         directory = Path(directory)
         self._output_handler(parameters, directory)
-        parameters = self._sanity_checks(parameters, binary=self.binary)
+        parameters = self._sanity_checks(parameters)
 
         if self.test_run:
             self._test_run(parameters, directory)
