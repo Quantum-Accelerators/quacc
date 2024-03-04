@@ -53,8 +53,6 @@ class VibResults(TypedDict):
 
 
 class VibSchema(AtomsSchema):
-    """Schema for [quacc.schemas.ase.summarize_vib_run][]"""
-
     parameters: Parameters | None
     parameters_vib: ParametersVib | None
     results: VibResults
