@@ -33,12 +33,8 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.schemas._aliases.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
+    from quacc.schemas._aliases.ase import OptSchema, RunSchema, VibThermoSchema
     from quacc.utils.files import Filenames, SourceDirectory
-
-    class FreqSchema(RunSchema):
-        vib: VibSchema
-        thermo: ThermoSchema
 
 
 @job
@@ -141,7 +137,7 @@ def freq_job(
     pressure: float = 1.0,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
-) -> FreqSchema:
+) -> VibThermoSchema:
     """
     Perform a frequency calculation using the given atoms object.
 
@@ -162,7 +158,7 @@ def freq_job(
 
     Returns
     -------
-    FreqSchema
+    VibThermoSchema
         Dictionary of results. See the type-hint for the data structure.
     """
 
