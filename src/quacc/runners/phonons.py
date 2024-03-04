@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
-from quacc.atoms.core import copy_atoms
 from quacc.runners.prep import calc_cleanup, calc_setup
 
 try:
@@ -54,11 +53,10 @@ def run_phonopy(
     Phonopy
         The phonopy object with the results.
     """
-    # Copy atoms so we don't modify it in-place
-    atoms = copy_atoms(atoms)
+    atoms = Atoms()  # placeholder
 
     # Perform staging operations
-    tmpdir, job_results_dir = calc_setup(Atoms())
+    tmpdir, job_results_dir = calc_setup(atoms)
 
     # Run phonopy
     phonon.forces = forces
