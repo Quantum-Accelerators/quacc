@@ -289,6 +289,11 @@ def summarize_vib_and_thermo(
     )
     task_doc = clean_task_doc(unsorted_task_doc)
 
+    directory = vib.atoms.calc.directory
+    if SETTINGS.WRITE_PICKLE:
+        with Path(directory, "quacc_results.pkl").open("wb") as f:
+            pickle.dump(task_doc, f)
+
     if store:
         results_to_db(store, task_doc)
 
@@ -403,10 +408,6 @@ def _summarize_vib_run(
     )
     task_doc = clean_task_doc(unsorted_task_doc)
 
-    if SETTINGS.WRITE_PICKLE:
-        with Path(directory, "quacc_results.pkl").open("wb") as f:
-            pickle.dump(task_doc, f)
-
     if store:
         results_to_db(store, task_doc)
 
@@ -493,10 +494,6 @@ def _summarize_ideal_gas_thermo(
         atoms_metadata, inputs, results, additional_fields
     )
     task_doc = clean_task_doc(unsorted_task_doc)
-
-    # if SETTINGS.WRITE_PICKLE:
-    #     with Path(directory, "quacc_results.pkl").open("wb") as f:
-    #         pickle.dump(task_doc, f)
 
     if store:
         results_to_db(store, task_doc)
