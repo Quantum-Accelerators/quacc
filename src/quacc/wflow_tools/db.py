@@ -5,6 +5,8 @@ from __future__ import annotations
 import uuid
 from typing import TYPE_CHECKING
 
+from monty.json import jsanitize
+
 if TYPE_CHECKING:
     from typing import Any
 
@@ -32,8 +34,10 @@ def results_to_db(store: Store, results: dict[str, Any] | list[dict]) -> None:
     if not isinstance(results, list):
         results = [results]
 
-    for result in results:
-        result["uuid"] = str(uuid.uuid4())
+    sanitized_results = jsanitize(results, enum_values=True, recursive_msonable=True)
+
+    for result in sanitized_results:
+        sanitized_results["uuid"] = str(uuid.uuid4())
 
     with store:
-        store.update(results, key="uuid")
+        store.update(sanitized_results, key="uuid")

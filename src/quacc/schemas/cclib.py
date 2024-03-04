@@ -198,7 +198,7 @@ def _make_cclib_schema(
         raise RuntimeError(msg)
 
     # Fetch all the attributes (i.e. all input/outputs from cclib)
-    attributes = jsanitize(cclib_obj.getattributes())
+    attributes = cclib_obj.getattributes()
 
     # monty datetime bug workaround:
     # github.com/materialsvirtuallab/monty/issues/275
