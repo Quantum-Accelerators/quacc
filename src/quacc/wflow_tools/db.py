@@ -34,7 +34,10 @@ def results_to_db(store: Store, results: dict[str, Any] | list[dict]) -> None:
     if not isinstance(results, list):
         results = [results]
 
-    sanitized_results = [jsanitize(result, enum_values=True, recursive_msonable=True) for result in results]
+    sanitized_results = [
+        jsanitize(result, enum_values=True, recursive_msonable=True)
+        for result in results
+    ]
 
     for result in sanitized_results:
         result["uuid"] = str(uuid.uuid4())
