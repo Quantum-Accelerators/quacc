@@ -37,13 +37,13 @@ def atoms_as_dict(atoms: Atoms) -> dict[str, Any]:
     # Normally, we would want to this to be a wrapper around atoms.todict() with @module and
     # @class key-value pairs inserted. However, atoms.todict()/atoms.fromdict() does not currently
     # work properly with constraints.
-    atoms_info = atoms.info.copy()
-    atoms.info = {}
+    atoms_no_info = atoms.copy()
+    atoms_no_info.info: dict = {}
     return {
         "@module": "ase.atoms",
         "@class": "Atoms",
-        "atoms_json": encode(atoms),
-        "atoms_info": jsanitize(atoms_info, strict=True),
+        "atoms_json": encode(atoms_no_info),
+        "atoms_info": jsanitize(atoms.info, strict=True),
     }
 
 
