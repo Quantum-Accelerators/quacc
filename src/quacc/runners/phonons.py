@@ -53,7 +53,7 @@ def run_phonopy(
     Phonopy
         The phonopy object with the results.
     """
-    atoms = Atoms()  # placeholder
+    atoms = None  # placeholder
 
     # Perform staging operations
     tmpdir, job_results_dir = calc_setup(atoms)
