@@ -120,8 +120,8 @@ class QuaccSettings(BaseSettings):
     GZIP_FILES: bool = Field(
         True, description="Whether generated files should be gzip'd."
     )
-    WRITE_JSON: bool = Field(
-        True, description="Whether the results schema should be written to a json file."
+    WRITE_PICKLE: bool = Field(
+        True, description="Whether the results schema should be written to a .pkl file."
     )
     CHECK_CONVERGENCE: bool = Field(
         True,
@@ -193,7 +193,7 @@ class QuaccSettings(BaseSettings):
             "projwfc": "projwfc.x",
             "pp": "pp.x",
             "wannier90": "wannier90.x",
-            "fs": "fs.x"
+            "fs": "fs.x",
         },
         description="Name for each espresso binary.",
     )
