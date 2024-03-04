@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 - Fixed pickle-ability of the schemas
-- Fixed multithreaded `@task` distribution with Espresso recipes
+- Fixed multithreaded `@task` distribution with Espresso recipes and common phonon flow
 
 ### Removed
 
