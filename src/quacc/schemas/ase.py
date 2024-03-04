@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from ase import units
 from ase.io import read
+from ase.vibrations import Vibrations
 from ase.vibrations.data import VibrationsData
 
 from quacc import SETTINGS, __version__
@@ -26,7 +27,6 @@ if TYPE_CHECKING:
     from ase.io import Trajectory
     from ase.optimize.optimize import Optimizer
     from ase.thermochemistry import IdealGasThermo
-    from ase.vibrations import Vibrations
     from maggma.core import Store
 
     from quacc.schemas._aliases.ase import (
