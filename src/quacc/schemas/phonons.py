@@ -46,7 +46,7 @@ def summarize_phonopy(
     ----------
     phonon
         Phonopy object
-    atoms
+    input_atoms
         Input atoms object
     parameters
         Calculator parameters used to generate the phonon object.
