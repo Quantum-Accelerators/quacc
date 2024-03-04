@@ -53,7 +53,6 @@ class VibResults(TypedDict):
 
 
 class VibSchema(AtomsSchema):
-    """Schema for [quacc.schemas.ase._summarize_vib_run][]"""
 
     parameters: Parameters | None
     parameters_vib: ParametersVib | None
@@ -85,7 +84,6 @@ class ThermoResults(TypedDict):
 
 
 class ThermoSchema(AtomsSchema):
-    """Schema for [quacc.schemas.ase._summarize_ideal_gas_thermo][]"""
 
     parameters_thermo: ParametersThermo
     results: ThermoResults
