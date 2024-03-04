@@ -14,7 +14,6 @@ from quacc.schemas.ase import (
     summarize_opt_run,
     summarize_run,
     summarize_vib_and_thermo,
-    summarize_vib_run,
 )
 from quacc.utils.dicts import recursive_dict_merge
 
