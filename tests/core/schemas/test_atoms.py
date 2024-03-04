@@ -1,9 +1,6 @@
 from pathlib import Path
-
-import numpy as np
 import pytest
 from ase.build import bulk, molecule
-from ase.io import read
 from monty.json import MontyDecoder, jsanitize
 from pymatgen.io.ase import AseAtomsAdaptor
 
