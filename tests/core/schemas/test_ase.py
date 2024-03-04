@@ -209,7 +209,7 @@ def test_summarize_vib_run(tmp_path, monkeypatch):
     vib.run()
 
     store = MemoryStore()
-    summarize_vib_run(vib, store=store)
+    _summarize_vib_run(vib, store=store)
     assert store.count() == 1
 
     # Make sure info tags are handled appropriately
