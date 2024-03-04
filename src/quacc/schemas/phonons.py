@@ -82,7 +82,6 @@ def summarize_phonopy(
             "force_constants": phonon.force_constants,
         }
     }
-    phonon.save(Path(directory, "phonopy.yaml"), settings={"force_constants": True})
 
     atoms_metadata = atoms_to_metadata(input_atoms)
     unsorted_task_doc = recursive_dict_merge(
