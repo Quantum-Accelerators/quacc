@@ -14,10 +14,10 @@ from maggma.stores import MemoryStore
 from monty.json import MontyDecoder, jsanitize
 
 from quacc.schemas.ase import (
-    summarize_ideal_gas_thermo,
+    _summarize_ideal_gas_thermo,
+    _summarize_vib_run,
     summarize_opt_run,
     summarize_run,
-    summarize_vib_run,
 )
 
 FILE_DIR = Path(__file__).parent
@@ -175,7 +175,7 @@ def test_summarize_vib_run(tmp_path, monkeypatch):
     vib = Vibrations(atoms)
     vib.run()
 
-    results = summarize_vib_run(vib)
+    results = _summarize_vib_run(vib)
     assert results["atoms"] == input_atoms
     assert results["natoms"] == len(atoms)
     assert results["parameters_vib"]["delta"] == vib.delta
@@ -219,7 +219,7 @@ def test_summarize_vib_run(tmp_path, monkeypatch):
     vib = Vibrations(atoms)
     vib.run()
 
-    results = summarize_vib_run(vib)
+    results = _summarize_vib_run(vib)
     assert results.get("atoms_info", {}) != {}
     assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
@@ -235,7 +235,7 @@ def test_summarize_vib_run(tmp_path, monkeypatch):
     vib = Vibrations(atoms)
     vib.run()
 
-    results = summarize_vib_run(vib)
+    results = _summarize_vib_run(vib)
     assert results["atoms"] == input_atoms
     assert results["nsites"] == len(atoms)
     assert results["parameters_vib"]["delta"] == vib.delta
@@ -251,7 +251,7 @@ def test_summarize_ideal_gas_thermo(tmp_path, monkeypatch):
     # Make sure metadata is made
     atoms = molecule("N2")
     igt = IdealGasThermo([0.34], "linear", atoms=atoms, spin=0, symmetrynumber=2)
-    results = summarize_ideal_gas_thermo(igt)
+    results = _summarize_ideal_gas_thermo(igt)
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["parameters_thermo"]["vib_energies"] == [0.34]
@@ -262,9 +262,9 @@ def test_summarize_ideal_gas_thermo(tmp_path, monkeypatch):
     # Test DB
     atoms = molecule("N2")
     igt = IdealGasThermo([0.34], "linear", atoms=atoms, spin=0, symmetrynumber=2)
-    summarize_ideal_gas_thermo(igt)
+    _summarize_ideal_gas_thermo(igt)
     store = MemoryStore()
-    summarize_ideal_gas_thermo(igt, store=store)
+    _summarize_ideal_gas_thermo(igt, store=store)
     assert store.count() == 1
 
     # Make sure right number of vib energies are reported
@@ -272,7 +272,7 @@ def test_summarize_ideal_gas_thermo(tmp_path, monkeypatch):
     igt = IdealGasThermo(
         [0.0, 0.34], "linear", atoms=atoms, potentialenergy=-1, spin=0, symmetrynumber=2
     )
-    results = summarize_ideal_gas_thermo(igt)
+    results = _summarize_ideal_gas_thermo(igt)
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["parameters_thermo"]["vib_energies"] == [0.34]
@@ -286,7 +286,7 @@ def test_summarize_ideal_gas_thermo(tmp_path, monkeypatch):
     igt = IdealGasThermo(
         [0.0, 0.34], "linear", atoms=atoms, potentialenergy=-1, spin=0, symmetrynumber=2
     )
-    results = summarize_ideal_gas_thermo(igt)
+    results = _summarize_ideal_gas_thermo(igt)
     assert results.get("atoms_info", {}) != {}
     assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
@@ -315,7 +315,7 @@ def test_summarize_ideal_gas_thermo(tmp_path, monkeypatch):
         spin=0.5,
         symmetrynumber=6,
     )
-    results = summarize_ideal_gas_thermo(igt, temperature=1000.0, pressure=20.0)
+    results = _summarize_ideal_gas_thermo(igt, temperature=1000.0, pressure=20.0)
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
     assert len(results["parameters_thermo"]["vib_energies"]) == 6
@@ -335,7 +335,7 @@ def test_summarize_ideal_gas_thermo(tmp_path, monkeypatch):
     MontyDecoder().process_decoded(d)
 
     with pytest.raises(ValueError):
-        summarize_ideal_gas_thermo(igt, charge_and_multiplicity=[0, 1])
+        _summarize_ideal_gas_thermo(igt, charge_and_multiplicity=[0, 1])
 
 
 def test_errors(tmp_path, monkeypatch):
