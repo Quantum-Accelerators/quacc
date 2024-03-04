@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 @requires(phonopy, "This schema relies on phonopy")
 def summarize_phonopy(
     phonon: Phonopy,
-    atoms: Atoms,
+    input_atoms: Atoms,
     parameters: dict[str, Any] | None = None,
     directory: str | Path = ".",
     additional_fields: dict[str, Any] | None = None,
@@ -84,7 +84,7 @@ def summarize_phonopy(
     }
     phonon.save(Path(directory, "phonopy.yaml"), settings={"force_constants": True})
 
-    atoms_metadata = atoms_to_metadata(atoms)
+    atoms_metadata = atoms_to_metadata(input_atoms)
     unsorted_task_doc = recursive_dict_merge(
         atoms_metadata, inputs, results, additional_fields
     )
