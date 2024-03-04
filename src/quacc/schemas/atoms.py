@@ -56,6 +56,7 @@ def atoms_to_metadata(
     additional_fields = additional_fields or {}
     atoms = copy_atoms(atoms)
     results = {}
+    atoms.calc = None
 
     # Set any charge or multiplicity keys
     if not atoms.pbc.any():
