@@ -120,7 +120,9 @@ def summarize_run(
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_JSON:
-        jsanitized_task_doc = jsanitize(task_doc, enum_values=True, recursive_msonable=True)
+        jsanitized_task_doc = jsanitize(
+            task_doc, enum_values=True, recursive_msonable=True
+        )
         dumpfn(jsanitized_task_doc, "quacc_results.json")
 
     if store:
@@ -224,7 +226,9 @@ def summarize_opt_run(
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_JSON:
-        jsanitized_task_doc = jsanitize(task_doc, enum_values=True, recursive_msonable=True)
+        jsanitized_task_doc = jsanitize(
+            task_doc, enum_values=True, recursive_msonable=True
+        )
         dumpfn(jsanitized_task_doc, "quacc_results.json")
 
     if store:
@@ -342,7 +346,9 @@ def summarize_vib_run(
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_JSON:
-        jsanitized_task_doc = jsanitize(task_doc, enum_values=True, recursive_msonable=True)
+        jsanitized_task_doc = jsanitize(
+            task_doc, enum_values=True, recursive_msonable=True
+        )
         dumpfn(jsanitized_task_doc, "quacc_results.json")
 
     if store:
