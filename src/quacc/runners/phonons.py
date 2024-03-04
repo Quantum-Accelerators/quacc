@@ -16,7 +16,6 @@ except ImportError:
     has_deps = False
 
 if TYPE_CHECKING:
-    from ase.atoms import Atoms
     from numpy.typing import NDArray
 
     if phonopy:
