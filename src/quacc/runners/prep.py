@@ -55,7 +55,7 @@ def calc_setup(
     tmpdir = make_unique_dir(base_path=tmpdir_base, prefix="tmp-quacc-")
 
     # Set the calculator's directory
-    if atoms:
+    if atoms is not None:
         atoms.calc.directory = tmpdir
 
     # Define the results directory
@@ -120,7 +120,7 @@ def calc_cleanup(
         raise ValueError(msg)
 
     # Reset the calculator's directory
-    if atoms:
+    if atoms is not None:
         atoms.calc.directory = job_results_dir
 
     # Make the results directory
