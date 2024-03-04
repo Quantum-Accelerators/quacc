@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 
 def calc_setup(
-    atoms: Atoms,
+    atoms: Atoms | None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> tuple[Path, Path]:
     """
@@ -55,7 +55,8 @@ def calc_setup(
     tmpdir = make_unique_dir(base_path=tmpdir_base, prefix="tmp-quacc-")
 
     # Set the calculator's directory
-    atoms.calc.directory = tmpdir
+    if atoms is not None:
+        atoms.calc.directory = tmpdir
 
     # Define the results directory
     job_results_dir = SETTINGS.RESULTS_DIR
@@ -86,7 +87,9 @@ def calc_setup(
     return tmpdir, job_results_dir
 
 
-def calc_cleanup(atoms: Atoms, tmpdir: Path | str, job_results_dir: Path | str) -> None:
+def calc_cleanup(
+    atoms: Atoms | None, tmpdir: Path | str, job_results_dir: Path | str
+) -> None:
     """
     Perform cleanup operations for a calculation, including gzipping files, copying
     files back to the original directory, and removing the tmpdir.
@@ -117,7 +120,8 @@ def calc_cleanup(atoms: Atoms, tmpdir: Path | str, job_results_dir: Path | str) 
         raise ValueError(msg)
 
     # Reset the calculator's directory
-    atoms.calc.directory = job_results_dir
+    if atoms is not None:
+        atoms.calc.directory = job_results_dir
 
     # Make the results directory
     job_results_dir.mkdir(parents=True, exist_ok=True)

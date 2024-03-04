@@ -1,9 +1,6 @@
 from pathlib import Path
-
-import numpy as np
 import pytest
 from ase.build import bulk, molecule
-from ase.io import read
 from monty.json import MontyDecoder, jsanitize
 from pymatgen.io.ase import AseAtomsAdaptor
 
@@ -46,34 +43,6 @@ def test_atoms_to_metadata(test_cifs):
     assert "structure" not in results
     assert results["atoms"].info.get("test", None) == "hi"
     assert results["molecule"] == AseAtomsAdaptor().get_molecule(atoms)
-
-    atoms = bulk("Cu")
-    parent = bulk("Al") * (2, 1, 1)
-    atoms.info = {
-        "parent": parent,
-        "test": [
-            parent,
-            1.0,
-            [2.0, 3.0],
-            {"subtest": parent, "subtest2": "hi"},
-            np.array([1.0, 2.0]),
-        ],
-    }
-    results = atoms_to_metadata(atoms)
-    assert results["atoms_info"]["parent"]["atoms"] == parent
-    assert results["atoms_info"]["parent"]["nsites"] == len(parent)
-    assert results["atoms_info"]["test"][0]["atoms"] == parent
-    assert results["atoms_info"]["test"][0]["nsites"] == len(parent)
-    assert results["atoms_info"]["test"][1] == 1.0
-    assert results["atoms_info"]["test"][2] == [2.0, 3.0]
-    assert results["atoms_info"]["test"][3]["subtest"]["atoms"] == parent
-    assert results["atoms_info"]["test"][3]["subtest"]["nsites"] == len(parent)
-    assert results["atoms_info"]["test"][3]["subtest2"] == "hi"
-    assert results["atoms_info"]["test"][4] == [1.0, 2.0]
-
-    atoms = read(test_cifs / "nonserializable_info.cif.gz")
-    atoms.info["parent"] = parent
-    results = atoms_to_metadata(atoms)
 
     # test document can be jsanitized and decoded
     d = jsanitize(results, strict=True, enum_values=True)

@@ -223,7 +223,69 @@ def summarize_opt_run(
     return task_doc
 
 
-def summarize_vib_run(
+def summarize_vib_and_thermo(
+    vib: Vibrations,
+    igt: IdealGasThermo,
+    temperature: float = 298.15,
+    pressure: float = 1.0,
+    charge_and_multiplicity: tuple[int, int] | None = None,
+    additional_fields: dict[str, Any] | None = None,
+    store: Store | bool | None = None,
+) -> VibThermoSchema:
+    """
+    Get tabulated results from an ASE Vibrations run and ASE IdealGasThermo object and
+    store them in a database-friendly format.
+
+    Parameters
+    ----------
+    vib
+        ASE Vibrations object.
+    igt
+        ASE IdealGasThermo object.
+    temperature
+        Temperature in Kelvins.
+    pressure
+        Pressure in bar.
+    charge_and_multiplicity
+        Charge and spin multiplicity of the Atoms object, only used for Molecule
+        metadata.
+    additional_fields
+        Additional fields to add to the task document.
+    store
+        Maggma Store object to store the results in. If None,
+        `SETTINGS.STORE` will be used.
+
+    Returns
+    -------
+    VibThermoSchema
+        A dictionary that merges the `VibSchema` and `ThermoSchema`.
+    """
+    additional_fields = additional_fields or {}
+    store = SETTINGS.STORE if store is None else store
+
+    vib_task_doc = _summarize_vib_run(
+        vib, charge_and_multiplicity=charge_and_multiplicity, store=False
+    )
+    thermo_task_doc = _summarize_ideal_gas_thermo(
+        igt,
+        temperature=temperature,
+        pressure=pressure,
+        charge_and_multiplicity=charge_and_multiplicity,
+        store=False,
+    )
+
+    unsorted_task_doc = recursive_dict_merge(
+        vib_task_doc, thermo_task_doc, additional_fields
+    )
+    task_doc = clean_task_doc(unsorted_task_doc)
+
+    if store:
+        results_to_db(store, task_doc)
+
+    return task_doc
+
+
+def _summarize_vib_run(
     vib: Vibrations | VibrationsData,
     charge_and_multiplicity: tuple[int, int] | None = None,
     additional_fields: dict[str, Any] | None = None,
@@ -337,7 +399,7 @@ def summarize_vib_run(
     return task_doc
 
 
-def summarize_ideal_gas_thermo(
+def _summarize_ideal_gas_thermo(
     igt: IdealGasThermo,
     temperature: float = 298.15,
     pressure: float = 1.0,
@@ -415,68 +477,6 @@ def summarize_ideal_gas_thermo(
 
     unsorted_task_doc = recursive_dict_merge(
         atoms_metadata, inputs, results, additional_fields
-    )
-    task_doc = clean_task_doc(unsorted_task_doc)
-
-    if store:
-        results_to_db(store, task_doc)
-
-    return task_doc
-
-
-def summarize_vib_and_thermo(
-    vib: Vibrations,
-    igt: IdealGasThermo,
-    temperature: float = 298.15,
-    pressure: float = 1.0,
-    charge_and_multiplicity: tuple[int, int] | None = None,
-    additional_fields: dict[str, Any] | None = None,
-    store: Store | bool | None = None,
-) -> VibThermoSchema:
-    """
-    Get tabulated results from an ASE Vibrations run and ASE IdealGasThermo object and
-    store them in a database-friendly format.
-
-    Parameters
-    ----------
-    vib
-        ASE Vibrations object.
-    igt
-        ASE IdealGasThermo object.
-    temperature
-        Temperature in Kelvins.
-    pressure
-        Pressure in bar.
-    charge_and_multiplicity
-        Charge and spin multiplicity of the Atoms object, only used for Molecule
-        metadata.
-    additional_fields
-        Additional fields to add to the task document.
-    store
-        Maggma Store object to store the results in. If None,
-        `SETTINGS.STORE` will be used.
-
-    Returns
-    -------
-    VibThermoSchema
-        A dictionary that merges the `VibSchema` and `ThermoSchema`.
-    """
-    additional_fields = additional_fields or {}
-    store = SETTINGS.STORE if store is None else store
-
-    vib_task_doc = summarize_vib_run(
-        vib, charge_and_multiplicity=charge_and_multiplicity, store=False
-    )
-    thermo_task_doc = summarize_ideal_gas_thermo(
-        igt,
-        temperature=temperature,
-        pressure=pressure,
-        charge_and_multiplicity=charge_and_multiplicity,
-        store=False,
-    )
-
-    unsorted_task_doc = recursive_dict_merge(
-        vib_task_doc, thermo_task_doc, additional_fields
     )
     task_doc = clean_task_doc(unsorted_task_doc)
 
