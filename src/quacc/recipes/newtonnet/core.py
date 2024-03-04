@@ -11,9 +11,9 @@ from quacc import SETTINGS, job
 from quacc.runners.ase import run_calc, run_opt
 from quacc.runners.thermo import run_ideal_gas
 from quacc.schemas.ase import (
-    summarize_ideal_gas_thermo,
     summarize_opt_run,
     summarize_run,
+    summarize_vib_and_thermo,
     summarize_vib_run,
 )
 from quacc.utils.dicts import recursive_dict_merge
@@ -184,19 +184,16 @@ def freq_job(
     hessian = summary["results"]["hessian"]
 
     vib = VibrationsData(final_atoms, hessian)
-    summary["vib"] = summarize_vib_run(
-        vib, additional_fields={"name": "ASE Vibrations Analysis"}
-    )
 
     igt = run_ideal_gas(final_atoms, vib.get_frequencies(), energy=energy)
-    summary["thermo"] = summarize_ideal_gas_thermo(
+
+    return summarize_vib_and_thermo(
+        vib,
         igt,
         temperature=temperature,
         pressure=pressure,
-        additional_fields={"name": "ASE Thermo Analysis"},
+        additional_fields={"name": "ASE Vibrations and Thermo Analysis"},
     )
-
-    return summary
 
 
 def _add_stdev_and_hess(summary: dict[str, Any]) -> dict[str, Any]:
