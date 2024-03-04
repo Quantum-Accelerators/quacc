@@ -83,6 +83,7 @@ def atoms_to_metadata(
 
     # Copy the info flags as a separate entry in the DB for easy querying
     results["atoms_info"] = _quacc_sanitize(atoms.info)
+    atoms.info = {}
 
     # Store Atoms object
     results["atoms"] = atoms
