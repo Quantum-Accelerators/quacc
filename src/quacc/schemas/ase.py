@@ -283,6 +283,7 @@ def summarize_vib_run(
 
     if isinstance(vib, VibrationsData):
         atoms = vib._atoms
+        directory = atoms.calc.directory
         inputs = {}
     else:
         atoms = vib.atoms
@@ -439,6 +440,13 @@ def summarize_ideal_gas_thermo(
     )
     task_doc = clean_task_doc(unsorted_task_doc)
 
+    directory = igt.atoms.calc.directory
+    if SETTINGS.WRITE_JSON:
+        jsanitized_task_doc = jsanitize(
+            task_doc, enum_values=True, recursive_msonable=True
+        )
+        dumpfn(jsanitized_task_doc, Path(directory, "quacc_results.json"))
+
     if store:
         results_to_db(store, task_doc)
 
@@ -500,6 +508,13 @@ def summarize_vib_and_thermo(
         vib_task_doc, thermo_task_doc, additional_fields
     )
     task_doc = clean_task_doc(unsorted_task_doc)
+
+    directory = igt.atoms.calc.directory
+    if SETTINGS.WRITE_JSON:
+        jsanitized_task_doc = jsanitize(
+            task_doc, enum_values=True, recursive_msonable=True
+        )
+        dumpfn(jsanitized_task_doc, Path(directory, "quacc_results.json"))
 
     if store:
         results_to_db(store, task_doc)
