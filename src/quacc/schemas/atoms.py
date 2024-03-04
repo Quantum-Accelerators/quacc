@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import TYPE_CHECKING
 
 from ase.atoms import Atoms
@@ -81,7 +82,7 @@ def atoms_to_metadata(
         metadata = {}
 
     # Copy the info flags as a separate entry in the DB for easy querying
-    results["atoms_info"] = atoms.info
+    results["atoms_info"] = deepcopy(atoms.info)
 
     # Store Atoms object
     results["atoms"] = atoms
