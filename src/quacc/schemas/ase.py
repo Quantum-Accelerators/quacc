@@ -289,10 +289,11 @@ def summarize_vib_and_thermo(
     )
     task_doc = clean_task_doc(unsorted_task_doc)
 
-    directory = vib.atoms.calc.directory
-    if SETTINGS.WRITE_PICKLE:
-        with Path(directory, "quacc_results.pkl").open("wb") as f:
-            pickle.dump(task_doc, f)
+    if isinstance(vib, Vibrations):
+        directory = vib.atoms.calc.directory
+        if SETTINGS.WRITE_PICKLE:
+            with Path(directory, "quacc_results.pkl").open("wb") as f:
+                pickle.dump(task_doc, f)
 
     if store:
         results_to_db(store, task_doc)
