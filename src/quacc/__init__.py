@@ -38,7 +38,7 @@ def atoms_as_dict(atoms: Atoms) -> dict[str, Any]:
     # @class key-value pairs inserted. However, atoms.todict()/atoms.fromdict() does not currently
     # work properly with constraints.
     atoms_no_info = atoms.copy()
-    atoms_no_info.info: dict = {}
+    atoms_no_info.info = {}
     return {
         "@module": "ase.atoms",
         "@class": "Atoms",
