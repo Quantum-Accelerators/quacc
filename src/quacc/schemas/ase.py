@@ -8,6 +8,7 @@ import numpy as np
 from ase import units
 from ase.io import read
 from ase.vibrations.data import VibrationsData
+from monty.json import jsanitize
 from monty.serialization import dumpfn
 
 from quacc import SETTINGS, __version__
@@ -119,7 +120,8 @@ def summarize_run(
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_JSON:
-        dumpfn(task_doc, "quacc_results.json")
+        jsanitized_task_doc = jsanitize(task_doc, enum_values=True, recursive_msonable=True)
+        dumpfn(jsanitized_task_doc, "quacc_results.json")
 
     if store:
         results_to_db(store, task_doc)
@@ -222,7 +224,8 @@ def summarize_opt_run(
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_JSON:
-        dumpfn(task_doc, "quacc_results.json")
+        jsanitized_task_doc = jsanitize(task_doc, enum_values=True, recursive_msonable=True)
+        dumpfn(jsanitized_task_doc, "quacc_results.json")
 
     if store:
         results_to_db(store, task_doc)
@@ -339,7 +342,8 @@ def summarize_vib_run(
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_JSON:
-        dumpfn(task_doc, "quacc_results.json")
+        jsanitized_task_doc = jsanitize(task_doc, enum_values=True, recursive_msonable=True)
+        dumpfn(jsanitized_task_doc, "quacc_results.json")
 
     if store:
         results_to_db(store, task_doc)
