@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 
 from ase.atoms import Atoms
 from emmet.core.structure import MoleculeMetadata, StructureMetadata
-from monty.json import jsanitize
 from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc.atoms.core import (
