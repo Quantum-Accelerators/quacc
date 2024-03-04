@@ -53,7 +53,6 @@ class VibResults(TypedDict):
 
 
 class VibSchema(AtomsSchema):
-
     parameters: Parameters | None
     parameters_vib: ParametersVib | None
     results: VibResults
@@ -84,7 +83,6 @@ class ThermoResults(TypedDict):
 
 
 class ThermoSchema(AtomsSchema):
-
     parameters_thermo: ParametersThermo
     results: ThermoResults
 
