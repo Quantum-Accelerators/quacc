@@ -66,6 +66,7 @@ def run_phonopy(
     phonon.auto_band_structure(
         write_yaml=True, filename=Path(tmpdir, "phonopy_auto_band_structure.yaml")
     )
+    phonon.save(Path(tmpdir, "phonopy.yaml"), settings={"force_constants": True})
     phonon.directory = job_results_dir
 
     # Perform cleanup operations
