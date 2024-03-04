@@ -85,7 +85,7 @@ def summarize_run(
         msg = "ASE Atoms object's calculator has no results."
         raise ValueError(msg)
 
-    directory = Path(final_atoms.calc.directory)
+    directory = final_atoms.calc.directory
     uri = get_uri(directory)
     input_atoms_metadata = (
         atoms_to_metadata(
@@ -124,7 +124,7 @@ def summarize_run(
         jsanitized_task_doc = jsanitize(
             task_doc, enum_values=True, recursive_msonable=True
         )
-        dumpfn(jsanitized_task_doc, "quacc_results.json")
+        dumpfn(jsanitized_task_doc, Path(directory, "quacc_results.json"))
 
     if store:
         results_to_db(store, task_doc)
@@ -189,7 +189,7 @@ def summarize_opt_run(
 
     initial_atoms = trajectory[0]
     final_atoms = get_final_atoms_from_dyn(dyn)
-    directory = Path(final_atoms.calc.directory)
+    directory = final_atoms.calc.directory
 
     # Check convergence
     is_converged = dyn.converged()
@@ -230,7 +230,7 @@ def summarize_opt_run(
         jsanitized_task_doc = jsanitize(
             task_doc, enum_values=True, recursive_msonable=True
         )
-        dumpfn(jsanitized_task_doc, directory / "quacc_results.json")
+        dumpfn(jsanitized_task_doc, Path(directory, "quacc_results.json"))
 
     if store:
         results_to_db(store, task_doc)
@@ -286,7 +286,7 @@ def summarize_vib_run(
         inputs = {}
     else:
         atoms = vib.atoms
-        directory = Path(atoms.calc.directory)
+        directory = atoms.calc.directory
         uri = get_uri(directory)
 
         inputs = {
@@ -350,7 +350,7 @@ def summarize_vib_run(
         jsanitized_task_doc = jsanitize(
             task_doc, enum_values=True, recursive_msonable=True
         )
-        dumpfn(jsanitized_task_doc, directory / "quacc_results.json")
+        dumpfn(jsanitized_task_doc, Path(directory, "quacc_results.json"))
 
     if store:
         results_to_db(store, task_doc)
