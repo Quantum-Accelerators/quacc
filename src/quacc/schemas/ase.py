@@ -120,7 +120,7 @@ def summarize_run(
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_PICKLE:
-        with open(Path(directory, "quacc_results.pkl"), "wb") as f:
+        with Path(directory, "quacc_results.pkl").open("wb") as f:
             pickle.dump(task_doc, f)
 
     if store:
@@ -224,7 +224,7 @@ def summarize_opt_run(
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_PICKLE:
-        with open(Path(directory, "quacc_results.pkl"), "wb") as f:
+        with Path(directory, "quacc_results.pkl").open("wb") as f:
             pickle.dump(task_doc, f)
 
     if store:
@@ -342,7 +342,7 @@ def summarize_vib_run(
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_PICKLE:
-        with open(Path(directory, "quacc_results.pkl"), "wb") as f:
+        with Path(directory, "quacc_results.pkl").open("wb") as f:
             pickle.dump(task_doc, f)
 
     if store:
@@ -433,7 +433,7 @@ def summarize_ideal_gas_thermo(
     task_doc = clean_task_doc(unsorted_task_doc)
 
     # if SETTINGS.WRITE_PICKLE:
-    #     with open(Path(directory, "quacc_results.pkl"), "wb") as f:
+    #     with Path(directory, "quacc_results.pkl").open("wb") as f:
     #         pickle.dump(task_doc, f)
 
     if store:
@@ -499,7 +499,7 @@ def summarize_vib_and_thermo(
     task_doc = clean_task_doc(unsorted_task_doc)
 
     # if SETTINGS.WRITE_PICKLE:
-    #     with open(Path(directory, "quacc_results.pkl"), "wb") as f:
+    #     with Path(directory, "quacc_results.pkl").open("wb") as f:
     #         pickle.dump(task_doc, f)
 
     if store:
