@@ -15,7 +15,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     from quacc.recipes.vasp.core import relax_job, static_job
 
     n_nodes = 1
-    n_cores_per_node = 48
+    n_cores_per_node = 128
     vasp_parallel_cmd = f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores
 
     executor = ct.executor.SlurmExecutor(
