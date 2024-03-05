@@ -35,7 +35,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
         remote_workdir="$SCRATCH/quacc",
         create_unique_workdir=True,
         use_srun=False,
-        prereun_commands=["module load vasp/6.4.1-cpu", f"export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}"],
+        prereun_commands=["module load vasp/6.4.1-cpu", f"export QUACC_VASP_PARALLEL_CMD='{vasp_parallel_cmd}'"],
     )
 
 
