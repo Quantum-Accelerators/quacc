@@ -43,13 +43,16 @@ In the previous examples, we have been running calculations on our local machine
     from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
 
-    static_job.electron_object.executor = "local"
+
+    @ct.electron(executor="local")
+    def local_static_job(*args, **kwargs):
+        return static_job(*args, **kwargs)
 
 
     @flow
     def workflow(atoms):
         output1 = relax_job(atoms)
-        output2 = static_job(output1["atoms"])
+        output2 = local_static_job(output1["atoms"])
 
         return output2
 
@@ -59,34 +62,6 @@ In the previous examples, we have been running calculations on our local machine
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
     ```
-
-    ??? Tip "An Alternate Approach"
-
-        ```python
-        import covalent as ct
-        from ase.build import bulk
-        from quacc import flow
-        from quacc.recipes.emt.core import relax_job, static_job
-
-
-        @ct.electron(executor="local")
-        def local_static_job(*args, **kwargs):
-            return static_job(*args, **kwargs)
-
-
-        @flow
-        def workflow(atoms):
-            output1 = relax_job(atoms)
-            output2 = local_static_job(output1["atoms"])
-
-            return output2
-
-
-        atoms = bulk("Cu")
-        dispatch_id = ct.dispatch(workflow)(atoms)
-        result = ct.get_result(dispatch_id, wait=True)
-        print(result)
-        ```
 
     **Configuring Executors**
 
