@@ -16,7 +16,9 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
 
     n_nodes = 1
     n_cores_per_node = 128
-    vasp_parallel_cmd = f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
+    vasp_parallel_cmd = (
+        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
+    )
 
     executor = ct.executor.SlurmExecutor(
         username="YourUserName",
@@ -35,7 +37,10 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
         remote_workdir="$SCRATCH/quacc",
         create_unique_workdir=True,
         use_srun=False,
-        prereun_commands=["module load vasp/6.4.1-cpu", f"export QUACC_VASP_PARALLEL_CMD='{vasp_parallel_cmd}'"],
+        prereun_commands=[
+            "module load vasp/6.4.1-cpu",
+            f"export QUACC_VASP_PARALLEL_CMD='{vasp_parallel_cmd}'",
+        ],
     )
 
 
