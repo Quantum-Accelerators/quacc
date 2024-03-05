@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 from quacc import flow, job
 from quacc.recipes.vasp._base import base_fn
+import numpy as np
 
 if TYPE_CHECKING:
     from typing import Any
@@ -14,6 +15,110 @@ if TYPE_CHECKING:
 
     from quacc.schemas._aliases.vasp import DoubleRelaxSchema, VaspSchema
     from quacc.utils.files import Filenames, SourceDirectory
+    from pymatgen.io.vasp import Vasprun
+
+@job
+def nscf_job(
+    atoms: Atoms,
+    preset: str | None = "BulkSet",
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    kpoints_mode: str = "line",
+    calculate_optics: bool = False,
+    bandgap: float = None,
+    vasprun: Vasprun = None,
+    **calc_kwargs,
+) -> VaspSchema:
+    """
+    Carry out a non-self-consistent field (NSCF) calculation.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object.
+    preset
+        Preset to use from `quacc.calculators.vasp.presets`.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
+    kpoints_mode
+        Type of k-points mode. Options are "uniform" or "line". "boltztrap" may
+        be implemented in future.
+    calculate_optics
+        Whether to calculate optical properties.
+    bandgap
+        The band gap of the material.
+    **calc_kwargs
+        Custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to [quacc.calculators.vasp.vasp.Vasp][].
+
+    Returns
+    -------
+    VaspSchema
+        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
+        See the type-hint for the data structure.
+    """
+
+    # Normalize kpoints_mode
+    kpoints_mode = kpoints_mode.lower()
+
+    # Validate kpoints_mode
+    supported_modes = ("line", "uniform")
+    if kpoints_mode not in supported_modes:
+        raise ValueError(f"Supported kpoints modes are: {', '.join(supported_modes)}")
+
+    calc_defaults = {
+        "lorbit": 11,
+        "lwave": False,
+        "lcharg": False,
+        "nsw": 0,
+        "isym": 0,
+        "icharg": 11,
+        "kspacing": None,
+        "nedos": 5001,
+    }
+
+    updates: dict[str, Any] = {}
+
+    if vasprun is not None:
+        nbands_factor = 1.2
+        nbands = int(np.ceil(vasprun.parameters["NBANDS"] * nbands_factor))
+        updates["nbands"] = nbands
+
+    def _get_nedos(vasprun: Vasprun | None, dedos: float) -> int:
+        """Automatic setting of nedos using the energy range and the energy step."""
+        if vasprun is None:
+            return 5001
+        emax = max(eigs.max() for eigs in vasprun.eigenvalues.values())
+        emin = min(eigs.min() for eigs in vasprun.eigenvalues.values())
+        return int((emax - emin) / dedos)
+
+    if kpoints_mode == "uniform":
+        # Automatic setting of NEDOS using the energy range and the energy step
+        n_edos = _get_nedos(vasprun, 0.005)  # Example value, adjust as needed
+        # Use tetrahedron method for DOS and optics calculations
+        updates.update({"ismear": -5, "isym": 2, "nedos": n_edos})
+    elif kpoints_mode == "line":
+        sigma = 0.2 if bandgap == 0 else 0.01
+        updates.update({"ismear": 0, "sigma": sigma})
+
+    if calculate_optics:
+        # LREAL not supported with LOPTICS = True; automatic NEDOS usually
+        # underestimates, so set it explicitly
+        n_edos = _get_nedos(vasprun, 0.0025)  # Example value, adjust as needed
+        updates.update({"loptics": True, "lreal": False, "cshift": 1e-5, "nedos": n_edos})
+
+    # integrate updates to calc_kwargs
+    calc_kwargs.update(updates)
+
+
+    return base_fn(
+        atoms,
+        preset=preset,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        additional_fields={"name": "VASP NSCF"},
+        copy_files=copy_files,
+    )
 
 
 @job
