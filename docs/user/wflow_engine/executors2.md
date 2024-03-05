@@ -284,7 +284,7 @@ When deploying calculations for the first time, it's important to start simple, 
         executors=[
             HighThroughputExecutor(
                 label="quacc_parsl",
-                max_workers_per_node=cores_per_node,
+                max_workers=cores_per_node,
                 provider=SlurmProvider(
                     account=account,
                     qos="debug",
