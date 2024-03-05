@@ -94,80 +94,84 @@ In the previous examples, we have been running calculations on our local machine
 
         Refer to the [executor plugin documentation](https://docs.covalent.xyz/docs/plugin) for instructions on how to install and use the relevant plugins that allow Covalent to submit jobs on your desired machines.
 
-    Most users of quacc will probably want to use the [`HPCExecutor`](https://github.com/Quantum-Accelerators/covalent-hpc-plugin), which is a plugin for Covalent that supports Slurm, PBS, LSF, Flux, and more. For submitting jobs to a Slurm-based job scheduler from your local machine, an example `HPCExecutor` configuration might look like the following, which has been tested on Perlmutter at NERSC:
+    Most users of quacc will probably want to use the [`SlurmExecutor`](https://github.com/AgnostiqHQ/covalent-slurm-plugin), which is a plugin for Covalent that supports Slurm job scheduling system. An example `SlurmExecutor` configuration might look like the following, which has been tested on Perlmutter at NERSC:
 
     ```python
-    n_nodes = 2  # Number of nodes to reserve for each calculation
-    n_cores_per_node = 48  # Number of CPU cores per node
+    n_nodes = 2
+    n_cores_per_node = 48
 
-    executor = ct.executor.HPCExecutor(
-        # SSH credentials
+    executor = ct.executor.SlurmExecutor(
         username="YourUserName",
         address="perlmutter-p1.nersc.gov",
         ssh_key_file="~/.ssh/nersc",
         cert_file="~/.ssh/nersc-cert.pub",  # (1)!
-        # PSI/J parameters
-        instance="slurm",
-        resource_spec_kwargs={
-            "node_count": n_nodes,
-            "processes_per_node": n_cores_per_node,
-        },  # (2)!
-        job_attributes_kwargs={
-            "duration": 10,  # minutes
-            "project_name": "YourAccountName",
-            "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
-        },  # (3)!
-        # Remote Python env parameters
-        remote_conda_env="quacc",
-        # Covalent parameters
-        remote_workdir="$SCRATCH/quacc",  # (4)!
-        create_unique_workdir=True,  # (5)!
-        cleanup=False,  # (6)!
+        conda_env="quacc",
+        options={
+            "nodes": f"{n_nodes}",
+            "qos": "debug",
+            "constraint": "cpu",
+            "account": "YourAccountName",
+            "job-name": "quacc",
+            "time": "00:10:00",
+        },
+        remote_workdir="$SCRATCH/quacc",  # (2)!
+        create_unique_workdir=True,  # (3)!
+        use_srun=False,  # (4)!
     )
     ```
 
     1. This a certificate file used to validate your SSH credentials. This is often not needed but is required at NERSC facilities due to the use of [`sshproxy`](https://docs.nersc.gov/connect/mfa/#sshproxy)-based multi-factor authentication.
 
-    2. These are the resource specifications for the compute job, which are keyword arguments passed to PSI/J's [`ResourceSpecV1` class](https://exaworks.org/psij-python/docs/v/0.9.0/.generated/psij.html#psij.resource_spec.ResourceSpecV1).
+    2. If you use this keyword argument, there is no need to explicitly specify the `RESULTS_DIR` quacc setting, which seeks to do largely the same thing.
 
-    3. These are the job attributes that the job scheduler needs, which are keyword arguments passed to PSI/J's [`JobAttributes` class](https://exaworks.org/psij-python/docs/v/0.9.0/.generated/psij.html#psij.JobAttributes).
+    3. This will tell Covalent to make a unique working directory for each job. This should be used in place of the `CREATE_UNIQUE_DIR` quacc setting, which seeks to do largely the same thing.
 
-    4. This will tell Slurm where to `cd` and will specify where the calculations and results are stored. If you use this keyword argument, you should not explicitly specify the `RESULTS_DIR` quacc setting, which seeks to do largely the same thing.
+    4. The `SlurmExecutor` must have `use_srun=False` in order for ASE-based calculators to be launched appropriately.
+    ```
 
-    5. You generally want each quacc job to have the results stored in its own unique working directory to ensure files don't overwrite one another, so  `create_unique_workdir` should be set to `True`. This should not be used in combination with the `CREATE_UNIQUE_DIR` quacc setting, which seeks to do largely the same thing.
-
-    6. For debugging purposes, it can be useful to keep all the temporary files. Once you're confident things work, you can omit the `cleanup` keyword argument.
-
-    ??? Note "The SlurmExecutor"
-
-        If you plan to use the dedicated [SlurmExecutor](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/slurm) developed by Covalent, an analogous example is included below:
+    ??? Note "The HPCExecutor"
 
         ```python
-        n_nodes = 2
-        n_cores_per_node = 48
+        n_nodes = 2  # Number of nodes to reserve for each calculation
+        n_cores_per_node = 48  # Number of CPU cores per node
 
-        executor = ct.executor.SlurmExecutor(
+        executor = ct.executor.HPCExecutor(
+            # SSH credentials
             username="YourUserName",
             address="perlmutter-p1.nersc.gov",
             ssh_key_file="~/.ssh/nersc",
-            cert_file="~/.ssh/nersc-cert.pub",
-            conda_env="quacc",
-            options={
-                "nodes": f"{n_nodes}",
-                "qos": "debug",
-                "constraint": "cpu",
-                "account": "YourAccountName",
-                "job-name": "quacc",
-                "time": "00:10:00",
-            },
-            remote_workdir="$SCRATCH/quacc",  # (1)!
-            use_srun=False,  # (2)!
+            cert_file="~/.ssh/nersc-cert.pub",  # (1)!
+            # PSI/J parameters
+            instance="slurm",
+            resource_spec_kwargs={
+                "node_count": n_nodes,
+                "processes_per_node": n_cores_per_node,
+            },  # (2)!
+            job_attributes_kwargs={
+                "duration": 10,  # minutes
+                "project_name": "YourAccountName",
+                "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
+            },  # (3)!
+            # Remote Python env parameters
+            remote_conda_env="quacc",
+            # Covalent parameters
+            remote_workdir="$SCRATCH/quacc",  # (4)!
+            create_unique_workdir=True,  # (5)!
+            cleanup=False,  # (6)!
         )
         ```
 
-        1. This will tell Slurm where to `cd` into and will specify where the calculations and results are stored. If you use this keyword argument, you should not explicitly specify the `RESULTS_DIR` quacc setting, which seeks to do largely the same thing.
+        1. This a certificate file used to validate your SSH credentials. This is often not needed but is required at NERSC facilities due to the use of [`sshproxy`](https://docs.nersc.gov/connect/mfa/#sshproxy)-based multi-factor authentication.
 
-        2.  The `SlurmExecutor` must have `use_srun=False` in order for ASE-based calculators to be launched appropriately.
+        2. These are the resource specifications for the compute job, which are keyword arguments passed to PSI/J's [`ResourceSpecV1` class](https://exaworks.org/psij-python/docs/v/0.9.0/.generated/psij.html#psij.resource_spec.ResourceSpecV1).
+
+        3. These are the job attributes that the job scheduler needs, which are keyword arguments passed to PSI/J's [`JobAttributes` class](https://exaworks.org/psij-python/docs/v/0.9.0/.generated/psij.html#psij.JobAttributes).
+
+        4.  If you use this keyword argument, there is no need to explicitly specify the `RESULTS_DIR` quacc setting, which seeks to do largely the same thing.
+
+        5. This will tell Covalent to make a unique working directory for each job. This should be used in place of the `CREATE_UNIQUE_DIR` quacc setting, which seeks to do largely the same thing.
+
+        6. For debugging purposes, it can be useful to keep all the temporary files. Once you're confident things work, you can omit the `cleanup` keyword argument.
 
 === "Dask"
 

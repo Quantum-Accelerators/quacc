@@ -25,7 +25,11 @@ graph LR
         covalent start
         ```
 
-        You may also wish to set the `RESULTS_DIR` to a fixed location as well.
+        Optionally, you may wish to:
+
+        1. Set the `RESULTS_DIR` quacc setting to a fixed location where you'd like to store your calculation outputs.
+
+        2. Have Covalent deal with creating the unique working directories so the paths in the UI are clearer. This can be done via `quacc set CREATE_UNIQUE_DIR false` and `#!Python ct.set_config({"executors.dask.create_unique_workdir": True})`.
 
     ```python
     import covalent as ct
