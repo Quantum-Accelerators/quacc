@@ -34,7 +34,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
             "job-name": "quacc",
             "time": "00:30:00",
         },
-        remote_workdir="$SCRATCH/quacc",
+        remote_workdir="~/quacc",
         create_unique_workdir=True,
         use_srun=False,
         prereun_commands=[
@@ -81,7 +81,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
                 "QUACC_VASP_PARALLEL_CMD": f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
             },
             remote_conda_env="quacc",
-            remote_workdir="$SCRATCH/quacc",
+            remote_workdir="~/quacc",
             create_unique_workdir=True,
             cleanup=False,
         )

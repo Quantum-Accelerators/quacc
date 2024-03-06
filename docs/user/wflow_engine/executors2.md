@@ -115,7 +115,7 @@ When deploying calculations for the first time, it's important to start simple, 
             "job-name": "quacc",
             "time": "00:10:00",
         },
-        remote_workdir="$SCRATCH/quacc",
+        remote_workdir="~/quacc",
         create_unique_workdir=True,
         use_srun=False,
     )

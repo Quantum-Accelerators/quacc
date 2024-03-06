@@ -89,7 +89,7 @@ In the previous examples, we have been running calculations on our local machine
             "job-name": "quacc",
             "time": "00:10:00",
         },
-        remote_workdir="$SCRATCH/quacc",  # (2)!
+        remote_workdir="~/quacc",  # (2)!
         create_unique_workdir=True,  # (3)!
         use_srun=False,  # (4)!
     )
@@ -130,7 +130,7 @@ In the previous examples, we have been running calculations on our local machine
             # Remote Python env parameters
             remote_conda_env="quacc",
             # Covalent parameters
-            remote_workdir="$SCRATCH/quacc",  # (4)!
+            remote_workdir="~/quacc",  # (4)!
             create_unique_workdir=True,  # (5)!
             cleanup=False,  # (6)!
         )
