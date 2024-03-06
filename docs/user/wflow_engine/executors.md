@@ -1,12 +1,90 @@
-# Worked Examples on HPC
+# Deploying Calculations
 
-In this section, we provide a few examples going through the entire process to deploy recipes remotely on HPC machines that use a job scheduler. The precise configuration details will depend on your given compute setup. Nonetheless, we have provided examples here for [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/) that you can build from.
+In the previous examples, we have been running calculations on our local machine. However, in practice, you will probably want to run your calculations on one or more HPC machines. This section will describe how to set up your workflows to run on HPC machines using your desired workflow engine to scale up your calculations.
+
+## Background Information
+
+=== "Covalent"
+
+    Refer to the [executor plugin documentation](https://docs.covalent.xyz/docs/plugin) for instructions on how to install and use the relevant plugins that allow Covalent to submit jobs on your desired machines. Most users of quacc will probably want to use the [`SlurmExecutor`](https://github.com/AgnostiqHQ/covalent-slurm-plugin), which is a plugin for Covalent that supports Slurm job scheduling system. If you are using a job scheduler environment but find the `covalent-slurm-plugin` does not suit your needs, you may wish to consider the [`covalent-hpc-plugin`](https://github.com/Quantum-Accelerators/covalent-hpc-plugin).
+
+=== "Dask"
+
+    A Dask cluster can be set up to be used with a queueing system like that found on most HPC machines. This is done via [Dask Jobqueue](https://jobqueue.dask.org/en/latest/index.html). Example configurations for various queuing systems can be found in the ["Example Deployments"](https://jobqueue.dask.org/en/latest/examples.html) section of the Dask Jobqueue documentation.
+
+    !!! Note "Pilot Jobs"
+
+        Unlike most other workflow engines, Dask is built for the [pilot job model](https://en.wikipedia.org/wiki/Pilot_job) where the allocated nodes continually pull in new tasks to run. This makes it possible to avoid submitting a large number of small jobs to the scheduler, which can be inefficient from a queuing perspective.
+
+=== "Parsl"
+
+    Out-of-the-box, Parsl will run on your local machine. However, in practice you will probably want to run your Parsl workflows on HPC machines.
+
+    To configure Parsl for the high-performance computing environment of your choice, refer to the [executor configuration page in the Parsl documentation](https://parsl.readthedocs.io/en/stable/userguide/configuring.html) for many examples. Additional details can be found in the ["Execution" section](https://parsl.readthedocs.io/en/stable/userguide/execution.html) of the Parsl documentation. Most users of quacc will probably want to the [`HighThroughputExecutor`](https://parsl.readthedocs.io/en/stable/stubs/parsl.executors.HighThroughputExecutor.html#parsl.executors.HighThroughputExecutor).
+
+    !!! Note "Pilot Jobs"
+
+        Unlike most other workflow engines, Parsl is built for the [pilot job model](https://en.wikipedia.org/wiki/Pilot_job) where the allocated nodes continually pull in new tasks to run. This makes it possible to avoid submitting a large number of small jobs to the scheduler, which can be inefficient from a queuing perspective.
+
+=== "Prefect"
+
+    To scale up calculations, read about the concept of a Prefect [task runner](https://docs.prefect.io/latest/concepts/task-runners/). By default, `quacc` automatically submits all `#!Python @job`-decorated functions to the specified task runner and so concurrency is achieved by default.
+
+    To use Prefect in a job scheduler environment, you can create a [`DaskTaskRunner`](https://prefecthq.github.io/prefect-dask/usage_guide/) that can be used in conjunction with [dask-jobqueue](https://jobqueue.dask.org/en/latest). Example configurations for various queuing systems can be found in the ["Example Deployments"](https://jobqueue.dask.org/en/latest/examples.html) section of the `dask-jobqueue` documentation.
+
+=== "Redun"
+
+    Out-of-the-box, Redun will run on your local machine. However, in practice, you will probably want to specify a dedicated executor.
+
+    To configure Redun for the high-performance computing environment of your choice, refer to the [executors](https://insitro.github.io/redun/executors.html) page in the Redun documentation.
+
+=== "Jobflow"
+
+    Out-of-the-box, Jobflow can be used to run on your local machine. You will, however, need a "manager" to run your workflows on HPC machines. The two recommended options are [jobflow-remote](https://github.com/Matgenix/jobflow-remote) and [FireWorks](https://github.com/materialsproject/fireworks), the latter of which is described here.
+
+    **Setting Up Your `my_qadapter.yaml`**
+
+    When you previously [set up Jobflow and FireWorks](../../install/wflow_engines.md), you created a `my_qadapter.yaml` file. It's now time to revisit that file and adjust the `pre_rocket` command with any modules or environment variables necessary for your calculations to run. Additionally, you will probably want to update the `nodes`, `walltime`, and related settings for your scheduler.
+
+    **Converting Between Jobflow and FireWorks**
+
+    The [`jobflow.managers.fireworks`](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks) module has all the tools you need to convert your Jobflow workflows to a format that is suitable for FireWorks.
+
+    **Converting a Job to a Firework**
+
+    To convert a `Job` to a `firework` and add it to your launch pad:
+
+    ```python
+    from fireworks import LaunchPad
+    from jobflow.managers.fireworks import job_to_firework
+
+    fw = job_to_firework(job)
+    lpad = LaunchPad.auto_load()
+    lpad.add_wf(fw)
+    ```
+
+    **Converting a Flow to a Workflow**
+
+    To convert a `Flow` to a `workflow` and add it to your launch pad:
+
+    ```python
+    from fireworks import LaunchPad
+    from jobflow.managers.fireworks import flow_to_workflow
+
+    wf = flow_to_workflow(flow)
+    lpad = LaunchPad.auto_load()
+    lpad.add_wf(wf)
+    ```
+
+## Worked Examples
+
+In this section, we go through the entire process to deploy recipes remotely on HPC machines that use a job scheduler. The precise configuration details will depend on your given compute setup. Nonetheless, we have provided examples here for [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/) that you can build from.
 
 !!! Tip "First-Time Deployment"
 
     Before deploying remote calculations for the first time, do `quacc set WORKFLOW_ENGINE None` on the remote machine and run your recipe as a standard Python script (e.g. by submitting it as a job to the scheduler). This preliminary test will help you identify potential issues early on. When you're done, you can re-set the `WORKFLOW_ENGINE` variable and continue with deployment via a workflow manager.
 
-## Pre-Requisites
+### Pre-Requisites
 
 If you haven't done so already:
 
@@ -16,7 +94,7 @@ If you haven't done so already:
 
     ```bash
     pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
-    pip install quacc[covalent] covalent-slurm-plugin
+    pip install quacc[covalent]
     quacc set WORKFLOW_ENGINE covalent && quacc set CREATE_UNIQUE_DIR false  # (1)!
     ```
 
@@ -25,6 +103,7 @@ If you haven't done so already:
     On the local machine:
 
     ```bash
+    pip install covalent-slurm-plugin
     covalent start
     ```
 
@@ -84,9 +163,7 @@ If you haven't done so already:
 
     1. FireWorks and Jobflow have their own mechanisms for task isolation, which we will rely on instead.
 
-## Example
-
-When deploying calculations for the first time, it's important to start simple, which is why you should try to run a sample EMT workflow first.
+### Simple Demonstration
 
 === "Covalent"
 
@@ -160,7 +237,7 @@ When deploying calculations for the first time, it's important to start simple, 
         pip install psij-python
         ```
 
-        Then you can use the `HPCExecutor` as follows:
+        Then you can use the `HPCExecutor` as follows from the local machine:
 
         ```python
         n_nodes = 1  # Number of nodes to reserve for each calculation
@@ -241,7 +318,7 @@ When deploying calculations for the first time, it's important to start simple, 
     client = Client(cluster)
     ```
 
-    Then run the following code:
+    Then run the following code in the same Python process:
 
     ```python
     from ase.build import bulk
@@ -389,7 +466,7 @@ When deploying calculations for the first time, it's important to start simple, 
 
     **Demonstration**
 
-    Here, we will run a TBLite relaxation and frequency calculation for 162 molecules in the so-called "g2" collection of small, neutral molecules. This example should be run from an interactive resource like a Jupyter Notebook or IPython kernel on the remote machine:
+    Here, we will run a TBLite relaxation and frequency calculation for 162 molecules in the so-called "g2" collection of small, neutral molecules. This example should be run from an interactive resource like a Jupyter Notebook or IPython kernel on the remote machine.
 
     On the remote machine, make sure to install the necessary dependencies:
 
@@ -397,7 +474,7 @@ When deploying calculations for the first time, it's important to start simple, 
     pip install quacc[tblite]
     ```
 
-    First we initialize a Parsl configuration. For this example, we will request one Slurm job (block), which will run single-core compute tasks over two nodes.
+    First, we initialize a Parsl configuration. For this example, we will request one Slurm job (block), which will concurrently run single-core compute tasks over two nodes.
 
     ```python
     import parsl
@@ -468,6 +545,8 @@ When deploying calculations for the first time, it's important to start simple, 
         )
     ```
 
+    1. This is where the `PythonApp`s will be dispatched.
+
     !!! Note "Practical Deployment"
 
         For debugging purposes or when running only a small numbers of jobs, it is simple enough to run the Parsl process from an interactive Jupyter Notebook or IPython kernel on the remote machine. However, for practical deployment and to ensure jobs are continually submitted to the queue even when the SSH session is terminated, you can run the Parsl orchestration process on a login node and maintain its state via a program like `tmux` or `screen`.
@@ -482,6 +561,8 @@ When deploying calculations for the first time, it's important to start simple, 
     from dask.distributed import Client
     from dask_jobqueue import SLURMCluster
 
+    account = "MyAccountName"
+
     n_slurm_jobs = 1
     n_nodes_per_calc = 1
     n_cores_per_node = 48
@@ -494,7 +575,7 @@ When deploying calculations for the first time, it's important to start simple, 
         "memory": mem_per_node,
         # SLURM options
         "shebang": "#!/bin/bash",
-        "account": "MyAccountName",  # (1)!
+        "account": account,
         "walltime": "00:10:00",
         "job_mem": "0",
         "job_script_prologue": [
@@ -509,8 +590,6 @@ When deploying calculations for the first time, it's important to start simple, 
     cluster = SLURMCluster(**cluster_kwargs)
     client = Client(cluster)
     ```
-
-    1. Make sure to replace this with the account name to charge.
 
     Then run the following code:
 
@@ -532,7 +611,7 @@ When deploying calculations for the first time, it's important to start simple, 
     print(future.result())
     ```
 
-    If you are connecting to an existing Dask cluster and want to ensure it is not killed when the walltime is reached, refer to the [corresponding section](https://jobqueue.dask.org/en/latest/advanced-tips-and-tricks.html#how-to-handle-job-queueing-system-walltime-killing-workers) in the `dask-jobqueue` manual. If preferred, it is also possible to instantiate a [one-time, temporary](https://prefecthq.github.io/prefect-dask/usage_guide/#using-a-temporary-cluster) Dask cluster via the `DaskTaskRunner` rather than connecting to an existing Dask cluster. This is the more conventional job scheduling approach, where each workflow will run on its own job allocation.
+    If preferred, it is also possible to instantiate a [one-time, temporary](https://prefecthq.github.io/prefect-dask/usage_guide/#using-a-temporary-cluster) Dask cluster via the `DaskTaskRunner` rather than connecting to an existing Dask cluster. This is the more conventional job scheduling approach, where each workflow will run on its own Slurm allocation at the expense of lower throughput.
 
 === "Jobflow"
 
@@ -573,4 +652,204 @@ When deploying calculations for the first time, it's important to start simple, 
 
     To ensure that jobs are continually submitted to the queue, you can use `tmux` to preserve the job submission process even when the SSH session is terminated. For example, running `tmux new -s launcher` will create a new `tmux` session named `launcher`. To exit the `tmux` session while still preserving any running tasks on the login node, press `ctrl+b` followed by `d`. To re-enter the tmux session, run `tmux attach -t launcher`. Additional `tmux` commands can be found on the [tmux cheatsheet](https://tmuxcheatsheet.com/).
 
-For an example involving a code with more complex settings, refer to the [VASP example](../advanced/vasp_hpc.md).
+    **Setting Where Jobs are Dispatched**
+
+    The `my_qadapter.yaml` file you made in the [installation instructions](../../install/install.md) specifies how FireWorks will submit jobs added to your launch pad. Additional details can be found in the [Jobflow Documentation](https://materialsproject.github.io/jobflow/tutorials/8-fireworks.html#setting-where-jobs-are-dispatched) for how to dynamically set where and how Jobflow `Job` and `Flow` objects can be dispatched.
+
+### VASP Demonstration
+
+Here we will run a sample VASP recipe that will highlight the use of a more complicated MPI-based configuration. This example can only be run if you are a licensed VASP user, but the same fundamental principles apply to many other DFT codes with recipes in quacc.
+
+First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc` of your remote machine as described in the [Calculator Setup guide](../../install/codes.md). When you're done, follow the steps below.
+
+=== "Covalent"
+
+    Run the following code on the local machine:
+
+    ```python
+    import covalent as ct
+    from ase.build import bulk
+    from quacc import flow
+    from quacc.recipes.vasp.core import relax_job, static_job
+
+    n_nodes = 1
+    n_cores_per_node = 128
+    vasp_parallel_cmd = (
+        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
+    )
+
+    executor = ct.executor.SlurmExecutor(
+        username="YourUserName",
+        address="perlmutter-p1.nersc.gov",
+        ssh_key_file="~/.ssh/nersc",
+        cert_file="~/.ssh/nersc-cert.pub",
+        conda_env="quacc",
+        options={
+            "nodes": f"{n_nodes}",
+            "qos": "debug",
+            "constraint": "cpu",
+            "account": "YourAccountName",
+            "job-name": "quacc",
+            "time": "00:30:00",
+        },
+        remote_workdir="/path/to/workdir",
+        create_unique_workdir=True,
+        use_srun=False,
+        prereun_commands=[
+            "module load vasp/6.4.1-cpu",
+            f"export QUACC_VASP_PARALLEL_CMD='{vasp_parallel_cmd}'",
+        ],
+    )
+
+
+    @flow(executor=executor)
+    def workflow(atoms):
+        relax_output = relax_job(atoms)
+        return static_job(relax_output["atoms"])
+
+
+    atoms = bulk("C")
+    dispatch_id = ct.dispatch(workflow)(atoms)
+    result = ct.get_result(dispatch_id, wait=True)
+    print(result)
+    ```
+
+    ??? Note "An Alternate Approach: The `HPCExecutor`"
+
+        A similar configuration can be used for the `HPCExecutor`:
+
+        ```python
+        executor = ct.executor.HPCExecutor(
+            username="YourUserName",
+            address="perlmutter-p1.nersc.gov",
+            ssh_key_file="~/.ssh/nersc",
+            cert_file="~/.ssh/nersc-cert.pub",
+            instance="slurm",
+            resource_spec_kwargs={
+                "node_count": n_nodes,
+                "processes_per_node": n_cores_per_node,
+            },
+            job_attributes_kwargs={
+                "duration": 30,
+                "project_name": "YourAccountName",
+                "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
+            },
+            pre_launch_cmds=["module load vasp/6.4.1-cpu"],
+            environment={
+                "QUACC_VASP_PARALLEL_CMD": f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
+            },
+            remote_conda_env="quacc",
+            remote_workdir="$SCRATCH/quacc",
+            create_unique_workdir=True,
+            cleanup=False,
+        )
+        ```
+
+=== "Parsl"
+
+    Let's consider a scenario where we want to run concurrent VASP jobs that each run on a full CPU node of 128 cores. We will run two concurrent VASP jobs in a single Slurm allocation.
+
+    From an interactive resource like a Jupyter Notebook or IPython kernel from the login node on the remote machine:
+
+    ```python
+    import parsl
+    from parsl.config import Config
+    from parsl.executors import HighThroughputExecutor
+    from parsl.launchers import SimpleLauncher
+    from parsl.providers import SlurmProvider
+
+    account = "MyAccountName"
+
+    concurrent_jobs = 2
+    nodes_per_job = 1
+    cores_per_node = 128
+    vasp_parallel_cmd = (
+        f"srun -N {nodes_per_job} --ntasks-per-node={cores_per_node} --cpu_bind=cores"
+    )
+    min_slurm_allocations = 0
+    max_slurm_allocations = 1
+
+    config = Config(
+        strategy="htex_auto_scale",
+        executors=[
+            HighThroughputExecutor(
+                label="quacc_parsl",
+                max_workers=concurrent_jobs,
+                cores_per_worker=1e-6,
+                provider=SlurmProvider(
+                    account=account,
+                    qos="debug",
+                    constraint="cpu",
+                    worker_init=f"source ~/.bashrc && conda activate quacc && module load vasp/6.4.1-cpu && export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}",
+                    walltime="00:10:00",
+                    nodes_per_block=concurrent_jobs * nodes_per_job,
+                    init_blocks=0,
+                    min_blocks=min_slurm_allocations,
+                    max_blocks=max_slurm_allocations,
+                    launcher=SimpleLauncher(),
+                    cmd_timeout=60,
+                ),
+            )
+        ],
+    )
+
+    parsl.load(config)
+    ```
+
+    ```python
+    from ase.build import bulk
+    from quacc.recipes.vasp.core import relax_job, static_job
+
+
+    def workflow(atoms):
+        relax_output = relax_job(atoms, kpts=[3, 3, 3])
+        return static_job(relax_output["atoms"], kpts=[3, 3, 3])
+
+
+    future1 = workflow(bulk("C"))
+    future2 = workflow(bulk("Cu"))
+    print(future1.result(), future2.result())
+    ```
+
+=== "Jobflow"
+
+    You will need to update your `my_qadapter.yaml` file that you made when setting up FireWorks. Specifically, ensure that the following parameters are set:
+
+    ```yaml title="my_qadapter.yaml"
+    _fw_name: CommonAdapter
+    _fw_q_type: SLURM
+    rocket_launch: rlaunch -w /path/to/fw_config/my_fworker.yaml singleshot
+    nodes: 1
+    walltime: 00:30:00
+    account: MyAccountName
+    job_name: quacc_firework
+    qos: debug
+    pre_rocket: |
+    module load vasp/6.4.1-cpu
+    export QUACC_VASP_PARALLEL_CMD="srun -N 1 --ntasks-per-node=128 --cpu_bind=cores"
+    ```
+
+    From the login node of the remote machine, then run the following:
+
+    ```python
+    import jobflow as jf
+    from ase.build import bulk
+    from fireworks import LaunchPad
+    from jobflow.managers.fireworks import flow_to_workflow
+    from quacc.recipes.vasp.core import relax_job, static_job
+
+    atoms = bulk("C")
+    job1 = relax_job(atoms, kpts=[3, 3, 3])
+    job2 = static_job(job1.output["atoms"], kpts=[3, 3, 3])
+    flow = jf.Flow([job1, job2])
+
+    wf = flow_to_workflow(flow)
+    lpad = LaunchPad.auto_load()
+    lpad.add_wf(wf)
+    ```
+
+    Then run the following on the remote machine:
+
+    ```bash
+    qlaunch rapidfire -m 1
+    ```
