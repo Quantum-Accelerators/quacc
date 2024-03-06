@@ -51,7 +51,7 @@ def nscf_job(
     bandgap
         The band gap of the material.
     nbands_factor
-        It increases NBANDS. However, to use it, the vasprun.xml(.gz) must 
+        It increases NBANDS. However, to use it, the vasprun.xml(.gz) must
         provided in prev_dir.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
