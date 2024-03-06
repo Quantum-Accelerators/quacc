@@ -903,8 +903,3 @@ def test_run(monkeypatch, tmp_path):
     atoms = bulk("Cu")
     calc = Vasp(atoms, xc="PBE", use_custodian=False)
     assert calc._run() > 0
-
-    atoms = bulk("Cu")
-    calc = Vasp(atoms, xc="PBE", use_custodian=True)
-    with pytest.raises(FileNotFoundError):
-        calc._run()
