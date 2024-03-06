@@ -252,7 +252,7 @@ class QChem(FileIOCalculator):
         super().__init__(
             restart=None,
             label=None,
-            command=self.command,
+            command=command,
             atoms=self.atoms,
             profile=None,
             **self.fileiocalculator_kwargs,
