@@ -246,7 +246,7 @@ class QChem(FileIOCalculator):
         self._set_default_params()
 
         # Get Q-Chem executable command
-        self.command = self._manage_environment()
+        command = self._manage_environment()
 
         # Instantiate the calculator
         super().__init__(
