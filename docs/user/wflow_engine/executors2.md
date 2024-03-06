@@ -16,11 +16,11 @@ If you haven't done so already:
 
     ```bash
     pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
-    pip install quacc[covalent]
-    quacc set WORKFLOW_ENGINE covalent && quacc set CREATE_UNIQUE_DIR false  # (1)!
+    pip install quacc[covalent] covalent-slurm-plugin
+    quacc set WORKFLOW_ENGINE covalent && quacc set CREATE_UNIQUE_DIR false  # (2)!
     ```
 
-    1. Many of the Covalent executors have their own mechanism for task isolation, which we will use instead.
+    2. Many of the Covalent executors have their own mechanism for task isolation, which we will use instead.
 
     On the local machine:
 
@@ -132,6 +132,54 @@ When deploying calculations for the first time, it's important to start simple, 
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
     ```
+
+    ??? Note "An Alternate Approach: The `HPCExecutor`"
+
+        If you are using the `HPCExecutor`, the process is similar.
+
+        On the local machine, run:
+
+        ```bash
+        pip install covalent-hpc-plugin
+        ```
+
+        On the remote machine, run:
+
+        ```bash
+        pip install psij-python
+        ```
+
+        Then you can use the `HPCExecutor` as follows:
+
+        ```python
+        n_nodes = 1  # Number of nodes to reserve for each calculation
+        n_cores_per_node = 48  # Number of CPU cores per node
+
+        executor = ct.executor.HPCExecutor(
+            # SSH credentials
+            username="YourUserName",
+            address="perlmutter-p1.nersc.gov",
+            ssh_key_file="~/.ssh/nersc",
+            cert_file="~/.ssh/nersc-cert.pub",  # (1)!
+            # PSI/J parameters
+            instance="slurm",
+            resource_spec_kwargs={
+                "node_count": n_nodes,
+                "processes_per_node": n_cores_per_node,
+            },  # (2)!
+            job_attributes_kwargs={
+                "duration": 10,  # minutes
+                "project_name": "YourAccountName",
+                "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
+            },  # (3)!
+            # Remote Python env parameters
+            remote_conda_env="quacc",
+            # Covalent parameters
+            remote_workdir="$SCRATCH/quacc",  # (4)!
+            create_unique_workdir=True,  # (5)!
+            cleanup=False,  # (6)!
+        )
+        ```
 
 === "Dask"
 

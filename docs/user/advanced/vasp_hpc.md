@@ -56,7 +56,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     print(result)
     ```
 
-    ??? "The HPCExecutor"
+    ??? Note "An Alternate Approach: The `HPCExecutor`"
 
         A similar configuration can be used for the `HPCExecutor`:
 
@@ -81,7 +81,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
                 "QUACC_VASP_PARALLEL_CMD": f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
             },
             remote_conda_env="quacc",
-            remote_workdir="/path/to/workdir",
+            remote_workdir="$SCRATCH/quacc",
             create_unique_workdir=True,
             cleanup=False,
         )

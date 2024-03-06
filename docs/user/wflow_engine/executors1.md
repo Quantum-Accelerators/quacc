@@ -103,7 +103,11 @@ In the previous examples, we have been running calculations on our local machine
 
     4. The `SlurmExecutor` must have `use_srun=False` in order for ASE-based calculators to be launched appropriately.
 
-    ??? Note "The `HPCExecutor`"
+    ??? Note "An Alternate Approach: The `HPCExecutor`"
+
+        If you are using a job scheduler environment but find the `covalent-slurm-plugin` does not suit your needs, you may wish to consider the [`covalent-hpc-plugin`](https://github.com/Quantum-Accelerators/covalent-hpc-plugin).
+
+        An example `HPCExecutor` configuration might look like the following:
 
         ```python
         n_nodes = 1  # Number of nodes to reserve for each calculation
