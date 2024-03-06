@@ -580,7 +580,7 @@ If you haven't done so already:
             "source ~/.bashrc",
             "conda activate quacc",
             "module load vasp/6.4.1-cpu",
-            f"export QUACC_VASP_PARALLEL_CMD='{vasp_parallel_cmd}'"
+            f"export QUACC_VASP_PARALLEL_CMD='{vasp_parallel_cmd}'",
         ],
         "job_directives_skip": ["-n", "--cpus-per-task"],
         "job_extra_directives": [f"-N {nodes_per_calc}", "-q debug", "-C cpu"],
