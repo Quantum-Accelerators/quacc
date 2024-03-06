@@ -29,6 +29,7 @@ def nscf_job(
     calculate_optics: bool = False,
     bandgap: float | None,
     vasprun: Vasprun = None,
+    nbands_factor: float | None,
     **calc_kwargs,
 ) -> VaspSchema:
     """
@@ -49,6 +50,9 @@ def nscf_job(
         Whether to calculate optical properties.
     bandgap
         The band gap of the material.
+    nbands_factor
+        It increases NBANDS. However, to use it, the vasprun.xml(.gz) must 
+        provided in prev_dir.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -74,8 +78,8 @@ def nscf_job(
 
     updates: dict[str, Any] = {}
 
-    if vasprun is not None:
-        nbands_factor = 1.2
+    if vasprun is not None and nbands_factor is not None:
+        nbands_factor = nbands_factor
         nbands = int(np.ceil(vasprun.parameters["NBANDS"] * nbands_factor))
         updates["nbands"] = nbands
 
