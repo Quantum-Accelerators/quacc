@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import inspect
 import os
-import subprocess
 import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -24,7 +23,6 @@ from quacc.calculators.vasp.params import (
     set_auto_dipole,
     set_pmg_kpts,
 )
-from quacc.calculators.vasp.vasp_custodian import run_custodian
 from quacc.schemas.prep import set_magmoms
 from quacc.utils.dicts import sort_dict
 
