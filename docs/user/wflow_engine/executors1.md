@@ -72,7 +72,7 @@ In the previous examples, we have been running calculations on our local machine
     Most users of quacc will probably want to use the [`SlurmExecutor`](https://github.com/AgnostiqHQ/covalent-slurm-plugin), which is a plugin for Covalent that supports Slurm job scheduling system. An example `SlurmExecutor` configuration might look like the following, which has been tested on Perlmutter at NERSC:
 
     ```python
-    n_nodes = 2
+    n_nodes = 1
     n_cores_per_node = 48
 
     executor = ct.executor.SlurmExecutor(
@@ -106,7 +106,7 @@ In the previous examples, we have been running calculations on our local machine
     ??? Note "The `HPCExecutor`"
 
         ```python
-        n_nodes = 2  # Number of nodes to reserve for each calculation
+        n_nodes = 1  # Number of nodes to reserve for each calculation
         n_cores_per_node = 48  # Number of CPU cores per node
 
         executor = ct.executor.HPCExecutor(
