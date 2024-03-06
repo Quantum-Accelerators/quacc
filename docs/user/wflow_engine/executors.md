@@ -4,7 +4,7 @@ In the previous examples, we have been running calculations on our local machine
 
 !!! Note "A Note on Terminology"
 
-    Throughout this section, when we refer to a "job", we are specifically referring to a function decorated by `#!Python @job`. A node refers to the compute node on the HPC machine, which consists of many individual compute cores. An allocation refers to one or more nodes that have been reserved via the job scheduler for a given amount of time.
+    Throughout this section, when we refer to a "job", we are specifically referring to a function decorated by `#!Python @job` (i.e. not necessarily a Slurm job, which may run multipel `#!Python @job`s). A node refers to the compute node on the HPC machine, which consists of many individual compute cores. An allocation refers to one or more nodes that have been reserved via the job scheduler for a given amount of time.
 
 ## Background Information
 
@@ -283,68 +283,13 @@ If you haven't done so already:
 
         6. For debugging purposes, it can be useful to keep all the temporary files. Once you're confident things work, you can omit the `cleanup` keyword argument.
 
-=== "Dask"
-
-    From an interactive resource like a Jupyter Notebook or IPython kernel on the login node of the remote machine, run the following to instantiate a Dask [`SLURMCluster`](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html):
-
-    ```python
-    from dask.distributed import Client
-    from dask_jobqueue import SLURMCluster
-
-    account = "MyAccountName"
-
-    nodes_per_calc = 1
-    cores_per_node = 128
-    mem_per_node = "64 GB"
-
-    cluster_kwargs = {
-        # Dask worker options
-        "n_workers": cores_per_node,
-        "cores": cores_per_node,
-        "memory": mem_per_node,
-        # SLURM options
-        "shebang": "#!/bin/bash",
-        "account": account,
-        "walltime": "00:10:00",
-        "job_mem": "0",
-        "job_script_prologue": [
-            "source ~/.bashrc",
-            "conda activate quacc",
-        ],
-        "job_directives_skip": ["-n", "--cpus-per-task"],
-        "job_extra_directives": [f"-N {nodes_per_calc}", "-q debug", "-C cpu"],
-        "python": "python",
-    }
-
-    cluster = SLURMCluster(**cluster_kwargs)
-    client = Client(cluster)
-    ```
-
-    Then run the following code in the same Python process:
-
-    ```python
-    from ase.build import bulk
-    from quacc.recipes.emt.core import relax_job, static_job
-
-
-    def workflow(atoms):
-        relax_output = relax_job(atoms)
-        return static_job(relax_output["atoms"])
-
-
-    atoms = bulk("Cu")
-    delayed = workflow(atoms)
-    result = client.compute(delayed).result()
-    print(result)
-    ```
-
-    ??? Tip "Handling the Walltime Killing Workers"
-
-        The `dask-jobqueue` documentation has a [helpful section](https://jobqueue.dask.org/en/latest/advanced-tips-and-tricks.html#how-to-handle-job-queueing-system-walltime-killing-workers) on how to ensure that workflows run to completion despite the finite walltime on a job scheduler system. Namely, you should use the `--lifetime` (and, potentially, the `--lifetime-stagger`) option alongside an adaptive Dask cluster to ensure that the cluster can always spin up new workers as-needed.
-
 === "Parsl"
 
     Here, we describe several representative [`HighThroughputExecutor`](https://parsl.readthedocs.io/en/stable/stubs/parsl.executors.HighThroughputExecutor.html#parsl.executors.HighThroughputExecutor) configurations that will orchestrate jobs from the login node of NERSC's Perlmutter machine. There is no one-size-fits-all approach, so you will need to adjust the configuration to suit your specific needs.
+
+    Parsl has its own terminology that basically boils down to the following:
+    - `block`: A Slurm allocation, which is a set of one or more compute nodes reserved for a given amount of time
+    - `worker`: A process running on a compute node within a block that is responsible for executing a Parsl task
 
     **Concurrent Non-MPI Jobs**
 
@@ -370,7 +315,7 @@ If you haven't done so already:
         executors=[
             HighThroughputExecutor(
                 label="quacc_parsl",  # (2)!
-                max_workers=cores_per_node,  # (3)!
+                max_workers_per_node=cores_per_node,  # (3)!
                 cores_per_worker=cores_per_job,  # (4)!
                 provider=SlurmProvider(
                     account=account,
@@ -398,7 +343,7 @@ If you haven't done so already:
 
     3. The maximum number of running jobs per node. If you are running a non-MPI job, this value will generally be the number of physical cores per node (this example). Perlmutter has 128 physical CPU cores, so we have set a value of 128 here.
 
-    4. The number of cores per job. We are running single-core jobs in this example
+    4. The number of cores per job. We are running single-core jobs in this example.
 
     5. Any commands to run before carrying out any of the Parsl jobs. This is useful for setting environment variables, activating a given Conda environment, and loading modules.
 
@@ -440,7 +385,7 @@ If you haven't done so already:
         executors=[
             HighThroughputExecutor(
                 label="quacc_parsl",
-                max_workers=nodes_per_job*nodes_per_allocation,  # (1)!
+                max_workers_per_node=nodes_per_job*nodes_per_allocation,  # (1)!
                 cores_per_worker=1e-6,  # (2)!
                 provider=SlurmProvider(
                     account=account,
@@ -462,7 +407,7 @@ If you haven't done so already:
     parsl.load(config)
     ```
 
-    1. Unlike the prior example, here `max_workers` is defining how many concurrent jobs to run in total and not how many jobs are run per node.
+    1. Unlike the prior example, here `max_workers_per_node` is defining the maximum number of concurrent jobs in total and not the maximum number of jobs run per node.
 
     2. This is recommended in the Parsl manual for jobs that spawn MPI processes.
 
@@ -502,7 +447,7 @@ If you haven't done so already:
         executors=[
             HighThroughputExecutor(
                 label="quacc_parsl",
-                max_workers=cores_per_node,
+                max_workers_per_node=cores_per_node,
                 cores_per_worker=cores_per_job,
                 provider=SlurmProvider(
                     account=account,
@@ -563,66 +508,6 @@ If you haven't done so already:
         For debugging purposes or when running only a small numbers of jobs, it is simple enough to run the Parsl process from an interactive Jupyter Notebook or IPython kernel on the remote machine. However, for practical deployment and to ensure jobs are continually submitted to the queue even when the SSH session is terminated, you can run the Parsl orchestration process on a login node and maintain its state via a program like `tmux` or `screen`.
 
         For example, running `tmux new -s launcher` will create a new `tmux` session named `launcher`. To exit the `tmux` session while still preserving any running jobs on the login node, press `ctrl+b` followed by `d`. To re-enter the tmux session, run `tmux attach -t launcher`. Additional `tmux` commands can be found on the [tmux cheatsheet](https://tmuxcheatsheet.com/).
-
-=== "Prefect"
-
-    From an interactive resource like a Jupyter Notebook or IPython kernel on the login node of the remote machine, run the following to instantiate a Dask [`SLURMCluster`](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html):
-
-    ```python
-    from dask.distributed import Client
-    from dask_jobqueue import SLURMCluster
-
-    account = "MyAccountName"
-
-    slurm_jobs = 1
-    nodes_per_calc = 1
-    cores_per_node = 48
-    mem_per_node = "64 GB"
-
-    cluster_kwargs = {
-        # Dask worker options
-        "n_workers": slurm_jobs,
-        "cores": cores_per_node,
-        "memory": mem_per_node,
-        # SLURM options
-        "shebang": "#!/bin/bash",
-        "account": account,
-        "walltime": "00:10:00",
-        "job_mem": "0",
-        "job_script_prologue": [
-            "source ~/.bashrc",
-            "conda activate quacc",
-        ],
-        "job_directives_skip": ["-n", "--cpus-per-task"],
-        "job_extra_directives": [f"-N {nodes_per_calc}", "-q debug", "-C cpu"],
-        "python": "python",
-    }
-
-    cluster = SLURMCluster(**cluster_kwargs)
-    client = Client(cluster)
-    ```
-
-    Then run the following code:
-
-    ```python
-    from ase.build import bulk
-    from prefect_dask import DaskTaskRunner
-    from quacc import flow
-    from quacc.recipes.emt.core import relax_job, static_job
-
-
-    @flow(task_runner=DaskTaskRunner(address=client.scheduler.address))
-    def workflow(atoms):
-        relax_output = relax_job(atoms)
-        return static_job(relax_output["atoms"])
-
-
-    atoms = bulk("Cu")
-    future = workflow(atoms)
-    print(future.result())
-    ```
-
-    If preferred, it is also possible to instantiate a [one-time, temporary](https://prefecthq.github.io/prefect-dask/usage_guide/#using-a-temporary-cluster) Dask cluster via the `DaskTaskRunner` rather than connecting to an existing Dask cluster. This is the more conventional job scheduling approach, where each workflow will run on its own Slurm allocation at the expense of lower throughput.
 
 === "Jobflow"
 
@@ -758,63 +643,6 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
         )
         ```
 
-=== "Dask"
-
-    ```python
-    from dask.distributed import Client
-    from dask_jobqueue import SLURMCluster
-
-    account = "MyAccountName"
-
-    nodes_per_calc = 1
-    cores_per_node = 128
-    concurrent_jobs = 2
-    mem_per_node = "64 GB"
-
-    vasp_parallel_cmd = (
-        f"srun -N {nodes_per_calc} --ntasks-per-node={cores_per_node} --cpu_bind=cores"
-    )
-
-    cluster_kwargs = {
-        # Dask worker options
-        "cores": cores_per_node,
-        "memory": mem_per_node,
-        # SLURM options
-        "shebang": "#!/bin/bash",
-        "account": account,
-        "walltime": "00:10:00",
-        "job_mem": "0",
-        "job_script_prologue": [
-            "source ~/.bashrc",
-            "conda activate quacc",
-            "module load vasp/6.4.1-cpu",
-            f"export QUACC_VASP_PARALLEL_CMD='{vasp_parallel_cmd}'",
-        ],
-        "job_directives_skip": ["-n", "--cpus-per-task"],
-        "job_extra_directives": [f"-N {nodes_per_calc}", "-q debug", "-C cpu"],
-        "python": "python",
-    }
-
-    cluster = SLURMCluster(**cluster_kwargs)
-    cluster.scale(jobs=concurrent_jobs)
-    client = Client(cluster)
-    ```
-
-    ```python
-    from ase.build import bulk
-    from quacc.recipes.vasp.core import relax_job, static_job
-
-
-    def workflow(atoms):
-        relax_output = relax_job(atoms, kpts=[3, 3, 3])
-        return static_job(relax_output["atoms"], kpts=[3, 3, 3])
-
-
-    future1 = client.compute(workflow(bulk("C")))
-    future2 = client.compute(workflow(bulk("Cu")))
-    print(future1.result(), future2.result())
-    ```
-
 === "Parsl"
 
     Let's consider a scenario where we want to run concurrent VASP jobs that each run on a full CPU node of 128 cores. We will run two concurrent VASP jobs in a single Slurm allocation.
@@ -844,7 +672,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
         executors=[
             HighThroughputExecutor(
                 label="quacc_parsl",
-                max_workers=nodes_per_job*nodes_per_allocation,
+                max_workers_per_node=nodes_per_job*nodes_per_allocation,
                 cores_per_worker=1e-6,
                 provider=SlurmProvider(
                     account=account,
@@ -871,65 +699,6 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     from quacc.recipes.vasp.core import relax_job, static_job
 
 
-    def workflow(atoms):
-        relax_output = relax_job(atoms, kpts=[3, 3, 3])
-        return static_job(relax_output["atoms"], kpts=[3, 3, 3])
-
-
-    future1 = workflow(bulk("C"))
-    future2 = workflow(bulk("Cu"))
-    print(future1.result(), future2.result())
-    ```
-
-=== "Prefect"
-
-    ```python
-    from dask.distributed import Client
-    from dask_jobqueue import SLURMCluster
-
-    account = "MyAccountName"
-
-    slurm_jobs = 2
-    nodes_per_calc = 1
-    cores_per_node = 128
-    mem_per_node = "64 GB"
-
-    vasp_parallel_cmd = (
-        f"srun -N {nodes_per_calc} --ntasks-per-node={cores_per_node} --cpu_bind=cores"
-    )
-
-    cluster_kwargs = {
-        # Dask worker options
-        "cores": cores_per_node,
-        "memory": mem_per_node,
-        # SLURM options
-        "shebang": "#!/bin/bash",
-        "account": account,
-        "walltime": "00:10:00",
-        "job_mem": "0",
-        "job_script_prologue": [
-            "source ~/.bashrc",
-            "conda activate quacc",
-            "module load vasp/6.4.1-cpu",
-            f"export QUACC_VASP_PARALLEL_CMD='{vasp_parallel_cmd}'",
-        ],
-        "job_directives_skip": ["-n", "--cpus-per-task"],
-        "job_extra_directives": [f"-N {nodes_per_calc}", "-q debug", "-C cpu"],
-        "python": "python",
-    }
-
-    cluster = SLURMCluster(**cluster_kwargs)
-    client = Client(cluster)
-    ```
-
-    ```python
-    from ase.build import bulk
-    from prefect_dask import DaskTaskRunner
-    from quacc import flow
-    from quacc.recipes.vasp.core import relax_job, static_job
-
-
-    @flow(task_runner=DaskTaskRunner(address=client.scheduler.address))
     def workflow(atoms):
         relax_output = relax_job(atoms, kpts=[3, 3, 3])
         return static_job(relax_output["atoms"], kpts=[3, 3, 3])
