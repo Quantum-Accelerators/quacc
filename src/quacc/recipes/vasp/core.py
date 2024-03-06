@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 import numpy as np
-from typing import Literal
+
 from quacc import flow, job
 from quacc.recipes.vasp._base import base_fn
 
