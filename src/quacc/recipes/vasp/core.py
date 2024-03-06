@@ -23,6 +23,7 @@ if TYPE_CHECKING:
 def nscf_job(
     atoms: Atoms,
     preset: str | None = "BulkSet",
+    prev_dir: SourceDirectory
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     kpoints_mode: Literal["uniform", "line"] = "uniform",
     calculate_optics: bool = False,
@@ -78,29 +79,16 @@ def nscf_job(
         nbands = int(np.ceil(vasprun.parameters["NBANDS"] * nbands_factor))
         updates["nbands"] = nbands
 
-    def _get_nedos(vasprun: Vasprun | None, dedos: float) -> int:
-        """Automatic setting of nedos using the energy range and the energy step."""
-        if vasprun is None:
-            return 5001
-        emax = max(eigs.max() for eigs in vasprun.eigenvalues.values())
-        emin = min(eigs.min() for eigs in vasprun.eigenvalues.values())
-        return int((emax - emin) / dedos)
-
     if kpoints_mode == "uniform":
-        # Automatic setting of NEDOS using the energy range and the energy step
-        n_edos = _get_nedos(vasprun, 0.005)  # Example value, adjust as needed
         # Use tetrahedron method for DOS and optics calculations
-        updates.update({"ismear": -5, "isym": 2, "nedos": n_edos})
+        updates.update({"ismear": -5, "isym": 2})
     elif kpoints_mode == "line":
         sigma = 0.2 if bandgap == 0 else 0.01
         updates.update({"ismear": 0, "sigma": sigma})
 
     if calculate_optics:
-        # LREAL not supported with LOPTICS = True; automatic NEDOS usually
-        # underestimates, so set it explicitly
-        n_edos = _get_nedos(vasprun, 0.0025)  # Example value, adjust as needed
         updates.update(
-            {"loptics": True, "lreal": False, "cshift": 1e-5, "nedos": n_edos}
+            {"loptics": True, "lreal": False, "cshift": 1e-5}
         )
 
     # integrate updates to calc_kwargs
