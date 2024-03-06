@@ -102,9 +102,8 @@ In the previous examples, we have been running calculations on our local machine
     3. This will tell Covalent to make a unique working directory for each job. This should be used in place of the `CREATE_UNIQUE_DIR` quacc setting, which seeks to do largely the same thing.
 
     4. The `SlurmExecutor` must have `use_srun=False` in order for ASE-based calculators to be launched appropriately.
-    ```
 
-    ??? Note "The HPCExecutor"
+    ??? Note "The `HPCExecutor`"
 
         ```python
         n_nodes = 2  # Number of nodes to reserve for each calculation
