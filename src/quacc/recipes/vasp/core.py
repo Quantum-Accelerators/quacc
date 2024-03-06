@@ -5,15 +5,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
-
+from typing import Literal
 from quacc import flow, job
 from quacc.recipes.vasp._base import base_fn
-<<<<<<< HEAD
-import numpy as np
-from typing import Literal
-
-=======
->>>>>>> ea2df1bfb266dca745b6c7263f7899c3edb91b06
 
 if TYPE_CHECKING:
     from typing import Any
