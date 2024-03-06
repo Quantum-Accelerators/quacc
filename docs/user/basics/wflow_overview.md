@@ -43,7 +43,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     - Extremely popular
     - Has significant support for running on HPC resources
     - It does not involve a centralized server or network connectivity
-    - Supports adaptive scaling of compute resources and the powerful pilot job model
+    - Supports adaptive scaling of compute resources
     - The dashboard to monitor resource usage is very intuitive
 
     Cons:
