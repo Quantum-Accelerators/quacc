@@ -2,6 +2,10 @@
 
 In the previous examples, we have been running calculations on our local machine. However, in practice, you will probably want to run your calculations on one or more HPC machines. This section will describe how to set up your workflows to run on HPC machines using your desired workflow engine to scale up your calculations.
 
+!!! Note "A Note on Terminology"
+
+    Throughout this section, when we refer to a "job", we are specifically referring to a function decorated by `#!Python @job`. A node refers to the compute node on the HPC machine, which consists of many individual compute cores. An allocation refers to one or more nodes that have been reserved via the job scheduler for a given amount of time.
+
 ## Background Information
 
 === "Covalent"
@@ -20,7 +24,7 @@ In the previous examples, we have been running calculations on our local machine
 
     !!! Note "Pilot Jobs"
 
-        Unlike most other workflow engines, Parsl is built for the [pilot job model](https://en.wikipedia.org/wiki/Pilot_job) where the allocated nodes continually pull in new tasks to run. This makes it possible to avoid submitting a large number of small jobs to the scheduler, which can be inefficient from a queuing perspective.
+        Unlike most other workflow engines, Parsl is built for the [pilot job model](https://en.wikipedia.org/wiki/Pilot_job) where the allocated nodes continually pull in new jobs to run. This makes it possible to avoid submitting a large number of small jobs to the scheduler, which can be inefficient from a queuing perspective.
 
 === "Prefect"
 
@@ -344,21 +348,22 @@ If you haven't done so already:
 
     **Concurrent Non-MPI Jobs**
 
-    Let's imagine a scenario where we want to concurrently run a large number of single-core compute tasks. A sample configuration for this purpose is shown below. Here, we are requesting a single Slurm allocation with 2 nodes and each job is running on one core of that allocation.
+    Let's imagine a scenario where we want to concurrently run a large number of single-core compute jobs. A sample configuration for this purpose is shown below. Here, we are requesting a single Slurm allocation with 2 nodes, and each compute job is running on one core of that allocation.
 
     ```python
     import parsl
     from parsl.config import Config
     from parsl.executors import HighThroughputExecutor
-    from parsl.launchers import SimpleLauncher
+    from parsl.launchers import SrunLauncher
     from parsl.providers import SlurmProvider
 
     account = "MyAccountName"
 
-    concurrent_jobs = 128
-    cores_per_node = 64
-    min_slurm_allocations = 0
-    max_slurm_allocations = 1
+    cores_per_job = 1
+    cores_per_node = 128
+    nodes_per_allocation = 2
+    min_allocations = 0
+    max_allocations = 1
 
     config = Config(
         strategy="htex_auto_scale",  # (1)!
@@ -366,18 +371,19 @@ If you haven't done so already:
             HighThroughputExecutor(
                 label="quacc_parsl",  # (2)!
                 max_workers=cores_per_node,  # (3)!
+                cores_per_worker=cores_per_job,  # (4)!
                 provider=SlurmProvider(
                     account=account,
                     qos="debug",
                     constraint="cpu",
-                    worker_init=f"source ~/.bashrc && conda activate quacc",  # (4)!
-                    walltime="00:10:00",  # (5)!
-                    nodes_per_block=concurrent_jobs // cores_per_node,  # (6)!
-                    init_blocks=0,  # (7)!
-                    min_blocks=min_slurm_allocations,  # (8)!
-                    max_blocks=max_slurm_allocations,  # (9)!
-                    launcher=SimpleLauncher(),  # (10)!
-                    cmd_timeout=60,  # (11)!
+                    worker_init=f"source ~/.bashrc && conda activate quacc",  # (5)!
+                    walltime="00:10:00",  # (6)!
+                    nodes_per_block=nodes_per_allocation,  # (7)!
+                    init_blocks=0,  # (8)!
+                    min_blocks=min_allocations,  # (9)!
+                    max_blocks=max_allocations,  # (10)!
+                    launcher=SrunLauncher(),  # (11)!
+                    cmd_timeout=60,  # (12)!
                 ),
             )
         ],
@@ -386,31 +392,33 @@ If you haven't done so already:
     parsl.load(config)
     ```
 
-    1. Unique to the `HighThroughputExecutor`, this `strategy` will automatically scale the number of active blocks (i.e. Slurm allocations) up or down based on the number of tasks remaining. We set `max_blocks=1` here so it can't scale up beyond 1 Slurm job, but it can scale down from 1 to 0 since `min_blocks=0`. By setting `init_blocks=0`, no Slurm allocation will be requested until tasks are launched.
+    1. Unique to the `HighThroughputExecutor`, this `strategy` will automatically scale the number of active blocks (i.e. Slurm allocations) up or down based on the number of jobs remaining. We set `max_blocks=1` here so it can't scale up beyond 1 Slurm job, but it can scale down from 1 to 0 since `min_blocks=0`. By setting `init_blocks=0`, no Slurm allocation will be requested until jobs are launched.
 
     2. This is just an arbitrary label for file I/O.
 
-    3. If you are running a single-core `Job`, this value will be the number of physical cores per node (this example). If you are running a `Job` that is calling MPI and uses multiple cores per node, this will be the number of concurrent tasks (see next example).
+    3. The maximum number of running jobs per node. If you are running a non-MPI job, this value will generally be the number of physical cores per node (this example). Perlmutter has 128 physical CPU cores, so we have set a value of 128 here.
 
-    4. Any commands to run before carrying out any of the Parsl tasks. This is useful for setting environment variables, activating a given Conda environment, and loading modules.
+    4. The number of cores per job. We are running single-core jobs in this example
 
-    5. The walltime for each block (i.e. Slurm allocation).
+    5. Any commands to run before carrying out any of the Parsl jobs. This is useful for setting environment variables, activating a given Conda environment, and loading modules.
 
-    6. The number of nodes that each block (i.e. Slurm allocation) should allocate.
+    6. The walltime for each block (i.e. Slurm allocation).
 
-    7. Sets the number of blocks (e.g. Slurm allocations) to provision during initialization of the workflow. We set this to a value of 0 so that there isn't a running Slurm job before any tasks have been submitted to Parsl.
+    7. The number of nodes that each block (i.e. Slurm allocation) should allocate.
 
-    8. Sets the minimum number of blocks (e.g. Slurm allocations) to maintain during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 0 so that Slurm jobs aren't running when there are no remaining tasks.
+    8. Sets the number of blocks (e.g. Slurm allocations) to provision during initialization of the workflow. We set this to a value of 0 so that there isn't a running Slurm job before any jobs have been submitted to Parsl.
 
-    9. Sets the maximum number of active blocks (e.g. Slurm allocations) during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 1 here, but it can be increased to have multiple Slurm jobs running simultaneously. Raising `max_blocks` to a larger value will allow the "htex_auto_scale" strategy to upscale resources as needed.
+    9. Sets the minimum number of blocks (e.g. Slurm allocations) to maintain during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 0 so that Slurm jobs aren't running when there are no remaining jobs.
 
-    10. The type of Launcher to use. `SimpleLauncher()` must be used instead of the commonly used `SrunLauncher()` to allow quacc subprocesses to launch their own `srun` commands.
+    10. Sets the maximum number of active blocks (e.g. Slurm allocations) during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 1 here, but it can be increased to have multiple Slurm jobs running simultaneously. Raising `max_blocks` to a larger value will allow the "htex_auto_scale" strategy to upscale resources as needed.
 
-    11. The maximum time to wait (in seconds) for the job scheduler info to be retrieved/sent.
+    11. The type of Launcher to use. `SrunLauncher()` will distribute jobs across the cores and nodes of the Slurm allocation. It should not be used for `PythonApp`s that themselves call MPI, which should use `SimpleLauncher()` instead.
+
+    12. The maximum time to wait (in seconds) for the job scheduler info to be retrieved/sent.
 
     **Concurrent MPI Jobs**
 
-    Now let's consider a similar configuration but for tasks where the underlying executable is run via MPI, as is typically the case for most quantum chemistry codes that distribute work over multiple cores and/or nodes. The setup here is a bit different. In this example, we are requesting a single Slurm allocation with 8 nodes and each job is running on 2 nodes of that allocation.
+    Now let's consider a similar configuration but for jobs where the underlying executable is run via MPI, as is typically the case for most quantum chemistry codes that distribute work over multiple cores and/or nodes. The setup here is a bit different. In this example, we are requesting a single Slurm allocation with 8 nodes (containing 128 physical CPU cores per node), and each compute job is running on 2 nodes of that allocation.
 
     ```python
     import parsl
@@ -421,30 +429,30 @@ If you haven't done so already:
 
     account = "MyAccountName"
 
-    concurrent_jobs = 4
-    nodes_per_job = 2  # (1)!
-    cores_per_node = 64  # (2)!
-    min_slurm_allocations = 0
-    max_slurm_allocations = 1
+    nodes_per_job = 2
+    cores_per_node = 128
+    nodes_per_allocation = 2
+    min_allocations = 0
+    max_allocations = 1
 
     config = Config(
         strategy="htex_auto_scale",
         executors=[
             HighThroughputExecutor(
                 label="quacc_parsl",
-                max_workers=concurrent_jobs,  # (3)!
-                cores_per_worker=1e-6,  # (4)!
+                max_workers=nodes_per_job*nodes_per_allocation,  # (1)!
+                cores_per_worker=1e-6,  # (2)!
                 provider=SlurmProvider(
                     account=account,
                     qos="debug",
                     constraint="cpu",
                     worker_init=f"source ~/.bashrc && conda activate quacc",
                     walltime="00:10:00",
-                    nodes_per_block=concurrent_jobs * nodes_per_job,
+                    nodes_per_block=nodes_per_allocation,
                     init_blocks=0,
-                    min_blocks=min_slurm_allocations,
-                    max_blocks=max_slurm_allocations,
-                    launcher=SimpleLauncher(),
+                    min_blocks=min_allocations,
+                    max_blocks=max_allocations,
+                    launcher=SimpleLauncher(),  # (3)!
                     cmd_timeout=60,
                 ),
             )
@@ -454,17 +462,15 @@ If you haven't done so already:
     parsl.load(config)
     ```
 
-    1. The underlying executable should be run via `-N 2` in the `srun` command.
+    1. Unlike the prior example, here `max_workers` is defining how many concurrent jobs to run in total and not how many jobs are run per node.
 
-    2. The underlying executable should be run via `--ntasks-per-node 64` in the `srun` command. If you want the job to use half of the compute node's resources, you would set `--ntasks-per-node 32` in the MPI call but would keep `cores_per_node=64` in the Parsl configuration.
+    2. This is recommended in the Parsl manual for jobs that spawn MPI processes.
 
-    3. Unlike the prior example, here `max_workers` is defining how many concurrent tasks to run and not how many tasks are run per node.
+    3. The `SimpleLauncher` should be used in place of the `SrunLauncher` for `PythonApp`s that themselves call MPI.
 
-    4. This is recommended in the Parsl manual for jobs that run via MPI.
+    **TBLite Example**
 
-    **Demonstration**
-
-    Here, we will run a TBLite relaxation and frequency calculation for 162 molecules in the so-called "g2" collection of small, neutral molecules. This example should be run from an interactive resource like a Jupyter Notebook or IPython kernel on the remote machine.
+    Here, we will run single-core TBLite relaxation and frequency calculations for 162 molecules in the so-called "g2" collection of small, neutral molecules. This example should be run from an interactive resource like a Jupyter Notebook or IPython kernel on the remote machine.
 
     On the remote machine, make sure to install the necessary dependencies:
 
@@ -472,21 +478,24 @@ If you haven't done so already:
     pip install quacc[tblite]
     ```
 
-    First, we initialize a Parsl configuration. For this example, we will request one Slurm job (block), which will concurrently run single-core compute tasks over two nodes.
+    First, we initialize a Parsl configuration. For this example, we will request one Slurm job (block), which will concurrently run single-core compute jobs over two nodes.
 
     ```python
     import parsl
     from parsl.config import Config
     from parsl.executors import HighThroughputExecutor
-    from parsl.launchers import SimpleLauncher
+    from parsl.launchers import SrunLauncher
     from parsl.providers import SlurmProvider
 
     account = "MyAccountName"
 
-    concurrent_jobs = 128
-    cores_per_node = 64
-    min_slurm_allocations = 0
-    max_slurm_allocations = 1
+    cores_per_job = 1
+    cores_per_node = 128
+    nodes_per_allocation = 2
+    min_allocations = 0
+    max_allocations = 1
+
+    env_vars = "export OMP_NUM_THREADS=1,1" # (1)!
 
     config = Config(
         strategy="htex_auto_scale",
@@ -494,24 +503,28 @@ If you haven't done so already:
             HighThroughputExecutor(
                 label="quacc_parsl",
                 max_workers=cores_per_node,
+                cores_per_worker=cores_per_job,
                 provider=SlurmProvider(
                     account=account,
                     qos="debug",
                     constraint="cpu",
-                    worker_init="source ~/.bashrc && conda activate quacc",
+                    worker_init=f"source ~/.bashrc && conda activate quacc && {env_vars}",
                     walltime="00:10:00",
-                    nodes_per_block=concurrent_jobs // cores_per_node,
+                    nodes_per_block=nodes_per_allocation,
                     init_blocks=0,
-                    min_blocks=min_slurm_allocations,
-                    max_blocks=max_slurm_allocations,
-                    launcher=SimpleLauncher(),
+                    min_blocks=min_allocations,
+                    max_blocks=max_allocations,
+                    launcher=SrunLauncher(),
                     cmd_timeout=60,
                 ),
             )
         ],
     )
+
     parsl.load(config)
     ```
+
+    1. Since we are running single-core jobs, we need to set the `OMP_NUM_THREADS` environment variable to "1,1" according to the [TBLite documentation](https://tblite.readthedocs.io/en/latest/tutorial/parallel.html#running-tblite-in-parallel).
 
     Now we define the workflow, apply it to all molecules in the "g2" collection, and monitor the progress of our calculations.
 
@@ -543,13 +556,13 @@ If you haven't done so already:
         )
     ```
 
-    1. This is where the `PythonApp`s will be dispatched.
+    1. This is when the `PythonApp`s will be dispatched.
 
     !!! Note "Practical Deployment"
 
         For debugging purposes or when running only a small numbers of jobs, it is simple enough to run the Parsl process from an interactive Jupyter Notebook or IPython kernel on the remote machine. However, for practical deployment and to ensure jobs are continually submitted to the queue even when the SSH session is terminated, you can run the Parsl orchestration process on a login node and maintain its state via a program like `tmux` or `screen`.
 
-        For example, running `tmux new -s launcher` will create a new `tmux` session named `launcher`. To exit the `tmux` session while still preserving any running tasks on the login node, press `ctrl+b` followed by `d`. To re-enter the tmux session, run `tmux attach -t launcher`. Additional `tmux` commands can be found on the [tmux cheatsheet](https://tmuxcheatsheet.com/).
+        For example, running `tmux new -s launcher` will create a new `tmux` session named `launcher`. To exit the `tmux` session while still preserving any running jobs on the login node, press `ctrl+b` followed by `d`. To re-enter the tmux session, run `tmux attach -t launcher`. Additional `tmux` commands can be found on the [tmux cheatsheet](https://tmuxcheatsheet.com/).
 
 === "Prefect"
 
@@ -579,8 +592,6 @@ If you haven't done so already:
         "job_script_prologue": [
             "source ~/.bashrc",
             "conda activate quacc",
-            "module load vasp/6.4.1-cpu",
-            f"export QUACC_VASP_PARALLEL_CMD='{vasp_parallel_cmd}'",
         ],
         "job_directives_skip": ["-n", "--cpus-per-task"],
         "job_extra_directives": [f"-N {nodes_per_calc}", "-q debug", "-C cpu"],
@@ -650,7 +661,7 @@ If you haven't done so already:
 
     **Continuous Job Submission**
 
-    To ensure that jobs are continually submitted to the queue, you can use `tmux` to preserve the job submission process even when the SSH session is terminated. For example, running `tmux new -s launcher` will create a new `tmux` session named `launcher`. To exit the `tmux` session while still preserving any running tasks on the login node, press `ctrl+b` followed by `d`. To re-enter the tmux session, run `tmux attach -t launcher`. Additional `tmux` commands can be found on the [tmux cheatsheet](https://tmuxcheatsheet.com/).
+    To ensure that jobs are continually submitted to the queue, you can use `tmux` to preserve the job submission process even when the SSH session is terminated. For example, running `tmux new -s launcher` will create a new `tmux` session named `launcher`. To exit the `tmux` session while still preserving any running jobs on the login node, press `ctrl+b` followed by `d`. To re-enter the tmux session, run `tmux attach -t launcher`. Additional `tmux` commands can be found on the [tmux cheatsheet](https://tmuxcheatsheet.com/).
 
     **Setting Where Jobs are Dispatched**
 
@@ -819,21 +830,21 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
 
     account = "MyAccountName"
 
-    concurrent_jobs = 2
     nodes_per_job = 1
     cores_per_node = 128
+    nodes_per_allocation = 2
     vasp_parallel_cmd = (
         f"srun -N {nodes_per_job} --ntasks-per-node={cores_per_node} --cpu_bind=cores"
     )
-    min_slurm_allocations = 0
-    max_slurm_allocations = 1
+    min_allocations = 0
+    max_allocations = 1
 
     config = Config(
         strategy="htex_auto_scale",
         executors=[
             HighThroughputExecutor(
                 label="quacc_parsl",
-                max_workers=concurrent_jobs,
+                max_workers=nodes_per_job*nodes_per_allocation,
                 cores_per_worker=1e-6,
                 provider=SlurmProvider(
                     account=account,
@@ -841,10 +852,10 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
                     constraint="cpu",
                     worker_init=f"source ~/.bashrc && conda activate quacc && module load vasp/6.4.1-cpu && export QUACC_VASP_PARALLEL_CMD='{vasp_parallel_cmd}'",
                     walltime="00:10:00",
-                    nodes_per_block=concurrent_jobs * nodes_per_job,
+                    nodes_per_block=nodes_per_allocation,
                     init_blocks=0,
-                    min_blocks=min_slurm_allocations,
-                    max_blocks=max_slurm_allocations,
+                    min_blocks=min_allocations,
+                    max_blocks=max_allocations,
                     launcher=SimpleLauncher(),
                     cmd_timeout=60,
                 ),
