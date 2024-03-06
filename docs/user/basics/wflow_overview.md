@@ -30,9 +30,9 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     Cons:
 
     - It requires a centralized server to be running continuously in order to manage the workflows unless using [Covalent Cloud](https://www.covalent.xyz/cloud/)
-    - Not as widely used as other workflow management solutions
-    - Only supports standard queuing schemes for job schedulers (e.g. no pilot job model)
+    - Support for job scheduler HPC environments is available but not as robust or performant as other solutions
     - High-security HPC environments may be difficult to access via SSH with the centralized server approach
+    - Not as widely used as other workflow management solutions
 
 === "Dask"
 

@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
+import inspect
+import sys
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ase.calculators.calculator import FileIOCalculator
 
+from quacc.calculators.qchem import qchem_custodian
 from quacc.calculators.qchem.io import read_qchem, write_qchem
 from quacc.calculators.qchem.params import cleanup_attrs, make_qc_input
 from quacc.calculators.qchem.qchem_custodian import run_custodian
@@ -232,20 +236,20 @@ class QChem(FileIOCalculator):
         # Instantiate previous orbital coefficients
         self.prev_orbital_coeffs = None
 
-        if "directory" in self.fileiocalculator_kwargs:
-            raise NotImplementedError("The directory kwarg is not supported.")
-
         # Clean up parameters
         cleanup_attrs(self)
 
         # Set default params
         self._set_default_params()
 
+        # Get Q-Chem executable command
+        command = self._manage_environment()
+
         # Instantiate the calculator
         super().__init__(
             restart=None,
             label=None,
-            command="",
+            command=command,
             atoms=self.atoms,
             profile=None,
             **self.fileiocalculator_kwargs,
@@ -277,7 +281,11 @@ class QChem(FileIOCalculator):
 
         qc_input = make_qc_input(self, atoms)
 
-        write_qchem(qc_input, prev_orbital_coeffs=self.prev_orbital_coeffs)
+        write_qchem(
+            qc_input,
+            directory=self.directory,
+            prev_orbital_coeffs=self.prev_orbital_coeffs,
+        )
 
     @staticmethod
     def execute() -> int:
@@ -302,9 +310,22 @@ class QChem(FileIOCalculator):
         -------
         None
         """
-        results, prev_orbital_coeffs = read_qchem()
+        results, prev_orbital_coeffs = read_qchem(directory=self.directory)
         self.results = results
         self.prev_orbital_coeffs = prev_orbital_coeffs
+
+    @staticmethod
+    def _manage_environment() -> str:
+        """
+        Return the command to run the Q-Chem calculator via Custodian.
+        Returns
+        -------
+        str
+            The command flag to run Q-Chem with Custodian.
+        """
+
+        qchem_custodian_script = Path(inspect.getfile(qchem_custodian)).resolve()
+        return f"{sys.executable} {qchem_custodian_script}"
 
     def _set_default_params(self) -> None:
         """

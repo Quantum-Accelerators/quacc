@@ -14,34 +14,33 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     from quacc import flow
     from quacc.recipes.vasp.core import relax_job, static_job
 
-    username = "MyUserName"
-    account = "MyAccountName"
     n_nodes = 1
     n_cores_per_node = 128
+    vasp_parallel_cmd = (
+        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
+    )
 
-    executor = ct.executor.HPCExecutor(
-        username=username,
+    executor = ct.executor.SlurmExecutor(
+        username="YourUserName",
         address="perlmutter-p1.nersc.gov",
         ssh_key_file="~/.ssh/nersc",
         cert_file="~/.ssh/nersc-cert.pub",
-        instance="slurm",
-        resource_spec_kwargs={
-            "node_count": n_nodes,
-            "processes_per_node": n_cores_per_node,
+        conda_env="quacc",
+        options={
+            "nodes": f"{n_nodes}",
+            "qos": "debug",
+            "constraint": "cpu",
+            "account": "YourAccountName",
+            "job-name": "quacc",
+            "time": "00:30:00",
         },
-        job_attributes_kwargs={
-            "duration": 30,
-            "project_name": account,
-            "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
-        },
-        pre_launch_cmds=["module load vasp/6.4.1-cpu"],
-        environment={
-            "QUACC_VASP_PARALLEL_CMD": f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
-        },
-        remote_conda_env="quacc",
-        remote_workdir="$SCRATCH/quacc",
+        remote_workdir="/path/to/workdir",
         create_unique_workdir=True,
-        cleanup=False,
+        use_srun=False,
+        prereun_commands=[
+            "module load vasp/6.4.1-cpu",
+            f"export QUACC_VASP_PARALLEL_CMD='{vasp_parallel_cmd}'",
+        ],
     )
 
 
@@ -56,6 +55,37 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
     ```
+
+    ??? Note "An Alternate Approach: The `HPCExecutor`"
+
+        A similar configuration can be used for the `HPCExecutor`:
+
+        ```python
+        executor = ct.executor.HPCExecutor(
+            username="YourUserName",
+            address="perlmutter-p1.nersc.gov",
+            ssh_key_file="~/.ssh/nersc",
+            cert_file="~/.ssh/nersc-cert.pub",
+            instance="slurm",
+            resource_spec_kwargs={
+                "node_count": n_nodes,
+                "processes_per_node": n_cores_per_node,
+            },
+            job_attributes_kwargs={
+                "duration": 30,
+                "project_name": "YourAccountName",
+                "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
+            },
+            pre_launch_cmds=["module load vasp/6.4.1-cpu"],
+            environment={
+                "QUACC_VASP_PARALLEL_CMD": f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
+            },
+            remote_conda_env="quacc",
+            remote_workdir="$SCRATCH/quacc",
+            create_unique_workdir=True,
+            cleanup=False,
+        )
+        ```
 
 === "Parsl"
 
@@ -86,7 +116,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
         executors=[
             HighThroughputExecutor(
                 label="quacc_parsl",
-                max_workers_per_node=concurrent_jobs,
+                max_workers=concurrent_jobs,
                 cores_per_worker=1e-6,
                 provider=SlurmProvider(
                     account=account,
