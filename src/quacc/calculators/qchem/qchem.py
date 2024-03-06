@@ -303,7 +303,7 @@ class QChem(FileIOCalculator):
         -------
         None
         """
-        results, prev_orbital_coeffs = read_qchem()
+        results, prev_orbital_coeffs = read_qchem(directory=self.directory)
         self.results = results
         self.prev_orbital_coeffs = prev_orbital_coeffs
 
