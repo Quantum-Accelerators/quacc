@@ -232,9 +232,6 @@ class QChem(FileIOCalculator):
         # Instantiate previous orbital coefficients
         self.prev_orbital_coeffs = None
 
-        if "directory" in self.fileiocalculator_kwargs:
-            raise NotImplementedError("The directory kwarg is not supported.")
-
         # Clean up parameters
         cleanup_attrs(self)
 
