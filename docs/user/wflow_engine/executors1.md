@@ -43,13 +43,16 @@ In the previous examples, we have been running calculations on our local machine
     from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
 
-    static_job.electron_object.executor = "local"
+
+    @ct.electron(executor="local")
+    def local_static_job(*args, **kwargs):
+        return static_job(*args, **kwargs)
 
 
     @flow
     def workflow(atoms):
         output1 = relax_job(atoms)
-        output2 = static_job(output1["atoms"])
+        output2 = local_static_job(output1["atoms"])
 
         return output2
 
@@ -60,114 +63,93 @@ In the previous examples, we have been running calculations on our local machine
     print(result)
     ```
 
-    ??? Tip "An Alternate Approach"
-
-        ```python
-        import covalent as ct
-        from ase.build import bulk
-        from quacc import flow
-        from quacc.recipes.emt.core import relax_job, static_job
-
-
-        @ct.electron(executor="local")
-        def local_static_job(*args, **kwargs):
-            return static_job(*args, **kwargs)
-
-
-        @flow
-        def workflow(atoms):
-            output1 = relax_job(atoms)
-            output2 = local_static_job(output1["atoms"])
-
-            return output2
-
-
-        atoms = bulk("Cu")
-        dispatch_id = ct.dispatch(workflow)(atoms)
-        result = ct.get_result(dispatch_id, wait=True)
-        print(result)
-        ```
-
     **Configuring Executors**
 
     !!! Tip "Example Configurations"
 
         Refer to the [executor plugin documentation](https://docs.covalent.xyz/docs/plugin) for instructions on how to install and use the relevant plugins that allow Covalent to submit jobs on your desired machines.
 
-    Most users of quacc will probably want to use the [`HPCExecutor`](https://github.com/Quantum-Accelerators/covalent-hpc-plugin), which is a plugin for Covalent that supports Slurm, PBS, LSF, Flux, and more. For submitting jobs to a Slurm-based job scheduler from your local machine, an example `HPCExecutor` configuration might look like the following, which has been tested on Perlmutter at NERSC:
+    Most users of quacc will probably want to use the [`SlurmExecutor`](https://github.com/AgnostiqHQ/covalent-slurm-plugin), which is a plugin for Covalent that supports Slurm job scheduling system. An example `SlurmExecutor` configuration might look like the following, which has been tested on Perlmutter at NERSC:
 
     ```python
-    n_nodes = 2  # Number of nodes to reserve for each calculation
-    n_cores_per_node = 48  # Number of CPU cores per node
+    n_nodes = 1
+    n_cores_per_node = 48
 
-    executor = ct.executor.HPCExecutor(
-        # SSH credentials
+    executor = ct.executor.SlurmExecutor(
         username="YourUserName",
         address="perlmutter-p1.nersc.gov",
         ssh_key_file="~/.ssh/nersc",
         cert_file="~/.ssh/nersc-cert.pub",  # (1)!
-        # PSI/J parameters
-        instance="slurm",
-        resource_spec_kwargs={
-            "node_count": n_nodes,
-            "processes_per_node": n_cores_per_node,
-        },  # (2)!
-        job_attributes_kwargs={
-            "duration": 10,  # minutes
-            "project_name": "YourAccountName",
-            "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
-        },  # (3)!
-        # Remote Python env parameters
-        remote_conda_env="quacc",
-        # Covalent parameters
-        remote_workdir="$SCRATCH/quacc",  # (4)!
-        create_unique_workdir=True,  # (5)!
-        cleanup=False,  # (6)!
+        conda_env="quacc",
+        options={
+            "nodes": f"{n_nodes}",
+            "qos": "debug",
+            "constraint": "cpu",
+            "account": "YourAccountName",
+            "job-name": "quacc",
+            "time": "00:10:00",
+        },
+        remote_workdir="/path/to/workdir",  # (2)!
+        create_unique_workdir=True,  # (3)!
+        use_srun=False,  # (4)!
     )
     ```
 
     1. This a certificate file used to validate your SSH credentials. This is often not needed but is required at NERSC facilities due to the use of [`sshproxy`](https://docs.nersc.gov/connect/mfa/#sshproxy)-based multi-factor authentication.
 
-    2. These are the resource specifications for the compute job, which are keyword arguments passed to PSI/J's [`ResourceSpecV1` class](https://exaworks.org/psij-python/docs/v/0.9.0/.generated/psij.html#psij.resource_spec.ResourceSpecV1).
+    2. If you use this keyword argument, there is no need to explicitly specify the `RESULTS_DIR` quacc setting.
 
-    3. These are the job attributes that the job scheduler needs, which are keyword arguments passed to PSI/J's [`JobAttributes` class](https://exaworks.org/psij-python/docs/v/0.9.0/.generated/psij.html#psij.JobAttributes).
+    3. This will tell Covalent to make a unique working directory for each job. This should be used in place of the `CREATE_UNIQUE_DIR` quacc setting, which seeks to do largely the same thing.
 
-    4. This will tell Slurm where to `cd` and will specify where the calculations and results are stored. If you use this keyword argument, you should not explicitly specify the `RESULTS_DIR` quacc setting, which seeks to do largely the same thing.
+    4. The `SlurmExecutor` must have `use_srun=False` in order for ASE-based calculators to be launched appropriately.
 
-    5. You generally want each quacc job to have the results stored in its own unique working directory to ensure files don't overwrite one another, so  `create_unique_workdir` should be set to `True`. This should not be used in combination with the `CREATE_UNIQUE_DIR` quacc setting, which seeks to do largely the same thing.
+    ??? Note "An Alternate Approach: The `HPCExecutor`"
 
-    6. For debugging purposes, it can be useful to keep all the temporary files. Once you're confident things work, you can omit the `cleanup` keyword argument.
+        If you are using a job scheduler environment but find the `covalent-slurm-plugin` does not suit your needs, you may wish to consider the [`covalent-hpc-plugin`](https://github.com/Quantum-Accelerators/covalent-hpc-plugin).
 
-    ??? Note "The SlurmExecutor"
-
-        If you plan to use the dedicated [SlurmExecutor](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/slurm) developed by Covalent, an analogous example is included below:
+        An example `HPCExecutor` configuration might look like the following:
 
         ```python
-        n_nodes = 2
-        n_cores_per_node = 48
+        n_nodes = 1  # Number of nodes to reserve for each calculation
+        n_cores_per_node = 48  # Number of CPU cores per node
 
-        executor = ct.executor.SlurmExecutor(
+        executor = ct.executor.HPCExecutor(
+            # SSH credentials
             username="YourUserName",
             address="perlmutter-p1.nersc.gov",
             ssh_key_file="~/.ssh/nersc",
-            cert_file="~/.ssh/nersc-cert.pub",
-            conda_env="quacc",
-            options={
-                "nodes": f"{n_nodes}",
-                "qos": "debug",
-                "constraint": "cpu",
-                "account": "YourAccountName",
-                "job-name": "quacc",
-                "time": "00:10:00",
-            },
-            remote_workdir="$SCRATCH/quacc",  # (1)!
-            use_srun=False,  # (2)!
+            cert_file="~/.ssh/nersc-cert.pub",  # (1)!
+            # PSI/J parameters
+            instance="slurm",
+            resource_spec_kwargs={
+                "node_count": n_nodes,
+                "processes_per_node": n_cores_per_node,
+            },  # (2)!
+            job_attributes_kwargs={
+                "duration": 10,  # minutes
+                "project_name": "YourAccountName",
+                "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
+            },  # (3)!
+            # Remote Python env parameters
+            remote_conda_env="quacc",
+            # Covalent parameters
+            remote_workdir="$SCRATCH/quacc",  # (4)!
+            create_unique_workdir=True,  # (5)!
+            cleanup=False,  # (6)!
         )
         ```
 
-        1. This will tell Slurm where to `cd` into and will specify where the calculations and results are stored. If you use this keyword argument, you should not explicitly specify the `RESULTS_DIR` quacc setting, which seeks to do largely the same thing.
+        1. This a certificate file used to validate your SSH credentials. This is often not needed but is required at NERSC facilities due to the use of [`sshproxy`](https://docs.nersc.gov/connect/mfa/#sshproxy)-based multi-factor authentication.
 
-        2.  The `SlurmExecutor` must have `use_srun=False` in order for ASE-based calculators to be launched appropriately.
+        2. These are the resource specifications for the compute job, which are keyword arguments passed to PSI/J's [`ResourceSpecV1` class](https://exaworks.org/psij-python/docs/v/0.9.0/.generated/psij.html#psij.resource_spec.ResourceSpecV1).
+
+        3. These are the job attributes that the job scheduler needs, which are keyword arguments passed to PSI/J's [`JobAttributes` class](https://exaworks.org/psij-python/docs/v/0.9.0/.generated/psij.html#psij.JobAttributes).
+
+        4.  If you use this keyword argument, there is no need to explicitly specify the `RESULTS_DIR` quacc setting.
+
+        5. This will tell Covalent to make a unique working directory for each job. This should be used in place of the `CREATE_UNIQUE_DIR` quacc setting, which seeks to do largely the same thing.
+
+        6. For debugging purposes, it can be useful to keep all the temporary files. Once you're confident things work, you can omit the `cleanup` keyword argument.
 
 === "Dask"
 
@@ -189,7 +171,7 @@ In the previous examples, we have been running calculations on our local machine
 
     Here, we describe several representative [`HighThroughputExecutor`](https://parsl.readthedocs.io/en/stable/stubs/parsl.executors.HighThroughputExecutor.html#parsl.executors.HighThroughputExecutor) configurations that will orchestrate jobs from the login node of NERSC's Perlmutter machine. There is no one-size-fits-all approach, so you will need to adjust the configuration to suit your specific needs.
 
-    Let's imagine a scenario where we want to concurrently run a large number single-core, CPU-based compute tasks. A sample configuration for this purpose is shown below. The configuration ensures that we have at most one active Slurm allocation (`max_blocks=1`), we request four nodes in that Slurm allocation (`nodes_per_block=4`), run no more than 64 tasks at a time per node (`max_workers_per_node=64`) since that's how many physical CPU cores there are, and that there will be no Slurm allocations queued or running when there are no tasks to run (`min_blocks=0`). This configuration ensures that up to 256 single-core tasks can be run concurrently.
+    Let's imagine a scenario where we want to concurrently run a large number single-core, CPU-based compute tasks. A sample configuration for this purpose is shown below. The configuration ensures that we have at most one active Slurm allocation (`max_blocks=1`), we request four nodes in that Slurm allocation (`nodes_per_block=4`), run no more than 64 tasks at a time per node (`max_workers=64`) since that's how many physical CPU cores there are, and that there will be no Slurm allocations queued or running when there are no tasks to run (`min_blocks=0`). This configuration ensures that up to 256 single-core tasks can be run concurrently.
 
     ```python
     import parsl
@@ -208,7 +190,7 @@ In the previous examples, we have been running calculations on our local machine
         executors=[
             HighThroughputExecutor(
                 label="quacc_parsl",  # (2)!
-                max_workers_per_node=cores_per_node,  # (3)!
+                max_workers=cores_per_node,  # (3)!
                 provider=SlurmProvider(
                     account="MyAccountName",
                     qos="debug",
@@ -233,7 +215,7 @@ In the previous examples, we have been running calculations on our local machine
 
     2. This is just an arbitrary label for file I/O.
 
-    3. Sets the maximum number of workers per block. If you are running a single-core `Job`, this value will be the number of physical cores per node. If you are running a `Job` that is calling MPI and uses multiple cores per node, this will be the number of concurrent tasks (see next example).
+    3. If you are running a single-core `Job`, this value will be the number of physical cores per node. If you are running a `Job` that is calling MPI and uses multiple cores per node, this will be the number of concurrent tasks (see next example).
 
     4. Any commands to run before carrying out any of the Parsl tasks. This is useful for setting environment variables, activating a given Conda environment, and loading modules.
 
@@ -271,7 +253,7 @@ In the previous examples, we have been running calculations on our local machine
         executors=[
             HighThroughputExecutor(
                 label="quacc_parsl",
-                max_workers_per_node=concurrent_jobs,  # (3)!
+                max_workers=concurrent_jobs,  # (3)!
                 cores_per_worker=1e-6,  # (4)!
                 provider=SlurmProvider(
                     account="MyAccountName",

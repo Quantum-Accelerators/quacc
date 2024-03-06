@@ -16,11 +16,11 @@ If you haven't done so already:
 
     ```bash
     pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
-    pip install quacc[covalent]
-    quacc set WORKFLOW_ENGINE covalent && quacc set CREATE_UNIQUE_DIR false  # (1)!
+    pip install quacc[covalent] covalent-slurm-plugin
+    quacc set WORKFLOW_ENGINE covalent && quacc set CREATE_UNIQUE_DIR false  # (2)!
     ```
 
-    1. Many of the Covalent executors have their own mechanism for task isolation, which we will use instead.
+    2. Many of the Covalent executors have their own mechanism for task isolation, which we will use instead.
 
     On the local machine:
 
@@ -98,28 +98,26 @@ When deploying calculations for the first time, it's important to start simple, 
     from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
 
-    username = "MyUserName"
-    account = "MyAccountName"
+    n_nodes = 1
+    n_cores_per_node = 1
 
-    executor = ct.executor.HPCExecutor(
-        username=username,
+    executor = ct.executor.SlurmExecutor(
+        username="YourUserName",
         address="perlmutter-p1.nersc.gov",
         ssh_key_file="~/.ssh/nersc",
         cert_file="~/.ssh/nersc-cert.pub",
-        instance="slurm",
-        resource_spec_kwargs={
-            "node_count": 1,
-            "processes_per_node": 1,
+        conda_env="quacc",
+        options={
+            "nodes": f"{n_nodes}",
+            "qos": "debug",
+            "constraint": "cpu",
+            "account": "YourAccountName",
+            "job-name": "quacc",
+            "time": "00:10:00",
         },
-        job_attributes_kwargs={
-            "duration": 10,
-            "project_name": account,
-            "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
-        },
-        remote_conda_env="quacc",
-        remote_workdir="$SCRATCH/quacc",
+        remote_workdir="/path/to/workdir",
         create_unique_workdir=True,
-        cleanup=False,
+        use_srun=False,
     )
 
 
@@ -135,9 +133,53 @@ When deploying calculations for the first time, it's important to start simple, 
     print(result)
     ```
 
-    ??? Tip "Debugging"
+    ??? Note "An Alternate Approach: The `HPCExecutor`"
 
-        The most common cause of issues is related to the job scheduler details (i.e. the `resource_spec_kwargs` and the `job_attributes_kwargs`). If your job fails on the remote machine, check the files left behind in the working directory as well as the `~/.psij` directory for a history and various log files associated with your attempted job submissions.
+        If you are using the `HPCExecutor`, the process is similar.
+
+        On the local machine, run:
+
+        ```bash
+        pip install covalent-hpc-plugin
+        ```
+
+        On the remote machine, run:
+
+        ```bash
+        pip install psij-python
+        ```
+
+        Then you can use the `HPCExecutor` as follows:
+
+        ```python
+        n_nodes = 1  # Number of nodes to reserve for each calculation
+        n_cores_per_node = 48  # Number of CPU cores per node
+
+        executor = ct.executor.HPCExecutor(
+            # SSH credentials
+            username="YourUserName",
+            address="perlmutter-p1.nersc.gov",
+            ssh_key_file="~/.ssh/nersc",
+            cert_file="~/.ssh/nersc-cert.pub",  # (1)!
+            # PSI/J parameters
+            instance="slurm",
+            resource_spec_kwargs={
+                "node_count": n_nodes,
+                "processes_per_node": n_cores_per_node,
+            },  # (2)!
+            job_attributes_kwargs={
+                "duration": 10,  # minutes
+                "project_name": "YourAccountName",
+                "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
+            },  # (3)!
+            # Remote Python env parameters
+            remote_conda_env="quacc",
+            # Covalent parameters
+            remote_workdir="$SCRATCH/quacc",  # (4)!
+            create_unique_workdir=True,  # (5)!
+            cleanup=False,  # (6)!
+        )
+        ```
 
 === "Dask"
 
@@ -284,7 +326,7 @@ When deploying calculations for the first time, it's important to start simple, 
         executors=[
             HighThroughputExecutor(
                 label="quacc_parsl",
-                max_workers_per_node=cores_per_node,
+                max_workers=cores_per_node,
                 provider=SlurmProvider(
                     account=account,
                     qos="debug",
