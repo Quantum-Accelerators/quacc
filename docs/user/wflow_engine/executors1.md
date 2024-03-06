@@ -97,7 +97,7 @@ In the previous examples, we have been running calculations on our local machine
 
     1. This a certificate file used to validate your SSH credentials. This is often not needed but is required at NERSC facilities due to the use of [`sshproxy`](https://docs.nersc.gov/connect/mfa/#sshproxy)-based multi-factor authentication.
 
-    2. If you use this keyword argument, there is no need to explicitly specify the `RESULTS_DIR` quacc setting, which seeks to do largely the same thing.
+    2. If you use this keyword argument, there is no need to explicitly specify the `RESULTS_DIR` quacc setting.
 
     3. This will tell Covalent to make a unique working directory for each job. This should be used in place of the `CREATE_UNIQUE_DIR` quacc setting, which seeks to do largely the same thing.
 
@@ -142,7 +142,7 @@ In the previous examples, we have been running calculations on our local machine
 
         3. These are the job attributes that the job scheduler needs, which are keyword arguments passed to PSI/J's [`JobAttributes` class](https://exaworks.org/psij-python/docs/v/0.9.0/.generated/psij.html#psij.JobAttributes).
 
-        4.  If you use this keyword argument, there is no need to explicitly specify the `RESULTS_DIR` quacc setting, which seeks to do largely the same thing.
+        4.  If you use this keyword argument, there is no need to explicitly specify the `RESULTS_DIR` quacc setting.
 
         5. This will tell Covalent to make a unique working directory for each job. This should be used in place of the `CREATE_UNIQUE_DIR` quacc setting, which seeks to do largely the same thing.
 
