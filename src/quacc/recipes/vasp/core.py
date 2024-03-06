@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING
 from quacc import flow, job
 from quacc.recipes.vasp._base import base_fn
 import numpy as np
+from typing import Literal
+
 
 if TYPE_CHECKING:
     from typing import Any
@@ -22,7 +24,7 @@ def nscf_job(
     atoms: Atoms,
     preset: str | None = "BulkSet",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-    kpoints_mode: str = "line",
+    kpoints_mode: Literal["uniform", "line"] = "uniform",
     calculate_optics: bool = False,
     bandgap: float = None,
     vasprun: Vasprun = None,
@@ -57,14 +59,6 @@ def nscf_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
         See the type-hint for the data structure.
     """
-
-    # Normalize kpoints_mode
-    kpoints_mode = kpoints_mode.lower()
-
-    # Validate kpoints_mode
-    supported_modes = ("line", "uniform")
-    if kpoints_mode not in supported_modes:
-        raise ValueError(f"Supported kpoints modes are: {', '.join(supported_modes)}")
 
     calc_defaults = {
         "lorbit": 11,
