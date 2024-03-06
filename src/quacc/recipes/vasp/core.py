@@ -26,7 +26,7 @@ def nscf_job(
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     kpoints_mode: Literal["uniform", "line"] = "uniform",
     calculate_optics: bool = False,
-    bandgap: float = None,
+    bandgap: float | None,
     vasprun: Vasprun = None,
     **calc_kwargs,
 ) -> VaspSchema:
