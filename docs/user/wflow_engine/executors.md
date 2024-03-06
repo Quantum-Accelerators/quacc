@@ -440,7 +440,7 @@ If you haven't done so already:
         executors=[
             HighThroughputExecutor(
                 label="quacc_parsl",
-                max_workers=nodes_per_job*nodes_per_allocation,  # (1)!
+                max_workers=nodes_per_job * nodes_per_allocation,  # (1)!
                 cores_per_worker=1e-6,  # (2)!
                 provider=SlurmProvider(
                     account=account,
@@ -495,7 +495,7 @@ If you haven't done so already:
     min_allocations = 0
     max_allocations = 1
 
-    env_vars = "export OMP_NUM_THREADS=1,1" # (1)!
+    env_vars = "export OMP_NUM_THREADS=1,1"  # (1)!
 
     config = Config(
         strategy="htex_auto_scale",
@@ -844,7 +844,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
         executors=[
             HighThroughputExecutor(
                 label="quacc_parsl",
-                max_workers=nodes_per_job*nodes_per_allocation,
+                max_workers=nodes_per_job * nodes_per_allocation,
                 cores_per_worker=1e-6,
                 provider=SlurmProvider(
                     account=account,
