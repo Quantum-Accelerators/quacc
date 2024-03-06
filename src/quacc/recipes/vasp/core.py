@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 @job
 def nscf_job(
     atoms: Atoms,
-    prev_dir: SourceDirectory, 
+    prev_dir: SourceDirectory,
     preset: str | None = "BulkSet",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     kpoints_mode: Literal["uniform", "line"] = "uniform",
