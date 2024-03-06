@@ -129,7 +129,7 @@ In the previous examples, we have been running calculations on our local machine
             # Remote Python env parameters
             remote_conda_env="quacc",
             # Covalent parameters
-            remote_workdir="/path/to/workdir",  # (4)!
+            remote_workdir="$SCRATCH/quacc",  # (4)!
             create_unique_workdir=True,  # (5)!
             cleanup=False,  # (6)!
         )
