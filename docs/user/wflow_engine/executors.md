@@ -672,7 +672,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
         executors=[
             HighThroughputExecutor(
                 label="quacc_parsl",
-                max_workers=nodes_per_job*nodes_per_allocation,
+                max_workers=nodes_per_job * nodes_per_allocation,
                 cores_per_worker=1e-6,
                 provider=SlurmProvider(
                     account=account,
