@@ -4,20 +4,26 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import numpy as np
+
 from quacc import flow, job
 from quacc.recipes.vasp._base import base_fn
+<<<<<<< HEAD
 import numpy as np
 from typing import Literal
 
+=======
+>>>>>>> ea2df1bfb266dca745b6c7263f7899c3edb91b06
 
 if TYPE_CHECKING:
     from typing import Any
 
     from ase import Atoms
+    from pymatgen.io.vasp import Vasprun
 
     from quacc.schemas._aliases.vasp import DoubleRelaxSchema, VaspSchema
     from quacc.utils.files import Filenames, SourceDirectory
-    from pymatgen.io.vasp import Vasprun
+
 
 @job
 def nscf_job(
@@ -99,11 +105,12 @@ def nscf_job(
         # LREAL not supported with LOPTICS = True; automatic NEDOS usually
         # underestimates, so set it explicitly
         n_edos = _get_nedos(vasprun, 0.0025)  # Example value, adjust as needed
-        updates.update({"loptics": True, "lreal": False, "cshift": 1e-5, "nedos": n_edos})
+        updates.update(
+            {"loptics": True, "lreal": False, "cshift": 1e-5, "nedos": n_edos}
+        )
 
     # integrate updates to calc_kwargs
     calc_kwargs.update(updates)
-
 
     return base_fn(
         atoms,
