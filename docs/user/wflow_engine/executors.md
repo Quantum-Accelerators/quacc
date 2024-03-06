@@ -12,10 +12,6 @@ In the previous examples, we have been running calculations on our local machine
 
     A Dask cluster can be set up to be used with a queueing system like that found on most HPC machines. This is done via [Dask Jobqueue](https://jobqueue.dask.org/en/latest/index.html). Example configurations for various queuing systems can be found in the ["Example Deployments"](https://jobqueue.dask.org/en/latest/examples.html) section of the Dask Jobqueue documentation.
 
-    !!! Note "Pilot Jobs"
-
-        Unlike most other workflow engines, Dask is built for the [pilot job model](https://en.wikipedia.org/wiki/Pilot_job) where the allocated nodes continually pull in new tasks to run. This makes it possible to avoid submitting a large number of small jobs to the scheduler, which can be inefficient from a queuing perspective.
-
 === "Parsl"
 
     Out-of-the-box, Parsl will run on your local machine. However, in practice you will probably want to run your Parsl workflows on HPC machines.
@@ -175,8 +171,8 @@ If you haven't done so already:
     from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
 
-    n_nodes = 1
-    n_cores_per_node = 128
+    nodes = 1
+    cores_per_node = 128
 
     executor = ct.executor.SlurmExecutor(
         username="YourUserName",
@@ -185,7 +181,7 @@ If you haven't done so already:
         cert_file="/home/username/.ssh/nersc-cert.pub",  # (1)!
         conda_env="quacc",
         options={
-            "nodes": f"{n_nodes}",
+            "nodes": f"{nodes}",
             "qos": "debug",
             "constraint": "cpu",
             "account": "YourAccountName",
@@ -240,8 +236,10 @@ If you haven't done so already:
         Then you can use the `HPCExecutor` as follows from the local machine:
 
         ```python
-        n_nodes = 1  # Number of nodes to reserve for each calculation
-        n_cores_per_node = 128  # Number of CPU cores per node
+        import covalent as ct
+
+        nodes = 1  # Number of nodes to reserve for each calculation
+        cores_per_node = 128  # Number of CPU cores per node
 
         executor = ct.executor.HPCExecutor(
             # SSH credentials
@@ -252,8 +250,8 @@ If you haven't done so already:
             # PSI/J parameters
             instance="slurm",
             resource_spec_kwargs={
-                "node_count": n_nodes,
-                "processes_per_node": n_cores_per_node,
+                "node_count": nodes,
+                "processes_per_node": cores_per_node,
             },  # (2)!
             job_attributes_kwargs={
                 "duration": 10,  # minutes
@@ -289,16 +287,16 @@ If you haven't done so already:
     from dask.distributed import Client
     from dask_jobqueue import SLURMCluster
 
-    n_slurm_jobs = 1
-    n_nodes_per_calc = 1
-    n_cores_per_node = 128
-    mem_per_node = "64 GB"
     account = "MyAccountName"
+
+    nodes_per_calc = 1
+    cores_per_node = 128
+    mem_per_node = "64 GB"
 
     cluster_kwargs = {
         # Dask worker options
-        "n_workers": n_slurm_jobs,
-        "cores": n_cores_per_node,
+        "n_workers": cores_per_node,
+        "cores": cores_per_node,
         "memory": mem_per_node,
         # SLURM options
         "shebang": "#!/bin/bash",
@@ -310,7 +308,7 @@ If you haven't done so already:
             "conda activate quacc",
         ],
         "job_directives_skip": ["-n", "--cpus-per-task"],
-        "job_extra_directives": [f"-N {n_nodes_per_calc}", "-q debug", "-C cpu"],
+        "job_extra_directives": [f"-N {nodes_per_calc}", "-q debug", "-C cpu"],
         "python": "python",
     }
 
@@ -332,11 +330,11 @@ If you haven't done so already:
 
     atoms = bulk("Cu")
     delayed = workflow(atoms)
-    result = client.submit(delayed).result()
+    result = client.compute(delayed).result()
     print(result)
     ```
 
-    !!! Tip "Handling the Walltime Killing Workers"
+    ??? Tip "Handling the Walltime Killing Workers"
 
         The `dask-jobqueue` documentation has a [helpful section](https://jobqueue.dask.org/en/latest/advanced-tips-and-tricks.html#how-to-handle-job-queueing-system-walltime-killing-workers) on how to ensure that workflows run to completion despite the finite walltime on a job scheduler system. Namely, you should use the `--lifetime` (and, potentially, the `--lifetime-stagger`) option alongside an adaptive Dask cluster to ensure that the cluster can always spin up new workers as-needed.
 
@@ -563,15 +561,15 @@ If you haven't done so already:
 
     account = "MyAccountName"
 
-    n_slurm_jobs = 1
-    n_nodes_per_calc = 1
-    n_cores_per_node = 48
+    slurm_jobs = 1
+    nodes_per_calc = 1
+    cores_per_node = 48
     mem_per_node = "64 GB"
 
     cluster_kwargs = {
         # Dask worker options
-        "n_workers": n_slurm_jobs,
-        "cores": n_cores_per_node,
+        "n_workers": slurm_jobs,
+        "cores": cores_per_node,
         "memory": mem_per_node,
         # SLURM options
         "shebang": "#!/bin/bash",
@@ -581,9 +579,11 @@ If you haven't done so already:
         "job_script_prologue": [
             "source ~/.bashrc",
             "conda activate quacc",
+            "module load vasp/6.4.1-cpu",
+            f"export QUACC_VASP_PARALLEL_CMD='{vasp_parallel_cmd}'"
         ],
         "job_directives_skip": ["-n", "--cpus-per-task"],
-        "job_extra_directives": [f"-N {n_nodes_per_calc}", "-q debug", "-C cpu"],
+        "job_extra_directives": [f"-N {nodes_per_calc}", "-q debug", "-C cpu"],
         "python": "python",
     }
 
@@ -672,10 +672,10 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     from quacc import flow
     from quacc.recipes.vasp.core import relax_job, static_job
 
-    n_nodes = 1
-    n_cores_per_node = 128
+    nodes = 1
+    cores_per_node = 128
     vasp_parallel_cmd = (
-        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
+        f"srun -N {nodes} --ntasks-per-node={cores_per_node} --cpu_bind=cores"
     )
 
     executor = ct.executor.SlurmExecutor(
@@ -685,7 +685,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
         cert_file="~/.ssh/nersc-cert.pub",
         conda_env="quacc",
         options={
-            "nodes": f"{n_nodes}",
+            "nodes": f"{nodes}",
             "qos": "debug",
             "constraint": "cpu",
             "account": "YourAccountName",
@@ -704,8 +704,8 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
 
     @flow(executor=executor)
     def workflow(atoms):
-        relax_output = relax_job(atoms)
-        return static_job(relax_output["atoms"])
+        relax_output = relax_job(atoms, kpts=[3, 3, 3])
+        return static_job(relax_output["atoms"], kpts=[3, 3, 3])
 
 
     atoms = bulk("C")
@@ -719,6 +719,8 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
         A similar configuration can be used for the `HPCExecutor`:
 
         ```python
+        import covalent as ct
+
         executor = ct.executor.HPCExecutor(
             username="YourUserName",
             address="perlmutter-p1.nersc.gov",
@@ -726,8 +728,8 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
             cert_file="~/.ssh/nersc-cert.pub",
             instance="slurm",
             resource_spec_kwargs={
-                "node_count": n_nodes,
-                "processes_per_node": n_cores_per_node,
+                "node_count": nodes,
+                "processes_per_node": cores_per_node,
             },
             job_attributes_kwargs={
                 "duration": 30,
@@ -736,7 +738,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
             },
             pre_launch_cmds=["module load vasp/6.4.1-cpu"],
             environment={
-                "QUACC_VASP_PARALLEL_CMD": f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
+                "QUACC_VASP_PARALLEL_CMD": f"srun -N {nodes} --ntasks-per-node={cores_per_node} --cpu_bind=cores"
             },
             remote_conda_env="quacc",
             remote_workdir="$SCRATCH/quacc",
@@ -744,6 +746,63 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
             cleanup=False,
         )
         ```
+
+=== "Dask"
+
+    ```python
+    from dask.distributed import Client
+    from dask_jobqueue import SLURMCluster
+
+    account = "MyAccountName"
+
+    nodes_per_calc = 1
+    cores_per_node = 128
+    concurrent_jobs = 2
+    mem_per_node = "64 GB"
+
+    vasp_parallel_cmd = (
+        f"srun -N {nodes_per_calc} --ntasks-per-node={cores_per_node} --cpu_bind=cores"
+    )
+
+    cluster_kwargs = {
+        # Dask worker options
+        "cores": cores_per_node,
+        "memory": mem_per_node,
+        # SLURM options
+        "shebang": "#!/bin/bash",
+        "account": account,
+        "walltime": "00:10:00",
+        "job_mem": "0",
+        "job_script_prologue": [
+            "source ~/.bashrc",
+            "conda activate quacc",
+            "module load vasp/6.4.1-cpu",
+            f"export QUACC_VASP_PARALLEL_CMD='{vasp_parallel_cmd}'",
+        ],
+        "job_directives_skip": ["-n", "--cpus-per-task"],
+        "job_extra_directives": [f"-N {nodes_per_calc}", "-q debug", "-C cpu"],
+        "python": "python",
+    }
+
+    cluster = SLURMCluster(**cluster_kwargs)
+    cluster.scale(jobs=concurrent_jobs)
+    client = Client(cluster)
+    ```
+
+    ```python
+    from ase.build import bulk
+    from quacc.recipes.vasp.core import relax_job, static_job
+
+
+    def workflow(atoms):
+        relax_output = relax_job(atoms, kpts=[3, 3, 3])
+        return static_job(relax_output["atoms"], kpts=[3, 3, 3])
+
+
+    future1 = client.compute(workflow(bulk("C")))
+    future2 = client.compute(workflow(bulk("Cu")))
+    print(future1.result(), future2.result())
+    ```
 
 === "Parsl"
 
@@ -780,7 +839,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
                     account=account,
                     qos="debug",
                     constraint="cpu",
-                    worker_init=f"source ~/.bashrc && conda activate quacc && module load vasp/6.4.1-cpu && export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}",
+                    worker_init=f"source ~/.bashrc && conda activate quacc && module load vasp/6.4.1-cpu && export QUACC_VASP_PARALLEL_CMD='{vasp_parallel_cmd}'",
                     walltime="00:10:00",
                     nodes_per_block=concurrent_jobs * nodes_per_job,
                     init_blocks=0,
@@ -801,6 +860,65 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     from quacc.recipes.vasp.core import relax_job, static_job
 
 
+    def workflow(atoms):
+        relax_output = relax_job(atoms, kpts=[3, 3, 3])
+        return static_job(relax_output["atoms"], kpts=[3, 3, 3])
+
+
+    future1 = workflow(bulk("C"))
+    future2 = workflow(bulk("Cu"))
+    print(future1.result(), future2.result())
+    ```
+
+=== "Prefect"
+
+    ```python
+    from dask.distributed import Client
+    from dask_jobqueue import SLURMCluster
+
+    account = "MyAccountName"
+
+    slurm_jobs = 2
+    nodes_per_calc = 1
+    cores_per_node = 128
+    mem_per_node = "64 GB"
+
+    vasp_parallel_cmd = (
+        f"srun -N {nodes_per_calc} --ntasks-per-node={cores_per_node} --cpu_bind=cores"
+    )
+
+    cluster_kwargs = {
+        # Dask worker options
+        "cores": cores_per_node,
+        "memory": mem_per_node,
+        # SLURM options
+        "shebang": "#!/bin/bash",
+        "account": account,
+        "walltime": "00:10:00",
+        "job_mem": "0",
+        "job_script_prologue": [
+            "source ~/.bashrc",
+            "conda activate quacc",
+            "module load vasp/6.4.1-cpu",
+            f"export QUACC_VASP_PARALLEL_CMD='{vasp_parallel_cmd}'",
+        ],
+        "job_directives_skip": ["-n", "--cpus-per-task"],
+        "job_extra_directives": [f"-N {nodes_per_calc}", "-q debug", "-C cpu"],
+        "python": "python",
+    }
+
+    cluster = SLURMCluster(**cluster_kwargs)
+    client = Client(cluster)
+    ```
+
+    ```python
+    from ase.build import bulk
+    from prefect_dask import DaskTaskRunner
+    from quacc import flow
+    from quacc.recipes.vasp.core import relax_job, static_job
+
+
+    @flow(task_runner=DaskTaskRunner(address=client.scheduler.address))
     def workflow(atoms):
         relax_output = relax_job(atoms, kpts=[3, 3, 3])
         return static_job(relax_output["atoms"], kpts=[3, 3, 3])
