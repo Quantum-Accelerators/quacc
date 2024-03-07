@@ -283,6 +283,82 @@ If you haven't done so already:
 
         6. For debugging purposes, it can be useful to keep all the temporary files. Once you're confident things work, you can omit the `cleanup` keyword argument.
 
+=== "Dask"
+
+    Here, we will run single-core TBLite relaxation and frequency calculations for 162 molecules in the so-called "g2" collection of small, neutral molecules.
+
+    On the remote machine, first make sure to install the necessary dependencies:
+
+    ```
+    pip install quacc[tblite]
+    ```
+
+    From an interactive resource like a Jupyter Notebook or IPython kernel on the login node of the remote machine, run the following to instantiate a Dask [`SLURMCluster`](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html):
+
+    ```python
+    from dask.distributed import Client
+    from dask_jobqueue import SLURMCluster
+
+    account = "MyAccountName"
+
+    slurm_jobs = 2
+    nodes_per_calc = 1
+    cores_per_node = 128
+    mem_per_node = "64 GB"
+
+    env_vars = "export OMP_NUM_THREADS=1,1"  # (1)!
+
+    cluster_kwargs = {
+        "cores": cores_per_node,
+        "memory": "64 GB",
+        "shebang": "#!/bin/bash",
+        "account": account,
+        "walltime": "00:10:00",
+        "job_mem": "0",
+        "job_script_prologue": [
+            "source ~/.bashrc",
+            "conda activate quacc",
+            env_vars,
+        ],
+        "job_directives_skip": ["-n", "--cpus-per-task"],
+        "job_extra_directives": [f"-N {nodes_per_calc}", "-q debug", "-C cpu"],
+        "python": "python",
+    }
+
+    cluster = SLURMCluster(**cluster_kwargs)
+    cluster.scale(jobs=slurm_jobs)
+    client = Client(cluster)
+    ```
+
+    1. Since we are running single-core jobs, we need to set the `OMP_NUM_THREADS` environment variable to "1,1" according to the [TBLite documentation](https://tblite.readthedocs.io/en/latest/tutorial/parallel.html#running-tblite-in-parallel).
+
+    Then run the following code:
+
+    ```python
+    from ase.collections import g2
+    from quacc.recipes.tblite.core import relax_job, freq_job
+
+
+    def workflow(atoms):
+        relax_output = relax_job(atoms)
+        return freq_job(relax_output["atoms"], energy=relax_output["results"]["energy"])
+
+
+    futures = []
+    for name in g2.names:
+        atoms = g2[name]
+        future = client.compute(workflow(atoms))
+        futures.append(future)
+
+    task_docs = client.gather(futures)
+    for task_doc in task_docs:
+        print(
+            task_doc["formula_pretty"],
+            task_doc["results"]["gibbs_energy"],
+            task_doc["dir_name"],
+        )
+    ```
+
 === "Parsl"
 
     Here, we describe several representative [`HighThroughputExecutor`](https://parsl.readthedocs.io/en/stable/stubs/parsl.executors.HighThroughputExecutor.html#parsl.executors.HighThroughputExecutor) configurations that will orchestrate jobs from the login node of NERSC's Perlmutter machine. There is no one-size-fits-all approach, so you will need to adjust the configuration to suit your specific needs.
@@ -638,6 +714,67 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
             cleanup=False,
         )
         ```
+
+=== "Dask"
+
+    ```python
+    from dask.distributed import Client
+    from dask_jobqueue import SLURMCluster
+
+    account = "MyAccountName"
+
+    slurm_jobs = 2
+    nodes_per_calc = 1
+    cores_per_node = 128
+    mem_per_node = "64 GB"
+
+    vasp_parallel_cmd = (
+        f"srun -N {nodes_per_calc} --ntasks-per-node={cores_per_node} --cpu_bind=cores"
+    )
+
+    cluster_kwargs = {
+        "cores": 1,  # (1)!
+        "memory": "64 GB",
+        "shebang": "#!/bin/bash",
+        "account": account,
+        "walltime": "00:10:00",
+        "job_mem": "0",
+        "job_script_prologue": [
+            "source ~/.bashrc",
+            "conda activate quacc",
+            "module load vasp/6.4.1-cpu",
+            f"export QUACC_VASP_PARALLEL_CMD='{vasp_parallel_cmd}'",
+        ],
+        "job_directives_skip": ["-n", "--cpus-per-task"],
+        "job_extra_directives": [f"-N {nodes_per_calc}", "-q debug", "-C cpu"],
+        "python": "python",
+    }
+
+    cluster = SLURMCluster(**cluster_kwargs)
+    cluster.scale(jobs=slurm_jobs)
+    client = Client(cluster)
+    ```
+
+    ```python
+    from ase.build import bulk
+    from quacc.recipes.vasp.core import relax_job, static_job
+
+
+    def workflow(atoms):
+        relax_output = relax_job(atoms, kpts=[3, 3, 3])
+        return static_job(relax_output["atoms"], kpts=[3, 3, 3])
+
+
+    future1 = workflow(bulk("C"))
+    future2 = workflow(bulk("Cu"))
+    client.gather(client.compute([future1, future2]))
+    ```
+
+    1. The value of `cores` refers to the number of workers to have in each allocation. Since we only want to run one VASP job per allocation, we set this to 1. VASP will still use multiple cores via the `srun` command.
+
+    !!! Note "Limitations"
+
+        Unfortunately, `dask-jobqueue` is somewhat limited in terms of its flexibility. Most notably, there is no mechanism to distribute `#!Python @job`s over multiple nodes on a single Slurm allocation. Users interested in such functionality should consider using other tools in the Dask suite or other workflow engines (e.g. Parsl).
 
 === "Parsl"
 
