@@ -493,7 +493,7 @@ If you haven't done so already:
 
 === "Prefect"
 
-    Here, we will run single-core TBLite relaxation and frequency calculations for 20 molecules from the so-called "g2" collection of small, neutral molecules. Note that the full "g2" collection has 162 molecules, but running all of them in quick succession will surpass the free tier rate limit of Prefect Cloud.
+    Here, we will run single-core TBLite relaxation and frequency calculations for 20 molecules from the so-called "g2" collection of small, neutral molecules. Note that the full "g2" collection has 162 molecules, but running all of them in quick succession will risk surpassing the free-tier rate limit of Prefect Cloud.
 
     On the remote machine, first make sure to install the necessary dependencies:
 
