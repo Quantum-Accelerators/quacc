@@ -187,7 +187,7 @@ If you haven't done so already:
         cert_file="/home/username/.ssh/nersc-cert.pub",  # (1)!
         conda_env="quacc",
         options={
-            "nodes": f"{nodes}",
+            "nodes": nodes,
             "qos": "debug",
             "constraint": "cpu",
             "account": "YourAccountName",
@@ -650,7 +650,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
         cert_file="/home/username/.ssh/nersc-cert.pub",
         conda_env="quacc",
         options={
-            "nodes": f"{nodes}",
+            "nodes": nodes,
             "qos": "debug",
             "constraint": "cpu",
             "account": "YourAccountName",
