@@ -479,7 +479,7 @@ If you haven't done so already:
 
     1. This is when the `PythonApp`s will be dispatched.
 
-    !!! Note "Practical Deployment"
+    ??? Tip "Tips for Practical Deployment"
 
         For debugging purposes or when running only a small numbers of jobs, it is simple enough to run the Parsl process from an interactive Jupyter Notebook or IPython kernel on the remote machine. However, for practical deployment and to ensure jobs are continually submitted to the queue even when the SSH session is terminated, you can run the Parsl orchestration process on a login node and maintain its state via a program like `tmux` or `screen`.
 
