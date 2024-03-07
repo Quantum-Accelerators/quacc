@@ -125,6 +125,10 @@ If you haven't done so already:
     quacc set WORKFLOW_ENGINE dask
     ```
 
+    ??? Note "For NERSC Users"
+
+        If using Perlmutter at NERSC, Dask should be run from the `$SCRATCH` directory. This is because the `$SCRATCH` directory is the only directory that supports file locking mechanisms, which Dask relies on.
+
 === "Parsl"
 
     On the remote machine:
@@ -150,6 +154,10 @@ If you haven't done so already:
     ```bash
     prefect cloud login
     ```
+
+    ??? Note "For NERSC Users"
+
+        If using Perlmutter at NERSC with the Dask backend for Prefect, your calculations should be run from the `$SCRATCH` directory. This is because the `$SCRATCH` directory is the only directory that supports file locking mechanisms, which Dask relies on.
 
 === "Jobflow"
 
@@ -483,6 +491,102 @@ If you haven't done so already:
 
         For example, running `tmux new -s launcher` will create a new `tmux` session named `launcher`. To exit the `tmux` session while still preserving any running jobs on the login node, press `ctrl+b` followed by `d`. To re-enter the tmux session, run `tmux attach -t launcher`. Additional `tmux` commands can be found on the [tmux cheatsheet](https://tmuxcheatsheet.com/).
 
+=== "Prefect"
+
+    Here, we will run single-core TBLite relaxation and frequency calculations for 20 molecules from the so-called "g2" collection of small, neutral molecules. Note that the full "g2" collection has 162 molecules, but running all of them in quick succession will surpass the free tier rate limit of Prefect Cloud.
+
+    On the remote machine, first make sure to install the necessary dependencies:
+
+    ```
+    pip install quacc[tblite]
+    ```
+
+    From an interactive resource like a Jupyter Notebook or IPython kernel on the login node of the remote machine, you will need to instantiate a Dask [`SLURMCluster`](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html). For specific details on creating a `SLURMCluster`, refer to the "Dask" tab in this section.
+
+    Then run the following code:
+
+    ```python
+    from dask.distributed import Client
+    from dask_jobqueue import SLURMCluster
+
+    account = "MyAccountName"
+
+    slurm_jobs = 1
+    nodes_per_calc = 1
+    cores_per_node = 128
+    mem_per_node = "64 GB"
+
+    env_vars = "export OMP_NUM_THREADS=1,1"  # (1)!
+
+    cluster_kwargs = {
+        "cores": cores_per_node,
+        "memory": "64 GB",
+        "shebang": "#!/bin/bash",
+        "account": account,
+        "walltime": "00:10:00",
+        "job_mem": "0",
+        "job_script_prologue": [
+            "source ~/.bashrc",
+            "conda activate quacc",
+            env_vars,
+        ],
+        "job_directives_skip": ["-n", "--cpus-per-task"],  # (2)!
+        "job_extra_directives": [f"-N {nodes_per_calc}", "-q debug", "-C cpu"],  # (3)!
+        "python": "python",
+    }
+    cluster = SLURMCluster(**cluster_kwargs)
+    cluster.scale(jobs=slurm_jobs)
+    client = Client(cluster)
+    ```
+
+    1. Since we are running single-core jobs, we need to set the `OMP_NUM_THREADS` environment variable to "1,1" according to the [TBLite documentation](https://tblite.readthedocs.io/en/latest/tutorial/parallel.html#running-tblite-in-parallel).
+
+    2. We have skipped the `-n` and `--cpus-per-task` Slurm directives because we will be using the full node here.
+
+    3. We have set the number of nodes to reserve for each calculation, the queue to submit to, and the constraint to use.
+
+    Now we define our workflow to dispatch, attaching it to the premade Dask cluster:
+
+    ```python
+    from prefect_dask import DaskTaskRunner
+    from quacc import flow
+
+
+    @flow(task_runner=DaskTaskRunner(address=client.scheduler.address))
+    def workflow(list_of_atoms):
+        from quacc.recipes.tblite.core import freq_job, relax_job
+
+        futures = []
+        for atoms in list_of_atoms:
+            relax_output = relax_job(atoms)
+            freq_output = freq_job(
+                relax_output["atoms"], energy=relax_output["results"]["energy"]
+            )
+            futures.append(freq_output)
+
+        return futures
+    ```
+
+    Finally, we dispatch the workflow and fetch the results:
+
+    ```python
+    from ase.collections import g2
+
+    list_of_atoms = [g2[name] for name in g2.names[:20]]
+    futures = workflow(list_of_atoms)
+    results = [future.result() for future in futures]
+    for task_doc in results:
+        print(
+            task_doc["formula_pretty"],
+            task_doc["results"]["gibbs_energy"],
+            task_doc["dir_name"],
+        )
+    ```
+
+    !!! Tip "One-Time Dask Clusters"
+
+        If preferred, it is also possible to instantiate a [one-time, temporary](https://prefecthq.github.io/prefect-dask/usage_guide/#using-a-temporary-cluster) Dask cluster via the `DaskTaskRunner` directly rather than connecting to an existing Dask cluster, as described in the [Task Runner documentation](https://prefecthq.github.io/prefect-dask/task_runners/). This is the more conventional job scheduling approach, where each workflow will run on its own Slurm allocation.
+
 === "Jobflow"
 
     From the login node of the remote machine, run the following:
@@ -751,6 +855,80 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     future1 = workflow(bulk("C"))
     future2 = workflow(bulk("Cu"))
     print(future1.result(), future2.result())
+    ```
+
+=== "Prefect"
+
+    ```python
+    from dask.distributed import Client
+    from dask_jobqueue import SLURMCluster
+
+    account = "MyAccountName"
+
+    slurm_jobs = 2
+    nodes_per_calc = 1
+    cores_per_node = 128
+    mem_per_node = "64 GB"
+
+    vasp_parallel_cmd = (
+        f"srun -N {nodes_per_calc} --ntasks-per-node={cores_per_node} --cpu_bind=cores"
+    )
+
+    cluster_kwargs = {
+        "cores": 1,  # (1)!
+        "memory": "64 GB",
+        "shebang": "#!/bin/bash",
+        "account": account,
+        "walltime": "00:10:00",
+        "job_mem": "0",
+        "job_script_prologue": [
+            "source ~/.bashrc",
+            "conda activate quacc",
+            "module load vasp/6.4.1-cpu",
+            f"export QUACC_VASP_PARALLEL_CMD='{vasp_parallel_cmd}'",
+        ],
+        "job_directives_skip": ["-n", "--cpus-per-task"],
+        "job_extra_directives": [f"-N {nodes_per_calc}", "-q debug", "-C cpu"],
+        "python": "python",
+    }
+    cluster = SLURMCluster(**cluster_kwargs)
+    cluster.scale(jobs=slurm_jobs)
+    client = Client(cluster)
+    ```
+
+    1. The value of `cores` refers to the number of workers to have in each allocation. Since we only want to run one VASP job per allocation, we set this to 1. VASP will still use multiple cores via the `srun` command.
+
+    Now we define our workflow to dispatch, attaching it to the premade Dask cluster:
+
+    ```python
+    from prefect_dask import DaskTaskRunner
+    from quacc import flow
+
+
+    @flow(task_runner=DaskTaskRunner(address=client.scheduler.address))
+    def workflow(list_of_atoms):
+        from quacc.recipes.vasp.core import relax_job, static_job
+
+        futures = []
+        for atoms in list_of_atoms:
+            relax_output = relax_job(atoms, kpts=[3,3,3])
+            static_output = static_job(
+                relax_output["atoms"], kpts=[3,3,3]
+            )
+            futures.append(static_output)
+
+        return futures
+    ```
+
+    Finally, we dispatch the workflow and fetch the results:
+
+    ```python
+    from ase.build import bulk
+
+    list_of_atoms = [bulk("Cu"), bulk("C")]
+    futures = workflow(list_of_atoms)
+    results = [future.result() for future in futures]
+    print(results)
     ```
 
 === "Jobflow"
