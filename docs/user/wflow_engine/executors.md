@@ -4,7 +4,7 @@ In the previous examples, we have been running calculations on our local machine
 
 !!! Note "A Note on Terminology"
 
-    Throughout this section, when we refer to a "job", we are specifically referring to a function decorated by `#!Python @job` (i.e. not necessarily a Slurm job, which may run multipel `#!Python @job`s). A node refers to the compute node on the HPC machine, which consists of many individual compute cores. An allocation refers to one or more nodes that have been reserved via the job scheduler for a given amount of time.
+    Throughout this section, when we refer to a "job", we are specifically referring to a function decorated by `#!Python @job` (i.e. not necessarily a Slurm job). A node refers to the compute node on the HPC machine, which consists of many individual compute cores. An allocation refers to one or more nodes that have been reserved via the job scheduler for a given amount of time.
 
 ## Background Information
 
