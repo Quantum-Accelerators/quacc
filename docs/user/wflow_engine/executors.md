@@ -357,58 +357,6 @@ If you haven't done so already:
 
     12. The maximum time to wait (in seconds) for the job scheduler info to be retrieved/sent.
 
-    **Concurrent MPI Jobs**
-
-    Now let's consider a similar configuration but for jobs where the underlying executable is run via MPI, as is typically the case for most quantum chemistry codes that distribute work over multiple cores and/or nodes. The setup here is a bit different. In this example, we are requesting a single Slurm allocation with 8 nodes (containing 128 physical CPU cores per node), and each compute job is running on 2 nodes of that allocation.
-
-    ```python
-    import parsl
-    from parsl.config import Config
-    from parsl.executors import HighThroughputExecutor
-    from parsl.launchers import SimpleLauncher
-    from parsl.providers import SlurmProvider
-
-    account = "MyAccountName"
-
-    nodes_per_job = 2
-    cores_per_node = 128
-    nodes_per_allocation = 2
-    min_allocations = 0
-    max_allocations = 1
-
-    config = Config(
-        strategy="htex_auto_scale",
-        executors=[
-            HighThroughputExecutor(
-                label="quacc_parsl",
-                max_workers=nodes_per_job * nodes_per_allocation,  # (1)!
-                cores_per_worker=1e-6,  # (2)!
-                provider=SlurmProvider(
-                    account=account,
-                    qos="debug",
-                    constraint="cpu",
-                    worker_init=f"source ~/.bashrc && conda activate quacc",
-                    walltime="00:10:00",
-                    nodes_per_block=nodes_per_allocation,
-                    init_blocks=0,
-                    min_blocks=min_allocations,
-                    max_blocks=max_allocations,
-                    launcher=SimpleLauncher(),  # (3)!
-                    cmd_timeout=60,
-                ),
-            )
-        ],
-    )
-
-    parsl.load(config)
-    ```
-
-    1. Unlike the prior example, here `max_workers_per_node` is defining the maximum number of concurrent jobs in total and not the maximum number of jobs run per node.
-
-    2. This is recommended in the Parsl manual for jobs that spawn MPI processes.
-
-    3. The `SimpleLauncher` should be used in place of the `SrunLauncher` for `PythonApp`s that themselves call MPI.
-
     **TBLite Example**
 
     Here, we will run single-core TBLite relaxation and frequency calculations for 162 molecules in the so-called "g2" collection of small, neutral molecules. This example should be run from an interactive resource like a Jupyter Notebook or IPython kernel on the remote machine.
@@ -498,6 +446,58 @@ If you haven't done so already:
     ```
 
     1. This is when the `PythonApp`s will be dispatched.
+
+    **Concurrent MPI Jobs**
+
+    Now let's consider a similar configuration but for jobs where the underlying executable is run via MPI, as is typically the case for most quantum chemistry codes that distribute work over multiple cores and/or nodes. The setup here is a bit different. In this example, we are requesting a single Slurm allocation with 8 nodes (containing 128 physical CPU cores per node), and each compute job is running on 2 nodes of that allocation.
+
+    ```python
+    import parsl
+    from parsl.config import Config
+    from parsl.executors import HighThroughputExecutor
+    from parsl.launchers import SimpleLauncher
+    from parsl.providers import SlurmProvider
+
+    account = "MyAccountName"
+
+    nodes_per_job = 2
+    cores_per_node = 128
+    nodes_per_allocation = 2
+    min_allocations = 0
+    max_allocations = 1
+
+    config = Config(
+        strategy="htex_auto_scale",
+        executors=[
+            HighThroughputExecutor(
+                label="quacc_parsl",
+                max_workers=nodes_per_job * nodes_per_allocation,  # (1)!
+                cores_per_worker=1e-6,  # (2)!
+                provider=SlurmProvider(
+                    account=account,
+                    qos="debug",
+                    constraint="cpu",
+                    worker_init=f"source ~/.bashrc && conda activate quacc",
+                    walltime="00:10:00",
+                    nodes_per_block=nodes_per_allocation,
+                    init_blocks=0,
+                    min_blocks=min_allocations,
+                    max_blocks=max_allocations,
+                    launcher=SimpleLauncher(),  # (3)!
+                    cmd_timeout=60,
+                ),
+            )
+        ],
+    )
+
+    parsl.load(config)
+    ```
+
+    1. Unlike the prior example, here `max_workers_per_node` is defining the maximum number of concurrent jobs in total and not the maximum number of jobs run per node.
+
+    2. This is recommended in the Parsl manual for jobs that spawn MPI processes.
+
+    3. The `SimpleLauncher` should be used in place of the `SrunLauncher` for `PythonApp`s that themselves call MPI.
 
     !!! Note "Practical Deployment"
 
