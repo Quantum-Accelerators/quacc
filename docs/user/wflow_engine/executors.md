@@ -334,7 +334,7 @@ If you haven't done so already:
 
     2. We have skipped the `-n` and `--cpus-per-task` Slurm directives because we will be using the full node here.
 
-    3. We have set the number of nodes to reserve for each calculation, the queue to submit to, and the constraint to use.
+    3. We have set the number of nodes to reserve, the queue to submit to, and the constraint to use.
 
     Then run the following code:
 
