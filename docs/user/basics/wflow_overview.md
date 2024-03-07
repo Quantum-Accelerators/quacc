@@ -6,12 +6,12 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
 !!! Tip "Recommendations"
 
-    Not sure which to choose? In general, we recommend starting with **Parsl** for most HPC users. For a more feature-rich workflow orchestration platform, we recommend trying **Covalent** or **Prefect** depending on your needs. Some additional opinions on the matter:
+    Not sure which to choose? In general, we recommend starting with **Parsl** for most HPC users. For a more feature-rich workflow orchestration platform, we recommend trying **Prefect** or **Covalent** depending on your needs. Some additional opinions on the matter:
 
-    - Covalent: You want a visual dashboard and are prioritizing the use of distributed compute resources.
+    - Covalent: You want a visual dashboard and are prioritizing the use of distributed compute resources, especially cloud compute.
     - Dask: You already are familiar with the Dask ecosystem and are happy to stick with it.
     - Parsl: You want to run many workflows as fast as possible on one or more job scheduler-based HPC machines.
-    - Prefect: You want a visual dashboard with a robust workflow management platform and are already familiar with the concepts of workflow orchestration.
+    - Prefect: You want a visual dashboard with a robust workflow management platform and are familiar with the basic concepts of workflow orchestration.
     - Redun: You are running calculations on AWS.
     - Jobflow: You are affiliated with the Materials Project or are already using Jobflow and/or FireWorks.
 
@@ -41,7 +41,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     Pros:
 
     - Extremely popular
-    - Has significant support for running on HPC resources
+    - Has native support for running on HPC resources
     - It does not involve a centralized server or network connectivity
     - Supports adaptive scaling of compute resources
     - The dashboard to monitor resource usage is very intuitive
