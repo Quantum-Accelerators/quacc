@@ -9,7 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 - Fixed pickle-ability of the schemas
-- Fixed multithreaded `@task` distribution with Espresso recipes and common phonon flow
+- Fixed multithreaded `@task` distribution with GULP, Espresso, and common phonon flow recipes
+- Fixed concurrency issues with VASP/Q-Chem due to refactoring
 
 ### Removed
 
