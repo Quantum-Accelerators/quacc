@@ -14,7 +14,7 @@ In the previous examples, we have been running calculations on our local machine
 
 === "Dask"
 
-    A Dask cluster can be set up to be used with a queueing system like that found on most HPC machines. This is done via [Dask Jobqueue](https://jobqueue.dask.org/en/latest/index.html). Example configurations for various queuing systems can be found in the ["Example Deployments"](https://jobqueue.dask.org/en/latest/examples.html) section of the Dask Jobqueue documentation.
+    A Dask cluster can be set up to be used with a queueing system like that found on most HPC machines. This is most easily done via [Dask Jobqueue](https://jobqueue.dask.org/en/latest/index.html). Example configurations for various queuing systems can be found in the ["Example Deployments"](https://jobqueue.dask.org/en/latest/examples.html) section of the Dask Jobqueue documentation.
 
 === "Parsl"
 
@@ -163,7 +163,7 @@ If you haven't done so already:
 
     1. FireWorks and Jobflow have their own mechanisms for task isolation, which we will rely on instead.
 
-### Simple Demonstration
+### Concurrent Non-MPI Jobs
 
 === "Covalent"
 
@@ -308,29 +308,31 @@ If you haven't done so already:
 
     env_vars = "export OMP_NUM_THREADS=1,1"  # (1)!
 
-    cluster_kwargs = {
-        "cores": cores_per_node,
-        "memory": "64 GB",
-        "shebang": "#!/bin/bash",
-        "account": account,
-        "walltime": "00:10:00",
-        "job_mem": "0",
-        "job_script_prologue": [
+    cluster = SLURMCluster(
+        cores=cores_per_node,
+        memory="64 GB",
+        shebang="#!/bin/bash",
+        account=account,
+        walltime="00:10:00",
+        job_mem="0",
+        job_script_prologue=[
             "source ~/.bashrc",
             "conda activate quacc",
             env_vars,
         ],
-        "job_directives_skip": ["-n", "--cpus-per-task"],
-        "job_extra_directives": [f"-N {nodes_per_calc}", "-q debug", "-C cpu"],
-        "python": "python",
-    }
-
-    cluster = SLURMCluster(**cluster_kwargs)
+        job_directives_skip=["-n", "--cpus-per-task"],  # (2)!
+        job_extra_directives=[f"-N {nodes_per_calc}", "-q debug", "-C cpu"],  # (3)!
+        python="python",
+    )
     cluster.scale(jobs=slurm_jobs)
     client = Client(cluster)
     ```
 
     1. Since we are running single-core jobs, we need to set the `OMP_NUM_THREADS` environment variable to "1,1" according to the [TBLite documentation](https://tblite.readthedocs.io/en/latest/tutorial/parallel.html#running-tblite-in-parallel).
+
+    2. We have skipped the `-n` and `--cpus-per-task` Slurm directives because we will be using the full node here.
+
+    3. We have set the number of nodes to reserve for each calculation, the queue to submit to, and the constraint to use.
 
     Then run the following code:
 
@@ -361,79 +363,7 @@ If you haven't done so already:
 
 === "Parsl"
 
-    Here, we describe several representative [`HighThroughputExecutor`](https://parsl.readthedocs.io/en/stable/stubs/parsl.executors.HighThroughputExecutor.html#parsl.executors.HighThroughputExecutor) configurations that will orchestrate jobs from the login node of NERSC's Perlmutter machine. There is no one-size-fits-all approach, so you will need to adjust the configuration to suit your specific needs.
-
-    **Concurrent Non-MPI Jobs**
-
-    Let's imagine a scenario where we want to concurrently run a large number of single-core compute jobs. A sample configuration for this purpose is shown below. Here, we are requesting a single Slurm allocation with 2 nodes, and each compute job is running on one core of that allocation.
-
-    ```python
-    import parsl
-    from parsl.config import Config
-    from parsl.executors import HighThroughputExecutor
-    from parsl.launchers import SrunLauncher
-    from parsl.providers import SlurmProvider
-
-    account = "MyAccountName"
-
-    cores_per_job = 1
-    cores_per_node = 128
-    nodes_per_allocation = 2
-    min_allocations = 0
-    max_allocations = 1
-
-    config = Config(
-        strategy="htex_auto_scale",  # (1)!
-        executors=[
-            HighThroughputExecutor(
-                label="quacc_parsl",  # (2)!
-                max_workers_per_node=cores_per_node,  # (3)!
-                cores_per_worker=cores_per_job,  # (4)!
-                provider=SlurmProvider(
-                    account=account,
-                    qos="debug",
-                    constraint="cpu",
-                    worker_init=f"source ~/.bashrc && conda activate quacc",  # (5)!
-                    walltime="00:10:00",  # (6)!
-                    nodes_per_block=nodes_per_allocation,  # (7)!
-                    init_blocks=0,  # (8)!
-                    min_blocks=min_allocations,  # (9)!
-                    max_blocks=max_allocations,  # (10)!
-                    launcher=SrunLauncher(),  # (11)!
-                    cmd_timeout=60,  # (12)!
-                ),
-            )
-        ],
-    )
-
-    parsl.load(config)
-    ```
-
-    1. Unique to the `HighThroughputExecutor`, this `strategy` will automatically scale the number of active blocks (i.e. Slurm allocations) up or down based on the number of jobs remaining. We set `max_blocks=1` here so it can't scale up beyond 1 Slurm job, but it can scale down from 1 to 0 since `min_blocks=0`. By setting `init_blocks=0`, no Slurm allocation will be requested until jobs are launched.
-
-    2. This is just an arbitrary label for file I/O.
-
-    3. The maximum number of running jobs per node. If you are running a non-MPI job, this value will generally be the number of physical cores per node (this example). Perlmutter has 128 physical CPU cores, so we have set a value of 128 here.
-
-    4. The number of cores per job. We are running single-core jobs in this example.
-
-    5. Any commands to run before carrying out any of the Parsl jobs. This is useful for setting environment variables, activating a given Conda environment, and loading modules.
-
-    6. The walltime for each block (i.e. Slurm allocation).
-
-    7. The number of nodes that each block (i.e. Slurm allocation) should allocate.
-
-    8. Sets the number of blocks (e.g. Slurm allocations) to provision during initialization of the workflow. We set this to a value of 0 so that there isn't a running Slurm job before any jobs have been submitted to Parsl.
-
-    9. Sets the minimum number of blocks (e.g. Slurm allocations) to maintain during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 0 so that Slurm jobs aren't running when there are no remaining jobs.
-
-    10. Sets the maximum number of active blocks (e.g. Slurm allocations) during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 1 here, but it can be increased to have multiple Slurm jobs running simultaneously. Raising `max_blocks` to a larger value will allow the "htex_auto_scale" strategy to upscale resources as needed.
-
-    11. The type of Launcher to use. `SrunLauncher()` will distribute jobs across the cores and nodes of the Slurm allocation. It should not be used for `PythonApp`s that themselves call MPI, which should use `SimpleLauncher()` instead.
-
-    12. The maximum time to wait (in seconds) for the job scheduler info to be retrieved/sent.
-
-    **TBLite Example**
+    Here, we describe representative [`HighThroughputExecutor`](https://parsl.readthedocs.io/en/stable/stubs/parsl.executors.HighThroughputExecutor.html#parsl.executors.HighThroughputExecutor) configurations that will orchestrate jobs from the login node of NERSC's Perlmutter machine. There is no one-size-fits-all approach, so you will need to adjust the configuration to suit your specific needs.
 
     Here, we will run single-core TBLite relaxation and frequency calculations for 162 molecules in the so-called "g2" collection of small, neutral molecules. This example should be run from an interactive resource like a Jupyter Notebook or IPython kernel on the remote machine.
 
@@ -443,7 +373,7 @@ If you haven't done so already:
     pip install quacc[tblite]
     ```
 
-    First, we initialize a Parsl configuration. For this example, we will request one Slurm job (block), which will concurrently run single-core compute jobs over two nodes.
+    Now we will request a single Slurm allocation with 2 nodes, and each compute job will run on one core of that allocation.
 
     ```python
     import parsl
@@ -463,24 +393,24 @@ If you haven't done so already:
     env_vars = "export OMP_NUM_THREADS=1,1"  # (1)!
 
     config = Config(
-        strategy="htex_auto_scale",
+        strategy="htex_auto_scale",  # (2)!
         executors=[
             HighThroughputExecutor(
-                label="quacc_parsl",
-                max_workers_per_node=cores_per_node,
-                cores_per_worker=cores_per_job,
+                label="quacc_parsl",  # (3)!
+                max_workers_per_node=cores_per_node,  # (4)!
+                cores_per_worker=cores_per_job,  # (5)!
                 provider=SlurmProvider(
                     account=account,
                     qos="debug",
                     constraint="cpu",
-                    worker_init=f"source ~/.bashrc && conda activate quacc && {env_vars}",
-                    walltime="00:10:00",
-                    nodes_per_block=nodes_per_allocation,
-                    init_blocks=0,
-                    min_blocks=min_allocations,
-                    max_blocks=max_allocations,
-                    launcher=SrunLauncher(),
-                    cmd_timeout=60,
+                    worker_init=f"source ~/.bashrc && conda activate quacc && {env_vars}",  # (6)!
+                    walltime="00:10:00",  # (7)!
+                    nodes_per_block=nodes_per_allocation,  # (8)!
+                    init_blocks=0,  # (9)!
+                    min_blocks=min_allocations,  # (10)!
+                    max_blocks=max_allocations,  # (11)!
+                    launcher=SrunLauncher(),  # (12)!
+                    cmd_timeout=60,  # (13)!
                 ),
             )
         ],
@@ -490,6 +420,30 @@ If you haven't done so already:
     ```
 
     1. Since we are running single-core jobs, we need to set the `OMP_NUM_THREADS` environment variable to "1,1" according to the [TBLite documentation](https://tblite.readthedocs.io/en/latest/tutorial/parallel.html#running-tblite-in-parallel).
+
+    2. Unique to the `HighThroughputExecutor`, this `strategy` will automatically scale the number of active blocks (i.e. Slurm allocations) up or down based on the number of jobs remaining. We set `max_blocks=1` here so it can't scale up beyond 1 Slurm job, but it can scale down from 1 to 0 since `min_blocks=0`. By setting `init_blocks=0`, no Slurm allocation will be requested until jobs are launched.
+
+    3. This is just an arbitrary label for file I/O.
+
+    4. The maximum number of running jobs per node. If you are running a non-MPI job, this value will generally be the number of physical cores per node (this example). Perlmutter has 128 physical CPU cores, so we have set a value of 128 here.
+
+    5. The number of cores per job. We are running single-core jobs in this example.
+
+    6. Any commands to run before carrying out any of the Parsl jobs. This is useful for setting environment variables, activating a given Conda environment, and loading modules.
+
+    7. The walltime for each block (i.e. Slurm allocation).
+
+    8. The number of nodes that each block (i.e. Slurm allocation) should allocate.
+
+    9. Sets the number of blocks (e.g. Slurm allocations) to provision during initialization of the workflow. We set this to a value of 0 so that there isn't a running Slurm job before any jobs have been submitted to Parsl.
+
+    10. Sets the minimum number of blocks (e.g. Slurm allocations) to maintain during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 0 so that Slurm jobs aren't running when there are no remaining jobs.
+
+    11. Sets the maximum number of active blocks (e.g. Slurm allocations) during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 1 here, but it can be increased to have multiple Slurm jobs running simultaneously. Raising `max_blocks` to a larger value will allow the "htex_auto_scale" strategy to upscale resources as needed.
+
+    12. The type of Launcher to use. `SrunLauncher()` will distribute jobs across the cores and nodes of the Slurm allocation. It should not be used for `PythonApp`s that themselves call MPI, which should use `SimpleLauncher()` instead.
+
+    13. The maximum time to wait (in seconds) for the job scheduler info to be retrieved/sent.
 
     Now we define the workflow, apply it to all molecules in the "g2" collection, and monitor the progress of our calculations.
 
@@ -522,58 +476,6 @@ If you haven't done so already:
     ```
 
     1. This is when the `PythonApp`s will be dispatched.
-
-    **Concurrent MPI Jobs**
-
-    Now let's consider a similar configuration but for jobs where the underlying executable is run via MPI, as is typically the case for most quantum chemistry codes that distribute work over multiple cores and/or nodes. The setup here is a bit different. In this example, we are requesting a single Slurm allocation with 8 nodes (containing 128 physical CPU cores per node), and each compute job is running on 2 nodes of that allocation.
-
-    ```python
-    import parsl
-    from parsl.config import Config
-    from parsl.executors import HighThroughputExecutor
-    from parsl.launchers import SimpleLauncher
-    from parsl.providers import SlurmProvider
-
-    account = "MyAccountName"
-
-    nodes_per_job = 2
-    cores_per_node = 128
-    nodes_per_allocation = 2
-    min_allocations = 0
-    max_allocations = 1
-
-    config = Config(
-        strategy="htex_auto_scale",
-        executors=[
-            HighThroughputExecutor(
-                label="quacc_parsl",
-                max_workers=nodes_per_job * nodes_per_allocation,  # (1)!
-                cores_per_worker=1e-6,  # (2)!
-                provider=SlurmProvider(
-                    account=account,
-                    qos="debug",
-                    constraint="cpu",
-                    worker_init=f"source ~/.bashrc && conda activate quacc",
-                    walltime="00:10:00",
-                    nodes_per_block=nodes_per_allocation,
-                    init_blocks=0,
-                    min_blocks=min_allocations,
-                    max_blocks=max_allocations,
-                    launcher=SimpleLauncher(),  # (3)!
-                    cmd_timeout=60,
-                ),
-            )
-        ],
-    )
-
-    parsl.load(config)
-    ```
-
-    1. Unlike the prior example, here `max_workers_per_node` is defining the maximum number of concurrent jobs in total and not the maximum number of jobs run per node.
-
-    2. This is recommended in the Parsl manual for jobs that spawn MPI processes.
-
-    3. The `SimpleLauncher` should be used in place of the `SrunLauncher` for `PythonApp`s that themselves call MPI.
 
     !!! Note "Practical Deployment"
 
@@ -624,7 +526,7 @@ If you haven't done so already:
 
     The `my_qadapter.yaml` file you made in the [installation instructions](../../install/install.md) specifies how FireWorks will submit jobs added to your launch pad. Additional details can be found in the [Jobflow Documentation](https://materialsproject.github.io/jobflow/tutorials/8-fireworks.html#setting-where-jobs-are-dispatched) for how to dynamically set where and how Jobflow `Job` and `Flow` objects can be dispatched.
 
-### VASP Demonstration
+### Concurrent MPI Jobs
 
 Here we will run a sample VASP recipe that will highlight the use of a more complicated MPI-based configuration. This example can only be run if you are a licensed VASP user, but the same fundamental principles apply to many other DFT codes with recipes in quacc.
 
@@ -732,28 +634,30 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
         f"srun -N {nodes_per_calc} --ntasks-per-node={cores_per_node} --cpu_bind=cores"
     )
 
-    cluster_kwargs = {
-        "cores": 1,  # (1)!
-        "memory": "64 GB",
-        "shebang": "#!/bin/bash",
-        "account": account,
-        "walltime": "00:10:00",
-        "job_mem": "0",
-        "job_script_prologue": [
+    cluster = SLURMCluster(
+        cores=1,  # (1)!
+        memory="64 GB",
+        shebang="#!/bin/bash",
+        account=account,
+        walltime="00:10:00",
+        job_mem="0",
+        job_script_prologue=[
             "source ~/.bashrc",
             "conda activate quacc",
             "module load vasp/6.4.1-cpu",
             f"export QUACC_VASP_PARALLEL_CMD='{vasp_parallel_cmd}'",
         ],
-        "job_directives_skip": ["-n", "--cpus-per-task"],
-        "job_extra_directives": [f"-N {nodes_per_calc}", "-q debug", "-C cpu"],
-        "python": "python",
-    }
-
-    cluster = SLURMCluster(**cluster_kwargs)
+        job_directives_skip=["-n", "--cpus-per-task"],
+        job_extra_directives=[f"-N {nodes_per_calc}", "-q debug", "-C cpu"],
+        python="python",
+    )
     cluster.scale(jobs=slurm_jobs)
     client = Client(cluster)
     ```
+
+    1. The value of `cores` refers to the number of workers to have in each allocation. Since we only want to run one VASP job per allocation, we set this to 1. VASP will still use multiple cores via the `srun` command.
+
+    Now we launch the VASP jobs:
 
     ```python
     from ase.build import bulk
@@ -765,20 +669,19 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
         return static_job(relax_output["atoms"], kpts=[3, 3, 3])
 
 
-    future1 = workflow(bulk("C"))
-    future2 = workflow(bulk("Cu"))
-    client.gather(client.compute([future1, future2]))
+    future1 = client.compute(workflow(bulk("C")))
+    future2 = client.compute(workflow(bulk("Cu")))
+    result = client.gather([future1, future2])
+    print(result)
     ```
 
-    1. The value of `cores` refers to the number of workers to have in each allocation. Since we only want to run one VASP job per allocation, we set this to 1. VASP will still use multiple cores via the `srun` command.
-
-    !!! Note "Limitations"
+    !!! Warning "Limitations"
 
         Unfortunately, `dask-jobqueue` is somewhat limited in terms of its flexibility. Most notably, there is no mechanism to distribute `#!Python @job`s over multiple nodes on a single Slurm allocation. Users interested in such functionality should consider using other tools in the Dask suite or other workflow engines (e.g. Parsl).
 
 === "Parsl"
 
-    Let's consider a scenario where we want to run concurrent VASP jobs that each run on a full CPU node of 128 cores. We will run two concurrent VASP jobs in a single Slurm allocation.
+    Now let's consider a similar configuration but for jobs where the underlying executable is run via MPI, as is typically the case for most quantum chemistry codes that distribute work over multiple cores and/or nodes. The setup here is a bit different. In this example, we are requesting a single Slurm allocation with 8 nodes (containing 128 physical CPU cores per node), and each compute job is running on 2 nodes of that allocation.
 
     From an interactive resource like a Jupyter Notebook or IPython kernel from the login node on the remote machine:
 
@@ -805,8 +708,8 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
         executors=[
             HighThroughputExecutor(
                 label="quacc_parsl",
-                max_workers=nodes_per_job * nodes_per_allocation,
-                cores_per_worker=1e-6,
+                max_workers=nodes_per_job * nodes_per_allocation,  # (1)!
+                cores_per_worker=1e-6,  # (2)!
                 provider=SlurmProvider(
                     account=account,
                     qos="debug",
@@ -817,7 +720,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
                     init_blocks=0,
                     min_blocks=min_allocations,
                     max_blocks=max_allocations,
-                    launcher=SimpleLauncher(),
+                    launcher=SimpleLauncher(),  # (3)!
                     cmd_timeout=60,
                 ),
             )
@@ -826,6 +729,14 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
 
     parsl.load(config)
     ```
+
+    1. Unlike the prior example, here `max_workers_per_node` is defining the maximum number of concurrent jobs in total and not the maximum number of jobs run per node.
+
+    2. This is recommended in the Parsl manual for jobs that spawn MPI processes.
+
+    3. The `SimpleLauncher` should be used in place of the `SrunLauncher` for `PythonApp`s that themselves call MPI.
+
+    Now we launch the VASP jobs:
 
     ```python
     from ase.build import bulk
