@@ -169,6 +169,10 @@ If you haven't done so already:
 
 === "Covalent"
 
+    !!! Warning
+
+        Until [this issue](https://github.com/AgnostiqHQ/covalent-slurm-plugin/issues/95) is resolved in the `covalent-slurm-plugin`, the `covalent-hpc-plugin` should be used (or you can disable the chdir calls via `quacc set CHDIR false`).
+
     Run the following code on the local machine. Calculations will be dispatched to the remote machine automatically via SSH.
 
     ```python
