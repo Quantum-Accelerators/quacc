@@ -495,9 +495,7 @@ If you haven't done so already:
     pip install quacc[tblite]
     ```
 
-    From an interactive resource like a Jupyter Notebook or IPython kernel on the login node of the remote machine, you will need to instantiate a Dask [`SLURMCluster`](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html). For specific details on creating a `SLURMCluster`, refer to the "Dask" tab in this section.
-
-    Then run the following code:
+    From an interactive resource like a Jupyter Notebook or IPython kernel on the login node of the remote machine, you will need to instantiate a Dask [`SLURMCluster`](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html):
 
     ```python
     from dask.distributed import Client
