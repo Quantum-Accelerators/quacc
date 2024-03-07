@@ -287,10 +287,6 @@ If you haven't done so already:
 
     Here, we describe several representative [`HighThroughputExecutor`](https://parsl.readthedocs.io/en/stable/stubs/parsl.executors.HighThroughputExecutor.html#parsl.executors.HighThroughputExecutor) configurations that will orchestrate jobs from the login node of NERSC's Perlmutter machine. There is no one-size-fits-all approach, so you will need to adjust the configuration to suit your specific needs.
 
-    Parsl has its own terminology that basically boils down to the following:
-    - `block`: A Slurm allocation, which is a set of one or more compute nodes reserved for a given amount of time
-    - `worker`: A process running on a compute node within a block that is responsible for executing a Parsl task
-
     **Concurrent Non-MPI Jobs**
 
     Let's imagine a scenario where we want to concurrently run a large number of single-core compute jobs. A sample configuration for this purpose is shown below. Here, we are requesting a single Slurm allocation with 2 nodes, and each compute job is running on one core of that allocation.
