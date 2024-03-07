@@ -2,18 +2,19 @@
 
 from __future__ import annotations
 
+import os
+from pathlib import Path
 from typing import TYPE_CHECKING, Literal
 
-import numpy as np
-import os
 from monty.os.path import zpath
-from pathlib import Path
 from pymatgen.io.vasp import Vasprun
+
 from quacc import flow, job
 from quacc.recipes.vasp._base import base_fn
 
 if TYPE_CHECKING:
     from typing import Any
+
     from ase import Atoms
 
     from quacc.schemas._aliases.vasp import DoubleRelaxSchema, VaspSchema
@@ -25,7 +26,7 @@ def nscf_job(
     atoms: Atoms,
     prev_dir: SourceDirectory,
     bandgap: float | None = None,
-#    nbands_factor: float | None = None,
+    #    nbands_factor: float | None = None,
     preset: str | None = "BulkSet",
     kpoints_mode: Literal["uniform", "line"] = "uniform",
     calculate_optics: bool = False,
@@ -38,7 +39,7 @@ def nscf_job(
     ----------
     atoms
         Atoms object.
-    prev_dir: that is generally the folder (str | path) of the static_job 
+    prev_dir: that is generally the folder (str | path) of the static_job
     preset
         Preset to use from `quacc.calculators.vasp.presets`.
     copy_files
@@ -79,29 +80,38 @@ def nscf_job(
     # check the expected files in prev_dir
     basics_to_copy = ["CHGCAR*", "WAVECAR*", "vasprun.xml*"]
     files_to_copy = {prev_dir: basics_to_copy}
-    chgar_files = [file for file in os.listdir(prev_dir) if file.startswith('CHGCAR')]
+    chgar_files = [file for file in os.listdir(prev_dir) if file.startswith("CHGCAR")]
     if not chgar_files:
         raise FileNotFoundError("No CHGCAR* file exists in the specified directory.")
-    vasprun_exists = any(file.startswith('vasprun.xml') for file in os.listdir(prev_dir))
+    vasprun_exists = any(
+        file.startswith("vasprun.xml") for file in os.listdir(prev_dir)
+    )
     if vasprun_exists:
         vasprun_path = Path(prev_dir, "vasprun.xml")
         if (vasprun_path_gz := Path(str(vasprun_path) + ".gz")).exists():
-            vasprun_path = zpath(vasprun_path_gz) # if vasprun.xml.gz, zpath will decompress it
+            vasprun_path = zpath(
+                vasprun_path_gz
+            )  # if vasprun.xml.gz, zpath will decompress it
             vasprun = Vasprun(vasprun_path)
         else:
-            print("Warning: vasprun.xml* file does not exist in the specified directory.")
-    for file_name in basics_to_copy[1:]: #actually it checks the existence of WAVECAR*
-        matching_files = [file for file in os.listdir(prev_dir) if file.startswith(file_name[:-1])]
+            print(
+                "Warning: vasprun.xml* file does not exist in the specified directory."
+            )
+    for file_name in basics_to_copy[1:]:  # actually it checks the existence of WAVECAR*
+        matching_files = [
+            file for file in os.listdir(prev_dir) if file.startswith(file_name[:-1])
+        ]
         if not matching_files:
-            print(f"Warning: {file_pattern} file does not exist in the specified directory.")
-
+            print(
+                f"Warning: {file_pattern} file does not exist in the specified directory."
+            )
 
     updates: dict[str, Any] = {}
 
-#    if vasprun is not None and nbands_factor is not None:
-#        nbands_factor = nbands_factor
-#        nbands = int(np.ceil(vasprun.parameters["NBANDS"] * nbands_factor))
-#        updates["nbands"] = nbands
+    #    if vasprun is not None and nbands_factor is not None:
+    #        nbands_factor = nbands_factor
+    #        nbands = int(np.ceil(vasprun.parameters["NBANDS"] * nbands_factor))
+    #        updates["nbands"] = nbands
 
     if kpoints_mode == "uniform":
         # Use tetrahedron method for DOS and optics calculations
@@ -111,9 +121,7 @@ def nscf_job(
         updates.update({"ismear": 0, "sigma": sigma})
 
     if calculate_optics:
-        updates.update(
-            {"loptics": True, "lreal": False, "cshift": 1e-5}
-        )
+        updates.update({"loptics": True, "lreal": False, "cshift": 1e-5})
 
     # integrate updates to calc_kwargs
     calc_kwargs.update(updates)
@@ -125,7 +133,7 @@ def nscf_job(
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "VASP NSCF"},
-        copy_files = copy_files, 
+        copy_files=copy_files,
     )
 
 
