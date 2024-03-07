@@ -911,10 +911,8 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
 
         futures = []
         for atoms in list_of_atoms:
-            relax_output = relax_job(atoms, kpts=[3,3,3])
-            static_output = static_job(
-                relax_output["atoms"], kpts=[3,3,3]
-            )
+            relax_output = relax_job(atoms, kpts=[3, 3, 3])
+            static_output = static_job(relax_output["atoms"], kpts=[3, 3, 3])
             futures.append(static_output)
 
         return futures
