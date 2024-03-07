@@ -178,7 +178,6 @@ If you haven't done so already:
     from quacc.recipes.emt.core import relax_job, static_job
 
     nodes = 1
-    cores_per_node = 128
 
     executor = ct.executor.SlurmExecutor(
         username="YourUserName",
@@ -660,7 +659,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
         remote_workdir="/path/to/workdir",
         create_unique_workdir=True,
         use_srun=False,
-        prereun_commands=[
+        prerun_commands=[
             "module load vasp/6.4.1-cpu",
             f"export QUACC_VASP_PARALLEL_CMD='{vasp_parallel_cmd}'",
         ],
