@@ -649,8 +649,8 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     executor = ct.executor.SlurmExecutor(
         username="YourUserName",
         address="perlmutter-p1.nersc.gov",
-        ssh_key_file="~/.ssh/nersc",
-        cert_file="~/.ssh/nersc-cert.pub",
+        ssh_key_file="/home/username/.ssh/nersc",
+        cert_file="/home/username/.ssh/nersc-cert.pub",
         conda_env="quacc",
         options={
             "nodes": f"{nodes}",
