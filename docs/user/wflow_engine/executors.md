@@ -295,7 +295,7 @@ If you haven't done so already:
     pip install quacc[tblite]
     ```
 
-    From an interactive resource like a Jupyter Notebook or IPython kernel on the login node of the remote machine, run the following to instantiate a Dask [`SLURMCluster`](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html):
+    From an interactive resource like a Jupyter Notebook or IPython kernel on the login node of the remote machine, run the following to instantiate a Dask [`SLURMCluster`](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html) that will request two Slurm allocations of one node each, with each `#!Python @job` running on one core of the allocation:
 
     ```python
     from dask.distributed import Client
@@ -303,15 +303,14 @@ If you haven't done so already:
 
     account = "MyAccountName"
 
-    slurm_jobs = 2
-    nodes_per_calc = 1
     cores_per_node = 128
     mem_per_node = "64 GB"
+    slurm_jobs = 2
 
     env_vars = "export OMP_NUM_THREADS=1,1"  # (1)!
 
     cluster = SLURMCluster(
-        cores=cores_per_node,
+        cores=cores_per_node,  # (2)!
         memory="64 GB",
         shebang="#!/bin/bash",
         account=account,
@@ -319,22 +318,23 @@ If you haven't done so already:
         job_mem="0",
         job_script_prologue=[
             "source ~/.bashrc",
-            "conda activate quacc",
             env_vars,
         ],
-        job_directives_skip=["-n", "--cpus-per-task"],  # (2)!
-        job_extra_directives=[f"-N {nodes_per_calc}", "-q debug", "-C cpu"],  # (3)!
-        python="python",
+        job_directives_skip=["-n", "--cpus-per-task"],  # (3)!
+        job_extra_directives=["-q debug", "-C cpu"],  # (4)!
     )
+    print(cluster.job_script())
     cluster.scale(jobs=slurm_jobs)
     client = Client(cluster)
     ```
 
     1. Since we are running single-core jobs, we need to set the `OMP_NUM_THREADS` environment variable to "1,1" according to the [TBLite documentation](https://tblite.readthedocs.io/en/latest/tutorial/parallel.html#running-tblite-in-parallel).
 
-    2. We have skipped the `-n` and `--cpus-per-task` Slurm directives because we will be using the full node here.
+    2. It is also worthwhile to play around with the `processes` argument, which defaults to sqrt(cores).
 
-    3. We have set the number of nodes to reserve, the queue to submit to, and the constraint to use.
+    3. We have skipped the `-n` and `--cpus-per-task` Slurm directives because we will be using the full node here.
+
+    4. We have set the queue to submit to and the constraint to use.
 
     Then run the following code:
 
@@ -495,7 +495,7 @@ If you haven't done so already:
     pip install quacc[tblite]
     ```
 
-    From an interactive resource like a Jupyter Notebook or IPython kernel on the login node of the remote machine, you will need to instantiate a Dask [`SLURMCluster`](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html):
+    From an interactive resource like a Jupyter Notebook or IPython kernel on the login node of the remote machine, you will need to instantiate a Dask [`SLURMCluster`](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html) that will request one Slurm allocation for one node, with a `#!Python @job` running on each core of the allocation:
 
     ```python
     from dask.distributed import Client
@@ -511,7 +511,7 @@ If you haven't done so already:
     env_vars = "export OMP_NUM_THREADS=1,1"  # (1)!
 
     cluster_kwargs = {
-        "cores": cores_per_node,
+        "cores": cores_per_node,  # (2)!
         "memory": "64 GB",
         "shebang": "#!/bin/bash",
         "account": account,
@@ -519,23 +519,24 @@ If you haven't done so already:
         "job_mem": "0",
         "job_script_prologue": [
             "source ~/.bashrc",
-            "conda activate quacc",
             env_vars,
         ],
-        "job_directives_skip": ["-n", "--cpus-per-task"],  # (2)!
-        "job_extra_directives": [f"-N {nodes_per_calc}", "-q debug", "-C cpu"],  # (3)!
-        "python": "python",
+        "job_directives_skip": ["-n", "--cpus-per-task"],  # (3)!
+        "job_extra_directives": ["-q debug", "-C cpu"],  # (4)!
     }
     cluster = SLURMCluster(**cluster_kwargs)
+    print(cluster.job_script())
     cluster.scale(jobs=slurm_jobs)
     client = Client(cluster)
     ```
 
     1. Since we are running single-core jobs, we need to set the `OMP_NUM_THREADS` environment variable to "1,1" according to the [TBLite documentation](https://tblite.readthedocs.io/en/latest/tutorial/parallel.html#running-tblite-in-parallel).
 
-    2. We have skipped the `-n` and `--cpus-per-task` Slurm directives because we will be using the full node here.
+    2. It is also worthwhile to play around with the `processes` argument, which defaults to sqrt(cores).
 
-    3. We have set the number of nodes to reserve, the queue to submit to, and the constraint to use.
+    3. We have skipped the `-n` and `--cpus-per-task` Slurm directives because we will be using the full node here.
+
+    4. We have set the queue to submit to and the constraint to use.
 
     Now we define our workflow to dispatch, attaching it to the premade Dask cluster:
 
@@ -739,19 +740,18 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
         job_mem="0",
         job_script_prologue=[
             "source ~/.bashrc",
-            "conda activate quacc",
             "module load vasp/6.4.1-cpu",
             f"export QUACC_VASP_PARALLEL_CMD='{vasp_parallel_cmd}'",
         ],
         job_directives_skip=["-n", "--cpus-per-task"],
         job_extra_directives=[f"-N {nodes_per_calc}", "-q debug", "-C cpu"],
-        python="python",
     )
+    print(cluster.job_script())
     cluster.scale(jobs=slurm_jobs)
     client = Client(cluster)
     ```
 
-    1. The value of `cores` refers to the number of workers to have in each allocation. Since we only want to run one VASP job per allocation, we set this to 1. VASP will still use multiple cores via the `srun` command.
+    1. Since we only want to run one VASP job per allocation, we set this to 1. VASP will still use multiple cores via the `srun` command. The same could be achieved by setting `processes=1`.
 
     Now we launch the VASP jobs:
 
@@ -875,20 +875,19 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
         "job_mem": "0",
         "job_script_prologue": [
             "source ~/.bashrc",
-            "conda activate quacc",
             "module load vasp/6.4.1-cpu",
             f"export QUACC_VASP_PARALLEL_CMD='{vasp_parallel_cmd}'",
         ],
         "job_directives_skip": ["-n", "--cpus-per-task"],
         "job_extra_directives": [f"-N {nodes_per_calc}", "-q debug", "-C cpu"],
-        "python": "python",
     }
     cluster = SLURMCluster(**cluster_kwargs)
+    print(cluster.job_script())
     cluster.scale(jobs=slurm_jobs)
     client = Client(cluster)
     ```
 
-    1. The value of `cores` refers to the number of workers to have in each allocation. Since we only want to run one VASP job per allocation, we set this to 1. VASP will still use multiple cores via the `srun` command.
+    1. Since we only want to run one VASP job per allocation, we set this to 1. VASP will still use multiple cores via the `srun` command. The same could be achieved by setting `processes=1`.
 
     Now we define our workflow to dispatch, attaching it to the premade Dask cluster:
 
