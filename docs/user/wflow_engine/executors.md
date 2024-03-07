@@ -32,12 +32,6 @@ In the previous examples, we have been running calculations on our local machine
 
     To use Prefect in a job scheduler environment, you can create a [`DaskTaskRunner`](https://prefecthq.github.io/prefect-dask/usage_guide/) that can be used in conjunction with [dask-jobqueue](https://jobqueue.dask.org/en/latest). Example configurations for various queuing systems can be found in the ["Example Deployments"](https://jobqueue.dask.org/en/latest/examples.html) section of the `dask-jobqueue` documentation.
 
-=== "Redun"
-
-    Out-of-the-box, Redun will run on your local machine. However, in practice, you will probably want to specify a dedicated executor.
-
-    To configure Redun for the high-performance computing environment of your choice, refer to the [executors](https://insitro.github.io/redun/executors.html) page in the Redun documentation.
-
 === "Jobflow"
 
     Out-of-the-box, Jobflow can be used to run on your local machine. You will, however, need a "manager" to run your workflows on HPC machines. The two recommended options are [jobflow-remote](https://github.com/Matgenix/jobflow-remote) and [FireWorks](https://github.com/materialsproject/fireworks), the latter of which is described here.
