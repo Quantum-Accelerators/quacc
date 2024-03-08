@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import logging
 import os
-import numpy as np
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal
-import logging
+
+import numpy as np
+
 logger = logging.getLogger(__name__)
 
 from monty.os.path import zpath
@@ -93,7 +95,9 @@ def nscf_job(
             nbands = int(np.ceil(vasprun.parameters["NBANDS"] * nbands_factor))
             updates["nbands"] = nbands
         else:
-            logger.warning(f"vasprun.xml* file does not exist in the specified directory.")
+            logger.warning(
+                "vasprun.xml* file does not exist in the specified directory."
+            )
 
     if kpoints_mode == "uniform":
         # Use tetrahedron method for DOS and optics calculations
@@ -102,7 +106,7 @@ def nscf_job(
         sigma = 0.2 if bandgap == 0 else 0.01
         updates.update({"ismear": 0, "sigma": sigma})
     else:
-        raise ValueError(f"Supported kpoint modes are 'uniform' and 'line' at present")
+        raise ValueError("Supported kpoint modes are 'uniform' and 'line' at present")
 
     if calculate_optics:
         updates.update({"loptics": True, "lreal": False, "cshift": 1e-5})
