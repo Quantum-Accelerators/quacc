@@ -135,7 +135,12 @@ from quacc.recipes.emt.core import relax_job
 atoms = bulk("Cu")
 
 # Run a structure relaxation on the Atoms object
-result = relax_job(atoms, relax_cell=True, opt_params={"fmax": 1e-3, "optimizer": LBFGS}, asap_cutoff=True)
+result = relax_job(
+    atoms,
+    relax_cell=True,
+    opt_params={"fmax": 1e-3, "optimizer": LBFGS},
+    asap_cutoff=True,
+)
 print(result)
 ```
 
