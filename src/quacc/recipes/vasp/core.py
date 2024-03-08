@@ -44,12 +44,13 @@ def nscf_job(
     ----------
     atoms
         Atoms object.
-    prev_dir: Directory (str | path) of the static_job
+    prev_dir
+        Directory (str | path) of the static_job
     bandgap
         The band gap of the material.
     nbands_factor
-        It increases NBANDS. However, to use it, the vasprun.xml(.gz) must
-        provided in prev_dir.
+        A factor used to adjust NBANDS provided vasprun.xml(.gz) exists in
+        prev_dir
     preset
         Preset to use from `quacc.calculators.vasp.presets`.
     kpoints_mode
