@@ -99,7 +99,7 @@ def nscf_job(
         # Use tetrahedron method for DOS and optics calculations
         updates.update({"ismear": -5, "isym": 2})
     elif kpoints_mode == "line":
-        sigma = 0.2 if bandgap == 0 else 0.01
+        sigma = 0.2 if bandgap < 1e-4 else 0.01
         updates.update({"ismear": 0, "sigma": sigma})
     else:
         raise ValueError(f"Supported kpoint modes are 'uniform' and 'line' at present")
