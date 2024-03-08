@@ -43,8 +43,8 @@ def test_nscf_job(tmp_path, monkeypatch):
     assert "parameters" in output
     assert "results" in output
 
-    assert output["parameters"]["ismear"] == -5  
-    assert output["parameters"]["loptics"] is False 
+    assert output["parameters"]["ismear"] == -5
+    assert output["parameters"]["loptics"] is False
     assert "cshift" not in output["parameters"]
     assert output["parameters"]["lorbit"] == 11
     assert output["parameters"]["lwave"] is False
