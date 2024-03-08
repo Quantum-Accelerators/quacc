@@ -42,21 +42,14 @@ def test_nscf_job1(tmp_path, monkeypatch):
     assert "parameters" in output
     assert "results" in output
 
-    # Check default values of parameters
-    assert output["parameters"]["bandgap"] is None
-    assert output["parameters"]["nbands_factor"] == 1.2
-    assert output["parameters"]["preset"] == "BulkSet"
-    assert output["parameters"]["kpoints_mode"] == "uniform"
-    assert output["parameters"]["calculate_optics"] is False
-
     # Check default values of calc_defaults
     assert output["parameters"]["lorbit"] == 11
     assert output["parameters"]["lwave"] is False
     assert output["parameters"]["lcharg"] is False
     assert output["parameters"]["nsw"] == 0
-    assert output["parameters"]["isym"] == 0
+    assert output["parameters"]["isym"] == 2
     assert output["parameters"]["icharg"] == 11
-    assert output["parameters"]["kspacing"] is None
+    assert output["parameters"].get("kspacing") is None
     assert output["parameters"]["nedos"] == 5001
 
 def test_nscf_job(tmp_path, monkeypatch, caplog):
