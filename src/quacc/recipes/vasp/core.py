@@ -92,7 +92,7 @@ def nscf_job(
         nbands = int(np.ceil(vasprun.parameters["NBANDS"] * nbands_factor))
         updates["nbands"] = nbands
     else:
-        logger.warning("vasprun.xml* file does not exist in the specified directory.")
+        logger.warning("vasprun.xml* file does not exist in the specified directory, thus nbands_factor won't update NBANDS as expected.")
 
     if kpoints_mode == "uniform":
         # Use tetrahedron method for DOS and optics calculations
