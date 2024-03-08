@@ -108,8 +108,8 @@ def nscf_job(
     if calculate_optics:
         updates.update({"loptics": True, "lreal": False, "cshift": 1e-5})
 
-    # integrate updates to calc_kwargs
-    calc_kwargs.update(updates)
+    # integrate updates to calc_defaults
+    calc_defaults.update(updates)
     copy_files = {prev_dir: ["WAVECAR*", "CHGCAR*"]}
 
     return base_fn(
