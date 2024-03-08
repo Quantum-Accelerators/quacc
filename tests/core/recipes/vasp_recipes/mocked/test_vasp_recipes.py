@@ -2,6 +2,7 @@ import pytest
 from ase.build import bulk, molecule
 
 from pathlib import Path
+from shutil import copy
 
 FILE_DIR = Path(__file__).parent
 MOCKED_DIR = FILE_DIR / "mocked_vasp_run"
@@ -24,13 +25,47 @@ from quacc.recipes.vasp.slabs import static_job as slab_static_job
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 
+
+# test nscf_job only using the default arguments
+def test_nscf_job1(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    atoms = bulk("Al")
+
+    output = nscf_job(
+        atoms=atoms,
+        prev_dir=tmp_path,
+    )
+
+    # Assertions on the output dictionary
+    assert "nsites" in output
+    assert "parameters" in output
+    assert "results" in output
+
+    # Check default values of parameters
+    assert output["parameters"]["bandgap"] is None
+    assert output["parameters"]["nbands_factor"] == 1.2
+    assert output["parameters"]["preset"] == "BulkSet"
+    assert output["parameters"]["kpoints_mode"] == "uniform"
+    assert output["parameters"]["calculate_optics"] is False
+
+    # Check default values of calc_defaults
+    assert output["parameters"]["lorbit"] == 11
+    assert output["parameters"]["lwave"] is False
+    assert output["parameters"]["lcharg"] is False
+    assert output["parameters"]["nsw"] == 0
+    assert output["parameters"]["isym"] == 0
+    assert output["parameters"]["icharg"] == 11
+    assert output["parameters"]["kspacing"] is None
+    assert output["parameters"]["nedos"] == 5001
+
 def test_nscf_job(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Al")
     calc_kwargs = {}
     kpoints_mode = "uniform"
-    calculate_optics=True
+    calculate_optics = True
 
     output = nscf_job(
         atoms,
@@ -65,11 +100,12 @@ def test_nscf_job(tmp_path, monkeypatch, caplog):
     # test nbands and log when vasprun.xml doesn't exist
     vasprun_exists = False
     assert output["parameters"].get("nbands") is None
-    assert "vasprun.xml* file does not exist in the specified directory, thus nbands_factor won't update NBANDS as expected." in caplog.text
-
+    assert (
+        "vasprun.xml* file does not exist in the specified directory, thus nbands_factor won't update NBANDS as expected."
+        in caplog.text
+    )
 
     # test nbands when vasprun.xml exists
-    from shutil import copy
     copy(MOCKED_DIR / "vasprun.xml.gz", tmp_path / "vasprun.xml.gz")
     output = nscf_job(
         atoms,
@@ -99,12 +135,11 @@ def test_nscf_job(tmp_path, monkeypatch, caplog):
     kpoints_mode = "dummy"
     with pytest.raises(ValueError):
         output = nscf_job(
-                atoms,
-                prev_dir=tmp_path,
-                kpoints_mode=kpoints_mode,
-                **calc_kwargs,
-                )
-
+            atoms,
+            prev_dir=tmp_path,
+            kpoints_mode=kpoints_mode,
+            **calc_kwargs,
+        )
 
 
 def test_static_job(tmp_path, monkeypatch):
