@@ -19,13 +19,12 @@ from quacc.recipes.vasp.slabs import static_job as slab_static_job
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 
-def test_nscf_job(tmp_path, monkeypatch):
+def test_nscf_job(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Al")
     calc_kwargs = {}
     kpoints_mode = "uniform"
-    vasprun_exists = False
     calculate_optics=True
 
     output = nscf_job(
@@ -58,10 +57,52 @@ def test_nscf_job(tmp_path, monkeypatch):
     assert output["parameters"]["icharg"] == 11
     assert output["parameters"].get("kspacing") is None
 
+    # test nbands and log when vasprun.xml doesn't exist
+    vasprun_exists = False
     if vasprun_exists:
         assert "nbands" in output["parameters"]
     else:
         assert output["parameters"].get("nbands") is None
+        assert "vasprun.xml* file does not exist in the specified directory." in caplog.text
+
+
+    # test nbands when vasprun.xml exists
+    (tmp_path / "vasprun.xml").touch()
+    output = nscf_job(
+        atoms,
+        prev_dir=tmp_path,
+        nbands_factor=1.2,
+        kpoints_mode="uniform",
+        **calc_kwargs,
+    )
+    assert "nbands" in output["parameters"]
+
+    # test kpoints_mode line mode
+    kpoints_mode = "line"
+    output = nscf_job(
+        atoms,
+        prev_dir=tmp_path,
+        bandgap=0.0,
+        nbands_factor=1.0,
+        preset="BulkSet",
+        kpoints_mode=kpoints_mode,
+        calculate_optics=calculate_optics,
+        **calc_kwargs,
+    )
+    assert output["parameters"]["sigma"] == 0.2
+    assert output["parameters"]["ismear"] == 0
+
+    # test invalid kpoints_mode
+    kpoints_mode = "dummy"
+    with pytest.raises(ValueError):
+        output = nscf_job(
+                atoms,
+                prev_dir=tmp_path,
+                kpoints_mode=kpoints_mode,
+                **calc_kwargs,
+                )
+
+
 
 def test_static_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
