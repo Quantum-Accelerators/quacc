@@ -68,7 +68,7 @@ def test_nscf_job(tmp_path, monkeypatch, caplog):
         assert "nbands" in output["parameters"]
     else:
         assert output["parameters"].get("nbands") is None
-        assert "vasprun.xml* file does not exist in the specified directory." in caplog.text
+        assert "vasprun.xml* file does not exist in the specified directory, thus nbands_factor won't update NBANDS as expected." in caplog.text
 
 
     # test nbands when vasprun.xml exists
