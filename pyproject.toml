@@ -29,7 +29,7 @@ requires-python = ">=3.9, <3.13"
 dependencies = [
     "ase>3.22.1", # for Atoms object and calculators
     "cclib>=1.8", # for I/O parsing of molecular DFT codes
-    "custodian>=2024.2.15", # for automated error corrections
+    "custodian[qchem,vasp]>=2024.2.15", # for automated error corrections
     "emmet-core>=0.78.0", # for pre-made schemas
     "maggma>=0.57.0", # for database handling
     "monty>=2024.2.26", # miscellaneous Python utilities
