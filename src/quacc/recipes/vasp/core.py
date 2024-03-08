@@ -44,21 +44,19 @@ def nscf_job(
     ----------
     atoms
         Atoms object.
-    prev_dir: that is generally the folder (str | path) of the static_job
-    preset
-        Preset to use from `quacc.calculators.vasp.presets`.
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
-    kpoints_mode
-        Type of k-points mode. Options are "uniform" or "line". "boltztrap" may
-        be implemented in future.
-    calculate_optics
-        Whether to calculate optical properties.
+    prev_dir: Directory (str | path) of the static_job
     bandgap
         The band gap of the material.
     nbands_factor
         It increases NBANDS. However, to use it, the vasprun.xml(.gz) must
         provided in prev_dir.
+    preset
+        Preset to use from `quacc.calculators.vasp.presets`.
+    kpoints_mode
+        Type of k-points mode. Options are "uniform" or "line". "boltztrap" may
+        be implemented in future.
+    calculate_optics
+        Whether to calculate optical properties.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
