@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import os
+import numpy as np
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal
+import logging
+logger = logging.getLogger(__name__)
 
 from monty.os.path import zpath
 from pymatgen.io.vasp import Vasprun
@@ -26,7 +29,7 @@ def nscf_job(
     atoms: Atoms,
     prev_dir: SourceDirectory,
     bandgap: float | None = None,
-    #    nbands_factor: float | None = None,
+    nbands_factor: float | None = None,
     preset: str | None = "BulkSet",
     kpoints_mode: Literal["uniform", "line"] = "uniform",
     calculate_optics: bool = False,
@@ -77,41 +80,20 @@ def nscf_job(
         "nedos": 5001,
     }
 
-    # check the expected files in prev_dir
-    basics_to_copy = ["CHGCAR*", "WAVECAR*", "vasprun.xml*"]
-    files_to_copy = {prev_dir: basics_to_copy}
-    chgar_files = [file for file in os.listdir(prev_dir) if file.startswith("CHGCAR")]
-    if not chgar_files:
-        raise FileNotFoundError("No CHGCAR* file exists in the specified directory.")
+    updates: dict[str, Any] = {}
+
+    # update NBANDS if vasprun.xml* in prev_dir exists
     vasprun_exists = any(
         file.startswith("vasprun.xml") for file in os.listdir(prev_dir)
     )
     if vasprun_exists:
         vasprun_path = Path(prev_dir, "vasprun.xml")
-        if (vasprun_path_gz := Path(str(vasprun_path) + ".gz")).exists():
-            vasprun_path = zpath(
-                vasprun_path_gz
-            )  # if vasprun.xml.gz, zpath will decompress it
-            vasprun = Vasprun(vasprun_path)
+        vasprun = Vasprun(zpath(vasprun_path))
+        if nbands_factor is not None:
+            nbands = int(np.ceil(vasprun.parameters["NBANDS"] * nbands_factor))
+            updates["nbands"] = nbands
         else:
-            print(
-                "Warning: vasprun.xml* file does not exist in the specified directory."
-            )
-    for file_name in basics_to_copy[1:]:  # actually it checks the existence of WAVECAR*
-        matching_files = [
-            file for file in os.listdir(prev_dir) if file.startswith(file_name[:-1])
-        ]
-        if not matching_files:
-            print(
-                f"Warning: {file_pattern} file does not exist in the specified directory."
-            )
-
-    updates: dict[str, Any] = {}
-
-    #    if vasprun is not None and nbands_factor is not None:
-    #        nbands_factor = nbands_factor
-    #        nbands = int(np.ceil(vasprun.parameters["NBANDS"] * nbands_factor))
-    #        updates["nbands"] = nbands
+            logger.warning(f"vasprun.xml* file does not exist in the specified directory.")
 
     if kpoints_mode == "uniform":
         # Use tetrahedron method for DOS and optics calculations
@@ -119,13 +101,15 @@ def nscf_job(
     elif kpoints_mode == "line":
         sigma = 0.2 if bandgap == 0 else 0.01
         updates.update({"ismear": 0, "sigma": sigma})
+    else:
+        raise ValueError(f"Supported kpoint modes are 'uniform' and 'line' at present")
 
     if calculate_optics:
         updates.update({"loptics": True, "lreal": False, "cshift": 1e-5})
 
     # integrate updates to calc_kwargs
     calc_kwargs.update(updates)
-    copy_files = {prev_dir: ["CHGCAR*", "WAVECAR*"]}
+    copy_files = {prev_dir: ["WAVECAR*", "CHGCAR*"]}
 
     return base_fn(
         atoms,
