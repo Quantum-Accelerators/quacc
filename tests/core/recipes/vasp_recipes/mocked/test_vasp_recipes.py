@@ -2,7 +2,7 @@ import pytest
 from ase.build import bulk, molecule
 
 from quacc import SETTINGS
-from quacc.recipes.vasp.core import double_relax_flow, relax_job, static_job
+from quacc.recipes.vasp.core import double_relax_flow, relax_job, static_job, nscf_job
 from quacc.recipes.vasp.mp import (
     mp_gga_relax_flow,
     mp_gga_relax_job,
@@ -19,6 +19,46 @@ from quacc.recipes.vasp.slabs import static_job as slab_static_job
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 
+def test_nscf_job(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    atoms = bulk("Al")
+    calc_kwargs = {}
+    kpoints_mode = "uniform"
+    vasprun_exists = False
+
+    output = nscf_job(
+        atoms,
+        prev_dir=tmp_path,
+        bandgap=0.0,
+        nbands_factor=1.0,
+        preset="BulkSet",
+        kpoints_mode=kpoints_mode,
+        calculate_optics=False,
+        **calc_kwargs,
+    )
+
+    # Assertions on the output dictionary
+    assert "nsites" in output
+    assert "parameters" in output
+    assert "results" in output
+
+    assert output["parameters"]["ismear"] == -5  
+    assert output["parameters"]["loptics"] is False 
+    assert "cshift" not in output["parameters"]
+    assert output["parameters"]["lorbit"] == 11
+    assert output["parameters"]["lwave"] is False
+    assert output["parameters"]["lcharg"] is False
+    assert output["parameters"]["nsw"] == 0
+    uniform_isym = 2 if kpoints_mode == "uniform" else 0
+    assert output["parameters"]["isym"] == uniform_isym
+    assert output["parameters"]["icharg"] == 11
+    assert output["parameters"].get("kspacing") is None
+
+    if vasprun_exists:
+        assert "nbands" in output["parameters"]
+    else:
+        assert output["parameters"].get("nbands") is None
 
 def test_static_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
