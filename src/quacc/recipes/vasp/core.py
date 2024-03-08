@@ -30,7 +30,7 @@ def nscf_job(
     atoms: Atoms,
     prev_dir: SourceDirectory,
     bandgap: float | None = None,
-    nbands_factor: float | None = None,
+    nbands_factor: float = 1.2,
     preset: str | None = "BulkSet",
     kpoints_mode: Literal["uniform", "line"] = "uniform",
     calculate_optics: bool = False,
@@ -48,7 +48,7 @@ def nscf_job(
     bandgap
         The band gap of the material.
     nbands_factor
-        A factor used to adjust NBANDS provided vasprun.xml(.gz) exists in
+        A multiplicative factor used to adjust NBANDS when vasprun.xml(.gz) exists in
         prev_dir
     preset
         Preset to use from `quacc.calculators.vasp.presets`.
@@ -89,9 +89,8 @@ def nscf_job(
     if vasprun_exists:
         vasprun_path = Path(prev_dir, "vasprun.xml")
         vasprun = Vasprun(zpath(vasprun_path))
-        if nbands_factor is not None:
-            nbands = int(np.ceil(vasprun.parameters["NBANDS"] * nbands_factor))
-            updates["nbands"] = nbands
+        nbands = int(np.ceil(vasprun.parameters["NBANDS"] * nbands_factor))
+        updates["nbands"] = nbands
     else:
         logger.warning("vasprun.xml* file does not exist in the specified directory.")
 
