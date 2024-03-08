@@ -108,6 +108,8 @@ def nscf_job(
 
     if calculate_optics:
         updates.update({"loptics": True, "lreal": False, "cshift": 1e-5})
+#    else:
+#        updates.update({"loptics": False})
 
     # integrate updates to calc_kwargs
     calc_kwargs.update(updates)

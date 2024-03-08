@@ -26,6 +26,7 @@ def test_nscf_job(tmp_path, monkeypatch):
     calc_kwargs = {}
     kpoints_mode = "uniform"
     vasprun_exists = False
+    calculate_optics=True
 
     output = nscf_job(
         atoms,
@@ -34,7 +35,7 @@ def test_nscf_job(tmp_path, monkeypatch):
         nbands_factor=1.0,
         preset="BulkSet",
         kpoints_mode=kpoints_mode,
-        calculate_optics=False,
+        calculate_optics=calculate_optics,
         **calc_kwargs,
     )
 
@@ -44,8 +45,10 @@ def test_nscf_job(tmp_path, monkeypatch):
     assert "results" in output
 
     assert output["parameters"]["ismear"] == -5  
-    assert output["parameters"]["loptics"] is False 
-    assert "cshift" not in output["parameters"]
+    if calculate_optics:
+        assert output["parameters"]["loptics"] is True 
+        assert output["parameters"]["lreal"] is False 
+        assert output["parameters"]["cshift"] == 1e-5
     assert output["parameters"]["lorbit"] == 11
     assert output["parameters"]["lwave"] is False
     assert output["parameters"]["lcharg"] is False
