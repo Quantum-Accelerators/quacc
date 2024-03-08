@@ -8,7 +8,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Literal
 
 import numpy as np
-
 from monty.os.path import zpath
 from pymatgen.io.vasp import Vasprun
 
@@ -17,7 +16,9 @@ from quacc.recipes.vasp._base import base_fn
 
 if TYPE_CHECKING:
     from typing import Any
+
     from ase import Atoms
+
     from quacc.schemas._aliases.vasp import DoubleRelaxSchema, VaspSchema
     from quacc.utils.files import Filenames, SourceDirectory
 
