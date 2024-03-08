@@ -44,10 +44,10 @@ def test_nscf_job(tmp_path, monkeypatch):
     assert "parameters" in output
     assert "results" in output
 
-    assert output["parameters"]["ismear"] == -5  
+    assert output["parameters"]["ismear"] == -5
     if calculate_optics:
-        assert output["parameters"]["loptics"] is True 
-        assert output["parameters"]["lreal"] is False 
+        assert output["parameters"]["loptics"] is True
+        assert output["parameters"]["lreal"] is False
         assert output["parameters"]["cshift"] == 1e-5
     assert output["parameters"]["lorbit"] == 11
     assert output["parameters"]["lwave"] is False
