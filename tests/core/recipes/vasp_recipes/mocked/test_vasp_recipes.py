@@ -1,6 +1,11 @@
 import pytest
 from ase.build import bulk, molecule
 
+from pathlib import Path
+
+FILE_DIR = Path(__file__).parent
+MOCKED_DIR = FILE_DIR / "mocked_vasp_run"
+
 from quacc import SETTINGS
 from quacc.recipes.vasp.core import double_relax_flow, relax_job, static_job, nscf_job
 from quacc.recipes.vasp.mp import (
@@ -67,7 +72,8 @@ def test_nscf_job(tmp_path, monkeypatch, caplog):
 
 
     # test nbands when vasprun.xml exists
-    (tmp_path / "vasprun.xml").touch()
+    from shutil import copy
+    copy(MOCKED_DIR / "vasprun.xml.gz", tmp_path / "vasprun.xml.gz")
     output = nscf_job(
         atoms,
         prev_dir=tmp_path,
