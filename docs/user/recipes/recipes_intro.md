@@ -33,7 +33,7 @@ from quacc.recipes.emt.core import relax_job
 atoms = bulk("Cu")
 
 # Run a structure relaxation on the Atoms object
-result = relax_job(atoms)  # (1)!
+result = relax_job(atoms)
 print(result)
 ```
 
