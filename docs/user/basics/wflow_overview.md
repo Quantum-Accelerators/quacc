@@ -115,7 +115,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
     !!! Warning
 
-        Jobflow is not currently compatible with the `#!Python @flow` or `#!Python @subflow` decorators used in many quacc recipes and so should only be used if necessary.
+        Jobflow is not yet compatible with the `#!Python @flow` or `#!Python @subflow` decorators used in many quacc recipes and so should only be used if necessary. See [this issue](https://github.com/Quantum-Accelerators/quacc/issues/1061) to track the progress of this enhancement.
 
     Pros:
 

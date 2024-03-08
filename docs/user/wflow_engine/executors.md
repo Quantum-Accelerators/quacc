@@ -169,6 +169,10 @@ If you haven't done so already:
 
 === "Covalent"
 
+    !!! Warning
+
+        Until [this issue](https://github.com/AgnostiqHQ/covalent-slurm-plugin/issues/95) is resolved in the `covalent-slurm-plugin`, the `covalent-hpc-plugin` should be used (or you can disable the chdir calls via `quacc set CHDIR false`).
+
     Run the following code on the local machine. Calculations will be dispatched to the remote machine automatically via SSH.
 
     ```python
@@ -178,13 +182,12 @@ If you haven't done so already:
     from quacc.recipes.emt.core import relax_job, static_job
 
     nodes = 1
-    cores_per_node = 128
 
     executor = ct.executor.SlurmExecutor(
         username="YourUserName",
         address="perlmutter-p1.nersc.gov",
-        ssh_key_file="/home/username/.ssh/nersc",
-        cert_file="/home/username/.ssh/nersc-cert.pub",  # (1)!
+        ssh_key_file="~/.ssh/nersc",
+        cert_file="~/.ssh/nersc-cert.pub",  # (1)!
         conda_env="quacc",
         options={
             "nodes": nodes,
@@ -196,8 +199,7 @@ If you haven't done so already:
         },
         remote_workdir="/path/to/workdir",  # (2)!
         create_unique_workdir=True,  # (3)!
-        use_srun=False,  # (4)!
-        cleanup=False,  # (5)!
+        cleanup=False,  # (4)!
     )
 
 
@@ -219,9 +221,7 @@ If you haven't done so already:
 
     3.  This will tell Covalent to make a unique working directory for each job. This should be used in place of the `CREATE_UNIQUE_DIR` quacc setting, which seeks to do largely the same thing.
 
-    4.  The `SlurmExecutor` must have `use_srun=False` in order for ASE-based calculators to be launched appropriately.
-
-    5. For debugging purposes, it can be useful to keep all the temporary files. Once you're confident things work, you can omit the `cleanup` keyword argument.
+    4. For debugging purposes, it can be useful to keep all the temporary files. Once you're confident things work, you can omit the `cleanup` keyword argument.
 
     ??? Note "An Alternate Approach: The `HPCExecutor`"
 
@@ -244,8 +244,8 @@ If you haven't done so already:
         ```python
         import covalent as ct
 
-        nodes = 1  # Number of nodes to reserve for each calculation
-        cores_per_node = 128  # Number of CPU cores per node
+        nodes = 1
+        cores_per_node = 128
 
         executor = ct.executor.HPCExecutor(
             # SSH credentials
@@ -646,8 +646,8 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     executor = ct.executor.SlurmExecutor(
         username="YourUserName",
         address="perlmutter-p1.nersc.gov",
-        ssh_key_file="/home/username/.ssh/nersc",
-        cert_file="/home/username/.ssh/nersc-cert.pub",
+        ssh_key_file="~/.ssh/nersc",
+        cert_file="~/.ssh/nersc-cert.pub",
         conda_env="quacc",
         options={
             "nodes": nodes,
@@ -659,8 +659,8 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
         },
         remote_workdir="/path/to/workdir",
         create_unique_workdir=True,
-        use_srun=False,
-        prereun_commands=[
+        use_srun=False,  # (1)!
+        prerun_commands=[
             "module load vasp/6.4.1-cpu",
             f"export QUACC_VASP_PARALLEL_CMD='{vasp_parallel_cmd}'",
         ],
@@ -679,12 +679,20 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     print(result)
     ```
 
+    1. This is set to `False` because we are using the `srun` command in the `QUACC_VASP_PARALLEL_CMD` environment variable.
+
     ??? Note "An Alternate Approach: The `HPCExecutor`"
 
         A similar configuration can be used for the `HPCExecutor`:
 
         ```python
         import covalent as ct
+
+        nodes = 1
+        cores_per_node = 128
+        vasp_parallel_cmd = (
+            f"srun -N {nodes} --ntasks-per-node={cores_per_node} --cpu_bind=cores"
+        )
 
         executor = ct.executor.HPCExecutor(
             username="YourUserName",
@@ -703,7 +711,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
             },
             pre_launch_cmds=["module load vasp/6.4.1-cpu"],
             environment={
-                "QUACC_VASP_PARALLEL_CMD": f"srun -N {nodes} --ntasks-per-node={cores_per_node} --cpu_bind=cores"
+                "QUACC_VASP_PARALLEL_CMD": vasp_parallel_cmd,
             },
             remote_conda_env="quacc",
             remote_workdir="$SCRATCH/quacc",
@@ -711,6 +719,8 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
             cleanup=False,
         )
         ```
+
+        1. This is set to "single" because we are using the `srun` command in the `QUACC_VASP_PARALLEL_CMD` environment variable.
 
 === "Dask"
 
