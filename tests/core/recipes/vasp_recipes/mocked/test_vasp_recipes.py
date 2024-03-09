@@ -8,7 +8,7 @@ FILE_DIR = Path(__file__).parent
 MOCKED_DIR = FILE_DIR / "mocked_vasp_run"
 
 from quacc import SETTINGS
-from quacc.recipes.vasp.core import double_relax_flow, relax_job, static_job, nscf_job
+from quacc.recipes.vasp.core import double_relax_flow, relax_job, static_job, non_scf_job
 from quacc.recipes.vasp.mp import (
     mp_gga_relax_flow,
     mp_gga_relax_job,
@@ -26,13 +26,13 @@ from quacc.recipes.vasp.slabs import static_job as slab_static_job
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 
-# test nscf_job only using the default arguments
-def test_nscf_job1(tmp_path, monkeypatch):
+# test non_scf_job only using the default arguments
+def test_non_scf_job1(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Al")
 
-    output = nscf_job(
+    output = non_scf_job(
         atoms=atoms,
         prev_dir=tmp_path,
     )
@@ -53,8 +53,8 @@ def test_nscf_job1(tmp_path, monkeypatch):
     assert output["parameters"]["nedos"] == 5001
 
 
-# test nscf_job with "uniform" in the absence of vasprun.xml
-def test_nscf_job2(tmp_path, monkeypatch, caplog):
+# test non_scf_job with "uniform" in the absence of vasprun.xml
+def test_non_scf_job2(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Al")
@@ -62,7 +62,7 @@ def test_nscf_job2(tmp_path, monkeypatch, caplog):
     kpoints_mode = "uniform"
     calculate_optics = False
 
-    output = nscf_job(
+    output = non_scf_job(
         atoms,
         prev_dir=tmp_path,
         bandgap=0.0,
@@ -96,9 +96,9 @@ def test_nscf_job2(tmp_path, monkeypatch, caplog):
     )
 
 
-# test nscf_job with "uniform" kpoints mode when vasprun.xml exists
+# test non_scf_job with "uniform" kpoints mode when vasprun.xml exists
 # and calculate optics properties
-def test_nscf_job3(tmp_path, monkeypatch, caplog):
+def test_non_scf_job3(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Al")
@@ -107,7 +107,7 @@ def test_nscf_job3(tmp_path, monkeypatch, caplog):
     calculate_optics = True
     copy(MOCKED_DIR / "vasprun.xml.gz", tmp_path / "vasprun.xml.gz")
 
-    output = nscf_job(
+    output = non_scf_job(
         atoms,
         prev_dir=tmp_path,
         bandgap=0.0,
@@ -137,14 +137,14 @@ def test_nscf_job3(tmp_path, monkeypatch, caplog):
     assert output["parameters"].get("kspacing") is None
 
 
-# test nscf_job with "line" kpoints mode assuming bandgap is 0.5
-def test_nscf_job4(tmp_path, monkeypatch, caplog):
+# test non_scf_job with "line" kpoints mode assuming bandgap is 0.5
+def test_non_scf_job4(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Al")
     kpoints_mode = "line"
 
-    output = nscf_job(
+    output = non_scf_job(
         atoms,
         prev_dir=tmp_path,
         bandgap=0.5,
@@ -155,8 +155,8 @@ def test_nscf_job4(tmp_path, monkeypatch, caplog):
     assert output["parameters"]["ismear"] == 0
 
 
-# test nscf_job with invalid kpoints mode
-def test_nscf_job5(tmp_path, monkeypatch, caplog):
+# test non_scf_job with invalid kpoints mode
+def test_non_scf_job5(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Al")
@@ -165,7 +165,7 @@ def test_nscf_job5(tmp_path, monkeypatch, caplog):
     with pytest.raises(
         ValueError, match="Supported kpoint modes are 'uniform' and 'line' at present"
     ):
-        output = nscf_job(
+        output = non_scf_job(
             atoms,
             prev_dir=tmp_path,
             kpoints_mode=kpoints_mode,
