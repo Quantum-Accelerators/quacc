@@ -1,6 +1,6 @@
 import pytest
 
-from quacc import flow, job
+from quacc import job
 from quacc.wflow_tools.customizers import customize_funcs
 
 
