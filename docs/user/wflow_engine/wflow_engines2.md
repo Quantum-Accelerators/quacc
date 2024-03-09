@@ -546,7 +546,7 @@ graph LR
             return bulk_to_slabs_flow(*args, **kwargs)
         ```
 
-    ??? Tip "Selectively Modifying Job Decorators in a Pre-Made Flow"
+    !!! Tip "Selectively Modifying Job Decorators in a Pre-Made Flow"
 
         If you want to modify the decorators of select jobs in a pre-made workflow, such as to modify the executor of a given function, you can use the `job_decorators` keyword argument:
 
