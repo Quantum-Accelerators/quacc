@@ -239,7 +239,7 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 
 | Name                            | Decorator        | Documentation                                   | Req'd Extras |
 | ------------------------------- | ---------------- | ----------------------------------------------- | ------------ |
-| VASP Non-SCF                    | `#!Python @job`  | [quacc.recipes.vasp.core.non_scf_job][]          |              |
+| VASP Non-SCF                    | `#!Python @job`  | [quacc.recipes.vasp.core.non_scf_job][]         |              |
 | VASP Static                     | `#!Python @job`  | [quacc.recipes.vasp.core.static_job][]          |              |
 | VASP Relax                      | `#!Python @job`  | [quacc.recipes.vasp.core.relax_job][]           |              |
 | VASP Double Relax               | `#!Python @flow` | [quacc.recipes.vasp.core.double_relax_flow][]   |              |
