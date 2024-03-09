@@ -461,7 +461,7 @@ class QuaccSettings(BaseSettings):
         """Make directories."""
         if not v.exists():
             v.mkdir(parents=True)
-    
+
     @field_validator("STORE")
     def generate_store(cls, v: Union[dict[str, dict[str, Any]], Store]) -> Store:
         """Generate the Maggma store."""
