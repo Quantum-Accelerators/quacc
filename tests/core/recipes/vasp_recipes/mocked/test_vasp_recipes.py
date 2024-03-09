@@ -52,13 +52,15 @@ def test_nscf_job1(tmp_path, monkeypatch):
     assert output["parameters"].get("kspacing") is None
     assert output["parameters"]["nedos"] == 5001
 
-def test_nscf_job(tmp_path, monkeypatch, caplog):
+
+# test nscf_job with "uniform" in the absence of vasprun.xml
+def test_nscf_job2(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Al")
     calc_kwargs = {}
     kpoints_mode = "uniform"
-    calculate_optics = True
+    calculate_optics = False
 
     output = nscf_job(
         atoms,
@@ -77,61 +79,96 @@ def test_nscf_job(tmp_path, monkeypatch, caplog):
     assert "results" in output
 
     assert output["parameters"]["ismear"] == -5
-    if calculate_optics:
-        assert output["parameters"]["loptics"] is True
-        assert output["parameters"]["lreal"] is False
-        assert output["parameters"]["cshift"] == 1e-5
+    assert "loptics" not in output["parameters"]
+    assert "cshift" not in output["parameters"]
     assert output["parameters"]["lorbit"] == 11
     assert output["parameters"]["lwave"] is False
     assert output["parameters"]["lcharg"] is False
     assert output["parameters"]["nsw"] == 0
-    uniform_isym = 2 if kpoints_mode == "uniform" else 0
-    assert output["parameters"]["isym"] == uniform_isym
+    assert output["parameters"]["isym"] == 2
     assert output["parameters"]["icharg"] == 11
     assert output["parameters"].get("kspacing") is None
 
-    # test nbands and log when vasprun.xml doesn't exist
-    vasprun_exists = False
     assert output["parameters"].get("nbands") is None
     assert (
         "vasprun.xml* file does not exist in the specified directory, thus nbands_factor won't update NBANDS as expected."
         in caplog.text
     )
 
-    # test nbands when vasprun.xml exists
-    copy(MOCKED_DIR / "vasprun.xml.gz", tmp_path / "vasprun.xml.gz")
-    output = nscf_job(
-        atoms,
-        prev_dir=tmp_path,
-        nbands_factor=1.2,
-        kpoints_mode="uniform",
-        **calc_kwargs,
-    )
-    assert "nbands" in output["parameters"]
 
-    # test kpoints_mode line mode
-    kpoints_mode = "line"
+# test nscf_job with "uniform" kpoints mode when vasprun.xml exists
+# and calculate optics properties
+def test_nscf_job3(tmp_path, monkeypatch, caplog):
+    monkeypatch.chdir(tmp_path)
+
+    atoms = bulk("Al")
+    calc_kwargs = {}
+    kpoints_mode = "uniform"
+    calculate_optics = True
+    copy(MOCKED_DIR / "vasprun.xml.gz", tmp_path / "vasprun.xml.gz")
+
     output = nscf_job(
         atoms,
         prev_dir=tmp_path,
         bandgap=0.0,
-        nbands_factor=1.0,
+        nbands_factor=1.2,
         preset="BulkSet",
         kpoints_mode=kpoints_mode,
         calculate_optics=calculate_optics,
         **calc_kwargs,
     )
-    assert output["parameters"]["sigma"] == 0.2
+
+    # Assertions on the output dictionary
+    assert "nsites" in output
+    assert "parameters" in output
+    assert "results" in output
+
+    assert output["parameters"]["loptics"] is True
+    assert output["parameters"]["lreal"] is False
+    assert output["parameters"]["cshift"] == 1e-5
+    assert "nbands" in output["parameters"]
+    assert output["parameters"]["ismear"] == -5
+    assert output["parameters"]["lorbit"] == 11
+    assert output["parameters"]["lwave"] is False
+    assert output["parameters"]["lcharg"] is False
+    assert output["parameters"]["nsw"] == 0
+    assert output["parameters"]["isym"] == 2
+    assert output["parameters"]["icharg"] == 11
+    assert output["parameters"].get("kspacing") is None
+
+
+# test nscf_job with "line" kpoints mode assuming bandgap is 0.5
+def test_nscf_job4(tmp_path, monkeypatch, caplog):
+    monkeypatch.chdir(tmp_path)
+
+    atoms = bulk("Al")
+    kpoints_mode = "line"
+
+    output = nscf_job(
+        atoms,
+        prev_dir=tmp_path,
+        bandgap=0.5,
+        preset="BulkSet",
+        kpoints_mode=kpoints_mode,
+    )
+    assert output["parameters"]["sigma"] == 0.01
     assert output["parameters"]["ismear"] == 0
 
-    # test invalid kpoints_mode
+
+# test nscf_job with invalid kpoints mode
+def test_nscf_job5(tmp_path, monkeypatch, caplog):
+    monkeypatch.chdir(tmp_path)
+
+    atoms = bulk("Al")
     kpoints_mode = "dummy"
-    with pytest.raises(ValueError):
+
+    with pytest.raises(
+        ValueError, match="Supported kpoint modes are 'uniform' and 'line' at present"
+    ):
         output = nscf_job(
             atoms,
             prev_dir=tmp_path,
             kpoints_mode=kpoints_mode,
-            **calc_kwargs,
         )
 
 
