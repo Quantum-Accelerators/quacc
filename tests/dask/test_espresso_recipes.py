@@ -143,7 +143,7 @@ def test_phonon_grid_qplot(tmp_path, monkeypatch):
         "ph_job": {"input_data": ph_loose, "qpts": [(0.1, 0, 0, 1), (0.2, 0, 0, 1)]},
     }
 
-    future = grid_phonon_flow(atoms, job_params=job_params, job_decorators={"relax_job": job(), "phonon_job": job()})
+    future = grid_phonon_flow(atoms, job_params=job_params, job_decorators={"relax_job": job(), "ph_job": job()})
     grid_results = client.compute(future).result()
 
     sections = [
