@@ -15,7 +15,7 @@ DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 
 @pytest.mark.parametrize("chdir", [True, False])
-@pytest.mark.parametrize("job_decorators", [True, False])
+@pytest.mark.parametrize("job_decorators", [None, {"relax_job": job()}])
 def test_functools(tmp_path, monkeypatch, chdir, job_decorators):
     monkeypatch.chdir(tmp_path)
 
