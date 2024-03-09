@@ -4,7 +4,7 @@ parsl = pytest.importorskip("parsl")
 
 from ase.build import bulk
 
-from quacc import SETTINGS
+from quacc import SETTINGS, job
 from quacc.recipes.emt.core import relax_job  # skipcq: PYL-C0412
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow  # skipcq: PYL-C0412
 
@@ -15,14 +15,18 @@ DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 
 @pytest.mark.parametrize("chdir", [True, False])
-def test_functools(tmp_path, monkeypatch, chdir):
+@pytest.mark.parametrize("job_decorators", [None, {"relax_job": job()}])
+def test_functools(tmp_path, monkeypatch, chdir, job_decorators):
     monkeypatch.chdir(tmp_path)
 
     SETTINGS.CHDIR = chdir
 
     atoms = bulk("Cu")
     result = bulk_to_slabs_flow(
-        atoms, job_params={"relax_job": {"opt_params": {"fmax": 0.1}}}, run_static=False
+        atoms,
+        run_static=False,
+        job_params={"relax_job": {"opt_params": {"fmax": 0.1}}},
+        job_decorators=job_decorators,
     ).result()
     assert len(result) == 4
     assert "atoms" in result[-1]
