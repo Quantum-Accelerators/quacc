@@ -720,8 +720,6 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
         )
         ```
 
-        1. This is set to "single" because we are using the `srun` command in the `QUACC_VASP_PARALLEL_CMD` environment variable.
-
 === "Dask"
 
     ```python
