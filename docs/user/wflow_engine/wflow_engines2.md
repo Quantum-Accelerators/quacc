@@ -528,24 +528,6 @@ graph LR
     print(result)
     ```
 
-    !!! Tip "Modifying the Decorator of a Pre-Made Flow"
-
-        If you want to modify the decorator of a pre-made flow, such as to modify the flow's executor, you can use the [quacc.wflow_tools.customizers.redecorate][] function:
-
-        ```python
-        from quacc import redecorate
-
-        bulk_to_slabs_flow = redecorate(bulk_to_slabs_flow, flow(executor="local"))
-        ```
-
-        This achieves functionally the same result as simply re-decorating it directly and using this new function instead:
-
-        ```python
-        @flow(executor="local")
-        def bulk_to_slabs_flow_(*args, **kwargs):
-            return bulk_to_slabs_flow(*args, **kwargs)
-        ```
-
     !!! Tip "Selectively Modifying Job Decorators in a Pre-Made Flow"
 
         If you want to modify the decorators of select jobs in a pre-made workflow, such as to modify the executor of a given function, you can use the `job_decorators` keyword argument:
