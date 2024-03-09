@@ -451,14 +451,14 @@ class QuaccSettings(BaseSettings):
         if v is None:
             return v
         v = Path(os.path.expandvars(v)).expanduser()
-        if not v.is_absolute():
-            raise ValueError(f"{v} must be an absolute path.")
         return v
 
     @field_validator("RESULTS_DIR", "SCRATCH_DIR")
     @classmethod
     def make_directories(cls, v: Path) -> None:
         """Make directories."""
+        if not v.is_absolute():
+            raise ValueError(f"{v} must be an absolute path.")
         if not v.exists():
             v.mkdir(parents=True)
 
