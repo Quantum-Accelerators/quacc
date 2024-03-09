@@ -448,19 +448,20 @@ class QuaccSettings(BaseSettings):
     @classmethod
     def expand_paths(cls, v: Optional[Path]) -> Optional[Path]:
         """Expand ~/ and $ENV_VARS in paths."""
-        if v is None:
-            return v
-        v = Path(os.path.expandvars(v)).expanduser()
+        if v:
+            v = Path(os.path.expandvars(v)).expanduser()
         return v
 
     @field_validator("RESULTS_DIR", "SCRATCH_DIR")
     @classmethod
-    def make_directories(cls, v: Path) -> None:
+    def make_directories(cls, v: Optional[Path]) -> Optional[Path]:
         """Make directories."""
-        if not v.is_absolute():
-            raise ValueError(f"{v} must be an absolute path.")
-        if not v.exists():
-            v.mkdir(parents=True)
+        if v:
+            if not v.is_absolute():
+                raise ValueError(f"{v} must be an absolute path.")
+            if not v.exists():
+                v.mkdir(parents=True)
+        return v
 
     @field_validator("STORE")
     def generate_store(cls, v: Union[dict[str, dict[str, Any]], Store]) -> Store:
