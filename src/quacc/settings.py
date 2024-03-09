@@ -190,7 +190,7 @@ class QuaccSettings(BaseSettings):
             "projwfc": "projwfc.x",
             "pp": "pp.x",
             "wannier90": "wannier90.x",
-            "fs": "fs.x"
+            "fs": "fs.x",
         },
         description="Name for each espresso binary.",
     )
@@ -437,7 +437,10 @@ class QuaccSettings(BaseSettings):
         if v is None:
             return v
 
-        v = Path(os.path.expandvars(v)).expanduser().resolve()
+        v = Path(os.path.expandvars(v)).expanduser()
+        if not v.is_absolute():
+            raise ValueError(f"{v} must be an absolute path.")
+        v = v.resolve()
         if not v.exists():
             v.mkdir(parents=True)
         return v
