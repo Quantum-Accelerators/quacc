@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 
 @job
-def nscf_job(
+def non_scf_job(
     atoms: Atoms,
     prev_dir: SourceDirectory,
     bandgap: float | None = None,
@@ -117,7 +117,7 @@ def nscf_job(
         preset=preset,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "VASP NSCF"},
+        additional_fields={"name": "VASP Non-SCF"},
         copy_files=copy_files,
     )
 
