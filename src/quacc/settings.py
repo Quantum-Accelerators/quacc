@@ -447,7 +447,7 @@ class QuaccSettings(BaseSettings):
     )
     @classmethod
     def expand_paths(cls, v: Optional[Path]) -> Optional[Path]:
-        """Expand ~/ in paths."""
+        """Expand ~/ and $ENV_VARS in paths."""
         if v is None:
             return v
         v = Path(os.path.expandvars(v)).expanduser()
