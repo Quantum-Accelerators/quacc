@@ -422,6 +422,7 @@ def grid_phonon_flow(
 
         return grid_results
 
+    job_params = job_params or {}
     relax_job_defaults = {
         "input_data": {
             "control": {"forc_conv_thr": 5.0e-5},
@@ -430,7 +431,7 @@ def grid_phonon_flow(
     }
     ph_init_job_defaults = recursive_dict_merge(
         {"input_data": {"inputph": {"lqdir": True, "only_init": True}}},
-        job_params.get("ph_job", {}),
+        job_params.get("ph_job"),
     )
     ph_job_defaults = {
         "input_data": {
@@ -439,7 +440,7 @@ def grid_phonon_flow(
     }
     ph_recover_job_defaults = recursive_dict_merge(
         {"input_data": {"inputph": {"recover": True, "lqdir": True}}},
-        job_params.get("ph_job", {}),
+        job_params.get("ph_job"),
     )
 
     calc_defaults = {
