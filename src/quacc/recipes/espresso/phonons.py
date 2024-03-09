@@ -376,7 +376,7 @@ def grid_phonon_flow(
     @subflow
     def _grid_phonon_subflow(
         ph_input_data: dict | None,
-        ph_init_job_results: str | Path,
+        ph_init_job_results: RunSchema,
         ph_job: Job,
         nblocks: int = 1,
     ) -> list[RunSchema]:
