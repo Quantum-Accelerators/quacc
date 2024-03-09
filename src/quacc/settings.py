@@ -430,22 +430,9 @@ class QuaccSettings(BaseSettings):
 
     # --8<-- [end:settings]
 
-    @field_validator("RESULTS_DIR", "SCRATCH_DIR")
-    @classmethod
-    def resolve_and_make_paths(cls, v: Optional[Path]) -> Optional[Path]:
-        """Resolve and make paths."""
-        if v is None:
-            return v
-
-        v = Path(os.path.expandvars(v)).expanduser()
-        if not v.is_absolute():
-            raise ValueError(f"{v} must be an absolute path.")
-        v = v.resolve()
-        if not v.exists():
-            v.mkdir(parents=True)
-        return v
-
     @field_validator(
+        "RESULTS_DIR",
+        "SCRATCH_DIR",
         "ESPRESSO_PRESET_DIR",
         "ESPRESSO_PSEUDO",
         "GAUSSIAN_CMD",
@@ -461,8 +448,20 @@ class QuaccSettings(BaseSettings):
     @classmethod
     def expand_paths(cls, v: Optional[Path]) -> Optional[Path]:
         """Expand ~/ in paths."""
-        return v.expanduser() if v is not None else v
+        if v is None:
+            return v
+        v = Path(os.path.expandvars(v)).expanduser()
+        if not v.is_absolute():
+            raise ValueError(f"{v} must be an absolute path.")
+        return v
 
+    @field_validator("RESULTS_DIR", "SCRATCH_DIR")
+    @classmethod
+    def make_directories(cls, v: Path) -> None:
+        """Make directories."""
+        if not v.exists():
+            v.mkdir(parents=True)
+    
     @field_validator("STORE")
     def generate_store(cls, v: Union[dict[str, dict[str, Any]], Store]) -> Store:
         """Generate the Maggma store."""
