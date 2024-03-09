@@ -7,7 +7,7 @@ from shutil import which
 
 from dask.distributed import default_client
 
-from quacc import SETTINGS
+from quacc import job, SETTINGS
 
 pytestmark = pytest.mark.skipif(
     which(str(SETTINGS.ESPRESSO_BIN_DIR / SETTINGS.ESPRESSO_BINARIES["pw"])) is None
@@ -143,7 +143,7 @@ def test_phonon_grid_qplot(tmp_path, monkeypatch):
         "ph_job": {"input_data": ph_loose, "qpts": [(0.1, 0, 0, 1), (0.2, 0, 0, 1)]},
     }
 
-    future = grid_phonon_flow(atoms, job_params=job_params)
+    future = grid_phonon_flow(atoms, job_params=job_params, job_decorators={"relax_job": job(), "phonon_job": job()})
     grid_results = client.compute(future).result()
 
     sections = [
