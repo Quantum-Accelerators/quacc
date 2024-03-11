@@ -1,6 +1,7 @@
 from pathlib import Path
 from shutil import copy
 
+import numpy as np
 import pytest
 from ase.build import bulk, molecule
 
@@ -180,6 +181,9 @@ def test_non_scf_job1(tmp_path, monkeypatch):
     assert output["parameters"]["icharg"] == 11
     assert output["parameters"].get("kspacing") is None
     assert output["parameters"]["nedos"] == 3153
+    assert output["parameters"]["kpts"] == [11, 11, 11]
+    assert output["parameters"]["ismear"] == -5
+    assert output["parameters"]["nbands"] == 99
 
 
 def test_non_scf_job2(tmp_path, monkeypatch, caplog):
@@ -189,12 +193,7 @@ def test_non_scf_job2(tmp_path, monkeypatch, caplog):
     atoms = bulk("Al")
 
     output = non_scf_job(
-        atoms,
-        tmp_path,
-        preset="BulkSet",
-        nbands_factor=1.2,
-        kpts_mode="uniform",
-        calculate_optics=True,
+        atoms, tmp_path, preset="BulkSet", nbands_factor=1, calculate_optics=True
     )
 
     assert "nsites" in output
@@ -204,7 +203,7 @@ def test_non_scf_job2(tmp_path, monkeypatch, caplog):
     assert output["parameters"]["loptics"] is True
     assert output["parameters"]["lreal"] is False
     assert output["parameters"]["cshift"] == 1e-5
-    assert "nbands" in output["parameters"]
+    assert output["parameters"]["nbands"] == 82
     assert output["parameters"]["ismear"] == -5
     assert output["parameters"]["lorbit"] == 11
     assert output["parameters"]["lwave"] is False
@@ -215,26 +214,38 @@ def test_non_scf_job2(tmp_path, monkeypatch, caplog):
     assert output["parameters"].get("kspacing") is None
 
 
-def test_non_scf_job3(tmp_path, monkeypatch):
+@pytest.mark.parametrize("_is_metal", [True, False])
+def test_non_scf_job3(tmp_path, monkeypatch, _is_metal):
     monkeypatch.chdir(tmp_path)
+
+    class DummyBandStructure:
+        def __init__(self):
+            pass
+
+        @staticmethod
+        def is_metal():
+            return _is_metal
+
+    monkeypatch.setattr(
+        "pymatgen.io.vasp.Vasprun.get_band_structure", DummyBandStructure
+    )
     copy(MOCKED_DIR / "vasprun.xml.gz", tmp_path / "vasprun.xml.gz")
 
     atoms = bulk("Al")
 
     output = non_scf_job(atoms, tmp_path, preset="BulkSet", kpts_mode="line")
-    assert output["parameters"]["sigma"] == 0.01
-    assert output["parameters"]["ismear"] == 0
+    assert np.shape(output["parameters"]["kpts"]) == (250, 3)
+    if _is_metal:
+        assert output["parameters"]["sigma"] == 0.2
+        assert output["parameters"]["ismear"] == 1
+    else:
+        assert output["parameters"]["sigma"] == 0.01
+        assert output["parameters"]["ismear"] == 0
 
 
 def test_non_scf_job4(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    class DummyBandStructure:
-        is_metal: True
-
-    monkeypatch.setattr(
-        "pymatgen.io.vasp.Vasprun.get_band_structure", DummyBandStructure
-    )
     copy(MOCKED_DIR / "vasprun.xml.gz", tmp_path / "vasprun.xml.gz")
     atoms = bulk("Al")
 

@@ -60,6 +60,7 @@ def static_job(
         "lcharg": True,
         "lreal": False,
         "lwave": True,
+        "nedos": 5001,
         "nsw": 0,
     }
     return base_fn(
@@ -264,7 +265,7 @@ def non_scf_job(
         is_metal = vasprun.get_band_structure().is_metal()
         calc_defaults.update(
             {
-                "ismear": 0,
+                "ismear": 1 if is_metal else 0,
                 "pmg_kpts": {"line_density": line_kpt_density},
                 "sigma": 0.2 if is_metal else 0.01,
             }
