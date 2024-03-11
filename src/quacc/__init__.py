@@ -36,7 +36,12 @@ def atoms_as_dict(s: Atoms) -> dict[str, Any]:
     # Uses Monty's MSONable spec
     atoms_no_info = atoms.copy()
     atoms_no_info.info = {}
-    return {"@module": "pymatgen.io.ase", "@class": "MSONAtoms", "atoms_json": encode(s),"atoms_no_info": jsanitize(atoms.info, strict=True)}
+    return {
+        "@module": "pymatgen.io.ase",
+        "@class": "MSONAtoms",
+        "atoms_json": encode(s),
+        "atoms_no_info": jsanitize(atoms.info, strict=True),
+    }
 
 
 def atoms_from_dict(d: dict[str, Any]) -> Atoms:
