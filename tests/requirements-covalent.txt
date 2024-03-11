@@ -1,4 +1,4 @@
 covalent==0.234.0rc0
 covalent-cloud==0.45.1
 covalent-hpc-plugin==0.0.8
-covalent-slurm-plugin==0.16.0rc0
+covalent-slurm-plugin==0.18.0
