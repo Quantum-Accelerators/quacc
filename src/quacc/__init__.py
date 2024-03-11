@@ -66,8 +66,8 @@ logger.setLevel(level)
 
 # Monkeypatching for Prefect
 if SETTINGS.WORKFLOW_ENGINE == "prefect":
-    from prefect import State
     from prefect.futures import PrefectFuture
+    from prefect.states import State
 
     def _patched_getitem(self, index):
         @job
