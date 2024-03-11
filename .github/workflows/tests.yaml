@@ -223,7 +223,7 @@ jobs:
       - name: Install conda packages
         run: |
           conda install -n base conda-libmamba-solver
-          conda install psi4 python=3.11 -c conda-forge/label/libint_dev -c conda-forge --solver libmamba
+          conda install psi4 libint==2.8.2 -c conda-forge --solver libmamba
 
       - name: Install pip packages
         run: |
