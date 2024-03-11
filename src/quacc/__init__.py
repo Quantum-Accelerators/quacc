@@ -31,22 +31,24 @@ __all__ = [
 
 def atoms_as_dict(s: Atoms) -> dict[str, Any]:
     from ase.io.jsonio import encode
+    from monty.json import jsanitize
 
     # Uses Monty's MSONable spec
-    # Normally, we would want to this to be a wrapper around atoms.todict() with @module and
-    # @class key-value pairs inserted. However, atoms.todict()/atoms.fromdict() does not currently
-    # work properly with constraints.
-    return {"@module": "ase.atoms", "@class": "Atoms", "atoms_json": encode(s)}
+    atoms_no_info = atoms.copy()
+    atoms_no_info.info = {}
+    return {"@module": "pymatgen.io.ase", "@class": "MSONAtoms", "atoms_json": encode(s),"atoms_no_info": jsanitize(atoms.info, strict=True)}
 
 
 def atoms_from_dict(d: dict[str, Any]) -> Atoms:
     from ase.io.jsonio import decode
+    from monty.json import MontyDecoder
+    from pymatgen.io.ase import MSONAtoms
 
     # Uses Monty's MSONable spec
-    # Normally, we would want to have this be a wrapper around atoms.fromdict()
-    # that just ignores the @module/@class key-value pairs. However, atoms.todict()/atoms.fromdict()
-    # does not currently work properly with constraints.
-    return decode(d["atoms_json"])
+    mson_atoms = MSONAtoms(decode(dct["atoms_json"]))
+    atoms_info = MontyDecoder().process_decoded(dct["atoms_info"])
+    mson_atoms.info = atoms_info
+    return mson_atoms
 
 
 # Load the quacc version
