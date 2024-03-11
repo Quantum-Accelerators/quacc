@@ -29,7 +29,7 @@ __all__ = [
 ]
 
 
-def atoms_as_dict(s: Atoms) -> dict[str, Any]:
+def atoms_as_dict(atoms: Atoms) -> dict[str, Any]:
     from ase.io.jsonio import encode
     from monty.json import jsanitize
 
