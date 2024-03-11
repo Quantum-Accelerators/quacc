@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "quacc"
 description="A platform to enable high-throughput, database-driven quantum chemistry and computational materials science"
-version = "0.6.10"
+version = "0.6.11"
 readme = "README.md"
 license = { text = "BSD-3" }
 authors = [{ name = "Andrew S. Rosen", email = "asrosen@princeton.edu" }]
@@ -29,7 +29,7 @@ requires-python = ">=3.9, <3.13"
 dependencies = [
     "ase>3.22.1", # for Atoms object and calculators
     "cclib>=1.8", # for I/O parsing of molecular DFT codes
-    "custodian>=2024.2.15", # for automated error corrections
+    "custodian[qchem,vasp]>=2024.2.15", # for automated error corrections
     "emmet-core>=0.78.0", # for pre-made schemas
     "maggma>=0.57.0", # for database handling
     "monty>=2024.2.26", # miscellaneous Python utilities
