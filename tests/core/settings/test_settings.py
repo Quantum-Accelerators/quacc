@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+import pytest
 from ase.build import bulk
 from maggma.stores import MemoryStore
 
@@ -41,6 +42,13 @@ def test_results_dir(tmp_path, monkeypatch):
     relax_job(atoms)
     assert "opt.traj" in os.listdir(os.getcwd())
     os.remove("opt.traj")
+
+
+def test_bad_dir():
+    with pytest.raises(ValueError, match="must be an absolute path"):
+        SETTINGS.RESULTS_DIR = "bad_dir"
+    with pytest.raises(ValueError, match="must be an absolute path"):
+        SETTINGS.SCRATCH_DIR = "bad_dir"
 
 
 def test_env_var(monkeypatch, tmp_path):

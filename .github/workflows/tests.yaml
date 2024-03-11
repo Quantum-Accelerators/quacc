@@ -183,7 +183,6 @@ jobs:
           pip install -r tests/requirements-${{ matrix.wflow_engine }}.txt
           pip install -r tests/requirements-phonopy.txt
           pip install .[dev]
-          pip install starlette==0.32.0
 
       - name: Run tests with pytest
         run: pytest --durations=10 tests/${{ matrix.wflow_engine }} --cov=quacc --cov-report=xml
@@ -224,7 +223,7 @@ jobs:
       - name: Install conda packages
         run: |
           conda install -n base conda-libmamba-solver
-          conda install psi4 python=3.11 -c conda-forge/label/libint_dev -c conda-forge --solver libmamba
+          conda install psi4 libint==2.8.2 -c conda-forge --solver libmamba
 
       - name: Install pip packages
         run: |
