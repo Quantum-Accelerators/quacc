@@ -30,31 +30,28 @@ __all__ = [
 
 
 def atoms_as_dict(atoms: Atoms) -> dict[str, Any]:
+    """Uses Monty's MSONable spec. Refer to [pymatgen.io.ase.MSONAtoms][]"""
+
     from ase.io.jsonio import encode
     from monty.json import jsanitize
 
-    # Uses Monty's MSONable spec
-    # Normally, we would want to this to be a wrapper around atoms.todict() with @module and
-    # @class key-value pairs inserted. However, atoms.todict()/atoms.fromdict() does not currently
-    # work properly with constraints.
     atoms_no_info = atoms.copy()
     atoms_no_info.info = {}
     return {
-        "@module": "ase.atoms",
-        "@class": "Atoms",
+        "@module": "pymatgen.io.ase",
+        "@class": "MSONAtoms",
         "atoms_json": encode(atoms_no_info),
         "atoms_info": jsanitize(atoms.info, strict=True),
     }
 
 
 def atoms_from_dict(dct: dict[str, Any]) -> Atoms:
+    """Uses Monty's MSONable spec. Refer to [pymatgen.io.ase.MSONAtoms][]"""
+
     from ase.io.jsonio import decode
     from monty.json import MontyDecoder
 
     # Uses Monty's MSONable spec
-    # Normally, we would want to have this be a wrapper around atoms.fromdict()
-    # that just ignores the @module/@class key-value pairs. However, atoms.todict()/atoms.fromdict()
-    # does not currently work properly with constraints.
     decoded_atoms = decode(dct["atoms_json"])
     atoms_info = MontyDecoder().process_decoded(dct["atoms_info"])
     decoded_atoms.info = atoms_info
