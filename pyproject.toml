@@ -37,7 +37,7 @@ dependencies = [
     "psutil", # for getting compute architecture details
     "pydantic>=2.0.1", # for settings management
     "pydantic-settings>=2.2.0", # for settings management
-    "pymatgen>=2024.2.20", # for structure manipulation
+    "pymatgen @ git+https://github.com/materialsproject/pymatgen", # for structure manipulation
     "typer[all]>=0.9.0", # for the CLI
 ]
 
