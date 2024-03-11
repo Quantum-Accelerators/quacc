@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import logging
 from importlib.metadata import version
-from typing import TYPE_CHECKING
 
 from ase.atoms import Atoms
 from pymatgen.io.ase import MSONAtoms
@@ -14,8 +13,6 @@ from quacc.utils.dicts import Remove
 from quacc.wflow_tools.customizers import redecorate, strip_decorator
 from quacc.wflow_tools.decorators import Flow, Job, Subflow, flow, job, subflow
 
-if TYPE_CHECKING:
-    pass
 
 __all__ = [
     "flow",
