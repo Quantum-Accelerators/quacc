@@ -25,6 +25,7 @@ def run_custodian(
     qchem_use_error_handlers: bool | None = None,
     qchem_custodian_max_errors: int | None = None,
     qchem_nbo_exe: str | Path | None = None,
+    directory: str | Path = "./",
 ) -> Popen:
     """
     Function to run QChem Custodian.
@@ -45,6 +46,8 @@ def run_custodian(
         in settings.
     qchem_nbo_exe
         The full path to the NBO executable.
+    directory
+        The runtime directory.
 
     Returns
     -------
@@ -94,6 +97,7 @@ def run_custodian(
         jobs,
         max_errors=qchem_custodian_max_errors,
         terminate_on_nonzero_returncode=False,
+        directory=directory,
     )
 
     return c.run()
