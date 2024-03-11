@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-import os
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal
 
@@ -23,103 +22,6 @@ if TYPE_CHECKING:
     from quacc.utils.files import Filenames, SourceDirectory
 
 logger = logging.getLogger(__name__)
-
-
-@job
-def non_scf_job(
-    atoms: Atoms,
-    prev_dir: SourceDirectory,
-    bandgap: float | None = None,
-    nbands_factor: float = 1.2,
-    preset: str | None = "BulkSet",
-    kpoints_mode: Literal["uniform", "line"] = "uniform",
-    calculate_optics: bool = False,
-    **calc_kwargs,
-) -> VaspSchema:
-    """
-    Carry out a non-self-consistent field (NSCF) calculation.
-
-    Parameters
-    ----------
-    atoms
-        Atoms object.
-    prev_dir
-        Directory (str | path) of the static_job
-    bandgap
-        The band gap of the material.
-    nbands_factor
-        A multiplicative factor used to adjust NBANDS when vasprun.xml(.gz) exists in
-        prev_dir
-    preset
-        Preset to use from `quacc.calculators.vasp.presets`.
-    kpoints_mode
-        Type of k-points mode. Options are "uniform" or "line". "boltztrap" may
-        be implemented in future.
-    calculate_optics
-        Whether to calculate optical properties.
-    **calc_kwargs
-        Custom kwargs for the Vasp calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [quacc.calculators.vasp.vasp.Vasp][].
-
-    Returns
-    -------
-    VaspSchema
-        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
-        See the type-hint for the data structure.
-    """
-
-    calc_defaults = {
-        "lorbit": 11,
-        "lwave": False,
-        "lcharg": False,
-        "nsw": 0,
-        "isym": 0,
-        "icharg": 11,
-        "kspacing": None,
-        "nedos": 5001,
-    }
-
-    updates: dict[str, Any] = {}
-
-    # update NBANDS if vasprun.xml* in prev_dir exists
-    vasprun_exists = any(
-        file.startswith("vasprun.xml") for file in os.listdir(prev_dir)
-    )
-    if vasprun_exists:
-        vasprun_path = Path(prev_dir, "vasprun.xml")
-        vasprun = Vasprun(zpath(vasprun_path))
-        nbands = int(np.ceil(vasprun.parameters["NBANDS"] * nbands_factor))
-        updates["nbands"] = nbands
-    else:
-        logger.warning(
-            "vasprun.xml* file does not exist in the specified directory, thus nbands_factor won't update NBANDS as expected."
-        )
-
-    if kpoints_mode == "uniform":
-        # Use tetrahedron method for DOS and optics calculations
-        updates.update({"ismear": -5, "isym": 2})
-    elif kpoints_mode == "line":
-        sigma = 0.2 if bandgap < 1e-4 else 0.01
-        updates.update({"ismear": 0, "sigma": sigma})
-    else:
-        raise ValueError("Supported kpoint modes are 'uniform' and 'line' at present")
-
-    if calculate_optics:
-        updates.update({"loptics": True, "lreal": False, "cshift": 1e-5})
-
-    # integrate updates to calc_defaults
-    calc_defaults.update(updates)
-    copy_files = {prev_dir: ["WAVECAR*", "CHGCAR*"]}
-
-    return base_fn(
-        atoms,
-        preset=preset,
-        calc_defaults=calc_defaults,
-        calc_swaps=calc_kwargs,
-        additional_fields={"name": "VASP Non-SCF"},
-        copy_files=copy_files,
-    )
 
 
 @job
@@ -158,7 +60,6 @@ def static_job(
         "lcharg": True,
         "lreal": False,
         "lwave": True,
-        "nedos": 5001,
         "nsw": 0,
     }
     return base_fn(
@@ -279,3 +180,106 @@ def double_relax_flow(
     )
 
     return {"relax1": summary1, "relax2": summary2}
+
+
+@job
+def non_scf_job(
+    atoms: Atoms,
+    prev_dir: SourceDirectory,
+    preset: str | None = "BulkSet",
+    nbands_factor: float = 1.2,
+    kpts_mode: Literal["uniform", "line"] = "uniform",
+    uniform_de_dos: float = 0.01,
+    uniform_kppvol: float = 100,
+    line_kpt_density: float = 20,
+    calculate_optics: bool = False,
+    **calc_kwargs,
+) -> VaspSchema:
+    """
+    Carry out a non-self-consistent field (NSCF) calculation.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object.
+    prev_dir
+        Directory of the prior job. Must contain a CHGCAR and vasprun.xml file.
+    preset
+        Preset to use from `quacc.calculators.vasp.presets`.
+    nbands_factor
+        A multiplicative factor used to adjust NBANDS when vasprun.xml(.gz) exists in
+        prev_dir
+    kpts_mode
+        Type of k-points mode. Options are "uniform" or "line".    uniform_de_dos
+    uniform_de_dos
+        The dE between DOS points for uniform k-point mode.
+    uniform_kppvol
+        The k-point per volume density for the uniform k-point mode.
+    line_kpt_density
+        The k-point density for the line k-point mode.
+    calculate_optics
+        Whether to calculate optical properties.
+    **calc_kwargs
+        Custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to [quacc.calculators.vasp.vasp.Vasp][].
+
+    Returns
+    -------
+    VaspSchema
+        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
+        See the type-hint for the data structure.
+    """
+
+    calc_defaults = {
+        "icharg": 11,
+        "isym": 0,
+        "kspacing": None,
+        "lcharg": False,
+        "lorbit": 11,
+        "lwave": False,
+        "nsw": 0,
+    }
+
+    vasprun_path = zpath(Path(prev_dir, "vasprun.xml"))
+    vasprun = Vasprun(vasprun_path)
+    prior_nbands = vasprun.parameters["NBANDS"]
+
+    new_nedos = int(np.ceil(prior_nbands * nbands_factor))
+    calc_defaults["nbands"] = new_nedos
+
+    if kpts_mode == "uniform":
+        prior_eigenvalues = vasprun.eigenvalues.values()
+        emax = max(eigs.max() for eigs in prior_eigenvalues)
+        emin = min(eigs.min() for eigs in prior_eigenvalues)
+        calc_defaults.update(
+            {
+                "nedos": round((emax - emin) / uniform_de_dos),
+                "pmg_kpts": {"kppvol": uniform_kppvol},
+                "ismear": -5,
+                "isym": 2,
+            }
+        )
+    elif kpts_mode == "line":
+        is_metal = vasprun.get_band_structure().is_metal()
+        calc_defaults.update(
+            {
+                "ismear": 0,
+                "pmg_kpts": {"line_density": line_kpt_density},
+                "sigma": 0.2 if is_metal else 0.01,
+            }
+        )
+    else:
+        raise ValueError("Supported kpoint modes are 'uniform' and 'line' at present")
+
+    if calculate_optics:
+        calc_defaults.update({"cshift": 1e-5, "loptics": True, "lreal": False})
+
+    return base_fn(
+        atoms,
+        preset=preset,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        additional_fields={"name": "VASP Non-SCF"},
+        copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
+    )
