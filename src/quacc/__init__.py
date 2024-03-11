@@ -44,7 +44,7 @@ def atoms_as_dict(s: Atoms) -> dict[str, Any]:
     }
 
 
-def atoms_from_dict(d: dict[str, Any]) -> Atoms:
+def atoms_from_dict(dct: dict[str, Any]) -> Atoms:
     from ase.io.jsonio import decode
     from monty.json import MontyDecoder
     from pymatgen.io.ase import MSONAtoms
