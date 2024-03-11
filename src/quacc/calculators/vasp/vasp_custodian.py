@@ -68,7 +68,7 @@ def run_custodian(
     vasp_custodian_handlers: list[str] | None = None,
     vasp_custodian_validators: list[str] | None = None,
     scratch_dir: str | None = None,
-    directory: str | None = "./"
+    directory: str | None = "./",
     vasp_job_kwargs: VaspJobKwargs | None = None,
     custodian_kwargs: CustodianKwargs | None = None,
 ) -> list[list[dict]]:
