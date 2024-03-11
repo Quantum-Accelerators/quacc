@@ -244,8 +244,8 @@ def non_scf_job(
 
     vasprun_path = zpath(Path(prev_dir, "vasprun.xml"))
     vasprun = Vasprun(vasprun_path)
-    prior_nbands = vasprun.parameters["NBANDS"]
 
+    prior_nbands = vasprun.parameters["NBANDS"]
     new_nedos = int(np.ceil(prior_nbands * nbands_factor))
     calc_defaults["nbands"] = new_nedos
 
