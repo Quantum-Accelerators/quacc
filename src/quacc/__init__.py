@@ -15,7 +15,7 @@ from quacc.wflow_tools.customizers import redecorate, strip_decorator
 from quacc.wflow_tools.decorators import Flow, Job, Subflow, flow, job, subflow
 
 if TYPE_CHECKING:
-    from typing import Any
+    pass
 
 __all__ = [
     "flow",
