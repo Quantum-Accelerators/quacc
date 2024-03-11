@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import logging
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal
 
@@ -20,8 +19,6 @@ if TYPE_CHECKING:
 
     from quacc.schemas._aliases.vasp import DoubleRelaxSchema, VaspSchema
     from quacc.utils.files import Filenames, SourceDirectory
-
-logger = logging.getLogger(__name__)
 
 
 @job
