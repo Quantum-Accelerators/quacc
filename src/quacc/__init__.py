@@ -39,7 +39,7 @@ def atoms_as_dict(atoms: Atoms) -> dict[str, Any]:
     return {
         "@module": "pymatgen.io.ase",
         "@class": "MSONAtoms",
-        "atoms_json": encode(s),
+        "atoms_json": encode(atoms),
         "atoms_no_info": jsanitize(atoms.info, strict=True),
     }
 
