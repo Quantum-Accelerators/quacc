@@ -280,8 +280,7 @@ class QChem(FileIOCalculator):
             prev_orbital_coeffs=self.prev_orbital_coeffs,
         )
 
-    @staticmethod
-    def execute() -> int:
+    def execute(self) -> int:
         """
         Execute Q-Chem.
 
@@ -291,7 +290,7 @@ class QChem(FileIOCalculator):
             The return code.
         """
 
-        run_custodian()
+        run_custodian(directory=self.directory)
         return 0
 
     def read_results(self) -> None:
