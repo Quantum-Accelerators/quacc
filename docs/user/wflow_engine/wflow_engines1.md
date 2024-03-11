@@ -25,7 +25,7 @@ graph LR
         covalent start
         ```
 
-        Covalent also has its own [configuration variables](https://docs.covalent.xyz/docs/user-documentation/how-to/customization/) you may wish to consider modifying. For instance, you can have Covalent, rather than quacc, deal with creating the unique working directories so the paths in the UI are clearer. This can be done via `quacc set CREATE_UNIQUE_DIR false` and `#!Python ct.set_config({"executors.dask.create_unique_workdir": True})`.
+        Covalent also has its own [configuration variables](https://docs.covalent.xyz/docs/user-documentation/how-to/customization/) you may wish to consider modifying.
 
     ```python
     import covalent as ct

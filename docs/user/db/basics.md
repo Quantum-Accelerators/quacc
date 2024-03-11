@@ -21,7 +21,7 @@ Here, we describe how to set up quacc with a database of your choosing.
     )
     ```
 
-    To replicate the same behavior, simply specify the `STORE` setting in your `~/.quacc.yaml` file using `type` as the name of the `Store` and all arguments provided as key-value pairs.
+    To replicate the same behavior, simply specify the `STORE` setting in your `~/.quacc.yaml` file using the class as the name of the `Store` and all arguments provided as key-value pairs.
 
     ```yaml title="~/.quacc.yaml"
     STORE:

@@ -4,9 +4,9 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
 !!! Tip "Picking a Workflow Engine"
 
-    For a comparison of the different compatible workflow engines, refer to the [Workflow Engines Overview](../user/basics/wflow_overview.md) section.
+    If you don't want to use a workflow engine or are just starting out, you can simply skip this section.
 
-    If you don't want to use a workflow engine, you can simply skip this section.
+    For a comparison of the different compatible workflow engines, refer to the [Workflow Engines Overview](../user/basics/wflow_overview.md) section.
 
 === "Covalent"
 
