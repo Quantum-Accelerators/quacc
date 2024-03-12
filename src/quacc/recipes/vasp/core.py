@@ -245,10 +245,10 @@ def non_scf_job(
     if kpts_mode == "uniform":
         calc_defaults.update(
             {
-                "nedos": 6001,
-                "pmg_kpts": {"kppvol": uniform_kppvol},
                 "ismear": -5,
                 "isym": 2,
+                "pmg_kpts": {"kppvol": uniform_kppvol},
+                "nedos": 6001,
             }
         )
     elif kpts_mode == "line":
