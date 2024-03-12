@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- Use [`pymatgen.io.ase.MSONAtoms`][] to make MSONable `Atoms`
+- Use `pymatgen.io.ase.MSONAtoms` to make MSONable `Atoms`
 - Changed default NEDOS value from 5001 to 3001 for VASP static jobs (10x the default)
 
 ### Fixed
