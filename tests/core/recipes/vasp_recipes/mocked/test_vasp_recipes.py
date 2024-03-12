@@ -1,8 +1,17 @@
+from pathlib import Path
+from shutil import copy
+
+import numpy as np
 import pytest
 from ase.build import bulk, molecule
 
 from quacc import SETTINGS
-from quacc.recipes.vasp.core import double_relax_flow, relax_job, static_job
+from quacc.recipes.vasp.core import (
+    double_relax_flow,
+    non_scf_job,
+    relax_job,
+    static_job,
+)
 from quacc.recipes.vasp.mp import (
     mp_gga_relax_flow,
     mp_gga_relax_job,
@@ -13,11 +22,15 @@ from quacc.recipes.vasp.mp import (
     mp_metagga_static_job,
 )
 from quacc.recipes.vasp.qmof import qmof_relax_job
-from quacc.recipes.vasp.slabs import bulk_to_slabs_flow, slab_to_ads_flow
+from quacc.recipes.vasp.slabs import bulk_to_slabs_flow
 from quacc.recipes.vasp.slabs import relax_job as slab_relax_job
+from quacc.recipes.vasp.slabs import slab_to_ads_flow
 from quacc.recipes.vasp.slabs import static_job as slab_static_job
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
+
+FILE_DIR = Path(__file__).parent
+MOCKED_DIR = FILE_DIR / "mocked_vasp_run"
 
 
 def test_static_job(tmp_path, monkeypatch):
@@ -146,6 +159,100 @@ def test_doublerelax_flow(tmp_path, monkeypatch):
     assert output["relax2"]["parameters"]["isif"] == 2
 
     assert double_relax_flow(atoms, relax1_kwargs={"kpts": [1, 1, 1]})
+
+
+def test_non_scf_job1(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    copy(MOCKED_DIR / "vasprun.xml.gz", tmp_path / "vasprun.xml.gz")
+
+    atoms = bulk("Al")
+
+    output = non_scf_job(atoms, tmp_path)
+
+    assert "nsites" in output
+    assert "parameters" in output
+    assert "results" in output
+
+    assert output["parameters"]["lorbit"] == 11
+    assert output["parameters"]["lwave"] is False
+    assert output["parameters"]["lcharg"] is False
+    assert output["parameters"]["nsw"] == 0
+    assert output["parameters"]["isym"] == 2
+    assert output["parameters"]["icharg"] == 11
+    assert output["parameters"].get("kspacing") is None
+    assert output["parameters"]["nedos"] == 6001
+    assert output["parameters"]["kpts"] == [11, 11, 11]
+    assert output["parameters"]["ismear"] == -5
+    assert output["parameters"]["nbands"] == 99
+
+
+def test_non_scf_job2(tmp_path, monkeypatch, caplog):
+    monkeypatch.chdir(tmp_path)
+    copy(MOCKED_DIR / "vasprun.xml.gz", tmp_path / "vasprun.xml.gz")
+
+    atoms = bulk("Al")
+
+    output = non_scf_job(
+        atoms, tmp_path, preset="BulkSet", nbands_factor=1, calculate_optics=True
+    )
+
+    assert "nsites" in output
+    assert "parameters" in output
+    assert "results" in output
+
+    assert output["parameters"]["loptics"] is True
+    assert output["parameters"]["lreal"] is False
+    assert output["parameters"]["cshift"] == 1e-5
+    assert output["parameters"]["nbands"] == 82
+    assert output["parameters"]["ismear"] == -5
+    assert output["parameters"]["lorbit"] == 11
+    assert output["parameters"]["lwave"] is False
+    assert output["parameters"]["lcharg"] is False
+    assert output["parameters"]["nsw"] == 0
+    assert output["parameters"]["isym"] == 2
+    assert output["parameters"]["icharg"] == 11
+    assert output["parameters"].get("kspacing") is None
+
+
+@pytest.mark.parametrize("_is_metal", [True, False])
+def test_non_scf_job3(tmp_path, monkeypatch, _is_metal):
+    monkeypatch.chdir(tmp_path)
+
+    class DummyBandStructure:
+        def __init__(self):
+            pass
+
+        @staticmethod
+        def is_metal():
+            return _is_metal
+
+    monkeypatch.setattr(
+        "pymatgen.io.vasp.Vasprun.get_band_structure", DummyBandStructure
+    )
+    copy(MOCKED_DIR / "vasprun.xml.gz", tmp_path / "vasprun.xml.gz")
+
+    atoms = bulk("Al")
+
+    output = non_scf_job(atoms, tmp_path, preset="BulkSet", kpts_mode="line")
+    assert np.shape(output["parameters"]["kpts"]) == (250, 3)
+    if _is_metal:
+        assert output["parameters"]["sigma"] == 0.2
+        assert output["parameters"]["ismear"] == 1
+    else:
+        assert output["parameters"]["sigma"] == 0.01
+        assert output["parameters"]["ismear"] == 0
+
+
+def test_non_scf_job4(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    copy(MOCKED_DIR / "vasprun.xml.gz", tmp_path / "vasprun.xml.gz")
+    atoms = bulk("Al")
+
+    with pytest.raises(
+        ValueError, match="Supported kpoint modes are 'uniform' and 'line' at present"
+    ):
+        non_scf_job(atoms, tmp_path, kpts_mode="dummy")
 
 
 def test_slab_static_job(tmp_path, monkeypatch):
