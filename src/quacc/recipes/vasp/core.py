@@ -187,7 +187,6 @@ def non_scf_job(
     preset: str | None = "BulkSet",
     nbands_factor: float = 1.2,
     kpts_mode: Literal["uniform", "line"] = "uniform",
-    uniform_de_dos: float = 0.01,
     uniform_kppvol: float = 100,
     line_kpt_density: float = 20,
     calculate_optics: bool = False,
@@ -208,9 +207,7 @@ def non_scf_job(
         A multiplicative factor used to adjust NBANDS when vasprun.xml(.gz) exists in
         prev_dir
     kpts_mode
-        Type of k-points mode. Options are "uniform" or "line".    uniform_de_dos
-    uniform_de_dos
-        The dE between DOS points for uniform k-point mode.
+        Type of k-points mode. Options are "uniform" or "line".
     uniform_kppvol
         The k-point per volume density for the uniform k-point mode.
     line_kpt_density
