@@ -228,7 +228,6 @@ def non_scf_job(
 
     calc_defaults = {
         "icharg": 11,
-        "isym": 0,
         "kspacing": None,
         "lcharg": False,
         "lorbit": 11,
@@ -256,6 +255,7 @@ def non_scf_job(
         calc_defaults.update(
             {
                 "ismear": 1 if is_metal else 0,
+                "isym": 0,
                 "pmg_kpts": {"line_density": line_kpt_density},
                 "sigma": 0.2 if is_metal else 0.01,
             }
