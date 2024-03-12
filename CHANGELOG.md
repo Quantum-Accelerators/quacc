@@ -6,8 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.6.11]
 
+### Changed
+
+- Use `pymatgen.io.ase.MSONAtoms` to make MSONable `Atoms`
+- Changed default NEDOS value from 5001 to 3001 for VASP static jobs (10x the default)
+
 ### Fixed
 
+- Fixed a bug where, with Prefect, the `State` would raise an indexing error when passing around deferred `dict` entries
 - Fixed a bug when `job_parameters` and `job_decorators` are both passed to `customize_funcs()`
 - Raise a `ValueError` when the user provides `SCRATCH_DIR` or `RESULTS_DIR` as a relative path
 
