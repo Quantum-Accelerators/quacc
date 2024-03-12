@@ -180,7 +180,7 @@ def test_non_scf_job1(tmp_path, monkeypatch):
     assert output["parameters"]["isym"] == 2
     assert output["parameters"]["icharg"] == 11
     assert output["parameters"].get("kspacing") is None
-    assert output["parameters"]["nedos"] == 3153
+    assert output["parameters"]["nedos"] == 6001
     assert output["parameters"]["kpts"] == [11, 11, 11]
     assert output["parameters"]["ismear"] == -5
     assert output["parameters"]["nbands"] == 99

@@ -243,16 +243,12 @@ def non_scf_job(
     vasprun = Vasprun(vasprun_path)
 
     prior_nbands = vasprun.parameters["NBANDS"]
-    new_nedos = int(np.ceil(prior_nbands * nbands_factor))
-    calc_defaults["nbands"] = new_nedos
+    calc_defaults["nbands"] = int(np.ceil(prior_nbands * nbands_factor))
 
     if kpts_mode == "uniform":
-        prior_eigenvalues = vasprun.eigenvalues.values()
-        emax = max(eigs.max() for eigs in prior_eigenvalues)
-        emin = min(eigs.min() for eigs in prior_eigenvalues)
         calc_defaults.update(
             {
-                "nedos": round((emax - emin) / uniform_de_dos),
+                "nedos": 6001,
                 "pmg_kpts": {"kppvol": uniform_kppvol},
                 "ismear": -5,
                 "isym": 2,
