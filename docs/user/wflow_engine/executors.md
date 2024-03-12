@@ -933,13 +933,14 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     ```yaml title="my_qadapter.yaml"
     _fw_name: CommonAdapter
     _fw_q_type: SLURM
-    rocket_launch: rlaunch -w /path/to/fw_config/my_fworker.yaml singleshot
+    rocket_launch: rlaunch -w </path/to/fw_config/my_fworker.yaml> singleshot
     nodes: 1
     walltime: 00:30:00
-    account: MyAccountName
+    account: MySlurmAccountName
     job_name: quacc_firework
     qos: debug
     pre_rocket: |
+    conda activate quacc
     module load vasp/6.4.1-cpu
     export QUACC_VASP_PARALLEL_CMD="srun -N 1 --ntasks-per-node=128 --cpu_bind=cores"
     ```
