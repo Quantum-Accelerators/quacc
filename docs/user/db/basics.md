@@ -30,7 +30,7 @@ Here, we describe how to set up quacc with a database of your choosing.
         collection_name: my_collection_name
         username: my_username
         password: my_password
-        host: localhost
+        host: my_hostname
         port: 27017
     ```
 
