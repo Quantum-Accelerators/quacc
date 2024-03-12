@@ -56,7 +56,7 @@ def static_job(
         "lreal": False,
         "lvhar": True,
         "lwave": True,
-        "nedos": 5001,
+        "nedos": 3001,
         "nsw": 0,
     }
     return base_fn(
