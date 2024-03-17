@@ -184,6 +184,7 @@ def double_relax_flow(
 def ase_relax_job(
     atoms: Atoms,
     preset: str | None = "BulkSet",
+    relax_cell: bool = True,
     opt_params: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
@@ -198,8 +199,8 @@ def ase_relax_job(
     preset
         Preset to use from `quacc.calculators.vasp.presets`.
     relax_cell
-        True if a volume relaxation (ISIF = 3) should be performed. False if
-        only the positions (ISIF = 2) should be updated.
+        True if a volume relaxation should be performed. False if only the positions
+        should be updated.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
@@ -218,11 +219,13 @@ def ase_relax_job(
         "lwave": False,
         "nsw": 0,
     }
+    opt_defaults = {"relax_cell": relax_cell}
     return base_opt_fn(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
+        opt_defaults=opt_defaults,
         opt_params=opt_params,
         additional_fields={"name": "VASP ASE Relax"},
         copy_files=copy_files,

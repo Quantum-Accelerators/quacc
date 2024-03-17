@@ -73,6 +73,7 @@ def base_opt_fn(
     preset: str | None = None,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
+    opt_defaults: dict[str, Any] | None = None,
     opt_params: dict[str, Any] | None = None,
     report_mp_corrections: bool = False,
     additional_fields: dict[str, Any] | None = None,
@@ -93,10 +94,10 @@ def base_opt_fn(
         Dictionary of custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.calculators.vasp.vasp.Vasp][].
+    opt_defaults
+        Default arguments for the ASE optimizer.
     opt_params
-        Dictionary of custom kwargs for the Vasp calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [quacc.runners.ase.run_opt][].
+        Dictionary of custom kwargs for [quacc.runners.ase.run_opt][]
     report_mp_corrections
         Whether to report the Materials Project corrections in the results.
     additional_fields
@@ -110,9 +111,10 @@ def base_opt_fn(
         Dictionary of results
     """
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
+    opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
     atoms.calc = Vasp(atoms, preset=preset, **calc_flags)
-    dyn = run_opt(atoms, copy_files=copy_files, **opt_params)
+    dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
 
     opt_run_summary = summarize_opt_run(dyn,additional_fields=additional_fields)
 
