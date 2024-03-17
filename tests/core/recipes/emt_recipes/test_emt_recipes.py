@@ -1,3 +1,6 @@
+import pickle
+from pathlib import Path
+
 import numpy as np
 import pytest
 from ase.build import bulk, molecule
@@ -26,6 +29,23 @@ def test_static_job(tmp_path, monkeypatch):
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] is True
     assert output["results"]["energy"] == pytest.approx(0.11074520235398744)
+
+    assert Path(output["dir_name"], "quacc_results.pkl").exists()
+
+    with open(Path(output["dir_name"], "quacc_results.pkl"), "rb") as f:
+        pickle_results = pickle.load(f)
+
+    output.pop("uuid")
+    assert pickle_results.keys() == output.keys()
+
+    assert pickle_results["nsites"] == output["nsites"]
+    assert (
+        pickle_results["parameters"]["asap_cutoff"]
+        == output["parameters"]["asap_cutoff"]
+    )
+    assert pickle_results["results"]["energy"] == output["results"]["energy"]
+    assert pickle_results["atoms"].info["test"] == output["atoms"].info["test"]
+    assert pickle_results["atoms"].info.get("_id") == output["atoms"].info.get("_id")
 
 
 def test_relax_job(tmp_path, monkeypatch):
@@ -82,6 +102,25 @@ def test_relax_job(tmp_path, monkeypatch):
     assert output["parameters"]["asap_cutoff"] is True
     assert output["results"]["energy"] == pytest.approx(0.04996032884581858)
 
+    with open(Path(output["dir_name"], "quacc_results.pkl"), "rb") as f:
+        pickle_results = pickle.load(f)
+
+    output.pop("uuid")
+
+    assert pickle_results.keys() == output.keys()
+
+    # assert things on the trajectory are the same
+    assert pickle_results["trajectory"][0] == output["trajectory"][0]
+    assert pickle_results["trajectory"][-1] == output["trajectory"][-1]
+    assert (
+        pickle_results["trajectory_results"][0]["energy"]
+        == output["trajectory_results"][0]["energy"]
+    )
+    assert (
+        pickle_results["trajectory_results"][-1]["energy"]
+        == output["trajectory_results"][-1]["energy"]
+    )
+
 
 def test_slab_dynamic_jobs(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
@@ -124,6 +163,8 @@ def test_customizer_v2():
     results = bulk_to_slabs_flow(atoms, job_params={"relax_job": {"asap_cutoff": True}})
     for result in results:
         assert result["parameters"]["asap_cutoff"] is False
+
+        assert Path(result["dir_name"], "quacc_results.pkl").exists()
 
 
 def test_all_customizers():

@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import pickle
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
 from ase import units
 from ase.io import read
+from ase.vibrations import Vibrations
 from ase.vibrations.data import VibrationsData
 
 from quacc import SETTINGS, __version__
@@ -24,7 +27,6 @@ if TYPE_CHECKING:
     from ase.io import Trajectory
     from ase.optimize.optimize import Optimizer
     from ase.thermochemistry import IdealGasThermo
-    from ase.vibrations import Vibrations
     from maggma.core import Store
 
     from quacc.schemas._aliases.ase import (
@@ -116,6 +118,10 @@ def summarize_run(
         final_atoms_metadata, inputs, results, additional_fields
     )
     task_doc = clean_task_doc(unsorted_task_doc)
+
+    if SETTINGS.WRITE_PICKLE:
+        with Path(directory, "quacc_results.pkl").open("wb") as f:
+            pickle.dump(task_doc, f)
 
     if store:
         results_to_db(store, task_doc)
@@ -217,6 +223,10 @@ def summarize_opt_run(
     )
     task_doc = clean_task_doc(unsorted_task_doc)
 
+    if SETTINGS.WRITE_PICKLE:
+        with Path(directory, "quacc_results.pkl").open("wb") as f:
+            pickle.dump(task_doc, f)
+
     if store:
         results_to_db(store, task_doc)
 
@@ -278,6 +288,12 @@ def summarize_vib_and_thermo(
         vib_task_doc, thermo_task_doc, additional_fields
     )
     task_doc = clean_task_doc(unsorted_task_doc)
+
+    if isinstance(vib, Vibrations):
+        directory = vib.atoms.calc.directory
+        if SETTINGS.WRITE_PICKLE:
+            with Path(directory, "quacc_results.pkl").open("wb") as f:
+                pickle.dump(task_doc, f)
 
     if store:
         results_to_db(store, task_doc)
