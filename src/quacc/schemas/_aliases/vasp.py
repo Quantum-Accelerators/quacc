@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TypedDict
 
-from quacc.schemas._aliases.ase import RunSchema
+from quacc.schemas._aliases.ase import OptSchema, RunSchema
 from quacc.schemas._aliases.emmet import TaskDoc
 
 
@@ -72,3 +72,6 @@ class QMOFRelaxSchema(VaspSchema):
     position_relax_lowacc: VaspSchema
     volume_relax_lowacc: VaspSchema | None
     double_relax: VaspSchema
+
+class VaspASESchema(VaspSchema,OptSchema):
+    """Type hint associated with VASP relaxations run via ASE"""
