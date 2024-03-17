@@ -99,9 +99,9 @@ def base_opt_fn(
 
     atoms.calc = _prep_calculator(calc_defaults=calc_defaults, calc_swaps=calc_swaps)
 
-    final_atoms = run_opt(atoms, copy_files=copy_files, **opt_flags)
+    dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
 
-    return summarize_opt_run(final_atoms, additional_fields=additional_fields)
+    return summarize_opt_run(dyn, additional_fields=additional_fields)
 
 
 def _prep_calculator(
