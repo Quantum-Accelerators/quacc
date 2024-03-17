@@ -783,7 +783,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
 
 === "Parsl"
 
-    Now let's consider a similar configuration but for jobs where the underlying executable is run via MPI, as is typically the case for most quantum chemistry codes that distribute work over multiple cores and/or nodes. The setup here is a bit different. In this example, we are requesting a single Slurm allocation with 8 nodes (containing 128 physical CPU cores per node), and each compute job is running on 2 nodes of that allocation.
+    Now let's consider a similar configuration but for jobs where the underlying executable is run via MPI, as is typically the case for most quantum chemistry codes that distribute work over multiple cores and/or nodes. The setup here is a bit different. In this example, we are requesting a single Slurm allocation with 2 nodes (containing 128 physical CPU cores per node), and each compute job is running on 1 node of that allocation.
 
     From an interactive resource like a Jupyter Notebook or IPython kernel from the login node on the remote machine:
 
@@ -933,13 +933,14 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     ```yaml title="my_qadapter.yaml"
     _fw_name: CommonAdapter
     _fw_q_type: SLURM
-    rocket_launch: rlaunch -w /path/to/fw_config/my_fworker.yaml singleshot
+    rocket_launch: rlaunch -w </path/to/fw_config/my_fworker.yaml> singleshot
     nodes: 1
     walltime: 00:30:00
-    account: MyAccountName
+    account: MySlurmAccountName
     job_name: quacc_firework
     qos: debug
     pre_rocket: |
+    conda activate quacc
     module load vasp/6.4.1-cpu
     export QUACC_VASP_PARALLEL_CMD="srun -N 1 --ntasks-per-node=128 --cpu_bind=cores"
     ```

@@ -50,19 +50,8 @@ def base_fn(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
-    atoms.calc = Onetep(
-        calc_defaults=calc_defaults,
-        pseudo_path=str(SETTINGS.ONETEP_PP_PATH) if SETTINGS.ONETEP_PP_PATH else ".",
-        parallel_info=SETTINGS.ONETEP_PARALLEL_CMD,
-        profile=OnetepProfile(
-            str(SETTINGS.ONETEP_CMD)
-        ),  # TODO: If the ASE merge is successful, we need to change ONETEP_PARALLEL_CMD to a list[str] and remove parallel info.
-        # If we also have access to post_args we can point not to the binary but to the launcher which takes -t nthreads as a post_args
-        **calc_flags,
-    )
-
+    atoms.calc = _prep_calculator(calc_defaults=calc_defaults, calc_swaps=calc_swaps)
     final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(final_atoms, atoms, additional_fields=additional_fields)
@@ -106,12 +95,39 @@ def base_opt_fn(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
-
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
-    atoms.calc = Onetep(
-        calc_defaults=calc_defaults,
+    atoms.calc = _prep_calculator(calc_defaults=calc_defaults, calc_swaps=calc_swaps)
+
+    final_atoms = run_opt(atoms, copy_files=copy_files, **opt_flags)
+
+    return summarize_opt_run(final_atoms, additional_fields=additional_fields)
+
+
+def _prep_calculator(
+    calc_defaults: dict[str, Any] | None = None,
+    calc_swaps: dict[str, Any] | None = None,
+) -> Onetep:
+    """
+    Prepare the Onetep calculator.
+
+    Parameters
+    ----------
+    calc_defaults
+        The default calculator parameters.
+    calc_swaps
+        Custom kwargs for the ONETEP calculator. Set a value to
+        `quacc.Remove` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the [ase.calculators.onetep.Onetep][] calculator.
+
+    Returns
+    -------
+    Onetep
+        The Onetep calculator.
+    """
+    calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
+
+    return Onetep(
         pseudo_path=str(SETTINGS.ONETEP_PP_PATH) if SETTINGS.ONETEP_PP_PATH else ".",
         parallel_info=SETTINGS.ONETEP_PARALLEL_CMD,
         profile=OnetepProfile(
