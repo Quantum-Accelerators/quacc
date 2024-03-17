@@ -16,7 +16,6 @@ from quacc.runners.thermo import run_ideal_gas
 from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
 
 if TYPE_CHECKING:
-
     from ase.atoms import Atoms
 
     from quacc.runners.ase import OptParams, VibKwargs

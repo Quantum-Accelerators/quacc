@@ -15,7 +15,6 @@ from quacc.runners.ase import run_calc, run_opt
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 
 if TYPE_CHECKING:
-
     from ase.atoms import Atoms
 
     from quacc.runners.ase import OptParams

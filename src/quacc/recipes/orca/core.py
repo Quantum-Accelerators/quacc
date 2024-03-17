@@ -10,7 +10,6 @@ from quacc import job
 from quacc.recipes.orca._base import base_fn, base_opt_fn
 
 if TYPE_CHECKING:
-
     from ase.atoms import Atoms
 
     from quacc.runners.ase import OptParams

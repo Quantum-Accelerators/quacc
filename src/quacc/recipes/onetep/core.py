@@ -11,7 +11,6 @@ from quacc.recipes.onetep._base import base_fn, base_opt_fn
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
-
     from ase import Atoms
 
     from quacc.runners.ase import OptParams
