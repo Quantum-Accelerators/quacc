@@ -104,21 +104,21 @@ class QuaccSettings(BaseSettings):
         ),
     )
     CHDIR: bool = Field(
-        True,
+        False,
         description=(
             """
             Whether quacc will make `os.chdir` calls to change the working directory
             to be the location where the calculation is run. By default, we leave this
-            as `True` because not all ASE calculators properly support a `directory`
-            parameter. In most cases, this is fine, but it breaks thread safety.
-            If you need to run multiple, parallel calculations in a single Python process,
-            such as in a multithreaded job execution mode, then this setting needs
-            to be `False`. Note that not all calculators properly support this, however.
+            as `False` to enable running multiple calculations in a single Python process
+            since `os.chdir` calls break thread safety. This parameter will eventually be deprecated.
             """
         ),
     )
     GZIP_FILES: bool = Field(
         True, description="Whether generated files should be gzip'd."
+    )
+    WRITE_PICKLE: bool = Field(
+        True, description="Whether the results schema should be written to a .pkl file."
     )
     CHECK_CONVERGENCE: bool = Field(
         True,
@@ -190,6 +190,7 @@ class QuaccSettings(BaseSettings):
             "projwfc": "projwfc.x",
             "pp": "pp.x",
             "wannier90": "wannier90.x",
+            "fs": "fs.x",
         },
         description="Name for each espresso binary.",
     )
@@ -429,19 +430,9 @@ class QuaccSettings(BaseSettings):
 
     # --8<-- [end:settings]
 
-    @field_validator("RESULTS_DIR", "SCRATCH_DIR")
-    @classmethod
-    def resolve_and_make_paths(cls, v: Optional[Path]) -> Optional[Path]:
-        """Resolve and make paths."""
-        if v is None:
-            return v
-
-        v = Path(os.path.expandvars(v)).expanduser().resolve()
-        if not v.exists():
-            v.mkdir(parents=True)
-        return v
-
     @field_validator(
+        "RESULTS_DIR",
+        "SCRATCH_DIR",
         "ESPRESSO_PRESET_DIR",
         "ESPRESSO_PSEUDO",
         "GAUSSIAN_CMD",
@@ -456,8 +447,21 @@ class QuaccSettings(BaseSettings):
     )
     @classmethod
     def expand_paths(cls, v: Optional[Path]) -> Optional[Path]:
-        """Expand ~/ in paths."""
-        return v.expanduser() if v is not None else v
+        """Expand ~/ and $ENV_VARS in paths."""
+        if v:
+            v = Path(os.path.expandvars(v)).expanduser()
+        return v
+
+    @field_validator("RESULTS_DIR", "SCRATCH_DIR")
+    @classmethod
+    def make_directories(cls, v: Optional[Path]) -> Optional[Path]:
+        """Make directories."""
+        if v:
+            if not v.is_absolute():
+                raise ValueError(f"{v} must be an absolute path.")
+            if not v.exists():
+                v.mkdir(parents=True)
+        return v
 
     @field_validator("STORE")
     def generate_store(cls, v: Union[dict[str, dict[str, Any]], Store]) -> Store:

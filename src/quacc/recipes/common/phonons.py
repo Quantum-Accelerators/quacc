@@ -2,18 +2,17 @@
 
 from __future__ import annotations
 
+from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
 from quacc import flow, job, subflow
 from quacc.atoms.phonons import get_phonopy, phonopy_atoms_to_ase_atoms
+from quacc.runners.phonons import run_phonopy
 from quacc.schemas.phonons import summarize_phonopy
 
-try:
-    import phonopy
-except ImportError:
-    phonopy = None
+has_deps = find_spec("phonopy") is not None and find_spec("seekpath") is not None
 
 if TYPE_CHECKING:
     from typing import Any
@@ -25,7 +24,9 @@ if TYPE_CHECKING:
 
 
 @flow
-@requires(phonopy, "Phonopy must be installed. Run `pip install quacc[phonons]`")
+@requires(
+    has_deps, "Phonopy and seekpath must be installed. Run `pip install quacc[phonons]`"
+)
 def phonon_flow(
     atoms: Atoms,
     force_job: Job,
@@ -108,17 +109,14 @@ def phonon_flow(
         )
         parameters = force_job_results[-1].get("parameters")
         forces = [output["results"]["forces"] for output in force_job_results]
-        phonon.forces = forces
-        phonon.produce_force_constants()
-        phonon.run_mesh()
-        phonon.run_total_dos()
-        phonon.run_thermal_properties(t_step=t_step, t_max=t_max, t_min=t_min)
-        phonon.auto_band_structure(
-            write_yaml=True, filename="phonopy_auto_band_structure.yaml"
-        )
+        phonon = run_phonopy(phonon, forces, t_step=t_step, t_min=t_min, t_max=t_max)
 
         return summarize_phonopy(
-            phonon, atoms, parameters=parameters, additional_fields=additional_fields
+            phonon,
+            atoms,
+            parameters=parameters,
+            directory=phonon.directory,
+            additional_fields=additional_fields,
         )
 
     if relax_job is not None:

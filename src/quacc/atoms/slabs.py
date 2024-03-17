@@ -7,7 +7,7 @@ from copy import deepcopy
 from typing import TYPE_CHECKING
 
 import numpy as np
-from ase import Atoms
+from ase.atoms import Atoms
 from pymatgen.analysis.adsorption import AdsorbateSiteFinder
 from pymatgen.core.structure import Structure
 from pymatgen.core.surface import Slab, center_slab, generate_all_slabs

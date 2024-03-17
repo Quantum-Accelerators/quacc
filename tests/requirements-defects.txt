@@ -1,2 +1,2 @@
 pymatgen-analysis-defects==2024.2.24
-shakenbreak==3.3.0
+shakenbreak==3.3.1

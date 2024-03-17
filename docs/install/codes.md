@@ -122,6 +122,8 @@ If you plan to use TBLite with quacc, you will need to install the tblite interf
 pip install quacc[tblite] # only on Linux
 ```
 
+Refer to the [TBLite documentation](https://tblite.readthedocs.io/en/latest/tutorial/parallel.html) for details on how to parallelize calculations and adjust the memory limits.
+
 ## VASP
 
 To use quacc with VASP, you will need to define several environment variables, as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md). The most important are listed below:

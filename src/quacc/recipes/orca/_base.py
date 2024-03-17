@@ -67,20 +67,18 @@ def base_fn(
     Returns
     -------
     cclibSchema
-        Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][]
+        Dictionary of results
     """
-    inputs = merge_list_params(default_inputs, input_swaps)
-    blocks = merge_list_params(default_blocks, block_swaps)
-    orcasimpleinput = " ".join(inputs)
-    orcablocks = " ".join(blocks)
 
-    atoms.calc = ORCA(
-        profile=OrcaProfile(SETTINGS.ORCA_CMD),
+    atoms.calc = _prep_calculator(
         charge=charge,
-        mult=spin_multiplicity,
-        orcasimpleinput=orcasimpleinput,
-        orcablocks=orcablocks,
+        spin_multiplicity=spin_multiplicity,
+        default_inputs=default_inputs,
+        default_blocks=default_blocks,
+        input_swaps=input_swaps,
+        block_swaps=block_swaps,
     )
+
     atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
 
     return cclib_summarize_run(atoms, LOG_FILE, additional_fields=additional_fields)
@@ -132,22 +130,18 @@ def base_opt_fn(
     Returns
     -------
     cclibASEOptSchema
-        Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][]
+        Dictionary of results
     """
-    inputs = merge_list_params(default_inputs, input_swaps)
-    blocks = merge_list_params(default_blocks, block_swaps)
-    opt_flags = recursive_dict_merge(opt_defaults, opt_params)
-    orcasimpleinput = " ".join(inputs)
-    orcablocks = " ".join(blocks)
-
-    atoms.calc = ORCA(
-        profile=OrcaProfile(SETTINGS.ORCA_CMD),
+    atoms.calc = _prep_calculator(
         charge=charge,
-        mult=spin_multiplicity,
-        orcasimpleinput=orcasimpleinput,
-        orcablocks=orcablocks,
+        spin_multiplicity=spin_multiplicity,
+        default_inputs=default_inputs,
+        default_blocks=default_blocks,
+        input_swaps=input_swaps,
+        block_swaps=block_swaps,
     )
 
+    opt_flags = recursive_dict_merge(opt_defaults, opt_params)
     dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
     opt_run_summary = summarize_opt_run(
         dyn,
@@ -160,3 +154,50 @@ def base_opt_fn(
         final_atoms, LOG_FILE, additional_fields=additional_fields
     )
     return recursive_dict_merge(cclib_summary, opt_run_summary)
+
+
+def _prep_calculator(
+    charge: int = 0,
+    spin_multiplicity: int = 1,
+    default_inputs: list[str] | None = None,
+    default_blocks: list[str] | None = None,
+    input_swaps: list[str] | None = None,
+    block_swaps: list[str] | None = None,
+) -> ORCA:
+    """
+    Prepare the ORCA calculator.
+
+    Parameters
+    ----------
+    charge
+        Charge of the system.
+    spin_multiplicity
+        Multiplicity of the system.
+    default_inputs
+        Default input parameters.
+    default_blocks
+        Default block input parameters.
+    input_swaps
+        List of orcasimpleinput swaps for the calculator. To remove entries
+        from the defaults, put a `#` in front of the name.
+    block_swaps
+        List of orcablock swaps for the calculator. To remove entries
+        from the defaults, put a `#` in front of the name.
+
+    Returns
+    -------
+    ORCA
+        The ORCA calculator
+    """
+    inputs = merge_list_params(default_inputs, input_swaps)
+    blocks = merge_list_params(default_blocks, block_swaps)
+    orcasimpleinput = " ".join(inputs)
+    orcablocks = " ".join(blocks)
+
+    return ORCA(
+        profile=OrcaProfile(SETTINGS.ORCA_CMD),
+        charge=charge,
+        mult=spin_multiplicity,
+        orcasimpleinput=orcasimpleinput,
+        orcablocks=orcablocks,
+    )
