@@ -42,13 +42,13 @@ def patch_read_results(monkeypatch):
     monkeypatch.setattr(Vasp, "read_results", mock_read_results)
 
 
-def mock_taskdoc(dir, *args, **kwargs):
+def mock_taskdoc(directory, *args, **kwargs):
     from ase.io import read
     from monty.os.path import zpath
 
     from quacc.atoms.core import check_is_metal
 
-    MOCK_TASKDOC.output.bandgap = 0.0 if check_is_metal(read(zpath(Path(dir,"CONTCAR")))) else 0.5
+    MOCK_TASKDOC.output.bandgap = 0.0 if check_is_metal(read(zpath(Path(directory, "CONTCAR")))) else 0.5
     return MOCK_TASKDOC
 
 
