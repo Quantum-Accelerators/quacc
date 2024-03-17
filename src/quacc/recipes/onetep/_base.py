@@ -67,7 +67,7 @@ def base_opt_fn(
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> RunSchema:
     """
-    Base function to carry out Onetep recipes.
+    Base function to carry out Onetep recipes with ASE optimizers.
 
     Parameters
     ----------

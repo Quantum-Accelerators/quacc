@@ -2,16 +2,13 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
-
-from emmet.core.tasks import TaskDoc
 
 from quacc.atoms.core import get_final_atoms_from_dyn
 from quacc.calculators.vasp import Vasp
 from quacc.runners.ase import run_calc, run_opt
 from quacc.schemas.ase import summarize_opt_run
-from quacc.schemas.vasp import vasp_summarize_run
+from quacc.schemas.vasp import _get_intermediate_task_docs, vasp_summarize_run
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
@@ -83,7 +80,7 @@ def base_opt_fn(
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> VaspSchema:
     """
-    Base job function for VASP recipes.
+    Base job function for VASP recipes with ASE optimizers.
 
     Parameters
     ----------
@@ -124,10 +121,9 @@ def base_opt_fn(
 
     if opt_flags.get("store_intermediate_files"):
         intermediate_task_docs = {
-            "steps": {
-                n: TaskDoc.from_directory(Path(final_atoms.calc.directory, f"step{n}")).model_dump()
-                for n in range(dyn.nsteps+1)
-            }
+            "steps": _get_intermediate_task_docs(
+                dir_path=final_atoms.calc.directory, nsteps=dyn.nsteps
+            )
         }
     else:
         intermediate_task_docs = None

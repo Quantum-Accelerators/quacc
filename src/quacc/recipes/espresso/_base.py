@@ -101,7 +101,7 @@ def base_opt_fn(
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> RunSchema:
     """
-    Base function to carry out espresso recipes.
+    Base function to carry out espresso recipes with ASE optimizers.
 
     Parameters
     ----------
