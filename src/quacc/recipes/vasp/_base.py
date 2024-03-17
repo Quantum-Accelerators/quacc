@@ -80,7 +80,7 @@ def base_opt_fn(
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> VaspSchema:
     """
-    Base job function for VASP recipes.
+    Base job function for VASP recipes with ASE optimizers.
 
     Parameters
     ----------

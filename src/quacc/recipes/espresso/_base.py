@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
 
 def base_fn(
-    atoms: Atoms = None,
+    atoms: Atoms | None = None,
     preset: str | None = None,
     template: EspressoTemplate | None = None,
     profile: EspressoProfile | None = None,
@@ -101,7 +101,7 @@ def base_opt_fn(
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> RunSchema:
     """
-    Base function to carry out espresso recipes.
+    Base function to carry out espresso recipes with ASE optimizers.
 
     Parameters
     ----------
