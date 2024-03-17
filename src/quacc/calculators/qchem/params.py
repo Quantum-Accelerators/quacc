@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-from ase import Atoms
+from ase.atoms import Atoms
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.qchem.inputs import QCInput
 from pymatgen.io.qchem.sets import QChemDictSet

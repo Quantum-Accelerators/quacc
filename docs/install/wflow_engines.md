@@ -4,9 +4,9 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
 !!! Tip "Picking a Workflow Engine"
 
-    For a comparison of the different compatible workflow engines, refer to the [Workflow Engines Overview](../user/basics/wflow_overview.md) section.
+    If you don't want to use a workflow engine or are just starting out, you can simply skip this section.
 
-    If you don't want to use a workflow engine, you can simply skip this section.
+    For a comparison of the different compatible workflow engines, refer to the [Workflow Engines Overview](../user/basics/wflow_overview.md) section.
 
 === "Covalent"
 
@@ -66,7 +66,6 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     ```bash
     pip install quacc[prefect]
-    pip install starlette==0.32.0 # (1)!
     ```
 
     1. This is a temporary workaround to resolve a dependency conflict.
@@ -216,13 +215,14 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     ```yaml title="my_qadapter.yaml"
     _fw_name: CommonAdapter
     _fw_q_type: SLURM
-    rocket_launch: rlaunch -w /path/to/fw_config/my_fworker.yaml singleshot
-    nodes: 2
+    rocket_launch: rlaunch -w </path/to/fw_config/my_fworker.yaml> singleshot
+    nodes: 1
     walltime: 00:30:00
     account: <account>
     job_name: quacc_firework
     qos: regular
     pre_rocket: |
+    conda activate MyEnv
     module load MyModuleName
     export MyEnvVar=MyEnvValue
     ```

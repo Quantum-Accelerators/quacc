@@ -70,25 +70,25 @@ def qcinput_nearly_equal(qcinput1, qcinput2):
             assert qcin1[key] == qcin2[key]
 
 
-def mock_execute1(_self, **kwargs):
-    copy(QCHEM_DIR / "mol.qout.basic", "mol.qout")
-    copy(QCHEM_DIR / "131.0.basic", "131.0")
-    copy(QCHEM_DIR / "53.0.basic", "53.0")
-    copy(QCHEM_DIR / "custodian.json", "custodian.json")
+def mock_execute1(self, **kwargs):
+    copy(QCHEM_DIR / "mol.qout.basic", Path(self.directory, "mol.qout"))
+    copy(QCHEM_DIR / "131.0.basic", Path(self.directory, "131.0"))
+    copy(QCHEM_DIR / "53.0.basic", Path(self.directory, "53.0"))
+    copy(QCHEM_DIR / "custodian.json", Path(self.directory, "custodian.json"))
 
 
-def mock_execute2(_self, **kwargs):
-    copy(QCHEM_DIR / "mol.qout.intermediate", "mol.qout")
-    copy(QCHEM_DIR / "131.0.intermediate", "131.0")
-    copy(QCHEM_DIR / "53.0.intermediate", "53.0")
-    copy(QCHEM_DIR / "custodian.json", "custodian.json")
+def mock_execute2(self, **kwargs):
+    copy(QCHEM_DIR / "mol.qout.intermediate", Path(self.directory, "mol.qout"))
+    copy(QCHEM_DIR / "131.0.intermediate", Path(self.directory, "131.0"))
+    copy(QCHEM_DIR / "53.0.intermediate", Path(self.directory, "53.0"))
+    copy(QCHEM_DIR / "custodian.json", Path(self.directory, "custodian.json"))
 
 
-def mock_execute3(_self, **kwargs):
-    copy(QCHEM_DIR / "mol.qout.alternate", "mol.qout")
-    copy(QCHEM_DIR / "131.0.alternate", "131.0")
-    copy(QCHEM_DIR / "53.0.alternate", "53.0")
-    copy(QCHEM_DIR / "custodian.json", "custodian.json")
+def mock_execute3(self, **kwargs):
+    copy(QCHEM_DIR / "mol.qout.alternate", Path(self.directory, "mol.qout"))
+    copy(QCHEM_DIR / "131.0.alternate", Path(self.directory, "131.0"))
+    copy(QCHEM_DIR / "53.0.alternate", Path(self.directory, "53.0"))
+    copy(QCHEM_DIR / "custodian.json", Path(self.directory, "custodian.json"))
 
 
 def mock_execute4(self, **kwargs):
@@ -100,11 +100,11 @@ def mock_execute4(self, **kwargs):
     self.results = atoms.calc.results
 
 
-def mock_execute5(_self, **kwargs):
-    copy(QCHEM_DIR / "mol.qout.freq", "mol.qout")
-    copy(QCHEM_DIR / "132.0.freq", "132.0")
-    copy(QCHEM_DIR / "53.0.freq", "53.0")
-    copy(QCHEM_DIR / "custodian.json", "custodian.json")
+def mock_execute5(self, **kwargs):
+    copy(QCHEM_DIR / "mol.qout.freq", Path(self.directory, "mol.qout"))
+    copy(QCHEM_DIR / "132.0.freq", Path(self.directory, "132.0"))
+    copy(QCHEM_DIR / "53.0.freq", Path(self.directory, "53.0"))
+    copy(QCHEM_DIR / "custodian.json", Path(self.directory, "custodian.json"))
 
 
 def mock_read(self, **kwargs):

@@ -68,6 +68,7 @@ def run_custodian(
     vasp_custodian_handlers: list[str] | None = None,
     vasp_custodian_validators: list[str] | None = None,
     scratch_dir: str | None = None,
+    directory: str | None = "./",
     vasp_job_kwargs: VaspJobKwargs | None = None,
     custodian_kwargs: CustodianKwargs | None = None,
 ) -> list[list[dict]]:
@@ -202,7 +203,12 @@ def run_custodian(
         validators=validators,
         max_errors=vasp_custodian_max_errors,
         scratch_dir=scratch_dir,
+        directory=directory,
         **custodian_kwargs,
     )
 
     return c.run()
+
+
+if __name__ == "__main__":
+    run_custodian()

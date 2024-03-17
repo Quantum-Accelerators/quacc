@@ -150,11 +150,11 @@ class Vasp(Vasp_):
 
         # Get VASP executable command, if necessary, and specify child
         # environment variables
-        command = self._manage_environment()
+        self.command = self._manage_environment()
 
         # Instantiate the calculator!
         super().__init__(
-            atoms=self.input_atoms, command=command, **self.user_calc_params
+            atoms=self.input_atoms, command=self.command, **self.user_calc_params
         )
 
     def _manage_environment(self) -> str:
@@ -317,7 +317,7 @@ class Vasp(Vasp_):
             directory = self.directory
 
         if self.use_custodian:
-            run_custodian()
+            run_custodian(directory=directory)
             return 0
         else:
             return subprocess.call(command, shell=True, stdout=out, cwd=directory)

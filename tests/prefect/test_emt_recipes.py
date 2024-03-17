@@ -4,16 +4,20 @@ prefect = pytest.importorskip("prefect")
 
 from ase.build import bulk
 
-from quacc import flow
+from quacc import flow, job
 from quacc.recipes.emt.core import relax_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow  # skipcq: PYL-C0412
 
 
-def test_functools(tmp_path, monkeypatch):
+@pytest.mark.parametrize("job_decorators", [None, {"relax_job": job()}])
+def test_functools(tmp_path, monkeypatch, job_decorators):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
     output = bulk_to_slabs_flow(
-        atoms, job_params={"relax_job": {"opt_params": {"fmax": 0.1}}}, run_static=False
+        atoms,
+        run_static=False,
+        job_params={"relax_job": {"opt_params": {"fmax": 0.1}}},
+        job_decorators=job_decorators,
     )
     result = [future.result() for future in output]
     assert len(result) == 4
