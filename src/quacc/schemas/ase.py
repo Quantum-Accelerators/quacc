@@ -38,7 +38,7 @@ if TYPE_CHECKING:
 
 def summarize_run(
     final_atoms: Atoms,
-    input_atoms: Atoms,
+    input_atoms: Atoms | None,
     charge_and_multiplicity: tuple[int, int] | None = None,
     move_magmoms: bool = False,
     additional_fields: dict[str, Any] | None = None,
@@ -105,12 +105,9 @@ def summarize_run(
 
     atoms_to_store = prep_next_run(final_atoms, move_magmoms=move_magmoms)
 
-    if final_atoms:
-        final_atoms_metadata = atoms_to_metadata(
-            atoms_to_store, charge_and_multiplicity=charge_and_multiplicity
-        )
-    else:
-        final_atoms_metadata = {}
+    final_atoms_metadata = atoms_to_metadata(
+        atoms_to_store, charge_and_multiplicity=charge_and_multiplicity
+    )
 
     unsorted_task_doc = recursive_dict_merge(
         final_atoms_metadata, inputs, results, additional_fields
