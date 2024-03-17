@@ -38,7 +38,7 @@ class OptSchema(RunSchema):
 class DynSchema(RunSchema):
     """Schema for [quacc.schemas.ase.summarize_md_run][]"""
 
-    parameters_md: dict[str, Any] # from Dynamics.todict()
+    parameters_md: dict[str, Any]  # from Dynamics.todict()
     nsteps: int
     trajectory: list[Atoms]
     trajectory_log: list[dict[str, Any]]
