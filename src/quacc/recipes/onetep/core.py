@@ -69,6 +69,7 @@ def static_job(
 @job
 def ase_relax_job(
     atoms: Atoms,
+    relax_cell: bool = False,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     opt_params: dict[str, Any] | None = None,
     **calc_kwargs,
@@ -102,7 +103,7 @@ def ase_relax_job(
         {"keywords": {"write_forces": True, "forces_output_detail": "verbose"}},
     )
 
-    opt_defaults = {"optimizer": LBFGS}
+    opt_defaults = {"optimizer": LBFGS, "relax_cell": relax_cell}
 
     return base_opt_fn(
         atoms,

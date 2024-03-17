@@ -10,14 +10,14 @@ from monty.os.path import zpath
 from pymatgen.io.vasp import Vasprun
 
 from quacc import flow, job
-from quacc.recipes.vasp._base import base_fn
+from quacc.recipes.vasp._base import base_fn, base_opt_fn
 
 if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
 
-    from quacc.schemas._aliases.vasp import DoubleRelaxSchema, VaspSchema
+    from quacc.schemas._aliases.vasp import DoubleRelaxSchema, VaspASESchema, VaspSchema
     from quacc.utils.files import Filenames, SourceDirectory
 
 
@@ -178,6 +178,58 @@ def double_relax_flow(
     )
 
     return {"relax1": summary1, "relax2": summary2}
+
+
+@job
+def ase_relax_job(
+    atoms: Atoms,
+    preset: str | None = "BulkSet",
+    relax_cell: bool = True,
+    opt_params: dict[str, Any] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    **calc_kwargs,
+) -> VaspASESchema:
+    """
+    Relax a structure.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+    preset
+        Preset to use from `quacc.calculators.vasp.presets`.
+    relax_cell
+        True if a volume relaxation should be performed. False if only the positions
+        should be updated.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
+    **calc_kwargs
+        Custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the [quacc.calculators.vasp.vasp.Vasp][] calculator.
+
+    Returns
+    -------
+    VaspASESchema
+        Dictionary of results. See the type-hint for the data structure.
+    """
+
+    calc_defaults = {
+        "lcharg": False,
+        "lwave": False,
+        "nsw": 0,
+    }
+    opt_defaults = {"relax_cell": relax_cell}
+    return base_opt_fn(
+        atoms,
+        preset=preset,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        opt_defaults=opt_defaults,
+        opt_params=opt_params,
+        additional_fields={"name": "VASP ASE Relax"},
+        copy_files=copy_files,
+    )
 
 
 @job
