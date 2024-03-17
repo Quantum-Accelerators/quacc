@@ -1,3 +1,6 @@
+import pickle
+from pathlib import Path
+
 import numpy as np
 import pytest
 from ase.build import bulk, molecule
@@ -93,6 +96,27 @@ def test_freq_job(tmp_path, monkeypatch):
     assert len(output["results"]["vib_freqs"]) == 3 * len(atoms) - 6
     assert len(output["parameters_thermo"]["vib_freqs"]) == 3 * len(atoms) - 6
     assert output["parameters_thermo"]["n_imag"] == 0
+
+    with open(Path(output["dir_name"], "quacc_results.pkl"), "rb") as f:
+        pickle_results = pickle.load(f)
+
+    output.pop("uuid")
+    assert pickle_results.keys() == output.keys()
+
+    # assert things on thermo and freq results
+    assert (
+        pickle_results["parameters_thermo"]["n_imag"]
+        == output["parameters_thermo"]["n_imag"]
+    )
+    assert (
+        pickle_results["parameters_thermo"]["vib_freqs"]
+        == output["parameters_thermo"]["vib_freqs"]
+    )
+    assert pickle_results["results"]["vib_freqs"] == output["results"]["vib_freqs"]
+    assert (
+        pickle_results["results"]["vib_freqs_raw"] == output["results"]["vib_freqs_raw"]
+    )
+    assert pickle_results["results"]["vib_freqs"] == output["results"]["vib_freqs"]
 
 
 def test_freq_job_threads(tmp_path, monkeypatch):
