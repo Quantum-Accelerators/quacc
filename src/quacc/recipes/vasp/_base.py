@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
+
+from emmet.core.tasks import TaskDoc
 
 from quacc.atoms.core import get_final_atoms_from_dyn
 from quacc.calculators.vasp import Vasp
@@ -115,14 +118,23 @@ def base_opt_fn(
 
     atoms.calc = Vasp(atoms, preset=preset, **calc_flags)
     dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
+    final_atoms = get_final_atoms_from_dyn(dyn)
 
     opt_run_summary = summarize_opt_run(dyn, additional_fields=additional_fields)
 
-    final_atoms = get_final_atoms_from_dyn(dyn)
+    if opt_flags.get("store_intermediate_files"):
+        intermediate_task_docs = {
+            "steps": {
+                n: TaskDoc.from_directory(Path(final_atoms.calc.directory, f"step{n}")).model_dump()
+                for n in range(dyn.nsteps+1)
+            }
+        }
+    else:
+        intermediate_task_docs = None
 
     vasp_summary = vasp_summarize_run(
         final_atoms,
         report_mp_corrections=report_mp_corrections,
         additional_fields=additional_fields,
     )
-    return recursive_dict_merge(vasp_summary, opt_run_summary)
+    return recursive_dict_merge(intermediate_task_docs, vasp_summary, opt_run_summary)

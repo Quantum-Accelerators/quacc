@@ -161,7 +161,6 @@ def test_doublerelax_flow(tmp_path, monkeypatch):
     assert double_relax_flow(atoms, relax1_kwargs={"kpts": [1, 1, 1]})
 
 
-
 def test_ase_relax_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
@@ -175,6 +174,23 @@ def test_ase_relax_job(tmp_path, monkeypatch):
     assert output["parameters"]["encut"] == 520
     assert output["fmax"] == 0.01
     assert len(output["trajectory_results"]) > 1
+
+
+def test_ase_relax_job2(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    atoms = bulk("Al")
+
+    output = ase_relax_job(atoms, opt_params={"store_intermediate_files":True})
+    assert output["nsites"] == len(atoms)
+    assert output["parameters"]["nsw"] == 0
+    assert output["parameters"]["lwave"] is False
+    assert output["parameters"]["lcharg"] is False
+    assert output["parameters"]["encut"] == 520
+    assert output["fmax"] == 0.01
+    assert len(output["trajectory_results"]) > 1
+    assert len(output["steps"]) == len(output["trajectory_results"])
+
 
 def test_non_scf_job1(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
