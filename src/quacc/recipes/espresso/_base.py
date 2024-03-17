@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ase import Atoms
+from ase.atoms import Atoms
 from ase.io.espresso import Namelist
 from ase.io.espresso_namelist.keys import ALL_KEYS
 
