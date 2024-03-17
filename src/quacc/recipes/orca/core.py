@@ -10,10 +10,10 @@ from quacc import job
 from quacc.recipes.orca._base import base_fn, base_opt_fn
 
 if TYPE_CHECKING:
-    from typing import Any
 
     from ase.atoms import Atoms
 
+    from quacc.runners.ase import OptParams
     from quacc.schemas._aliases.cclib import cclibSchema
     from quacc.utils.files import Filenames, SourceDirectory
 
@@ -161,7 +161,7 @@ def ase_relax_job(
     basis: str = "def2-tzvp",
     orcasimpleinput: list[str] | None = None,
     orcablocks: list[str] | None = None,
-    opt_params: dict[str, Any] | None = None,
+    opt_params: OptParams | None = None,
     nprocs: int | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> cclibSchema:
@@ -188,6 +188,10 @@ def ase_relax_job(
         List of `orcablocks` swaps for the calculator. To remove entries
         from the defaults, put a `#` in front of the name. Refer to the
         [ase.calculators.orca.ORCA][] calculator for details on `orcablocks`.
+    opt_params
+        Dictionary of custom kwargs for the optimization process. Set a value
+        to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
+        keys, refer to [quacc.runners.ase.run_opt][].
     nprocs
         Number of processors to use. Defaults to the number of physical cores.
     copy_files

@@ -11,10 +11,10 @@ from quacc.recipes.onetep._base import base_fn, base_opt_fn
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
-    from typing import Any
 
     from ase import Atoms
 
+    from quacc.runners.ase import OptParams
     from quacc.schemas._aliases.ase import RunSchema
     from quacc.utils.files import Filenames, SourceDirectory
 
@@ -70,7 +70,7 @@ def static_job(
 def ase_relax_job(
     atoms: Atoms,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-    opt_params: dict[str, Any] | None = None,
+    opt_params: OptParams | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """

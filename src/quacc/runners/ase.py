@@ -34,6 +34,22 @@ if TYPE_CHECKING:
 
     from quacc.utils.files import Filenames, SourceDirectory
 
+    class OptParams(TypedDict, total=False):
+        """
+        Type hint for keyword arguments to [quacc.runners.ase.run_opt][].
+        """
+
+        relax_cell: bool  # default = False
+        fmax: float  # default = 0.01
+        max_steps: int  # default = 1000
+        optimizer: Optimizer  # default = BFGS
+        optimizer_kwargs: OptimizerKwargs | None  # default = None
+        store_intermediate_files: bool  # default = False
+        run_kwargs: dict[str, Any] | None  # default = None
+        copy_files: (
+            SourceDirectory | dict[SourceDirectory, Filenames] | None
+        )  # default = None
+
     class OptimizerKwargs(TypedDict, total=False):
         """
         Type hint for `optimizer_kwargs` in [quacc.runners.ase.run_opt][].
