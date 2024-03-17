@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from ase import Atoms
+from ase.atoms import Atoms
 from pymatgen.analysis.elasticity.strain import DeformedStructureSet
 from pymatgen.io.ase import AseAtomsAdaptor
 

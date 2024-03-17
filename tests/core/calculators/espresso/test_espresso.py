@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from ase import Atoms
+from ase.atoms import Atoms
 
 from quacc.calculators.espresso.espresso import Espresso, EspressoTemplate
 

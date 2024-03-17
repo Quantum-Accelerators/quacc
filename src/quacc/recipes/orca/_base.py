@@ -67,7 +67,7 @@ def base_fn(
     Returns
     -------
     cclibSchema
-        Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][]
+        Dictionary of results
     """
 
     atoms.calc = _prep_calculator(
@@ -130,7 +130,7 @@ def base_opt_fn(
     Returns
     -------
     cclibASEOptSchema
-        Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][]
+        Dictionary of results
     """
     atoms.calc = _prep_calculator(
         charge=charge,
