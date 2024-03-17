@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
 
 def base_fn(
-    atoms: Atoms = None,
+    atoms: Atoms | None = None,
     preset: str | None = None,
     template: EspressoTemplate | None = None,
     profile: EspressoProfile | None = None,
