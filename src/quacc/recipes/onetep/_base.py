@@ -136,7 +136,3 @@ def _prep_calculator(
         # If we also have access to post_args we can point not to the binary but to the launcher which takes -t nthreads as a post_args
         **calc_flags,
     )
-
-    dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
-
-    return summarize_opt_run(dyn, additional_fields=additional_fields)
