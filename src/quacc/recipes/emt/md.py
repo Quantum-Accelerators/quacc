@@ -35,7 +35,7 @@ def md_job(
     **calc_kwargs,
 ) -> DynSchema:
     """
-    Carry out a md calculation.
+    Carry out a Molecular Dynamics calculation.
 
     Parameters
     ----------
@@ -67,8 +67,6 @@ def md_job(
         See the type-hint for the data structure.
     """
 
-    md_defaults = {"timestep": 1.0, "steps": 500, "dynamics": VelocityVerlet}
-
     maxwell_boltzmann_defaults = {"temperature": None, "fix_com": True, "fix_rot": True}
 
     maxwell_boltzmann_params = recursive_dict_merge(
@@ -88,10 +86,10 @@ def md_job(
         if fix_rot:
             ZeroRotation(atoms)
 
-    md_flags = recursive_dict_merge(md_defaults, md_params)
-
     atoms.calc = EMT(**calc_kwargs)
+
+    md_flags = md_params or {}
 
     dyn = run_md(atoms, **md_flags)
 
-    return summarize_md_run(dyn, additional_fields={"name": "EMT Microcanonical"})
+    return summarize_md_run(dyn, additional_fields={"name": "EMT MD"})

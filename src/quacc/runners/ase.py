@@ -21,6 +21,7 @@ from quacc import SETTINGS
 from quacc.atoms.core import copy_atoms, get_final_atoms_from_dyn
 from quacc.runners.prep import calc_cleanup, calc_setup
 from quacc.utils.dicts import recursive_dict_merge
+from quacc.utils.units import md_units
 
 LOGGER = logging.getLogger(__name__)
 
@@ -297,65 +298,8 @@ def run_md(
         {"logfile": "-" if SETTINGS.DEBUG else tmpdir / "dyn.log"}, dynamics_kwargs
     )
 
-    # Check if trajectory kwarg is specified
-    if "trajectory" in dynamics_kwargs:
-        msg = "Quacc does not support setting the `trajectory` kwarg."
-        raise ValueError(msg)
-
-    if "temperature" in dynamics_kwargs or "temp" in dynamics_kwargs:
-        LOGGER.warning(
-            r"The `temperature`\`temp` kwargs are ASE deprecated and will"
-            "be interpreted as `temperature_K` in Quacc."
-        )
-        dynamics_kwargs["temperature_K"] = dynamics_kwargs.pop(
-            "temperature", None
-        ) or dynamics_kwargs.pop("temp", None)
-
-    if "pressure" in dynamics_kwargs:
-        LOGGER.warning(
-            "The `pressure` kwarg is ASE deprecated and will"
-            "be interpreted as `pressure_au` in Quacc."
-        )
-        dynamics_kwargs["pressure_au"] = dynamics_kwargs.pop("pressure")
-
-    if "compressibility" in dynamics_kwargs:
-        LOGGER.warning(
-            "The `compressibility` kwarg is ASE deprecated and will"
-            "be interpreted as `compressibility_au` in Quacc."
-        )
-        dynamics_kwargs["compressibility_au"] = dynamics_kwargs.pop("compressibility")
-
-    if "dt" in dynamics_kwargs:
-        LOGGER.warning(
-            "The `dt` kwarg is ASE deprecated and will"
-            "be interpreted as `timestep` in Quacc."
-        )
-        dynamics_kwargs["timestep"] = dynamics_kwargs.pop("dt")
-
-    # Convert units so that Quacc ALWAYS use the same units, for
-    # every MD classes.
-    # Users will have to always input time in fs, pressure in GPa
-    # temperature in K, and compressibility in 1/GPa.
-
-    if "ttime" in dynamics_kwargs:
-        dynamics_kwargs["ttime"] = dynamics_kwargs.pop("ttime") * fs
-
-    if "friction" in dynamics_kwargs:
-        dynamics_kwargs["friction"] = dynamics_kwargs.pop("friction") / fs
-
-    if "taut" in dynamics_kwargs:
-        dynamics_kwargs["taut"] = dynamics_kwargs.pop("taut") * fs
-
-    if "taup" in dynamics_kwargs:
-        dynamics_kwargs["taup"] = dynamics_kwargs.pop("taup") * fs
-
-    if "pfactor" in dynamics_kwargs:
-        dynamics_kwargs["pfactor"] = dynamics_kwargs.pop("pfactor") * GPa
-
-    if "compressibility_au" in dynamics_kwargs:
-        dynamics_kwargs["compressibility"] = (
-            dynamics_kwargs.pop("compressibility") / GPa
-        )
+    dynamics_kwargs = _md_params_handler(dynamics_kwargs)
+    dynamics_kwargs = md_units(dynamics_kwargs)
 
     traj_filename = tmpdir / "opt.traj"
     traj = Trajectory(traj_filename, "w", atoms=atoms)
@@ -485,3 +429,54 @@ def _copy_intermediate_files(
                 copy(item, store_path)
             elif item.is_dir():
                 copytree(item, store_path / item.name)
+
+
+def _md_params_handler(dynamics_kwargs):
+    """
+    Helper function to handle deprecated MD parameters.
+
+    Parameters
+    ----------
+    dynamics_kwargs
+        Dictionary of keyword arguments for the molecular dynamics calculation.
+
+    Returns
+    -------
+    None
+    """
+
+    if "trajectory" in dynamics_kwargs:
+        msg = "Quacc does not support setting the `trajectory` kwarg."
+        raise ValueError(msg)
+
+    if "temperature" in dynamics_kwargs or "temp" in dynamics_kwargs:
+        LOGGER.warning(
+            r"The `temperature`\`temp` kwargs are ASE deprecated and will"
+            "be interpreted as `temperature_K` in Quacc."
+        )
+        dynamics_kwargs["temperature_K"] = dynamics_kwargs.pop(
+            "temperature", None
+        ) or dynamics_kwargs.pop("temp", None)
+
+    if "pressure" in dynamics_kwargs:
+        LOGGER.warning(
+            "The `pressure` kwarg is ASE deprecated and will"
+            "be interpreted as `pressure_au` in Quacc."
+        )
+        dynamics_kwargs["pressure_au"] = dynamics_kwargs.pop("pressure")
+
+    if "compressibility" in dynamics_kwargs:
+        LOGGER.warning(
+            "The `compressibility` kwarg is ASE deprecated and will"
+            "be interpreted as `compressibility_au` in Quacc."
+        )
+        dynamics_kwargs["compressibility_au"] = dynamics_kwargs.pop("compressibility")
+
+    if "dt" in dynamics_kwargs:
+        LOGGER.warning(
+            "The `dt` kwarg is ASE deprecated and will"
+            "be interpreted as `timestep` in Quacc."
+        )
+        dynamics_kwargs["timestep"] = dynamics_kwargs.pop("dt")
+
+    return dynamics_kwargs
