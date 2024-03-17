@@ -73,5 +73,6 @@ class QMOFRelaxSchema(VaspSchema):
     volume_relax_lowacc: VaspSchema | None
     double_relax: VaspSchema
 
-class VaspASESchema(VaspSchema,OptSchema):
+
+class VaspASESchema(VaspSchema, OptSchema):
     """Type hint associated with VASP relaxations run via ASE"""

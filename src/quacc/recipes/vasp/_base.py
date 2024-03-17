@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.schemas._aliases.vasp import VaspASESchema, VaspSchema
+    from quacc.schemas._aliases.vasp import VaspSchema
     from quacc.utils.files import Filenames, SourceDirectory
 
 
@@ -116,7 +116,7 @@ def base_opt_fn(
     atoms.calc = Vasp(atoms, preset=preset, **calc_flags)
     dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
 
-    opt_run_summary = summarize_opt_run(dyn,additional_fields=additional_fields)
+    opt_run_summary = summarize_opt_run(dyn, additional_fields=additional_fields)
 
     final_atoms = get_final_atoms_from_dyn(dyn)
 
