@@ -67,7 +67,7 @@ def base_fn(
     Returns
     -------
     cclibSchema
-        Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][]
+        Dictionary of results
     """
     inputs = merge_list_params(default_inputs, input_swaps)
     blocks = merge_list_params(default_blocks, block_swaps)
@@ -132,7 +132,7 @@ def base_opt_fn(
     Returns
     -------
     cclibASEOptSchema
-        Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][]
+        Dictionary of results
     """
     inputs = merge_list_params(default_inputs, input_swaps)
     blocks = merge_list_params(default_blocks, block_swaps)
