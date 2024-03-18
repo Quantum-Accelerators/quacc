@@ -419,7 +419,7 @@ def get_intermediate_schemas(
     dir_path
         Path to the VASP calculation directory.
     logfile_extensions
-        Possible extensions of the log file  
+        Possible extensions of the log file
     nsteps
         Number of steps in the VASP calculation.
 
