@@ -8,7 +8,8 @@ from ase.build import bulk, molecule
 from quacc import SETTINGS
 from quacc.recipes.vasp.core import (
     double_relax_flow,
-    non_scf_job,ase_relax_job,
+    non_scf_job,
+    ase_relax_job,
     relax_job,
     static_job,
 )
@@ -181,7 +182,7 @@ def test_ase_relax_job2(tmp_path, monkeypatch):
 
     atoms = bulk("Al")
 
-    output = ase_relax_job(atoms, opt_params={"store_intermediate_files":True})
+    output = ase_relax_job(atoms, opt_params={"store_intermediate_files": True})
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["nsw"] == 0
     assert output["parameters"]["lwave"] is False
