@@ -133,7 +133,7 @@ def test_md_jobs(tmp_path, monkeypatch):
 
     assert output["parameters"]["asap_cutoff"] is False
     assert len(output["trajectory"]) == 501
-    assert output["name"] == "EMT Microcanonical"
+    assert output["name"] == "EMT MD"
     assert output["parameters_md"]["timestep"] == pytest.approx(1.0)
     assert output["trajectory_log"][-1]["temperature"] == pytest.approx(1575.886)
     assert output["trajectory_log"][0]["temperature"] == pytest.approx(0.0)
@@ -178,7 +178,7 @@ def test_md_jobs(tmp_path, monkeypatch):
 
     assert output["parameters"]["asap_cutoff"] is False
     assert len(output["trajectory"]) == 500
-    assert output["name"] == "EMT Microcanonical"
+    assert output["name"] == "EMT MD"
     assert output["trajectory_log"][0]["temperature"] == pytest.approx(759.8829)
     assert output["trajectory_results"][-1]["energy"] == pytest.approx(2.0363759)
 
