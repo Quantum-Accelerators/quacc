@@ -131,7 +131,7 @@ def cclib_summarize_run(
     if nsteps:
         intermediate_cclib_task_docs ={"steps":{
             n: _make_cclib_schema(Path(dir_path, f"step{n}"),logfile_extensions)
-            for n in range(nsteps + 1)
+            for n in range(nsteps)
         }}
     else:
         intermediate_cclib_task_docs = {}
