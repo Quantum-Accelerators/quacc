@@ -129,7 +129,7 @@ def vasp_summarize_run(
             }
         }
     else:
-        intermediate_task_docs = None
+        intermediate_task_docs = {}
 
     # Get Bader analysis
     if run_bader:
