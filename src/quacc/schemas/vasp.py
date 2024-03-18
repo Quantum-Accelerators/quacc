@@ -122,14 +122,14 @@ def vasp_summarize_run(
     # Get intermediate task documents if an ASE optimizer is used
     nsteps = len([f for f in os.listdir(dir_path) if f.startswith("step")])
     if nsteps:
-        intermediate_task_docs = {
+        intermediate_vasp_task_docs = {
             "steps": {
                 n: TaskDoc.from_directory(Path(dir_path, f"step{n}")).model_dump()
                 for n in range(nsteps + 1)
             }
         }
     else:
-        intermediate_task_docs = {}
+        intermediate_vasp_task_docs = {}
 
     # Get Bader analysis
     if run_bader:
@@ -155,7 +155,7 @@ def vasp_summarize_run(
 
     # Make task document
     unsorted_task_doc = (
-        intermediate_task_docs | vasp_task_doc | base_task_doc | additional_fields
+        intermediate_vasp_task_docs | vasp_task_doc | base_task_doc | additional_fields
     )
     task_doc = clean_task_doc(unsorted_task_doc)
 
