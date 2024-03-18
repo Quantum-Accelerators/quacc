@@ -145,7 +145,7 @@ def cclib_summarize_run(
     )
 
     # Create a dictionary of the inputs/outputs
-    unsorted_task_doc = intermediate_cclib_task_docs| cclib_task_doc|run_task_doc| additional_fields
+    unsorted_task_doc = run_task_doc | intermediate_cclib_task_docs| cclib_task_doc| additional_fields
     task_doc = clean_task_doc(unsorted_task_doc)
 
     # Store the results
