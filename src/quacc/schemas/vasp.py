@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
+import pickle
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -12,6 +13,10 @@ from emmet.core.tasks import TaskDoc
 from monty.os.path import zpath
 from pymatgen.command_line.bader_caller import bader_analysis_from_path
 from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
+from pymatgen.entries.compatibility import (
+    CompatibilityError,
+    MaterialsProject2020Compatibility,
+)
 
 from quacc import SETTINGS
 from quacc.schemas.ase import summarize_run
@@ -36,6 +41,7 @@ def vasp_summarize_run(
     run_bader: bool | None = None,
     run_chargemol: bool | None = None,
     check_convergence: bool | None = None,
+    report_mp_corrections: bool = False,
     additional_fields: dict[str, Any] | None = None,
     store: Store | None = None,
 ) -> VaspSchema:
@@ -62,6 +68,8 @@ def vasp_summarize_run(
     check_convergence
         Whether to throw an error if convergence is not reached. Defaults to True in
         settings.
+    report_mp_corrections
+        Whether to apply the MP corrections to the task document. Defaults to False.
     additional_fields
         Additional fields to add to the task document.
     store
@@ -85,7 +93,21 @@ def vasp_summarize_run(
 
     # Fetch all tabulated results from VASP outputs files. Fortunately, emmet
     # already has a handy function for this
-    vasp_task_doc = TaskDoc.from_directory(dir_path).model_dump()
+    vasp_task_model = TaskDoc.from_directory(dir_path)
+
+    # Get MP corrections
+    if report_mp_corrections:
+        mp_compat = MaterialsProject2020Compatibility()
+        try:
+            corrected_entry = mp_compat.process_entry(
+                vasp_task_model.structure_entry, on_error="raise"
+            )
+            vasp_task_model.entry = corrected_entry
+        except CompatibilityError as err:
+            logger.warning(err)
+
+    # Convert the VASP task model to a dictionary
+    vasp_task_doc = vasp_task_model.model_dump()
 
     # Check for calculation convergence
     if check_convergence and vasp_task_doc["state"] != "successful":
@@ -123,6 +145,10 @@ def vasp_summarize_run(
     # Make task document
     unsorted_task_doc = vasp_task_doc | base_task_doc | additional_fields
     task_doc = clean_task_doc(unsorted_task_doc)
+
+    if SETTINGS.WRITE_PICKLE:
+        with Path(dir_path, "quacc_results.pkl").open("wb") as f:
+            pickle.dump(task_doc, f)
 
     # Store the results
     if store:

@@ -2,17 +2,20 @@
 
 from __future__ import annotations
 
+import pickle
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
 from ase import units
 from ase.io import read
+from ase.vibrations import Vibrations
 from ase.vibrations.data import VibrationsData
 
 from quacc import SETTINGS, __version__
 from quacc.atoms.core import get_final_atoms_from_dyn
 from quacc.schemas.atoms import atoms_to_metadata
-from quacc.schemas.prep import prep_magmoms, prep_next_run
+from quacc.schemas.prep import prep_next_run
 from quacc.utils.dicts import clean_task_doc, recursive_dict_merge
 from quacc.utils.files import get_uri
 from quacc.wflow_tools.db import results_to_db
@@ -25,7 +28,6 @@ if TYPE_CHECKING:
     from ase.md.md import MolecularDynamics
     from ase.optimize.optimize import Optimizer
     from ase.thermochemistry import IdealGasThermo
-    from ase.vibrations import Vibrations
     from maggma.core import Store
 
     from quacc.schemas._aliases.ase import (
@@ -42,7 +44,7 @@ def summarize_run(
     final_atoms: Atoms,
     input_atoms: Atoms,
     charge_and_multiplicity: tuple[int, int] | None = None,
-    move_magmoms: bool = True,
+    move_magmoms: bool = False,
     additional_fields: dict[str, Any] | None = None,
     store: Store | bool | None = None,
 ) -> RunSchema:
@@ -105,9 +107,7 @@ def summarize_run(
 
     results = {"results": final_atoms.calc.results}
 
-    if move_magmoms:
-        final_atoms = prep_magmoms(final_atoms)
-    atoms_to_store = prep_next_run(final_atoms)
+    atoms_to_store = prep_next_run(final_atoms, move_magmoms=move_magmoms)
 
     if final_atoms:
         final_atoms_metadata = atoms_to_metadata(
@@ -121,6 +121,10 @@ def summarize_run(
     )
     task_doc = clean_task_doc(unsorted_task_doc)
 
+    if SETTINGS.WRITE_PICKLE:
+        with Path(directory, "quacc_results.pkl").open("wb") as f:
+            pickle.dump(task_doc, f)
+
     if store:
         results_to_db(store, task_doc)
 
@@ -132,7 +136,7 @@ def summarize_opt_run(
     trajectory: Trajectory | list[Atoms] = None,
     check_convergence: bool | None = None,
     charge_and_multiplicity: tuple[int, int] | None = None,
-    move_magmoms: bool = True,
+    move_magmoms: bool = False,
     additional_fields: dict[str, Any] | None = None,
     store: Store | bool | None = None,
 ) -> OptSchema:
@@ -220,6 +224,10 @@ def summarize_opt_run(
         base_task_doc, opt_fields, additional_fields
     )
     task_doc = clean_task_doc(unsorted_task_doc)
+
+    if SETTINGS.WRITE_PICKLE:
+        with Path(directory, "quacc_results.pkl").open("wb") as f:
+            pickle.dump(task_doc, f)
 
     if store:
         results_to_db(store, task_doc)
@@ -324,7 +332,75 @@ def summarize_md_run(
     return task_doc
 
 
-def summarize_vib_run(
+def summarize_vib_and_thermo(
+    vib: Vibrations,
+    igt: IdealGasThermo,
+    temperature: float = 298.15,
+    pressure: float = 1.0,
+    charge_and_multiplicity: tuple[int, int] | None = None,
+    additional_fields: dict[str, Any] | None = None,
+    store: Store | bool | None = None,
+) -> VibThermoSchema:
+    """
+    Get tabulated results from an ASE Vibrations run and ASE IdealGasThermo object and
+    store them in a database-friendly format.
+
+    Parameters
+    ----------
+    vib
+        ASE Vibrations object.
+    igt
+        ASE IdealGasThermo object.
+    temperature
+        Temperature in Kelvins.
+    pressure
+        Pressure in bar.
+    charge_and_multiplicity
+        Charge and spin multiplicity of the Atoms object, only used for Molecule
+        metadata.
+    additional_fields
+        Additional fields to add to the task document.
+    store
+        Maggma Store object to store the results in. If None,
+        `SETTINGS.STORE` will be used.
+
+    Returns
+    -------
+    VibThermoSchema
+        A dictionary that merges the `VibSchema` and `ThermoSchema`.
+    """
+    additional_fields = additional_fields or {}
+    store = SETTINGS.STORE if store is None else store
+
+    vib_task_doc = _summarize_vib_run(
+        vib, charge_and_multiplicity=charge_and_multiplicity, store=False
+    )
+    thermo_task_doc = _summarize_ideal_gas_thermo(
+        igt,
+        temperature=temperature,
+        pressure=pressure,
+        charge_and_multiplicity=charge_and_multiplicity,
+        store=False,
+    )
+
+    unsorted_task_doc = recursive_dict_merge(
+        vib_task_doc, thermo_task_doc, additional_fields
+    )
+    task_doc = clean_task_doc(unsorted_task_doc)
+
+    if isinstance(vib, Vibrations):
+        directory = vib.atoms.calc.directory
+        if SETTINGS.WRITE_PICKLE:
+            with Path(directory, "quacc_results.pkl").open("wb") as f:
+                pickle.dump(task_doc, f)
+
+    if store:
+        results_to_db(store, task_doc)
+
+    return task_doc
+
+
+def _summarize_vib_run(
     vib: Vibrations | VibrationsData,
     charge_and_multiplicity: tuple[int, int] | None = None,
     additional_fields: dict[str, Any] | None = None,
@@ -438,7 +514,7 @@ def summarize_vib_run(
     return task_doc
 
 
-def summarize_ideal_gas_thermo(
+def _summarize_ideal_gas_thermo(
     igt: IdealGasThermo,
     temperature: float = 298.15,
     pressure: float = 1.0,
@@ -516,68 +592,6 @@ def summarize_ideal_gas_thermo(
 
     unsorted_task_doc = recursive_dict_merge(
         atoms_metadata, inputs, results, additional_fields
-    )
-    task_doc = clean_task_doc(unsorted_task_doc)
-
-    if store:
-        results_to_db(store, task_doc)
-
-    return task_doc
-
-
-def summarize_vib_and_thermo(
-    vib: Vibrations,
-    igt: IdealGasThermo,
-    temperature: float = 298.15,
-    pressure: float = 1.0,
-    charge_and_multiplicity: tuple[int, int] | None = None,
-    additional_fields: dict[str, Any] | None = None,
-    store: Store | bool | None = None,
-) -> VibThermoSchema:
-    """
-    Get tabulated results from an ASE Vibrations run and ASE IdealGasThermo object and
-    store them in a database-friendly format.
-
-    Parameters
-    ----------
-    vib
-        ASE Vibrations object.
-    igt
-        ASE IdealGasThermo object.
-    temperature
-        Temperature in Kelvins.
-    pressure
-        Pressure in bar.
-    charge_and_multiplicity
-        Charge and spin multiplicity of the Atoms object, only used for Molecule
-        metadata.
-    additional_fields
-        Additional fields to add to the task document.
-    store
-        Maggma Store object to store the results in. If None,
-        `SETTINGS.STORE` will be used.
-
-    Returns
-    -------
-    VibThermoSchema
-        A dictionary that merges the `VibSchema` and `ThermoSchema`.
-    """
-    additional_fields = additional_fields or {}
-    store = SETTINGS.STORE if store is None else store
-
-    vib_task_doc = summarize_vib_run(
-        vib, charge_and_multiplicity=charge_and_multiplicity, store=False
-    )
-    thermo_task_doc = summarize_ideal_gas_thermo(
-        igt,
-        temperature=temperature,
-        pressure=pressure,
-        charge_and_multiplicity=charge_and_multiplicity,
-        store=False,
-    )
-
-    unsorted_task_doc = recursive_dict_merge(
-        vib_task_doc, thermo_task_doc, additional_fields
     )
     task_doc = clean_task_doc(unsorted_task_doc)
 

@@ -74,6 +74,7 @@ def mp_gga_relax_job(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
+        report_mp_corrections=True,
         additional_fields={"name": "MP GGA Relax"},
         copy_files=copy_files,
     )
@@ -120,6 +121,7 @@ def mp_gga_static_job(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
+        report_mp_corrections=True,
         additional_fields={"name": "MP GGA Static"},
         copy_files=copy_files,
     )
@@ -173,6 +175,7 @@ def mp_metagga_prerelax_job(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
+        report_mp_corrections=True,
         additional_fields={"name": "MP Meta-GGA Pre-Relax"},
         copy_files=copy_files,
     )
@@ -222,6 +225,7 @@ def mp_metagga_relax_job(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
+        report_mp_corrections=True,
         additional_fields={"name": "MP Meta-GGA Relax"},
         copy_files=copy_files,
     )
@@ -272,6 +276,7 @@ def mp_metagga_static_job(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
+        report_mp_corrections=True,
         additional_fields={"name": "MP Meta-GGA Static"},
         copy_files=copy_files,
     )
@@ -387,15 +392,17 @@ def mp_metagga_relax_flow(
     MPMetaGGARelaxFlowSchema
         Dictionary of results. See the type-hint for the data structure.
     """
-    (
-        mp_metagga_prerelax_job_,
-        mp_metagga_relax_job_,
-        mp_metagga_static_job_,
-    ) = customize_funcs(
-        ["mp_metagga_prerelax_job", "mp_metagga_relax_job", "mp_metagga_static_job"],
-        [mp_metagga_prerelax_job, mp_metagga_relax_job, mp_metagga_static_job],
-        parameters=job_params,
-        decorators=job_decorators,
+    (mp_metagga_prerelax_job_, mp_metagga_relax_job_, mp_metagga_static_job_) = (
+        customize_funcs(
+            [
+                "mp_metagga_prerelax_job",
+                "mp_metagga_relax_job",
+                "mp_metagga_static_job",
+            ],
+            [mp_metagga_prerelax_job, mp_metagga_relax_job, mp_metagga_static_job],
+            parameters=job_params,
+            decorators=job_decorators,
+        )
     )
 
     # Run the prerelax

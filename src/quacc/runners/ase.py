@@ -12,7 +12,7 @@ from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read
 from ase.md.verlet import VelocityVerlet
 from ase.optimize import BFGS
-from ase.units import GPa, fs
+from ase.units import fs
 from ase.vibrations import Vibrations
 from monty.dev import requires
 from monty.os.path import zpath

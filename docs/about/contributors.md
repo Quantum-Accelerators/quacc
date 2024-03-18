@@ -25,6 +25,7 @@ Additional contributions were made by the individuals listed [here](https://gith
 - [@tomdemeyere](https://github.com/tomdemeyere): Custom Espresso calculator, Espresso recipes.
 - [@ViktoriiaBaib](https://github.com/ViktoriiaBaib): Initial testing of quacc.
 - [@zulissimeta](https://github.com/zulissimeta): Dask support
+- [@yw-fang](https://github.com/yw-fang): VASP Non-SCF recipe
 
 ## Inspiration
 

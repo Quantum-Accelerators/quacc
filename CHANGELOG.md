@@ -4,6 +4,49 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0]
+
+### Added
+
+- Added a `non_scf_job` for VASP
+
+### Changed
+
+- There are no more `os.chdir` calls to ensure thread safety
+- Use `pymatgen.io.ase.MSONAtoms` to make MSONable `Atoms`
+- Changed default NEDOS value from 5001 to 3001 for VASP static jobs (10x the default)
+
+### Fixed
+
+- Fixed multithreaded `@task` distribution with VASP and Q-Chem
+- Fixed a bug where, with Prefect, the `State` would raise an indexing error when passing around deferred `dict` entries
+- Fixed a bug when `job_parameters` and `job_decorators` are both passed to `customize_funcs()`
+- Raise a `ValueError` when the user provides `SCRATCH_DIR` or `RESULTS_DIR` as a relative path
+
+## [0.6.10]
+
+### Fixed
+
+- Fixed pickle-ability of the schemas
+- Fixed multithreaded `@task` distribution with GULP, Espresso, and common phonon flow recipes
+- Fixed concurrency issues with VASP/Q-Chem due to refactoring
+
+### Removed
+
+- Removed the `quacc.schemas.atoms._quacc_sanitize` function
+
+## [0.6.9]
+
+### Added
+
+- Added MP compatability corrections in VASP MP recipes
+- Added various phonon recipes for Espresso
+- Added various DOS recipes for Espresso
+
+### Fixed
+
+- Fixed a rare edge case where final magmoms would not be moved to initial magmoms of next run in MP VASP recipes
+
 ## [0.6.8]
 
 ### Added

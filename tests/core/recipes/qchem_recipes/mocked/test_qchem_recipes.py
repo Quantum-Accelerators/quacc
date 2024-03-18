@@ -70,29 +70,29 @@ def qcinput_nearly_equal(qcinput1, qcinput2):
             assert qcin1[key] == qcin2[key]
 
 
-def mock_execute1(_self, **kwargs):
-    copy(QCHEM_DIR / "mol.qout.basic", "mol.qout")
-    copy(QCHEM_DIR / "131.0.basic", "131.0")
-    copy(QCHEM_DIR / "53.0.basic", "53.0")
-    copy(QCHEM_DIR / "custodian.json", "custodian.json")
+def mock_execute1(self, **kwargs):
+    copy(QCHEM_DIR / "mol.qout.basic", Path(self.directory, "mol.qout"))
+    copy(QCHEM_DIR / "131.0.basic", Path(self.directory, "131.0"))
+    copy(QCHEM_DIR / "53.0.basic", Path(self.directory, "53.0"))
+    copy(QCHEM_DIR / "custodian.json", Path(self.directory, "custodian.json"))
 
 
-def mock_execute2(_self, **kwargs):
-    copy(QCHEM_DIR / "mol.qout.intermediate", "mol.qout")
-    copy(QCHEM_DIR / "131.0.intermediate", "131.0")
-    copy(QCHEM_DIR / "53.0.intermediate", "53.0")
-    copy(QCHEM_DIR / "custodian.json", "custodian.json")
+def mock_execute2(self, **kwargs):
+    copy(QCHEM_DIR / "mol.qout.intermediate", Path(self.directory, "mol.qout"))
+    copy(QCHEM_DIR / "131.0.intermediate", Path(self.directory, "131.0"))
+    copy(QCHEM_DIR / "53.0.intermediate", Path(self.directory, "53.0"))
+    copy(QCHEM_DIR / "custodian.json", Path(self.directory, "custodian.json"))
 
 
-def mock_execute3(_self, **kwargs):
-    copy(QCHEM_DIR / "mol.qout.alternate", "mol.qout")
-    copy(QCHEM_DIR / "131.0.alternate", "131.0")
-    copy(QCHEM_DIR / "53.0.alternate", "53.0")
-    copy(QCHEM_DIR / "custodian.json", "custodian.json")
+def mock_execute3(self, **kwargs):
+    copy(QCHEM_DIR / "mol.qout.alternate", Path(self.directory, "mol.qout"))
+    copy(QCHEM_DIR / "131.0.alternate", Path(self.directory, "131.0"))
+    copy(QCHEM_DIR / "53.0.alternate", Path(self.directory, "53.0"))
+    copy(QCHEM_DIR / "custodian.json", Path(self.directory, "custodian.json"))
 
 
 def mock_execute4(self, **kwargs):
-    qcin = QCInput.from_file("mol.qin")
+    qcin = QCInput.from_file(str(Path(self.directory, "mol.qin")))
     mol = qcin.molecule
     atoms = mol.to_ase_atoms()
     atoms.calc = LennardJones()
@@ -100,11 +100,11 @@ def mock_execute4(self, **kwargs):
     self.results = atoms.calc.results
 
 
-def mock_execute5(_self, **kwargs):
-    copy(QCHEM_DIR / "mol.qout.freq", "mol.qout")
-    copy(QCHEM_DIR / "132.0.freq", "132.0")
-    copy(QCHEM_DIR / "53.0.freq", "53.0")
-    copy(QCHEM_DIR / "custodian.json", "custodian.json")
+def mock_execute5(self, **kwargs):
+    copy(QCHEM_DIR / "mol.qout.freq", Path(self.directory, "mol.qout"))
+    copy(QCHEM_DIR / "132.0.freq", Path(self.directory, "132.0"))
+    copy(QCHEM_DIR / "53.0.freq", Path(self.directory, "53.0"))
+    copy(QCHEM_DIR / "custodian.json", Path(self.directory, "custodian.json"))
 
 
 def mock_read(self, **kwargs):
@@ -128,7 +128,7 @@ def test_static_job_v1(monkeypatch, tmp_path, test_atoms):
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826330655069403)
     assert output["results"]["custodian"][0]["job"]["max_cores"] == 40
 
-    qcin = QCInput.from_file("mol.qin.gz")
+    qcin = QCInput.from_file(str(Path(output["dir_name"], "mol.qin.gz")))
     ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.basic"))
     qcinput_nearly_equal(qcin, ref_qcin)
     qcinput_nearly_equal(ref_qcin, QCInput.from_dict(output["results"]["qc_input"]))
@@ -158,7 +158,7 @@ def test_static_job_v2(monkeypatch, tmp_path, test_atoms):
     assert output["results"]["energy"] == pytest.approx(-605.6859554025 * units.Hartree)
     assert output["results"]["forces"][0][0] == pytest.approx(-0.6955571014353796)
 
-    qcin = QCInput.from_file("mol.qin.gz")
+    qcin = QCInput.from_file(str(Path(output["dir_name"], "mol.qin.gz")))
     ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.intermediate"))
     qcinput_nearly_equal(qcin, ref_qcin)
     qcinput_nearly_equal(ref_qcin, QCInput.from_dict(output["results"]["qc_input"]))
@@ -185,7 +185,7 @@ def test_static_job_v3(monkeypatch, tmp_path, test_atoms):
     assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826311086011256)
 
-    qcin = QCInput.from_file("mol.qin.gz")
+    qcin = QCInput.from_file(str(Path(output["dir_name"], "mol.qin.gz")))
     ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.alternate"))
     qcinput_nearly_equal(qcin, ref_qcin)
     qcinput_nearly_equal(ref_qcin, QCInput.from_dict(output["results"]["qc_input"]))
@@ -235,7 +235,7 @@ def test_relax_job_v1(monkeypatch, tmp_path, test_atoms):
     assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826330655069403)
 
-    qcin = QCInput.from_file("mol.qin.gz")
+    qcin = QCInput.from_file(str(Path(output["dir_name"], "mol.qin.gz")))
     ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.basic.sella_opt_iter1"))
     qcinput_nearly_equal(qcin, ref_qcin)
     assert len(output["results"]["qc_input"]) > 1
@@ -265,7 +265,7 @@ def test_relax_job_v2(monkeypatch, tmp_path, test_atoms):
     assert output["results"]["energy"] == pytest.approx(-605.6859554025 * units.Hartree)
     assert output["results"]["forces"][0][0] == pytest.approx(-0.6955571014353796)
 
-    qcin = QCInput.from_file("mol.qin.gz")
+    qcin = QCInput.from_file(str(Path(output["dir_name"], "mol.qin.gz")))
     ref_qcin = QCInput.from_file(
         str(QCHEM_DIR / "mol.qin.intermediate.sella_opt_iter1")
     )
@@ -367,7 +367,7 @@ def test_ts_job_v1(monkeypatch, tmp_path, test_atoms):
     assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826330655069403)
 
-    qcin = QCInput.from_file("mol.qin.gz")
+    qcin = QCInput.from_file(str(Path(output["dir_name"], "mol.qin.gz")))
     ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.basic.sella_TSopt_iter1"))
     qcinput_nearly_equal(qcin, ref_qcin)
 
@@ -396,7 +396,7 @@ def test_ts_job_v2(monkeypatch, tmp_path, test_atoms):
     assert output["results"]["energy"] == pytest.approx(-605.6859554025 * units.Hartree)
     assert output["results"]["forces"][0][0] == pytest.approx(-0.6955571014353796)
 
-    qcin = QCInput.from_file("mol.qin.gz")
+    qcin = QCInput.from_file(str(Path(output["dir_name"], "mol.qin.gz")))
     ref_qcin = QCInput.from_file(
         str(QCHEM_DIR / "mol.qin.intermediate.sella_TSopt_iter1")
     )
@@ -474,7 +474,7 @@ def test_irc_job_v1(monkeypatch, tmp_path, test_atoms):
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["spin_multiplicity"] == 1
 
-    qcin = QCInput.from_file("mol.qin.gz")
+    qcin = QCInput.from_file(str(Path(output["dir_name"], "mol.qin.gz")))
     ref_qcin = QCInput.from_file(
         str(QCHEM_DIR / "mol.qin.basic.sella_IRC_forward_iter1")
     )
@@ -490,7 +490,7 @@ def test_irc_job_v1(monkeypatch, tmp_path, test_atoms):
         opt_params={"max_steps": 1},
     )
 
-    qcin = QCInput.from_file("mol.qin.gz")
+    qcin = QCInput.from_file(str(Path(output["dir_name"], "mol.qin.gz")))
     ref_qcin = QCInput.from_file(
         str(QCHEM_DIR / "mol.qin.basic.sella_IRC_reverse_iter1")
     )
@@ -566,7 +566,7 @@ def test_quasi_irc_job(monkeypatch, tmp_path, test_atoms):
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["spin_multiplicity"] == 1
 
-    qcin = QCInput.from_file("mol.qin.gz")
+    qcin = QCInput.from_file(str(Path(output["dir_name"], "mol.qin.gz")))
     ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.basic.quasi_irc_forward"))
     qcinput_nearly_equal(qcin, ref_qcin)
 
@@ -594,6 +594,6 @@ def test_quasi_irc_job(monkeypatch, tmp_path, test_atoms):
     assert output["parameters"]["charge"] == -1
     assert output["parameters"]["spin_multiplicity"] == 2
 
-    qcin = QCInput.from_file("mol.qin.gz")
+    qcin = QCInput.from_file(str(Path(output["dir_name"], "mol.qin.gz")))
     ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.quasi_irc_reverse"))
     qcinput_nearly_equal(qcin, ref_qcin)

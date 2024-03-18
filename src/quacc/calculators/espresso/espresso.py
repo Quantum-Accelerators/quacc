@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
+import logging
 import os
 import re
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
-from ase import Atoms
+from ase.atoms import Atoms
 from ase.calculators.espresso import Espresso as Espresso_
 from ase.calculators.espresso import EspressoProfile
 from ase.calculators.espresso import EspressoTemplate as EspressoTemplate_
@@ -19,14 +20,17 @@ from ase.io.espresso import (
     write_espresso_ph,
     write_fortran_namelist,
 )
+from ase.io.espresso_namelist.keys import ALL_KEYS
 
 from quacc import SETTINGS
-from quacc.calculators.espresso.utils import get_pseudopotential_info, sanity_checks
+from quacc.calculators.espresso.utils import get_pseudopotential_info
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.utils.files import load_yaml_calc
 
 if TYPE_CHECKING:
     from typing import Any
+
+LOGGER = logging.getLogger(__name__)
 
 
 class EspressoTemplate(EspressoTemplate_):
@@ -59,6 +63,7 @@ class EspressoTemplate(EspressoTemplate_):
 
         self.inputname = f"{binary}.in"
         self.outputname = f"{binary}.out"
+        self.errorname = f"{binary}.err"
 
         self.binary = binary
 
@@ -67,7 +72,15 @@ class EspressoTemplate(EspressoTemplate_):
             "wfcdir": os.environ.get("ESPRESSO_TMPDIR", "."),
         }
 
-        self.outfiles = {"fildos": "pwscf.dos", "filpdos": "pwscf.pdos_tot"}
+        self.outfiles = {
+            "fildos": "pwscf.dos",
+            "filpdos": "pwscf.pdos_tot",
+            "flfrc": "q2r.fc",
+            "fldos": "matdyn.dos",
+            "flfrq": "matdyn.freq",
+            "flvec": "matdyn.modes",
+            "fleig": "matdyn.eig",
+        }
 
         self.test_run = test_run
 
@@ -106,7 +119,7 @@ class EspressoTemplate(EspressoTemplate_):
 
         directory = Path(directory)
         self._output_handler(parameters, directory)
-        parameters = sanity_checks(parameters, binary=self.binary)
+        parameters = self._sanity_checks(parameters)
 
         if self.test_run:
             self._test_run(parameters, directory)
@@ -199,6 +212,7 @@ class EspressoTemplate(EspressoTemplate_):
             The results dictionnary
         """
 
+        results = {}
         if self.binary == "pw":
             atoms = read(directory / self.outputname, format="espresso-out")
             results = dict(atoms.calc.properties())
@@ -207,14 +221,14 @@ class EspressoTemplate(EspressoTemplate_):
                 results = read_espresso_ph(fd)
         elif self.binary == "dos":
             fildos = self.outfiles["fildos"]
-            with Path(fildos).open("r") as fd:
+            with fildos.open("r") as fd:
                 lines = fd.readlines()
                 fermi = float(re.search(r"-?\d+\.?\d*", lines[0]).group(0))
                 dos = np.loadtxt(lines[1:])
             results = {fildos.name.replace(".", "_"): {"dos": dos, "fermi": fermi}}
         elif self.binary == "projwfc":
             filpdos = self.outfiles["filpdos"]
-            with Path(filpdos).open("r") as fd:
+            with filpdos.open("r") as fd:
                 lines = np.loadtxt(fd.readlines())
                 energy = lines[1:, 0]
                 dos = lines[1:, 1]
@@ -226,8 +240,11 @@ class EspressoTemplate(EspressoTemplate_):
                     "pdos": pdos,
                 }
             }
-        else:
-            results = {}
+        elif self.binary == "matdyn":
+            fldos = self.outfiles["fldos"]
+            if fldos.exists():
+                phonon_dos = np.loadtxt(fldos)
+                results = {fldos.name.replace(".", "_"): {"phonon_dos": phonon_dos}}
 
         if "energy" not in results:
             results["energy"] = None
@@ -261,10 +278,16 @@ class EspressoTemplate(EspressoTemplate_):
         working_dir = Path(directory).expanduser().resolve()
 
         for key in all_out:
-            path = Path(all_out[key]).expanduser().resolve()
+            path = Path(working_dir, all_out[key])
+
             for section in input_data:
                 if key in input_data[section]:
-                    path = Path(input_data[section][key]).expanduser().resolve()
+                    path = Path(input_data[section][key])
+                    if path.is_absolute():
+                        raise ValueError(
+                            f"Cannot use {key}={path} because it is an absolute path. When using Quacc please provide relative paths."
+                        )
+                    path = (working_dir / path).resolve()
                     input_data[section][key] = path
 
             try:
@@ -280,6 +303,58 @@ class EspressoTemplate(EspressoTemplate_):
                 self.outfiles[key] = path
 
         parameters["input_data"] = input_data
+
+        return parameters
+
+    def _sanity_checks(self, parameters: dict[str, Any]) -> None:
+        """
+        Function that performs sanity checks on the input_data. It is meant
+        to catch common mistakes that are not caught by the espresso binaries.
+
+        Parameters
+        ----------
+        parameters
+            The parameters dictionary which is assumed to already be in
+            the nested format.
+
+        Returns
+        -------
+        dict
+            The modified parameters dictionary.
+        """
+
+        input_data = parameters.get("input_data", {})
+
+        if self.binary == "ph":
+            input_ph = input_data.get("inputph", {})
+            qpts = parameters.get("qpts", (0, 0, 0))
+
+            qplot = input_ph.get("qplot", False)
+            lqdir = input_ph.get("lqdir", False)
+            recover = input_ph.get("recover", False)
+            ldisp = input_ph.get("ldisp", False)
+
+            is_grid = input_ph.get("start_q") or input_ph.get("start_irr")
+            # Temporary patch for https://gitlab.com/QEF/q-e/-/issues/644
+            if qplot and lqdir and recover and is_grid:
+                prefix = input_ph.get("prefix", "pwscf")
+                outdir = self.outdirs["outdir"]
+
+                Path(outdir, "_ph0", f"{prefix}.q_1").mkdir(parents=True, exist_ok=True)
+            if not (ldisp or qplot):
+                if np.array(qpts).shape == (1, 4):
+                    LOGGER.warning(
+                        "qpts is a 2D array despite ldisp and qplot being set to False. Converting to 1D array"
+                    )
+                    qpts = tuple(qpts[0])
+                if lqdir and is_grid and qpts != (0, 0, 0):
+                    LOGGER.warning(
+                        "lqdir is set to True but ldisp and qplot are set to False. The band structure will still be computed at each step. Setting lqdir to False"
+                    )
+                    input_ph["lqdir"] = False
+
+            parameters["input_data"]["inputph"] = input_ph
+            parameters["qpts"] = qpts
 
         return parameters
 
@@ -349,7 +424,19 @@ class Espresso(Espresso_):
         )
         self._bin_path = str(full_path)
         self._binary = template.binary
-        self._cleanup_params()
+
+        if self._binary in ALL_KEYS:
+            self._cleanup_params()
+        else:
+            LOGGER.warning(
+                f"the binary you requested, `{self._binary}`, is not supported by ASE. This means that presets and usual checks will not be carried out, your `input_data` must be provided in nested format."
+            )
+
+            template.binary = None
+
+            self.kwargs["input_data"] = Namelist(self.kwargs.get("input_data"))
+            self._user_calc_params = self.kwargs
+
         self._pseudo_path = (
             self._user_calc_params.get("input_data", {})
             .get("control", {})

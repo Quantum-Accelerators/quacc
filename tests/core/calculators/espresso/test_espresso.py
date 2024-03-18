@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from ase import Atoms
+from ase.atoms import Atoms
 
 from quacc.calculators.espresso.espresso import Espresso, EspressoTemplate
 
@@ -151,13 +151,13 @@ def test_output_handler(tmp_path, monkeypatch):
 
     test_path = "../test3/test2/test1"
     fake_template = EspressoTemplate()
-    with pytest.raises(ValueError, match="because it is not a subpath"):
+    with pytest.raises(ValueError, match="because it is"):
         new_parameters = fake_template._output_handler(parameters, Path())
 
     test_path = "/test3/test2/test1"
     parameters["input_data"]["system"]["outdir"] = test_path
     fake_template = EspressoTemplate()
-    with pytest.raises(ValueError, match="because it is not a subpath"):
+    with pytest.raises(ValueError, match="because it is"):
         new_parameters = fake_template._output_handler(parameters, Path())
 
     test_path = Path("test3/test2/test1")

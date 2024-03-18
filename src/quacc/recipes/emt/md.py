@@ -12,7 +12,6 @@ from ase.md.velocitydistribution import (
     Stationary,
     ZeroRotation,
 )
-from ase.md.verlet import VelocityVerlet
 
 from quacc import job
 from quacc.runners.ase import run_md
