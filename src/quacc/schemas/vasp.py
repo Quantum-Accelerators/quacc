@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
+import pickle
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -158,6 +159,10 @@ def vasp_summarize_run(
         intermediate_vasp_task_docs | vasp_task_doc | base_task_doc | additional_fields
     )
     task_doc = clean_task_doc(unsorted_task_doc)
+
+    if SETTINGS.WRITE_PICKLE:
+        with Path(dir_path, "quacc_results.pkl").open("wb") as f:
+            pickle.dump(task_doc, f)
 
     # Store the results
     if store:
