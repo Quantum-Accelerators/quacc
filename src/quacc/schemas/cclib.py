@@ -13,7 +13,7 @@ import cclib
 from ase.atoms import Atoms
 from cclib.io import ccread
 from monty.json import jsanitize
-
+import gzip
 from quacc import SETTINGS
 from quacc.schemas.ase import summarize_run
 from quacc.utils.dicts import clean_task_doc
@@ -150,7 +150,7 @@ def cclib_summarize_run(
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_PICKLE:
-        with Path(dir_path, "quacc_results.pkl").open("wb") as f:
+        with gzip.open(Path(dir_path, "quacc_results.pkl.gz"), "wb") if SETTINGS.GZIP_FILES else Path(dir_path, "quacc_results.pkl").open("wb") as f:
             pickle.dump(task_doc, f)
 
     # Store the results
