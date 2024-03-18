@@ -16,7 +16,7 @@ from quacc import SETTINGS, __version__
 from quacc.atoms.core import get_final_atoms_from_dyn
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.schemas.prep import prep_next_run
-from quacc.utils.dicts import clean_task_doc, recursive_dict_merge
+from quacc.utils.dicts import clean_task_doc
 from quacc.utils.files import get_uri
 from quacc.wflow_tools.db import results_to_db
 
@@ -114,9 +114,7 @@ def summarize_run(
     else:
         final_atoms_metadata = {}
 
-    unsorted_task_doc = recursive_dict_merge(
-        final_atoms_metadata, inputs, results, additional_fields
-    )
+    unsorted_task_doc =         final_atoms_metadata| inputs| results|additional_fields
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_PICKLE:
@@ -218,9 +216,7 @@ def summarize_opt_run(
     }
 
     # Create a dictionary of the inputs/outputs
-    unsorted_task_doc = recursive_dict_merge(
-        base_task_doc, opt_fields, additional_fields
-    )
+    unsorted_task_doc =   base_task_doc| opt_fields|additional_fields
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_PICKLE:
@@ -284,9 +280,7 @@ def summarize_vib_and_thermo(
         store=False,
     )
 
-    unsorted_task_doc = recursive_dict_merge(
-        vib_task_doc, thermo_task_doc, additional_fields
-    )
+    unsorted_task_doc = vib_task_doc | thermo_task_doc | additional_fields
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if isinstance(vib, Vibrations):
@@ -404,9 +398,7 @@ def _summarize_vib_run(
         }
     }
 
-    unsorted_task_doc = recursive_dict_merge(
-        atoms_metadata, inputs, results, additional_fields
-    )
+    unsorted_task_doc =         atoms_metadata| inputs| results| additional_fields
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if store:
@@ -491,9 +483,7 @@ def _summarize_ideal_gas_thermo(
         igt.atoms, charge_and_multiplicity=charge_and_multiplicity
     )
 
-    unsorted_task_doc = recursive_dict_merge(
-        atoms_metadata, inputs, results, additional_fields
-    )
+    unsorted_task_doc =         atoms_metadata| inputs| results| additional_fields
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if store:
