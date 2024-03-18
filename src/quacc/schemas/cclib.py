@@ -125,6 +125,17 @@ def cclib_summarize_run(
     else:
         input_atoms = cclib_task_doc["trajectory"][0]
 
+    # Get the intermediate cclib task documents if an ASE optimizer is used
+    nsteps = len([f for f in os.listdir(dir_path) if f.startswith("step")])
+    if nsteps:
+        intermediate_cclib_task_docs ={"steps":{
+            n: _make_cclib_schema(Path(dir_path, f"step{n}"),logfile_extensions)
+            for n in range(nsteps + 1)
+        }}
+    else:
+        intermediate_cclib_task_docs = None
+
+
     # Get the base task document for the ASE run
     run_task_doc = summarize_run(
         final_atoms,
@@ -134,7 +145,7 @@ def cclib_summarize_run(
     )
 
     # Create a dictionary of the inputs/outputs
-    unsorted_task_doc = run_task_doc | cclib_task_doc | additional_fields
+    unsorted_task_doc = intermediate_cclib_task_docs| cclib_task_doc|run_task_doc| additional_fields
     task_doc = clean_task_doc(unsorted_task_doc)
 
     # Store the results
@@ -395,3 +406,29 @@ def _get_homos_lumos(
         lumo_energies[i] - homo_energies[i] for i in range(len(homo_energies))
     ]
     return homo_energies, lumo_energies, homo_lumo_gaps
+
+def get_intermediate_schemas(
+    dir_path: str | Path,  logfile_extensions: str | list[str],nsteps: int,
+) -> dict[int, cclibBaseSchema]:
+    """
+    Get the task documents for each step in a cclib-based calculation run with an ASE optimizer.
+    Assumes that the calculation directory is structured as `step0`, `step1`, etc.
+
+    Parameters
+    ----------
+    dir_path
+        Path to the VASP calculation directory.
+    logfile_extensions
+        Possible extensions of the log file  
+    nsteps
+        Number of steps in the VASP calculation.
+
+    Returns
+    -------
+    dict[int, cclibBaseSchema]
+        Dictionary of task documents for each step in the calculation.
+    """
+    return {
+        n: _make_cclib_schema(Path(dir_path, f"step{n}"),logfile_extensions)
+        for n in range(nsteps + 1)
+    }

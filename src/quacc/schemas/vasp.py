@@ -119,6 +119,17 @@ def vasp_summarize_run(
         final_atoms, initial_atoms, move_magmoms=move_magmoms, store=False
     )
 
+    # Get intermediate task documents if an ASE optimizer is used
+    nsteps = len([f for f in os.listdir(dir_path) if f.startswith("step")])
+    if nsteps:
+        intermediate_task_docs ={"steps":{
+            n:  TaskDoc.from_directory(Path(dir_path, f"step{n}")).model_dump()
+            for n in range(nsteps + 1)
+        }}
+    else:
+        intermediate_task_docs = None
+
+
     # Get Bader analysis
     if run_bader:
         try:
@@ -142,7 +153,7 @@ def vasp_summarize_run(
             vasp_task_doc["chargemol"] = chargemol_results
 
     # Make task document
-    unsorted_task_doc = vasp_task_doc | base_task_doc | additional_fields
+    unsorted_task_doc = intermediate_task_docs | vasp_task_doc | base_task_doc | additional_fields
     task_doc = clean_task_doc(unsorted_task_doc)
 
     # Store the results
@@ -241,28 +252,3 @@ def _chargemol_runner(
 
     # Run Chargemol analysis
     return ChargemolAnalysis(path=path, atomic_densities_path=atomic_densities_path)
-
-
-def _get_intermediate_task_docs(
-    dir_path: str | Path, nsteps: int
-) -> dict[int, TaskDoc]:
-    """
-    Get the task documents for each step in a VASP calculation run with an ASE optimizer.
-    Assumes that the VASP calculation directory is structured as `step0`, `step1`, etc.
-
-    Parameters
-    ----------
-    dir_path
-        Path to the VASP calculation directory.
-    nsteps
-        Number of steps in the VASP calculation.
-
-    Returns
-    -------
-    dict[int, TaskDoc]
-        Dictionary of task documents for each step in the VASP calculation.
-    """
-    return {
-        n: TaskDoc.from_directory(Path(dir_path, f"step{n}")).model_dump()
-        for n in range(nsteps + 1)
-    }

@@ -8,7 +8,7 @@ from quacc.atoms.core import get_final_atoms_from_dyn
 from quacc.calculators.vasp import Vasp
 from quacc.runners.ase import run_calc, run_opt
 from quacc.schemas.ase import summarize_opt_run
-from quacc.schemas.vasp import _get_intermediate_task_docs, vasp_summarize_run
+from quacc.schemas.vasp import vasp_summarize_run
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
@@ -115,22 +115,13 @@ def base_opt_fn(
 
     atoms.calc = Vasp(atoms, preset=preset, **calc_flags)
     dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
-    final_atoms = get_final_atoms_from_dyn(dyn)
 
     opt_run_summary = summarize_opt_run(dyn, additional_fields=additional_fields)
 
-    if opt_flags.get("store_intermediate_files"):
-        intermediate_task_docs = {
-            "steps": _get_intermediate_task_docs(
-                dir_path=final_atoms.calc.directory, nsteps=dyn.nsteps
-            )
-        }
-    else:
-        intermediate_task_docs = None
-
+    final_atoms = get_final_atoms_from_dyn(dyn)
     vasp_summary = vasp_summarize_run(
         final_atoms,
         report_mp_corrections=report_mp_corrections,
         additional_fields=additional_fields,
     )
-    return recursive_dict_merge(intermediate_task_docs, vasp_summary, opt_run_summary)
+    return recursive_dict_merge(vasp_summary, opt_run_summary)

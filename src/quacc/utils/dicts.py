@@ -32,7 +32,7 @@ def recursive_dict_merge(
 ) -> MutableMapping[str, Any]:
     """
     Recursively merge several dictionaries, taking the latter in the list as higher
-    preference. Also removes any entries that have a valu of `remove_trigger` from the
+    preference. Also removes any entries that have a value of `remove_trigger` from the
     final dictionary.
 
     This function should be used instead of the | operator when merging nested dictionaries,
