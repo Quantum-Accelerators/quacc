@@ -155,7 +155,7 @@ def vasp_summarize_run(
             vasp_task_doc["chargemol"] = chargemol_results
 
     # Make task document
-    unsorted_task_doc = intermediate_task_docs | vasp_task_doc | base_task_doc | additional_fields
+    unsorted_task_doc = intermediate_vasp_task_docs | vasp_task_doc | base_task_doc | additional_fields
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_PICKLE:
