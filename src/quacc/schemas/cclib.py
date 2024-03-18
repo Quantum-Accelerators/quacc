@@ -406,29 +406,3 @@ def _get_homos_lumos(
         lumo_energies[i] - homo_energies[i] for i in range(len(homo_energies))
     ]
     return homo_energies, lumo_energies, homo_lumo_gaps
-
-def get_intermediate_schemas(
-    dir_path: str | Path,  logfile_extensions: str | list[str],nsteps: int,
-) -> dict[int, cclibBaseSchema]:
-    """
-    Get the task documents for each step in a cclib-based calculation run with an ASE optimizer.
-    Assumes that the calculation directory is structured as `step0`, `step1`, etc.
-
-    Parameters
-    ----------
-    dir_path
-        Path to the VASP calculation directory.
-    logfile_extensions
-        Possible extensions of the log file
-    nsteps
-        Number of steps in the VASP calculation.
-
-    Returns
-    -------
-    dict[int, cclibBaseSchema]
-        Dictionary of task documents for each step in the calculation.
-    """
-    return {
-        n: _make_cclib_schema(Path(dir_path, f"step{n}"),logfile_extensions)
-        for n in range(nsteps + 1)
-    }
