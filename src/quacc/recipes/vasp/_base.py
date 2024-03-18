@@ -119,6 +119,7 @@ def base_opt_fn(
     opt_run_summary = summarize_opt_run(dyn, additional_fields=additional_fields)
 
     final_atoms = get_final_atoms_from_dyn(dyn)
+
     vasp_summary = vasp_summarize_run(
         final_atoms,
         report_mp_corrections=report_mp_corrections,
