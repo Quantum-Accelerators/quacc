@@ -133,7 +133,7 @@ def cclib_summarize_run(
             for n in range(nsteps + 1)
         }}
     else:
-        intermediate_cclib_task_docs = None
+        intermediate_cclib_task_docs = {}
 
 
     # Get the base task document for the ASE run
