@@ -16,5 +16,5 @@ def pytest_sessionfinish(exitstatus):
     if exitstatus == 0:
         from shutil import rmtree
 
-        rmtree(TEST_RESULTS_DIR, ignore_errors=True)
-        rmtree(TEST_SCRATCH_DIR, ignore_errors=True)
+        #rmtree(TEST_RESULTS_DIR, ignore_errors=True)
+        #rmtree(TEST_SCRATCH_DIR, ignore_errors=True)

@@ -43,6 +43,7 @@ class DynSchema(RunSchema):
     trajectory: list[Atoms]
     trajectory_log: list[dict[str, Any]]
     trajectory_results: list[Results]
+    restart_data: dict[str, Any]
 
 
 class ParametersVib(TypedDict):

@@ -255,6 +255,7 @@ def run_md(
     steps: int = 500,
     dynamics: MolecularDynamics = VelocityVerlet,
     dynamics_kwargs: dict[str, Any] | None = None,
+    restart_data: dict[str, Any] | None = None,
     copy_files: str | Path | list[str | Path] | None = None,
 ) -> MolecularDynamics:
     """
@@ -278,6 +279,9 @@ def run_md(
     dynamics_kwargs
         Dictionary of kwargs for the dynamics. Takes all valid kwargs for ASE
         MolecularDynamics classes.
+    restart_data
+        Dictionary of restart data. If provided, the MD run will be restarted from this data.
+        This is needed by some dynamics types, such as the Nose-Hoover (NPT) thermostat.
     copy_files
         Filenames to copy from source to scratch directory.
 
@@ -301,12 +305,17 @@ def run_md(
     dynamics_kwargs = _md_params_handler(dynamics_kwargs)
     dynamics_kwargs = md_units(dynamics_kwargs)
 
+    timestep = dynamics_kwargs.pop("timestep", timestep)
+
     traj_filename = tmpdir / "opt.traj"
     traj = Trajectory(traj_filename, "w", atoms=atoms)
     dynamics_kwargs["trajectory"] = traj
 
     # Run calculation
     with traj, dynamics(atoms, timestep=timestep * fs, **dynamics_kwargs) as dyn:
+        if restart_data:
+            _md_restarts_handler(restart_data, dyn, atoms)
+
         dyn.run(steps=steps)
 
     # Store the trajectory atoms
@@ -479,4 +488,46 @@ def _md_params_handler(dynamics_kwargs):
         )
         dynamics_kwargs["timestep"] = dynamics_kwargs.pop("dt")
 
+    if "fixcm" in dynamics_kwargs:
+        LOGGER.warning(
+            "`fixcm` is interpreted as `fix_com` in Quacc."
+        )
+
+    if "fixrot" in dynamics_kwargs:
+        LOGGER.warning(
+            "`fixrot` is interpreted as `fix_rot` in Quacc."
+        )
+    
+    if "fix_com" in dynamics_kwargs:
+        dynamics_kwargs["fixcm"] = dynamics_kwargs.pop("fix_com")
+    
+    if "fix_rot" in dynamics_kwargs:
+        dynamics_kwargs["fixrot"] = dynamics_kwargs.pop("fix_rot")
+
     return dynamics_kwargs
+
+def _md_restarts_handler(restart_data, dyn, atoms):
+    """
+    Helper function to handle deprecated MD restart data.
+
+    Parameters
+    ----------
+    restart_data
+        Dictionary of restart data.
+
+    Returns
+    -------
+    None
+    """
+
+    from ase.md.andersen import Andersen
+    from ase.md.langevin import Langevin
+    from ase.md.npt import NPT
+    from ase.md.nptberendsen import NPTBerendsen
+    from ase.md.nvtberendsen import NVTBerendsen
+
+    if isinstance(dyn, NPT):
+        dyn.__dict__.update(restart_data)
+
+        #dyn.restart_from(atoms, **restart_data)
+

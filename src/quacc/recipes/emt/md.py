@@ -31,10 +31,39 @@ def md_job(
     atoms: Atoms,
     maxwell_boltzmann_params: dict[str, Any] | None = None,
     md_params: dict[str, Any] | None = None,
+    restart_data: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> DynSchema:
     """
     Carry out a Molecular Dynamics calculation.
+
+    Quacc does not follow ASE standards for Molecular Dynamics units.
+
+    Quacc ALWAYS uses the following units:
+    - Time: femtoseconds (fs)
+    - Pressure: GPa
+    - Temperature: Kelvin (K)
+    - Compressibility: 1/GPa
+
+    Additionally, Quacc uses the keywords `fix_com` and `fix_rot` instead of
+    `fixcm` and `fixrot` to fix the center of mass and rotation, respectively.
+
+    As of March 2024, ASE still accept deprecated keywords such as:
+
+    - temperature instead of temperature_K
+    - pressure instead of pressure_au
+    - compressibility instead of compressibility_au
+    - dt instead of timestep
+
+    All of these keywords will be accepted by Quacc, but it is recommended to use the
+    new keywords to avoid confusion. Everything will always be converted to the Quacc
+    units mentioned above.
+
+    Shared keywords between various dynamics type such as `timestep` and `steps` should
+    be specified in the `md_params` dictionary. Keywords specific to the dynamics type
+    should be specified in a dictionary `dynamics_kwargs` inside `md_params`.
+
+    The dynamics type can be specified in `md_params` as `dynamics`.
 
     Parameters
     ----------
@@ -45,15 +74,19 @@ def md_job(
         to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to [ase.md.velocitydistribution.MaxwellBoltzmannDistribution][].
         Quacc has two additional parameters `fix_com` and `fix_rot` to fix the center of mass
-        and rotation, respectively when setting the initial temperature. The default is
+        and rotation from the initial velocity distribution. Defaults are
         `{"temperature": None, "fix_com": True, "fix_rot": True}`. If `temperature` is set to
-        `None`, the initial temperature will not be set. For an improved chance of
-        success when performing a microcanonical ensemble calculation, the initial
-        temperature (units of K) should be set to a value twice the target temperature.
+        `None`, the initial temperature will not be set.
     md_params
         Dictionary of custom kwargs for the optimization process. Set a value
         to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_md][].
+    restart_data
+        Dictionary of restart data. If provided, the MD run will be restarted from this data.
+        This is needed by some dynamics types, such as the Nose-Hoover (NPT) thermostat.
+        The simplest way to obtain this data is from the previous DynSchema output.
+
+        e.g `restart_data = previous_output["restart_data"]`
     **calc_kwargs
         Custom kwargs for the EMT calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -89,6 +122,8 @@ def md_job(
 
     md_flags = md_params or {}
 
-    dyn = run_md(atoms, **md_flags)
+    restart_data = restart_data or {}
+
+    dyn = run_md(atoms, restart_data=restart_data, **md_flags)
 
     return summarize_md_run(dyn, additional_fields={"name": "EMT MD"})

@@ -9,6 +9,12 @@ from typing import TYPE_CHECKING
 import numpy as np
 from ase import units
 from ase.io import read
+from ase.md.andersen import Andersen
+from ase.md.langevin import Langevin
+from ase.md.npt import NPT
+from ase.md.nptberendsen import NPTBerendsen
+from ase.md.nvtberendsen import NVTBerendsen
+from ase.md.verlet import VelocityVerlet
 from ase.vibrations import Vibrations
 from ase.vibrations.data import VibrationsData
 
@@ -299,6 +305,8 @@ def summarize_md_run(
     parameters_md = dyn.todict()
     parameters_md.pop("logfile", None)
 
+    parameters_md, restart_data = _process_dyn_object(dyn)
+
     parameters_md["timestep"] = parameters_md["timestep"] / units.fs
 
     trajectory_log = []
@@ -318,6 +326,7 @@ def summarize_md_run(
         "trajectory": trajectory,
         "trajectory_log": trajectory_log,
         "trajectory_results": [atoms.calc.results for atoms in trajectory],
+        "restart_data": restart_data,
     }
 
     # Create a dictionary of the inputs/outputs
@@ -599,3 +608,34 @@ def _summarize_ideal_gas_thermo(
         results_to_db(store, task_doc)
 
     return task_doc
+
+
+def _process_dyn_object(
+    dyn: MolecularDynamics,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """
+    Process an ASE MolecularDynamics object to get the parameters and restart data.
+
+    Parameters
+    ----------
+    dyn
+        ASE MolecularDynamics object.
+
+    Returns
+    -------
+    tuple
+        Tuple of the parameters and restart data.
+    """
+    parameters_md = dyn.todict()
+    parameters_md.pop("logfile", None)
+
+    parameters_md["timestep"] /= units.fs
+
+    # "Let's be reproducible" they said...
+    if isinstance(dyn, NPT):
+        restart_data = dyn.get_data()
+        restart_data.update(dyn.get_init_data())
+    else:
+        restart_data = {}
+
+    return parameters_md, restart_data
