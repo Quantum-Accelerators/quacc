@@ -1,5 +1,5 @@
 git+https://gitlab.com/ase/ase.git
-git+https://github.com/cclib/cclib.git@v1.8.1rc2
+git+https://github.com/cclib/cclib.git@v1.8.1
 custodian==2024.3.12
 emmet-core==0.78.7
 maggma==0.63.4
