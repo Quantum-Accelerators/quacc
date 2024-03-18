@@ -126,7 +126,7 @@ def vasp_summarize_run(
         intermediate_vasp_task_docs = {
             "steps": {
                 n: TaskDoc.from_directory(Path(dir_path, f"step{n}")).model_dump()
-                for n in range(nsteps + 1)
+                for n in range(nsteps)
             }
         }
     else:
