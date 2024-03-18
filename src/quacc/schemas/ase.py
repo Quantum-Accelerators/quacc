@@ -270,7 +270,10 @@ def summarize_vib_and_thermo(
     store = SETTINGS.STORE if store is None else store
 
     vib_task_doc = _summarize_vib_run(
-        vib, charge_and_multiplicity=charge_and_multiplicity, store=False, additional_fields=additional_fields
+        vib,
+        charge_and_multiplicity=charge_and_multiplicity,
+        store=False,
+        additional_fields=additional_fields,
     )
     thermo_task_doc = _summarize_ideal_gas_thermo(
         igt,
@@ -278,7 +281,7 @@ def summarize_vib_and_thermo(
         pressure=pressure,
         charge_and_multiplicity=charge_and_multiplicity,
         store=False,
-        additional_fields=additional_fieds
+        additional_fields=additional_fieds,
     )
 
     unsorted_task_doc = recursive_dict_merge(vib_task_doc, thermo_task_doc)
