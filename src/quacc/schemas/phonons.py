@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import gzip
 import pickle
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -89,7 +90,11 @@ def summarize_phonopy(
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_PICKLE:
-        with Path(directory, "quacc_results.pkl").open("wb") as f:
+        with (
+            gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
+            if SETTINGS.GZIP_FILES
+            else Path(directory, "quacc_results.pkl").open("wb") as f
+        ):
             pickle.dump(task_doc, f)
 
     if store:
