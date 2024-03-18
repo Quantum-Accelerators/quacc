@@ -85,7 +85,7 @@ def summarize_phonopy(
     }
 
     atoms_metadata = atoms_to_metadata(input_atoms)
-    unsorted_task_doc =  atoms_metadata| inputs| results| additional_fields
+    unsorted_task_doc = atoms_metadata | inputs | results | additional_fields
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_PICKLE:
