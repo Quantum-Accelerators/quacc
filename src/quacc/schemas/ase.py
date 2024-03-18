@@ -16,7 +16,7 @@ from quacc import SETTINGS, __version__
 from quacc.atoms.core import get_final_atoms_from_dyn
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.schemas.prep import prep_next_run
-from quacc.utils.dicts import clean_task_doc
+from quacc.utils.dicts import clean_task_doc, recursive_dict_merge
 from quacc.utils.files import get_uri
 from quacc.wflow_tools.db import results_to_db
 
@@ -270,7 +270,7 @@ def summarize_vib_and_thermo(
     store = SETTINGS.STORE if store is None else store
 
     vib_task_doc = _summarize_vib_run(
-        vib, charge_and_multiplicity=charge_and_multiplicity, store=False
+        vib, charge_and_multiplicity=charge_and_multiplicity, store=False, additional_fields=additional_fields
     )
     thermo_task_doc = _summarize_ideal_gas_thermo(
         igt,
@@ -278,9 +278,10 @@ def summarize_vib_and_thermo(
         pressure=pressure,
         charge_and_multiplicity=charge_and_multiplicity,
         store=False,
+        additional_fields=additional_fieds
     )
 
-    unsorted_task_doc = vib_task_doc | thermo_task_doc | additional_fields
+    unsorted_task_doc = recursive_dict_merge(vib_task_doc, thermo_task_doc)
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if isinstance(vib, Vibrations):
