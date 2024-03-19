@@ -2,11 +2,15 @@
 
 from __future__ import annotations
 
+import gzip
+import pickle
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
 from ase import units
 from ase.io import read
+from ase.vibrations import Vibrations
 from ase.vibrations.data import VibrationsData
 
 from quacc import SETTINGS, __version__
@@ -24,7 +28,6 @@ if TYPE_CHECKING:
     from ase.io import Trajectory
     from ase.optimize.optimize import Optimizer
     from ase.thermochemistry import IdealGasThermo
-    from ase.vibrations import Vibrations
     from maggma.core import Store
 
     from quacc.schemas._aliases.ase import (
@@ -112,10 +115,16 @@ def summarize_run(
     else:
         final_atoms_metadata = {}
 
-    unsorted_task_doc = recursive_dict_merge(
-        final_atoms_metadata, inputs, results, additional_fields
-    )
+    unsorted_task_doc = final_atoms_metadata | inputs | results | additional_fields
     task_doc = clean_task_doc(unsorted_task_doc)
+
+    if SETTINGS.WRITE_PICKLE:
+        with (
+            gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
+            if SETTINGS.GZIP_FILES
+            else Path(directory, "quacc_results.pkl").open("wb") as f
+        ):
+            pickle.dump(task_doc, f)
 
     if store:
         results_to_db(store, task_doc)
@@ -212,10 +221,16 @@ def summarize_opt_run(
     }
 
     # Create a dictionary of the inputs/outputs
-    unsorted_task_doc = recursive_dict_merge(
-        base_task_doc, opt_fields, additional_fields
-    )
+    unsorted_task_doc = base_task_doc | opt_fields | additional_fields
     task_doc = clean_task_doc(unsorted_task_doc)
+
+    if SETTINGS.WRITE_PICKLE:
+        with (
+            gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
+            if SETTINGS.GZIP_FILES
+            else Path(directory, "quacc_results.pkl").open("wb") as f
+        ):
+            pickle.dump(task_doc, f)
 
     if store:
         results_to_db(store, task_doc)
@@ -264,7 +279,10 @@ def summarize_vib_and_thermo(
     store = SETTINGS.STORE if store is None else store
 
     vib_task_doc = _summarize_vib_run(
-        vib, charge_and_multiplicity=charge_and_multiplicity, store=False
+        vib,
+        charge_and_multiplicity=charge_and_multiplicity,
+        store=False,
+        additional_fields=additional_fields,
     )
     thermo_task_doc = _summarize_ideal_gas_thermo(
         igt,
@@ -272,13 +290,21 @@ def summarize_vib_and_thermo(
         pressure=pressure,
         charge_and_multiplicity=charge_and_multiplicity,
         store=False,
+        additional_fields=additional_fields,
     )
 
-    unsorted_task_doc = recursive_dict_merge(
-        vib_task_doc, thermo_task_doc, additional_fields
-    )
+    unsorted_task_doc = recursive_dict_merge(vib_task_doc, thermo_task_doc)
     task_doc = clean_task_doc(unsorted_task_doc)
 
+    if isinstance(vib, Vibrations):
+        directory = vib.atoms.calc.directory
+        if SETTINGS.WRITE_PICKLE:
+            with (
+                gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
+                if SETTINGS.GZIP_FILES
+                else Path(directory, "quacc_results.pkl").open("wb") as f
+            ):
+                pickle.dump(task_doc, f)
     if store:
         results_to_db(store, task_doc)
 
@@ -388,9 +414,7 @@ def _summarize_vib_run(
         }
     }
 
-    unsorted_task_doc = recursive_dict_merge(
-        atoms_metadata, inputs, results, additional_fields
-    )
+    unsorted_task_doc = atoms_metadata | inputs | results | additional_fields
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if store:
@@ -475,9 +499,7 @@ def _summarize_ideal_gas_thermo(
         igt.atoms, charge_and_multiplicity=charge_and_multiplicity
     )
 
-    unsorted_task_doc = recursive_dict_merge(
-        atoms_metadata, inputs, results, additional_fields
-    )
+    unsorted_task_doc = atoms_metadata | inputs | results | additional_fields
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if store:

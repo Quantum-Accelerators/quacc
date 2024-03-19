@@ -4,14 +4,16 @@ from __future__ import annotations
 
 import logging
 import os
+import pickle
 from inspect import getmembers, isclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import cclib
+import gzip
 from ase.atoms import Atoms
 from cclib.io import ccread
-
+from monty.json import jsanitize
 from quacc import SETTINGS
 from quacc.schemas.ase import summarize_run
 from quacc.utils.dicts import clean_task_doc
@@ -124,6 +126,17 @@ def cclib_summarize_run(
     else:
         input_atoms = cclib_task_doc["trajectory"][0]
 
+    # Get the intermediate cclib task documents if an ASE optimizer is used
+    nsteps = len([f for f in os.listdir(dir_path) if f.startswith("step")])
+    if nsteps:
+        intermediate_cclib_task_docs ={"steps":{
+            n: _make_cclib_schema(Path(dir_path, f"step{n}"),logfile_extensions)
+            for n in range(nsteps)
+        }}
+    else:
+        intermediate_cclib_task_docs = {}
+
+
     # Get the base task document for the ASE run
     run_task_doc = summarize_run(
         final_atoms,
@@ -133,8 +146,12 @@ def cclib_summarize_run(
     )
 
     # Create a dictionary of the inputs/outputs
-    unsorted_task_doc = run_task_doc | cclib_task_doc | additional_fields
+    unsorted_task_doc = run_task_doc | intermediate_cclib_task_docs| cclib_task_doc| additional_fields
     task_doc = clean_task_doc(unsorted_task_doc)
+
+    if SETTINGS.WRITE_PICKLE:
+        with gzip.open(Path(dir_path, "quacc_results.pkl.gz"), "wb") if SETTINGS.GZIP_FILES else Path(dir_path, "quacc_results.pkl").open("wb") as f:
+            pickle.dump(task_doc, f)
 
     # Store the results
     if store:

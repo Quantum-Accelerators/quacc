@@ -15,7 +15,7 @@ with warnings.catch_warnings():
 def mock_run(self, *args, **kwargs):
     from ase.io import write
 
-    write(Path(self.directory) / "CONTCAR", self.atoms)
+    write(Path(self.directory, "CONTCAR"), self.atoms)
 
 
 @pytest.fixture(autouse=True)
@@ -42,13 +42,15 @@ def patch_read_results(monkeypatch):
     monkeypatch.setattr(Vasp, "read_results", mock_read_results)
 
 
-def mock_taskdoc(*args, **kwargs):
+def mock_taskdoc(directory, *args, **kwargs):
     from ase.io import read
     from monty.os.path import zpath
 
     from quacc.atoms.core import check_is_metal
 
-    MOCK_TASKDOC.output.bandgap = 0.0 if check_is_metal(read(zpath("CONTCAR"))) else 0.5
+    MOCK_TASKDOC.output.bandgap = (
+        0.0 if check_is_metal(read(zpath(Path(directory, "CONTCAR")))) else 0.5
+    )
     return MOCK_TASKDOC
 
 

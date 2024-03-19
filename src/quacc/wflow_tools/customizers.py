@@ -187,10 +187,10 @@ def customize_funcs(
 
     for i, func in enumerate(funcs):
         func_ = deepcopy(func)
-        if "all" in decorators:
-            func_ = redecorate(func_, decorators["all"])
-        if names[i] in decorators:
-            func_ = redecorate(func_, decorators[names[i]])
+        if decorator := decorators.get("all"):
+            func_ = redecorate(func_, decorator)
+        if decorator := decorators.get(names[i]):
+            func_ = redecorate(func_, decorator)
         if params := parameters.get("all"):
             func_ = update_parameters(func_, params)
         if params := parameters.get(names[i]):

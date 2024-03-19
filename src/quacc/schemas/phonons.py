@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import gzip
+import pickle
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -9,7 +11,7 @@ from monty.dev import requires
 
 from quacc import SETTINGS, __version__
 from quacc.schemas.atoms import atoms_to_metadata
-from quacc.utils.dicts import clean_task_doc, recursive_dict_merge
+from quacc.utils.dicts import clean_task_doc
 from quacc.utils.files import get_uri
 from quacc.wflow_tools.db import results_to_db
 
@@ -84,10 +86,16 @@ def summarize_phonopy(
     }
 
     atoms_metadata = atoms_to_metadata(input_atoms)
-    unsorted_task_doc = recursive_dict_merge(
-        atoms_metadata, inputs, results, additional_fields
-    )
+    unsorted_task_doc = atoms_metadata | inputs | results | additional_fields
     task_doc = clean_task_doc(unsorted_task_doc)
+
+    if SETTINGS.WRITE_PICKLE:
+        with (
+            gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
+            if SETTINGS.GZIP_FILES
+            else Path(directory, "quacc_results.pkl").open("wb") as f
+        ):
+            pickle.dump(task_doc, f)
 
     if store:
         results_to_db(store, task_doc)

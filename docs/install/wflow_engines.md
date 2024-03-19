@@ -215,13 +215,14 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     ```yaml title="my_qadapter.yaml"
     _fw_name: CommonAdapter
     _fw_q_type: SLURM
-    rocket_launch: rlaunch -w /path/to/fw_config/my_fworker.yaml singleshot
-    nodes: 2
+    rocket_launch: rlaunch -w </path/to/fw_config/my_fworker.yaml> singleshot
+    nodes: 1
     walltime: 00:30:00
     account: <account>
     job_name: quacc_firework
     qos: regular
     pre_rocket: |
+    conda activate MyEnv
     module load MyModuleName
     export MyEnvVar=MyEnvValue
     ```

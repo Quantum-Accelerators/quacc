@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ase import Atoms
+from ase.atoms import Atoms
 from ase.io.espresso import Namelist
 from ase.io.espresso_namelist.keys import ALL_KEYS
 
@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
 
 def base_fn(
-    atoms: Atoms = None,
+    atoms: Atoms | None = None,
     preset: str | None = None,
     template: EspressoTemplate | None = None,
     profile: EspressoProfile | None = None,
@@ -101,7 +101,7 @@ def base_opt_fn(
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> RunSchema:
     """
-    Base function to carry out espresso recipes.
+    Base function to carry out espresso recipes with ASE optimizers.
 
     Parameters
     ----------
