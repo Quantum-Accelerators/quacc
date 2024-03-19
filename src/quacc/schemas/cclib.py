@@ -13,7 +13,6 @@ import cclib
 import gzip
 from ase.atoms import Atoms
 from cclib.io import ccread
-from monty.json import jsanitize
 from quacc import SETTINGS
 from quacc.schemas.ase import summarize_run
 from quacc.utils.dicts import clean_task_doc
