@@ -34,7 +34,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-_DEFAULT_SETTING = object()
+_DEFAULT_SETTING = ()
 
 
 def vasp_summarize_run(

@@ -31,7 +31,7 @@ if TYPE_CHECKING:
     if phonopy:
         from phonopy import Phonopy
 
-_DEFAULT_SETTING = object()
+_DEFAULT_SETTING = ()
 
 
 @requires(phonopy, "This schema relies on phonopy")

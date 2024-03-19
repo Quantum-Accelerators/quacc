@@ -16,7 +16,7 @@ try:
 except ImportError:
     ob = None
 
-_DEFAULT_SETTING = object()
+_DEFAULT_SETTING = ()
 
 
 @requires(ob, "Openbabel must be installed. Try conda install -c conda-forge openbabel")

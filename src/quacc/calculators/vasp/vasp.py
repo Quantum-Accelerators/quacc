@@ -31,7 +31,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from pymatgen.io.vasp.sets import DictSet
 
-_DEFAULT_SETTING = object()
+_DEFAULT_SETTING = ()
 
 
 class Vasp(Vasp_):

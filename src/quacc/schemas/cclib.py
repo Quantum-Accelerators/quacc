@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-_DEFAULT_SETTING = object()
+_DEFAULT_SETTING = ()
 
 def cclib_summarize_run(
     final_atoms: Atoms,

@@ -58,7 +58,7 @@ if TYPE_CHECKING:
         terminate_on_nonzero_returncode: bool  # default = False
 
 
-_DEFAULT_SETTING = object()
+_DEFAULT_SETTING = ()
 
 
 def run_custodian(

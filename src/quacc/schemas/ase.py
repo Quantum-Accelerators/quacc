@@ -38,7 +38,7 @@ if TYPE_CHECKING:
         VibThermoSchema,
     )
 
-_DEFAULT_SETTING = object()
+_DEFAULT_SETTING = ()
 
 
 def summarize_run(
