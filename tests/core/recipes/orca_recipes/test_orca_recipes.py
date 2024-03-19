@@ -134,7 +134,7 @@ def test_ase_relax_job_store(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = molecule("H2O")
-    output = ase_relax_job(atoms, opt_params={"store_intermediate_files": True})
+    output = ase_relax_job(atoms, opt_params={"store_intermediate_results": True})
     nsteps = len(output["trajectory"])
     for i in range(nsteps):
         assert f"step{i}" in os.listdir(output["dir_name"])
