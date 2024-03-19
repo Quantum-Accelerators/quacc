@@ -489,22 +489,19 @@ def _md_params_handler(dynamics_kwargs):
         dynamics_kwargs["timestep"] = dynamics_kwargs.pop("dt")
 
     if "fixcm" in dynamics_kwargs:
-        LOGGER.warning(
-            "`fixcm` is interpreted as `fix_com` in Quacc."
-        )
+        LOGGER.warning("`fixcm` is interpreted as `fix_com` in Quacc.")
 
     if "fixrot" in dynamics_kwargs:
-        LOGGER.warning(
-            "`fixrot` is interpreted as `fix_rot` in Quacc."
-        )
-    
+        LOGGER.warning("`fixrot` is interpreted as `fix_rot` in Quacc.")
+
     if "fix_com" in dynamics_kwargs:
         dynamics_kwargs["fixcm"] = dynamics_kwargs.pop("fix_com")
-    
+
     if "fix_rot" in dynamics_kwargs:
         dynamics_kwargs["fixrot"] = dynamics_kwargs.pop("fix_rot")
 
     return dynamics_kwargs
+
 
 def _md_restarts_handler(restart_data, dyn, atoms):
     """
@@ -520,14 +517,9 @@ def _md_restarts_handler(restart_data, dyn, atoms):
     None
     """
 
-    from ase.md.andersen import Andersen
-    from ase.md.langevin import Langevin
     from ase.md.npt import NPT
-    from ase.md.nptberendsen import NPTBerendsen
-    from ase.md.nvtberendsen import NVTBerendsen
 
     if isinstance(dyn, NPT):
         dyn.__dict__.update(restart_data)
 
-        #dyn.restart_from(atoms, **restart_data)
-
+        # dyn.restart_from(atoms, **restart_data)

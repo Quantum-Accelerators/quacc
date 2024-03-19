@@ -43,7 +43,9 @@ def md_units(dynamics_kwargs: dict[str, Any]) -> dict[str, Any]:
         converted_kwargs["friction"] = converted_kwargs.pop("friction") / fs
 
     if "externalstress" in converted_kwargs:
-        converted_kwargs["externalstress"] = np.array(converted_kwargs.pop("externalstress")) * GPa
+        converted_kwargs["externalstress"] = (
+            np.array(converted_kwargs.pop("externalstress")) * GPa
+        )
 
     if "taut" in converted_kwargs:
         converted_kwargs["taut"] = converted_kwargs.pop("taut") * fs

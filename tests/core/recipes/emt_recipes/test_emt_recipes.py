@@ -346,7 +346,7 @@ def test_md_restart(tmp_path, monkeypatch):
     )
 
     md_params["steps"] = 10
-    
+
     output_langevin_full = md_job(
         atoms,
         md_params=md_params,
