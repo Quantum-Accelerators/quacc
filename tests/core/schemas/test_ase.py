@@ -40,13 +40,11 @@ def test_summarize_run(tmpdir, monkeypatch):
 
     with gzip.open(Path(results["dir_name"], "quacc_results.pkl.gz"), "rb") as f:
         pickle_results = pickle.load(f)
-    output = results.copy()
-    output.pop("uuid")
-    assert pickle_results.keys() == output.keys()
+    assert pickle_results.keys() == results.keys()
 
-    assert pickle_results["nsites"] == output["nsites"]
-    assert pickle_results["results"]["energy"] == output["results"]["energy"]
-    assert pickle_results["atoms"].info == output["atoms"].info
+    assert pickle_results["nsites"] == results["nsites"]
+    assert pickle_results["results"]["energy"] == results["results"]["energy"]
+    assert pickle_results["atoms"].info == results["atoms"].info
 
 
 def test_summarize_run2(tmp_path, monkeypatch):
@@ -139,16 +137,13 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
     with gzip.open(Path(results["dir_name"], "quacc_results.pkl.gz"), "rb") as f:
         pickle_results = pickle.load(f)
 
-    output = results.copy()
-    output.pop("uuid")
-
-    assert pickle_results.keys() == output.keys()
+    assert pickle_results.keys() == results.keys()
 
     # assert things on the trajectory are the same
-    assert pickle_results["trajectory"] == output["trajectory"]
+    assert pickle_results["trajectory"] == results["trajectory"]
     assert (
         pickle_results["trajectory_results"][-1]["energy"]
-        == output["trajectory_results"][-1]["energy"]
+        == results["trajectory_results"][-1]["energy"]
     )
 
     # Test DB
