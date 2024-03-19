@@ -77,7 +77,7 @@ def summarize_run(
     """
 
     additional_fields = additional_fields or {}
-    store = SETTINGS.STORE if store is _DEFAULT_SETTING else store
+    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
 
     if not final_atoms.calc:
         msg = "ASE Atoms object has no attached calculator."
@@ -175,10 +175,10 @@ def summarize_opt_run(
 
     check_convergence = (
         SETTINGS.CHECK_CONVERGENCE
-        if check_convergence is _DEFAULT_SETTING
+        if check_convergence == _DEFAULT_SETTING
         else check_convergence
     )
-    store = SETTINGS.STORE if store is _DEFAULT_SETTING else store
+    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
     additional_fields = additional_fields or {}
 
     # Get trajectory
@@ -277,7 +277,7 @@ def summarize_vib_and_thermo(
         A dictionary that merges the `VibSchema` and `ThermoSchema`.
     """
     additional_fields = additional_fields or {}
-    store = SETTINGS.STORE if store is _DEFAULT_SETTING else store
+    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
 
     vib_task_doc = _summarize_vib_run(
         vib,
@@ -340,7 +340,7 @@ def _summarize_vib_run(
         Dictionary representation of the task document
     """
     additional_fields = additional_fields or {}
-    store = SETTINGS.STORE if store is _DEFAULT_SETTING else store
+    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
 
     vib_freqs_raw = vib.get_frequencies().tolist()
     vib_energies_raw = vib.get_energies().tolist()
@@ -458,7 +458,7 @@ def _summarize_ideal_gas_thermo(
     """
 
     additional_fields = additional_fields or {}
-    store = SETTINGS.STORE if store is _DEFAULT_SETTING else store
+    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
 
     spin_multiplicity = round(2 * igt.spin + 1)
 

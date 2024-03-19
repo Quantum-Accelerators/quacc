@@ -84,17 +84,17 @@ def vasp_summarize_run(
         Dictionary representation of the task document
     """
 
-    run_bader = SETTINGS.VASP_BADER if run_bader is _DEFAULT_SETTING else run_bader
+    run_bader = SETTINGS.VASP_BADER if run_bader == _DEFAULT_SETTING else run_bader
     run_chargemol = (
-        SETTINGS.VASP_CHARGEMOL if run_chargemol is _DEFAULT_SETTING else run_chargemol
+        SETTINGS.VASP_CHARGEMOL if run_chargemol == _DEFAULT_SETTING else run_chargemol
     )
     check_convergence = (
         SETTINGS.CHECK_CONVERGENCE
-        if check_convergence is _DEFAULT_SETTING
+        if check_convergence == _DEFAULT_SETTING
         else check_convergence
     )
     dir_path = Path(dir_path or final_atoms.calc.directory)
-    store = SETTINGS.STORE if store is _DEFAULT_SETTING else store
+    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
     additional_fields = additional_fields or {}
 
     # Fetch all tabulated results from VASP outputs files. Fortunately, emmet

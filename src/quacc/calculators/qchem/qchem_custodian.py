@@ -63,26 +63,26 @@ def run_custodian(
 
     # Set defaults
     qchem_cores = (
-        SETTINGS.QCHEM_NUM_CORES if qchem_cores is _DEFAULT_SETTING else qchem_cores
+        SETTINGS.QCHEM_NUM_CORES if qchem_cores == _DEFAULT_SETTING else qchem_cores
     )
-    qchem_cmd = SETTINGS.QCHEM_CMD if qchem_cmd is _DEFAULT_SETTING else qchem_cmd
+    qchem_cmd = SETTINGS.QCHEM_CMD if qchem_cmd == _DEFAULT_SETTING else qchem_cmd
     qchem_local_scratch = (
         SETTINGS.QCHEM_LOCAL_SCRATCH
-        if qchem_local_scratch is _DEFAULT_SETTING
+        if qchem_local_scratch == _DEFAULT_SETTING
         else qchem_local_scratch
     )
     qchem_use_error_handlers = (
         SETTINGS.QCHEM_USE_ERROR_HANDLERS
-        if qchem_use_error_handlers is _DEFAULT_SETTING
+        if qchem_use_error_handlers == _DEFAULT_SETTING
         else qchem_use_error_handlers
     )
     qchem_custodian_max_errors = (
         SETTINGS.QCHEM_CUSTODIAN_MAX_ERRORS
-        if qchem_custodian_max_errors is _DEFAULT_SETTING
+        if qchem_custodian_max_errors == _DEFAULT_SETTING
         else qchem_custodian_max_errors
     )
     qchem_nbo_exe = (
-        SETTINGS.QCHEM_NBO_EXE if qchem_nbo_exe is _DEFAULT_SETTING else qchem_nbo_exe
+        SETTINGS.QCHEM_NBO_EXE if qchem_nbo_exe == _DEFAULT_SETTING else qchem_nbo_exe
     )
 
     # Error handlers for Q-Chem

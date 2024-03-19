@@ -97,9 +97,9 @@ def cclib_summarize_run(
 
     dir_path = Path(dir_path or final_atoms.calc.directory)
     check_convergence = (
-        SETTINGS.CHECK_CONVERGENCE if check_convergence is _DEFAULT_SETTING else check_convergence
+        SETTINGS.CHECK_CONVERGENCE if check_convergence == _DEFAULT_SETTING else check_convergence
     )
-    store = SETTINGS.STORE if store is _DEFAULT_SETTING else store
+    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
     additional_fields = additional_fields or {}
 
     # Get the cclib base task document
