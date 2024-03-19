@@ -34,17 +34,18 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+_DEFAULT_SETTING = object()
 
 def vasp_summarize_run(
     final_atoms: Atoms,
     dir_path: str | Path | None = None,
     move_magmoms: bool = True,
-    run_bader: bool | None = None,
-    run_chargemol: bool | None = None,
-    check_convergence: bool | None = None,
+    run_bader: bool = _DEFAULT_SETTING,
+    run_chargemol: bool = _DEFAULT_SETTING,
+    check_convergence: bool = _DEFAULT_SETTING,
     report_mp_corrections: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None = None,
+    store: Store | None = _DEFAULT_SETTING,
 ) -> VaspSchema:
     """
     Get tabulated results from a VASP run and store them in a database-friendly format.
@@ -74,8 +75,7 @@ def vasp_summarize_run(
     additional_fields
         Additional fields to add to the task document.
     store
-        Maggma Store object to store the results in. If None,
-        `SETTINGS.STORE` will be used.
+        Maggma Store object to store the results in. Defaults to `SETTINGS.STORE`,
 
     Returns
     -------
@@ -83,14 +83,14 @@ def vasp_summarize_run(
         Dictionary representation of the task document
     """
 
-    additional_fields = additional_fields or {}
-    run_bader = SETTINGS.VASP_BADER if run_bader is None else run_bader
-    run_chargemol = SETTINGS.VASP_CHARGEMOL if run_chargemol is None else run_chargemol
+    run_bader = SETTINGS.VASP_BADER if run_bader is _DEFAULT_SETTING else run_bader
+    run_chargemol = SETTINGS.VASP_CHARGEMOL if run_chargemol is _DEFAULT_SETTING else run_chargemol
     check_convergence = (
-        SETTINGS.CHECK_CONVERGENCE if check_convergence is None else check_convergence
+        SETTINGS.CHECK_CONVERGENCE if check_convergence is _DEFAULT_SETTING else check_convergence
     )
     dir_path = Path(dir_path or final_atoms.calc.directory)
-    store = SETTINGS.STORE if store is None else store
+    store = SETTINGS.STORE if store is _DEFAULT_SETTING else store
+    additional_fields = additional_fields or {}
 
     # Fetch all tabulated results from VASP outputs files. Fortunately, emmet
     # already has a handy function for this

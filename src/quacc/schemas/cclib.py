@@ -33,6 +33,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+_DEFAULT_SETTING = object()
 
 def cclib_summarize_run(
     final_atoms: Atoms,
@@ -54,9 +55,9 @@ def cclib_summarize_run(
         ]
         | None
     ) = None,
-    check_convergence: bool | None = None,
+    check_convergence: bool = _DEFAULT_SETTING,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None = None,
+    store: Store = _DEFAULT_SETTING,
 ) -> cclibSchema:
     """
     Get tabulated results from a molecular DFT run and store them in a database-friendly
@@ -86,8 +87,7 @@ def cclib_summarize_run(
     additional_fields
         Additional fields to add to the task document.
     store
-        Maggma Store object to store the results in. If None,
-        `SETTINGS.STORE` will be used.
+        Maggma Store object to store the results in. Defaults to `SETTINGS.STORE`
 
     Returns
     -------
@@ -97,10 +97,10 @@ def cclib_summarize_run(
 
     dir_path = Path(dir_path or final_atoms.calc.directory)
     check_convergence = (
-        SETTINGS.CHECK_CONVERGENCE if check_convergence is None else check_convergence
+        SETTINGS.CHECK_CONVERGENCE if check_convergence is _DEFAULT_SETTING else check_convergence
     )
+    store = SETTINGS.STORE if store is _DEFAULT_SETTING else store
     additional_fields = additional_fields or {}
-    store = SETTINGS.STORE if store is None else store
 
     # Get the cclib base task document
     cclib_task_doc = _make_cclib_schema(
