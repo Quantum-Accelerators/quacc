@@ -33,6 +33,7 @@ if TYPE_CHECKING:
 
 _DEFAULT_SETTING = object()
 
+
 @requires(phonopy, "This schema relies on phonopy")
 def summarize_phonopy(
     phonon: Phonopy,

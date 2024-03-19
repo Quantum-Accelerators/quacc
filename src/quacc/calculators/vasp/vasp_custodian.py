@@ -57,7 +57,9 @@ if TYPE_CHECKING:
         terminate_func: Callable | None  # default = None
         terminate_on_nonzero_returncode: bool  # default = False
 
+
 _DEFAULT_SETTING = object()
+
 
 def run_custodian(
     vasp_parallel_cmd: str = _DEFAULT_SETTING,
@@ -115,11 +117,15 @@ def run_custodian(
 
     # Set defaults
     vasp_parallel_cmd = os.path.expandvars(
-        SETTINGS.VASP_PARALLEL_CMD if vasp_parallel_cmd is _DEFAULT_SETTING else vasp_parallel_cmd
+        SETTINGS.VASP_PARALLEL_CMD
+        if vasp_parallel_cmd is _DEFAULT_SETTING
+        else vasp_parallel_cmd
     )
     vasp_cmd = SETTINGS.VASP_CMD if vasp_cmd is _DEFAULT_SETTING else vasp_cmd
     vasp_gamma_cmd = (
-        SETTINGS.VASP_GAMMA_CMD if vasp_gamma_cmd is _DEFAULT_SETTING else vasp_gamma_cmd
+        SETTINGS.VASP_GAMMA_CMD
+        if vasp_gamma_cmd is _DEFAULT_SETTING
+        else vasp_gamma_cmd
     )
     vasp_custodian_max_errors = (
         SETTINGS.VASP_CUSTODIAN_MAX_ERRORS
@@ -131,7 +137,9 @@ def run_custodian(
         if vasp_custodian_wall_time is _DEFAULT_SETTING
         else vasp_custodian_wall_time
     )
-    vtst_fixes = SETTINGS.VASP_CUSTODIAN_VTST if vtst_fixes is _DEFAULT_SETTING else vtst_fixes
+    vtst_fixes = (
+        SETTINGS.VASP_CUSTODIAN_VTST if vtst_fixes is _DEFAULT_SETTING else vtst_fixes
+    )
     vasp_custodian_handlers = (
         SETTINGS.VASP_CUSTODIAN_HANDLERS
         if vasp_custodian_handlers is _DEFAULT_SETTING

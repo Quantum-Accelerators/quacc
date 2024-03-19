@@ -36,6 +36,7 @@ logger = logging.getLogger(__name__)
 
 _DEFAULT_SETTING = object()
 
+
 def vasp_summarize_run(
     final_atoms: Atoms,
     dir_path: str | Path | None = None,
@@ -84,9 +85,13 @@ def vasp_summarize_run(
     """
 
     run_bader = SETTINGS.VASP_BADER if run_bader is _DEFAULT_SETTING else run_bader
-    run_chargemol = SETTINGS.VASP_CHARGEMOL if run_chargemol is _DEFAULT_SETTING else run_chargemol
+    run_chargemol = (
+        SETTINGS.VASP_CHARGEMOL if run_chargemol is _DEFAULT_SETTING else run_chargemol
+    )
     check_convergence = (
-        SETTINGS.CHECK_CONVERGENCE if check_convergence is _DEFAULT_SETTING else check_convergence
+        SETTINGS.CHECK_CONVERGENCE
+        if check_convergence is _DEFAULT_SETTING
+        else check_convergence
     )
     dir_path = Path(dir_path or final_atoms.calc.directory)
     store = SETTINGS.STORE if store is _DEFAULT_SETTING else store

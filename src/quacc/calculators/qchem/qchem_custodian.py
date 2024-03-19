@@ -18,6 +18,7 @@ except ImportError:
 
 _DEFAULT_SETTING = object()
 
+
 @requires(ob, "Openbabel must be installed. Try conda install -c conda-forge openbabel")
 def run_custodian(
     qchem_cmd: str = _DEFAULT_SETTING,
@@ -61,7 +62,9 @@ def run_custodian(
     from custodian.qchem.jobs import QCJob
 
     # Set defaults
-    qchem_cores = SETTINGS.QCHEM_NUM_CORES if qchem_cores is _DEFAULT_SETTING else qchem_cores
+    qchem_cores = (
+        SETTINGS.QCHEM_NUM_CORES if qchem_cores is _DEFAULT_SETTING else qchem_cores
+    )
     qchem_cmd = SETTINGS.QCHEM_CMD if qchem_cmd is _DEFAULT_SETTING else qchem_cmd
     qchem_local_scratch = (
         SETTINGS.QCHEM_LOCAL_SCRATCH
@@ -78,7 +81,9 @@ def run_custodian(
         if qchem_custodian_max_errors is _DEFAULT_SETTING
         else qchem_custodian_max_errors
     )
-    qchem_nbo_exe = SETTINGS.QCHEM_NBO_EXE if qchem_nbo_exe is _DEFAULT_SETTING else qchem_nbo_exe
+    qchem_nbo_exe = (
+        SETTINGS.QCHEM_NBO_EXE if qchem_nbo_exe is _DEFAULT_SETTING else qchem_nbo_exe
+    )
 
     # Error handlers for Q-Chem
     handlers = [QChemErrorHandler()] if qchem_use_error_handlers else []
