@@ -205,7 +205,7 @@ def summarize_opt_run(
         initial_atoms,
         charge_and_multiplicity=charge_and_multiplicity,
         move_magmoms=move_magmoms,
-        store=False,
+        store=None,
     )
 
     # Clean up the opt parameters
@@ -282,7 +282,7 @@ def summarize_vib_and_thermo(
     vib_task_doc = _summarize_vib_run(
         vib,
         charge_and_multiplicity=charge_and_multiplicity,
-        store=False,
+        store=None,
         additional_fields=additional_fields,
     )
     thermo_task_doc = _summarize_ideal_gas_thermo(
@@ -290,7 +290,7 @@ def summarize_vib_and_thermo(
         temperature=temperature,
         pressure=pressure,
         charge_and_multiplicity=charge_and_multiplicity,
-        store=False,
+        store=None,
         additional_fields=additional_fields,
     )
 

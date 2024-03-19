@@ -142,7 +142,7 @@ def cclib_summarize_run(
         final_atoms,
         input_atoms,
         charge_and_multiplicity=(attributes["charge"], attributes["mult"]),
-        store=False,
+        store=None,
     )
 
     # Create a dictionary of the inputs/outputs

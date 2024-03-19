@@ -123,7 +123,7 @@ def vasp_summarize_run(
 
     initial_atoms = read(zpath(dir_path / "POSCAR"))
     base_task_doc = summarize_run(
-        final_atoms, initial_atoms, move_magmoms=move_magmoms, store=False
+        final_atoms, initial_atoms, move_magmoms=move_magmoms, store=None
     )
 
     # Get intermediate task documents if an ASE optimizer is used
