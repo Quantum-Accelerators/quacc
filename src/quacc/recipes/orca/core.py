@@ -65,7 +65,7 @@ def static_job(
         See the type-hint for the data structure.
     """
 
-    nprocs = psutil.cpu_count(logical=False) if nprocs.lower() == "max" else nprocs
+    nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
     default_inputs = [xc, basis, "sp", "slowconv", "normalprint", "xyzfile"]
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
@@ -131,7 +131,7 @@ def relax_job(
         Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][].
         See the type-hint for the data structure.
     """
-    nprocs = psutil.cpu_count(logical=False) if nprocs.lower() == "max" else nprocs
+    nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
 
     default_inputs = [xc, basis, "opt", "slowconv", "normalprint", "xyzfile"]
     if run_freq:
@@ -201,7 +201,7 @@ def ase_relax_job(
         See the type-hint for the data structure.
     """
 
-    nprocs = psutil.cpu_count(logical=False) if nprocs.lower() == "max" else nprocs
+    nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
     default_inputs = [xc, basis, "slowconv", "normalprint", "xyzfile", "engrad"]
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
