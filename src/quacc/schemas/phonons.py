@@ -31,6 +31,8 @@ if TYPE_CHECKING:
     if phonopy:
         from phonopy import Phonopy
 
+_DEFAULT_SETTING = ()
+
 
 @requires(phonopy, "This schema relies on phonopy")
 def summarize_phonopy(
@@ -39,7 +41,7 @@ def summarize_phonopy(
     parameters: dict[str, Any] | None = None,
     directory: str | Path = ".",
     additional_fields: dict[str, Any] | None = None,
-    store: Store | bool | None = None,
+    store: Store | None = _DEFAULT_SETTING,
 ) -> PhononSchema:
     """
     Summarize a Phonopy object.
@@ -63,7 +65,7 @@ def summarize_phonopy(
         The PhononSchema.
     """
     additional_fields = additional_fields or {}
-    store = SETTINGS.STORE if store is None else store
+    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
 
     uri = get_uri(directory)
     directory = ":".join(uri.split(":")[1:])
