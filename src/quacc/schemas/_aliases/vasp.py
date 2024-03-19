@@ -49,6 +49,7 @@ class VaspSchema(RunSchema, TaskDoc):
 
     bader: BaderSchema
     chargemol: ChargemolSchema
+    steps: dict[int, TaskDoc]  # when store_intermediate_results=True
 
 
 class MPGGARelaxFlowSchema(VaspSchema):

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import gzip
 import logging
 import os
 import pickle
@@ -120,6 +121,18 @@ def vasp_summarize_run(
         final_atoms, initial_atoms, move_magmoms=move_magmoms, store=False
     )
 
+    # Get intermediate task documents if an ASE optimizer is used
+    nsteps = len([f for f in os.listdir(dir_path) if f.startswith("step")])
+    if nsteps:
+        intermediate_vasp_task_docs = {
+            "steps": {
+                n: TaskDoc.from_directory(Path(dir_path, f"step{n}")).model_dump()
+                for n in range(nsteps)
+            }
+        }
+    else:
+        intermediate_vasp_task_docs = {}
+
     # Get Bader analysis
     if run_bader:
         try:
@@ -143,11 +156,17 @@ def vasp_summarize_run(
             vasp_task_doc["chargemol"] = chargemol_results
 
     # Make task document
-    unsorted_task_doc = vasp_task_doc | base_task_doc | additional_fields
+    unsorted_task_doc = (
+        intermediate_vasp_task_docs | vasp_task_doc | base_task_doc | additional_fields
+    )
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_PICKLE:
-        with Path(dir_path, "quacc_results.pkl").open("wb") as f:
+        with (
+            gzip.open(Path(dir_path, "quacc_results.pkl.gz"), "wb")
+            if SETTINGS.GZIP_FILES
+            else Path(dir_path, "quacc_results.pkl").open("wb") as f
+        ):
             pickle.dump(task_doc, f)
 
     # Store the results

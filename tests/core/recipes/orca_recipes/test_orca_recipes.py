@@ -139,3 +139,5 @@ def test_ase_relax_job_store(tmp_path, monkeypatch):
     for i in range(nsteps):
         assert f"step{i}" in os.listdir(output["dir_name"])
         assert "orca.xyz.gz" in os.listdir(Path(output["dir_name"], f"step{i}"))
+    assert len(output["steps"]) == nsteps
+    assert "attributes" in output["steps"][0]

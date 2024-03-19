@@ -136,6 +136,8 @@ class cclibBaseSchema(TypedDict):
 class cclibSchema(cclibBaseSchema, RunSchema):
     """Type hint associated with [quacc.schemas.cclib.cclib_summarize_run][]."""
 
+    steps: dict[int, cclibBaseSchema]  # when store_intermediate_results=True
+
 
 class cclibASEOptSchema(cclibSchema, OptSchema):
     """Type hint used when merging cclibSchema with OptSchema."""

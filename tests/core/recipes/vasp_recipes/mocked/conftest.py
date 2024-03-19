@@ -48,7 +48,9 @@ def mock_taskdoc(directory, *args, **kwargs):
 
     from quacc.atoms.core import check_is_metal
 
-    MOCK_TASKDOC.output.bandgap = 0.0 if check_is_metal(read(zpath(Path(directory, "CONTCAR")))) else 0.5
+    MOCK_TASKDOC.output.bandgap = (
+        0.0 if check_is_metal(read(zpath(Path(directory, "CONTCAR")))) else 0.5
+    )
     return MOCK_TASKDOC
 
 
