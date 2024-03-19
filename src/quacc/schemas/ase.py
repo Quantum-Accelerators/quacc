@@ -47,7 +47,7 @@ def summarize_run(
     charge_and_multiplicity: tuple[int, int] | None = None,
     move_magmoms: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    store: Store = _DEFAULT_SETTING,
+    store: Store | None = _DEFAULT_SETTING,
 ) -> RunSchema:
     """
     Get tabulated results from an Atoms object and calculator and store them in a

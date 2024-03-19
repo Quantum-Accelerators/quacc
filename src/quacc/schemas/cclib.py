@@ -57,7 +57,7 @@ def cclib_summarize_run(
     ) = None,
     check_convergence: bool = _DEFAULT_SETTING,
     additional_fields: dict[str, Any] | None = None,
-    store: Store = _DEFAULT_SETTING,
+    store: Store | None = _DEFAULT_SETTING,
 ) -> cclibSchema:
     """
     Get tabulated results from a molecular DFT run and store them in a database-friendly
