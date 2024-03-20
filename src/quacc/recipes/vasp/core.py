@@ -10,7 +10,6 @@ from monty.os.path import zpath
 from pymatgen.io.vasp import Vasprun
 
 from quacc import flow, job
-from quacc.recipes.vasp._base import base_fn, base_opt_fn
 
 if TYPE_CHECKING:
     from typing import Any

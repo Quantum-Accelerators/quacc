@@ -13,7 +13,6 @@ from ase.optimize import BFGSLineSearch
 
 from quacc import job
 from quacc.calculators.vasp import Vasp
-from quacc.recipes.vasp._base import base_fn
 from quacc.runners.ase import run_opt
 from quacc.schemas.ase import summarize_opt_run
 from quacc.utils.dicts import recursive_dict_merge

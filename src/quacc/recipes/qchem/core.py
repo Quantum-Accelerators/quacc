@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc import job
-from quacc.recipes.qchem._base import base_fn, base_opt_fn
 from quacc.utils.dicts import recursive_dict_merge
 
 try:

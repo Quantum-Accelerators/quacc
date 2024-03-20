@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 from monty.dev import requires
 
 from quacc import job
-from quacc.recipes.psi4._base import base_fn
 
 try:
     import psi4

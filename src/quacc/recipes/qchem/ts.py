@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 from monty.dev import requires
 
 from quacc import SETTINGS, job, strip_decorator
-from quacc.recipes.qchem._base import base_opt_fn
 from quacc.recipes.qchem.core import _BASE_SET, relax_job
 from quacc.utils.dicts import recursive_dict_merge
 

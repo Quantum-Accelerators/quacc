@@ -13,7 +13,6 @@ from typing import TYPE_CHECKING
 from quacc import flow, job
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.calculators.espresso.utils import pw_copy_files
-from quacc.recipes.espresso._base import base_fn
 from quacc.recipes.espresso.core import non_scf_job, static_job
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs

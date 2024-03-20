@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 import psutil
 
 from quacc import job
-from quacc.recipes.orca._base import base_fn, base_opt_fn
 
 if TYPE_CHECKING:
     from typing import Any, Literal

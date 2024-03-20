@@ -13,7 +13,6 @@ from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 
 from quacc import flow, job
 from quacc.calculators.espresso.espresso import EspressoTemplate
-from quacc.recipes.espresso._base import base_fn
 from quacc.utils.kpts import convert_pmg_kpts
 from quacc.wflow_tools.customizers import customize_funcs
 

@@ -23,7 +23,6 @@ from typing import TYPE_CHECKING
 from pymatgen.io.vasp.sets import MPRelaxSet, MPScanRelaxSet, MPStaticSet
 
 from quacc import flow, job
-from quacc.recipes.vasp._base import base_fn
 from quacc.wflow_tools.customizers import customize_funcs
 
 try:

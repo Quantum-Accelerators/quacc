@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 
 from quacc import flow, job
 from quacc.recipes.common.slabs import bulk_to_slabs_subflow, slab_to_ads_subflow
-from quacc.recipes.vasp._base import base_fn
 from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:
