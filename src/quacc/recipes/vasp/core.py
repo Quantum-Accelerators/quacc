@@ -214,11 +214,7 @@ def ase_relax_job(
         Dictionary of results. See the type-hint for the data structure.
     """
 
-    calc_defaults = {
-        "lcharg": False,
-        "lwave": False,
-        "nsw": 0,
-    }
+    calc_defaults = {"lcharg": False, "lwave": False, "nsw": 0}
     opt_defaults = {"relax_cell": relax_cell}
     return base_opt_fn(
         atoms,

@@ -170,8 +170,8 @@ def vasp_summarize_run(
         with (
             gzip.open(Path(dir_path, "quacc_results.pkl.gz"), "wb")
             if SETTINGS.GZIP_FILES
-            else Path(dir_path, "quacc_results.pkl").open("wb") as f
-        ):
+            else Path(dir_path, "quacc_results.pkl").open("wb")
+        ) as f:
             pickle.dump(task_doc, f)
 
     # Store the results

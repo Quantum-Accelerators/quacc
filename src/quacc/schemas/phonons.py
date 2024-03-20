@@ -95,8 +95,8 @@ def summarize_phonopy(
         with (
             gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
             if SETTINGS.GZIP_FILES
-            else Path(directory, "quacc_results.pkl").open("wb") as f
-        ):
+            else Path(directory, "quacc_results.pkl").open("wb")
+        ) as f:
             pickle.dump(task_doc, f)
 
     if store:

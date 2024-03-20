@@ -35,6 +35,7 @@ logger = logging.getLogger(__name__)
 
 _DEFAULT_SETTING = ()
 
+
 def cclib_summarize_run(
     final_atoms: Atoms,
     logfile_extensions: str | list[str],
@@ -97,7 +98,9 @@ def cclib_summarize_run(
 
     dir_path = Path(dir_path or final_atoms.calc.directory)
     check_convergence = (
-        SETTINGS.CHECK_CONVERGENCE if check_convergence == _DEFAULT_SETTING else check_convergence
+        SETTINGS.CHECK_CONVERGENCE
+        if check_convergence == _DEFAULT_SETTING
+        else check_convergence
     )
     store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
     additional_fields = additional_fields or {}
@@ -129,13 +132,14 @@ def cclib_summarize_run(
     # Get the intermediate cclib task documents if an ASE optimizer is used
     nsteps = len([f for f in os.listdir(dir_path) if f.startswith("step")])
     if nsteps:
-        intermediate_cclib_task_docs ={"steps":{
-            n: _make_cclib_schema(Path(dir_path, f"step{n}"),logfile_extensions)
-            for n in range(nsteps)
-        }}
+        intermediate_cclib_task_docs = {
+            "steps": {
+                n: _make_cclib_schema(Path(dir_path, f"step{n}"), logfile_extensions)
+                for n in range(nsteps)
+            }
+        }
     else:
         intermediate_cclib_task_docs = {}
-
 
     # Get the base task document for the ASE run
     run_task_doc = summarize_run(
@@ -146,11 +150,17 @@ def cclib_summarize_run(
     )
 
     # Create a dictionary of the inputs/outputs
-    unsorted_task_doc = run_task_doc | intermediate_cclib_task_docs| cclib_task_doc| additional_fields
+    unsorted_task_doc = (
+        run_task_doc | intermediate_cclib_task_docs | cclib_task_doc | additional_fields
+    )
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_PICKLE:
-        with gzip.open(Path(dir_path, "quacc_results.pkl.gz"), "wb") if SETTINGS.GZIP_FILES else Path(dir_path, "quacc_results.pkl").open("wb") as f:
+        with (
+            gzip.open(Path(dir_path, "quacc_results.pkl.gz"), "wb")
+            if SETTINGS.GZIP_FILES
+            else Path(dir_path, "quacc_results.pkl").open("wb")
+        ) as f:
             pickle.dump(task_doc, f)
 
     # Store the results
