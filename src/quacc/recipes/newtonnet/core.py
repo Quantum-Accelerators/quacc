@@ -10,11 +10,7 @@ from monty.dev import requires
 from quacc import SETTINGS, job
 from quacc.runners.ase import run_calc, run_opt
 from quacc.runners.thermo import run_ideal_gas
-from quacc.schemas.ase import (
-    summarize_opt_run,
-    summarize_run,
-    summarize_vib_and_thermo,
-)
+from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
 from quacc.utils.dicts import recursive_dict_merge
 
 try:

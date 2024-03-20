@@ -6,8 +6,12 @@ from collections.abc import MutableMapping
 from copy import deepcopy
 from typing import TYPE_CHECKING
 
+from quacc.wflow_tools.db import results_to_db
+
 if TYPE_CHECKING:
     from typing import Any
+
+    from maggma.core import Store
 
 
 class Remove:
@@ -22,6 +26,17 @@ class Remove:
         raise NotImplementedError(
             "Remove is a sentinel class and should not be instantiated."
         )
+
+
+def recursive_summary_merge(
+    *dicts: MutableMapping[str, Any], store: Store
+) -> MutableMapping[str, Any]:
+    """
+    Recursively merge two or more summaries, storing the results.
+    """
+    summary = recursive_dict_merge(dicts)
+    results_to_db(store, summary)
+    return summary
 
 
 def recursive_dict_merge(

@@ -10,7 +10,7 @@ from quacc import SETTINGS
 from quacc.atoms.core import get_final_atoms_from_dyn
 from quacc.runners.ase import run_calc, run_opt
 from quacc.schemas.ase import summarize_opt_run
-from quacc.schemas.cclib import cclib_summarize_run
+from quacc.schemas.cclib import cclib_summarize_run, summarize_cclib_opt_run
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.utils.lists import merge_list_params
 
@@ -143,17 +143,7 @@ def base_opt_fn(
 
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
     dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
-    opt_run_summary = summarize_opt_run(
-        dyn,
-        charge_and_multiplicity=(charge, spin_multiplicity),
-        additional_fields=additional_fields,
-    )
-
-    final_atoms = get_final_atoms_from_dyn(dyn)
-    cclib_summary = cclib_summarize_run(
-        final_atoms, LOG_FILE, additional_fields=additional_fields
-    )
-    return recursive_dict_merge(cclib_summary, opt_run_summary)
+    return summarize_cclib_opt_run(dyn, LOG_FILE, additional_fields=additional_fields)
 
 
 def _prep_calculator(
