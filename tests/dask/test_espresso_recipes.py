@@ -22,6 +22,8 @@ from ase.build import bulk
 from quacc.recipes.espresso.phonons import grid_phonon_flow
 from quacc.utils.files import copy_decompress_files
 
+from monty.io import zopen
+
 DATA_DIR = (
     Path(__file__).parent / ".." / "core" / "recipes" / "espresso_recipes" / "data"
 )
@@ -70,6 +72,15 @@ def test_phonon_grid_single(tmp_path, monkeypatch):
 
     for key in sections:
         assert key in grid_results["results"][1]
+
+    outfile = Path(grid_results["dir_name"], "ph.out.gz")
+
+    assert outfile.exists()
+
+    with zopen(outfile, "r") as fd:
+        lines = fd.read()
+
+    assert "Self-consistent Calculation" not in lines
 
 
 def test_phonon_grid_single_gamma(tmp_path, monkeypatch):
