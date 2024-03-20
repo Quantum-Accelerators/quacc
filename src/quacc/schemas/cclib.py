@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 
     from ase.io import Trajectory
     from maggma.core import Store
-
+    from ase.optimize.optimize import Optimizer
     from quacc.schemas._aliases.cclib import (
         PopAnalysisAttributes,
         cclibBaseSchema,
@@ -175,7 +175,7 @@ def cclib_summarize_run(
 
 
 def summarize_cclib_opt_run(
-    dyn: Atoms,
+    dyn: Optimizer,
     logfile_extensions: str | list[str],
     trajectory: Trajectory | list[Atoms] | None = None,
     dir_path: Path | str | None = None,
@@ -205,7 +205,7 @@ def summarize_cclib_opt_run(
     Parameters
     ----------
     dyn
-        ASE Atoms object following a calculation.
+        The ASE optimizer object
     logfile_extensions
         Possible extensions of the log file (e.g. ".log", ".out", ".txt",
         ".chk"). Note that only a partial match is needed. For instance, `.log`
