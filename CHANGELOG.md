@@ -20,6 +20,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Fixed input file formatting for `orcablocks` in ORCA recipes
 
+### Removed
+
+- Removed the `CHDIR` setting
+
 ## [0.7.0]
 
 ### Added
