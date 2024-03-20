@@ -31,6 +31,8 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from pymatgen.io.vasp.sets import DictSet
 
+_DEFAULT_SETTING = ()
+
 
 class Vasp(Vasp_):
     """This is a wrapper around the ASE Vasp calculator that adjusts INCAR parameters
@@ -41,11 +43,11 @@ class Vasp(Vasp_):
         self,
         input_atoms: Atoms,
         preset: None | str = None,
-        use_custodian: bool | None = None,
-        incar_copilot: Literal["off", "on", "aggressive"] | None = None,
-        copy_magmoms: bool | None = None,
-        preset_mag_default: float | None = None,
-        mag_cutoff: None | float = None,
+        use_custodian: bool = _DEFAULT_SETTING,
+        incar_copilot: Literal["off", "on", "aggressive"] = _DEFAULT_SETTING,
+        copy_magmoms: bool = _DEFAULT_SETTING,
+        preset_mag_default: float = _DEFAULT_SETTING,
+        mag_cutoff: float = _DEFAULT_SETTING,
         elemental_magmoms: dict[str, float] | None = None,
         pmg_kpts: (
             dict[Literal["line_density", "kppvol", "kppa"], float]
@@ -113,20 +115,28 @@ class Vasp(Vasp_):
 
         # Set defaults
         use_custodian = (
-            SETTINGS.VASP_USE_CUSTODIAN if use_custodian is None else use_custodian
+            SETTINGS.VASP_USE_CUSTODIAN
+            if use_custodian == _DEFAULT_SETTING
+            else use_custodian
         )
         incar_copilot = (
-            SETTINGS.VASP_INCAR_COPILOT if incar_copilot is None else incar_copilot
+            SETTINGS.VASP_INCAR_COPILOT
+            if incar_copilot == _DEFAULT_SETTING
+            else incar_copilot
         )
         copy_magmoms = (
-            SETTINGS.VASP_COPY_MAGMOMS if copy_magmoms is None else copy_magmoms
+            SETTINGS.VASP_COPY_MAGMOMS
+            if copy_magmoms == _DEFAULT_SETTING
+            else copy_magmoms
         )
         preset_mag_default = (
             SETTINGS.VASP_PRESET_MAG_DEFAULT
-            if preset_mag_default is None
+            if preset_mag_default == _DEFAULT_SETTING
             else preset_mag_default
         )
-        mag_cutoff = SETTINGS.VASP_MAG_CUTOFF if mag_cutoff is None else mag_cutoff
+        mag_cutoff = (
+            SETTINGS.VASP_MAG_CUTOFF if mag_cutoff == _DEFAULT_SETTING else mag_cutoff
+        )
 
         # Assign variables to self
         self.input_atoms = input_atoms
@@ -150,11 +160,11 @@ class Vasp(Vasp_):
 
         # Get VASP executable command, if necessary, and specify child
         # environment variables
-        command = self._manage_environment()
+        self.command = self._manage_environment()
 
         # Instantiate the calculator!
         super().__init__(
-            atoms=self.input_atoms, command=command, **self.user_calc_params
+            atoms=self.input_atoms, command=self.command, **self.user_calc_params
         )
 
     def _manage_environment(self) -> str:
@@ -317,7 +327,7 @@ class Vasp(Vasp_):
             directory = self.directory
 
         if self.use_custodian:
-            run_custodian()
+            run_custodian(directory=directory)
             return 0
         else:
             return subprocess.call(command, shell=True, stdout=out, cwd=directory)

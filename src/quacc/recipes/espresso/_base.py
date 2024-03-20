@@ -4,8 +4,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ase import Atoms
+from ase.atoms import Atoms
 from ase.io.espresso import Namelist
+from ase.io.espresso_namelist.keys import ALL_KEYS
 
 from quacc.calculators.espresso.espresso import (
     Espresso,
@@ -24,7 +25,7 @@ if TYPE_CHECKING:
 
 
 def base_fn(
-    atoms: Atoms = None,
+    atoms: Atoms | None = None,
     preset: str | None = None,
     template: EspressoTemplate | None = None,
     profile: EspressoProfile | None = None,
@@ -80,7 +81,9 @@ def base_fn(
 
     final_atoms = run_calc(atoms, geom_file=geom_file, copy_files=copy_files)
 
-    return summarize_run(final_atoms, atoms, additional_fields=additional_fields)
+    return summarize_run(
+        final_atoms, atoms, move_magmoms=True, additional_fields=additional_fields
+    )
 
 
 def base_opt_fn(
@@ -98,7 +101,7 @@ def base_opt_fn(
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> RunSchema:
     """
-    Base function to carry out espresso recipes.
+    Base function to carry out espresso recipes with ASE optimizers.
 
     Parameters
     ----------
@@ -151,7 +154,9 @@ def base_opt_fn(
 
     dyn = run_opt(atoms, relax_cell=relax_cell, copy_files=copy_files, **opt_flags)
 
-    return summarize_opt_run(dyn, additional_fields=additional_fields)
+    return summarize_opt_run(
+        dyn, move_magmoms=True, additional_fields=additional_fields
+    )
 
 
 def _prepare_atoms(
@@ -199,8 +204,9 @@ def _prepare_atoms(
 
     binary = template.binary if template else "pw"
 
-    calc_defaults["input_data"].to_nested(binary=binary, **calc_defaults)
-    calc_swaps["input_data"].to_nested(binary=binary, **calc_swaps)
+    if binary in ALL_KEYS:
+        calc_defaults["input_data"].to_nested(binary=binary, **calc_defaults)
+        calc_swaps["input_data"].to_nested(binary=binary, **calc_swaps)
 
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 

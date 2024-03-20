@@ -1,5 +1,6 @@
 import pytest
 
+from quacc import job
 from quacc.wflow_tools.customizers import customize_funcs
 
 
@@ -18,6 +19,15 @@ def test_basic_customizers():
 
     add_, mult_ = customize_funcs(
         ["add", "mult"], [add, mult], parameters={"add": {"b": 2}, "mult": {"b": 2}}
+    )
+    assert add_(1) == 5
+    assert mult_(1) == 8
+
+    add_, mult_ = customize_funcs(
+        ["add", "mult"],
+        [add, mult],
+        parameters={"add": {"b": 2}, "mult": {"b": 2}},
+        decorators={"add": job(), "mult": job()},
     )
     assert add_(1) == 5
     assert mult_(1) == 8

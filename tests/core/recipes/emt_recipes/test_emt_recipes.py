@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import numpy as np
 import pytest
 from ase.build import bulk, molecule
@@ -124,6 +126,7 @@ def test_customizer_v2():
     results = bulk_to_slabs_flow(atoms, job_params={"relax_job": {"asap_cutoff": True}})
     for result in results:
         assert result["parameters"]["asap_cutoff"] is False
+        assert Path(result["dir_name"], "quacc_results.pkl.gz").exists()
 
 
 def test_all_customizers():

@@ -15,12 +15,12 @@ The default global quacc settings can be found in the [`settings.py`](https://gi
 If you are planning to modify a given set of parameters for all of your calculations, the easiest way is to create a YAML file with custom settings. By default, quacc looks for this YAML file at `~/.quacc.yaml`. If you wish to store the YAML file somewhere else or with a different name, you can define the environment variable `QUACC_CONFIG_FILE` and point it to the YAML path of your choosing.
 
 ```yaml title="~/.quacc.yaml"
-SCRATCH_DIR: $SCRATCH # (1)!
+SCRATCH_DIR: /path/to/my/scratch/dir # (1)!
 CREATE_UNIQUE_DIR: false # (2)!
 WORKFLOW_ENGINE: None # (3)!
 ```
 
-1. In YAML, you do not need to put quotation marks around strings. In this case, the quacc scratch directory would be set to the environment variable `$SCRATCH` on whatever machine the calculations are run on.
+1. In YAML, you do not need to put quotation marks around strings. The YAML file also supports environment variable-based paths, like `$SCRATCH`.
 
 2. In YAML, booleans are lowercase.
 
@@ -35,7 +35,7 @@ WORKFLOW_ENGINE: None # (3)!
 If you want to define quacc settings without writing them to a YAML file, you can instead modify the desired settings by defining individual environment variables with `QUACC` as the prefix. The environment variable takes precedence over any value specified in the YAML file. Most simple field types (e.g. `int`, `bool`, `float`, `str`) will be automatically inferred from the environment variable. To achieve the same results as the aforementioned YAML file, you would define the following environment variables:
 
 ```bash
-export QUACC_SCRATCH_DIR=$SCRATCH
+export QUACC_SCRATCH_DIR=/path/to/my/scratch/dir
 export QUACC_CREATE_UNIQUE_DIR=False
 export QUACC_WORKFLOW_ENGINE=None
 ```
@@ -58,4 +58,4 @@ SETTINGS.RESULTS_DIR = "/new/path/to/store/results"
 
 ??? Tip "When is This Method Ideal?"
 
-    This approach is ideal for debugging scenarios, such as when using a Jupyter Notebook. Generally, it should not be used when deploying calculations via a workflow engine, as changes to in-memory global variables on the local machine will not be reflected on the remote machine.
+    This approach is ideal for debugging scenarios, such as when using a Jupyter Notebook. Note that when deploying calculations via a workflow engine, changes to in-memory global variables on the local machine will not be reflected on the remote machine. To modify global settings in a script, ensure the setting re-assignment takes place in the decorated function itself.

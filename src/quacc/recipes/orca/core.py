@@ -10,7 +10,7 @@ from quacc import job
 from quacc.recipes.orca._base import base_fn, base_opt_fn
 
 if TYPE_CHECKING:
-    from typing import Any
+    from typing import Any, Literal
 
     from ase.atoms import Atoms
 
@@ -27,7 +27,7 @@ def static_job(
     basis: str = "def2-tzvp",
     orcasimpleinput: list[str] | None = None,
     orcablocks: list[str] | None = None,
-    nprocs: int | None = None,
+    nprocs: int | Literal["max"] = "max",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> cclibSchema:
     """
@@ -65,8 +65,8 @@ def static_job(
         See the type-hint for the data structure.
     """
 
-    nprocs = nprocs or psutil.cpu_count(logical=False)
-    default_inputs = [xc, basis, "sp", "slowconv", "normalprint", "xyzfile"]
+    nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
+    default_inputs = [xc, basis, "engrad", "normalprint", "slowconv"]
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
     return base_fn(
@@ -92,7 +92,7 @@ def relax_job(
     run_freq: bool = False,
     orcasimpleinput: list[str] | None = None,
     orcablocks: list[str] | None = None,
-    nprocs: int | None = None,
+    nprocs: int | Literal["max"] = "max",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> cclibSchema:
     """
@@ -131,9 +131,9 @@ def relax_job(
         Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][].
         See the type-hint for the data structure.
     """
-    nprocs = nprocs or psutil.cpu_count(logical=False)
+    nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
 
-    default_inputs = [xc, basis, "opt", "slowconv", "normalprint", "xyzfile"]
+    default_inputs = [xc, basis, "normalprint", "opt", "slowconv"]
     if run_freq:
         default_inputs.append("freq")
 
@@ -162,7 +162,7 @@ def ase_relax_job(
     orcasimpleinput: list[str] | None = None,
     orcablocks: list[str] | None = None,
     opt_params: dict[str, Any] | None = None,
-    nprocs: int | None = None,
+    nprocs: int | Literal["max"] = "max",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> cclibSchema:
     """
@@ -201,8 +201,8 @@ def ase_relax_job(
         See the type-hint for the data structure.
     """
 
-    nprocs = nprocs or psutil.cpu_count(logical=False)
-    default_inputs = [xc, basis, "slowconv", "normalprint", "xyzfile", "engrad"]
+    nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
+    default_inputs = [xc, basis, "engrad", "normalprint", "slowconv"]
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
     return base_opt_fn(

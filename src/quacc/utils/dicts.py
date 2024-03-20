@@ -15,10 +15,7 @@ class Remove:
     A sentinel class used in quacc to mark a key in a dictionary for removal.
 
     Note: This is more robust than using `None` as the sentinel value because
-    `None` is a valid value for many keyword arguments. Also, using `object()`
-    as the sentinel value is not robust because its value changes every time
-    it is instantiated, which means an `object()` provided by the user locally
-    will not match an `object()` instantiated on the remote machine.
+    `None` is a valid value for many keyword arguments.
     """
 
     def __init__(self):
@@ -32,7 +29,7 @@ def recursive_dict_merge(
 ) -> MutableMapping[str, Any]:
     """
     Recursively merge several dictionaries, taking the latter in the list as higher
-    preference. Also removes any entries that have a valu of `remove_trigger` from the
+    preference. Also removes any entries that have a value of `remove_trigger` from the
     final dictionary.
 
     This function should be used instead of the | operator when merging nested dictionaries,
