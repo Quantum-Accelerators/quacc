@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import logging
-import pickle
-
 from pathlib import Path
 
 import numpy as np
@@ -269,8 +267,8 @@ def test_md_logger(tmp_path, monkeypatch, caplog):
     assert "fixcm" in caplog.text
     assert "dt" in caplog.text
 
-def test_md_restart(tmp_path, monkeypatch):
 
+def test_md_restart(tmp_path, monkeypatch):
     atoms = molecule("H2O", vacuum=10.0)
 
     md_params = {
@@ -337,7 +335,7 @@ def test_md_restart(tmp_path, monkeypatch):
             "temperature_K": 1000,
             "friction": 0.01,
             "fix_com": False,
-        }
+        },
     }
 
     output_langevin = md_job(atoms, md_params=md_params)
@@ -364,7 +362,7 @@ def test_md_restart(tmp_path, monkeypatch):
         "dynamics_kwargs": {
             "temperature": 1000,
             "taut": 10,
-        }
+        },
     }
 
     output_nvt = md_job(atoms, md_params=md_params)
@@ -394,7 +392,7 @@ def test_md_restart(tmp_path, monkeypatch):
             "taut": 0.2,
             "taup": 0.5,
             "compressibility": 0.5,
-        }
+        },
     }
 
     output_npt_berendsen = md_job(atoms, md_params=md_params)
