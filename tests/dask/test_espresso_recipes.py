@@ -20,11 +20,10 @@ pytestmark = pytest.mark.skipif(
 from pathlib import Path
 
 from ase.build import bulk
+from monty.io import zopen
 
 from quacc.recipes.espresso.phonons import grid_phonon_flow
 from quacc.utils.files import copy_decompress_files
-
-from monty.io import zopen
 
 DATA_DIR = (
     Path(__file__).parent / ".." / "core" / "recipes" / "espresso_recipes" / "data"
