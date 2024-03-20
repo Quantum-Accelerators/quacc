@@ -10,7 +10,7 @@ from ase.io import read
 from cclib.io import ccread
 from maggma.stores import MemoryStore
 from monty.json import MontyDecoder, jsanitize
-
+from shutil import copytree
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.cclib import (
     _cclib_calculate,
@@ -58,11 +58,13 @@ def bad_mock_cclib_calculate(*args, **kwargs):
 
 def test_cclib_summarize_run(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
+    copytree(run1, tmp_path / "test1")
+    copytree(run2, tmp_path / "test2")
 
     # Make sure metadata is made
     atoms = read(log1)
     results = cclib_summarize_run(
-        atoms, ".log", dir_path=run1, additional_fields={"test": "hi"}
+        atoms, ".log", dir_path=tmp_path / "test1", additional_fields={"test": "hi"}
     )
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
@@ -75,14 +77,13 @@ def test_cclib_summarize_run(tmp_path, monkeypatch):
     # Make sure metadata is made
     atoms = read(log2)
     results = cclib_summarize_run(
-        atoms, ".log", dir_path=run2, additional_fields={"test": "hi"}
+        atoms, ".log", dir_path=tmp_path / "test2", additional_fields={"test": "hi"}
     )
     assert results["attributes"]["final_scf_energy"] == pytest.approx(-4091.763)
     assert results["natoms"] == 2
     assert results["charge"] == 0
     assert results["spin_multiplicity"] == 3
     assert results["nelectrons"] == 16
-    assert "schemas" in results["logfile"]
     assert "gau_testopt.log.gz" in results["logfile"]
     assert results.get("attributes") is not None
     assert results["attributes"]["metadata"]["success"] is True
@@ -110,19 +111,19 @@ def test_cclib_summarize_run(tmp_path, monkeypatch):
     MontyDecoder().process_decoded(d)
 
     # Make sure default dir works
-    monkeypatch.chdir(run1)
+    monkeypatch.chdir(tmp_path / "test1")
     cclib_summarize_run(atoms, ".log")
 
     # Test DB
     atoms = read(log1)
     store = MemoryStore()
-    cclib_summarize_run(atoms, ".log", dir_path=run1, store=store)
+    cclib_summarize_run(atoms, ".log", dir_path=tmp_path / "test1", store=store)
     assert store.count() == 1
 
     # Make sure info tags are handled appropriately
     atoms = read(log1)
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
-    results = cclib_summarize_run(atoms, ".log", dir_path=run1)
+    results = cclib_summarize_run(atoms, ".log", dir_path=tmp_path / "test1")
     assert atoms.info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results.get("atoms_info", {}) != {}
     assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
