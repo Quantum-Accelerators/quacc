@@ -258,6 +258,7 @@ def summarize_vasp_opt_run(
     )
     task_doc = recursive_dict_merge(vasp_summary, opt_run_summary)
 
+    dir_path = final_atoms.calc.directory
     if SETTINGS.WRITE_PICKLE:
         with (
             gzip.open(Path(dir_path, "quacc_results.pkl.gz"), "wb")
