@@ -51,7 +51,6 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     keyword_defaults = ["gfnff", "gwolf"] if use_gfnff else []
     option_defaults = ["dump every gulp.res"]
 
@@ -107,7 +106,6 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     keyword_defaults = ["opti", "conp" if relax_cell else "conv"]
     if use_gfnff:
         keyword_defaults += ["gfnff", "gwolf"]

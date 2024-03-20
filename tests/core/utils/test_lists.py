@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from quacc.utils.lists import merge_list_params
 
 

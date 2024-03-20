@@ -49,7 +49,6 @@ def static_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
         See the return type-hint for the data structure.
     """
-
     calc_defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
         "Hamiltonian_MaxSccIterations": 200,
@@ -104,7 +103,6 @@ def relax_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
         See the return type-hint for the data structure.
     """
-
     calc_defaults = {
         "Driver_": "GeometryOptimization",
         "Driver_AppendGeometries": "Yes",

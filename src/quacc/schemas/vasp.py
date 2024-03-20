@@ -91,7 +91,6 @@ def vasp_summarize_run(
     VaspSchema
         Dictionary representation of the task document
     """
-
     run_bader = SETTINGS.VASP_BADER if run_bader == _DEFAULT_SETTING else run_bader
     run_chargemol = (
         SETTINGS.VASP_CHARGEMOL if run_chargemol == _DEFAULT_SETTING else run_chargemol
@@ -235,7 +234,6 @@ def summarize_vasp_opt_run(
     store
         Maggma Store object to store the results in. Defaults to `SETTINGS.STORE`,
     """
-
     store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
 
     final_atoms = get_final_atoms_from_dyn(dyn)
@@ -297,7 +295,6 @@ def _bader_runner(path: Path | str) -> BaderSchema:
     BaderSchema
         Dictionary containing the Bader analysis summary
     """
-
     # Make sure files are present
     relevant_files = ["AECCAR0", "AECCAR2", "CHGCAR", "POTCAR"]
     for f in relevant_files:
@@ -350,7 +347,6 @@ def _chargemol_runner(
     ChargemolSchema
         Dictionary containing the Chargemol analysis summary
     """
-
     # Make sure files are present
     relevant_files = ["AECCAR0", "AECCAR2", "CHGCAR", "POTCAR"]
     for f in relevant_files:

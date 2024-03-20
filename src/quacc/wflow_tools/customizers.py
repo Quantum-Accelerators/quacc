@@ -164,7 +164,6 @@ def customize_funcs(
     tuple[Callable, ...] | Callable
         The customized functions, returned in the same order as provided in `funcs`.
     """
-
     parameters = parameters or {}
     decorators = decorators or {}
     updated_funcs = []

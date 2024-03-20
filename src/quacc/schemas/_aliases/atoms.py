@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
-from typing import Any
-
-from ase.atoms import Atoms
-from pymatgen.core.structure import Molecule, Structure
+from typing import TYPE_CHECKING, Any
 
 from quacc.schemas._aliases.emmet import MoleculeMetadata, StructureMetadata
+
+if TYPE_CHECKING:
+    from ase.atoms import Atoms
+    from pymatgen.core.structure import Molecule, Structure
 
 
 class AtomsSchema(StructureMetadata, MoleculeMetadata):

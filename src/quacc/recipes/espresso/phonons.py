@@ -72,7 +72,6 @@ def phonon_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "input_data": {
             "inputph": {"tr2_ph": 1e-12, "alpha_mix(1)": 0.1, "verbosity": "high"}
@@ -120,7 +119,6 @@ def q2r_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     input_data = Namelist(calc_kwargs.get("input_data"))
     input_data.to_nested(binary="q2r")
 
@@ -170,7 +168,6 @@ def matdyn_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     input_data = Namelist(calc_kwargs.get("input_data"))
     input_data.to_nested(binary="matdyn")
 
@@ -230,7 +227,6 @@ def phonon_dos_flow(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     relax_job_defaults = {
         "input_data": {
             "control": {"forc_conv_thr": 5.0e-5},
@@ -400,7 +396,6 @@ def grid_phonon_flow(
         list[RunSchema]
             A list of results from each phonon job.
         """
-
         ph_input_data = Namelist(ph_input_data)
         ph_input_data.to_nested(binary="ph")
 

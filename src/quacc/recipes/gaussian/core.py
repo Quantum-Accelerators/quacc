@@ -54,7 +54,6 @@ def static_job(
         Dictionary of results, as specified in [quacc.schemas.cclib.cclib_summarize_run][]
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "mem": "16GB",
         "chk": "Gaussian.chk",
@@ -121,7 +120,6 @@ def relax_job(
         Dictionary of results, as specified in [quacc.schemas.cclib.cclib_summarize_run][]
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "mem": "16GB",
         "chk": "Gaussian.chk",
