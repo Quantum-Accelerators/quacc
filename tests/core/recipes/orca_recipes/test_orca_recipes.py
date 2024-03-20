@@ -44,7 +44,7 @@ def test_static_job_parallel(tmp_path, monkeypatch):
     assert output["parameters"]["mult"] == 3
     assert (
         output["parameters"]["orcasimpleinput"]
-        == "def2-svp normalprint slowconv sp wb97x-d3bj xyzfile"
+        == "def2-svp engrad normalprint slowconv wb97x-d3bj xyzfile"
     )
     assert "%scf maxiter 300 end" in output["parameters"]["orcablocks"]
     assert output.get("attributes")
