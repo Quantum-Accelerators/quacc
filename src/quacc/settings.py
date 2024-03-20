@@ -16,6 +16,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 if TYPE_CHECKING:
     from typing import Any
 
+
 installed_engine = next(
     (
         wflow_engine

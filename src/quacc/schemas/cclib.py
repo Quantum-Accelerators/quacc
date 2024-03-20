@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import gzip
 import logging
 import os
 import pickle
@@ -13,10 +14,11 @@ import cclib
 import gzip
 from ase.atoms import Atoms
 from cclib.io import ccread
-from quacc.atoms.core import get_final_atoms_from_dyn
+from monty.json import jsanitize
 
 from quacc import SETTINGS
-from quacc.schemas.ase import summarize_run, summarize_opt_run
+from quacc.atoms.core import get_final_atoms_from_dyn
+from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import clean_task_doc, recursive_dict_merge
 from quacc.utils.files import find_recent_logfile
 from quacc.wflow_tools.db import results_to_db
@@ -25,13 +27,14 @@ if TYPE_CHECKING:
     from typing import Any, Literal
 
     from ase.io import Trajectory
-    from maggma.core import Store
     from ase.optimize.optimize import Optimizer
+    from maggma.core import Store
+
     from quacc.schemas._aliases.cclib import (
         PopAnalysisAttributes,
+        cclibASEOptSchema,
         cclibBaseSchema,
         cclibSchema,
-        cclibASEOptSchema,
     )
 
 logger = logging.getLogger(__name__)
@@ -98,7 +101,6 @@ def cclib_summarize_run(
     cclibSchema
         Dictionary representation of the task document
     """
-
     dir_path = Path(dir_path or final_atoms.calc.directory)
     check_convergence = (
         SETTINGS.CHECK_CONVERGENCE
@@ -315,7 +317,6 @@ def _make_cclib_schema(
         A TaskDocument dictionary summarizing the inputs/outputs of the log
         file.
     """
-
     # Find the most recent log file with the given extension in the
     # specified directory.
     logfile = find_recent_logfile(dir_name, logfile_extensions)
@@ -421,7 +422,6 @@ def _cclib_calculate(
     PopAnalysisAttributes | None
         The results of the population analysis.
     """
-
     method = method.lower()
     cube_methods = ["bader", "ddec6", "hirshfeld"]
     proatom_methods = ["ddec6", "hirshfeld"]

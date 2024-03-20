@@ -60,7 +60,6 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "mem": "16GB",
         "num_threads": "max",

@@ -30,7 +30,6 @@ def results_to_db(store: Store, results: dict[str, Any] | list[dict]) -> None:
     -------
     None
     """
-
     if not isinstance(results, list):
         results = [results]
 

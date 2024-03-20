@@ -75,7 +75,6 @@ def summarize_run(
     RunSchema
         Dictionary representation of the task document
     """
-
     additional_fields = additional_fields or {}
     store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
 
@@ -172,7 +171,6 @@ def summarize_opt_run(
     OptSchema
         Dictionary representation of the task document
     """
-
     check_convergence = (
         SETTINGS.CHECK_CONVERGENCE
         if check_convergence == _DEFAULT_SETTING
@@ -455,7 +453,6 @@ def _summarize_ideal_gas_thermo(
     ThermoSchema
         Dictionary representation of the task document
     """
-
     additional_fields = additional_fields or {}
     store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
 

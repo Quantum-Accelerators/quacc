@@ -37,7 +37,8 @@ _DEFAULT_SETTING = ()
 class Vasp(Vasp_):
     """This is a wrapper around the ASE Vasp calculator that adjusts INCAR parameters
     on-the-fly, allows for ASE to run VASP via Custodian, and supports several automatic
-    k-point generation schemes from Pymatgen."""
+    k-point generation schemes from Pymatgen.
+    """
 
     def __init__(
         self,

@@ -86,7 +86,6 @@ def run_calc(
     Atoms
         The updated Atoms object.
     """
-
     # Copy atoms so we don't modify it in-place
     atoms = copy_atoms(atoms)
 
@@ -177,7 +176,6 @@ def run_opt(
     Optimizer
         The ASE Optimizer object.
     """
-
     # Copy atoms so we don't modify it in-place
     atoms = copy_atoms(atoms)
 
@@ -269,7 +267,6 @@ def run_vib(
     Vibrations
         The updated Vibrations module
     """
-
     # Copy atoms so we don't modify it in-place
     atoms = copy_atoms(atoms)
 
@@ -315,7 +312,6 @@ def _set_sella_kwargs(atoms: Atoms, optimizer_kwargs: dict[str, Any]) -> None:
     -------
     None
     """
-
     if "order" not in optimizer_kwargs:
         optimizer_kwargs["order"] = 0
 

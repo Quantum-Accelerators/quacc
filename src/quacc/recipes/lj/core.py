@@ -51,7 +51,6 @@ def static_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     atoms.calc = LennardJones(**calc_kwargs)
     final_atoms = run_calc(atoms, copy_files=copy_files)
 

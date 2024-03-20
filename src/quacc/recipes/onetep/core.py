@@ -54,7 +54,6 @@ def static_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = BASE_SET
 
     return base_fn(
@@ -97,7 +96,6 @@ def ase_relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = recursive_dict_merge(
         BASE_SET,
         {"keywords": {"write_forces": True, "forces_output_detail": "verbose"}},

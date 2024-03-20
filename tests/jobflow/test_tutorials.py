@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pytest
 
 jf = pytest.importorskip("jobflow")
@@ -91,8 +93,7 @@ def test_comparison2(tmp_path, monkeypatch):
     @jf.job
     def add_distributed(vals, c):
         jobs = []
-        for val in vals:
-            jobs.append(add(val, c))
+        jobs = [add(val, c) for val in vals]
 
         flow = jf.Flow(jobs)
         return jf.Response(replace=flow)

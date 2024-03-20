@@ -1,14 +1,13 @@
+from __future__ import annotations
+
+import contextlib
+from importlib import util
 from pathlib import Path
 
 TEST_RESULTS_DIR = Path(__file__).parent / "_test_results"
 TEST_SCRATCH_DIR = Path(__file__).parent / "_test_scratch"
 
-try:
-    import dask.distributed
-
-    has_import = True
-except ImportError:
-    has_import = False
+has_import = util.find_spec("dask.distributed") is not None
 
 if has_import:
 
@@ -33,10 +32,8 @@ if has_import:
         if exitstatus == 0:
             from dask.distributed import default_client
 
-            try:
+            with contextlib.suppress(Exception):
                 default_client().close()
-            except Exception:
-                pass
 
             rmtree(TEST_RESULTS_DIR, ignore_errors=True)
             rmtree(TEST_SCRATCH_DIR, ignore_errors=True)

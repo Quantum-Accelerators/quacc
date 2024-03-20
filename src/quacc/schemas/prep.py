@@ -108,7 +108,6 @@ def set_magmoms(
     Atoms
         Atoms object
     """
-
     # Handle the magnetic moments Check if a prior job was run and pull the
     # prior magmoms
     if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None) is not None:

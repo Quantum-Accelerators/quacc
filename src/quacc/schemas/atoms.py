@@ -5,7 +5,6 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import TYPE_CHECKING
 
-from ase.atoms import Atoms
 from emmet.core.structure import MoleculeMetadata, StructureMetadata
 from pymatgen.io.ase import AseAtomsAdaptor
 
@@ -18,6 +17,8 @@ from quacc.utils.dicts import clean_task_doc
 
 if TYPE_CHECKING:
     from typing import Any
+
+    from ase.atoms import Atoms
 
     from quacc.schemas._aliases.atoms import AtomsSchema
 
@@ -52,7 +53,6 @@ def atoms_to_metadata(
     AtomsSchema
         Dict of metadata about the Atoms object.
     """
-
     additional_fields = additional_fields or {}
     atoms = copy_atoms(atoms)
     results = {}
@@ -113,7 +113,6 @@ def _set_charge_and_spin(
     None
         Modifies the Atoms object in place.
     """
-
     if charge_and_multiplicity:
         charge = charge_and_multiplicity[0]
         spin_multiplicity = charge_and_multiplicity[1]

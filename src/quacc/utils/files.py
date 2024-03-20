@@ -129,7 +129,6 @@ def copy_decompress_files(
     -------
     None
     """
-
     source_directory = Path(source_directory).expanduser()
     destination_directory = Path(destination_directory).expanduser()
 
@@ -204,7 +203,6 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
     dict
         The calculator configuration (i.e. settings).
     """
-
     yaml_path = Path(yaml_path).expanduser()
 
     if yaml_path.suffix != ".yaml":

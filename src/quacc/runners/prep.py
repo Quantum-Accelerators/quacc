@@ -49,7 +49,6 @@ def calc_setup(
         `SETTINGS.CREATE_UNIQUE_DIR` is set, it will be a unique directory
         within the `SETTINGS.RESULTS_DIR`.
     """
-
     # Create a tmpdir for the calculation
     tmpdir_base = SETTINGS.SCRATCH_DIR or SETTINGS.RESULTS_DIR
     tmpdir = make_unique_dir(base_path=tmpdir_base, prefix="tmp-quacc-")
@@ -104,7 +103,6 @@ def calc_cleanup(
     -------
     None
     """
-
     job_results_dir, tmpdir = Path(job_results_dir), Path(tmpdir)
 
     # Safety check
