@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import TYPE_CHECKING
 
 from emmet.core.structure import MoleculeMetadata, StructureMetadata
-from monty.json import jsanitize
 from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc.atoms.core import (
@@ -83,9 +83,7 @@ def atoms_to_metadata(
         metadata = {}
 
     # Copy the info flags as a separate entry in the DB for easy querying
-    results["atoms_info"] = jsanitize(
-        atoms.info, enum_values=True, recursive_msonable=True
-    )
+    results["atoms_info"] = deepcopy(atoms.info)
 
     # Store Atoms object
     results["atoms"] = atoms
