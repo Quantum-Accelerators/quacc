@@ -36,6 +36,8 @@ MOCKED_DIR = FILE_DIR / "mocked_vasp_run"
 
 def test_static_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
+    import os
+    raise ValueError(os.environ["VASP_PP_PATH"])
 
     atoms = bulk("Al")
 
