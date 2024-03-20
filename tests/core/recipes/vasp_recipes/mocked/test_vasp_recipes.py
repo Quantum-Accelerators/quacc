@@ -37,7 +37,8 @@ import warnings
 def test_static_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     import os
-    warnings.warn(os.environ["VASP_PP_PATH"], os.listdir(os.environ["VASP_PP_PATH"]))
+    warnings.warn(os.environ["VASP_PP_PATH"])
+    warnings.warn(os.listdir(os.environ["VASP_PP_PATH"]))
     atoms = bulk("Al")
 
     output = static_job(atoms)
