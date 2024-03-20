@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- Updated `ruff` settings
 - The Gaussian and ORCA `static_job` routines do a force calculation by default now
 
 ### Fixed
