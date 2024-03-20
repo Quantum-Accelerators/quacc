@@ -22,7 +22,7 @@ def mock_run(self, *args, **kwargs):
 def patch_run(monkeypatch):
     from quacc.calculators.vasp.vasp import Vasp
 
-    monkeypatch.setenv("VASP_PP_PATH", str(PSEUDO_DIR.as_posix()))
+    monkeypatch.setenv("VASP_PP_PATH", str(PSEUDO_DIR))
     monkeypatch.setattr(Vasp, "_run", mock_run)
 
 
