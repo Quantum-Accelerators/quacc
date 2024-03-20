@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
-from ase import Atoms
+from ase.atoms import Atoms
 from ase.calculators.espresso import Espresso as Espresso_
 from ase.calculators.espresso import EspressoProfile
 from ase.calculators.espresso import EspressoTemplate as EspressoTemplate_
@@ -35,7 +35,8 @@ LOGGER = logging.getLogger(__name__)
 
 class EspressoTemplate(EspressoTemplate_):
     """This is a wrapper around the ASE Espresso template that allows for the use of
-    other binaries such as pw.x, ph.x, cp.x, etc."""
+    other binaries such as pw.x, ph.x, cp.x, etc.
+    """
 
     def __init__(
         self, binary: str = "pw", test_run: bool = False, autorestart: bool = False
@@ -116,7 +117,6 @@ class EspressoTemplate(EspressoTemplate_):
         -------
         None
         """
-
         directory = Path(directory)
         self._output_handler(parameters, directory)
         parameters = self._sanity_checks(parameters)
@@ -189,7 +189,6 @@ class EspressoTemplate(EspressoTemplate_):
         -------
         None
         """
-
         prefix = EspressoTemplate._search_keyword(parameters, "prefix") or "pwscf"
 
         Path(directory, f"{prefix}.EXIT").touch()
@@ -211,7 +210,6 @@ class EspressoTemplate(EspressoTemplate_):
         dict
             The results dictionnary
         """
-
         results = {}
         if self.binary == "pw":
             atoms = read(directory / self.outputname, format="espresso-out")
@@ -322,7 +320,6 @@ class EspressoTemplate(EspressoTemplate_):
         dict
             The modified parameters dictionary.
         """
-
         input_data = parameters.get("input_data", {})
 
         if self.binary == "ph":
@@ -469,7 +466,6 @@ class Espresso(Espresso_):
         -------
         None
         """
-
         if self.kwargs.get("directory"):
             raise NotImplementedError("quacc does not support the directory argument.")
 

@@ -1,4 +1,8 @@
+from __future__ import annotations
+
+import gzip
 import os
+import pickle
 from copy import deepcopy
 from pathlib import Path
 
@@ -25,7 +29,8 @@ FILE_DIR = Path(__file__).parent
 RUN1 = FILE_DIR / "test_files" / "vasp_run1"
 
 
-def test_summarize_run():
+def test_summarize_run(tmpdir, monkeypatch):
+    monkeypatch.chdir(tmpdir)
     # Make sure metadata is made
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
@@ -37,8 +42,19 @@ def test_summarize_run():
     assert results["input_atoms"]["atoms"] == initial_atoms
     assert Path(results["dir_name"]).is_dir()
 
+    with gzip.open(Path(results["dir_name"], "quacc_results.pkl.gz"), "rb") as f:
+        pickle_results = pickle.load(f)
+    output = results.copy()
+    output.pop("uuid")
+    assert pickle_results.keys() == output.keys()
 
-def test_summarize_run2():
+    assert pickle_results["nsites"] == output["nsites"]
+    assert pickle_results["results"]["energy"] == output["results"]["energy"]
+    assert pickle_results["atoms"].info == output["atoms"].info
+
+
+def test_summarize_run2(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
     # Test DB
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
@@ -47,7 +63,9 @@ def test_summarize_run2():
     assert store.count() == 1
 
 
-def test_summarize_run3():
+def test_summarize_run3(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
     # Make sure info tags are handled appropriately
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
@@ -59,7 +77,8 @@ def test_summarize_run3():
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
 
-def test_summarize_run4():
+def test_summarize_run4(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
     # Make sure magnetic moments are handled appropriately
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
@@ -76,7 +95,8 @@ def test_summarize_run4():
     assert results["atoms"].calc is None
 
 
-def test_summarize_run5():
+def test_summarize_run5(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
     # Make sure Atoms magmoms were not moved if specified
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
@@ -119,6 +139,21 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
     assert "pymatgen_version" in results["builder_meta"]
     assert results["fmax"] == dyn.fmax
     assert results["parameters_opt"]["max_steps"] == 100
+
+    with gzip.open(Path(results["dir_name"], "quacc_results.pkl.gz"), "rb") as f:
+        pickle_results = pickle.load(f)
+
+    output = results.copy()
+    output.pop("uuid")
+
+    assert pickle_results.keys() == output.keys()
+
+    # assert things on the trajectory are the same
+    assert pickle_results["trajectory"] == output["trajectory"]
+    assert (
+        pickle_results["trajectory_results"][-1]["energy"]
+        == output["trajectory_results"][-1]["energy"]
+    )
 
     # Test DB
     atoms = bulk("Cu") * (2, 2, 1)

@@ -15,10 +15,7 @@ class Remove:
     A sentinel class used in quacc to mark a key in a dictionary for removal.
 
     Note: This is more robust than using `None` as the sentinel value because
-    `None` is a valid value for many keyword arguments. Also, using `object()`
-    as the sentinel value is not robust because its value changes every time
-    it is instantiated, which means an `object()` provided by the user locally
-    will not match an `object()` instantiated on the remote machine.
+    `None` is a valid value for many keyword arguments.
     """
 
     def __init__(self):
@@ -32,7 +29,7 @@ def recursive_dict_merge(
 ) -> MutableMapping[str, Any]:
     """
     Recursively merge several dictionaries, taking the latter in the list as higher
-    preference. Also removes any entries that have a valu of `remove_trigger` from the
+    preference. Also removes any entries that have a value of `remove_trigger` from the
     final dictionary.
 
     This function should be used instead of the | operator when merging nested dictionaries,
@@ -51,7 +48,6 @@ def recursive_dict_merge(
     MutableMapping[str, Any]
         Merged dictionary
     """
-
     old_dict = dicts[0]
     for i in range(len(dicts) - 1):
         merged = _recursive_dict_pair_merge(old_dict, dicts[i + 1])
@@ -78,7 +74,6 @@ def _recursive_dict_pair_merge(
     dict
         Merged dictionary
     """
-
     dict1 = dict1 or ({} if dict1 is None else dict1.__class__())
     dict2 = dict2 or ({} if dict2 is None else dict2.__class__())
     merged = safe_dict_copy(dict1)
@@ -135,7 +130,6 @@ def remove_dict_entries(
     dict
         Cleaned dictionary
     """
-
     if isinstance(start_dict, MutableMapping):
         return {
             k: remove_dict_entries(v, remove_trigger)
@@ -163,7 +157,6 @@ def sort_dict(start_dict: dict[str, Any]) -> dict[str, Any]:
     dict
         Sorted dictionary
     """
-
     return {
         k: sort_dict(v) if isinstance(v, MutableMapping) else v
         for k, v in sorted(start_dict.items())

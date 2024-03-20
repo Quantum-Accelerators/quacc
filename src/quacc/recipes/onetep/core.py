@@ -13,7 +13,7 @@ from quacc.utils.dicts import recursive_dict_merge
 if TYPE_CHECKING:
     from typing import Any
 
-    from ase import Atoms
+    from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
     from quacc.utils.files import Filenames, SourceDirectory
@@ -54,7 +54,6 @@ def static_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = BASE_SET
 
     return base_fn(
@@ -69,6 +68,7 @@ def static_job(
 @job
 def ase_relax_job(
     atoms: Atoms,
+    relax_cell: bool = False,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     opt_params: dict[str, Any] | None = None,
     **calc_kwargs,
@@ -96,13 +96,12 @@ def ase_relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = recursive_dict_merge(
         BASE_SET,
         {"keywords": {"write_forces": True, "forces_output_detail": "verbose"}},
     )
 
-    opt_defaults = {"optimizer": LBFGS}
+    opt_defaults = {"optimizer": LBFGS, "relax_cell": relax_cell}
 
     return base_opt_fn(
         atoms,

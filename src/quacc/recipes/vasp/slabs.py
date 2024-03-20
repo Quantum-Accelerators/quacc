@@ -47,7 +47,6 @@ def static_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "auto_dipole": True,
         "ismear": -5,
@@ -98,7 +97,6 @@ def relax_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "auto_dipole": True,
         "ediffg": -0.02,

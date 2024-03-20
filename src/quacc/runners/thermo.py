@@ -44,7 +44,6 @@ def run_ideal_gas(
     -------
     IdealGasThermo object
     """
-
     # Switch off PBC since this is only for molecules
     atoms.set_pbc(False)
 

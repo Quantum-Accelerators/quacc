@@ -135,7 +135,6 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     Job
         The @job-decorated function.
     """
-
     from quacc import SETTINGS
 
     if _func is None:
@@ -581,7 +580,8 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
 
 class Delayed_:
     """A small Dask-compatible, serializable object to wrap delayed functions that we
-    don't want to execute."""
+    don't want to execute.
+    """
 
     __slots__ = ("func",)
 

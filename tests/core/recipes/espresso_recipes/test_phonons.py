@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from shutil import which
 
 import pytest
@@ -188,7 +190,7 @@ def test_q2r_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     assert Path(recycled_input[0]["input"].pop("flfrc")).is_absolute()
 
     assert recycled_input[0]["input"] == {"fildyn": "matdyn"}
-    assert recycled_input[1] == additional_cards + ["EOF"]
+    assert recycled_input[1] == [*additional_cards, "EOF"]
 
 
 def test_matdyn_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
@@ -248,6 +250,6 @@ def test_phonon_dos_flow(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
         "matdyn_job": {"parallel_info": ESPRESSO_PARALLEL_INFO},
     }
 
-    phonon_dos_results = phonon_dos_flow(atoms, job_params=job_params)
+    assert phonon_dos_flow(atoms, job_params=job_params)
 
     SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO
