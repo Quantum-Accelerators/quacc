@@ -175,7 +175,7 @@ lint.isort.required-imports = ["from __future__ import annotations"]
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
 "tests/**" = ["ANN201", "D", "E402", "S101"]
-"src/quacc/settings.py" = ["FBT003", "UP007"]
+"src/quacc/settings.py" = ["FBT003", "TCH002", "UP007"]
 
 [tool.docformatter]
 pre-summary-newline = true

@@ -9,13 +9,13 @@ from shutil import which
 from typing import TYPE_CHECKING, Literal, Optional, Union
 
 import psutil
+from maggma.core import Store
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 if TYPE_CHECKING:
     from typing import Any
 
-    from maggma.core import Store
 
 installed_engine = next(
     (
