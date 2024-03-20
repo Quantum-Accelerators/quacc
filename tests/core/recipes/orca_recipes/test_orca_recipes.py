@@ -79,7 +79,7 @@ def test_relax_job(tmp_path, monkeypatch):
         output["parameters"]["orcasimpleinput"]
         == "def2-svp hf normalprint opt slowconv xyzfile"
     )
-    assert "%scf maxiter 300 end" in output["parameters"]["orcablocks"]
+    assert output["parameters"]["orcablocks"] == "%pal nprocs 2 end\n%scf maxiter 300 end"
     assert output.get("trajectory")
     assert len(output["trajectory"]) > 1
     assert output.get("attributes")

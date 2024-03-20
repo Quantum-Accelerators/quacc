@@ -66,7 +66,7 @@ def static_job(
     """
 
     nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
-    default_inputs = [xc, basis, "sp", "slowconv", "normalprint", "xyzfile"]
+    default_inputs = [xc, basis, "normalprint", "sp", "slowconv"]
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
     return base_fn(
@@ -133,7 +133,7 @@ def relax_job(
     """
     nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
 
-    default_inputs = [xc, basis, "opt", "slowconv", "normalprint", "xyzfile"]
+    default_inputs = [xc, basis, "normalprint", "opt", "slowconv"]
     if run_freq:
         default_inputs.append("freq")
 
@@ -202,7 +202,7 @@ def ase_relax_job(
     """
 
     nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
-    default_inputs = [xc, basis, "slowconv", "normalprint", "xyzfile", "engrad"]
+    default_inputs = [xc, basis, "engrad", "normalprint", "slowconv"]
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
     return base_opt_fn(
