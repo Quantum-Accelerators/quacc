@@ -35,13 +35,11 @@ def test_results_dir(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Cu")
-    relax_job(atoms)
-    assert "opt.traj.gz" in os.listdir(tmp_path)
-    os.remove("opt.traj.gz")
+    output = relax_job(atoms)
+    assert "opt.traj.gz" in os.listdir(output["dir_name"])
     SETTINGS.GZIP_FILES = False
-    relax_job(atoms)
-    assert "opt.traj" in os.listdir(tmp_path)
-    os.remove("opt.traj")
+    output = relax_job(atoms)
+    assert "opt.traj" in os.listdir(output["dir_name"])
 
 
 def test_bad_dir():
