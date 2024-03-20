@@ -123,8 +123,8 @@ def summarize_run(
         with (
             gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
             if SETTINGS.GZIP_FILES
-            else Path(directory, "quacc_results.pkl").open("wb") as f
-        ):
+            else Path(directory, "quacc_results.pkl").open("wb")
+        ) as f:
             pickle.dump(task_doc, f)
 
     if store:
@@ -230,8 +230,8 @@ def summarize_opt_run(
         with (
             gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
             if SETTINGS.GZIP_FILES
-            else Path(directory, "quacc_results.pkl").open("wb") as f
-        ):
+            else Path(directory, "quacc_results.pkl").open("wb")
+        ) as f:
             pickle.dump(task_doc, f)
 
     if store:
@@ -303,8 +303,8 @@ def summarize_vib_and_thermo(
             with (
                 gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
                 if SETTINGS.GZIP_FILES
-                else Path(directory, "quacc_results.pkl").open("wb") as f
-            ):
+                else Path(directory, "quacc_results.pkl").open("wb")
+            ) as f:
                 pickle.dump(task_doc, f)
     if store:
         results_to_db(store, task_doc)
