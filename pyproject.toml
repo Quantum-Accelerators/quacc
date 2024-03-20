@@ -152,7 +152,6 @@ lint.ignore = [
   "PLR",    # Design related pylint codes
   "E501",   # Line too long
   "B028",   # No explicit stacklevel
-  "E402",   # Module level import at top of file
   "EM101",  # Exception must not use a string literal
   "EM102",  # Exception must not use an f-string literal
   "G004",   # f-string in Logging statement
@@ -175,7 +174,7 @@ lint.isort.required-imports = ["from __future__ import annotations"]
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
-"tests/**" = ["ANN201", "D", "S101"]
+"tests/**" = ["ANN201", "D", "E402", "S101"]
 "src/quacc/settings.py" = ["FBT003", "UP007"]
 
 [tool.docformatter]
