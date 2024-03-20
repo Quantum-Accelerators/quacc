@@ -179,8 +179,10 @@ def _prep_calculator(
     """
     inputs = merge_list_params(default_inputs, input_swaps)
     blocks = merge_list_params(default_blocks, block_swaps)
+    if "xyzfile" not in inputs:
+        inputs.append("xyzfile")
     orcasimpleinput = " ".join(inputs)
-    orcablocks = " ".join(blocks)
+    orcablocks = "\n".join(blocks)
 
     return ORCA(
         profile=OrcaProfile(SETTINGS.ORCA_CMD),
