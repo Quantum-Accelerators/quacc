@@ -276,7 +276,6 @@ def summarize_vib_and_thermo(
     VibThermoSchema
         A dictionary that merges the `VibSchema` and `ThermoSchema`.
     """
-    additional_fields = additional_fields or {}
     store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
 
     vib_task_doc = _summarize_vib_run(
