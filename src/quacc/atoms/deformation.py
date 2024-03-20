@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
-from ase.atoms import Atoms
 from pymatgen.analysis.elasticity.strain import DeformedStructureSet
 from pymatgen.io.ase import AseAtomsAdaptor
 
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from ase.atoms import Atoms
 
 def make_deformations_from_bulk(
     atoms: Atoms,

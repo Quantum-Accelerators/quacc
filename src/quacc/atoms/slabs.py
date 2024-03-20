@@ -7,7 +7,6 @@ from copy import deepcopy
 from typing import TYPE_CHECKING
 
 import numpy as np
-from ase.atoms import Atoms
 from pymatgen.analysis.adsorption import AdsorbateSiteFinder
 from pymatgen.core.structure import Structure
 from pymatgen.core.surface import Slab, center_slab, generate_all_slabs
@@ -18,6 +17,7 @@ from quacc.atoms.core import copy_atoms
 if TYPE_CHECKING:
     from typing import Literal, TypedDict
 
+    from ase.atoms import Atoms
     from numpy.typing import ArrayLike
 
     class AdsSiteFinderKwargs(TypedDict, total=False):

@@ -33,7 +33,7 @@ def callback(value: bool) -> None:
 
     if value:
         rich_print(f"quacc v{__version__}")
-        raise typer.Exit()
+        raise typer.Exit
 
 
 @app.callback()

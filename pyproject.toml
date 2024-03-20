@@ -121,7 +121,6 @@ exclude_also = [
 lint.select = [
   "B",      # flake8-bugbear
   "C4",     # flake8-comprehensions
-  "D",      # pydocstyle
   "E",      # pycodestyle error
   "EXE",    # flake8-executable
   "F",      # pyflakes
@@ -130,7 +129,6 @@ lint.select = [
   "FLY",    # flynt
   "I",      # isort
   "ICN",    # flake8-import-conventions
-  "ISC",    # flake8-implicit-str-concat
   "PD",     # pandas-vet
   "PERF",   # perflint
   "PIE",    # flake8-pie
@@ -154,6 +152,7 @@ lint.ignore = [
   "PLR",    # Design related pylint codes
   "E501",   # Line too long
   "B028",   # No explicit stacklevel
+  "E402",   # Module level import at top of file
   "EM101",  # Exception must not use a string literal
   "EM102",  # Exception must not use an f-string literal
   "G004",   # f-string in Logging statement
@@ -169,6 +168,10 @@ lint.unfixable = [
 lint.pydocstyle.convention = "numpy"
 lint.isort.known-first-party = ["quacc"]
 lint.isort.required-imports = ["from __future__ import annotations"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+"tests/**" = ["ANN201", "D", "S101"]
 
 [tool.docformatter]
 pre-summary-newline = true

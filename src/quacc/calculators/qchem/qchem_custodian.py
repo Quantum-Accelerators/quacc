@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
@@ -10,7 +9,9 @@ from monty.dev import requires
 from quacc import SETTINGS
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from subprocess import Popen
+
 try:
     import openbabel as ob
 except ImportError:
