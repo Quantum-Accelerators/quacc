@@ -18,7 +18,6 @@ from __future__ import annotations
 
 import logging
 from functools import partial
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from pymatgen.io.vasp.sets import MPRelaxSet, MPScanRelaxSet, MPStaticSet
@@ -33,6 +32,7 @@ except ImportError:
     ValidationDoc = None
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from typing import Any, Callable
 
     from ase.atoms import Atoms

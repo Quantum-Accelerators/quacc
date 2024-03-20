@@ -158,6 +158,10 @@ lint.ignore = [
   "G004",   # f-string in Logging statement
   "RUF015", # Prefer next(iter())
   "RET505", # Unnecessary `elif` after `return`
+  "PT004",  # Fixture does not return anthing
+  "B017",   # pytest.raises
+  "PT011",  # pytest.raises
+  "PT012",  # pytest.raises
 ]
 lint.typing-modules = ["mypackage._compat.typing"]
 src = ["src"]
@@ -172,6 +176,7 @@ lint.isort.required-imports = ["from __future__ import annotations"]
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
 "tests/**" = ["ANN201", "D", "S101"]
+"src/quacc/settings.py" = ["FBT003", "UP007"]
 
 [tool.docformatter]
 pre-summary-newline = true

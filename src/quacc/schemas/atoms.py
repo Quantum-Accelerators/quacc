@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ase.atoms import Atoms
 from emmet.core.structure import MoleculeMetadata, StructureMetadata
 from monty.json import jsanitize
 from pymatgen.io.ase import AseAtomsAdaptor
@@ -18,6 +17,8 @@ from quacc.utils.dicts import clean_task_doc
 
 if TYPE_CHECKING:
     from typing import Any
+
+    from ase.atoms import Atoms
 
     from quacc.schemas._aliases.atoms import AtomsSchema
 

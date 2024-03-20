@@ -256,7 +256,7 @@ def test_non_scf_job2(tmp_path, monkeypatch, caplog):
 
 
 @pytest.mark.parametrize("_is_metal", [True, False])
-def test_non_scf_job3(tmp_path, monkeypatch, _is_metal):
+def test_non_scf_job3(tmp_path, monkeypatch, _is_metal):  # noqa: PT019
     monkeypatch.chdir(tmp_path)
 
     class DummyBandStructure:
