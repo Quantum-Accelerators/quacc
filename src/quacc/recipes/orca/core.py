@@ -66,7 +66,7 @@ def static_job(
     """
 
     nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
-    default_inputs = [xc, basis, "normalprint", "sp", "slowconv"]
+    default_inputs = [xc, basis, "engrad", "normalprint", "slowconv"]
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
     return base_fn(

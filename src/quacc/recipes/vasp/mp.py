@@ -8,20 +8,13 @@ This set of recipes is meant to be compatible with the Materials Project
     Make sure that you use the Materials Project-compatible pseudpotential
     versions. The GGA workflows use the old (no version) PAW PBE potentials.
     The meta-GGA workflows currently use the v.54 PAW PBE potentials.
-
-!!! Info
-
-    The one true source of Materials Project workflows is
-    [atomate2](https://github.com/materialsproject/atomate2).
-    If you need an MP-compatible workflow, we strongly encourage you to
-    use atomate2 to ensure that all of your settings are fully compatible
-    and up-to-date. This module is a best effort to be used at your own
-    discretion.
 """
 
 from __future__ import annotations
 
+import logging
 from functools import partial
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from pymatgen.io.vasp.sets import MPRelaxSet, MPScanRelaxSet, MPStaticSet
@@ -30,10 +23,16 @@ from quacc import flow, job
 from quacc.recipes.vasp._base import base_fn
 from quacc.wflow_tools.customizers import customize_funcs
 
+try:
+    from pymatgen.io.validation import ValidationDoc
+except ImportError:
+    ValidationDoc = None
+
 if TYPE_CHECKING:
     from typing import Any, Callable
 
     from ase.atoms import Atoms
+    from emmet.core.base import EmmetBaseModel
 
     from quacc.schemas._aliases.vasp import (
         MPGGARelaxFlowSchema,
@@ -41,6 +40,39 @@ if TYPE_CHECKING:
         VaspSchema,
     )
     from quacc.utils.files import Filenames, SourceDirectory
+
+logger = logging.getLogger(__name__)
+
+
+def _validate_mp_compatability(directory: Path | str) -> EmmetBaseModel | None:
+    """
+    Validate the output of a VASP calculation for Materials Project compatibility.
+
+    Parameters
+    ----------
+    directory
+        Path to the directory containing the VASP calculation.
+
+    Returns
+    -------
+    EmmetBaseModel | None
+        The validation document.
+    """
+    if ValidationDoc is None:
+        logger.warning(
+            "pymatgen-io-validation is not installed. Skipping MP compatability check."
+        )
+        return None
+    validation_doc = ValidationDoc.from_directory(dir_name=directory)
+    if not validation_doc.valid:
+        logger.warning(
+            f"Calculation in {directory} is not MP-compatible for the following reasons: {validation_doc.reasons}"
+        )
+    if validation_doc.warnings:
+        logger.warning(
+            f"Calculation in {directory} has the following MP-related warnings: {validation_doc.warnings}"
+        )
+    return validation_doc
 
 
 @job
@@ -70,7 +102,7 @@ def mp_gga_relax_job(
     """
 
     calc_defaults = {"pmg_input_set": MPRelaxSet}
-    return base_fn(
+    output = base_fn(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -78,6 +110,9 @@ def mp_gga_relax_job(
         additional_fields={"name": "MP GGA Relax"},
         copy_files=copy_files,
     )
+    _validate_mp_compatability(output["dir_name"])
+
+    return output
 
 
 @job
@@ -117,7 +152,7 @@ def mp_gga_static_job(
         "lwave": True,  # Deviation from MP (but logical)
         "lreal": False,
     }
-    return base_fn(
+    output = base_fn(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -125,6 +160,9 @@ def mp_gga_static_job(
         additional_fields={"name": "MP GGA Static"},
         copy_files=copy_files,
     )
+    _validate_mp_compatability(output["dir_name"])
+
+    return output
 
 
 @job
@@ -171,7 +209,7 @@ def mp_metagga_prerelax_job(
         "lwave": True,
         "metagga": None,
     }
-    return base_fn(
+    output = base_fn(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -179,6 +217,8 @@ def mp_metagga_prerelax_job(
         additional_fields={"name": "MP Meta-GGA Pre-Relax"},
         copy_files=copy_files,
     )
+    _validate_mp_compatability(output["dir_name"])
+    return output
 
 
 @job
@@ -221,7 +261,7 @@ def mp_metagga_relax_job(
         "lvtot": False,  # Deviation from MP (but logical)
         "lwave": True,
     }
-    return base_fn(
+    output = base_fn(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -229,6 +269,9 @@ def mp_metagga_relax_job(
         additional_fields={"name": "MP Meta-GGA Relax"},
         copy_files=copy_files,
     )
+    _validate_mp_compatability(output["dir_name"])
+
+    return output
 
 
 @job
@@ -272,7 +315,7 @@ def mp_metagga_static_job(
         "lwave": True,  # Deviation from MP (but logical)
         "nsw": 0,
     }
-    return base_fn(
+    output = base_fn(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -280,6 +323,8 @@ def mp_metagga_static_job(
         additional_fields={"name": "MP Meta-GGA Static"},
         copy_files=copy_files,
     )
+    _validate_mp_compatability(output["dir_name"])
+    return output
 
 
 @flow
