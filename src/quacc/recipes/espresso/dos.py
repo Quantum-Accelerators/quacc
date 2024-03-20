@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING
 from quacc import flow, job
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.calculators.espresso.utils import pw_copy_files
-from quacc.recipes.espresso._base import base_fn
+from quacc.recipes.espresso._base import run
 from quacc.recipes.espresso.core import non_scf_job, static_job
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs
@@ -67,7 +67,7 @@ def dos_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    return base_fn(
+    return run(
         template=EspressoTemplate("dos", test_run=test_run),
         calc_defaults={},
         calc_swaps=calc_kwargs,
@@ -108,7 +108,7 @@ def projwfc_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    return base_fn(
+    return run(
         template=EspressoTemplate("projwfc", test_run=test_run),
         calc_defaults={},
         calc_swaps=calc_kwargs,

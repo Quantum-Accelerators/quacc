@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from quacc import flow, job
 from quacc.recipes.common.slabs import bulk_to_slabs_subflow, slab_to_ads_subflow
-from quacc.recipes.vasp._base import base_fn
+from quacc.recipes.vasp._base import run
 from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:
@@ -58,7 +58,7 @@ def static_job(
         "nedos": 3001,
         "nsw": 0,
     }
-    return base_fn(
+    return run(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
@@ -108,7 +108,7 @@ def relax_job(
         "nsw": 200,
         "symprec": 1e-8,
     }
-    return base_fn(
+    return run(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,

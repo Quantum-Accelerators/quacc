@@ -24,7 +24,7 @@ LOG_FILE = f"{_LABEL}.log"
 GAUSSIAN_CMD = f"{SETTINGS.GAUSSIAN_CMD} < {_LABEL}.com > {LOG_FILE}"
 
 
-def base_fn(
+def run(
     atoms: Atoms,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
