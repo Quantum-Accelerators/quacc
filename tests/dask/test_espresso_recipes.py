@@ -78,7 +78,7 @@ def test_phonon_grid_single(tmp_path, monkeypatch):
     assert outfile.exists()
 
     with zopen(outfile, "r") as fd:
-        lines = fd.read()
+        lines = str(fd.read())
 
     assert "Self-consistent Calculation" not in lines
 
