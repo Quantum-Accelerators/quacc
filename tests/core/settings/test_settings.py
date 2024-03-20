@@ -10,7 +10,7 @@ from quacc.recipes.emt.core import relax_job, static_job
 from quacc.settings import QuaccSettings
 
 FILE_DIR = Path(__file__).parent
-
+DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 def test_file(tmp_path, monkeypatch):
     with open(tmp_path / "quacc_test.yaml", "w") as f:
@@ -40,7 +40,7 @@ def test_results_dir(tmp_path, monkeypatch):
     SETTINGS.GZIP_FILES = False
     output = relax_job(atoms)
     assert "opt.traj" in os.listdir(output["dir_name"])
-
+    SETTINGS.GZIP_FILES = DEFAULT_SETTINGS.GZIP_FILES
 
 def test_bad_dir():
     with pytest.raises(ValueError, match="must be an absolute path"):
