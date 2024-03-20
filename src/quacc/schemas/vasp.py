@@ -236,6 +236,8 @@ def summarize_vasp_opt_run(
         Maggma Store object to store the results in. Defaults to `SETTINGS.STORE`,
     """
 
+    final_atoms = get_final_atoms_from_dyn(dyn)
+    dir_path = Path(dir_path or final_atoms.calc.directory)
     opt_run_summary = summarize_opt_run(
         dyn,
         trajectory=trajectory,
@@ -244,7 +246,6 @@ def summarize_vasp_opt_run(
         additional_fields=additional_fields,
         store=None,
     )
-    final_atoms = get_final_atoms_from_dyn(dyn)
     vasp_summary = vasp_summarize_run(
         final_atoms,
         dir_path=dir_path,
@@ -258,7 +259,6 @@ def summarize_vasp_opt_run(
     )
     task_doc = recursive_dict_merge(vasp_summary, opt_run_summary)
 
-    dir_path = final_atoms.calc.directory
     if SETTINGS.WRITE_PICKLE:
         with (
             gzip.open(Path(dir_path, "quacc_results.pkl.gz"), "wb")

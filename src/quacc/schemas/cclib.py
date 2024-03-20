@@ -238,6 +238,7 @@ def summarize_cclib_opt_run(
     """
 
     final_atoms = get_final_atoms_from_dyn(dyn)
+    dir_path = Path(dir_path or final_atoms.calc.directory)
     cclib_summary = cclib_summarize_run(
         final_atoms,
         logfile_extensions,
@@ -260,7 +261,6 @@ def summarize_cclib_opt_run(
     )
     task_doc = recursive_dict_merge(cclib_summary, opt_run_summary)
 
-    dir_path = final_atoms.calc.directory
     if SETTINGS.WRITE_PICKLE:
         with (
             gzip.open(Path(dir_path, "quacc_results.pkl.gz"), "wb")
