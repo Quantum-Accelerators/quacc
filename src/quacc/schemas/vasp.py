@@ -236,6 +236,8 @@ def summarize_vasp_opt_run(
         Maggma Store object to store the results in. Defaults to `SETTINGS.STORE`,
     """
 
+    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
+
     final_atoms = get_final_atoms_from_dyn(dyn)
     dir_path = Path(dir_path or final_atoms.calc.directory)
     opt_run_summary = summarize_opt_run(

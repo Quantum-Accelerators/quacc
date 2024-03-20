@@ -236,6 +236,7 @@ def summarize_cclib_opt_run(
     cclibASEOptSchema
         Dictionary representation of the task document
     """
+    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
 
     final_atoms = get_final_atoms_from_dyn(dyn)
     dir_path = Path(dir_path or final_atoms.calc.directory)
