@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
+
 def make_deformations_from_bulk(
     atoms: Atoms,
     norm_strains: Sequence[float] = (-0.01, -0.005, 0.005, 0.01),
