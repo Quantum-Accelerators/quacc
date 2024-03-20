@@ -36,10 +36,6 @@ MOCKED_DIR = FILE_DIR / "mocked_vasp_run"
 
 def test_static_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    from quacc.calculators.vasp.vasp import Vasp
-
-    monkeypatch.setenv("VASP_PP_PATH", str(PSEUDO_DIR.as_posix()))
-    monkeypatch.setattr(Vasp, "_run", mock_run)
 
     atoms = bulk("Al")
 
