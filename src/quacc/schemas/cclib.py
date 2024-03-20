@@ -13,8 +13,6 @@ import cclib
 import gzip
 from ase.atoms import Atoms
 from cclib.io import ccread
-from monty.json import jsanitize
-import gzip
 from quacc.atoms.core import get_final_atoms_from_dyn
 
 from quacc import SETTINGS
