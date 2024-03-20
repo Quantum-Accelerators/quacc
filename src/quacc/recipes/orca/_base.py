@@ -153,7 +153,7 @@ def base_opt_fn(
     cclib_summary = cclib_summarize_run(
         final_atoms, LOG_FILE, additional_fields=additional_fields
     )
-    return recursive_dict_merge(cclib_summary, opt_run_summary)
+    return cclib_summary | opt_run_summary
 
 
 def _prep_calculator(

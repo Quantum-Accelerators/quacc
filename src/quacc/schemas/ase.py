@@ -294,7 +294,7 @@ def summarize_vib_and_thermo(
         additional_fields=additional_fields,
     )
 
-    unsorted_task_doc = recursive_dict_merge(vib_task_doc, thermo_task_doc)
+    unsorted_task_doc = vib_task_doc | thermo_task_doc
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if isinstance(vib, Vibrations):

@@ -125,4 +125,4 @@ def base_opt_fn(
         report_mp_corrections=report_mp_corrections,
         additional_fields=additional_fields,
     )
-    return recursive_dict_merge(vasp_summary, opt_run_summary)
+    return vasp_summary | opt_run_summary
