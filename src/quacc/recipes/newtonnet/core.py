@@ -10,11 +10,7 @@ from monty.dev import requires
 from quacc import SETTINGS, job
 from quacc.runners.ase import run_calc, run_opt
 from quacc.runners.thermo import run_ideal_gas
-from quacc.schemas.ase import (
-    summarize_opt_run,
-    summarize_run,
-    summarize_vib_and_thermo,
-)
+from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
 from quacc.utils.dicts import recursive_dict_merge
 
 try:
@@ -63,7 +59,6 @@ def static_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
@@ -110,7 +105,6 @@ def relax_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_opt_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
@@ -160,7 +154,6 @@ def freq_job(
     VibThermoSchema
         Dictionary of results. See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
@@ -212,7 +205,6 @@ def _add_stdev_and_hess(summary: dict[str, Any]) -> dict[str, Any]:
         The modified summary dictionary with added standard deviation and
         Hessian values.
     """
-
     for i, atoms in enumerate(summary["trajectory"]):
         ml_calculator = NewtonNet(
             model_path=SETTINGS.NEWTONNET_MODEL_PATH,

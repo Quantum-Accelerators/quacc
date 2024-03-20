@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 from pathlib import Path
 
@@ -16,7 +18,7 @@ def test_static_job(tmp_path, monkeypatch):
     assert output["natoms"] == len(atoms)
     assert (
         output["parameters"]["orcasimpleinput"]
-        == "def2-tzvp normalprint slowconv sp wb97x-d3bj xyzfile"
+        == "def2-tzvp engrad normalprint slowconv wb97x-d3bj xyzfile"
     )
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
@@ -44,7 +46,7 @@ def test_static_job_parallel(tmp_path, monkeypatch):
     assert output["parameters"]["mult"] == 3
     assert (
         output["parameters"]["orcasimpleinput"]
-        == "def2-svp normalprint slowconv sp wb97x-d3bj xyzfile"
+        == "def2-svp engrad normalprint slowconv wb97x-d3bj xyzfile"
     )
     assert "%scf maxiter 300 end" in output["parameters"]["orcablocks"]
     assert output.get("attributes")
@@ -79,7 +81,9 @@ def test_relax_job(tmp_path, monkeypatch):
         output["parameters"]["orcasimpleinput"]
         == "def2-svp hf normalprint opt slowconv xyzfile"
     )
-    assert "%scf maxiter 300 end" in output["parameters"]["orcablocks"]
+    assert (
+        output["parameters"]["orcablocks"] == "%pal nprocs 2 end\n%scf maxiter 300 end"
+    )
     assert output.get("trajectory")
     assert len(output["trajectory"]) > 1
     assert output.get("attributes")
@@ -134,7 +138,7 @@ def test_ase_relax_job_store(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = molecule("H2O")
-    output = ase_relax_job(atoms, opt_params={"store_intermediate_files": True})
+    output = ase_relax_job(atoms, opt_params={"store_intermediate_results": True})
     nsteps = len(output["trajectory"])
     for i in range(nsteps):
         assert f"step{i}" in os.listdir(output["dir_name"])

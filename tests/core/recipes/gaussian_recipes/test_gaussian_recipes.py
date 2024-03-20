@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from ase.build import molecule
 from numpy.testing import assert_array_equal
 
@@ -13,7 +15,7 @@ def test_static_job(tmp_path, monkeypatch):
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
-    assert output["parameters"]["sp"] == ""
+    assert output["parameters"]["force"] == ""
     assert output["parameters"]["xc"] == "wb97xd"
     assert output["parameters"]["basis"] == "def2tzvp"
     assert output["parameters"]["integral"] == "ultrafine"
@@ -29,7 +31,7 @@ def test_static_job(tmp_path, monkeypatch):
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2
     assert output["parameters"]["mult"] == 3
-    assert output["parameters"]["sp"] == ""
+    assert output["parameters"]["force"] == ""
     assert output["parameters"]["xc"] == "m06l"
     assert output["parameters"]["basis"] == "def2svp"
     assert output["parameters"]["integral"] == "superfinegrid"

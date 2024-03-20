@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import gzip
 from io import StringIO
 from pathlib import Path
@@ -13,8 +15,7 @@ RUN_PATH = Path(__file__).parent / "test_runs"
 
 def _read_gzip_file(file_path):
     with gzip.open(file_path, "rt", encoding="utf-8") as file:
-        content = file.read()
-    return content
+        return file.read()
 
 
 @pytest.mark.parametrize("i", range(1, 66, 5))

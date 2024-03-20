@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pytest
 from ase.build import molecule
 from ase.calculators.emt import EMT

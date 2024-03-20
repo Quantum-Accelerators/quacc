@@ -41,7 +41,6 @@ def load_vasp_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
     dict
         The calculator configuration (i.e. settings).
     """
-
     config = load_yaml_calc(yaml_path)
 
     # Allow for either "Cu_pv" and "_pv" style setups

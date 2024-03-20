@@ -7,7 +7,6 @@ from copy import deepcopy
 from typing import TYPE_CHECKING
 
 import numpy as np
-from ase.atoms import Atoms
 from pymatgen.analysis.adsorption import AdsorbateSiteFinder
 from pymatgen.core.structure import Structure
 from pymatgen.core.surface import Slab, center_slab, generate_all_slabs
@@ -18,6 +17,7 @@ from quacc.atoms.core import copy_atoms
 if TYPE_CHECKING:
     from typing import Literal, TypedDict
 
+    from ase.atoms import Atoms
     from numpy.typing import ArrayLike
 
     class AdsSiteFinderKwargs(TypedDict, total=False):
@@ -66,7 +66,6 @@ def flip_atoms(
     Atoms | Structure | Slab
         Inverted slab
     """
-
     new_atoms = (
         atoms.to_ase_atoms() if isinstance(atoms, Structure) else copy_atoms(atoms)
     )
@@ -121,7 +120,6 @@ def make_slabs_from_bulk(
     list[Atoms]
         All generated slabs
     """
-
     # Note: This will not work properly for 2D structures. See Oxana/Martin's
     # code for adjustments for 2D:
     # https://github.com/oxana-a/atomate/blob/ads_wf/atomate/vasp/firetasks/adsorption_tasks.py
@@ -265,7 +263,7 @@ def make_adsorbate_structures(
         AdsorbateSiteFinder.find_adsorption_sites().
 
     Returns
-    --------
+    -------
     list[Atoms]
         The structures with adsorbates
     """
@@ -379,7 +377,7 @@ def get_surface_energy(
     asymmetric slabs, this is better thought of as the cleavage energy.
 
     Parameters
-    -----------
+    ----------
     bulk
         The bulk structure.
     slab
@@ -394,7 +392,6 @@ def get_surface_energy(
     np.floating
         The surface energy in eV/A^2.
     """
-
     alpha = len(slab) / len(bulk)
     cell = slab.get_cell()
     A = np.linalg.norm(np.cross(cell[0], cell[1]))

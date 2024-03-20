@@ -51,9 +51,9 @@ def ts_job(
         Multiplicity of the system.
     method
         DFT exchange-correlation functional or other electronic structure
-        method. Defaults to wB97M-V.
+        method.
     basis
-        Basis set. Defaults to def2-SVPD.
+        Basis set.
     opt_params
         Dictionary of custom kwargs for the optimization process. Set a value
         to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -71,7 +71,6 @@ def ts_job(
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = recursive_dict_merge(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
@@ -121,9 +120,9 @@ def irc_job(
         Direction of the IRC. Should be "forward" or "reverse".
     method
         DFT exchange-correlation functional or other electronic structure
-        method. Defaults to wB97M-V.
+        method.
     basis
-        Basis set. Defaults to def2-SVPD.
+        Basis set.
     opt_params
         Dictionary of custom kwargs for the optimization process. Set a value
         to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -140,7 +139,6 @@ def irc_job(
     OptSchema
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
-
     calc_defaults = recursive_dict_merge(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
@@ -204,7 +202,6 @@ def quasi_irc_job(
     OptSchema
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
-
     default_settings = SETTINGS.model_copy()
 
     irc_job_defaults = {

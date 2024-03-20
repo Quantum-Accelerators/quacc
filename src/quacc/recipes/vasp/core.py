@@ -50,7 +50,6 @@ def static_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "ismear": -5,
         "laechg": True,
@@ -103,7 +102,6 @@ def relax_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "ediffg": -0.02,
         "isif": 3 if relax_cell else 2,
@@ -213,12 +211,7 @@ def ase_relax_job(
     VaspASESchema
         Dictionary of results. See the type-hint for the data structure.
     """
-
-    calc_defaults = {
-        "lcharg": False,
-        "lwave": False,
-        "nsw": 0,
-    }
+    calc_defaults = {"lcharg": False, "lwave": False, "nsw": 0}
     opt_defaults = {"relax_cell": relax_cell}
     return base_opt_fn(
         atoms,
@@ -277,7 +270,6 @@ def non_scf_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "icharg": 11,
         "kspacing": None,

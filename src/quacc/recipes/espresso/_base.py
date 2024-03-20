@@ -66,7 +66,6 @@ def base_fn(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-
     atoms = _prepare_atoms(
         atoms=atoms,
         preset=preset,
@@ -139,7 +138,6 @@ def base_opt_fn(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-
     atoms = _prepare_atoms(
         atoms=atoms,
         preset=preset,
@@ -196,7 +194,6 @@ def _prepare_atoms(
     Atoms
         Atoms object with attached Espresso calculator.
     """
-
     atoms = Atoms() if atoms is None else atoms
 
     calc_defaults["input_data"] = Namelist(calc_defaults.get("input_data"))

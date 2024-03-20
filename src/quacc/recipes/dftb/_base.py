@@ -53,7 +53,6 @@ def base_fn(
     RunSchema
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
-
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
     atoms.calc = Dftb(**calc_flags)

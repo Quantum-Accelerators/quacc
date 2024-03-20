@@ -40,7 +40,6 @@ def get_pseudopotential_info(
     dict[str, str]
         The pseudopotentials dictinoary, e.g. {"O": "O.pbe-n-kjpaw_psl.0.1.UPF"}
     """
-
     unique_elements = list(set(atoms.get_chemical_symbols()))
     ecutwfc, ecutrho = 0, 0
     pseudopotentials = {}
@@ -134,7 +133,6 @@ def grid_copy_files(
     dict
         The dictionary of files to copy
     """
-
     prefix = ph_input_data["inputph"].get("prefix", "pwscf")
     outdir = ph_input_data["inputph"].get("outdir", ".")
     lqdir = ph_input_data["inputph"].get("lqdir", False)
@@ -192,7 +190,6 @@ def grid_prepare_repr(patterns: dict[str, Any], nblocks: int) -> list:
     list
         The list of representations to do grouped in blocks if nblocks > 1
     """
-
     this_block = nblocks if nblocks > 0 else len(patterns)
     repr_to_do = [rep for rep in patterns if not patterns[rep]["done"]]
     return np.array_split(repr_to_do, np.ceil(len(repr_to_do) / this_block))

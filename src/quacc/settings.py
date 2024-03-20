@@ -16,6 +16,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 if TYPE_CHECKING:
     from typing import Any
 
+
 installed_engine = next(
     (
         wflow_engine
@@ -100,17 +101,6 @@ class QuaccSettings(BaseSettings):
             Whether to have a unique directory in RESULTS_DIR for each job.
             Some workflow engines have an option to do this for you already,
             in which case you should set this to False.
-            """
-        ),
-    )
-    CHDIR: bool = Field(
-        False,
-        description=(
-            """
-            Whether quacc will make `os.chdir` calls to change the working directory
-            to be the location where the calculation is run. By default, we leave this
-            as `False` to enable running multiple calculations in a single Python process
-            since `os.chdir` calls break thread safety. This parameter will eventually be deprecated.
             """
         ),
     )
