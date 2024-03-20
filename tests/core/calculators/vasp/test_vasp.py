@@ -52,7 +52,7 @@ def test_vanilla_vasp():
 
 
 def test_presets():
-    default_calcs_dir = Path(presets.__file__).resolve().parent
+    default_calcs_dir = Path(presets.__file__).parent
 
     atoms = bulk("Co") * (2, 2, 1)
     atoms[-1].symbol = "Fe"

@@ -8,7 +8,8 @@ from typer.testing import CliRunner
 from quacc import SETTINGS, __version__
 from quacc._cli.quacc import app
 
-TEST_YAML = Path.cwd() / "test_quacc.yaml"
+FILE_PATH = Path(__file__).parent
+TEST_YAML = FILE_PATH / "test_quacc.yaml"
 
 
 def setup_module():

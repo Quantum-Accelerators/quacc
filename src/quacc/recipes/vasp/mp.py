@@ -8,6 +8,10 @@ This set of recipes is meant to be compatible with the Materials Project
     Make sure that you use the Materials Project-compatible pseudpotential
     versions. The GGA workflows use the old (no version) PAW PBE potentials.
     The meta-GGA workflows currently use the v.54 PAW PBE potentials.
+
+!!! Info
+    The one true source of Materials Project workflows is
+    [atomate2](https://github.com/materialsproject/atomate2).
 """
 
 from __future__ import annotations
