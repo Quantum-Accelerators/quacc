@@ -1,1 +1,1 @@
-git+https://github.com/materialsproject/pymatgen-io-validation.git
+pymatgen-io-validation==0.0.1
