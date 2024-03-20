@@ -20,17 +20,25 @@ from pymatgen.entries.compatibility import (
 )
 
 from quacc import SETTINGS
-from quacc.schemas.ase import summarize_run
-from quacc.utils.dicts import clean_task_doc
+from quacc.atoms.core import get_final_atoms_from_dyn
+from quacc.schemas.ase import summarize_opt_run, summarize_run
+from quacc.utils.dicts import clean_task_doc, recursive_dict_merge
 from quacc.wflow_tools.db import results_to_db
 
 if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
+    from ase.io import Trajectory
+    from ase.optimize.optimize import Optimizer
     from maggma.core import Store
 
-    from quacc.schemas._aliases.vasp import BaderSchema, ChargemolSchema, VaspSchema
+    from quacc.schemas._aliases.vasp import (
+        BaderSchema,
+        ChargemolSchema,
+        VaspASESchema,
+        VaspSchema,
+    )
 
 logger = logging.getLogger(__name__)
 
@@ -165,6 +173,93 @@ def vasp_summarize_run(
         intermediate_vasp_task_docs | vasp_task_doc | base_task_doc | additional_fields
     )
     task_doc = clean_task_doc(unsorted_task_doc)
+
+    if SETTINGS.WRITE_PICKLE:
+        with (
+            gzip.open(Path(dir_path, "quacc_results.pkl.gz"), "wb")
+            if SETTINGS.GZIP_FILES
+            else Path(dir_path, "quacc_results.pkl").open("wb")
+        ) as f:
+            pickle.dump(task_doc, f)
+
+    # Store the results
+    if store:
+        results_to_db(store, task_doc)
+
+    return task_doc
+
+
+def summarize_vasp_opt_run(
+    dyn: Optimizer,
+    trajectory: Trajectory | list[Atoms] | None = None,
+    dir_path: str | Path | None = None,
+    move_magmoms: bool = True,
+    run_bader: bool = _DEFAULT_SETTING,
+    run_chargemol: bool = _DEFAULT_SETTING,
+    check_convergence: bool = _DEFAULT_SETTING,
+    report_mp_corrections: bool = False,
+    additional_fields: dict[str, Any] | None = None,
+    store: Store | None = _DEFAULT_SETTING,
+) -> VaspASESchema:
+    """
+    Merges the `vasp_summarize_run` with an `summarize_opt_run`, meant to
+    be used for an ASE-based VASP relaxation.
+
+    Parameters
+    ----------
+    dyn
+        The ASE optimizer object
+    trajectory
+        ASE Trajectory object or list[Atoms] from reading a trajectory file. If
+        None, the trajectory must be found in dyn.traj_atoms.
+    dir_path
+        Path to VASP outputs. A value of None specifies the calculator directory.
+    move_magmoms
+        Whether to move the final magmoms of the original Atoms object to the
+        initial magmoms of the returned Atoms object.
+    run_bader
+        Whether a Bader analysis should be performed. Will not run if bader
+        executable is not in PATH even if bader is set to True. Defaults to
+        VASP_BADER in settings.
+    run_chargemol
+        Whether a Chargemol analysis should be performed. Will not run if chargemol
+        executable is not in PATH even if chargmeol is set to True. Defaults to
+        VASP_CHARGEMOL in settings.
+    check_convergence
+        Whether to throw an error if convergence is not reached. Defaults to True in
+        settings.
+    report_mp_corrections
+        Whether to apply the MP corrections to the task document. Defaults to False.
+    additional_fields
+        Additional fields to add to the task document.
+    store
+        Maggma Store object to store the results in. Defaults to `SETTINGS.STORE`,
+    """
+
+    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
+
+    final_atoms = get_final_atoms_from_dyn(dyn)
+    dir_path = Path(dir_path or final_atoms.calc.directory)
+    opt_run_summary = summarize_opt_run(
+        dyn,
+        trajectory=trajectory,
+        check_convergence=check_convergence,
+        move_magmoms=move_magmoms,
+        additional_fields=additional_fields,
+        store=None,
+    )
+    vasp_summary = vasp_summarize_run(
+        final_atoms,
+        dir_path=dir_path,
+        move_magmoms=move_magmoms,
+        run_bader=run_bader,
+        run_chargemol=run_chargemol,
+        check_convergence=check_convergence,
+        report_mp_corrections=report_mp_corrections,
+        additional_fields=additional_fields,
+        store=None,
+    )
+    task_doc = recursive_dict_merge(vasp_summary, opt_run_summary)
 
     if SETTINGS.WRITE_PICKLE:
         with (

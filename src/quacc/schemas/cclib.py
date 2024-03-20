@@ -14,21 +14,25 @@ from ase.atoms import Atoms
 from cclib.io import ccread
 from monty.json import jsanitize
 import gzip
+from quacc.atoms.core import get_final_atoms_from_dyn
+
 from quacc import SETTINGS
-from quacc.schemas.ase import summarize_run
-from quacc.utils.dicts import clean_task_doc
+from quacc.schemas.ase import summarize_run, summarize_opt_run
+from quacc.utils.dicts import clean_task_doc, recursive_dict_merge
 from quacc.utils.files import find_recent_logfile
 from quacc.wflow_tools.db import results_to_db
 
 if TYPE_CHECKING:
     from typing import Any, Literal
 
+    from ase.io import Trajectory
     from maggma.core import Store
-
+    from ase.optimize.optimize import Optimizer
     from quacc.schemas._aliases.cclib import (
         PopAnalysisAttributes,
         cclibBaseSchema,
         cclibSchema,
+        cclibASEOptSchema,
     )
 
 logger = logging.getLogger(__name__)
@@ -154,6 +158,109 @@ def cclib_summarize_run(
         run_task_doc | intermediate_cclib_task_docs | cclib_task_doc | additional_fields
     )
     task_doc = clean_task_doc(unsorted_task_doc)
+
+    if SETTINGS.WRITE_PICKLE:
+        with (
+            gzip.open(Path(dir_path, "quacc_results.pkl.gz"), "wb")
+            if SETTINGS.GZIP_FILES
+            else Path(dir_path, "quacc_results.pkl").open("wb")
+        ) as f:
+            pickle.dump(task_doc, f)
+
+    # Store the results
+    if store:
+        results_to_db(store, task_doc)
+
+    return task_doc
+
+
+def summarize_cclib_opt_run(
+    dyn: Optimizer,
+    logfile_extensions: str | list[str],
+    trajectory: Trajectory | list[Atoms] | None = None,
+    dir_path: Path | str | None = None,
+    pop_analyses: (
+        list[
+            Literal[
+                "cpsa",
+                "mpa",
+                "lpa",
+                "bickelhaupt",
+                "density",
+                "mbo",
+                "bader",
+                "ddec6",
+                "hirshfeld",
+            ]
+        ]
+        | None
+    ) = None,
+    check_convergence: bool = _DEFAULT_SETTING,
+    additional_fields: dict[str, Any] | None = None,
+    store: Store | None = _DEFAULT_SETTING,
+) -> cclibASEOptSchema:
+    """
+    Merges the results of a cclib run with the results of an ASE optimizer run.
+
+    Parameters
+    ----------
+    dyn
+        The ASE optimizer object
+    logfile_extensions
+        Possible extensions of the log file (e.g. ".log", ".out", ".txt",
+        ".chk"). Note that only a partial match is needed. For instance, `.log`
+        will match `.log.gz` and `.log.1.gz`. If multiple files with this
+        extension are found, the one with the most recent change time will be
+        used. For an exact match only, put in the full file name.
+    trajectory
+        ASE Trajectory object or list[Atoms] from reading a trajectory file. If
+        None, the trajectory must be found in dyn.traj_atoms.
+    dir_path
+        The path to the folder containing the calculation outputs. A value of
+        None specifies the calculator directory.
+    pop_analyses
+        The name(s) of any cclib post-processing analysis to run. Note that for
+        bader, ddec6, and hirshfeld, a cube file (.cube, .cub) must reside in
+        dir_path. Supports: "cpsa", "mpa", "lpa", "bickelhaupt", "density",
+        "mbo", "bader", "ddec6", "hirshfeld".
+    check_convergence
+         Whether to throw an error if geometry optimization convergence is not
+         reached. Defaults to True in settings.
+    additional_fields
+        Additional fields to add to the task document.
+    store
+        Maggma Store object to store the results in. Defaults to `SETTINGS.STORE`
+
+    Returns
+    -------
+    cclibASEOptSchema
+        Dictionary representation of the task document
+    """
+    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
+
+    final_atoms = get_final_atoms_from_dyn(dyn)
+    dir_path = Path(dir_path or final_atoms.calc.directory)
+    cclib_summary = cclib_summarize_run(
+        final_atoms,
+        logfile_extensions,
+        dir_path=dir_path,
+        pop_analyses=pop_analyses,
+        check_convergence=check_convergence,
+        additional_fields=additional_fields,
+        store=None,
+    )
+    opt_run_summary = summarize_opt_run(
+        dyn,
+        trajectory=trajectory,
+        check_convergence=check_convergence,
+        charge_and_multiplicity=(
+            cclib_summary["charge"],
+            cclib_summary["spin_multiplicity"],
+        ),
+        additional_fields=additional_fields,
+        store=None,
+    )
+    task_doc = recursive_dict_merge(cclib_summary, opt_run_summary)
 
     if SETTINGS.WRITE_PICKLE:
         with (
