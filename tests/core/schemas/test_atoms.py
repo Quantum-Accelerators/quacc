@@ -1,4 +1,5 @@
 from pathlib import Path
+
 import pytest
 from ase.build import bulk, molecule
 from monty.json import MontyDecoder, jsanitize

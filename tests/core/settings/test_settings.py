@@ -12,6 +12,7 @@ from quacc.settings import QuaccSettings
 FILE_DIR = Path(__file__).parent
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 
+
 def test_file(tmp_path, monkeypatch):
     with open(tmp_path / "quacc_test.yaml", "w") as f:
         f.write("GZIP_FILES: false\nWORKFLOW_ENGINE: None\nDEBUG: True\nSTORE: null")
@@ -41,6 +42,7 @@ def test_results_dir(tmp_path, monkeypatch):
     output = relax_job(atoms)
     assert "opt.traj" in os.listdir(output["dir_name"])
     SETTINGS.GZIP_FILES = DEFAULT_SETTINGS.GZIP_FILES
+
 
 def test_bad_dir():
     with pytest.raises(ValueError, match="must be an absolute path"):

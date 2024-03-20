@@ -3,6 +3,7 @@ import logging
 import os
 import shutil
 from pathlib import Path
+from shutil import copytree
 
 import pytest
 from ase.build import bulk
@@ -10,7 +11,7 @@ from ase.io import read
 from cclib.io import ccread
 from maggma.stores import MemoryStore
 from monty.json import MontyDecoder, jsanitize
-from shutil import copytree
+
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.cclib import (
     _cclib_calculate,

@@ -7,9 +7,9 @@ from ase.build import bulk, molecule
 
 from quacc import SETTINGS
 from quacc.recipes.vasp.core import (
+    ase_relax_job,
     double_relax_flow,
     non_scf_job,
-    ase_relax_job,
     relax_job,
     static_job,
 )
@@ -36,8 +36,6 @@ MOCKED_DIR = FILE_DIR / "mocked_vasp_run"
 
 def test_static_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    import os
-    raise ValueError(os.environ["VASP_PP_PATH"])
 
     atoms = bulk("Al")
 
