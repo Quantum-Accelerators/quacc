@@ -14,7 +14,7 @@ def test_cifs():
     return file_dir / "test_files"
 
 
-def test_atoms_to_metadata(test_cifs):
+def test_atoms_to_metadata():
     atoms = bulk("Cu")
     atoms.info["test"] = "hi"
     results = atoms_to_metadata(atoms)
