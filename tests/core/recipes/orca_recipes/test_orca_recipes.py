@@ -16,7 +16,7 @@ def test_static_job(tmp_path, monkeypatch):
     assert output["natoms"] == len(atoms)
     assert (
         output["parameters"]["orcasimpleinput"]
-        == "def2-tzvp normalprint slowconv sp wb97x-d3bj xyzfile"
+        == "def2-tzvp engrad normalprint slowconv wb97x-d3bj xyzfile"
     )
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
