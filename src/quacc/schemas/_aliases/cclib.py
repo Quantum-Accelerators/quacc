@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING, Any, TypedDict
 from quacc.schemas._aliases.ase import OptSchema, RunSchema
 
 if TYPE_CHECKING:
-
     from ase.atoms import Atoms
     from numpy.typing import NDArray
 

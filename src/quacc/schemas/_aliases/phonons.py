@@ -7,6 +7,7 @@ from quacc.schemas._aliases.ase import AtomsSchema
 if TYPE_CHECKING:
     from numpy.typing import NDArray
 
+
 class ThermalProperties(TypedDict):
     """Type hint associated with PhononSchema."""
 
