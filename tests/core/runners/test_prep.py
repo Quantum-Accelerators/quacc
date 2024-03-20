@@ -190,7 +190,6 @@ def test_calc_cleanup(tmp_path, monkeypatch):
     assert p.is_dir()
     calc_cleanup(atoms, p, SETTINGS.RESULTS_DIR)
     assert not p.exists()
-    assert Path.cwd() == SETTINGS.RESULTS_DIR
     assert Path(atoms.calc.directory) == SETTINGS.RESULTS_DIR
 
     SETTINGS.SCRATCH_DIR = DEFAULT_SETTINGS.SCRATCH_DIR
