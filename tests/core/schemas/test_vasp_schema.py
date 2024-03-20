@@ -57,7 +57,8 @@ def mock_chargemol_analysis(*args, **kwargs):
     }
 
 
-def test_vasp_summarize_run(run1, monkeypatch):
+def test_vasp_summarize_run(run1, monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
     calc = atoms.calc
     results = vasp_summarize_run(atoms, dir_path=run1)
@@ -69,10 +70,9 @@ def test_vasp_summarize_run(run1, monkeypatch):
     assert "orig_inputs" in results
 
     # Make sure default dir works
-    cwd = os.getcwd()
     monkeypatch.chdir(run1)
     vasp_summarize_run(atoms)
-    monkeypatch.chdir(cwd)
+    monkeypatch.chdir(tmp_path)
 
     # Test DB
     atoms = read(os.path.join(run1, "OUTCAR.gz"))

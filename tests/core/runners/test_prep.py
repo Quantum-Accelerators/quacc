@@ -186,7 +186,7 @@ def test_calc_cleanup(tmp_path, monkeypatch):
     make_files2()
     SETTINGS.SCRATCH_DIR = tmp_path
 
-    p = Path(Path.cwd(), "quacc-tmp-1234").resolve()
+    p = Path(tmp_path, "quacc-tmp-1234").resolve()
     assert p.is_dir()
     calc_cleanup(atoms, p, SETTINGS.RESULTS_DIR)
     assert not p.exists()

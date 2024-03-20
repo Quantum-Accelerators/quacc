@@ -36,11 +36,11 @@ def test_results_dir(tmp_path, monkeypatch):
 
     atoms = bulk("Cu")
     relax_job(atoms)
-    assert "opt.traj.gz" in os.listdir(os.getcwd())
+    assert "opt.traj.gz" in os.listdir(tmp_path)
     os.remove("opt.traj.gz")
     SETTINGS.GZIP_FILES = False
     relax_job(atoms)
-    assert "opt.traj" in os.listdir(os.getcwd())
+    assert "opt.traj" in os.listdir(tmp_path)
     os.remove("opt.traj")
 
 
