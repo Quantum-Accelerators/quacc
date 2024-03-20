@@ -68,7 +68,7 @@ def static_job(
     default_inputs = [xc, basis, "engrad", "normalprint", "slowconv"]
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
-    return base_fn(
+    return run(
         atoms,
         charge,
         spin_multiplicity,
@@ -138,7 +138,7 @@ def relax_job(
 
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
-    return base_fn(
+    return run(
         atoms,
         charge=charge,
         spin_multiplicity=spin_multiplicity,
@@ -203,7 +203,7 @@ def ase_relax_job(
     default_inputs = [xc, basis, "engrad", "normalprint", "slowconv"]
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
-    return base_opt_fn(
+    return run_ase_opt(
         atoms,
         charge=charge,
         spin_multiplicity=spin_multiplicity,

@@ -79,7 +79,7 @@ def phonon_job(
         "qpts": (0, 0, 0),
     }
 
-    return base_fn(
+    return run(
         template=EspressoTemplate("ph", test_run=test_run),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -128,7 +128,7 @@ def q2r_job(
 
     copy_files = {prev_dir: [f"{fildyn}*"]}
 
-    return base_fn(
+    return run(
         template=EspressoTemplate("q2r"),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -177,7 +177,7 @@ def matdyn_job(
 
     copy_files = {prev_dir: [f"{flfrc}*"]}
 
-    return base_fn(
+    return run(
         template=EspressoTemplate("matdyn"),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,

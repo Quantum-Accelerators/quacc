@@ -67,7 +67,7 @@ def dos_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    return base_fn(
+    return run(
         template=EspressoTemplate("dos", test_run=test_run),
         calc_defaults={},
         calc_swaps=calc_kwargs,
@@ -108,7 +108,7 @@ def projwfc_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    return base_fn(
+    return run(
         template=EspressoTemplate("projwfc", test_run=test_run),
         calc_defaults={},
         calc_swaps=calc_kwargs,

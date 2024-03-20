@@ -70,7 +70,7 @@ def static_job(
         "gfinput": "",
         "ioplist": ["6/7=3", "2/9=2000"],  # see ASE issue #660
     }
-    return base_fn(
+    return run(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -138,7 +138,7 @@ def relax_job(
     if freq:
         calc_defaults["freq"] = ""
 
-    return base_fn(
+    return run(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,

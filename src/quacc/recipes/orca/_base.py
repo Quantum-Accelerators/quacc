@@ -25,7 +25,7 @@ LOG_FILE = f"{_LABEL}.out"
 GEOM_FILE = f"{_LABEL}.xyz"
 
 
-def base_fn(
+def run(
     atoms: Atoms,
     charge: int = 0,
     spin_multiplicity: int = 1,
@@ -81,7 +81,7 @@ def base_fn(
     return cclib_summarize_run(atoms, LOG_FILE, additional_fields=additional_fields)
 
 
-def base_opt_fn(
+def run_ase_opt(
     atoms: Atoms,
     charge: int = 0,
     spin_multiplicity: int = 1,

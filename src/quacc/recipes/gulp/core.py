@@ -54,7 +54,7 @@ def static_job(
     keyword_defaults = ["gfnff", "gwolf"] if use_gfnff else []
     option_defaults = ["dump every gulp.res"]
 
-    return base_fn(
+    return run(
         atoms,
         library=library,
         keyword_defaults=keyword_defaults,
@@ -112,7 +112,7 @@ def relax_job(
 
     option_defaults = ["dump every gulp.res"]
 
-    return base_fn(
+    return run(
         atoms,
         library=library,
         keyword_defaults=keyword_defaults,

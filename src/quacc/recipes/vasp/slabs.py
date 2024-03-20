@@ -58,7 +58,7 @@ def static_job(
         "nedos": 3001,
         "nsw": 0,
     }
-    return base_fn(
+    return run(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
@@ -108,7 +108,7 @@ def relax_job(
         "nsw": 200,
         "symprec": 1e-8,
     }
-    return base_fn(
+    return run(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,

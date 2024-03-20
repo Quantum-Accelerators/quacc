@@ -57,7 +57,7 @@ def static_job(
     if "xtb" in method.lower():
         calc_defaults["Hamiltonian_Method"] = method
 
-    return base_fn(
+    return run(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -115,7 +115,7 @@ def relax_job(
     if "xtb" in method.lower():
         calc_defaults["Hamiltonian_Method"] = method
 
-    return base_fn(
+    return run(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,

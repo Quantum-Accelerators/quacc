@@ -56,7 +56,7 @@ def static_job(
     """
     calc_defaults = BASE_SET
 
-    return base_fn(
+    return run(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -103,7 +103,7 @@ def ase_relax_job(
 
     opt_defaults = {"optimizer": LBFGS, "relax_cell": relax_cell}
 
-    return base_opt_fn(
+    return run_ase_opt(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,

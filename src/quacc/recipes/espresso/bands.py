@@ -93,7 +93,7 @@ def bands_pw_job(
             cell=atoms.get_cell(),
         )
 
-    return base_fn(
+    return run(
         atoms,
         template=EspressoTemplate("pw", test_run=test_run),
         calc_defaults=calc_defaults,
@@ -138,7 +138,7 @@ def bands_pp_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    return base_fn(
+    return run(
         atoms,
         template=EspressoTemplate("bands", test_run=test_run),
         calc_defaults={},
@@ -184,7 +184,7 @@ def fermi_surface_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    return base_fn(
+    return run(
         atoms,
         template=EspressoTemplate("fs", test_run=test_run),
         calc_defaults={},
