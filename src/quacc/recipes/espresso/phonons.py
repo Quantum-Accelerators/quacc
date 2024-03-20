@@ -393,7 +393,7 @@ def grid_phonon_flow(
         ph_job
             The phonon job to be executed.
         nblocks
-            The number of blocks for grouping representations. Defaults to 1.
+            The number of blocks for grouping representations.
 
         Returns
         -------

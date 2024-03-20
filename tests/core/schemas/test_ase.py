@@ -1,6 +1,9 @@
+import gzip
 import os
+import pickle
 from copy import deepcopy
 from pathlib import Path
+
 import pytest
 from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
@@ -11,8 +14,7 @@ from ase.units import invcm
 from ase.vibrations import Vibrations
 from maggma.stores import MemoryStore
 from monty.json import MontyDecoder, jsanitize
-import pickle
-import gzip
+
 from quacc.schemas.ase import (
     _summarize_ideal_gas_thermo,
     _summarize_vib_run,

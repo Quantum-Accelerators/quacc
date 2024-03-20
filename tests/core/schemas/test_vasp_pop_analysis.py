@@ -43,7 +43,7 @@ def patch_pop_analyses(monkeypatch):
     monkeypatch.setattr("quacc.schemas.vasp.ChargemolAnalysis", mock_chargemol_analysis)
 
 
-def prep_files(monkeypatch):
+def prep_files():
     for f in ["CHGCAR", "POTCAR"]:
         with open(f, "w") as w:
             w.write("test")
@@ -54,7 +54,7 @@ def prep_files(monkeypatch):
 
 def test_run_bader(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    prep_files(monkeypatch)
+    prep_files()
 
     bader_stats = _bader_runner(tmp_path)
     assert bader_stats["min_dist"] == [1.0]
@@ -77,7 +77,7 @@ def test_bader_erorr(tmp_path, monkeypatch):
 
 def test_run_chargemol(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    prep_files(monkeypatch)
+    prep_files()
 
     chargemol_stats = _chargemol_runner(path=tmp_path, atomic_densities_path=tmp_path)
     assert chargemol_stats["ddec"]["partial_charges"] == [1.0]
@@ -86,7 +86,7 @@ def test_run_chargemol(tmp_path, monkeypatch):
 
 def test_chargemol_erorr(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    prep_files(monkeypatch)
+    prep_files()
 
     with pytest.raises(OSError):
         _chargemol_runner(tmp_path)

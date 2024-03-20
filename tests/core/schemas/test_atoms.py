@@ -1,4 +1,5 @@
 from pathlib import Path
+
 import pytest
 from ase.build import bulk, molecule
 from monty.json import MontyDecoder, jsanitize
@@ -14,7 +15,7 @@ def test_cifs():
     return file_dir / "test_files"
 
 
-def test_atoms_to_metadata(test_cifs):
+def test_atoms_to_metadata():
     atoms = bulk("Cu")
     atoms.info["test"] = "hi"
     results = atoms_to_metadata(atoms)

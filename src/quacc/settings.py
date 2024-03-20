@@ -103,17 +103,6 @@ class QuaccSettings(BaseSettings):
             """
         ),
     )
-    CHDIR: bool = Field(
-        False,
-        description=(
-            """
-            Whether quacc will make `os.chdir` calls to change the working directory
-            to be the location where the calculation is run. By default, we leave this
-            as `False` to enable running multiple calculations in a single Python process
-            since `os.chdir` calls break thread safety. This parameter will eventually be deprecated.
-            """
-        ),
-    )
     GZIP_FILES: bool = Field(
         True, description="Whether generated files should be gzip'd."
     )
