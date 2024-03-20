@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from monty.dev import requires
 
 from quacc import job
-from quacc.recipes.psi4._base import base_fn
+from quacc.recipes.psi4._base import run
 
 try:
     import psi4
@@ -69,7 +69,7 @@ def static_job(
         "multiplicity": spin_multiplicity,
         "reference": "uks" if spin_multiplicity > 1 else "rks",
     }
-    return base_fn(
+    return run(
         atoms,
         charge=charge,
         spin_multiplicity=spin_multiplicity,
