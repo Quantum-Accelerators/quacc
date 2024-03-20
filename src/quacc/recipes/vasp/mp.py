@@ -104,7 +104,6 @@ def mp_gga_relax_job(
     VaspSchema
         Dictionary of results.
     """
-
     calc_defaults = {"pmg_input_set": MPRelaxSet}
     output = base_fn(
         atoms,
@@ -147,7 +146,6 @@ def mp_gga_static_job(
     VaspSchema
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
     """
-
     calc_defaults = {
         "pmg_input_set": partial(
             MPStaticSet, bandgap=bandgap, small_gap_multiply=[1e-4, 3.125]
@@ -201,7 +199,6 @@ def mp_metagga_prerelax_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "pmg_input_set": partial(
             MPScanRelaxSet, bandgap=bandgap or 0.0, auto_ismear=False
@@ -256,7 +253,6 @@ def mp_metagga_relax_job(
     VaspSchema
         Dictionary of results.
     """
-
     calc_defaults = {
         "pmg_input_set": partial(
             MPScanRelaxSet, bandgap=bandgap or 0.0, auto_ismear=False
@@ -308,7 +304,6 @@ def mp_metagga_static_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "pmg_input_set": partial(
             MPScanRelaxSet, bandgap=bandgap or 0.0, auto_ismear=False

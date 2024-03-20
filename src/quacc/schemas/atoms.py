@@ -52,7 +52,6 @@ def atoms_to_metadata(
     AtomsSchema
         Dict of metadata about the Atoms object.
     """
-
     additional_fields = additional_fields or {}
     atoms = copy_atoms(atoms)
     results = {}
@@ -115,7 +114,6 @@ def _set_charge_and_spin(
     None
         Modifies the Atoms object in place.
     """
-
     if charge_and_multiplicity:
         charge = charge_and_multiplicity[0]
         spin_multiplicity = charge_and_multiplicity[1]

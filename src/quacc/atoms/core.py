@@ -34,7 +34,6 @@ def get_atoms_id(atoms: Atoms) -> str:
     str
         MD5 hash of the Atoms object
     """
-
     atoms = copy_atoms(atoms)
     atoms.info = {}
     atoms.calc = None
@@ -197,7 +196,6 @@ def check_charge_and_spin(
     -------
     charge, multiplicity
     """
-
     charge = charge if charge is not None else get_charge_attribute(atoms)
     spin_multiplicity = (
         spin_multiplicity

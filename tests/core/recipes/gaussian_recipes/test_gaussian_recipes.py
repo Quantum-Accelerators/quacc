@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from ase.build import molecule
 from numpy.testing import assert_array_equal
 

@@ -71,7 +71,6 @@ def ts_job(
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = recursive_dict_merge(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
@@ -140,7 +139,6 @@ def irc_job(
     OptSchema
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
-
     calc_defaults = recursive_dict_merge(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
@@ -204,7 +202,6 @@ def quasi_irc_job(
     OptSchema
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
-
     default_settings = SETTINGS.model_copy()
 
     irc_job_defaults = {

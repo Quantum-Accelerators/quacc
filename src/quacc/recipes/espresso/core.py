@@ -58,7 +58,6 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {"input_data": {"control": {"calculation": "scf"}}}
 
     return base_fn(
@@ -115,7 +114,6 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "input_data": {
             "control": {"calculation": "vc-relax" if relax_cell else "relax"}
@@ -183,7 +181,6 @@ def ase_relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "input_data": {
             "control": {"calculation": "scf", "tstress": relax_cell, "tprnfor": True}
@@ -238,7 +235,6 @@ def post_processing_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "input_data": {
             "inputpp": {"plot_num": 0},
@@ -299,7 +295,6 @@ def non_scf_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {"input_data": {"control": {"calculation": "nscf"}}}
 
     return base_fn(

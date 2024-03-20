@@ -67,7 +67,6 @@ def base_fn(
     cclibSchema
         Dictionary of results
     """
-
     atoms.calc = _prep_calculator(
         charge=charge,
         spin_multiplicity=spin_multiplicity,

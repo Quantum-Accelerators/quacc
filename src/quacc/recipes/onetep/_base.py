@@ -50,7 +50,6 @@ def base_fn(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-
     atoms.calc = _prep_calculator(calc_defaults=calc_defaults, calc_swaps=calc_swaps)
     final_atoms = run_calc(atoms, copy_files=copy_files)
 

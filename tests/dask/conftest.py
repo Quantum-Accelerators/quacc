@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pathlib import Path
 
 TEST_RESULTS_DIR = Path(__file__).parent / "_test_results"

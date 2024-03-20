@@ -38,7 +38,6 @@ def make_qc_input(qchem: QChem, atoms: Atoms) -> QCInput:
     QCInput
         The QCInput object.
     """
-
     atoms.charge = qchem.charge
     atoms.spin_multiplicity = qchem.spin_multiplicity
     molecule = AseAtomsAdaptor().get_molecule(atoms)

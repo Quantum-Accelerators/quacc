@@ -55,7 +55,6 @@ def base_fn(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
     atoms.calc = QChem(
         atoms, charge=charge, spin_multiplicity=spin_multiplicity, **calc_flags

@@ -206,7 +206,6 @@ class QChem(FileIOCalculator):
         -------
         None
         """
-
         # Assign variables to self
         self.atoms = atoms
         self.charge = charge
@@ -289,7 +288,6 @@ class QChem(FileIOCalculator):
         int
             The return code.
         """
-
         run_custodian(directory=self.directory)
         return 0
 

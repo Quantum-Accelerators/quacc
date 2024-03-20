@@ -59,7 +59,6 @@ def static_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
@@ -106,7 +105,6 @@ def relax_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_opt_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
@@ -156,7 +154,6 @@ def freq_job(
     VibThermoSchema
         Dictionary of results. See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
@@ -208,7 +205,6 @@ def _add_stdev_and_hess(summary: dict[str, Any]) -> dict[str, Any]:
         The modified summary dictionary with added standard deviation and
         Hessian values.
     """
-
     for i, atoms in enumerate(summary["trajectory"]):
         ml_calculator = NewtonNet(
             model_path=SETTINGS.NEWTONNET_MODEL_PATH,

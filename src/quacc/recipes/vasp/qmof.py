@@ -70,7 +70,6 @@ def qmof_relax_job(
     QMOFRelaxSchema
         Dictionary of results. See the type-hint for the data structure.
     """
-
     # 1. Pre-relaxation
     if run_prerelax:
         summary1 = _prerelax(atoms, preset, fmax=5.0, **calc_kwargs)
@@ -118,13 +117,13 @@ def _prerelax(
     **kwargs
         Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely.
+
     Returns
     -------
     OptSchema
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "pmg_kpts": {"kppa": 100},
         "ediff": 1e-4,
@@ -164,7 +163,6 @@ def _loose_relax_positions(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "pmg_kpts": {"kppa": 100},
         "ediff": 1e-4,
@@ -208,7 +206,6 @@ def _loose_relax_cell(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "pmg_kpts": {"kppa": 100},
         "ediffg": -0.03,
@@ -245,13 +242,13 @@ def _double_relax(
     **calc_kwargs
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely.
+
     Returns
     -------
     list[VaspSchema]
         List of dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
         See the type-hint for the data structure.
     """
-
     # Run first relaxation
     calc_defaults = {
         "ediffg": -0.03,
@@ -307,7 +304,6 @@ def _static(atoms: Atoms, preset: str | None = "QMOFSet", **calc_kwargs) -> Vasp
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "laechg": True,
         "lcharg": True,

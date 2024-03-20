@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pytest
 
 pytest.importorskip("openbabel")
@@ -11,7 +13,7 @@ def mock_custodian_run(*args, **kwargs):
     """Instead of running Custodian, we will mock it to return True when .run() is called."""
 
     class MockRun:
-        "Mock Custodian run() function"
+        """Mock Custodian run() function"""
 
         @staticmethod
         def run():
@@ -23,7 +25,6 @@ def mock_custodian_run(*args, **kwargs):
 @pytest.fixture(autouse=True)
 def patch_custodian_run(monkeypatch):
     """Monkeypatch the Custodian.run() function so that it doesn't actually launch Custodian during a test."""
-
     monkeypatch.setattr(Custodian, "run", mock_custodian_run)
 
 

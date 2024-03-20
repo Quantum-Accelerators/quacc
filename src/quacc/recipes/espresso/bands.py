@@ -79,7 +79,6 @@ def bands_pw_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "input_data": {"control": {"calculation": "bands", "verbosity": "high"}}
     }
@@ -139,7 +138,6 @@ def bands_pp_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     return base_fn(
         atoms,
         template=EspressoTemplate("bands", test_run=test_run),
@@ -186,7 +184,6 @@ def fermi_surface_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     return base_fn(
         atoms,
         template=EspressoTemplate("fs", test_run=test_run),
@@ -272,7 +269,6 @@ def bands_flow(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     results = {}
     (bands_pw_job_, bands_pp_job_, fermi_surface_job_) = customize_funcs(
         ["bands_pw_job", "bands_pp_job", "fermi_surface_job"],

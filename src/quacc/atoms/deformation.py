@@ -34,7 +34,6 @@ def make_deformations_from_bulk(
     list[Atoms]
         All generated deformed structures
     """
-
     struct = AseAtomsAdaptor.get_structure(atoms)
 
     deformed_set = DeformedStructureSet(

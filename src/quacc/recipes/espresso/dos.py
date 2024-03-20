@@ -67,7 +67,6 @@ def dos_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     return base_fn(
         template=EspressoTemplate("dos", test_run=test_run),
         calc_defaults={},
@@ -109,7 +108,6 @@ def projwfc_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     return base_fn(
         template=EspressoTemplate("projwfc", test_run=test_run),
         calc_defaults={},
@@ -160,7 +158,6 @@ def dos_flow(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     static_job_defaults = {
         "kspacing": 0.2,
         "input_data": {"system": {"occupations": "tetrahedra"}},
@@ -254,7 +251,6 @@ def projwfc_flow(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     static_job_defaults = {
         "kspacing": 0.2,
         "input_data": {"system": {"occupations": "tetrahedra"}},

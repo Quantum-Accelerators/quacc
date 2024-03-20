@@ -85,7 +85,6 @@ def make_defects_from_bulk(
     list[Atoms]
         All generated defects
     """
-
     # Use pymatgen-analysis-defects and ShakeNBreak to generate defects
     struct = AseAtomsAdaptor.get_structure(atoms)
 

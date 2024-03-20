@@ -76,7 +76,6 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = recursive_dict_merge(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
@@ -136,7 +135,6 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = recursive_dict_merge(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
@@ -192,7 +190,6 @@ def freq_job(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-
     calc_defaults = recursive_dict_merge(
         _BASE_SET, {"rem": {"job_type": "freq", "method": method, "basis": basis}}
     )

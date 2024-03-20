@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import gzip
 from io import StringIO
 from pathlib import Path
