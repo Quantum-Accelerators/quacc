@@ -63,7 +63,7 @@ def static_job(
         "basis": basis,
         "charge": charge,
         "mult": spin_multiplicity,
-        "sp": "",
+        "force": "",
         "scf": ["maxcycle=250", "xqc"],
         "integral": "ultrafine",
         "nosymmetry": "",
