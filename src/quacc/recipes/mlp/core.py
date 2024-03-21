@@ -43,7 +43,7 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    atoms.calc = pick_calculator(method, **calc_flags)
+    atoms.calc = pick_calculator(method, **calc_kwargs)
     final_atoms = run_calc(atoms, get_forces=True)
     return summarize_run(
         final_atoms, atoms, additional_fields={"name": f"{method} Static"}
