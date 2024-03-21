@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import os
 
 import pytest
@@ -37,10 +38,16 @@ from quacc.recipes.vasp.slabs import bulk_to_slabs_flow, slab_to_ads_flow
 from quacc.recipes.vasp.slabs import relax_job as slab_relax_job
 from quacc.recipes.vasp.slabs import static_job as slab_static_job
 
+try:
+    from pymatgen.io.validation import ValidationDoc
+except ImportError:
+    ValidationDoc = None
+
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 FILE_DIR = Path(__file__).parent
 MOCKED_DIR = FILE_DIR / "mocked_vasp_run"
+logger = logging.getLogger(__name__)
 
 
 def test_static_job(tmp_path, monkeypatch):
@@ -729,11 +736,14 @@ def test_mp_metagga_relax_flow(tmp_path, monkeypatch):
     assert output["static"]["parameters"]["magmom"] == [0.0, 0.0]
 
 
-def test_mp_gga_relax_job():
+def test_mp_gga_relax_job(caplog):
     atoms = bulk("Ni") * (2, 1, 1)
     atoms[0].symbol = "O"
     del atoms.arrays["initial_magmoms"]
-    output = mp_gga_relax_job(atoms)
+
+    with caplog.at_level(logging.WARNING):
+        output = mp_gga_relax_job(atoms)
+    assert "is not MP-compatible" not in output
 
     assert output["nsites"] == len(atoms)
     assert output["parameters"] == {
@@ -769,11 +779,15 @@ def test_mp_gga_relax_job():
     assert output["atoms"].get_chemical_symbols() == ["O", "Ni"]
 
 
-def test_mp_gga_static_job():
+def test_mp_gga_static_job(caplog):
     atoms = bulk("Ni") * (2, 1, 1)
     atoms[0].symbol = "O"
     del atoms.arrays["initial_magmoms"]
-    output = mp_gga_static_job(atoms)
+
+    with caplog.at_level(logging.WARNING):
+        output = mp_gga_static_job(atoms)
+
+    assert "is not MP-compatible" not in output
     assert output["nsites"] == len(atoms)
     assert output["parameters"] == {
         "algo": "fast",
@@ -805,12 +819,23 @@ def test_mp_gga_static_job():
         "setups": {"Ni": "_pv", "O": ""},
     }
 
+@pytest.mark.skipif(ValidationDoc is None, reason="pymatgen-io-validation is not installed")
+def test_mp_incompatible(caplog):
+    atoms = bulk("Ni")
 
-def test_mp_gga_relax_flow():
+    with caplog.at_level(logging.ERROR):
+        assert mp_gga_static_job(atoms, xc="hse06")
+    assert "is not MP-compatible" in caplog.text
+
+def test_mp_gga_relax_flow(caplog):
     atoms = bulk("Ni") * (2, 1, 1)
     atoms[0].symbol = "O"
     del atoms.arrays["initial_magmoms"]
-    output = mp_gga_relax_flow(atoms)
+
+    with caplog.at_level(logging.WARNING):
+        output = mp_gga_relax_flow(atoms)
+    assert "is not MP-compatible" not in output
+
     relax_params = {
         "algo": "fast",
         "ediff": 0.0001,
@@ -877,14 +902,17 @@ def test_mp_gga_relax_flow():
     }
 
 
-def test_mp_relax_flow_custom():
+def test_mp_relax_flow_custom(caplog):
     atoms = bulk("Ni") * (2, 1, 1)
     atoms[0].symbol = "O"
     del atoms.arrays["initial_magmoms"]
-    output = mp_metagga_relax_flow(
-        mp_gga_relax_flow(atoms, job_params={"mp_gga_relax_job": {"nsw": 0}})["static"][
-            "atoms"
-        ],
-        job_params={"mp_metagga_relax_job": {"nsw": 0}},
-    )
+
+    with caplog.at_level(logging.WARNING):
+        output = mp_metagga_relax_flow(
+            mp_gga_relax_flow(atoms, job_params={"mp_gga_relax_job": {"nsw": 0}})["static"][
+                "atoms"
+            ],
+            job_params={"mp_metagga_relax_job": {"nsw": 0}},
+        )
+    assert "is not MP-compatible" not in output
     assert output["relax2"]["parameters"]["nsw"] == 0

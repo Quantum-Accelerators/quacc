@@ -69,7 +69,7 @@ def _validate_mp_compatability(directory: Path | str) -> EmmetBaseModel | None:
         return None
     validation_doc = ValidationDoc.from_directory(dir_name=directory)
     if not validation_doc.valid:
-        logger.warning(
+        logger.error(
             f"Calculation in {directory} is not MP-compatible for the following reasons: {validation_doc.reasons}"
         )
     if validation_doc.warnings:
