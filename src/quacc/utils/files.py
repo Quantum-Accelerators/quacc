@@ -136,14 +136,12 @@ def copy_decompress_files(
         filenames = [filenames]
 
     for f in filenames:
-        f_path = Path(f)
         globs_found = list(source_directory.glob(str(f)))
         if not globs_found:
             logger.warning(f"Cannot find file {f} in {source_directory}")
         for source_filepath in globs_found:
-            n_parts_to_keep = len(f_path.parts)
-            destination_filepath = destination_directory / Path(
-                "/".join(source_filepath.parts[-n_parts_to_keep:])
+            destination_filepath = destination_directory / source_filepath.relative_to(
+                source_directory
             )
             Path(destination_filepath.parent).mkdir(parents=True, exist_ok=True)
 
