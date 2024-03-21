@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING
 from ase import units
 from emmet.core.qc_tasks import TaskDoc
 from emmet.core.tasks import _parse_custodian
-from pymatgen.io.qchem.inputs import QCInput
 from pymatgen.io.qchem.outputs import (
     gradient_parser,
     hessian_parser,
@@ -17,6 +16,8 @@ from pymatgen.io.qchem.outputs import (
 )
 
 if TYPE_CHECKING:
+    from pymatgen.io.qchem.inputs import QCInput
+
     from quacc.calculators.qchem.qchem import Results
 
 
