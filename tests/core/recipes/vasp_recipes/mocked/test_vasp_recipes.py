@@ -841,7 +841,10 @@ def test_mp_gga_static_job(caplog):
         "setups": {"Ni": "_pv", "O": ""},
     }
 
-@pytest.mark.skipif(ValidationDoc is None, reason="pymatgen-io-validation is not installed")
+
+@pytest.mark.skipif(
+    ValidationDoc is None, reason="pymatgen-io-validation is not installed"
+)
 def test_mp_incompatible(caplog):
     atoms = bulk("Ni")
 
@@ -933,9 +936,9 @@ def test_mp_relax_flow_custom(caplog):
 
     with caplog.at_level(logging.WARNING):
         output = mp_metagga_relax_flow(
-            mp_gga_relax_flow(atoms, job_params={"mp_gga_relax_job": {"nsw": 0}})["static"][
-                "atoms"
-            ],
+            mp_gga_relax_flow(atoms, job_params={"mp_gga_relax_job": {"nsw": 0}})[
+                "static"
+            ]["atoms"],
             job_params={"mp_metagga_relax_job": {"nsw": 0}},
         )
     assert "is not MP-compatible" not in output

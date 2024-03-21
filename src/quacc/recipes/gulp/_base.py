@@ -27,7 +27,7 @@ GEOM_FILE_NOPBC = "gulp.xyz"
 GULP_CMD = f"{SETTINGS.GULP_CMD} < gulp.gin > gulp.got"
 
 
-def base_fn(
+def run_and_summarize(
     atoms: Atoms,
     library: str | None = None,
     keyword_defaults: list[str] | None = None,

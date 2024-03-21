@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from quacc.utils.files import Filenames, SourceDirectory
 
 
-def base_fn(
+def run_and_summarize(
     atoms: Atoms,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
@@ -56,7 +56,7 @@ def base_fn(
     return summarize_run(final_atoms, atoms, additional_fields=additional_fields)
 
 
-def base_opt_fn(
+def run_and_summarize_opt(
     atoms: Atoms,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
