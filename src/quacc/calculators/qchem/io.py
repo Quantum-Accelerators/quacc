@@ -76,7 +76,7 @@ def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float]]:
 
     results: Results = {
         "energy": task_doc["output"]["final_energy"] * units.Hartree,
-        "taskdoc": task_doc
+        "taskdoc": task_doc,
     }
 
     # Read the gradient scratch file in 8 byte chunks
