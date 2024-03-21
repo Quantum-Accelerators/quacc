@@ -8,7 +8,7 @@ from ase.optimize import LBFGS
 
 from quacc import job
 from quacc.calculators.espresso.espresso import EspressoTemplate
-from quacc.recipes.espresso._base import base_fn, base_opt_fn
+from quacc.recipes.espresso._base import run_and_summarize, run_and_summarize_opt
 
 if TYPE_CHECKING:
     from typing import Any
@@ -60,7 +60,7 @@ def static_job(
     """
     calc_defaults = {"input_data": {"control": {"calculation": "scf"}}}
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         preset=preset,
         template=EspressoTemplate("pw", test_run=test_run),
@@ -120,7 +120,7 @@ def relax_job(
         }
     }
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         preset=preset,
         template=EspressoTemplate("pw", test_run=test_run),
@@ -189,7 +189,7 @@ def ase_relax_job(
 
     opt_defaults = {"optimizer": LBFGS}
 
-    return base_opt_fn(
+    return run_and_summarize_opt(
         atoms,
         preset=preset,
         relax_cell=relax_cell,
@@ -246,7 +246,7 @@ def post_processing_job(
         }
     }
 
-    return base_fn(
+    return run_and_summarize(
         template=EspressoTemplate("pp", test_run=test_run),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -297,7 +297,7 @@ def non_scf_job(
     """
     calc_defaults = {"input_data": {"control": {"calculation": "nscf"}}}
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         preset=preset,
         template=EspressoTemplate("pw", test_run=test_run),

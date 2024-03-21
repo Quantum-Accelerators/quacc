@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from quacc.utils.files import Filenames, SourceDirectory
 
 
-def base_fn(
+def run_and_summarize(
     atoms: Atoms,
     preset: str | None = None,
     calc_defaults: dict[str, Any] | None = None,
@@ -66,7 +66,7 @@ def base_fn(
     )
 
 
-def base_opt_fn(
+def run_and_summarize_opt(
     atoms: Atoms,
     preset: str | None = None,
     calc_defaults: dict[str, Any] | None = None,
