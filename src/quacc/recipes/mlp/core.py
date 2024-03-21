@@ -73,9 +73,8 @@ def relax_job(
     relax_cell
         Whether to relax the cell.
     opt_params
-        Dictionary of custom kwargs for the optimization process. Set a value
-        to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [quacc.runners.ase.run_opt][].
+        Dictionary of custom kwargs for the optimization process. For a list
+        of available keys, refer to [quacc.runners.ase.run_opt][].
     **calc_kwargs
         Custom kwargs for the underlying calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available

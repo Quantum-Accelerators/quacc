@@ -199,6 +199,9 @@ def ase_relax_job(
     relax_cell
         True if a volume relaxation should be performed. False if only the positions
         should be updated.
+    opt_params
+        Dictionary of custom kwargs for the optimization process. For a list
+        of available keys, refer to [quacc.runners.ase.run_opt][].
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs

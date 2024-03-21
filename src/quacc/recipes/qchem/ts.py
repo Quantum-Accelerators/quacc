@@ -55,9 +55,8 @@ def ts_job(
     basis
         Basis set.
     opt_params
-        Dictionary of custom kwargs for the optimization process. Set a value
-        to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [quacc.runners.ase.run_opt][].
+        Dictionary of custom kwargs for the optimization process. For a list
+        of available keys, refer to [quacc.runners.ase.run_opt][].
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
@@ -124,9 +123,8 @@ def irc_job(
     basis
         Basis set.
     opt_params
-        Dictionary of custom kwargs for the optimization process. Set a value
-        to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [quacc.runners.ase.run_opt][].
+        Dictionary of custom kwargs for the optimization process. For a list
+        of available keys, refer to [quacc.runners.ase.run_opt][].
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
