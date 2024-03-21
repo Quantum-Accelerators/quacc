@@ -68,12 +68,16 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     pip install quacc[prefect]
     ```
 
-    1. This is a temporary workaround to resolve a dependency conflict.
-
     To connect to Prefect Cloud, run the following as well:
 
     ```bash
     prefect cloud login
+    ```
+
+    Prefect has [many configuration options](https://docs.prefect.io/latest/guides/settings/). For instance, you can store the quacc logs in the UI as follows:
+
+    ```bash
+    prefect config set PREFECT_LOGGING_EXTRA_LOGGERS=quacc
     ```
 
 === "Redun"
