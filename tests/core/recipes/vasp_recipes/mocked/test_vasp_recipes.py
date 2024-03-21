@@ -512,12 +512,14 @@ def test_qmof(tmp_path, monkeypatch):
     assert output["double_relax"][0]["parameters"]["isif"] == 2
     assert output["double_relax"][1]["parameters"]["isif"] == 2
 
-
-def test_mp_metagga_prerelax_job(tmp_path, monkeypatch):
+@pytest.mark.skipif(ValidationDoc is None, reason="pymatgen-io-validation is not installed")
+def test_mp_metagga_prerelax_job(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Al")
-    output = mp_metagga_prerelax_job(atoms)
+    with caplog.at_level(logging.WARNING):
+        output = mp_metagga_prerelax_job(atoms)
+    assert "is not MP-compatible" not in output
     assert output["nsites"] == len(atoms)
     assert output["parameters"] == {
         "algo": "all",
@@ -550,7 +552,10 @@ def test_mp_metagga_prerelax_job(tmp_path, monkeypatch):
         "pp": "pbe",
     }
 
-    output = mp_metagga_prerelax_job(atoms, bandgap=0)
+    with caplog.at_level(logging.WARNING):
+        output = mp_metagga_prerelax_job(atoms, bandgap=0)
+    assert "is not MP-compatible" not in output
+
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["gga"] == "ps"
     assert output["parameters"]["ediffg"] == -0.05
@@ -561,7 +566,10 @@ def test_mp_metagga_prerelax_job(tmp_path, monkeypatch):
     assert output["parameters"]["pp"] == "pbe"
     assert "metagga" not in output["parameters"]
 
-    output = mp_metagga_prerelax_job(atoms, bandgap=100)
+    with caplog.at_level(logging.WARNING):
+        output = mp_metagga_prerelax_job(atoms, bandgap=100)
+    assert "is not MP-compatible" not in output
+
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["gga"] == "ps"
     assert output["parameters"]["ediffg"] == -0.05
@@ -573,11 +581,11 @@ def test_mp_metagga_prerelax_job(tmp_path, monkeypatch):
     assert "metagga" not in output["parameters"]
 
 
-def test_mp_metagga_relax_job(tmp_path, monkeypatch):
+@pytest.mark.skipif(ValidationDoc is None, reason="pymatgen-io-validation is not installed")
+def test_mp_metagga_relax_job(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Al")
-
     ref_parameters = {
         "algo": "all",
         "ediff": 1e-5,
@@ -611,11 +619,15 @@ def test_mp_metagga_relax_job(tmp_path, monkeypatch):
     ref_parameters2 = ref_parameters.copy()
     ref_parameters2["magmom"] = [0.0]
 
-    output = mp_metagga_relax_job(atoms)
+    with caplog.at_level(logging.WARNING):
+        output = mp_metagga_relax_job(atoms)
+    assert "is not MP-compatible" not in output
     assert output["parameters"] == ref_parameters
     assert output["nsites"] == len(atoms)
 
-    output = mp_metagga_relax_job(atoms, bandgap=0)
+    with caplog.at_level(logging.WARNING):
+        output = mp_metagga_relax_job(atoms, bandgap=0)
+    assert "is not MP-compatible" not in output
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["metagga"].lower() == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
@@ -625,7 +637,9 @@ def test_mp_metagga_relax_job(tmp_path, monkeypatch):
     assert output["parameters"]["sigma"] == 0.05
     assert output["parameters"]["pp"] == "pbe"
 
-    output = mp_metagga_relax_job(atoms, bandgap=100)
+    with caplog.at_level(logging.WARNING):
+        output = mp_metagga_relax_job(atoms, bandgap=100)
+    assert "is not MP-compatible" not in output
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["metagga"].lower() == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
@@ -635,13 +649,15 @@ def test_mp_metagga_relax_job(tmp_path, monkeypatch):
     assert output["parameters"]["sigma"] == 0.05
     assert output["parameters"]["pp"] == "pbe"
 
-
-def test_mp_metagga_static_job(tmp_path, monkeypatch):
+@pytest.mark.skipif(ValidationDoc is None, reason="pymatgen-io-validation is not installed")
+def test_mp_metagga_static_job(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Al")
 
-    output = mp_metagga_static_job(atoms)
+    with caplog.at_level(logging.WARNING):
+        output = mp_metagga_static_job(atoms)
+    assert "is not MP-compatible" not in output
     assert output["nsites"] == len(atoms)
     assert output["parameters"] == {
         "algo": "fast",
@@ -671,13 +687,15 @@ def test_mp_metagga_static_job(tmp_path, monkeypatch):
         "setups": {"Al": ""},
     }
 
-
-def test_mp_metagga_relax_flow(tmp_path, monkeypatch):
+@pytest.mark.skipif(ValidationDoc is None, reason="pymatgen-io-validation is not installed")
+def test_mp_metagga_relax_flow(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Al")
 
-    output = mp_metagga_relax_flow(atoms)
+    with caplog.at_level(logging.WARNING):
+        output = mp_metagga_relax_flow(atoms)
+    assert "is not MP-compatible" not in output
     assert output["static"]["nsites"] == len(atoms)
     assert output["prerelax"]["parameters"]["gga"] == "ps"
     assert output["prerelax"]["parameters"]["ismear"] == 0
@@ -695,7 +713,9 @@ def test_mp_metagga_relax_flow(tmp_path, monkeypatch):
 
     atoms = bulk("C")
     atoms.set_initial_magnetic_moments([0.0, 0.0])
-    output = mp_metagga_relax_flow(atoms)
+    with caplog.at_level(logging.WARNING):
+        output = mp_metagga_relax_flow(atoms)
+    assert "is not MP-compatible" not in output
     assert output["prerelax"]["parameters"]["ismear"] == 0
     assert output["prerelax"]["parameters"]["pp"] == "pbe"
     assert output["prerelax"]["parameters"]["magmom"] == [0.0, 0.0]
@@ -715,7 +735,9 @@ def test_mp_metagga_relax_flow(tmp_path, monkeypatch):
     atoms.set_initial_magnetic_moments([1.0, 0.0])
     atoms.center(vacuum=10)
     atoms.pbc = True
-    output = mp_metagga_relax_flow(atoms)
+    with caplog.at_level(logging.WARNING):
+        output = mp_metagga_relax_flow(atoms)
+    assert "is not MP-compatible" not in output
     assert output["prerelax"]["parameters"]["ismear"] == 0
     assert output["prerelax"]["parameters"]["pp"] == "pbe"
     assert output["prerelax"]["parameters"]["magmom"] == [1.0, 0.0]
@@ -735,7 +757,7 @@ def test_mp_metagga_relax_flow(tmp_path, monkeypatch):
     assert output["static"]["parameters"]["algo"] == "fast"
     assert output["static"]["parameters"]["magmom"] == [0.0, 0.0]
 
-
+@pytest.mark.skipif(ValidationDoc is None, reason="pymatgen-io-validation is not installed")
 def test_mp_gga_relax_job(caplog):
     atoms = bulk("Ni") * (2, 1, 1)
     atoms[0].symbol = "O"
@@ -778,7 +800,7 @@ def test_mp_gga_relax_job(caplog):
     }
     assert output["atoms"].get_chemical_symbols() == ["O", "Ni"]
 
-
+@pytest.mark.skipif(ValidationDoc is None, reason="pymatgen-io-validation is not installed")
 def test_mp_gga_static_job(caplog):
     atoms = bulk("Ni") * (2, 1, 1)
     atoms[0].symbol = "O"
@@ -827,6 +849,7 @@ def test_mp_incompatible(caplog):
         assert mp_gga_static_job(atoms, xc="hse06")
     assert "is not MP-compatible" in caplog.text
 
+@pytest.mark.skipif(ValidationDoc is None, reason="pymatgen-io-validation is not installed")
 def test_mp_gga_relax_flow(caplog):
     atoms = bulk("Ni") * (2, 1, 1)
     atoms[0].symbol = "O"
@@ -902,6 +925,7 @@ def test_mp_gga_relax_flow(caplog):
     }
 
 
+@pytest.mark.skipif(ValidationDoc is None, reason="pymatgen-io-validation is not installed")
 def test_mp_relax_flow_custom(caplog):
     atoms = bulk("Ni") * (2, 1, 1)
     atoms[0].symbol = "O"
