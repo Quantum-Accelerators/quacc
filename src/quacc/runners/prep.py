@@ -20,6 +20,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+
 def calc_setup(
     atoms: Atoms | None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
