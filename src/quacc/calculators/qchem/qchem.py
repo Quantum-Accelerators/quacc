@@ -25,7 +25,6 @@ if TYPE_CHECKING:
         forces: NDArray  # forces in eV/A
         hessian: NDArray  # Hessian in eV/A^2/amu
         taskdoc: dict[str, Any]  # Output from `emmet.core.qc_tasks.TaskDoc`
-        custodian: dict[str, Any]  # custodian.json file metadata
 
 
 class QChem(FileIOCalculator):
@@ -36,7 +35,6 @@ class QChem(FileIOCalculator):
         "forces",
         "hessian",
         "taskdoc",
-        "custodian",
     ]
     results: ClassVar[Results] = {}
 
