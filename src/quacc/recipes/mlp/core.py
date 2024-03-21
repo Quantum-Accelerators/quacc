@@ -43,9 +43,6 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    calc_defaults = {"default_dtype": "float64"} if method == "mace" else {}
-    calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
-
     atoms.calc = pick_calculator(method, **calc_flags)
     final_atoms = run_calc(atoms, get_forces=True)
     return summarize_run(
