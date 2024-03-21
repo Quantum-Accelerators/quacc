@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING
 
 from ase import units
 from emmet.core.qc_tasks import TaskDoc
-from emmet.core.tasks import _parse_custodian
 from pymatgen.io.qchem.outputs import (
     gradient_parser,
     hessian_parser,
@@ -77,8 +76,7 @@ def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float]]:
 
     results: Results = {
         "energy": task_doc["output"]["final_energy"] * units.Hartree,
-        "taskdoc": task_doc,
-        "custodian": _parse_custodian(directory),
+        "taskdoc": task_doc
     }
 
     # Read the gradient scratch file in 8 byte chunks
