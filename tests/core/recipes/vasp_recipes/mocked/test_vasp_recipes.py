@@ -512,7 +512,10 @@ def test_qmof(tmp_path, monkeypatch):
     assert output["double_relax"][0]["parameters"]["isif"] == 2
     assert output["double_relax"][1]["parameters"]["isif"] == 2
 
-@pytest.mark.skipif(ValidationDoc is None, reason="pymatgen-io-validation is not installed")
+
+@pytest.mark.skipif(
+    ValidationDoc is None, reason="pymatgen-io-validation is not installed"
+)
 def test_mp_metagga_prerelax_job(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
 
@@ -581,7 +584,9 @@ def test_mp_metagga_prerelax_job(tmp_path, monkeypatch, caplog):
     assert "metagga" not in output["parameters"]
 
 
-@pytest.mark.skipif(ValidationDoc is None, reason="pymatgen-io-validation is not installed")
+@pytest.mark.skipif(
+    ValidationDoc is None, reason="pymatgen-io-validation is not installed"
+)
 def test_mp_metagga_relax_job(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
 
@@ -649,7 +654,10 @@ def test_mp_metagga_relax_job(tmp_path, monkeypatch, caplog):
     assert output["parameters"]["sigma"] == 0.05
     assert output["parameters"]["pp"] == "pbe"
 
-@pytest.mark.skipif(ValidationDoc is None, reason="pymatgen-io-validation is not installed")
+
+@pytest.mark.skipif(
+    ValidationDoc is None, reason="pymatgen-io-validation is not installed"
+)
 def test_mp_metagga_static_job(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
 
@@ -687,7 +695,10 @@ def test_mp_metagga_static_job(tmp_path, monkeypatch, caplog):
         "setups": {"Al": ""},
     }
 
-@pytest.mark.skipif(ValidationDoc is None, reason="pymatgen-io-validation is not installed")
+
+@pytest.mark.skipif(
+    ValidationDoc is None, reason="pymatgen-io-validation is not installed"
+)
 def test_mp_metagga_relax_flow(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
 
@@ -757,7 +768,10 @@ def test_mp_metagga_relax_flow(tmp_path, monkeypatch, caplog):
     assert output["static"]["parameters"]["algo"] == "fast"
     assert output["static"]["parameters"]["magmom"] == [0.0, 0.0]
 
-@pytest.mark.skipif(ValidationDoc is None, reason="pymatgen-io-validation is not installed")
+
+@pytest.mark.skipif(
+    ValidationDoc is None, reason="pymatgen-io-validation is not installed"
+)
 def test_mp_gga_relax_job(caplog):
     atoms = bulk("Ni") * (2, 1, 1)
     atoms[0].symbol = "O"
@@ -800,7 +814,10 @@ def test_mp_gga_relax_job(caplog):
     }
     assert output["atoms"].get_chemical_symbols() == ["O", "Ni"]
 
-@pytest.mark.skipif(ValidationDoc is None, reason="pymatgen-io-validation is not installed")
+
+@pytest.mark.skipif(
+    ValidationDoc is None, reason="pymatgen-io-validation is not installed"
+)
 def test_mp_gga_static_job(caplog):
     atoms = bulk("Ni") * (2, 1, 1)
     atoms[0].symbol = "O"
@@ -852,7 +869,10 @@ def test_mp_incompatible(caplog):
         assert mp_gga_static_job(atoms, xc="hse06")
     assert "is not MP-compatible" in caplog.text
 
-@pytest.mark.skipif(ValidationDoc is None, reason="pymatgen-io-validation is not installed")
+
+@pytest.mark.skipif(
+    ValidationDoc is None, reason="pymatgen-io-validation is not installed"
+)
 def test_mp_gga_relax_flow(caplog):
     atoms = bulk("Ni") * (2, 1, 1)
     atoms[0].symbol = "O"
@@ -928,7 +948,9 @@ def test_mp_gga_relax_flow(caplog):
     }
 
 
-@pytest.mark.skipif(ValidationDoc is None, reason="pymatgen-io-validation is not installed")
+@pytest.mark.skipif(
+    ValidationDoc is None, reason="pymatgen-io-validation is not installed"
+)
 def test_mp_relax_flow_custom(caplog):
     atoms = bulk("Ni") * (2, 1, 1)
     atoms[0].symbol = "O"
