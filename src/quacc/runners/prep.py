@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import os
 from pathlib import Path
 from shutil import move, rmtree
@@ -17,6 +18,7 @@ if TYPE_CHECKING:
 
     from quacc.utils.files import Filenames, SourceDirectory
 
+logger = logging.getLogger(__name__)
 
 def calc_setup(
     atoms: Atoms | None,
@@ -52,6 +54,7 @@ def calc_setup(
     # Create a tmpdir for the calculation
     tmpdir_base = SETTINGS.SCRATCH_DIR or SETTINGS.RESULTS_DIR
     tmpdir = make_unique_dir(base_path=tmpdir_base, prefix="tmp-quacc-")
+    logging.info(f"Calculation will run at {tmpdir}")
 
     # Set the calculator's directory
     if atoms is not None:
@@ -104,6 +107,7 @@ def calc_cleanup(
     None
     """
     job_results_dir, tmpdir = Path(job_results_dir), Path(tmpdir)
+    logging.info(f"Calculation results stored at {job_results_dir}")
 
     # Safety check
     if "tmp-" not in str(tmpdir):
