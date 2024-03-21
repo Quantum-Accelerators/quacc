@@ -133,9 +133,7 @@ def cclib_summarize_run(
     else:
         input_atoms = cclib_task_doc["trajectory"][0]
 
-    if nsteps := len(
-        [f for f in os.listdir(dir_path) if f.startswith("step")]
-    ):
+    if nsteps := len([f for f in os.listdir(dir_path) if f.startswith("step")]):
         intermediate_cclib_task_docs = {
             "steps": {
                 n: _make_cclib_schema(Path(dir_path, f"step{n}"), logfile_extensions)
