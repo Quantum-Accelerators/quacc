@@ -279,7 +279,6 @@ def summarize_vib_and_thermo(
     vib_task_doc = _summarize_vib_run(
         vib,
         charge_and_multiplicity=charge_and_multiplicity,
-        store=None,
         additional_fields=additional_fields,
     )
     thermo_task_doc = _summarize_ideal_gas_thermo(
@@ -287,7 +286,6 @@ def summarize_vib_and_thermo(
         temperature=temperature,
         pressure=pressure,
         charge_and_multiplicity=charge_and_multiplicity,
-        store=None,
         additional_fields=additional_fields,
     )
 
@@ -313,7 +311,6 @@ def _summarize_vib_run(
     vib: Vibrations | VibrationsData,
     charge_and_multiplicity: tuple[int, int] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None = None,
 ) -> VibSchema:
     """
     Get tabulated results from an ASE Vibrations object and store them in a database-
@@ -328,8 +325,6 @@ def _summarize_vib_run(
         metadata.
     additional_fields
         Additional fields to add to the task document.
-    store
-        Maggma Store object to store the results in. Defaults to `SETTINGS.STORE`.
 
     Returns
     -------
@@ -337,7 +332,6 @@ def _summarize_vib_run(
         Dictionary representation of the task document
     """
     additional_fields = additional_fields or {}
-    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
 
     vib_freqs_raw = vib.get_frequencies().tolist()
     vib_energies_raw = vib.get_energies().tolist()
@@ -412,13 +406,7 @@ def _summarize_vib_run(
     }
 
     unsorted_task_doc = atoms_metadata | inputs | results | additional_fields
-    task_doc = clean_task_doc(unsorted_task_doc)
-
-    if store:
-        results_to_db(store, task_doc)
-
-    return task_doc
-
+    return clean_task_doc(unsorted_task_doc)
 
 def _summarize_ideal_gas_thermo(
     igt: IdealGasThermo,
@@ -426,7 +414,6 @@ def _summarize_ideal_gas_thermo(
     pressure: float = 1.0,
     charge_and_multiplicity: tuple[int, int] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None = _DEFAULT_SETTING,
 ) -> ThermoSchema:
     """
     Get tabulated results from an ASE IdealGasThermo object and store them in a
@@ -445,8 +432,6 @@ def _summarize_ideal_gas_thermo(
         metadata.
     additional_fields
         Additional fields to add to the task document.
-    store
-        Maggma Store object to store the results in. Defaults to `SETTINGS.STORE`
 
     Returns
     -------
@@ -454,7 +439,6 @@ def _summarize_ideal_gas_thermo(
         Dictionary representation of the task document
     """
     additional_fields = additional_fields or {}
-    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
 
     spin_multiplicity = round(2 * igt.spin + 1)
 
@@ -495,9 +479,5 @@ def _summarize_ideal_gas_thermo(
     )
 
     unsorted_task_doc = atoms_metadata | inputs | results | additional_fields
-    task_doc = clean_task_doc(unsorted_task_doc)
 
-    if store:
-        results_to_db(store, task_doc)
-
-    return task_doc
+    return clean_task_doc(unsorted_task_doc)
