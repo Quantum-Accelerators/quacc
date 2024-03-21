@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from quacc.utils.files import Filenames, SourceDirectory
 
 
-def run(
+def base_fn(
     atoms: Atoms | None = None,
     preset: str | None = None,
     template: EspressoTemplate | None = None,
@@ -85,7 +85,7 @@ def run(
     )
 
 
-def run_ase_opt(
+def base_opt_fn(
     atoms: Atoms | None = None,
     preset: str | None = None,
     relax_cell: bool = False,

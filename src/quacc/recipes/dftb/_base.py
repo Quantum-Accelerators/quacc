@@ -22,7 +22,7 @@ LOG_FILE = "dftb.out"
 GEOM_FILE = "geo_end.gen"
 
 
-def run(
+def base_fn(
     atoms: Atoms,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,

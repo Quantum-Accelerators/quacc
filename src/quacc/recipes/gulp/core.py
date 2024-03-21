@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc import job
-from quacc.recipes.gulp._base import run
+from quacc.recipes.gulp._base import base_fn
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
@@ -54,7 +54,7 @@ def static_job(
     keyword_defaults = ["gfnff", "gwolf"] if use_gfnff else []
     option_defaults = ["dump every gulp.res"]
 
-    return run(
+    return base_fn(
         atoms,
         library=library,
         keyword_defaults=keyword_defaults,
@@ -112,7 +112,7 @@ def relax_job(
 
     option_defaults = ["dump every gulp.res"]
 
-    return run(
+    return base_fn(
         atoms,
         library=library,
         keyword_defaults=keyword_defaults,

@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from quacc.utils.files import Filenames, SourceDirectory
 
 
-def run(
+def base_fn(
     atoms: Atoms,
     charge: int = 0,
     spin_multiplicity: int = 1,

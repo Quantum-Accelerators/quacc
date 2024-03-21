@@ -23,7 +23,7 @@ from typing import TYPE_CHECKING
 from pymatgen.io.vasp.sets import MPRelaxSet, MPScanRelaxSet, MPStaticSet
 
 from quacc import flow, job
-from quacc.recipes.vasp._base import run
+from quacc.recipes.vasp._base import base_fn
 from quacc.wflow_tools.customizers import customize_funcs
 
 try:
@@ -105,7 +105,7 @@ def mp_gga_relax_job(
         Dictionary of results.
     """
     calc_defaults = {"pmg_input_set": MPRelaxSet}
-    output = run(
+    output = base_fn(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -154,7 +154,7 @@ def mp_gga_static_job(
         "lwave": True,  # Deviation from MP (but logical)
         "lreal": False,
     }
-    output = run(
+    output = base_fn(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -210,7 +210,7 @@ def mp_metagga_prerelax_job(
         "lwave": True,
         "metagga": None,
     }
-    output = run(
+    output = base_fn(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -261,7 +261,7 @@ def mp_metagga_relax_job(
         "lvtot": False,  # Deviation from MP (but logical)
         "lwave": True,
     }
-    output = run(
+    output = base_fn(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -314,7 +314,7 @@ def mp_metagga_static_job(
         "lwave": True,  # Deviation from MP (but logical)
         "nsw": 0,
     }
-    output = run(
+    output = base_fn(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,

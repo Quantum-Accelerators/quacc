@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from ase.optimize import LBFGS
 
 from quacc import job
-from quacc.recipes.onetep._base import run, run_ase_opt
+from quacc.recipes.onetep._base import base_fn, base_opt_fn
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
@@ -56,7 +56,7 @@ def static_job(
     """
     calc_defaults = BASE_SET
 
-    return run(
+    return base_fn(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -103,7 +103,7 @@ def ase_relax_job(
 
     opt_defaults = {"optimizer": LBFGS, "relax_cell": relax_cell}
 
-    return run_ase_opt(
+    return base_opt_fn(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,

@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from quacc.utils.files import Filenames, SourceDirectory
 
 
-def run(
+def base_fn(
     atoms: Atoms,
     charge: int = 0,
     spin_multiplicity: int = 1,
@@ -69,7 +69,7 @@ def run(
     )
 
 
-def run_ase_opt(
+def base_opt_fn(
     atoms: Atoms,
     charge: int = 0,
     spin_multiplicity: int = 1,
