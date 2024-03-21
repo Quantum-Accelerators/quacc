@@ -327,7 +327,8 @@ class Vasp(Vasp_):
         if directory is None:
             directory = self.directory
 
-        if not self.use_custodian:
-            return subprocess.call(command, shell=True, stdout=out, cwd=directory)
-        run_custodian(directory=directory)
-        return 0
+        if self.use_custodian:
+            run_custodian(directory=directory)
+            return 0
+
+        return subprocess.call(command, shell=True, stdout=out, cwd=directory)
