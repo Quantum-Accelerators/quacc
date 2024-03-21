@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc import job
-from quacc.recipes.qchem._base import base_fn, base_opt_fn
+from quacc.recipes.qchem._base import run_and_summarize, run_and_summarize_opt
 from quacc.utils.dicts import recursive_dict_merge
 
 try:
@@ -80,7 +80,7 @@ def static_job(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         charge=charge,
         spin_multiplicity=spin_multiplicity,
@@ -140,7 +140,7 @@ def relax_job(
     )
     opt_defaults = {"optimizer": Sella} if has_sella else {}
 
-    return base_opt_fn(
+    return run_and_summarize_opt(
         atoms,
         charge=charge,
         spin_multiplicity=spin_multiplicity,
@@ -194,7 +194,7 @@ def freq_job(
         _BASE_SET, {"rem": {"job_type": "freq", "method": method, "basis": basis}}
     )
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         charge=charge,
         spin_multiplicity=spin_multiplicity,

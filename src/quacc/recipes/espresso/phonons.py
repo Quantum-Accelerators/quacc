@@ -17,7 +17,7 @@ from ase.io.espresso import Namelist
 from quacc import Job, flow, job, subflow
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.calculators.espresso.utils import grid_copy_files, grid_prepare_repr
-from quacc.recipes.espresso._base import base_fn
+from quacc.recipes.espresso._base import run_and_summarize
 from quacc.recipes.espresso.core import relax_job
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs, strip_decorator
@@ -79,7 +79,7 @@ def phonon_job(
         "qpts": (0, 0, 0),
     }
 
-    return base_fn(
+    return run_and_summarize(
         template=EspressoTemplate("ph", test_run=test_run),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -128,7 +128,7 @@ def q2r_job(
 
     copy_files = {prev_dir: [f"{fildyn}*"]}
 
-    return base_fn(
+    return run_and_summarize(
         template=EspressoTemplate("q2r"),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -177,7 +177,7 @@ def matdyn_job(
 
     copy_files = {prev_dir: [f"{flfrc}*"]}
 
-    return base_fn(
+    return run_and_summarize(
         template=EspressoTemplate("matdyn"),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
