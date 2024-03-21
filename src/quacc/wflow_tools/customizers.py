@@ -164,7 +164,6 @@ def customize_funcs(
     tuple[Callable, ...] | Callable
         The customized functions, returned in the same order as provided in `funcs`.
     """
-
     parameters = parameters or {}
     decorators = decorators or {}
     updated_funcs = []
@@ -187,14 +186,14 @@ def customize_funcs(
 
     for i, func in enumerate(funcs):
         func_ = deepcopy(func)
+        if decorator := decorators.get("all"):
+            func_ = redecorate(func_, decorator)
+        if decorator := decorators.get(names[i]):
+            func_ = redecorate(func_, decorator)
         if params := parameters.get("all"):
             func_ = update_parameters(func_, params)
         if params := parameters.get(names[i]):
             func_ = update_parameters(func_, params)
-        if "all" in decorators:
-            func_ = redecorate(func_, decorators["all"])
-        if names[i] in decorators:
-            func_ = redecorate(func_, decorators[names[i]])
         updated_funcs.append(func_)
 
     return updated_funcs[0] if len(updated_funcs) == 1 else tuple(updated_funcs)

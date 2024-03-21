@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 from pathlib import Path
 
@@ -43,11 +45,6 @@ def test_qchem_write_input_basic(tmp_path, monkeypatch, test_atoms):
     ref_qcinp = QCInput.from_file(str(FILE_DIR / "examples" / "basic" / "mol.qin"))
     assert qcinp.as_dict() == ref_qcinp.as_dict()
     assert not Path(FILE_DIR / "53.0").exists()
-
-    with pytest.raises(
-        NotImplementedError, match="The directory kwarg is not supported"
-    ):
-        QChem(test_atoms, directory="notsupported")
 
     with pytest.raises(
         NotImplementedError,

@@ -53,7 +53,6 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {"method": method}
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
     atoms.calc = TBLite(**calc_flags)
@@ -85,9 +84,8 @@ def relax_job(
     relax_cell
         Whether to relax the cell.
     opt_params
-        Dictionary of custom kwargs for the optimization process. Set a value
-        to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [quacc.runners.ase.run_opt][].
+        Dictionary of custom kwargs for the optimization process. For a list
+        of available keys, refer to [quacc.runners.ase.run_opt][].
     **calc_kwargs
         Custom kwargs for the tblite calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -99,7 +97,6 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][].
         See the type-hint for the data structure.
     """
-
     opt_params = opt_params or {}
     calc_defaults = {"method": method}
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)

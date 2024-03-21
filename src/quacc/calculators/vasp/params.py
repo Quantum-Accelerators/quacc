@@ -48,7 +48,6 @@ def get_param_swaps(
     dict
         The updated user-provided calculator parameters.
     """
-
     is_metal = check_is_metal(input_atoms)
     calc = Vasp_(**user_calc_params)
     max_Z = input_atoms.get_atomic_numbers().max()
@@ -248,7 +247,7 @@ def remove_unused_flags(user_calc_params: dict[str, Any]) -> dict[str, Any]:
     Removes unused flags in the INCAR, like EDIFFG if you are doing NSW = 0.
 
     Parameters
-    -------
+    ----------
     user_calc_params
         The updated user-provided calculator parameters.
 
@@ -257,7 +256,6 @@ def remove_unused_flags(user_calc_params: dict[str, Any]) -> dict[str, Any]:
     dict
         The updated user-provided calculator parameters.
     """
-
     if user_calc_params.get("nsw", 0) == 0:
         # Turn off opt flags if NSW = 0
         opt_flags = ("ediffg", "ibrion", "isif", "potim", "iopt")
@@ -291,7 +289,7 @@ def normalize_params(user_calc_params: dict[str, Any]) -> dict[str, Any]:
     Normalizes the user-provided calculator parameters.
 
     Parameters
-    -------
+    ----------
     user_calc_params
         The user-provided calculator parameters.
 
@@ -324,7 +322,6 @@ def set_auto_dipole(
     dict
         The updated user-provided calculator parameters.
     """
-
     com = input_atoms.get_center_of_mass(scaled=True)
     if "dipol" not in user_calc_params:
         user_calc_params["dipol"] = com
@@ -358,7 +355,6 @@ def set_pmg_kpts(
     dict
         The updated user-provided calculator parameters.
     """
-
     kpts, gamma = convert_pmg_kpts(
         pmg_kpts, input_atoms, force_gamma=user_calc_params.get("gamma", False)
     )

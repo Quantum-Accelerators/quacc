@@ -23,8 +23,7 @@ nav:
       - Using a Workflow Engine:
           - user/wflow_engine/wflow_engines1.md
           - user/wflow_engine/wflow_engines2.md
-          - user/wflow_engine/executors1.md
-          - user/wflow_engine/executors2.md
+          - user/wflow_engine/executors.md
       - Settings Management:
           - user/settings/settings.md
           - user/settings/file_management.md
@@ -34,7 +33,6 @@ nav:
           - user/db/basics.md
       - Miscellaneous:
           - user/advanced/file_transfers.md
-          - user/advanced/vasp_hpc.md
   - Code Documentation 📖: reference/
   - Developer Guide 🤝:
       - dev/contributing.md

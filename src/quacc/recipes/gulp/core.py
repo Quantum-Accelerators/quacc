@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc import job
-from quacc.recipes.gulp._base import base_fn
+from quacc.recipes.gulp._base import run_and_summarize
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
@@ -51,11 +51,10 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     keyword_defaults = ["gfnff", "gwolf"] if use_gfnff else []
     option_defaults = ["dump every gulp.res"]
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         library=library,
         keyword_defaults=keyword_defaults,
@@ -107,14 +106,13 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     keyword_defaults = ["opti", "conp" if relax_cell else "conv"]
     if use_gfnff:
         keyword_defaults += ["gfnff", "gwolf"]
 
     option_defaults = ["dump every gulp.res"]
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         library=library,
         keyword_defaults=keyword_defaults,

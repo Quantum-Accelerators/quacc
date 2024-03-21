@@ -1,5 +1,5 @@
 """
-This module, 'dos.py', contains recipes for performing phonon calculations using the
+This module, 'dos.py', contains recipes for performing dos calculations using the
 dos.x binary from Quantum ESPRESSO via the quacc library.
 
 The recipes provided in this module are jobs and flows that can be used to perform
@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING
 from quacc import flow, job
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.calculators.espresso.utils import pw_copy_files
-from quacc.recipes.espresso._base import base_fn
+from quacc.recipes.espresso._base import run_and_summarize
 from quacc.recipes.espresso.core import non_scf_job, static_job
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs
@@ -34,7 +34,6 @@ if TYPE_CHECKING:
     class ProjwfcSchema(TypedDict):
         static_job: RunSchema
         non_scf_job: RunSchema
-        projwfc_job: RunSchema
 
 
 @job
@@ -68,8 +67,7 @@ def dos_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
-    return base_fn(
+    return run_and_summarize(
         template=EspressoTemplate("dos", test_run=test_run),
         calc_defaults={},
         calc_swaps=calc_kwargs,
@@ -110,8 +108,7 @@ def projwfc_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
-    return base_fn(
+    return run_and_summarize(
         template=EspressoTemplate("projwfc", test_run=test_run),
         calc_defaults={},
         calc_swaps=calc_kwargs,
@@ -161,7 +158,6 @@ def dos_flow(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     static_job_defaults = {
         "kspacing": 0.2,
         "input_data": {"system": {"occupations": "tetrahedra"}},
@@ -255,7 +251,6 @@ def projwfc_flow(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     static_job_defaults = {
         "kspacing": 0.2,
         "input_data": {"system": {"occupations": "tetrahedra"}},

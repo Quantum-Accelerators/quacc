@@ -25,7 +25,7 @@ graph LR
         covalent start
         ```
 
-        You may also wish to set the `RESULTS_DIR` to a fixed location as well.
+        Covalent also has its own [configuration variables](https://docs.covalent.xyz/docs/user-documentation/how-to/customization/) you may wish to consider modifying.
 
     ```python
     import covalent as ct

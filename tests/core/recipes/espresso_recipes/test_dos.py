@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pathlib import Path
 from shutil import which
 
@@ -15,26 +17,32 @@ pytestmark = pytest.mark.skipif(
 DATA_DIR = Path(__file__).parent / "data"
 
 
-def test_dos_job(tmp_path, monkeypatch):
+def test_dos_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
+
     copy_decompress_files(DATA_DIR / "dos_test", [Path("pwscf.save", "*.gz")], tmp_path)
     copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
-    output = dos_job(tmp_path)
+    output = dos_job(tmp_path, parallel_info=ESPRESSO_PARALLEL_INFO)
 
     assert output["results"]["pwscf_dos"]["fermi"] == pytest.approx(7.199)
 
 
-def test_projwfc_job(tmp_path, monkeypatch):
+def test_projwfc_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
+
     copy_decompress_files(DATA_DIR / "dos_test", [Path("pwscf.save", "*.gz")], tmp_path)
     copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
-    output = projwfc_job(tmp_path)
+    output = projwfc_job(tmp_path, parallel_info=ESPRESSO_PARALLEL_INFO)
+
     assert output["name"] == "projwfc.x Projects-wavefunctions"
     assert output["parameters"]["input_data"]["projwfc"] == {}
 
 
-def test_dos_flow(tmp_path, monkeypatch):
+def test_dos_flow(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
     copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
     atoms = bulk("Si")
@@ -46,8 +54,12 @@ def test_dos_flow(tmp_path, monkeypatch):
     pseudopotentials = {"Si": "Si.upf"}
 
     job_params = {
-        "static_job": {"input_data": input_data, "pseudopotentials": pseudopotentials},
-        "non_scf_job": {"kspacing": 0.05},
+        "static_job": {
+            "input_data": input_data,
+            "pseudopotentials": pseudopotentials,
+            "parallel_info": ESPRESSO_PARALLEL_INFO,
+        },
+        "non_scf_job": {"kspacing": 0.05, "parallel_info": ESPRESSO_PARALLEL_INFO},
     }
 
     output = dos_flow(atoms, job_params=job_params)
@@ -87,8 +99,9 @@ def test_dos_flow(tmp_path, monkeypatch):
     assert output["dos_job"]["results"]["pwscf_dos"]["fermi"] == pytest.approx(6.772)
 
 
-def test_projwfc_flow(tmp_path, monkeypatch):
+def test_projwfc_flow(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
     copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
     atoms = bulk("Si")
@@ -100,8 +113,12 @@ def test_projwfc_flow(tmp_path, monkeypatch):
     pseudopotentials = {"Si": "Si.upf"}
 
     job_params = {
-        "static_job": {"input_data": input_data, "pseudopotentials": pseudopotentials},
-        "non_scf_job": {"kspacing": 0.05},
+        "static_job": {
+            "input_data": input_data,
+            "pseudopotentials": pseudopotentials,
+            "parallel_info": ESPRESSO_PARALLEL_INFO,
+        },
+        "non_scf_job": {"kspacing": 0.05, "parallel_info": ESPRESSO_PARALLEL_INFO},
     }
 
     output = projwfc_flow(atoms, job_params=job_params)

@@ -22,7 +22,7 @@ LOG_FILE = "dftb.out"
 GEOM_FILE = "geo_end.gen"
 
 
-def base_fn(
+def run_and_summarize(
     atoms: Atoms,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
@@ -53,7 +53,6 @@ def base_fn(
     RunSchema
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
-
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
     atoms.calc = Dftb(**calc_flags)
