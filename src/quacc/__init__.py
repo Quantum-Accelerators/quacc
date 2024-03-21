@@ -39,7 +39,7 @@ SETTINGS = QuaccSettings()
 # Set logging info
 logger = logging.getLogger(__name__)
 level = logging.DEBUG if SETTINGS.DEBUG else logging.INFO
-logger.setLevel(level)
+logger.basicConfig(level=level)
 
 # Monkeypatching for Prefect
 if SETTINGS.WORKFLOW_ENGINE == "prefect":
