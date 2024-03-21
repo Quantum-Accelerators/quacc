@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import struct
+import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -70,7 +71,9 @@ def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float]]:
     """
     directory = Path(directory)
 
-    task_doc = TaskDoc.from_directory(directory, validate_lot=False).model_dump()
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=UserWarning)
+        task_doc = TaskDoc.from_directory(directory, validate_lot=False).model_dump()
 
     results: Results = {
         "energy": task_doc["output"]["final_energy"] * units.Hartree,
