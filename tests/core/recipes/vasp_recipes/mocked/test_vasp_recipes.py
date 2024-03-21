@@ -517,7 +517,7 @@ def test_mp_metagga_prerelax_job(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Al")
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(logging.ERROR):
         output = mp_metagga_prerelax_job(atoms)
     assert "is not MP-compatible" not in output
     assert output["nsites"] == len(atoms)
@@ -552,7 +552,7 @@ def test_mp_metagga_prerelax_job(tmp_path, monkeypatch, caplog):
         "pp": "pbe",
     }
 
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(logging.ERROR):
         output = mp_metagga_prerelax_job(atoms, bandgap=0)
     assert "is not MP-compatible" not in output
 
@@ -566,7 +566,7 @@ def test_mp_metagga_prerelax_job(tmp_path, monkeypatch, caplog):
     assert output["parameters"]["pp"] == "pbe"
     assert "metagga" not in output["parameters"]
 
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(logging.ERROR):
         output = mp_metagga_prerelax_job(atoms, bandgap=100)
     assert "is not MP-compatible" not in output
 
@@ -619,13 +619,13 @@ def test_mp_metagga_relax_job(tmp_path, monkeypatch, caplog):
     ref_parameters2 = ref_parameters.copy()
     ref_parameters2["magmom"] = [0.0]
 
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(logging.ERROR):
         output = mp_metagga_relax_job(atoms)
     assert "is not MP-compatible" not in output
     assert output["parameters"] == ref_parameters
     assert output["nsites"] == len(atoms)
 
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(logging.ERROR):
         output = mp_metagga_relax_job(atoms, bandgap=0)
     assert "is not MP-compatible" not in output
     assert output["nsites"] == len(atoms)
@@ -637,7 +637,7 @@ def test_mp_metagga_relax_job(tmp_path, monkeypatch, caplog):
     assert output["parameters"]["sigma"] == 0.05
     assert output["parameters"]["pp"] == "pbe"
 
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(logging.ERROR):
         output = mp_metagga_relax_job(atoms, bandgap=100)
     assert "is not MP-compatible" not in output
     assert output["nsites"] == len(atoms)
@@ -655,7 +655,7 @@ def test_mp_metagga_static_job(tmp_path, monkeypatch, caplog):
 
     atoms = bulk("Al")
 
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(logging.ERROR):
         output = mp_metagga_static_job(atoms)
     assert "is not MP-compatible" not in output
     assert output["nsites"] == len(atoms)
@@ -693,7 +693,7 @@ def test_mp_metagga_relax_flow(tmp_path, monkeypatch, caplog):
 
     atoms = bulk("Al")
 
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(logging.ERROR):
         output = mp_metagga_relax_flow(atoms)
     assert "is not MP-compatible" not in output
     assert output["static"]["nsites"] == len(atoms)
@@ -713,7 +713,7 @@ def test_mp_metagga_relax_flow(tmp_path, monkeypatch, caplog):
 
     atoms = bulk("C")
     atoms.set_initial_magnetic_moments([0.0, 0.0])
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(logging.ERROR):
         output = mp_metagga_relax_flow(atoms)
     assert "is not MP-compatible" not in output
     assert output["prerelax"]["parameters"]["ismear"] == 0
@@ -735,7 +735,7 @@ def test_mp_metagga_relax_flow(tmp_path, monkeypatch, caplog):
     atoms.set_initial_magnetic_moments([1.0, 0.0])
     atoms.center(vacuum=10)
     atoms.pbc = True
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(logging.ERROR):
         output = mp_metagga_relax_flow(atoms)
     assert "is not MP-compatible" not in output
     assert output["prerelax"]["parameters"]["ismear"] == 0
@@ -763,7 +763,7 @@ def test_mp_gga_relax_job(caplog):
     atoms[0].symbol = "O"
     del atoms.arrays["initial_magmoms"]
 
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(logging.ERROR):
         output = mp_gga_relax_job(atoms)
     assert "is not MP-compatible" not in output
 
@@ -806,7 +806,7 @@ def test_mp_gga_static_job(caplog):
     atoms[0].symbol = "O"
     del atoms.arrays["initial_magmoms"]
 
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(logging.ERROR):
         output = mp_gga_static_job(atoms)
 
     assert "is not MP-compatible" not in output
@@ -858,7 +858,7 @@ def test_mp_gga_relax_flow(caplog):
     atoms[0].symbol = "O"
     del atoms.arrays["initial_magmoms"]
 
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(logging.ERROR):
         output = mp_gga_relax_flow(atoms)
     assert "is not MP-compatible" not in output
 
@@ -934,7 +934,7 @@ def test_mp_relax_flow_custom(caplog):
     atoms[0].symbol = "O"
     del atoms.arrays["initial_magmoms"]
 
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(logging.ERROR):
         output = mp_metagga_relax_flow(
             mp_gga_relax_flow(atoms, job_params={"mp_gga_relax_job": {"nsw": 0}})[
                 "static"
