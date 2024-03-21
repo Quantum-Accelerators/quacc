@@ -269,7 +269,6 @@ def bands_flow(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    results = {}
     (bands_pw_job_, bands_pp_job_, fermi_surface_job_) = customize_funcs(
         ["bands_pw_job", "bands_pp_job", "fermi_surface_job"],
         [bands_pw_job, bands_pp_job, fermi_surface_job],
@@ -286,8 +285,7 @@ def bands_flow(
         parallel_info=parallel_info,
         test_run=test_run,
     )
-    results["bands_pw"] = bands_result
-
+    results = {"bands_pw": bands_result}
     if run_bands_pp:
         bands_pp_results = bands_pp_job_(
             atoms,

@@ -273,6 +273,10 @@ def non_scf_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
         See the type-hint for the data structure.
     """
+    vasprun_path = zpath(Path(prev_dir, "vasprun.xml"))
+    vasprun = Vasprun(vasprun_path)
+
+    prior_nbands = vasprun.parameters["NBANDS"]
     calc_defaults = {
         "icharg": 11,
         "kspacing": None,
@@ -280,38 +284,28 @@ def non_scf_job(
         "lorbit": 11,
         "lwave": False,
         "nsw": 0,
+        "nbands": int(np.ceil(prior_nbands * nbands_factor)),
     }
-
-    vasprun_path = zpath(Path(prev_dir, "vasprun.xml"))
-    vasprun = Vasprun(vasprun_path)
-
-    prior_nbands = vasprun.parameters["NBANDS"]
-    calc_defaults["nbands"] = int(np.ceil(prior_nbands * nbands_factor))
-
     if kpts_mode == "uniform":
-        calc_defaults.update(
-            {
-                "ismear": -5,
-                "isym": 2,
-                "pmg_kpts": {"kppvol": uniform_kppvol},
-                "nedos": 6001,
-            }
-        )
+        calc_defaults |= {
+            "ismear": -5,
+            "isym": 2,
+            "pmg_kpts": {"kppvol": uniform_kppvol},
+            "nedos": 6001,
+        }
     elif kpts_mode == "line":
         is_metal = vasprun.get_band_structure().is_metal()
-        calc_defaults.update(
-            {
-                "ismear": 1 if is_metal else 0,
-                "isym": 0,
-                "pmg_kpts": {"line_density": line_kpt_density},
-                "sigma": 0.2 if is_metal else 0.01,
-            }
-        )
+        calc_defaults |= {
+            "ismear": 1 if is_metal else 0,
+            "isym": 0,
+            "pmg_kpts": {"line_density": line_kpt_density},
+            "sigma": 0.2 if is_metal else 0.01,
+        }
     else:
         raise ValueError("Supported kpoint modes are 'uniform' and 'line' at present")
 
     if calculate_optics:
-        calc_defaults.update({"cshift": 1e-5, "loptics": True, "lreal": False})
+        calc_defaults |= {"cshift": 1e-5, "loptics": True, "lreal": False}
 
     return run_and_summarize(
         atoms,
