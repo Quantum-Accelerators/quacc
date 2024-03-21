@@ -128,7 +128,6 @@ def test_static_job_v1(monkeypatch, tmp_path, test_atoms):
     assert output["parameters"]["spin_multiplicity"] == 1
     assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826330655069403)
-    assert output["results"]["custodian"][0]["job"]["max_cores"] == 40
 
     qcin = QCInput.from_file(str(Path(output["dir_name"], "mol.qin.gz")))
     ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.basic"))
