@@ -408,6 +408,7 @@ def _summarize_vib_run(
     unsorted_task_doc = atoms_metadata | inputs | results | additional_fields
     return clean_task_doc(unsorted_task_doc)
 
+
 def _summarize_ideal_gas_thermo(
     igt: IdealGasThermo,
     temperature: float = 298.15,
