@@ -10,7 +10,7 @@ from monty.os.path import zpath
 from pymatgen.io.vasp import Vasprun
 
 from quacc import flow, job
-from quacc.recipes.vasp._base import base_fn, base_opt_fn
+from quacc.recipes.vasp._base import run_and_summarize, run_and_summarize_opt
 
 if TYPE_CHECKING:
     from typing import Any
@@ -59,7 +59,7 @@ def static_job(
         "nedos": 3001,
         "nsw": 0,
     }
-    return base_fn(
+    return run_and_summarize(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
@@ -112,7 +112,7 @@ def relax_job(
         "nsw": 200,
         "symprec": 1e-8,
     }
-    return base_fn(
+    return run_and_summarize(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
@@ -213,7 +213,7 @@ def ase_relax_job(
     """
     calc_defaults = {"lcharg": False, "lwave": False, "nsw": 0}
     opt_defaults = {"relax_cell": relax_cell}
-    return base_opt_fn(
+    return run_and_summarize_opt(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
@@ -310,7 +310,7 @@ def non_scf_job(
     if calculate_optics:
         calc_defaults.update({"cshift": 1e-5, "loptics": True, "lreal": False})
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
