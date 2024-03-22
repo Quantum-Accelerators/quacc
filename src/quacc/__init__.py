@@ -37,9 +37,7 @@ Atoms.from_dict = MSONAtoms.from_dict
 SETTINGS = QuaccSettings()
 
 # Set logging info
-logger = logging.getLogger(__name__)
-level = logging.DEBUG if SETTINGS.DEBUG else logging.INFO
-logger.setLevel(level)
+logging.basicConfig(level=logging.DEBUG if SETTINGS.DEBUG else logging.INFO)
 
 # Monkeypatching for Prefect
 if SETTINGS.WORKFLOW_ENGINE == "prefect":

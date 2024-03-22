@@ -133,9 +133,7 @@ def vasp_summarize_run(
         final_atoms, initial_atoms, move_magmoms=move_magmoms, store=None
     )
 
-    # Get intermediate task documents if an ASE optimizer is used
-    nsteps = len([f for f in os.listdir(dir_path) if f.startswith("step")])
-    if nsteps:
+    if nsteps := len([f for f in os.listdir(dir_path) if f.startswith("step")]):
         intermediate_vasp_task_docs = {
             "steps": {
                 n: TaskDoc.from_directory(Path(dir_path, f"step{n}")).model_dump()

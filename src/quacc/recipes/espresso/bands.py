@@ -13,7 +13,7 @@ from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 
 from quacc import flow, job
 from quacc.calculators.espresso.espresso import EspressoTemplate
-from quacc.recipes.espresso._base import base_fn
+from quacc.recipes.espresso._base import run_and_summarize
 from quacc.utils.kpts import convert_pmg_kpts
 from quacc.wflow_tools.customizers import customize_funcs
 
@@ -93,7 +93,7 @@ def bands_pw_job(
             cell=atoms.get_cell(),
         )
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         template=EspressoTemplate("pw", test_run=test_run),
         calc_defaults=calc_defaults,
@@ -138,7 +138,7 @@ def bands_pp_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    return base_fn(
+    return run_and_summarize(
         atoms,
         template=EspressoTemplate("bands", test_run=test_run),
         calc_defaults={},
@@ -184,7 +184,7 @@ def fermi_surface_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    return base_fn(
+    return run_and_summarize(
         atoms,
         template=EspressoTemplate("fs", test_run=test_run),
         calc_defaults={},
@@ -269,7 +269,6 @@ def bands_flow(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    results = {}
     (bands_pw_job_, bands_pp_job_, fermi_surface_job_) = customize_funcs(
         ["bands_pw_job", "bands_pp_job", "fermi_surface_job"],
         [bands_pw_job, bands_pp_job, fermi_surface_job],
@@ -286,8 +285,7 @@ def bands_flow(
         parallel_info=parallel_info,
         test_run=test_run,
     )
-    results["bands_pw"] = bands_result
-
+    results = {"bands_pw": bands_result}
     if run_bands_pp:
         bands_pp_results = bands_pp_job_(
             atoms,
