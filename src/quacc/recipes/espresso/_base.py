@@ -195,6 +195,8 @@ def _prepare_atoms(
         Atoms object with attached Espresso calculator.
     """
     atoms = Atoms() if atoms is None else atoms
+    calc_defaults = calc_defaults or {}
+    calc_swaps = calc_swaps or {}
 
     calc_defaults["input_data"] = Namelist(calc_defaults.get("input_data"))
     calc_swaps["input_data"] = Namelist(calc_swaps.get("input_data"))
