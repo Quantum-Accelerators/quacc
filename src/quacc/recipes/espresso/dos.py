@@ -68,7 +68,7 @@ def dos_job(
     """
     return run_and_summarize(
         template=EspressoTemplate("dos", test_run=test_run),
-        calc_defaults={},
+        calc_defaults=None,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "dos.x Density-of-States"},
@@ -109,7 +109,7 @@ def projwfc_job(
     """
     return run_and_summarize(
         template=EspressoTemplate("projwfc", test_run=test_run),
-        calc_defaults={},
+        calc_defaults=None,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "projwfc.x Projects-wavefunctions"},
@@ -162,7 +162,7 @@ def dos_flow(
         "input_data": {"system": {"occupations": "tetrahedra"}},
     }
     non_scf_job_defaults = recursive_dict_merge(
-        job_params.get("static_job", {}),
+        job_params.get("static_job"),
         {
             "kspacing": 0.01,
             "input_data": {
@@ -171,12 +171,11 @@ def dos_flow(
             },
         },
     )
-    dos_job_defaults = {}
 
     calc_defaults = {
         "static_job": static_job_defaults,
         "non_scf_job": non_scf_job_defaults,
-        "dos_job": dos_job_defaults,
+        "dos_job": None,
     }
     job_params = recursive_dict_merge(calc_defaults, job_params)
 
@@ -243,7 +242,7 @@ def projwfc_flow(
         "input_data": {"system": {"occupations": "tetrahedra"}},
     }
     non_scf_job_defaults = recursive_dict_merge(
-        job_params.get("static_job", {}),
+        job_params.get("static_job"),
         {
             "kspacing": 0.01,
             "input_data": {
@@ -252,12 +251,11 @@ def projwfc_flow(
             },
         },
     )
-    projwfc_job_defaults = {}
 
     calc_defaults = {
         "static_job": static_job_defaults,
         "non_scf_job": non_scf_job_defaults,
-        "projwfc_job": projwfc_job_defaults,
+        "projwfc_job": None,
     }
     job_params = recursive_dict_merge(calc_defaults, job_params)
 
