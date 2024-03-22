@@ -936,9 +936,9 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     job_name: quacc_firework
     qos: debug
     pre_rocket: |
-    conda activate quacc
-    module load vasp/6.4.1-cpu
-    export QUACC_VASP_PARALLEL_CMD="srun -N 1 --ntasks-per-node=128 --cpu_bind=cores"
+                conda activate quacc
+                module load vasp/6.4.1-cpu
+                export QUACC_VASP_PARALLEL_CMD="srun -N 1 --ntasks-per-node=128 --cpu_bind=cores"
     ```
 
     From the login node of the remote machine, then run the following:
