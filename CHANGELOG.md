@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.7.2]
 
+### Changed
+
+- The Q-Chem calculator now uses the TaskDoc from emmet in its `results` attribute
+
 ### Fixed
 
 - Fixed user setting of logger level
