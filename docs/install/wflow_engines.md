@@ -192,7 +192,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     username: <username>
     password: <password>
     logdir: null
-    Istrm_lvl: DEBUG
+    strm_lvl: DEBUG
     user_indices: []
     wf_user_indices: []
     ```
