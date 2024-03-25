@@ -30,7 +30,7 @@ def recursive_dict_merge(
     """
     Recursively merge several dictionaries, taking the latter in the list as higher
     preference. Also removes any entries that have a value of `remove_trigger` from the
-    final dictionary.
+    final dictionary. If a `None` is provided, it is assumed to be `{}`.
 
     This function should be used instead of the | operator when merging nested dictionaries,
     e.g. `{"a": {"b": 1}} | {"a": {"c": 2}}` will return `{"a": {"c": 2}}` whereas
@@ -60,7 +60,7 @@ def _recursive_dict_pair_merge(
     dict1: MutableMapping[str, Any] | None, dict2: MutableMapping[str, Any] | None
 ) -> MutableMapping[str, Any]:
     """
-    Recursively merges two dictionaries.
+    Recursively merges two dictionaries. If a `None` is provided, it is assumed to be `{}`.
 
     Parameters
     ----------
