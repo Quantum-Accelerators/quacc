@@ -1,1 +1,1 @@
-parsl[monitoring]==2024.3.18
+git+https://github.com/Parsl/parsl.git#benc-plugin-future-resolution
