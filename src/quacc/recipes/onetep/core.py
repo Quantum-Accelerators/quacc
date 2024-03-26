@@ -20,10 +20,9 @@ if TYPE_CHECKING:
 
 BASE_SET = {
     "keywords": {
-        "output_detail": "verbose",
-        "do_properties": True,
         "cutoff_energy": "600 eV",
-        "task": "SinglePoint",
+        "do_properties": True,
+        "output_detail": "verbose",
     }
 }
 
@@ -54,7 +53,7 @@ def static_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    calc_defaults = BASE_SET
+    calc_defaults = recusrive_dict_merge(BASE_SET, {"keyword": {"task": "SinglePoint"}})
 
     return run_and_summarize(
         atoms,
@@ -100,7 +99,7 @@ def ase_relax_job(
     """
     calc_defaults = recursive_dict_merge(
         BASE_SET,
-        {"keywords": {"write_forces": True, "forces_output_detail": "verbose"}},
+        {"keywords": {"forces_output_detail": "verbose", "task": "SinglePoint", "write_forces": True}},
     )
 
     opt_defaults = {"optimizer": LBFGS, "relax_cell": relax_cell}
