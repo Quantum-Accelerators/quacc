@@ -53,7 +53,7 @@ def static_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    calc_defaults = recusrive_dict_merge(BASE_SET, {"keyword": {"task": "SinglePoint"}})
+    calc_defaults = recursive_dict_merge(BASE_SET, {"keyword": {"task": "SinglePoint"}})
 
     return run_and_summarize(
         atoms,
