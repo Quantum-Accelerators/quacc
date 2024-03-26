@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from ase import units
 from ase.io import read
+from ase.md.npt import NPT
 from ase.vibrations import Vibrations
 from ase.vibrations.data import VibrationsData
 
@@ -26,11 +27,13 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
     from ase.io import Trajectory
+    from ase.md.md import MolecularDynamics
     from ase.optimize.optimize import Optimizer
     from ase.thermochemistry import IdealGasThermo
     from maggma.core import Store
 
     from quacc.schemas._aliases.ase import (
+        DynSchema,
         OptSchema,
         RunSchema,
         ThermoSchema,
@@ -231,6 +234,106 @@ def summarize_opt_run(
             else Path(directory, "quacc_results.pkl").open("wb")
         ) as f:
             pickle.dump(task_doc, f)
+
+    if store:
+        results_to_db(store, task_doc)
+
+    return task_doc
+
+
+def summarize_md_run(
+    dyn: MolecularDynamics,
+    trajectory: Trajectory | list[Atoms] = None,
+    charge_and_multiplicity: tuple[int, int] | None = None,
+    move_magmoms: bool = True,
+    additional_fields: dict[str, Any] | None = None,
+    store: Store | bool | None = None,
+) -> DynSchema:
+    """
+    Get tabulated results from an ASE Atoms trajectory and store them in a database-
+    friendly format. This is meant to be compatible with all calculator types.
+
+    Parameters
+    ----------
+    dyn
+        ASE MolecularDynamics object.
+    trajectory
+        ASE Trajectory object or list[Atoms] from reading a trajectory file. If
+        None, the trajectory must be found in dyn.traj_atoms.
+    charge_and_multiplicity
+        Charge and spin multiplicity of the Atoms object, only used for Molecule
+        metadata.
+    move_magmoms
+        Whether to move the final magmoms of the original Atoms object to the
+        initial magmoms of the returned Atoms object.
+    additional_fields
+        Additional fields to add to the task document.
+    store
+        Maggma Store object to store the results in. If None,
+        `SETTINGS.STORE` will be used.
+
+    Returns
+    -------
+    DynSchema
+        Dictionary representation of the task document
+    """
+
+    additional_fields = additional_fields or {}
+    store = SETTINGS.STORE if store is None else store
+
+    # Get trajectory
+    if not trajectory:
+        trajectory = (
+            dyn.traj_atoms
+            if hasattr(dyn, "traj_atoms")
+            else read(dyn.trajectory.filename, index=":")
+        )
+
+    initial_atoms = trajectory[0]
+    final_atoms = get_final_atoms_from_dyn(dyn)
+
+    # Base task doc
+    base_task_doc = summarize_run(
+        final_atoms,
+        initial_atoms,
+        charge_and_multiplicity=charge_and_multiplicity,
+        move_magmoms=move_magmoms,
+        store=False,
+    )
+
+    # Clean up the opt parameters
+    parameters_md = dyn.todict()
+    parameters_md.pop("logfile", None)
+
+    parameters_md, restart_data = _process_dyn_object(dyn)
+
+    parameters_md["timestep"] = parameters_md["timestep"] / units.fs
+
+    trajectory_log = []
+
+    for t, atoms in enumerate(trajectory):
+        trajectory_log.append(
+            {
+                "kinetic_energy": atoms.get_kinetic_energy(),
+                "temperature": atoms.get_temperature(),
+                "time": t * parameters_md["timestep"] / 1000,
+            }
+        )
+
+    opt_fields = {
+        "parameters_md": parameters_md,
+        "nsteps": dyn.get_number_of_steps(),
+        "trajectory": trajectory,
+        "trajectory_log": trajectory_log,
+        "trajectory_results": [atoms.calc.results for atoms in trajectory],
+        "restart_data": restart_data,
+    }
+
+    # Create a dictionary of the inputs/outputs
+    unsorted_task_doc = recursive_dict_merge(
+        base_task_doc, opt_fields, additional_fields
+    )
+    task_doc = clean_task_doc(unsorted_task_doc)
 
     if store:
         results_to_db(store, task_doc)
@@ -501,3 +604,34 @@ def _summarize_ideal_gas_thermo(
         results_to_db(store, task_doc)
 
     return task_doc
+
+
+def _process_dyn_object(
+    dyn: MolecularDynamics,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """
+    Process an ASE MolecularDynamics object to get the parameters and restart data.
+
+    Parameters
+    ----------
+    dyn
+        ASE MolecularDynamics object.
+
+    Returns
+    -------
+    tuple
+        Tuple of the parameters and restart data.
+    """
+    parameters_md = dyn.todict()
+    parameters_md.pop("logfile", None)
+
+    parameters_md["timestep"] /= units.fs
+
+    # "Let's be reproducible" they said...
+    if isinstance(dyn, NPT):
+        restart_data = dyn.get_data()
+        restart_data.update(dyn.get_init_data())
+    else:
+        restart_data = {}
+
+    return parameters_md, restart_data

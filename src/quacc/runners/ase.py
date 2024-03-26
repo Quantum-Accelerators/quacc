@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import sys
 from shutil import copy, copytree
 from typing import TYPE_CHECKING
@@ -9,7 +10,9 @@ from typing import TYPE_CHECKING
 import numpy as np
 from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read
+from ase.md.verlet import VelocityVerlet
 from ase.optimize import BFGS
+from ase.units import fs
 from ase.vibrations import Vibrations
 from monty.dev import requires
 from monty.os.path import zpath
@@ -18,6 +21,9 @@ from quacc import SETTINGS
 from quacc.atoms.core import copy_atoms, get_final_atoms_from_dyn
 from quacc.runners.prep import calc_cleanup, calc_setup
 from quacc.utils.dicts import recursive_dict_merge
+from quacc.utils.units import md_units
+
+LOGGER = logging.getLogger(__name__)
 
 try:
     from sella import Sella
@@ -30,6 +36,7 @@ if TYPE_CHECKING:
     from typing import Any, TypedDict
 
     from ase.atoms import Atoms
+    from ase.md.md import MolecularDynamics
     from ase.optimize.optimize import Optimizer
 
     from quacc.utils.files import Filenames, SourceDirectory
@@ -240,6 +247,84 @@ def run_opt(
     return dyn
 
 
+def run_md(
+    atoms: Atoms,
+    timestep: float = 1.0,
+    steps: int = 500,
+    dynamics: MolecularDynamics = VelocityVerlet,
+    dynamics_kwargs: dict[str, Any] | None = None,
+    restart_data: dict[str, Any] | None = None,
+    copy_files: str | Path | list[str | Path] | None = None,
+) -> MolecularDynamics:
+    """
+    Run an ASE-based MD in a scratch directory and copy the results back to
+    the original directory. This can be useful if file I/O is slow in the working
+    directory, so long as file transfer speeds are reasonable.
+
+    This is a wrapper around the dynamical object in ASE. Note: This function does not
+    modify the atoms object in-place.
+
+    Parameters
+    ----------
+    atoms
+        The Atoms object to run the calculation on.
+    timestep
+        The time step in femtoseconds.
+    steps
+        Maximum number of steps to run
+    dynamics
+        MolecularDynamics class to use, from `ase.md.md.MolecularDynamics`.
+    dynamics_kwargs
+        Dictionary of kwargs for the dynamics. Takes all valid kwargs for ASE
+        MolecularDynamics classes.
+    restart_data
+        Dictionary of restart data. If provided, the MD run will be restarted from this data.
+        This is needed by some dynamics types, such as the Nose-Hoover (NPT) thermostat.
+    copy_files
+        Filenames to copy from source to scratch directory.
+
+    Returns
+    -------
+    Dymamics
+        The ASE MolecularDynamics object.
+    """
+
+    # Copy atoms so we don't modify it in-place
+    atoms = copy_atoms(atoms)
+
+    # Perform staging operations
+    tmpdir, job_results_dir = calc_setup(atoms, copy_files=copy_files)
+
+    # Set defaults
+    dynamics_kwargs = recursive_dict_merge(
+        {"logfile": "-" if SETTINGS.DEBUG else tmpdir / "dyn.log"}, dynamics_kwargs
+    )
+
+    dynamics_kwargs = _md_params_handler(dynamics_kwargs)
+    dynamics_kwargs = md_units(dynamics_kwargs)
+
+    timestep = dynamics_kwargs.pop("timestep", timestep)
+
+    traj_filename = tmpdir / "opt.traj"
+    traj = Trajectory(traj_filename, "w", atoms=atoms)
+    dynamics_kwargs["trajectory"] = traj
+
+    # Run calculation
+    with traj, dynamics(atoms, timestep=timestep * fs, **dynamics_kwargs) as dyn:
+        if restart_data:
+            _md_restarts_handler(restart_data, dyn, atoms)
+
+        dyn.run(steps=steps)
+
+    # Store the trajectory atoms
+    dyn.traj_atoms = read(traj_filename, index=":")
+
+    # Perform cleanup operations
+    calc_cleanup(get_final_atoms_from_dyn(dyn), tmpdir, job_results_dir)
+
+    return dyn
+
+
 def run_vib(
     atoms: Atoms,
     vib_kwargs: VibKwargs | None = None,
@@ -349,3 +434,88 @@ def _copy_intermediate_files(
                 copy(item, store_path)
             elif item.is_dir():
                 copytree(item, store_path / item.name)
+
+
+def _md_params_handler(dynamics_kwargs):
+    """
+    Helper function to handle deprecated MD parameters.
+
+    Parameters
+    ----------
+    dynamics_kwargs
+        Dictionary of keyword arguments for the molecular dynamics calculation.
+
+    Returns
+    -------
+    None
+    """
+
+    if "trajectory" in dynamics_kwargs:
+        msg = "Quacc does not support setting the `trajectory` kwarg."
+        raise ValueError(msg)
+
+    if "temperature" in dynamics_kwargs or "temp" in dynamics_kwargs:
+        LOGGER.warning(
+            r"The `temperature`\`temp` kwargs are ASE deprecated and will"
+            "be interpreted as `temperature_K` in Quacc."
+        )
+        dynamics_kwargs["temperature_K"] = dynamics_kwargs.pop(
+            "temperature", None
+        ) or dynamics_kwargs.pop("temp", None)
+
+    if "pressure" in dynamics_kwargs:
+        LOGGER.warning(
+            "The `pressure` kwarg is ASE deprecated and will"
+            "be interpreted as `pressure_au` in Quacc."
+        )
+        dynamics_kwargs["pressure_au"] = dynamics_kwargs.pop("pressure")
+
+    if "compressibility" in dynamics_kwargs:
+        LOGGER.warning(
+            "The `compressibility` kwarg is ASE deprecated and will"
+            "be interpreted as `compressibility_au` in Quacc."
+        )
+        dynamics_kwargs["compressibility_au"] = dynamics_kwargs.pop("compressibility")
+
+    if "dt" in dynamics_kwargs:
+        LOGGER.warning(
+            "The `dt` kwarg is ASE deprecated and will"
+            "be interpreted as `timestep` in Quacc."
+        )
+        dynamics_kwargs["timestep"] = dynamics_kwargs.pop("dt")
+
+    if "fixcm" in dynamics_kwargs:
+        LOGGER.warning("`fixcm` is interpreted as `fix_com` in Quacc.")
+
+    if "fixrot" in dynamics_kwargs:
+        LOGGER.warning("`fixrot` is interpreted as `fix_rot` in Quacc.")
+
+    if "fix_com" in dynamics_kwargs:
+        dynamics_kwargs["fixcm"] = dynamics_kwargs.pop("fix_com")
+
+    if "fix_rot" in dynamics_kwargs:
+        dynamics_kwargs["fixrot"] = dynamics_kwargs.pop("fix_rot")
+
+    return dynamics_kwargs
+
+
+def _md_restarts_handler(restart_data, dyn, atoms):
+    """
+    Helper function to handle deprecated MD restart data.
+
+    Parameters
+    ----------
+    restart_data
+        Dictionary of restart data.
+
+    Returns
+    -------
+    None
+    """
+
+    from ase.md.npt import NPT
+
+    if isinstance(dyn, NPT):
+        dyn.__dict__.update(restart_data)
+
+        # dyn.restart_from(atoms, **restart_data)
