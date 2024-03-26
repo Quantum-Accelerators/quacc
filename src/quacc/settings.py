@@ -195,15 +195,13 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # Gaussian Settings
     # ---------------------------
-    GAUSSIAN_CMD: str = Field(
-        "g16", description=("Path to the Gaussian executable.")
-    )
+    GAUSSIAN_CMD: str = Field("g16", description=("Path to the Gaussian executable."))
 
     # ---------------------------
     # ONETEP Settings
     # ---------------------------
     ONETEP_CMD: Optional[str] = Field(
-        Path("onetep.arch"), description=("Path to the ONETEP executable.")
+        "onetep.arch", description=("Path to the ONETEP executable.")
     )
     ONETEP_PARALLEL_CMD: Optional[dict] = Field(
         None,
