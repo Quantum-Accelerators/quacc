@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- Calculator executable commands are now `str` type instead of `Path`
+- Removed `slowconv` from the default parameters of the ORCA recipes
 - The Q-Chem calculator now uses the TaskDoc from emmet in its `results` attribute
 
 ### Fixed

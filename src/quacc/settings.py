@@ -151,8 +151,8 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # ORCA Settings
     # ---------------------------
-    ORCA_CMD: Path = Field(
-        Path(which("orca") or "orca"),
+    ORCA_CMD: str = Field(
+        which("orca") or "orca",
         description=(
             """
             Path to the ORCA executable. This must be the full, absolute path
@@ -195,14 +195,14 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # Gaussian Settings
     # ---------------------------
-    GAUSSIAN_CMD: Path = Field(
-        Path("g16"), description=("Path to the Gaussian executable.")
+    GAUSSIAN_CMD: str = Field(
+        "g16", description=("Path to the Gaussian executable.")
     )
 
     # ---------------------------
     # ONETEP Settings
     # ---------------------------
-    ONETEP_CMD: Optional[Path] = Field(
+    ONETEP_CMD: Optional[str] = Field(
         Path("onetep.arch"), description=("Path to the ONETEP executable.")
     )
     ONETEP_PARALLEL_CMD: Optional[dict] = Field(
@@ -218,7 +218,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # GULP Settings
     # ---------------------------
-    GULP_CMD: Path = Field(Path("gulp"), description=("Path to the GULP executable."))
+    GULP_CMD: str = Field("gulp", description=("Path to the GULP executable."))
     GULP_LIB: Optional[Path] = Field(
         None,
         description=(
@@ -425,10 +425,7 @@ class QuaccSettings(BaseSettings):
         "SCRATCH_DIR",
         "ESPRESSO_PRESET_DIR",
         "ESPRESSO_PSEUDO",
-        "GAUSSIAN_CMD",
-        "GULP_CMD",
         "GULP_LIB",
-        "ORCA_CMD",
         "QCHEM_LOCAL_SCRATCH",
         "NEWTONNET_MODEL_PATH",
         "VASP_PRESET_DIR",
