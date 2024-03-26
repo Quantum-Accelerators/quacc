@@ -78,8 +78,7 @@ def test_relax_job(tmp_path, monkeypatch):
     )
     assert output["natoms"] == len(atoms)
     assert (
-        output["parameters"]["orcasimpleinput"]
-        == "def2-svp hf normalprint opt xyzfile"
+        output["parameters"]["orcasimpleinput"] == "def2-svp hf normalprint opt xyzfile"
     )
     assert (
         output["parameters"]["orcablocks"] == "%pal nprocs 2 end\n%scf maxiter 300 end"
@@ -108,10 +107,7 @@ def test_relax_freq_job(tmp_path, monkeypatch):
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
-    assert (
-        output["parameters"]["orcasimpleinput"]
-        == "def2-svp freq hf opt xyzfile"
-    )
+    assert output["parameters"]["orcasimpleinput"] == "def2-svp freq hf opt xyzfile"
     assert output["trajectory"][0] != output["trajectory"][-1]
 
 

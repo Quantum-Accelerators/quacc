@@ -195,9 +195,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # Gaussian Settings
     # ---------------------------
-    GAUSSIAN_CMD: str = Field(
-        "g16", description=("Path to the Gaussian executable.")
-    )
+    GAUSSIAN_CMD: str = Field("g16", description=("Path to the Gaussian executable."))
 
     # ---------------------------
     # ONETEP Settings
