@@ -99,7 +99,13 @@ def ase_relax_job(
     """
     calc_defaults = recursive_dict_merge(
         BASE_SET,
-        {"keywords": {"forces_output_detail": "verbose", "task": "SinglePoint", "write_forces": True}},
+        {
+            "keywords": {
+                "forces_output_detail": "verbose",
+                "task": "SinglePoint",
+                "write_forces": True,
+            }
+        },
     )
 
     opt_defaults = {"optimizer": LBFGS, "relax_cell": relax_cell}
