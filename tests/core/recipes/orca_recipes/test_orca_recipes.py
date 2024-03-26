@@ -126,7 +126,7 @@ def test_ase_relax_job(tmp_path, monkeypatch):
     assert output["parameters"]["mult"] == 1
     assert (
         output["parameters"]["orcasimpleinput"]
-        == "def2-tzvp engrad normalprint slconv wb97x-d3bj xyzfile"
+        == "def2-tzvp engrad normalprint wb97x-d3bj xyzfile"
     )
     assert output["fmax"] == 0.1
     assert output.get("trajectory")
