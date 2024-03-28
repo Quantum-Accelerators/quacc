@@ -565,6 +565,7 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
         return delayed(wrapper, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "parsl":
         from parsl import join_app
+
         _func = _add_parsl_special_params(kwargs, _func)
         return join_app(_func, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "prefect":
@@ -594,6 +595,7 @@ class Delayed_:
 
     def __call__(self, *args, **kwargs):
         return self.func(*args, **kwargs)
+
 
 def _add_parsl_special_params(kwargs: dict, _func: Callable) -> Callable:
     """
