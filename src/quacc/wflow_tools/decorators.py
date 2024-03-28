@@ -626,8 +626,10 @@ def _add_parsl_special_params(kwargs: dict, _func: Callable) -> Callable:
             "parsl_resource_specification"
         )
     if special_params:
+
         @wraps(_func)
         def wrapper(*f_args, **f_kwargs):
             return _func(*f_args, **f_kwargs)
+
         return wrapper
     return _func
