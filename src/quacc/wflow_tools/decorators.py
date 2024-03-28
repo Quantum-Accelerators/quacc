@@ -162,6 +162,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     elif SETTINGS.WORKFLOW_ENGINE == "parsl":
         from parsl import python_app
 
+        _func = _add_parsl_special_params(kwargs, _func)
         return python_app(_func, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
         from redun import task
@@ -564,7 +565,7 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
         return delayed(wrapper, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "parsl":
         from parsl import join_app
-
+        _func = _add_parsl_special_params(kwargs, _func)
         return join_app(_func, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "prefect":
         from prefect import flow as prefect_flow
@@ -593,3 +594,35 @@ class Delayed_:
 
     def __call__(self, *args, **kwargs):
         return self.func(*args, **kwargs)
+
+def _add_parsl_special_params(kwargs: dict, _func: Callable) -> Callable:
+    """
+    Add special parameters to a Parsl Python app function.
+
+    Parameters
+    ----------
+    kwargs
+        Keyword arguments passed to the decorator, which may or may not include
+        special parameters.
+    _func
+        The function to decorate.
+
+    Returns
+    -------
+    Callable
+        The function with any special parameters added to it.
+    """
+    special_params = {}
+    if "stdout" in kwargs:
+        special_params["stdout"] = kwargs.pop("stdout")
+    if "stderr" in kwargs:
+        special_params["stderr"] = kwargs.pop("stderr")
+    if "walltime" in kwargs:
+        special_params["walltime"] = kwargs.pop("walltime")
+    if "parsl_resource_specification" in kwargs:
+        special_params["parsl_resource_specification"] = kwargs.pop(
+            "parsl_resource_specification"
+        )
+    if special_params:
+        return partial(_func, **special_params)
+    return _func
