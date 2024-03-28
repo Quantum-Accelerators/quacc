@@ -119,13 +119,25 @@ def test_strip_decorators():
     stripped_add3 = strip_decorator(add3)
     assert stripped_add3(1, 2) == 3
 
-def test_special_params(tmpdir,monkeypatch):
+
+def test_special_params(tmpdir, monkeypatch):
     monkeypatch.chdir(tmpdir)
-    @job(stdout="mystdout.txt",stderr="mystderr.txt",walltime="00:10:00",parsl_resource_specification={})
+
+    @job(
+        stdout="mystdout.txt",
+        stderr="mystderr.txt",
+        walltime="00:10:00",
+        parsl_resource_specification={},
+    )
     def add(a, b):
         return a + b
 
-    @subflow(stdout="mystdout2.txt",stderr="mystderr2.txt",walltime="00:10:00",parsl_resource_specification={})
+    @subflow(
+        stdout="mystdout2.txt",
+        stderr="mystderr2.txt",
+        walltime="00:10:00",
+        parsl_resource_specification={},
+    )
     def add2(a, b):
         return a + b
 
