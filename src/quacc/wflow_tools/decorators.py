@@ -623,6 +623,4 @@ def _add_parsl_special_params(kwargs: dict, _func: Callable) -> Callable:
         special_params["parsl_resource_specification"] = kwargs.pop(
             "parsl_resource_specification"
         )
-    if special_params:
-        return partial(_func, **special_params)
-    return _func
+    return partial(_func, **special_params) if special_params else _func
