@@ -115,6 +115,7 @@ plugins:
       separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
   - autorefs
   - social
+      enabled: false
   - offline
   - mkdocstrings:
       default_handler: python
