@@ -300,7 +300,6 @@ If you haven't done so already:
     account = "MyAccountName"
 
     cores_per_node = 128
-    mem_per_node = "64 GB"
     slurm_jobs = 2
 
     env_vars = "export OMP_NUM_THREADS=1,1"  # (1)!
@@ -859,7 +858,6 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     slurm_jobs = 2
     nodes_per_calc = 1
     cores_per_node = 128
-    mem_per_node = "64 GB"
 
     vasp_parallel_cmd = (
         f"srun -N {nodes_per_calc} --ntasks-per-node={cores_per_node} --cpu_bind=cores"
