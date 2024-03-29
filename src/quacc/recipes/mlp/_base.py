@@ -41,7 +41,7 @@ def pick_calculator(
     if not torch.cuda.is_available():
         logger.warning("CUDA is not available to PyTorch. Calculations will be slow.")
 
-    if method.lower().startswith("m3gnet"):
+    if method.lower() == "m3gnet":
         import matgl
         from matgl import __version__
         from matgl.ext.ase import PESCalculator
