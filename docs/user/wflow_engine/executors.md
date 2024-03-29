@@ -500,7 +500,6 @@ If you haven't done so already:
     account = "MyAccountName"
 
     slurm_jobs = 1
-    nodes_per_calc = 1
     cores_per_node = 128
 
     env_vars = "export OMP_NUM_THREADS=1,1"  # (1)!
