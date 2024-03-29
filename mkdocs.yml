@@ -114,8 +114,6 @@ plugins:
   - search:
       separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
   - autorefs
-  - social
-      enabled: false
   - offline
   - mkdocstrings:
       default_handler: python
@@ -149,7 +147,3 @@ plugins:
       nav_file: SUMMARY.md
 
 edit_uri: blob/main/docs/
-extra:
-  social:
-    - icon: fontawesome/brands/github
-      link: https://github.com/Quantum-Accelerators/
