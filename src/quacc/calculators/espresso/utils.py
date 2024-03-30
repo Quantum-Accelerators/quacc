@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING
 import numpy as np
 from ase.io.espresso import Namelist
 
+from quacc.utils.dicts import Remove
+
 if TYPE_CHECKING:
     from typing import Any
 
@@ -98,9 +100,7 @@ def pw_copy_files(
     elif include_wfc:
         basics_to_copy.append("wfc*.*")
 
-    files_to_copy[prev_dir].extend(
-        [Path(f"{prefix}.save", i) for i in basics_to_copy]
-    )
+    files_to_copy[prev_dir].extend([Path(f"{prefix}.save", i) for i in basics_to_copy])
 
     return files_to_copy
 
@@ -190,3 +190,51 @@ def grid_prepare_repr(patterns: dict[str, Any], nblocks: int) -> list:
     this_block = nblocks if nblocks > 0 else len(patterns)
     repr_to_do = [rep for rep in patterns if not patterns[rep]["done"]]
     return np.array_split(repr_to_do, np.ceil(len(repr_to_do) / this_block))
+
+
+def espresso_prepare_dir(outdir: str | Path, binary: str = "pw") -> dict[str, Any]:
+    """
+    Function that prepares the espresso dictionary for the calculation.
+
+    Parameters
+    ----------
+    outdir
+        The output to be used for the espresso calculation
+    binary
+        The binary to be used for the espresso calculation
+
+    Returns
+    -------
+    dict
+        Input data for the espresso calculation
+    """
+
+    outkeys = {
+        "pw": {"control": {"outdir": outdir, "wfcdir": Remove}},
+        "ph": {
+            "inputph": {
+                "fildyn": "matdyn",
+                "outdir": outdir,
+                "ahc_dir": Remove,
+                "wpot_dir": Remove,
+                "dvscf_star%dir": Remove,
+                "drho_star%dir": Remove,
+            }
+        },
+        "pp": {"inputpp": {"filplot": "tmp.pp", "outdir": outdir}},
+        "dos": {"dos": {"fildos": "pwscf.dos", "outdir": outdir}},
+        "projwfc": {"projwfc": {"filpdos": "pwscf", "outdir": outdir}},
+        "matdyn": {
+            "input": {
+                "fldos": "matdyn.dos",
+                "flfrq": "matdyn.freq",
+                "flvec": "matdyn.modes",
+                "fleig": "matdyn.eig",
+            }
+        },
+        "q2r": {"input": {"flfrc": "q2r.fc"}},
+        "bands": {"bands": {"filband": "bands.out", "outdir": outdir}},
+        "fs": {"fermi": {"file_fs": "fermi_surface.bxsf", "outdir": outdir}},
+    }
+
+    return outkeys.get(binary, {})

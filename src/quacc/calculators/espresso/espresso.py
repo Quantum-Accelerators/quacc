@@ -23,8 +23,11 @@ from ase.io.espresso import (
 from ase.io.espresso_namelist.keys import ALL_KEYS
 
 from quacc import SETTINGS
-from quacc.calculators.espresso.utils import get_pseudopotential_info
-from quacc.utils.dicts import Remove, recursive_dict_merge
+from quacc.calculators.espresso.utils import (
+    espresso_prepare_dir,
+    get_pseudopotential_info,
+)
+from quacc.utils.dicts import recursive_dict_merge
 from quacc.utils.files import load_yaml_calc
 
 if TYPE_CHECKING:
@@ -259,40 +262,10 @@ class EspressoTemplate(EspressoTemplate_):
         os.environ.pop("ESPRESSO_FILDVSCF_DIR", None)
         os.environ.pop("ESPRESSO_FILDRHO_DIR", None)
 
-        self.outdir = Path(directory).expanduser().resolve()
-
-        self.outkeys = {
-            "pw": {"control": {"outdir": self.outdir, "wfcdir": Remove}},
-            "ph": {
-                "inputph": {
-                    "fildyn": "matdyn",
-                    "outdir": self.outdir,
-                    "ahc_dir": Remove,
-                    "wpot_dir": Remove,
-                    "dvscf_star%dir": Remove,
-                    "drho_star%dir": Remove,
-                }
-            },
-            "pp": {"inputpp": {"filplot": "tmp.pp", "outdir": self.outdir}},
-            "dos": {"dos": {"fildos": "pwscf.dos", "outdir": self.outdir}},
-            "projwfc": {"projwfc": {"filpdos": "pwscf", "outdir": self.outdir}},
-            "matdyn": {
-                "input": {
-                    "fldos": "matdyn.dos",
-                    "flfrq": "matdyn.freq",
-                    "flvec": "matdyn.modes",
-                    "fleig": "matdyn.eig",
-                }
-            },
-            "q2r": {"input": {"flfrc": "q2r.fc"}},
-            "bands": {"bands": {"filband": "bands.out", "outdir": self.outdir}},
-            "fs": {"fermi": {"file_fs": "fermi_surface.bxsf", "outdir": self.outdir}},
-        }
+        espresso_outdir = Path(directory).expanduser().resolve()
+        outkeys = espresso_prepare_dir(espresso_outdir, self.binary)
 
         input_data = parameters.get("input_data", {})
-
-        outkeys = self.outkeys.get(self.binary, {})
-
         input_data = recursive_dict_merge(input_data, outkeys)
 
         parameters["input_data"] = input_data
