@@ -305,11 +305,12 @@ class EspressoTemplate(EspressoTemplate_):
             },
             "q2r": {"input": {"flfrc": "q2r.fc"}},
             "bands": {"bands": {"filband": "bands.out", "outdir": self.outdir}},
+            "fs": {"fermi": {"file_fs": "fermi_surface.bxsf", "outdir": self.outdir}},
         }
 
         input_data = parameters.get("input_data", {})
 
-        outkeys = self.outkeys[self.binary]
+        outkeys = self.outkeys.get(self.binary, {})
 
         input_data = recursive_dict_merge(outkeys, input_data)
 
