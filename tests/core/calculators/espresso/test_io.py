@@ -45,6 +45,5 @@ def test_read_espresso_ph_1():
 def test_dos_output(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     template = EspressoTemplate(binary="dos")
-    template.outfiles = {"fildos": Path(RUN_PATH, "test.dos")}
-    results = template.read_results(directory=".")
-    assert results["test_dos"]["fermi"] == pytest.approx(5.98)
+    results = template.read_results(directory=Path(RUN_PATH))
+    assert results["dos_results"]["fermi"] == pytest.approx(5.98)
