@@ -303,7 +303,7 @@ class EspressoTemplate(EspressoTemplate_):
             # Temporary patch for https://gitlab.com/QEF/q-e/-/issues/644
             if qplot and lqdir and recover and is_grid:
                 prefix = input_ph.get("prefix", "pwscf")
-                outdir = self.outdirs["outdir"]
+                outdir = input_ph.get("outdir", ".")
 
                 Path(outdir, "_ph0", f"{prefix}.q_1").mkdir(parents=True, exist_ok=True)
             if not (ldisp or qplot):
