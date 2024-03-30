@@ -4,9 +4,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ase.optimize import LBFGS
+from ase.optimize import BFGSLineSearch
 
 from quacc import job
+from quacc.atoms.core import check_is_metal
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.recipes.espresso._base import run_and_summarize, run_and_summarize_opt
 
@@ -58,7 +59,25 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    calc_defaults = {"input_data": {"control": {"calculation": "scf"}}}
+
+    is_metal = check_is_metal(atoms)
+
+    calc_defaults = {
+        "input_data": {
+            "control": {"calculation": "scf"},
+            "system": {
+                "occupations": "smearing",
+                "smearing": "cold" if is_metal else "gaussian",
+                "degauss": 0.01 if is_metal else 0.005,
+            },
+            "electrons": {
+                "conv_thr": 1e-8,
+                "mixing_mode": "local-TF",
+                "mixing_beta": 0.35,
+            },
+        },
+        "kspacing": 0.33 if is_metal else 0.045,
+    }
 
     return run_and_summarize(
         atoms,
@@ -114,10 +133,24 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
+
+    is_metal = check_is_metal(atoms)
+
     calc_defaults = {
         "input_data": {
-            "control": {"calculation": "vc-relax" if relax_cell else "relax"}
-        }
+            "control": {"calculation": "vc-relax" if relax_cell else "relax"},
+            "system": {
+                "occupations": "smearing",
+                "smearing": "cold" if is_metal else "gaussian",
+                "degauss": 0.01 if is_metal else 0.005,
+            },
+            "electrons": {
+                "conv_thr": 1e-8,
+                "mixing_mode": "local-TF",
+                "mixing_beta": 0.35,
+            },
+        },
+        "kspacing": 0.33 if is_metal else 0.045,
     }
 
     return run_and_summarize(
@@ -180,13 +213,27 @@ def ase_relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
+
+    is_metal = check_is_metal(atoms)
+
     calc_defaults = {
         "input_data": {
-            "control": {"calculation": "scf", "tstress": relax_cell, "tprnfor": True}
-        }
+            "control": {"calculation": "scf", "tstress": relax_cell, "tprnfor": True},
+            "system": {
+                "occupations": "smearing",
+                "smearing": "cold" if is_metal else "gaussian",
+                "degauss": 0.01 if is_metal else 0.005,
+            },
+            "electrons": {
+                "conv_thr": 1e-8,
+                "mixing_mode": "local-TF",
+                "mixing_beta": 0.35,
+            },
+        },
+        "kspacing": 0.33 if is_metal else 0.045,
     }
 
-    opt_defaults = {"optimizer": LBFGS}
+    opt_defaults = {"optimizer": BFGSLineSearch}
 
     return run_and_summarize_opt(
         atoms,
