@@ -539,11 +539,11 @@ If you haven't done so already:
 
 
     @flow(task_runner=DaskTaskRunner(address=client.scheduler.address))
-    def workflow(list_of_atoms):
+    def workflow(atoms_objects):
         from quacc.recipes.tblite.core import freq_job, relax_job
 
         futures = []
-        for atoms in list_of_atoms:
+        for atoms in atoms_objects:
             relax_output = relax_job(atoms)
             freq_output = freq_job(
                 relax_output["atoms"], energy=relax_output["results"]["energy"]
@@ -558,15 +558,9 @@ If you haven't done so already:
     ```python
     from ase.collections import g2
 
-    list_of_atoms = [g2[name] for name in g2.names[:20]]
-    futures = workflow(list_of_atoms)
+    atoms_objects = [g2[name] for name in g2.names[:20]]
+    futures = workflow(atoms_objects)
     results = [future.result() for future in futures]
-    for task_doc in results:
-        print(
-            task_doc["formula_pretty"],
-            task_doc["results"]["gibbs_energy"],
-            task_doc["dir_name"],
-        )
     ```
 
     !!! Tip "One-Time Dask Clusters"
@@ -914,7 +908,6 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     list_of_atoms = [bulk("Cu"), bulk("C")]
     futures = workflow(list_of_atoms)
     results = [future.result() for future in futures]
-    print(results)
     ```
 
 === "Jobflow"
