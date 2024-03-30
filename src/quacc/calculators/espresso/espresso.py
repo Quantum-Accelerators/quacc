@@ -68,21 +68,6 @@ class EspressoTemplate(EspressoTemplate_):
 
         self.binary = binary
 
-        self.outdirs = {
-            "outdir": os.environ.get("ESPRESSO_TMPDIR", "."),
-            "wfcdir": os.environ.get("ESPRESSO_TMPDIR", "."),
-        }
-
-        self.outfiles = {
-            "fildos": "pwscf.dos",
-            "filpdos": "pwscf.pdos_tot",
-            "flfrc": "q2r.fc",
-            "fldos": "matdyn.dos",
-            "flfrq": "matdyn.freq",
-            "flvec": "matdyn.modes",
-            "fleig": "matdyn.eig",
-        }
-
         self.test_run = test_run
 
         self.nruns = 0
@@ -218,31 +203,29 @@ class EspressoTemplate(EspressoTemplate_):
             with Path.open(directory / self.outputname, "r") as fd:
                 results = read_espresso_ph(fd)
         elif self.binary == "dos":
-            fildos = self.outfiles["fildos"]
-            with fildos.open("r") as fd:
+            with Path.open(directory / "pwscf.dos", "r") as fd:
                 lines = fd.readlines()
                 fermi = float(re.search(r"-?\d+\.?\d*", lines[0])[0])
                 dos = np.loadtxt(lines[1:])
-            results = {fildos.name.replace(".", "_"): {"dos": dos, "fermi": fermi}}
+            results = {"dos_results": {"dos": dos, "fermi": fermi}}
         elif self.binary == "projwfc":
-            filpdos = self.outfiles["filpdos"]
-            with filpdos.open("r") as fd:
+            with Path.open(directory / "pwscf.pdos_tot", "r") as fd:
                 lines = np.loadtxt(fd.readlines())
                 energy = lines[1:, 0]
                 dos = lines[1:, 1]
                 pdos = lines[1:, 2]
             results = {
-                filpdos.name.replace(".", "_"): {
+                "projwfc_results": {
                     "energy": energy,
                     "dos": dos,
                     "pdos": pdos,
                 }
             }
         elif self.binary == "matdyn":
-            fldos = self.outfiles["fldos"]
+            fldos = Path(directory, "matdyn.dos")
             if fldos.exists():
                 phonon_dos = np.loadtxt(fldos)
-                results = {fldos.name.replace(".", "_"): {"phonon_dos": phonon_dos}}
+                results = {"matdyn_results": {"phonon_dos": phonon_dos}}
 
         if "energy" not in results:
             results["energy"] = None
