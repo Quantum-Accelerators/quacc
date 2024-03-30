@@ -24,7 +24,7 @@ from ase.io.espresso_namelist.keys import ALL_KEYS
 
 from quacc import SETTINGS
 from quacc.calculators.espresso.utils import get_pseudopotential_info
-from quacc.utils.dicts import recursive_dict_merge
+from quacc.utils.dicts import Remove, recursive_dict_merge
 from quacc.utils.files import load_yaml_calc
 
 if TYPE_CHECKING:
@@ -250,13 +250,14 @@ class EspressoTemplate(EspressoTemplate_):
         return results
 
     def _output_handler(
-        self, parameters: dict[str, Any], prev_dir: Path | None
+        self, parameters: dict[str, Any], directory: Path | str
     ) -> dict[str, Any]:
         """
-        Function that handles the various output of espresso binaries. If they are
-        relative, they are resolved against `directory`. In any other case the
-        function will raise a ValueError. This is to avoid the user to use absolute
-        paths that might lead to unexpected behaviour when using Quacc.
+        Function that handles the various output of espresso binaries. It will force the
+        output directory and other output files to be set or deleted if needed.
+
+        It will also prevent the user from setting environment variables that change the
+        output directories.
 
         Parameters
         ----------
@@ -271,11 +272,11 @@ class EspressoTemplate(EspressoTemplate_):
             The merged kwargs
         """
 
-        os.environ.pop("ESPRESSO_TMPDIR")
-        os.environ.pop("ESPRESSO_FILDVSCF_DIR")
-        os.environ.pop("ESPRESSO_FILDRHO_DIR")
+        os.environ.pop("ESPRESSO_TMPDIR", None)
+        os.environ.pop("ESPRESSO_FILDVSCF_DIR", None)
+        os.environ.pop("ESPRESSO_FILDRHO_DIR", None)
 
-        self.outdir = Path(self.outdir).expanduser().resolve()
+        self.outdir = Path(directory).expanduser().resolve()
 
         self.outkeys = {
             "pw": {"control": {"outdir": self.outdir, "wfcdir": Remove}},
@@ -311,9 +312,6 @@ class EspressoTemplate(EspressoTemplate_):
         outkeys = self.outkeys[self.binary]
 
         input_data = recursive_dict_merge(outkeys, input_data)
-
-        if self.low_data_mode and prev_dir:
-            pass
 
         return parameters
 
