@@ -275,9 +275,7 @@ class EspressoTemplate(EspressoTemplate_):
             },
             "pp": {"inputpp": {"filplot": "tmp.pp", "outdir": self.outdir}},
             "dos": {"dos": {"fildos": "pwscf.dos", "outdir": self.outdir}},
-            "projwfc": {
-                "projwfc": {"filpdos": "pwscf", "outdir": self.outdir}
-            },
+            "projwfc": {"projwfc": {"filpdos": "pwscf", "outdir": self.outdir}},
             "matdyn": {
                 "input": {
                     "fldos": "matdyn.dos",
