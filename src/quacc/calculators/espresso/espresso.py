@@ -276,7 +276,7 @@ class EspressoTemplate(EspressoTemplate_):
             "pp": {"inputpp": {"filplot": "tmp.pp", "outdir": self.outdir}},
             "dos": {"dos": {"fildos": "pwscf.dos", "outdir": self.outdir}},
             "projwfc": {
-                "projwfc": {"filpdos": "pwscf.pdos_tot", "outdir": self.outdir}
+                "projwfc": {"filpdos": "pwscf", "outdir": self.outdir}
             },
             "matdyn": {
                 "input": {
@@ -295,7 +295,9 @@ class EspressoTemplate(EspressoTemplate_):
 
         outkeys = self.outkeys.get(self.binary, {})
 
-        input_data = recursive_dict_merge(outkeys, input_data)
+        input_data = recursive_dict_merge(input_data, outkeys)
+
+        parameters["input_data"] = input_data
 
         return parameters
 
