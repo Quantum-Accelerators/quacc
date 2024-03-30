@@ -538,6 +538,7 @@ If you haven't done so already:
     from quacc import flow
     from quacc.recipes.tblite.core import freq_job, relax_job
 
+
     @flow(task_runner=DaskTaskRunner(address=client.scheduler.address))
     def workflow(atoms_objects):
         futures = []
