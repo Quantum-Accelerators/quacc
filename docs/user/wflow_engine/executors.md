@@ -540,7 +540,6 @@ If you haven't done so already:
 
     @flow(task_runner=DaskTaskRunner(address=client.scheduler.address))
     def workflow(atoms_objects):
-
         futures = []
         for atoms in atoms_objects:
             relax_output = relax_job(atoms)
