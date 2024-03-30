@@ -37,7 +37,7 @@ def test_projwfc_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     output = projwfc_job(tmp_path, parallel_info=ESPRESSO_PARALLEL_INFO)
 
     assert output["name"] == "projwfc.x Projects-wavefunctions"
-    assert output["parameters"]["input_data"]["projwfc"] == {}
+    assert output["parameters"]["input_data"]["projwfc"]["filpdos"]
 
 
 def test_dos_flow(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
