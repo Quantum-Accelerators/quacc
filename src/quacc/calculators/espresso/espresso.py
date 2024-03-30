@@ -250,7 +250,7 @@ class EspressoTemplate(EspressoTemplate_):
         return results
 
     def _output_handler(
-        self, parameters: dict[str, Any], directory: Path
+        self, parameters: dict[str, Any], prev_dir: Path | None
     ) -> dict[str, Any]:
         """
         Function that handles the various output of espresso binaries. If they are
@@ -262,7 +262,7 @@ class EspressoTemplate(EspressoTemplate_):
         ----------
         parameters
             User-supplied kwargs
-        directory
+        prev_dir
             The `directory` kwarg from the calculator.
 
         Returns
@@ -270,37 +270,50 @@ class EspressoTemplate(EspressoTemplate_):
         dict[str, Any]
             The merged kwargs
         """
+
+        os.environ.pop("ESPRESSO_TMPDIR")
+        os.environ.pop("ESPRESSO_FILDVSCF_DIR")
+        os.environ.pop("ESPRESSO_FILDRHO_DIR")
+
+        self.outdir = Path(self.outdir).expanduser().resolve()
+
+        self.outkeys = {
+            "pw": {"control": {"outdir": self.outdir, "wfcdir": Remove}},
+            "ph": {
+                "inputph": {
+                    "fildyn": "matdyn",
+                    "outdir": self.outdir,
+                    "ahc_dir": Remove,
+                    "wpot_dir": Remove,
+                    "dvscf_star%dir": Remove,
+                    "drho_star%dir": Remove,
+                }
+            },
+            "pp": {"inputpp": {"filplot": "tmp.pp", "outdir": self.outdir}},
+            "dos": {"dos": {"fildos": "pwscf.dos", "outdir": self.outdir}},
+            "projwfc": {
+                "projwfc": {"filpdos": "pwscf.pdos_tot", "outdir": self.outdir}
+            },
+            "matdyn": {
+                "input": {
+                    "fldos": "matdyn.dos",
+                    "flfrq": "matdyn.freq",
+                    "flvec": "matdyn.modes",
+                    "fleig": "matdyn.eig",
+                }
+            },
+            "q2r": {"input": {"flfrc": "q2r.fc"}},
+            "bands": {"bands": {"filband": "bands.out", "outdir": self.outdir}},
+        }
+
         input_data = parameters.get("input_data", {})
 
-        all_out = {**self.outdirs, **self.outfiles}
-        working_dir = Path(directory).expanduser().resolve()
+        outkeys = self.outkeys[self.binary]
 
-        for key in all_out:
-            path = Path(working_dir, all_out[key])
+        input_data = recursive_dict_merge(outkeys, input_data)
 
-            for section in input_data:
-                if key in input_data[section]:
-                    path = Path(input_data[section][key])
-                    if path.is_absolute():
-                        raise ValueError(
-                            f"Cannot use {key}={path} because it is an absolute path. When using Quacc please provide relative paths."
-                        )
-                    path = (working_dir / path).resolve()
-                    input_data[section][key] = path
-
-            try:
-                path.relative_to(working_dir)
-            except ValueError as e:
-                raise ValueError(
-                    f"Cannot use {key}={path} because it is not a subpath of {working_dir}. When using Quacc please provide subpaths relative to the working directory."
-                ) from e
-            if key in self.outdirs:
-                path.mkdir(parents=True, exist_ok=True)
-                self.outdirs[key] = path
-            elif key in self.outfiles:
-                self.outfiles[key] = path
-
-        parameters["input_data"] = input_data
+        if self.low_data_mode and prev_dir:
+            pass
 
         return parameters
 
