@@ -25,7 +25,7 @@ def test_dos_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
     output = dos_job(tmp_path, parallel_info=ESPRESSO_PARALLEL_INFO)
 
-    assert output["results"]["pwscf_dos"]["fermi"] == pytest.approx(7.199)
+    assert output["results"]["dos_results"]["fermi"] == pytest.approx(7.199)
 
 
 def test_projwfc_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
@@ -96,7 +96,7 @@ def test_dos_flow(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     assert output["non_scf_job"]["results"]["nbands"] == 8
     assert output["non_scf_job"]["results"]["nspins"] == 1
 
-    assert output["dos_job"]["results"]["pwscf_dos"]["fermi"] == pytest.approx(6.772)
+    assert output["dos_job"]["results"]["dos_results"]["fermi"] == pytest.approx(6.772)
 
 
 def test_projwfc_flow(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
