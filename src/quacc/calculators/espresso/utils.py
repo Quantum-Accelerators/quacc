@@ -98,9 +98,7 @@ def pw_copy_files(
     elif include_wfc:
         basics_to_copy.append("wfc*.*")
 
-    files_to_copy[prev_dir].extend(
-        [Path(f"{prefix}.save", i) for i in basics_to_copy]
-    )
+    files_to_copy[prev_dir].extend([Path(f"{prefix}.save", i) for i in basics_to_copy])
 
     return files_to_copy
 
