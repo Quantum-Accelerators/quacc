@@ -86,23 +86,20 @@ def pw_copy_files(
     prefix = control.get("prefix", "pwscf")
     restart_mode = control.get("restart_mode", "from_scratch")
 
-    outdir = control.get("outdir", ".")
-    wfcdir = control.get("wfcdir", outdir)
-
     files_to_copy = {prev_dir: []}
 
     basics_to_copy = ["charge-density.*", "data-file-schema.*", "paw.*"]
 
     if restart_mode == "restart":
-        files_to_copy[prev_dir].append(Path(wfcdir, f"{prefix}.wfc*"))
-        files_to_copy[prev_dir].append(Path(wfcdir, f"{prefix}.mix*"))
-        files_to_copy[prev_dir].append(Path(wfcdir, f"{prefix}.restart_k*"))
-        files_to_copy[prev_dir].append(Path(wfcdir, f"{prefix}.restart_scf*"))
+        files_to_copy[prev_dir].append(Path(f"{prefix}.wfc*"))
+        files_to_copy[prev_dir].append(Path(f"{prefix}.mix*"))
+        files_to_copy[prev_dir].append(Path(f"{prefix}.restart_k*"))
+        files_to_copy[prev_dir].append(Path(f"{prefix}.restart_scf*"))
     elif include_wfc:
         basics_to_copy.append("wfc*.*")
 
     files_to_copy[prev_dir].extend(
-        [Path(outdir, f"{prefix}.save", i) for i in basics_to_copy]
+        [Path(f"{prefix}.save", i) for i in basics_to_copy]
     )
 
     return files_to_copy
