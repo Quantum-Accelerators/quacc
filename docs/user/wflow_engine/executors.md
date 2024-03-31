@@ -300,7 +300,6 @@ If you haven't done so already:
     account = "MyAccountName"
 
     cores_per_node = 128
-    mem_per_node = "64 GB"
     slurm_jobs = 2
 
     env_vars = "export OMP_NUM_THREADS=1,1"  # (1)!
@@ -500,9 +499,7 @@ If you haven't done so already:
     account = "MyAccountName"
 
     slurm_jobs = 1
-    nodes_per_calc = 1
     cores_per_node = 128
-    mem_per_node = "64 GB"
 
     env_vars = "export OMP_NUM_THREADS=1,1"  # (1)!
 
@@ -539,14 +536,13 @@ If you haven't done so already:
     ```python
     from prefect_dask import DaskTaskRunner
     from quacc import flow
+    from quacc.recipes.tblite.core import freq_job, relax_job
 
 
     @flow(task_runner=DaskTaskRunner(address=client.scheduler.address))
-    def workflow(list_of_atoms):
-        from quacc.recipes.tblite.core import freq_job, relax_job
-
+    def workflow(atoms_objects):
         futures = []
-        for atoms in list_of_atoms:
+        for atoms in atoms_objects:
             relax_output = relax_job(atoms)
             freq_output = freq_job(
                 relax_output["atoms"], energy=relax_output["results"]["energy"]
@@ -561,15 +557,9 @@ If you haven't done so already:
     ```python
     from ase.collections import g2
 
-    list_of_atoms = [g2[name] for name in g2.names[:20]]
-    futures = workflow(list_of_atoms)
+    atoms_objects = [g2[name] for name in g2.names[:20]]
+    futures = workflow(atoms_objects)
     results = [future.result() for future in futures]
-    for task_doc in results:
-        print(
-            task_doc["formula_pretty"],
-            task_doc["results"]["gibbs_energy"],
-            task_doc["dir_name"],
-        )
     ```
 
     !!! Tip "One-Time Dask Clusters"
@@ -727,7 +717,6 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     slurm_jobs = 2
     nodes_per_calc = 1
     cores_per_node = 128
-    mem_per_node = "64 GB"
 
     vasp_parallel_cmd = (
         f"srun -N {nodes_per_calc} --ntasks-per-node={cores_per_node} --cpu_bind=cores"
@@ -862,7 +851,6 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     slurm_jobs = 2
     nodes_per_calc = 1
     cores_per_node = 128
-    mem_per_node = "64 GB"
 
     vasp_parallel_cmd = (
         f"srun -N {nodes_per_calc} --ntasks-per-node={cores_per_node} --cpu_bind=cores"
@@ -919,7 +907,6 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     list_of_atoms = [bulk("Cu"), bulk("C")]
     futures = workflow(list_of_atoms)
     results = [future.result() for future in futures]
-    print(results)
     ```
 
 === "Jobflow"
@@ -936,9 +923,9 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     job_name: quacc_firework
     qos: debug
     pre_rocket: |
-    conda activate quacc
-    module load vasp/6.4.1-cpu
-    export QUACC_VASP_PARALLEL_CMD="srun -N 1 --ntasks-per-node=128 --cpu_bind=cores"
+                conda activate quacc
+                module load vasp/6.4.1-cpu
+                export QUACC_VASP_PARALLEL_CMD="srun -N 1 --ntasks-per-node=128 --cpu_bind=cores"
     ```
 
     From the login node of the remote machine, then run the following:

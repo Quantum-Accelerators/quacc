@@ -16,6 +16,10 @@ nav:
           - user/recipes/recipes_intro.md
           - user/recipes/workflows.md
           - user/recipes/recipes_list.md
+      - Settings Management:
+          - user/settings/settings.md
+          - user/settings/file_management.md
+          - user/settings/settings_list.md
       - Workflow Basics:
           - user/basics/wflow_overview.md
           - user/basics/wflow_decorators.md
@@ -24,10 +28,6 @@ nav:
           - user/wflow_engine/wflow_engines1.md
           - user/wflow_engine/wflow_engines2.md
           - user/wflow_engine/executors.md
-      - Settings Management:
-          - user/settings/settings.md
-          - user/settings/file_management.md
-          - user/settings/settings_list.md
       - Using a Database:
           - user/db/context.md
           - user/db/basics.md
@@ -114,7 +114,6 @@ plugins:
   - search:
       separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
   - autorefs
-  - social
   - offline
   - mkdocstrings:
       default_handler: python
@@ -148,7 +147,3 @@ plugins:
       nav_file: SUMMARY.md
 
 edit_uri: blob/main/docs/
-extra:
-  social:
-    - icon: fontawesome/brands/github
-      link: https://github.com/Quantum-Accelerators/

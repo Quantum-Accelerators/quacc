@@ -41,14 +41,14 @@ def pick_calculator(
     if not torch.cuda.is_available():
         logger.warning("CUDA is not available to PyTorch. Calculations will be slow.")
 
-    if method.lower().startswith("m3gnet"):
+    if method.lower() == "m3gnet":
         import matgl
         from matgl import __version__
-        from matgl.ext.ase import M3GNetCalculator
+        from matgl.ext.ase import PESCalculator
 
         model = matgl.load_model("M3GNet-MP-2021.2.8-DIRECT-PES")
         kwargs.setdefault("stress_weight", 1.0 / 160.21766208)
-        calc = M3GNetCalculator(potential=model, **kwargs)
+        calc = PESCalculator(potential=model, **kwargs)
 
     elif method.lower() == "chgnet":
         from chgnet import __version__

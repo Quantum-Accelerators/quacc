@@ -11,6 +11,10 @@ from pymatgen.io.qchem.inputs import QCInput
 
 from quacc.calculators.qchem import QChem
 
+try:
+    import openbabel as ob
+except ImportError:
+    ob = None
 FILE_DIR = Path(__file__).parent
 
 
@@ -193,6 +197,7 @@ def test_qchem_write_input_freq(tmp_path, monkeypatch, test_atoms):
     assert qcinp.as_dict() == ref_qcinp.as_dict()
 
 
+@pytest.mark.skipif(ob is None, reason="openbabel needed")
 def test_qchem_read_results_basic_and_write_53(tmp_path, monkeypatch, test_atoms):
     calc = QChem(
         test_atoms,
@@ -219,6 +224,7 @@ def test_qchem_read_results_basic_and_write_53(tmp_path, monkeypatch, test_atoms
     assert qcinp.rem.get("scf_guess") == "read"
 
 
+@pytest.mark.skipif(ob is None, reason="openbabel needed")
 def test_qchem_read_results_intermediate(tmp_path, monkeypatch, test_atoms):
     monkeypatch.chdir(tmp_path)
     calc = QChem(test_atoms)
@@ -230,6 +236,7 @@ def test_qchem_read_results_intermediate(tmp_path, monkeypatch, test_atoms):
     assert calc.prev_orbital_coeffs is not None
 
 
+@pytest.mark.skipif(ob is None, reason="openbabel needed")
 def test_qchem_read_results_advanced(tmp_path, monkeypatch, test_atoms):
     monkeypatch.chdir(tmp_path)
     calc = QChem(test_atoms)
@@ -242,7 +249,9 @@ def test_qchem_read_results_advanced(tmp_path, monkeypatch, test_atoms):
     assert calc.results.get("hessian") is None
 
 
+@pytest.mark.skipif(ob is None, reason="openbabel needed")
 def test_qchem_read_results_freq(tmp_path, monkeypatch, test_atoms):
+    monkeypatch.chdir(tmp_path)
     calc = QChem(test_atoms, job_type="freq")
     monkeypatch.chdir(FILE_DIR / "examples" / "freq")
     calc.read_results()
@@ -252,8 +261,8 @@ def test_qchem_read_results_freq(tmp_path, monkeypatch, test_atoms):
     assert calc.prev_orbital_coeffs is not None
     assert len(calc.results["hessian"]) == 42
     assert len(calc.results["hessian"][0]) == 42
-    assert calc.results["qc_output"]["frequencies"][0] == -340.2
-    assert len(calc.results["qc_output"]["frequencies"]) == 36
-    assert len(calc.results["qc_output"]["frequency_mode_vectors"]) == 36
-    assert len(calc.results["qc_output"]["frequency_mode_vectors"][0]) == 14
-    assert len(calc.results["qc_output"]["frequency_mode_vectors"][0][0]) == 3
+    assert calc.results["taskdoc"]["output"]["frequencies"][0] == -340.2
+    assert len(calc.results["taskdoc"]["output"]["frequencies"]) == 36
+    assert len(calc.results["taskdoc"]["output"]["frequency_modes"]) == 36
+    assert len(calc.results["taskdoc"]["output"]["frequency_modes"][0]) == 14
+    assert len(calc.results["taskdoc"]["output"]["frequency_modes"][0][0]) == 3

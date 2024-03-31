@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from monty.dev import requires
 
 from quacc import SETTINGS, job, strip_decorator
-from quacc.recipes.qchem._base import base_opt_fn
+from quacc.recipes.qchem._base import run_and_summarize_opt
 from quacc.recipes.qchem.core import _BASE_SET, relax_job
 from quacc.utils.dicts import recursive_dict_merge
 
@@ -55,9 +55,8 @@ def ts_job(
     basis
         Basis set.
     opt_params
-        Dictionary of custom kwargs for the optimization process. Set a value
-        to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [quacc.runners.ase.run_opt][].
+        Dictionary of custom kwargs for the optimization process. For a list
+        of available keys, refer to [quacc.runners.ase.run_opt][].
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
@@ -79,7 +78,7 @@ def ts_job(
     if opt_params and opt_params.get("optimizer", Sella) is not Sella:
         raise ValueError("Only Sella should be used for TS optimization.")
 
-    return base_opt_fn(
+    return run_and_summarize_opt(
         atoms,
         charge,
         spin_multiplicity,
@@ -124,9 +123,8 @@ def irc_job(
     basis
         Basis set.
     opt_params
-        Dictionary of custom kwargs for the optimization process. Set a value
-        to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [quacc.runners.ase.run_opt][].
+        Dictionary of custom kwargs for the optimization process. For a list
+        of available keys, refer to [quacc.runners.ase.run_opt][].
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
@@ -150,7 +148,7 @@ def irc_job(
     if opt_params and opt_params.get("optimizer", IRC) is not IRC:
         raise ValueError("Only Sella's IRC should be used for IRC optimization.")
 
-    return base_opt_fn(
+    return run_and_summarize_opt(
         atoms,
         charge,
         spin_multiplicity,

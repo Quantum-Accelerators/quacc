@@ -17,10 +17,10 @@ from ase.io.espresso import Namelist
 from quacc import Job, flow, job, subflow
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.calculators.espresso.utils import grid_copy_files, grid_prepare_repr
-from quacc.recipes.espresso._base import base_fn
+from quacc.recipes.espresso._base import run_and_summarize
 from quacc.recipes.espresso.core import relax_job
 from quacc.utils.dicts import recursive_dict_merge
-from quacc.wflow_tools.customizers import customize_funcs, strip_decorator
+from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:
     from typing import Any, Callable, TypedDict
@@ -79,7 +79,7 @@ def phonon_job(
         "qpts": (0, 0, 0),
     }
 
-    return base_fn(
+    return run_and_summarize(
         template=EspressoTemplate("ph", test_run=test_run),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -128,7 +128,7 @@ def q2r_job(
 
     copy_files = {prev_dir: [f"{fildyn}*"]}
 
-    return base_fn(
+    return run_and_summarize(
         template=EspressoTemplate("q2r"),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -177,7 +177,7 @@ def matdyn_job(
 
     copy_files = {prev_dir: [f"{flfrc}*"]}
 
-    return base_fn(
+    return run_and_summarize(
         template=EspressoTemplate("matdyn"),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -356,8 +356,8 @@ def grid_phonon_flow(
         See the type-hint for the data structure.
     """
 
-    @job
-    def _ph_recover_job(grid_results: list[RunSchema]) -> RunSchema:
+    @subflow
+    def _ph_recover_subflow(grid_results: list[RunSchema]) -> RunSchema:
         prev_dirs = {}
         for result in grid_results:
             prev_dirs[result["dir_name"]] = [
@@ -367,7 +367,7 @@ def grid_phonon_flow(
                 Path("**", "wfc*.*"),
                 Path("**", "paw.txt.*"),
             ]
-        return strip_decorator(ph_recover_job)(prev_dirs)
+        return ph_recover_job(prev_dirs)
 
     @subflow
     def _grid_phonon_subflow(
@@ -462,4 +462,4 @@ def grid_phonon_flow(
         job_params["ph_job"]["input_data"], ph_init_job_results, ph_job, nblocks=nblocks
     )
 
-    return _ph_recover_job(grid_results)
+    return _ph_recover_subflow(grid_results)
