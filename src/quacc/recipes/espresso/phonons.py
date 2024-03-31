@@ -463,3 +463,113 @@ def grid_phonon_flow(
     )
 
     return _ph_recover_subflow(grid_results)
+
+
+@job
+def dvscf_q2r_job(
+    prev_dir: SourceDirectory, parallel_info: dict[str] | None = None, **calc_kwargs
+) -> RunSchema:
+    """
+    Function to carry out a basic dvscf_q2r calculation. It should allow you to
+    use all the features of the dvscf_q2r binary which does not have an official
+    documentation. Here are the available keywords.
+
+    WARNING: This binary is not supported by ASE, the input_data must be in nested format.
+
+    Only one card, &input:
+
+    prefix  : Prepended to input/output filenames, default: 'pwscf'
+    outdir  : Directory containing input, output, and scratch files.
+              In quacc this is always set to the current working directory.
+    fildyn  : File where the dynamical matrix is written.
+              In quacc this should always be set to 'matdyn'.
+    fildvscf : File where the potential variation is written.
+               In quacc this should always be set to 'dvscf'.
+               (character, Default: 'dvscf')
+    wpot_dir : Directory where the w_pot binary files are written.
+               In quacc this is always set to outdir / w_pot
+    do_long_range : If .true., subtract the long-range part of the potential
+                    before interpolation. Requires epsilon and Born effective
+                    charge data in _ph0/prefix.phsave/tensor.xml. default: .false.
+    do_charge_neutral : If .true., renormalize phonon potential to impose
+                    neutrality of Born effective charges. default: .false.
+    verbosity : If 'high', write more information to stdout.
+
+    This job requires the results of a previous ph.x calculation, you might
+    want to create your own flow to run both jobs in sequence.
+
+    Parameters
+    ----------
+    prev_dir
+        Outdir of the previously ran ph.x calculation.
+    parallel_info
+        Dictionary containing information about the parallelization of the
+        calculation. See the ASE documentation for more information.
+    **calc_kwargs
+        Additional keyword arguments to pass to the Espresso calculator. Set a value to
+        `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
+        [quacc.calculators.espresso.espresso.Espresso][] for more information.
+
+    Returns
+    -------
+    RunSchema
+        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        See the type-hint for the data structure.
+    """
+    input_data = Namelist(calc_kwargs.get("input_data"))
+
+    fildyn = input_data["input"].get("fildyn", "matdyn")
+    fildvscf = input_data["input"].get("fildvscf", "dvscf")
+
+    copy_files = {prev_dir: [f"{fildyn}*", f"{fildvscf}*"]}
+
+    return run_and_summarize(
+        template=EspressoTemplate("dvscf_q2r"),
+        calc_swaps=calc_kwargs,
+        parallel_info=parallel_info,
+        additional_fields={"name": "dvscf_q2r Phonon"},
+        copy_files=copy_files,
+    )
+
+
+@job
+def postahc_job(
+    prev_dir: SourceDirectory, parallel_info: dict[str] | None = None, **calc_kwargs
+) -> RunSchema:
+    """
+    Function to carry out a basic postahc calculation. It should allow you to
+    use all the features of the [postahc.x binary](https://www.quantum-espresso.org/Doc/INPUT_POSTAHC.html#idm11)
+
+    WARNING: This binary is not supported by ASE, the input_data must be in nested format.
+
+    Parameters
+    ----------
+    prev_dir
+        Outdir of the previously ran ph.x calculation.
+    parallel_info
+        Dictionary containing information about the parallelization of the
+        calculation. See the ASE documentation for more information.
+    **calc_kwargs
+        Additional keyword arguments to pass to the Espresso calculator. Set a value to
+        `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
+        [quacc.calculators.espresso.espresso.Espresso][] for more information.
+
+    Returns
+    -------
+    RunSchema
+        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        See the type-hint for the data structure.
+    """
+    input_data = Namelist(calc_kwargs.get("input_data"))
+
+    flvec = input_data["input"].get("flvec", "matdyn.modes")
+
+    copy_files = {prev_dir: [f"{flvec}*"]}
+
+    return run_and_summarize(
+        template=EspressoTemplate("postahc"),
+        calc_swaps=calc_kwargs,
+        parallel_info=parallel_info,
+        additional_fields={"name": "postahc Phonon"},
+        copy_files=copy_files,
+    )

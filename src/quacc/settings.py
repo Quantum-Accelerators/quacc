@@ -181,6 +181,8 @@ class QuaccSettings(BaseSettings):
             "pp": "pp.x",
             "wannier90": "wannier90.x",
             "fs": "fs.x",
+            "postahc": "postahc.x",
+            "dvscf_q2r": "dvscf_q2r.x",
         },
         description="Name for each espresso binary.",
     )

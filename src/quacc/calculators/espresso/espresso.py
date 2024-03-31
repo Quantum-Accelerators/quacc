@@ -416,11 +416,13 @@ class Espresso(Espresso_):
         self._user_calc_params = {}
 
         template = template or EspressoTemplate("pw")
+
+        self._binary = template.binary
+
         full_path = Path(
-            SETTINGS.ESPRESSO_BIN_DIR, SETTINGS.ESPRESSO_BINARIES[template.binary]
+            SETTINGS.ESPRESSO_BIN_DIR, SETTINGS.ESPRESSO_BINARIES[self._binary]
         )
         self._bin_path = str(full_path)
-        self._binary = template.binary
 
         if self._binary in ALL_KEYS:
             self._cleanup_params()
