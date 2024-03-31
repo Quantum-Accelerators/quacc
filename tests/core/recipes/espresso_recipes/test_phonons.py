@@ -459,7 +459,6 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, ESPRESSO_PARALLEL
         },
         "pseudopotentials": pseudopotential,
         "kpts": (6, 6, 6),
-        "parallel_info": ESPRESSO_PARALLEL_INFO,
     }
     c_scf_results = relax_job(
         atoms, **c_scf_params, parallel_info=ESPRESSO_PARALLEL_INFO
@@ -477,17 +476,20 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, ESPRESSO_PARALLEL
                 "nq3": 3,
                 "tr2_ph": 1.0e-16,
             }
-        },
-        "parallel_info": ESPRESSO_PARALLEL_INFO,
+        }
     }
-    c_ph_results = phonon_job(c_scf_results["dir_name"], **c_ph_params)
+    c_ph_results = phonon_job(
+        c_scf_results["dir_name"], **c_ph_params, parallel_info=ESPRESSO_PARALLEL_INFO
+    )
 
     q2r_params = {
         "input_data": {
             "input": {"fildyn": "diam.dyn", "zasr": "crystal", "flfrc": "diam.ifc"}
         }
     }
-    q2r_results = q2r_job(c_scf_results["dir_name"], **q2r_params)
+    q2r_results = q2r_job(
+        c_scf_results["dir_name"], **q2r_params, parallel_info=ESPRESSO_PARALLEL_INFO
+    )
 
     dvscf_q2r_params = {
         "input_data": {
