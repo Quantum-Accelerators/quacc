@@ -235,6 +235,8 @@ def espresso_prepare_dir(outdir: str | Path, binary: str = "pw") -> dict[str, An
         "q2r": {"input": {"flfrc": "q2r.fc"}},
         "bands": {"bands": {"filband": "bands.out", "outdir": outdir}},
         "fs": {"fermi": {"file_fs": "fermi_surface.bxsf", "outdir": outdir}},
+        "dvscf_q2r_job": {"input": {"outdir": "."}},
+        "postahc": {"input": {"ahc_dir": "ahc_dir/"}},
     }
 
     return outkeys.get(binary, {})
