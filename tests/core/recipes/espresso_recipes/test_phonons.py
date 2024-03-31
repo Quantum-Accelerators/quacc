@@ -467,7 +467,6 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, ESPRESSO_PARALLEL
     c_ph_params = {
         "input_data": {
             "inputph": {
-                "prefix": "diam",
                 "fildyn": "diam.dyn",
                 "fildvscf": "dvscf",
                 "ldisp": True,
