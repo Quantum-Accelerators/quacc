@@ -189,7 +189,7 @@ def test_q2r_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     with Path(q2r_results["dir_name"], "q2r.in").open() as f:
         recycled_input = read_fortran_namelist(f)
 
-    assert Path(recycled_input[0]["input"].pop("flfrc")).is_absolute()
+    assert recycled_input[0]["input"].pop("flfrc") == "q2r.fc"
 
     assert recycled_input[0]["input"] == {"fildyn": "matdyn"}
     assert recycled_input[1] == [*additional_cards, "EOF"]
@@ -210,16 +210,19 @@ def test_matdyn_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     assert Path(matdyn_results["dir_name"], "matdyn.dos.gz").exists()
     assert Path(matdyn_results["dir_name"], "matdyn.freq.gz").exists()
     assert Path(matdyn_results["dir_name"], "matdyn.modes.gz").exists()
-    assert matdyn_results["results"]["matdyn_dos"]["phonon_dos"].shape == (561, 3)
+    assert matdyn_results["results"]["matdyn_results"]["phonon_dos"].shape == (561, 3)
 
     decompress_file(Path(matdyn_results["dir_name"], "matdyn.in.gz"))
 
     with Path(matdyn_results["dir_name"], "matdyn.in").open() as f:
         recycled_input = read_fortran_namelist(f)
 
-    assert Path(recycled_input[0]["input"].pop("flfrc")).is_absolute()
+    assert recycled_input[0]["input"].pop("flfrc") == "q2r.fc"
 
-    assert recycled_input[0]["input"] == input_data["input"]
+    assert recycled_input[0]["input"]["fldos"] == "matdyn.dos"
+    assert recycled_input[0]["input"]["flfrq"] == "matdyn.freq"
+    assert recycled_input[0]["input"]["flvec"] == "matdyn.modes"
+    assert recycled_input[0]["input"]["fleig"] == "matdyn.eig"
 
 
 def test_phonon_dos_flow(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
