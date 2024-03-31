@@ -249,7 +249,7 @@ class EspressoTemplate(EspressoTemplate_):
         ----------
         parameters
             User-supplied kwargs
-        prev_dir
+        directory
             The `directory` kwarg from the calculator.
 
         Returns
