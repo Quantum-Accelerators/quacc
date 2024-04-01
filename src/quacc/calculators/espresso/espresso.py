@@ -132,7 +132,10 @@ class EspressoTemplate(EspressoTemplate_):
         else:
             with Path.open(directory / self.inputname, "w") as fd:
                 write_fortran_namelist(
-                    fd, binary=self.binary if self.ase_known else None, properties=properties, **parameters
+                    fd,
+                    binary=self.binary if self.ase_known else None,
+                    properties=properties,
+                    **parameters,
                 )
 
     def execute(self, *args: Any, **kwargs: Any) -> None:
