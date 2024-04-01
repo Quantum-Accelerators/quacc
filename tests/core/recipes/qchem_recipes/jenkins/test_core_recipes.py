@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from shutil import which
 
 import pytest
@@ -43,5 +45,5 @@ def test_relax_job_simple(monkeypatch, tmp_path):
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["spin_multiplicity"] == 3
     assert output["results"]["energy"] < 0
-    assert len(output["results"]["qc_input"]) > 1
+    assert len(output["results"]["taskdoc"]) > 1
     assert output["atoms"] != molecule("O2")

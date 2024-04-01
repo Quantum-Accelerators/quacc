@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc import job
-from quacc.recipes.dftb._base import base_fn
+from quacc.recipes.dftb._base import run_and_summarize
 
 if TYPE_CHECKING:
     from typing import Literal
@@ -49,7 +49,6 @@ def static_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
         See the return type-hint for the data structure.
     """
-
     calc_defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
         "Hamiltonian_MaxSccIterations": 200,
@@ -58,7 +57,7 @@ def static_job(
     if "xtb" in method.lower():
         calc_defaults["Hamiltonian_Method"] = method
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -104,7 +103,6 @@ def relax_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
         See the return type-hint for the data structure.
     """
-
     calc_defaults = {
         "Driver_": "GeometryOptimization",
         "Driver_AppendGeometries": "Yes",
@@ -117,7 +115,7 @@ def relax_job(
     if "xtb" in method.lower():
         calc_defaults["Hamiltonian_Method"] = method
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,

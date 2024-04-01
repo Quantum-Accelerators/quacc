@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
-from typing import Any, TypedDict
-
-from ase.atoms import Atoms
-from numpy.typing import NDArray
+from typing import TYPE_CHECKING, Any, TypedDict
 
 from quacc.schemas._aliases.ase import OptSchema, RunSchema
+
+if TYPE_CHECKING:
+    from ase.atoms import Atoms
+    from numpy.typing import NDArray
 
 
 class AdditionalAttributes(TypedDict, total=False):
@@ -135,6 +136,8 @@ class cclibBaseSchema(TypedDict):
 
 class cclibSchema(cclibBaseSchema, RunSchema):
     """Type hint associated with [quacc.schemas.cclib.cclib_summarize_run][]."""
+
+    steps: dict[int, cclibBaseSchema]  # when store_intermediate_results=True
 
 
 class cclibASEOptSchema(cclibSchema, OptSchema):

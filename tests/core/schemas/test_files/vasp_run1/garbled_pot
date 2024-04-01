@@ -22,7 +22,7 @@ PAW_PBE Na 08Apr2002
    RAUG   =    1.300    factor for augmentation sphere
    RDEP   =    2.259    radius for radial grids
    QCUT   =   -2.738; QGAM   =    5.475    optimization parameters
- 
+
    Description
      l     E      TYP  RCUT    TYP  RCUT
      0   .000     23  2.200
@@ -49,8 +49,8 @@ END of PSCTR-controll parameters
  local part
  85.0376694860515556
 End of Dataset
-  PAW_PBE Pd 04Jan2005                   
-   10.0000000000000     
+  PAW_PBE Pd 04Jan2005
+   10.0000000000000
  parameters from PSCTR are:
    SHA256 =  dd6f6f02930356371984e2b707ff5e456046761dc76b07c1eba30abd15eb3c39 Pd/POTCAR
    COPYR  = (c) Copyright 04Jan2005 Georg Kresse
@@ -77,7 +77,7 @@ End of Dataset
    RAUG   =    1.300    factor for augmentation sphere
    RDEP   =    2.734    radius for radial grids
    RDEPT  =    2.103    core radius for aug-charge
- 
+
    Atomic configuration
    12 entries
      n  l   j            E        occ.
@@ -120,5 +120,5 @@ End of Dataset
  0.190E-04 0.176E-04 0.134E-04 0.105E-04
 END of PSCTR-controll parameters
  local part
-   71.8095875659991     
+   71.8095875659991
 End of Dataset

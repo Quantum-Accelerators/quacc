@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-def prep_next_run(atoms: Atoms) -> Atoms:
+def prep_next_run(atoms: Atoms, move_magmoms: bool = False) -> Atoms:
     """
     Prepares the Atoms object for a new run by stripping off the calculator and
     assigning a unique ID.
@@ -24,6 +24,9 @@ def prep_next_run(atoms: Atoms) -> Atoms:
     ----------
     atoms
         Atoms object
+    move_magmoms
+        Whether to move the magnetic moments from the calculator results to the
+        initial magnetic moments.
 
     Returns
     -------
@@ -31,6 +34,15 @@ def prep_next_run(atoms: Atoms) -> Atoms:
         Updated Atoms object.
     """
     atoms = copy_atoms(atoms)
+
+    if (
+        move_magmoms
+        and hasattr(atoms, "calc")
+        and getattr(atoms.calc, "results", None) is not None
+    ):
+        atoms.set_initial_magnetic_moments(
+            atoms.calc.results.get("magmoms", [0.0] * len(atoms))
+        )
 
     # Clear off the calculator so we can run a new job. If we don't do this,
     # then something like atoms *= (2,2,2) still has a calculator attached,
@@ -47,42 +59,6 @@ def prep_next_run(atoms: Atoms) -> Atoms:
         atoms.info["_old_ids"].append(atoms.info["_id"])
     atoms.info["_id"] = get_atoms_id(atoms)
 
-    return atoms
-
-
-def prep_magmoms(atoms: Atoms) -> Atoms:
-    """
-    Prepare the Atoms object for a new run by moving the converged magnetic
-    moments to the initial magnetic moments.
-
-    Parameters
-    ----------
-    atoms
-        Atoms object
-
-    Returns
-    -------
-    Atoms
-        Updated Atoms object.
-    """
-
-    atoms = copy_atoms(atoms)
-    if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None) is not None:
-        # If there are initial magmoms set, then we should see what the final
-        # magmoms are. If they are present, move them to initial. If they are
-        # not present, it means the calculator doesn't support the "magmoms"
-        # property so we have to retain the initial magmoms given no further
-        # info.
-        if atoms.has("initial_magmoms"):
-            atoms.set_initial_magnetic_moments(
-                atoms.calc.results.get("magmoms", atoms.get_initial_magnetic_moments())
-            )
-        # If there are no initial magmoms set, just check the results and set
-        # everything to 0.0 if there is nothing there.
-        else:
-            atoms.set_initial_magnetic_moments(
-                atoms.calc.results.get("magmoms", [0.0] * len(atoms))
-            )
     return atoms
 
 
@@ -132,7 +108,6 @@ def set_magmoms(
     Atoms
         Atoms object
     """
-
     # Handle the magnetic moments Check if a prior job was run and pull the
     # prior magmoms
     if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None) is not None:

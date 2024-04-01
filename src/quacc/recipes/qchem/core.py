@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc import job
-from quacc.recipes.qchem._base import base_fn, base_opt_fn
+from quacc.recipes.qchem._base import run_and_summarize, run_and_summarize_opt
 from quacc.utils.dicts import recursive_dict_merge
 
 try:
@@ -76,12 +76,11 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = recursive_dict_merge(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         charge=charge,
         spin_multiplicity=spin_multiplicity,
@@ -116,13 +115,12 @@ def relax_job(
         Multiplicity of the system.
     method
         DFT exchange-correlation functional or other electronic structure
-        method. Defaults to wB97M-V.
+        method.
     basis
-        Basis set. Defaults to def2-SVPD.
+        Basis set.
     opt_params
-        Dictionary of custom kwargs for the optimization process. Set a value
-        to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [quacc.runners.ase.run_opt][].
+        Dictionary of custom kwargs for the optimization process. For a list
+        of available keys, refer to [quacc.runners.ase.run_opt][].
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
@@ -136,13 +134,12 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = recursive_dict_merge(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
     opt_defaults = {"optimizer": Sella} if has_sella else {}
 
-    return base_opt_fn(
+    return run_and_summarize_opt(
         atoms,
         charge=charge,
         spin_multiplicity=spin_multiplicity,
@@ -178,9 +175,9 @@ def freq_job(
         Multiplicity of the system.
     method
         DFT exchange-correlation functional or other electronic structure
-        method. Defaults to wB97M-V.
+        method.
     basis
-        Basis set. Defaults to def2-SVPD.
+        Basis set.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.    **calc_kwargs
         Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
@@ -192,12 +189,11 @@ def freq_job(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-
     calc_defaults = recursive_dict_merge(
         _BASE_SET, {"rem": {"job_type": "freq", "method": method, "basis": basis}}
     )
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         charge=charge,
         spin_multiplicity=spin_multiplicity,

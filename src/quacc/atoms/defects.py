@@ -64,6 +64,8 @@ def make_defects_from_bulk(
         bulk atoms
     defect_gen
         defect generator
+    defect_charge
+        charge state of defect
     sc_mat
         supercell matrix
     min_atoms
@@ -74,8 +76,6 @@ def make_defects_from_bulk(
         minimum length of supercell
     force_diagonal
         force supercell to be diagonal
-    defect_charge
-        charge state of defect
     **defect_gen_kwargs
         keyword arguments to pass to the pymatgen.analysis.defects.generators
         get_defects() method
@@ -85,7 +85,6 @@ def make_defects_from_bulk(
     list[Atoms]
         All generated defects
     """
-
     # Use pymatgen-analysis-defects and ShakeNBreak to generate defects
     struct = AseAtomsAdaptor.get_structure(atoms)
 
@@ -167,7 +166,8 @@ def _get_defect_entry_from_defect(
     defect_supercell.remove(dummy_site)
 
     computed_structure_entry = ComputedStructureEntry(
-        structure=defect_supercell, energy=0.0  # needs to be set, so set to 0.0
+        structure=defect_supercell,
+        energy=0.0,  # needs to be set, so set to 0.0
     )
 
     return DefectEntry(

@@ -10,12 +10,7 @@ from monty.dev import requires
 from quacc import SETTINGS, job
 from quacc.runners.ase import run_calc, run_opt
 from quacc.runners.thermo import run_ideal_gas
-from quacc.schemas.ase import (
-    summarize_ideal_gas_thermo,
-    summarize_opt_run,
-    summarize_run,
-    summarize_vib_run,
-)
+from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
 from quacc.utils.dicts import recursive_dict_merge
 
 try:
@@ -33,12 +28,8 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.schemas._aliases.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
+    from quacc.schemas._aliases.ase import OptSchema, RunSchema, VibThermoSchema
     from quacc.utils.files import Filenames, SourceDirectory
-
-    class FreqSchema(RunSchema):
-        vib: VibSchema
-        thermo: ThermoSchema
 
 
 @job
@@ -68,7 +59,6 @@ def static_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
@@ -99,9 +89,8 @@ def relax_job(
     atoms
         Atoms object
     opt_params
-        Dictionary of custom kwargs for the optimization process. Set a value
-        to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [quacc.runners.ase.run_opt][].
+        Dictionary of custom kwargs for the optimization process. For a list
+        of available keys, refer to [quacc.runners.ase.run_opt][].
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
@@ -115,7 +104,6 @@ def relax_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_opt_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
@@ -141,7 +129,7 @@ def freq_job(
     pressure: float = 1.0,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
-) -> FreqSchema:
+) -> VibThermoSchema:
     """
     Perform a frequency calculation using the given atoms object.
 
@@ -162,10 +150,9 @@ def freq_job(
 
     Returns
     -------
-    FreqSchema
+    VibThermoSchema
         Dictionary of results. See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
@@ -184,19 +171,16 @@ def freq_job(
     hessian = summary["results"]["hessian"]
 
     vib = VibrationsData(final_atoms, hessian)
-    summary["vib"] = summarize_vib_run(
-        vib, additional_fields={"name": "ASE Vibrations Analysis"}
-    )
 
     igt = run_ideal_gas(final_atoms, vib.get_frequencies(), energy=energy)
-    summary["thermo"] = summarize_ideal_gas_thermo(
+
+    return summarize_vib_and_thermo(
+        vib,
         igt,
         temperature=temperature,
         pressure=pressure,
-        additional_fields={"name": "ASE Thermo Analysis"},
+        additional_fields={"name": "ASE Vibrations and Thermo Analysis"},
     )
-
-    return summary
 
 
 def _add_stdev_and_hess(summary: dict[str, Any]) -> dict[str, Any]:
@@ -220,7 +204,6 @@ def _add_stdev_and_hess(summary: dict[str, Any]) -> dict[str, Any]:
         The modified summary dictionary with added standard deviation and
         Hessian values.
     """
-
     for i, atoms in enumerate(summary["trajectory"]):
         ml_calculator = NewtonNet(
             model_path=SETTINGS.NEWTONNET_MODEL_PATH,

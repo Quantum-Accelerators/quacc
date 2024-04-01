@@ -86,7 +86,6 @@ def run_calc(
     Atoms
         The updated Atoms object.
     """
-
     # Copy atoms so we don't modify it in-place
     atoms = copy_atoms(atoms)
 
@@ -135,7 +134,7 @@ def run_opt(
     max_steps: int = 1000,
     optimizer: Optimizer = BFGS,
     optimizer_kwargs: OptimizerKwargs | None = None,
-    store_intermediate_files: bool = False,
+    store_intermediate_results: bool = False,
     run_kwargs: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> Optimizer:
@@ -163,7 +162,7 @@ def run_opt(
         Dictionary of kwargs for the optimizer. Takes all valid kwargs for ASE
         Optimizer classes. Refer to `_set_sella_kwargs` for Sella-related
         kwargs and how they are set.
-    store_intermediate_files
+    store_intermediate_results
         Whether to store the files generated at each intermediate step in the
         optimization. If enabled, they will be stored in a directory named
         `stepN` where `N` is the step number, starting at 0.
@@ -177,7 +176,6 @@ def run_opt(
     Optimizer
         The ASE Optimizer object.
     """
-
     # Copy atoms so we don't modify it in-place
     atoms = copy_atoms(atoms)
 
@@ -218,7 +216,7 @@ def run_opt(
 
     # Run optimization
     with traj, optimizer(atoms, **optimizer_kwargs) as dyn:
-        if store_intermediate_files:
+        if store_intermediate_results:
             opt = dyn.irun(fmax=fmax, steps=max_steps, **run_kwargs)
             for i, _ in enumerate(opt):
                 _copy_intermediate_files(
@@ -269,7 +267,6 @@ def run_vib(
     Vibrations
         The updated Vibrations module
     """
-
     # Copy atoms so we don't modify it in-place
     atoms = copy_atoms(atoms)
 
@@ -315,7 +312,6 @@ def _set_sella_kwargs(atoms: Atoms, optimizer_kwargs: dict[str, Any]) -> None:
     -------
     None
     """
-
     if "order" not in optimizer_kwargs:
         optimizer_kwargs["order"] = 0
 

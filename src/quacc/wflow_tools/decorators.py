@@ -28,9 +28,11 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     ```python
     from quacc import job
 
+
     @job
     def add(a, b):
         return a + b
+
 
     add(1, 2)
     ```
@@ -42,9 +44,11 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
         ```python
         import covalent as ct
 
+
         @ct.electron
         def add(a, b):
             return a + b
+
 
         add(1, 2)
         ```
@@ -54,9 +58,11 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
         ```python
         from dask import delayed
 
+
         @delayed
         def add(a, b):
             return a + b
+
 
         add(1, 2)
         ```
@@ -66,9 +72,11 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
         ```python
         from parsl import python_app
 
+
         @python_app
         def add(a, b):
             return a + b
+
 
         add(1, 2)
         ```
@@ -78,9 +86,11 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
         ```python
         from prefect import task
 
+
         @task
         def add(a, b):
             return a + b
+
 
         add.submit(1, 2)
         ```
@@ -90,9 +100,11 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
         ```python
         from redun import task
 
+
         @task
         def add(a, b):
             return a + b
+
 
         add(1, 2)
         ```
@@ -102,9 +114,11 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
         ```python
         import jobflow as jf
 
+
         @jf.job
         def add(a, b):
             return a + b
+
 
         add(1, 2)
         ```
@@ -121,7 +135,6 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     Job
         The @job-decorated function.
     """
-
     from quacc import SETTINGS
 
     if _func is None:
@@ -186,13 +199,16 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
     ```python
     from quacc import flow, job
 
+
     @job
     def add(a, b):
         return a + b
 
+
     @flow
     def workflow(a, b, c):
         return add(add(a, b), c)
+
 
     workflow(1, 2, 3)
     ```
@@ -204,13 +220,16 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
         ```python
         import covalent as ct
 
+
         @ct.electron
         def add(a, b):
             return a + b
 
+
         @ct.lattice
         def workflow(a, b, c):
             return add(add(a, b), c)
+
 
         workflow(1, 2, 3)
         ```
@@ -220,12 +239,15 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
         ```python
         from dask import delayed
 
+
         @delayed
         def add(a, b):
             return a + b
 
+
         def workflow(a, b, c):
             return add(add(a, b), c)
+
 
         workflow(1, 2, 3)
         ```
@@ -235,12 +257,15 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
         ```python
         from parsl import python_app
 
+
         @python_app
         def add(a, b):
             return a + b
 
+
         def workflow(a, b, c):
             return add(add(a, b), c)
+
 
         workflow(1, 2, 3)
         ```
@@ -250,13 +275,16 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
         ```python
         from prefect import flow, task
 
+
         @task
         def add(a, b):
             return a + b
 
+
         @flow
         def workflow(a, b, c):
             return add.submit(add.submit(a, b), c)
+
 
         workflow(1, 2, 3)
         ```
@@ -266,13 +294,16 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
         ```python
         from redun import task
 
+
         @task
         def add(a, b):
             return a + b
 
+
         @task
         def workflow(a, b, c):
             return add(add(a, b), c)
+
 
         workflow(1, 2, 3)
         ```
@@ -331,23 +362,28 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
     import random
     from quacc import flow, job, subflow
 
+
     @job
     def add(a, b):
         return a + b
+
 
     @job
     def make_more(val):
         return [val] * random.randint(2, 5)
 
+
     @subflow
     def add_distributed(vals, c):
         return [add(val, c) for val in vals]
+
 
     @flow
     def workflow(a, b, c):
         result1 = add(a, b)
         result2 = make_more(result1)
         return add_distributed(result2, c)
+
 
     workflow(1, 2, 3)
     ```
@@ -360,24 +396,29 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
         import random
         import covalent as ct
 
+
         @ct.electron
         def add(a, b):
             return a + b
 
+
         @ct.electron
         def make_more(val):
             return [val] * random.randint(2, 5)
+
 
         @ct.electron
         @ct.lattice
         def add_distributed(vals, c):
             return [add(val, c) for val in vals]
 
+
         @ct.lattice
         def workflow(a, b, c):
             result1 = add(a, b)
             result2 = make_more(result1)
             return add_distributed(result2, c)
+
 
         workflow(1, 2, 3)
         ```
@@ -392,22 +433,27 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
         import random
         from parsl import join_app, python_app
 
+
         @python_app
         def add(a, b):
             return a + b
+
 
         @python_app
         def make_more(val):
             return [val] * random.randint(2, 5)
 
+
         @join_app
         def add_distributed(vals, c):
             return [add(val, c) for val in vals]
+
 
         def workflow(a, b, c):
             result1 = add(a, b)
             result2 = make_more(result1)
             return add_distributed(result2, c)
+
 
         workflow(1, 2, 3)
         ```
@@ -418,23 +464,28 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
         import random
         from prefect import flow, task
 
+
         @task
         def add(a, b):
             return a + b
+
 
         @task
         def make_more(val):
             return [val] * random.randint(2, 5)
 
+
         @flow
         def add_distributed(vals, c):
             return [add(val, c) for val in vals]
+
 
         @flow
         def workflow(a, b, c):
             result1 = add.submit(a, b)
             result2 = make_more.submit(result1)
             return add_distributed(result2, c)
+
 
         workflow(1, 2, 3)
         ```
@@ -445,23 +496,28 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
         import random
         from redun import task
 
+
         @task
         def add(a, b):
             return a + b
+
 
         @task
         def make_more(val):
             return [val] * random.randint(2, 5)
 
+
         @task
         def add_distributed(vals, c):
             return [add(val, c) for val in vals]
+
 
         @task
         def workflow(a, b, c):
             result1 = add(a, b)
             result2 = make_more(result1)
             return add_distributed(result2, c)
+
 
         workflow(1, 2, 3)
         ```
@@ -524,7 +580,8 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
 
 class Delayed_:
     """A small Dask-compatible, serializable object to wrap delayed functions that we
-    don't want to execute."""
+    don't want to execute.
+    """
 
     __slots__ = ("func",)
 

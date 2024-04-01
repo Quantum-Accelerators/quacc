@@ -16,6 +16,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 if TYPE_CHECKING:
     from typing import Any
 
+
 installed_engine = next(
     (
         wflow_engine
@@ -52,7 +53,7 @@ class QuaccSettings(BaseSettings):
         _DEFAULT_CONFIG_FILE_PATH,
         description=(
             """
-            Path to the YAML file to load alternative quacc configuration 
+            Path to the YAML file to load alternative quacc configuration
             defaults from.
             """
         ),
@@ -76,7 +77,7 @@ class QuaccSettings(BaseSettings):
         Path.cwd(),
         description=(
             """
-            Directory to permanently store I/O-based calculation results in. 
+            Directory to permanently store I/O-based calculation results in.
             Note that this behavior may be modified by the chosen workflow engine.
             """
         ),
@@ -85,10 +86,10 @@ class QuaccSettings(BaseSettings):
         None,
         description=(
             """
-            The base directory where calculations are run. If set to None, calculations will be run in a 
-            temporary directory within `RESULTS_DIR`. If a `Path` is supplied, calculations will 
-            be run in a temporary directory within `SCRATCH_DIR`. Files are always moved back 
-            to `RESULTS_DIR` after the calculation is complete, and the temporary directory 
+            The base directory where calculations are run. If set to None, calculations will be run in a
+            temporary directory within `RESULTS_DIR`. If a `Path` is supplied, calculations will
+            be run in a temporary directory within `SCRATCH_DIR`. Files are always moved back
+            to `RESULTS_DIR` after the calculation is complete, and the temporary directory
             in `SCRATCH_DIR` is removed.
             """
         ),
@@ -97,28 +98,17 @@ class QuaccSettings(BaseSettings):
         True,
         description=(
             """
-            Whether to have a unique directory in RESULTS_DIR for each job. 
-            Some workflow engines have an option to do this for you already, 
+            Whether to have a unique directory in RESULTS_DIR for each job.
+            Some workflow engines have an option to do this for you already,
             in which case you should set this to False.
-            """
-        ),
-    )
-    CHDIR: bool = Field(
-        True,
-        description=(
-            """
-            Whether quacc will make `os.chdir` calls to change the working directory
-            to be the location where the calculation is run. By default, we leave this
-            as `True` because not all ASE calculators properly support a `directory`
-            parameter. In most cases, this is fine, but it breaks thread safety.
-            If you need to run multiple, parallel calculations in a single Python process,
-            such as in a multithreaded job execution mode, then this setting needs
-            to be `False`. Note that not all calculators properly support this, however.
             """
         ),
     )
     GZIP_FILES: bool = Field(
         True, description="Whether generated files should be gzip'd."
+    )
+    WRITE_PICKLE: bool = Field(
+        True, description="Whether the results schema should be written to a .pkl file."
     )
     CHECK_CONVERGENCE: bool = Field(
         True,
@@ -132,10 +122,10 @@ class QuaccSettings(BaseSettings):
         None,
         description=(
             """
-            The desired Maggma data store where calculation results will be stored. All data stores listed in 
-            `maggma.stores.__init__.py` are supported. If a dictionary is provided, the first key must be set 
+            The desired Maggma data store where calculation results will be stored. All data stores listed in
+            `maggma.stores.__init__.py` are supported. If a dictionary is provided, the first key must be set
             to the desired store type. The sub-parameters are the keyword arguments accepted by the Store.
-            An example is shown below: 
+            An example is shown below:
 
             ```yaml
             STORE:
@@ -161,11 +151,11 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # ORCA Settings
     # ---------------------------
-    ORCA_CMD: Path = Field(
-        Path(which("orca") or "orca"),
+    ORCA_CMD: str = Field(
+        which("orca") or "orca",
         description=(
             """
-            Path to the ORCA executable. This must be the full, absolute path 
+            Path to the ORCA executable. This must be the full, absolute path
             for parallel calculations to work.
             """
         ),
@@ -190,6 +180,7 @@ class QuaccSettings(BaseSettings):
             "projwfc": "projwfc.x",
             "pp": "pp.x",
             "wannier90": "wannier90.x",
+            "fs": "fs.x",
         },
         description="Name for each espresso binary.",
     )
@@ -204,15 +195,13 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # Gaussian Settings
     # ---------------------------
-    GAUSSIAN_CMD: Path = Field(
-        Path("g16"), description=("Path to the Gaussian executable.")
-    )
+    GAUSSIAN_CMD: str = Field("g16", description=("Path to the Gaussian executable."))
 
     # ---------------------------
     # ONETEP Settings
     # ---------------------------
-    ONETEP_CMD: Optional[Path] = Field(
-        Path("onetep.arch"), description=("Path to the ONETEP executable.")
+    ONETEP_CMD: Optional[str] = Field(
+        "onetep.arch", description=("Path to the ONETEP executable.")
     )
     ONETEP_PARALLEL_CMD: Optional[dict] = Field(
         None,
@@ -227,7 +216,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # GULP Settings
     # ---------------------------
-    GULP_CMD: Path = Field(Path("gulp"), description=("Path to the GULP executable."))
+    GULP_CMD: str = Field("gulp", description=("Path to the GULP executable."))
     GULP_LIB: Optional[Path] = Field(
         None,
         description=(
@@ -298,7 +287,7 @@ class QuaccSettings(BaseSettings):
         1.0,
         description=(
             """
-            Default initial magmom to use for a given element if a preset 
+            Default initial magmom to use for a given element if a preset
             with magmoms is provided but an element is missing from the list.
             """
         ),
@@ -307,7 +296,7 @@ class QuaccSettings(BaseSettings):
         0.05,
         description=(
             """
-            If the absolute value of all magnetic moments are below this value, 
+            If the absolute value of all magnetic moments are below this value,
             they will be set to 0 such that a spin-unpolarized calculation will be performed.
             """
         ),
@@ -316,7 +305,7 @@ class QuaccSettings(BaseSettings):
         True,
         description=(
             """
-            If True, any pre-existing atoms.get_magnetic_moments() will be set 
+            If True, any pre-existing atoms.get_magnetic_moments() will be set
             in atoms.set_initial_magnetic_moments().
             """
         ),
@@ -334,7 +323,7 @@ class QuaccSettings(BaseSettings):
         False,
         description=(
             """
-            If VTST-related input swaps should be used when running Custodian. 
+            If VTST-related input swaps should be used when running Custodian.
             Requires VASP to be compiled with VTST
             """
         ),
@@ -365,7 +354,7 @@ class QuaccSettings(BaseSettings):
         None,
         description=(
             """
-            After this many seconds, Custodian will stop running 
+            After this many seconds, Custodian will stop running
             and ensure that VASP writes a STOPCAR
             """
         ),
@@ -421,7 +410,7 @@ class QuaccSettings(BaseSettings):
         False,
         description=(
             """
-            Whether to run in debug mode. This will set the logging level to DEBUG, 
+            Whether to run in debug mode. This will set the logging level to DEBUG,
             ASE logs (e.g. optimizations, vibrations, thermo) are printed to stdout.
             """
         ),
@@ -429,25 +418,12 @@ class QuaccSettings(BaseSettings):
 
     # --8<-- [end:settings]
 
-    @field_validator("RESULTS_DIR", "SCRATCH_DIR")
-    @classmethod
-    def resolve_and_make_paths(cls, v: Optional[Path]) -> Optional[Path]:
-        """Resolve and make paths."""
-        if v is None:
-            return v
-
-        v = Path(os.path.expandvars(v)).expanduser().resolve()
-        if not v.exists():
-            v.mkdir(parents=True)
-        return v
-
     @field_validator(
+        "RESULTS_DIR",
+        "SCRATCH_DIR",
         "ESPRESSO_PRESET_DIR",
         "ESPRESSO_PSEUDO",
-        "GAUSSIAN_CMD",
-        "GULP_CMD",
         "GULP_LIB",
-        "ORCA_CMD",
         "QCHEM_LOCAL_SCRATCH",
         "NEWTONNET_MODEL_PATH",
         "VASP_PRESET_DIR",
@@ -456,8 +432,21 @@ class QuaccSettings(BaseSettings):
     )
     @classmethod
     def expand_paths(cls, v: Optional[Path]) -> Optional[Path]:
-        """Expand ~/ in paths."""
-        return v.expanduser() if v is not None else v
+        """Expand ~/ and $ENV_VARS in paths."""
+        if v:
+            v = Path(os.path.expandvars(v)).expanduser()
+        return v
+
+    @field_validator("RESULTS_DIR", "SCRATCH_DIR")
+    @classmethod
+    def make_directories(cls, v: Optional[Path]) -> Optional[Path]:
+        """Make directories."""
+        if v:
+            if not v.is_absolute():
+                raise ValueError(f"{v} must be an absolute path.")
+            if not v.exists():
+                v.mkdir(parents=True)
+        return v
 
     @field_validator("STORE")
     def generate_store(cls, v: Union[dict[str, dict[str, Any]], Store]) -> Store:

@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 import os
 from pathlib import Path
 
+import pytest
 from ase.build import bulk
 from maggma.stores import MemoryStore
 
@@ -9,6 +12,7 @@ from quacc.recipes.emt.core import relax_job, static_job
 from quacc.settings import QuaccSettings
 
 FILE_DIR = Path(__file__).parent
+DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 
 def test_file(tmp_path, monkeypatch):
@@ -34,19 +38,25 @@ def test_results_dir(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Cu")
-    relax_job(atoms)
-    assert "opt.traj.gz" in os.listdir(os.getcwd())
-    os.remove("opt.traj.gz")
+    output = relax_job(atoms)
+    assert "opt.traj.gz" in os.listdir(output["dir_name"])
     SETTINGS.GZIP_FILES = False
-    relax_job(atoms)
-    assert "opt.traj" in os.listdir(os.getcwd())
-    os.remove("opt.traj")
+    output = relax_job(atoms)
+    assert "opt.traj" in os.listdir(output["dir_name"])
+    SETTINGS.GZIP_FILES = DEFAULT_SETTINGS.GZIP_FILES
+
+
+def test_bad_dir():
+    with pytest.raises(ValueError, match="must be an absolute path"):
+        SETTINGS.RESULTS_DIR = "bad_dir"
+    with pytest.raises(ValueError, match="must be an absolute path"):
+        SETTINGS.SCRATCH_DIR = "bad_dir"
 
 
 def test_env_var(monkeypatch, tmp_path):
     p = tmp_path / "my/scratch/dir"
     monkeypatch.setenv("QUACC_SCRATCH_DIR", p)
-    assert QuaccSettings().SCRATCH_DIR == p.expanduser().resolve()
+    assert p.expanduser().resolve() == QuaccSettings().SCRATCH_DIR
 
 
 def test_env_var2(monkeypatch, tmp_path):
@@ -80,4 +90,4 @@ def test_yaml(tmp_path, monkeypatch):
     with open(tmp_path / "quacc_test.yaml", "w") as f:
         f.write(f"SCRATCH_DIR: {p}")
     monkeypatch.setenv("QUACC_CONFIG_FILE", os.path.join(tmp_path, "quacc_test.yaml"))
-    assert QuaccSettings().SCRATCH_DIR == p.expanduser().resolve()
+    assert p.expanduser().resolve() == QuaccSettings().SCRATCH_DIR

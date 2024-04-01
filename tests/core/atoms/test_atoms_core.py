@@ -1,8 +1,9 @@
+from __future__ import annotations
+
 from pathlib import Path
 
 import numpy as np
 import pytest
-from ase import Atoms
 from ase.atoms import Atoms
 from ase.build import bulk, molecule
 from ase.io import read

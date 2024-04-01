@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING
 import numpy as np
 from ase.io.espresso import Namelist
 
+from quacc.utils.dicts import Remove
+
 if TYPE_CHECKING:
     from typing import Any
 
@@ -40,7 +42,6 @@ def get_pseudopotential_info(
     dict[str, str]
         The pseudopotentials dictinoary, e.g. {"O": "O.pbe-n-kjpaw_psl.0.1.UPF"}
     """
-
     unique_elements = list(set(atoms.get_chemical_symbols()))
     ecutwfc, ecutrho = 0, 0
     pseudopotentials = {}
@@ -87,24 +88,19 @@ def pw_copy_files(
     prefix = control.get("prefix", "pwscf")
     restart_mode = control.get("restart_mode", "from_scratch")
 
-    outdir = control.get("outdir", ".")
-    wfcdir = control.get("wfcdir", outdir)
-
     files_to_copy = {prev_dir: []}
 
     basics_to_copy = ["charge-density.*", "data-file-schema.*", "paw.*"]
 
     if restart_mode == "restart":
-        files_to_copy[prev_dir].append(Path(wfcdir, f"{prefix}.wfc*"))
-        files_to_copy[prev_dir].append(Path(wfcdir, f"{prefix}.mix*"))
-        files_to_copy[prev_dir].append(Path(wfcdir, f"{prefix}.restart_k*"))
-        files_to_copy[prev_dir].append(Path(wfcdir, f"{prefix}.restart_scf*"))
+        files_to_copy[prev_dir].append(Path(f"{prefix}.wfc*"))
+        files_to_copy[prev_dir].append(Path(f"{prefix}.mix*"))
+        files_to_copy[prev_dir].append(Path(f"{prefix}.restart_k*"))
+        files_to_copy[prev_dir].append(Path(f"{prefix}.restart_scf*"))
     elif include_wfc:
         basics_to_copy.append("wfc*.*")
 
-    files_to_copy[prev_dir].extend(
-        [Path(outdir, f"{prefix}.save", i) for i in basics_to_copy]
-    )
+    files_to_copy[prev_dir].extend([Path(f"{prefix}.save", i) for i in basics_to_copy])
 
     return files_to_copy
 
@@ -134,7 +130,6 @@ def grid_copy_files(
     dict
         The dictionary of files to copy
     """
-
     prefix = ph_input_data["inputph"].get("prefix", "pwscf")
     outdir = ph_input_data["inputph"].get("outdir", ".")
     lqdir = ph_input_data["inputph"].get("lqdir", False)
@@ -192,63 +187,54 @@ def grid_prepare_repr(patterns: dict[str, Any], nblocks: int) -> list:
     list
         The list of representations to do grouped in blocks if nblocks > 1
     """
-
     this_block = nblocks if nblocks > 0 else len(patterns)
     repr_to_do = [rep for rep in patterns if not patterns[rep]["done"]]
     return np.array_split(repr_to_do, np.ceil(len(repr_to_do) / this_block))
 
 
-def sanity_checks(parameters: dict[str, Any], binary: str = "pw") -> None:
+def espresso_prepare_dir(outdir: str | Path, binary: str = "pw") -> dict[str, Any]:
     """
-    Function that performs sanity checks on the input_data. It is meant
-    to catch common mistakes that are not caught by the espresso binaries.
+    Function that prepares the espresso dictionary for the calculation.
 
     Parameters
     ----------
-    parameters
-        The parameters dictionary which is assumed to already be in
-        the nested format.
+    outdir
+        The output to be used for the espresso calculation
     binary
-        The binary to check (default pw).
+        The binary to be used for the espresso calculation
 
     Returns
     -------
     dict
-        The modified parameters dictionary.
+        Input data for the espresso calculation
     """
 
-    input_data = parameters.get("input_data", {})
+    outkeys = {
+        "pw": {"control": {"outdir": outdir, "wfcdir": Remove}},
+        "ph": {
+            "inputph": {
+                "fildyn": "matdyn",
+                "outdir": outdir,
+                "ahc_dir": Remove,
+                "wpot_dir": Remove,
+                "dvscf_star%dir": Remove,
+                "drho_star%dir": Remove,
+            }
+        },
+        "pp": {"inputpp": {"filplot": "tmp.pp", "outdir": outdir}},
+        "dos": {"dos": {"fildos": "pwscf.dos", "outdir": outdir}},
+        "projwfc": {"projwfc": {"filpdos": "pwscf", "outdir": outdir}},
+        "matdyn": {
+            "input": {
+                "fldos": "matdyn.dos",
+                "flfrq": "matdyn.freq",
+                "flvec": "matdyn.modes",
+                "fleig": "matdyn.eig",
+            }
+        },
+        "q2r": {"input": {"flfrc": "q2r.fc"}},
+        "bands": {"bands": {"filband": "bands.out", "outdir": outdir}},
+        "fs": {"fermi": {"file_fs": "fermi_surface.bxsf", "outdir": outdir}},
+    }
 
-    if binary == "ph":
-        input_ph = input_data.get("inputph", {})
-        qpts = parameters.get("qpts", (0, 0, 0))
-
-        qplot = input_ph.get("qplot", False)
-        lqdir = input_ph.get("lqdir", False)
-        recover = input_ph.get("recover", False)
-        ldisp = input_ph.get("ldisp", False)
-
-        is_grid = input_ph.get("start_q") or input_ph.get("start_irr")
-        # Temporary patch for https://gitlab.com/QEF/q-e/-/issues/644
-        if qplot and lqdir and recover and is_grid:
-            prefix = input_ph.get("prefix", "pwscf")
-            outdir = input_ph.get(
-                "outdir", "."
-            )  # TODO: change to self.outdir when DOS PR is merged
-            Path(outdir, "_ph0", f"{prefix}.q_1").mkdir(parents=True, exist_ok=True)
-        if not (ldisp or qplot):
-            if np.array(qpts).shape == (1, 4):
-                LOGGER.warning(
-                    "qpts is a 2D array despite ldisp and qplot being set to False. Converting to 1D array"
-                )
-                qpts = tuple(qpts[0])
-            if lqdir and is_grid and qpts != (0, 0, 0):
-                LOGGER.warning(
-                    "lqdir is set to True but ldisp and qplot are set to False. The band structure will still be computed at each step. Setting lqdir to False"
-                )
-                input_ph["lqdir"] = False
-
-        parameters["input_data"]["inputph"] = input_ph
-        parameters["qpts"] = qpts
-
-    return parameters
+    return outkeys.get(binary, {})

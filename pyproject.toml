@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "quacc"
 description="A platform to enable high-throughput, database-driven quantum chemistry and computational materials science"
-version = "0.6.8"
+version = "0.7.3"
 readme = "README.md"
 license = { text = "BSD-3" }
 authors = [{ name = "Andrew S. Rosen", email = "asrosen@princeton.edu" }]
@@ -18,7 +18,7 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12", 
+    "Programming Language :: Python :: 3.12",
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering",
     "Operating System :: Microsoft :: Windows",
@@ -29,9 +29,9 @@ requires-python = ">=3.9, <3.13"
 dependencies = [
     "ase", # for Atoms object and calculators
     "cclib>=1.8", # for I/O parsing of molecular DFT codes
-    "custodian>=2024.2.15", # for automated error corrections
-    "emmet-core>=0.69.6", # for pre-made schemas
-    "maggma>=0.57.0", # for database handling
+    "custodian>=2024.3.12", # for automated error corrections
+    "emmet-core>=0.80.0", # for pre-made schemas
+    "maggma<=0.63.4", # for database handling
     "monty>=2024.2.26", # miscellaneous Python utilities
     "numpy>=1.25.0", # for array handling
     "psutil", # for getting compute architecture details
@@ -42,22 +42,23 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-covalent = ["covalent>=0.234.0rc0", "covalent-cloud>=0.39.0", "covalent-hpc-plugin>=0.0.3"]
+covalent = ["covalent>=0.234.0rc0", "covalent-cloud>=0.39.0"]
 dask = ["dask[distributed]>=2023.12.1", "dask-jobqueue>=0.8.2"]
 defects = ["pymatgen-analysis-defects>=2023.8.22", "shakenbreak>=3.2.0"]
 jobflow = ["jobflow>=0.1.14", "jobflow-remote>=0.1.0", "fireworks>=2.0.3"]
-mlp = ["matgl>=1.0.0", "chgnet>=0.3.3", "mace-torch>=0.3.3", "torch-dftd>=0.4.0"]
+mlp = ["matgl>=1.0.0", "chgnet>=0.3.3", "mace-torch>=0.3.3", "torch-dftd>=0.4.0", "torch<=2.2.1"]
+mp = ["pymatgen-io-validation>=0.0.1"]
 newtonnet = ["newtonnet>=1.1"]
 parsl = ["parsl[monitoring]>=2023.10.23"]
 phonons = ["phonopy>=2.20.0", "seekpath>=2.1.0"]
 prefect = ["prefect>=2.14.14", "prefect-dask>=0.2.6", "dask-jobqueue>=0.8.2"]
 redun = ["redun>=0.16.2"]
-sella = ["sella>=2.3.2", "jax<=0.4.24", "jaxlib<=0.4.24"]
+sella = ["sella>=2.3.3"]
 tblite = ["tblite[ase]>=0.3.0; platform_system=='Linux'"]
-dev = ["black>=23.7.0", "codecov-cli>=0.4.1", "isort>=5.12.0", "pytest>=7.4.0", "pytest-cov>=3.0.0", "ruff>=0.0.285"]
+dev = ["codecov-cli>=0.4.1", "pytest>=7.4.0", "pytest-cov>=3.0.0", "ruff>=0.0.285"]
 docs = [
     "blacken-docs>=1.16.0",
-    "mkdocs-material>=9.1.21",
+    "mkdocs-material>=9.5.16",
     "mkdocstrings[python]>=0.22.0",
     "mkdocs-gen-files>=0.5.0",
     "mkdocs-literate-nav>=0.6.0",
@@ -118,31 +119,36 @@ exclude_also = [
 
 [tool.ruff]
 lint.select = [
-  "E", "F", "W", # flake8
-  "B",           # flake8-bugbear
-  "I",           # isort
-  "ARG",         # flake8-unused-arguments
-  "C4",          # flake8-comprehensions
-  "EM",          # flake8-errmsg
-  "ICN",         # flake8-import-conventions
-  "ISC",         # flake8-implicit-str-concat
-  "G",           # flake8-logging-format
-  "PGH",         # pygrep-hooks
-  "PIE",         # flake8-pie
-  "PL",          # pylint
-  "PT",          # flake8-pytest-style
-  "PTH",         # flake8-use-pathlib
-  "RET",         # flake8-return
-  "RUF",         # Ruff-specific
-  "SIM",         # flake8-simplify
-  "T20",         # flake8-print
-  "UP",          # pyupgrade
-  "YTT",         # flake8-2020
-  "EXE",         # flake8-executable
-  "NPY",         # NumPy specific rules
-  "PD",          # pandas-vet
+  "B",      # flake8-bugbear
+  "C4",     # flake8-comprehensions
+  "E",      # pycodestyle error
+  "EXE",    # flake8-executable
+  "F",      # pyflakes
+  "FA",     # flake8-future-annotations
+  "FBT003", # boolean-positional-value-in-call
+  "FLY",    # flynt
+  "I",      # isort
+  "ICN",    # flake8-import-conventions
+  "PD",     # pandas-vet
+  "PERF",   # perflint
+  "PIE",    # flake8-pie
+  "PL",     # pylint
+  "PT",     # flake8-pytest-style
+  "PYI",    # flakes8-pyi
+  "Q",      # flake8-quotes
+  "RET",    # flake8-return
+  "RSE",    # flake8-raise
+  "RUF",    # Ruff-specific rules
+  "SIM",    # flake8-simplify
+  "SLOT",   # flake8-slots
+  "TCH",    # flake8-type-checking
+  "TID",    # tidy imports
+  "TID",    # flake8-tidy-imports
+  "UP",     # pyupgrade
+  "W",      # pycodestyle warning
+  "YTT",    # flake8-2020
 ]
-lint.extend-ignore = [
+lint.ignore = [
   "PLR",    # Design related pylint codes
   "E501",   # Line too long
   "B028",   # No explicit stacklevel
@@ -151,6 +157,10 @@ lint.extend-ignore = [
   "G004",   # f-string in Logging statement
   "RUF015", # Prefer next(iter())
   "RET505", # Unnecessary `elif` after `return`
+  "PT004",  # Fixture does not return anthing
+  "B017",   # pytest.raises
+  "PT011",  # pytest.raises
+  "PT012",  # pytest.raises
 ]
 lint.typing-modules = ["mypackage._compat.typing"]
 src = ["src"]
@@ -158,12 +168,14 @@ lint.unfixable = [
   "T20",  # Removes print statements
   "F841", # Removes unused variables
 ]
-exclude = []
-lint.flake8-unused-arguments.ignore-variadic-names = true
-extend-exclude = ["tests", "src/quacc/settings.py", "src/quacc/schemas/cclib.py"]
 lint.pydocstyle.convention = "numpy"
-lint.isort.required-imports = ["from __future__ import annotations"]
 lint.isort.known-first-party = ["quacc"]
+lint.isort.required-imports = ["from __future__ import annotations"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+"tests/**" = ["ANN201", "D", "E402", "S101"]
+"src/quacc/settings.py" = ["FBT003", "TCH002", "UP007"]
 
 [tool.docformatter]
 pre-summary-newline = true

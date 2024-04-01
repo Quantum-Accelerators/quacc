@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import gzip
 from io import StringIO
 from pathlib import Path
@@ -13,8 +15,7 @@ RUN_PATH = Path(__file__).parent / "test_runs"
 
 def _read_gzip_file(file_path):
     with gzip.open(file_path, "rt", encoding="utf-8") as file:
-        content = file.read()
-    return content
+        return file.read()
 
 
 @pytest.mark.parametrize("i", range(1, 66, 5))
@@ -44,6 +45,5 @@ def test_read_espresso_ph_1():
 def test_dos_output(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     template = EspressoTemplate(binary="dos")
-    template.outfiles = {"fildos": Path(RUN_PATH, "test.dos")}
-    results = template.read_results(directory=".")
-    assert results["test_dos"]["fermi"] == pytest.approx(5.98)
+    results = template.read_results(directory=Path(RUN_PATH))
+    assert results["dos_results"]["fermi"] == pytest.approx(5.98)

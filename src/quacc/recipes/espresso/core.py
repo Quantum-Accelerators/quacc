@@ -8,7 +8,7 @@ from ase.optimize import LBFGS
 
 from quacc import job
 from quacc.calculators.espresso.espresso import EspressoTemplate
-from quacc.recipes.espresso._base import base_fn, base_opt_fn
+from quacc.recipes.espresso._base import run_and_summarize, run_and_summarize_opt
 
 if TYPE_CHECKING:
     from typing import Any
@@ -58,10 +58,9 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {"input_data": {"control": {"calculation": "scf"}}}
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         preset=preset,
         template=EspressoTemplate("pw", test_run=test_run),
@@ -115,14 +114,13 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "input_data": {
             "control": {"calculation": "vc-relax" if relax_cell else "relax"}
         }
     }
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         preset=preset,
         template=EspressoTemplate("pw", test_run=test_run),
@@ -167,9 +165,8 @@ def ase_relax_job(
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
     opt_params
-        Dictionary of parameters to pass to the optimizer. pass "optimizer"
-        to change the optimizer being used. "fmax" and "max_steps" are commonly
-        used keywords. See the ASE documentation for more information.
+        Dictionary of custom kwargs for the optimization process. For a list
+        of available keys, refer to [quacc.runners.ase.run_opt][].
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
@@ -183,7 +180,6 @@ def ase_relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "input_data": {
             "control": {"calculation": "scf", "tstress": relax_cell, "tprnfor": True}
@@ -192,7 +188,7 @@ def ase_relax_job(
 
     opt_defaults = {"optimizer": LBFGS}
 
-    return base_opt_fn(
+    return run_and_summarize_opt(
         atoms,
         preset=preset,
         relax_cell=relax_cell,
@@ -238,7 +234,6 @@ def post_processing_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "input_data": {
             "inputpp": {"plot_num": 0},
@@ -250,7 +245,7 @@ def post_processing_job(
         }
     }
 
-    return base_fn(
+    return run_and_summarize(
         template=EspressoTemplate("pp", test_run=test_run),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -299,10 +294,9 @@ def non_scf_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {"input_data": {"control": {"calculation": "nscf"}}}
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         preset=preset,
         template=EspressoTemplate("pw", test_run=test_run),

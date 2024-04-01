@@ -3,20 +3,21 @@
 from __future__ import annotations
 
 import struct
+import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ase import units
-from emmet.core.tasks import _parse_custodian
-from pymatgen.io.qchem.inputs import QCInput
+from emmet.core.qc_tasks import TaskDoc
 from pymatgen.io.qchem.outputs import (
-    QCOutput,
     gradient_parser,
     hessian_parser,
     orbital_coeffs_parser,
 )
 
 if TYPE_CHECKING:
+    from pymatgen.io.qchem.inputs import QCInput
+
     from quacc.calculators.qchem.qchem import Results
 
 
@@ -69,23 +70,14 @@ def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float]]:
     """
     directory = Path(directory)
 
-    qc_input = QCInput.from_file(directory / "mol.qin")
-    qc_output = QCOutput(directory / "mol.qout").data
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=UserWarning)
+        task_doc = TaskDoc.from_directory(directory, validate_lot=False).model_dump()
 
     results: Results = {
-        "energy": qc_output["final_energy"] * units.Hartree,
-        "qc_output": qc_output,
-        "qc_input": qc_input.as_dict(),
-        "custodian": _parse_custodian(directory),
+        "energy": task_doc["output"]["final_energy"] * units.Hartree,
+        "taskdoc": task_doc,
     }
-
-    # Parse thermo properties
-    if "total_enthalpy" in qc_output:
-        results["enthalpy"] = qc_output["total_enthalpy"] * (units.kcal / units.mol)
-    if "total_entropy" in qc_output:
-        results["entropy"] = qc_output["total_entropy"] * (
-            0.001 * units.kcal / units.mol
-        )
 
     # Read the gradient scratch file in 8 byte chunks
     grad_scratch = directory / "131.0"
@@ -97,9 +89,7 @@ def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float]]:
     # Read Hessian scratch file in 8 byte chunks
     hessian_scratch = directory / "132.0"
     if hessian_scratch.exists() and hessian_scratch.stat().st_size > 0:
-        reshaped_hess = hessian_parser(
-            hessian_scratch, n_atoms=len(qc_output["species"])
-        )
+        reshaped_hess = hessian_parser(hessian_scratch, n_atoms=task_doc["natoms"])
         results["hessian"] = reshaped_hess * (units.Hartree / units.Bohr**2)
 
     # Read orbital coefficients scratch file in 8 byte chunks

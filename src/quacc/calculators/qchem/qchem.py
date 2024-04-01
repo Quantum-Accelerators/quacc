@@ -24,15 +24,7 @@ if TYPE_CHECKING:
         energy: float  # electronic energy in eV
         forces: NDArray  # forces in eV/A
         hessian: NDArray  # Hessian in eV/A^2/amu
-        enthalpy: float  # total enthalpy in eV
-        entropy: float  # total entropy in eV/K
-        qc_output: dict[
-            str, Any
-        ]  # Output from `pymatgen.io.qchem.outputs.QCOutput.data`
-        qc_input: dict[
-            str, Any
-        ]  # Input from `pymatgen.io.qchem.inputs.QCInput.as_dict()`
-        custodian: dict[str, Any]  # custodian.json file metadata
+        taskdoc: dict[str, Any]  # Output from `emmet.core.qc_tasks.TaskDoc`
 
 
 class QChem(FileIOCalculator):
@@ -42,11 +34,7 @@ class QChem(FileIOCalculator):
         "energy",
         "forces",
         "hessian",
-        "enthalpy",
-        "entropy",
-        "qc_output",
-        "qc_input",
-        "custodian",
+        "taskdoc",
     ]
     results: ClassVar[Results] = {}
 
@@ -206,7 +194,6 @@ class QChem(FileIOCalculator):
         -------
         None
         """
-
         # Assign variables to self
         self.atoms = atoms
         self.charge = charge
@@ -231,9 +218,6 @@ class QChem(FileIOCalculator):
 
         # Instantiate previous orbital coefficients
         self.prev_orbital_coeffs = None
-
-        if "directory" in self.fileiocalculator_kwargs:
-            raise NotImplementedError("The directory kwarg is not supported.")
 
         # Clean up parameters
         cleanup_attrs(self)
@@ -277,10 +261,13 @@ class QChem(FileIOCalculator):
 
         qc_input = make_qc_input(self, atoms)
 
-        write_qchem(qc_input, prev_orbital_coeffs=self.prev_orbital_coeffs)
+        write_qchem(
+            qc_input,
+            directory=self.directory,
+            prev_orbital_coeffs=self.prev_orbital_coeffs,
+        )
 
-    @staticmethod
-    def execute() -> int:
+    def execute(self) -> int:
         """
         Execute Q-Chem.
 
@@ -289,8 +276,7 @@ class QChem(FileIOCalculator):
         int
             The return code.
         """
-
-        run_custodian()
+        run_custodian(directory=self.directory)
         return 0
 
     def read_results(self) -> None:
@@ -302,7 +288,7 @@ class QChem(FileIOCalculator):
         -------
         None
         """
-        results, prev_orbital_coeffs = read_qchem()
+        results, prev_orbital_coeffs = read_qchem(directory=self.directory)
         self.results = results
         self.prev_orbital_coeffs = prev_orbital_coeffs
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pytest
 
 pytest.importorskip("sella")
@@ -56,51 +58,37 @@ def test_freq_job(tmp_path, monkeypatch):
     atoms = molecule("H2O")
     output = freq_job(atoms)
     assert output["atoms"] == molecule("H2O")
-    assert len(output["vib"]["results"]["vib_freqs_raw"]) == 9
-    assert len(output["vib"]["results"]["vib_freqs"]) == 3
-    assert output["vib"]["results"]["vib_freqs_raw"][-1] == pytest.approx(
-        4090.37777396351
-    )
-    assert output["vib"]["results"]["vib_freqs"][0] == pytest.approx(1814.0941260498644)
-    assert output["vib"]["results"]["vib_freqs"][-1] == pytest.approx(4090.37777396351)
-    assert output["vib"]["results"]["n_imag"] == 0
-    assert output["vib"]["results"]["imag_vib_freqs"] == []
+    assert len(output["results"]["vib_freqs_raw"]) == 9
+    assert len(output["results"]["vib_freqs"]) == 3
+    assert output["results"]["vib_freqs_raw"][-1] == pytest.approx(4090.37777396351)
+    assert output["results"]["vib_freqs"][0] == pytest.approx(1814.0941260498644)
+    assert output["results"]["vib_freqs"][-1] == pytest.approx(4090.37777396351)
+    assert output["results"]["n_imag"] == 0
+    assert output["results"]["imag_vib_freqs"] == []
 
-    assert output["thermo"]["atoms"] == atoms
-    assert output["thermo"]["symmetry"]["point_group"] == "C2v"
-    assert output["thermo"]["symmetry"]["rotation_number"] == 2
-    assert output["thermo"]["symmetry"]["linear"] is False
-    assert output["thermo"]["results"]["energy"] == pytest.approx(-9.515200426406743)
-    assert output["thermo"]["results"]["enthalpy"] == pytest.approx(-8.807932688921495)
-    assert output["thermo"]["results"]["entropy"] == pytest.approx(
-        0.0019582788098945945
-    )
-    assert output["thermo"]["results"]["gibbs_energy"] == pytest.approx(
-        -9.391793516091568
-    )
+    assert output["symmetry"]["point_group"] == "C2v"
+    assert output["symmetry"]["rotation_number"] == 2
+    assert output["symmetry"]["linear"] is False
+    assert output["results"]["energy"] == pytest.approx(-9.515200426406743)
+    assert output["results"]["enthalpy"] == pytest.approx(-8.807932688921495)
+    assert output["results"]["entropy"] == pytest.approx(0.0019582788098945945)
+    assert output["results"]["gibbs_energy"] == pytest.approx(-9.391793516091568)
 
     atoms = molecule("CH3")
     output = freq_job(atoms, temperature=1000, pressure=20)
     assert output["atoms"] == molecule("CH3")
-    assert len(output["vib"]["results"]["vib_freqs_raw"]) == 12
-    assert len(output["vib"]["results"]["vib_freqs"]) == 6
-    assert output["vib"]["results"]["vib_energies_raw"][0] == pytest.approx(
+    assert len(output["results"]["vib_freqs_raw"]) == 12
+    assert len(output["results"]["vib_freqs"]) == 6
+    assert output["results"]["vib_energies_raw"][0] == pytest.approx(
         -0.09441402482739979
     )
-    assert output["vib"]["results"]["vib_energies_raw"][-1] == pytest.approx(
+    assert output["results"]["vib_energies_raw"][-1] == pytest.approx(
         0.3925829460532815
     )
-    assert output["vib"]["results"]["vib_energies"][0] == pytest.approx(
-        -0.09441402482739979
-    )
-    assert output["vib"]["results"]["vib_energies"][-1] == pytest.approx(
-        0.3925829460532815
-    )
-    assert output["vib"]["results"]["n_imag"] == 1
-    assert output["vib"]["results"]["imag_vib_freqs"] == pytest.approx(
-        [-761.5004719152678]
-    )
-    assert output["thermo"]["atoms"] == molecule("CH3")
+    assert output["results"]["vib_energies"][0] == pytest.approx(-0.09441402482739979)
+    assert output["results"]["vib_energies"][-1] == pytest.approx(0.3925829460532815)
+    assert output["results"]["n_imag"] == 1
+    assert output["results"]["imag_vib_freqs"] == pytest.approx([-761.5004719152678])
 
 
 def test_ts_job_with_default_args(tmp_path, monkeypatch):
@@ -116,9 +104,8 @@ def test_ts_job_with_default_args(tmp_path, monkeypatch):
     assert isinstance(output, dict)
 
     assert "freq_job" in output
-    assert "thermo" in output["freq_job"]
     assert output["results"]["energy"] == pytest.approx(-6.796914263061945)
-    assert output["freq_job"]["vib"]["results"]["imag_vib_freqs"][0] == pytest.approx(
+    assert output["freq_job"]["results"]["imag_vib_freqs"][0] == pytest.approx(
         -2426.7398321816004
     )
 
@@ -134,7 +121,7 @@ def test_ts_job_with_custom_hessian(tmp_path, monkeypatch):
 
     # Perform assertions on the result
     assert isinstance(output, dict)
-    assert "thermo" in output["freq_job"]
+    assert "results" in output["freq_job"]
 
 
 def test_irc_job_with_default_args(tmp_path, monkeypatch):
@@ -149,9 +136,7 @@ def test_irc_job_with_default_args(tmp_path, monkeypatch):
     assert isinstance(output, dict)
 
     assert output["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.517354091813969
-    )
+    assert output["freq_job"]["results"]["energy"] == pytest.approx(-9.517354091813969)
 
 
 def test_irc_job_with_custom_fmax(tmp_path, monkeypatch):
@@ -171,9 +156,7 @@ def test_irc_job_with_custom_fmax(tmp_path, monkeypatch):
     assert isinstance(output, dict)
 
     assert output["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.517354091813969
-    )
+    assert output["freq_job"]["results"]["energy"] == pytest.approx(-9.517354091813969)
 
 
 def test_irc_job_with_custom_max_steps(tmp_path, monkeypatch):
@@ -189,9 +172,7 @@ def test_irc_job_with_custom_max_steps(tmp_path, monkeypatch):
     assert isinstance(output, dict)
 
     assert output["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.517354091813969
-    )
+    assert output["freq_job"]["results"]["energy"] == pytest.approx(-9.517354091813969)
 
 
 def test_irc_job_with_custom_temperature_and_pressure(tmp_path, monkeypatch):
@@ -210,9 +191,7 @@ def test_irc_job_with_custom_temperature_and_pressure(tmp_path, monkeypatch):
     assert isinstance(output, dict)
 
     assert output["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.517354091813969
-    )
+    assert output["freq_job"]["results"]["energy"] == pytest.approx(-9.517354091813969)
 
 
 def test_irc_job_with_custom_opt_params(tmp_path, monkeypatch):
@@ -228,9 +207,7 @@ def test_irc_job_with_custom_opt_params(tmp_path, monkeypatch):
     assert isinstance(output, dict)
 
     assert output["results"]["energy"] == pytest.approx(-9.517354965639784)
-    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.517354965639784
-    )
+    assert output["freq_job"]["results"]["energy"] == pytest.approx(-9.517354965639784)
 
 
 def test_quasi_irc_job_with_default_args(tmp_path, monkeypatch):
@@ -246,9 +223,7 @@ def test_quasi_irc_job_with_default_args(tmp_path, monkeypatch):
 
     assert output["irc_job"]["results"]["energy"] == pytest.approx(-9.517354091813969)
     assert output["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.517354091813969
-    )
+    assert output["freq_job"]["results"]["energy"] == pytest.approx(-9.517354091813969)
 
 
 def test_quasi_irc_job_with_custom_direction(tmp_path, monkeypatch):
@@ -267,9 +242,7 @@ def test_quasi_irc_job_with_custom_direction(tmp_path, monkeypatch):
     assert output["irc_job"]["results"]["energy"] == pytest.approx(-9.517354965639784)
     assert output["irc_job"]["results"]["energy"] == pytest.approx(-9.517354965639784)
     assert output["results"]["energy"] == pytest.approx(-9.517354965639784)
-    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.517354965639784
-    )
+    assert output["freq_job"]["results"]["energy"] == pytest.approx(-9.517354965639784)
 
 
 def test_quasi_irc_job_with_custom_temperature_and_pressure(tmp_path, monkeypatch):
@@ -290,9 +263,7 @@ def test_quasi_irc_job_with_custom_temperature_and_pressure(tmp_path, monkeypatc
 
     assert output["irc_job"]["results"]["energy"] == pytest.approx(-9.517354091813969)
     assert output["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.517354091813969
-    )
+    assert output["freq_job"]["results"]["energy"] == pytest.approx(-9.517354091813969)
 
 
 def test_quasi_irc_job_with_custom_irc_swaps(tmp_path, monkeypatch):
@@ -310,6 +281,4 @@ def test_quasi_irc_job_with_custom_irc_swaps(tmp_path, monkeypatch):
 
     assert output["irc_job"]["results"]["energy"] == pytest.approx(-9.517354965639784)
     assert output["results"]["energy"] == pytest.approx(-9.517354965639784)
-    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.517354965639784
-    )
+    assert output["freq_job"]["results"]["energy"] == pytest.approx(-9.517354965639784)

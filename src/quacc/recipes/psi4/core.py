@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from monty.dev import requires
 
 from quacc import job
-from quacc.recipes.psi4._base import base_fn
+from quacc.recipes.psi4._base import run_and_summarize
 
 try:
     import psi4
@@ -60,7 +60,6 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "mem": "16GB",
         "num_threads": "max",
@@ -70,7 +69,7 @@ def static_job(
         "multiplicity": spin_multiplicity,
         "reference": "uks" if spin_multiplicity > 1 else "rks",
     }
-    return base_fn(
+    return run_and_summarize(
         atoms,
         charge=charge,
         spin_multiplicity=spin_multiplicity,

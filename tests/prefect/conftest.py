@@ -1,4 +1,5 @@
-import os
+from __future__ import annotations
+
 from pathlib import Path
 
 import pytest
@@ -14,6 +15,8 @@ except ImportError:
 if prefect:
 
     def pytest_sessionstart():
+        import os
+
         from prefect.testing.utilities import prefect_test_harness
 
         file_dir = Path(__file__).parent

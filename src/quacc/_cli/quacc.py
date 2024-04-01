@@ -33,19 +33,19 @@ def callback(value: bool) -> None:
 
     if value:
         rich_print(f"quacc v{__version__}")
-        raise typer.Exit()
+        raise typer.Exit
 
 
 @app.callback()
 def main(
-    version: Optional[bool] = typer.Option(  # noqa: ARG001, UP007
+    version: Optional[bool] = typer.Option(  # noqa: UP007
         None,
         "--version",
         "-v",
         help="Show the application's version and exit.",
         callback=callback,
         is_eager=True,
-    )
+    ),
 ) -> None:
     """
     The main CLI interface, with an option to return the version.
@@ -99,7 +99,7 @@ def unset(parameter: str) -> None:
     will not override any environment variables.
 
     Parameters
-    ---------
+    ----------
     parameter
         The quacc parameter to unset.
 

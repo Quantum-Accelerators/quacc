@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pytest
 
 pytest.importorskip("tblite.ase")
@@ -5,6 +7,7 @@ from copy import deepcopy
 
 import numpy as np
 from ase.build import bulk, molecule
+from numpy.testing import assert_array_equal
 
 from quacc import SETTINGS
 from quacc.recipes.tblite.core import freq_job, relax_job, static_job
@@ -20,6 +23,8 @@ def test_static_job_v1(tmp_path, monkeypatch):
     assert output["parameters"]["method"] == "GFN2-xTB"
     assert output["results"]["energy"] == pytest.approx(-137.96777594361672)
     assert np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
+    assert_array_equal(output["atoms"].get_initial_magnetic_moments(), [0.0, 0.0, 0.0])
+    assert output["spin_multiplicity"] == 1
 
 
 def test_static_job_v2(tmp_path, monkeypatch):
@@ -30,6 +35,20 @@ def test_static_job_v2(tmp_path, monkeypatch):
     assert output["parameters"]["method"] == "GFN1-xTB"
     assert output["results"]["energy"] == pytest.approx(-156.96750578831137)
     assert np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
+    assert output["spin_multiplicity"] == 1
+
+
+def test_static_job_v3(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    atoms = molecule("H")
+    atoms.set_initial_magnetic_moments([1.0])
+    output = static_job(atoms, method="GFN1-xTB")
+    assert output["parameters"]["method"] == "GFN1-xTB"
+    assert output["results"]["energy"] == pytest.approx(-10.92345239113973)
+    assert np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
+    assert output["spin_multiplicity"] == 2
+    assert_array_equal(output["atoms"].get_initial_magnetic_moments(), [1.0])
 
 
 def test_relax_job(tmp_path, monkeypatch):
@@ -49,11 +68,13 @@ def test_relax_job_cell(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Cu")
+    atoms.set_initial_magnetic_moments([1.0])
     output = relax_job(atoms, method="GFN1-xTB", relax_cell=True)
     assert output["parameters"]["method"] == "GFN1-xTB"
     assert output["trajectory_results"][-1]["energy"] == pytest.approx(
         -130.4917433263215
     )
+    assert "spin_multiplicity" not in output
 
 
 def test_freq_job_v1(tmp_path, monkeypatch):
@@ -70,6 +91,7 @@ def test_freq_job_v1(tmp_path, monkeypatch):
     assert output["results"]["vib_freqs"][-1] == pytest.approx(3526.9940431752034)
     assert output["results"]["n_imag"] == 0
     assert output["results"]["imag_vib_freqs"] == []
+    assert output["spin_multiplicity"] == 1
 
     assert output["symmetry"]["point_group"] == "C2v"
     assert output["symmetry"]["rotation_number"] == 2
@@ -100,6 +122,7 @@ def test_freq_job_v2(tmp_path, monkeypatch):
     assert output["results"]["vib_freqs"] == []
     assert output["results"]["n_imag"] == 0
     assert output["results"]["imag_vib_freqs"] == []
+    assert output["spin_multiplicity"] == 2
 
     assert output["symmetry"]["linear"] is False
     assert output["symmetry"]["rotation_number"] == np.inf
@@ -114,6 +137,7 @@ def test_freq_job_v3(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = molecule("CH3")
+    atoms.set_initial_magnetic_moments([1.0, 0.0, 0.0, 0.0])
     initial_atoms = deepcopy(atoms)
     output = freq_job(atoms, energy=-10.0, temperature=1000, pressure=20)
     assert output["atoms"] == initial_atoms
@@ -129,6 +153,7 @@ def test_freq_job_v3(tmp_path, monkeypatch):
     assert output["results"]["vib_energies"][-1] == pytest.approx(0.3880868821616259)
     assert output["results"]["n_imag"] == 0
     assert output["results"]["imag_vib_freqs"] == []
+    assert output["spin_multiplicity"] == 2
 
     assert output["parameters_thermo"]["temperature"] == 1000.0
     assert output["parameters_thermo"]["pressure"] == 20.0
@@ -143,6 +168,9 @@ def test_freq_job_v3(tmp_path, monkeypatch):
     assert output["results"]["gibbs_energy"] == pytest.approx(-11.100020872176652)
     assert "nid" in output
     assert "dir_name" in output
+    assert_array_equal(
+        output["atoms"].get_initial_magnetic_moments(), [1.0, 0.0, 0.0, 0.0]
+    )
 
 
 def test_unique_workdir(tmp_path, monkeypatch):

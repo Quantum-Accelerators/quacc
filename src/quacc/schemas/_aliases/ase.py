@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
-from typing import Any, TypedDict
-
-from ase.atoms import Atoms
-from numpy.typing import NDArray
+from typing import TYPE_CHECKING, Any, TypedDict
 
 from quacc.schemas._aliases.atoms import AtomsSchema
+
+if TYPE_CHECKING:
+    from ase.atoms import Atoms
+    from numpy.typing import NDArray
 
 Results = dict[str, Any]  # from atoms.calc.results
 Parameters = dict[str, Any]  # from atoms.calc.parameters
@@ -53,8 +54,6 @@ class VibResults(TypedDict):
 
 
 class VibSchema(AtomsSchema):
-    """Schema for [quacc.schemas.ase.summarize_vib_run][]"""
-
     parameters: Parameters | None
     parameters_vib: ParametersVib | None
     results: VibResults

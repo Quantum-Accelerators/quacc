@@ -129,7 +129,6 @@ def copy_decompress_files(
     -------
     None
     """
-
     source_directory = Path(source_directory).expanduser()
     destination_directory = Path(destination_directory).expanduser()
 
@@ -137,20 +136,18 @@ def copy_decompress_files(
         filenames = [filenames]
 
     for f in filenames:
-        f_path = Path(f)
         globs_found = list(source_directory.glob(str(f)))
         if not globs_found:
             logger.warning(f"Cannot find file {f} in {source_directory}")
         for source_filepath in globs_found:
-            n_parts_to_keep = len(f_path.parts)
-            destination_filepath = destination_directory / Path(
-                "/".join(source_filepath.parts[-n_parts_to_keep:])
+            destination_filepath = destination_directory / source_filepath.relative_to(
+                source_directory
             )
             Path(destination_filepath.parent).mkdir(parents=True, exist_ok=True)
 
             if source_filepath.is_symlink():
                 continue
-            elif source_filepath.is_file():
+            if source_filepath.is_file():
                 copy(source_filepath, destination_filepath)
                 decompress_file(destination_filepath)
             elif source_filepath.is_dir():
@@ -204,7 +201,6 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
     dict
         The calculator configuration (i.e. settings).
     """
-
     yaml_path = Path(yaml_path).expanduser()
 
     if yaml_path.suffix != ".yaml":

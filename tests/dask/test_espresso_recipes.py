@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pytest
 
 dask = pytest.importorskip("dask")
@@ -18,6 +20,7 @@ pytestmark = pytest.mark.skipif(
 from pathlib import Path
 
 from ase.build import bulk
+from monty.io import zopen
 
 from quacc.recipes.espresso.phonons import grid_phonon_flow
 from quacc.utils.files import copy_decompress_files
@@ -30,6 +33,7 @@ client = default_client()
 
 def test_phonon_grid_single(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
     copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
 
@@ -70,9 +74,19 @@ def test_phonon_grid_single(tmp_path, monkeypatch):
     for key in sections:
         assert key in grid_results["results"][1]
 
+    outfile = Path(grid_results["dir_name"], "ph.out.gz")
+
+    assert outfile.exists()
+
+    with zopen(outfile, "r") as fd:
+        lines = str(fd.read())
+
+    assert "Self-consistent Calculation" not in lines
+
 
 def test_phonon_grid_single_gamma(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
     copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
 
@@ -115,6 +129,7 @@ def test_phonon_grid_single_gamma(tmp_path, monkeypatch):
 
 def test_phonon_grid_qplot(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
     copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
 
@@ -159,6 +174,7 @@ def test_phonon_grid_qplot(tmp_path, monkeypatch):
 
 def test_phonon_grid_disp(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
     copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
 
@@ -210,6 +226,7 @@ def test_phonon_grid_disp(tmp_path, monkeypatch):
 
 def test_phonon_grid_v2(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
     copy_decompress_files(DATA_DIR, ["Li.upf.gz"], tmp_path)
 
