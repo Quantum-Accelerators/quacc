@@ -247,7 +247,7 @@ def espresso_prepare_dir(outdir: str | Path, binary: str = "pw") -> dict[str, An
                 "outdir": outdir,
             }
         },
-        "dvscf_q2r_job": {
+        "dvscf_q2r": {
             "input": {
                 "prefix": "pwscf",
                 "fildyn": "matdyn",
