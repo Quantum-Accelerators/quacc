@@ -487,7 +487,7 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, ESPRESSO_PARALLEL
         }
     }
     q2r_results = q2r_job(
-        c_scf_results["dir_name"], **q2r_params, parallel_info=ESPRESSO_PARALLEL_INFO
+        c_ph_results["dir_name"], **q2r_params, parallel_info=ESPRESSO_PARALLEL_INFO
     )
 
     dvscf_q2r_params = {
