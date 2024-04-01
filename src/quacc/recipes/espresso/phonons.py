@@ -119,18 +119,10 @@ def q2r_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    input_data = Namelist(calc_kwargs.get("input_data"))
-    input_data.to_nested(binary="q2r")
-
-    fildyn = input_data["input"].get("fildyn", "matdyn")
-
-    calc_defaults = {"input_data": {"input": {"flfrc": "q2r.fc", "fildyn": fildyn}}}
-
-    copy_files = {prev_dir: [f"{fildyn}*"]}
+    copy_files = {prev_dir: ["matdyn*"]}
 
     return run_and_summarize(
         template=EspressoTemplate("q2r"),
-        calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "q2r.x Phonon"},
@@ -168,18 +160,10 @@ def matdyn_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    input_data = Namelist(calc_kwargs.get("input_data"))
-    input_data.to_nested(binary="matdyn")
-
-    flfrc = input_data["input"].get("flfrc", "q2r.fc")
-
-    calc_defaults = {"input_data": {"input": {"flfrc": flfrc}}}
-
-    copy_files = {prev_dir: [f"{flfrc}*"]}
+    copy_files = {prev_dir: ["q2r.fc"]}
 
     return run_and_summarize(
         template=EspressoTemplate("matdyn"),
-        calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "matdyn Phonon"},
