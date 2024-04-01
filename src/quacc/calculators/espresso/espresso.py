@@ -217,13 +217,7 @@ class EspressoTemplate(EspressoTemplate_):
                 energy = lines[1:, 0]
                 dos = lines[1:, 1]
                 pdos = lines[1:, 2]
-            results = {
-                "projwfc_results": {
-                    "energy": energy,
-                    "dos": dos,
-                    "pdos": pdos,
-                }
-            }
+            results = {"projwfc_results": {"energy": energy, "dos": dos, "pdos": pdos}}
         elif self.binary == "matdyn":
             fldos = Path(directory, "matdyn.dos")
             if fldos.exists():
@@ -266,7 +260,7 @@ class EspressoTemplate(EspressoTemplate_):
         outkeys = espresso_prepare_dir(espresso_outdir, self.binary)
 
         input_data = parameters.get("input_data", {})
-        input_data = recursive_dict_merge(input_data, outkeys)
+        input_data = recursive_dict_merge(input_data, outkeys, verbose=True)
 
         parameters["input_data"] = input_data
 

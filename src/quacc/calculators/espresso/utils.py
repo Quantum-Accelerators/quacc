@@ -210,9 +210,10 @@ def espresso_prepare_dir(outdir: str | Path, binary: str = "pw") -> dict[str, An
     """
 
     outkeys = {
-        "pw": {"control": {"outdir": outdir, "wfcdir": Remove}},
+        "pw": {"control": {"prefix": "pwscf", "outdir": outdir, "wfcdir": Remove}},
         "ph": {
             "inputph": {
+                "prefix": "pwscf",
                 "fildyn": "matdyn",
                 "outdir": outdir,
                 "ahc_dir": Remove,
@@ -221,22 +222,40 @@ def espresso_prepare_dir(outdir: str | Path, binary: str = "pw") -> dict[str, An
                 "drho_star%dir": Remove,
             }
         },
-        "pp": {"inputpp": {"filplot": "tmp.pp", "outdir": outdir}},
-        "dos": {"dos": {"fildos": "pwscf.dos", "outdir": outdir}},
-        "projwfc": {"projwfc": {"filpdos": "pwscf", "outdir": outdir}},
+        "pp": {"inputpp": {"prefix": "pwscf", "filplot": "tmp.pp", "outdir": outdir}},
+        "dos": {"dos": {"prefix": "pwscf", "fildos": "pwscf.dos", "outdir": outdir}},
+        "projwfc": {
+            "projwfc": {"prefix": "pwscf", "filpdos": "pwscf", "outdir": outdir}
+        },
         "matdyn": {
             "input": {
+                "flfrc": "q2r.fc",
                 "fldos": "matdyn.dos",
                 "flfrq": "matdyn.freq",
                 "flvec": "matdyn.modes",
                 "fleig": "matdyn.eig",
             }
         },
-        "q2r": {"input": {"flfrc": "q2r.fc"}},
-        "bands": {"bands": {"filband": "bands.out", "outdir": outdir}},
-        "fs": {"fermi": {"file_fs": "fermi_surface.bxsf", "outdir": outdir}},
-        "dvscf_q2r_job": {"input": {"outdir": "."}},
-        "postahc": {"input": {"ahc_dir": "ahc_dir/"}},
+        "q2r": {"input": {"fildyn": "matdyn", "flfrc": "q2r.fc"}},
+        "bands": {
+            "bands": {"prefix": "pwscf", "filband": "bands.out", "outdir": outdir}
+        },
+        "fs": {
+            "fermi": {
+                "prefix": "pwscf",
+                "file_fs": "fermi_surface.bxsf",
+                "outdir": outdir,
+            }
+        },
+        "dvscf_q2r_job": {
+            "input": {
+                "prefix": "pwscf",
+                "fildyn": "matdyn",
+                "outdir": ".",
+                "wpot_dir": Remove,
+            }
+        },
+        "postahc": {"input": {"ahc_dir": "ahc_dir/", "flvec": "matdyn.modes"}},
     }
 
     return outkeys.get(binary, {})

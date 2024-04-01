@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
+import logging
 from collections.abc import MutableMapping
 from copy import deepcopy
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from typing import Any
+
+LOGGER = logging.getLogger(__name__)
 
 
 class Remove:
@@ -25,7 +28,9 @@ class Remove:
 
 
 def recursive_dict_merge(
-    *dicts: MutableMapping[str, Any] | None, remove_trigger: Any = Remove
+    *dicts: MutableMapping[str, Any] | None,
+    remove_trigger: Any = Remove,
+    verbose: bool = False,
 ) -> MutableMapping[str, Any]:
     """
     Recursively merge several dictionaries, taking the latter in the list as higher
@@ -42,6 +47,8 @@ def recursive_dict_merge(
         Dictionaries to merge
     remove_trigger
         Value to that triggers removal of the entry
+    verbose
+        Whether to log warnings when overwriting keys
 
     Returns
     -------
@@ -50,14 +57,16 @@ def recursive_dict_merge(
     """
     old_dict = dicts[0]
     for i in range(len(dicts) - 1):
-        merged = _recursive_dict_pair_merge(old_dict, dicts[i + 1])
+        merged = _recursive_dict_pair_merge(old_dict, dicts[i + 1], verbose=verbose)
         old_dict = safe_dict_copy(merged)
 
     return remove_dict_entries(merged, remove_trigger=remove_trigger)
 
 
 def _recursive_dict_pair_merge(
-    dict1: MutableMapping[str, Any] | None, dict2: MutableMapping[str, Any] | None
+    dict1: MutableMapping[str, Any] | None,
+    dict2: MutableMapping[str, Any] | None,
+    verbose: bool = False,
 ) -> MutableMapping[str, Any]:
     """
     Recursively merges two dictionaries. If a `None` is provided, it is assumed to be `{}`.
@@ -68,6 +77,8 @@ def _recursive_dict_pair_merge(
         First dictionary
     dict2
         Second dictionary
+    verbose
+        Whether to log warnings when overwriting keys
 
     Returns
     -------
@@ -86,6 +97,10 @@ def _recursive_dict_pair_merge(
                 merged[key] = _recursive_dict_pair_merge(merged[key], value)
             else:
                 merged[key] = value
+                if verbose:
+                    LOGGER.warning(
+                        f"Overwriting key '{key}' in dictionary: {merged[key]}"
+                    )
         else:
             merged[key] = value
 
