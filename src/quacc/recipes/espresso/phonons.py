@@ -500,14 +500,10 @@ def dvscf_q2r_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    input_data = Namelist(calc_kwargs.get("input_data"))
 
-    fildyn = input_data["input"].get("fildyn", "matdyn")
-    fildvscf = input_data["input"].get("fildvscf", "dvscf")
+    calc_defaults = {"input_data": {"input": {"fildyn": "matdyn", "fildvscf": "dvscf"}}}
 
-    calc_defaults = {"input_data": {"input": {"fildyn": fildyn, "fildvscf": fildvscf}}}
-
-    copy_files = {prev_dir: [f"{fildyn}0", f"{fildvscf}*"]}
+    copy_files = {prev_dir: [f"matdyn0", "matdyn*", "pwscf.save"]}
 
     return run_and_summarize(
         template=EspressoTemplate("dvscf_q2r"),
