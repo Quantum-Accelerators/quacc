@@ -503,7 +503,7 @@ def dvscf_q2r_job(
 
     calc_defaults = {"input_data": {"input": {"fildyn": "matdyn", "fildvscf": "dvscf"}}}
 
-    copy_files = {prev_dir: [f"matdyn0", "matdyn*", "pwscf.save"]}
+    copy_files = {prev_dir: [f"matdyn0", "pwscf.save"]}
 
     return run_and_summarize(
         template=EspressoTemplate("dvscf_q2r"),

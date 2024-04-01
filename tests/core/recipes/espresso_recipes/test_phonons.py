@@ -470,10 +470,10 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, ESPRESSO_PARALLEL
                 "fildyn": "diam.dyn",
                 "fildvscf": "dvscf",
                 "ldisp": True,
-                "nq1": 3,
-                "nq2": 3,
-                "nq3": 3,
-                "tr2_ph": 1.0e-16,
+                "nq1": 2,
+                "nq2": 2,
+                "nq3": 2,
+                "tr2_ph": 1.0e-12,
             }
         }
     }
@@ -500,8 +500,7 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, ESPRESSO_PARALLEL
                 "do_long_range": False,
                 "do_charge_neutral": False,
             }
-        },
-        "parallel_info": ESPRESSO_PARALLEL_INFO,
+        }
     }
     dvscf_q2r_results = dvscf_q2r_job(
         c_ph_results["dir_name"],
@@ -528,7 +527,6 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, ESPRESSO_PARALLEL
         },
         "pseudopotentials": pseudopotential,
         "kpts": {"path": [[0.0, 0.0, 0.0], [0.365, 0.365, 0.0]]},
-        "parallel_info": ESPRESSO_PARALLEL_INFO,
     }
 
     c_nscf_results = non_scf_job(**c_nscf_params, parallel_info=ESPRESSO_PARALLEL_INFO)
@@ -550,10 +548,13 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, ESPRESSO_PARALLEL
                 "ahc_nbnd": 8,
                 "ahc_dir": "ahc_dir_coarse",
             }
-        },
-        "parallel_info": ESPRESSO_PARALLEL_INFO,
+        }
     }
-    c_ahc_coarse_results = phonon_job(c_nscf_results["dir_name"], **c_ahc_coarse_params)
+    c_ahc_coarse_results = phonon_job(
+        c_nscf_results["dir_name"],
+        **c_ahc_coarse_params,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
+    )
 
     matdyn_coarse_params = {
         "input_data": {
