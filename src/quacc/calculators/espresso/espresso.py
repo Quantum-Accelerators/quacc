@@ -71,6 +71,8 @@ class EspressoTemplate(EspressoTemplate_):
 
         self.binary = binary
 
+        self.ase_known = self.binary in ALL_KEYS
+
         self.test_run = test_run
 
         self.nruns = 0
@@ -130,7 +132,7 @@ class EspressoTemplate(EspressoTemplate_):
         else:
             with Path.open(directory / self.inputname, "w") as fd:
                 write_fortran_namelist(
-                    fd, binary=self.binary, properties=properties, **parameters
+                    fd, binary=self.binary if self.ase_known else None, properties=properties, **parameters
                 )
 
     def execute(self, *args: Any, **kwargs: Any) -> None:
@@ -386,14 +388,12 @@ class Espresso(Espresso_):
         )
         self._bin_path = str(full_path)
 
-        if self._binary in ALL_KEYS:
+        if template.ase_known:
             self._cleanup_params()
         else:
             LOGGER.warning(
                 f"the binary you requested, `{self._binary}`, is not supported by ASE. This means that presets and usual checks will not be carried out, your `input_data` must be provided in nested format."
             )
-
-            template.binary = None
 
             self.kwargs["input_data"] = Namelist(self.kwargs.get("input_data"))
             self._user_calc_params = self.kwargs
