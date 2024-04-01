@@ -45,8 +45,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install -r tests/requirements.txt
-          uv pip install -r tests/requirements-mp.txt
+          uv pip install -r tests/requirements.txt -r tests/requirements-mp.txt
           uv pip install "quacc[dev] @ ."
 
       - name: Run tests with pytest (w/ coverage)
@@ -93,9 +92,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install -r tests/requirements.txt
-          uv pip install -r tests/requirements-covalent.txt
-          uv pip install -r tests/requirements-phonopy.txt
+          uv pip install -r tests/requirements.txt -r tests/requirements-covalent.txt -r tests/requirements-phonopy.txt
           uv pip install "quacc[dev] @ ."
 
       - name: Start Covalent server
@@ -149,9 +146,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install -r tests/requirements.txt
-          uv pip install -r tests/requirements-${{ matrix.wflow_engine }}.txt
-          uv pip install -r tests/requirements-phonopy.txt
+          uv pip install -r tests/requirements.txt -r tests/requirements-${{ matrix.wflow_engine }}.txt -r tests/requirements-phonopy.txt
           uv pip install "quacc[dev] @ ."
 
       - name: Run tests with pytest
@@ -201,9 +196,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install -r tests/requirements.txt
-          uv pip install -r tests/requirements-${{ matrix.wflow_engine }}.txt
-          uv pip install -r tests/requirements-phonopy.txt
+          uv pip install -r tests/requirements.txt -r tests/requirements-${{ matrix.wflow_engine }}.txt -r tests/requirements-phonopy.txt
           uv pip install "quacc[dev] @ ."
 
       - name: Run tests with pytest
@@ -295,9 +288,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install -r tests/requirements.txt
-          uv pip install -r tests/requirements-defects.txt
-          uv pip install -r tests/requirements-phonopy.txt
+          uv pip install -r tests/requirements.txt -r tests/requirements-defects.txt -r tests/requirements-phonopy.txt
           uv pip install "quacc[dev] @ ."
 
       - name: Run tests with pytest
@@ -342,9 +333,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install -r tests/requirements.txt
-          uv pip install -r tests/requirements-tblite.txt
-          uv pip install -r tests/requirements-phonopy.txt
+          uv pip install -r tests/requirements.txt -r tests/requirements-tblite.txt -r tests/requirements-phonopy.txt
           uv pip install "quacc[dev] @ ."
 
       - name: Run tests with pytest
@@ -391,8 +380,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install -r tests/requirements.txt
-          uv pip install -r tests/requirements-sella.txt
+          uv pip install -r tests/requirements.txt -r tests/requirements-sella.txt
           uv pip install "quacc[dev] @ ."
 
       - name: Run tests with pytest
@@ -434,11 +422,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install -r tests/requirements.txt
-          uv pip install -r tests/requirements-mlp.txt
-          uv pip install -r tests/requirements-newtonnet.txt
-          uv pip install -r tests/requirements-sella.txt
-          uv pip install -r tests/requirements-phonopy.txt
+          uv pip install -r tests/requirements.txt -r tests/requirements-mlp.txt -r tests/requirements-newtonnet.txt -r tests/requirements-sella.txt -r tests/requirements-phonopy.txt
           uv pip install "quacc[dev] @ ."
 
       - name: Run tests with pytest
