@@ -262,7 +262,7 @@ This example highlights how there are no restrictions in terms of how many codes
 
 !!! Note
 
-    Some codes require additional setup, including `tblite` (which can only be `pip` installed on Linux). Refer to the [Calculator Setup](../../install/codes.md) section for details.
+    Some codes require additional setup, including `tblite`. Refer to the [Calculator Setup](../../install/codes.md) section for details.
 
 ```python
 from ase.build import bulk
