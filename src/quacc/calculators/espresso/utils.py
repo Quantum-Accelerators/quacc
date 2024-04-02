@@ -262,14 +262,14 @@ def espresso_prepare_dir(outdir: str | Path, binary: str = "pw") -> dict[str, An
 
 
 def prepare_copy_files(
-    input_data: dict[str, Any], binary: str = "pw"
+    parameters: dict[str, Any], binary: str = "pw"
 ) -> dict[SourceDirectory, Filenames]:
     """
     Function that prepares the copy files for the espresso calculation.
 
     Parameters
     ----------
-    input_data
+    parameters
         The input data for the espresso calculation
     binary
         The binary to use for the espresso calculation
@@ -288,6 +288,8 @@ def prepare_copy_files(
         Path("pwscf.save", "paw.*"),
     ]
 
+    input_data = parameters.get("input_data", {})
+
     if binary == "pw":
 
         control = input_data.get("control", {})
@@ -300,12 +302,14 @@ def prepare_copy_files(
         calculation = control.get("calculation", "scf")
 
         if restart_mode == "restart":
-            to_copy.extend[
-                Path("pwscf.wfc*"),
-                Path("pwscf.mix*"),
-                Path("pwscf.restart_k*"),
-                Path("pwscf.restart_scf*"),
-            ]
+            to_copy.extend(
+                [
+                    Path("pwscf.wfc*"),
+                    Path("pwscf.mix*"),
+                    Path("pwscf.restart_k*"),
+                    Path("pwscf.restart_scf*"),
+                ]
+            )
 
         need_chg_dens = (
             startingpot == "file"
