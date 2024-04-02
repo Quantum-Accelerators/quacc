@@ -258,9 +258,9 @@ graph LR
   A[Input] --> B(EMT Relax) --> C(GFN2-xTB Static) --> D[Output]
 ```
 
-Now let's return to our bulk Cu example from above and start adding on some complexity. Here, we will use EMT to run a relaxation on the bulk Cu structure and then use the output of this calculation as the input to a static calculation with the semi-empirical quantum mechanics method GFN2-xTB as implemented in [quacc.recipes.tblite.core.static_job][].
+Now let's return to our first example and start adding on some complexity. Here, we will use EMT to run a relaxation on the bulk Cu structure and then use the output of this calculation as the input to a static calculation with the semi-empirical quantum mechanics method GFN2-xTB as implemented in [quacc.recipes.tblite.core.static_job][].
 
-This example highlights how there are no restrictions in terms of how many codes you can use in a single workflow. It also highlights how you can directly specify optional parameters of a given job.
+This example highlights how there are no restrictions in terms of how many codes you can use in a single workflow. It also highlights once more how you can specify optional parameters of a given job.
 
 !!! Note
 
