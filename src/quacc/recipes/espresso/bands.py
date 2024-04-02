@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
-    from quacc.utils.files import Filenames, SourceDirectory
+    from quacc.utils.files import SourceDirectorySchema
 
     class BandsSchema(TypedDict, total=False):
         bands_pw: RunSchema
@@ -34,7 +34,7 @@ if TYPE_CHECKING:
 @job
 def bands_pw_job(
     atoms: Atoms,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
+    copy_files: SourceDirectorySchema,
     make_bandpath: bool = True,
     line_density: float = 20,
     force_gamma: bool = True,
@@ -107,7 +107,7 @@ def bands_pw_job(
 @job
 def bands_pp_job(
     atoms: Atoms,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
+    copy_files: SourceDirectorySchema,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -152,7 +152,7 @@ def bands_pp_job(
 @job
 def fermi_surface_job(
     atoms: Atoms,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
+    copy_files: SourceDirectorySchema,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -198,7 +198,7 @@ def fermi_surface_job(
 @flow
 def bands_flow(
     atoms: Atoms,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
+    copy_files: SourceDirectorySchema,
     run_bands_pp: bool = True,
     run_fermi_surface: bool = False,
     make_bandpath: bool = True,

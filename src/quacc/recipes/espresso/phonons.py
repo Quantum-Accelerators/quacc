@@ -28,7 +28,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
-    from quacc.utils.files import Filenames, SourceDirectory
+    from quacc.utils.files import SourceDirectorySchema
 
     class PhononDosSchema(TypedDict):
         relax_job: RunSchema
@@ -39,7 +39,7 @@ if TYPE_CHECKING:
 
 @job
 def phonon_job(
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
+    copy_files: SourceDirectorySchema,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -91,7 +91,7 @@ def phonon_job(
 
 @job
 def q2r_job(
-    prev_dir: SourceDirectory, parallel_info: dict[str] | None = None, **calc_kwargs
+    copy_files: SourceDirectorySchema, parallel_info: dict[str] | None = None, **calc_kwargs
 ) -> RunSchema:
     """
     Function to carry out a basic q2r.x calculation. It should allow you to
@@ -102,7 +102,7 @@ def q2r_job(
 
     Parameters
     ----------
-    prev_dir
+    copy_files
         Outdir of the previously ran ph.x calculation. This is used to copy
         the the dynamical matrix files.
     parallel_info
@@ -119,7 +119,6 @@ def q2r_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    copy_files = {prev_dir: ["matdyn*"]}
 
     return run_and_summarize(
         template=EspressoTemplate("q2r"),
@@ -132,7 +131,7 @@ def q2r_job(
 
 @job
 def matdyn_job(
-    prev_dir: SourceDirectory, parallel_info: dict[str] | None = None, **calc_kwargs
+    copy_files: SourceDirectorySchema, parallel_info: dict[str] | None = None, **calc_kwargs
 ) -> RunSchema:
     """
     Function to carry out a basic matdyn.x calculation. It should allow you to use
@@ -143,7 +142,7 @@ def matdyn_job(
 
     Parameters
     ----------
-    prev_dir
+    copy_files
         Outdir of the previously ran q2r.x calculation. This is used to copy
         the the force constant file.
     parallel_info
@@ -166,7 +165,7 @@ def matdyn_job(
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "matdyn Phonon"},
-        copy_files=prev_dir,
+        copy_files=copy_files,
     )
 
 
@@ -450,7 +449,7 @@ def grid_phonon_flow(
 
 @job
 def dvscf_q2r_job(
-    prev_dir: SourceDirectory, parallel_info: dict[str] | None = None, **calc_kwargs
+    copy_files: SourceDirectorySchema, parallel_info: dict[str] | None = None, **calc_kwargs
 ) -> RunSchema:
     """
     Function to carry out a basic dvscf_q2r calculation. It should allow you to
@@ -483,7 +482,7 @@ def dvscf_q2r_job(
 
     Parameters
     ----------
-    prev_dir
+    copy_files
         Outdir of the previously ran ph.x calculation.
     parallel_info
         Dictionary containing information about the parallelization of the
@@ -500,28 +499,18 @@ def dvscf_q2r_job(
         See the type-hint for the data structure.
     """
 
-    # copy_files = {
-    #    prev_dir: [
-    #        "matdyn0*",
-    #        "pwscf.save",
-    #        "_ph0/pwscf.phsave",
-    #        "_ph0/pwscf.dvscf*",
-    #        "_ph0/pwscf.q_*/pwscf.dvscf*",
-    # }
-    ##    ]
-
     return run_and_summarize(
         template=EspressoTemplate("dvscf_q2r"),
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "dvscf_q2r Phonon"},
-        copy_files=prev_dir,
+        copy_files=copy_files,
     )
 
 
 @job
 def postahc_job(
-    prev_dir: SourceDirectory, parallel_info: dict[str] | None = None, **calc_kwargs
+    copy_files: SourceDirectorySchema, parallel_info: dict[str] | None = None, **calc_kwargs
 ) -> RunSchema:
     """
     Function to carry out a basic postahc calculation. It should allow you to
@@ -531,7 +520,7 @@ def postahc_job(
 
     Parameters
     ----------
-    prev_dir
+    copy_files
         Outdir of the previously ran ph.x calculation.
     parallel_info
         Dictionary containing information about the parallelization of the
@@ -547,17 +536,9 @@ def postahc_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    input_data = Namelist(calc_kwargs.get("input_data"))
-
-    flvec = input_data["input"].get("flvec", "matdyn.modes")
-
-    calc_defaults = {"input_data": {"input": {"flvec": flvec}}}
-
-    copy_files = {prev_dir: [f"{flvec}*"]}
 
     return run_and_summarize(
         template=EspressoTemplate("postahc"),
-        calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "postahc Phonon"},

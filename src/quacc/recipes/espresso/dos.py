@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
-    from quacc.utils.files import Filenames, SourceDirectory
+    from quacc.utils.files import SourceDirectorySchema
 
     class DosSchema(TypedDict):
         static_job: RunSchema
@@ -38,7 +38,7 @@ if TYPE_CHECKING:
 
 @job
 def dos_job(
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
+    copy_files: SourceDirectorySchema,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -79,7 +79,7 @@ def dos_job(
 
 @job
 def projwfc_job(
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
+    copy_files: SourceDirectorySchema,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,

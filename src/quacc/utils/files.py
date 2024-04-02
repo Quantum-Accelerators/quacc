@@ -23,6 +23,10 @@ if TYPE_CHECKING:
     Filenames = str | Path | list[str | Path]
     SourceDirectory = str | Path
 
+    SourceDirectorySchema = (
+        SourceDirectory | dict[str, SourceDirectory] | list[SourceDirectory]
+    )
+
 
 logger = logging.getLogger(__name__)
 
