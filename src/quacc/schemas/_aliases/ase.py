@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, TypedDict
+from typing import TYPE_CHECKING, TypedDict
 
 from quacc.schemas._aliases.atoms import AtomsSchema
 
@@ -10,12 +10,18 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from numpy.typing import NDArray
 
+
 class Results(TypedDict):
     """Dictionary of results from atoms.calc.results"""
+
+
 class Parameters(TypedDict):
     """Dictionary of parameters from atoms.calc.parameters"""
+
+
 class ParametersOpt(TypedDict):
     """Dictionary of parameters from Optimizer.todict()"""
+
 
 class RunSchema(AtomsSchema):
     """Schema for [quacc.schemas.ase.summarize_run][]"""
