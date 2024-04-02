@@ -124,7 +124,9 @@ print(result)
 
 ### Modifying Parameters of a Job
 
-What happens if you want to modify the default parameters of a job? Thankfully, this is quite straightforward to do. First, you would refer to the [function signature](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.core.relax_job) for the `relax_job` recipe to see the optional parameters that can be specified. For instance, we can relax the unit cell via `#!Python relax_cell=True`. Each job-based recipe can also take in any keyword arguments supported by the underlying ASE calculator. For instance, you can specify `#!Python asap_cutoff=True` since the ASE-based EMT calculator supports this parameter. Most relaxation-based jobs also have a keyword argument `opt_params` that can be used to specify optimization-based parameters.
+What happens if you want to modify the default parameters of a job? Thankfully, this is quite straightforward to do. First, you would refer to the [function signature](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.core.relax_job) for the `relax_job` recipe to see the various parameters that can be specified. Go ahead; click the hyperlink before reading further!
+
+In the function signature, you'll see that there is one required positional argument for the recipe: the `Atoms` object. Then there are several optional keyword arguments. For instance, the `relax_cell` keyword argument is optional (default: `False`) and can be used to toggle whether the unit cell parameters are optimized. Most relaxation-based jobs also have a keyword argument `opt_params` that can be used to specify several optimization-based parameters, overriding any defaults provided by the recipe. Finally, all job-based recipes can take any keyword argument supported by the underlying ASE calculator. For example, you can specify `#!Python asap_cutoff=True` since the ASE-based [EMT calculator](https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html#ase.calculators.emt.EMT) supports this parameter. This is all demonstrated below.
 
 ```python
 from ase.build import bulk
@@ -256,9 +258,9 @@ graph LR
   A[Input] --> B(EMT Relax) --> C(GFN2-xTB Static) --> D[Output]
 ```
 
-Now let's return to our bulk Cu example from above and start adding on some complexity. Here, we will use EMT to run a relaxation on the bulk Cu structure and then use the output of this calculation as the input to a static calculation with the semi-empirical quantum mechanics method GFN2-xTB as implemented in [quacc.recipes.tblite.core.static_job][].
+Now let's return to our first example and start adding on some complexity. Here, we will use EMT to run a relaxation on the bulk Cu structure and then use the output of this calculation as the input to a static calculation with the semi-empirical quantum mechanics method GFN2-xTB as implemented in [quacc.recipes.tblite.core.static_job][].
 
-This example highlights how there are no restrictions in terms of how many codes you can use in a single workflow. It also highlights how you can directly specify optional parameters of a given job.
+This example highlights how there are no restrictions in terms of how many codes you can use in a single workflow. It also highlights once more how you can specify optional parameters of a given job.
 
 !!! Note
 
