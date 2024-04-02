@@ -23,7 +23,7 @@ graph LR
   A[Input] --> B(EMT Relax) --> C[Output]
 ```
 
-Let's start with a simple example. Here, we will use a cheap calculator based on effective medium theory (EMT) to run a structure relaxation on a bulk structure of copper. We are interested in doing a structure relaxation, so we will use the [quacc.recipes.emt.core.relax_job][] recipe, as demonstrated below.
+Let's start with a simple example. Here, we will use a cheap calculator based on effective medium theory (EMT) to run a structure relaxation on a bulk structure of copper. We are interested in doing a structure relaxation, so we will use the [quacc.recipes.emt.core.relax_job][] recipe, as demonstrated below. Most recipes in quacc take an `Atoms` object as the input and will return a dictionary that summarizes the output.
 
 ```python
 from ase.build import bulk
@@ -122,15 +122,128 @@ print(result)
     'volume': 11.761470249999999}
     ```
 
+### A Mixed-Code Workflow
+
+```mermaid
+graph LR
+  A[Input] --> B(EMT Relax) --> C(GFN2-xTB Static) --> D[Output]
+```
+
+Now let's add on a bit of complexity. Here, we will use EMT to run a relaxation on the bulk Cu structure and then use the output of this calculation as the input to a static calculation with the semi-empirical quantum mechanics method [GFN2-xTB](https://pubs.acs.org/doi/full/10.1021/acs.jctc.8b01176) as implemented in [quacc.recipes.tblite.core.static_job][].
+
+This example highlights how there are no restrictions in terms of how many codes you can use in a single workflow. It also briefly demonstrates how you can specify optional parameters of a given job, as we will elaborate further in the next example.
+
+!!! Note
+
+    Some codes require additional setup, including `tblite`. Refer to the [Calculator Setup](../../install/codes.md) section for details.
+
+```python
+from ase.build import bulk
+from quacc.recipes.emt.core import relax_job
+from quacc.recipes.tblite.core import static_job
+
+# Make an Atoms object of a bulk Cu structure
+atoms = bulk("Cu")
+
+# Run a structure relaxation with EMT
+result1 = relax_job(atoms)
+
+# Run a static calculation with GFN2-xTB
+result2 = static_job(result1["atoms"], method="GFN2-xTB")  # (1)!
+print(result2)
+```
+
+1. We have to pass an `Atoms` object to the `static_job` recipe, so we parse it from `result1` output dictionary. We also have specified an optional parameter, `method`. Refer to the [function signature](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/tblite/core.html#quacc.recipes.tblite.core.static_job) for the `static_job` recipe to see the full list of parameters that can be specified.
+
+??? Info "Printed Output"
+
+    ```
+    {'atoms': Atoms(symbols='Cu', pbc=True, cell=[[0.0, 1.805, 1.805], [1.805, 0.0, 1.805], [1.805, 1.805, 0.0]]),
+    'atoms_info': {'_id': 'd4859270a1a67083343bec0ab783f774',
+                    '_old_ids': ['d4859270a1a67083343bec0ab783f774']},
+    'builder_meta': {'build_date': datetime.datetime(2024, 3, 8, 17, 56, 18, 773772),
+                      'emmet_version': '0.78.7',
+                      'pymatgen_version': '2024.3.1'},
+    'chemsys': 'Cu',
+    'composition': Composition('Cu1'),
+    'composition_reduced': Composition('Cu1'),
+    'density': 8.971719800606017,
+    'density_atomic': 11.761470249999999,
+    'dir_name': '/home/rosen/test/quacc-2024-03-08-17-56-17-983251-36940',
+    'elements': [Element Cu],
+    'formula_anonymous': 'A',
+    'formula_pretty': 'Cu',
+    'input_atoms': {'atoms': Atoms(symbols='Cu', pbc=True, cell=[[0.0, 1.805, 1.805], [1.805, 0.0, 1.805], [1.805, 1.805, 0.0]]),
+                    'atoms_info': {'_id': 'd4859270a1a67083343bec0ab783f774'},
+                    'builder_meta': {'build_date': datetime.datetime(2024, 3, 8, 17, 56, 18, 772151),
+                                      'emmet_version': '0.78.7',
+                                      'pymatgen_version': '2024.3.1'},
+                    'chemsys': 'Cu',
+                    'composition': Composition('Cu1'),
+                    'composition_reduced': Composition('Cu1'),
+                    'density': 8.971719800606017,
+                    'density_atomic': 11.761470249999999,
+                    'elements': [Element Cu],
+                    'formula_anonymous': 'A',
+                    'formula_pretty': 'Cu',
+                    'nelements': 1,
+                    'nsites': 1,
+                    'symmetry': {'crystal_system': <CrystalSystem.cubic: 'Cubic'>,
+                                  'number': 225,
+                                  'point_group': 'm-3m',
+                                  'symbol': 'Fm-3m',
+                                  'symprec': 0.1,
+                                  'version': '2.3.1'},
+                    'volume': 11.761470249999999},
+    'name': 'TBLite Static',
+    'nelements': 1,
+    'nid': 'rosen.',
+    'nsites': 1,
+    'parameters': {'accuracy': 1.0,
+                    'cache_api': True,
+                    'electronic_temperature': 300.0,
+                    'max_iterations': 250,
+                    'method': 'GFN2-xTB',
+                    'verbosity': 1},
+    'quacc_version': '0.6.10',
+    'results': {'charges': array([-4.63897809e-11]),
+                'dipole': array([-7.99968228e-08,  1.96246646e-07, -5.12600360e-08]),
+                'energy': -318.8584605831397,
+                'forces': array([[5.44452313e-20, 5.39007790e-19, 2.45003541e-19]]),
+                'free_energy': -318.8584605831397,
+                'stress': array([14.65181119, 14.65181119, 14.65181119,  1.40704868,  1.01943286,
+            0.63181703])},
+    'structure': Structure Summary
+    Lattice
+        abc : 2.5526554800834367 2.5526554800834367 2.5526554800834367
+    angles : 60.00000000000001 60.00000000000001 60.00000000000001
+    volume : 11.761470249999999
+          A : 0.0 1.805 1.805
+          B : 1.805 0.0 1.805
+          C : 1.805 1.805 0.0
+        pbc : True True True
+    PeriodicSite: Cu (0.0, 0.0, 0.0) [0.0, 0.0, 0.0],
+    'symmetry': {'crystal_system': <CrystalSystem.cubic: 'Cubic'>,
+                  'number': 225,
+                  'point_group': 'm-3m',
+                  'symbol': 'Fm-3m',
+                  'symprec': 0.1,
+                  'version': '2.3.1'},
+    'volume': 11.761470249999999}
+    ```
+
+
 ### Modifying Parameters of a Job
 
-What happens if you want to modify the default parameters of a job? Thankfully, this is quite straightforward to do. First, you would refer to the [function signature](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.core.relax_job) for the `relax_job` recipe to see the various parameters that can be specified. Go ahead; click the hyperlink before reading further!
+Up until now, we have told you what parameters each function accepts. In practice, this is something you will want to be able to identify yourself. Let's take a deeper dive into the [quacc.recipes.emt.core.relax_job][] for this demonstration.
 
-In the function signature and corresponding docstring, you'll see that there is one required positional argument for the recipe (the `Atoms` object) and several optional keyword arguments. Most notably:
+The first step is to read the [function signature](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.core.relax_job) for the recipe of interest to see the various parameters that can be specified. Go ahead; click it! Once you do, you'll see from the docstring that there is one required positional argument for the recipe (the `Atoms` object) and several optional keyword arguments, most notably:
 
 - The `relax_cell` keyword argument (default: `False`) can be used to toggle whether the unit cell parameters are optimized.
 - Most relaxation-based jobs have a keyword argument `opt_params` that can be used to specify several optimization-based parameters, overriding any defaults provided by the recipe.
 - All jobs can take any keyword argument supported by the underlying ASE calculator (via `**calc_kwargs`). For example, you can specify `#!Python asap_cutoff=True` since the [EMT calculator](https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html#ase.calculators.emt.EMT) supports this parameter. This is all demonstrated below.
+
+Putting it all together, you can modify these parameters like in the example below:
 
 ```python
 from ase.build import bulk
@@ -253,114 +366,4 @@ print(result)
                             'stress': array([ 1.12813866e-06,  1.12813866e-06,  1.12813866e-06, -1.53212912e-16,
           -2.29819368e-16, -4.92256329e-17])}],
     'volume': 11.594041355280432}
-    ```
-
-### A Mixed-Code Workflow
-
-```mermaid
-graph LR
-  A[Input] --> B(EMT Relax) --> C(GFN2-xTB Static) --> D[Output]
-```
-
-Now let's return to our first example and start adding on some complexity. Here, we will use EMT to run a relaxation on the bulk Cu structure and then use the output of this calculation as the input to a static calculation with the semi-empirical quantum mechanics method GFN2-xTB as implemented in [quacc.recipes.tblite.core.static_job][].
-
-This example highlights how there are no restrictions in terms of how many codes you can use in a single workflow. It also highlights once more how you can specify optional parameters of a given job.
-
-!!! Note
-
-    Some codes require additional setup, including `tblite`. Refer to the [Calculator Setup](../../install/codes.md) section for details.
-
-```python
-from ase.build import bulk
-from quacc.recipes.emt.core import relax_job
-from quacc.recipes.tblite.core import static_job
-
-# Make an Atoms object of a bulk Cu structure
-atoms = bulk("Cu")
-
-# Run a structure relaxation with EMT
-result1 = relax_job(atoms)
-
-# Run a static calculation with GFN2-xTB
-result2 = static_job(result1["atoms"], method="GFN2-xTB")  # (1)!
-print(result2)
-```
-
-1. Refer to the [function signature](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/tblite/core.html#quacc.recipes.tblite.core.static_job) for the `static_job` recipe to see the optional parameters that can be specified.
-
-??? Info "Printed Output"
-
-    ```
-    {'atoms': Atoms(symbols='Cu', pbc=True, cell=[[0.0, 1.805, 1.805], [1.805, 0.0, 1.805], [1.805, 1.805, 0.0]]),
-    'atoms_info': {'_id': 'd4859270a1a67083343bec0ab783f774',
-                    '_old_ids': ['d4859270a1a67083343bec0ab783f774']},
-    'builder_meta': {'build_date': datetime.datetime(2024, 3, 8, 17, 56, 18, 773772),
-                      'emmet_version': '0.78.7',
-                      'pymatgen_version': '2024.3.1'},
-    'chemsys': 'Cu',
-    'composition': Composition('Cu1'),
-    'composition_reduced': Composition('Cu1'),
-    'density': 8.971719800606017,
-    'density_atomic': 11.761470249999999,
-    'dir_name': '/home/rosen/test/quacc-2024-03-08-17-56-17-983251-36940',
-    'elements': [Element Cu],
-    'formula_anonymous': 'A',
-    'formula_pretty': 'Cu',
-    'input_atoms': {'atoms': Atoms(symbols='Cu', pbc=True, cell=[[0.0, 1.805, 1.805], [1.805, 0.0, 1.805], [1.805, 1.805, 0.0]]),
-                    'atoms_info': {'_id': 'd4859270a1a67083343bec0ab783f774'},
-                    'builder_meta': {'build_date': datetime.datetime(2024, 3, 8, 17, 56, 18, 772151),
-                                      'emmet_version': '0.78.7',
-                                      'pymatgen_version': '2024.3.1'},
-                    'chemsys': 'Cu',
-                    'composition': Composition('Cu1'),
-                    'composition_reduced': Composition('Cu1'),
-                    'density': 8.971719800606017,
-                    'density_atomic': 11.761470249999999,
-                    'elements': [Element Cu],
-                    'formula_anonymous': 'A',
-                    'formula_pretty': 'Cu',
-                    'nelements': 1,
-                    'nsites': 1,
-                    'symmetry': {'crystal_system': <CrystalSystem.cubic: 'Cubic'>,
-                                  'number': 225,
-                                  'point_group': 'm-3m',
-                                  'symbol': 'Fm-3m',
-                                  'symprec': 0.1,
-                                  'version': '2.3.1'},
-                    'volume': 11.761470249999999},
-    'name': 'TBLite Static',
-    'nelements': 1,
-    'nid': 'rosen.',
-    'nsites': 1,
-    'parameters': {'accuracy': 1.0,
-                    'cache_api': True,
-                    'electronic_temperature': 300.0,
-                    'max_iterations': 250,
-                    'method': 'GFN2-xTB',
-                    'verbosity': 1},
-    'quacc_version': '0.6.10',
-    'results': {'charges': array([-4.63897809e-11]),
-                'dipole': array([-7.99968228e-08,  1.96246646e-07, -5.12600360e-08]),
-                'energy': -318.8584605831397,
-                'forces': array([[5.44452313e-20, 5.39007790e-19, 2.45003541e-19]]),
-                'free_energy': -318.8584605831397,
-                'stress': array([14.65181119, 14.65181119, 14.65181119,  1.40704868,  1.01943286,
-            0.63181703])},
-    'structure': Structure Summary
-    Lattice
-        abc : 2.5526554800834367 2.5526554800834367 2.5526554800834367
-    angles : 60.00000000000001 60.00000000000001 60.00000000000001
-    volume : 11.761470249999999
-          A : 0.0 1.805 1.805
-          B : 1.805 0.0 1.805
-          C : 1.805 1.805 0.0
-        pbc : True True True
-    PeriodicSite: Cu (0.0, 0.0, 0.0) [0.0, 0.0, 0.0],
-    'symmetry': {'crystal_system': <CrystalSystem.cubic: 'Cubic'>,
-                  'number': 225,
-                  'point_group': 'm-3m',
-                  'symbol': 'Fm-3m',
-                  'symprec': 0.1,
-                  'version': '2.3.1'},
-    'volume': 11.761470249999999}
     ```
