@@ -271,6 +271,14 @@ def test_ase_relax_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
         parallel_info=ESPRESSO_PARALLEL_INFO,
     )
 
+    with zopen(results["dir_name"] / "pw.out.gz", "r") as fd:
+        lines = str(fd.read())
+
+    assert "Cannot read rho : file not found" not in lines
+    assert "Initial potential from superposition of free atoms" not in lines
+    assert "The initial density is read from file" in lines
+    assert "Starting wfcs from file" in lines
+
     with pytest.raises(AssertionError):
         assert_allclose(
             results["atoms"].get_positions(), atoms.get_positions(), atol=1.0e-4
@@ -393,7 +401,7 @@ def test_non_scf_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     assert results["parameters"].get("kpts") is None
 
 
-def test_pw_copy(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
+def test_pw_restart(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
