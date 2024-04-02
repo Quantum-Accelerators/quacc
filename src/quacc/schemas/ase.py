@@ -212,7 +212,7 @@ def summarize_opt_run(
     parameters_opt.pop("restart", None)
 
     opt_fields = {
-        "fmax": getattr(dyn, "fmax", None),
+        "fmax": dyn.fmax,
         "parameters_opt": parameters_opt,
         "converged": is_converged,
         "nsteps": dyn.get_number_of_steps(),
