@@ -386,7 +386,7 @@ def prepare_copy_files(
         to_copy.append(Path("pwscf.save", "wfc*.*"))
 
     if binary == "matdyn":
-        to_copy.append(Path("q2r.fc"))
+        to_copy.append(Path("q2r.fc*"))
 
     if binary == "q2r":
         to_copy.append(Path("matdyn*"))
@@ -401,6 +401,6 @@ def prepare_copy_files(
         to_copy.append("wpot")
 
     if binary == "postahc":
-        to_copy.extend([Path("ahc_dir"), Path("matdyn.modes")])
+        to_copy.extend([Path("ahc_dir"), Path("matdyn.modes*")])
 
     return to_copy
