@@ -501,17 +501,22 @@ def dvscf_q2r_job(
         See the type-hint for the data structure.
     """
 
-    calc_defaults = {"input_data": {"input": {"fildyn": "matdyn", "fildvscf": "dvscf"}}}
-
-    copy_files = {prev_dir: [f"matdyn0", "pwscf.save"]}
+    #copy_files = {
+    #    prev_dir: [
+    #        "matdyn0*",
+    #        "pwscf.save",
+    #        "_ph0/pwscf.phsave",
+    #        "_ph0/pwscf.dvscf*",
+    #        "_ph0/pwscf.q_*/pwscf.dvscf*",
+    #}
+    ##    ]
 
     return run_and_summarize(
         template=EspressoTemplate("dvscf_q2r"),
-        calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "dvscf_q2r Phonon"},
-        copy_files=copy_files,
+        copy_files=prev_dir,
     )
 
 

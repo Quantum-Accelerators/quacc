@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ase.atoms import Atoms
@@ -13,6 +14,7 @@ from quacc.calculators.espresso.espresso import (
     EspressoProfile,
     EspressoTemplate,
 )
+from quacc.calculators.espresso.utils import prepare_copy_files
 from quacc.runners.ase import run_calc, run_opt
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import recursive_dict_merge
@@ -66,7 +68,7 @@ def run_and_summarize(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    atoms = _prepare_atoms(
+    atoms, copy_files = _prepare_calc(
         atoms=atoms,
         preset=preset,
         template=template,
@@ -74,6 +76,7 @@ def run_and_summarize(
         calc_defaults=calc_defaults,
         calc_swaps=calc_swaps,
         parallel_info=parallel_info,
+        copy_files=copy_files,
     )
 
     geom_file = template.outputname if template.binary == "pw" else None
@@ -138,7 +141,7 @@ def run_and_summarize_opt(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    atoms = _prepare_atoms(
+    atoms, copy_files = _prepare_calc(
         atoms=atoms,
         preset=preset,
         template=template,
@@ -146,6 +149,7 @@ def run_and_summarize_opt(
         calc_defaults=calc_defaults,
         calc_swaps=calc_swaps,
         parallel_info=parallel_info,
+        copy_files=copy_files,
     )
 
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
@@ -157,7 +161,7 @@ def run_and_summarize_opt(
     )
 
 
-def _prepare_atoms(
+def _prepare_calc(
     atoms: Atoms | None = None,
     preset: str | None = None,
     template: EspressoTemplate | None = None,
@@ -165,6 +169,7 @@ def _prepare_atoms(
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     parallel_info: dict[str, Any] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> Atoms:
     """
     Commonly used preparation function to merge parameters
@@ -209,7 +214,7 @@ def _prepare_atoms(
 
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
-    atoms.calc = Espresso(
+    calc = Espresso(
         input_atoms=atoms,
         preset=preset,
         parallel_info=parallel_info,
@@ -218,4 +223,11 @@ def _prepare_atoms(
         **calc_flags,
     )
 
-    return atoms
+    if isinstance(copy_files, (str, Path)):
+        copy_files = {
+            copy_files: prepare_copy_files(calc._user_calc_params, binary=binary)
+        }
+
+    atoms.calc = calc
+
+    return atoms, copy_files
