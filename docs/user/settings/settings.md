@@ -44,6 +44,7 @@ or run the following before the first `quacc` import in your code:
 
 ```python
 import os
+
 os.environ["QUACC_SCRATCH_DIR"] = "/path/to/my/scratch/dir"
 os.environ["QUACC_CREATE_UNIQUE_DIR"] = False
 os.environ["QUACC_WORKFLOW_ENGINE"] = None
