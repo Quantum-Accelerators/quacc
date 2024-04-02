@@ -28,10 +28,10 @@ class RunSchema(AtomsSchema):
 class OptSchema(RunSchema):
     """Schema for [quacc.schemas.ase.summarize_opt_run][]"""
 
-    fmax: float | None
     parameters_opt: dict[str, Any]  # from Optimizer.todict()
     converged: bool
     nsteps: int
+    run_fmax: float | None
     trajectory: list[Atoms]
     trajectory_results: list[Results]
 

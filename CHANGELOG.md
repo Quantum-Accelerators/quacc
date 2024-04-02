@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.7.3]
 
+### Changed
+
+- Changed the `fmax` attribute in the `OptSchema` to be named `run_fmax`. This makes it clearer that `fmax` is a parameter that is passed to the `run` method of the optimizer and not the |F|\_max of the final structure.
+
 ### Fixed
 
 - Fixed potential issues with I/O settings and Espresso
