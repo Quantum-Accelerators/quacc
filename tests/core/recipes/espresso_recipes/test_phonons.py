@@ -529,7 +529,12 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, ESPRESSO_PARALLEL
         "kpts": {"path": [[0.0, 0.0, 0.0], [0.365, 0.365, 0.0]]},
     }
 
-    c_nscf_results = non_scf_job(**c_nscf_params, parallel_info=ESPRESSO_PARALLEL_INFO)
+    c_nscf_results = non_scf_job(
+        c_scf_results["atoms"],
+        c_scf_results["dir_name"],
+        **c_nscf_params,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
+    )
 
     c_ahc_coarse_params = {
         "input_data": {

@@ -348,6 +348,8 @@ def prepare_copy_files(
         if ldvscf_interpolate:
             to_copy.append(Path("_ph*", "pwscf.dvscf*"))
 
+            to_copy.append(Path("wpot"))
+
             if lqdir:
                 to_copy.append(Path("_ph*", "pwscf.q_*", "pwscf.dvscf*"))
 
@@ -398,7 +400,11 @@ def prepare_copy_files(
         to_copy.extend(pw_base)
 
     if binary == "dvscf_q2r":
-        to_copy.append("wpot")
+        to_copy.extend(pw_base)
+        to_copy.append(Path("matdyn0*"))
+        to_copy.append(Path("_ph*", "pwscf.phsave"))
+        to_copy.append(Path("_ph*", "pwscf.dvscf*"))
+        to_copy.append(Path("_ph*", "pwscf.q_*", "pwscf.dvscf*"))
 
     if binary == "postahc":
         to_copy.extend([Path("ahc_dir"), Path("matdyn.modes*")])
