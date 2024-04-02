@@ -187,7 +187,7 @@ def test_q2r_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     with Path(q2r_results["dir_name"], "q2r.in").open() as f:
         recycled_input = read_fortran_namelist(f)
 
-    assert recycled_input[0]["input"].pop("flfrc") == "q2r.fc"
+    assert recycled_input[0]["input"].get("flfrc") == "q2r.fc"
 
     assert recycled_input[0]["input"] == {"fildyn": "matdyn"}
     assert recycled_input[1] == [*additional_cards, "EOF"]
@@ -215,7 +215,7 @@ def test_matdyn_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     with Path(matdyn_results["dir_name"], "matdyn.in").open() as f:
         recycled_input = read_fortran_namelist(f)
 
-    assert recycled_input[0]["input"].pop("flfrc") == "q2r.fc"
+    assert recycled_input[0]["input"].get("flfrc") == "q2r.fc"
 
     assert recycled_input[0]["input"]["fldos"] == "matdyn.dos"
     assert recycled_input[0]["input"]["flfrq"] == "matdyn.freq"
