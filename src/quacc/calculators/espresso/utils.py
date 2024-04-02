@@ -333,7 +333,7 @@ def prepare_copy_files(
 
         to_copy.extend(pw_base)
 
-        to_copy.extend(Path("pwscf.save", "wfc*.*"))
+        to_copy.append(Path("pwscf.save", "wfc*.*"))
 
         inputph = input_data.get("inputph", {})
         ldisp = inputph.get("ldisp", False)
