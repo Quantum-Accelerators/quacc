@@ -240,7 +240,7 @@ Up until now, we have told you what parameters each function accepts. In practic
 The first step is to read the [function signature](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.core.relax_job) for the recipe of interest to see the various parameters that can be specified. Go ahead; click it! Once you do, you'll see from the docstring that there is one required positional argument for the recipe (the `Atoms` object) and several optional keyword arguments, most notably:
 
 - The `relax_cell` keyword argument (default: `False`) can be used to toggle whether the unit cell parameters are optimized.
-- Most relaxation-based jobs have a keyword argument `opt_params` that can be used to specify several optimization-based parameters, overriding any defaults provided by the recipe.
+- There is a keyword argument, `opt_params`, that can be used to specify several optimization-based parameters, overriding any defaults provided by the recipe.
 - All jobs can take any keyword argument supported by the underlying ASE calculator (via `**calc_kwargs`). For example, you can specify `#!Python asap_cutoff=True` since the [EMT calculator](https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html#ase.calculators.emt.EMT) supports this parameter. This is all demonstrated below.
 
 Putting it all together, you can modify these parameters like in the example below:
