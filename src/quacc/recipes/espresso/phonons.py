@@ -160,14 +160,13 @@ def matdyn_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    copy_files = {prev_dir: ["q2r.fc"]}
 
     return run_and_summarize(
         template=EspressoTemplate("matdyn"),
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "matdyn Phonon"},
-        copy_files=copy_files,
+        copy_files=prev_dir,
     )
 
 
@@ -501,14 +500,14 @@ def dvscf_q2r_job(
         See the type-hint for the data structure.
     """
 
-    #copy_files = {
+    # copy_files = {
     #    prev_dir: [
     #        "matdyn0*",
     #        "pwscf.save",
     #        "_ph0/pwscf.phsave",
     #        "_ph0/pwscf.dvscf*",
     #        "_ph0/pwscf.q_*/pwscf.dvscf*",
-    #}
+    # }
     ##    ]
 
     return run_and_summarize(
