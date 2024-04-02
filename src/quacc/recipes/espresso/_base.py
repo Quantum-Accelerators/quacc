@@ -223,10 +223,14 @@ def _prepare_calc(
         **calc_flags,
     )
 
-    if isinstance(copy_files, (str, Path)):
-        copy_files = {
-            copy_files: prepare_copy_files(calc._user_calc_params, binary=binary)
-        }
+    if isinstance(copy_files, (str, Path, list)):
+
+        exact_files_to_copy = prepare_copy_files(calc._user_calc_params, binary=binary)
+
+        if isinstance(copy_files, (str, Path)):
+            copy_files = {copy_files: exact_files_to_copy}
+        elif isinstance(copy_files, list):
+            copy_files = {source: exact_files_to_copy for source in copy_files}
 
     atoms.calc = calc
 

@@ -556,7 +556,7 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, ESPRESSO_PARALLEL
         }
     }
     c_ahc_coarse_results = phonon_job(
-        c_nscf_results["dir_name"],
+        [dvscf_q2r_results["dir_name"], c_nscf_results["dir_name"]],
         **c_ahc_coarse_params,
         parallel_info=ESPRESSO_PARALLEL_INFO,
     )
