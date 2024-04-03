@@ -152,5 +152,3 @@ extra:
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/Quantum-Accelerators/
-extra_css:
-  - stylesheets/extra.css
