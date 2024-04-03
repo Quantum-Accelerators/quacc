@@ -291,7 +291,6 @@ def prepare_copy_files2(
     input_data = parameters.get("input_data", {})
 
     if binary == "pw":
-
         control = input_data.get("control", {})
         restart_mode = control.get("restart_mode", "from_scratch")
 
@@ -330,7 +329,6 @@ def prepare_copy_files2(
         )
 
     if binary == "ph":
-
         to_copy.extend(pw_base)
 
         to_copy.append(Path("pwscf.save", "wfc*.*"))
@@ -370,7 +368,6 @@ def prepare_copy_files2(
             to_copy.append(Path("_ph*", "pwscf.phsave"))
 
     if binary == "pp":
-
         plotnum = input_data.get("plot_num", 0)
 
         wfc_needed = [3, 7, 10]

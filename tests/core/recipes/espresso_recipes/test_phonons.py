@@ -384,7 +384,9 @@ def test_phonon_calculation_si_spin_orbit(
         si_relax_results["dir_name"], **si_phonon_params, qpts=(0.0, 0.0, 0.0)
     )
 
-    assert si_phonon_results["parameters"]["input_data"]["inputph"]["fildyn"] == "matdyn"
+    assert (
+        si_phonon_results["parameters"]["input_data"]["inputph"]["fildyn"] == "matdyn"
+    )
 
     SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO
 

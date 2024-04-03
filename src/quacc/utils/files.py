@@ -18,7 +18,7 @@ from monty.os.path import zpath
 from monty.shutil import copy_r, decompress_dir, decompress_file
 
 if TYPE_CHECKING:
-    from typing import Any, Annotated
+    from typing import Any
 
     Filenames = str | Path | list[str | Path]
     SourceDirectory = str | Path
