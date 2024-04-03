@@ -58,7 +58,7 @@ In general, please try to keep the code style consistent when possible, particul
 
 2. Address any relevant issues raised by the GitHub Actions test suite.
 
-3. All Python code should be formatted with [ruff](https://github.com/astral-sh/ruff) (`ruff format . --fix`).
+3. All Python code should be formatted with [ruff](https://github.com/astral-sh/ruff) (`ruff check --fix .`).
 
 ## Unit Tests
 
