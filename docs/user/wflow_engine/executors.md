@@ -387,7 +387,7 @@ If you haven't done so already:
     min_allocations = 0
     max_allocations = 1
 
-    env_vars = "export OMP_NUM_THREADS=1,1"  # (1)!
+    env_vars = f"export OMP_NUM_THREADS={cores_per_job},1"  # (1)!
 
     config = Config(
         strategy="htex_auto_scale",  # (2)!
