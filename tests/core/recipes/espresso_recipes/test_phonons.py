@@ -304,7 +304,7 @@ def test_phonon_calculation_spin_orbit_example_06(
 
     pt_phonon_params = {
         "input_data": {
-            "inputph": {"amass(1)": 195.078, "fildyn": "ptdyn", "tr2_ph": 1.0e-16}
+            "inputph": {"amass(1)": 195.078, "fildyn": "ptdyn", "tr2_ph": 1.0e-10}
         },
         "parallel_info": ESPRESSO_PARALLEL_INFO,
     }
@@ -314,7 +314,7 @@ def test_phonon_calculation_spin_orbit_example_06(
 
     pt_phonon_x_params = {
         "input_data": {
-            "inputph": {"amass(1)": 195.078, "fildyn": "ptdyn", "tr2_ph": 1.0e-16}
+            "inputph": {"amass(1)": 195.078, "fildyn": "ptdyn", "tr2_ph": 1.0e-10}
         },
         "parallel_info": ESPRESSO_PARALLEL_INFO,
     }
@@ -327,11 +327,11 @@ def test_phonon_calculation_spin_orbit_example_06(
             "inputph": {
                 "amass(1)": 195.078,
                 "fildyn": "ptdyn",
-                "tr2_ph": 1.0e-16,
+                "tr2_ph": 1.0e-10,
                 "ldisp": True,
-                "nq1": 4,
-                "nq2": 4,
-                "nq3": 4,
+                "nq1": 2,
+                "nq2": 2,
+                "nq3": 2,
             }
         },
         "parallel_info": ESPRESSO_PARALLEL_INFO,

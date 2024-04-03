@@ -225,7 +225,7 @@ def _prepare_calc(
 
     if isinstance(copy_files, (str, Path, list)):
 
-        exact_files_to_copy = prepare_copy_files(calc._user_calc_params, binary=binary)
+        exact_files_to_copy = prepare_copy_files(calc.user_calc_params, binary=binary)
 
         if isinstance(copy_files, (str, Path)):
             copy_files = {copy_files: exact_files_to_copy}
