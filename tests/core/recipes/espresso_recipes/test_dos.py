@@ -7,7 +7,7 @@ import pytest
 from ase.build import bulk
 from numpy.testing import assert_allclose
 
-from quacc.recipes.espresso.dos import dos_flow, projwfc_flow, projwfc_job
+from quacc.recipes.espresso.dos import dos_flow, projwfc_flow
 from quacc.utils.files import copy_decompress_files
 
 pytestmark = pytest.mark.skipif(
