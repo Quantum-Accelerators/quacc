@@ -608,7 +608,7 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, ESPRESSO_PARALLEL
         "parallel_info": ESPRESSO_PARALLEL_INFO,
     }
     matdyn_coarse_results = matdyn_job(
-        c_ahc_coarse_results["dir_name"],
+        [q2r_results["dir_name"], c_ahc_coarse_results["dir_name"]],
         **matdyn_coarse_params,
     )
 
@@ -629,10 +629,10 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, ESPRESSO_PARALLEL
                 "amass_amu(1)": 12.01078,
                 "amass_amu(2)": 12.01078,
             }
-        },
+        }
     }
     postahc_coarse_results = postahc_job(
-        matdyn_coarse_results["dir_name"],
+        [c_ahc_coarse_results["dir_name"], matdyn_coarse_results["dir_name"]],
         **postahc_coarse_params,
         parallel_info=ESPRESSO_PARALLEL_INFO,
     )
@@ -655,7 +655,7 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, ESPRESSO_PARALLEL
                 "ahc_dir": "ahc_dir_fine",
                 "skip_upperfan": True,
             }
-        },
+        }
     }
     c_ahc_fine_results = phonon_job(
         [dvscf_q2r_results["dir_name"], c_nscf_results["dir_name"]],
@@ -746,7 +746,9 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, ESPRESSO_PARALLEL
         ],
     }
     matdyn_fine_results = matdyn_job(
-        c_ahc_fine_results["dir_name"], **matdyn_fine_params, parallel_info=ESPRESSO_PARALLEL_INFO
+        [q2r_results["dir_name"], c_ahc_fine_results["dir_name"]],
+        **matdyn_fine_params,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
     )
 
     postahc_fine_params = {
@@ -768,9 +770,13 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, ESPRESSO_PARALLEL
                 "amass_amu(1)": 12.01078,
                 "amass_amu(2)": 12.01078,
             }
-        },
+        }
     }
-    postahc_fine_results = postahc_job(**postahc_fine_params, parallel_info=ESPRESSO_PARALLEL_INFO)
+    postahc_fine_results = postahc_job(
+        [c_ahc_fine_results["dir_name"], matdyn_fine_results["dir_name"]],
+        **postahc_fine_params,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
+    )
 
     assert c_scf_results is not None
     assert c_ph_results is not None
