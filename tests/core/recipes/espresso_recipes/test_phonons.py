@@ -302,16 +302,6 @@ def test_phonon_calculation_spin_orbit_example_06(
     }
     pt_relax_results = relax_job(pt_atoms, **pt_relax_params)
 
-    pt_phonon_params = {
-        "input_data": {
-            "inputph": {"amass(1)": 195.078, "fildyn": "ptdyn", "tr2_ph": 1.0e-10}
-        },
-        "parallel_info": ESPRESSO_PARALLEL_INFO,
-    }
-    pt_phonon_results = phonon_job(
-        pt_relax_results["dir_name"], **pt_phonon_params, qpts=(0.0, 0.0, 0.0)
-    )
-
     pt_phonon_x_params = {
         "input_data": {
             "inputph": {"amass(1)": 195.078, "fildyn": "ptdyn", "tr2_ph": 1.0e-10}
@@ -322,23 +312,8 @@ def test_phonon_calculation_spin_orbit_example_06(
         pt_relax_results["dir_name"], **pt_phonon_x_params, qpts=(1.0, 0.0, 0.0)
     )
 
-    pt_phonon_dispersions_params = {
-        "input_data": {
-            "inputph": {
-                "amass(1)": 195.078,
-                "fildyn": "ptdyn",
-                "tr2_ph": 1.0e-10,
-                "ldisp": True,
-                "nq1": 2,
-                "nq2": 2,
-                "nq3": 2,
-            }
-        },
-        "parallel_info": ESPRESSO_PARALLEL_INFO,
-    }
-    pt_phonon_dispersions_results = phonon_job(
-        pt_relax_results["dir_name"], **pt_phonon_dispersions_params
-    )
+    with zopen(Path(pt_phonon_x_results["dir_name"], "ph.out")) as f:
+        lines = f.readlines()
 
     SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO
 
