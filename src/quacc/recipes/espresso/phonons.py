@@ -91,7 +91,9 @@ def phonon_job(
 
 @job
 def q2r_job(
-    copy_files: SourceDirectorySchema, parallel_info: dict[str] | None = None, **calc_kwargs
+    copy_files: SourceDirectorySchema,
+    parallel_info: dict[str] | None = None,
+    **calc_kwargs,
 ) -> RunSchema:
     """
     Function to carry out a basic q2r.x calculation. It should allow you to
@@ -131,7 +133,9 @@ def q2r_job(
 
 @job
 def matdyn_job(
-    copy_files: SourceDirectorySchema, parallel_info: dict[str] | None = None, **calc_kwargs
+    copy_files: SourceDirectorySchema,
+    parallel_info: dict[str] | None = None,
+    **calc_kwargs,
 ) -> RunSchema:
     """
     Function to carry out a basic matdyn.x calculation. It should allow you to use
@@ -176,8 +180,9 @@ def phonon_dos_flow(
     job_decorators: dict[str, Callable | None] | None = None,
 ) -> PhononDosSchema:
     """
-    Function to carry out a phonon DOS calculation. The phonon calculation is carried out on a coarse q-grid, the force constants are calculated
-    and extrapolated to a finer q-grid, and the phonon DOS is calculated.
+    Function to carry out a phonon DOS calculation. The phonon calculation is carried
+    out on a coarse q-grid, the force constants are calculated and extrapolated to a
+    finer q-grid, and the phonon DOS is calculated.
 
     Consists of following jobs that can be modified:
 
@@ -290,12 +295,6 @@ def grid_phonon_flow(
     groups multiple representations together in a single job, reducing the
     data size by a factor of nblocks, but also reducing the level of parallelization.
     In the case of nblocks = 0, each job will contain all the representations for each q-point.
-
-    WARNING: Using the ph.x gamma trick is only partially supported by this function.
-    The gamma trick will lead to explicit calculations for each mode. If some of them
-    can be calculated using symmetry a full job will still be dispatched. This is
-    will become a problem if you system is large: you will dispatch large HPC calculations
-    for nothing. This can be tempered by setting a large or zero nblocks value.
 
     Consists of following jobs that can be modified:
 
@@ -412,7 +411,12 @@ def grid_phonon_flow(
     )
     ph_job_defaults = {
         "input_data": {
-            "inputph": {"lqdir": True, "low_directory_check": True, "recover": True}
+            "inputph": {
+                "lqdir": True,
+                "low_directory_check": True,
+                "recover": True,
+                "reduce_io": True,
+            }
         }
     }
     ph_recover_job_defaults = recursive_dict_merge(
@@ -449,7 +453,9 @@ def grid_phonon_flow(
 
 @job
 def dvscf_q2r_job(
-    copy_files: SourceDirectorySchema, parallel_info: dict[str] | None = None, **calc_kwargs
+    copy_files: SourceDirectorySchema,
+    parallel_info: dict[str] | None = None,
+    **calc_kwargs,
 ) -> RunSchema:
     """
     Function to carry out a basic dvscf_q2r calculation. It should allow you to
@@ -510,7 +516,9 @@ def dvscf_q2r_job(
 
 @job
 def postahc_job(
-    copy_files: SourceDirectorySchema, parallel_info: dict[str] | None = None, **calc_kwargs
+    copy_files: SourceDirectorySchema,
+    parallel_info: dict[str] | None = None,
+    **calc_kwargs,
 ) -> RunSchema:
     """
     Function to carry out a basic postahc calculation. It should allow you to
