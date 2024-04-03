@@ -348,7 +348,7 @@ def prepare_copy_files(
         if ldvscf_interpolate:
             to_copy.append(Path("_ph*", "pwscf.dvscf*"))
 
-            to_copy.append(Path("wpot"))
+            to_copy.append(Path("w_pot"))
 
             if lqdir:
                 to_copy.append(Path("_ph*", "pwscf.q_*", "pwscf.dvscf*"))
