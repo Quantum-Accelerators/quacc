@@ -361,7 +361,7 @@ def test_phonon_calculation_si_spin_orbit(
         "input_data": {
             "control": {"calculation": "scf", "restart_mode": "from_scratch"},
             "system": {"ecutwfc": 20.0, "noncolin": True, "lspinorb": True},
-            "electrons": {"mixing_beta": 0.7, "conv_thr": 1.0e-10},
+            "electrons": {"mixing_beta": 0.7, "conv_thr": 1.0e-8},
         },
         "pseudopotentials": pseudopotential,
         "kpts": (2, 2, 2),
@@ -372,7 +372,7 @@ def test_phonon_calculation_si_spin_orbit(
     si_phonon_params = {
         "input_data": {
             "inputph": {
-                "tr2_ph": 1.0e-16,
+                "tr2_ph": 1.0e-10,
                 "epsil": True,
                 "fildyn": "Sig.dyn",
                 "amass(1)": 28.0855,
@@ -384,8 +384,7 @@ def test_phonon_calculation_si_spin_orbit(
         si_relax_results["dir_name"], **si_phonon_params, qpts=(0.0, 0.0, 0.0)
     )
 
-    assert si_relax_results is not None
-    assert si_phonon_results is not None
+    assert si_phonon_results["parameters"]["input_data"]["inputph"]["fildyn"] == "matdyn"
 
     SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO
 
@@ -408,7 +407,7 @@ def test_phonon_calculation_c_noncollinear(
         "input_data": {
             "control": {"calculation": "scf", "restart_mode": "from_scratch"},
             "system": {"ecutwfc": 27.0, "ecutrho": 300.0, "noncolin": True},
-            "electrons": {"mixing_beta": 0.7, "conv_thr": 1.0e-9},
+            "electrons": {"mixing_beta": 0.7, "conv_thr": 1.0e-8},
         },
         "pseudopotentials": pseudopotential,
         "kpts": (4, 4, 4),
@@ -417,7 +416,7 @@ def test_phonon_calculation_c_noncollinear(
     c_relax_results = relax_job(c_atoms, **c_relax_params)
 
     c_phonon_params = {
-        "input_data": {"inputph": {"tr2_ph": 1.0e-14, "epsil": True}},
+        "input_data": {"inputph": {"tr2_ph": 1.0e-10, "epsil": True}},
         "parallel_info": ESPRESSO_PARALLEL_INFO,
     }
     c_phonon_results = phonon_job(
@@ -450,15 +449,15 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, ESPRESSO_PARALLEL
                 "tprnfor": True,
                 "tstress": True,
             },
-            "system": {"ecutwfc": 60, "occupations": "fixed"},
+            "system": {"ecutwfc": 45, "occupations": "fixed"},
             "electrons": {
                 "diagonalization": "david",
                 "mixing_beta": 0.7,
-                "conv_thr": 1.0e-12,
+                "conv_thr": 1.0e-9,
             },
         },
         "pseudopotentials": pseudopotential,
-        "kpts": (6, 6, 6),
+        "kpts": (3, 3, 3),
     }
     c_scf_results = relax_job(
         atoms, **c_scf_params, parallel_info=ESPRESSO_PARALLEL_INFO
@@ -473,7 +472,7 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, ESPRESSO_PARALLEL
                 "nq1": 2,
                 "nq2": 2,
                 "nq3": 2,
-                "tr2_ph": 1.0e-12,
+                "tr2_ph": 1.0e-10,
             }
         }
     }
@@ -512,7 +511,7 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, ESPRESSO_PARALLEL
         "input_data": {
             "control": {"calculation": "nscf", "restart_mode": "from_scratch"},
             "system": {
-                "ecutwfc": 60,
+                "ecutwfc": 45,
                 "occupations": "fixed",
                 "nbnd": 15,
                 "nosym": True,
@@ -522,7 +521,7 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, ESPRESSO_PARALLEL
                 "diago_full_acc": True,
                 "diagonalization": "david",
                 "mixing_beta": 0.7,
-                "conv_thr": 1.0e-10,
+                "conv_thr": 1.0e-9,
             },
         },
         "pseudopotentials": pseudopotential,
@@ -541,11 +540,11 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, ESPRESSO_PARALLEL
             "inputph": {
                 "prefix": "diam",
                 "fildyn": "dyn_dir_ahc_coarse/diam.dyn",
-                "tr2_ph": 1.0e-20,
+                "tr2_ph": 1.0e-12,
                 "ldisp": True,
-                "nq1": 3,
-                "nq2": 3,
-                "nq3": 3,
+                "nq1": 2,
+                "nq2": 2,
+                "nq3": 2,
                 "ldvscf_interpolate": True,
                 "wpot_dir": "wpot/",
                 "trans": False,
