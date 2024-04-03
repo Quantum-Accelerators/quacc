@@ -517,7 +517,8 @@ def prepare_copy_files(
                 to_copy.append(Path("_ph*", "pwscf.q_*", "pwscf.dvscf*"))
 
     elif binary in ["dos", "fs"]:
-        to_copy.extend(pw_base)
+        # Not optimal... dos.x requires the pseudo files... they can't be guessed
+        to_copy.extend(Path("pwscf.save"))
 
     elif binary in ["projwfc", "bands"]:
         to_copy.extend(pw_base)
