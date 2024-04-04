@@ -88,7 +88,7 @@ def convert_pun_to_atoms(
 
     # Add the `oxi_states` and `atom_type` arrays to the Atoms object
     embedded_cluster.set_array("oxi_states", np.array(charge_list))
-    embedded_cluster.set_array("atom_type", np.array([atom_type_list]))
+    embedded_cluster.set_array("atom_type", np.array(atom_type_list))
 
     return embedded_cluster
 
