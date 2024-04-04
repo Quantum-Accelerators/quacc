@@ -4,18 +4,104 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
-from ase import Atoms
+from ase.atoms import Atoms
 from ase.io import write
 from ase.units import Bohr
 
 if TYPE_CHECKING:
     from numpy.typing import NDArray
 
+
+def create_skzcam_clusters(
+    pun_file: str | Path,
+    center_position: NDArray,
+    atom_oxi_states: dict[str, float],
+    shell_max: int = 10,
+    shell_width: float = 0.005,
+    bond_dist: float = 2.5,
+    write_clusters: bool = False,
+    write_clusters_path: str | Path = ".",
+    write_include_ecp: bool = False,
+) -> list[list[int]]:
+    """
+    Returns a list of list containing the indices of the atoms (in embedded_cluster) which form the quantum clusters in the SKZCAM protocol. The number of clusters created is controlled by the rdf_max parameter.
+
+    Parameters
+    ----------
+    embedded_cluster
+        The ASE Atoms object containing the atomic coordinates AND the atom types (i.e. cation or anion).
+    shell_max
+        The maximum number of quantum clusters to be created.
+    write_clusters
+        If True, the quantum clusters will be written to a file.
+    bond_dist
+        The distance within which an anion is considered to be coordinating a cation.
+    write_clusters_path
+        The path to the file where the quantum clusters will be written.
+    write_include_ecp
+        If True, the ECP region will be included in the quantum clusters.
+
+    Returns
+    -------
+    clusters
+        A list of lists containing the indices of the atoms in each quantum cluster.
+    """
+
+    # Read the .pun file and create the embedded_cluster Atoms object
+    embedded_cluster = convert_pun_to_atoms(pun_file, atom_oxi_states)
+
+    # Get distances of all atoms from the cluster center
+    atom_center_distances = _get_atom_distances(embedded_cluster, center_position)
+
+    # Determine the cation shells from the center of the embedded cluster
+    _, cation_shells_idx = _find_cation_shells(
+        embedded_cluster, atom_center_distances, shell_width
+    )
+
+    # Create the distance matrix for the embedded cluster
+    embedded_cluster_all_dist = embedded_cluster.get_all_distances()
+
+    # Create the anion coordination list for each cation shell
+    anion_coord_idx = []
+    for shell_idx in range(shell_max):
+        cation_shell = cation_shells_idx[shell_idx]
+        anion_coord_idx += [
+            _get_anion_coordination(embedded_cluster, cation_shell, embedded_cluster_all_dist, bond_dist)
+        ]
+
+    # Create the quantum clusters by summing up the indices of the cations and their coordinating anions
+    quantum_cluster_idx = []
+    dummy_cation_idx = []
+    dummy_anion_idx = []
+    for shell_idx in range(shell_max):
+        dummy_cation_idx += cation_shells_idx[shell_idx]
+        dummy_anion_idx += anion_coord_idx[shell_idx]
+        quantum_cluster_idx += [list(set(dummy_cation_idx + dummy_anion_idx))]
+
+    # Get the ECP region for each quantum cluster
+    ecp_region_idx = _get_ecp_region(embedded_cluster, quantum_cluster_idx, embedded_cluster_all_dist)
+
+    # Write the quantum clusters to files
+    if write_clusters:
+        for idx, cluster in enumerate(quantum_cluster_idx):
+            cluster_atoms = embedded_cluster[cluster]
+            if write_include_ecp:
+                ecp_atoms = embedded_cluster[ecp_region_idx[idx]]
+                ecp_atoms.set_chemical_symbols(np.array(["U"] * len(ecp_atoms)))
+                cluster_atoms = cluster_atoms.copy() + ecp_atoms.copy()
+            write(
+                Path(write_clusters_path,f"SKZCAM_cluster_{idx}.xyz"),
+                cluster_atoms,
+            )
+
+    return quantum_cluster_idx, ecp_region_idx
+
 def convert_pun_to_atoms(
     pun_file: str | Path, atom_oxi_states: dict[str, float]
 ) -> Atoms:
     """
-    Reads a .pun file and returns an ASE Atoms object containing the atomic coordinates, point charges/oxidation states and atom types.
+    Reads a .pun file and returns an ASE Atoms object containing the atomic coordinates,
+    point charges/oxidation states, and atom types.
 
     Parameters
     ----------
@@ -83,7 +169,7 @@ def convert_pun_to_atoms(
         )
         embedded_cluster = embedded_cluster.copy() + atom.copy()
 
-    # Centre the embedded cluster so that atom index 0 is at the [0, 0, 0] position
+    # Center the embedded cluster so that atom index 0 is at the [0, 0, 0] position
     embedded_cluster.translate(-embedded_cluster[0].position)
 
     # Add the `oxi_states` and `atom_type` arrays to the Atoms object
@@ -93,9 +179,9 @@ def convert_pun_to_atoms(
     return embedded_cluster
 
 
-def get_atom_distances(embedded_cluster: Atoms, center_position: NDArray) -> NDArray:
+def _get_atom_distances(embedded_cluster: Atoms, center_position: NDArray) -> NDArray:
     """
-    Returns the distance of all atoms from the centre position of the embedded cluster
+    Returns the distance of all atoms from the center position of the embedded cluster
 
     Parameters
     ----------
@@ -105,26 +191,27 @@ def get_atom_distances(embedded_cluster: Atoms, center_position: NDArray) -> NDA
     Returns
     -------
     NDArray
-        An array containing the distances of each atom in the Atoms object from the cluster centre.
+        An array containing the distances of each atom in the Atoms object from the cluster center.
     """
 
     return np.array([np.linalg.norm(atom.position - center_position) for atom in embedded_cluster])
 
 
-def find_cation_shells(
+def _find_cation_shells(
     embedded_cluster: Atoms,
     distances: NDArray,
     shell_width: float = 0.005,
 ) -> list[list[int]]:
     """
-    Returns a list of lists containing the indices of the cations in each shell, based on distance from the embedded cluster centre. This is achieved by clustering the data based on the DBSCAN clustering algorithm.
+    Returns a list of lists containing the indices of the cations in each shell, based on distance from the embedded cluster center.
+    This is achieved by clustering the data based on the DBSCAN clustering algorithm.
 
     Parameters
     ----------
     embedded_cluster
         The ASE Atoms object containing the atomic coordinates AND the atom types (i.e. cation or anion).
     distances
-        The distance of atoms from the cluster centre.
+        The distance of atoms from the cluster center.
     shell_width
         Defines the distance between atoms within shells; this is the maximum distance between any two atoms within the shell
 
@@ -138,7 +225,7 @@ def find_cation_shells(
     shells = []
     shells_idx = []
 
-    # Sort the points by distance from the cluster centre for the cations only
+    # Sort the points by distance from the cluster center for the cations only
     distances_sorted = []
     distances_sorted_idx = []
     for i in np.argsort(distances):
@@ -166,7 +253,7 @@ def find_cation_shells(
     return shells, shells_idx
 
 
-def get_anion_coordination(
+def _get_anion_coordination(
     embedded_cluster: Atoms,
     cation_shell_idx: list[int],
     dist_matrix: NDArray,
@@ -206,7 +293,7 @@ def get_anion_coordination(
     return list(set(anion_coord_idx))
 
 
-def get_ecp_region(
+def _get_ecp_region(
     embedded_cluster: Atoms,
     quantum_cluster_idx: list[int],
     dist_matrix: NDArray,
@@ -253,91 +340,3 @@ def get_ecp_region(
 
     return ecp_region_idx
 
-
-def create_skzcam_clusters(
-    pun_file: str | Path,
-    center_position: NDArray,
-    atom_oxi_states: dict[str, float],
-    shell_max: int = 10,
-    shell_width: float = 0.005,
-    bond_dist: float = 2.5,
-    write_clusters: bool = False,
-    write_clusters_path: str | Path | None = None,
-    write_cluster_name: str = "SKZCAM_cluster",
-    write_include_ecp: bool = False,
-) -> list[list[int]]:
-    """
-    Returns a list of list containing the indices of the atoms (in embedded_cluster) which form the quantum clusters in the SKZCAM protocol. The number of clusters created is controlled by the rdf_max parameter.
-
-    Parameters
-    ----------
-    embedded_cluster
-        The ASE Atoms object containing the atomic coordinates AND the atom types (i.e. cation or anion).
-    shell_max
-        The maximum number of quantum clusters to be created.
-    write_clusters
-        If True, the quantum clusters will be written to a file.
-    write_clusters_path
-        The path to the file where the quantum clusters will be written.
-    write_cluster_name
-        The name of the file where the quantum clusters will be written.
-    write_include_ecp
-        If True, the ECP region will be included in the quantum clusters.
-
-    Returns
-    -------
-    clusters
-        A list of lists containing the indices of the atoms in each quantum cluster.
-    """
-
-    # Read the .pun file and create the embedded_cluster Atoms object
-    embedded_cluster = convert_pun_to_atoms(pun_file, atom_oxi_states)
-
-    # Get distances of all atoms from the cluster centre
-    atom_centre_distances = get_atom_distances(embedded_cluster, center_position)
-
-    # Determine the cation shells from the centre of the embedded cluster
-    _, cation_shells_idx = find_cation_shells(
-        embedded_cluster, atom_centre_distances, shell_width
-    )
-
-    # Create the distance matrix for the embedded cluster
-    embedded_cluster_all_dist = embedded_cluster.get_all_distances()
-
-    anion_coord_idx = []
-    # Create the anion coordination list for each cation shell
-    for shell_idx in range(shell_max):
-        cation_shell = cation_shells_idx[shell_idx]
-        anion_coord_idx += [
-            get_anion_coordination(embedded_cluster, cation_shell, embedded_cluster_all_dist, bond_dist)
-        ]
-
-    # Create the quantum clusters by summing up the indices of the cations and their coordinating anions
-    quantum_cluster_idx = []
-    dummy_cation_idx = []
-    dummy_anion_idx = []
-    for shell_idx in range(shell_max):
-        dummy_cation_idx += cation_shells_idx[shell_idx]
-        dummy_anion_idx += anion_coord_idx[shell_idx]
-        quantum_cluster_idx += [list(set(dummy_cation_idx + dummy_anion_idx))]
-
-    # Get the ECP region for each quantum cluster
-    ecp_region_idx = get_ecp_region(embedded_cluster, quantum_cluster_idx, embedded_cluster_all_dist)
-
-    if write_clusters:
-        if write_clusters_path is None:
-            write_clusters_path = Path.cwd()
-        # Write the quantum clusters to a file
-        for idx, cluster in enumerate(quantum_cluster_idx):
-            cluster_atoms = embedded_cluster[cluster]
-            if write_include_ecp:
-                ecp_atoms = embedded_cluster[ecp_region_idx[idx]]
-                ecp_atoms.set_chemical_symbols(np.array(["U"] * len(ecp_atoms)))
-                cluster_atoms = cluster_atoms.copy() + ecp_atoms.copy()
-
-            write(
-                Path(f"{write_clusters_path}/{write_cluster_name}_{idx}.xyz"),
-                cluster_atoms,
-            )
-
-    return quantum_cluster_idx, ecp_region_idx
