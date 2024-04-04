@@ -67,7 +67,7 @@ def test_cclib_summarize_run(tmp_path, monkeypatch):
     # Make sure metadata is made
     atoms = read(log1)
     results = cclib_summarize_run(
-        atoms, ".log", dir_path=tmp_path / "test1", additional_fields={"test": "hi"}
+        atoms, ".log", directory=tmp_path / "test1", additional_fields={"test": "hi"}
     )
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
@@ -80,7 +80,7 @@ def test_cclib_summarize_run(tmp_path, monkeypatch):
     # Make sure metadata is made
     atoms = read(log2)
     results = cclib_summarize_run(
-        atoms, ".log", dir_path=tmp_path / "test2", additional_fields={"test": "hi"}
+        atoms, ".log", directory=tmp_path / "test2", additional_fields={"test": "hi"}
     )
     assert results["attributes"]["final_scf_energy"] == pytest.approx(-4091.763)
     assert results["natoms"] == 2
@@ -120,13 +120,13 @@ def test_cclib_summarize_run(tmp_path, monkeypatch):
     # Test DB
     atoms = read(log1)
     store = MemoryStore()
-    cclib_summarize_run(atoms, ".log", dir_path=tmp_path / "test1", store=store)
+    cclib_summarize_run(atoms, ".log", directory=tmp_path / "test1", store=store)
     assert store.count() == 1
 
     # Make sure info tags are handled appropriately
     atoms = read(log1)
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
-    results = cclib_summarize_run(atoms, ".log", dir_path=tmp_path / "test1")
+    results = cclib_summarize_run(atoms, ".log", directory=tmp_path / "test1")
     assert atoms.info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results.get("atoms_info", {}) != {}
     assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
@@ -136,12 +136,12 @@ def test_cclib_summarize_run(tmp_path, monkeypatch):
 def test_errors():
     atoms = bulk("Cu")
     with pytest.raises(ValueError):
-        cclib_summarize_run(atoms, ".log", dir_path=run1)
+        cclib_summarize_run(atoms, ".log", directory=run1)
 
     calc = Vasp(atoms)
     atoms.calc = calc
     with pytest.raises(ValueError):
-        cclib_summarize_run(atoms, ".log", dir_path=run1)
+        cclib_summarize_run(atoms, ".log", directory=run1)
 
 
 def test_cclib_taskdoc(tmp_path, monkeypatch):

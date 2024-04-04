@@ -28,7 +28,7 @@ def run_custodian(
     qchem_use_error_handlers: bool = _DEFAULT_SETTING,
     qchem_custodian_max_errors: int = _DEFAULT_SETTING,
     qchem_nbo_exe: str | Path = _DEFAULT_SETTING,
-    directory: str | Path = "./",
+    directory: str | Path | None = None,
 ) -> Popen:
     """
     Function to run QChem Custodian.
