@@ -107,7 +107,7 @@ def pw_copy_files(
 
 def grid_copy_files(
     ph_input_data: dict[str, Any],
-    dir_name: str | Path,
+    directory: str | Path,
     qnum: int,
     qpt: tuple[float, float, float],
 ) -> dict[SourceDirectory, Filenames]:
@@ -118,7 +118,7 @@ def grid_copy_files(
     ----------
     ph_input_data
         The input data for the ph calculation
-    dir_name
+    directory
         The directory name to copy the files from
     qnum
         The q-point number
@@ -135,7 +135,7 @@ def grid_copy_files(
     lqdir = ph_input_data["inputph"].get("lqdir", False)
 
     files_to_copy = {
-        dir_name: [
+        directory: [
             Path(outdir, "_ph0", f"{prefix}.phsave", "control_ph.xml*"),
             Path(outdir, "_ph0", f"{prefix}.phsave", "status_run.xml*"),
             Path(outdir, "_ph0", f"{prefix}.phsave", "patterns.*.xml*"),
@@ -144,7 +144,7 @@ def grid_copy_files(
     }
 
     if lqdir or qpt == (0.0, 0.0, 0.0):
-        files_to_copy[dir_name].extend(
+        files_to_copy[directory].extend(
             [
                 Path(outdir, f"{prefix}.save", "charge-density.*"),
                 Path(outdir, f"{prefix}.save", "data-file-schema.xml.*"),
@@ -153,14 +153,14 @@ def grid_copy_files(
             ]
         )
         if qpt != (0.0, 0.0, 0.0):
-            files_to_copy[dir_name].extend(
+            files_to_copy[directory].extend(
                 [
                     Path(outdir, "_ph0", f"{prefix}.q_{qnum}", f"{prefix}.save", "*"),
                     Path(outdir, "_ph0", f"{prefix}.q_{qnum}", f"{prefix}.wfc*"),
                 ]
             )
     else:
-        files_to_copy[dir_name].extend(
+        files_to_copy[directory].extend(
             [
                 Path(outdir, "_ph0", f"{prefix}.wfc*"),
                 Path(outdir, "_ph0", f"{prefix}.save", "*"),

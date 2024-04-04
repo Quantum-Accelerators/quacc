@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
 def write_qchem(
     qc_input: QCInput,
-    directory: Path | str = ".",
+    directory: Path | str,
     prev_orbital_coeffs: list[float] | None = None,
 ) -> None:
     """
@@ -53,7 +53,7 @@ def write_qchem(
     qc_input.write_file(directory / "mol.qin")
 
 
-def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float]]:
+def read_qchem(directory: Path | str) -> tuple[Results, list[float]]:
     """
     Read Q-Chem log files.
 

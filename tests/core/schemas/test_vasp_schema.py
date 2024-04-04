@@ -66,7 +66,7 @@ def test_vasp_summarize_run(run1, monkeypatch, tmp_path):
 
     atoms = read(os.path.join(p, "OUTCAR.gz"))
     calc = atoms.calc
-    results = vasp_summarize_run(atoms, dir_path=p)
+    results = vasp_summarize_run(atoms, directory=p)
     assert results["nsites"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["output"]["energy"] == -33.15807349
@@ -82,12 +82,12 @@ def test_vasp_summarize_run(run1, monkeypatch, tmp_path):
     # Test DB
     atoms = read(os.path.join(p, "OUTCAR.gz"))
     store = MemoryStore()
-    vasp_summarize_run(atoms, dir_path=p, store=store)
+    vasp_summarize_run(atoms, directory=p, store=store)
     assert store.count() == 1
 
     # Make sure metadata is made
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
-    results = vasp_summarize_run(atoms, dir_path=p, additional_fields={"test": "hi"})
+    results = vasp_summarize_run(atoms, directory=p, additional_fields={"test": "hi"})
     assert results.get("test") == "hi"
 
     # Make sure info tags are handled appropriately
@@ -96,7 +96,7 @@ def test_vasp_summarize_run(run1, monkeypatch, tmp_path):
     atoms.calc = calc
     atoms.calc.results = {"energy": -1.0}
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
-    results = vasp_summarize_run(atoms, dir_path=p)
+    results = vasp_summarize_run(atoms, directory=p)
     results_atoms = results["atoms"]
     assert atoms.info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results.get("atoms_info", {}) != {}
@@ -109,7 +109,7 @@ def test_vasp_summarize_run(run1, monkeypatch, tmp_path):
     calc = Vasp(atoms)
     atoms.calc = calc
     atoms.calc.results = {"energy": -1.0, "magmoms": [2.0] * len(atoms)}
-    results = vasp_summarize_run(atoms, dir_path=p)
+    results = vasp_summarize_run(atoms, directory=p)
     results_atoms = results["atoms"]
 
     assert atoms.calc is not None
@@ -124,7 +124,7 @@ def test_vasp_summarize_run(run1, monkeypatch, tmp_path):
     atoms.calc = calc
     atoms.calc.results = {"energy": -1.0}
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
-    results = vasp_summarize_run(atoms, dir_path=p, move_magmoms=False)
+    results = vasp_summarize_run(atoms, directory=p, move_magmoms=False)
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
     results_atoms = results["atoms"]
     assert results_atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
@@ -151,7 +151,7 @@ def test_summarize_bader_run(monkeypatch, run1, tmp_path):
 
     # Make sure Bader works
     atoms = read(str(p / "OUTCAR.gz"))
-    results = vasp_summarize_run(atoms, dir_path=p, run_bader=True)
+    results = vasp_summarize_run(atoms, directory=p, run_bader=True)
     assert results["bader"]["partial_charges"] == [1.0] * len(atoms)
     assert results["bader"]["spin_moments"] == [0.0] * len(atoms)
 
@@ -172,7 +172,7 @@ def test_summarize_chargemol_run(monkeypatch, run1, tmp_path):
 
     # Make sure Bader works
     atoms = read(str(p / "OUTCAR.gz"))
-    results = vasp_summarize_run(atoms, dir_path=p, run_bader=False, run_chargemol=True)
+    results = vasp_summarize_run(atoms, directory=p, run_bader=False, run_chargemol=True)
     assert results["chargemol"]["ddec"]["partial_charges"] == [1.0] * len(atoms)
     assert results["chargemol"]["cm5"]["partial_charges"] == [1.0] * len(atoms)
     assert results["chargemol"]["ddec"]["spin_moments"] == [0.0] * len(atoms)
@@ -197,7 +197,7 @@ def test_summarize_bader_and_chargemol_run(monkeypatch, run1, tmp_path):
 
     # Make sure Bader works
     atoms = read(str(p / "OUTCAR.gz"))
-    results = vasp_summarize_run(atoms, dir_path=p, run_bader=True, run_chargemol=True)
+    results = vasp_summarize_run(atoms, directory=p, run_bader=True, run_chargemol=True)
     assert results["chargemol"]["ddec"]["partial_charges"] == [1.0] * len(atoms)
     assert results["chargemol"]["cm5"]["partial_charges"] == [1.0] * len(atoms)
     assert results["chargemol"]["ddec"]["spin_moments"] == [0.0] * len(atoms)
@@ -210,7 +210,7 @@ def test_summarize_mp(monkeypatch, mp_run1, tmp_path):
     p = tmp_path / "vasp_run"
     copytree(mp_run1, p)
     atoms = read(p / "OUTCAR.gz")
-    results = vasp_summarize_run(atoms, dir_path=p, report_mp_corrections=True)
+    results = vasp_summarize_run(atoms, directory=p, report_mp_corrections=True)
     assert results["entry"].correction == pytest.approx(-3.2279999999999998)
 
 
@@ -220,7 +220,7 @@ def test_summarize_mp_bad(monkeypatch, run1, tmp_path, caplog):
     copytree(run1, p)
     atoms = read(p / "OUTCAR.gz")
     with caplog.at_level(logging.WARNING):
-        vasp_summarize_run(atoms, dir_path=p, report_mp_corrections=True)
+        vasp_summarize_run(atoms, directory=p, report_mp_corrections=True)
     assert "invalid run type" in caplog.text
 
 
@@ -230,7 +230,7 @@ def test_no_bader(tmp_path, monkeypatch, run1, caplog):
     copytree(run1, p)
     atoms = read(p / "OUTCAR.gz")
     with caplog.at_level(logging.WARNING):
-        vasp_summarize_run(atoms, dir_path=p, run_bader=True, run_chargemol=False)
+        vasp_summarize_run(atoms, directory=p, run_bader=True, run_chargemol=False)
     assert "Bader analysis could not be performed." in caplog.text
 
 
@@ -240,5 +240,5 @@ def test_no_chargemol(tmp_path, monkeypatch, run1, caplog):
     copytree(run1, p)
     atoms = read(p / "OUTCAR.gz")
     with caplog.at_level(logging.WARNING):
-        vasp_summarize_run(atoms, dir_path=p, run_bader=False, run_chargemol=True)
+        vasp_summarize_run(atoms, directory=p, run_bader=False, run_chargemol=True)
     assert "Chargemol analysis could not be performed." in caplog.text
