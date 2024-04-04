@@ -54,8 +54,8 @@ def run_custodian(
 
     Returns
     -------
-    Popen
-        Popen object.
+    list[list[dict]]
+        Lists of lists of errors.
     """
     # Adapted from atomate.qchem.firetasks.run_calc
     from custodian import Custodian

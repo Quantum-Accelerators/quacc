@@ -331,4 +331,4 @@ class Vasp(Vasp_):
             run_custodian(directory=directory)
             return 0
 
-        return subprocess.call(command, shell=True, stdout=out, cwd=directory)
+        return subprocess.run(command, shell=True, stdout=out, cwd=directory).returncode

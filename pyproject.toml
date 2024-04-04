@@ -158,6 +158,7 @@ lint.ignore = [
   "RUF015", # Prefer next(iter())
   "RET505", # Unnecessary `elif` after `return`
   "PT004",  # Fixture does not return anthing
+  "PLW1510",  # subprocess-run-without-check
   "B017",   # pytest.raises
   "PT011",  # pytest.raises
   "PT012",  # pytest.raises
