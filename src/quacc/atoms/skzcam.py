@@ -121,16 +121,16 @@ def find_cation_shells(
 
     Parameters
     ----------
-    embedded_cluster : Atoms
+    embedded_cluster
         The ASE Atoms object containing the atomic coordinates AND the atom types (i.e. cation or anion).
-    distances : np.ndarray
+    distances
         The distance of atoms from the cluster centre.
-    shell_width : float
+    shell_width
         Defines the distance between atoms within shells; this is the maximum distance between any two atoms within the shell
 
     Returns
     -------
-    shells: list
+    list[list[int]]
         A list of lists containing the indices of the cations in each shell.
     """
 
@@ -183,10 +183,12 @@ def get_anion_coordination(
         A list of the indices of the cations in the cluster.
     dist_matrix
         A matrix containing the distances between each pair of atoms in the embedded cluster.
+    bond_dist
+        The distance within which an anion is considered to be coordinating a cation.
 
     Returns
     -------
-    anion_coord_idx
+    list[int]
         A list containing the indices of the anions coordinating the cation indices.
     """
 
@@ -226,7 +228,7 @@ def get_ecp_region(
 
     Returns
     -------
-    ecp_region_idx
+    list[list[int]]
         A list of lists containing the indices of the atoms in the ECP region for each quantum cluster.
     """
 
@@ -336,7 +338,6 @@ def create_skzcam_clusters(
             write(
                 Path(f"{write_clusters_path}/{write_cluster_name}_{idx}.xyz"),
                 cluster_atoms,
-                format="xyz",
             )
 
     return quantum_cluster_idx, ecp_region_idx
