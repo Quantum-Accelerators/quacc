@@ -66,7 +66,9 @@ def create_skzcam_clusters(
     for shell_idx in range(shell_max):
         cation_shell = cation_shells_idx[shell_idx]
         anion_coord_idx += [
-            _get_anion_coordination(embedded_cluster, cation_shell, embedded_cluster_all_dist, bond_dist)
+            _get_anion_coordination(
+                embedded_cluster, cation_shell, embedded_cluster_all_dist, bond_dist
+            )
         ]
 
     # Create the quantum clusters by summing up the indices of the cations and their coordinating anions
@@ -79,7 +81,9 @@ def create_skzcam_clusters(
         quantum_cluster_idx += [list(set(dummy_cation_idx + dummy_anion_idx))]
 
     # Get the ECP region for each quantum cluster
-    ecp_region_idx = _get_ecp_region(embedded_cluster, quantum_cluster_idx, embedded_cluster_all_dist)
+    ecp_region_idx = _get_ecp_region(
+        embedded_cluster, quantum_cluster_idx, embedded_cluster_all_dist
+    )
 
     # Write the quantum clusters to files
     if write_clusters:
@@ -90,11 +94,12 @@ def create_skzcam_clusters(
                 ecp_atoms.set_chemical_symbols(np.array(["U"] * len(ecp_atoms)))
                 cluster_atoms = cluster_atoms.copy() + ecp_atoms.copy()
             write(
-                Path(write_clusters_path,f"SKZCAM_cluster_{idx}.xyz"),
+                Path(write_clusters_path, f"SKZCAM_cluster_{idx}.xyz"),
                 cluster_atoms,
             )
 
     return quantum_cluster_idx, ecp_region_idx
+
 
 def convert_pun_to_atoms(
     pun_file: str | Path, atom_oxi_states: dict[str, float]
@@ -194,7 +199,9 @@ def _get_atom_distances(embedded_cluster: Atoms, center_position: NDArray) -> ND
         An array containing the distances of each atom in the Atoms object from the cluster center.
     """
 
-    return np.array([np.linalg.norm(atom.position - center_position) for atom in embedded_cluster])
+    return np.array(
+        [np.linalg.norm(atom.position - center_position) for atom in embedded_cluster]
+    )
 
 
 def _find_cation_shells(
@@ -287,7 +294,10 @@ def _get_anion_coordination(
         anion_coord_idx += [
             idx
             for idx, dist in enumerate(dist_matrix[atom_idx])
-            if (dist < bond_dist and embedded_cluster.get_array("atom_type")[idx] == "anion")
+            if (
+                dist < bond_dist
+                and embedded_cluster.get_array("atom_type")[idx] == "anion"
+            )
         ]
 
     return list(set(anion_coord_idx))
@@ -339,4 +349,3 @@ def _get_ecp_region(
         ecp_region_idx += [list(set(cluster_ecp_region_idx))]
 
     return ecp_region_idx
-
