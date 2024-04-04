@@ -71,7 +71,7 @@ def run_custodian(
     vasp_custodian_handlers: list[str] | None = _DEFAULT_SETTING,
     vasp_custodian_validators: list[str] | None = _DEFAULT_SETTING,
     scratch_dir: str | None = None,
-    directory: str | None = "./",
+    directory: str | None = None,
     vasp_job_kwargs: VaspJobKwargs | None = None,
     custodian_kwargs: CustodianKwargs | None = None,
 ) -> list[list[dict]]:
@@ -101,6 +101,8 @@ def run_custodian(
         List of validators to use in Custodian. See settings for list.
     scratch_dir
         Scratch directory to use. Defaults to None.
+    directory
+        Directory to run the calculation in. Defaults to None.
     vasp_job_kwargs
         Keyword arguments to pass to the Custodian VaspJob. Defaults to None.
     custodian_kwargs
