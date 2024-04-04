@@ -25,6 +25,7 @@ from custodian.vasp.jobs import VaspJob
 from custodian.vasp.validators import VaspFilesValidator, VasprunXMLValidator
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from typing import Callable, TypedDict
 
     class VaspJobKwargs(TypedDict, total=False):
@@ -71,7 +72,7 @@ def run_custodian(
     vasp_custodian_handlers: list[str] | None = _DEFAULT_SETTING,
     vasp_custodian_validators: list[str] | None = _DEFAULT_SETTING,
     scratch_dir: str | None = None,
-    directory: str | None = None,
+    directory: str | Path | None = None,
     vasp_job_kwargs: VaspJobKwargs | None = None,
     custodian_kwargs: CustodianKwargs | None = None,
 ) -> list[list[dict]]:
