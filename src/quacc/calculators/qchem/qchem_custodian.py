@@ -10,7 +10,6 @@ from quacc import SETTINGS
 
 if TYPE_CHECKING:
     from pathlib import Path
-    from subprocess import Popen
 
 try:
     import openbabel as ob
@@ -29,7 +28,7 @@ def run_custodian(
     qchem_custodian_max_errors: int = _DEFAULT_SETTING,
     qchem_nbo_exe: str | Path = _DEFAULT_SETTING,
     directory: str | Path | None = None,
-) -> Popen:
+) -> list[list[dict]]:
     """
     Function to run QChem Custodian.
 
