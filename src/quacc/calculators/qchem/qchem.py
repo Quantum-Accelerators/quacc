@@ -263,7 +263,7 @@ class QChem(FileIOCalculator):
 
         write_qchem(
             qc_input,
-            directory=self.directory,
+            self.directory,
             prev_orbital_coeffs=self.prev_orbital_coeffs,
         )
 
@@ -288,7 +288,7 @@ class QChem(FileIOCalculator):
         -------
         None
         """
-        results, prev_orbital_coeffs = read_qchem(directory=self.directory)
+        results, prev_orbital_coeffs = read_qchem(self.directory)
         self.results = results
         self.prev_orbital_coeffs = prev_orbital_coeffs
 

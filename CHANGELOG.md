@@ -4,10 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.3]
+
+### Fixed
+
+- Fixed potential issues with I/O settings and Espresso
+- Fixed passing of custom decorators in the Espresso `grid_phonon_flow`
+
 ## [0.7.2]
 
 ### Changed
 
+- Calculator executable commands are now `str` type instead of `Path`
+- Removed `slowconv` from the default parameters of the ORCA recipes
 - The Q-Chem calculator now uses the TaskDoc from emmet in its `results` attribute
 
 ### Fixed

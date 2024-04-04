@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, TypedDict
+from typing import TYPE_CHECKING, TypedDict
 
 from quacc.schemas._aliases.atoms import AtomsSchema
 
@@ -10,8 +10,17 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from numpy.typing import NDArray
 
-Results = dict[str, Any]  # from atoms.calc.results
-Parameters = dict[str, Any]  # from atoms.calc.parameters
+
+class Results(TypedDict):
+    """Dictionary of results from atoms.calc.results"""
+
+
+class Parameters(TypedDict):
+    """Dictionary of parameters from atoms.calc.parameters"""
+
+
+class ParametersOpt(TypedDict):
+    """Dictionary of parameters from Optimizer.todict()"""
 
 
 class RunSchema(AtomsSchema):
@@ -29,7 +38,7 @@ class OptSchema(RunSchema):
     """Schema for [quacc.schemas.ase.summarize_opt_run][]"""
 
     fmax: float | None
-    parameters_opt: dict[str, Any]  # from Optimizer.todict()
+    parameters_opt: ParametersOpt
     converged: bool
     nsteps: int
     trajectory: list[Atoms]
