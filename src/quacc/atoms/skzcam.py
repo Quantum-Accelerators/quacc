@@ -12,14 +12,14 @@ if TYPE_CHECKING:
     from numpy.typing import NDArray
 
 def convert_pun_to_atoms(
-    pun_filename: str | Path, atom_oxi_states: dict[str, float]
+    pun_file: str | Path, atom_oxi_states: dict[str, float]
 ) -> Atoms:
     """
     Reads a .pun file and returns an ASE Atoms object containing the atomic coordinates, point charges/oxidation states and atom types.
 
     Parameters
     ----------
-    pun_filename
+    pun_file
         The path to the .pun file created by ChemShell to be read.
     atom_oxi_states
         A dictionary containing the atomic symbols as keys and the oxidation states as values.
@@ -42,7 +42,7 @@ def convert_pun_to_atoms(
     }
 
     # Load the pun file as a list of strings
-    raw_pun_file = [line.rstrip() for line in Path.open(pun_filename)]
+    raw_pun_file = [line.rstrip() for line in Path.open(pun_file)]
 
     # Get the number of atoms and number of atomic charges in the .pun file
     n_atoms = int(raw_pun_file[3].split()[-1])
@@ -93,32 +93,22 @@ def convert_pun_to_atoms(
     return embedded_cluster
 
 
-def get_atom_distances(embedded_cluster: Atoms, centre_position: NDArray) -> NDArray:
+def get_atom_distances(embedded_cluster: Atoms, center_position: NDArray) -> NDArray:
     """
     Returns the distance of all atoms from the centre position of the embedded cluster
 
     Parameters
     ----------
     embedded_cluster
-        The ASE Atoms object containing the atomic coordinates.
+        The ASE Atoms object containing the atomic coordinates of the embedded cluster.
 
     Returns
     -------
     NDArray
-        An array containing the distances of each atom in the Atoms object fro the cluster centre.
+        An array containing the distances of each atom in the Atoms object from the cluster centre.
     """
 
-    # Get the number of atoms in the Atoms object
-    n_atoms = len(embedded_cluster)
-
-    # Create an empty matrix to store the distances between each pair of atoms
-    distances = np.zeros(n_atoms)
-
-    # Calculate the distances between each pair of atoms
-    for i in range(n_atoms):
-        distances[i] = np.linalg.norm(embedded_cluster[i].position - centre_position)
-
-    return distances
+    return np.array([np.linalg.norm(atom.position - center_position) for atom in embedded_cluster])
 
 
 def find_cation_shells(
@@ -263,8 +253,8 @@ def get_ecp_region(
 
 
 def create_skzcam_clusters(
-    pun_filename: str | Path,
-    centre_position: NDArray,
+    pun_file: str | Path,
+    center_position: NDArray,
     atom_oxi_states: dict[str, float],
     shell_max: int = 10,
     shell_width: float = 0.005,
@@ -300,10 +290,10 @@ def create_skzcam_clusters(
     """
 
     # Read the .pun file and create the embedded_cluster Atoms object
-    embedded_cluster = convert_pun_to_atoms(pun_filename, atom_oxi_states)
+    embedded_cluster = convert_pun_to_atoms(pun_file, atom_oxi_states)
 
     # Get distances of all atoms from the cluster centre
-    atom_centre_distances = get_atom_distances(embedded_cluster, centre_position)
+    atom_centre_distances = get_atom_distances(embedded_cluster, center_position)
 
     # Determine the cation shells from the centre of the embedded cluster
     _, cation_shells_idx = find_cation_shells(
