@@ -277,7 +277,6 @@ def create_skzcam_clusters(
         If True, the quantum clusters will be written to a file.
     write_clusters_path
         The path to the file where the quantum clusters will be written.
-        Defaults to "SKZ
     write_cluster_name
         The name of the file where the quantum clusters will be written.
     write_include_ecp
