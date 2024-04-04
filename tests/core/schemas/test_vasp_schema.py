@@ -172,7 +172,9 @@ def test_summarize_chargemol_run(monkeypatch, run1, tmp_path):
 
     # Make sure Bader works
     atoms = read(str(p / "OUTCAR.gz"))
-    results = vasp_summarize_run(atoms, directory=p, run_bader=False, run_chargemol=True)
+    results = vasp_summarize_run(
+        atoms, directory=p, run_bader=False, run_chargemol=True
+    )
     assert results["chargemol"]["ddec"]["partial_charges"] == [1.0] * len(atoms)
     assert results["chargemol"]["cm5"]["partial_charges"] == [1.0] * len(atoms)
     assert results["chargemol"]["ddec"]["spin_moments"] == [0.0] * len(atoms)
