@@ -447,7 +447,6 @@ def grid_phonon_flow(
                 "lqdir": True,
                 "low_directory_check": True,
                 "recover": True,
-                "reduce_io": True,
             }
         }
     }
