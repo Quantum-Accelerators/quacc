@@ -16,6 +16,7 @@ from pathlib import Path
 
 from ase.build import bulk
 from ase.io.espresso import read_fortran_namelist
+from monty.io import zopen
 from monty.shutil import decompress_file
 from numpy.testing import assert_allclose, assert_array_equal
 
@@ -313,7 +314,7 @@ def test_phonon_calculation_spin_orbit_example_06(
     )
 
     with zopen(Path(pt_phonon_x_results["dir_name"], "ph.out")) as f:
-        lines = f.readlines()
+        lines = str(f.read())
 
     SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO
 

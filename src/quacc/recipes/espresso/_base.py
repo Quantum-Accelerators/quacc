@@ -35,7 +35,12 @@ def run_and_summarize(
     calc_swaps: dict[str, Any] | None = None,
     parallel_info: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: (
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
 ) -> RunSchema:
     """
     Base function to carry out espresso recipes.
@@ -100,7 +105,12 @@ def run_and_summarize_opt(
     opt_params: dict[str, Any] | None = None,
     parallel_info: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: (
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
 ) -> RunSchema:
     """
     Base function to carry out espresso recipes with ASE optimizers.
@@ -169,7 +179,12 @@ def _prepare_calc(
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     parallel_info: dict[str, Any] | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: (
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
 ) -> Atoms:
     """
     Commonly used preparation function to merge parameters
@@ -228,9 +243,10 @@ def _prepare_calc(
     if copy_files:
         if isinstance(copy_files, (str, Path)):
             copy_files = [copy_files]
+
         exact_files_to_copy = prepare_copy_files(calc._user_calc_params, binary=binary)
-        copy_files = {source: exact_files_to_copy for source in copy_files}
+        updated_copy_files = {source: exact_files_to_copy for source in copy_files}
 
     atoms.calc = calc
 
-    return atoms, copy_files
+    return atoms, updated_copy_files

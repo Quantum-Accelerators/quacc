@@ -1,10 +1,4 @@
-"""
-This module, 'dos.py', contains recipes for performing dos calculations using the
-dos.x binary from Quantum ESPRESSO via the quacc library.
-
-The recipes provided in this module are jobs and flows that can be used to perform
-dos calculations.
-"""
+"""DOS/ProjWFC recipes for performing dos calculations"""
 
 from __future__ import annotations
 
@@ -24,7 +18,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
-    from quacc.utils.files import SourceDirectorySchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
     class DosSchema(TypedDict):
         static_job: RunSchema
@@ -38,7 +32,9 @@ if TYPE_CHECKING:
 
 @job
 def dos_job(
-    copy_files: SourceDirectorySchema,
+    copy_files: (
+        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
+    ),
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -79,7 +75,9 @@ def dos_job(
 
 @job
 def projwfc_job(
-    copy_files: SourceDirectorySchema,
+    copy_files: (
+        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
+    ),
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,

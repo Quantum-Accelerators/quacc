@@ -28,7 +28,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
-    from quacc.utils.files import SourceDirectorySchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
     class PhononDosSchema(TypedDict):
         relax_job: RunSchema
@@ -39,7 +39,9 @@ if TYPE_CHECKING:
 
 @job
 def phonon_job(
-    copy_files: SourceDirectorySchema,
+    copy_files: (
+        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
+    ),
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     is_phcg: bool = False,
@@ -98,7 +100,9 @@ def phonon_job(
 
 @job
 def q2r_job(
-    copy_files: SourceDirectorySchema,
+    copy_files: (
+        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
+    ),
     parallel_info: dict[str] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -144,7 +148,9 @@ def q2r_job(
 
 @job
 def matdyn_job(
-    copy_files: SourceDirectorySchema,
+    copy_files: (
+        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
+    ),
     parallel_info: dict[str] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -469,7 +475,9 @@ def grid_phonon_flow(
 
 @job
 def dvscf_q2r_job(
-    copy_files: SourceDirectorySchema,
+    copy_files: (
+        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
+    ),
     parallel_info: dict[str] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -483,8 +491,6 @@ def dvscf_q2r_job(
     interpolation. To use this, run ph.x on a coarse q-point grid, use dvscf_q2r.x to
     inverse Fourier transform the phonon potentials to a real-space supercell, and then set
     ldvscf_interpolation=.true. in ph.x to Fourier transform the potentials to desired q points.
-
-    WARNING: This binary is not supported by ASE, the input_data must be in nested format.
 
     Only one card, &input:
 
@@ -538,7 +544,9 @@ def dvscf_q2r_job(
 
 @job
 def postahc_job(
-    copy_files: SourceDirectorySchema,
+    copy_files: (
+        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
+    ),
     parallel_info: dict[str] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -557,8 +565,6 @@ def postahc_job(
     - Total Fan self-energy in the OSA
     - Upper Fan self-energy
     - Lower Fan self-energy in the OSA
-
-    WARNING: This binary is not supported by ASE, the input_data must be in nested format.
 
     Parameters
     ----------
