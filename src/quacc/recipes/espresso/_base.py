@@ -266,7 +266,7 @@ def _prepare_copy(
         The calculator parameters.
     binary
         The binary to use.
-    
+
     Returns
     -------
     dict
