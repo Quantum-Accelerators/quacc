@@ -401,7 +401,7 @@ class Espresso(Espresso_):
         )
         self._bin_path = str(full_path)
 
-        if template.ase_known:
+        if template._ase_known_binary:
             self._cleanup_params()
         else:
             LOGGER.warning(
