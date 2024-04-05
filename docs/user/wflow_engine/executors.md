@@ -349,12 +349,12 @@ If you haven't done so already:
         future = client.compute(workflow(atoms))
         futures.append(future)
 
-    task_docs = client.gather(futures)
-    for task_doc in task_docs:
+    results = client.gather(futures)
+    for result in results:
         print(
-            task_doc["formula_pretty"],
-            task_doc["results"]["gibbs_energy"],
-            task_doc["dir_name"],
+            result["formula_pretty"],
+            result["results"]["gibbs_energy"],
+            result["dir_name"],
         )
     ```
 
@@ -387,7 +387,7 @@ If you haven't done so already:
     min_allocations = 0
     max_allocations = 1
 
-    env_vars = "export OMP_NUM_THREADS=1,1"  # (1)!
+    env_vars = f"export OMP_NUM_THREADS={cores_per_job},1"  # (1)!
 
     config = Config(
         strategy="htex_auto_scale",  # (2)!
@@ -464,11 +464,11 @@ If you haven't done so already:
 
 
     for future in tqdm(as_completed(futures), total=len(futures)):
-        task_doc = future.result()
+        result = future.result()
         print(
-            task_doc["formula_pretty"],
-            task_doc["results"]["gibbs_energy"],
-            task_doc["dir_name"],
+            result["formula_pretty"],
+            result["results"]["gibbs_energy"],
+            result["dir_name"],
         )
     ```
 
