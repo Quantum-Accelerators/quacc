@@ -479,5 +479,7 @@ class Espresso(Espresso_):
         else:
             self._user_calc_params = self.kwargs
 
-        if self._user_calc_params.get("kpts") and self._user_calc_params.get("kspacing"):
+        if self._user_calc_params.get("kpts") and self._user_calc_params.get(
+            "kspacing"
+        ):
             raise ValueError("Cannot specify both kpts and kspacing.")

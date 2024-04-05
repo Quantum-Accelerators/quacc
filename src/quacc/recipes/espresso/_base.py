@@ -73,7 +73,7 @@ def run_and_summarize(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    atoms, copy_files = _prepare_calc(
+    atoms, copy_files = _prepare_atoms(
         atoms=atoms,
         preset=preset,
         template=template,
@@ -151,7 +151,7 @@ def run_and_summarize_opt(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    atoms, copy_files = _prepare_calc(
+    atoms = _prepare_atoms(
         atoms=atoms,
         preset=preset,
         template=template,
@@ -162,16 +162,22 @@ def run_and_summarize_opt(
         copy_files=copy_files,
     )
 
+    updated_copy_files = _prepare_copy(
+        copy_files, atoms.calc._user_calc_params, atoms.calc.template.binary
+    )
+
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
-    dyn = run_opt(atoms, relax_cell=relax_cell, copy_files=copy_files, **opt_flags)
+    dyn = run_opt(
+        atoms, relax_cell=relax_cell, copy_files=updated_copy_files, **opt_flags
+    )
 
     return summarize_opt_run(
         dyn, move_magmoms=True, additional_fields=additional_fields
     )
 
 
-def _prepare_calc(
+def _prepare_atoms(
     atoms: Atoms | None = None,
     preset: str | None = None,
     template: EspressoTemplate | None = None,
@@ -179,12 +185,6 @@ def _prepare_calc(
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     parallel_info: dict[str, Any] | None = None,
-    copy_files: (
-        SourceDirectory
-        | list[SourceDirectory]
-        | dict[SourceDirectory, Filenames]
-        | None
-    ) = None,
 ) -> Atoms:
     """
     Commonly used preparation function to merge parameters
@@ -240,13 +240,44 @@ def _prepare_calc(
         **calc_flags,
     )
 
+    atoms.calc = calc
+
+    return atoms
+
+
+def _prepare_copy(
+    copy_files: (
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
+    calc_params: dict[str, Any] | None = None,
+    binary: str = "pw",
+) -> dict[SourceDirectory, Filenames]:
+    """
+    Function that will prepare the files to copy.
+
+    Parameters
+    ----------
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
+    calc_params
+        The calculator parameters.
+    binary
+        The binary to use.
+    
+    Returns
+    -------
+    dict
+        Dictionary of files to copy.
+    """
+
     if copy_files:
         if isinstance(copy_files, (str, Path)):
             copy_files = [copy_files]
 
-        exact_files_to_copy = prepare_copy_files(calc._user_calc_params, binary=binary)
-        updated_copy_files = {source: exact_files_to_copy for source in copy_files}
+        exact_files_to_copy = prepare_copy_files(calc_params, binary=binary)
+        return {source: exact_files_to_copy for source in copy_files}
 
-    atoms.calc = calc
-
-    return atoms, updated_copy_files
+    return {}
