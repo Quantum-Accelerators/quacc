@@ -276,7 +276,7 @@ def _prepare_copy(
     if isinstance(copy_files, (str, Path)):
         copy_files = [copy_files]
 
-    if isinstance(copy_files, (list)):
+    if isinstance(copy_files, list):
         exact_files_to_copy = prepare_copy_files(calc_params, binary=binary)
         return {source: exact_files_to_copy for source in copy_files}
 
