@@ -130,8 +130,7 @@ def grid_copy_files(
     dict
         The dictionary of files to copy
     """
-    prefix = ph_input_data["inputph"].get("prefix", "pwscf")
-    outdir = ph_input_data["inputph"].get("outdir", ".")
+
     lqdir = ph_input_data["inputph"].get("lqdir", False)
 
     files_to_copy = {
@@ -161,10 +160,7 @@ def grid_copy_files(
             )
     else:
         files_to_copy[dir_name].extend(
-            [
-                Path(outdir, "_ph0", "pwscf.wfc*"),
-                Path(outdir, "_ph0", "pwscf.save", "*"),
-            ]
+            [Path("_ph0", "pwscf.wfc*"), Path("_ph0", "pwscf.save", "*")]
         )
 
     return files_to_copy
