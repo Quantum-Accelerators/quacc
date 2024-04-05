@@ -81,7 +81,6 @@ def run_and_summarize(
         calc_defaults=calc_defaults,
         calc_swaps=calc_swaps,
         parallel_info=parallel_info,
-        copy_files=copy_files,
     )
 
     updated_copy_files = _prepare_copy(
@@ -163,7 +162,6 @@ def run_and_summarize_opt(
         calc_defaults=calc_defaults,
         calc_swaps=calc_swaps,
         parallel_info=parallel_info,
-        copy_files=copy_files,
     )
 
     updated_copy_files = _prepare_copy(
@@ -212,8 +210,6 @@ def _prepare_atoms(
         keys, refer to the [ase.calculators.espresso.Espresso][] calculator.
     parallel_info
         Dictionary of parallelization information.
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
 
     Returns
     -------
