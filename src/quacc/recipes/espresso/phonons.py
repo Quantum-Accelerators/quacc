@@ -42,14 +42,16 @@ def phonon_job(
     copy_files: SourceDirectorySchema,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
+    is_phcg: bool = False,
     **calc_kwargs,
 ) -> RunSchema:
     """
     Function to carry out a basic ph.x calculation. It should allow you to
     use all the features of the [ph.x binary](https://www.quantum-espresso.org/Doc/INPUT_PH.html)
 
-    This job requires the results of a previous pw.x calculation, you might
-    want to create your own flow to run both jobs in sequence.
+    `ph.x` calculates the dynamical matrix at a set of q-points within the Density
+    Functional Perturbation Theory (DFPT) framework. The dynamical matrix is used to calculate the phonon frequencies and eigenvectors. Various other properties can be
+    calculated using other post-processing tools.
 
     Parameters
     ----------
@@ -61,6 +63,9 @@ def phonon_job(
     test_run
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
+    is_phcg
+        If True, the calculation is performed using the "second-order cg" method.
+        Only Gamma (q, k), no spin and no USPP and PAW.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -79,8 +84,10 @@ def phonon_job(
         "qpts": (0, 0, 0),
     }
 
+    binary = "phcg" if is_phcg else "ph"
+
     return run_and_summarize(
-        template=EspressoTemplate("ph", test_run=test_run),
+        template=EspressoTemplate(binary, test_run=test_run),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
@@ -99,8 +106,9 @@ def q2r_job(
     Function to carry out a basic q2r.x calculation. It should allow you to
     use all the features of the [q2r.x binary](https://www.quantum-espresso.org/Doc/INPUT_Q2R.html#idm51)
 
-    This job requires the results of a previous ph.x calculation, you might
-    want to create your own flow to run both jobs in sequence.
+    `q2r.x` reads force constant matrices C(q) produced by the `ph.x` code
+    for a grid of q-points and calculates the corresponding set
+    of interatomic force constants (IFC), C(R)
 
     Parameters
     ----------
@@ -122,8 +130,11 @@ def q2r_job(
         See the type-hint for the data structure.
     """
 
+    calc_defaults = {}
+
     return run_and_summarize(
         template=EspressoTemplate("q2r"),
+        calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "q2r.x Phonon"},
@@ -138,11 +149,13 @@ def matdyn_job(
     **calc_kwargs,
 ) -> RunSchema:
     """
-    Function to carry out a basic matdyn.x calculation. It should allow you to use
+    Function to carry out a basic `matdyn.x` calculation. It should allow you to use
     all the features of the [matdyn.x binary](https://www.quantum-espresso.org/Doc/INPUT_MATDYN.html#idm138)
 
-    This job requires the results of a previous q2r.x calculation, you might
-    want to create your own flow to run both jobs in sequence.
+    This program calculates the phonon frequencies for a list of generic
+    q vectors starting from the interatomic force constants generated
+    from the dynamical matrices as written by DFPT phonon code through
+    the program `q2r.x`
 
     Parameters
     ----------
@@ -164,8 +177,11 @@ def matdyn_job(
         See the type-hint for the data structure.
     """
 
+    calc_defaults = {}
+
     return run_and_summarize(
         template=EspressoTemplate("matdyn"),
+        calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "matdyn Phonon"},
@@ -460,7 +476,13 @@ def dvscf_q2r_job(
     """
     Function to carry out a basic dvscf_q2r calculation. It should allow you to
     use all the features of the dvscf_q2r binary which does not have an official
-    documentation. Here are the available keywords.
+    documentation.
+
+    The potential perturbation from a single atom's displacement is spatially localized,
+    allowing phonon potential interpolation from coarse to fine q-point grids using Fourier
+    interpolation. To use this, run ph.x on a coarse q-point grid, use dvscf_q2r.x to
+    inverse Fourier transform the phonon potentials to a real-space supercell, and then set
+    ldvscf_interpolation=.true. in ph.x to Fourier transform the potentials to desired q points.
 
     WARNING: This binary is not supported by ASE, the input_data must be in nested format.
 
@@ -483,9 +505,6 @@ def dvscf_q2r_job(
                     neutrality of Born effective charges. default: .false.
     verbosity : If 'high', write more information to stdout.
 
-    This job requires the results of a previous ph.x calculation, you might
-    want to create your own flow to run both jobs in sequence.
-
     Parameters
     ----------
     copy_files
@@ -505,8 +524,11 @@ def dvscf_q2r_job(
         See the type-hint for the data structure.
     """
 
+    calc_defaults = {}
+
     return run_and_summarize(
         template=EspressoTemplate("dvscf_q2r"),
+        calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "dvscf_q2r Phonon"},
@@ -524,12 +546,27 @@ def postahc_job(
     Function to carry out a basic postahc calculation. It should allow you to
     use all the features of the [postahc.x binary](https://www.quantum-espresso.org/Doc/INPUT_POSTAHC.html#idm11)
 
+    Calculate the phonon-induced electron self-energy in the full matrix form
+    at a given temperature. This requires the results of a previous ph.x calculation
+    with `electron_phonon='ahc'`
+
+    self energies calculated and printed by `postahc.x`
+
+    - Total self-energy in the on-shell approximation (OSA)
+    - Debye-Waller self-energy in the RIA
+    - Total Fan self-energy in the OSA
+    - Upper Fan self-energy
+    - Lower Fan self-energy in the OSA
+
     WARNING: This binary is not supported by ASE, the input_data must be in nested format.
 
     Parameters
     ----------
     copy_files
-        Outdir of the previously ran ph.x calculation.
+        Source directory or directories to copy files from. Accepts a string,
+        Path, or dict. If a dict is provided, keys are source directories and values
+        are files or directories to copy (specified as a string, Path,
+        or list of strings/Paths). Glob patterns are supported.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -545,8 +582,11 @@ def postahc_job(
         See the type-hint for the data structure.
     """
 
+    calc_defaults = {}
+
     return run_and_summarize(
         template=EspressoTemplate("postahc"),
+        calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "postahc Phonon"},

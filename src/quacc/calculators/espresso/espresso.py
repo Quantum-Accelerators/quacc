@@ -1,4 +1,17 @@
-"""Custom Espresso calculator and template."""
+"""Custom Espresso calculator and template.
+
+This can be viewed as an extension of the ASE Espresso calculator allowing
+to run calculations not only using the main program `pw.x` but also other modules.
+
+The full list is available in the [Quacc list of recipes](https://quantum-accelerators.github.io/quacc/user/recipes/recipes_list.html#quantum-espresso).
+
+Instruction for the impatient:
+
+1. If you are used to ASE, you can send the same parameter to Quacc's jobs `input_data`, `kpts` ...
+2. Espresso being very modular each binary has its own job(s) and set of parameters. In Quacc
+    each job has its own running directory, which means that files have to be copied from one
+    directory to another. When creating a workflow
+3. """
 
 from __future__ import annotations
 
@@ -71,7 +84,7 @@ class EspressoTemplate(EspressoTemplate_):
 
         self.binary = binary
 
-        self.ase_known = self.binary in ALL_KEYS
+        self._ase_known_binary = self.binary in ALL_KEYS
 
         self.test_run = test_run
 
@@ -126,14 +139,14 @@ class EspressoTemplate(EspressoTemplate_):
                 properties=properties,
                 **parameters,
             )
-        elif self.binary == "ph":
+        elif self.binary in ["ph", "phcg"]:
             with Path.open(directory / self.inputname, "w") as fd:
                 write_espresso_ph(fd=fd, properties=properties, **parameters)
         else:
             with Path.open(directory / self.inputname, "w") as fd:
                 write_fortran_namelist(
                     fd,
-                    binary=self.binary if self.ase_known else None,
+                    binary=self.binary if self._ase_known_binary else None,
                     properties=properties,
                     **parameters,
                 )
@@ -207,7 +220,7 @@ class EspressoTemplate(EspressoTemplate_):
         if self.binary == "pw":
             atoms = read(directory / self.outputname, format="espresso-out")
             results = dict(atoms.calc.properties())
-        elif self.binary == "ph":
+        elif self.binary in ["ph", "phcg"]:
             with Path.open(directory / self.outputname, "r") as fd:
                 results = read_espresso_ph(fd)
         elif self.binary == "dos":
@@ -289,7 +302,7 @@ class EspressoTemplate(EspressoTemplate_):
         """
         input_data = parameters.get("input_data", {})
 
-        if self.binary == "ph":
+        if self.binary in ["ph", "phcg"]:
             input_ph = input_data.get("inputph", {})
             qpts = parameters.get("qpts", (0, 0, 0))
 
@@ -380,7 +393,7 @@ class Espresso(Espresso_):
         self.preset = preset
         self.parallel_info = parallel_info
         self.kwargs = kwargs
-        self.user_calc_params = {}
+        self._user_calc_params = {}
 
         template = template or EspressoTemplate("pw")
 
@@ -399,10 +412,10 @@ class Espresso(Espresso_):
             )
 
             self.kwargs["input_data"] = Namelist(self.kwargs.get("input_data"))
-            self.user_calc_params = self.kwargs
+            self._user_calc_params = self.kwargs
 
         self._pseudo_path = (
-            self.user_calc_params.get("input_data", {})
+            self._user_calc_params.get("input_data", {})
             .get("control", {})
             .get("pseudo_dir", str(SETTINGS.ESPRESSO_PSEUDO))
         )
@@ -415,7 +428,7 @@ class Espresso(Espresso_):
         super().__init__(
             profile=self.profile,
             parallel_info=self.parallel_info,
-            **self.user_calc_params,
+            **self._user_calc_params,
         )
 
         self.template = template
@@ -454,7 +467,7 @@ class Espresso(Espresso_):
                     calc_preset.pop("kspacing", None)
                 if "kspacing" in self.kwargs:
                     calc_preset.pop("kpts", None)
-                self.user_calc_params = recursive_dict_merge(
+                self._user_calc_params = recursive_dict_merge(
                     calc_preset,
                     {
                         "input_data": {
@@ -465,11 +478,11 @@ class Espresso(Espresso_):
                     self.kwargs,
                 )
             else:
-                self.user_calc_params = recursive_dict_merge(calc_preset, self.kwargs)
+                self._user_calc_params = recursive_dict_merge(calc_preset, self.kwargs)
         else:
-            self.user_calc_params = self.kwargs
+            self._user_calc_params = self.kwargs
 
-        if self.user_calc_params.get("kpts") and self.user_calc_params.get(
+        if self._user_calc_params.get("kpts") and self._user_calc_params.get(
             "kspacing"
         ):
             raise ValueError("Cannot specify both kpts and kspacing.")

@@ -43,7 +43,11 @@ def bands_pw_job(
     **calc_kwargs,
 ) -> RunSchema:
     """
-    Function to carry out a basic bands calculation with pw.x.
+    Function to carry out a basic bands structure calculation with pw.x.
+
+    First perform a normal SCF calculation as above; then use this job
+    if you are interested in calculating only the Kohn-Sham states for the given
+    set of k-point
 
     Parameters
     ----------
@@ -114,6 +118,8 @@ def bands_pp_job(
 ) -> RunSchema:
     """
     Function to re-order bands and computes bands-related properties with bands.x.
+    This allows to get the bands structure in a more readable way. This requires a
+    previous `bands_pw_job` calculation.
 
     Parameters
     ----------

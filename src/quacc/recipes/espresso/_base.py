@@ -193,6 +193,8 @@ def _prepare_calc(
         keys, refer to the [ase.calculators.espresso.Espresso][] calculator.
     parallel_info
         Dictionary of parallelization information.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
 
     Returns
     -------
@@ -223,14 +225,11 @@ def _prepare_calc(
         **calc_flags,
     )
 
-    if isinstance(copy_files, (str, Path, list)):
-
-        exact_files_to_copy = prepare_copy_files(calc.user_calc_params, binary=binary)
-
+    if copy_files:
         if isinstance(copy_files, (str, Path)):
-            copy_files = {copy_files: exact_files_to_copy}
-        elif isinstance(copy_files, list):
-            copy_files = {source: exact_files_to_copy for source in copy_files}
+            copy_files = [copy_files]
+        exact_files_to_copy = prepare_copy_files(calc._user_calc_params, binary=binary)
+        copy_files = {source: exact_files_to_copy for source in copy_files}
 
     atoms.calc = calc
 
