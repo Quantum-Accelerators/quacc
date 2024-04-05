@@ -136,34 +136,34 @@ def grid_copy_files(
 
     files_to_copy = {
         dir_name: [
-            Path(outdir, "_ph0", f"{prefix}.phsave", "control_ph.xml*"),
-            Path(outdir, "_ph0", f"{prefix}.phsave", "status_run.xml*"),
-            Path(outdir, "_ph0", f"{prefix}.phsave", "patterns.*.xml*"),
-            Path(outdir, "_ph0", f"{prefix}.phsave", "tensors.xml*"),
+            Path("_ph0", "pwscf.phsave", "control_ph.xml*"),
+            Path("_ph0", "pwscf.phsave", "status_run.xml*"),
+            Path("_ph0", "pwscf.phsave", "patterns.*.xml*"),
+            Path("_ph0", "pwscf.phsave", "tensors.xml*"),
         ]
     }
 
     if lqdir or qpt == (0.0, 0.0, 0.0):
         files_to_copy[dir_name].extend(
             [
-                Path(outdir, f"{prefix}.save", "charge-density.*"),
-                Path(outdir, f"{prefix}.save", "data-file-schema.xml.*"),
-                Path(outdir, f"{prefix}.save", "paw.txt.*"),
-                Path(outdir, f"{prefix}.save", "wfc*.*"),
+                Path("pwscf.save", "charge-density.*"),
+                Path("pwscf.save", "data-file-schema.xml.*"),
+                Path("pwscf.save", "paw.txt.*"),
+                Path("pwscf.save", "wfc*.*"),
             ]
         )
         if qpt != (0.0, 0.0, 0.0):
             files_to_copy[dir_name].extend(
                 [
-                    Path(outdir, "_ph0", f"{prefix}.q_{qnum}", f"{prefix}.save", "*"),
-                    Path(outdir, "_ph0", f"{prefix}.q_{qnum}", f"{prefix}.wfc*"),
+                    Path("_ph0", f"pwscf.q_{qnum}", "pwscf.save", "*"),
+                    Path("_ph0", f"pwscf.q_{qnum}", "pwscf.wfc*"),
                 ]
             )
     else:
         files_to_copy[dir_name].extend(
             [
-                Path(outdir, "_ph0", f"{prefix}.wfc*"),
-                Path(outdir, "_ph0", f"{prefix}.save", "*"),
+                Path(outdir, "_ph0", "pwscf.wfc*"),
+                Path(outdir, "_ph0", "pwscf.save", "*"),
             ]
         )
 
