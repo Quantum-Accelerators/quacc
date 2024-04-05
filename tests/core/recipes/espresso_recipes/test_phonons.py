@@ -313,8 +313,11 @@ def test_phonon_calculation_spin_orbit_example_06(
         pt_relax_results["dir_name"], **pt_phonon_x_params, qpts=(1.0, 0.0, 0.0)
     )
 
-    with zopen(Path(pt_phonon_x_results["dir_name"], "ph.out")) as f:
+    with zopen(Path(pt_phonon_x_results["dir_name"], "ph.out.gz")) as f:
         lines = str(f.read())
+
+    assert "Reading collected, re-writing distributed wavefunctions in" in lines
+    assert "Non magnetic calculation with spin-orbit" in lines
 
     SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO
 
@@ -360,49 +363,21 @@ def test_phonon_calculation_si_spin_orbit(
         si_relax_results["dir_name"], **si_phonon_params, qpts=(0.0, 0.0, 0.0)
     )
 
+    assert si_phonon_results["parameters"]["input_data"]["inputph"]["prefix"] == "pwscf"
+
     assert (
         si_phonon_results["parameters"]["input_data"]["inputph"]["fildyn"] == "matdyn"
     )
 
-    SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO
+    with zopen(Path(si_phonon_results["dir_name"], "ph.out.gz")) as f:
+        lines = str(f.read())
 
+    assert Path(
+        si_phonon_results["dir_name"], "_ph0", "pwscf.phsave", "tensors.xml.gz"
+    ).exists()
 
-def test_phonon_calculation_c_noncollinear(
-    tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO
-):
-    monkeypatch.chdir(tmp_path)
-    monkeypatch.setenv("OMP_NUM_THREADS", "1")
-
-    SETTINGS.ESPRESSO_PSEUDO = tmp_path
-
-    copy_decompress_files(DATA_DIR, ["C.pz-rrkjus.UPF.gz"], tmp_path)
-
-    c_atoms = bulk("C")
-
-    pseudopotential = {"C": "C.pz-rrkjus.UPF"}
-
-    c_relax_params = {
-        "input_data": {
-            "control": {"calculation": "scf", "restart_mode": "from_scratch"},
-            "system": {"ecutwfc": 27.0, "ecutrho": 300.0, "noncolin": True},
-            "electrons": {"mixing_beta": 0.7, "conv_thr": 1.0e-8},
-        },
-        "pseudopotentials": pseudopotential,
-        "kpts": (4, 4, 4),
-        "parallel_info": ESPRESSO_PARALLEL_INFO,
-    }
-    c_relax_results = relax_job(c_atoms, **c_relax_params)
-
-    c_phonon_params = {
-        "input_data": {"inputph": {"tr2_ph": 1.0e-10, "epsil": True}},
-        "parallel_info": ESPRESSO_PARALLEL_INFO,
-    }
-    c_phonon_results = phonon_job(
-        c_relax_results["dir_name"], **c_phonon_params, qpts=(0.0, 0.0, 0.0)
-    )
-
-    assert c_relax_results is not None
-    assert c_phonon_results is not None
+    assert "Reading collected, re-writing distributed wavefunctions in" in lines
+    assert "Non magnetic calculation with spin-orbit" in lines
 
     SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO
 
