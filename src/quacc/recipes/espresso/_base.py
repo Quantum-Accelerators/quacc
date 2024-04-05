@@ -73,7 +73,7 @@ def run_and_summarize(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    atoms, copy_files = _prepare_atoms(
+    atoms = _prepare_atoms(
         atoms=atoms,
         preset=preset,
         template=template,
@@ -84,9 +84,13 @@ def run_and_summarize(
         copy_files=copy_files,
     )
 
+    updated_copy_files = _prepare_copy(
+        copy_files, atoms.calc._user_calc_params, atoms.calc.template.binary
+    )
+
     geom_file = template.outputname if template.binary == "pw" else None
 
-    final_atoms = run_calc(atoms, geom_file=geom_file, copy_files=copy_files)
+    final_atoms = run_calc(atoms, geom_file=geom_file, copy_files=updated_copy_files)
 
     return summarize_run(
         final_atoms, atoms, move_magmoms=True, additional_fields=additional_fields
@@ -266,7 +270,7 @@ def _prepare_copy(
         The calculator parameters.
     binary
         The binary to use.
-    
+
     Returns
     -------
     dict
