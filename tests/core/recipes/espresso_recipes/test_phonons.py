@@ -438,6 +438,8 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, caplog, ESPRESSO_
         c_ph_results = phonon_job(
             c_scf_results["dir_name"], **c_ph_params, parallel_info=ESPRESSO_PARALLEL_INFO
         )
+        assert "Overwriting key 'fildyn' in dictionary" in caplog.text
+        assert "Overwriting key 'fildvscf' in dictionary" in caplog.text
 
     q2r_params = {
         "input_data": {
@@ -470,6 +472,10 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, caplog, ESPRESSO_
             **dvscf_q2r_params,
             parallel_info=ESPRESSO_PARALLEL_INFO,
         )
+
+        assert "Overwriting key 'fildyn' in dictionary" in caplog.text
+        assert "Overwriting key 'wpot_dir' in dictionary" in caplog.text
+        assert "Overwriting key 'prefix' in dictionary" in caplog.text
 
     assert dvscf_q2r_results["parameters"]["input_data"]["input"]["fildyn"] == "matdyn"
     assert dvscf_q2r_results["parameters"]["input_data"]["input"]["prefix"] == "pwscf"
