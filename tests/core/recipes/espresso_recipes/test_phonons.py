@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from shutil import which
 
 import pytest
@@ -33,6 +34,9 @@ from quacc.utils.files import copy_decompress_files
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 DATA_DIR = Path(__file__).parent / "data"
+
+LOGGER = logging.getLogger(__name__)
+LOGGER.propagate = True
 
 
 def test_phonon_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
@@ -382,7 +386,7 @@ def test_phonon_calculation_si_spin_orbit(
     SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO
 
 
-def test_phonon_induced_renormalization(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
+def test_phonon_induced_renormalization(tmp_path, monkeypatch, caplog, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -429,9 +433,11 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, ESPRESSO_PARALLEL
             }
         }
     }
-    c_ph_results = phonon_job(
-        c_scf_results["dir_name"], **c_ph_params, parallel_info=ESPRESSO_PARALLEL_INFO
-    )
+
+    with caplog.at_level(logging.WARNING):
+        c_ph_results = phonon_job(
+            c_scf_results["dir_name"], **c_ph_params, parallel_info=ESPRESSO_PARALLEL_INFO
+        )
 
     q2r_params = {
         "input_data": {
@@ -441,6 +447,9 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, ESPRESSO_PARALLEL
     q2r_results = q2r_job(
         c_ph_results["dir_name"], **q2r_params, parallel_info=ESPRESSO_PARALLEL_INFO
     )
+
+    assert q2r_results["parameters"]["input_data"]["input"]["flfrc"] == "q2r.fc"
+    assert q2r_results["parameters"]["input_data"]["input"]["fildyn"] == "matdyn"
 
     dvscf_q2r_params = {
         "input_data": {
@@ -454,11 +463,16 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, ESPRESSO_PARALLEL
             }
         }
     }
-    dvscf_q2r_results = dvscf_q2r_job(
-        c_ph_results["dir_name"],
-        **dvscf_q2r_params,
-        parallel_info=ESPRESSO_PARALLEL_INFO,
-    )
+
+    with caplog.at_level(logging.WARNING):
+        dvscf_q2r_results = dvscf_q2r_job(
+            c_ph_results["dir_name"],
+            **dvscf_q2r_params,
+            parallel_info=ESPRESSO_PARALLEL_INFO,
+        )
+
+    assert dvscf_q2r_results["parameters"]["input_data"]["input"]["fildyn"] == "matdyn"
+    assert dvscf_q2r_results["parameters"]["input_data"]["input"]["prefix"] == "pwscf"
 
     c_nscf_params = {
         "input_data": {

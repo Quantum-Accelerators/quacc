@@ -280,4 +280,4 @@ def _prepare_copy(
         exact_files_to_copy = prepare_copy_files(calc_params, binary=binary)
         return {source: exact_files_to_copy for source in copy_files}
 
-    return {}
+    return copy_files
