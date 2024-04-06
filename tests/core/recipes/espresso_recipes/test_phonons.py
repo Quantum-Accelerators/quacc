@@ -603,13 +603,8 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, caplog, ESPRESSO_
         parallel_info=ESPRESSO_PARALLEL_INFO,
     )
 
-    assert c_scf_results is not None
-    assert c_ph_results is not None
-    assert q2r_results is not None
-    assert dvscf_q2r_results is not None
-    assert c_nscf_results is not None
-    assert c_ahc_coarse_results is not None
-    assert matdyn_coarse_results is not None
-    assert postahc_coarse_results is not None
+    assert Path(postahc_coarse_results["dir_name"], "postahc.out.gz").exists()
+    assert Path(postahc_coarse_results["dir_name"], "ahc_dir").exists()
+    assert Path(postahc_coarse_results["dir_name"], "selfen_real.dat.gz").exists()
 
     SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO
