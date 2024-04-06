@@ -386,7 +386,9 @@ def test_phonon_calculation_si_spin_orbit(
     SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO
 
 
-def test_phonon_induced_renormalization(tmp_path, monkeypatch, caplog, ESPRESSO_PARALLEL_INFO):
+def test_phonon_induced_renormalization(
+    tmp_path, monkeypatch, caplog, ESPRESSO_PARALLEL_INFO
+):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -436,7 +438,9 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, caplog, ESPRESSO_
 
     with caplog.at_level(logging.WARNING):
         c_ph_results = phonon_job(
-            c_scf_results["dir_name"], **c_ph_params, parallel_info=ESPRESSO_PARALLEL_INFO
+            c_scf_results["dir_name"],
+            **c_ph_params,
+            parallel_info=ESPRESSO_PARALLEL_INFO,
         )
 
     q2r_params = {
