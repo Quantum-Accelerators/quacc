@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 
 from quacc import flow, job
 from quacc.calculators.espresso.espresso import EspressoTemplate
-from quacc.calculators.espresso.utils import pw_copy_files
 from quacc.recipes.espresso._base import run_and_summarize
 from quacc.recipes.espresso.core import non_scf_job, static_job
 from quacc.utils.dicts import recursive_dict_merge
@@ -194,20 +193,10 @@ def dos_flow(
     )
 
     static_results = static_job_(atoms)
-    files_to_copy = pw_copy_files(
-        job_params["static_job"].get("input_data"),
-        static_results["dir_name"],
-        include_wfc=False,
-    )
 
-    non_scf_results = non_scf_job_(atoms, files_to_copy)
-    files_to_copy = pw_copy_files(
-        job_params["non_scf_job"].get("input_data"),
-        non_scf_results["dir_name"],
-        include_wfc=False,
-    )
+    non_scf_results = non_scf_job_(atoms, static_results["dir_name"])
 
-    dos_results = dos_job_(files_to_copy)
+    dos_results = dos_job_(non_scf_results["dir_name"])
 
     return {
         "static_job": static_results,
@@ -286,20 +275,10 @@ def projwfc_flow(
     )
 
     static_results = static_job_(atoms)
-    files_to_copy = pw_copy_files(
-        job_params["static_job"].get("input_data"),
-        static_results["dir_name"],
-        include_wfc=False,
-    )
 
-    non_scf_results = non_scf_job_(atoms, files_to_copy)
-    files_to_copy = pw_copy_files(
-        job_params["non_scf_job"].get("input_data"),
-        non_scf_results["dir_name"],
-        include_wfc=True,
-    )
+    non_scf_results = non_scf_job_(atoms, static_results["dir_name"])
 
-    projwfc_results = projwfc_job_(files_to_copy)
+    projwfc_results = projwfc_job_(non_scf_results["dir_name"])
 
     return {
         "static_job": static_results,
