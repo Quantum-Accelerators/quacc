@@ -544,7 +544,7 @@ def test_phonon_induced_renormalization(
             **c_ph_params,
             parallel_info=ESPRESSO_PARALLEL_INFO,
         )
-        assert "Overwriting key 'fildyn' in dictionary" in caplog.text
+        assert "Overwriting key 'fildyn'" in caplog.text
 
     q2r_params = {
         "input_data": {
@@ -578,9 +578,9 @@ def test_phonon_induced_renormalization(
             parallel_info=ESPRESSO_PARALLEL_INFO,
         )
 
-        assert "Overwriting key 'fildyn' in dictionary" in caplog.text
-        assert "Overwriting key 'wpot_dir' in dictionary" in caplog.text
-        assert "Overwriting key 'prefix' in dictionary" in caplog.text
+        assert "Overwriting key 'fildyn'" in caplog.text
+        assert "Overwriting key 'wpot_dir'" in caplog.text
+        assert "Overwriting key 'prefix'" in caplog.text
 
     assert dvscf_q2r_results["parameters"]["input_data"]["input"]["fildyn"] == "matdyn"
     assert dvscf_q2r_results["parameters"]["input_data"]["input"]["prefix"] == "pwscf"
