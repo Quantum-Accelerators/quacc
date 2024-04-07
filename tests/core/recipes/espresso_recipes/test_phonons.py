@@ -103,7 +103,7 @@ def test_phonon_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     ph_loose["inputph"]["recover"] = True
 
     recover_ph_results = phonon_job(
-        pw_results["dir_name"],
+        ph_results["dir_name"],
         input_data=ph_loose,
         parallel_info=ESPRESSO_PARALLEL_INFO,
     )
@@ -112,6 +112,10 @@ def test_phonon_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
         lines = str(f.read())
 
     assert "Reading collected, re-writing distributed wavefunctions in" in lines
+    assert "Restart after Phonon calculation" in lines
+    assert "Representation     1      1 modes -  Done" in lines
+    assert "Representation     2      1 modes -  Done" in lines
+    assert "Representation     3      1 modes -  Done" in lines
 
     SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO
 
