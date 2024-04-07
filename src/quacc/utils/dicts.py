@@ -94,7 +94,9 @@ def _recursive_dict_pair_merge(
             if isinstance(merged[key], MutableMapping) and isinstance(
                 value, MutableMapping
             ):
-                merged[key] = _recursive_dict_pair_merge(merged[key], value)
+                merged[key] = _recursive_dict_pair_merge(
+                    merged[key], value, verbose=verbose
+                )
             else:
                 merged[key] = value
                 if verbose:

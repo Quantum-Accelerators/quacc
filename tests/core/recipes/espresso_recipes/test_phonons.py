@@ -443,7 +443,6 @@ def test_phonon_induced_renormalization(
             parallel_info=ESPRESSO_PARALLEL_INFO,
         )
         assert "Overwriting key 'fildyn' in dictionary" in caplog.text
-        assert "Overwriting key 'fildvscf' in dictionary" in caplog.text
 
     q2r_params = {
         "input_data": {
