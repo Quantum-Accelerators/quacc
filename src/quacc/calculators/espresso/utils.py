@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
-from ase.io.espresso import Namelist
 
 from quacc.utils.dicts import Remove
 

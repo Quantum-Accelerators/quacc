@@ -100,9 +100,7 @@ def _recursive_dict_pair_merge(
             else:
                 merged[key] = value
                 if verbose:
-                    LOGGER.warning(
-                        f"Overwriting key '{key}' to: '{merged[key]}'"
-                    )
+                    LOGGER.warning(f"Overwriting key '{key}' to: '{merged[key]}'")
         else:
             merged[key] = value
 
