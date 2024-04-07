@@ -100,6 +100,19 @@ def test_phonon_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     for key in sections:
         assert key in ph_results["results"][1]
 
+    ph_loose["inputph"]["recover"] = True
+
+    recover_ph_results = phonon_job(
+        pw_results["dir_name"],
+        input_data=ph_loose,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
+    )
+
+    with zopen(Path(recover_ph_results["dir_name"], "ph.out.gz")) as f:
+        lines = str(f.read())
+
+    assert "Reading collected, re-writing distributed wavefunctions in" in lines
+
     SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO
 
 
