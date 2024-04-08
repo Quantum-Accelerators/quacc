@@ -305,11 +305,10 @@ def summarize_md_run(
     parameters_md = dyn.todict()
     parameters_md.pop("logfile", None)
 
-    parameters_md, restart_data = _process_dyn_object(dyn)
-
     parameters_md["timestep"] = parameters_md["timestep"] / units.fs
 
     trajectory_log = []
+    trajectory_results = []
 
     for t, atoms in enumerate(trajectory):
         trajectory_log.append(
@@ -319,14 +318,14 @@ def summarize_md_run(
                 "time": t * parameters_md["timestep"] / 1000,
             }
         )
+        trajectory_results.append(atoms.calc.results)
 
     opt_fields = {
         "parameters_md": parameters_md,
         "nsteps": dyn.get_number_of_steps(),
         "trajectory": trajectory,
         "trajectory_log": trajectory_log,
-        "trajectory_results": [atoms.calc.results for atoms in trajectory],
-        "restart_data": restart_data,
+        "trajectory_results": trajectory_results,
     }
 
     # Create a dictionary of the inputs/outputs
@@ -604,34 +603,3 @@ def _summarize_ideal_gas_thermo(
         results_to_db(store, task_doc)
 
     return task_doc
-
-
-def _process_dyn_object(
-    dyn: MolecularDynamics,
-) -> tuple[dict[str, Any], dict[str, Any]]:
-    """
-    Process an ASE MolecularDynamics object to get the parameters and restart data.
-
-    Parameters
-    ----------
-    dyn
-        ASE MolecularDynamics object.
-
-    Returns
-    -------
-    tuple
-        Tuple of the parameters and restart data.
-    """
-    parameters_md = dyn.todict()
-    parameters_md.pop("logfile", None)
-
-    parameters_md["timestep"] /= units.fs
-
-    # "Let's be reproducible" they said...
-    if isinstance(dyn, NPT):
-        restart_data = dyn.get_data()
-        restart_data.update(dyn.get_init_data())
-    else:
-        restart_data = {}
-
-    return parameters_md, restart_data

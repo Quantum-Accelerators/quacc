@@ -31,7 +31,6 @@ def md_job(
     atoms: Atoms,
     maxwell_boltzmann_params: dict[str, Any] | None = None,
     md_params: dict[str, Any] | None = None,
-    restart_data: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> DynSchema:
     """
@@ -81,12 +80,6 @@ def md_job(
         Dictionary of custom kwargs for the optimization process. Set a value
         to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.runners.ase.run_md][].
-    restart_data
-        Dictionary of restart data. If provided, the MD run will be restarted from this data.
-        This is needed by some dynamics types, such as the Nose-Hoover (NPT) thermostat.
-        The simplest way to obtain this data is from the previous DynSchema output.
-
-        e.g `restart_data = previous_output["restart_data"]`
     **calc_kwargs
         Custom kwargs for the EMT calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -122,8 +115,6 @@ def md_job(
 
     md_flags = md_params or {}
 
-    restart_data = restart_data or {}
-
-    dyn = run_md(atoms, restart_data=restart_data, **md_flags)
+    dyn = run_md(atoms, **md_flags)
 
     return summarize_md_run(dyn, additional_fields={"name": "EMT MD"})

@@ -47,6 +47,9 @@ def md_units(dynamics_kwargs: dict[str, Any]) -> dict[str, Any]:
             np.array(converted_kwargs.pop("externalstress")) * GPa
         )
 
+    if "timestep" in converted_kwargs:
+        converted_kwargs["timestep"] = converted_kwargs.pop("timestep") * fs
+
     if "taut" in converted_kwargs:
         converted_kwargs["taut"] = converted_kwargs.pop("taut") * fs
 
