@@ -1,6 +1,6 @@
-# Pre-Defined Workflows
+# Intro to Flows
 
-In addition to individual jobs, quacc ships with a variety of pre-made workflows. Here, we will run the following pre-made workflow with EMT, defined by [quacc.recipes.emt.slabs.bulk_to_slabs_flow][].
+In addition to individual jobs, quacc ships with a variety of pre-made workflows, which we call flows for short. Here, we will run a pre-made flow with EMT, defined by [quacc.recipes.emt.slabs.bulk_to_slabs_flow][] and described by the following graph representation:
 
 ```mermaid
 graph LR
