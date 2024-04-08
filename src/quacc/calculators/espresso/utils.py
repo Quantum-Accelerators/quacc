@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING
 import numpy as np
 from ase.io.espresso import Namelist
 
+from quacc.utils.dicts import Remove
+
 if TYPE_CHECKING:
     from typing import Any
 
@@ -86,31 +88,26 @@ def pw_copy_files(
     prefix = control.get("prefix", "pwscf")
     restart_mode = control.get("restart_mode", "from_scratch")
 
-    outdir = control.get("outdir", ".")
-    wfcdir = control.get("wfcdir", outdir)
-
     files_to_copy = {prev_dir: []}
 
     basics_to_copy = ["charge-density.*", "data-file-schema.*", "paw.*"]
 
     if restart_mode == "restart":
-        files_to_copy[prev_dir].append(Path(wfcdir, f"{prefix}.wfc*"))
-        files_to_copy[prev_dir].append(Path(wfcdir, f"{prefix}.mix*"))
-        files_to_copy[prev_dir].append(Path(wfcdir, f"{prefix}.restart_k*"))
-        files_to_copy[prev_dir].append(Path(wfcdir, f"{prefix}.restart_scf*"))
+        files_to_copy[prev_dir].append(Path(f"{prefix}.wfc*"))
+        files_to_copy[prev_dir].append(Path(f"{prefix}.mix*"))
+        files_to_copy[prev_dir].append(Path(f"{prefix}.restart_k*"))
+        files_to_copy[prev_dir].append(Path(f"{prefix}.restart_scf*"))
     elif include_wfc:
         basics_to_copy.append("wfc*.*")
 
-    files_to_copy[prev_dir].extend(
-        [Path(outdir, f"{prefix}.save", i) for i in basics_to_copy]
-    )
+    files_to_copy[prev_dir].extend([Path(f"{prefix}.save", i) for i in basics_to_copy])
 
     return files_to_copy
 
 
 def grid_copy_files(
     ph_input_data: dict[str, Any],
-    dir_name: str | Path,
+    directory: str | Path,
     qnum: int,
     qpt: tuple[float, float, float],
 ) -> dict[SourceDirectory, Filenames]:
@@ -121,7 +118,7 @@ def grid_copy_files(
     ----------
     ph_input_data
         The input data for the ph calculation
-    dir_name
+    directory
         The directory name to copy the files from
     qnum
         The q-point number
@@ -138,7 +135,7 @@ def grid_copy_files(
     lqdir = ph_input_data["inputph"].get("lqdir", False)
 
     files_to_copy = {
-        dir_name: [
+        directory: [
             Path(outdir, "_ph0", f"{prefix}.phsave", "control_ph.xml*"),
             Path(outdir, "_ph0", f"{prefix}.phsave", "status_run.xml*"),
             Path(outdir, "_ph0", f"{prefix}.phsave", "patterns.*.xml*"),
@@ -147,7 +144,7 @@ def grid_copy_files(
     }
 
     if lqdir or qpt == (0.0, 0.0, 0.0):
-        files_to_copy[dir_name].extend(
+        files_to_copy[directory].extend(
             [
                 Path(outdir, f"{prefix}.save", "charge-density.*"),
                 Path(outdir, f"{prefix}.save", "data-file-schema.xml.*"),
@@ -156,14 +153,14 @@ def grid_copy_files(
             ]
         )
         if qpt != (0.0, 0.0, 0.0):
-            files_to_copy[dir_name].extend(
+            files_to_copy[directory].extend(
                 [
                     Path(outdir, "_ph0", f"{prefix}.q_{qnum}", f"{prefix}.save", "*"),
                     Path(outdir, "_ph0", f"{prefix}.q_{qnum}", f"{prefix}.wfc*"),
                 ]
             )
     else:
-        files_to_copy[dir_name].extend(
+        files_to_copy[directory].extend(
             [
                 Path(outdir, "_ph0", f"{prefix}.wfc*"),
                 Path(outdir, "_ph0", f"{prefix}.save", "*"),
@@ -195,6 +192,54 @@ def grid_prepare_repr(patterns: dict[str, Any], nblocks: int) -> list:
     return np.array_split(repr_to_do, np.ceil(len(repr_to_do) / this_block))
 
 
+def espresso_prepare_dir(outdir: str | Path, binary: str = "pw") -> dict[str, Any]:
+    """
+    Function that prepares the espresso dictionary for the calculation.
+
+    Parameters
+    ----------
+    outdir
+        The output to be used for the espresso calculation
+    binary
+        The binary to be used for the espresso calculation
+
+    Returns
+    -------
+    dict
+        Input data for the espresso calculation
+    """
+
+    outkeys = {
+        "pw": {"control": {"outdir": outdir, "wfcdir": Remove}},
+        "ph": {
+            "inputph": {
+                "fildyn": "matdyn",
+                "outdir": outdir,
+                "ahc_dir": Remove,
+                "wpot_dir": Remove,
+                "dvscf_star%dir": Remove,
+                "drho_star%dir": Remove,
+            }
+        },
+        "pp": {"inputpp": {"filplot": "tmp.pp", "outdir": outdir}},
+        "dos": {"dos": {"fildos": "pwscf.dos", "outdir": outdir}},
+        "projwfc": {"projwfc": {"filpdos": "pwscf", "outdir": outdir}},
+        "matdyn": {
+            "input": {
+                "fldos": "matdyn.dos",
+                "flfrq": "matdyn.freq",
+                "flvec": "matdyn.modes",
+                "fleig": "matdyn.eig",
+            }
+        },
+        "q2r": {"input": {"flfrc": "q2r.fc"}},
+        "bands": {"bands": {"filband": "bands.out", "outdir": outdir}},
+        "fs": {"fermi": {"file_fs": "fermi_surface.bxsf", "outdir": outdir}},
+    }
+
+    return outkeys.get(binary, {})
+
+  
 def remove_conflicting_kpts_kspacing(to_change_dict, reference_dict):
     """
     Parameters

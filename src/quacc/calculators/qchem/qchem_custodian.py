@@ -10,7 +10,6 @@ from quacc import SETTINGS
 
 if TYPE_CHECKING:
     from pathlib import Path
-    from subprocess import Popen
 
 try:
     import openbabel as ob
@@ -28,8 +27,8 @@ def run_custodian(
     qchem_use_error_handlers: bool = _DEFAULT_SETTING,
     qchem_custodian_max_errors: int = _DEFAULT_SETTING,
     qchem_nbo_exe: str | Path = _DEFAULT_SETTING,
-    directory: str | Path = "./",
-) -> Popen:
+    directory: str | Path | None = None,
+) -> list[list[dict]]:
     """
     Function to run QChem Custodian.
 
@@ -54,8 +53,8 @@ def run_custodian(
 
     Returns
     -------
-    Popen
-        Popen object.
+    list[list[dict]]
+        Lists of lists of errors.
     """
     # Adapted from atomate.qchem.firetasks.run_calc
     from custodian import Custodian
