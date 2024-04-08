@@ -10,7 +10,6 @@ from typing import TYPE_CHECKING
 import numpy as np
 from ase import units
 from ase.io import read
-from ase.md.npt import NPT
 from ase.vibrations import Vibrations
 from ase.vibrations.data import VibrationsData
 
