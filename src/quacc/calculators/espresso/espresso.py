@@ -26,6 +26,7 @@ from quacc import SETTINGS
 from quacc.calculators.espresso.utils import (
     espresso_prepare_dir,
     get_pseudopotential_info,
+    remove_conflicting_kpts_kspacing,
 )
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.utils.files import load_yaml_calc
@@ -451,10 +452,7 @@ class Espresso(Espresso_):
                     calc_preset["pseudopotentials"], self.input_atoms
                 )
                 calc_preset.pop("pseudopotentials", None)
-                if "kpts" in self.kwargs:
-                    calc_preset.pop("kspacing", None)
-                if "kspacing" in self.kwargs:
-                    calc_preset.pop("kpts", None)
+                calc_preset = remove_conflicting_kpts_kspacing(calc_preset, self.kwargs)
                 self._user_calc_params = recursive_dict_merge(
                     calc_preset,
                     {

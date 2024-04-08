@@ -238,3 +238,28 @@ def espresso_prepare_dir(outdir: str | Path, binary: str = "pw") -> dict[str, An
     }
 
     return outkeys.get(binary, {})
+
+
+def remove_conflicting_kpts_kspacing(
+    to_change_dict: dict[str, Any], reference_dict: dict[str, Any]
+) -> dict[str, Any]:
+    """
+    Parameters
+    ----------
+    to_change_dict
+        The dictionary that will be changed
+    reference_dict
+        The reference dictionary that will remain intact
+
+    Returns
+    -------
+    dict
+        The modified dictionary
+    """
+
+    if "kpts" in reference_dict:
+        to_change_dict.pop("kspacing", None)
+    if "kspacing" in reference_dict:
+        to_change_dict.pop("kpts", None)
+
+    return to_change_dict
