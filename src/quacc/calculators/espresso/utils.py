@@ -193,3 +193,26 @@ def grid_prepare_repr(patterns: dict[str, Any], nblocks: int) -> list:
     this_block = nblocks if nblocks > 0 else len(patterns)
     repr_to_do = [rep for rep in patterns if not patterns[rep]["done"]]
     return np.array_split(repr_to_do, np.ceil(len(repr_to_do) / this_block))
+
+
+def remove_conflicting_kpts_kspacing(to_change_dict, reference_dict):
+    """
+    Parameters
+    ----------
+    to_change_dict
+        The first dictionary
+    reference_dict
+        The second dictionary
+
+    Returns
+    -------
+    dict
+        The merged dictionary
+    """
+
+    if "kpts" in reference_dict:
+        to_change_dict.pop("kspacing", None)
+    if "kspacing" in reference_dict:
+        to_change_dict.pop("kpts", None)
+
+    return to_change_dict
