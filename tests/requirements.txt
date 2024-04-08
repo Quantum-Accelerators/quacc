@@ -9,4 +9,4 @@ psutil==5.9.8
 pydantic==2.6.4
 pydantic-settings==2.2.1
 pymatgen==2024.3.1
-typer==0.12.1
+typer==0.12.2
