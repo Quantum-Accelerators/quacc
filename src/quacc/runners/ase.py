@@ -275,9 +275,6 @@ def run_md(
     dynamics_kwargs
         Dictionary of kwargs for the dynamics. Takes all valid kwargs for ASE
         MolecularDynamics classes.
-    restart_data
-        Dictionary of restart data. If provided, the MD run will be restarted from this data.
-        This is needed by some dynamics types, such as the Nose-Hoover (NPT) thermostat.
     copy_files
         Filenames to copy from source to scratch directory.
 
