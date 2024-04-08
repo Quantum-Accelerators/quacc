@@ -245,14 +245,14 @@ def remove_conflicting_kpts_kspacing(to_change_dict, reference_dict):
     Parameters
     ----------
     to_change_dict
-        The first dictionary
+        The dictionary that will be changed
     reference_dict
-        The second dictionary
+        The reference dictionary that will remain intact
 
     Returns
     -------
     dict
-        The merged dictionary
+        The modified dictionary
     """
 
     if "kpts" in reference_dict:
