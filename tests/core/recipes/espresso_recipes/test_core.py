@@ -63,7 +63,7 @@ def test_static_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     new_input_data = results["parameters"]["input_data"]
     assert new_input_data["system"]["ecutwfc"] == 30.0
     assert new_input_data["system"]["ecutrho"] == 240.0
-    assert "kspacing" not in results["parameters"]
+    assert "kspacing" in results["parameters"]
     assert results["parameters"].get("kpts") is None
 
 
