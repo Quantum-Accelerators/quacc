@@ -240,7 +240,9 @@ def espresso_prepare_dir(outdir: str | Path, binary: str = "pw") -> dict[str, An
     return outkeys.get(binary, {})
 
 
-def remove_conflicting_kpts_kspacing(to_change_dict: dict[str, Any], reference_dict: dict[str, Any]) -> dict[str, Any]:
+def remove_conflicting_kpts_kspacing(
+    to_change_dict: dict[str, Any], reference_dict: dict[str, Any]
+) -> dict[str, Any]:
     """
     Parameters
     ----------
