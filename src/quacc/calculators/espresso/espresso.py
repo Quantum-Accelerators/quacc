@@ -24,8 +24,8 @@ from ase.io.espresso_namelist.keys import ALL_KEYS
 
 from quacc import SETTINGS
 from quacc.calculators.espresso.utils import (
-    get_pseudopotential_info,
     espresso_prepare_dir,
+    get_pseudopotential_info,
     remove_conflicting_kpts_kspacing,
 )
 from quacc.utils.dicts import recursive_dict_merge
