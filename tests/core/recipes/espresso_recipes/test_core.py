@@ -48,7 +48,6 @@ def test_static_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
         atoms,
         input_data=input_data,
         pseudopotentials=pseudopotentials,
-        kpts=None,
         parallel_info=ESPRESSO_PARALLEL_INFO,
     )
 

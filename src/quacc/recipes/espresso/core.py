@@ -19,6 +19,22 @@ if TYPE_CHECKING:
     from quacc.schemas._aliases.ase import RunSchema
     from quacc.utils.files import Filenames, SourceDirectory
 
+BASE_SET_METAL = {
+    "input_data": {
+        "system": {"occupations": "smearing", "smearing": "cold", "degauss": 0.01},
+        "electrons": {"conv_thr": 1e-8, "mixing_mode": "local-TF", "mixing_beta": 0.35},
+    },
+    "kspacing": 0.033,
+}
+
+BASE_SET_NON_METAL = {
+    "input_data": {
+        "system": {"occupations": "smearing", "smearing": "gaussian", "degauss": 0.005},
+        "electrons": {"conv_thr": 1e-8, "mixing_mode": "local-TF", "mixing_beta": 0.35},
+    },
+    "kspacing": 0.045,
+}
+
 
 @job
 def static_job(
@@ -62,22 +78,8 @@ def static_job(
 
     is_metal = check_is_metal(atoms)
 
-    calc_defaults = {
-        "input_data": {
-            "control": {"calculation": "scf"},
-            "system": {
-                "occupations": "smearing",
-                "smearing": "cold" if is_metal else "gaussian",
-                "degauss": 0.01 if is_metal else 0.005,
-            },
-            "electrons": {
-                "conv_thr": 1e-8,
-                "mixing_mode": "local-TF",
-                "mixing_beta": 0.35,
-            },
-        },
-        "kspacing": 0.33 if is_metal else 0.045,
-    }
+    calc_defaults = BASE_SET_METAL if is_metal else BASE_SET_NON_METAL
+    calc_defaults["input_data"]["control"] = {"calculation": "scf"}
 
     return run_and_summarize(
         atoms,
@@ -136,21 +138,9 @@ def relax_job(
 
     is_metal = check_is_metal(atoms)
 
-    calc_defaults = {
-        "input_data": {
-            "control": {"calculation": "vc-relax" if relax_cell else "relax"},
-            "system": {
-                "occupations": "smearing",
-                "smearing": "cold" if is_metal else "gaussian",
-                "degauss": 0.01 if is_metal else 0.005,
-            },
-            "electrons": {
-                "conv_thr": 1e-8,
-                "mixing_mode": "local-TF",
-                "mixing_beta": 0.35,
-            },
-        },
-        "kspacing": 0.33 if is_metal else 0.045,
+    calc_defaults = BASE_SET_METAL if is_metal else BASE_SET_NON_METAL
+    calc_defaults["input_data"]["control"] = {
+        "calculation": "vc-relax" if relax_cell else "relax"
     }
 
     return run_and_summarize(
@@ -216,21 +206,11 @@ def ase_relax_job(
 
     is_metal = check_is_metal(atoms)
 
-    calc_defaults = {
-        "input_data": {
-            "control": {"calculation": "scf", "tstress": relax_cell, "tprnfor": True},
-            "system": {
-                "occupations": "smearing",
-                "smearing": "cold" if is_metal else "gaussian",
-                "degauss": 0.01 if is_metal else 0.005,
-            },
-            "electrons": {
-                "conv_thr": 1e-8,
-                "mixing_mode": "local-TF",
-                "mixing_beta": 0.35,
-            },
-        },
-        "kspacing": 0.33 if is_metal else 0.045,
+    calc_defaults = BASE_SET_METAL if is_metal else BASE_SET_NON_METAL
+    calc_defaults["input_data"]["control"] = {
+        "calculation": "scf",
+        "tstress": relax_cell,
+        "tprnfor": True,
     }
 
     opt_defaults = {"optimizer": BFGSLineSearch}
