@@ -31,12 +31,20 @@ def create_skzcam_clusters(
     ----------
     embedded_cluster
         The ASE Atoms object containing the atomic coordinates AND the atom types (i.e. cation or anion).
+    pun_file
+        The path to the .pun file created by ChemShell to be read.
+    center_position
+        The position of the center of the embedded cluster (i.e., position of the adsorbate).
+    atom_oxi_states
+        A dictionary containing the atomic symbols as keys and the oxidation states as values.
     shell_max
         The maximum number of quantum clusters to be created.
-    write_clusters
-        If True, the quantum clusters will be written to a file.
+    shell_width
+        Defines the distance between atoms within shells; this is the maximum distance between any two atoms within the shell.
     bond_dist
         The distance within which an anion is considered to be coordinating a cation.
+    write_clusters
+        If True, the quantum clusters will be written to a file.
     write_clusters_path
         The path to the file where the quantum clusters will be written.
     write_include_ecp
@@ -44,7 +52,7 @@ def create_skzcam_clusters(
 
     Returns
     -------
-    clusters
+    list[list[int]]
         A list of lists containing the indices of the atoms in each quantum cluster.
     """
 
