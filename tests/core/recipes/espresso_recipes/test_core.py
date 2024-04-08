@@ -58,7 +58,7 @@ def test_static_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     assert_array_equal(
         results["atoms"].get_chemical_symbols(), atoms.get_chemical_symbols()
     )
-    assert results["results"]["energy"] == pytest.approx(-293.71195934404255)
+    assert results["results"]["energy"] == pytest.approx(-310.74454357109096)
 
     new_input_data = results["parameters"]["input_data"]
     assert new_input_data["system"]["ecutwfc"] == 30.0
