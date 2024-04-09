@@ -176,6 +176,13 @@ def test_md_logger(tmp_path, monkeypatch, caplog):
     with caplog.at_level(logging.WARNING):
         output_npt = md_job(atoms, md_params=md_params)
 
+        assert (
+            "In quacc `temperature`, `temp` and `temperature_K` are"
+            " equivalent and will be interpreted in Kelvin."
+        ) in caplog.text
+
+    assert output_npt["parameters_md"]["md-type"] == "NPT"
+
     md_params = {
         "steps": 10,
         "dynamics": Langevin,
@@ -189,6 +196,8 @@ def test_md_logger(tmp_path, monkeypatch, caplog):
 
     with caplog.at_level(logging.WARNING):
         output_langevin = md_job(atoms, md_params=md_params)
+
+        assert "be interpreted as `timestep` in Quacc." in caplog.text
 
     assert output_langevin["parameters_md"]["md-type"] == "Langevin"
     assert output_langevin["parameters_md"]["timestep"] == pytest.approx(2.0)
@@ -207,6 +216,8 @@ def test_md_logger(tmp_path, monkeypatch, caplog):
     with caplog.at_level(logging.WARNING):
         output_andersen = md_job(atoms, md_params=md_params)
 
+        assert "`fixcm` is interpreted as `fix_com` in Quacc." in caplog.text
+
     assert output_andersen["parameters_md"]["md-type"] == "Andersen"
 
     md_params = {
@@ -218,6 +229,11 @@ def test_md_logger(tmp_path, monkeypatch, caplog):
 
     with caplog.at_level(logging.WARNING):
         output_nvt = md_job(atoms, md_params=md_params)
+
+        assert (
+            "In quacc `temperature`, `temp` and `temperature_K` are"
+            " equivalent and will be interpreted in Kelvin."
+        ) in caplog.text
 
     assert output_nvt["parameters_md"]["md-type"] == "NVTBerendsen"
 
@@ -237,6 +253,17 @@ def test_md_logger(tmp_path, monkeypatch, caplog):
     with caplog.at_level(logging.WARNING):
         output_npt_berendsen = md_job(atoms, md_params=md_params)
 
+        assert (
+            "In quacc `temperature`, `temp` and `temperature_K` are"
+            " equivalent and will be interpreted in Kelvin."
+        ) in caplog.text
+
+        assert (
+            "In quacc `pressure` and `pressure_au` are equivalent"
+            " and will be interpreted in GPA."
+        ) in caplog.text
+
+
     assert output_npt_berendsen["parameters_md"]["md-type"] == "NPTBerendsen"
 
     md_params = {
@@ -254,6 +281,21 @@ def test_md_logger(tmp_path, monkeypatch, caplog):
 
     with caplog.at_level(logging.WARNING):
         output_npt_berendsen_bis = md_job(atoms, md_params=md_params)
+
+        assert (
+            "In quacc `temperature`, `temp` and `temperature_K` are"
+            " equivalent and will be interpreted in Kelvin."
+        ) in caplog.text
+
+        assert (
+            "In quacc `pressure` and `pressure_au` are equivalent"
+            " and will be interpreted in GPA."
+        ) in caplog.text
+
+        assert (
+            "In quacc `compressibility` and `compressibility_au` are equivalent"
+            " and will be interpreted in 1/GPa."
+        ) in caplog.text
 
     assert (
         output_npt_berendsen_bis["trajectory_log"]

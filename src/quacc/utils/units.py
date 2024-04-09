@@ -13,8 +13,21 @@ if TYPE_CHECKING:
 
 LOGGER = logging.getLogger(__name__)
 
+QUACC_BASE_UNITS = {
+    "ttime": fs,
+    "pressure_au": GPa,
+    "temperature_K": 1.0,
+    "compressibility_au": 1 / GPa,
+    "timestep": fs,
+    "taut": fs,
+    "taup": fs,
+    "pfactor": GPa,
+    "externalstress": GPa,
+    "friction": 1 / fs,
+}
 
-def md_units(dynamics_kwargs: dict[str, Any]) -> dict[str, Any]:
+
+def md_units(dynamics_kwargs: dict[str, Any], inverse: bool = False) -> dict[str, Any]:
     """
     Convert units for molecular dynamics parameters to ensure consistency.
     Quacc ALWAYS uses the following units:
@@ -27,6 +40,8 @@ def md_units(dynamics_kwargs: dict[str, Any]) -> dict[str, Any]:
     ----------
     dynamics_kwargs: dict[str, Any]
         Dictionary of keyword arguments for the molecular dynamics calculation.
+    inverse: bool
+        If True, convert from Quacc units to ASE units.
 
     Returns
     -------
@@ -36,34 +51,15 @@ def md_units(dynamics_kwargs: dict[str, Any]) -> dict[str, Any]:
     converted_kwargs = dynamics_kwargs.copy()
 
     # Time units
-    if "ttime" in converted_kwargs:
-        converted_kwargs["ttime"] = converted_kwargs.pop("ttime") * fs
-
-    if "friction" in converted_kwargs:
-        converted_kwargs["friction"] = converted_kwargs.pop("friction") / fs
-
-    if "externalstress" in converted_kwargs:
-        converted_kwargs["externalstress"] = (
-            np.array(converted_kwargs.pop("externalstress")) * GPa
-        )
-
-    if "timestep" in converted_kwargs:
-        converted_kwargs["timestep"] = converted_kwargs.pop("timestep") * fs
-
-    if "taut" in converted_kwargs:
-        converted_kwargs["taut"] = converted_kwargs.pop("taut") * fs
-
-    if "taup" in converted_kwargs:
-        converted_kwargs["taup"] = converted_kwargs.pop("taup") * fs
-
-    # Pressure units
-    if "pfactor" in converted_kwargs:
-        converted_kwargs["pfactor"] = converted_kwargs.pop("pfactor") * GPa
-
-    # Compressibility units
-    if "compressibility_au" in converted_kwargs:
-        converted_kwargs["compressibility"] = (
-            converted_kwargs.pop("compressibility_au") / GPa
-        )
+    for key in converted_kwargs:
+        if key in QUACC_BASE_UNITS:
+            if not inverse:
+                converted_kwargs[key] = (
+                    np.array(converted_kwargs[key]) * QUACC_BASE_UNITS[key]
+                )
+            else:
+                converted_kwargs[key] = (
+                    np.array(converted_kwargs[key]) / QUACC_BASE_UNITS[key]
+                )
 
     return converted_kwargs

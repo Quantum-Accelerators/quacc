@@ -450,8 +450,8 @@ def _md_params_handler(dynamics_kwargs):
 
     if "temperature" in dynamics_kwargs or "temp" in dynamics_kwargs:
         LOGGER.warning(
-            r"The `temperature`\`temp` kwargs are ASE deprecated and will"
-            "be interpreted as `temperature_K` in Quacc."
+            "In quacc `temperature`, `temp` and `temperature_K` are"
+            " equivalent and will be interpreted in Kelvin."
         )
         dynamics_kwargs["temperature_K"] = dynamics_kwargs.pop(
             "temperature", None
@@ -459,22 +459,34 @@ def _md_params_handler(dynamics_kwargs):
 
     if "pressure" in dynamics_kwargs:
         LOGGER.warning(
-            "The `pressure` kwarg is ASE deprecated and will"
-            "be interpreted as `pressure_au` in Quacc."
+            "In quacc `pressure` and `pressure_au` are equivalent and will be"
+            " interpreted in GPA."
         )
         dynamics_kwargs["pressure_au"] = dynamics_kwargs.pop("pressure")
 
+    if "pressure_au" in dynamics_kwargs:
+        LOGGER.warning(
+            "In quacc `pressure` and `pressure_au` are equivalent and will be"
+            " interpreted in GPA."
+        )
+
     if "compressibility" in dynamics_kwargs:
         LOGGER.warning(
-            "The `compressibility` kwarg is ASE deprecated and will"
-            "be interpreted as `compressibility_au` in Quacc."
+            "In quacc `compressibility` and `compressibility_au` are equivalent"
+            " and will be interpreted in 1/GPa."
         )
         dynamics_kwargs["compressibility_au"] = dynamics_kwargs.pop("compressibility")
+
+    if "compressibility_au" in dynamics_kwargs:
+        LOGGER.warning(
+            "In quacc `compressibility` and `compressibility_au` are equivalent"
+            " and will be interpreted in 1/GPa."
+        )
 
     if "dt" in dynamics_kwargs:
         LOGGER.warning(
             "The `dt` kwarg is ASE deprecated and will"
-            "be interpreted as `timestep` in Quacc."
+            " be interpreted as `timestep` in Quacc."
         )
         dynamics_kwargs["timestep"] = dynamics_kwargs.pop("dt")
 

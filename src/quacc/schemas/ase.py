@@ -19,6 +19,7 @@ from quacc.schemas.atoms import atoms_to_metadata
 from quacc.schemas.prep import prep_next_run
 from quacc.utils.dicts import clean_task_doc, recursive_dict_merge
 from quacc.utils.files import get_uri
+from quacc.utils.units import md_units
 from quacc.wflow_tools.db import results_to_db
 
 if TYPE_CHECKING:
@@ -304,7 +305,7 @@ def summarize_md_run(
     parameters_md = dyn.todict()
     parameters_md.pop("logfile", None)
 
-    parameters_md["timestep"] = parameters_md["timestep"] / units.fs
+    parameters_md = md_units(parameters_md, inverse=True)
 
     trajectory_log = []
     trajectory_results = []
