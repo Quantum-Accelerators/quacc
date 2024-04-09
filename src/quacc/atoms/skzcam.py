@@ -20,6 +20,7 @@ def create_skzcam_clusters(
     shell_max: int = 10,
     shell_width: float = 0.005,
     bond_dist: float = 2.5,
+    ecp_dist: float = 6.0,
     write_clusters: bool = False,
     write_clusters_path: str | Path = ".",
     write_include_ecp: bool = False,
@@ -43,6 +44,8 @@ def create_skzcam_clusters(
         Defines the distance between atoms within shells; this is the maximum distance between any two atoms within the shell.
     bond_dist
         The distance within which an anion is considered to be coordinating a cation.
+    ecp_dist
+        The distance from edges of the quantum cluster to define the ECP region.
     write_clusters
         If True, the quantum clusters will be written to a file.
     write_clusters_path
@@ -76,7 +79,7 @@ def create_skzcam_clusters(
         cation_shell = cation_shells_idx[shell_idx]
         anion_coord_idx += [
             _get_anion_coordination(
-                embedded_cluster, cation_shell, embedded_cluster_all_dist, bond_dist
+                embedded_cluster, cation_shell, embedded_cluster_all_dist, bond_dist, ecp_dist
             )
         ]
 
