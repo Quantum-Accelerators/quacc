@@ -342,7 +342,6 @@ class EspressoTemplate(EspressoTemplate_):
 
 
 class Espresso(Espresso_):
-
     def __init__(
         self,
         input_atoms: Atoms | None = None,
