@@ -411,7 +411,7 @@ def test_phonon_calculation_spin_orbit_example_06(
 
     pt_phonon_x_params = {
         "input_data": {
-            "inputph": {"amass(1)": 195.078, "fildyn": "ptdyn", "tr2_ph": 1.0e-10}
+            "inputph": {"aMass(1)": 195.078, "fildYn": "ptdyn", "TR2_ph": 1.0e-10}
         },
         "parallel_info": ESPRESSO_PARALLEL_INFO,
     }
@@ -628,16 +628,16 @@ def test_phonon_induced_renormalization(
                 "prefix": "diam",
                 "fildyn": "dyn_dir_ahc_coarse/diam.dyn",
                 "tr2_ph": 1.0e-10,
-                "ldisp": True,
+                "lDisp": True,
                 "nq1": 3,
-                "nq2": 3,
+                "nQ2": 3,
                 "nq3": 3,
                 "ldvscf_interpolate": True,
-                "wpot_dir": "wpot/",
+                "wpOt_dir": "wpot/",
                 "trans": False,
                 "electron_phonon": "ahc",
                 "ahc_nbnd": 8,
-                "ahc_dir": "ahc_dir_coarse",
+                "AHC_dir": "ahc_dir_coarse",
             }
         }
     }
@@ -651,13 +651,13 @@ def test_phonon_induced_renormalization(
         "input_data": {
             "input": {
                 "asr": "crystal",
-                "amass(1)": 12.01078,
+                "amaSS(1)": 12.01078,
                 "flfrc": "diam.ifc",
                 "flvec": "diam.modes_coarse",
                 "flfrq": "",
                 "fleig": "",
-                "q_in_band_form": False,
-                "q_in_cryst_coord": False,
+                "Q_in_band_form": False,
+                "Q_in_cryst_coord": False,
                 "loto_disable": True,
             }
         },
@@ -707,8 +707,8 @@ def test_phonon_induced_renormalization(
                 "nbnd": 15,
                 "ahc_nbnd": 8,
                 "ahc_nbndskip": 0,
-                "nat": 2,
-                "nq": 27,
+                "NAT": 2,
+                "NQ": 27,
                 "eta": 0.01,
                 "efermi": 0.4766,
                 "temp_kelvin": 300.0,
