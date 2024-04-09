@@ -38,7 +38,8 @@ LOGGER = logging.getLogger(__name__)
 
 
 class EspressoTemplate(EspressoTemplate_):
-    """This is a wrapper around the ASE Espresso template that allows for the use of
+    """
+    A wrapper around the ASE Espresso template that allows for the use of
     other binaries such as pw.x, ph.x, cp.x, etc.
     """
 
@@ -341,6 +342,11 @@ class EspressoTemplate(EspressoTemplate_):
 
 
 class Espresso(Espresso_):
+    """
+    A wrapper around the ASE Espresso calculator that adjusts input_data
+    parameters and allows for the use of presets.
+    Templates are used to set the binary and input/output file names.
+    """
     def __init__(
         self,
         input_atoms: Atoms | None = None,
