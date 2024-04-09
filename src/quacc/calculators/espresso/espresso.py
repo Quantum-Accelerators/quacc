@@ -28,7 +28,7 @@ from quacc.calculators.espresso.utils import (
     get_pseudopotential_info,
     remove_conflicting_kpts_kspacing,
 )
-from quacc.utils.dicts import recursive_dict_merge
+from quacc.utils.dicts import Remove, recursive_dict_merge, remove_dict_entries
 from quacc.utils.files import load_yaml_calc
 
 if TYPE_CHECKING:
@@ -302,8 +302,8 @@ class EspressoTemplate(EspressoTemplate_):
                     LOGGER.warning(
                         "The occupations are set to 'fixed' but smearing or degauss is also set. This will be ignored."
                     )
-                    system["smearing"] = None
-                    system["degauss"] = None
+                    system["smearing"] = Remove
+                    system["degauss"] = Remove
 
             parameters["input_data"]["system"] = system
 
@@ -338,7 +338,7 @@ class EspressoTemplate(EspressoTemplate_):
             parameters["input_data"]["inputph"] = input_ph
             parameters["qpts"] = qpts
 
-        return parameters
+        return remove_dict_entries(parameters, remove_trigger=Remove)
 
 
 class Espresso(Espresso_):
