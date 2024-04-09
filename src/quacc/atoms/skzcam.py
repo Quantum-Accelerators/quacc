@@ -5,9 +5,9 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from ase.atoms import Atoms
+from ase.data import atomic_numbers
 from ase.io import write
 from ase.units import Bohr
-from ase.data import atomic_numbers
 
 if TYPE_CHECKING:
     from numpy.typing import NDArray
@@ -177,10 +177,15 @@ def convert_pun_to_atoms(
 
         # Add the atom number to the atom_number_list and position to the atom_position_list
         atom_number_list += [atomic_numbers[line_info[0]]]
-        atom_position_list += [[float(line_info[1])*Bohr, float(line_info[2])*Bohr, float(line_info[3])*Bohr]]
-    
-    
-    embedded_cluster = Atoms(numbers=atom_number_list,positions = atom_position_list)
+        atom_position_list += [
+            [
+                float(line_info[1]) * Bohr,
+                float(line_info[2]) * Bohr,
+                float(line_info[3]) * Bohr,
+            ]
+        ]
+
+    embedded_cluster = Atoms(numbers=atom_number_list, positions=atom_position_list)
 
     # Center the embedded cluster so that atom index 0 is at the [0, 0, 0] position
     embedded_cluster.translate(-embedded_cluster[0].position)
