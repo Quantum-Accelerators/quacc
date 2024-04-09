@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from ase.optimize import LBFGS
 
 from quacc import job
-from quacc.recipes.onetep._base import base_fn, base_opt_fn
+from quacc.recipes.onetep._base import run_and_summarize, run_and_summarize_opt
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
@@ -56,7 +56,7 @@ def static_job(
     """
     calc_defaults = BASE_SET
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -69,8 +69,8 @@ def static_job(
 def ase_relax_job(
     atoms: Atoms,
     relax_cell: bool = False,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     opt_params: dict[str, Any] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -81,10 +81,12 @@ def ase_relax_job(
     ----------
     atoms
         The Atoms object.
+    relax_cell
+        True if a volume relaxation should be performed. False if only the positions
+        should be updated.
     opt_params
-        Dictionary of parameters to pass to the optimizer. pass "optimizer"
-        to change the optimizer being used. "fmax" and "max_steps" are commonly
-        used keywords. See the ASE documentation for more information.
+        Dictionary of custom kwargs for the optimization process. For a list
+        of available keys, refer to [quacc.runners.ase.run_opt][].
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
@@ -103,7 +105,7 @@ def ase_relax_job(
 
     opt_defaults = {"optimizer": LBFGS, "relax_cell": relax_cell}
 
-    return base_opt_fn(
+    return run_and_summarize_opt(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,

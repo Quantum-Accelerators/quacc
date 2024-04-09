@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 import psutil
 
 from quacc import job
-from quacc.recipes.orca._base import base_fn, base_opt_fn
+from quacc.recipes.orca._base import run_and_summarize, run_and_summarize_opt
 
 if TYPE_CHECKING:
     from typing import Any, Literal
@@ -65,10 +65,10 @@ def static_job(
         See the type-hint for the data structure.
     """
     nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
-    default_inputs = [xc, basis, "engrad", "normalprint", "slowconv"]
+    default_inputs = [xc, basis, "engrad", "normalprint"]
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         charge,
         spin_multiplicity,
@@ -132,13 +132,13 @@ def relax_job(
     """
     nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
 
-    default_inputs = [xc, basis, "normalprint", "opt", "slowconv"]
+    default_inputs = [xc, basis, "normalprint", "opt"]
     if run_freq:
         default_inputs.append("freq")
 
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         charge=charge,
         spin_multiplicity=spin_multiplicity,
@@ -200,10 +200,10 @@ def ase_relax_job(
         See the type-hint for the data structure.
     """
     nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
-    default_inputs = [xc, basis, "engrad", "normalprint", "slowconv"]
+    default_inputs = [xc, basis, "engrad", "normalprint"]
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
-    return base_opt_fn(
+    return run_and_summarize_opt(
         atoms,
         charge=charge,
         spin_multiplicity=spin_multiplicity,

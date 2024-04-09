@@ -118,9 +118,17 @@ The various ESPRESSO binaries should be present in your `PATH`, or you should mo
 
 If you plan to use TBLite with quacc, you will need to install the tblite interface with ASE support.
 
-```bash
-pip install quacc[tblite] # only on Linux
-```
+=== "Conda"
+
+    ```bash
+    pip install -c conda-forge tblite-python
+    ```
+
+=== "Pip"
+
+    ```bash
+    pip install quacc[tblite] # only on Linux
+    ```
 
 Refer to the [TBLite documentation](https://tblite.readthedocs.io/en/latest/tutorial/parallel.html) for details on how to parallelize calculations and adjust the memory limits.
 

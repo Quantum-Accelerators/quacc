@@ -47,7 +47,7 @@ _DEFAULT_SETTING = ()
 
 def vasp_summarize_run(
     final_atoms: Atoms,
-    dir_path: str | Path | None = None,
+    directory: str | Path | None = None,
     move_magmoms: bool = True,
     run_bader: bool = _DEFAULT_SETTING,
     run_chargemol: bool = _DEFAULT_SETTING,
@@ -63,7 +63,7 @@ def vasp_summarize_run(
     ----------
     final_atoms
         ASE Atoms object following a calculation.
-    dir_path
+    directory
         Path to VASP outputs. A value of None specifies the calculator directory.
     move_magmoms
         Whether to move the final magmoms of the original Atoms object to the
@@ -100,13 +100,13 @@ def vasp_summarize_run(
         if check_convergence == _DEFAULT_SETTING
         else check_convergence
     )
-    dir_path = Path(dir_path or final_atoms.calc.directory)
+    directory = Path(directory or final_atoms.calc.directory)
     store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
     additional_fields = additional_fields or {}
 
     # Fetch all tabulated results from VASP outputs files. Fortunately, emmet
     # already has a handy function for this
-    vasp_task_model = TaskDoc.from_directory(dir_path)
+    vasp_task_model = TaskDoc.from_directory(directory)
 
     # Get MP corrections
     if report_mp_corrections:
@@ -125,20 +125,18 @@ def vasp_summarize_run(
     # Check for calculation convergence
     if check_convergence and vasp_task_doc["state"] != "successful":
         raise RuntimeError(
-            f"VASP calculation did not converge. Will not store task data. Refer to {dir_path}"
+            f"VASP calculation did not converge. Will not store task data. Refer to {directory}"
         )
 
-    initial_atoms = read(zpath(dir_path / "POSCAR"))
+    initial_atoms = read(zpath(directory / "POSCAR"))
     base_task_doc = summarize_run(
         final_atoms, initial_atoms, move_magmoms=move_magmoms, store=None
     )
 
-    # Get intermediate task documents if an ASE optimizer is used
-    nsteps = len([f for f in os.listdir(dir_path) if f.startswith("step")])
-    if nsteps:
+    if nsteps := len([f for f in os.listdir(directory) if f.startswith("step")]):
         intermediate_vasp_task_docs = {
             "steps": {
-                n: TaskDoc.from_directory(Path(dir_path, f"step{n}")).model_dump()
+                n: TaskDoc.from_directory(Path(directory, f"step{n}")).model_dump()
                 for n in range(nsteps)
             }
         }
@@ -148,7 +146,7 @@ def vasp_summarize_run(
     # Get Bader analysis
     if run_bader:
         try:
-            bader_results = _bader_runner(dir_path)
+            bader_results = _bader_runner(directory)
         except Exception:
             bader_results = None
             logging.warning("Bader analysis could not be performed.", exc_info=True)
@@ -159,7 +157,7 @@ def vasp_summarize_run(
     # Get the Chargemol analysis
     if run_chargemol:
         try:
-            chargemol_results = _chargemol_runner(dir_path)
+            chargemol_results = _chargemol_runner(directory)
         except Exception:
             chargemol_results = None
             logging.warning("Chargemol analysis could not be performed.", exc_info=True)
@@ -175,9 +173,9 @@ def vasp_summarize_run(
 
     if SETTINGS.WRITE_PICKLE:
         with (
-            gzip.open(Path(dir_path, "quacc_results.pkl.gz"), "wb")
+            gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
             if SETTINGS.GZIP_FILES
-            else Path(dir_path, "quacc_results.pkl").open("wb")
+            else Path(directory, "quacc_results.pkl").open("wb")
         ) as f:
             pickle.dump(task_doc, f)
 
@@ -191,7 +189,7 @@ def vasp_summarize_run(
 def summarize_vasp_opt_run(
     dyn: Optimizer,
     trajectory: Trajectory | list[Atoms] | None = None,
-    dir_path: str | Path | None = None,
+    directory: str | Path | None = None,
     move_magmoms: bool = True,
     run_bader: bool = _DEFAULT_SETTING,
     run_chargemol: bool = _DEFAULT_SETTING,
@@ -211,7 +209,7 @@ def summarize_vasp_opt_run(
     trajectory
         ASE Trajectory object or list[Atoms] from reading a trajectory file. If
         None, the trajectory must be found in dyn.traj_atoms.
-    dir_path
+    directory
         Path to VASP outputs. A value of None specifies the calculator directory.
     move_magmoms
         Whether to move the final magmoms of the original Atoms object to the
@@ -237,7 +235,7 @@ def summarize_vasp_opt_run(
     store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
 
     final_atoms = get_final_atoms_from_dyn(dyn)
-    dir_path = Path(dir_path or final_atoms.calc.directory)
+    directory = Path(directory or final_atoms.calc.directory)
     opt_run_summary = summarize_opt_run(
         dyn,
         trajectory=trajectory,
@@ -248,7 +246,7 @@ def summarize_vasp_opt_run(
     )
     vasp_summary = vasp_summarize_run(
         final_atoms,
-        dir_path=dir_path,
+        directory=directory,
         move_magmoms=move_magmoms,
         run_bader=run_bader,
         run_chargemol=run_chargemol,
@@ -261,9 +259,9 @@ def summarize_vasp_opt_run(
 
     if SETTINGS.WRITE_PICKLE:
         with (
-            gzip.open(Path(dir_path, "quacc_results.pkl.gz"), "wb")
+            gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
             if SETTINGS.GZIP_FILES
-            else Path(dir_path, "quacc_results.pkl").open("wb")
+            else Path(directory, "quacc_results.pkl").open("wb")
         ) as f:
             pickle.dump(task_doc, f)
 

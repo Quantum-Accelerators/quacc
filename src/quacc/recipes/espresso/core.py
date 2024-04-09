@@ -4,11 +4,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ase.optimize import LBFGS
+from ase.optimize import BFGSLineSearch
 
 from quacc import job
+from quacc.atoms.core import check_is_metal
 from quacc.calculators.espresso.espresso import EspressoTemplate
-from quacc.recipes.espresso._base import base_fn, base_opt_fn
+from quacc.recipes.espresso._base import run_and_summarize, run_and_summarize_opt
 
 if TYPE_CHECKING:
     from typing import Any
@@ -17,6 +18,22 @@ if TYPE_CHECKING:
 
     from quacc.schemas._aliases.ase import RunSchema
     from quacc.utils.files import Filenames, SourceDirectory
+
+BASE_SET_METAL = {
+    "input_data": {
+        "system": {"occupations": "smearing", "smearing": "cold", "degauss": 0.01},
+        "electrons": {"conv_thr": 1e-8, "mixing_mode": "local-TF", "mixing_beta": 0.35},
+    },
+    "kspacing": 0.033,
+}
+
+BASE_SET_NON_METAL = {
+    "input_data": {
+        "system": {"occupations": "smearing", "smearing": "gaussian", "degauss": 0.005},
+        "electrons": {"conv_thr": 1e-8, "mixing_mode": "local-TF", "mixing_beta": 0.35},
+    },
+    "kspacing": 0.045,
+}
 
 
 @job
@@ -58,9 +75,13 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    calc_defaults = {"input_data": {"control": {"calculation": "scf"}}}
 
-    return base_fn(
+    is_metal = check_is_metal(atoms)
+
+    calc_defaults = BASE_SET_METAL if is_metal else BASE_SET_NON_METAL
+    calc_defaults["input_data"]["control"] = {"calculation": "scf"}
+
+    return run_and_summarize(
         atoms,
         preset=preset,
         template=EspressoTemplate("pw", test_run=test_run),
@@ -114,13 +135,15 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    calc_defaults = {
-        "input_data": {
-            "control": {"calculation": "vc-relax" if relax_cell else "relax"}
-        }
+
+    is_metal = check_is_metal(atoms)
+
+    calc_defaults = BASE_SET_METAL if is_metal else BASE_SET_NON_METAL
+    calc_defaults["input_data"]["control"] = {
+        "calculation": "vc-relax" if relax_cell else "relax"
     }
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         preset=preset,
         template=EspressoTemplate("pw", test_run=test_run),
@@ -165,9 +188,8 @@ def ase_relax_job(
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
     opt_params
-        Dictionary of parameters to pass to the optimizer. pass "optimizer"
-        to change the optimizer being used. "fmax" and "max_steps" are commonly
-        used keywords. See the ASE documentation for more information.
+        Dictionary of custom kwargs for the optimization process. For a list
+        of available keys, refer to [quacc.runners.ase.run_opt][].
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
@@ -181,15 +203,19 @@ def ase_relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    calc_defaults = {
-        "input_data": {
-            "control": {"calculation": "scf", "tstress": relax_cell, "tprnfor": True}
-        }
+
+    is_metal = check_is_metal(atoms)
+
+    calc_defaults = BASE_SET_METAL if is_metal else BASE_SET_NON_METAL
+    calc_defaults["input_data"]["control"] = {
+        "calculation": "scf",
+        "tstress": relax_cell,
+        "tprnfor": True,
     }
 
-    opt_defaults = {"optimizer": LBFGS}
+    opt_defaults = {"optimizer": BFGSLineSearch}
 
-    return base_opt_fn(
+    return run_and_summarize_opt(
         atoms,
         preset=preset,
         relax_cell=relax_cell,
@@ -246,7 +272,7 @@ def post_processing_job(
         }
     }
 
-    return base_fn(
+    return run_and_summarize(
         template=EspressoTemplate("pp", test_run=test_run),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -297,7 +323,7 @@ def non_scf_job(
     """
     calc_defaults = {"input_data": {"control": {"calculation": "nscf"}}}
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         preset=preset,
         template=EspressoTemplate("pw", test_run=test_run),

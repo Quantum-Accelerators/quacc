@@ -23,7 +23,11 @@ from ase.io.espresso import (
 from ase.io.espresso_namelist.keys import ALL_KEYS
 
 from quacc import SETTINGS
-from quacc.calculators.espresso.utils import get_pseudopotential_info
+from quacc.calculators.espresso.utils import (
+    espresso_prepare_dir,
+    get_pseudopotential_info,
+    remove_conflicting_kpts_kspacing,
+)
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.utils.files import load_yaml_calc
 
@@ -67,21 +71,6 @@ class EspressoTemplate(EspressoTemplate_):
         self.errorname = f"{binary}.err"
 
         self.binary = binary
-
-        self.outdirs = {
-            "outdir": os.environ.get("ESPRESSO_TMPDIR", "."),
-            "wfcdir": os.environ.get("ESPRESSO_TMPDIR", "."),
-        }
-
-        self.outfiles = {
-            "fildos": "pwscf.dos",
-            "filpdos": "pwscf.pdos_tot",
-            "flfrc": "q2r.fc",
-            "fldos": "matdyn.dos",
-            "flfrq": "matdyn.freq",
-            "flvec": "matdyn.modes",
-            "fleig": "matdyn.eig",
-        }
 
         self.test_run = test_run
 
@@ -218,31 +207,29 @@ class EspressoTemplate(EspressoTemplate_):
             with Path.open(directory / self.outputname, "r") as fd:
                 results = read_espresso_ph(fd)
         elif self.binary == "dos":
-            fildos = self.outfiles["fildos"]
-            with fildos.open("r") as fd:
+            with Path.open(directory / "pwscf.dos", "r") as fd:
                 lines = fd.readlines()
-                fermi = float(re.search(r"-?\d+\.?\d*", lines[0]).group(0))
+                fermi = float(re.search(r"-?\d+\.?\d*", lines[0])[0])
                 dos = np.loadtxt(lines[1:])
-            results = {fildos.name.replace(".", "_"): {"dos": dos, "fermi": fermi}}
+            results = {"dos_results": {"dos": dos, "fermi": fermi}}
         elif self.binary == "projwfc":
-            filpdos = self.outfiles["filpdos"]
-            with filpdos.open("r") as fd:
+            with Path.open(directory / "pwscf.pdos_tot", "r") as fd:
                 lines = np.loadtxt(fd.readlines())
                 energy = lines[1:, 0]
                 dos = lines[1:, 1]
                 pdos = lines[1:, 2]
             results = {
-                filpdos.name.replace(".", "_"): {
+                "projwfc_results": {
                     "energy": energy,
                     "dos": dos,
                     "pdos": pdos,
                 }
             }
         elif self.binary == "matdyn":
-            fldos = self.outfiles["fldos"]
+            fldos = Path(directory, "matdyn.dos")
             if fldos.exists():
                 phonon_dos = np.loadtxt(fldos)
-                results = {fldos.name.replace(".", "_"): {"phonon_dos": phonon_dos}}
+                results = {"matdyn_results": {"phonon_dos": phonon_dos}}
 
         if "energy" not in results:
             results["energy"] = None
@@ -250,13 +237,14 @@ class EspressoTemplate(EspressoTemplate_):
         return results
 
     def _output_handler(
-        self, parameters: dict[str, Any], directory: Path
+        self, parameters: dict[str, Any], directory: Path | str
     ) -> dict[str, Any]:
         """
-        Function that handles the various output of espresso binaries. If they are
-        relative, they are resolved against `directory`. In any other case the
-        function will raise a ValueError. This is to avoid the user to use absolute
-        paths that might lead to unexpected behaviour when using Quacc.
+        Function that handles the various output of espresso binaries. It will force the
+        output directory and other output files to be set or deleted if needed.
+
+        It will also prevent the user from setting environment variables that change the
+        output directories.
 
         Parameters
         ----------
@@ -270,35 +258,16 @@ class EspressoTemplate(EspressoTemplate_):
         dict[str, Any]
             The merged kwargs
         """
+
+        os.environ.pop("ESPRESSO_TMPDIR", None)
+        os.environ.pop("ESPRESSO_FILDVSCF_DIR", None)
+        os.environ.pop("ESPRESSO_FILDRHO_DIR", None)
+
+        espresso_outdir = Path(directory).expanduser().resolve()
+        outkeys = espresso_prepare_dir(espresso_outdir, self.binary)
+
         input_data = parameters.get("input_data", {})
-
-        all_out = {**self.outdirs, **self.outfiles}
-        working_dir = Path(directory).expanduser().resolve()
-
-        for key in all_out:
-            path = Path(working_dir, all_out[key])
-
-            for section in input_data:
-                if key in input_data[section]:
-                    path = Path(input_data[section][key])
-                    if path.is_absolute():
-                        raise ValueError(
-                            f"Cannot use {key}={path} because it is an absolute path. When using Quacc please provide relative paths."
-                        )
-                    path = (working_dir / path).resolve()
-                    input_data[section][key] = path
-
-            try:
-                path.relative_to(working_dir)
-            except ValueError as e:
-                raise ValueError(
-                    f"Cannot use {key}={path} because it is not a subpath of {working_dir}. When using Quacc please provide subpaths relative to the working directory."
-                ) from e
-            if key in self.outdirs:
-                path.mkdir(parents=True, exist_ok=True)
-                self.outdirs[key] = path
-            elif key in self.outfiles:
-                self.outfiles[key] = path
+        input_data = recursive_dict_merge(input_data, outkeys)
 
         parameters["input_data"] = input_data
 
@@ -335,7 +304,7 @@ class EspressoTemplate(EspressoTemplate_):
             # Temporary patch for https://gitlab.com/QEF/q-e/-/issues/644
             if qplot and lqdir and recover and is_grid:
                 prefix = input_ph.get("prefix", "pwscf")
-                outdir = self.outdirs["outdir"]
+                outdir = input_ph.get("outdir", ".")
 
                 Path(outdir, "_ph0", f"{prefix}.q_1").mkdir(parents=True, exist_ok=True)
             if not (ldisp or qplot):
@@ -483,10 +452,7 @@ class Espresso(Espresso_):
                     calc_preset["pseudopotentials"], self.input_atoms
                 )
                 calc_preset.pop("pseudopotentials", None)
-                if "kpts" in self.kwargs:
-                    calc_preset.pop("kspacing", None)
-                if "kspacing" in self.kwargs:
-                    calc_preset.pop("kpts", None)
+                calc_preset = remove_conflicting_kpts_kspacing(calc_preset, self.kwargs)
                 self._user_calc_params = recursive_dict_merge(
                     calc_preset,
                     {

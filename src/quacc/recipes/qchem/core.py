@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc import job
-from quacc.recipes.qchem._base import base_fn, base_opt_fn
+from quacc.recipes.qchem._base import run_and_summarize, run_and_summarize_opt
 from quacc.utils.dicts import recursive_dict_merge
 
 try:
@@ -80,7 +80,7 @@ def static_job(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         charge=charge,
         spin_multiplicity=spin_multiplicity,
@@ -119,9 +119,8 @@ def relax_job(
     basis
         Basis set.
     opt_params
-        Dictionary of custom kwargs for the optimization process. Set a value
-        to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [quacc.runners.ase.run_opt][].
+        Dictionary of custom kwargs for the optimization process. For a list
+        of available keys, refer to [quacc.runners.ase.run_opt][].
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
@@ -140,7 +139,7 @@ def relax_job(
     )
     opt_defaults = {"optimizer": Sella} if has_sella else {}
 
-    return base_opt_fn(
+    return run_and_summarize_opt(
         atoms,
         charge=charge,
         spin_multiplicity=spin_multiplicity,
@@ -194,7 +193,7 @@ def freq_job(
         _BASE_SET, {"rem": {"job_type": "freq", "method": method, "basis": basis}}
     )
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         charge=charge,
         spin_multiplicity=spin_multiplicity,

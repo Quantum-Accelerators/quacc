@@ -140,6 +140,32 @@ def test_copy_decompress_tree(tmp_path):
     assert not (dst / "dir1" / "symlink1").exists()
 
 
+@pytest.mark.skipif(os.name == "nt", reason="Windows doesn't support symlinks")
+def test_copy_decompress_tree_v2(tmp_path):
+    src = tmp_path / "src"
+    src.mkdir()
+
+    dst = tmp_path / "dst"
+    dst.mkdir()
+
+    Path(src / "dir1").mkdir()
+    Path(src / "dir2" / "dir3").mkdir(parents=True)
+    Path(src / "dir1" / "file2").touch()
+    Path(src / "dir1" / "file1").touch()
+    Path(src / "dir2" / "file1").touch()
+    Path(src / "dir2" / "dir3" / "file1").touch()
+    Path(src / "dir2" / "dir3" / "file2").touch()
+
+    copy_decompress_files(src, Path("**", "file1"), dst)
+
+    assert (dst / "dir1" / "file1").exists()
+    assert (dst / "dir2" / "file1").exists()
+    assert (dst / "dir2" / "dir3" / "file1").exists()
+
+    assert not (dst / "dir1" / "file2").exists()
+    assert not (dst / "dir2" / "dir3" / "file2").exists()
+
+
 def test_check_logfile(tmp_path):
     with open(tmp_path / "logs.out", "w") as f:
         f.write("trigger")

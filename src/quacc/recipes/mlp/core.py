@@ -43,10 +43,7 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    calc_defaults = {"default_dtype": "float64"} if method == "mace" else {}
-    calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
-
-    atoms.calc = pick_calculator(method, **calc_flags)
+    atoms.calc = pick_calculator(method, **calc_kwargs)
     final_atoms = run_calc(atoms, get_forces=True)
     return summarize_run(
         final_atoms, atoms, additional_fields={"name": f"{method} Static"}
@@ -73,9 +70,8 @@ def relax_job(
     relax_cell
         Whether to relax the cell.
     opt_params
-        Dictionary of custom kwargs for the optimization process. Set a value
-        to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [quacc.runners.ase.run_opt][].
+        Dictionary of custom kwargs for the optimization process. For a list
+        of available keys, refer to [quacc.runners.ase.run_opt][].
     **calc_kwargs
         Custom kwargs for the underlying calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available

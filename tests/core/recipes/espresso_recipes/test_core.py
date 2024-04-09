@@ -48,7 +48,6 @@ def test_static_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
         atoms,
         input_data=input_data,
         pseudopotentials=pseudopotentials,
-        kpts=None,
         parallel_info=ESPRESSO_PARALLEL_INFO,
     )
 
@@ -59,12 +58,12 @@ def test_static_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     assert_array_equal(
         results["atoms"].get_chemical_symbols(), atoms.get_chemical_symbols()
     )
-    assert results["results"]["energy"] == pytest.approx(-293.71195934404255)
+    assert results["results"]["energy"] == pytest.approx(-310.74454357109096)
 
     new_input_data = results["parameters"]["input_data"]
     assert new_input_data["system"]["ecutwfc"] == 30.0
     assert new_input_data["system"]["ecutrho"] == 240.0
-    assert "kspacing" not in results["parameters"]
+    assert "kspacing" in results["parameters"]
     assert results["parameters"].get("kpts") is None
 
 
@@ -166,18 +165,25 @@ def test_static_job_outdir_abs(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
         "control": {
             "pseudo_dir": tmp_path,
             "outdir": Path(tmp_path, "test2").resolve(),
+            "wfcdir": Path(tmp_path, "test1").resolve(),
         },
     }
     pseudopotentials = {"Si": "Si.upf"}
 
-    with pytest.raises(ValueError):
-        static_job(
-            atoms,
-            input_data=input_data,
-            pseudopotentials=pseudopotentials,
-            kpts=None,
-            parallel_info=ESPRESSO_PARALLEL_INFO,
-        )
+    results = static_job(
+        atoms,
+        input_data=input_data,
+        pseudopotentials=pseudopotentials,
+        kpts=None,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
+    )
+
+    assert (
+        str(Path(tmp_path, "test2").resolve())
+        != results["parameters"]["input_data"]["control"]["outdir"]
+    )
+
+    assert results["parameters"]["input_data"]["control"].get("wfcdir") is None
 
 
 def test_static_job_dir_fail(tmp_path, monkeypatch):
