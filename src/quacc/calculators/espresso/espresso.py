@@ -397,7 +397,7 @@ class Espresso(Espresso_):
         self.preset = preset
         self.parallel_info = parallel_info
         self.kwargs = kwargs
-        self._user_calc_params = {}
+        self.user_calc_params = {}
 
         template = template or EspressoTemplate("pw")
 
@@ -416,10 +416,10 @@ class Espresso(Espresso_):
             )
 
             self.kwargs["input_data"] = Namelist(self.kwargs.get("input_data"))
-            self._user_calc_params = self.kwargs
+            self.user_calc_params = self.kwargs
 
         self._pseudo_path = (
-            self._user_calc_params.get("input_data", {})
+            self.user_calc_params.get("input_data", {})
             .get("control", {})
             .get("pseudo_dir", str(SETTINGS.ESPRESSO_PSEUDO))
         )
@@ -432,7 +432,7 @@ class Espresso(Espresso_):
         super().__init__(
             profile=self.profile,
             parallel_info=self.parallel_info,
-            **self._user_calc_params,
+            **self.user_calc_params,
         )
 
         self.template = template
@@ -468,7 +468,7 @@ class Espresso(Espresso_):
                 )
                 calc_preset.pop("pseudopotentials", None)
                 calc_preset = remove_conflicting_kpts_kspacing(calc_preset, self.kwargs)
-                self._user_calc_params = recursive_dict_merge(
+                self.user_calc_params = recursive_dict_merge(
                     calc_preset,
                     {
                         "input_data": {
@@ -479,11 +479,9 @@ class Espresso(Espresso_):
                     self.kwargs,
                 )
             else:
-                self._user_calc_params = recursive_dict_merge(calc_preset, self.kwargs)
+                self.user_calc_params = recursive_dict_merge(calc_preset, self.kwargs)
         else:
-            self._user_calc_params = self.kwargs
+            self.user_calc_params = self.kwargs
 
-        if self._user_calc_params.get("kpts") and self._user_calc_params.get(
-            "kspacing"
-        ):
+        if self.user_calc_params.get("kpts") and self.user_calc_params.get("kspacing"):
             raise ValueError("Cannot specify both kpts and kspacing.")

@@ -88,7 +88,7 @@ def run_and_summarize(
 
     updated_copy_files = _prepare_copy(
         copy_files=copy_files,
-        calc_params=atoms.calc._user_calc_params,
+        calc_params=atoms.calc.user_calc_params,
         binary=atoms.calc.template.binary,
     )
 
@@ -171,7 +171,7 @@ def run_and_summarize_opt(
 
     updated_copy_files = _prepare_copy(
         copy_files=copy_files,
-        calc_params=atoms.calc._user_calc_params,
+        calc_params=atoms.calc.user_calc_params,
         binary=atoms.calc.template.binary,
     )
 
