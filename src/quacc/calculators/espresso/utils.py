@@ -217,11 +217,9 @@ def prepare_copy_files(
         The input data for the espresso calculation
     binary
         The binary to use for the espresso calculation
-
     Returns
     -------
-    dict
-        The files to copy for the espresso calculation
+        The modified dictionary
     """
 
     to_copy = []
@@ -341,3 +339,28 @@ def prepare_copy_files(
         to_copy.extend([Path("ahc_dir"), Path("matdyn.modes*")])
 
     return to_copy
+
+
+def remove_conflicting_kpts_kspacing(
+    to_change_dict: dict[str, Any], reference_dict: dict[str, Any]
+) -> dict[str, Any]:
+    """
+    Parameters
+    ----------
+    to_change_dict
+        The dictionary that will be changed
+    reference_dict
+        The reference dictionary that will remain intact
+
+    Returns
+    -------
+    dict
+        The modified dictionary
+    """
+
+    if "kpts" in reference_dict:
+        to_change_dict.pop("kspacing", None)
+    if "kspacing" in reference_dict:
+        to_change_dict.pop("kpts", None)
+
+    return to_change_dict

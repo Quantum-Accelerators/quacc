@@ -14,7 +14,10 @@ from quacc.calculators.espresso.espresso import (
     EspressoProfile,
     EspressoTemplate,
 )
-from quacc.calculators.espresso.utils import prepare_copy_files
+from quacc.calculators.espresso.utils import (
+    prepare_copy_files,
+    remove_conflicting_kpts_kspacing,
+)
 from quacc.runners.ase import run_calc, run_opt
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import recursive_dict_merge
@@ -232,6 +235,8 @@ def _prepare_atoms(
     if binary in ALL_KEYS:
         calc_defaults["input_data"].to_nested(binary=binary, **calc_defaults)
         calc_swaps["input_data"].to_nested(binary=binary, **calc_swaps)
+
+    calc_defaults = remove_conflicting_kpts_kspacing(calc_defaults, calc_swaps)
 
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
