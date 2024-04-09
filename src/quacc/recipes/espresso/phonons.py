@@ -44,7 +44,7 @@ def phonon_job(
     ),
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
-    is_phcg: bool = False,
+    use_phcg: bool = False,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -69,9 +69,10 @@ def phonon_job(
     test_run
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
-    is_phcg
-        If True, the calculation is performed using the "second-order cg" method.
-        Only Gamma (q, k), no spin and no USPP and PAW.
+    use_phcg
+        If True, the calculation is performed using the `phcg.x` code which uses a faster algorithm.
+        It can be used only if you sample the Brillouin Zone at Gamma and you only need the phonon
+        modes at Gamma (molecules typically). It cannot be used with spin-polarization, USPP and PAW.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -90,14 +91,14 @@ def phonon_job(
         "qpts": (0, 0, 0),
     }
 
-    binary = "phcg" if is_phcg else "ph"
+    binary = "phcg" if use_phcg else "ph"
 
     return run_and_summarize(
         template=EspressoTemplate(binary, test_run=test_run),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
-        additional_fields={"name": "ph.x Phonon"},
+        additional_fields={"name": f"{binary}.x Phonon"},
         copy_files=copy_files,
     )
 
@@ -141,11 +142,9 @@ def q2r_job(
         See the type-hint for the data structure.
     """
 
-    calc_defaults = {}
-
     return run_and_summarize(
         template=EspressoTemplate("q2r"),
-        calc_defaults=calc_defaults,
+        calc_defaults={},
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "q2r.x Phonon"},
@@ -193,11 +192,9 @@ def matdyn_job(
         See the type-hint for the data structure.
     """
 
-    calc_defaults = {}
-
     return run_and_summarize(
         template=EspressoTemplate("matdyn"),
-        calc_defaults=calc_defaults,
+        calc_defaults={},
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "matdyn Phonon"},
@@ -443,11 +440,7 @@ def grid_phonon_flow(
     )
     ph_job_defaults = {
         "input_data": {
-            "inputph": {
-                "lqdir": True,
-                "low_directory_check": True,
-                "recover": True,
-            }
+            "inputph": {"lqdir": True, "low_directory_check": True, "recover": True}
         }
     }
     ph_recover_job_defaults = recursive_dict_merge(
@@ -491,15 +484,15 @@ def dvscf_q2r_job(
     **calc_kwargs,
 ) -> RunSchema:
     """
-    Function to carry out a basic dvscf_q2r calculation. It should allow you to
-    use all the features of the dvscf_q2r binary which does not have an official
-    documentation.
+    Function to carry out a basic dvscf_q2r calculation allowing phonon potential
+    interpolation from coarse to fine q-point grids using Fourier interpolation.
+    It should allow you to use all the features of the dvscf_q2r binary which does
+    not have an official documentation.
 
-    The potential perturbation from a single atom's displacement is spatially localized,
-    allowing phonon potential interpolation from coarse to fine q-point grids using Fourier
-    interpolation. To use this, run ph.x on a coarse q-point grid, use dvscf_q2r.x to
-    inverse Fourier transform the phonon potentials to a real-space supercell, and then set
-    ldvscf_interpolation=.true. in ph.x to Fourier transform the potentials to desired q points.
+    To use this, run a [phonon_job][] on a coarse q-point grid, dvscf_q2r.x can then
+    be used to inverse Fourier transform the phonon potentials to a real-space supercell,
+    you can later run an additional [phonon_job][] with `ldvscf_interpolation = True`
+    to Fourier transform the potentials to desired q points.
 
     Only one card, &input:
 
@@ -543,11 +536,9 @@ def dvscf_q2r_job(
         See the type-hint for the data structure.
     """
 
-    calc_defaults = {}
-
     return run_and_summarize(
         template=EspressoTemplate("dvscf_q2r"),
-        calc_defaults=calc_defaults,
+        calc_defaults={},
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "dvscf_q2r Phonon"},
@@ -602,11 +593,9 @@ def postahc_job(
         See the type-hint for the data structure.
     """
 
-    calc_defaults = {}
-
     return run_and_summarize(
         template=EspressoTemplate("postahc"),
-        calc_defaults=calc_defaults,
+        calc_defaults={},
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "postahc Phonon"},

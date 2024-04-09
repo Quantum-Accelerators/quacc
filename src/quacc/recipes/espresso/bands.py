@@ -47,9 +47,9 @@ def bands_pw_job(
     """
     Function to carry out a basic bands structure calculation with pw.x.
 
-    First perform a normal SCF calculation as above; then use this job
-    if you are interested in calculating only the Kohn-Sham states for the given
-    set of k-point
+    First perform a normal SCF calculation [quacc.recipes.espresso.core.static_job][];
+    then use this job if you are interested in calculating only the Kohn-Sham states
+    for the given set of k-points
 
     Parameters
     ----------
@@ -127,7 +127,7 @@ def bands_pp_job(
     """
     Function to re-order bands and computes bands-related properties with bands.x.
     This allows to get the bands structure in a more readable way. This requires a
-    previous `bands_pw_job` calculation.
+    previous [bands_pw_job][] calculation.
 
     Parameters
     ----------

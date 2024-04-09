@@ -84,7 +84,9 @@ def run_and_summarize(
     )
 
     updated_copy_files = _prepare_copy(
-        copy_files, atoms.calc._user_calc_params, atoms.calc.template.binary
+        copy_files=copy_files,
+        calc_params=atoms.calc._user_calc_params,
+        binary=atoms.calc.template.binary,
     )
 
     geom_file = template.outputname if template.binary == "pw" else None
@@ -165,7 +167,9 @@ def run_and_summarize_opt(
     )
 
     updated_copy_files = _prepare_copy(
-        copy_files, atoms.calc._user_calc_params, atoms.calc.template.binary
+        copy_files=copy_files,
+        calc_params=atoms.calc._user_calc_params,
+        binary=atoms.calc.template.binary,
     )
 
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
@@ -231,7 +235,7 @@ def _prepare_atoms(
 
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
-    calc = Espresso(
+    atoms.calc = Espresso(
         input_atoms=atoms,
         preset=preset,
         parallel_info=parallel_info,
@@ -239,8 +243,6 @@ def _prepare_atoms(
         profile=profile,
         **calc_flags,
     )
-
-    atoms.calc = calc
 
     return atoms
 
@@ -254,7 +256,7 @@ def _prepare_copy(
     ) = None,
     calc_params: dict[str, Any] | None = None,
     binary: str = "pw",
-) -> dict[SourceDirectory, Filenames]:
+) -> dict[SourceDirectory, Filenames] | None:
     """
     Function that will prepare the files to copy.
 

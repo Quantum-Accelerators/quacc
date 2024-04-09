@@ -324,22 +324,6 @@ class EspressoTemplate(EspressoTemplate_):
 
 
 class Espresso(Espresso_):
-    """
-    This can be viewed as an extension of the ASE Espresso calculator allowing
-    to run calculations not only using the main program `pw.x` but also other modules.
-
-    The full list is available in the [Quacc list of recipes](https://quantum-accelerators.github.io/quacc/user/recipes/recipes_list.html#quantum-espresso).
-
-    Instruction for the impatient:
-
-    1. If you are used to ASE, you can send the same parameter to Quacc's jobs `input_data`, `kpts` ...
-    2. In Quacc each job has its own running directory, keep this in mind when creating workflows.
-    You will often have to use the `copy_files` parameter to copy files from one job to another.
-    You will often want to pass only the previous `dir_name` to copy_file. This interface will
-    then take care of copying the necessary files.
-    3. By default all `pw.x` jobs will use the SSSP pseudopotentials library. This is specified in the
-    `preset` parameter.
-    """
 
     def __init__(
         self,
