@@ -17,10 +17,10 @@ from subprocess import CalledProcessError
 import pytest
 from ase.build import bulk
 from ase.optimize import BFGS
+from monty.io import zopen
 from numpy.testing import assert_allclose, assert_array_equal
 
 from quacc.calculators.espresso.espresso import EspressoTemplate
-from quacc.calculators.espresso.utils import pw_copy_files
 from quacc.recipes.espresso.core import (
     ase_relax_job,
     non_scf_job,
@@ -270,6 +270,14 @@ def test_ase_relax_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
         parallel_info=ESPRESSO_PARALLEL_INFO,
     )
 
+    with zopen(results["dir_name"] / "pw.out.gz", "r") as fd:
+        lines = str(fd.read())
+
+    assert "Cannot read rho : file not found" not in lines
+    assert "Initial potential from superposition of free atoms" not in lines
+    assert "The initial density is read from file" in lines
+    assert "Starting wfcs from file" in lines
+
     with pytest.raises(AssertionError):
         assert_allclose(
             results["atoms"].get_positions(), atoms.get_positions(), atol=1.0e-4
@@ -365,12 +373,10 @@ def test_non_scf_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
         kpts=None,
         parallel_info=ESPRESSO_PARALLEL_INFO,
     )
-    files_to_copy = pw_copy_files(
-        input_data, static_result["dir_name"], include_wfc=False
-    )
+
     results = non_scf_job(
         atoms,
-        files_to_copy,
+        static_result["dir_name"],
         input_data=input_data,
         pseudopotentials=pseudopotentials,
         parallel_info=ESPRESSO_PARALLEL_INFO,
@@ -394,7 +400,7 @@ def test_non_scf_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     assert results["parameters"].get("kpts") is None
 
 
-def test_pw_copy(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
+def test_pw_restart(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -417,15 +423,21 @@ def test_pw_copy(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     new_input_data["restart_mode"] = "restart"
     new_input_data["max_seconds"] = 10**7
 
-    files_to_copy = pw_copy_files(new_input_data, results["dir_name"], include_wfc=True)
-
     results = static_job(
         atoms,
         input_data=new_input_data,
         pseudopotentials=pseudopotentials,
         kpts=None,
-        copy_files=files_to_copy,
+        copy_files=results["dir_name"],
         parallel_info=ESPRESSO_PARALLEL_INFO,
     )
     assert new_input_data["system"]["ecutwfc"] == 30.0
     assert new_input_data["system"]["ecutrho"] == 240.0
+
+    with zopen(results["dir_name"] / "pw.out.gz", "r") as fd:
+        lines = str(fd.read())
+
+    assert "Cannot read rho : file not found" not in lines
+    assert "Initial potential from superposition of free atoms" not in lines
+    assert "The initial density is read from file" in lines
+    assert "Starting wfcs from file" in lines
