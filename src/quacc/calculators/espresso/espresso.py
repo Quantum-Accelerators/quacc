@@ -347,6 +347,7 @@ class Espresso(Espresso_):
     parameters and allows for the use of presets.
     Templates are used to set the binary and input/output file names.
     """
+
     def __init__(
         self,
         input_atoms: Atoms | None = None,
