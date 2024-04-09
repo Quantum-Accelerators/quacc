@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 
 from ase.io import read
 from emmet.core.tasks import TaskDoc
+from monty.io import zopen
 from monty.os.path import zpath
 from pymatgen.command_line.bader_caller import bader_analysis_from_path
 from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
@@ -172,11 +173,7 @@ def vasp_summarize_run(
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_PICKLE:
-        with (
-            gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
-            if SETTINGS.GZIP_FILES
-            else Path(directory, "quacc_results.pkl").open("wb")
-        ) as f:
+        with zopen(zpath(Path(directory, "quacc_results.pkl")), "wb") as f:
             pickle.dump(task_doc, f)
 
     # Store the results
@@ -258,11 +255,7 @@ def summarize_vasp_opt_run(
     task_doc = recursive_dict_merge(vasp_summary, opt_run_summary)
 
     if SETTINGS.WRITE_PICKLE:
-        with (
-            gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
-            if SETTINGS.GZIP_FILES
-            else Path(directory, "quacc_results.pkl").open("wb")
-        ) as f:
+        with zopen(zpath(Path(directory, "quacc_results.pkl")), "wb") as f:
             pickle.dump(task_doc, f)
 
     # Store the results

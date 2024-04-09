@@ -12,6 +12,7 @@ from ase import units
 from ase.io import read
 from ase.vibrations import Vibrations
 from ase.vibrations.data import VibrationsData
+from monty.io import zopen, zpath
 
 from quacc import SETTINGS, __version__
 from quacc.atoms.core import get_final_atoms_from_dyn
@@ -119,11 +120,7 @@ def summarize_run(
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_PICKLE:
-        with (
-            gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
-            if SETTINGS.GZIP_FILES
-            else Path(directory, "quacc_results.pkl").open("wb")
-        ) as f:
+        with zopen(zpath(Path(directory, "quacc_results.pkl")), "wb") as f:
             pickle.dump(task_doc, f)
 
     if store:
@@ -225,11 +222,7 @@ def summarize_opt_run(
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_PICKLE:
-        with (
-            gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
-            if SETTINGS.GZIP_FILES
-            else Path(directory, "quacc_results.pkl").open("wb")
-        ) as f:
+        with zopen(zpath(Path(directory, "quacc_results.pkl")), "wb") as f:
             pickle.dump(task_doc, f)
 
     if store:
@@ -297,11 +290,7 @@ def summarize_vib_and_thermo(
     if isinstance(vib, Vibrations):
         directory = vib.atoms.calc.directory
         if SETTINGS.WRITE_PICKLE:
-            with (
-                gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
-                if SETTINGS.GZIP_FILES
-                else Path(directory, "quacc_results.pkl").open("wb")
-            ) as f:
+            with zopen(zpath(Path(directory, "quacc_results.pkl")), "wb") as f:
                 pickle.dump(task_doc, f)
     if store:
         results_to_db(store, task_doc)

@@ -13,7 +13,9 @@ from typing import TYPE_CHECKING
 import cclib
 from ase.atoms import Atoms
 from cclib.io import ccread
+from monty.io import zopen
 from monty.json import jsanitize
+from monty.os.path import zpath
 
 from quacc import SETTINGS
 from quacc.atoms.core import get_final_atoms_from_dyn
@@ -158,11 +160,7 @@ def cclib_summarize_run(
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_PICKLE:
-        with (
-            gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
-            if SETTINGS.GZIP_FILES
-            else Path(directory, "quacc_results.pkl").open("wb")
-        ) as f:
+        with zopen(zpath(Path(directory, "quacc_results.pkl")), "wb") as f:
             pickle.dump(task_doc, f)
 
     # Store the results
@@ -261,11 +259,7 @@ def summarize_cclib_opt_run(
     task_doc = recursive_dict_merge(cclib_summary, opt_run_summary)
 
     if SETTINGS.WRITE_PICKLE:
-        with (
-            gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
-            if SETTINGS.GZIP_FILES
-            else Path(directory, "quacc_results.pkl").open("wb")
-        ) as f:
+        with zopen(zpath(Path(directory, "quacc_results.pkl")), "wb") as f:
             pickle.dump(task_doc, f)
 
     # Store the results
