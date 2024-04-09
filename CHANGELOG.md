@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.7.3]
 
+### Added
+
+- Added new Espresso recipes to perform electron-phonon calculations and Fourier interpolation of the phonon potential
+
 ### Fixed
 
 - Fixed potential issues with I/O settings and Espresso
