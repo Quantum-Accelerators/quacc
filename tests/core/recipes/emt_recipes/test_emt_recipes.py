@@ -263,7 +263,6 @@ def test_md_logger(tmp_path, monkeypatch, caplog):
             " and will be interpreted in GPA."
         ) in caplog.text
 
-
     assert output_npt_berendsen["parameters_md"]["md-type"] == "NPTBerendsen"
 
     md_params = {
