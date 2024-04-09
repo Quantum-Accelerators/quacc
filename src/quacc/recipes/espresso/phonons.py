@@ -489,9 +489,10 @@ def dvscf_q2r_job(
     It should allow you to use all the features of the dvscf_q2r binary which does
     not have an official documentation.
 
-    To use this, run a [phonon_job][] on a coarse q-point grid, dvscf_q2r.x can then
-    be used to inverse Fourier transform the phonon potentials to a real-space supercell,
-    you can later run an additional [phonon_job][] with `ldvscf_interpolation = True`
+    To use this, run a [quacc.recipes.espresso.phonons.phonon_job][] on a coarse q-point
+    grid, dvscf_q2r.x can then be used to inverse Fourier transform the phonon potentials
+    to a real-space supercell, you can later run an additional
+    [quacc.recipes.espresso.phonons.phonon_job][] with `ldvscf_interpolation = True`
     to Fourier transform the potentials to desired q points.
 
     Only one card, &input:

@@ -385,23 +385,23 @@ def test_phonon_calculation_spin_orbit_example_06(
     # Pt calculations
     pt_relax_params = {
         "input_data": {
-            "control": {
-                "calculation": "scf",
-                "restart_mode": "from_scratch",
-                "tprnfor": True,
-                "tstress": True,
+            "cONTROL": {
+                "caLCULATION": "SCF",
+                "RESTART_mode": "from_scratch",
+                "tPRNFOR": True,
+                "TstRESS": True,
             },
-            "system": {
-                "lspinorb": True,
-                "noncolin": True,
-                "starting_magnetization": 0.0,
-                "occupations": "smearing",
-                "degauss": 0.02,
-                "smearing": "mv",
-                "ecutwfc": 30.0,
-                "ecutrho": 250.0,
+            "sYSTEM": {
+                "LSPINOrb": True,
+                "noNCOLIN": True,
+                "STARTING_MAGNETIZATION": 0.0,
+                "occupaTIONS": "smearing",
+                "DEGAUss": 0.02,
+                "SMEaring": "mv",
+                "eCUTWFC": 30.0,
+                "EcuTRHO": 250.0,
             },
-            "electrons": {"mixing_beta": 0.7, "conv_thr": 1.0e-8},
+            "ELECTrons": {"mixing_BETA": 0.7, "CONV_thr": 1.0e-8},
         },
         "pseudopotentials": pseudopotential,
         "kpts": (2, 2, 2),
@@ -429,7 +429,7 @@ def test_phonon_calculation_spin_orbit_example_06(
 
 
 def test_phonon_calculation_si_spin_orbit(
-    tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO
+    tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO, caplog
 ):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
@@ -445,14 +445,23 @@ def test_phonon_calculation_si_spin_orbit(
     si_relax_params = {
         "input_data": {
             "control": {"calculation": "scf", "restart_mode": "from_scratch"},
-            "system": {"ecutwfc": 20.0, "noncolin": True, "lspinorb": True},
+            "system": {
+                "ecutwfc": 20.0,
+                "noncolin": True,
+                "lspinorb": True,
+                "occupations": "fixed",
+            },
             "electrons": {"mixing_beta": 0.7, "conv_thr": 1.0e-8},
         },
         "pseudopotentials": pseudopotential,
         "kpts": (2, 2, 2),
         "parallel_info": ESPRESSO_PARALLEL_INFO,
     }
-    si_relax_results = relax_job(si_atoms, **si_relax_params)
+
+    with caplog.at_level(logging.WARNING):
+        si_relax_results = relax_job(si_atoms, **si_relax_params)
+
+        assert "The occupations are set to 'fixed'" in caplog.text
 
     si_phonon_params = {
         "input_data": {

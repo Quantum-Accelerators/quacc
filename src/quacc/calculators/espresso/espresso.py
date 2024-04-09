@@ -290,7 +290,24 @@ class EspressoTemplate(EspressoTemplate_):
         """
         input_data = parameters.get("input_data", {})
 
-        if self.binary in ["ph", "phcg"]:
+        if self.binary == "pw":
+            system = input_data.get("system", {})
+
+            occupations = system.get("occupations", "fixed")
+            smearing = system.get("smearing", None)
+            degauss = system.get("degauss", None)
+
+            if occupations == "fixed":
+                if smearing is not None or degauss is not None:
+                    LOGGER.warning(
+                        "The occupations are set to 'fixed' but smearing or degauss is also set. This will be ignored."
+                    )
+                    system["smearing"] = None
+                    system["degauss"] = None
+
+            parameters["input_data"]["system"] = system
+
+        elif self.binary in ["ph", "phcg"]:
             input_ph = input_data.get("inputph", {})
             qpts = parameters.get("qpts", (0, 0, 0))
 

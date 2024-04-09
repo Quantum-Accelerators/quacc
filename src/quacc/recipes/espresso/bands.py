@@ -127,7 +127,7 @@ def bands_pp_job(
     """
     Function to re-order bands and computes bands-related properties with bands.x.
     This allows to get the bands structure in a more readable way. This requires a
-    previous [bands_pw_job][] calculation.
+    previous [quacc.recipes.espresso.bands.bands_pw_job][] calculation.
 
     Parameters
     ----------
