@@ -386,7 +386,7 @@ def test_phonon_calculation_spin_orbit_example_06(
     pt_relax_params = {
         "input_data": {
             "cONTROL": {
-                "caLCULATION": "SCF",
+                "caLCULATION": "scf",
                 "RESTART_mode": "from_scratch",
                 "tPRNFOR": True,
                 "TstRESS": True,
@@ -401,7 +401,7 @@ def test_phonon_calculation_spin_orbit_example_06(
                 "eCUTWFC": 30.0,
                 "EcuTRHO": 250.0,
             },
-            "ELECTrons": {"mixing_BETA": 0.7, "CONV_thr": 1.0e-8},
+            "ELECTrons": {"mixing_beta": 0.7, "conv_thr": 1.0e-8},
         },
         "pseudopotentials": pseudopotential,
         "kpts": (2, 2, 2),
