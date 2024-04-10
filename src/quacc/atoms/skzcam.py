@@ -9,6 +9,9 @@ from ase.data import atomic_numbers
 from ase.io import write
 from ase.units import Bohr
 
+from monty.io import zopen
+from monty.os.path import zpath
+
 if TYPE_CHECKING:
     from numpy.typing import NDArray
 
@@ -142,10 +145,11 @@ def convert_pun_to_atoms(
     atom_type_dict = {
         atom: "cation" if oxi_state > 0 else "anion" if oxi_state < 0 else "neutral"
         for atom, oxi_state in atom_oxi_states.items()
-    }
+	}
 
     # Load the pun file as a list of strings
-    raw_pun_file = [line.rstrip() for line in Path.open(pun_file)]
+    with zopen(zpath(Path(pun_file))) as f:
+        raw_pun_file = [line.rstrip() for line in f]
 
     # Get the number of atoms and number of atomic charges in the .pun file
     n_atoms = int(raw_pun_file[3].split()[-1])
