@@ -1,10 +1,4 @@
-"""
-This module, 'dos.py', contains recipes for performing dos calculations using the
-dos.x binary from Quantum ESPRESSO via the quacc library.
-
-The recipes provided in this module are jobs and flows that can be used to perform
-dos calculations.
-"""
+"""DOS/ProjWFC recipes for performing dos calculations"""
 
 from __future__ import annotations
 
@@ -12,7 +6,6 @@ from typing import TYPE_CHECKING
 
 from quacc import flow, job
 from quacc.calculators.espresso.espresso import EspressoTemplate
-from quacc.calculators.espresso.utils import pw_copy_files
 from quacc.recipes.espresso._base import run_and_summarize
 from quacc.recipes.espresso.core import non_scf_job, static_job
 from quacc.utils.dicts import recursive_dict_merge
@@ -38,7 +31,9 @@ if TYPE_CHECKING:
 
 @job
 def dos_job(
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
+    copy_files: (
+        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
+    ),
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -52,7 +47,11 @@ def dos_job(
     Parameters
     ----------
     copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+        Source directory or directories to copy files from. If a `SourceDirectory` or a
+        list of `SourceDirectory` is provided, this interface will automatically guess
+        which files have to be copied over by looking at the binary and `input_data`.
+        If a dict is provided, the mode is manual, keys are source directories and values
+        are relative path to files or directories to copy. Glob patterns are supported.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -79,7 +78,9 @@ def dos_job(
 
 @job
 def projwfc_job(
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
+    copy_files: (
+        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
+    ),
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -93,7 +94,11 @@ def projwfc_job(
     Parameters
     ----------
     copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+        Source directory or directories to copy files from. If a `SourceDirectory` or a
+        list of `SourceDirectory` is provided, this interface will automatically guess
+        which files have to be copied over by looking at the binary and `input_data`.
+        If a dict is provided, the mode is manual, keys are source directories and values
+        are relative path to files or directories to copy. Glob patterns are supported.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -188,20 +193,10 @@ def dos_flow(
     )
 
     static_results = static_job_(atoms)
-    files_to_copy = pw_copy_files(
-        job_params["static_job"].get("input_data"),
-        static_results["dir_name"],
-        include_wfc=False,
-    )
 
-    non_scf_results = non_scf_job_(atoms, files_to_copy)
-    files_to_copy = pw_copy_files(
-        job_params["non_scf_job"].get("input_data"),
-        non_scf_results["dir_name"],
-        include_wfc=False,
-    )
+    non_scf_results = non_scf_job_(atoms, static_results["dir_name"])
 
-    dos_results = dos_job_(files_to_copy)
+    dos_results = dos_job_(non_scf_results["dir_name"])
 
     return {
         "static_job": static_results,
@@ -280,20 +275,10 @@ def projwfc_flow(
     )
 
     static_results = static_job_(atoms)
-    files_to_copy = pw_copy_files(
-        job_params["static_job"].get("input_data"),
-        static_results["dir_name"],
-        include_wfc=False,
-    )
 
-    non_scf_results = non_scf_job_(atoms, files_to_copy)
-    files_to_copy = pw_copy_files(
-        job_params["non_scf_job"].get("input_data"),
-        non_scf_results["dir_name"],
-        include_wfc=True,
-    )
+    non_scf_results = non_scf_job_(atoms, static_results["dir_name"])
 
-    projwfc_results = projwfc_job_(files_to_copy)
+    projwfc_results = projwfc_job_(non_scf_results["dir_name"])
 
     return {
         "static_job": static_results,

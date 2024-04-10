@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
-from ase.io.espresso import Namelist
 
 from quacc.utils.dicts import Remove
 
@@ -54,57 +53,6 @@ def get_pseudopotential_info(
     return ecutwfc, ecutrho, pseudopotentials
 
 
-def pw_copy_files(
-    input_data: dict[str, Any], prev_dir: str | Path, include_wfc: bool = True
-) -> dict[SourceDirectory, Filenames]:
-    """
-    Function that take care of copying the correct files from a previous pw.x
-    to a current pw.x/bands.x/dos.x... calculation. wfc in collected format
-    might be optionally ommited.
-
-    Parameters
-    ----------
-    input_data
-        input_data of the current calculation
-    prev_dir
-        Outdir of the previously ran pw.x calculation. This is used to partially
-        copy the tree structure of that directory to the working directory
-        of this calculation.
-    include_wfc
-        Whether to include the wfc files or not, for dos.x and bands.x they are
-        not needed for example.
-
-    Returns
-    -------
-    dict
-        Dictionary of files to copy. The key is the directory to copy from and
-        the value is a list of files to copy from that directory.
-    """
-    input_data = Namelist(input_data)
-    input_data.to_nested(binary="pw")
-
-    control = input_data.get("control", {})
-
-    prefix = control.get("prefix", "pwscf")
-    restart_mode = control.get("restart_mode", "from_scratch")
-
-    files_to_copy = {prev_dir: []}
-
-    basics_to_copy = ["charge-density.*", "data-file-schema.*", "paw.*"]
-
-    if restart_mode == "restart":
-        files_to_copy[prev_dir].append(Path(f"{prefix}.wfc*"))
-        files_to_copy[prev_dir].append(Path(f"{prefix}.mix*"))
-        files_to_copy[prev_dir].append(Path(f"{prefix}.restart_k*"))
-        files_to_copy[prev_dir].append(Path(f"{prefix}.restart_scf*"))
-    elif include_wfc:
-        basics_to_copy.append("wfc*.*")
-
-    files_to_copy[prev_dir].extend([Path(f"{prefix}.save", i) for i in basics_to_copy])
-
-    return files_to_copy
-
-
 def grid_copy_files(
     ph_input_data: dict[str, Any],
     directory: str | Path,
@@ -130,41 +78,37 @@ def grid_copy_files(
     dict
         The dictionary of files to copy
     """
-    prefix = ph_input_data["inputph"].get("prefix", "pwscf")
-    outdir = ph_input_data["inputph"].get("outdir", ".")
+
     lqdir = ph_input_data["inputph"].get("lqdir", False)
 
     files_to_copy = {
         directory: [
-            Path(outdir, "_ph0", f"{prefix}.phsave", "control_ph.xml*"),
-            Path(outdir, "_ph0", f"{prefix}.phsave", "status_run.xml*"),
-            Path(outdir, "_ph0", f"{prefix}.phsave", "patterns.*.xml*"),
-            Path(outdir, "_ph0", f"{prefix}.phsave", "tensors.xml*"),
+            Path("_ph0", "pwscf.phsave", "control_ph.xml*"),
+            Path("_ph0", "pwscf.phsave", "status_run.xml*"),
+            Path("_ph0", "pwscf.phsave", "patterns.*.xml*"),
+            Path("_ph0", "pwscf.phsave", "tensors.xml*"),
         ]
     }
 
     if lqdir or qpt == (0.0, 0.0, 0.0):
         files_to_copy[directory].extend(
             [
-                Path(outdir, f"{prefix}.save", "charge-density.*"),
-                Path(outdir, f"{prefix}.save", "data-file-schema.xml.*"),
-                Path(outdir, f"{prefix}.save", "paw.txt.*"),
-                Path(outdir, f"{prefix}.save", "wfc*.*"),
+                Path("pwscf.save", "charge-density.*"),
+                Path("pwscf.save", "data-file-schema.xml.*"),
+                Path("pwscf.save", "paw.txt.*"),
+                Path("pwscf.save", "wfc*.*"),
             ]
         )
         if qpt != (0.0, 0.0, 0.0):
             files_to_copy[directory].extend(
                 [
-                    Path(outdir, "_ph0", f"{prefix}.q_{qnum}", f"{prefix}.save", "*"),
-                    Path(outdir, "_ph0", f"{prefix}.q_{qnum}", f"{prefix}.wfc*"),
+                    Path("_ph0", f"pwscf.q_{qnum}", "pwscf.save", "*"),
+                    Path("_ph0", f"pwscf.q_{qnum}", "pwscf.wfc*"),
                 ]
             )
     else:
         files_to_copy[directory].extend(
-            [
-                Path(outdir, "_ph0", f"{prefix}.wfc*"),
-                Path(outdir, "_ph0", f"{prefix}.save", "*"),
-            ]
+            [Path("_ph0", "pwscf.wfc*"), Path("_ph0", "pwscf.save", "*")]
         )
 
     return files_to_copy
@@ -210,9 +154,10 @@ def espresso_prepare_dir(outdir: str | Path, binary: str = "pw") -> dict[str, An
     """
 
     outkeys = {
-        "pw": {"control": {"outdir": outdir, "wfcdir": Remove}},
+        "pw": {"control": {"prefix": "pwscf", "outdir": outdir, "wfcdir": Remove}},
         "ph": {
             "inputph": {
+                "prefix": "pwscf",
                 "fildyn": "matdyn",
                 "outdir": outdir,
                 "ahc_dir": Remove,
@@ -221,23 +166,179 @@ def espresso_prepare_dir(outdir: str | Path, binary: str = "pw") -> dict[str, An
                 "drho_star%dir": Remove,
             }
         },
-        "pp": {"inputpp": {"filplot": "tmp.pp", "outdir": outdir}},
-        "dos": {"dos": {"fildos": "pwscf.dos", "outdir": outdir}},
-        "projwfc": {"projwfc": {"filpdos": "pwscf", "outdir": outdir}},
+        "pp": {"inputpp": {"prefix": "pwscf", "filplot": "tmp.pp", "outdir": outdir}},
+        "dos": {"dos": {"prefix": "pwscf", "fildos": "pwscf.dos", "outdir": outdir}},
+        "projwfc": {
+            "projwfc": {"prefix": "pwscf", "filpdos": "pwscf", "outdir": outdir}
+        },
         "matdyn": {
             "input": {
+                "flfrc": "q2r.fc",
                 "fldos": "matdyn.dos",
                 "flfrq": "matdyn.freq",
                 "flvec": "matdyn.modes",
                 "fleig": "matdyn.eig",
             }
         },
-        "q2r": {"input": {"flfrc": "q2r.fc"}},
-        "bands": {"bands": {"filband": "bands.out", "outdir": outdir}},
-        "fs": {"fermi": {"file_fs": "fermi_surface.bxsf", "outdir": outdir}},
+        "q2r": {"input": {"fildyn": "matdyn", "flfrc": "q2r.fc"}},
+        "bands": {
+            "bands": {"prefix": "pwscf", "filband": "bands.out", "outdir": outdir}
+        },
+        "fs": {
+            "fermi": {
+                "prefix": "pwscf",
+                "file_fs": "fermi_surface.bxsf",
+                "outdir": outdir,
+            }
+        },
+        "dvscf_q2r": {
+            "input": {
+                "prefix": "pwscf",
+                "fildyn": "matdyn",
+                "outdir": ".",
+                "wpot_dir": Remove,
+            }
+        },
+        "postahc": {"input": {"ahc_dir": "ahc_dir/", "flvec": "matdyn.modes"}},
     }
 
     return outkeys.get(binary, {})
+
+
+def prepare_copy_files(
+    parameters: dict[str, Any], binary: str = "pw"
+) -> dict[SourceDirectory, Filenames]:
+    """
+    Function that prepares the copy files for the espresso calculation.
+
+    Parameters
+    ----------
+    parameters
+        The input data for the espresso calculation
+    binary
+        The binary to use for the espresso calculation
+    Returns
+    -------
+        The modified dictionary
+    """
+
+    to_copy = []
+
+    pw_base = [
+        Path("pwscf.save", "charge-density.*"),
+        Path("pwscf.save", "data-file-schema.*"),
+        Path("pwscf.save", "paw.*"),
+    ]
+
+    input_data = parameters.get("input_data", {})
+
+    if binary == "pw":
+        control = input_data.get("control", {})
+        restart_mode = control.get("restart_mode", "from_scratch")
+        electrons = input_data.get("electrons", {})
+        startingpot = electrons.get("startingpot", "atomic")
+        startingwfc = electrons.get("startingwfc", "atomic+random")
+        calculation = control.get("calculation", "scf")
+
+        if restart_mode == "restart":
+            to_copy.extend(
+                [
+                    Path("pwscf.wfc*"),
+                    Path("pwscf.mix*"),
+                    Path("pwscf.restart_k*"),
+                    Path("pwscf.restart_scf*"),
+                ]
+            )
+
+        need_chg_dens = (
+            startingpot == "file"
+            or calculation in ["bands", "nscf"]
+            or restart_mode == "restart"
+        )
+
+        need_wfc = startingwfc == "file" or restart_mode == "restart"
+
+        if need_chg_dens:
+            to_copy.append(Path("pwscf.save", "charge-density.*"))
+
+        if need_wfc:
+            to_copy.append(Path("pwscf.save", "wfc*.*"))
+
+        to_copy.extend(
+            [Path("pwscf.save", "data-file-schema.*"), Path("pwscf.save", "paw.*")]
+        )
+
+    elif binary in ["ph", "phcg"]:
+        to_copy.extend(pw_base)
+        to_copy.append(Path("pwscf.save", "wfc*.*"))
+
+        inputph = input_data.get("inputph", {})
+        ldisp = inputph.get("ldisp", False)
+        fildvscf = inputph.get("fildvscf", "")
+        recover = inputph.get("recover", False)
+        lqdir = inputph.get("lqdir", False) or (ldisp and fildvscf)
+        ldvscf_interpolate = inputph.get("ldvscf_interpolate", False)
+
+        if lqdir:
+            to_copy.extend(
+                [Path("_ph*", "pwscf.q_*", "pwscf.save", "data-file-schema.*")]
+            )
+
+            if recover:
+                to_copy.extend(
+                    [
+                        Path("_ph*", "pwscf.q_*", "pwscf.save", "charge-density.*"),
+                        # Path("_ph*", "pwscf.q_*", "pwscf.wfc*.gz"),
+                    ]
+                )
+
+        if recover:
+            to_copy.append(Path("_ph*", "pwscf.phsave"))
+
+        if ldvscf_interpolate:
+            to_copy.append(Path("_ph*", "pwscf.dvscf*"))
+            to_copy.append(Path("w_pot"))
+
+            if lqdir:
+                to_copy.append(Path("_ph*", "pwscf.q_*", "pwscf.dvscf*"))
+
+    elif binary in ["dos", "fs"]:
+        to_copy.extend(pw_base)
+
+    elif binary in ["projwfc", "bands"]:
+        to_copy.extend(pw_base)
+        to_copy.append(Path("pwscf.save", "wfc*.*"))
+
+    elif binary == "pp":
+        plotnum = input_data.get("plot_num", 0)
+        wfc_needed = [3, 7, 10]
+
+        to_copy.extend(pw_base)
+
+        if plotnum in wfc_needed:
+            to_copy.append(Path("pwscf.save", "wfc*.*"))
+
+    elif binary == "matdyn":
+        to_copy.append(Path("q2r.fc*"))
+
+    elif binary == "q2r":
+        to_copy.append(Path("matdyn*"))
+
+    elif binary == "dvscf_q2r":
+        to_copy.extend(pw_base)
+        to_copy.extend(
+            [
+                Path("matdyn0*"),
+                Path("_ph*", "pwscf.phsave"),
+                Path("_ph*", "pwscf.dvscf*"),
+                Path("_ph*", "pwscf.q_*", "pwscf.dvscf*"),
+            ]
+        )
+
+    elif binary == "postahc":
+        to_copy.extend([Path("ahc_dir"), Path("matdyn.modes*")])
+
+    return to_copy
 
 
 def remove_conflicting_kpts_kspacing(
