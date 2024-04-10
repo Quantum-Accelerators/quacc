@@ -94,7 +94,7 @@ def create_skzcam_clusters(
 
     # Get the ECP region for each quantum cluster
     ecp_region_idx = _get_ecp_region(
-        embedded_cluster, quantum_cluster_idx, embedded_cluster_all_dist, ecp_dist
+        embedded_cluster, quantum_cluster_idx, embedded_cluster_all_dist,  ecp_dist
     )
 
     # Write the quantum clusters to files
