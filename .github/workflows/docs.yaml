@@ -26,8 +26,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install --system -r tests/requirements.txt
-          uv pip install --system "quacc[docs] @ ."
+          uv pip install --system -r tests/requirements.txt "quacc[docs] @ ."
 
       - name: Build docs
         run: |
