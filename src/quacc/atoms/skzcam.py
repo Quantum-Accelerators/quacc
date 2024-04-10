@@ -145,14 +145,12 @@ def create_skzcam_clusters(
     write_clusters: bool = False,
     write_clusters_path: str | Path = ".",
     write_include_ecp: bool = False,
-) -> list[list[int]]:
+) -> tuple[Atoms, list[list[int]], list[list[int]]]:
     """
     Returns a list of list containing the indices of the atoms (in embedded_cluster) which form the quantum clusters in the SKZCAM protocol. The number of clusters created is controlled by the rdf_max parameter.
 
     Parameters
     ----------
-    embedded_cluster
-        The ASE Atoms object containing the atomic coordinates AND the atom types (i.e. cation or anion).
     pun_file
         The path to the .pun file created by ChemShell to be read.
     center_position
@@ -176,8 +174,12 @@ def create_skzcam_clusters(
 
     Returns
     -------
+    Atoms
+        The ASE Atoms object containing the atomic coordinates and atomic charges from the .pun file.
     list[list[int]]
         A list of lists containing the indices of the atoms in each quantum cluster.
+    list[list[int]]
+        A list of lists containing the indices of the atoms in the ECP region for each quantum cluster.
     """
 
     # Read the .pun file and create the embedded_cluster Atoms object
@@ -231,7 +233,7 @@ def create_skzcam_clusters(
                 cluster_atoms,
             )
 
-    return quantum_cluster_idx, ecp_region_idx
+    return embedded_cluster, quantum_cluster_idx, ecp_region_idx
 
 
 def convert_pun_to_atoms(
