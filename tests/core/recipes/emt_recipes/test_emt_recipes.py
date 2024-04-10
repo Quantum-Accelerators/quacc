@@ -243,10 +243,10 @@ def test_md_logger(tmp_path, monkeypatch, caplog):
         "dynamics": NPTBerendsen,
         "dynamics_kwargs": {
             "temperature": 1000,
-            "pressure_au": 1,
-            "taut": 0.2,
-            "taup": 0.5,
-            "compressibility_au": 0.5,
+            "pressure_au": 0.001,
+            "taut": 500,
+            "taup": 1000,
+            "compressibility_au": 5e-4,
         },
     }
 
@@ -271,10 +271,10 @@ def test_md_logger(tmp_path, monkeypatch, caplog):
         "dynamics": NPTBerendsen,
         "dynamics_kwargs": {
             "temperature": 1000,
-            "pressure": 1,
-            "taut": 0.2,
-            "taup": 0.5,
-            "compressibility": 0.5,
+            "pressure": 0.001,
+            "taut": 500,
+            "taup": 1000,
+            "compressibility": 5e-4,
         },
     }
 
