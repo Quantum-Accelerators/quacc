@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pathlib import Path
 from shutil import copy
 
@@ -126,12 +128,11 @@ def test_static_job_v1(monkeypatch, tmp_path, test_atoms):
     assert output["parameters"]["spin_multiplicity"] == 1
     assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826330655069403)
-    assert output["results"]["custodian"][0]["job"]["max_cores"] == 40
 
     qcin = QCInput.from_file(str(Path(output["dir_name"], "mol.qin.gz")))
     ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.basic"))
     qcinput_nearly_equal(qcin, ref_qcin)
-    qcinput_nearly_equal(ref_qcin, QCInput.from_dict(output["results"]["qc_input"]))
+    assert output["results"]["taskdoc"]
 
 
 def test_static_job_v2(monkeypatch, tmp_path, test_atoms):
@@ -161,7 +162,7 @@ def test_static_job_v2(monkeypatch, tmp_path, test_atoms):
     qcin = QCInput.from_file(str(Path(output["dir_name"], "mol.qin.gz")))
     ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.intermediate"))
     qcinput_nearly_equal(qcin, ref_qcin)
-    qcinput_nearly_equal(ref_qcin, QCInput.from_dict(output["results"]["qc_input"]))
+    assert output["results"]["taskdoc"]
 
 
 def test_static_job_v3(monkeypatch, tmp_path, test_atoms):
@@ -188,7 +189,7 @@ def test_static_job_v3(monkeypatch, tmp_path, test_atoms):
     qcin = QCInput.from_file(str(Path(output["dir_name"], "mol.qin.gz")))
     ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.alternate"))
     qcinput_nearly_equal(qcin, ref_qcin)
-    qcinput_nearly_equal(ref_qcin, QCInput.from_dict(output["results"]["qc_input"]))
+    assert output["results"]["taskdoc"]
 
 
 def test_static_job_v4(monkeypatch, tmp_path, os_atoms):
@@ -238,7 +239,7 @@ def test_relax_job_v1(monkeypatch, tmp_path, test_atoms):
     qcin = QCInput.from_file(str(Path(output["dir_name"], "mol.qin.gz")))
     ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.basic.sella_opt_iter1"))
     qcinput_nearly_equal(qcin, ref_qcin)
-    assert len(output["results"]["qc_input"]) > 1
+    assert len(output["results"]["taskdoc"]["input"]) > 1
 
 
 @pytest.mark.skipif(sella is None, reason="Does not have Sella")
@@ -331,16 +332,7 @@ def test_freq_job_v1(monkeypatch, tmp_path, test_atoms):
     assert output["parameters"]["spin_multiplicity"] == 2
     assert output["results"]["energy"] == pytest.approx(-605.6859554019 * units.Hartree)
     assert output["results"].get("hessian") is not None
-    assert output["results"]["enthalpy"] == pytest.approx(
-        output["results"]["qc_output"]["total_enthalpy"] * (units.kcal / units.mol)
-    )
-    assert (
-        output["results"]["entropy"]
-        == output["results"]["qc_output"]["total_entropy"]
-        * 0.001
-        * units.kcal
-        / units.mol
-    )
+    assert output["results"]["taskdoc"]["output"]["enthalpy"] is not None
 
 
 @pytest.mark.skipif(sella is None, reason="Does not have Sella")

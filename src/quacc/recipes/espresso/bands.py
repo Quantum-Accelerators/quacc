@@ -13,7 +13,7 @@ from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 
 from quacc import flow, job
 from quacc.calculators.espresso.espresso import EspressoTemplate
-from quacc.recipes.espresso._base import base_fn
+from quacc.recipes.espresso._base import run_and_summarize
 from quacc.utils.kpts import convert_pmg_kpts
 from quacc.wflow_tools.customizers import customize_funcs
 
@@ -34,7 +34,9 @@ if TYPE_CHECKING:
 @job
 def bands_pw_job(
     atoms: Atoms,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
+    copy_files: (
+        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
+    ),
     make_bandpath: bool = True,
     line_density: float = 20,
     force_gamma: bool = True,
@@ -43,14 +45,22 @@ def bands_pw_job(
     **calc_kwargs,
 ) -> RunSchema:
     """
-    Function to carry out a basic bands calculation with pw.x.
+    Function to carry out a basic bands structure calculation with pw.x.
+
+    First perform a normal SCF calculation [quacc.recipes.espresso.core.static_job][];
+    then use this job if you are interested in calculating only the Kohn-Sham states
+    for the given set of k-points
 
     Parameters
     ----------
     atoms
         The Atoms object.
     copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+        Source directory or directories to copy files from. If a `SourceDirectory` or a
+        list of `SourceDirectory` is provided, this interface will automatically guess
+        which files have to be copied over by looking at the binary and `input_data`.
+        If a dict is provided, the mode is manual, keys are source directories and values
+        are relative path to files or directories to copy. Glob patterns are supported.
     make_bandpath
         If True, it returns the primitive cell for your structure and generates
         the high symmetry k-path using Latmer-Munro approach.
@@ -79,7 +89,6 @@ def bands_pw_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "input_data": {"control": {"calculation": "bands", "verbosity": "high"}}
     }
@@ -94,7 +103,7 @@ def bands_pw_job(
             cell=atoms.get_cell(),
         )
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         template=EspressoTemplate("pw", test_run=test_run),
         calc_defaults=calc_defaults,
@@ -108,20 +117,28 @@ def bands_pw_job(
 @job
 def bands_pp_job(
     atoms: Atoms,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
+    copy_files: (
+        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
+    ),
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
 ) -> RunSchema:
     """
     Function to re-order bands and computes bands-related properties with bands.x.
+    This allows to get the bands structure in a more readable way. This requires a
+    previous [quacc.recipes.espresso.bands.bands_pw_job][] calculation.
 
     Parameters
     ----------
     atoms
         The Atoms object.
     copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+        Source directory or directories to copy files from. If a `SourceDirectory` or a
+        list of `SourceDirectory` is provided, this interface will automatically guess
+        which files have to be copied over by looking at the binary and `input_data`.
+        If a dict is provided, the mode is manual, keys are source directories and values
+        are relative path to files or directories to copy. Glob patterns are supported.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -139,8 +156,7 @@ def bands_pp_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
-    return base_fn(
+    return run_and_summarize(
         atoms,
         template=EspressoTemplate("bands", test_run=test_run),
         calc_defaults={},
@@ -154,7 +170,9 @@ def bands_pp_job(
 @job
 def fermi_surface_job(
     atoms: Atoms,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
+    copy_files: (
+        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
+    ),
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -168,7 +186,11 @@ def fermi_surface_job(
     atoms
         The Atoms object.
     copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+        Source directory or directories to copy files from. If a `SourceDirectory` or a
+        list of `SourceDirectory` is provided, this interface will automatically guess
+        which files have to be copied over by looking at the binary and `input_data`.
+        If a dict is provided, the mode is manual, keys are source directories and values
+        are relative path to files or directories to copy. Glob patterns are supported.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -186,8 +208,7 @@ def fermi_surface_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
-    return base_fn(
+    return run_and_summarize(
         atoms,
         template=EspressoTemplate("fs", test_run=test_run),
         calc_defaults={},
@@ -201,7 +222,9 @@ def fermi_surface_job(
 @flow
 def bands_flow(
     atoms: Atoms,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
+    copy_files: (
+        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
+    ),
     run_bands_pp: bool = True,
     run_fermi_surface: bool = False,
     make_bandpath: bool = True,
@@ -272,8 +295,6 @@ def bands_flow(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
-    results = {}
     (bands_pw_job_, bands_pp_job_, fermi_surface_job_) = customize_funcs(
         ["bands_pw_job", "bands_pp_job", "fermi_surface_job"],
         [bands_pw_job, bands_pp_job, fermi_surface_job],
@@ -290,8 +311,7 @@ def bands_flow(
         parallel_info=parallel_info,
         test_run=test_run,
     )
-    results["bands_pw"] = bands_result
-
+    results = {"bands_pw": bands_result}
     if run_bands_pp:
         bands_pp_results = bands_pp_job_(
             atoms,

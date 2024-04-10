@@ -1,6 +1,6 @@
 # File Management
 
-It can be useful to understand how quacc handles files so that you can adjust the behavior for your needs. Let's consider a recipe that writes an input file INPUT and an output file OUTPUT.
+It can be useful to understand how quacc handles files so that you can adjust the behavior for your needs. Let's consider a recipe that writes an input file `INPUT` and an output file `OUTPUT`.
 
 !!! Tip "Having an Organized Filesystem"
 

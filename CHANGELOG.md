@@ -4,12 +4,50 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.3]
+
+### Added
+
+- Added new Espresso recipes to perform electron-phonon calculations and Fourier interpolation of the phonon potential
+
+### Fixed
+
+- Fixed potential issues with I/O settings and Espresso
+- Fixed passing of custom decorators in the Espresso `grid_phonon_flow`
+
+## [0.7.2]
+
+### Changed
+
+- Calculator executable commands are now `str` type instead of `Path`
+- Removed `slowconv` from the default parameters of the ORCA recipes
+- The Q-Chem calculator now uses the TaskDoc from emmet in its `results` attribute
+
+### Fixed
+
+- Fixed user setting of logger level
+- Fixed a glob-based issue with `copy_decompress_files`
+
 ## [0.7.1]
 
 ### Added
 
+- Added an optional MP compatability checker for MP recipes
 - Summaries for intermediate ASE optimization steps are now stored in the output schema for VASP and cclib-based recipes when `store_intermediate_results=True`
 - Added a `WRITE_PICKLE` setting, which by default, will write out a `.pkl` file containing the result schema to the directory
+
+### Changed
+
+- Updated `ruff` settings
+- The Gaussian and ORCA `static_job` routines do a force calculation by default now
+
+### Fixed
+
+- Fixed input file formatting for `orcablocks` in ORCA recipes
+
+### Removed
+
+- Removed the `CHDIR` setting
 
 ## [0.7.0]
 
@@ -77,7 +115,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- Added a `store_intermediate_files` keyword option to `quacc.runners.ase.run_opt()` to allow for storing of the logfiles in intermediate geometry optimization steps.
+- Added a `store_intermediate_results` keyword option to `quacc.runners.ase.run_opt()` to allow for storing of the logfiles in intermediate geometry optimization steps.
 - Added support for Pymatgen-based input sets in VASP jobs
 - Added an MP meta-GGA VASP static job
 - Added MP GGA relax job, MP GGA static job, and MP GGA relax flow

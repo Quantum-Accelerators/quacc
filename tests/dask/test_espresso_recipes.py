@@ -1,8 +1,11 @@
+from __future__ import annotations
+
 import pytest
 
 dask = pytest.importorskip("dask")
 pytest.importorskip("distributed")
 
+import gzip
 from shutil import which
 
 from dask.distributed import default_client
@@ -70,6 +73,15 @@ def test_phonon_grid_single(tmp_path, monkeypatch):
 
     for key in sections:
         assert key in grid_results["results"][1]
+
+    outfile = Path(grid_results["dir_name"], "ph.out.gz")
+
+    assert outfile.exists()
+
+    with gzip.open(outfile, "r") as fd:
+        lines = str(fd.read())
+
+    assert "Self-consistent Calculation" not in lines
 
 
 def test_phonon_grid_single_gamma(tmp_path, monkeypatch):

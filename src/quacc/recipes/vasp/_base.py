@@ -4,11 +4,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from quacc.atoms.core import get_final_atoms_from_dyn
 from quacc.calculators.vasp import Vasp
 from quacc.runners.ase import run_calc, run_opt
-from quacc.schemas.ase import summarize_opt_run
-from quacc.schemas.vasp import vasp_summarize_run
+from quacc.schemas.vasp import summarize_vasp_opt_run, vasp_summarize_run
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
@@ -16,11 +14,11 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.schemas._aliases.vasp import VaspSchema
+    from quacc.schemas._aliases.vasp import VaspASESchema, VaspSchema
     from quacc.utils.files import Filenames, SourceDirectory
 
 
-def base_fn(
+def run_and_summarize(
     atoms: Atoms,
     preset: str | None = None,
     calc_defaults: dict[str, Any] | None = None,
@@ -68,7 +66,7 @@ def base_fn(
     )
 
 
-def base_opt_fn(
+def run_and_summarize_opt(
     atoms: Atoms,
     preset: str | None = None,
     calc_defaults: dict[str, Any] | None = None,
@@ -78,7 +76,7 @@ def base_opt_fn(
     report_mp_corrections: bool = False,
     additional_fields: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-) -> VaspSchema:
+) -> VaspASESchema:
     """
     Base job function for VASP recipes with ASE optimizers.
 
@@ -116,13 +114,8 @@ def base_opt_fn(
     atoms.calc = Vasp(atoms, preset=preset, **calc_flags)
     dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
 
-    opt_run_summary = summarize_opt_run(dyn, additional_fields=additional_fields)
-
-    final_atoms = get_final_atoms_from_dyn(dyn)
-
-    vasp_summary = vasp_summarize_run(
-        final_atoms,
+    return summarize_vasp_opt_run(
+        dyn,
         report_mp_corrections=report_mp_corrections,
         additional_fields=additional_fields,
     )
-    return recursive_dict_merge(vasp_summary, opt_run_summary)

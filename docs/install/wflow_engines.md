@@ -68,12 +68,16 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     pip install quacc[prefect]
     ```
 
-    1. This is a temporary workaround to resolve a dependency conflict.
-
     To connect to Prefect Cloud, run the following as well:
 
     ```bash
     prefect cloud login
+    ```
+
+    Prefect has [many configuration options](https://docs.prefect.io/latest/guides/settings/). For instance, you can store the quacc logs in the UI as follows:
+
+    ```bash
+    prefect config set PREFECT_LOGGING_EXTRA_LOGGERS=quacc
     ```
 
 === "Redun"
@@ -188,7 +192,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     username: <username>
     password: <password>
     logdir: null
-    Istrm_lvl: DEBUG
+    strm_lvl: DEBUG
     user_indices: []
     wf_user_indices: []
     ```
@@ -203,7 +207,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
         name: <database name>
         uri_store: true
         logdir: null
-        Istrm_lvl: DEBUG
+        strm_lvl: DEBUG
         user_indices: []
         wf_user_indices: []
         ```
@@ -222,9 +226,9 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     job_name: quacc_firework
     qos: regular
     pre_rocket: |
-    conda activate MyEnv
-    module load MyModuleName
-    export MyEnvVar=MyEnvValue
+                conda activate MyEnv
+                module load MyModuleName
+                export MyEnvVar=MyEnvValue
     ```
 
     In the above example, you would need to change the path in the `rocket_launch` field to the correct path to your `my_fworker.yaml`. The nodes, walltime, account, and qos are the corresponding parameters for your queuing system. Finally, anything in the `pre_rocket` field will be executed before the job begins running. It is a good place to load modules and set environment variables. A representative example has been provided above.

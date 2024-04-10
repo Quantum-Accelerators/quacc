@@ -129,7 +129,6 @@ def copy_decompress_files(
     -------
     None
     """
-
     source_directory = Path(source_directory).expanduser()
     destination_directory = Path(destination_directory).expanduser()
 
@@ -137,14 +136,12 @@ def copy_decompress_files(
         filenames = [filenames]
 
     for f in filenames:
-        f_path = Path(f)
         globs_found = list(source_directory.glob(str(f)))
         if not globs_found:
             logger.warning(f"Cannot find file {f} in {source_directory}")
         for source_filepath in globs_found:
-            n_parts_to_keep = len(f_path.parts)
-            destination_filepath = destination_directory / Path(
-                "/".join(source_filepath.parts[-n_parts_to_keep:])
+            destination_filepath = destination_directory / source_filepath.relative_to(
+                source_directory
             )
             Path(destination_filepath.parent).mkdir(parents=True, exist_ok=True)
 
@@ -204,7 +201,6 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
     dict
         The calculator configuration (i.e. settings).
     """
-
     yaml_path = Path(yaml_path).expanduser()
 
     if yaml_path.suffix != ".yaml":
@@ -239,13 +235,13 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
     return config
 
 
-def find_recent_logfile(dir_name: Path | str, logfile_extensions: str | list[str]):
+def find_recent_logfile(directory: Path | str, logfile_extensions: str | list[str]):
     """
     Find the most recent logfile in a given directory.
 
     Parameters
     ----------
-    dir_name
+    directory
         The path to the directory to search
     logfile_extensions
         The extension (or list of possible extensions) of the logfile to search
@@ -260,8 +256,8 @@ def find_recent_logfile(dir_name: Path | str, logfile_extensions: str | list[str
     logfile = None
     if isinstance(logfile_extensions, str):
         logfile_extensions = [logfile_extensions]
-    for f in Path(dir_name).expanduser().iterdir():
-        f_path = Path(dir_name, f)
+    for f in Path(directory).expanduser().iterdir():
+        f_path = Path(directory, f)
         for ext in logfile_extensions:
             if ext in str(f) and f_path.stat().st_mtime > mod_time:
                 mod_time = f_path.stat().st_mtime
@@ -269,7 +265,7 @@ def find_recent_logfile(dir_name: Path | str, logfile_extensions: str | list[str
     return logfile
 
 
-def get_uri(dir_name: str | Path) -> str:
+def get_uri(directory: str | Path) -> str:
     """
     Return the URI path for a directory.
 
@@ -280,7 +276,7 @@ def get_uri(dir_name: str | Path) -> str:
 
     Parameters
     ----------
-    dir_name
+    directory
         A directory name.
 
     Returns
@@ -288,7 +284,7 @@ def get_uri(dir_name: str | Path) -> str:
     str
         Full URI path, e.g., "fileserver.host.com:/full/path/of/dir_name".
     """
-    fullpath = Path(dir_name).expanduser().resolve()
+    fullpath = Path(directory).expanduser().resolve()
     hostname = socket.gethostname()
     with contextlib.suppress(socket.gaierror, socket.herror):
         hostname = socket.gethostbyaddr(hostname)[0]

@@ -4,11 +4,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ase.optimize import LBFGS
+from ase.optimize import BFGSLineSearch
 
 from quacc import job
+from quacc.atoms.core import check_is_metal
 from quacc.calculators.espresso.espresso import EspressoTemplate
-from quacc.recipes.espresso._base import base_fn, base_opt_fn
+from quacc.recipes.espresso._base import run_and_summarize, run_and_summarize_opt
 
 if TYPE_CHECKING:
     from typing import Any
@@ -18,6 +19,22 @@ if TYPE_CHECKING:
     from quacc.schemas._aliases.ase import RunSchema
     from quacc.utils.files import Filenames, SourceDirectory
 
+BASE_SET_METAL = {
+    "input_data": {
+        "system": {"occupations": "smearing", "smearing": "cold", "degauss": 0.01},
+        "electrons": {"conv_thr": 1e-8, "mixing_mode": "local-TF", "mixing_beta": 0.35},
+    },
+    "kspacing": 0.033,
+}
+
+BASE_SET_NON_METAL = {
+    "input_data": {
+        "system": {"occupations": "smearing", "smearing": "gaussian", "degauss": 0.005},
+        "electrons": {"conv_thr": 1e-8, "mixing_mode": "local-TF", "mixing_beta": 0.35},
+    },
+    "kspacing": 0.045,
+}
+
 
 @job
 def static_job(
@@ -25,7 +42,12 @@ def static_job(
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: (
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -46,7 +68,11 @@ def static_job(
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
     copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+        Source directory or directories to copy files from. If a `SourceDirectory` or a
+        list of `SourceDirectory` is provided, this interface will automatically guess
+        which files have to be copied over by looking at the binary and `input_data`.
+        If a dict is provided, the mode is manual, keys are source directories and values
+        are relative path to files or directories to copy. Glob patterns are supported.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -59,9 +85,12 @@ def static_job(
         See the type-hint for the data structure.
     """
 
-    calc_defaults = {"input_data": {"control": {"calculation": "scf"}}}
+    is_metal = check_is_metal(atoms)
 
-    return base_fn(
+    calc_defaults = BASE_SET_METAL if is_metal else BASE_SET_NON_METAL
+    calc_defaults["input_data"]["control"] = {"calculation": "scf"}
+
+    return run_and_summarize(
         atoms,
         preset=preset,
         template=EspressoTemplate("pw", test_run=test_run),
@@ -80,7 +109,12 @@ def relax_job(
     relax_cell: bool = False,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: (
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -103,7 +137,11 @@ def relax_job(
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
     copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+        Source directory or directories to copy files from. If a `SourceDirectory` or a
+        list of `SourceDirectory` is provided, this interface will automatically guess
+        which files have to be copied over by looking at the binary and `input_data`.
+        If a dict is provided, the mode is manual, keys are source directories and values
+        are relative path to files or directories to copy. Glob patterns are supported.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -116,13 +154,14 @@ def relax_job(
         See the type-hint for the data structure.
     """
 
-    calc_defaults = {
-        "input_data": {
-            "control": {"calculation": "vc-relax" if relax_cell else "relax"}
-        }
+    is_metal = check_is_metal(atoms)
+
+    calc_defaults = BASE_SET_METAL if is_metal else BASE_SET_NON_METAL
+    calc_defaults["input_data"]["control"] = {
+        "calculation": "vc-relax" if relax_cell else "relax"
     }
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         preset=preset,
         template=EspressoTemplate("pw", test_run=test_run),
@@ -142,7 +181,12 @@ def ase_relax_job(
     relax_cell: bool = False,
     parallel_info: dict[str] | None = None,
     opt_params: dict[str, Any] | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: (
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -167,11 +211,14 @@ def ase_relax_job(
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
     opt_params
-        Dictionary of parameters to pass to the optimizer. pass "optimizer"
-        to change the optimizer being used. "fmax" and "max_steps" are commonly
-        used keywords. See the ASE documentation for more information.
+        Dictionary of custom kwargs for the optimization process. For a list
+        of available keys, refer to [quacc.runners.ase.run_opt][].
     copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+        Source directory or directories to copy files from. If a `SourceDirectory` or a
+        list of `SourceDirectory` is provided, this interface will automatically guess
+        which files have to be copied over by looking at the binary and `input_data`.
+        If a dict is provided, the mode is manual, keys are source directories and values
+        are relative path to files or directories to copy. Glob patterns are supported.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -184,15 +231,18 @@ def ase_relax_job(
         See the type-hint for the data structure.
     """
 
-    calc_defaults = {
-        "input_data": {
-            "control": {"calculation": "scf", "tstress": relax_cell, "tprnfor": True}
-        }
+    is_metal = check_is_metal(atoms)
+
+    calc_defaults = BASE_SET_METAL if is_metal else BASE_SET_NON_METAL
+    calc_defaults["input_data"]["control"] = {
+        "calculation": "scf",
+        "tstress": relax_cell,
+        "tprnfor": True,
     }
 
-    opt_defaults = {"optimizer": LBFGS}
+    opt_defaults = {"optimizer": BFGSLineSearch}
 
-    return base_opt_fn(
+    return run_and_summarize_opt(
         atoms,
         preset=preset,
         relax_cell=relax_cell,
@@ -209,7 +259,9 @@ def ase_relax_job(
 
 @job
 def post_processing_job(
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
+    copy_files: (
+        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
+    ),
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -223,7 +275,11 @@ def post_processing_job(
     Parameters
     ----------
     copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+        Source directory or directories to copy files from. If a `SourceDirectory` or a
+        list of `SourceDirectory` is provided, this interface will automatically guess
+        which files have to be copied over by looking at the binary and `input_data`.
+        If a dict is provided, the mode is manual, keys are source directories and values
+        are relative path to files or directories to copy. Glob patterns are supported.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -238,7 +294,6 @@ def post_processing_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "input_data": {
             "inputpp": {"plot_num": 0},
@@ -250,7 +305,7 @@ def post_processing_job(
         }
     }
 
-    return base_fn(
+    return run_and_summarize(
         template=EspressoTemplate("pp", test_run=test_run),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -263,7 +318,9 @@ def post_processing_job(
 @job
 def non_scf_job(
     atoms: Atoms,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames],
+    copy_files: (
+        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
+    ),
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
@@ -277,7 +334,11 @@ def non_scf_job(
     atoms
         The Atoms object.
     copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+        Source directory or directories to copy files from. If a `SourceDirectory` or a
+        list of `SourceDirectory` is provided, this interface will automatically guess
+        which files have to be copied over by looking at the binary and `input_data`.
+        If a dict is provided, the mode is manual, keys are source directories and values
+        are relative path to files or directories to copy. Glob patterns are supported.
     preset
         The name of a YAML file containing a list of parameters to use as
         a "preset" for the calculator. quacc will automatically look in the
@@ -299,10 +360,9 @@ def non_scf_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {"input_data": {"control": {"calculation": "nscf"}}}
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         preset=preset,
         template=EspressoTemplate("pw", test_run=test_run),

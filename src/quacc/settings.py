@@ -16,6 +16,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 if TYPE_CHECKING:
     from typing import Any
 
+
 installed_engine = next(
     (
         wflow_engine
@@ -103,17 +104,6 @@ class QuaccSettings(BaseSettings):
             """
         ),
     )
-    CHDIR: bool = Field(
-        False,
-        description=(
-            """
-            Whether quacc will make `os.chdir` calls to change the working directory
-            to be the location where the calculation is run. By default, we leave this
-            as `False` to enable running multiple calculations in a single Python process
-            since `os.chdir` calls break thread safety. This parameter will eventually be deprecated.
-            """
-        ),
-    )
     GZIP_FILES: bool = Field(
         True, description="Whether generated files should be gzip'd."
     )
@@ -161,8 +151,8 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # ORCA Settings
     # ---------------------------
-    ORCA_CMD: Path = Field(
-        Path(which("orca") or "orca"),
+    ORCA_CMD: str = Field(
+        which("orca") or "orca",
         description=(
             """
             Path to the ORCA executable. This must be the full, absolute path
@@ -191,6 +181,8 @@ class QuaccSettings(BaseSettings):
             "pp": "pp.x",
             "wannier90": "wannier90.x",
             "fs": "fs.x",
+            "postahc": "postahc.x",
+            "dvscf_q2r": "dvscf_q2r.x",
         },
         description="Name for each espresso binary.",
     )
@@ -205,15 +197,13 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # Gaussian Settings
     # ---------------------------
-    GAUSSIAN_CMD: Path = Field(
-        Path("g16"), description=("Path to the Gaussian executable.")
-    )
+    GAUSSIAN_CMD: str = Field("g16", description=("Path to the Gaussian executable."))
 
     # ---------------------------
     # ONETEP Settings
     # ---------------------------
-    ONETEP_CMD: Optional[Path] = Field(
-        Path("onetep.arch"), description=("Path to the ONETEP executable.")
+    ONETEP_CMD: Optional[str] = Field(
+        "onetep.arch", description=("Path to the ONETEP executable.")
     )
     ONETEP_PARALLEL_CMD: Optional[dict] = Field(
         None,
@@ -228,7 +218,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # GULP Settings
     # ---------------------------
-    GULP_CMD: Path = Field(Path("gulp"), description=("Path to the GULP executable."))
+    GULP_CMD: str = Field("gulp", description=("Path to the GULP executable."))
     GULP_LIB: Optional[Path] = Field(
         None,
         description=(
@@ -435,10 +425,7 @@ class QuaccSettings(BaseSettings):
         "SCRATCH_DIR",
         "ESPRESSO_PRESET_DIR",
         "ESPRESSO_PSEUDO",
-        "GAUSSIAN_CMD",
-        "GULP_CMD",
         "GULP_LIB",
-        "ORCA_CMD",
         "QCHEM_LOCAL_SCRATCH",
         "NEWTONNET_MODEL_PATH",
         "VASP_PRESET_DIR",

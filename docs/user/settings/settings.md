@@ -40,6 +40,16 @@ export QUACC_CREATE_UNIQUE_DIR=False
 export QUACC_WORKFLOW_ENGINE=None
 ```
 
+or run the following before the first `quacc` import in your code:
+
+```python
+import os
+
+os.environ["QUACC_SCRATCH_DIR"] = "/path/to/my/scratch/dir"
+os.environ["QUACC_CREATE_UNIQUE_DIR"] = False
+os.environ["QUACC_WORKFLOW_ENGINE"] = None
+```
+
 For more complex types, such as lists or dictionaries, refer to the corresponding section in the [pydantic-settings](https://docs.pydantic.dev/latest/concepts/pydantic_settings/#parsing-environment-variable-values) documentation. We use `__` as the delimiter for nested settings.
 
 ??? Tip "When is This Method Ideal?"

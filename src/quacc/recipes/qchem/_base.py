@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from quacc.utils.files import Filenames, SourceDirectory
 
 
-def base_fn(
+def run_and_summarize(
     atoms: Atoms,
     charge: int = 0,
     spin_multiplicity: int = 1,
@@ -55,7 +55,6 @@ def base_fn(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
     atoms.calc = QChem(
         atoms, charge=charge, spin_multiplicity=spin_multiplicity, **calc_flags
@@ -70,7 +69,7 @@ def base_fn(
     )
 
 
-def base_opt_fn(
+def run_and_summarize_opt(
     atoms: Atoms,
     charge: int = 0,
     spin_multiplicity: int = 1,

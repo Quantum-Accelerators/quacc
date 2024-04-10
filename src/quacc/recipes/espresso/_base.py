@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ase.atoms import Atoms
@@ -12,6 +13,10 @@ from quacc.calculators.espresso.espresso import (
     Espresso,
     EspressoProfile,
     EspressoTemplate,
+)
+from quacc.calculators.espresso.utils import (
+    prepare_copy_files,
+    remove_conflicting_kpts_kspacing,
 )
 from quacc.runners.ase import run_calc, run_opt
 from quacc.schemas.ase import summarize_opt_run, summarize_run
@@ -24,7 +29,7 @@ if TYPE_CHECKING:
     from quacc.utils.files import Filenames, SourceDirectory
 
 
-def base_fn(
+def run_and_summarize(
     atoms: Atoms | None = None,
     preset: str | None = None,
     template: EspressoTemplate | None = None,
@@ -33,7 +38,12 @@ def base_fn(
     calc_swaps: dict[str, Any] | None = None,
     parallel_info: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: (
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
 ) -> RunSchema:
     """
     Base function to carry out espresso recipes.
@@ -66,7 +76,6 @@ def base_fn(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-
     atoms = _prepare_atoms(
         atoms=atoms,
         preset=preset,
@@ -77,16 +86,22 @@ def base_fn(
         parallel_info=parallel_info,
     )
 
+    updated_copy_files = _prepare_copy(
+        copy_files=copy_files,
+        calc_params=atoms.calc.user_calc_params,
+        binary=atoms.calc.template.binary,
+    )
+
     geom_file = template.outputname if template.binary == "pw" else None
 
-    final_atoms = run_calc(atoms, geom_file=geom_file, copy_files=copy_files)
+    final_atoms = run_calc(atoms, geom_file=geom_file, copy_files=updated_copy_files)
 
     return summarize_run(
         final_atoms, atoms, move_magmoms=True, additional_fields=additional_fields
     )
 
 
-def base_opt_fn(
+def run_and_summarize_opt(
     atoms: Atoms | None = None,
     preset: str | None = None,
     relax_cell: bool = False,
@@ -98,7 +113,12 @@ def base_opt_fn(
     opt_params: dict[str, Any] | None = None,
     parallel_info: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: (
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
 ) -> RunSchema:
     """
     Base function to carry out espresso recipes with ASE optimizers.
@@ -139,7 +159,6 @@ def base_opt_fn(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-
     atoms = _prepare_atoms(
         atoms=atoms,
         preset=preset,
@@ -150,9 +169,17 @@ def base_opt_fn(
         parallel_info=parallel_info,
     )
 
+    updated_copy_files = _prepare_copy(
+        copy_files=copy_files,
+        calc_params=atoms.calc.user_calc_params,
+        binary=atoms.calc.template.binary,
+    )
+
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
-    dyn = run_opt(atoms, relax_cell=relax_cell, copy_files=copy_files, **opt_flags)
+    dyn = run_opt(
+        atoms, relax_cell=relax_cell, copy_files=updated_copy_files, **opt_flags
+    )
 
     return summarize_opt_run(
         dyn, move_magmoms=True, additional_fields=additional_fields
@@ -196,8 +223,9 @@ def _prepare_atoms(
     Atoms
         Atoms object with attached Espresso calculator.
     """
-
     atoms = Atoms() if atoms is None else atoms
+    calc_defaults = calc_defaults or {}
+    calc_swaps = calc_swaps or {}
 
     calc_defaults["input_data"] = Namelist(calc_defaults.get("input_data"))
     calc_swaps["input_data"] = Namelist(calc_swaps.get("input_data"))
@@ -207,6 +235,8 @@ def _prepare_atoms(
     if binary in ALL_KEYS:
         calc_defaults["input_data"].to_nested(binary=binary, **calc_defaults)
         calc_swaps["input_data"].to_nested(binary=binary, **calc_swaps)
+
+    calc_defaults = remove_conflicting_kpts_kspacing(calc_defaults, calc_swaps)
 
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
@@ -220,3 +250,41 @@ def _prepare_atoms(
     )
 
     return atoms
+
+
+def _prepare_copy(
+    copy_files: (
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
+    calc_params: dict[str, Any] | None = None,
+    binary: str = "pw",
+) -> dict[SourceDirectory, Filenames] | None:
+    """
+    Function that will prepare the files to copy.
+
+    Parameters
+    ----------
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
+    calc_params
+        The calculator parameters.
+    binary
+        The binary to use.
+
+    Returns
+    -------
+    dict
+        Dictionary of files to copy.
+    """
+
+    if isinstance(copy_files, (str, Path)):
+        copy_files = [copy_files]
+
+    if isinstance(copy_files, list):
+        exact_files_to_copy = prepare_copy_files(calc_params, binary=binary)
+        return {source: exact_files_to_copy for source in copy_files}
+
+    return copy_files

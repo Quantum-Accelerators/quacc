@@ -13,7 +13,7 @@ from ase.optimize import BFGSLineSearch
 
 from quacc import job
 from quacc.calculators.vasp import Vasp
-from quacc.recipes.vasp._base import base_fn
+from quacc.recipes.vasp._base import run_and_summarize
 from quacc.runners.ase import run_opt
 from quacc.schemas.ase import summarize_opt_run
 from quacc.utils.dicts import recursive_dict_merge
@@ -70,7 +70,6 @@ def qmof_relax_job(
     QMOFRelaxSchema
         Dictionary of results. See the type-hint for the data structure.
     """
-
     # 1. Pre-relaxation
     if run_prerelax:
         summary1 = _prerelax(atoms, preset, fmax=5.0, **calc_kwargs)
@@ -118,13 +117,13 @@ def _prerelax(
     **kwargs
         Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely.
+
     Returns
     -------
     OptSchema
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "pmg_kpts": {"kppa": 100},
         "ediff": 1e-4,
@@ -164,7 +163,6 @@ def _loose_relax_positions(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "pmg_kpts": {"kppa": 100},
         "ediff": 1e-4,
@@ -177,7 +175,7 @@ def _loose_relax_positions(
         "lwave": True,
         "nsw": 250,
     }
-    return base_fn(
+    return run_and_summarize(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
@@ -208,7 +206,6 @@ def _loose_relax_cell(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "pmg_kpts": {"kppa": 100},
         "ediffg": -0.03,
@@ -219,7 +216,7 @@ def _loose_relax_cell(
         "lwave": True,
         "nsw": 500,
     }
-    return base_fn(
+    return run_and_summarize(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
@@ -245,13 +242,13 @@ def _double_relax(
     **calc_kwargs
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely.
+
     Returns
     -------
     list[VaspSchema]
         List of dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
         See the type-hint for the data structure.
     """
-
     # Run first relaxation
     calc_defaults = {
         "ediffg": -0.03,
@@ -262,7 +259,7 @@ def _double_relax(
         "lwave": True,
         "nsw": 500 if relax_cell else 250,
     }
-    summary1 = base_fn(
+    summary1 = run_and_summarize(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
@@ -277,7 +274,7 @@ def _double_relax(
     del calc_defaults["lreal"]
 
     # Run second relaxation
-    summary2 = base_fn(
+    summary2 = run_and_summarize(
         summary1["atoms"],
         preset=preset,
         calc_defaults=calc_defaults,
@@ -307,7 +304,6 @@ def _static(atoms: Atoms, preset: str | None = "QMOFSet", **calc_kwargs) -> Vasp
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "laechg": True,
         "lcharg": True,
@@ -315,7 +311,7 @@ def _static(atoms: Atoms, preset: str | None = "QMOFSet", **calc_kwargs) -> Vasp
         "lwave": True,
         "nsw": 0,
     }
-    return base_fn(
+    return run_and_summarize(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,

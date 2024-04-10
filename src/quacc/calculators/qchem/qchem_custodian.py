@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
@@ -10,23 +9,26 @@ from monty.dev import requires
 from quacc import SETTINGS
 
 if TYPE_CHECKING:
-    from subprocess import Popen
+    from pathlib import Path
+
 try:
     import openbabel as ob
 except ImportError:
     ob = None
 
+_DEFAULT_SETTING = ()
+
 
 @requires(ob, "Openbabel must be installed. Try conda install -c conda-forge openbabel")
 def run_custodian(
-    qchem_cmd: str | None = None,
-    qchem_cores: int | None = None,
-    qchem_local_scratch: str | Path | None = None,
-    qchem_use_error_handlers: bool | None = None,
-    qchem_custodian_max_errors: int | None = None,
-    qchem_nbo_exe: str | Path | None = None,
-    directory: str | Path = "./",
-) -> Popen:
+    qchem_cmd: str = _DEFAULT_SETTING,
+    qchem_cores: int = _DEFAULT_SETTING,
+    qchem_local_scratch: str | Path = _DEFAULT_SETTING,
+    qchem_use_error_handlers: bool = _DEFAULT_SETTING,
+    qchem_custodian_max_errors: int = _DEFAULT_SETTING,
+    qchem_nbo_exe: str | Path = _DEFAULT_SETTING,
+    directory: str | Path | None = None,
+) -> list[list[dict]]:
     """
     Function to run QChem Custodian.
 
@@ -51,8 +53,8 @@ def run_custodian(
 
     Returns
     -------
-    Popen
-        Popen object.
+    list[list[dict]]
+        Lists of lists of errors.
     """
     # Adapted from atomate.qchem.firetasks.run_calc
     from custodian import Custodian
@@ -60,24 +62,28 @@ def run_custodian(
     from custodian.qchem.jobs import QCJob
 
     # Set defaults
-    qchem_cores = SETTINGS.QCHEM_NUM_CORES if qchem_cores is None else qchem_cores
-    qchem_cmd = SETTINGS.QCHEM_CMD if qchem_cmd is None else qchem_cmd
+    qchem_cores = (
+        SETTINGS.QCHEM_NUM_CORES if qchem_cores == _DEFAULT_SETTING else qchem_cores
+    )
+    qchem_cmd = SETTINGS.QCHEM_CMD if qchem_cmd == _DEFAULT_SETTING else qchem_cmd
     qchem_local_scratch = (
         SETTINGS.QCHEM_LOCAL_SCRATCH
-        if qchem_local_scratch is None
+        if qchem_local_scratch == _DEFAULT_SETTING
         else qchem_local_scratch
     )
     qchem_use_error_handlers = (
         SETTINGS.QCHEM_USE_ERROR_HANDLERS
-        if qchem_use_error_handlers is None
+        if qchem_use_error_handlers == _DEFAULT_SETTING
         else qchem_use_error_handlers
     )
     qchem_custodian_max_errors = (
         SETTINGS.QCHEM_CUSTODIAN_MAX_ERRORS
-        if qchem_custodian_max_errors is None
+        if qchem_custodian_max_errors == _DEFAULT_SETTING
         else qchem_custodian_max_errors
     )
-    qchem_nbo_exe = SETTINGS.QCHEM_NBO_EXE if qchem_nbo_exe is None else qchem_nbo_exe
+    qchem_nbo_exe = (
+        SETTINGS.QCHEM_NBO_EXE if qchem_nbo_exe == _DEFAULT_SETTING else qchem_nbo_exe
+    )
 
     # Error handlers for Q-Chem
     handlers = [QChemErrorHandler()] if qchem_use_error_handlers else []

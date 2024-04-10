@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pathlib import Path
 from shutil import which
 
@@ -5,7 +7,7 @@ import pytest
 from ase.build import bulk
 from numpy.testing import assert_allclose
 
-from quacc.recipes.espresso.dos import dos_flow, dos_job, projwfc_flow, projwfc_job
+from quacc.recipes.espresso.dos import dos_flow, projwfc_flow
 from quacc.utils.files import copy_decompress_files
 
 pytestmark = pytest.mark.skipif(
@@ -13,29 +15,6 @@ pytestmark = pytest.mark.skipif(
 )
 
 DATA_DIR = Path(__file__).parent / "data"
-
-
-def test_dos_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
-    monkeypatch.chdir(tmp_path)
-    monkeypatch.setenv("OMP_NUM_THREADS", "1")
-
-    copy_decompress_files(DATA_DIR / "dos_test", [Path("pwscf.save", "*.gz")], tmp_path)
-    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
-    output = dos_job(tmp_path, parallel_info=ESPRESSO_PARALLEL_INFO)
-
-    assert output["results"]["pwscf_dos"]["fermi"] == pytest.approx(7.199)
-
-
-def test_projwfc_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
-    monkeypatch.chdir(tmp_path)
-    monkeypatch.setenv("OMP_NUM_THREADS", "1")
-
-    copy_decompress_files(DATA_DIR / "dos_test", [Path("pwscf.save", "*.gz")], tmp_path)
-    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
-    output = projwfc_job(tmp_path, parallel_info=ESPRESSO_PARALLEL_INFO)
-
-    assert output["name"] == "projwfc.x Projects-wavefunctions"
-    assert output["parameters"]["input_data"]["projwfc"] == {}
 
 
 def test_dos_flow(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
@@ -94,7 +73,7 @@ def test_dos_flow(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     assert output["non_scf_job"]["results"]["nbands"] == 8
     assert output["non_scf_job"]["results"]["nspins"] == 1
 
-    assert output["dos_job"]["results"]["pwscf_dos"]["fermi"] == pytest.approx(6.772)
+    assert output["dos_job"]["results"]["dos_results"]["fermi"] == pytest.approx(6.772)
 
 
 def test_projwfc_flow(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):

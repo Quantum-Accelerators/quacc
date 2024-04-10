@@ -1,7 +1,14 @@
+from __future__ import annotations
+
+import logging
+
 import pytest
 
 from quacc import Remove
 from quacc.utils.dicts import recursive_dict_merge, remove_dict_entries
+
+LOGGER = logging.getLogger(__name__)
+LOGGER.propagate = True
 
 
 def test_remove_dict_entries():
@@ -61,6 +68,15 @@ def test_recursive_dict_merge2():
         "a": 1,
         "b": {"a": 1, "b": 3, "d": 1},
     }
+
+
+def test_recursive_dict_merge_verbose(caplog):
+    defaults = {"a": 1, "b": {"a": 1, "b": 2}}
+    calc_swaps = {"a": Remove, "b": {"b": 3, "d": 1}}
+    with caplog.at_level(logging.WARNING):
+        recursive_dict_merge(defaults, calc_swaps, verbose=True)
+        assert "Overwriting key 'a'" in caplog.text
+        assert "Overwriting key 'b' to: '3'" in caplog.text
 
 
 def test_remove_instantiation():

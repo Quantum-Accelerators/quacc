@@ -1,9 +1,5 @@
 name: tests
-on:
-  push:
-    branches:
-      - main
-  pull_request:
+on: push
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -39,6 +35,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install -r tests/requirements.txt
+          pip install -r tests/requirements-mp.txt
           pip install .[dev]
 
       - name: Run tests with pytest (w/ coverage)
@@ -223,7 +220,7 @@ jobs:
       - name: Install conda packages
         run: |
           conda install -n base conda-libmamba-solver
-          conda install psi4 libint==2.8.2 -c conda-forge --solver libmamba
+          conda install psi4 -c conda-forge --solver libmamba
 
       - name: Install pip packages
         run: |

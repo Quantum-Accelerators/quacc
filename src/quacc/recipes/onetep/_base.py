@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from quacc.utils.files import Filenames, SourceDirectory
 
 
-def base_fn(
+def run_and_summarize(
     atoms: Atoms,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
@@ -50,14 +50,13 @@ def base_fn(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-
     atoms.calc = _prep_calculator(calc_defaults=calc_defaults, calc_swaps=calc_swaps)
     final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(final_atoms, atoms, additional_fields=additional_fields)
 
 
-def base_opt_fn(
+def run_and_summarize_opt(
     atoms: Atoms,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
@@ -131,7 +130,7 @@ def _prep_calculator(
         pseudo_path=str(SETTINGS.ONETEP_PP_PATH) if SETTINGS.ONETEP_PP_PATH else ".",
         parallel_info=SETTINGS.ONETEP_PARALLEL_CMD,
         profile=OnetepProfile(
-            str(SETTINGS.ONETEP_CMD)
+            SETTINGS.ONETEP_CMD
         ),  # TODO: If the ASE merge is successful, we need to change ONETEP_PARALLEL_CMD to a list[str] and remove parallel info.
         # If we also have access to post_args we can point not to the binary but to the launcher which takes -t nthreads as a post_args
         **calc_flags,

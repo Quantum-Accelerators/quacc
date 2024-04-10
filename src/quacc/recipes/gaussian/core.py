@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 import psutil
 
 from quacc import job
-from quacc.recipes.gaussian._base import base_fn
+from quacc.recipes.gaussian._base import run_and_summarize
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
@@ -54,7 +54,6 @@ def static_job(
         Dictionary of results, as specified in [quacc.schemas.cclib.cclib_summarize_run][]
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "mem": "16GB",
         "chk": "Gaussian.chk",
@@ -63,7 +62,7 @@ def static_job(
         "basis": basis,
         "charge": charge,
         "mult": spin_multiplicity,
-        "sp": "",
+        "force": "",
         "scf": ["maxcycle=250", "xqc"],
         "integral": "ultrafine",
         "nosymmetry": "",
@@ -71,7 +70,7 @@ def static_job(
         "gfinput": "",
         "ioplist": ["6/7=3", "2/9=2000"],  # see ASE issue #660
     }
-    return base_fn(
+    return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -121,7 +120,6 @@ def relax_job(
         Dictionary of results, as specified in [quacc.schemas.cclib.cclib_summarize_run][]
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "mem": "16GB",
         "chk": "Gaussian.chk",
@@ -140,7 +138,7 @@ def relax_job(
     if freq:
         calc_defaults["freq"] = ""
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,

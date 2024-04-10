@@ -38,6 +38,8 @@ if TYPE_CHECKING:
         VibThermoSchema,
     )
 
+_DEFAULT_SETTING = ()
+
 
 def summarize_run(
     final_atoms: Atoms,
@@ -45,7 +47,7 @@ def summarize_run(
     charge_and_multiplicity: tuple[int, int] | None = None,
     move_magmoms: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | bool | None = None,
+    store: Store | None = _DEFAULT_SETTING,
 ) -> RunSchema:
     """
     Get tabulated results from an Atoms object and calculator and store them in a
@@ -66,17 +68,15 @@ def summarize_run(
     additional_fields
         Additional fields to add to the task document.
     store
-        Maggma Store object to store the results in. If None,
-        `SETTINGS.STORE` will be used.
+        Maggma Store object to store the results in. Defaults to `SETTINGS.STORE`
 
     Returns
     -------
     RunSchema
         Dictionary representation of the task document
     """
-
     additional_fields = additional_fields or {}
-    store = SETTINGS.STORE if store is None else store
+    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
 
     if not final_atoms.calc:
         msg = "ASE Atoms object has no attached calculator."
@@ -122,8 +122,8 @@ def summarize_run(
         with (
             gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
             if SETTINGS.GZIP_FILES
-            else Path(directory, "quacc_results.pkl").open("wb") as f
-        ):
+            else Path(directory, "quacc_results.pkl").open("wb")
+        ) as f:
             pickle.dump(task_doc, f)
 
     if store:
@@ -134,12 +134,12 @@ def summarize_run(
 
 def summarize_opt_run(
     dyn: Optimizer,
-    trajectory: Trajectory | list[Atoms] = None,
-    check_convergence: bool | None = None,
+    trajectory: Trajectory | list[Atoms] | None = None,
+    check_convergence: bool = _DEFAULT_SETTING,
     charge_and_multiplicity: tuple[int, int] | None = None,
     move_magmoms: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | bool | None = None,
+    store: Store | None = _DEFAULT_SETTING,
 ) -> OptSchema:
     """
     Get tabulated results from an ASE Atoms trajectory and store them in a database-
@@ -164,20 +164,20 @@ def summarize_opt_run(
     additional_fields
         Additional fields to add to the task document.
     store
-        Maggma Store object to store the results in. If None,
-        `SETTINGS.STORE` will be used.
+        Maggma Store object to store the results in. Defaults to `SETTINGS.STORE`.
 
     Returns
     -------
     OptSchema
         Dictionary representation of the task document
     """
-
     check_convergence = (
-        SETTINGS.CHECK_CONVERGENCE if check_convergence is None else check_convergence
+        SETTINGS.CHECK_CONVERGENCE
+        if check_convergence == _DEFAULT_SETTING
+        else check_convergence
     )
+    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
     additional_fields = additional_fields or {}
-    store = SETTINGS.STORE if store is None else store
 
     # Get trajectory
     if not trajectory:
@@ -203,7 +203,7 @@ def summarize_opt_run(
         initial_atoms,
         charge_and_multiplicity=charge_and_multiplicity,
         move_magmoms=move_magmoms,
-        store=False,
+        store=None,
     )
 
     # Clean up the opt parameters
@@ -228,8 +228,8 @@ def summarize_opt_run(
         with (
             gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
             if SETTINGS.GZIP_FILES
-            else Path(directory, "quacc_results.pkl").open("wb") as f
-        ):
+            else Path(directory, "quacc_results.pkl").open("wb")
+        ) as f:
             pickle.dump(task_doc, f)
 
     if store:
@@ -245,7 +245,7 @@ def summarize_vib_and_thermo(
     pressure: float = 1.0,
     charge_and_multiplicity: tuple[int, int] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | bool | None = None,
+    store: Store | None = _DEFAULT_SETTING,
 ) -> VibThermoSchema:
     """
     Get tabulated results from an ASE Vibrations run and ASE IdealGasThermo object and
@@ -267,21 +267,19 @@ def summarize_vib_and_thermo(
     additional_fields
         Additional fields to add to the task document.
     store
-        Maggma Store object to store the results in. If None,
-        `SETTINGS.STORE` will be used.
+        Maggma Store object to store the results in. Defaults to  `SETTINGS.STORE`.
 
     Returns
     -------
     VibThermoSchema
         A dictionary that merges the `VibSchema` and `ThermoSchema`.
     """
-    additional_fields = additional_fields or {}
-    store = SETTINGS.STORE if store is None else store
+    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
 
     vib_task_doc = _summarize_vib_run(
         vib,
         charge_and_multiplicity=charge_and_multiplicity,
-        store=False,
+        store=None,
         additional_fields=additional_fields,
     )
     thermo_task_doc = _summarize_ideal_gas_thermo(
@@ -289,7 +287,7 @@ def summarize_vib_and_thermo(
         temperature=temperature,
         pressure=pressure,
         charge_and_multiplicity=charge_and_multiplicity,
-        store=False,
+        store=None,
         additional_fields=additional_fields,
     )
 
@@ -302,8 +300,8 @@ def summarize_vib_and_thermo(
             with (
                 gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
                 if SETTINGS.GZIP_FILES
-                else Path(directory, "quacc_results.pkl").open("wb") as f
-            ):
+                else Path(directory, "quacc_results.pkl").open("wb")
+            ) as f:
                 pickle.dump(task_doc, f)
     if store:
         results_to_db(store, task_doc)
@@ -315,7 +313,7 @@ def _summarize_vib_run(
     vib: Vibrations | VibrationsData,
     charge_and_multiplicity: tuple[int, int] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | bool | None = None,
+    store: Store | None = None,
 ) -> VibSchema:
     """
     Get tabulated results from an ASE Vibrations object and store them in a database-
@@ -331,8 +329,7 @@ def _summarize_vib_run(
     additional_fields
         Additional fields to add to the task document.
     store
-        Maggma Store object to store the results in. If None,
-        `SETTINGS.STORE` will be used.
+        Maggma Store object to store the results in. Defaults to `SETTINGS.STORE`.
 
     Returns
     -------
@@ -340,7 +337,7 @@ def _summarize_vib_run(
         Dictionary representation of the task document
     """
     additional_fields = additional_fields or {}
-    store = SETTINGS.STORE if store is None else store
+    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
 
     vib_freqs_raw = vib.get_frequencies().tolist()
     vib_energies_raw = vib.get_energies().tolist()
@@ -429,7 +426,7 @@ def _summarize_ideal_gas_thermo(
     pressure: float = 1.0,
     charge_and_multiplicity: tuple[int, int] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | bool | None = None,
+    store: Store | None = _DEFAULT_SETTING,
 ) -> ThermoSchema:
     """
     Get tabulated results from an ASE IdealGasThermo object and store them in a
@@ -449,17 +446,15 @@ def _summarize_ideal_gas_thermo(
     additional_fields
         Additional fields to add to the task document.
     store
-        Maggma Store object to store the results in. If None,
-        `SETTINGS.STORE` will be used.
+        Maggma Store object to store the results in. Defaults to `SETTINGS.STORE`
 
     Returns
     -------
     ThermoSchema
         Dictionary representation of the task document
     """
-
     additional_fields = additional_fields or {}
-    store = SETTINGS.STORE if store is None else store
+    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
 
     spin_multiplicity = round(2 * igt.spin + 1)
 

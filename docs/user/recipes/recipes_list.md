@@ -197,9 +197,11 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 | Espresso Post Processing | `#!Python @job`  | [quacc.recipes.espresso.core.post_processing_job][] |              |
 | Espresso Phonon          | `#!Python @job`  | [quacc.recipes.espresso.phonons.phonon_job][]       |              |
 | Espresso Grid Phonon     | `#!Python @flow` | [quacc.recipes.espresso.phonons.grid_phonon_flow][] |              |
-| Espresso q2r             | `#!Python @job`  | [quacc.recipes.espresso.phonons.q2r_job][]          |              |
-| Espresso matdyn          | `#!Python @job`  | [quacc.recipes.espresso.phonons.matdyn_job][]       |              |
+| Espresso Q2R             | `#!Python @job`  | [quacc.recipes.espresso.phonons.q2r_job][]          |              |
+| Espresso Matdyn          | `#!Python @job`  | [quacc.recipes.espresso.phonons.matdyn_job][]       |              |
 | Espresso Phonon DOS Flow | `#!Python @flow` | [quacc.recipes.espresso.phonons.phonon_dos_flow][]  |              |
+| Espresso DVSCF Q2R       | `#!Python @job`  | [quacc.recipes.espresso.phonons.dvscf_q2r_job][]    |              |
+| Espresso PostAHC         | `#!Python @job`  | [quacc.recipes.espresso.phonons.postahc_job][]      |              |
 | Espresso Non-SCF         | `#!Python @job`  | [quacc.recipes.espresso.core.non_scf_job][]         |              |
 | Espresso DOS             | `#!Python @job`  | [quacc.recipes.espresso.dos.dos_job][]              |              |
 | Espresso DOS Flow        | `#!Python @flow` | [quacc.recipes.espresso.dos.dos_flow][]             |              |
@@ -247,13 +249,13 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 | VASP Slab Relax                 | `#!Python @job`  | [quacc.recipes.vasp.slabs.relax_job][]          |              |
 | VASP Bulk to Slabs              | `#!Python @flow` | [quacc.recipes.vasp.slabs.bulk_to_slabs_flow][] |              |
 | VASP Slab to Adsorbates         | `#!Python @flow` | [quacc.recipes.vasp.slabs.slab_to_ads_flow][]   |              |
-| VASP MP GGA Relax               | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_gga_relax_job][]      |              |
-| VASP MP GGA Static              | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_gga_static_job][]     |              |
-| VASP MP GGA Relax Workflow      | `#!Python @flow` | [quacc.recipes.vasp.mp.mp_gga_relax_flow][]     |              |
-| VASP MP Meta-GGA Prerelax       | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_metagga_relax_job][]  |              |
-| VASP MP Meta-GGA Relax          | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_metagga_relax_job][]  |              |
-| VASP MP Meta-GGA Static         | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_metagga_static_job][] |              |
-| VASP MP Meta-GGA Relax Workflow | `#!Python @flow` | [quacc.recipes.vasp.mp.mp_metagga_relax_flow][] |              |
+| VASP MP GGA Relax               | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_gga_relax_job][]      | `quacc[mp]`  |
+| VASP MP GGA Static              | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_gga_static_job][]     | `quacc[mp]`  |
+| VASP MP GGA Relax Workflow      | `#!Python @flow` | [quacc.recipes.vasp.mp.mp_gga_relax_flow][]     | `quacc[mp]`  |
+| VASP MP Meta-GGA Prerelax       | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_metagga_relax_job][]  | `quacc[mp]`  |
+| VASP MP Meta-GGA Relax          | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_metagga_relax_job][]  | `quacc[mp]`  |
+| VASP MP Meta-GGA Static         | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_metagga_static_job][] | `quacc[mp]`  |
+| VASP MP Meta-GGA Relax Workflow | `#!Python @flow` | [quacc.recipes.vasp.mp.mp_metagga_relax_flow][] | `quacc[mp]`  |
 | VASP QMOF Relax                 | `#!Python @job`  | [quacc.recipes.vasp.qmof.qmof_relax_job][]      |              |
 
 </center>

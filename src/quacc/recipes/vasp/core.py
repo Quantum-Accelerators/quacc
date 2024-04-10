@@ -10,7 +10,7 @@ from monty.os.path import zpath
 from pymatgen.io.vasp import Vasprun
 
 from quacc import flow, job
-from quacc.recipes.vasp._base import base_fn, base_opt_fn
+from quacc.recipes.vasp._base import run_and_summarize, run_and_summarize_opt
 
 if TYPE_CHECKING:
     from typing import Any
@@ -50,7 +50,6 @@ def static_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "ismear": -5,
         "laechg": True,
@@ -60,7 +59,7 @@ def static_job(
         "nedos": 3001,
         "nsw": 0,
     }
-    return base_fn(
+    return run_and_summarize(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
@@ -103,7 +102,6 @@ def relax_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "ediffg": -0.02,
         "isif": 3 if relax_cell else 2,
@@ -114,7 +112,7 @@ def relax_job(
         "nsw": 200,
         "symprec": 1e-8,
     }
-    return base_fn(
+    return run_and_summarize(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
@@ -201,6 +199,9 @@ def ase_relax_job(
     relax_cell
         True if a volume relaxation should be performed. False if only the positions
         should be updated.
+    opt_params
+        Dictionary of custom kwargs for the optimization process. For a list
+        of available keys, refer to [quacc.runners.ase.run_opt][].
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
@@ -213,14 +214,9 @@ def ase_relax_job(
     VaspASESchema
         Dictionary of results. See the type-hint for the data structure.
     """
-
-    calc_defaults = {
-        "lcharg": False,
-        "lwave": False,
-        "nsw": 0,
-    }
+    calc_defaults = {"lcharg": False, "lwave": False, "nsw": 0}
     opt_defaults = {"relax_cell": relax_cell}
-    return base_opt_fn(
+    return run_and_summarize_opt(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
@@ -277,7 +273,10 @@ def non_scf_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
         See the type-hint for the data structure.
     """
+    vasprun_path = zpath(Path(prev_dir, "vasprun.xml"))
+    vasprun = Vasprun(vasprun_path)
 
+    prior_nbands = vasprun.parameters["NBANDS"]
     calc_defaults = {
         "icharg": 11,
         "kspacing": None,
@@ -285,40 +284,30 @@ def non_scf_job(
         "lorbit": 11,
         "lwave": False,
         "nsw": 0,
+        "nbands": int(np.ceil(prior_nbands * nbands_factor)),
     }
-
-    vasprun_path = zpath(Path(prev_dir, "vasprun.xml"))
-    vasprun = Vasprun(vasprun_path)
-
-    prior_nbands = vasprun.parameters["NBANDS"]
-    calc_defaults["nbands"] = int(np.ceil(prior_nbands * nbands_factor))
-
     if kpts_mode == "uniform":
-        calc_defaults.update(
-            {
-                "ismear": -5,
-                "isym": 2,
-                "pmg_kpts": {"kppvol": uniform_kppvol},
-                "nedos": 6001,
-            }
-        )
+        calc_defaults |= {
+            "ismear": -5,
+            "isym": 2,
+            "pmg_kpts": {"kppvol": uniform_kppvol},
+            "nedos": 6001,
+        }
     elif kpts_mode == "line":
         is_metal = vasprun.get_band_structure().is_metal()
-        calc_defaults.update(
-            {
-                "ismear": 1 if is_metal else 0,
-                "isym": 0,
-                "pmg_kpts": {"line_density": line_kpt_density},
-                "sigma": 0.2 if is_metal else 0.01,
-            }
-        )
+        calc_defaults |= {
+            "ismear": 1 if is_metal else 0,
+            "isym": 0,
+            "pmg_kpts": {"line_density": line_kpt_density},
+            "sigma": 0.2 if is_metal else 0.01,
+        }
     else:
         raise ValueError("Supported kpoint modes are 'uniform' and 'line' at present")
 
     if calculate_optics:
-        calc_defaults.update({"cshift": 1e-5, "loptics": True, "lreal": False})
+        calc_defaults |= {"cshift": 1e-5, "loptics": True, "lreal": False}
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,

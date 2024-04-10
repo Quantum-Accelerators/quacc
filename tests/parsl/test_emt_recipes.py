@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pytest
 
 parsl = pytest.importorskip("parsl")
@@ -14,12 +16,9 @@ from quacc.recipes.emt.slabs import bulk_to_slabs_flow  # skipcq: PYL-C0412
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 
-@pytest.mark.parametrize("chdir", [True, False])
 @pytest.mark.parametrize("job_decorators", [None, {"relax_job": job()}])
-def test_functools(tmp_path, monkeypatch, chdir, job_decorators):
+def test_functools(tmp_path, monkeypatch, job_decorators):
     monkeypatch.chdir(tmp_path)
-
-    SETTINGS.CHDIR = chdir
 
     atoms = bulk("Cu")
     result = bulk_to_slabs_flow(
@@ -31,8 +30,6 @@ def test_functools(tmp_path, monkeypatch, chdir, job_decorators):
     assert len(result) == 4
     assert "atoms" in result[-1]
     assert result[-1]["fmax"] == 0.1
-
-    SETTINGS.CHDIR = DEFAULT_SETTINGS.CHDIR
 
 
 # def test_copy_files(tmp_path, monkeypatch):
@@ -47,12 +44,9 @@ def test_functools(tmp_path, monkeypatch, chdir, job_decorators):
 #     assert "atoms" in myflow(atoms).result()
 
 
-@pytest.mark.parametrize("chdir", [True, False])
-def test_phonon_flow(tmp_path, monkeypatch, chdir):
+def test_phonon_flow(tmp_path, monkeypatch):
     pytest.importorskip("phonopy")
     from quacc.recipes.emt.phonons import phonon_flow
-
-    SETTINGS.CHDIR = chdir
 
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
@@ -61,15 +55,10 @@ def test_phonon_flow(tmp_path, monkeypatch, chdir):
         101,
     )
 
-    SETTINGS.CHDIR = DEFAULT_SETTINGS.CHDIR
 
-
-@pytest.mark.parametrize("chdir", [True, False])
-def test_phonon_flow_multistep(tmp_path, monkeypatch, chdir):
+def test_phonon_flow_multistep(tmp_path, monkeypatch):
     pytest.importorskip("phonopy")
     from quacc.recipes.emt.phonons import phonon_flow
-
-    SETTINGS.CHDIR = chdir
 
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
@@ -78,5 +67,3 @@ def test_phonon_flow_multistep(tmp_path, monkeypatch, chdir):
     assert output.result()["results"]["thermal_properties"]["temperatures"].shape == (
         101,
     )
-
-    SETTINGS.CHDIR = DEFAULT_SETTINGS.CHDIR
