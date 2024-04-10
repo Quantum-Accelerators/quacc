@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ase.atoms import Atoms
@@ -12,6 +13,10 @@ from quacc.calculators.espresso.espresso import (
     Espresso,
     EspressoProfile,
     EspressoTemplate,
+)
+from quacc.calculators.espresso.utils import (
+    prepare_copy_files,
+    remove_conflicting_kpts_kspacing,
 )
 from quacc.runners.ase import run_calc, run_opt
 from quacc.schemas.ase import summarize_opt_run, summarize_run
@@ -33,7 +38,12 @@ def run_and_summarize(
     calc_swaps: dict[str, Any] | None = None,
     parallel_info: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: (
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
 ) -> RunSchema:
     """
     Base function to carry out espresso recipes.
@@ -76,9 +86,15 @@ def run_and_summarize(
         parallel_info=parallel_info,
     )
 
+    updated_copy_files = _prepare_copy(
+        copy_files=copy_files,
+        calc_params=atoms.calc.user_calc_params,
+        binary=atoms.calc.template.binary,
+    )
+
     geom_file = template.outputname if template.binary == "pw" else None
 
-    final_atoms = run_calc(atoms, geom_file=geom_file, copy_files=copy_files)
+    final_atoms = run_calc(atoms, geom_file=geom_file, copy_files=updated_copy_files)
 
     return summarize_run(
         final_atoms, atoms, move_magmoms=True, additional_fields=additional_fields
@@ -97,7 +113,12 @@ def run_and_summarize_opt(
     opt_params: dict[str, Any] | None = None,
     parallel_info: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: (
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
 ) -> RunSchema:
     """
     Base function to carry out espresso recipes with ASE optimizers.
@@ -148,9 +169,17 @@ def run_and_summarize_opt(
         parallel_info=parallel_info,
     )
 
+    updated_copy_files = _prepare_copy(
+        copy_files=copy_files,
+        calc_params=atoms.calc.user_calc_params,
+        binary=atoms.calc.template.binary,
+    )
+
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
-    dyn = run_opt(atoms, relax_cell=relax_cell, copy_files=copy_files, **opt_flags)
+    dyn = run_opt(
+        atoms, relax_cell=relax_cell, copy_files=updated_copy_files, **opt_flags
+    )
 
     return summarize_opt_run(
         dyn, move_magmoms=True, additional_fields=additional_fields
@@ -207,6 +236,8 @@ def _prepare_atoms(
         calc_defaults["input_data"].to_nested(binary=binary, **calc_defaults)
         calc_swaps["input_data"].to_nested(binary=binary, **calc_swaps)
 
+    calc_defaults = remove_conflicting_kpts_kspacing(calc_defaults, calc_swaps)
+
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
     atoms.calc = Espresso(
@@ -219,3 +250,41 @@ def _prepare_atoms(
     )
 
     return atoms
+
+
+def _prepare_copy(
+    copy_files: (
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
+    calc_params: dict[str, Any] | None = None,
+    binary: str = "pw",
+) -> dict[SourceDirectory, Filenames] | None:
+    """
+    Function that will prepare the files to copy.
+
+    Parameters
+    ----------
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
+    calc_params
+        The calculator parameters.
+    binary
+        The binary to use.
+
+    Returns
+    -------
+    dict
+        Dictionary of files to copy.
+    """
+
+    if isinstance(copy_files, (str, Path)):
+        copy_files = [copy_files]
+
+    if isinstance(copy_files, list):
+        exact_files_to_copy = prepare_copy_files(calc_params, binary=binary)
+        return {source: exact_files_to_copy for source in copy_files}
+
+    return copy_files
