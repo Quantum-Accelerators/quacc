@@ -22,14 +22,14 @@ FILE_DIR = Path(__file__).parent
 
 @pytest.fixture
 def embedded_cluster():
-    return convert_pun_to_atoms( FILE_DIR / "mgo_shells_cluster.pun", {'Mg': 2.0, 'O': -2.0})
+    return convert_pun_to_atoms( FILE_DIR / "mgo_shells_cluster.pun.gz", {'Mg': 2.0, 'O': -2.0})
 
 @pytest.fixture
 def distance_matrix(embedded_cluster):
     return embedded_cluster.get_all_distances()
 
 def test_convert_pun_to_atoms():
-	embedded_cluster = convert_pun_to_atoms( FILE_DIR / "mgo_shells_cluster.pun", {'Mg': 2.0, 'O': -2.0})
+	embedded_cluster = convert_pun_to_atoms( FILE_DIR / "mgo_shells_cluster.pun.gz", {'Mg': 2.0, 'O': -2.0})
 	
 	# Check that number of atoms matches our reference
 	assert len(embedded_cluster) == 390
@@ -103,7 +103,7 @@ def test_get_ecp_region(embedded_cluster, distance_matrix):
 def test_create_skzcam_clusters():
 
 	# Get quantum cluster and ECP region indices
-	quantum_cluster_idx, ecp_region_idx = create_skzcam_clusters(FILE_DIR / "mgo_shells_cluster.pun", [0,0,2], {'Mg': 2.0, 'O': -2.0}, shell_max=2,ecp_dist=3.0)
+	quantum_cluster_idx, ecp_region_idx = create_skzcam_clusters(FILE_DIR / "mgo_shells_cluster.pun.gz", [0,0,2], {'Mg': 2.0, 'O': -2.0}, shell_max=2,ecp_dist=3.0)
 
 	# Check quantum cluster indices match with reference
 	assert np.all(quantum_cluster_idx[1] == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 15, 16, 17, 23, 24, 25, 26, 27, 28, 29, 30])
