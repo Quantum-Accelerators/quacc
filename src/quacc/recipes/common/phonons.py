@@ -114,8 +114,8 @@ def phonon_flow(
         return summarize_phonopy(
             phonon,
             atoms,
+            phonon.directory,
             parameters=parameters,
-            directory=phonon.directory,
             additional_fields=additional_fields,
         )
 

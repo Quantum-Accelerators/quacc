@@ -14,7 +14,7 @@ from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 try:
     import phonopy
 
-    has_deps = phonopy is not None and find_spec("seekpath") is not None
+    has_deps = find_spec("seekpath") is not None
 except ImportError:
     has_deps = False
 

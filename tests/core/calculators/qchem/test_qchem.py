@@ -6,7 +6,6 @@ from pathlib import Path
 import pytest
 from ase import units
 from ase.io import read
-from monty.io import zopen
 from pymatgen.io.qchem.inputs import QCInput
 
 from quacc.calculators.qchem import QChem
@@ -213,9 +212,9 @@ def test_qchem_read_results_basic_and_write_53(tmp_path, monkeypatch, test_atoms
 
     calc.write_input(test_atoms)
     assert Path(tmp_path, "53.0").exists()
-    with zopen("53.0", mode="rb") as new_file:
+    with open("53.0", mode="rb") as new_file:
         new_binary = new_file.read()
-        with zopen(
+        with open(
             os.path.join(FILE_DIR, "examples", "basic", "53.0"), mode="rb"
         ) as old_file:
             old_binary = old_file.read()

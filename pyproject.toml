@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "quacc"
 description="A platform to enable high-throughput, database-driven quantum chemistry and computational materials science"
-version = "0.7.3"
+version = "0.7.4"
 readme = "README.md"
 license = { text = "BSD-3" }
 authors = [{ name = "Andrew S. Rosen", email = "asrosen@princeton.edu" }]
@@ -38,7 +38,7 @@ dependencies = [
     "pydantic>=2.0.1", # for settings management
     "pydantic-settings>=2.2.0", # for settings management
     "pymatgen>=2024.2.20", # for structure manipulation
-    "typer[all]>=0.9.0", # for the CLI
+    "typer>=0.12.1", # for the CLI
 ]
 
 [project.optional-dependencies]
