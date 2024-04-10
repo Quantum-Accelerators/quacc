@@ -59,7 +59,7 @@ def test_find_cation_shells(embedded_cluster):
 	distances = _get_atom_distances(embedded_cluster,[0,0,2])
 
 	# Find the cation shells from the distances
-	cation_shells, cation_shells_idx = _find_cation_shells(embedded_cluster,distances)
+	cation_shells, cation_shells_idx = _find_cation_shells(embedded_cluster,distances,shell_width=0.005)
 
 	# As these list of lists do not have the same length, we flatten first 5 lists into a 1D list for comparison
 	cation_shells_flatten = [item for row in cation_shells[:5] for item in row] 
@@ -103,11 +103,10 @@ def test_get_ecp_region(embedded_cluster, distance_matrix):
 def test_create_skzcam_clusters():
 
 	# Get quantum cluster and ECP region indices
-	quantum_cluster_idx, ecp_region_idx = create_skzcam_clusters(FILE_DIR / "mgo_shells_cluster.pun.gz", [0,0,2], {'Mg': 2.0, 'O': -2.0}, shell_max=2,ecp_dist=3.0)
+	embedded_cluster, quantum_cluster_idx, ecp_region_idx = create_skzcam_clusters(FILE_DIR / "mgo_shells_cluster.pun.gz", [0,0,2], {'Mg': 2.0, 'O': -2.0}, shell_max=2,ecp_dist=3.0,shell_width=0.005,write_clusters=True)
 
 	# Check quantum cluster indices match with reference
 	assert np.all(quantum_cluster_idx[1] == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 15, 16, 17, 23, 24, 25, 26, 27, 28, 29, 30])
-
 
 	# Check ECP region indices match with reference
 	assert np.all(ecp_region_idx[1] == [10,
@@ -144,3 +143,16 @@ def test_create_skzcam_clusters():
  82,
  83]
 )
+	# Read the written output and check that it matches with the reference positions and atomic numbers
+	skzcam_cluster = read('SKZCAM_cluster_0.xyz')
+
+	np.testing.assert_allclose(
+        skzcam_cluster.get_positions(), np.array([[ 0.        ,  0.        ,  0.        ],
+       [-2.12018426,  0.        ,  0.00567209],
+       [ 0.        ,  2.12018426,  0.00567209],
+       [ 2.12018426,  0.        ,  0.00567209],
+       [ 0.        , -2.12018426,  0.00567209],
+       [ 0.        ,  0.        , -2.14129966]]),rtol=1e-04, atol=1e-07)
+
+	assert np.all(skzcam_cluster.get_atomic_numbers().tolist() == [12,  8,  8,  8,  8,  8])
+	
