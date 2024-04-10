@@ -9,11 +9,16 @@ from ase.data import atomic_numbers
 from ase.io import read, write
 from ase.units import Bohr
 
-from chemsh import *
-from chemsh.io.tools import convert_atoms_to_frag
+try:
+    from chemsh import *
+    from chemsh.io.tools import convert_atoms_to_frag
+    chemshell_module = True
+except ImportError:
+    chemshell_module = None
 
 from monty.io import zopen
 from monty.os.path import zpath
+from monty.dev import requires
 
 if TYPE_CHECKING:
     from numpy.typing import NDArray
@@ -52,7 +57,7 @@ def get_cluster_info_from_slab(
 
     # Find indices (within adsorbate_slab) of the slab
     slab_idx = [x for x in list(range(len(adsorbate_slab))) if x not in adsorbate_idx]
-    
+
     # Create slab from adsorbate_slab
     slab = adsorbate_slab[slab_idx].copy()
 
@@ -78,6 +83,7 @@ def get_cluster_info_from_slab(
 
     return adsorbate, slab, slab_first_atom_idx, center_position, adsorbate_vector_from_slab
 
+@requires(chemshell_module, "ChemShell is not installed")
 def run_chemshell(
         slab: Atoms,
         slab_center_idx: int,
