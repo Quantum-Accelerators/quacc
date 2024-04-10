@@ -8,15 +8,17 @@ from ase.atoms import Atoms
 from ase.data import atomic_numbers
 from ase.io import read, write
 from ase.units import Bohr
+
 try:
     from chemsh import *
     from chemsh.io.tools import convert_atoms_to_frag
+
     chemshell_module = True
 except ImportError:
     chemshell_module = None
+from monty.dev import requires
 from monty.io import zopen
 from monty.os.path import zpath
-from monty.dev import requires
 
 if TYPE_CHECKING:
     from numpy.typing import NDArray
