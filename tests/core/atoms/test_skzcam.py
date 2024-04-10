@@ -9,7 +9,16 @@ from ase.build import bulk, fcc100, molecule
 from ase.io import read
 from ase import Atoms
 
+try:
+	from chemsh import *
+	from chemsh.io.tools import convert_atoms_to_frag
+	chemshell_module = True
+except ImportError:
+    chemshell_module = None
+
 from quacc.atoms.skzcam import (
+	get_cluster_info_from_slab,
+	run_chemshell,
 	create_skzcam_clusters,
 	convert_pun_to_atoms,
 	_get_atom_distances,
@@ -27,6 +36,78 @@ def embedded_cluster():
 @pytest.fixture
 def distance_matrix(embedded_cluster):
     return embedded_cluster.get_all_distances()
+
+def test_get_cluster_info_from_slab():
+	adsorbate, slab, slab_first_atom_idx, center_position, adsorbate_vector_from_slab = get_cluster_info_from_slab( FILE_DIR / 'NO_MgO.poscar.gz',adsorbate_idx=[0,1],slab_center_idx=[32,33])
+	
+	# Check adsorbate matches reference
+	np.testing.assert_allclose(adsorbate.get_positions(), np.array([[ 5.39130495,  4.07523845, 15.96981134],
+       [ 5.88635842,  4.84892196, 16.72270959]]),rtol=1e-05, atol=1e-07)
+	assert np.all(adsorbate.get_atomic_numbers().tolist() == [7, 8])
+
+	# Check slab matches reference
+	np.testing.assert_allclose(slab.get_positions()[::10],np.array([[ 0.        ,  6.33073849,  7.5       ],
+       [ 0.        ,  4.22049233,  9.61024616],
+       [ 4.2206809 ,  6.32743192, 11.73976183],
+       [ 4.2019821 ,  4.21892378, 13.89202884],
+       [ 0.        ,  2.11024616,  9.61024616],
+       [ 4.22049233,  0.        ,  7.5       ],
+       [ 4.22098271,  2.10239745, 13.86181098]]),rtol=1e-05, atol=1e-07)
+	assert np.all(slab.get_atomic_numbers().tolist() == [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
+       12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,  8,  8,
+        8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,
+        8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8])
+
+	# Check first atom index of slab
+	assert slab_first_atom_idx == 30
+
+	# Check center_position matches reference
+	np.testing.assert_allclose(center_position, np.array([ 1.06307888, -1.06176564,  2.4591779 ]), rtol=1e-05, atol=1e-07)
+
+	# Check vector distance of adsorbate from first center atom (corresponding to first atom index) of slab matches reference
+	np.testing.assert_allclose(adsorbate_vector_from_slab, np.array([ 1.18932285, -0.14368533,  2.0777825 ]), rtol=1e-05, atol=1e-07)	
+
+@pytest.mark.skipif(chemshell_module is None, reason="py-ChemShell is not installed")
+def test_run_chemshell():
+	
+	# First create the slab
+	slab = read(FILE_DIR / 'NO_MgO.poscar.gz')
+	slab = slab[2:].copy()
+
+	# Run ChemShell
+	run_chemshell(slab,30,{'Mg':2.0, 'O':-2.0},chemsh_radius_active = 15.0, chemsh_radius_cluster = 25.0, write_xyz_file=True)
+
+	# Read the output .xyz file
+	chemshell_embedded_cluster = read('ChemShell_cluster.xyz')
+
+	# Check that the positions and atomic numbers match reference
+	np.testing.assert_allclose(chemshell_embedded_cluster.get_positions()[::100],np.array([[ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00],
+       [-2.09173593e+00, -2.10867761e+00, -6.39202884e+00],
+       [ 2.12875640e+00, -6.32916994e+00, -6.39202884e+00],
+       [-2.09273725e+00,  1.05516878e+01, -2.16301583e+00],
+       [ 2.12875640e+00, -1.05496623e+01, -6.39202884e+00],
+       [ 6.34924872e+00, -1.05496623e+01, -6.39202884e+00],
+       [ 1.05725789e+01, -1.05444085e+01, -2.15965963e+00],
+       [ 1.47875715e+01,  6.33408913e+00, -2.16464681e+00],
+       [ 6.34924872e+00, -1.47701546e+01, -6.39202884e+00],
+       [ 1.69010014e+01,  6.33551965e+00, -2.15224877e+00],
+       [ 1.05697410e+01, -1.47701546e+01, -6.39202884e+00],
+       [ 1.05637735e+01,  1.68825241e+01, -2.17052139e+00],
+       [-1.68651820e+01,  1.26649992e+01, -5.68710477e-02],
+       [-1.89763671e+01, -1.05478802e+01, -2.16464681e+00],
+       [ 1.05697410e+01, -1.89906469e+01, -6.39202884e+00],
+       [-2.31906127e+01, -4.21607826e+00, -1.24998430e-02],
+       [ 1.47951600e+01,  1.89994594e+01, -5.11097275e-02],
+       [-2.31941976e+01, -6.32916994e+00, -6.39202884e+00]]),  rtol=1e-05, atol=1e-07)
+
+	assert np.all(chemshell_embedded_cluster.get_atomic_numbers()[::20].tolist() == [12, 12, 12,  8, 12,  8,  8, 12,  8, 12,  8,  8, 12,  8, 12,  8,  8,
+       12,  8, 12,  8,  8, 12,  8,  8,  8,  8, 12,  8, 12,  8,  8, 12, 12,
+       12,  8,  8, 12,  8, 12,  8,  8, 12,  8, 12, 12,  8, 12,  8, 12,  8,
+        8, 12,  8,  8, 12,  8, 12,  8, 12, 12,  8, 12, 12,  8,  8,  8, 12,
+       12,  8,  8,  8, 12,  8, 12,  8,  8, 12, 12,  8, 12,  8, 12, 12,  8,
+        8, 12,  9,  9,  9])
+	
+
 
 def test_convert_pun_to_atoms():
 	embedded_cluster = convert_pun_to_atoms( FILE_DIR / "mgo_shells_cluster.pun.gz", {'Mg': 2.0, 'O': -2.0})

@@ -46,15 +46,13 @@ def get_cluster_info_from_slab(
     list[float, float, float]
         The vector from the center of the slab to the center of mass of the adsorbate.
     """
-    # """
-    # Get the necessary information for the cluster from a provided slab file (in any format that ASE can read)
-    # """
 
+    # Get the necessary information for the cluster from a provided slab file (in any format that ASE can read)
     adsorbate_slab = read(adsorbate_slab_file)
-    # Get the slab 
 
     # Find indices (within adsorbate_slab) of the slab
     slab_idx = [x for x in list(range(len(adsorbate_slab))) if x not in adsorbate_idx]
+    
     # Create slab from adsorbate_slab
     slab = adsorbate_slab[slab_idx].copy()
 
