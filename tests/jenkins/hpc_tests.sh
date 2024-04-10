@@ -3,7 +3,7 @@
 # Fail fast
 set -e
 
-# Ensure results are purged
+# Ensure results are written to a scratch directory
 export QUACC_RESULTS_DIR=$SCRATCH/jenkins
 
 # GULP
@@ -29,3 +29,6 @@ pytest tests/core/recipes/vasp_recipes/jenkins --noconftest
 # QChem
 module purge
 pytest tests/core/recipes/qchem_recipes/jenkins --noconftest
+
+# Clean up
+rm -r $QUACC_RESULTS_DIR
