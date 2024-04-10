@@ -1,11 +1,5 @@
 name: docs
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+on: push
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -31,8 +25,8 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install -r tests/requirements.txt
-          pip install .[docs]
+          pip install uv
+          uv pip install --system -r tests/requirements.txt "quacc[docs] @ ."
 
       - name: Build docs
         run: |

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "quacc"
 description="A platform to enable high-throughput, database-driven quantum chemistry and computational materials science"
-version = "0.7.3"
+version = "0.7.4"
 readme = "README.md"
 license = { text = "BSD-3" }
 authors = [{ name = "Andrew S. Rosen", email = "asrosen@princeton.edu" }]
@@ -38,7 +38,7 @@ dependencies = [
     "pydantic>=2.0.1", # for settings management
     "pydantic-settings>=2.2.0", # for settings management
     "pymatgen @ git+https://github.com/materialsproject/pymatgen", # for structure manipulation
-    "typer[all]>=0.9.0", # for the CLI
+    "typer>=0.12.1", # for the CLI
 ]
 
 [project.optional-dependencies]
@@ -55,10 +55,10 @@ prefect = ["prefect>=2.14.14", "prefect-dask>=0.2.6", "dask-jobqueue>=0.8.2"]
 redun = ["redun>=0.16.2"]
 sella = ["sella>=2.3.3"]
 tblite = ["tblite[ase]>=0.3.0; platform_system=='Linux'"]
-dev = ["codecov-cli>=0.4.1", "pytest>=7.4.0", "pytest-cov>=3.0.0", "ruff>=0.0.285"]
+dev = ["pytest>=7.4.0", "pytest-cov>=3.0.0", "ruff>=0.0.285"]
 docs = [
     "blacken-docs>=1.16.0",
-    "mkdocs-material>=9.1.21",
+    "mkdocs-material>=9.5.16",
     "mkdocstrings[python]>=0.22.0",
     "mkdocs-gen-files>=0.5.0",
     "mkdocs-literate-nav>=0.6.0",

@@ -38,8 +38,8 @@ _DEFAULT_SETTING = ()
 def summarize_phonopy(
     phonon: Phonopy,
     input_atoms: Atoms,
+    directory: str | Path,
     parameters: dict[str, Any] | None = None,
-    directory: str | Path = ".",
     additional_fields: dict[str, Any] | None = None,
     store: Store | None = _DEFAULT_SETTING,
 ) -> PhononSchema:
@@ -52,6 +52,8 @@ def summarize_phonopy(
         Phonopy object
     input_atoms
         Input atoms object
+    directory
+        Directory where the results are stored.
     parameters
         Calculator parameters used to generate the phonon object.
     additional_fields
