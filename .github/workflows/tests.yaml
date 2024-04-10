@@ -190,7 +190,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install --system --prerelease=allow -r tests/requirements.txt -r tests/requirements-${{ matrix.wflow_engine }}.txt -r tests/requirements-phonopy.txt "quacc[dev] @ ."
+          uv pip install --system -r tests/requirements.txt -r tests/requirements-${{ matrix.wflow_engine }}.txt -r tests/requirements-phonopy.txt "quacc[dev] @ ."
 
       - name: Run tests with pytest
         run: pytest --durations=10 tests/${{ matrix.wflow_engine }} --cov=quacc --cov-report=xml
