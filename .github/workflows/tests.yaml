@@ -41,8 +41,8 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install -r tests/requirements.txt -r tests/requirements-mp.txt
-          uv pip install "quacc[dev] @ ."
+          uv pip install --system -r tests/requirements.txt -r tests/requirements-mp.txt
+          uv pip install --system "quacc[dev] @ ."
 
       - name: Run tests with pytest (w/ coverage)
         if: matrix.python-version != '3.12'
@@ -88,8 +88,8 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install -r tests/requirements.txt -r tests/requirements-covalent.txt -r tests/requirements-phonopy.txt
-          uv pip install "quacc[dev] @ ."
+          uv pip install --system -r tests/requirements.txt -r tests/requirements-covalent.txt -r tests/requirements-phonopy.txt
+          uv pip install --system "quacc[dev] @ ."
 
       - name: Start Covalent server
         run: covalent start
@@ -142,8 +142,8 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install -r tests/requirements.txt -r tests/requirements-${{ matrix.wflow_engine }}.txt -r tests/requirements-phonopy.txt
-          uv pip install "quacc[dev] @ ."
+          uv pip install --system -r tests/requirements.txt -r tests/requirements-${{ matrix.wflow_engine }}.txt -r tests/requirements-phonopy.txt
+          uv pip install --system "quacc[dev] @ ."
 
       - name: Run tests with pytest
         run: pytest --durations=10 tests/${{ matrix.wflow_engine }} --cov=quacc --cov-report=xml
@@ -192,8 +192,8 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install -r tests/requirements.txt -r tests/requirements-${{ matrix.wflow_engine }}.txt -r tests/requirements-phonopy.txt
-          uv pip install "quacc[dev] @ ."
+          uv pip install --system -r tests/requirements.txt -r tests/requirements-${{ matrix.wflow_engine }}.txt -r tests/requirements-phonopy.txt
+          uv pip install --system "quacc[dev] @ ."
 
       - name: Run tests with pytest
         run: pytest --durations=10 tests/${{ matrix.wflow_engine }} --cov=quacc --cov-report=xml
@@ -239,8 +239,8 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install -r tests/requirements.txt
-          uv pip install "quacc[dev] @ ."
+          uv pip install --system -r tests/requirements.txt
+          uv pip install --system "quacc[dev] @ ."
 
       - name: Run tests with pytest
         run: pytest -k 'psi4' --durations=10 --cov=quacc --cov-report=xml
@@ -284,8 +284,8 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install -r tests/requirements.txt -r tests/requirements-defects.txt -r tests/requirements-phonopy.txt
-          uv pip install "quacc[dev] @ ."
+          uv pip install --system -r tests/requirements.txt -r tests/requirements-defects.txt -r tests/requirements-phonopy.txt
+          uv pip install --system "quacc[dev] @ ."
 
       - name: Run tests with pytest
         run: pytest -k 'defects or phonon or espresso' --durations=10 --cov=quacc --cov-report=xml
@@ -329,8 +329,8 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install -r tests/requirements.txt -r tests/requirements-tblite.txt -r tests/requirements-phonopy.txt
-          uv pip install "quacc[dev] @ ."
+          uv pip install --system -r tests/requirements.txt -r tests/requirements-tblite.txt -r tests/requirements-phonopy.txt
+          uv pip install --system "quacc[dev] @ ."
 
       - name: Run tests with pytest
         run: pytest -k 'dftb or tblite' --durations=10 --cov=quacc --cov-report=xml
@@ -376,8 +376,8 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install -r tests/requirements.txt -r tests/requirements-sella.txt
-          uv pip install "quacc[dev] @ ."
+          uv pip install --system -r tests/requirements.txt -r tests/requirements-sella.txt
+          uv pip install --system "quacc[dev] @ ."
 
       - name: Run tests with pytest
         run: pytest -k 'qchem or sella' --durations=10 --cov=quacc --cov-report=xml
@@ -418,8 +418,8 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install -r tests/requirements.txt -r tests/requirements-mlp.txt -r tests/requirements-newtonnet.txt -r tests/requirements-sella.txt -r tests/requirements-phonopy.txt
-          uv pip install "quacc[dev] @ ."
+          uv pip install --system -r tests/requirements.txt -r tests/requirements-mlp.txt -r tests/requirements-newtonnet.txt -r tests/requirements-sella.txt -r tests/requirements-phonopy.txt
+          uv pip install --system "quacc[dev] @ ."
 
       - name: Run tests with pytest
         run: pytest -k 'mlp or newtonnet' --durations=10 --cov=quacc --cov-report=xml
