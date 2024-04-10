@@ -8,14 +8,12 @@ from ase.atoms import Atoms
 from ase.data import atomic_numbers
 from ase.io import read, write
 from ase.units import Bohr
-
 try:
     from chemsh import *
     from chemsh.io.tools import convert_atoms_to_frag
     chemshell_module = True
 except ImportError:
     chemshell_module = None
-
 from monty.io import zopen
 from monty.os.path import zpath
 from monty.dev import requires
@@ -23,10 +21,9 @@ from monty.dev import requires
 if TYPE_CHECKING:
     from numpy.typing import NDArray
 
+
 def get_cluster_info_from_slab(
-        adsorbate_slab_file: Path,
-        slab_center_idx: list[int],
-        adsorbate_idx: list[int] 
+    adsorbate_slab_file: Path, slab_center_idx: list[int], adsorbate_idx: list[int]
 ) -> tuple[Atoms, Atoms, int, NDArray, NDArray]:
     """
     Read the file containing the periodic slab and adsorbate (geometry optimized) and return the key information needed to create an embedded cluster in ChemShell.
@@ -62,36 +59,53 @@ def get_cluster_info_from_slab(
     slab = adsorbate_slab[slab_idx].copy()
 
     # Find index of the first center atom of the slab as listed in slab_center_idx
-    slab_first_atom_idx = [index for index,x in enumerate(slab_idx) if x == slab_center_idx[0]][0]
+    slab_first_atom_idx = [
+        index for index, x in enumerate(slab_idx) if x == slab_center_idx[0]
+    ][0]
 
     # Get the centre of the cluster from the atom indices
     slab_center_position = np.zeros(3)
     for atom_idx in slab_center_idx:
         slab_center_position += adsorbate_slab.get_positions()[atom_idx]
 
-    slab_center_position = slab_center_position/len(slab_center_idx)
+    slab_center_position = slab_center_position / len(slab_center_idx)
 
     adsorbate = adsorbate_slab[adsorbate_idx].copy()
 
     # Get the relative distance of the adsorbate from the first center atom of the slab as defined in the slab_center_idx
     adsorbate_com = adsorbate.get_center_of_mass()
-    adsorbate_vector_from_slab = adsorbate[0].position - adsorbate_slab[slab_center_idx[0]].position
+    adsorbate_vector_from_slab = (
+        adsorbate[0].position - adsorbate_slab[slab_center_idx[0]].position
+    )
 
     # Add the height of the adsorbate from the slab along the z-direction relative to the first center atom of the slab as defined in the slab_center_idx
-    adsorbate_com_z_disp = adsorbate_com[2] - adsorbate_slab[slab_center_idx[0]].position[2]
-    center_position = np.array([0.0, 0.0, adsorbate_com_z_disp]) +  slab_center_position - adsorbate_slab[slab_center_idx[0]].position
+    adsorbate_com_z_disp = (
+        adsorbate_com[2] - adsorbate_slab[slab_center_idx[0]].position[2]
+    )
+    center_position = (
+        np.array([0.0, 0.0, adsorbate_com_z_disp])
+        + slab_center_position
+        - adsorbate_slab[slab_center_idx[0]].position
+    )
 
-    return adsorbate, slab, slab_first_atom_idx, center_position, adsorbate_vector_from_slab
+    return (
+        adsorbate,
+        slab,
+        slab_first_atom_idx,
+        center_position,
+        adsorbate_vector_from_slab,
+    )
+
 
 @requires(chemshell_module, "ChemShell is not installed")
 def run_chemshell(
-        slab: Atoms,
-        slab_center_idx: int,
-        atom_oxi_states: dict[str, float],
-        chemsh_radius_active: float=40.0,
-        chemsh_radius_cluster: float=60.0,
-        chemsh_bq_layer: float=6.0,
-        write_xyz_file: bool = False
+    slab: Atoms,
+    slab_center_idx: int,
+    atom_oxi_states: dict[str, float],
+    chemsh_radius_active: float = 40.0,
+    chemsh_radius_cluster: float = 60.0,
+    chemsh_bq_layer: float = 6.0,
+    write_xyz_file: bool = False,
 ):
     """
     Run ChemShell to create an embedded cluster from a slab.
@@ -113,29 +127,31 @@ def run_chemshell(
     write_xyz_file
         Whether to write an XYZ file of the cluster for visualisation.
     """
-    
+
     # Translate slab such that first Mg atom is at 0,0,0
     slab.translate(-slab.get_positions()[slab_center_idx])
 
     # Convert ASE Atoms to ChemShell Fragment object
-    slab_frag = convert_atoms_to_frag(slab, connect_mode='ionic', dim='2D')
+    slab_frag = convert_atoms_to_frag(slab, connect_mode="ionic", dim="2D")
 
     # Add the atomic charges to the fragment
     slab_frag.addCharges(atom_oxi_states)
-    
+
     # Create the chemshell cluster (i.e., add electrostatic fitting charges) from the fragment
-    chemsh_embedded_cluster = slab_frag.construct_cluster(origin=slab_center_idx, 
-                                         radius_cluster=chemsh_radius_cluster/Bohr, 
-                                         radius_active=chemsh_radius_active/Bohr, 
-                                         bq_layer=chemsh_bq_layer/Bohr,
-                                         adjust_charge='coordination_scaled',)
+    chemsh_embedded_cluster = slab_frag.construct_cluster(
+        origin=slab_center_idx,
+        radius_cluster=chemsh_radius_cluster / Bohr,
+        radius_active=chemsh_radius_active / Bohr,
+        bq_layer=chemsh_bq_layer / Bohr,
+        adjust_charge="coordination_scaled",
+    )
 
     # Save the final cluster to a .pun file
-    chemsh_embedded_cluster.save('ChemShell_cluster.pun', 'pun')
+    chemsh_embedded_cluster.save("ChemShell_cluster.pun", "pun")
 
     if write_xyz_file:
         # XYZ for visualisation
-        chemsh_embedded_cluster.save('ChemShell_cluster.xyz', 'xyz')
+        chemsh_embedded_cluster.save("ChemShell_cluster.xyz", "xyz")
 
 
 def create_skzcam_clusters(
@@ -221,7 +237,7 @@ def create_skzcam_clusters(
 
     # Get the ECP region for each quantum cluster
     ecp_region_idx = _get_ecp_region(
-        embedded_cluster, quantum_cluster_idx, embedded_cluster_all_dist,  ecp_dist
+        embedded_cluster, quantum_cluster_idx, embedded_cluster_all_dist, ecp_dist
     )
 
     # Write the quantum clusters to files
@@ -269,11 +285,14 @@ def convert_pun_to_atoms(
     atom_type_dict = {
         atom: "cation" if oxi_state > 0 else "anion" if oxi_state < 0 else "neutral"
         for atom, oxi_state in atom_oxi_states.items()
-	}
+    }
 
     # Load the pun file as a list of strings
     with zopen(zpath(Path(pun_file))) as f:
-        raw_pun_file = [line.rstrip().decode("utf-8") if isinstance(line, bytes) else line.rstrip() for line in f]
+        raw_pun_file = [
+            line.rstrip().decode("utf-8") if isinstance(line, bytes) else line.rstrip()
+            for line in f
+        ]
 
     # Get the number of atoms and number of atomic charges in the .pun file
     n_atoms = int(raw_pun_file[3].split()[-1])
