@@ -41,8 +41,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install --system -r tests/requirements.txt -r tests/requirements-mp.txt
-          uv pip install --system "quacc[dev] @ ."
+          uv pip install --system -r tests/requirements.txt -r tests/requirements-mp.txt "quacc[dev] @ ."
 
       - name: Run tests with pytest (w/ coverage)
         if: matrix.python-version != '3.12'
