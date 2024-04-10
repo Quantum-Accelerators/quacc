@@ -20,9 +20,13 @@ from quacc.atoms.skzcam import (
 
 FILE_DIR = Path(__file__).parent
 
-embedded_cluster = convert_pun_to_atoms( FILE_DIR / "mgo_shells_cluster.pun", {'Mg': 2.0, 'O': -2.0})
-distance_matrix = embedded_cluster.get_all_distances()
+@pytest.fixture
+def embedded_cluster():
+    return convert_pun_to_atoms( FILE_DIR / "mgo_shells_cluster.pun", {'Mg': 2.0, 'O': -2.0})
 
+@pytest.fixture
+def distance_matrix(embedded_cluster):
+    return embedded_cluster.get_all_distances()
 
 def test_convert_pun_to_atoms():
 	embedded_cluster = convert_pun_to_atoms( FILE_DIR / "mgo_shells_cluster.pun", {'Mg': 2.0, 'O': -2.0})
@@ -49,7 +53,7 @@ def test_get_atom_distances():
 	
 	np.testing.assert_allclose(atom_distances,np.array([2.        , 2.82842712]),rtol=1e-05, atol=1e-07)	
 
-def test_find_cation_shells():
+def test_find_cation_shells(embedded_cluster):
 	
 	# Get distance of atoms from the center
 	distances = _get_atom_distances(embedded_cluster,[0,0,2])
@@ -79,7 +83,7 @@ def test_find_cation_shells():
 	
 	assert np.all(cation_shells_idx_flatten == [0, 9, 8, 6, 7, 11, 12, 10, 13, 19, 21, 18, 20, 22])
 
-def test_get_anion_coordination():
+def test_get_anion_coordination(embedded_cluster, distance_matrix):
 
 	# Get the anions for the second SKZCAM shell
 	anion_shell_idx = _get_anion_coordination(embedded_cluster, [9, 8, 6, 7], distance_matrix)
@@ -88,7 +92,7 @@ def test_get_anion_coordination():
 	assert np.all(anion_shell_idx == [1, 2, 3, 4, 14, 15, 16, 17, 23, 24, 25, 26, 27, 28, 29, 30])
 
 
-def test_get_ecp_region():
+def test_get_ecp_region(embedded_cluster, distance_matrix):
 	
 	# Find the ECP region for the first cluster
 	ecp_region_idx = _get_ecp_region(embedded_cluster, quantum_cluster_idx = [[0,1,2,3,4,5]], dist_matrix = distance_matrix, ecp_dist = 3)
