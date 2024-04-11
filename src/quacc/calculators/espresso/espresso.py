@@ -298,7 +298,9 @@ class EspressoTemplate(EspressoTemplate_):
             smearing = system.get("smearing", None)
             degauss = system.get("degauss", None)
 
-            if occupations == "fixed" and not (smearing is None and degauss is None):
+            if occupations == "fixed" and (
+                smearing is not None or degauss is not None
+            ):
                 LOGGER.warning(
                     "The occupations are set to 'fixed' but smearing or degauss is also set. This will be ignored."
                 )
