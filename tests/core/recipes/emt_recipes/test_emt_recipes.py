@@ -136,7 +136,7 @@ def test_md_jobs(tmp_path, monkeypatch):
     assert atoms.positions == pytest.approx(old_positions)
 
     with pytest.raises(ValueError, match="Quacc does not support"):
-        output = md_job(atoms, md_params={"dynamics_kwargs": {"trajectory": "md.traj"}})
+        md_job(atoms, md_params={"dynamics_kwargs": {"trajectory": "md.traj"}})
 
     atoms = molecule("H2O", vacuum=10.0)
     old_positions = atoms.positions.copy()
