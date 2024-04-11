@@ -252,7 +252,7 @@ def run_md(
     steps: int = 500,
     dynamics: MolecularDynamics = VelocityVerlet,
     dynamics_kwargs: dict[str, Any] | None = None,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> MolecularDynamics:
     """
     Run an ASE-based MD in a scratch directory and copy the results back to
@@ -276,7 +276,7 @@ def run_md(
         Dictionary of kwargs for the dynamics. Takes all valid kwargs for ASE
         MolecularDynamics classes.
     copy_files
-        Filenames to copy from source to scratch directory.
+        Files to copy (and decompress) from source to the runtime directory.
 
     Returns
     -------
