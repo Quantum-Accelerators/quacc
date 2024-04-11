@@ -251,4 +251,6 @@ def get_final_atoms_from_dynamics(dynamics: Dynamics) -> Atoms:
     Atoms
         Atoms object
     """
-    return dynamics.atoms.atoms if isinstance(dynamics.atoms, Filter) else dynamics.atoms
+    return (
+        dynamics.atoms.atoms if isinstance(dynamics.atoms, Filter) else dynamics.atoms
+    )
