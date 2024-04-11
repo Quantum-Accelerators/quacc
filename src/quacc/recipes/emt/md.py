@@ -39,26 +39,26 @@ def md_job(
     !!! Note "Units"
 
         Quacc does not follow ASE standards for Molecular Dynamics units.
-    
+
         Quacc ALWAYS uses the following units:
-        
+
         - Time: femtoseconds (fs)
         - Pressure: GPa
         - Temperature: Kelvin (K)
         - Compressibility: 1/GPa
 
     !!! Note "Keywords"
-    
+
         Additionally, Quacc uses the keywords `fix_com` and `fix_rot` instead of
         `fixcm` and `fixrot` to fix the center of mass and rotation, respectively.
-    
+
         As of March 2024, ASE still accept deprecated keywords such as:
-    
+
         - temperature instead of temperature_K
         - pressure instead of pressure_au
         - compressibility instead of compressibility_au
         - dt instead of timestep
-    
+
         All of these keywords will be accepted by Quacc, but it is recommended to use the
         new keywords to avoid confusion. Everything will always be converted to the Quacc
         units mentioned above.
@@ -66,7 +66,7 @@ def md_job(
         Shared keywords between various dynamics type such as `timestep` and `steps` should
         be specified in the `md_params` dictionary. Keywords specific to the dynamics type
         should be specified in a dictionary `dynamics_kwargs` inside `md_params`.
-    
+
         The dynamics type can be specified in `md_params` as `dynamics`.
 
     Parameters
