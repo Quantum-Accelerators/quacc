@@ -430,7 +430,7 @@ def _copy_intermediate_files(
                 copytree(item, store_path / item.name)
 
 
-def _md_params_handler(dynamics_kwargs):
+def _md_params_handler(dynamics_kwargs: dict[str, Any]) -> None:
     """
     Helper function to handle deprecated MD parameters.
 
