@@ -314,7 +314,7 @@ def run_md(
     dyn.traj_atoms = read(traj_filename, index=":")
 
     # Perform cleanup operations
-    calc_cleanup(get_final_atoms_from_dyn(dyn), tmpdir, job_results_dir)
+    calc_cleanup(get_final_atoms_from_dynamics(dyn), tmpdir, job_results_dir)
 
     return dyn
 

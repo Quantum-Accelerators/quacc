@@ -290,7 +290,7 @@ def summarize_md_run(
         )
 
     initial_atoms = trajectory[0]
-    final_atoms = get_final_atoms_from_dyn(dyn)
+    final_atoms = get_final_atoms_from_dynamics(dyn)
 
     # Base task doc
     base_task_doc = summarize_run(
