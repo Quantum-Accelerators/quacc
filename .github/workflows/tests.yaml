@@ -414,6 +414,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
+          pip install torch # (https://github.com/astral-sh/uv/issues/1921)
           uv pip install --system -r tests/requirements.txt -r tests/requirements-mlp.txt -r tests/requirements-newtonnet.txt -r tests/requirements-sella.txt -r tests/requirements-phonopy.txt "quacc[dev] @ ."
 
       - name: Run tests with pytest
