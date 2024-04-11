@@ -14,7 +14,7 @@ from ase.vibrations import Vibrations
 from ase.vibrations.data import VibrationsData
 
 from quacc import SETTINGS, __version__
-from quacc.atoms.core import get_final_atoms_from_dyn
+from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.schemas.prep import prep_next_run
 from quacc.utils.dicts import clean_task_doc, recursive_dict_merge
@@ -188,7 +188,7 @@ def summarize_opt_run(
         )
 
     initial_atoms = trajectory[0]
-    final_atoms = get_final_atoms_from_dyn(dyn)
+    final_atoms = get_final_atoms_from_dynamics(dyn)
     directory = final_atoms.calc.directory
 
     # Check convergence
