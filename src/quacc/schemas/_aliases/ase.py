@@ -28,7 +28,11 @@ class ParametersDyn(TypedDict):
 
 
 class TrajectoryLog(TypedDict):
-    """Dictionary of parameters from Dynamics.todict()"""
+    """Dictionary of parameters related to the MD trajectory"""
+    
+    kinetic_energy: float
+    temperature: float
+    time: float
 
 
 class RunSchema(AtomsSchema):
