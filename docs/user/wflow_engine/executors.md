@@ -28,7 +28,7 @@ In the previous examples, we have been running calculations on our local machine
 
     !!! Tip "Globus Compute"
 
-        If you want to run Parsl workflows on remotme, distributed computing resources, check out [Globus Compute](https://github.com/globus/globus-compute) and the corresponding [tutorial](https://globus-compute.readthedocs.io/en/latest/tutorial.html#running-parsl-workflows).
+        If you want to run Parsl workflows on remote, distributed computing resources, check out [Globus Compute](https://github.com/globus/globus-compute) and the corresponding [tutorial](https://globus-compute.readthedocs.io/en/latest/tutorial.html#running-parsl-workflows).
 
 === "Prefect"
 
