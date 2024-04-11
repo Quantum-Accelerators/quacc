@@ -235,7 +235,7 @@ print(result2)
 
 ### Modifying Parameters of a Job
 
-As demonstrated in the previous examples, each recipe accepts optional keyword arguments to modify the default parameters. To identify the possible parameters a function takes, you'll want to check out the function signature and corresponding documentation, like that for [quacc.recipes.emt.core.relax_job][]. Go ahead; click it! Once you do, you'll see from the docstring that there is one required positional argument for the recipe (the `Atoms` object) and several optional keyword arguments, including those related to the underlying ASE calculator, the optimization settings, and more. You can modify these parameters like in the example below:
+As demonstrated in the previous example, each recipe accepts optional keyword arguments to modify the default parameters. To identify the possible parameters a function takes, you'll want to check out the function signature and corresponding documentation, like that for [quacc.recipes.emt.core.relax_job][]. Go ahead; click it! Once you do, you'll see from the docstring that there is one required positional argument for the recipe (the `Atoms` object) and several optional keyword arguments, including those related to the underlying ASE calculator, the optimization settings, and more. You can modify these parameters like in the example below:
 
 ```python
 from ase.build import bulk
