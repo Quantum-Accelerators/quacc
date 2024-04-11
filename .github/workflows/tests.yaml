@@ -35,12 +35,6 @@ jobs:
           cache: pip
           cache-dependency-path: tests/requirements**.txt
 
-      - name: Set up conda
-        uses: conda-incubator/setup-miniconda@v3
-        with:
-          python-version: ${{ matrix.python-version }}
-          activate-environment: quacc-env
-
       - name: Install pip packages
         run: |
           pip install uv
@@ -80,12 +74,6 @@ jobs:
           python-version: "3.10"
           cache: pip
           cache-dependency-path: tests/requirements**.txt
-
-      - name: Set up conda
-        uses: conda-incubator/setup-miniconda@v3
-        with:
-          python-version: "3.10"
-          activate-environment: quacc-env
 
       - name: Install pip packages
         run: |
@@ -183,12 +171,6 @@ jobs:
           python-version: "3.11"
           cache: pip
           cache-dependency-path: tests/requirements**.txt
-
-      - name: Set up conda
-        uses: conda-incubator/setup-miniconda@v3
-        with:
-          python-version: "3.11"
-          activate-environment: quacc-env
 
       - name: Install pip packages
         run: |
@@ -402,12 +384,6 @@ jobs:
           python-version: "3.11"
           cache: pip
           cache-dependency-path: tests/requirements**.txt
-
-      - name: Set up conda
-        uses: conda-incubator/setup-miniconda@v3
-        with:
-          python-version: ${{ matrix.python-version }}
-          activate-environment: quacc-env
 
       - name: Install pip packages
         run: |
