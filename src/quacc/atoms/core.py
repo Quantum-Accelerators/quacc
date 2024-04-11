@@ -237,13 +237,13 @@ def check_charge_and_spin(
     return mol.charge, mol.spin_multiplicity
 
 
-def get_final_atoms_from_dyn(dyn: Dynamics) -> Atoms:
+def get_final_atoms_from_dynamics(dynamics: Dynamics) -> Atoms:
     """
     Get the final atoms object from a dynamics run.
 
     Parameters
     ----------
-    dyn
+    dynamics
         ASE dynamics object
 
     Returns
@@ -251,4 +251,4 @@ def get_final_atoms_from_dyn(dyn: Dynamics) -> Atoms:
     Atoms
         Atoms object
     """
-    return dyn.atoms.atoms if isinstance(dyn.atoms, Filter) else dyn.atoms
+    return dynamics.atoms.atoms if isinstance(dynamics.atoms, Filter) else dynamics.atoms

@@ -16,7 +16,7 @@ from cclib.io import ccread
 from monty.json import jsanitize
 
 from quacc import SETTINGS
-from quacc.atoms.core import get_final_atoms_from_dyn
+from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import clean_task_doc, recursive_dict_merge
 from quacc.utils.files import find_recent_logfile
@@ -173,7 +173,7 @@ def cclib_summarize_run(
 
 
 def summarize_cclib_opt_run(
-    dyn: Optimizer,
+    optimizer: Optimizer,
     logfile_extensions: str | list[str],
     trajectory: Trajectory | list[Atoms] | None = None,
     directory: Path | str | None = None,
@@ -202,7 +202,7 @@ def summarize_cclib_opt_run(
 
     Parameters
     ----------
-    dyn
+    optimizer
         The ASE optimizer object
     logfile_extensions
         Possible extensions of the log file (e.g. ".log", ".out", ".txt",
@@ -236,7 +236,7 @@ def summarize_cclib_opt_run(
     """
     store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
 
-    final_atoms = get_final_atoms_from_dyn(dyn)
+    final_atoms = get_final_atoms_from_dynamics(optimizer)
     directory = Path(directory or final_atoms.calc.directory)
     cclib_summary = cclib_summarize_run(
         final_atoms,
@@ -248,7 +248,7 @@ def summarize_cclib_opt_run(
         store=None,
     )
     opt_run_summary = summarize_opt_run(
-        dyn,
+        optimizer,
         trajectory=trajectory,
         check_convergence=check_convergence,
         charge_and_multiplicity=(
