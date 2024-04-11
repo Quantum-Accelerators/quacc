@@ -53,13 +53,13 @@ def md_units(dynamics_kwargs: dict[str, Any], inverse: bool = False) -> dict[str
     # Time units
     for key in converted_kwargs:
         if key in QUACC_BASE_UNITS:
-            if not inverse:
-                converted_kwargs[key] = (
-                    np.array(converted_kwargs[key]) * QUACC_BASE_UNITS[key]
-                )
-            else:
+            if inverse:
                 converted_kwargs[key] = (
                     np.array(converted_kwargs[key]) / QUACC_BASE_UNITS[key]
                 )
 
+            else:
+                converted_kwargs[key] = (
+                    np.array(converted_kwargs[key]) * QUACC_BASE_UNITS[key]
+                )
     return converted_kwargs
