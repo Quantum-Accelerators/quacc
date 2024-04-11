@@ -86,9 +86,6 @@ jobs:
       - name: Run tests with pytest
         run: pytest --durations=10 tests/covalent --cov=quacc --cov-report=xml
 
-      - name: Stop Covalent server
-        run: covalent stop
-
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v4
         with:
