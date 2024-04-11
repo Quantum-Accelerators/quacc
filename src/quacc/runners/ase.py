@@ -17,7 +17,7 @@ from monty.dev import requires
 from monty.os.path import zpath
 
 from quacc import SETTINGS
-from quacc.atoms.core import copy_atoms, get_final_atoms_from_dyn
+from quacc.atoms.core import copy_atoms, get_final_atoms_from_dynamics
 from quacc.runners.prep import calc_cleanup, calc_setup
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.utils.units import md_units
@@ -241,7 +241,7 @@ def run_opt(
     dyn.traj_atoms = read(traj_file, index=":")
 
     # Perform cleanup operations
-    calc_cleanup(get_final_atoms_from_dyn(dyn), tmpdir, job_results_dir)
+    calc_cleanup(get_final_atoms_from_dynamics(dyn), tmpdir, job_results_dir)
 
     return dyn
 

@@ -268,7 +268,7 @@ def prepare_copy_files(
             [Path("pwscf.save", "data-file-schema.*"), Path("pwscf.save", "paw.*")]
         )
 
-    elif binary in ["ph", "phcg"]:
+    elif binary in {"ph", "phcg"}:
         to_copy.extend(pw_base)
         to_copy.append(Path("pwscf.save", "wfc*.*"))
 
@@ -296,16 +296,14 @@ def prepare_copy_files(
             to_copy.append(Path("_ph*", "pwscf.phsave"))
 
         if ldvscf_interpolate:
-            to_copy.append(Path("_ph*", "pwscf.dvscf*"))
-            to_copy.append(Path("w_pot"))
-
+            to_copy.extend((Path("_ph*", "pwscf.dvscf*"), Path("w_pot")))
             if lqdir:
                 to_copy.append(Path("_ph*", "pwscf.q_*", "pwscf.dvscf*"))
 
-    elif binary in ["dos", "fs"]:
+    elif binary in {"dos", "fs"}:
         to_copy.extend(pw_base)
 
-    elif binary in ["projwfc", "bands"]:
+    elif binary in {"projwfc", "bands"}:
         to_copy.extend(pw_base)
         to_copy.append(Path("pwscf.save", "wfc*.*"))
 
