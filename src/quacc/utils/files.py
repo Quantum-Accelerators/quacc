@@ -292,7 +292,10 @@ def get_uri(directory: str | Path) -> str:
         hostname = socket.gethostbyaddr(hostname)[0]
     return f"{hostname}:{fullpath}"
 
-def write_schema_to_json(schema: dict[Any, Any], filepath: str | Path) -> dict[Any, Any]:
+
+def write_schema_to_json(
+    schema: dict[Any, Any], filepath: str | Path
+) -> dict[Any, Any]:
     """
     Convert a schema to JSON format.
 
