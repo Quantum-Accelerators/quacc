@@ -276,9 +276,7 @@ class EspressoTemplate(EspressoTemplate_):
         os.environ.pop("ESPRESSO_FILDVSCF_DIR", None)
         os.environ.pop("ESPRESSO_FILDRHO_DIR", None)
 
-        espresso_outdir = self.outdir or directory
-
-        espresso_outdir = Path(espresso_outdir).expanduser().resolve()
+        espresso_outdir = Path(self.outdir or directory).expanduser().resolve()
         outkeys = espresso_prepare_dir(espresso_outdir, self.binary)
 
         input_data = parameters.get("input_data", {})
