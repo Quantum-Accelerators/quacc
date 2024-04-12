@@ -24,6 +24,7 @@ from ase.build import bulk
 
 from quacc import subflow
 from quacc.recipes.espresso.core import post_processing_job, static_job
+from quacc.recipes.espresso.dos import projwfc_job
 from quacc.recipes.espresso.phonons import grid_phonon_flow
 from quacc.utils.files import copy_decompress_files
 
@@ -311,5 +312,51 @@ def test_pp_concurrent_inplace(tmp_path, monkeypatch):
 
         assert (
             pp_result["parameters"]["input_data"]["inputpp"]["outdir"]
+            == static_results["dir_name"]
+        )
+
+def test_projwfc_concurrent_inplace(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
+
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
+
+    atoms = bulk("Si")
+
+    input_data = {
+        "system": {"occupations": "smearing", "smearing": "gaussian", "degauss": 0.005},
+        "electrons": {"mixing_mode": "plain", "mixing_beta": 0.6, "conv_thr": 1.0e-6},
+        "control": {"pseudo_dir": tmp_path},
+    }
+
+    pseudopotentials = {"Si": "Si.upf"}
+
+    static_results = static_job(
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.5
+    )
+
+    static_results = client.compute(static_results).result()
+
+    @subflow
+    def projwfc_subflow(results):
+        projwfc_results = []
+
+        for _ in range(0, 10):
+            projwfc_results.append(
+                projwfc_job(
+                    prev_outdir=results,
+                )
+            )
+
+        return projwfc_results
+
+    future = projwfc_subflow(static_results["dir_name"])
+    projwfc_results = client.compute(future).result()
+
+    for pp_result in projwfc_results:
+        assert Path(pp_result["dir_name"], "pseudo_charge_density.cube.gz").is_file()
+
+        assert (
+            projwfc_results["parameters"]["input_data"]["projwfc"]["outdir"]
             == static_results["dir_name"]
         )

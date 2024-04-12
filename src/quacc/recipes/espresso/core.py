@@ -278,6 +278,10 @@ def post_processing_job(
 
     Parameters
     ----------
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     copy_files
         Source directory or directories to copy files from. If a `SourceDirectory` or a
         list of `SourceDirectory` is provided, this interface will automatically guess
