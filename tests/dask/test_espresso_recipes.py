@@ -293,7 +293,7 @@ def test_pp_concurrent_inplace(tmp_path, monkeypatch):
         for plot_num in [0, 1, 2, 4, 8, 123, 3]:
             pp_results.append(
                 post_processing_job(
-                    prev_outdir=results["outdir"], input_data={"plot_num": plot_num}
+                    prev_outdir=results["dir_name"], input_data={"plot_num": plot_num}
                 )
             )
         
@@ -301,4 +301,8 @@ def test_pp_concurrent_inplace(tmp_path, monkeypatch):
 
     future = pp_subflow(results)
     pp_results = client.compute(future).result()
-    # assert Path(pp_results["dir_name"], "pseudo_charge_density.cube.gz").is_file()
+    
+    for pp_result in pp_results:
+        assert Path(pp_result["dir_name"], "pseudo_charge_density.cube.gz").is_file()
+
+        assert pp_result["parameters"]["input_data"]["input_pp"]["outdir"] == pp_result["dir_name"]
