@@ -9,7 +9,6 @@ import gzip
 from shutil import which
 
 from dask.distributed import default_client
-
 from quacc import SETTINGS
 
 pytestmark = pytest.mark.skipif(
@@ -21,7 +20,7 @@ pytestmark = pytest.mark.skipif(
 from pathlib import Path
 
 from ase.build import bulk
-
+from quacc import subflow
 from quacc.recipes.espresso.core import post_processing_job, static_job
 from quacc.recipes.espresso.phonons import grid_phonon_flow
 from quacc.utils.files import copy_decompress_files
@@ -267,7 +266,7 @@ def test_phonon_grid_v2(tmp_path, monkeypatch):
         assert key in grid_results["results"][1]
 
 
-def test_pp_concurrent_inplace(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
+def test_pp_concurrent_inplace(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -284,18 +283,22 @@ def test_pp_concurrent_inplace(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     pseudopotentials = {"Si": "Si.upf"}
 
     results = static_job(
-        atoms,
-        input_data=input_data,
-        pseudopotentials=pseudopotentials,
-        kspacing=0.5,
-        parallel_info=ESPRESSO_PARALLEL_INFO,
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.5
     )
 
-    pp_results = []
+    @subflow
+    def pp_subflow(results):
+        pp_results = []
 
-    for plot_num in [0, 1, 2, 4, 8, 123, 3]:
-        pp_results.append(
-            post_processing_job(results, input_data={"plot_num": plot_num})
-        )
+        for plot_num in [0, 1, 2, 4, 8, 123, 3]:
+            pp_results.append(
+                post_processing_job(
+                    prev_outdir=results["outdir"], input_data={"plot_num": plot_num}
+                )
+            )
+        
+        return pp_results
 
+    future = pp_subflow(results)
+    pp_results = client.compute(future).result()
     # assert Path(pp_results["dir_name"], "pseudo_charge_density.cube.gz").is_file()
