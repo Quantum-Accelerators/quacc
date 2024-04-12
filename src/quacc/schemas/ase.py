@@ -10,14 +10,13 @@ from ase import units
 from ase.io import read
 from ase.vibrations import Vibrations
 from ase.vibrations.data import VibrationsData
-from monty.serialization import dumpfn
 
 from quacc import SETTINGS, __version__
 from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.schemas.prep import prep_next_run
 from quacc.utils.dicts import clean_task_doc, recursive_dict_merge
-from quacc.utils.files import get_uri
+from quacc.utils.files import get_uri, write_schema_to_json
 from quacc.wflow_tools.db import results_to_db
 
 if TYPE_CHECKING:
@@ -118,7 +117,7 @@ def summarize_run(
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_JSON:
-        dumpfn(
+        write_schema_to_json(
             task_doc,
             Path(
                 directory,
@@ -227,7 +226,7 @@ def summarize_opt_run(
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_JSON:
-        dumpfn(
+        write_schema_to_json(
             task_doc,
             Path(
                 directory,
@@ -301,7 +300,7 @@ def summarize_vib_and_thermo(
 
     if isinstance(vib, Vibrations):
         directory = vib.atoms.calc.directory
-        dumpfn(
+        write_schema_to_json(
             task_doc,
             Path(
                 directory,

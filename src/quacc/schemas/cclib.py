@@ -11,13 +11,12 @@ from typing import TYPE_CHECKING
 import cclib
 from ase.atoms import Atoms
 from cclib.io import ccread
-from monty.serialization import dumpfn
 
 from quacc import SETTINGS
 from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import clean_task_doc, recursive_dict_merge
-from quacc.utils.files import find_recent_logfile
+from quacc.utils.files import find_recent_logfile, write_schema_to_json
 from quacc.wflow_tools.db import results_to_db
 
 if TYPE_CHECKING:
@@ -156,7 +155,7 @@ def cclib_summarize_run(
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_JSON:
-        dumpfn(
+        write_schema_to_json(
             task_doc,
             Path(
                 directory,
@@ -262,7 +261,7 @@ def summarize_cclib_opt_run(
     task_doc = recursive_dict_merge(cclib_summary, opt_run_summary)
 
     if SETTINGS.WRITE_JSON:
-        dumpfn(
+        write_schema_to_json(
             task_doc,
             Path(
                 directory,

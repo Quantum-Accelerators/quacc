@@ -10,7 +10,6 @@ from typing import TYPE_CHECKING
 from ase.io import read
 from emmet.core.tasks import TaskDoc
 from monty.os.path import zpath
-from monty.serialization import dumpfn
 from pymatgen.command_line.bader_caller import bader_analysis_from_path
 from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
 from pymatgen.entries.compatibility import (
@@ -22,6 +21,7 @@ from quacc import SETTINGS
 from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import clean_task_doc, recursive_dict_merge
+from quacc.utils.files import write_schema_to_json
 from quacc.wflow_tools.db import results_to_db
 
 if TYPE_CHECKING:
@@ -171,7 +171,7 @@ def vasp_summarize_run(
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_JSON:
-        dumpfn(
+        write_schema_to_json(
             task_doc,
             Path(
                 directory,
@@ -260,7 +260,7 @@ def summarize_vasp_opt_run(
     task_doc = recursive_dict_merge(vasp_summary, opt_run_summary)
 
     if SETTINGS.WRITE_JSON:
-        dumpfn(
+        write_schema_to_json(
             task_doc,
             Path(
                 directory,

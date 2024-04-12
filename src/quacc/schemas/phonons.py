@@ -6,12 +6,11 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
-from monty.serialization import dumpfn
 
 from quacc import SETTINGS, __version__
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.utils.dicts import clean_task_doc
-from quacc.utils.files import get_uri
+from quacc.utils.files import get_uri, write_schema_to_json
 from quacc.wflow_tools.db import results_to_db
 
 try:
@@ -93,7 +92,7 @@ def summarize_phonopy(
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_JSON:
-        dumpfn(
+        write_schema_to_json(
             task_doc,
             Path(
                 directory,

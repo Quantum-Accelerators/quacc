@@ -14,7 +14,9 @@ from typing import TYPE_CHECKING
 
 import yaml
 from monty.io import zopen
+from monty.json import jsanitize
 from monty.os.path import zpath
+from monty.serialization import dumpfn
 from monty.shutil import copy_r, decompress_dir, decompress_file
 
 if TYPE_CHECKING:
@@ -289,3 +291,21 @@ def get_uri(directory: str | Path) -> str:
     with contextlib.suppress(socket.gaierror, socket.herror):
         hostname = socket.gethostbyaddr(hostname)[0]
     return f"{hostname}:{fullpath}"
+
+def write_schema_to_json(schema: dict[Any, Any], filepath: str | Path) -> dict[Any, Any]:
+    """
+    Convert a schema to JSON format.
+
+    Parameters
+    ----------
+    schema
+        The schema to convert.
+
+    Returns
+    -------
+    dict
+        The schema in JSON format.
+    """
+    sanitized_schema = jsanitize(schema, enum_values=True, strict=True)
+    dumpfn(sanitized_schema, filepath)
+    return sanitized_schema
