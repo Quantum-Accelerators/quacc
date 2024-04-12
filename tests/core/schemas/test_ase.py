@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-import gzip
 import os
-import pickle
 from copy import deepcopy
 from pathlib import Path
 

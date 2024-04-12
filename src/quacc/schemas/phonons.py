@@ -93,7 +93,15 @@ def summarize_phonopy(
     task_doc = clean_task_doc(unsorted_task_doc)
 
     if SETTINGS.WRITE_JSON:
-        dumpfn(task_doc, Path(directory, "quacc_results.json.gz" if SETTINGS.GZIP_FILES else "quacc_results.json"))
+        dumpfn(
+            task_doc,
+            Path(
+                directory,
+                "quacc_results.json.gz"
+                if SETTINGS.GZIP_FILES
+                else "quacc_results.json",
+            ),
+        )
 
     if store:
         results_to_db(store, task_doc)
