@@ -21,7 +21,6 @@ from ase.io.espresso import (
     write_fortran_namelist,
 )
 from ase.io.espresso_namelist.keys import ALL_KEYS
-from quacc.utils.files import safe_decompress_dir
 
 from quacc import SETTINGS
 from quacc.calculators.espresso.utils import (
@@ -30,7 +29,7 @@ from quacc.calculators.espresso.utils import (
     remove_conflicting_kpts_kspacing,
 )
 from quacc.utils.dicts import Remove, recursive_dict_merge, remove_dict_entries
-from quacc.utils.files import load_yaml_calc
+from quacc.utils.files import load_yaml_calc, safe_decompress_dir
 
 if TYPE_CHECKING:
     from typing import Any
