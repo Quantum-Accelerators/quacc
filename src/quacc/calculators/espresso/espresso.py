@@ -21,7 +21,7 @@ from ase.io.espresso import (
     write_fortran_namelist,
 )
 from ase.io.espresso_namelist.keys import ALL_KEYS
-from monty.shutil import decompress_dir
+from quacc.utils.files import safe_decompress_dir
 
 from quacc import SETTINGS
 from quacc.calculators.espresso.utils import (
@@ -124,7 +124,7 @@ class EspressoTemplate(EspressoTemplate_):
         parameters = self._sanity_checks(parameters)
 
         if self.outdir:
-            decompress_dir(self.outdir)
+            safe_decompress_dir(self.outdir)
 
         if self.test_run:
             self._test_run(parameters, directory)
