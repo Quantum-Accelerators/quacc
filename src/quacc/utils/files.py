@@ -309,6 +309,6 @@ def write_schema_to_json(
     dict
         The schema in JSON format.
     """
-    sanitized_schema = jsanitize(schema, enum_values=True, strict=True)
+    sanitized_schema = jsanitize(schema, enum_values=True, recursive_msonable=True)
     dumpfn(sanitized_schema, filepath)
     return sanitized_schema
