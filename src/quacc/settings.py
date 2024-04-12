@@ -107,8 +107,8 @@ class QuaccSettings(BaseSettings):
     GZIP_FILES: bool = Field(
         True, description="Whether generated files should be gzip'd."
     )
-    WRITE_PICKLE: bool = Field(
-        True, description="Whether the results schema should be written to a .pkl file."
+    WRITE_JSON: bool = Field(
+        True, description="Whether the results schema should be written to a JSON file."
     )
     CHECK_CONVERGENCE: bool = Field(
         True,

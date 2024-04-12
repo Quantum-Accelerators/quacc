@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
-import gzip
-import pickle
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
+from monty.serialization import dumpfn
 
 from quacc import SETTINGS, __version__
 from quacc.schemas.atoms import atoms_to_metadata
@@ -93,13 +92,8 @@ def summarize_phonopy(
     unsorted_task_doc = atoms_metadata | inputs | results | additional_fields
     task_doc = clean_task_doc(unsorted_task_doc)
 
-    if SETTINGS.WRITE_PICKLE:
-        with (
-            gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
-            if SETTINGS.GZIP_FILES
-            else Path(directory, "quacc_results.pkl").open("wb")
-        ) as f:
-            pickle.dump(task_doc, f)
+    if SETTINGS.WRITE_JSON:
+        dumpfn(task_doc, Path(directory, "quacc_results.json.gz" if SETTINGS.GZIP_FILES else "quacc_results.json"))
 
     if store:
         results_to_db(store, task_doc)

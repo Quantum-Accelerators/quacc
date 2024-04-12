@@ -2,10 +2,8 @@
 
 from __future__ import annotations
 
-import gzip
 import logging
 import os
-import pickle
 from inspect import getmembers, isclass
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -13,6 +11,7 @@ from typing import TYPE_CHECKING
 import cclib
 from ase.atoms import Atoms
 from cclib.io import ccread
+from monty.serialization import dumpfn
 
 from quacc import SETTINGS
 from quacc.atoms.core import get_final_atoms_from_dynamics
@@ -156,13 +155,8 @@ def cclib_summarize_run(
     )
     task_doc = clean_task_doc(unsorted_task_doc)
 
-    if SETTINGS.WRITE_PICKLE:
-        with (
-            gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
-            if SETTINGS.GZIP_FILES
-            else Path(directory, "quacc_results.pkl").open("wb")
-        ) as f:
-            pickle.dump(task_doc, f)
+    if SETTINGS.WRITE_JSON:
+        dumpfn(task_doc, Path(directory, "quacc_results.json.gz" if SETTINGS.GZIP_FILES else "quacc_results.json"))
 
     # Store the results
     if store:
@@ -259,13 +253,8 @@ def summarize_cclib_opt_run(
     )
     task_doc = recursive_dict_merge(cclib_summary, opt_run_summary)
 
-    if SETTINGS.WRITE_PICKLE:
-        with (
-            gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
-            if SETTINGS.GZIP_FILES
-            else Path(directory, "quacc_results.pkl").open("wb")
-        ) as f:
-            pickle.dump(task_doc, f)
+    if SETTINGS.WRITE_JSON:
+        dumpfn(task_doc, Path(directory, "quacc_results.json.gz" if SETTINGS.GZIP_FILES else "quacc_results.json"))
 
     # Store the results
     if store:

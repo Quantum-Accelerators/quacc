@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import gzip
-import pickle
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -12,6 +10,7 @@ from ase import units
 from ase.io import read
 from ase.vibrations import Vibrations
 from ase.vibrations.data import VibrationsData
+from monty.serialization import dumpfn
 
 from quacc import SETTINGS, __version__
 from quacc.atoms.core import get_final_atoms_from_dynamics
@@ -118,13 +117,8 @@ def summarize_run(
     unsorted_task_doc = final_atoms_metadata | inputs | results | additional_fields
     task_doc = clean_task_doc(unsorted_task_doc)
 
-    if SETTINGS.WRITE_PICKLE:
-        with (
-            gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
-            if SETTINGS.GZIP_FILES
-            else Path(directory, "quacc_results.pkl").open("wb")
-        ) as f:
-            pickle.dump(task_doc, f)
+    if SETTINGS.WRITE_JSON:
+        dumpfn(task_doc, Path(directory, "quacc_results.json.gz" if SETTINGS.GZIP_FILES else "quacc_results.json"))
 
     if store:
         results_to_db(store, task_doc)
@@ -224,13 +218,8 @@ def summarize_opt_run(
     unsorted_task_doc = base_task_doc | opt_fields | additional_fields
     task_doc = clean_task_doc(unsorted_task_doc)
 
-    if SETTINGS.WRITE_PICKLE:
-        with (
-            gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
-            if SETTINGS.GZIP_FILES
-            else Path(directory, "quacc_results.pkl").open("wb")
-        ) as f:
-            pickle.dump(task_doc, f)
+    if SETTINGS.WRITE_JSON:
+        dumpfn(task_doc, Path(directory, "quacc_results.json.gz" if SETTINGS.GZIP_FILES else "quacc_results.json"))
 
     if store:
         results_to_db(store, task_doc)
@@ -296,13 +285,8 @@ def summarize_vib_and_thermo(
 
     if isinstance(vib, Vibrations):
         directory = vib.atoms.calc.directory
-        if SETTINGS.WRITE_PICKLE:
-            with (
-                gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
-                if SETTINGS.GZIP_FILES
-                else Path(directory, "quacc_results.pkl").open("wb")
-            ) as f:
-                pickle.dump(task_doc, f)
+        dumpfn(task_doc, Path(directory, "quacc_results.json.gz" if SETTINGS.GZIP_FILES else "quacc_results.json"))
+
     if store:
         results_to_db(store, task_doc)
 

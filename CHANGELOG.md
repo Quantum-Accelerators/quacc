@@ -40,7 +40,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Added an optional MP compatability checker for MP recipes
 - Summaries for intermediate ASE optimization steps are now stored in the output schema for VASP and cclib-based recipes when `store_intermediate_results=True`
-- Added a `WRITE_PICKLE` setting, which by default, will write out a `.pkl` file containing the result schema to the directory
+- Added a `WRITE_JSON` setting, which by default, will write out a `.pkl` file containing the result schema to the directory
 
 ### Changed
 
