@@ -315,6 +315,7 @@ def test_pp_concurrent_inplace(tmp_path, monkeypatch):
             == static_results["dir_name"]
         )
 
+
 def test_projwfc_concurrent_inplace(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
@@ -341,7 +342,7 @@ def test_projwfc_concurrent_inplace(tmp_path, monkeypatch):
     def projwfc_subflow(results):
         projwfc_results = []
 
-        for _ in range(0, 10):
+        for _ in range(10):
             projwfc_results.append(
                 projwfc_job(
                     prev_outdir=results,
