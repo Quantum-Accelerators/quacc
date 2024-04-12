@@ -259,9 +259,13 @@ def ase_relax_job(
 
 @job
 def post_processing_job(
+    prev_outdir: SourceDirectory | None = None,
     copy_files: (
-        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
-    ),
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -306,7 +310,7 @@ def post_processing_job(
     }
 
     return run_and_summarize(
-        template=EspressoTemplate("pp", test_run=test_run),
+        template=EspressoTemplate("pp", test_run=test_run, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,

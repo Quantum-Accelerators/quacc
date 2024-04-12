@@ -112,6 +112,34 @@ def test_static_job_v2(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     assert Path(pp_results["dir_name"], "pseudo_charge_density.cube.gz").is_file()
 
 
+def test_static_job_outdir_inplace(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
+
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
+
+    atoms = bulk("Si")
+
+    input_data = {
+        "system": {"occupations": "smearing", "smearing": "gaussian", "degauss": 0.005},
+        "electrons": {"mixing_mode": "plain", "mixing_beta": 0.6, "conv_thr": 1.0e-6},
+        "control": {"pseudo_dir": tmp_path},
+    }
+
+    pseudopotentials = {"Si": "Si.upf"}
+
+    results = static_job(
+        atoms,
+        input_data=input_data,
+        pseudopotentials=pseudopotentials,
+        kspacing=0.5,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
+    )
+
+    pp_results = post_processing_job(prev_outdir=results["dir_name"])
+    assert Path(pp_results["dir_name"], "pseudo_charge_density.cube.gz").is_file()
+
+
 def test_static_job_outdir(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")

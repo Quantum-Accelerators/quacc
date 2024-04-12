@@ -21,6 +21,7 @@ from ase.io.espresso import (
     write_fortran_namelist,
 )
 from ase.io.espresso_namelist.keys import ALL_KEYS
+from monty.shutil import decompress_dir
 
 from quacc import SETTINGS
 from quacc.calculators.espresso.utils import (
@@ -44,7 +45,11 @@ class EspressoTemplate(EspressoTemplate_):
     """
 
     def __init__(
-        self, binary: str = "pw", test_run: bool = False, autorestart: bool = False
+        self,
+        binary: str = "pw",
+        test_run: bool = False,
+        autorestart: bool = False,
+        outdir: str | Path | None = None,
     ) -> None:
         """
         Initialize the Espresso template.
@@ -60,6 +65,9 @@ class EspressoTemplate(EspressoTemplate_):
         autorestart
             If True, the calculation will automatically switch to 'restart'
             if this calculator performs more than one run. (ASE-relax/MD/NEB)
+        outdir
+            The directory that will be used as `outdir` in the input_data. If
+            None, the directory will be set to the current working directory.
 
         Returns
         -------
@@ -79,6 +87,8 @@ class EspressoTemplate(EspressoTemplate_):
 
         self.nruns = 0
         self.autorestart = autorestart
+
+        self.outdir = outdir
 
     def write_input(
         self,
@@ -112,6 +122,9 @@ class EspressoTemplate(EspressoTemplate_):
         directory = Path(directory)
         self._output_handler(parameters, directory)
         parameters = self._sanity_checks(parameters)
+
+        if self.outdir:
+            decompress_dir(self.outdir)
 
         if self.test_run:
             self._test_run(parameters, directory)
@@ -263,7 +276,9 @@ class EspressoTemplate(EspressoTemplate_):
         os.environ.pop("ESPRESSO_FILDVSCF_DIR", None)
         os.environ.pop("ESPRESSO_FILDRHO_DIR", None)
 
-        espresso_outdir = Path(directory).expanduser().resolve()
+        espresso_outdir = self.outdir or directory
+
+        espresso_outdir = Path(espresso_outdir).expanduser().resolve()
         outkeys = espresso_prepare_dir(espresso_outdir, self.binary)
 
         input_data = parameters.get("input_data", {})
