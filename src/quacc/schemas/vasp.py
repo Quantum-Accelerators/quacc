@@ -20,7 +20,7 @@ from pymatgen.entries.compatibility import (
 )
 
 from quacc import SETTINGS
-from quacc.atoms.core import get_final_atoms_from_dyn
+from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import clean_task_doc, recursive_dict_merge
 from quacc.wflow_tools.db import results_to_db
@@ -187,7 +187,7 @@ def vasp_summarize_run(
 
 
 def summarize_vasp_opt_run(
-    dyn: Optimizer,
+    optimizer: Optimizer,
     trajectory: Trajectory | list[Atoms] | None = None,
     directory: str | Path | None = None,
     move_magmoms: bool = True,
@@ -204,7 +204,7 @@ def summarize_vasp_opt_run(
 
     Parameters
     ----------
-    dyn
+    optimizer
         The ASE optimizer object
     trajectory
         ASE Trajectory object or list[Atoms] from reading a trajectory file. If
@@ -234,10 +234,10 @@ def summarize_vasp_opt_run(
     """
     store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
 
-    final_atoms = get_final_atoms_from_dyn(dyn)
+    final_atoms = get_final_atoms_from_dynamics(optimizer)
     directory = Path(directory or final_atoms.calc.directory)
     opt_run_summary = summarize_opt_run(
-        dyn,
+        optimizer,
         trajectory=trajectory,
         check_convergence=check_convergence,
         move_magmoms=move_magmoms,
