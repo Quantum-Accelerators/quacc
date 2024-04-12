@@ -108,7 +108,7 @@ def test_static_job_v2(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     assert "kpts" not in results["parameters"]
     assert results["parameters"]["kspacing"] == 0.5
 
-    pp_results = post_processing_job(results["dir_name"])
+    pp_results = post_processing_job(copy_files=results["dir_name"])
     assert Path(pp_results["dir_name"], "pseudo_charge_density.cube.gz").is_file()
 
 

@@ -22,6 +22,7 @@ from pathlib import Path
 
 from ase.build import bulk
 
+from quacc.recipes.espresso.core import post_processing_job, static_job
 from quacc.recipes.espresso.phonons import grid_phonon_flow
 from quacc.utils.files import copy_decompress_files
 
@@ -264,3 +265,37 @@ def test_phonon_grid_v2(tmp_path, monkeypatch):
 
     for key in sections:
         assert key in grid_results["results"][1]
+
+
+def test_pp_concurrent_inplace(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
+
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
+
+    atoms = bulk("Si")
+
+    input_data = {
+        "system": {"occupations": "smearing", "smearing": "gaussian", "degauss": 0.005},
+        "electrons": {"mixing_mode": "plain", "mixing_beta": 0.6, "conv_thr": 1.0e-6},
+        "control": {"pseudo_dir": tmp_path},
+    }
+
+    pseudopotentials = {"Si": "Si.upf"}
+
+    results = static_job(
+        atoms,
+        input_data=input_data,
+        pseudopotentials=pseudopotentials,
+        kspacing=0.5,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
+    )
+
+    pp_results = []
+
+    for plot_num in [0, 1, 2, 4, 8, 123, 3]:
+        pp_results.append(
+            post_processing_job(results, input_data={"plot_num": plot_num})
+        )
+
+    # assert Path(pp_results["dir_name"], "pseudo_charge_density.cube.gz").is_file()
