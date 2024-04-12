@@ -235,15 +235,7 @@ print(result2)
 
 ### Modifying Parameters of a Job
 
-Up until now, we have told you what parameters each function accepts. In practice, this is something you will want to be able to identify yourself. Let's take a deeper dive into the [quacc.recipes.emt.core.relax_job][] for this demonstration.
-
-The first step is to read the [function signature](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.core.relax_job) for the recipe of interest to see the various parameters that can be specified. Go ahead; click it! Once you do, you'll see from the docstring that there is one required positional argument for the recipe (the `Atoms` object) and several optional keyword arguments, most notably:
-
-- The `relax_cell` keyword argument (default: `False`) can be used to toggle whether the unit cell parameters are optimized.
-- There is a keyword argument, `opt_params`, that can be used to specify several optimization-based parameters, overriding any defaults provided by the recipe.
-- All jobs can take any keyword argument supported by the underlying ASE calculator (via `**calc_kwargs`). For example, you can specify `#!Python asap_cutoff=True` since the [EMT calculator](https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html#ase.calculators.emt.EMT) supports this parameter. This is all demonstrated below.
-
-Putting it all together, you can modify these parameters like in the example below:
+As demonstrated in the previous example, each recipe accepts optional keyword arguments to modify the default parameters. To identify the possible parameters a function takes, you'll want to check out the function signature and corresponding documentation, like that for [quacc.recipes.emt.core.relax_job][]. Go ahead; click it! Once you do, you'll see from the docstring that there is one required positional argument for the recipe (the `Atoms` object) and several optional keyword arguments, including those related to the underlying ASE calculator, the optimization settings, and more. You can modify these parameters like in the example below:
 
 ```python
 from ase.build import bulk
