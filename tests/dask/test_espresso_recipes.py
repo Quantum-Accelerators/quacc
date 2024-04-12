@@ -282,27 +282,33 @@ def test_pp_concurrent_inplace(tmp_path, monkeypatch):
 
     pseudopotentials = {"Si": "Si.upf"}
 
-    results = static_job(
+    static_results = static_job(
         atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.5
     )
 
+    static_results = client.compute(static_results).result()
+
     @subflow
     def pp_subflow(results):
+
         pp_results = []
 
         for plot_num in [0, 1, 2, 4, 8, 123, 3]:
             pp_results.append(
                 post_processing_job(
-                    prev_outdir=results["dir_name"], input_data={"plot_num": plot_num}
+                    prev_outdir=results, input_data={"plot_num": plot_num}
                 )
             )
-        
+
         return pp_results
 
-    future = pp_subflow(results)
+    future = pp_subflow(static_results["dir_name"])
     pp_results = client.compute(future).result()
-    
+
     for pp_result in pp_results:
         assert Path(pp_result["dir_name"], "pseudo_charge_density.cube.gz").is_file()
 
-        assert pp_result["parameters"]["input_data"]["inputpp"]["outdir"] == pp_result["dir_name"]
+        assert (
+            pp_result["parameters"]["input_data"]["inputpp"]["outdir"]
+            == static_results["dir_name"]
+        )
