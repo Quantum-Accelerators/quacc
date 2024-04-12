@@ -9,6 +9,7 @@ import gzip
 from shutil import which
 
 from dask.distributed import default_client
+
 from quacc import SETTINGS
 
 pytestmark = pytest.mark.skipif(
@@ -20,6 +21,7 @@ pytestmark = pytest.mark.skipif(
 from pathlib import Path
 
 from ase.build import bulk
+
 from quacc import subflow
 from quacc.recipes.espresso.core import post_processing_job, static_job
 from quacc.recipes.espresso.phonons import grid_phonon_flow
@@ -290,7 +292,6 @@ def test_pp_concurrent_inplace(tmp_path, monkeypatch):
 
     @subflow
     def pp_subflow(results):
-
         pp_results = []
 
         for plot_num in [0, 1, 2, 4, 8, 123, 3]:
