@@ -31,13 +31,13 @@ dependencies = [
     "cclib>=1.8", # for I/O parsing of molecular DFT codes
     "custodian>=2024.3.12", # for automated error corrections
     "emmet-core>=0.80.0", # for pre-made schemas
-    "maggma<=0.63.4", # for database handling
+    "maggma>=0.64.0", # for database handling
     "monty>=2024.2.26", # miscellaneous Python utilities
     "numpy>=1.25.0", # for array handling
     "psutil", # for getting compute architecture details
     "pydantic>=2.0.1", # for settings management
     "pydantic-settings>=2.2.0", # for settings management
-    "pymatgen>=2024.2.20", # for structure manipulation
+    "pymatgen>=2024.4.12", # for structure manipulation
     "typer>=0.12.1", # for the CLI
 ]
 
