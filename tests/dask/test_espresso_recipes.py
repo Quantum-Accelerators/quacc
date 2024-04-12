@@ -305,4 +305,4 @@ def test_pp_concurrent_inplace(tmp_path, monkeypatch):
     for pp_result in pp_results:
         assert Path(pp_result["dir_name"], "pseudo_charge_density.cube.gz").is_file()
 
-        assert pp_result["parameters"]["input_data"]["input_pp"]["outdir"] == pp_result["dir_name"]
+        assert pp_result["parameters"]["input_data"]["inputpp"]["outdir"] == pp_result["dir_name"]
