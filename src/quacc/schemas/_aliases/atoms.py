@@ -15,6 +15,5 @@ class AtomsSchema(StructureMetadata, MoleculeMetadata):
     """Type hint associated with [quacc.schemas.atoms.atoms_to_metadata][]"""
 
     atoms: Atoms
-    atoms_info: dict[str, Any]  # from atoms.info
     structure: Structure  # if atoms.pbc.any()
     molecule: Molecule  # if not atoms.pbc.any()

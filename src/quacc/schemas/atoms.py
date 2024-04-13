@@ -82,9 +82,6 @@ def atoms_to_metadata(
     else:
         metadata = {}
 
-    # Copy the info flags as a separate entry in the DB for easy querying
-    results["atoms_info"] = deepcopy(atoms.info)
-
     # Store Atoms object
     results["atoms"] = atoms
 
