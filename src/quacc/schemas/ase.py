@@ -12,7 +12,6 @@ from ase import units
 from ase.io import read
 from ase.vibrations import Vibrations
 from ase.vibrations.data import VibrationsData
-from pymatgen.io.ase import MSONAtoms
 
 from quacc import SETTINGS, __version__
 from quacc.atoms.core import get_final_atoms_from_dynamics
@@ -187,7 +186,6 @@ def summarize_opt_run(
             if hasattr(dyn, "traj_atoms")
             else read(dyn.trajectory.filename, index=":")
         )
-    trajectory = [MSONAtoms(atoms) for atoms in trajectory]
 
     initial_atoms = trajectory[0]
     final_atoms = get_final_atoms_from_dynamics(dyn)
