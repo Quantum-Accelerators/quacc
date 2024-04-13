@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from quacc.schemas._aliases.emmet import MoleculeMetadata, StructureMetadata
 
