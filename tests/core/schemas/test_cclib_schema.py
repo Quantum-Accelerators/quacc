@@ -209,7 +209,7 @@ def test_cclib_calculate(tmp_path, monkeypatch, cclib_obj):
             cube_file=FILE_DIR / "test_files" / "cclib_data" / "psi_test.cube",
         )
 
-    with pytest.raises(Exception):
+    with pytest.raises(FileNotFoundError):
         _cclib_calculate(
             cclib_obj,
             method="ddec6",
