@@ -34,9 +34,13 @@ if TYPE_CHECKING:
 @job
 def bands_pw_job(
     atoms: Atoms,
+    prev_outdir: SourceDirectory | None = None,
     copy_files: (
-        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
-    ),
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
     make_bandpath: bool = True,
     line_density: float = 20,
     force_gamma: bool = True,
@@ -55,6 +59,10 @@ def bands_pw_job(
     ----------
     atoms
         The Atoms object.
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     copy_files
         Source directory or directories to copy files from. If a `SourceDirectory` or a
         list of `SourceDirectory` is provided, this interface will automatically guess
@@ -105,7 +113,7 @@ def bands_pw_job(
 
     return run_and_summarize(
         atoms,
-        template=EspressoTemplate("pw", test_run=test_run),
+        template=EspressoTemplate("pw", test_run=test_run, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
@@ -117,9 +125,13 @@ def bands_pw_job(
 @job
 def bands_pp_job(
     atoms: Atoms,
+    prev_outdir: SourceDirectory | None = None,
     copy_files: (
-        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
-    ),
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -133,6 +145,10 @@ def bands_pp_job(
     ----------
     atoms
         The Atoms object.
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     copy_files
         Source directory or directories to copy files from. If a `SourceDirectory` or a
         list of `SourceDirectory` is provided, this interface will automatically guess
@@ -158,7 +174,7 @@ def bands_pp_job(
     """
     return run_and_summarize(
         atoms,
-        template=EspressoTemplate("bands", test_run=test_run),
+        template=EspressoTemplate("bands", test_run=test_run, outdir=prev_outdir),
         calc_defaults={},
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
@@ -170,9 +186,13 @@ def bands_pp_job(
 @job
 def fermi_surface_job(
     atoms: Atoms,
+    prev_outdir: SourceDirectory | None = None,
     copy_files: (
-        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
-    ),
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -185,6 +205,10 @@ def fermi_surface_job(
     ----------
     atoms
         The Atoms object.
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     copy_files
         Source directory or directories to copy files from. If a `SourceDirectory` or a
         list of `SourceDirectory` is provided, this interface will automatically guess
@@ -210,7 +234,7 @@ def fermi_surface_job(
     """
     return run_and_summarize(
         atoms,
-        template=EspressoTemplate("fs", test_run=test_run),
+        template=EspressoTemplate("fs", test_run=test_run, outdir=prev_outdir),
         calc_defaults={},
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,

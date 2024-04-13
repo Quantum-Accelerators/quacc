@@ -39,9 +39,13 @@ if TYPE_CHECKING:
 
 @job
 def phonon_job(
+    prev_outdir: SourceDirectory | None = None,
     copy_files: (
-        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
-    ),
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     use_phcg: bool = False,
@@ -57,6 +61,10 @@ def phonon_job(
 
     Parameters
     ----------
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     copy_files
         Source directory or directories to copy files from. If a `SourceDirectory` or a
         list of `SourceDirectory` is provided, this interface will automatically guess
@@ -94,7 +102,7 @@ def phonon_job(
     binary = "phcg" if use_phcg else "ph"
 
     return run_and_summarize(
-        template=EspressoTemplate(binary, test_run=test_run),
+        template=EspressoTemplate(binary, test_run=test_run, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
@@ -105,9 +113,13 @@ def phonon_job(
 
 @job
 def q2r_job(
+    prev_outdir: SourceDirectory | None = None,
     copy_files: (
-        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
-    ),
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
     parallel_info: dict[str] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -121,6 +133,10 @@ def q2r_job(
 
     Parameters
     ----------
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     copy_files
         Source directory or directories to copy files from. If a `SourceDirectory` or a
         list of `SourceDirectory` is provided, this interface will automatically guess
@@ -143,7 +159,7 @@ def q2r_job(
     """
 
     return run_and_summarize(
-        template=EspressoTemplate("q2r"),
+        template=EspressoTemplate("q2r", outdir=prev_outdir),
         calc_defaults={},
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
@@ -154,9 +170,13 @@ def q2r_job(
 
 @job
 def matdyn_job(
+    prev_outdir: SourceDirectory | None = None,
     copy_files: (
-        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
-    ),
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
     parallel_info: dict[str] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -171,6 +191,10 @@ def matdyn_job(
 
     Parameters
     ----------
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     copy_files
         Source directory or directories to copy files from. If a `SourceDirectory` or a
         list of `SourceDirectory` is provided, this interface will automatically guess
@@ -193,7 +217,7 @@ def matdyn_job(
     """
 
     return run_and_summarize(
-        template=EspressoTemplate("matdyn"),
+        template=EspressoTemplate("matdyn", outdir=prev_outdir),
         calc_defaults={},
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
@@ -477,9 +501,13 @@ def grid_phonon_flow(
 
 @job
 def dvscf_q2r_job(
+    prev_outdir: SourceDirectory | None = None,
     copy_files: (
-        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
-    ),
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
     parallel_info: dict[str] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -516,6 +544,10 @@ def dvscf_q2r_job(
 
     Parameters
     ----------
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     copy_files
         Source directory or directories to copy files from. If a `SourceDirectory` or a
         list of `SourceDirectory` is provided, this interface will automatically guess
@@ -538,7 +570,7 @@ def dvscf_q2r_job(
     """
 
     return run_and_summarize(
-        template=EspressoTemplate("dvscf_q2r"),
+        template=EspressoTemplate("dvscf_q2r", outdir=prev_outdir),
         calc_defaults={},
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
@@ -549,9 +581,13 @@ def dvscf_q2r_job(
 
 @job
 def postahc_job(
+    prev_outdir: SourceDirectory | None = None,
     copy_files: (
-        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
-    ),
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
     parallel_info: dict[str] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -573,6 +609,10 @@ def postahc_job(
 
     Parameters
     ----------
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     copy_files
         Source directory or directories to copy files from. If a `SourceDirectory` or a
         list of `SourceDirectory` is provided, this interface will automatically guess
@@ -595,7 +635,7 @@ def postahc_job(
     """
 
     return run_and_summarize(
-        template=EspressoTemplate("postahc"),
+        template=EspressoTemplate("postahc", outdir=prev_outdir),
         calc_defaults={},
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,

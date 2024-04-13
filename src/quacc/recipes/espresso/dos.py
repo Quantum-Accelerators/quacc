@@ -31,9 +31,13 @@ if TYPE_CHECKING:
 
 @job
 def dos_job(
+    prev_outdir: SourceDirectory | None = None,
     copy_files: (
-        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
-    ),
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -46,6 +50,10 @@ def dos_job(
 
     Parameters
     ----------
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     copy_files
         Source directory or directories to copy files from. If a `SourceDirectory` or a
         list of `SourceDirectory` is provided, this interface will automatically guess
@@ -67,7 +75,7 @@ def dos_job(
         See the type-hint for the data structure.
     """
     return run_and_summarize(
-        template=EspressoTemplate("dos", test_run=test_run),
+        template=EspressoTemplate("dos", test_run=test_run, outdir=prev_outdir),
         calc_defaults=None,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,

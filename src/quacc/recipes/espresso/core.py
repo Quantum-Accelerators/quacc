@@ -109,6 +109,7 @@ def relax_job(
     relax_cell: bool = False,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
+    prev_outdir: SourceDirectory | None = None,
     copy_files: (
         SourceDirectory
         | list[SourceDirectory]
@@ -136,6 +137,10 @@ def relax_job(
     test_run
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     copy_files
         Source directory or directories to copy files from. If a `SourceDirectory` or a
         list of `SourceDirectory` is provided, this interface will automatically guess
@@ -164,7 +169,7 @@ def relax_job(
     return run_and_summarize(
         atoms,
         preset=preset,
-        template=EspressoTemplate("pw", test_run=test_run),
+        template=EspressoTemplate("pw", test_run=test_run, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
@@ -181,6 +186,7 @@ def ase_relax_job(
     relax_cell: bool = False,
     parallel_info: dict[str] | None = None,
     opt_params: dict[str, Any] | None = None,
+    prev_outdir: SourceDirectory | None = None,
     copy_files: (
         SourceDirectory
         | list[SourceDirectory]
@@ -213,6 +219,10 @@ def ase_relax_job(
     opt_params
         Dictionary of custom kwargs for the optimization process. For a list
         of available keys, refer to [quacc.runners.ase.run_opt][].
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     copy_files
         Source directory or directories to copy files from. If a `SourceDirectory` or a
         list of `SourceDirectory` is provided, this interface will automatically guess
@@ -246,7 +256,7 @@ def ase_relax_job(
         atoms,
         preset=preset,
         relax_cell=relax_cell,
-        template=EspressoTemplate("pw", autorestart=autorestart),
+        template=EspressoTemplate("pw", autorestart=autorestart, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         opt_defaults=opt_defaults,
@@ -326,9 +336,13 @@ def post_processing_job(
 @job
 def non_scf_job(
     atoms: Atoms,
+    prev_outdir: SourceDirectory | None = None,
     copy_files: (
-        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
-    ),
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
@@ -341,6 +355,10 @@ def non_scf_job(
     ----------
     atoms
         The Atoms object.
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     copy_files
         Source directory or directories to copy files from. If a `SourceDirectory` or a
         list of `SourceDirectory` is provided, this interface will automatically guess
@@ -373,7 +391,7 @@ def non_scf_job(
     return run_and_summarize(
         atoms,
         preset=preset,
-        template=EspressoTemplate("pw", test_run=test_run),
+        template=EspressoTemplate("pw", test_run=test_run, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
