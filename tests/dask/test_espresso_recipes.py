@@ -23,11 +23,10 @@ from pathlib import Path
 from ase.build import bulk
 
 from quacc import subflow
-from quacc.recipes.espresso.core import post_processing_job, static_job, non_scf_job
-from quacc.recipes.espresso.dos import projwfc_job, dos_job
-from quacc.recipes.espresso.phonons import q2r_job, matdyn_job, dvscf_q2r_job, postahc_job
-from quacc.recipes.espresso.bands import bands_pp_job, bands_pw_job
-from quacc.recipes.espresso.phonons import grid_phonon_flow
+from quacc.recipes.espresso.core import post_processing_job, static_job
+from quacc.recipes.espresso.phonons import (
+    grid_phonon_flow,
+)
 from quacc.utils.files import copy_decompress_files
 
 DATA_DIR = (
@@ -316,6 +315,7 @@ def test_pp_concurrent_inplace(tmp_path, monkeypatch):
             pp_result["parameters"]["input_data"]["inputpp"]["outdir"]
             == static_results["dir_name"]
         )
+
 
 def test_pp_concurrent_inplace(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
