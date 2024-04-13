@@ -128,7 +128,6 @@ def test_cclib_summarize_run(tmp_path, monkeypatch):
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
     results = cclib_summarize_run(atoms, ".log", directory=tmp_path / "test1")
     assert atoms.info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
-    assert results.get("atoms_info", {}) != {}
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
 

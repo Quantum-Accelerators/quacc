@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-import gzip
 import os
-import pickle
 from copy import deepcopy
 from pathlib import Path
 
@@ -16,6 +14,7 @@ from ase.units import invcm
 from ase.vibrations import Vibrations
 from maggma.stores import MemoryStore
 from monty.json import MontyDecoder, jsanitize
+from monty.serialization import loadfn
 
 from quacc.schemas.ase import (
     _summarize_ideal_gas_thermo,
@@ -42,13 +41,12 @@ def test_summarize_run(tmpdir, monkeypatch):
     assert results["input_atoms"]["atoms"] == initial_atoms
     assert Path(results["dir_name"]).is_dir()
 
-    with gzip.open(Path(results["dir_name"], "quacc_results.pkl.gz"), "rb") as f:
-        pickle_results = pickle.load(f)
-    assert pickle_results.keys() == results.keys()
+    json_results = loadfn(Path(results["dir_name"], "quacc_results.json.gz"))
+    assert json_results.keys() == results.keys()
 
-    assert pickle_results["nsites"] == results["nsites"]
-    assert pickle_results["results"]["energy"] == results["results"]["energy"]
-    assert pickle_results["atoms"].info == results["atoms"].info
+    assert json_results["nsites"] == results["nsites"]
+    assert json_results["results"]["energy"] == results["results"]["energy"]
+    assert json_results["atoms"].info == results["atoms"].info
 
 
 def test_summarize_run2(tmp_path, monkeypatch):
@@ -70,7 +68,7 @@ def test_summarize_run3(tmp_path, monkeypatch):
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
     results = summarize_run(atoms, initial_atoms)
     assert atoms.info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
-    assert results.get("atoms_info", {}) != {}
+    assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
 
 def test_summarize_run4(tmp_path, monkeypatch):
@@ -136,15 +134,14 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
     assert results["fmax"] == dyn.fmax
     assert results["parameters_opt"]["max_steps"] == 100
 
-    with gzip.open(Path(results["dir_name"], "quacc_results.pkl.gz"), "rb") as f:
-        pickle_results = pickle.load(f)
+    json_results = loadfn(Path(results["dir_name"], "quacc_results.json.gz"))
 
-    assert pickle_results.keys() == results.keys()
+    assert json_results.keys() == results.keys()
 
     # assert things on the trajectory are the same
-    assert pickle_results["trajectory"] == results["trajectory"]
+    assert json_results["trajectory"] == results["trajectory"]
     assert (
-        pickle_results["trajectory_results"][-1]["energy"]
+        json_results["trajectory_results"][-1]["energy"]
         == results["trajectory_results"][-1]["energy"]
     )
 
@@ -180,7 +177,6 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
     dyn.run()
 
     results = summarize_opt_run(dyn)
-    assert results.get("atoms_info", {}) != {}
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
     # test document can be jsanitized and decoded
@@ -247,7 +243,6 @@ def test_summarize_vib_run(tmp_path, monkeypatch):
     vib.run()
 
     results = _summarize_vib_run(vib)
-    assert results.get("atoms_info", {}) != {}
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
     # test document can be jsanitized and decoded
@@ -313,7 +308,6 @@ def test_summarize_ideal_gas_thermo(tmp_path, monkeypatch):
         [0.0, 0.34], "linear", atoms=atoms, potentialenergy=-1, spin=0, symmetrynumber=2
     )
     results = _summarize_ideal_gas_thermo(igt)
-    assert results.get("atoms_info", {}) != {}
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
     # Make sure spin works right
