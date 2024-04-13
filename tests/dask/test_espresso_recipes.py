@@ -24,9 +24,7 @@ from ase.build import bulk
 
 from quacc import subflow
 from quacc.recipes.espresso.core import post_processing_job, static_job
-from quacc.recipes.espresso.phonons import (
-    grid_phonon_flow,
-)
+from quacc.recipes.espresso.phonons import grid_phonon_flow
 from quacc.utils.files import copy_decompress_files
 
 DATA_DIR = (
