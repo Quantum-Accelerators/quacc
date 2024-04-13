@@ -457,7 +457,7 @@ class QuaccSettings(BaseSettings):
         from maggma import stores
 
         if isinstance(v, dict):
-            store_name = list(v.keys())[0]
+            store_name = next(iter(v.keys()))
             store = getattr(stores, store_name)
 
             return store(**v[store_name])

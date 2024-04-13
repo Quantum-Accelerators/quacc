@@ -120,47 +120,51 @@ exclude_also = [
 
 [tool.ruff]
 lint.select = [
+  "A",      # flake8-builtins
+  "ARG",    # flake8-unused-arguments
+  "ASYNC",  # flake8-async
   "B",      # flake8-bugbear
   "C4",     # flake8-comprehensions
+  "DTZ",    # flake8-datetimez
   "E",      # pycodestyle error
   "EXE",    # flake8-executable
   "F",      # pyflakes
   "FA",     # flake8-future-annotations
-  "FBT003", # boolean-positional-value-in-call
   "FLY",    # flynt
   "I",      # isort
   "ICN",    # flake8-import-conventions
+  "INT",    # flake8-gettext
+  "ISC",    # flake8-implicit-str-concat
+  "LOG",    # flake8-logging
+  "NPY",    # numpy-specific rules
   "PD",     # pandas-vet
   "PERF",   # perflint
   "PIE",    # flake8-pie
   "PL",     # pylint
   "PT",     # flake8-pytest-style
-  "PYI",    # flakes8-pyi
+  "PTH",    # flake8-use-pathlib
+  "PYI",    # flake8-pyi
   "Q",      # flake8-quotes
   "RET",    # flake8-return
   "RSE",    # flake8-raise
   "RUF",    # Ruff-specific rules
   "SIM",    # flake8-simplify
   "SLOT",   # flake8-slots
+  "T20",    # flake8-print
   "TCH",    # flake8-type-checking
   "TID",    # flake8-tidy-imports
+  "TRIO",   # flake8-trio
   "UP",     # pyupgrade
   "W",      # pycodestyle warning
   "YTT",    # flake8-2020
 ]
 lint.ignore = [
-  "PLR",    # Design related pylint codes
   "E501",   # Line too long
-  "B028",   # No explicit stacklevel
-  "EM101",  # Exception must not use a string literal
-  "EM102",  # Exception must not use an f-string literal
-  "G004",   # f-string in Logging statement
-  "RUF015", # Prefer next(iter())
-  "RET505", # Unnecessary `elif` after `return`
-  "PT004",  # Fixture does not return anthing
-  "B017",   # pytest.raises
+  "PLR",    # Design related pylint codes
+  "PT004",  # Fixture does not return anything
   "PT011",  # pytest.raises
   "PT012",  # pytest.raises
+  "RET505", # Unnecessary `elif` after `return`
 ]
 src = ["src"]
 lint.pydocstyle.convention = "numpy"
@@ -170,7 +174,7 @@ extend-include = ["*.ipynb"]
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
-"tests/**" = ["ANN201", "D", "E402", "S101"]
+"tests/**" = ["ANN", "ARG", "D", "E402", "PTH", "S101"]
 "src/quacc/settings.py" = ["FBT003", "TCH002", "UP007"]
 
 [tool.docformatter]
