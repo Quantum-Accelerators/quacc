@@ -125,7 +125,6 @@ lint.select = [
   "ASYNC",  # flake8-async
   "B",      # flake8-bugbear
   "C4",     # flake8-comprehensions
-  "D",      # pydocstyle
   "DTZ",    # flake8-datetimez
   "E",      # pycodestyle error
   "EXE",    # flake8-executable
@@ -160,7 +159,6 @@ lint.select = [
   "YTT",    # flake8-2020
 ]
 lint.ignore = [
-  "D100", "D101", "D102", "D103", "D104", "D105", "D106", "D107", "D200", "D205", "D206", "D400", "D401", "D402", "D404", "D414", "D417", "D418", "D419",   # unfixables
   "E501",   # Line too long
   "PLR",    # Design related pylint codes
   "PT004",  # Fixture does not return anything
