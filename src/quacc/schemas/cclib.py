@@ -13,7 +13,6 @@ from typing import TYPE_CHECKING
 import cclib
 from ase.atoms import Atoms
 from cclib.io import ccread
-from monty.json import jsanitize
 
 from quacc import SETTINGS
 from quacc.atoms.core import get_final_atoms_from_dynamics
@@ -328,7 +327,7 @@ def _make_cclib_schema(
         raise RuntimeError(msg)
 
     # Fetch all the attributes (i.e. all input/outputs from cclib)
-    attributes = jsanitize(cclib_obj.getattributes())
+    attributes = cclib_obj.getattributes()
 
     # monty datetime bug workaround:
     # github.com/materialsvirtuallab/monty/issues/275

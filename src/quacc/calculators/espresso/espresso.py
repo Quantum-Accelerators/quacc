@@ -270,7 +270,6 @@ class EspressoTemplate(EspressoTemplate_):
         dict[str, Any]
             The merged kwargs
         """
-
         os.environ.pop("ESPRESSO_TMPDIR", None)
         os.environ.pop("ESPRESSO_FILDVSCF_DIR", None)
         os.environ.pop("ESPRESSO_FILDRHO_DIR", None)

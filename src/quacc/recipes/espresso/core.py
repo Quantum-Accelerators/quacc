@@ -84,7 +84,6 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     is_metal = check_is_metal(atoms)
 
     calc_defaults = BASE_SET_METAL if is_metal else BASE_SET_NON_METAL
@@ -158,7 +157,6 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     is_metal = check_is_metal(atoms)
 
     calc_defaults = BASE_SET_METAL if is_metal else BASE_SET_NON_METAL
@@ -240,7 +238,6 @@ def ase_relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     is_metal = check_is_metal(atoms)
 
     calc_defaults = BASE_SET_METAL if is_metal else BASE_SET_NON_METAL
