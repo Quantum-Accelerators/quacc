@@ -162,15 +162,11 @@ lint.ignore = [
   "PT011",  # pytest.raises
   "PT012",  # pytest.raises
 ]
-lint.typing-modules = ["mypackage._compat.typing"]
 src = ["src"]
-lint.unfixable = [
-  "T20",  # Removes print statements
-  "F841", # Removes unused variables
-]
 lint.pydocstyle.convention = "numpy"
 lint.isort.known-first-party = ["quacc"]
 lint.isort.required-imports = ["from __future__ import annotations"]
+extend-include = ["*.ipynb"]
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
