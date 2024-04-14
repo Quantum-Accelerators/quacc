@@ -306,5 +306,5 @@ def safe_decompress_dir(path: str | Path) -> None:
         for f in files:
             try:
                 decompress_file(Path(parent, f))
-            except FileNotFoundError: # noqa: PERF203
+            except FileNotFoundError:  # noqa: PERF203
                 logger.warning(f"Cannot find {f} in {parent}. Skipping.")
