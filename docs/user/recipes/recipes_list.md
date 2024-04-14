@@ -189,17 +189,17 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 
 <center>
 
-| Name                     | Decorator        | Documentation                                       | Req'd Extras |
-| ------------------------ | ---------------- | --------------------------------------------------- | ------------ |
-| Espresso Static          | `#!Python @job`  | [quacc.recipes.espresso.core.static_job][]          |              |
-| Espresso Relax           | `#!Python @job`  | [quacc.recipes.espresso.core.relax_job][]           |              |
-| Espresso ASE Relax       | `#!Python @job`  | [quacc.recipes.espresso.core.relax_job][]           |              |
-| Espresso Post Processing | `#!Python @job`  | [quacc.recipes.espresso.core.post_processing_job][] |              |
-| Espresso Phonon          | `#!Python @job`  | [quacc.recipes.espresso.phonons.phonon_job][]       |              |
-| Espresso Grid Phonon     | `#!Python @flow` | [quacc.recipes.espresso.phonons.grid_phonon_flow][] |              |
-| Espresso Q2R             | `#!Python @job`  | [quacc.recipes.espresso.phonons.q2r_job][]          |              |
-| Espresso Matdyn          | `#!Python @job`  | [quacc.recipes.espresso.phonons.matdyn_job][]       |              |
-| Espresso Phonon DOS Flow | `#!Python @flow` | [quacc.recipes.espresso.phonons.phonon_dos_flow][]  |              |
+| Name                     | Decorator        | Documentation                                       | Req'd Extras | `prev_outdir` compatibility |
+| ------------------------ | ---------------- | --------------------------------------------------- | ------------ | --------------------------- |
+| Espresso Static          | `#!Python @job`  | [quacc.recipes.espresso.core.static_job][]          |              | Non-concurrent                        |
+| Espresso Relax           | `#!Python @job`  | [quacc.recipes.espresso.core.relax_job][]           |              | Non-concurrent                        |
+| Espresso ASE Relax       | `#!Python @job`  | [quacc.recipes.espresso.core.relax_job][]           |              | Non-concurrent                        |
+| Espresso Post Processing | `#!Python @job`  | [quacc.recipes.espresso.core.post_processing_job][] |              | Full                        |
+| Espresso Phonon          | `#!Python @job`  | [quacc.recipes.espresso.phonons.phonon_job][]       |              | Non-concurrent              |
+| Espresso Grid Phonon     | `#!Python @flow` | [quacc.recipes.espresso.phonons.grid_phonon_flow][] |              | None                        |
+| Espresso Q2R             | `#!Python @job`  | [quacc.recipes.espresso.phonons.q2r_job][]          |              | None                        |
+| Espresso Matdyn          | `#!Python @job`  | [quacc.recipes.espresso.phonons.matdyn_job][]       |              | None                        |
+| Espresso Phonon DOS Flow | `#!Python @flow` | [quacc.recipes.espresso.phonons.phonon_dos_flow][]  |              | 
 | Espresso DVSCF Q2R       | `#!Python @job`  | [quacc.recipes.espresso.phonons.dvscf_q2r_job][]    |              |
 | Espresso PostAHC         | `#!Python @job`  | [quacc.recipes.espresso.phonons.postahc_job][]      |              |
 | Espresso Non-SCF         | `#!Python @job`  | [quacc.recipes.espresso.core.non_scf_job][]         |              |
