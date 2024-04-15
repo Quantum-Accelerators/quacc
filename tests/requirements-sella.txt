@@ -1,1 +1,1 @@
-sella==2.3.3
+sella @ git+https://github.com/zadorlab/sella.git@refs/pull/37/merge
