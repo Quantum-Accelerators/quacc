@@ -161,6 +161,7 @@ lint.select = [
 lint.ignore = [
   "E501",   # Line too long
   "PLR",    # Design related pylint codes
+  "PERF203",  # try-except-in-loop
   "PT004",  # Fixture does not return anything
   "PT011",  # pytest.raises
   "PT012",  # pytest.raises
