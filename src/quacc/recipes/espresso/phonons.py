@@ -157,7 +157,6 @@ def q2r_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     return run_and_summarize(
         template=EspressoTemplate("q2r", outdir=prev_outdir),
         calc_defaults={},
@@ -215,7 +214,6 @@ def matdyn_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     return run_and_summarize(
         template=EspressoTemplate("matdyn", outdir=prev_outdir),
         calc_defaults={},
@@ -568,7 +566,6 @@ def dvscf_q2r_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     return run_and_summarize(
         template=EspressoTemplate("dvscf_q2r", outdir=prev_outdir),
         calc_defaults={},
@@ -633,7 +630,6 @@ def postahc_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     return run_and_summarize(
         template=EspressoTemplate("postahc", outdir=prev_outdir),
         calc_defaults={},

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from quacc.schemas._aliases.emmet import MoleculeMetadata, StructureMetadata
 
@@ -15,6 +15,5 @@ class AtomsSchema(StructureMetadata, MoleculeMetadata):
     """Type hint associated with [quacc.schemas.atoms.atoms_to_metadata][]"""
 
     atoms: Atoms
-    atoms_info: dict[str, Any]  # from atoms.info
     structure: Structure  # if atoms.pbc.any()
     molecule: Molecule  # if not atoms.pbc.any()
