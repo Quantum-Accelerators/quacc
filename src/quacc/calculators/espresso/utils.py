@@ -78,7 +78,6 @@ def grid_copy_files(
     dict
         The dictionary of files to copy
     """
-
     lqdir = ph_input_data["inputph"].get("lqdir", False)
 
     files_to_copy = {
@@ -152,7 +151,6 @@ def espresso_prepare_dir(outdir: str | Path, binary: str = "pw") -> dict[str, An
     dict
         Input data for the espresso calculation
     """
-
     outkeys = {
         "pw": {"control": {"prefix": "pwscf", "outdir": outdir, "wfcdir": Remove}},
         "ph": {
@@ -217,11 +215,11 @@ def prepare_copy_files(
         The input data for the espresso calculation
     binary
         The binary to use for the espresso calculation
+
     Returns
     -------
         The modified dictionary
     """
-
     to_copy = []
 
     pw_base = [
@@ -268,7 +266,7 @@ def prepare_copy_files(
             [Path("pwscf.save", "data-file-schema.*"), Path("pwscf.save", "paw.*")]
         )
 
-    elif binary in ["ph", "phcg"]:
+    elif binary in {"ph", "phcg"}:
         to_copy.extend(pw_base)
         to_copy.append(Path("pwscf.save", "wfc*.*"))
 
@@ -296,16 +294,14 @@ def prepare_copy_files(
             to_copy.append(Path("_ph*", "pwscf.phsave"))
 
         if ldvscf_interpolate:
-            to_copy.append(Path("_ph*", "pwscf.dvscf*"))
-            to_copy.append(Path("w_pot"))
-
+            to_copy.extend((Path("_ph*", "pwscf.dvscf*"), Path("w_pot")))
             if lqdir:
                 to_copy.append(Path("_ph*", "pwscf.q_*", "pwscf.dvscf*"))
 
-    elif binary in ["dos", "fs"]:
+    elif binary in {"dos", "fs"}:
         to_copy.extend(pw_base)
 
-    elif binary in ["projwfc", "bands"]:
+    elif binary in {"projwfc", "bands"}:
         to_copy.extend(pw_base)
         to_copy.append(Path("pwscf.save", "wfc*.*"))
 
@@ -357,7 +353,6 @@ def remove_conflicting_kpts_kspacing(
     dict
         The modified dictionary
     """
-
     if "kpts" in reference_dict:
         to_change_dict.pop("kspacing", None)
     if "kspacing" in reference_dict:

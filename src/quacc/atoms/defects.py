@@ -112,11 +112,11 @@ def make_defects_from_bulk(
         )
 
         # Instantiate class to apply rattle and bond distortion to all defects
-        Dist = Distortions([defect_entry])
+        dist = Distortions([defect_entry])
 
         # Apply rattle and bond distortion to all defects
-        defect_dict, distortion_metadata = Dist.apply_distortions()
-        defect_symbol = list(distortion_metadata["defects"].keys())[0]
+        defect_dict, distortion_metadata = dist.apply_distortions()
+        defect_symbol = next(iter(distortion_metadata["defects"].keys()))
         distortion_dict = defect_dict[defect_symbol]["charges"][defect_charge][
             "structures"
         ]["distortions"]
