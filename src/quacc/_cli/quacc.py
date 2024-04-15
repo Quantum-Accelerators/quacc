@@ -190,9 +190,9 @@ def _delete_setting(key: str, config_file: Path) -> None:
     -------
     None
     """
-    import ruamel.yaml
+    from ruamel.yaml import YAML
 
-    yaml = ruamel.yaml.YAML()
+    yaml = YAML()
     if config_file.exists():
         with config_file.open() as yaml_file:
             yaml_content = yaml.load(yaml_file)

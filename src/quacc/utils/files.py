@@ -12,10 +12,10 @@ from random import randint
 from shutil import copy
 from typing import TYPE_CHECKING
 
-import yaml
 from monty.io import zopen
 from monty.os.path import zpath
 from monty.shutil import copy_r, decompress_dir, decompress_file
+from ruamel.yaml import YAML
 
 if TYPE_CHECKING:
     from typing import Any
@@ -211,8 +211,7 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
         raise FileNotFoundError(msg)
 
     # Load YAML file
-    with yaml_path.open() as stream:
-        config = yaml.safe_load(stream)
+    config = YAML().load(yaml_path)
 
     # Inherit arguments from any parent YAML files but do not overwrite those in
     # the child file.
