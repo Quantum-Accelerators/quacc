@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from copy import deepcopy
 from typing import TYPE_CHECKING
 
 from emmet.core.structure import MoleculeMetadata, StructureMetadata
@@ -81,9 +80,6 @@ def atoms_to_metadata(
                 results["molecule"] = mol
     else:
         metadata = {}
-
-    # Copy the info flags as a separate entry in the DB for easy querying
-    results["atoms_info"] = deepcopy(atoms.info)
 
     # Store Atoms object
     results["atoms"] = atoms
