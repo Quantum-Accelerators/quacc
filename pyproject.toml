@@ -37,7 +37,7 @@ dependencies = [
     "psutil", # for getting compute architecture details
     "pydantic>=2.0.1", # for settings management
     "pydantic-settings>=2.2.0", # for settings management
-    "pymatgen>=2024.4.12", # for structure manipulation
+    "pymatgen>=2024.4.13", # for structure manipulation
     "ruamel.yaml>=0.17.40", # for YAML
     "typer>=0.12.1", # for the CLI
 ]
@@ -161,6 +161,7 @@ lint.select = [
 lint.ignore = [
   "E501",   # Line too long
   "PLR",    # Design related pylint codes
+  "PERF203",  # try-except-in-loop
   "PT004",  # Fixture does not return anything
   "PT011",  # pytest.raises
   "PT012",  # pytest.raises
