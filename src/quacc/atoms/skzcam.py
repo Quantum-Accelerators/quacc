@@ -352,12 +352,13 @@ def convert_pun_to_atoms(
 
     return embedded_cluster
 
+
 def insert_adsorbate_to_embedded_cluster(
     embedded_cluster: Atoms,
     adsorbate: Atoms,
     adsorbate_vector_from_slab: NDArray,
-    quantum_cluster_idx: list[list[int]] = None,
-    ecp_region_idx: list[list[int]] = None
+    quantum_cluster_idx: list[list[int]] | None = None,
+    ecp_region_idx: list[list[int]] | None = None,
 ) -> tuple[Atoms, list[list[int]], list[list[int]]]:
     """
     Insert the adsorbate into the embedded cluster and update the quantum cluster and ECP region indices.
@@ -388,7 +389,6 @@ def insert_adsorbate_to_embedded_cluster(
     # Remove PBC from the adsorbate
     adsorbate.set_pbc([False, False, False])
 
-
     # Translate the adsorbate to the correct position relative to the slab
     adsorbate.translate(-adsorbate[0].position + adsorbate_vector_from_slab)
 
@@ -401,9 +401,13 @@ def insert_adsorbate_to_embedded_cluster(
 
     # Update the quantum cluster and ECP region indices
     if quantum_cluster_idx is not None:
-        quantum_cluster_idx = [[idx + len(adsorbate) for idx in cluster] for cluster in quantum_cluster_idx]
+        quantum_cluster_idx = [
+            [idx + len(adsorbate) for idx in cluster] for cluster in quantum_cluster_idx
+        ]
     if ecp_region_idx is not None:
-        ecp_region_idx = [[idx + len(adsorbate) for idx in cluster] for cluster in ecp_region_idx]
+        ecp_region_idx = [
+            [idx + len(adsorbate) for idx in cluster] for cluster in ecp_region_idx
+        ]
 
     return embedded_cluster, quantum_cluster_idx, ecp_region_idx
 
