@@ -352,6 +352,61 @@ def convert_pun_to_atoms(
 
     return embedded_cluster
 
+def insert_adsorbate_to_embedded_cluster(
+    embedded_cluster: Atoms,
+    adsorbate: Atoms,
+    adsorbate_vector_from_slab: NDArray,
+    quantum_cluster_idx: list[list[int]] = None,
+    ecp_region_idx: list[list[int]] = None
+) -> tuple[Atoms, list[list[int]], list[list[int]]]:
+    """
+    Insert the adsorbate into the embedded cluster and update the quantum cluster and ECP region indices.
+
+    Parameters
+    ----------
+    embedded_cluster
+        The ASE Atoms object containing the atomic coordinates and atomic charges from the .pun file.
+    adsorbate
+        The ASE Atoms object of the adsorbate molecule.
+    adsorbate_vector_from_slab
+        The vector from the first atom of the embedded cluster to the center of mass of the adsorbate.
+    quantum_cluster_idx
+        A list of lists containing the indices of the atoms in each quantum cluster.
+    ecp_region_idx
+        A list of lists containing the indices of the atoms in the ECP region for each quantum cluster.
+
+    Returns
+    -------
+    Atoms
+        The ASE Atoms object containing the adsorbate and embedded cluster
+    list[list[int]]
+        A list of lists containing the indices of the atoms in each quantum cluster.
+    list[list[int]]
+        A list of lists containing the indices of the atoms in the ECP region for each quantum cluster.
+    """
+
+    # Remove PBC from the adsorbate
+    adsorbate.set_pbc([False, False, False])
+
+
+    # Translate the adsorbate to the correct position relative to the slab
+    adsorbate.translate(-adsorbate[0].position + adsorbate_vector_from_slab)
+
+    # Set oxi_state and atom_type arrays for the adsorbate
+    adsorbate.set_array("oxi_states", np.array([0.0] * len(adsorbate)))
+    adsorbate.set_array("atom_type", np.array(["adsorbate"] * len(adsorbate)))
+
+    # Add the adsorbate to the embedded cluster
+    embedded_cluster = adsorbate.copy() + embedded_cluster.copy()
+
+    # Update the quantum cluster and ECP region indices
+    if quantum_cluster_idx is not None:
+        quantum_cluster_idx = [[idx + len(adsorbate) for idx in cluster] for cluster in quantum_cluster_idx]
+    if ecp_region_idx is not None:
+        ecp_region_idx = [[idx + len(adsorbate) for idx in cluster] for cluster in ecp_region_idx]
+
+    return embedded_cluster, quantum_cluster_idx, ecp_region_idx
+
 
 def _get_atom_distances(embedded_cluster: Atoms, center_position: NDArray) -> NDArray:
     """
