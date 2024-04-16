@@ -93,8 +93,8 @@ def grid_copy_files(
         files_to_copy[directory].extend(
             [
                 Path("pwscf.save", "charge-density.*"),
-                Path("pwscf.save", "data-file-schema.xml.*"),
-                Path("pwscf.save", "paw.txt.*"),
+                Path("pwscf.save", "data-file-schema.xml*"),
+                Path("pwscf.save", "paw.txt*"),
                 Path("pwscf.save", "wfc*.*"),
             ]
         )
@@ -193,7 +193,7 @@ def espresso_prepare_dir(outdir: str | Path, binary: str = "pw") -> dict[str, An
             "input": {
                 "prefix": "pwscf",
                 "fildyn": "matdyn",
-                "outdir": ".",
+                "outdir": outdir,
                 "wpot_dir": Remove,
             }
         },
