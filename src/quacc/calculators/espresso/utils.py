@@ -93,8 +93,8 @@ def grid_copy_files(
         files_to_copy[directory].extend(
             [
                 Path("pwscf.save", "charge-density.*"),
-                Path("pwscf.save", "data-file-schema.xml.*"),
-                Path("pwscf.save", "paw.txt.*"),
+                Path("pwscf.save", "data-file-schema.xml*"),
+                Path("pwscf.save", "paw.txt*"),
                 Path("pwscf.save", "wfc*.*"),
             ]
         )
