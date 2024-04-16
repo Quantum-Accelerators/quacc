@@ -60,9 +60,9 @@ def get_cluster_info_from_slab(
     slab = adsorbate_slab[slab_idx].copy()
 
     # Find index of the first center atom of the slab as listed in slab_center_idx
-    slab_first_atom_idx = [
+    slab_first_atom_idx = next(
         index for index, x in enumerate(slab_idx) if x == slab_center_idx[0]
-    ][0]
+    )
 
     # Get the centre of the cluster from the atom indices
     slab_center_position = np.zeros(3)
@@ -154,11 +154,13 @@ def generate_chemshell_cluster(
     )
 
     # Save the final cluster to a .pun file
-    chemsh_embedded_cluster.save(Path(directory,filename).with_suffix(".pun"), "pun")
+    chemsh_embedded_cluster.save(Path(directory, filename).with_suffix(".pun"), "pun")
 
     if write_xyz_file:
         # XYZ for visualisation
-        chemsh_embedded_cluster.save(Path(directory,filename).with_suffix(".xyz"), "xyz")
+        chemsh_embedded_cluster.save(
+            Path(directory, filename).with_suffix(".xyz"), "xyz"
+        )
 
 
 def create_skzcam_clusters(
