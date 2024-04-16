@@ -29,12 +29,11 @@ def create_skzcam_clusters(
     write_include_ecp: bool = False,
 ) -> list[list[int]]:
     """
-    Returns a list of list containing the indices of the atoms (in embedded_cluster) which form the quantum clusters in the SKZCAM protocol. The number of clusters created is controlled by the rdf_max parameter.
+    Returns a list of list containing the indices of the atoms (in embedded_cluster) which form the quantum clusters in the SKZCAM protocol.
+    The number of clusters created is controlled by the rdf_max parameter.
 
     Parameters
     ----------
-    embedded_cluster
-        The ASE Atoms object containing the atomic coordinates AND the atom types (i.e. cation or anion).
     pun_file
         The path to the .pun file created by ChemShell to be read.
     center_position
@@ -212,6 +211,8 @@ def _get_atom_distances(embedded_cluster: Atoms, center_position: NDArray) -> ND
     ----------
     embedded_cluster
         The ASE Atoms object containing the atomic coordinates of the embedded cluster.
+    center_position
+        The position of the center of the embedded cluster (i.e., position of the adsorbate).
 
     Returns
     -------
