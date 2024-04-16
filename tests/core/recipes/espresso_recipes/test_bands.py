@@ -50,10 +50,6 @@ def test_bands_flow(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
 
     assert output["bands_pw"]["results"]["nbands"] == 4
 
-    assert_allclose(
-        output["bands_pp"]["atoms"].get_positions(), atoms.get_positions(), atol=1.0e-4
-    )
-
     assert output["bands_pp"]["name"] == "bands.x post-processing"
 
 

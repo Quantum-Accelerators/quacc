@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import contextlib
 import logging
+import os
 import socket
 from copy import deepcopy
 from datetime import datetime, timezone
@@ -313,3 +314,20 @@ def write_schema_to_json(
     sanitized_schema = jsanitize(schema, enum_values=True, recursive_msonable=True)
     dumpfn(sanitized_schema, filepath)
     return sanitized_schema
+
+def safe_decompress_dir(path: str | Path) -> None:
+    """
+    Recursively decompresses all files in a directory.
+    This is a wrapper around the `decompress_file` function.
+
+
+    Args:
+        path (str | Path): Path to parent directory.
+    """
+    path = Path(path)
+    for parent, _, files in os.walk(path):
+        for f in files:
+            try:
+                decompress_file(Path(parent, f))
+            except FileNotFoundError:
+                logger.debug(f"Cannot find {f} in {parent}. Skipping.")
