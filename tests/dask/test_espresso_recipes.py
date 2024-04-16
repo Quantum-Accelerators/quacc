@@ -5,6 +5,7 @@ import pytest
 dask = pytest.importorskip("dask")
 pytest.importorskip("distributed")
 
+import gzip
 from shutil import which
 
 from dask.distributed import default_client
@@ -20,7 +21,6 @@ pytestmark = pytest.mark.skipif(
 from pathlib import Path
 
 from ase.build import bulk
-from monty.io import zopen
 
 from quacc.recipes.espresso.phonons import grid_phonon_flow
 from quacc.utils.files import copy_decompress_files
@@ -78,7 +78,7 @@ def test_phonon_grid_single(tmp_path, monkeypatch):
 
     assert outfile.exists()
 
-    with zopen(outfile, "r") as fd:
+    with gzip.open(outfile, "r") as fd:
         lines = str(fd.read())
 
     assert "Self-consistent Calculation" not in lines

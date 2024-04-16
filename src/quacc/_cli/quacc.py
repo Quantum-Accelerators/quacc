@@ -38,7 +38,7 @@ def callback(value: bool) -> None:
 
 @app.callback()
 def main(
-    version: Optional[bool] = typer.Option(  # noqa: UP007
+    version: Optional[bool] = typer.Option(  # noqa: ARG001, UP007
         None,
         "--version",
         "-v",
@@ -81,15 +81,15 @@ def set_(parameter: str, new_value: str) -> None:
     from quacc import SETTINGS
     from quacc.settings import _DEFAULT_CONFIG_FILE_PATH
 
-    CONFIG_FILE = SETTINGS.CONFIG_FILE or _DEFAULT_CONFIG_FILE_PATH
+    config_file = SETTINGS.CONFIG_FILE or _DEFAULT_CONFIG_FILE_PATH
     parameter = parameter.upper()
 
     settings = _type_handler({parameter: new_value})
     new_value = settings[parameter]
     _parameter_handler(parameter, SETTINGS.model_dump(), value=new_value)
 
-    rich_print(f"Setting `{parameter}` to `{new_value}` in {CONFIG_FILE}")
-    _update_setting(parameter, new_value, CONFIG_FILE)
+    rich_print(f"Setting `{parameter}` to `{new_value}` in {config_file}")
+    _update_setting(parameter, new_value, config_file)
 
 
 @app.command()
@@ -190,9 +190,9 @@ def _delete_setting(key: str, config_file: Path) -> None:
     -------
     None
     """
-    import ruamel.yaml
+    from ruamel.yaml import YAML
 
-    yaml = ruamel.yaml.YAML()
+    yaml = YAML()
     if config_file.exists():
         with config_file.open() as yaml_file:
             yaml_content = yaml.load(yaml_file)

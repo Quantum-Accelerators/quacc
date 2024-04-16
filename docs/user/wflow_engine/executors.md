@@ -26,6 +26,10 @@ In the previous examples, we have been running calculations on our local machine
 
         Unlike most other workflow engines, Parsl is built for the [pilot job model](https://en.wikipedia.org/wiki/Pilot_job) where the allocated nodes continually pull in new jobs to run. This makes it possible to avoid submitting a large number of small jobs to the scheduler, which can be inefficient from a queuing perspective.
 
+    !!! Tip "Globus Compute"
+
+        If you want to run Parsl workflows on remote, distributed computing resources, check out [Globus Compute](https://github.com/globus/globus-compute) and the corresponding [tutorial](https://globus-compute.readthedocs.io/en/latest/tutorial.html#running-parsl-workflows).
+
 === "Prefect"
 
     To scale up calculations, read about the concept of a Prefect [task runner](https://docs.prefect.io/latest/concepts/task-runners/). By default, `quacc` automatically submits all `#!Python @job`-decorated functions to the specified task runner and so concurrency is achieved by default.

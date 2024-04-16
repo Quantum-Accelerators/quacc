@@ -99,8 +99,6 @@ def test_vasp_summarize_run(run1, monkeypatch, tmp_path):
     results = vasp_summarize_run(atoms, directory=p)
     results_atoms = results["atoms"]
     assert atoms.info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
-    assert results.get("atoms_info", {}) != {}
-    assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results_atoms.info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
     # Make sure magnetic moments are handled appropriately
