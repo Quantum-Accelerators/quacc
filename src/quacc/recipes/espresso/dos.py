@@ -31,13 +31,13 @@ if TYPE_CHECKING:
 
 @job
 def dos_job(
-    prev_outdir: SourceDirectory | None = None,
     copy_files: (
         SourceDirectory
         | list[SourceDirectory]
         | dict[SourceDirectory, Filenames]
         | None
     ) = None,
+    prev_outdir: SourceDirectory | None = None,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -50,16 +50,16 @@ def dos_job(
 
     Parameters
     ----------
-    prev_outdir
-        The output directory of a previous calculation. If provided, Quantum Espresso
-        will directly read the necessary files from this directory, eliminating the need
-        to manually copy files. The directory will be ungzipped if necessary.
     copy_files
         Source directory or directories to copy files from. If a `SourceDirectory` or a
         list of `SourceDirectory` is provided, this interface will automatically guess
         which files have to be copied over by looking at the binary and `input_data`.
         If a dict is provided, the mode is manual, keys are source directories and values
         are relative path to files or directories to copy. Glob patterns are supported.
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -86,13 +86,13 @@ def dos_job(
 
 @job
 def projwfc_job(
-    prev_outdir: SourceDirectory | None = None,
     copy_files: (
         SourceDirectory
         | list[SourceDirectory]
         | dict[SourceDirectory, Filenames]
         | None
     ) = None,
+    prev_outdir: SourceDirectory | None = None,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -105,16 +105,16 @@ def projwfc_job(
 
     Parameters
     ----------
-    prev_outdir
-        The output directory of a previous calculation. If provided, Quantum Espresso
-        will directly read the necessary files from this directory, eliminating the need
-        to manually copy files. The directory will be ungzipped if necessary.
     copy_files
         Source directory or directories to copy files from. If a `SourceDirectory` or a
         list of `SourceDirectory` is provided, this interface will automatically guess
         which files have to be copied over by looking at the binary and `input_data`.
         If a dict is provided, the mode is manual, keys are source directories and values
         are relative path to files or directories to copy. Glob patterns are supported.
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -210,9 +210,9 @@ def dos_flow(
 
     static_results = static_job_(atoms)
 
-    non_scf_results = non_scf_job_(atoms, static_results["dir_name"])
+    non_scf_results = non_scf_job_(atoms, prev_outdir=static_results["dir_name"])
 
-    dos_results = dos_job_(non_scf_results["dir_name"])
+    dos_results = dos_job_(prev_outdir=non_scf_results["dir_name"])
 
     return {
         "static_job": static_results,
@@ -292,9 +292,9 @@ def projwfc_flow(
 
     static_results = static_job_(atoms)
 
-    non_scf_results = non_scf_job_(atoms, static_results["dir_name"])
+    non_scf_results = non_scf_job_(atoms, prev_outdir=static_results["dir_name"])
 
-    projwfc_results = projwfc_job_(non_scf_results["dir_name"])
+    projwfc_results = projwfc_job_(prev_outdir=non_scf_results["dir_name"])
 
     return {
         "static_job": static_results,

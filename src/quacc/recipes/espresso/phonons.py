@@ -39,13 +39,13 @@ if TYPE_CHECKING:
 
 @job
 def phonon_job(
-    prev_outdir: SourceDirectory | None = None,
     copy_files: (
         SourceDirectory
         | list[SourceDirectory]
         | dict[SourceDirectory, Filenames]
         | None
     ) = None,
+    prev_outdir: SourceDirectory | None = None,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     use_phcg: bool = False,
@@ -61,16 +61,16 @@ def phonon_job(
 
     Parameters
     ----------
-    prev_outdir
-        The output directory of a previous calculation. If provided, Quantum Espresso
-        will directly read the necessary files from this directory, eliminating the need
-        to manually copy files. The directory will be ungzipped if necessary.
     copy_files
         Source directory or directories to copy files from. If a `SourceDirectory` or a
         list of `SourceDirectory` is provided, this interface will automatically guess
         which files have to be copied over by looking at the binary and `input_data`.
         If a dict is provided, the mode is manual, keys are source directories and values
         are relative path to files or directories to copy. Glob patterns are supported.
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -113,7 +113,6 @@ def phonon_job(
 
 @job
 def q2r_job(
-    prev_outdir: SourceDirectory | None = None,
     copy_files: (
         SourceDirectory
         | list[SourceDirectory]
@@ -133,10 +132,6 @@ def q2r_job(
 
     Parameters
     ----------
-    prev_outdir
-        The output directory of a previous calculation. If provided, Quantum Espresso
-        will directly read the necessary files from this directory, eliminating the need
-        to manually copy files. The directory will be ungzipped if necessary.
     copy_files
         Source directory or directories to copy files from. If a `SourceDirectory` or a
         list of `SourceDirectory` is provided, this interface will automatically guess
@@ -158,7 +153,7 @@ def q2r_job(
         See the type-hint for the data structure.
     """
     return run_and_summarize(
-        template=EspressoTemplate("q2r", outdir=prev_outdir),
+        template=EspressoTemplate("q2r"),
         calc_defaults={},
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
@@ -169,7 +164,6 @@ def q2r_job(
 
 @job
 def matdyn_job(
-    prev_outdir: SourceDirectory | None = None,
     copy_files: (
         SourceDirectory
         | list[SourceDirectory]
@@ -190,10 +184,6 @@ def matdyn_job(
 
     Parameters
     ----------
-    prev_outdir
-        The output directory of a previous calculation. If provided, Quantum Espresso
-        will directly read the necessary files from this directory, eliminating the need
-        to manually copy files. The directory will be ungzipped if necessary.
     copy_files
         Source directory or directories to copy files from. If a `SourceDirectory` or a
         list of `SourceDirectory` is provided, this interface will automatically guess
@@ -215,7 +205,7 @@ def matdyn_job(
         See the type-hint for the data structure.
     """
     return run_and_summarize(
-        template=EspressoTemplate("matdyn", outdir=prev_outdir),
+        template=EspressoTemplate("matdyn"),
         calc_defaults={},
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
@@ -304,9 +294,9 @@ def phonon_dos_flow(
     )
 
     pw_job_results = pw_job(atoms)
-    ph_job_results = ph_job(pw_job_results["dir_name"])
-    fc_job_results = fc_job(ph_job_results["dir_name"])
-    dos_job_results = dos_job(fc_job_results["dir_name"])
+    ph_job_results = ph_job(prev_outdir=pw_job_results["dir_name"])
+    fc_job_results = fc_job(copy_files=ph_job_results["dir_name"])
+    dos_job_results = dos_job(copy_files=fc_job_results["dir_name"])
 
     return {
         "relax_job": pw_job_results,
@@ -431,13 +421,15 @@ def grid_phonon_flow(
         ph_input_data = Namelist(ph_input_data)
         ph_input_data.to_nested(binary="ph")
 
+        prev_outdir = ph_init_job_results["parameters"]["inputph"]["outdir"]
+
         grid_results = []
         for qnum, qdata in ph_init_job_results["results"].items():
             ph_input_data["inputph"]["start_q"] = qnum
             ph_input_data["inputph"]["last_q"] = qnum
             repr_to_do = grid_prepare_repr(qdata["representations"], nblocks)
             files_to_copy = grid_copy_files(
-                ph_input_data, ph_init_job_results["dir_name"], qnum, qdata["qpoint"]
+                ph_input_data, prev_outdir, qnum, qdata["qpoint"]
             )
             for representation in repr_to_do:
                 ph_input_data["inputph"]["start_irr"] = representation[0]
@@ -488,7 +480,7 @@ def grid_phonon_flow(
 
     pw_job_results = pw_job(atoms)
 
-    ph_init_job_results = ph_init_job(pw_job_results["dir_name"])
+    ph_init_job_results = ph_init_job(prev_outdir=pw_job_results["dir_name"])
 
     grid_results = _grid_phonon_subflow(
         job_params["ph_job"]["input_data"], ph_init_job_results, ph_job, nblocks=nblocks
@@ -499,13 +491,13 @@ def grid_phonon_flow(
 
 @job
 def dvscf_q2r_job(
-    prev_outdir: SourceDirectory | None = None,
     copy_files: (
         SourceDirectory
         | list[SourceDirectory]
         | dict[SourceDirectory, Filenames]
         | None
     ) = None,
+    prev_outdir: SourceDirectory | None = None,
     parallel_info: dict[str] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -542,16 +534,16 @@ def dvscf_q2r_job(
 
     Parameters
     ----------
-    prev_outdir
-        The output directory of a previous calculation. If provided, Quantum Espresso
-        will directly read the necessary files from this directory, eliminating the need
-        to manually copy files. The directory will be ungzipped if necessary.
     copy_files
         Source directory or directories to copy files from. If a `SourceDirectory` or a
         list of `SourceDirectory` is provided, this interface will automatically guess
         which files have to be copied over by looking at the binary and `input_data`.
         If a dict is provided, the mode is manual, keys are source directories and values
         are relative path to files or directories to copy. Glob patterns are supported.
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -582,13 +574,13 @@ def dvscf_q2r_job(
 
 @job
 def postahc_job(
-    prev_outdir: SourceDirectory | None = None,
     copy_files: (
         SourceDirectory
         | list[SourceDirectory]
         | dict[SourceDirectory, Filenames]
         | None
     ) = None,
+    prev_outdir: SourceDirectory | None = None,
     parallel_info: dict[str] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -610,16 +602,16 @@ def postahc_job(
 
     Parameters
     ----------
-    prev_outdir
-        The output directory of a previous calculation. If provided, Quantum Espresso
-        will directly read the necessary files from this directory, eliminating the need
-        to manually copy files. The directory will be ungzipped if necessary.
     copy_files
         Source directory or directories to copy files from. If a `SourceDirectory` or a
         list of `SourceDirectory` is provided, this interface will automatically guess
         which files have to be copied over by looking at the binary and `input_data`.
         If a dict is provided, the mode is manual, keys are source directories and values
         are relative path to files or directories to copy. Glob patterns are supported.
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
