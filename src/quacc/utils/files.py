@@ -315,6 +315,7 @@ def write_schema_to_json(
     dumpfn(sanitized_schema, filepath)
     return sanitized_schema
 
+
 def safe_decompress_dir(path: str | Path) -> None:
     """
     Recursively decompresses all files in a directory.
