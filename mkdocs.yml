@@ -32,7 +32,7 @@ nav:
           - user/db/context.md
           - user/db/basics.md
       - Miscellaneous:
-          - user/advanced/file_transfers.md
+          - user/misc/file_transfers.md
   - Code Documentation 📖: reference/
   - Developer Guide 🤝:
       - dev/contributing.md
