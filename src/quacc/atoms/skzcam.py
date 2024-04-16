@@ -53,7 +53,7 @@ def get_cluster_info_from_slab(
 
     # Find indices (within adsorbate_slab) of the slab
     slab_idx = [i for i, _ in enumerate(adsorbate_slab) if i not in adsorbate_idx]
-    
+
     # Create slab from adsorbate_slab
     slab = adsorbate_slab[slab_idx]
 
@@ -158,9 +158,7 @@ def generate_chemshell_cluster(
 
     if write_xyz_file:
         # XYZ for visualisation
-        chemsh_embedded_cluster.save(
-            Path(filepath).with_suffix(".xyz"), "xyz"
-        )
+        chemsh_embedded_cluster.save(Path(filepath).with_suffix(".xyz"), "xyz")
 
 
 def create_skzcam_clusters(
