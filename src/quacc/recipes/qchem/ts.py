@@ -10,6 +10,7 @@ from quacc import SETTINGS, job, strip_decorator
 from quacc.recipes.qchem._base import run_and_summarize_opt
 from quacc.recipes.qchem.core import _BASE_SET, relax_job
 from quacc.utils.dicts import recursive_dict_merge
+from quacc.utils.coords import perturb
 
 try:
     from sella import IRC, Sella
@@ -267,6 +268,11 @@ def quasi_irc_perturb_job(
         factor, perhaps to 1.0 or 1.1. Lowering it is not generally found to be helpful.
     direction
         Direction of the (Quasi)IRC. Should be "forward" or "reverse".
+    method
+        DFT exchange-correlation functional or other electronic structure
+        method.
+    basis
+        Basis set.
     opt_params
         Dictionary of custom kwargs for the optimization process. For a list
         of available keys, refer to [quacc.runners.ase.run_opt][].
@@ -283,20 +289,6 @@ def quasi_irc_perturb_job(
     OptSchema
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
-    
-    def perturb(mol: Atoms, vector: List[List[float]], scale: float):
-        mol_copy = copy.deepcopy(mol)
-        mode_copy = copy.deepcopy(vector)
-
-        orig_pos = mol_copy.get_positions()
-
-        if not isinstance(mode_copy, np.ndarray):
-            mode_copy = np.asarray(mode_copy)
-
-        pos = orig_pos + mode_copy * scale
-        mol_copy.set_positions(pos)
-
-        return mol_copy
 
     calc_defaults = recursive_dict_merge(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
