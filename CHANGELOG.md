@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.6]
+
+### Fixed
+
+- Fixed file extension for the optimizer trajectories, which should have been `.json` instead of `.pckl`
+
+## [0.7.5]
+
+### Changed
+
+- Removed the `atoms_info` field from the `AtomsSchema` since this is already available in the database via Pymatgen's `MSONAtoms` serialization
+
 ## [0.7.4]
 
 ### Changed

@@ -186,7 +186,7 @@ def run_opt(
     optimizer_kwargs = recursive_dict_merge(
         {
             "logfile": "-" if SETTINGS.DEBUG else tmpdir / "opt.log",
-            "restart": tmpdir / "opt.pckl",
+            "restart": tmpdir / "opt.json",
         },
         optimizer_kwargs,
     )

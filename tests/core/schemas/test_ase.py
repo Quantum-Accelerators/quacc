@@ -68,8 +68,6 @@ def test_summarize_run3(tmp_path, monkeypatch):
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
     results = summarize_run(atoms, initial_atoms)
     assert atoms.info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
-    assert results.get("atoms_info", {}) != {}
-    assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
 
@@ -179,8 +177,6 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
     dyn.run()
 
     results = summarize_opt_run(dyn)
-    assert results.get("atoms_info", {}) != {}
-    assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
     # test document can be jsanitized and decoded
@@ -247,8 +243,6 @@ def test_summarize_vib_run(tmp_path, monkeypatch):
     vib.run()
 
     results = _summarize_vib_run(vib)
-    assert results.get("atoms_info", {}) != {}
-    assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
     # test document can be jsanitized and decoded
@@ -314,8 +308,6 @@ def test_summarize_ideal_gas_thermo(tmp_path, monkeypatch):
         [0.0, 0.34], "linear", atoms=atoms, potentialenergy=-1, spin=0, symmetrynumber=2
     )
     results = _summarize_ideal_gas_thermo(igt)
-    assert results.get("atoms_info", {}) != {}
-    assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
     # Make sure spin works right
