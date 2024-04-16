@@ -436,17 +436,19 @@ def mp_metagga_relax_flow(
     MPMetaGGARelaxFlowSchema
         Dictionary of results. See the type-hint for the data structure.
     """
-    (mp_metagga_prerelax_job_, mp_metagga_relax_job_, mp_metagga_static_job_) = (
-        customize_funcs(
-            [
-                "mp_metagga_prerelax_job",
-                "mp_metagga_relax_job",
-                "mp_metagga_static_job",
-            ],
-            [mp_metagga_prerelax_job, mp_metagga_relax_job, mp_metagga_static_job],
-            parameters=job_params,
-            decorators=job_decorators,
-        )
+    (
+        mp_metagga_prerelax_job_,
+        mp_metagga_relax_job_,
+        mp_metagga_static_job_,
+    ) = customize_funcs(
+        [
+            "mp_metagga_prerelax_job",
+            "mp_metagga_relax_job",
+            "mp_metagga_static_job",
+        ],
+        [mp_metagga_prerelax_job, mp_metagga_relax_job, mp_metagga_static_job],
+        parameters=job_params,
+        decorators=job_decorators,
     )
 
     # Run the prerelax

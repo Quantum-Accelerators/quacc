@@ -19,4 +19,7 @@ def mock_generate_chemshell_cluster(*args, **kwargs):
 @pytest.fixture(autouse=True)
 def patch_generate_chemshell_cluster(monkeypatch):
     from quacc.atoms import skzcam
-    monkeypatch.setattr(skzcam, "generate_chemshell_cluster", mock_generate_chemshell_cluster)
+
+    monkeypatch.setattr(
+        skzcam, "generate_chemshell_cluster", mock_generate_chemshell_cluster
+    )
