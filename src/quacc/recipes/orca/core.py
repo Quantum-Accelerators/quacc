@@ -293,9 +293,9 @@ def ase_relax_job(
 @job
 def ase_quasi_irc_perturb_job(
     atoms: Atoms,
+    mode: List[List[float]],
     charge: int = 0,
     spin_multiplicity: int = 1,
-    mode: List[List[float]],
     perturb_magnitude: float = 0.6,
     direction: Literal["forward", "reverse"] = "forward",
     xc: str = "wb97x-d3bj",
