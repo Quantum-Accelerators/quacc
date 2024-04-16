@@ -361,6 +361,8 @@ def _get_atom_distances(embedded_cluster: Atoms, center_position: NDArray) -> ND
     ----------
     embedded_cluster
         The ASE Atoms object containing the atomic coordinates of the embedded cluster.
+    center_position
+        The position of the center of the embedded cluster (i.e., position of the adsorbate).
 
     Returns
     -------
