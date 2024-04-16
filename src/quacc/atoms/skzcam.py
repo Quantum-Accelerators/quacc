@@ -1,15 +1,14 @@
 from __future__ import annotations
 
+from importlib.util import find_spec
 from pathlib import Path
 from typing import TYPE_CHECKING
-from importlib.util import find_spec
 
 import numpy as np
 from ase.atoms import Atoms
 from ase.data import atomic_numbers
 from ase.io import read, write
 from ase.units import Bohr
-
 from monty.dev import requires
 from monty.io import zopen
 from monty.os.path import zpath
@@ -18,6 +17,7 @@ if TYPE_CHECKING:
     from numpy.typing import NDArray
 
 has_chemshell = find_spec("chemsh") is not None
+
 
 def get_cluster_info_from_slab(
     adsorbate_slab_file: Path, slab_center_idx: list[int], adsorbate_idx: list[int]
