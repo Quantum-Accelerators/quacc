@@ -181,7 +181,7 @@ def test_generate_chemshell_cluster(tmpdir):
         slab,
         30,
         {"Mg": 2.0, "O": -2.0},
-        filepath=Path(tmpdir,"ChemShell_cluster"),
+        filepath=Path(tmpdir, "ChemShell_cluster"),
         chemsh_radius_active=15.0,
         chemsh_radius_cluster=25.0,
         write_xyz_file=True,
