@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from importlib.util import find_spec
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -8,19 +9,14 @@ from ase.atoms import Atoms
 from ase.data import atomic_numbers
 from ase.io import read, write
 from ase.units import Bohr
-
-try:
-    from chemsh.io.tools import convert_atoms_to_frag
-
-    chemshell_module = True
-except ImportError:
-    chemshell_module = None
 from monty.dev import requires
 from monty.io import zopen
 from monty.os.path import zpath
 
 if TYPE_CHECKING:
     from numpy.typing import NDArray
+
+has_chemshell = find_spec("chemsh") is not None
 
 
 def get_cluster_info_from_slab(
@@ -98,7 +94,7 @@ def get_cluster_info_from_slab(
     )
 
 
-@requires(chemshell_module, "ChemShell is not installed")
+@requires(has_chemshell, "ChemShell is not installed")
 def generate_chemshell_cluster(
     slab: Atoms,
     slab_center_idx: int,
@@ -134,6 +130,7 @@ def generate_chemshell_cluster(
     write_xyz_file
         Whether to write an XYZ file of the cluster for visualisation.
     """
+    from chemsh.io.tools import convert_atoms_to_frag
 
     # Translate slab such that first Mg atom is at 0,0,0
     slab.translate(-slab.get_positions()[slab_center_idx])
@@ -364,6 +361,8 @@ def _get_atom_distances(embedded_cluster: Atoms, center_position: NDArray) -> ND
     ----------
     embedded_cluster
         The ASE Atoms object containing the atomic coordinates of the embedded cluster.
+    center_position
+        The position of the center of the embedded cluster (i.e., position of the adsorbate).
 
     Returns
     -------
