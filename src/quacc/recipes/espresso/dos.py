@@ -212,7 +212,7 @@ def dos_flow(
 
     non_scf_results = non_scf_job_(atoms, prev_outdir=static_results["dir_name"])
 
-    dos_results = dos_job_(prev_outdir=non_scf_results["dir_name"])
+    dos_results = dos_job_(prev_outdir=static_results["dir_name"])
 
     return {
         "static_job": static_results,
