@@ -6,9 +6,9 @@ import numpy as np
 import pytest
 from ase import Atoms
 from ase.io import read
+import io, sys
 
 try:
-    from chemsh import *
     from chemsh.io.tools import convert_atoms_to_frag
 
     chemshell_module = True
@@ -23,7 +23,7 @@ from quacc.atoms.skzcam import (
     convert_pun_to_atoms,
     create_skzcam_clusters,
     get_cluster_info_from_slab,
-    run_chemshell,
+	generate_chemshell_cluster
 )
 
 FILE_DIR = Path(__file__).parent
@@ -32,7 +32,7 @@ FILE_DIR = Path(__file__).parent
 @pytest.fixture()
 def embedded_cluster():
     return convert_pun_to_atoms(
-        FILE_DIR / "mgo_shells_cluster.pun.gz", {"Mg": 2.0, "O": -2.0}
+        Path(FILE_DIR, "skzcam_files", "mgo_shells_cluster.pun.gz"), {"Mg": 2.0, "O": -2.0}
     )
 
 
@@ -49,7 +49,7 @@ def test_get_cluster_info_from_slab():
         center_position,
         adsorbate_vector_from_slab,
     ) = get_cluster_info_from_slab(
-        FILE_DIR / "NO_MgO.poscar.gz", adsorbate_idx=[0, 1], slab_center_idx=[32, 33]
+        Path(FILE_DIR , "skzcam_files", "NO_MgO.poscar.gz"), adsorbate_idx=[0, 1], slab_center_idx=[32, 33]
     )
 
     # Check adsorbate matches reference
@@ -174,23 +174,28 @@ def test_get_cluster_info_from_slab():
 
 
 @pytest.mark.skipif(chemshell_module is None, reason="py-ChemShell is not installed")
-def test_run_chemshell():
+def test_generate_chemshell_cluster(tmpdir):
     # First create the slab
-    slab = read(FILE_DIR / "NO_MgO.poscar.gz")
+    slab = read(Path(FILE_DIR ,"skzcam_files", "NO_MgO.poscar.gz"))
     slab = slab[2:].copy()
 
     # Run ChemShell
-    run_chemshell(
-        slab,
-        30,
-        {"Mg": 2.0, "O": -2.0},
-        chemsh_radius_active=15.0,
-        chemsh_radius_cluster=25.0,
-        write_xyz_file=True,
-    )
+    # text_trap = io.StringIO()
+    # sys.stdout = text_trap
+    generate_chemshell_cluster(
+				slab,
+				30,
+				{"Mg": 2.0, "O": -2.0},
+				filename="ChemShell_cluster",
+				directory=Path(tmpdir), 
+				chemsh_radius_active=15.0,
+				chemsh_radius_cluster=25.0,
+				write_xyz_file=True,
+			)
+    # sys.stdout = sys.__stdout__
 
     # Read the output .xyz file
-    chemshell_embedded_cluster = read("ChemShell_cluster.xyz")
+    chemshell_embedded_cluster = read(Path(tmpdir, "ChemShell_cluster.xyz"))
 
     # Check that the positions and atomic numbers match reference
     np.testing.assert_allclose(
@@ -320,7 +325,7 @@ def test_run_chemshell():
 
 def test_convert_pun_to_atoms():
     embedded_cluster = convert_pun_to_atoms(
-        FILE_DIR / "mgo_shells_cluster.pun.gz", {"Mg": 2.0, "O": -2.0}
+        Path(FILE_DIR, "skzcam_files", "mgo_shells_cluster.pun.gz"), {"Mg": 2.0, "O": -2.0}
     )
 
     # Check that number of atoms matches our reference
@@ -453,16 +458,17 @@ def test_get_ecp_region(embedded_cluster, distance_matrix):
     assert np.all(ecp_region_idx[0] == [6, 7, 8, 9, 10, 11, 12, 13, 18, 19, 20, 21, 22])
 
 
-def test_create_skzcam_clusters():
+def test_create_skzcam_clusters(tmpdir):
     # Get quantum cluster and ECP region indices
     embedded_cluster, quantum_cluster_idx, ecp_region_idx = create_skzcam_clusters(
-        FILE_DIR / "mgo_shells_cluster.pun.gz",
+        Path(FILE_DIR,"skzcam_files", "mgo_shells_cluster.pun.gz"),
         [0, 0, 2],
         {"Mg": 2.0, "O": -2.0},
         shell_max=2,
         ecp_dist=3.0,
         shell_width=0.005,
         write_clusters=True,
+        write_clusters_path= Path(tmpdir)
     )
 
     # Check quantum cluster indices match with reference
@@ -534,7 +540,7 @@ def test_create_skzcam_clusters():
         ]
     )
     # Read the written output and check that it matches with the reference positions and atomic numbers
-    skzcam_cluster = read("SKZCAM_cluster_0.xyz")
+    skzcam_cluster = read(Path(tmpdir,"SKZCAM_cluster_0.xyz"))
 
     np.testing.assert_allclose(
         skzcam_cluster.get_positions(),
@@ -553,3 +559,5 @@ def test_create_skzcam_clusters():
     )
 
     assert np.all(skzcam_cluster.get_atomic_numbers().tolist() == [12, 8, 8, 8, 8, 8])
+
+
