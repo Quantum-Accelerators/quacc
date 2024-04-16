@@ -193,7 +193,7 @@ def espresso_prepare_dir(outdir: str | Path, binary: str = "pw") -> dict[str, An
             "input": {
                 "prefix": "pwscf",
                 "fildyn": "matdyn",
-                "outdir": ".",
+                "outdir": outdir,
                 "wpot_dir": Remove,
             }
         },
