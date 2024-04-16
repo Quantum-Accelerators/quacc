@@ -175,7 +175,6 @@ def test_get_cluster_info_from_slab():
     )
 
 
-@pytest.mark.skipif(chemshell_module is None, reason="py-ChemShell is not installed")
 def test_generate_chemshell_cluster(tmpdir):
     # First create the slab
     slab = read(Path(FILE_DIR, "skzcam_files", "NO_MgO.poscar.gz"))
