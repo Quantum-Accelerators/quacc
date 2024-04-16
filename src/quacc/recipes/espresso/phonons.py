@@ -566,6 +566,10 @@ def dvscf_q2r_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
+
+    if prev_outdir:
+        copy_files = {prev_outdir: [Path("matdyn0*")]}
+
     return run_and_summarize(
         template=EspressoTemplate("dvscf_q2r", outdir=prev_outdir),
         calc_defaults={},
