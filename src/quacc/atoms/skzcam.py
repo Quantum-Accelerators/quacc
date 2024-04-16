@@ -40,6 +40,8 @@ def get_cluster_info_from_slab(
         The Atoms object of the adsorbate molecule.
     Atoms
         The Atoms object of the surface slab.
+    int
+        The index of the first atom of the slab as listed in slab_center_idx.
     NDArray
         The position of the center of the cluster.
     NDArray
@@ -50,10 +52,10 @@ def get_cluster_info_from_slab(
     adsorbate_slab = read(adsorbate_slab_file)
 
     # Find indices (within adsorbate_slab) of the slab
-    slab_idx = [x for x in list(range(len(adsorbate_slab))) if x not in adsorbate_idx]
-
+    slab_idx = [i for i, _ in enumerate(adsorbate_slab) if i not in adsorbate_idx]
+    
     # Create slab from adsorbate_slab
-    slab = adsorbate_slab[slab_idx].copy()
+    slab = adsorbate_slab[slab_idx]
 
     # Find index of the first center atom of the slab as listed in slab_center_idx
     slab_first_atom_idx = next(
@@ -67,7 +69,7 @@ def get_cluster_info_from_slab(
 
     slab_center_position = slab_center_position / len(slab_center_idx)
 
-    adsorbate = adsorbate_slab[adsorbate_idx].copy()
+    adsorbate = adsorbate_slab[adsorbate_idx]
 
     # Get the relative distance of the adsorbate from the first center atom of the slab as defined in the slab_center_idx
     adsorbate_com = adsorbate.get_center_of_mass()
@@ -99,13 +101,12 @@ def generate_chemshell_cluster(
     slab: Atoms,
     slab_center_idx: int,
     atom_oxi_states: dict[str, float],
-    filename: str | Path,
-    directory: str | Path,
+    filepath: str | Path,
     chemsh_radius_active: float = 40.0,
     chemsh_radius_cluster: float = 60.0,
     chemsh_bq_layer: float = 6.0,
     write_xyz_file: bool = False,
-):
+) -> None:
     """
     Run ChemShell to create an embedded cluster from a slab.
 
@@ -117,10 +118,8 @@ def generate_chemshell_cluster(
         The index of the (first) atom at the center of the slab, this index corresponds to the atom in the slab_center_idx list but adjusted for the slab (which does not contain the adsorbate atoms)
     atom_oxi_states
         The oxidation states of the atoms in the slab as a dictionary
-    directory
-        The directory where the ChemShell output files will be written.
-    filename
-        The name of the file to write the ChemShell cluster to.
+    filepath
+        The location where the ChemShell output files will be written.
     chemsh_radius_cluster
         The radius of the total embedded cluster in Angstroms.
     chemsh_radius_active
@@ -129,6 +128,10 @@ def generate_chemshell_cluster(
         The height above the surface to place some additional fitting point charges in Angstroms; simply for better reproduction of the electrostatic potential close to the adsorbate.
     write_xyz_file
         Whether to write an XYZ file of the cluster for visualisation.
+
+    Returns
+    -------
+    None
     """
     from chemsh.io.tools import convert_atoms_to_frag
 
@@ -151,12 +154,12 @@ def generate_chemshell_cluster(
     )
 
     # Save the final cluster to a .pun file
-    chemsh_embedded_cluster.save(Path(directory, filename).with_suffix(".pun"), "pun")
+    chemsh_embedded_cluster.save(Path(filepath).with_suffix(".pun"), "pun")
 
     if write_xyz_file:
         # XYZ for visualisation
         chemsh_embedded_cluster.save(
-            Path(directory, filename).with_suffix(".xyz"), "xyz"
+            Path(filepath).with_suffix(".xyz"), "xyz"
         )
 
 
