@@ -7,13 +7,6 @@ import pytest
 from ase import Atoms
 from ase.io import read
 
-try:
-    from chemsh.io.tools import convert_atoms_to_frag
-
-    chemshell_module = True
-except ImportError:
-    chemshell_module = None
-
 from quacc.atoms.skzcam import (
     _find_cation_shells,
     _get_anion_coordination,
