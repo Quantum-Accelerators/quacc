@@ -139,7 +139,7 @@ def copy_decompress_files(
     for f in filenames:
         globs_found = list(source_directory.glob(str(f)))
         if not globs_found:
-            logger.debug(f"Cannot find file {f} in {source_directory}")
+            logger.warning(f"Cannot find file {f} in {source_directory}")
         for source_filepath in globs_found:
             destination_filepath = destination_directory / source_filepath.relative_to(
                 source_directory
@@ -306,4 +306,4 @@ def safe_decompress_dir(path: str | Path) -> None:
             try:
                 decompress_file(Path(parent, f))
             except FileNotFoundError:
-                logger.warning(f"Cannot find {f} in {parent}. Skipping.")
+                logger.debug(f"Cannot find {f} in {parent}. Skipping.")
