@@ -8,7 +8,6 @@ from ase.atoms import Atoms
 from ase.data import atomic_numbers
 from ase.io import write
 from ase.units import Bohr
-
 from monty.io import zopen
 from monty.os.path import zpath
 
@@ -144,7 +143,7 @@ def convert_pun_to_atoms(
     atom_type_dict = {
         atom: "cation" if oxi_state > 0 else "anion" if oxi_state < 0 else "neutral"
         for atom, oxi_state in atom_oxi_states.items()
-	}
+    }
 
     # Load the pun file as a list of strings
     with zopen(zpath(Path(pun_file))) as f:
