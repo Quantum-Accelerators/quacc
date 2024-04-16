@@ -743,7 +743,10 @@ def test_phonon_dvscf_q2r_inplace(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO)
     pseudopotentials = {"C": "C.UPF"}
 
     c_scf_results = static_job(
-        atoms, parallel_info=ESPRESSO_PARALLEL_INFO, pseudopotentials=pseudopotentials
+        atoms,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
+        pseudopotentials=pseudopotentials,
+        kspacing=0.1,
     )
 
     c_ph_params = {
@@ -754,7 +757,7 @@ def test_phonon_dvscf_q2r_inplace(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO)
                 "nq1": 2,
                 "nq2": 2,
                 "nq3": 2,
-                "tr2_ph": 1.0e-8,
+                "tr2_ph": 1.0e-6,
             }
         }
     }
