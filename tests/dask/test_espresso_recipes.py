@@ -290,16 +290,10 @@ def test_pp_concurrent_inplace(tmp_path, monkeypatch):
 
     @subflow
     def pp_subflow(results):
-        pp_results = []
-
-        for plot_num in [0, 1, 2, 4, 8, 123, 3]:
-            pp_results.append(
-                post_processing_job(
-                    prev_outdir=results, input_data={"plot_num": plot_num}
-                )
-            )
-
-        return pp_results
+        return [
+            post_processing_job(prev_outdir=results, input_data={"plot_num": plot_num})
+            for plot_num in [0, 1, 2, 4, 8, 123, 3]
+        ]
 
     future = pp_subflow(static_results["dir_name"])
     pp_results = client.compute(future).result()
