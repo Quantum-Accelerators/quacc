@@ -95,7 +95,7 @@ def create_skzcam_clusters(
 
     # Get the ECP region for each quantum cluster
     ecp_region_idx = _get_ecp_region(
-        embedded_cluster, quantum_cluster_idx, embedded_cluster_all_dist,  ecp_dist
+        embedded_cluster, quantum_cluster_idx, embedded_cluster_all_dist, ecp_dist
     )
 
     # Write the quantum clusters to files
@@ -147,7 +147,10 @@ def convert_pun_to_atoms(
 
     # Load the pun file as a list of strings
     with zopen(zpath(Path(pun_file))) as f:
-        raw_pun_file = [line.rstrip().decode("utf-8") if isinstance(line, bytes) else line.rstrip() for line in f]
+        raw_pun_file = [
+            line.rstrip().decode("utf-8") if isinstance(line, bytes) else line.rstrip()
+            for line in f
+        ]
 
     # Get the number of atoms and number of atomic charges in the .pun file
     n_atoms = int(raw_pun_file[3].split()[-1])
