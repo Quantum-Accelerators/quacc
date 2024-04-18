@@ -293,7 +293,7 @@ def quasi_irc_perturb_job(
     calc_defaults = recursive_dict_merge(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
-    opt_defaults = {"optimizer": Sella} if has_sella else {}
+    opt_defaults = {"optimizer": Sella} if (Sella is not False) else {}
 
     if direction == "forward":
         scale = perturb_magnitude
