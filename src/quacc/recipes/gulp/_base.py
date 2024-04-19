@@ -65,7 +65,7 @@ def run_and_summarize(
         Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Any other keyword arguments to pass to the `GULP` calculator.
-        
+
     Returns
     -------
     RunSchema
