@@ -36,6 +36,7 @@ def run_and_summarize(
     option_swaps: list[str] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    **calc_kwargs,
 ) -> RunSchema:
     """
     Base job function for GULP recipes.
@@ -62,7 +63,9 @@ def run_and_summarize(
         Additional field to supply to the summarizer.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
-
+    **calc_kwargs
+        Any other keyword arguments to pass to the `GULP` calculator.
+        
     Returns
     -------
     RunSchema
