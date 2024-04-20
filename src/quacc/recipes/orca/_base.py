@@ -35,6 +35,7 @@ def run_and_summarize(
     block_swaps: list[str] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    **calc_kwargs,
 ) -> cclibSchema:
     """
     Base job function for ORCA recipes.
@@ -61,19 +62,22 @@ def run_and_summarize(
         Any additional fields to supply to the summarizer.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    **calc_kwargs
+        Any other keyword arguments to pass to the `ORCA` calculator.
 
     Returns
     -------
     cclibSchema
         Dictionary of results
     """
-    atoms.calc = _prep_calculator(
+    atoms.calc = prep_calculator(
         charge=charge,
         spin_multiplicity=spin_multiplicity,
         default_inputs=default_inputs,
         default_blocks=default_blocks,
         input_swaps=input_swaps,
         block_swaps=block_swaps,
+        **calc_kwargs,
     )
 
     atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
@@ -93,6 +97,7 @@ def run_and_summarize_opt(
     opt_params: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    **calc_kwargs,
 ) -> cclibASEOptSchema:
     """
     Base job function for ORCA recipes with ASE optimizer.
@@ -123,19 +128,22 @@ def run_and_summarize_opt(
         Any additional fields to supply to the summarizer.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    **calc_kwargs
+        Any other keyword arguments to pass to the `ORCA` calculator.
 
     Returns
     -------
     cclibASEOptSchema
         Dictionary of results
     """
-    atoms.calc = _prep_calculator(
+    atoms.calc = prep_calculator(
         charge=charge,
         spin_multiplicity=spin_multiplicity,
         default_inputs=default_inputs,
         default_blocks=default_blocks,
         input_swaps=input_swaps,
         block_swaps=block_swaps,
+        **calc_kwargs,
     )
 
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
@@ -143,13 +151,14 @@ def run_and_summarize_opt(
     return summarize_cclib_opt_run(dyn, LOG_FILE, additional_fields=additional_fields)
 
 
-def _prep_calculator(
+def prep_calculator(
     charge: int = 0,
     spin_multiplicity: int = 1,
     default_inputs: list[str] | None = None,
     default_blocks: list[str] | None = None,
     input_swaps: list[str] | None = None,
     block_swaps: list[str] | None = None,
+    **calc_kwargs,
 ) -> ORCA:
     """
     Prepare the ORCA calculator.
@@ -170,6 +179,8 @@ def _prep_calculator(
     block_swaps
         List of orcablock swaps for the calculator. To remove entries
         from the defaults, put a `#` in front of the name.
+    **calc_kwargs
+        Any other keyword arguments to pass to the `ORCA` calculator.
 
     Returns
     -------
@@ -189,4 +200,5 @@ def _prep_calculator(
         mult=spin_multiplicity,
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
+        **calc_kwargs,
     )
