@@ -108,7 +108,35 @@ def test_static_job_v2(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     assert "kpts" not in results["parameters"]
     assert results["parameters"]["kspacing"] == 0.5
 
-    pp_results = post_processing_job(results["dir_name"])
+    pp_results = post_processing_job(copy_files=results["dir_name"])
+    assert Path(pp_results["dir_name"], "pseudo_charge_density.cube.gz").is_file()
+
+
+def test_static_job_outdir_inplace(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
+
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
+
+    atoms = bulk("Si")
+
+    input_data = {
+        "system": {"occupations": "smearing", "smearing": "gaussian", "degauss": 0.005},
+        "electrons": {"mixing_mode": "plain", "mixing_beta": 0.6, "conv_thr": 1.0e-6},
+        "control": {"pseudo_dir": tmp_path},
+    }
+
+    pseudopotentials = {"Si": "Si.upf"}
+
+    results = static_job(
+        atoms,
+        input_data=input_data,
+        pseudopotentials=pseudopotentials,
+        kspacing=0.5,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
+    )
+
+    pp_results = post_processing_job(prev_outdir=results["dir_name"])
     assert Path(pp_results["dir_name"], "pseudo_charge_density.cube.gz").is_file()
 
 
@@ -429,6 +457,49 @@ def test_pw_restart(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
         pseudopotentials=pseudopotentials,
         kpts=None,
         copy_files=results["dir_name"],
+        parallel_info=ESPRESSO_PARALLEL_INFO,
+    )
+    assert new_input_data["system"]["ecutwfc"] == 30.0
+    assert new_input_data["system"]["ecutrho"] == 240.0
+
+    with zopen(results["dir_name"] / "pw.out.gz", "r") as fd:
+        lines = str(fd.read())
+
+    assert "Cannot read rho : file not found" not in lines
+    assert "Initial potential from superposition of free atoms" not in lines
+    assert "The initial density is read from file" in lines
+    assert "Starting wfcs from file" in lines
+
+
+def test_pw_restart_inplace(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
+
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
+
+    atoms = bulk("Si")
+
+    pseudopotentials = {"Si": "Si.upf"}
+    input_data = {"control": {"pseudo_dir": tmp_path, "max_seconds": 5}}
+
+    results = static_job(
+        atoms,
+        input_data=input_data,
+        pseudopotentials=pseudopotentials,
+        kpts=None,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
+    )
+
+    new_input_data = results["parameters"]["input_data"]
+    new_input_data["restart_mode"] = "restart"
+    new_input_data["max_seconds"] = 10**7
+
+    results = static_job(
+        atoms,
+        input_data=new_input_data,
+        pseudopotentials=pseudopotentials,
+        kpts=None,
+        prev_outdir=results["dir_name"],
         parallel_info=ESPRESSO_PARALLEL_INFO,
     )
     assert new_input_data["system"]["ecutwfc"] == 30.0
