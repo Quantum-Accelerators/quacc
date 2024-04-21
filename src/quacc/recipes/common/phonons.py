@@ -81,7 +81,7 @@ def phonon_flow(
     """
     fixed_atoms = fixed_atoms or []
     fixed_atoms = np.array([i in fixed_atoms for i in range(len(atoms))])
-
+    print(mesh_kwargs)
     phonon, atoms_to_add = prep_phonopy(
         atoms,
         fixed_atoms=fixed_atoms,
@@ -115,6 +115,7 @@ def phonon_flow(
         phonon_done = run_phonopy(
             phonon,
             forces,
+            fixed_atoms.any(),
             force_constants_kwargs,
             mesh_kwargs,
             total_dos_kwargs,

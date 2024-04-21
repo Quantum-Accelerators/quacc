@@ -31,6 +31,7 @@ if TYPE_CHECKING:
 def run_phonopy(
     phonon: Phonopy,
     forces: NDArray,
+    is_fixed: bool = False,
     force_constants_kwargs: dict[str, Any] | None = None,
     mesh_kwargs: dict[str, Any] | None = None,
     total_dos_kwargs: dict[str, Any] | None = None,
@@ -98,6 +99,11 @@ def run_phonopy(
     # Run phonopy
     phonon.forces = forces
     phonon.produce_force_constants(**force_constants_kwargs)
+
+    if is_fixed:
+        phonon.symmetrize_force_constants()
+        phonon.symmetrize_force_constants_by_space_group()
+
     phonon.run_mesh(**mesh_kwargs)
     phonon.run_total_dos(**total_dos_kwargs)
     phonon.run_thermal_properties(**thermal_properties_kwargs)
