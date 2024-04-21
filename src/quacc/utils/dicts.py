@@ -232,8 +232,16 @@ def finalize_dict(
 
     cleaned_task_doc = clean_dict(task_doc)
     if directory:
-        sanitized_schema = jsanitize(cleaned_task_doc, enum_values=True, recursive_msonable=True)
-        dumpfn(sanitized_schema, Path(directory,"quacc_results.json.gz" if gzip_file else "quacc_results.json"))
+        sanitized_schema = jsanitize(
+            cleaned_task_doc, enum_values=True, recursive_msonable=True
+        )
+        dumpfn(
+            sanitized_schema,
+            Path(
+                directory,
+                "quacc_results.json.gz" if gzip_file else "quacc_results.json",
+            ),
+        )
 
     if store:
         results_to_db(store, task_doc)
