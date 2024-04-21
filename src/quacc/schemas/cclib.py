@@ -17,7 +17,7 @@ from cclib.io import ccread
 from quacc import SETTINGS
 from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.ase import summarize_opt_run, summarize_run
-from quacc.utils.dicts import clean_task_doc, recursive_dict_merge
+from quacc.utils.dicts import finalize_dict, recursive_dict_merge
 from quacc.utils.files import find_recent_logfile
 from quacc.wflow_tools.db import results_to_db
 
@@ -154,21 +154,7 @@ def cclib_summarize_run(
     unsorted_task_doc = (
         run_task_doc | intermediate_cclib_task_docs | cclib_task_doc | additional_fields
     )
-    task_doc = clean_task_doc(unsorted_task_doc)
-
-    if SETTINGS.WRITE_PICKLE:
-        with (
-            gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
-            if SETTINGS.GZIP_FILES
-            else Path(directory, "quacc_results.pkl").open("wb")
-        ) as f:
-            pickle.dump(task_doc, f)
-
-    # Store the results
-    if store:
-        results_to_db(store, task_doc)
-
-    return task_doc
+    return finalize_dict(unsorted_task_doc, directory, store=store)
 
 
 def summarize_cclib_opt_run(
@@ -257,21 +243,8 @@ def summarize_cclib_opt_run(
         additional_fields=additional_fields,
         store=None,
     )
-    task_doc = recursive_dict_merge(cclib_summary, opt_run_summary)
-
-    if SETTINGS.WRITE_PICKLE:
-        with (
-            gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
-            if SETTINGS.GZIP_FILES
-            else Path(directory, "quacc_results.pkl").open("wb")
-        ) as f:
-            pickle.dump(task_doc, f)
-
-    # Store the results
-    if store:
-        results_to_db(store, task_doc)
-
-    return task_doc
+    unsorted_task_doc = recursive_dict_merge(cclib_summary, opt_run_summary)
+    return finalize_dict(unsorted_task_doc, directory, store=store)
 
 
 def _make_cclib_schema(

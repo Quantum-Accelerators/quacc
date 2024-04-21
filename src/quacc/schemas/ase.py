@@ -17,9 +17,8 @@ from quacc import SETTINGS, __version__
 from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.schemas.prep import prep_next_run
-from quacc.utils.dicts import clean_task_doc, recursive_dict_merge
+from quacc.utils.dicts import finalize_dict, recursive_dict_merge
 from quacc.utils.files import get_uri
-from quacc.wflow_tools.db import results_to_db
 
 if TYPE_CHECKING:
     from typing import Any
@@ -117,7 +116,7 @@ def summarize_run(
 
     unsorted_task_doc = final_atoms_metadata | inputs | results | additional_fields
 
-    return _finalize_schema(unsorted_task_doc, directory, store=store)
+    return finalize_dict(unsorted_task_doc, directory, store=store)
 
 
 def summarize_opt_run(
@@ -211,7 +210,7 @@ def summarize_opt_run(
     # Create a dictionary of the inputs/outputs
     unsorted_task_doc = base_task_doc | opt_fields | additional_fields
 
-    return _finalize_schema(unsorted_task_doc, directory, store=store)
+    return finalize_dict(unsorted_task_doc, directory, store=store)
 
 
 def summarize_vib_and_thermo(
@@ -267,47 +266,11 @@ def summarize_vib_and_thermo(
         vib_task_doc, thermo_task_doc, additional_fields
     )
 
-    return _finalize_schema(
+    return finalize_dict(
         unsorted_task_doc,
         vib.atoms.calc.directory if isinstance(vib, Vibrations) else None,
         store=store,
     )
-
-
-def _finalize_schema(
-    task_doc: dict[str, Any], directory: str | Path | None, store: Store | None = None
-) -> dict:
-    """
-    Finalize a schema by cleaning it and storing it in a database and/or file.
-
-    Parameters
-    ----------
-    task_doc
-        Dictionary representation of the task document.
-    directory
-        Directory where the results file is stored.
-    store
-        Maggma Store object to store the results in.
-
-    Returns
-    -------
-    dict
-        Cleaned task document
-    """
-    cleaned_task_doc = clean_task_doc(task_doc)
-
-    if directory:
-        with (
-            gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
-            if SETTINGS.GZIP_FILES
-            else Path(directory, "quacc_results.pkl").open("wb")
-        ) as f:
-            pickle.dump(task_doc, f)
-
-    if store:
-        results_to_db(store, task_doc)
-
-    return cleaned_task_doc
 
 
 def _summarize_vib_run(

@@ -2,13 +2,21 @@
 
 from __future__ import annotations
 
+import gzip
 import logging
+import pickle
 from collections.abc import MutableMapping
 from copy import deepcopy
+from pathlib import Path
 from typing import TYPE_CHECKING
+
+from quacc import SETTINGS
+from quacc.wflow_tools.db import results_to_db
 
 if TYPE_CHECKING:
     from typing import Any
+
+    from maggma.stores import Store
 
 LOGGER = logging.getLogger(__name__)
 
@@ -178,7 +186,7 @@ def sort_dict(start_dict: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def clean_task_doc(start_dict: dict[str, Any]) -> dict[str, Any]:
+def clean_dict(start_dict: dict[str, Any]) -> dict[str, Any]:
     """
     Clean up a task document dictionary by removing all entries that are None and
     sorting the dictionary alphabetically by key.
@@ -194,3 +202,39 @@ def clean_task_doc(start_dict: dict[str, Any]) -> dict[str, Any]:
         Cleaned dictionary
     """
     return sort_dict(remove_dict_entries(start_dict, None))
+
+
+def finalize_dict(
+    task_doc: dict, directory: str | Path | None, store: Store | None = None
+) -> dict:
+    """
+    Finalize a schema by cleaning it and storing it in a database and/or file.
+
+    Parameters
+    ----------
+    task_doc
+        Dictionary representation of the task document.
+    directory
+        Directory where the results file is stored.
+    store
+        Maggma Store object to store the results in.
+
+    Returns
+    -------
+    dict
+        Cleaned task document
+    """
+    cleaned_task_doc = clean_dict(task_doc)
+
+    if directory:
+        with (
+            gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
+            if SETTINGS.GZIP_FILES
+            else Path(directory, "quacc_results.pkl").open("wb")
+        ) as f:
+            pickle.dump(task_doc, f)
+
+    if store:
+        results_to_db(store, task_doc)
+
+    return cleaned_task_doc
