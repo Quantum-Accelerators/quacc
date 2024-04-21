@@ -232,6 +232,10 @@ def finalize_dict(
     cleaned_task_doc = clean_dict(task_doc)
 
     if directory:
+        if "tmp" in str(directory):
+            raise ValueError(
+                "The directory should not be a temporary directory."
+            )
         with (
             gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
             if gzip_file

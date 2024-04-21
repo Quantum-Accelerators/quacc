@@ -5,7 +5,7 @@ import logging
 import pytest
 
 from quacc import Remove
-from quacc.utils.dicts import recursive_dict_merge, remove_dict_entries
+from quacc.utils.dicts import finalize_dict, recursive_dict_merge, remove_dict_entries
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.propagate = True
@@ -82,3 +82,8 @@ def test_recursive_dict_merge_verbose(caplog):
 def test_remove_instantiation():
     with pytest.raises(NotImplementedError):
         Remove()
+
+
+def test_finalize_dict():
+    with pytest.raises(ValueError,match="The directory should not"):
+        finalize_dict({},"tmp-quacc")
