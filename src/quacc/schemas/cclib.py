@@ -32,7 +32,7 @@ if TYPE_CHECKING:
         cclibSchema,
     )
 
-LOGGER = logging.getLOGGER(__name__)
+LOGGER = logging.getLogger(__name__)
 
 _DEFAULT_SETTING = ()
 
