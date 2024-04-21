@@ -76,7 +76,7 @@ def run_and_summarize(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    atoms = _prepare_atoms(
+    atoms = prepare_atoms(
         atoms=atoms,
         preset=preset,
         template=template,
@@ -86,7 +86,7 @@ def run_and_summarize(
         parallel_info=parallel_info,
     )
 
-    updated_copy_files = _prepare_copy(
+    updated_copy_files = prepare_copy(
         copy_files=copy_files,
         calc_params=atoms.calc.user_calc_params,
         binary=atoms.calc.template.binary,
@@ -159,7 +159,7 @@ def run_and_summarize_opt(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    atoms = _prepare_atoms(
+    atoms = prepare_atoms(
         atoms=atoms,
         preset=preset,
         template=template,
@@ -169,7 +169,7 @@ def run_and_summarize_opt(
         parallel_info=parallel_info,
     )
 
-    updated_copy_files = _prepare_copy(
+    updated_copy_files = prepare_copy(
         copy_files=copy_files,
         calc_params=atoms.calc.user_calc_params,
         binary=atoms.calc.template.binary,
@@ -186,7 +186,7 @@ def run_and_summarize_opt(
     )
 
 
-def _prepare_atoms(
+def prepare_atoms(
     atoms: Atoms | None = None,
     preset: str | None = None,
     template: EspressoTemplate | None = None,
@@ -252,7 +252,7 @@ def _prepare_atoms(
     return atoms
 
 
-def _prepare_copy(
+def prepare_copy(
     copy_files: (
         SourceDirectory
         | list[SourceDirectory]
