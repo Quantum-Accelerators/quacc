@@ -118,7 +118,7 @@ class Runner:
         # object, as this contains important information such as the parameters
         # and output properties (e.g. final magnetic moments).
         if geom_file:
-            atoms_new = read(zpath(self.tmpdir / self.geom_file))
+            atoms_new = read(zpath(self.tmpdir / geom_file))
             if isinstance(atoms_new, list):
                 atoms_new = atoms_new[-1]
 
@@ -201,7 +201,7 @@ class Runner:
         if optimizer.__name__.startswith("SciPy"):
             optimizer_kwargs.pop("restart", None)
         elif optimizer.__name__ == "Sella":
-            self._set_sella_kwargs(self.atoms, optimizer_kwargs)
+            self._set_sella_kwargs(optimizer_kwargs)
         elif optimizer.__name__ == "IRC":
             optimizer_kwargs.pop("restart", None)
 
