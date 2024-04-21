@@ -94,7 +94,9 @@ def run_and_summarize(
 
     geom_file = template.outputname if template.binary == "pw" else None
 
-    final_atoms = Runner(atoms, copy_files=updated_copy_files).run_calc(geom_file=geom_file)
+    final_atoms = Runner(atoms, copy_files=updated_copy_files).run_calc(
+        geom_file=geom_file
+    )
 
     return summarize_run(
         final_atoms, atoms, move_magmoms=True, additional_fields=additional_fields
@@ -177,7 +179,9 @@ def run_and_summarize_opt(
 
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
-    dyn = Runner(atoms, copy_files=updated_copy_files).run_opt(relax_cell=relax_cell, **opt_flags)
+    dyn = Runner(atoms, copy_files=updated_copy_files).run_opt(
+        relax_cell=relax_cell, **opt_flags
+    )
 
     return summarize_opt_run(
         dyn, move_magmoms=True, additional_fields=additional_fields

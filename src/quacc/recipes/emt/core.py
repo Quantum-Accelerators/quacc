@@ -91,6 +91,8 @@ def relax_job(
     opt_params = opt_params or {}
 
     atoms.calc = EMT(**calc_kwargs)
-    dyn = Runner(atoms,  copy_files=copy_files).run_opt(relax_cell=relax_cell, **opt_params)
+    dyn = Runner(atoms, copy_files=copy_files).run_opt(
+        relax_cell=relax_cell, **opt_params
+    )
 
     return summarize_opt_run(dyn, additional_fields={"name": "EMT Relax"})

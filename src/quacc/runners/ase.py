@@ -15,7 +15,7 @@ from monty.dev import requires
 from monty.os.path import zpath
 
 from quacc import SETTINGS
-from quacc.atoms.core import copy_atoms, get_final_atoms_from_dynamics
+from quacc.atoms.core import copy_atoms
 from quacc.runners.prep import calc_cleanup, calc_setup
 from quacc.utils.dicts import recursive_dict_merge
 

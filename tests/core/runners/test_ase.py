@@ -123,19 +123,14 @@ def test_run_opt2(tmp_path, monkeypatch):
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
-    dyn = Runner(
-        atoms,
-        copy_files={Path(): "test_file.txt"}).run_opt(
+    dyn = Runner(atoms, copy_files={Path(): "test_file.txt"}).run_opt(
         optimizer=BFGS,
-
         optimizer_kwargs={"restart": None},
     )
     traj = dyn.traj_atoms
     assert traj[-1].calc.results is not None
 
-    dyn = Runner(
-        traj[-1],
-        copy_files={Path(): "test_file.txt"}).run_opt(
+    dyn = Runner(traj[-1], copy_files={Path(): "test_file.txt"}).run_opt(
         optimizer=BFGSLineSearch,
         optimizer_kwargs={"restart": None},
     )
@@ -149,7 +144,7 @@ def test_run_scipy_opt(tmp_path, monkeypatch):
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
-    dyn = Runner(atoms).run_opt( optimizer=SciPyFminBFGS)
+    dyn = Runner(atoms).run_opt(optimizer=SciPyFminBFGS)
     traj = dyn.traj_atoms
     assert traj[-1].calc.results is not None
     assert dyn.todict().get("restart") is None
@@ -188,8 +183,7 @@ def test_bad_runs(tmp_path, monkeypatch, caplog):
 
     # No trajectory kwarg
     with pytest.raises(ValueError):
-        Runner(
-            atoms).run_opt(
+        Runner(atoms).run_opt(
             optimizer=BFGSLineSearch,
             optimizer_kwargs={"restart": None, "trajectory": "test.traj"},
         )
