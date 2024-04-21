@@ -2,10 +2,8 @@
 
 from __future__ import annotations
 
-import gzip
 import logging
 import os
-import pickle
 from inspect import getmembers, isclass
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -19,7 +17,6 @@ from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import finalize_dict, recursive_dict_merge
 from quacc.utils.files import find_recent_logfile
-from quacc.wflow_tools.db import results_to_db
 
 if TYPE_CHECKING:
     from typing import Any, Literal

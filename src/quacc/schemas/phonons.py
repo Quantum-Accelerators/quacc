@@ -2,9 +2,6 @@
 
 from __future__ import annotations
 
-import gzip
-import pickle
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
@@ -13,7 +10,6 @@ from quacc import SETTINGS, __version__
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.utils.dicts import finalize_dict
 from quacc.utils.files import get_uri
-from quacc.wflow_tools.db import results_to_db
 
 try:
     import phonopy
@@ -21,6 +17,7 @@ except ImportError:
     phonopy = None
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from typing import Any
 
     from ase.atoms import Atoms
