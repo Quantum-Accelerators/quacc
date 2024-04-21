@@ -8,6 +8,7 @@ import numpy as np
 from ase import units
 from ase.thermochemistry import IdealGasThermo
 from emmet.core.symmetry import PointGroupData
+from pymatgen.io.ase import AseAtomsAdaptor
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
@@ -76,7 +77,8 @@ def run_ideal_gas(
 
     # Get symmetry for later use
     natoms = len(atoms)
-    point_group_data = PointGroupData().from_molecule(atoms)
+    mol = AseAtomsAdaptor().get_molecule(atoms, charge_spin_check=False)
+    point_group_data = PointGroupData().from_molecule(mol)
 
     # Get the geometry
     if natoms == 1:
