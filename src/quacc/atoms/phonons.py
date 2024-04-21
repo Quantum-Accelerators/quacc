@@ -78,7 +78,7 @@ def prep_phonopy(
 
     if supercell_matrix is None and min_lengths is not None:
         n_supercells = np.round(np.ceil(min_lengths / atoms.cell.lengths()))
-        supercell_matrix = np.diag([n_supercells, n_supercells, n_supercells])
+        supercell_matrix = np.diag(np.diag([n_supercells, n_supercells, n_supercells]))
 
     phonopy_atoms = get_phonopy_structure(non_fixed)
     phonon = phonopy.Phonopy(
