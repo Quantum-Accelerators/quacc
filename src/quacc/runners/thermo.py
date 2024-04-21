@@ -14,6 +14,7 @@ from pymatgen.io.ase import AseAtomsAdaptor
 if TYPE_CHECKING:
     from ase.atoms import Atoms
 
+
 @dataclass
 class ThermoRunner:
     """
@@ -24,10 +25,11 @@ class ThermoRunner:
     atoms
         The Atoms object associated with the vibrational analysis.
     """
+
     atoms: Atoms
 
-
-    def run_ideal_gas(self,
+    def run_ideal_gas(
+        self,
         vib_freqs: list[float | complex],
         energy: float = 0.0,
         spin_multiplicity: int | None = None,
