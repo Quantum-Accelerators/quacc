@@ -90,8 +90,12 @@ def phonon_flow(
         generate_displacements_kwargs=generate_displacements_kwargs,
     )
 
+    fixed_atoms = np.full(len(phonon.supercell), False)
+    fixed_atoms = np.append(fixed_atoms, [True] * len(atoms_to_add))
+    fixed_atoms = fixed_atoms.astype(bool)
+
     supercells = [
-        atoms_to_add + phonopy_atoms_to_ase_atoms(s)
+        phonopy_atoms_to_ase_atoms(s) + atoms_to_add
         for s in phonon.supercells_with_displacements
     ]
 
