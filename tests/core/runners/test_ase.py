@@ -104,7 +104,7 @@ def test_run_opt1(tmp_path, monkeypatch):
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
-    dyn = Runner(atoms, copy_files={Path(): "test_file.txt"}).run_calc()
+    dyn = Runner(atoms, copy_files={Path(): "test_file.txt"}).run_opt()
     traj = dyn.traj_atoms
     results_dir = _find_results_dir()
 

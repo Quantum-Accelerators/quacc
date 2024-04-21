@@ -220,7 +220,6 @@ class Runner:
                 opt = dyn.irun(fmax=fmax, steps=max_steps, **run_kwargs)
                 for i, _ in enumerate(opt):
                     self._copy_intermediate_files(
-                        self.tmpdir,
                         i,
                         files_to_ignore=[
                             traj_file,
