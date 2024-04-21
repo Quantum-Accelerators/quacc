@@ -2,17 +2,32 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
 import numpy as np
 from ase import units
 from ase.thermochemistry import IdealGasThermo
+from emmet.core.symmetry import PointGroupData
+from pymatgen.io.ase import AseAtomsAdaptor
 
-from quacc.runners.ase import Runner
-from quacc.schemas.atoms import atoms_to_metadata
+if TYPE_CHECKING:
+    from ase.atoms import Atoms
+
+@dataclass
+class ThermoRunner:
+    """
+    A runner for thermochemistry calculations.
+
+    Attributes
+    ----------
+    atoms
+        The Atoms object associated with the vibrational analysis.
+    """
+    atoms: Atoms
 
 
-class ThermoRunner(Runner):
-    def run_ideal_gas(
-        self,
+    def run_ideal_gas(self,
         vib_freqs: list[float | complex],
         energy: float = 0.0,
         spin_multiplicity: int | None = None,
@@ -39,9 +54,6 @@ class ThermoRunner(Runner):
         -------
         IdealGasThermo object
         """
-        # Switch off PBC since this is only for molecules
-        self.atoms.set_pbc(False)
-
         # Ensure all negative modes are made complex
         for i, f in enumerate(vib_freqs):
             if not isinstance(f, complex) and f < 0:
@@ -50,7 +62,7 @@ class ThermoRunner(Runner):
         # Convert vibrational frequencies to energies
         vib_energies = [f * units.invcm for f in vib_freqs]
 
-        # Get the spin from the self.atoms object.
+        # Get the spin from the Atoms object.
         if spin_multiplicity:
             spin = (spin_multiplicity - 1) / 2
         elif (
@@ -72,12 +84,13 @@ class ThermoRunner(Runner):
 
         # Get symmetry for later use
         natoms = len(self.atoms)
-        metadata = atoms_to_metadata(self.atoms)
+        mol = AseAtomsAdaptor().get_molecule(self.atoms, charge_spin_check=False)
+        point_group_data = PointGroupData().from_molecule(mol)
 
         # Get the geometry
         if natoms == 1:
             geometry = "monatomic"
-        elif metadata["symmetry"]["linear"]:
+        elif point_group_data.linear:
             geometry = "linear"
         else:
             geometry = "nonlinear"
@@ -87,7 +100,7 @@ class ThermoRunner(Runner):
             geometry,
             potentialenergy=energy,
             atoms=self.atoms,
-            symmetrynumber=metadata["symmetry"]["rotation_number"],
+            symmetrynumber=point_group_data.rotation_number,
             spin=spin,
             ignore_imag_modes=True,
         )
