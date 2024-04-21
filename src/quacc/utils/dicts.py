@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
-import gzip
 import logging
-import pickle
 from collections.abc import MutableMapping
 from copy import deepcopy
 from pathlib import Path
 from typing import TYPE_CHECKING
+
+from monty.json import jsanitize
+from monty.serialization import dumpfn
 
 from quacc.wflow_tools.db import results_to_db
 
@@ -230,14 +231,9 @@ def finalize_dict(
     """
 
     cleaned_task_doc = clean_dict(task_doc)
-
     if directory:
-        with (
-            gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
-            if gzip_file
-            else Path(directory, "quacc_results.pkl").open("wb")
-        ) as f:
-            pickle.dump(task_doc, f)
+        sanitized_schema = jsanitize(cleaned_task_doc, enum_values=True, recursive_msonable=True)
+        dumpfn(sanitized_schema, Path(directory,"quacc_results.json.gz" if gzip_file else "quacc_results.json"))
 
     if store:
         results_to_db(store, task_doc)
