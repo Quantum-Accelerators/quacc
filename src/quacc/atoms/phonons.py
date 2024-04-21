@@ -90,9 +90,9 @@ def prep_phonopy(
     phonon.generate_displacements(**generate_displacements_kwargs)
 
     if len(fixed) > 0:
-        fixed = get_phonopy_structure(AseAtomsAdaptor.get_structure(non_fixed))
-        fixed = phonopy.structure.cells.get_supercell(non_fixed, supercell_matrix)
-        fixed = AseAtomsAdaptor.get_atoms(get_pmg_structure(non_fixed))
+        fixed = get_phonopy_structure(AseAtomsAdaptor.get_structure(fixed))
+        fixed = phonopy.structure.cells.get_supercell(fixed, supercell_matrix)
+        fixed = AseAtomsAdaptor.get_atoms(get_pmg_structure(fixed))
 
     return phonon, fixed
 
