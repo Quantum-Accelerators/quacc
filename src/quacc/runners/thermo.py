@@ -10,7 +10,8 @@ from quacc.runners.ase import Runner
 
 
 class ThermoRunner(Runner):
-    def run_ideal_gas(self,
+    def run_ideal_gas(
+        self,
         vib_freqs: list[float | complex],
         energy: float = 0.0,
         spin_multiplicity: int | None = None,

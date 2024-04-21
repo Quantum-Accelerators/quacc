@@ -109,7 +109,9 @@ def phonon_flow(
         )
         parameters = force_job_results[-1].get("parameters")
         forces = [output["results"]["forces"] for output in force_job_results]
-        phonon = PhonopyRunner(None).run_phonopy(phonon, forces, t_step=t_step, t_min=t_min, t_max=t_max)
+        phonon = PhonopyRunner(None).run_phonopy(
+            phonon, forces, t_step=t_step, t_min=t_min, t_max=t_max
+        )
 
         return summarize_phonopy(
             phonon,

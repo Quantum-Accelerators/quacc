@@ -21,10 +21,11 @@ if TYPE_CHECKING:
     if phonopy:
         from phonopy import Phonopy
 
-class PhonopyRunner(Runner):
 
+class PhonopyRunner(Runner):
     @requires(has_deps, "Phonopy or seekpath is not installed.")
-    def run_phonopy(self,
+    def run_phonopy(
+        self,
         phonon: Phonopy,
         forces: NDArray,
         t_step: float = 10,
@@ -61,9 +62,12 @@ class PhonopyRunner(Runner):
         phonon.run_total_dos()
         phonon.run_thermal_properties(t_step=t_step, t_max=t_max, t_min=t_min)
         phonon.auto_band_structure(
-            write_yaml=True, filename=Path(self.tmpdir, "phonopy_auto_band_structure.yaml")
+            write_yaml=True,
+            filename=Path(self.tmpdir, "phonopy_auto_band_structure.yaml"),
         )
-        phonon.save(Path(self.tmpdir, "phonopy.yaml"), settings={"force_constants": True})
+        phonon.save(
+            Path(self.tmpdir, "phonopy.yaml"), settings={"force_constants": True}
+        )
         phonon.directory = self.job_results_dir
 
         # Perform cleanup operations
