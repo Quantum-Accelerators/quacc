@@ -212,10 +212,10 @@ class Runner:
 
         # Set volume relaxation constraints, if relevant
         if relax_cell and self.atoms.pbc.any():
-            atoms = FrechetCellFilter(self.atoms)
+            self.atoms = FrechetCellFilter(self.atoms)
 
         # Run optimization
-        with traj, optimizer(atoms, **optimizer_kwargs) as dyn:
+        with traj, optimizer(self.atoms, **optimizer_kwargs) as dyn:
             if store_intermediate_results:
                 opt = dyn.irun(fmax=fmax, steps=max_steps, **run_kwargs)
                 for i, _ in enumerate(opt):
