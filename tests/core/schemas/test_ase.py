@@ -234,10 +234,6 @@ def test_summarize_vib_run(tmp_path, monkeypatch):
     vib = Vibrations(atoms)
     vib.run()
 
-    store = MemoryStore()
-    _summarize_vib_run(vib, store=store)
-    assert store.count() == 1
-
     # Make sure info tags are handled appropriately
     atoms = molecule("N2")
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
@@ -287,9 +283,6 @@ def test_summarize_ideal_gas_thermo(tmp_path, monkeypatch):
     atoms = molecule("N2")
     igt = IdealGasThermo([0.34], "linear", atoms=atoms, spin=0, symmetrynumber=2)
     _summarize_ideal_gas_thermo(igt)
-    store = MemoryStore()
-    _summarize_ideal_gas_thermo(igt, store=store)
-    assert store.count() == 1
 
     # Make sure right number of vib energies are reported
     atoms = molecule("N2")
