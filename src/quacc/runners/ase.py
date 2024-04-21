@@ -77,8 +77,7 @@ class Runner:
         -------
         None
         """
-        if atoms is not None:
-            self.atoms = copy_atoms(atoms)
+        self.atoms = copy_atoms(atoms) if atoms is not None else atoms
         self.copy_files = copy_files
         self.tmpdir, self.job_results_dir = calc_setup(
             self.atoms, copy_files=self.copy_files
