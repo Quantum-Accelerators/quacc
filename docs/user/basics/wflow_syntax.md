@@ -47,7 +47,7 @@ graph LR
         return output2
 
 
-    dispatch_id = ct.dispatch(workflow)(1, 2, 3)   #  (3)!
+    dispatch_id = ct.dispatch(workflow)(1, 2, 3)  #  (3)!
     result = ct.get_result(dispatch_id, wait=True)  #  (4)!
     print(result)  # 9
     ```
@@ -226,6 +226,7 @@ graph LR
     ```python
     from quacc import flow, job
 
+
     @job  #  (1)!
     def add(a, b):
         return a + b
@@ -283,7 +284,7 @@ graph LR
     flow = jf.Flow([job1, job2])  #  (2)!
 
     responses = jf.run_locally(flow)  #  (3)!
-    result = responses[job2.uuid][1].output   #  (4)!
+    result = responses[job2.uuid][1].output  #  (4)!
     print(result)  # 9
     ```
 
@@ -316,7 +317,7 @@ graph LR
 
 === "Covalent"
 
-    If you want to learn more about Covalent, you can read the [Covalent Documentation](https://docs.covalent.xyz/docs/). Please refer to the Covalent [Discussion Board](https://github.com/AgnostiqHQ/covalent/discussions) for any Covalent-specific questions.
+    If you want to learn more about Covalent, you can read the [Covalent Documentation](https://docs.covalent.xyz/docs/). Please refer to the Covalent [Slack channel](https://join.slack.com/t/covalentworkflows/shared_invite/zt-1ew7f2rfk-dKSXVQmRniu5mQW4Z_eQuw) or [Discussion Board](https://github.com/AgnostiqHQ/covalent/discussions) for any Covalent-specific questions.
 
 === "Dask"
 

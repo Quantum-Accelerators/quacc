@@ -1,4 +1,5 @@
 """Utilities for working with lists."""
+
 from __future__ import annotations
 
 
@@ -23,7 +24,6 @@ def merge_list_params(
     list
         Merged list
     """
-
     merged_list = []
     lists = [list_ for list_ in lists if list_]
     for list_ in lists:

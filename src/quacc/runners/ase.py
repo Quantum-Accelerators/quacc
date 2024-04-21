@@ -3,18 +3,19 @@
 from __future__ import annotations
 
 import sys
+from shutil import copy, copytree
 from typing import TYPE_CHECKING
 
 import numpy as np
 from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read
-from ase.optimize import FIRE
+from ase.optimize import BFGS
 from ase.vibrations import Vibrations
 from monty.dev import requires
 from monty.os.path import zpath
 
 from quacc import SETTINGS
-from quacc.atoms.core import copy_atoms, get_final_atoms_from_dyn
+from quacc.atoms.core import copy_atoms, get_final_atoms_from_dynamics
 from quacc.runners.prep import calc_cleanup, calc_setup
 from quacc.utils.dicts import recursive_dict_merge
 
@@ -31,11 +32,21 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from ase.optimize.optimize import Optimizer
 
+    from quacc.utils.files import Filenames, SourceDirectory
+
     class OptimizerKwargs(TypedDict, total=False):
+        """
+        Type hint for `optimizer_kwargs` in [quacc.runners.ase.run_opt][].
+        """
+
         restart: Path | str | None  # default = None
         append_trajectory: bool  # default = False
 
     class VibKwargs(TypedDict, total=False):
+        """
+        Type hint for `vib_kwargs` in [quacc.runners.ase.run_vib][].
+        """
+
         indices: list[int] | None  # default = None
         delta: float  # default = 0.01
         nfree: int  # default = 2
@@ -44,7 +55,7 @@ if TYPE_CHECKING:
 def run_calc(
     atoms: Atoms,
     geom_file: str | None = None,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     get_forces: bool = False,
 ) -> Atoms:
     """
@@ -66,7 +77,7 @@ def run_calc(
         atoms.get_potential_energy() function to update the positions, as this
         varies between codes.
     copy_files
-        Filenames to copy from source to scratch directory.
+        Files to copy (and decompress) from source to the runtime directory.
     get_forces
         Whether to use `atoms.get_forces()` instead of `atoms.get_potential_energy()`.
 
@@ -75,7 +86,6 @@ def run_calc(
     Atoms
         The updated Atoms object.
     """
-
     # Copy atoms so we don't modify it in-place
     atoms = copy_atoms(atoms)
 
@@ -121,11 +131,12 @@ def run_opt(
     atoms: Atoms,
     relax_cell: bool = False,
     fmax: float = 0.01,
-    max_steps: int = 500,
-    optimizer: Optimizer = FIRE,
+    max_steps: int = 1000,
+    optimizer: Optimizer = BFGS,
     optimizer_kwargs: OptimizerKwargs | None = None,
+    store_intermediate_results: bool = False,
     run_kwargs: dict[str, Any] | None = None,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> Optimizer:
     """
     Run an ASE-based optimization in a scratch directory and copy the results back to
@@ -151,17 +162,20 @@ def run_opt(
         Dictionary of kwargs for the optimizer. Takes all valid kwargs for ASE
         Optimizer classes. Refer to `_set_sella_kwargs` for Sella-related
         kwargs and how they are set.
+    store_intermediate_results
+        Whether to store the files generated at each intermediate step in the
+        optimization. If enabled, they will be stored in a directory named
+        `stepN` where `N` is the step number, starting at 0.
     run_kwargs
         Dictionary of kwargs for the run() method of the optimizer.
     copy_files
-        Filenames to copy from source to scratch directory.
+        Files to copy (and decompress) from source to the runtime directory.
 
     Returns
     -------
     Optimizer
         The ASE Optimizer object.
     """
-
     # Copy atoms so we don't modify it in-place
     atoms = copy_atoms(atoms)
 
@@ -172,7 +186,7 @@ def run_opt(
     optimizer_kwargs = recursive_dict_merge(
         {
             "logfile": "-" if SETTINGS.DEBUG else tmpdir / "opt.log",
-            "restart": tmpdir / "opt.pckl",
+            "restart": tmpdir / "opt.json",
         },
         optimizer_kwargs,
     )
@@ -185,30 +199,43 @@ def run_opt(
 
     # Handle optimizer kwargs
     if optimizer.__name__.startswith("SciPy"):
-        optimizer_kwargs.pop("restart")
+        optimizer_kwargs.pop("restart", None)
     elif optimizer.__name__ == "Sella":
         _set_sella_kwargs(atoms, optimizer_kwargs)
     elif optimizer.__name__ == "IRC":
         optimizer_kwargs.pop("restart", None)
 
     # Define the Trajectory object
-    traj_filename = tmpdir / "opt.traj"
-    traj = Trajectory(traj_filename, "w", atoms=atoms)
+    traj_file = tmpdir / "opt.traj"
+    traj = Trajectory(traj_file, "w", atoms=atoms)
     optimizer_kwargs["trajectory"] = traj
 
     # Set volume relaxation constraints, if relevant
     if relax_cell and atoms.pbc.any():
         atoms = FrechetCellFilter(atoms)
 
-    # Run calculation
+    # Run optimization
     with traj, optimizer(atoms, **optimizer_kwargs) as dyn:
-        dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
+        if store_intermediate_results:
+            opt = dyn.irun(fmax=fmax, steps=max_steps, **run_kwargs)
+            for i, _ in enumerate(opt):
+                _copy_intermediate_files(
+                    tmpdir,
+                    i,
+                    files_to_ignore=[
+                        traj_file,
+                        optimizer_kwargs["restart"],
+                        optimizer_kwargs["logfile"],
+                    ],
+                )
+        else:
+            dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
 
     # Store the trajectory atoms
-    dyn.traj_atoms = read(traj_filename, index=":")
+    dyn.traj_atoms = read(traj_file, index=":")
 
     # Perform cleanup operations
-    calc_cleanup(get_final_atoms_from_dyn(dyn), tmpdir, job_results_dir)
+    calc_cleanup(get_final_atoms_from_dynamics(dyn), tmpdir, job_results_dir)
 
     return dyn
 
@@ -216,7 +243,7 @@ def run_opt(
 def run_vib(
     atoms: Atoms,
     vib_kwargs: VibKwargs | None = None,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> Vibrations:
     """
     Run an ASE-based vibration analysis in a scratch directory and copy the results back
@@ -231,16 +258,15 @@ def run_vib(
     atoms
         The Atoms object to run the calculation on.
     vib_kwargs
-        Dictionary of kwargs for the `ase.vibrations.Vibrations` class.
+        Dictionary of kwargs for the [ase.vibrations.Vibrations][] class.
     copy_files
-        Filenames to copy from source to scratch directory.
+        Files to copy (and decompress) from source to the runtime directory.
 
     Returns
     -------
     Vibrations
         The updated Vibrations module
     """
-
     # Copy atoms so we don't modify it in-place
     atoms = copy_atoms(atoms)
 
@@ -286,9 +312,40 @@ def _set_sella_kwargs(atoms: Atoms, optimizer_kwargs: dict[str, Any]) -> None:
     -------
     None
     """
-
     if "order" not in optimizer_kwargs:
         optimizer_kwargs["order"] = 0
 
     if not atoms.pbc.any() and "internal" not in optimizer_kwargs:
         optimizer_kwargs["internal"] = True
+
+
+def _copy_intermediate_files(
+    tmpdir: Path, step_number: int, files_to_ignore: list[Path] | None = None
+) -> None:
+    """
+    Copy all files in the working directory to a subdirectory named `stepN` where `N`
+    is the step number. This is useful for storing intermediate files generated during
+    an ASE relaaxation.
+
+    Parameters
+    ----------
+    tmpdir
+        The working directory.
+    step_number
+        The step number.
+    files_to_ignore
+        A list of files to ignore when copying files to the subdirectory.
+
+    Returns
+    -------
+    None
+    """
+    files_to_ignore = files_to_ignore or []
+    store_path = tmpdir / f"step{step_number}"
+    store_path.mkdir()
+    for item in tmpdir.iterdir():
+        if not item.name.startswith("step") and item not in files_to_ignore:
+            if item.is_file():
+                copy(item, store_path)
+            elif item.is_dir():
+                copytree(item, store_path / item.name)

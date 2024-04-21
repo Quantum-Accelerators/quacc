@@ -1,8 +1,9 @@
+from __future__ import annotations
+
 from pathlib import Path
 
 import numpy as np
 import pytest
-from ase import Atoms
 from ase.atoms import Atoms
 from ase.build import bulk, molecule
 from ase.io import read
@@ -82,15 +83,15 @@ def test_check_charge_and_spin(os_atoms):
     charge, spin_multiplicity = check_charge_and_spin(atoms)
     assert charge == 0
     assert spin_multiplicity == 2
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="not possible for this molecule"):
         charge, spin_multiplicity = check_charge_and_spin(atoms, spin_multiplicity=1)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="not possible for this molecule"):
         charge, spin_multiplicity = check_charge_and_spin(
             atoms, charge=0, spin_multiplicity=1
         )
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="not possible for this molecule"):
         charge, spin_multiplicity = check_charge_and_spin(atoms, spin_multiplicity=3)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="not possible for this molecule"):
         charge, spin_multiplicity = check_charge_and_spin(
             atoms, charge=0, spin_multiplicity=3
         )
@@ -113,7 +114,7 @@ def test_check_charge_and_spin(os_atoms):
     )
     assert charge == 0
     assert spin_multiplicity == 4
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="not possible for this molecule"):
         charge, spin_multiplicity = check_charge_and_spin(
             os_atoms, charge=0, spin_multiplicity=3
         )
@@ -122,19 +123,19 @@ def test_check_charge_and_spin(os_atoms):
     charge, spin_multiplicity = check_charge_and_spin(atoms)
     assert charge == 0
     assert spin_multiplicity == 2
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="not possible for this molecule"):
         charge, spin_multiplicity = check_charge_and_spin(atoms, spin_multiplicity=1)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="not possible for this molecule"):
         charge, spin_multiplicity = check_charge_and_spin(
             atoms, charge=0, spin_multiplicity=1
         )
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="not possible for this molecule"):
         charge, spin_multiplicity = check_charge_and_spin(atoms, spin_multiplicity=3)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="not possible for this molecule"):
         charge, spin_multiplicity = check_charge_and_spin(
             atoms, charge=0, spin_multiplicity=3
         )
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="not possible for this molecule"):
         charge, spin_multiplicity = check_charge_and_spin(atoms, charge=-1)
 
     charge, spin_multiplicity = check_charge_and_spin(
@@ -153,7 +154,7 @@ def test_check_charge_and_spin(os_atoms):
     )
     assert charge == 0
     assert spin_multiplicity == 4
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="not possible for this molecule"):
         charge, spin_multiplicity = check_charge_and_spin(
             os_atoms, charge=0, spin_multiplicity=3
         )
@@ -175,7 +176,7 @@ def test_check_charge_and_spin(os_atoms):
     atoms = molecule("CH3")
     atoms.set_initial_charges([-2, 0, 0, 0])
     atoms.set_initial_magnetic_moments([4, 0, 0, 0])
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="not possible for this molecule"):
         check_charge_and_spin(atoms)
 
     atoms = Atoms.fromdict(
@@ -197,7 +198,7 @@ def test_check_charge_and_spin(os_atoms):
     )
     assert charge == 0
     assert spin_multiplicity == 3
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="not possible for this molecule"):
         check_charge_and_spin(atoms, charge=0, spin_multiplicity=2)
 
     atoms = molecule("O2")

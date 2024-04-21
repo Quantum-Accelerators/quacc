@@ -1,12 +1,10 @@
 """Schemas for storing metadata about Atoms objects."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import numpy as np
-from ase.atoms import Atom, Atoms
 from emmet.core.structure import MoleculeMetadata, StructureMetadata
-from monty.json import jsanitize
 from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc.atoms.core import (
@@ -14,10 +12,11 @@ from quacc.atoms.core import (
     get_charge_attribute,
     get_spin_multiplicity_attribute,
 )
-from quacc.utils.dicts import clean_task_doc
 
 if TYPE_CHECKING:
     from typing import Any
+
+    from ase.atoms import Atoms
 
     from quacc.schemas._aliases.atoms import AtomsSchema
 
@@ -52,17 +51,18 @@ def atoms_to_metadata(
     AtomsSchema
         Dict of metadata about the Atoms object.
     """
-
     additional_fields = additional_fields or {}
     atoms = copy_atoms(atoms)
     results = {}
+    atoms.calc = None
 
     # Set any charge or multiplicity keys
     if not atoms.pbc.any():
         _set_charge_and_spin(atoms, charge_and_multiplicity=charge_and_multiplicity)
 
     # Strip the dummy atoms, if present
-    del atoms[[atom.index for atom in atoms if atom.symbol == "X"]]
+    if "X" in atoms.get_chemical_symbols():
+        del atoms[[atom.index for atom in atoms if atom.symbol == "X"]]
 
     # Get Atoms metadata, if requested. emmet already has built-in tools for
     # generating pymatgen Structure/Molecule metadata, so we'll just use that.
@@ -80,16 +80,10 @@ def atoms_to_metadata(
     else:
         metadata = {}
 
-    # Copy the info flags as a separate entry in the DB for easy querying
-    results["atoms_info"] = _quacc_sanitize(atoms.info)
-
     # Store Atoms object
     results["atoms"] = atoms
 
-    # Combine the metadata and results dictionaries
-    atoms_doc_unsorted = metadata | results | additional_fields
-
-    return clean_task_doc(atoms_doc_unsorted)
+    return metadata | results | additional_fields
 
 
 def _set_charge_and_spin(
@@ -111,7 +105,6 @@ def _set_charge_and_spin(
     None
         Modifies the Atoms object in place.
     """
-
     if charge_and_multiplicity:
         charge = charge_and_multiplicity[0]
         spin_multiplicity = charge_and_multiplicity[1]
@@ -123,31 +116,3 @@ def _set_charge_and_spin(
         atoms.charge = charge
     if spin_multiplicity is not None:
         atoms.spin_multiplicity = spin_multiplicity
-
-
-def _quacc_sanitize(obj: Any) -> Any:
-    """
-    Sanitizes an object for storage in MongoDB.
-
-    This is an analogue of monty's jsanitize function but meant to serialize
-    Atom/Atoms objects as well.
-
-    Parameters
-    ----------
-    obj
-        Object to sanitize
-
-    Returns
-    -------
-    Any
-        Sanitized object
-    """
-    if isinstance(obj, (Atom, Atoms)):
-        obj = atoms_to_metadata(obj)
-    elif isinstance(obj, (list, tuple, np.ndarray)):
-        obj = [_quacc_sanitize(i) for i in obj]
-    elif isinstance(obj, dict):
-        obj = {k.__str__(): _quacc_sanitize(v) for k, v in obj.items()}
-    else:
-        obj = jsanitize(obj)
-    return obj

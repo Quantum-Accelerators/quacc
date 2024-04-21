@@ -1,25 +1,28 @@
 """Aliases for type hinting for emmet."""
+
 from __future__ import annotations
 
-from datetime import datetime
-from typing import Any, Literal, TypedDict
+from typing import TYPE_CHECKING, Any, Literal, TypedDict
 
-from emmet.core.math import ListMatrix3D, Matrix3D, Vector3D
-from emmet.core.symmetry import CrystalSystem
-from emmet.core.vasp.calc_types import CalcType
-from emmet.core.vasp.calc_types.enums import RunType, TaskType
-from emmet.core.vasp.calculation import VaspObject
-from emmet.core.vasp.task_valid import TaskState
-from pymatgen.core.composition import Composition
-from pymatgen.core.lattice import Lattice
-from pymatgen.core.periodic_table import Element
-from pymatgen.core.structure import Structure
-from pymatgen.entries.computed_entries import ComputedEntry
-from pymatgen.io.vasp.inputs import Incar, Kpoints, Poscar, Potcar
+if TYPE_CHECKING:
+    from datetime import datetime
+
+    from emmet.core.math import ListMatrix3D, Matrix3D, Vector3D
+    from emmet.core.symmetry import CrystalSystem
+    from emmet.core.vasp.calc_types import CalcType
+    from emmet.core.vasp.calc_types.enums import RunType, TaskType
+    from emmet.core.vasp.calculation import VaspObject
+    from emmet.core.vasp.task_valid import TaskState
+    from pymatgen.core.composition import Composition
+    from pymatgen.core.lattice import Lattice
+    from pymatgen.core.periodic_table import Element
+    from pymatgen.core.structure import Structure
+    from pymatgen.entries.computed_entries import ComputedEntry
+    from pymatgen.io.vasp.inputs import Incar, Kpoints, Poscar, Potcar
 
 
 class SymmetryData(TypedDict):
-    """Type hint associated with `emmet.core.symmetry.SymmetryData`"""
+    """Type hint associated with [emmet.core.symmetry.SymmetryData][]"""
 
     crystal_system: CrystalSystem
     symbol: str
@@ -30,7 +33,7 @@ class SymmetryData(TypedDict):
 
 
 class PointGroupData(TypedDict):
-    """Type hint associated with `emmet.core.symmetry.PointGroupData`"""
+    """Type hint associated with [emmet.core.symmetry.PointGroupData][]"""
 
     point_group: str
     rotation_number: float
@@ -52,7 +55,7 @@ class EmmetBase(TypedDict):
 
 
 class StructureMetadata(EmmetBase):
-    """Type hint associated with `emmet.core.structure.StructureMetadata`"""
+    """Type hint associated with [emmet.core.structure.StructureMetadata][]"""
 
     nsites: int
     elements: list[Element]
@@ -68,7 +71,7 @@ class StructureMetadata(EmmetBase):
 
 
 class MoleculeMetadata(EmmetBase):
-    """Type hint associated with `emmet.core.structure.MoleculeMetadata`"""
+    """Type hint associated with [emmet.core.structure.MoleculeMetadata][]"""
 
     charge: int
     spin_multiplicity: int
@@ -139,7 +142,8 @@ class IonicStep(TypedDict):
 
 class FrequencyDependentDielectric(TypedDict):
     """Type hint associated with
-    emmet.core.vasp.calculation.FrequencyDependentDielectric."""
+    emmet.core.vasp.calculation.FrequencyDependentDielectric.
+    """
 
     real: list[list[float]]
     imaginary: list[list[float]]
@@ -148,7 +152,8 @@ class FrequencyDependentDielectric(TypedDict):
 
 class ElectronPhononDisplacedStructures(TypedDict):
     """Type hint associated with
-    emmet.core.vasp.calculation.ElectronPhononDisplacedStructures."""
+    emmet.core.vasp.calculation.ElectronPhononDisplacedStructures.
+    """
 
     temperatures: list[float]
     structures: list[Structure]

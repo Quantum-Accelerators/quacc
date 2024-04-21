@@ -1,0 +1,124 @@
+PAW_PBE Na 08Apr2002
+ 1.00000000000000000
+ parameters from PSCTR are:
+   VRHFIN =Na: s1p0
+   LEXCH  = PE
+   EATOM  =     5.1581 eV,     .3791 Ry
+
+   TITEL  = PAW_PBE Na 08Apr2002
+   LULTRA =        F    use ultrasoft PP ?
+   IUNSCR =        1    unscreen: 0-lin 1-nonlin 2-no
+   RPACOR =    1.800    partial core radius
+   POMASS =   22.990; ZVAL   =    1.000    mass and valenz
+   RCORE  =    2.200    outmost cutoff radius
+   RWIGS  =    3.320; RWIGS  =    1.757    wigner-seitz radius (au A)
+   ENMAX  =  101.968; ENMIN  =   76.476 eV
+   ICORE  =        2    local potential
+   LCOR   =        T    correct aug charges
+   LPAW   =        T    paw PP
+   EAUG   =  250.695
+   DEXC   =    -.224
+   RMAX   =    4.566    core radius for proj-oper
+   RAUG   =    1.300    factor for augmentation sphere
+   RDEP   =    2.259    radius for radial grids
+   QCUT   =   -2.738; QGAM   =    5.475    optimization parameters
+
+   Description
+     l     E      TYP  RCUT    TYP  RCUT
+     0   .000     23  2.200
+     0  2.000     23  2.200
+     1   .000     23  2.200
+     2   .000     23  2.200
+   Error from kinetic energy argument (eV)
+   NDATA  =      100
+   STEP   =   20.000   1.050
+  .348      .334      .326      .310      .302      .284      .267      .258
+  .240      .222      .214      .197      .181      .166      .151      .137
+  .124      .112      .101      .853E-01  .760E-01  .674E-01  .559E-01  .490E-01
+  .428E-01  .347E-01  .277E-01  .237E-01  .186E-01  .143E-01  .109E-01  .814E-02
+  .600E-02  .437E-02  .315E-02  .227E-02  .150E-02  .115E-02  .878E-03  .781E-03
+  .729E-03  .720E-03  .719E-03  .706E-03  .674E-03  .622E-03  .554E-03  .458E-03
+  .380E-03  .292E-03  .221E-03  .179E-03  .144E-03  .125E-03  .118E-03  .117E-03
+  .116E-03  .112E-03  .102E-03  .878E-04  .713E-04  .558E-04  .437E-04  .350E-04
+  .317E-04  .309E-04  .307E-04  .295E-04  .259E-04  .215E-04  .163E-04  .124E-04
+  .103E-04  .973E-05  .968E-05  .927E-05  .801E-05  .626E-05  .453E-05  .365E-05
+  .338E-05  .335E-05  .313E-05  .253E-05  .185E-05  .142E-05  .129E-05  .127E-05
+  .116E-05  .917E-06  .668E-06  .563E-06  .549E-06  .520E-06  .423E-06  .321E-06
+  .275E-06  .272E-06  .250E-06  .201E-06
+END of PSCTR-controll parameters
+ local part
+ 85.0376694860515556
+End of Dataset
+  PAW_PBE Pd 04Jan2005
+   10.0000000000000
+ parameters from PSCTR are:
+   SHA256 =  dd6f6f02930356371984e2b707ff5e456046761dc76b07c1eba30abd15eb3c39 Pd/POTCAR
+   COPYR  = (c) Copyright 04Jan2005 Georg Kresse
+   COPYR  = This file is part of the software VASP. Any use, copying, and all other rights are regulated by the VASP license agreement.
+   COPYR  = If you do not have a valid VASP license, you may not use, copy or distribute this file.
+   VRHFIN =Pd : s1 d9
+   LEXCH  = PE
+   EATOM  =   809.7530 eV,   59.5152 Ry
+
+   TITEL  = PAW_PBE Pd 04Jan2005
+   LULTRA =        F    use ultrasoft PP ?
+   IUNSCR =        1    unscreen: 0-lin 1-nonlin 2-no
+   RPACOR =    2.000    partial core radius
+   POMASS =  106.420; ZVAL   =   10.000    mass and valenz
+   RCORE  =    2.600    outmost cutoff radius
+   RWIGS  =    2.710; RWIGS  =    1.434    wigner-seitz radius (au A)
+   ENMAX  =  250.925; ENMIN  =  188.194 eV
+   ICORE  =        3    local potential
+   LCOR   =        T    correct aug charges
+   LPAW   =        T    paw PP
+   EAUG   =  416.230
+   DEXC   =    0.000
+   RMAX   =    2.653    core radius for proj-oper
+   RAUG   =    1.300    factor for augmentation sphere
+   RDEP   =    2.734    radius for radial grids
+   RDEPT  =    2.103    core radius for aug-charge
+
+   Atomic configuration
+   12 entries
+     n  l   j            E        occ.
+     1  0  0.50    -24164.6631   2.0000
+     2  0  0.50     -3530.9218   2.0000
+     2  1  1.50     -3165.6822   6.0000
+     3  0  0.50      -639.4577   2.0000
+     3  1  1.50      -519.4532   6.0000
+     3  2  2.50      -328.9757  10.0000
+     4  0  0.50       -88.7014   2.0000
+     4  1  1.50       -54.4540   6.0000
+     4  2  2.50        -6.6878   9.0000
+     5  0  0.50        -4.3543   1.0000
+     5  1  0.50        -1.3606   0.0000
+     4  3  2.50        -1.3606   0.0000
+   Description
+     l       E           TYP  RCUT    TYP  RCUT
+     2     -6.6878251     23  2.400
+     2     -8.0484077     23  2.400
+     0     -4.3542939     23  2.400
+     0      4.3406793     23  2.400
+     1     -4.0817478     23  2.600
+     1     15.8380318     23  2.600
+     3     -4.0817478     23  2.400
+   Error from kinetic energy argument (eV)
+   NDATA  =      100
+   STEP   =   20.000   1.050
+  187.      185.      183.      180.      179.      176.      172.      170.
+  167.      163.      161.      157.      152.      148.      143.      138.
+  133.      128.      123.      116.      111.      106.      97.9      92.9
+  87.9      80.6      73.5      69.0      62.3      56.0      50.0      44.4
+  39.2      34.4      30.0      25.9      21.1      17.9      14.3      11.9
+  9.19      6.98      5.20      3.80      2.71      1.88      1.27     0.748
+ 0.473     0.257     0.140     0.903E-01 0.621E-01 0.533E-01 0.520E-01 0.514E-01
+ 0.485E-01 0.418E-01 0.330E-01 0.239E-01 0.163E-01 0.107E-01 0.732E-02 0.553E-02
+ 0.511E-02 0.506E-02 0.489E-02 0.437E-02 0.343E-02 0.254E-02 0.171E-02 0.121E-02
+ 0.102E-02 0.985E-03 0.964E-03 0.875E-03 0.698E-03 0.505E-03 0.351E-03 0.290E-03
+ 0.277E-03 0.269E-03 0.237E-03 0.179E-03 0.127E-03 0.103E-03 0.979E-04 0.940E-04
+ 0.788E-04 0.584E-04 0.442E-04 0.409E-04 0.395E-04 0.334E-04 0.247E-04 0.199E-04
+ 0.190E-04 0.176E-04 0.134E-04 0.105E-04
+END of PSCTR-controll parameters
+ local part
+   71.8095875659991
+End of Dataset

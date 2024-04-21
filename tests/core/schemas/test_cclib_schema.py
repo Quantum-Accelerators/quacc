@@ -1,8 +1,11 @@
+from __future__ import annotations
+
 import gzip
 import logging
 import os
 import shutil
 from pathlib import Path
+from shutil import copytree
 
 import pytest
 from ase.build import bulk
@@ -23,9 +26,9 @@ LOGGER.propagate = True
 
 FILE_DIR = Path(__file__).parent
 
-run1 = FILE_DIR / "gaussian_run1"
+run1 = FILE_DIR / "test_files" / "gaussian_run1"
 log1 = run1 / "Gaussian.log"
-run2 = FILE_DIR / "cclib_data"
+run2 = FILE_DIR / "test_files" / "cclib_data"
 log2 = run2 / "gau_testopt.log.gz"
 
 
@@ -35,16 +38,17 @@ def cclib_obj():
 
 
 def setup_module():
-    p = FILE_DIR / "cclib_data"
+    p = FILE_DIR / "test_files" / "cclib_data"
 
-    with gzip.open(p / "psi_test.cube.gz", "r") as f_in, open(
-        p / "psi_test.cube", "wb"
-    ) as f_out:
+    with (
+        gzip.open(p / "psi_test.cube.gz", "r") as f_in,
+        open(p / "psi_test.cube", "wb") as f_out,
+    ):
         shutil.copyfileobj(f_in, f_out)
 
 
 def teardown_module():
-    p = FILE_DIR / "cclib_data"
+    p = FILE_DIR / "test_files" / "cclib_data"
 
     if os.path.exists(p / "psi_test.cube"):
         os.remove(p / "psi_test.cube")
@@ -57,11 +61,13 @@ def bad_mock_cclib_calculate(*args, **kwargs):
 
 def test_cclib_summarize_run(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
+    copytree(run1, tmp_path / "test1")
+    copytree(run2, tmp_path / "test2")
 
     # Make sure metadata is made
     atoms = read(log1)
     results = cclib_summarize_run(
-        atoms, ".log", dir_path=run1, additional_fields={"test": "hi"}
+        atoms, ".log", directory=tmp_path / "test1", additional_fields={"test": "hi"}
     )
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
@@ -74,14 +80,13 @@ def test_cclib_summarize_run(tmp_path, monkeypatch):
     # Make sure metadata is made
     atoms = read(log2)
     results = cclib_summarize_run(
-        atoms, ".log", dir_path=run2, additional_fields={"test": "hi"}
+        atoms, ".log", directory=tmp_path / "test2", additional_fields={"test": "hi"}
     )
     assert results["attributes"]["final_scf_energy"] == pytest.approx(-4091.763)
     assert results["natoms"] == 2
     assert results["charge"] == 0
     assert results["spin_multiplicity"] == 3
     assert results["nelectrons"] == 16
-    assert "schemas" in results["logfile"]
     assert "gau_testopt.log.gz" in results["logfile"]
     assert results.get("attributes") is not None
     assert results["attributes"]["metadata"]["success"] is True
@@ -109,40 +114,38 @@ def test_cclib_summarize_run(tmp_path, monkeypatch):
     MontyDecoder().process_decoded(d)
 
     # Make sure default dir works
-    monkeypatch.chdir(run1)
+    monkeypatch.chdir(tmp_path / "test1")
     cclib_summarize_run(atoms, ".log")
 
     # Test DB
     atoms = read(log1)
     store = MemoryStore()
-    cclib_summarize_run(atoms, ".log", dir_path=run1, store=store)
+    cclib_summarize_run(atoms, ".log", directory=tmp_path / "test1", store=store)
     assert store.count() == 1
 
     # Make sure info tags are handled appropriately
     atoms = read(log1)
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
-    results = cclib_summarize_run(atoms, ".log", dir_path=run1)
+    results = cclib_summarize_run(atoms, ".log", directory=tmp_path / "test1")
     assert atoms.info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
-    assert results.get("atoms_info", {}) != {}
-    assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
 
 def test_errors():
     atoms = bulk("Cu")
     with pytest.raises(ValueError):
-        cclib_summarize_run(atoms, ".log", dir_path=run1)
+        cclib_summarize_run(atoms, ".log", directory=run1)
 
     calc = Vasp(atoms)
     atoms.calc = calc
     with pytest.raises(ValueError):
-        cclib_summarize_run(atoms, ".log", dir_path=run1)
+        cclib_summarize_run(atoms, ".log", directory=run1)
 
 
 def test_cclib_taskdoc(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    p = FILE_DIR / "cclib_data"
+    p = FILE_DIR / "test_files" / "cclib_data"
 
     # Now we will try two possible extensions, but we will make sure that
     # it fails because the newest log file (.txt) is not valid
@@ -195,7 +198,7 @@ def test_cclib_calculate(tmp_path, monkeypatch, cclib_obj):
         _cclib_calculate(
             cclib_obj,
             method="ddec6",
-            cube_file=FILE_DIR / "cclib_data" / "psi_test.cube",
+            cube_file=FILE_DIR / "test_files" / "cclib_data" / "psi_test.cube",
             proatom_dir="does_not_exists",
         )
 
@@ -203,26 +206,28 @@ def test_cclib_calculate(tmp_path, monkeypatch, cclib_obj):
         _cclib_calculate(
             cclib_obj,
             method="ddec6",
-            cube_file=FILE_DIR / "cclib_data" / "psi_test.cube",
+            cube_file=FILE_DIR / "test_files" / "cclib_data" / "psi_test.cube",
         )
 
-    with pytest.raises(Exception):
+    with pytest.raises(AssertionError):
         _cclib_calculate(
             cclib_obj,
             method="ddec6",
-            cube_file=FILE_DIR / "cclib_data" / "psi_test.cube",
-            proatom_dir=FILE_DIR / "cclib_data" / "psi_test.cube",
+            cube_file=FILE_DIR / "test_files" / "cclib_data" / "psi_test.cube",
+            proatom_dir=FILE_DIR / "test_files" / "cclib_data" / "psi_test.cube",
         )
 
 
 def test_monkeypatches(tmp_path, monkeypatch, cclib_obj, caplog):
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setenv("PROATOM_DIR", str(FILE_DIR / "cclib_data" / "proatomdata"))
+    monkeypatch.setenv(
+        "PROATOM_DIR", str(FILE_DIR / "test_files" / "cclib_data" / "proatomdata")
+    )
     with pytest.raises(FileNotFoundError):
         _cclib_calculate(
             cclib_obj,
             method="ddec6",
-            cube_file=FILE_DIR / "cclib_data" / "psi_test.cube",
+            cube_file=FILE_DIR / "test_files" / "cclib_data" / "psi_test.cube",
         )
 
     monkeypatch.setattr("cclib.method.Bader.calculate", bad_mock_cclib_calculate)
@@ -231,7 +236,7 @@ def test_monkeypatches(tmp_path, monkeypatch, cclib_obj, caplog):
             _cclib_calculate(
                 cclib_obj,
                 method="bader",
-                cube_file=FILE_DIR / "cclib_data" / "psi_test.cube",
+                cube_file=FILE_DIR / "test_files" / "cclib_data" / "psi_test.cube",
             )
             is None
         )

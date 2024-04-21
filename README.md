@@ -4,8 +4,7 @@
 
 # `quacc` – The Quantum Accelerator 🦆
 
-[![codecov](https://codecov.io/gh/Quantum-Accelerators/quacc/branch/main/graph/badge.svg?token=OJaOZAH30u)](https://codecov.io/gh/Quantum-Accelerators/quacc)
-[![DeepSource](https://app.deepsource.com/gh/Quantum-Accelerators/quacc.svg/?label=active+issues&token=Y1NxOLIuFFEqWdjawIYnJNde)](https://app.deepsource.com/gh/Quantum-Accelerators/quacc/?ref=repository-badge)
+[![codecov](https://codecov.io/gh/Quantum-Accelerators/quacc/branch/main/graph/badge.svg?token=OJaOZAH30u&precision=1)](https://codecov.io/gh/Quantum-Accelerators/quacc)
 ![Python - Version](https://img.shields.io/pypi/pyversions/quacc)
 ![PyPI - Version](https://img.shields.io/pypi/v/quacc?color=blue&link=https%3A%2F%2Fpypi.org%2Fproject%2Fquacc%2F)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7720998.svg)](https://doi.org/10.5281/zenodo.7720998)
@@ -14,14 +13,14 @@
 
 - `quacc` makes it possible to easily run pre-made [computational materials science workflows](https://quantum-accelerators.github.io/quacc/user/recipes/recipes_list.html) that can be efficiently dispatched anywhere: locally, HPC, the cloud, or any combination thereof.
 
-- `quacc` gives you the freedom of choice. Through a single, unified interface to several supported [workflow management solutions](https://quantum-accelerators.github.io/quacc/user/basics/wflow_overview.html), you can use what best suits your unique computing needs.
+- `quacc` gives you the freedom of choice. Through a single, unified interface to several [workflow management solutions](https://quantum-accelerators.github.io/quacc/user/basics/wflow_overview.html), you can use what best suits your unique computing needs.
 
 - `quacc` leverages community resources so we don't reinvent the wheel. It is built around the Atomic Simulation Environment and much of the software infrastructure powering the Materials Project.
 
 ## Documentation 📖
 
 <p align="center">
-     <a href="https://quantum-accelerators.github.io/quacc/"><b><i>Learn More Here!</i></b></a> 
+     <a href="https://quantum-accelerators.github.io/quacc/"><b><i>Learn More Here!</i></b></a>
 </p>
 
 ... or skip straight to one of the following sections:

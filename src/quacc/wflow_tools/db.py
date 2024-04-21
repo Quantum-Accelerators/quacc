@@ -1,8 +1,11 @@
 """Utility functions for interfacing with databases."""
+
 from __future__ import annotations
 
 import uuid
 from typing import TYPE_CHECKING
+
+from monty.json import jsanitize
 
 if TYPE_CHECKING:
     from typing import Any
@@ -27,12 +30,16 @@ def results_to_db(store: Store, results: dict[str, Any] | list[dict]) -> None:
     -------
     None
     """
-
     if not isinstance(results, list):
         results = [results]
 
-    for result in results:
+    sanitized_results = [
+        jsanitize(result, enum_values=True, recursive_msonable=True)
+        for result in results
+    ]
+
+    for result in sanitized_results:
         result["uuid"] = str(uuid.uuid4())
 
     with store:
-        store.update(results, key="uuid")
+        store.update(sanitized_results, key="uuid")

@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 import os
 from copy import deepcopy
 from pathlib import Path
+from shutil import which
 
 import numpy as np
 import pytest
@@ -9,12 +12,14 @@ from ase.calculators.singlepoint import SinglePointDFTCalculator
 from ase.calculators.vasp import Vasp as Vasp_
 from ase.constraints import FixAtoms, FixBondLength
 from ase.io import read
+from pymatgen.io.vasp.sets import MPRelaxSet, MPScanRelaxSet
 
 from quacc import SETTINGS
 from quacc.calculators.vasp import Vasp, presets
-from quacc.schemas.prep import prep_magmoms, prep_next_run
+from quacc.schemas.prep import prep_next_run
 
 FILE_DIR = Path(__file__).parent
+PSEUDO_DIR = FILE_DIR / "fake_pseudos"
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 
@@ -49,7 +54,7 @@ def test_vanilla_vasp():
 
 
 def test_presets():
-    default_calcs_dir = Path(presets.__file__).resolve().parent
+    default_calcs_dir = Path(presets.__file__).parent
 
     atoms = bulk("Co") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
@@ -69,9 +74,9 @@ def test_presets():
     assert calc.exp_params["ediff"] == 1e-5
     assert calc.float_params["encut"] == 450
 
-    calc = Vasp(atoms, xc="scan", preset="MPScanSet")
+    calc = Vasp(atoms, xc="scan", pmg_input_set=MPScanRelaxSet)
     assert calc.xc.lower() == "scan"
-    assert calc.string_params["algo"] == "all"
+    assert calc.string_params["algo"].lower() == "all"
     assert calc.exp_params["ediff"] == 1e-5
 
 
@@ -164,6 +169,7 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
     atoms[-1].symbol = "Fe"
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
+    assert atoms.get_chemical_symbols() == ["Cu", "Cu", "Cu", "Fe"]
     assert atoms.get_initial_magnetic_moments().tolist() == [2.0] * (len(atoms) - 1) + [
         5.0
     ]
@@ -186,16 +192,15 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
 
     atoms = bulk("Cu") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
-    calc = Vasp(atoms, preset="MPScanSet")
+    calc = Vasp(atoms, pmg_input_set=MPScanRelaxSet)
     atoms.calc = calc
-    assert atoms.get_initial_magnetic_moments().tolist() == [1.0] * (len(atoms) - 1) + [
-        5.0
-    ]
+    assert atoms.get_chemical_symbols() == ["Cu", "Cu", "Cu", "Fe"]
+    assert calc.parameters["magmom"] == [0.6, 0.6, 0.6, 5.0]
 
     atoms = bulk("Cu") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
     atoms.set_initial_magnetic_moments([3.14] * (len(atoms) - 1) + [1.0])
-    calc = Vasp(atoms, preset="BulkSet")
+    calc = Vasp(atoms, pmg_input_set=MPScanRelaxSet)
     atoms.calc = calc
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * (
         len(atoms) - 1
@@ -312,28 +317,28 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
 def test_prep_magmoms2(atoms_mag, atoms_nomag, atoms_nospin):
     atoms = deepcopy(atoms_mag)
     mags = atoms.get_magnetic_moments()
-    atoms = prep_next_run(prep_magmoms(atoms))
+    atoms = prep_next_run(atoms, move_magmoms=True)
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
     assert atoms.has("initial_magmoms") is True
     assert atoms.get_initial_magnetic_moments().tolist() == mags.tolist()
 
     atoms = deepcopy(atoms_nomag)
-    atoms = prep_next_run(prep_magmoms(atoms))
+    atoms = prep_next_run(atoms, move_magmoms=True)
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = deepcopy(atoms_nospin)
-    atoms = prep_next_run(prep_magmoms(atoms))
+    atoms = prep_next_run(atoms, move_magmoms=True)
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = deepcopy(atoms_mag)
-    atoms = prep_next_run(prep_magmoms(atoms))
+    atoms = prep_next_run(atoms, move_magmoms=True)
     calc = Vasp(atoms, preset="BulkSet", mag_cutoff=10.0)
     atoms.calc = calc
     assert atoms.has("initial_magmoms") is True
@@ -343,7 +348,7 @@ def test_prep_magmoms2(atoms_mag, atoms_nomag, atoms_nospin):
     calc = Vasp(atoms)
     atoms.calc = calc
     atoms.calc.results = {"energy": -1.0, "magmoms": [0.0] * len(atoms)}
-    atoms = prep_next_run(prep_magmoms(atoms))
+    atoms = prep_next_run(atoms, move_magmoms=True)
     atoms *= (2, 2, 2)
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
@@ -353,7 +358,7 @@ def test_prep_magmoms2(atoms_mag, atoms_nomag, atoms_nospin):
     calc = Vasp(atoms)
     atoms.calc = calc
     atoms.calc.results = {"energy": -1.0, "magmoms": [-0.02] * len(atoms)}
-    atoms = prep_next_run(prep_magmoms(atoms))
+    atoms = prep_next_run(atoms, move_magmoms=True)
     atoms *= (2, 2, 2)
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
@@ -363,7 +368,7 @@ def test_prep_magmoms2(atoms_mag, atoms_nomag, atoms_nospin):
     calc = Vasp(atoms)
     atoms.calc = calc
     atoms.calc.results = {"energy": -1.0}
-    atoms = prep_next_run(prep_magmoms(atoms))
+    atoms = prep_next_run(atoms, move_magmoms=True)
     atoms *= (2, 2, 2)
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
@@ -373,7 +378,7 @@ def test_prep_magmoms2(atoms_mag, atoms_nomag, atoms_nospin):
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
     atoms.calc.results = {"energy": -1.0, "magmoms": [3.14] * len(atoms)}
-    atoms = prep_next_run(prep_magmoms(atoms))
+    atoms = prep_next_run(atoms, move_magmoms=True)
     atoms *= (2, 2, 2)
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
@@ -436,7 +441,7 @@ def test_lasph_aggressive():
 def test_vdw():
     atoms = bulk("Cu")
 
-    with pytest.raises(OSError):
+    with pytest.raises(OSError, match="VASP_VDW setting was not provided"):
         Vasp(atoms, xc="beef-vdw")
 
 
@@ -707,7 +712,7 @@ def test_setups():
     assert calc.parameters["setups"]["Cu"] == ""
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, preset="MPScanSet")
+    calc = Vasp(atoms, pmg_input_set=MPScanRelaxSet)
     assert calc.parameters["setups"]["Cu"] == "_pv"
 
     atoms = bulk("Cu")
@@ -719,7 +724,12 @@ def test_setups():
     assert calc.parameters["setups"]["Cu"] == ""
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, setups="minimal", preset="MPScanSet")
+    calc = Vasp(atoms, setups="minimal", preset="BulkSet")
+    assert isinstance(calc.parameters["setups"], str)
+    assert calc.parameters["setups"] == "minimal"
+
+    atoms = bulk("Cu")
+    calc = Vasp(atoms, setups="minimal", pmg_input_set=MPScanRelaxSet)
     assert isinstance(calc.parameters["setups"], str)
     assert calc.parameters["setups"] == "minimal"
 
@@ -788,19 +798,21 @@ def test_constraints():
 
     atoms = bulk("Cu") * (2, 1, 1)
     atoms.set_constraint(FixBondLength(0, 1))
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match="Atoms object has a constraint that is not compatible"
+    ):
         calc = Vasp(atoms)
 
 
 def test_envvars():
     DEFAULT_SETTINGS = SETTINGS.model_copy()
-    SETTINGS.VASP_PP_PATH = "/path/to/pseudos"
-    SETTINGS.VASP_VDW = "/path/to/kernel"
+    SETTINGS.VASP_PP_PATH = str(Path("/path/to/pseudos"))
+    SETTINGS.VASP_VDW = str(Path("/path/to/kernel"))
 
     atoms = bulk("Cu")
     atoms.calc = Vasp(atoms, xc="beef-vdw")
-    assert os.environ.get("VASP_PP_PATH") == "/path/to/pseudos"
-    assert os.environ.get("ASE_VASP_VDW") == "/path/to/kernel"
+    assert os.environ.get("VASP_PP_PATH") == str(Path("/path/to/pseudos"))
+    assert os.environ.get("ASE_VASP_VDW") == str(Path("/path/to/kernel"))
 
     SETTINGS.VASP_PP_PATH = DEFAULT_SETTINGS.VASP_PP_PATH
     SETTINGS.VASP_VDW = DEFAULT_SETTINGS.VASP_VDW
@@ -821,3 +833,80 @@ def test_preset_override():
 
     calc = Vasp(atoms, preset="BulkSet", efermi=None)
     assert calc.parameters.get("efermi") is None
+
+
+def test_pmg_input_set():
+    atoms = bulk("Cu")
+    calc = Vasp(atoms, pmg_input_set=MPRelaxSet, incar_copilot="off")
+    assert calc.parameters == {
+        "algo": "fast",
+        "ediff": 5e-05,
+        "encut": 520,
+        "ibrion": 2,
+        "isif": 3,
+        "ismear": -5,
+        "ispin": 2,
+        "lasph": True,
+        "lorbit": 11,
+        "lreal": "auto",
+        "lwave": False,
+        "nelm": 100,
+        "nsw": 99,
+        "pp": "pbe",
+        "prec": "accurate",
+        "sigma": 0.05,
+        "magmom": [0.6],
+        "lmaxmix": 4,
+        "kpts": [11, 11, 11],
+        "gamma": True,
+        "setups": {"Cu": "_pv"},
+    }
+
+
+def test_pmg_input_set2():
+    atoms = bulk("Fe") * (2, 1, 1)
+    atoms[0].symbol = "O"
+    calc = Vasp(atoms, pmg_input_set=MPRelaxSet, incar_copilot="off")
+    assert calc.parameters == {
+        "algo": "fast",
+        "ediff": 0.0001,
+        "encut": 520,
+        "ibrion": 2,
+        "isif": 3,
+        "ismear": -5,
+        "ispin": 2,
+        "lasph": True,
+        "ldau": True,
+        "ldauj": [0, 0],
+        "ldaul": [0, 2.0],
+        "ldautype": 2,
+        "ldauu": [0, 5.3],
+        "ldauprint": 1,
+        "lorbit": 11,
+        "lreal": "auto",
+        "lwave": False,
+        "nelm": 100,
+        "nsw": 99,
+        "pp": "pbe",
+        "prec": "accurate",
+        "sigma": 0.05,
+        "magmom": [2.3, 2.3],
+        "lmaxmix": 4,
+        "kpts": [5, 11, 11],
+        "gamma": True,
+        "setups": {"Fe": "_pv", "O": ""},
+    }
+
+
+@pytest.mark.skipif(which(SETTINGS.VASP_CMD), reason="VASP is installed")
+def test_run(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
+
+    atoms = bulk("Cu")
+    calc = Vasp(atoms, xc="PBE", use_custodian=False)
+    assert calc._run() > 0
+
+    atoms = bulk("Cu")
+    calc = Vasp(atoms, xc="PBE", use_custodian=True)
+    with pytest.raises(FileNotFoundError):
+        calc._run()

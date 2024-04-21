@@ -16,6 +16,10 @@ nav:
           - user/recipes/recipes_intro.md
           - user/recipes/workflows.md
           - user/recipes/recipes_list.md
+      - Settings Management:
+          - user/settings/settings.md
+          - user/settings/file_management.md
+          - user/settings/settings_list.md
       - Workflow Basics:
           - user/basics/wflow_overview.md
           - user/basics/wflow_decorators.md
@@ -23,18 +27,12 @@ nav:
       - Using a Workflow Engine:
           - user/wflow_engine/wflow_engines1.md
           - user/wflow_engine/wflow_engines2.md
-          - user/wflow_engine/executors1.md
-          - user/wflow_engine/executors2.md
-      - Settings Management:
-          - user/settings/settings.md
-          - user/settings/file_management.md
-          - user/settings/settings_list.md
+          - user/wflow_engine/executors.md
       - Using a Database:
           - user/db/context.md
           - user/db/basics.md
       - Miscellaneous:
-          - user/advanced/file_transfers.md
-          - user/advanced/vasp_hpc.md
+          - user/misc/file_transfers.md
   - Code Documentation 📖: reference/
   - Developer Guide 🤝:
       - dev/contributing.md
@@ -126,17 +124,13 @@ plugins:
             - https://docs.python.org/3/objects.inv
             - https://wiki.fysik.dtu.dk/ase/objects.inv
             - https://pymatgen.org/objects.inv
-            - https://cclib.github.io/objects.inv
+            - https://materialsproject.github.io/pymatgen-analysis-defects/objects.inv
             - https://materialsproject.github.io/maggma/objects.inv
             - https://materialsproject.github.io/emmet/objects.inv
             - https://materialsproject.github.io/jobflow/objects.inv
-            - https://materialsproject.github.io/fireworks/objects.inv
-            - https://parsl.readthedocs.io/en/latest/objects.inv
-            - https://tblite.readthedocs.io/en/latest/objects.inv
             - https://numpy.org/doc/stable/objects.inv
             - https://docs.pydantic.dev/latest/objects.inv
-            - https://covalent.readthedocs.io/en/latest/objects.inv
-            - https://click.palletsprojects.com/en/latest/objects.inv
+            - https://phonopy.github.io/phonopy/objects.inv
           options:
             docstring_style: numpy
             docstring_section_style: list
@@ -144,6 +138,9 @@ plugins:
             merge_init_into_class: true
             docstring_options:
               ignore_init_summary: true
+            show_signature_annotations: true
+            signature_crossrefs: true
+            show_if_no_docstring: true
   - gen-files:
       scripts:
         - docs/gen_ref_pages.py

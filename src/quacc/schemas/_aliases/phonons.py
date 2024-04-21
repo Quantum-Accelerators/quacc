@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from typing import Any, TypedDict
-
-from numpy.typing import NDArray
+from typing import TYPE_CHECKING, Any, TypedDict
 
 from quacc.schemas._aliases.ase import AtomsSchema
+
+if TYPE_CHECKING:
+    from numpy.typing import NDArray
 
 
 class ThermalProperties(TypedDict):
@@ -47,7 +48,7 @@ class PhonopyMetadata(TypedDict):
 
 
 class PhononSchema(AtomsSchema):
-    """Type hint associated with `quacc.schemas.phonons.summarize_phonopy`"""
+    """Type hint associated with [quacc.schemas.phonons.summarize_phonopy][]"""
 
     parameters: dict[str, Any] | None
     nid: str

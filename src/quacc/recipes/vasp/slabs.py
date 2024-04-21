@@ -1,27 +1,28 @@
 """Recipes for slabs."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
 from quacc import flow, job
 from quacc.recipes.common.slabs import bulk_to_slabs_subflow, slab_to_ads_subflow
-from quacc.recipes.vasp._base import base_fn
+from quacc.recipes.vasp._base import run_and_summarize
 from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from typing import Any, Callable
 
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.vasp import VaspSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
 
 @job
 def static_job(
     atoms: Atoms,
     preset: str | None = "SlabSet",
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """
@@ -34,11 +35,11 @@ def static_job(
     preset
         Preset to use from `quacc.calculators.vasp.presets`.
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to `ase.calculators.vasp.vasp.Vasp`.
+        keys, refer to [quacc.calculators.vasp.vasp.Vasp][].
 
     Returns
     -------
@@ -46,7 +47,6 @@ def static_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "auto_dipole": True,
         "ismear": -5,
@@ -55,10 +55,10 @@ def static_job(
         "lreal": False,
         "lvhar": True,
         "lwave": True,
-        "nedos": 5001,
+        "nedos": 3001,
         "nsw": 0,
     }
-    return base_fn(
+    return run_and_summarize(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
@@ -72,7 +72,7 @@ def static_job(
 def relax_job(
     atoms: Atoms,
     preset: str | None = "SlabSet",
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """
@@ -85,11 +85,11 @@ def relax_job(
     preset
         Preset to use from `quacc.calculators.vasp.presets`.
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to `ase.calculators.vasp.vasp.Vasp`.
+        keys, refer to [quacc.calculators.vasp.vasp.Vasp][].
 
     Returns
     -------
@@ -97,7 +97,6 @@ def relax_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "auto_dipole": True,
         "ediffg": -0.02,
@@ -109,7 +108,7 @@ def relax_job(
         "nsw": 200,
         "symprec": 1e-8,
     }
-    return base_fn(
+    return run_and_summarize(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,

@@ -4,9 +4,9 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
 !!! Tip "Picking a Workflow Engine"
 
-    For a comparison of the different compatible workflow engines, refer to the [Workflow Engines Overview](../user/basics/wflow_overview.md) section.
+    If you don't want to use a workflow engine or are just starting out, you can simply skip this section.
 
-    If you don't want to use a workflow engine, you can simply skip this section.
+    For a comparison of the different compatible workflow engines, refer to the [Workflow Engines Overview](../user/basics/wflow_overview.md) section.
 
 === "Covalent"
 
@@ -66,15 +66,18 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     ```bash
     pip install quacc[prefect]
-    pip install starlette==0.32.0 # (1)!
     ```
-
-    1. This is a temporary workaround to resolve a dependency conflict.
 
     To connect to Prefect Cloud, run the following as well:
 
     ```bash
     prefect cloud login
+    ```
+
+    Prefect has [many configuration options](https://docs.prefect.io/latest/guides/settings/). For instance, you can store the quacc logs in the UI as follows:
+
+    ```bash
+    prefect config set PREFECT_LOGGING_EXTRA_LOGGERS=quacc
     ```
 
 === "Redun"
@@ -189,7 +192,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     username: <username>
     password: <password>
     logdir: null
-    Istrm_lvl: DEBUG
+    strm_lvl: DEBUG
     user_indices: []
     wf_user_indices: []
     ```
@@ -204,7 +207,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
         name: <database name>
         uri_store: true
         logdir: null
-        Istrm_lvl: DEBUG
+        strm_lvl: DEBUG
         user_indices: []
         wf_user_indices: []
         ```
@@ -216,15 +219,16 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     ```yaml title="my_qadapter.yaml"
     _fw_name: CommonAdapter
     _fw_q_type: SLURM
-    rocket_launch: rlaunch -w /path/to/fw_config/my_fworker.yaml singleshot
-    nodes: 2
+    rocket_launch: rlaunch -w </path/to/fw_config/my_fworker.yaml> singleshot
+    nodes: 1
     walltime: 00:30:00
     account: <account>
     job_name: quacc_firework
     qos: regular
     pre_rocket: |
-    module load MyModuleName
-    export MyEnvVar=MyEnvValue
+                conda activate MyEnv
+                module load MyModuleName
+                export MyEnvVar=MyEnvValue
     ```
 
     In the above example, you would need to change the path in the `rocket_launch` field to the correct path to your `my_fworker.yaml`. The nodes, walltime, account, and qos are the corresponding parameters for your queuing system. Finally, anything in the `pre_rocket` field will be executed before the job begins running. It is a good place to load modules and set environment variables. A representative example has been provided above.

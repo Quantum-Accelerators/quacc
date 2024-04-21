@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 import pytest
 
 dask = pytest.importorskip("dask")
+pytest.importorskip("distributed")
 
 from ase.build import bulk, molecule
 from dask.distributed import get_client

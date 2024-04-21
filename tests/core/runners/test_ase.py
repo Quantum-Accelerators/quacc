@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import glob
+import logging
 import os
 from pathlib import Path
 from shutil import rmtree
@@ -13,6 +16,9 @@ from ase.optimize.sciopt import SciPyFminBFGS
 
 from quacc import SETTINGS
 from quacc.runners.ase import run_calc, run_opt, run_vib
+
+LOGGER = logging.getLogger(__name__)
+LOGGER.propagate = True
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 
@@ -43,13 +49,15 @@ def teardown_function():
 
 def test_run_calc(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
+    SETTINGS.RESULTS_DIR = tmp_path
+
     prep_files()
 
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
-    new_atoms = run_calc(atoms, copy_files=["test_file.txt"])
+    new_atoms = run_calc(atoms, copy_files={Path(): "test_file.txt"})
     results_dir = _find_results_dir()
 
     assert atoms.calc.results is not None
@@ -59,8 +67,12 @@ def test_run_calc(tmp_path, monkeypatch):
     assert np.array_equal(new_atoms.get_positions(), atoms.get_positions()) is True
     assert np.array_equal(new_atoms.cell.array, atoms.cell.array) is True
 
+    SETTINGS.RESULTS_DIR = DEFAULT_SETTINGS.RESULTS_DIR
+
 
 def test_run_calc_no_gzip(tmp_path, monkeypatch):
+    SETTINGS.RESULTS_DIR = tmp_path
+
     monkeypatch.chdir(tmp_path)
     prep_files()
 
@@ -70,7 +82,7 @@ def test_run_calc_no_gzip(tmp_path, monkeypatch):
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
-    new_atoms = run_calc(atoms, copy_files=["test_file.txt"])
+    new_atoms = run_calc(atoms, copy_files={Path(): "test_file.txt"})
     results_dir = _find_results_dir()
 
     assert atoms.calc.results is not None
@@ -80,9 +92,11 @@ def test_run_calc_no_gzip(tmp_path, monkeypatch):
     assert np.array_equal(new_atoms.get_positions(), atoms.get_positions()) is True
     assert np.array_equal(new_atoms.cell.array, atoms.cell.array) is True
     SETTINGS.GZIP_FILES = DEFAULT_SETTINGS.GZIP_FILES
+    SETTINGS.RESULTS_DIR = DEFAULT_SETTINGS.RESULTS_DIR
 
 
 def test_run_opt1(tmp_path, monkeypatch):
+    SETTINGS.RESULTS_DIR = tmp_path
     monkeypatch.chdir(tmp_path)
     prep_files()
 
@@ -90,7 +104,7 @@ def test_run_opt1(tmp_path, monkeypatch):
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
-    dyn = run_opt(atoms, copy_files=["test_file.txt"])
+    dyn = run_opt(atoms, copy_files={Path(): "test_file.txt"})
     traj = dyn.traj_atoms
     results_dir = _find_results_dir()
 
@@ -100,6 +114,7 @@ def test_run_opt1(tmp_path, monkeypatch):
     assert np.array_equal(traj[-1].get_positions(), atoms.get_positions()) is False
     assert np.array_equal(traj[-1].cell.array, atoms.cell.array) is True
     assert dyn.todict().get("restart")
+    SETTINGS.RESULTS_DIR = DEFAULT_SETTINGS.RESULTS_DIR
 
 
 def test_run_opt2(tmp_path, monkeypatch):
@@ -111,7 +126,7 @@ def test_run_opt2(tmp_path, monkeypatch):
     dyn = run_opt(
         atoms,
         optimizer=BFGS,
-        copy_files=["test_file.txt"],
+        copy_files={Path(): "test_file.txt"},
         optimizer_kwargs={"restart": None},
     )
     traj = dyn.traj_atoms
@@ -120,7 +135,7 @@ def test_run_opt2(tmp_path, monkeypatch):
     dyn = run_opt(
         traj[-1],
         optimizer=BFGSLineSearch,
-        copy_files=["test_file.txt"],
+        copy_files={Path(): "test_file.txt"},
         optimizer_kwargs={"restart": None},
     )
     traj = dyn.traj_atoms
@@ -145,7 +160,7 @@ def test_run_vib(tmp_path, monkeypatch):
 
     o2 = molecule("O2")
     o2.calc = LennardJones()
-    vib = run_vib(o2, copy_files=["test_file.txt"])
+    vib = run_vib(o2, copy_files={Path(): "test_file.txt"})
     results_dir = _find_results_dir()
 
     assert np.real(vib.get_frequencies()[-1]) == pytest.approx(255.6863883406967)
@@ -154,19 +169,21 @@ def test_run_vib(tmp_path, monkeypatch):
     assert os.path.exists(os.path.join(results_dir, "test_file.txt.gz"))
 
 
-def test_bad_runs(tmp_path, monkeypatch):
+def test_bad_runs(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Cu")
     atoms.calc = EMT()
 
     # No file
-    with pytest.warns(UserWarning):
-        run_calc(atoms, copy_files=["test_file.txt"])
+    with caplog.at_level(logging.WARNING):
+        run_calc(atoms, copy_files={Path(): "test_file.txt"})
+    assert "Cannot find file" in caplog.text
 
     # No file again
-    with pytest.warns(UserWarning):
-        run_opt(atoms, copy_files=["test_file.txt"])
+    with caplog.at_level(logging.WARNING):
+        run_opt(atoms, copy_files={Path(): "test_file.txt"})
+    assert "Cannot find file" in caplog.text
 
     # No trajectory kwarg
     with pytest.raises(ValueError):
@@ -179,6 +196,7 @@ def test_bad_runs(tmp_path, monkeypatch):
 
 def test_unique_workdir(tmp_path, monkeypatch):
     SETTINGS.CREATE_UNIQUE_DIR = True
+    SETTINGS.RESULTS_DIR = tmp_path
     monkeypatch.chdir(tmp_path)
     prep_files()
 
@@ -186,7 +204,7 @@ def test_unique_workdir(tmp_path, monkeypatch):
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
-    run_calc(atoms, copy_files=["test_file.txt"])
+    run_calc(atoms, copy_files={Path(): "test_file.txt"})
     results_dir = _find_results_dir()
     assert atoms.calc.results is not None
     assert not os.path.exists(os.path.join(results_dir, "test_file.txt"))
@@ -197,10 +215,11 @@ def test_unique_workdir(tmp_path, monkeypatch):
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
-    run_calc(atoms, copy_files=["test_file.txt"])
+    run_calc(atoms, copy_files={Path(): "test_file.txt"})
     results_dir = _find_results_dir()
     assert atoms.calc.results is not None
     assert not os.path.exists(os.path.join(results_dir, "test_file.txt"))
     assert os.path.exists(os.path.join(results_dir, "test_file.txt.gz"))
 
     SETTINGS.CREATE_UNIQUE_DIR = DEFAULT_SETTINGS.CREATE_UNIQUE_DIR
+    SETTINGS.RESULTS_DIR = DEFAULT_SETTINGS.RESULTS_DIR

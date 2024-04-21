@@ -1,6 +1,8 @@
 """Prepration for runners."""
+
 from __future__ import annotations
 
+import logging
 import os
 from pathlib import Path
 from shutil import move, rmtree
@@ -9,18 +11,19 @@ from typing import TYPE_CHECKING
 from monty.shutil import gzip_dir
 
 from quacc import SETTINGS
-from quacc.utils.files import (
-    copy_decompress_files,
-    copy_decompress_tree,
-    make_unique_dir,
-)
+from quacc.utils.files import copy_decompress_files, make_unique_dir
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
 
+    from quacc.utils.files import Filenames, SourceDirectory
+
+logger = logging.getLogger(__name__)
+
 
 def calc_setup(
-    atoms: Atoms, copy_files: str | Path | list[str | Path] | None = None
+    atoms: Atoms | None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> tuple[Path, Path]:
     """
     Perform staging operations for a calculation, including copying files to the scratch
@@ -33,7 +36,7 @@ def calc_setup(
         The Atoms object to run the calculation on. Must have a calculator
         attached.
     copy_files
-        Filenames to copy from source to scratch directory.
+        Files to copy (and decompress) from source to the runtime directory.
 
     Returns
     -------
@@ -49,13 +52,14 @@ def calc_setup(
         `SETTINGS.CREATE_UNIQUE_DIR` is set, it will be a unique directory
         within the `SETTINGS.RESULTS_DIR`.
     """
-
     # Create a tmpdir for the calculation
     tmpdir_base = SETTINGS.SCRATCH_DIR or SETTINGS.RESULTS_DIR
     tmpdir = make_unique_dir(base_path=tmpdir_base, prefix="tmp-quacc-")
+    logger.info(f"Calculation will run at {tmpdir}")
 
     # Set the calculator's directory
-    atoms.calc.directory = tmpdir
+    if atoms is not None:
+        atoms.calc.directory = tmpdir
 
     # Define the results directory
     job_results_dir = SETTINGS.RESULTS_DIR
@@ -69,23 +73,19 @@ def calc_setup(
         symlink.symlink_to(tmpdir, target_is_directory=True)
 
     # Copy files to tmpdir and decompress them if needed
-    if isinstance(copy_files, dict):
-        copy_decompress_tree(copy_files, tmpdir)
-    if isinstance(copy_files, list):
-        copy_decompress_files(copy_files, tmpdir)
-    elif isinstance(copy_files, (str, Path)):
-        copy_decompress_files([copy_files], tmpdir)
+    if copy_files:
+        if isinstance(copy_files, (str, Path)):
+            copy_files = {copy_files: "*"}
 
-    # NOTE: Technically, this breaks thread-safety since it will change the cwd
-    # for all threads in the current process. However, elsewhere in the code,
-    # we use absolute paths to avoid issues. We keep this here for now because some
-    # old ASE calculators do not support the `directory` keyword argument.
-    os.chdir(tmpdir)
+        for source_directory, filenames in copy_files.items():
+            copy_decompress_files(source_directory, filenames, tmpdir)
 
     return tmpdir, job_results_dir
 
 
-def calc_cleanup(atoms: Atoms, tmpdir: Path | str, job_results_dir: Path | str) -> None:
+def calc_cleanup(
+    atoms: Atoms | None, tmpdir: Path | str, job_results_dir: Path | str
+) -> None:
     """
     Perform cleanup operations for a calculation, including gzipping files, copying
     files back to the original directory, and removing the tmpdir.
@@ -107,8 +107,8 @@ def calc_cleanup(atoms: Atoms, tmpdir: Path | str, job_results_dir: Path | str) 
     -------
     None
     """
-
     job_results_dir, tmpdir = Path(job_results_dir), Path(tmpdir)
+    logger.info(f"Calculation results stored at {job_results_dir}")
 
     # Safety check
     if "tmp-" not in str(tmpdir):
@@ -116,16 +116,11 @@ def calc_cleanup(atoms: Atoms, tmpdir: Path | str, job_results_dir: Path | str) 
         raise ValueError(msg)
 
     # Reset the calculator's directory
-    atoms.calc.directory = job_results_dir
+    if atoms is not None:
+        atoms.calc.directory = job_results_dir
 
     # Make the results directory
     job_results_dir.mkdir(parents=True, exist_ok=True)
-
-    # NOTE: Technically, this breaks thread-safety since it will change the cwd
-    # for all threads in the current process. However, elsewhere in the code,
-    # we use absolute paths to avoid issues. We keep this here for now because some
-    # old ASE calculators do not support the `directory` keyword argument.
-    os.chdir(job_results_dir)
 
     # Gzip files in tmpdir
     if SETTINGS.GZIP_FILES:

@@ -6,18 +6,18 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
 !!! Tip "Recommendations"
 
-    Not sure which to choose? In general, new users of workflow orchestration tools should probably start with **Parsl**. The more savvy HPC users can probably start with **Prefect** or **Covalent** depending on your needs. Some additional opinions on the matter:
+    Not sure which to choose? In general, we recommend starting with **Parsl** for most HPC users. For a more feature-rich workflow orchestration platform, we recommend trying **Prefect** or **Covalent** depending on your needs. Some additional opinions on the matter:
 
-    - Covalent: You want a visual dashboard and are prioritizing the use of distributed compute resources.
+    - Covalent: You want a visual dashboard and are prioritizing the use of distributed compute resources, especially cloud compute.
     - Dask: You already are familiar with the Dask ecosystem and are happy to stick with it.
     - Parsl: You want to run many workflows as fast as possible on one or more job scheduler-based HPC machines.
-    - Prefect: You want a visual dashboard with a robust workflow management platform and are already familiar with the concepts of workflow orchestration.
+    - Prefect: You want a visual dashboard with a robust workflow management platform and are familiar with the basic concepts of workflow orchestration.
     - Redun: You are running calculations on AWS.
     - Jobflow: You are affiliated with the Materials Project or are already using Jobflow and/or FireWorks.
 
 === "Covalent"
 
-    [Covalent](https://github.com/AgnostiqHQ/covalent/) is a workflow management solution from the company [Agnostiq](https://agnostiq.ai/).
+    [Covalent](https://github.com/AgnostiqHQ/covalent/) is a user-friendly workflow management solution from the company [Agnostiq](https://agnostiq.ai/).
 
     Pros:
 
@@ -29,10 +29,10 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
     Cons:
 
-    - It requires a centralized server to be running continuously in order to manage the workflows
-    - Not as widely used as other workflow management solutions
-    - Only supports standard queuing schemes for job schedulers, limiting throughput
+    - It requires a centralized server to be running continuously in order to manage the workflows unless using [Covalent Cloud](https://www.covalent.xyz/cloud/)
+    - Support for job scheduler HPC environments is available but not as robust or performant as other solutions
     - High-security HPC environments may be difficult to access via SSH with the centralized server approach
+    - Not as widely used as other workflow management solutions
 
 === "Dask"
 
@@ -41,9 +41,9 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     Pros:
 
     - Extremely popular
-    - Has significant support for running on HPC resources
+    - Has native support for running on HPC resources
     - It does not involve a centralized server or network connectivity
-    - Supports adaptive scaling of compute resources and the powerful pilot job model
+    - Supports adaptive scaling of compute resources
     - The dashboard to monitor resource usage is very intuitive
 
     Cons:
@@ -86,7 +86,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
     Cons:
 
-    - For those who are less HPC-savvy, some of the concepts can be a bit technical
+    - For those who are less HPC-savvy, some of the concepts can be quite technical
     - If using Prefect Cloud, the compute nodes must have a network connection
     - The dashboard, while useful for monitoring successes and failures, is not ideal for analyzing results
     - The software is geared more towards data engineering than scientific computing, and that is reflected in the features and documentation
@@ -115,7 +115,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
     !!! Warning
 
-        Jobflow is not currently compatible with the `#!Python @flow` or `#!Python @subflow` decorators used in many quacc recipes and so should only be used if necessary.
+        Jobflow is not yet compatible with the `#!Python @flow` or `#!Python @subflow` decorators used in many quacc recipes and so should only be used if necessary. See [this issue](https://github.com/Quantum-Accelerators/quacc/issues/1061) to track the progress of this enhancement.
 
     Pros:
 

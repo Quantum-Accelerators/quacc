@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pathlib import Path
 from shutil import which
 
@@ -5,8 +7,8 @@ import pytest
 from ase.build import bulk
 from numpy.testing import assert_allclose
 
-from quacc.recipes.espresso.dos import dos_flow, dos_job
-from quacc.utils.files import copy_decompress_files, copy_decompress_tree
+from quacc.recipes.espresso.dos import dos_flow, projwfc_flow
+from quacc.utils.files import copy_decompress_files
 
 pytestmark = pytest.mark.skipif(
     which("pw.x") is None or which("dos.x") is None, reason="QE not installed"
@@ -15,19 +17,11 @@ pytestmark = pytest.mark.skipif(
 DATA_DIR = Path(__file__).parent / "data"
 
 
-def test_dos_job(tmp_path, monkeypatch):
+def test_dos_flow(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
-    copy_decompress_tree({DATA_DIR / "dos_test/": "pwscf.save/*.gz"}, tmp_path)
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
-    output = dos_job(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
-    assert output["results"]["pwscf.dos"]["fermi"] == pytest.approx(7.199)
-
-
-def test_dos_flow(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
-    copy_decompress_files([DATA_DIR / "Si.upf.gz"], tmp_path)
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
     atoms = bulk("Si")
     input_data = {
         "control": {"calculation": "scf", "pseudo_dir": tmp_path},
@@ -37,8 +31,12 @@ def test_dos_flow(tmp_path, monkeypatch):
     pseudopotentials = {"Si": "Si.upf"}
 
     job_params = {
-        "static_job": {"input_data": input_data, "pseudopotentials": pseudopotentials},
-        "non_scf_job": {"kspacing": 0.05},
+        "static_job": {
+            "input_data": input_data,
+            "pseudopotentials": pseudopotentials,
+            "parallel_info": ESPRESSO_PARALLEL_INFO,
+        },
+        "non_scf_job": {"kspacing": 0.05, "parallel_info": ESPRESSO_PARALLEL_INFO},
     }
 
     output = dos_flow(atoms, job_params=job_params)
@@ -75,4 +73,61 @@ def test_dos_flow(tmp_path, monkeypatch):
     assert output["non_scf_job"]["results"]["nbands"] == 8
     assert output["non_scf_job"]["results"]["nspins"] == 1
 
-    assert output["dos_job"]["results"]["pwscf.dos"]["fermi"] == pytest.approx(6.772)
+    assert output["dos_job"]["results"]["dos_results"]["fermi"] == pytest.approx(6.772)
+
+
+def test_projwfc_flow(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
+
+    copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
+    atoms = bulk("Si")
+    input_data = {
+        "control": {"calculation": "scf", "pseudo_dir": tmp_path},
+        "electrons": {"mixing_mode": "TF", "mixing_beta": 0.7, "conv_thr": 1.0e-6},
+    }
+
+    pseudopotentials = {"Si": "Si.upf"}
+
+    job_params = {
+        "static_job": {
+            "input_data": input_data,
+            "pseudopotentials": pseudopotentials,
+            "parallel_info": ESPRESSO_PARALLEL_INFO,
+        },
+        "non_scf_job": {"kspacing": 0.05, "parallel_info": ESPRESSO_PARALLEL_INFO},
+    }
+
+    output = projwfc_flow(atoms, job_params=job_params)
+    assert_allclose(
+        output["static_job"]["atoms"].get_positions(),
+        atoms.get_positions(),
+        atol=1.0e-4,
+    )
+    assert (
+        output["static_job"]["parameters"]["input_data"]["control"]["calculation"]
+        == "scf"
+    )
+    assert (
+        output["static_job"]["parameters"]["input_data"]["electrons"]["mixing_mode"]
+        == "TF"
+    )
+
+    assert output["static_job"]["results"]["nbands"] == 8
+    assert output["static_job"]["results"]["nspins"] == 1
+
+    assert_allclose(
+        output["non_scf_job"]["atoms"].get_positions(),
+        atoms.get_positions(),
+        atol=1.0e-4,
+    )
+    assert (
+        output["non_scf_job"]["parameters"]["input_data"]["control"]["calculation"]
+        == "nscf"
+    )
+    assert (
+        output["non_scf_job"]["parameters"]["input_data"]["electrons"]["mixing_mode"]
+        == "TF"
+    )
+    assert output["non_scf_job"]["results"]["nbands"] == 8
+    assert output["non_scf_job"]["results"]["nspins"] == 1

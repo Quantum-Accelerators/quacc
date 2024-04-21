@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from ase.build import bulk
 from maggma.stores import MemoryStore
 
@@ -10,3 +12,4 @@ def test_results_to_db():
     results_to_db(store, {"atoms": atoms})
     with store:
         assert store.count() == 1
+        assert store.query_one().get("uuid")

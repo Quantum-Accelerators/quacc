@@ -1,15 +1,17 @@
 """Core recipes for GULP."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
 from quacc import job
-from quacc.recipes.gulp._base import base_fn
+from quacc.recipes.gulp._base import run_and_summarize
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
 
 @job
@@ -19,6 +21,7 @@ def static_job(
     keywords: list[str] | None = None,
     options: list[str] | None = None,
     library: str | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -39,6 +42,8 @@ def static_job(
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
     library
         Filename of the potential library file, if required.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
 
     Returns
     -------
@@ -46,11 +51,10 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     keyword_defaults = ["gfnff", "gwolf"] if use_gfnff else []
     option_defaults = ["dump every gulp.res"]
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         library=library,
         keyword_defaults=keyword_defaults,
@@ -58,6 +62,7 @@ def static_job(
         keyword_swaps=keywords,
         option_swaps=options,
         additional_fields={"name": "GULP Static"},
+        copy_files=copy_files,
     )
 
 
@@ -69,6 +74,7 @@ def relax_job(
     keywords: list[str] | None = None,
     options: list[str] | None = None,
     library: str | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> RunSchema:
     """
     Carry out a structure relaxation.
@@ -91,6 +97,8 @@ def relax_job(
         available keys, refer to the `ase.calculators.gulp.GULP` calculator.
     library
         Filename of the potential library file, if required.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
 
     Returns
     -------
@@ -98,14 +106,13 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     keyword_defaults = ["opti", "conp" if relax_cell else "conv"]
     if use_gfnff:
         keyword_defaults += ["gfnff", "gwolf"]
 
     option_defaults = ["dump every gulp.res"]
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         library=library,
         keyword_defaults=keyword_defaults,
@@ -113,4 +120,5 @@ def relax_job(
         keyword_swaps=keywords,
         option_swaps=options,
         additional_fields={"name": "GULP Relax"},
+        copy_files=copy_files,
     )

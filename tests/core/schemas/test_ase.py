@@ -1,4 +1,8 @@
+from __future__ import annotations
+
+import gzip
 import os
+import pickle
 from copy import deepcopy
 from pathlib import Path
 
@@ -14,18 +18,19 @@ from maggma.stores import MemoryStore
 from monty.json import MontyDecoder, jsanitize
 
 from quacc.schemas.ase import (
-    summarize_ideal_gas_thermo,
+    _summarize_ideal_gas_thermo,
+    _summarize_vib_run,
     summarize_opt_run,
     summarize_run,
-    summarize_vib_run,
 )
 
 FILE_DIR = Path(__file__).parent
 
-RUN1 = FILE_DIR / "vasp_run1"
+RUN1 = FILE_DIR / "test_files" / "vasp_run1"
 
 
-def test_summarize_run():
+def test_summarize_run(tmpdir, monkeypatch):
+    monkeypatch.chdir(tmpdir)
     # Make sure metadata is made
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
@@ -35,9 +40,19 @@ def test_summarize_run():
     assert results["results"]["energy"] == atoms.get_potential_energy()
     assert "pymatgen_version" in results["builder_meta"]
     assert results["input_atoms"]["atoms"] == initial_atoms
+    assert Path(results["dir_name"]).is_dir()
+
+    with gzip.open(Path(results["dir_name"], "quacc_results.pkl.gz"), "rb") as f:
+        pickle_results = pickle.load(f)
+    assert pickle_results.keys() == results.keys()
+
+    assert pickle_results["nsites"] == results["nsites"]
+    assert pickle_results["results"]["energy"] == results["results"]["energy"]
+    assert pickle_results["atoms"].info == results["atoms"].info
 
 
-def test_summarize_run2():
+def test_summarize_run2(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
     # Test DB
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
@@ -46,25 +61,26 @@ def test_summarize_run2():
     assert store.count() == 1
 
 
-def test_summarize_run3():
+def test_summarize_run3(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
     # Make sure info tags are handled appropriately
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
     results = summarize_run(atoms, initial_atoms)
     assert atoms.info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
-    assert results.get("atoms_info", {}) != {}
-    assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
 
-def test_summarize_run4():
+def test_summarize_run4(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
     # Make sure magnetic moments are handled appropriately
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
     atoms.calc.results["magmoms"] = [2.0] * len(atoms)
-    results = summarize_run(atoms, initial_atoms)
+    results = summarize_run(atoms, initial_atoms, move_magmoms=True)
 
     assert atoms.calc is not None
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
@@ -75,7 +91,8 @@ def test_summarize_run4():
     assert results["atoms"].calc is None
 
 
-def test_summarize_run5():
+def test_summarize_run5(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
     # Make sure Atoms magmoms were not moved if specified
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
@@ -119,6 +136,18 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
     assert results["fmax"] == dyn.fmax
     assert results["parameters_opt"]["max_steps"] == 100
 
+    with gzip.open(Path(results["dir_name"], "quacc_results.pkl.gz"), "rb") as f:
+        pickle_results = pickle.load(f)
+
+    assert pickle_results.keys() == results.keys()
+
+    # assert things on the trajectory are the same
+    assert pickle_results["trajectory"] == results["trajectory"]
+    assert (
+        pickle_results["trajectory_results"][-1]["energy"]
+        == results["trajectory_results"][-1]["energy"]
+    )
+
     # Test DB
     atoms = bulk("Cu") * (2, 2, 1)
     atoms[0].position += [0.1, 0.1, 0.1]
@@ -139,7 +168,7 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
     dyn.run(steps=5)
     traj = read("test.traj", index=":")
 
-    with pytest.raises(RuntimeError):
+    with pytest.raises(RuntimeError, match="Optimization did not converge"):
         summarize_opt_run(dyn)
 
     # Make sure info tags are handled appropriately
@@ -151,8 +180,6 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
     dyn.run()
 
     results = summarize_opt_run(dyn)
-    assert results.get("atoms_info", {}) != {}
-    assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
     # test document can be jsanitized and decoded
@@ -174,7 +201,7 @@ def test_summarize_vib_run(tmp_path, monkeypatch):
     vib = Vibrations(atoms)
     vib.run()
 
-    results = summarize_vib_run(vib)
+    results = _summarize_vib_run(vib)
     assert results["atoms"] == input_atoms
     assert results["natoms"] == len(atoms)
     assert results["parameters_vib"]["delta"] == vib.delta
@@ -186,14 +213,10 @@ def test_summarize_vib_run(tmp_path, monkeypatch):
     assert "dir_name" in results
     assert "pymatgen_version" in results["builder_meta"]
     assert len(results["results"]["vib_freqs_raw"]) == 6
-    assert results["results"]["vib_freqs_raw"][0] == pytest.approx(
-        -3.054403266390365e-06
-    )
+    assert results["results"]["vib_freqs_raw"][0] == pytest.approx(0, rel=1e-5)
     assert results["results"]["vib_freqs_raw"][-1] == pytest.approx(928.1447554058556)
     assert len(results["results"]["vib_energies_raw"]) == 6
-    assert results["results"]["vib_energies_raw"][0] == pytest.approx(
-        -3.786977375083739e-10
-    )
+    assert results["results"]["vib_energies_raw"][0] == pytest.approx(0, rel=1e-5)
     assert results["results"]["vib_energies_raw"][-1] == pytest.approx(
         0.11507528256667966
     )
@@ -211,10 +234,6 @@ def test_summarize_vib_run(tmp_path, monkeypatch):
     vib = Vibrations(atoms)
     vib.run()
 
-    store = MemoryStore()
-    summarize_vib_run(vib, store=store)
-    assert store.count() == 1
-
     # Make sure info tags are handled appropriately
     atoms = molecule("N2")
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
@@ -222,9 +241,7 @@ def test_summarize_vib_run(tmp_path, monkeypatch):
     vib = Vibrations(atoms)
     vib.run()
 
-    results = summarize_vib_run(vib)
-    assert results.get("atoms_info", {}) != {}
-    assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
+    results = _summarize_vib_run(vib)
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
     # test document can be jsanitized and decoded
@@ -238,7 +255,7 @@ def test_summarize_vib_run(tmp_path, monkeypatch):
     vib = Vibrations(atoms)
     vib.run()
 
-    results = summarize_vib_run(vib)
+    results = _summarize_vib_run(vib)
     assert results["atoms"] == input_atoms
     assert results["nsites"] == len(atoms)
     assert results["parameters_vib"]["delta"] == vib.delta
@@ -254,7 +271,7 @@ def test_summarize_ideal_gas_thermo(tmp_path, monkeypatch):
     # Make sure metadata is made
     atoms = molecule("N2")
     igt = IdealGasThermo([0.34], "linear", atoms=atoms, spin=0, symmetrynumber=2)
-    results = summarize_ideal_gas_thermo(igt)
+    results = _summarize_ideal_gas_thermo(igt)
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["parameters_thermo"]["vib_energies"] == [0.34]
@@ -262,20 +279,12 @@ def test_summarize_ideal_gas_thermo(tmp_path, monkeypatch):
     assert results["results"]["energy"] == 0
     assert "pymatgen_version" in results["builder_meta"]
 
-    # Test DB
-    atoms = molecule("N2")
-    igt = IdealGasThermo([0.34], "linear", atoms=atoms, spin=0, symmetrynumber=2)
-    summarize_ideal_gas_thermo(igt)
-    store = MemoryStore()
-    summarize_ideal_gas_thermo(igt, store=store)
-    assert store.count() == 1
-
     # Make sure right number of vib energies are reported
     atoms = molecule("N2")
     igt = IdealGasThermo(
         [0.0, 0.34], "linear", atoms=atoms, potentialenergy=-1, spin=0, symmetrynumber=2
     )
-    results = summarize_ideal_gas_thermo(igt)
+    results = _summarize_ideal_gas_thermo(igt)
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["parameters_thermo"]["vib_energies"] == [0.34]
@@ -289,9 +298,7 @@ def test_summarize_ideal_gas_thermo(tmp_path, monkeypatch):
     igt = IdealGasThermo(
         [0.0, 0.34], "linear", atoms=atoms, potentialenergy=-1, spin=0, symmetrynumber=2
     )
-    results = summarize_ideal_gas_thermo(igt)
-    assert results.get("atoms_info", {}) != {}
-    assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
+    results = _summarize_ideal_gas_thermo(igt)
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
     # Make sure spin works right
@@ -318,7 +325,7 @@ def test_summarize_ideal_gas_thermo(tmp_path, monkeypatch):
         spin=0.5,
         symmetrynumber=6,
     )
-    results = summarize_ideal_gas_thermo(igt, temperature=1000.0, pressure=20.0)
+    results = _summarize_ideal_gas_thermo(igt, temperature=1000.0, pressure=20.0)
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
     assert len(results["parameters_thermo"]["vib_energies"]) == 6
@@ -338,7 +345,7 @@ def test_summarize_ideal_gas_thermo(tmp_path, monkeypatch):
     MontyDecoder().process_decoded(d)
 
     with pytest.raises(ValueError):
-        summarize_ideal_gas_thermo(igt, charge_and_multiplicity=[0, 1])
+        _summarize_ideal_gas_thermo(igt, charge_and_multiplicity=[0, 1])
 
 
 def test_errors(tmp_path, monkeypatch):

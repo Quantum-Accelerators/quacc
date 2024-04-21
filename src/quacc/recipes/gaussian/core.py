@@ -1,4 +1,5 @@
 """Core recipes for Gaussian."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -6,14 +7,13 @@ from typing import TYPE_CHECKING
 import psutil
 
 from quacc import job
-from quacc.recipes.gaussian._base import base_fn
+from quacc.recipes.gaussian._base import run_and_summarize
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.cclib import cclibSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
 
 @job
@@ -23,7 +23,7 @@ def static_job(
     spin_multiplicity: int = 1,
     xc: str = "wb97xd",
     basis: str = "def2tzvp",
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> cclibSchema:
     """
@@ -42,11 +42,11 @@ def static_job(
     basis
         Basis set
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Custom kwargs for the Gaussian calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.gaussian.Gaussian` calculator.
+        keys, refer to the [ase.calculators.gaussian.Gaussian][] calculator.
 
     Returns
     -------
@@ -54,7 +54,6 @@ def static_job(
         Dictionary of results, as specified in [quacc.schemas.cclib.cclib_summarize_run][]
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "mem": "16GB",
         "chk": "Gaussian.chk",
@@ -63,7 +62,7 @@ def static_job(
         "basis": basis,
         "charge": charge,
         "mult": spin_multiplicity,
-        "sp": "",
+        "force": "",
         "scf": ["maxcycle=250", "xqc"],
         "integral": "ultrafine",
         "nosymmetry": "",
@@ -71,7 +70,7 @@ def static_job(
         "gfinput": "",
         "ioplist": ["6/7=3", "2/9=2000"],  # see ASE issue #660
     }
-    return base_fn(
+    return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -88,7 +87,7 @@ def relax_job(
     xc: str = "wb97xd",
     basis: str = "def2tzvp",
     freq: bool = False,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> cclibSchema:
     """
@@ -109,11 +108,11 @@ def relax_job(
     freq
         If a frequency calculation should be carried out.
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Custom kwargs for the Gaussian calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.gaussian.Gaussian` calculator.
+        keys, refer to the [ase.calculators.gaussian.Gaussian][] calculator.
 
     Returns
     -------
@@ -121,7 +120,6 @@ def relax_job(
         Dictionary of results, as specified in [quacc.schemas.cclib.cclib_summarize_run][]
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "mem": "16GB",
         "chk": "Gaussian.chk",
@@ -140,7 +138,7 @@ def relax_job(
     if freq:
         calc_defaults["freq"] = ""
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,

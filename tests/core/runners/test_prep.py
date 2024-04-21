@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 from pathlib import Path
 
@@ -18,6 +20,14 @@ def make_files():
 def make_files2():
     p = Path("quacc-tmp-1234")
     os.makedirs(p)
+
+
+def make_files3():
+    Path("saved").mkdir()
+    with open("saved/file1.txt", "w") as f:
+        f.write("file1")
+    with open("saved/file2.txt", "w") as f:
+        f.write("file2")
 
 
 def test_calc_setup(tmp_path, monkeypatch):
@@ -43,14 +53,16 @@ def test_calc_setup(tmp_path, monkeypatch):
         assert not Path(SETTINGS.RESULTS_DIR, f"symlink-{tmpdir.name}").exists()
     assert "file1.txt" not in os.listdir(tmpdir)
     assert "file2.txt" not in os.listdir(tmpdir)
-    assert Path.cwd() == tmpdir
     assert Path(atoms.calc.directory) == tmpdir
 
     SETTINGS.RESULTS_DIR = DEFAULT_SETTINGS.RESULTS_DIR
     SETTINGS.SCRATCH_DIR = DEFAULT_SETTINGS.SCRATCH_DIR
 
 
-def test_calc_setup_v2(tmp_path, monkeypatch):
+@pytest.mark.parametrize(
+    "copy_files", [{Path(): ["file1.txt"]}, {Path(): "file1.txt"}, {Path(): "file1*"}]
+)
+def test_calc_setup_v2(tmp_path, monkeypatch, copy_files):
     from quacc import SETTINGS
 
     DEFAULT_SETTINGS = SETTINGS.model_copy()
@@ -61,7 +73,7 @@ def test_calc_setup_v2(tmp_path, monkeypatch):
     atoms = bulk("Cu")
     atoms.calc = EMT()
 
-    tmpdir, results_dir = calc_setup(atoms, copy_files=["file1.txt", "tmp_dir"])
+    tmpdir, results_dir = calc_setup(atoms, copy_files=copy_files)
 
     assert tmpdir.is_dir()
     assert "tmp" in str(tmpdir)
@@ -70,7 +82,96 @@ def test_calc_setup_v2(tmp_path, monkeypatch):
     assert not Path(SETTINGS.RESULTS_DIR, f"symlink-{tmpdir.name}").exists()
     assert "file1.txt" in os.listdir(tmpdir)
     assert "file2.txt" not in os.listdir(tmpdir)
-    assert Path.cwd() == tmpdir
+
+    SETTINGS.RESULTS_DIR = DEFAULT_SETTINGS.RESULTS_DIR
+    SETTINGS.SCRATCH_DIR = DEFAULT_SETTINGS.SCRATCH_DIR
+
+
+@pytest.mark.parametrize(
+    "copy_files",
+    [
+        {Path("saved"): "file1.txt"},
+        {"saved": "file1.txt"},
+        {"saved": "file1*"},
+        {"saved": ["file1.txt"]},
+        {"saved": ["file1*"]},
+    ],
+)
+def test_calc_setup_v3(tmp_path, monkeypatch, copy_files):
+    from quacc import SETTINGS
+
+    DEFAULT_SETTINGS = SETTINGS.model_copy()
+    monkeypatch.chdir(tmp_path)
+
+    make_files3()
+    SETTINGS.SCRATCH_DIR = None
+    atoms = bulk("Cu")
+    atoms.calc = EMT()
+
+    tmpdir, results_dir = calc_setup(atoms, copy_files=copy_files)
+
+    assert tmpdir.is_dir()
+    assert "tmp" in str(tmpdir)
+    assert results_dir.name == tmpdir.name.split("tmp-")[-1]
+    assert str(SETTINGS.RESULTS_DIR) in str(results_dir)
+    assert not Path(SETTINGS.RESULTS_DIR, f"symlink-{tmpdir.name}").exists()
+    assert "saved" not in os.listdir(tmpdir)
+    assert "file1.txt" in os.listdir(tmpdir)
+    assert "file2.txt" not in os.listdir(tmpdir)
+
+    SETTINGS.RESULTS_DIR = DEFAULT_SETTINGS.RESULTS_DIR
+    SETTINGS.SCRATCH_DIR = DEFAULT_SETTINGS.SCRATCH_DIR
+
+
+@pytest.mark.parametrize("copy_files", ["saved", Path("saved")])
+def test_calc_setup_v3_2(tmp_path, monkeypatch, copy_files):
+    from quacc import SETTINGS
+
+    DEFAULT_SETTINGS = SETTINGS.model_copy()
+    monkeypatch.chdir(tmp_path)
+
+    make_files3()
+    SETTINGS.SCRATCH_DIR = None
+    atoms = bulk("Cu")
+    atoms.calc = EMT()
+
+    tmpdir, results_dir = calc_setup(atoms, copy_files=copy_files)
+
+    assert tmpdir.is_dir()
+    assert "tmp" in str(tmpdir)
+    assert results_dir.name == tmpdir.name.split("tmp-")[-1]
+    assert str(SETTINGS.RESULTS_DIR) in str(results_dir)
+    assert not Path(SETTINGS.RESULTS_DIR, f"symlink-{tmpdir.name}").exists()
+    assert "saved" not in os.listdir(tmpdir)
+    assert "file1.txt" in os.listdir(tmpdir)
+    assert "file2.txt" in os.listdir(tmpdir)
+
+    SETTINGS.RESULTS_DIR = DEFAULT_SETTINGS.RESULTS_DIR
+    SETTINGS.SCRATCH_DIR = DEFAULT_SETTINGS.SCRATCH_DIR
+
+
+@pytest.mark.parametrize("copy_files", [{"saved": "*"}])
+def test_calc_setup_v4(tmp_path, monkeypatch, copy_files):
+    from quacc import SETTINGS
+
+    DEFAULT_SETTINGS = SETTINGS.model_copy()
+    monkeypatch.chdir(tmp_path)
+
+    make_files3()
+    SETTINGS.SCRATCH_DIR = None
+    atoms = bulk("Cu")
+    atoms.calc = EMT()
+
+    tmpdir, results_dir = calc_setup(atoms, copy_files=copy_files)
+
+    assert tmpdir.is_dir()
+    assert "tmp" in str(tmpdir)
+    assert results_dir.name == tmpdir.name.split("tmp-")[-1]
+    assert str(SETTINGS.RESULTS_DIR) in str(results_dir)
+    assert not Path(SETTINGS.RESULTS_DIR, f"symlink-{tmpdir.name}").exists()
+    assert "file1.txt" in os.listdir(tmpdir)
+    assert "file2.txt" in os.listdir(tmpdir)
+    assert "saved" not in os.listdir(tmpdir)
 
     SETTINGS.RESULTS_DIR = DEFAULT_SETTINGS.RESULTS_DIR
     SETTINGS.SCRATCH_DIR = DEFAULT_SETTINGS.SCRATCH_DIR
@@ -87,11 +188,10 @@ def test_calc_cleanup(tmp_path, monkeypatch):
     make_files2()
     SETTINGS.SCRATCH_DIR = tmp_path
 
-    p = Path(Path.cwd(), "quacc-tmp-1234").resolve()
+    p = Path(tmp_path, "quacc-tmp-1234").resolve()
     assert p.is_dir()
     calc_cleanup(atoms, p, SETTINGS.RESULTS_DIR)
     assert not p.exists()
-    assert Path.cwd() == SETTINGS.RESULTS_DIR
     assert Path(atoms.calc.directory) == SETTINGS.RESULTS_DIR
 
     SETTINGS.SCRATCH_DIR = DEFAULT_SETTINGS.SCRATCH_DIR

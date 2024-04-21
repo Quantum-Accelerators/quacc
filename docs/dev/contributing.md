@@ -58,7 +58,7 @@ In general, please try to keep the code style consistent when possible, particul
 
 2. Address any relevant issues raised by the GitHub Actions test suite.
 
-3. All Python code should be formatted with [isort](https://github.com/PyCQA/isort) (`isort .`), [black](https://github.com/psf/black) (`black .`), and [ruff](https://github.com/astral-sh/ruff) (`ruff . --fix`).
+3. All Python code should be formatted with [ruff](https://github.com/astral-sh/ruff) (`ruff check --fix && ruff format`).
 
 ## Unit Tests
 

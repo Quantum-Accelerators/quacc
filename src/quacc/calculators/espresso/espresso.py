@@ -1,13 +1,15 @@
 """Custom Espresso calculator and template."""
+
 from __future__ import annotations
 
+import logging
 import os
 import re
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
-from ase import Atoms
+from ase.atoms import Atoms
 from ase.calculators.espresso import Espresso as Espresso_
 from ase.calculators.espresso import EspressoProfile
 from ase.calculators.espresso import EspressoTemplate as EspressoTemplate_
@@ -18,22 +20,35 @@ from ase.io.espresso import (
     write_espresso_ph,
     write_fortran_namelist,
 )
+from ase.io.espresso_namelist.keys import ALL_KEYS
 
 from quacc import SETTINGS
-from quacc.calculators.espresso.utils import get_pseudopotential_info, sanity_checks
-from quacc.utils.dicts import recursive_dict_merge
-from quacc.utils.files import load_yaml_calc
+from quacc.calculators.espresso.utils import (
+    espresso_prepare_dir,
+    get_pseudopotential_info,
+    remove_conflicting_kpts_kspacing,
+)
+from quacc.utils.dicts import Remove, recursive_dict_merge, remove_dict_entries
+from quacc.utils.files import load_yaml_calc, safe_decompress_dir
 
 if TYPE_CHECKING:
     from typing import Any
 
+LOGGER = logging.getLogger(__name__)
+
 
 class EspressoTemplate(EspressoTemplate_):
-    """This is a wrapper around the ASE Espresso template that allows for the use of
-    other binaries such as pw.x, ph.x, cp.x, etc."""
+    """
+    A wrapper around the ASE Espresso template that allows for the use of
+    other binaries such as pw.x, ph.x, cp.x, etc.
+    """
 
     def __init__(
-        self, binary: str = "pw", test_run: bool = False, autorestart: bool = False
+        self,
+        binary: str = "pw",
+        test_run: bool = False,
+        autorestart: bool = False,
+        outdir: str | Path | None = None,
     ) -> None:
         """
         Initialize the Espresso template.
@@ -49,6 +64,9 @@ class EspressoTemplate(EspressoTemplate_):
         autorestart
             If True, the calculation will automatically switch to 'restart'
             if this calculator performs more than one run. (ASE-relax/MD/NEB)
+        outdir
+            The directory that will be used as `outdir` in the input_data. If
+            None, the directory will be set to the current working directory.
 
         Returns
         -------
@@ -58,20 +76,18 @@ class EspressoTemplate(EspressoTemplate_):
 
         self.inputname = f"{binary}.in"
         self.outputname = f"{binary}.out"
+        self.errorname = f"{binary}.err"
 
         self.binary = binary
 
-        self.outdirs = {
-            "outdir": os.environ.get("ESPRESSO_TMPDIR", "."),
-            "wfcdir": os.environ.get("ESPRESSO_TMPDIR", "."),
-        }
-
-        self.outfiles = {"fildos": "pwscf.dos"}
+        self._ase_known_binary = self.binary in ALL_KEYS
 
         self.test_run = test_run
 
         self.nruns = 0
         self.autorestart = autorestart
+
+        self.outdir = outdir
 
     def write_input(
         self,
@@ -102,10 +118,12 @@ class EspressoTemplate(EspressoTemplate_):
         -------
         None
         """
-
         directory = Path(directory)
         self._output_handler(parameters, directory)
-        parameters = sanity_checks(parameters, binary=self.binary)
+        parameters = self._sanity_checks(parameters)
+
+        if self.outdir:
+            safe_decompress_dir(self.outdir)
 
         if self.test_run:
             self._test_run(parameters, directory)
@@ -122,13 +140,16 @@ class EspressoTemplate(EspressoTemplate_):
                 properties=properties,
                 **parameters,
             )
-        elif self.binary == "ph":
+        elif self.binary in ["ph", "phcg"]:
             with Path.open(directory / self.inputname, "w") as fd:
                 write_espresso_ph(fd=fd, properties=properties, **parameters)
         else:
             with Path.open(directory / self.inputname, "w") as fd:
                 write_fortran_namelist(
-                    fd, binary=self.binary, properties=properties, **parameters
+                    fd,
+                    binary=self.binary if self._ase_known_binary else None,
+                    properties=properties,
+                    **parameters,
                 )
 
     def execute(self, *args: Any, **kwargs: Any) -> None:
@@ -159,7 +180,7 @@ class EspressoTemplate(EspressoTemplate_):
         return None
 
     @staticmethod
-    def _test_run(parameters: dict[str, Any], directory: Path) -> dict[str, Any]:
+    def _test_run(parameters: dict[str, Any], directory: Path) -> None:
         """
         Almost all QE binaries will do a test run if a file named <prefix>.EXIT is
         present in the working directory. This function will create this file.
@@ -175,7 +196,6 @@ class EspressoTemplate(EspressoTemplate_):
         -------
         None
         """
-
         prefix = EspressoTemplate._search_keyword(parameters, "prefix") or "pwscf"
 
         Path(directory, f"{prefix}.EXIT").touch()
@@ -197,22 +217,31 @@ class EspressoTemplate(EspressoTemplate_):
         dict
             The results dictionnary
         """
-
+        results = {}
         if self.binary == "pw":
             atoms = read(directory / self.outputname, format="espresso-out")
             results = dict(atoms.calc.properties())
-        elif self.binary == "ph":
+        elif self.binary in ["ph", "phcg"]:
             with Path.open(directory / self.outputname, "r") as fd:
                 results = read_espresso_ph(fd)
         elif self.binary == "dos":
-            fildos = self.outfiles["fildos"]
-            with Path(fildos).open("r") as fd:
+            with Path.open(directory / "pwscf.dos", "r") as fd:
                 lines = fd.readlines()
                 fermi = float(re.search(r"-?\d+\.?\d*", lines[0])[0])
                 dos = np.loadtxt(lines[1:])
-            results = {fildos.name: {"dos": dos, "fermi": fermi}}
-        else:
-            results = {}
+            results = {"dos_results": {"dos": dos, "fermi": fermi}}
+        elif self.binary == "projwfc":
+            with Path.open(directory / "pwscf.pdos_tot", "r") as fd:
+                lines = np.loadtxt(fd.readlines())
+                energy = lines[1:, 0]
+                dos = lines[1:, 1]
+                pdos = lines[1:, 2]
+            results = {"projwfc_results": {"energy": energy, "dos": dos, "pdos": pdos}}
+        elif self.binary == "matdyn":
+            fldos = Path(directory, "matdyn.dos")
+            if fldos.exists():
+                phonon_dos = np.loadtxt(fldos)
+                results = {"matdyn_results": {"phonon_dos": phonon_dos}}
 
         if "energy" not in results:
             results["energy"] = None
@@ -220,13 +249,14 @@ class EspressoTemplate(EspressoTemplate_):
         return results
 
     def _output_handler(
-        self, parameters: dict[str, Any], directory: Path
+        self, parameters: dict[str, Any], directory: Path | str
     ) -> dict[str, Any]:
         """
-        Function that handles the various output of espresso binaries. If they are
-        relative, they are resolved against `directory`. In any other case the
-        function will raise a ValueError. This is to avoid the user to use absolute
-        paths that might lead to unexpected behaviour when using Quacc.
+        Function that handles the various output of espresso binaries. It will force the
+        output directory and other output files to be set or deleted if needed.
+
+        It will also prevent the user from setting environment variables that change the
+        output directories.
 
         Parameters
         ----------
@@ -240,40 +270,92 @@ class EspressoTemplate(EspressoTemplate_):
         dict[str, Any]
             The merged kwargs
         """
+        os.environ.pop("ESPRESSO_TMPDIR", None)
+        os.environ.pop("ESPRESSO_FILDVSCF_DIR", None)
+        os.environ.pop("ESPRESSO_FILDRHO_DIR", None)
+
+        espresso_outdir = Path(self.outdir or directory).expanduser().resolve()
+        outkeys = espresso_prepare_dir(espresso_outdir, self.binary)
+
         input_data = parameters.get("input_data", {})
-
-        all_out = {**self.outdirs, **self.outfiles}
-        working_dir = Path(directory).expanduser().resolve()
-
-        for key in all_out:
-            path = Path(all_out[key]).expanduser().resolve()
-            for section in input_data:
-                if key in input_data[section]:
-                    path = Path(input_data[section][key]).expanduser().resolve()
-                    input_data[section][key] = path
-
-            try:
-                path.relative_to(working_dir)
-            except ValueError as e:
-                raise ValueError(
-                    f"Cannot use {key}={path} because it is not a subpath of {working_dir}. When using Quacc please provide subpaths relative to the working directory."
-                ) from e
-            if key in self.outdirs:
-                path.mkdir(parents=True, exist_ok=True)
-                self.outdirs[key] = path
-            elif key in self.outfiles:
-                self.outfiles[key] = path
+        input_data = recursive_dict_merge(input_data, outkeys, verbose=True)
 
         parameters["input_data"] = input_data
 
         return parameters
 
+    def _sanity_checks(self, parameters: dict[str, Any]) -> None:
+        """
+        Function that performs sanity checks on the input_data. It is meant
+        to catch common mistakes that are not caught by the espresso binaries.
+
+        Parameters
+        ----------
+        parameters
+            The parameters dictionary which is assumed to already be in
+            the nested format.
+
+        Returns
+        -------
+        dict
+            The modified parameters dictionary.
+        """
+        input_data = parameters.get("input_data", {})
+
+        if self.binary == "pw":
+            system = input_data.get("system", {})
+
+            occupations = system.get("occupations", "fixed")
+            smearing = system.get("smearing", None)
+            degauss = system.get("degauss", None)
+
+            if occupations == "fixed" and (smearing is not None or degauss is not None):
+                LOGGER.warning(
+                    "The occupations are set to 'fixed' but smearing or degauss is also set. This will be ignored."
+                )
+                system["smearing"] = Remove
+                system["degauss"] = Remove
+
+            parameters["input_data"]["system"] = system
+
+        elif self.binary in ["ph", "phcg"]:
+            input_ph = input_data.get("inputph", {})
+            qpts = parameters.get("qpts", (0, 0, 0))
+
+            qplot = input_ph.get("qplot", False)
+            lqdir = input_ph.get("lqdir", False)
+            recover = input_ph.get("recover", False)
+            ldisp = input_ph.get("ldisp", False)
+
+            is_grid = input_ph.get("start_q") or input_ph.get("start_irr")
+            # Temporary patch for https://gitlab.com/QEF/q-e/-/issues/644
+            if qplot and lqdir and recover and is_grid:
+                prefix = input_ph.get("prefix", "pwscf")
+                outdir = input_ph.get("outdir", ".")
+
+                Path(outdir, "_ph0", f"{prefix}.q_1").mkdir(parents=True, exist_ok=True)
+            if not (ldisp or qplot):
+                if np.array(qpts).shape == (1, 4):
+                    LOGGER.warning(
+                        "qpts is a 2D array despite ldisp and qplot being set to False. Converting to 1D array"
+                    )
+                    qpts = tuple(qpts[0])
+                if lqdir and is_grid and qpts != (0, 0, 0):
+                    LOGGER.warning(
+                        "lqdir is set to True but ldisp and qplot are set to False. The band structure will still be computed at each step. Setting lqdir to False"
+                    )
+                    input_ph["lqdir"] = False
+
+            parameters["input_data"]["inputph"] = input_ph
+            parameters["qpts"] = qpts
+
+        return remove_dict_entries(parameters, remove_trigger=Remove)
+
 
 class Espresso(Espresso_):
     """
-    This is a wrapper around the ASE Espresso calculator that adjusts input_data
+    A wrapper around the ASE Espresso calculator that adjusts input_data
     parameters and allows for the use of presets.
-
     Templates are used to set the binary and input/output file names.
     """
 
@@ -314,7 +396,7 @@ class Espresso(Espresso_):
         **kwargs
             Additional arguments to be passed to the Espresso calculator. Takes all valid
             ASE calculator arguments, such as `input_data` and `kpts`. Refer to
-            `ase.calculators.espresso.Espresso` for details. Note that the full input
+            [ase.calculators.espresso.Espresso][] for details. Note that the full input
             must be described; use `{"system":{"ecutwfc": 60}}` and not the `{"ecutwfc": 60}`
             short-hand.
 
@@ -326,17 +408,29 @@ class Espresso(Espresso_):
         self.preset = preset
         self.parallel_info = parallel_info
         self.kwargs = kwargs
-        self._user_calc_params = {}
+        self.user_calc_params = {}
 
         template = template or EspressoTemplate("pw")
+
+        self._binary = template.binary
+
         full_path = Path(
-            SETTINGS.ESPRESSO_BIN_DIR, SETTINGS.ESPRESSO_BINARIES[template.binary]
+            SETTINGS.ESPRESSO_BIN_DIR, SETTINGS.ESPRESSO_BINARIES[self._binary]
         )
         self._bin_path = str(full_path)
-        self._binary = template.binary
-        self._cleanup_params()
+
+        if template._ase_known_binary:
+            self._cleanup_params()
+        else:
+            LOGGER.warning(
+                f"the binary you requested, `{self._binary}`, is not supported by ASE. This means that presets and usual checks will not be carried out, your `input_data` must be provided in nested format."
+            )
+
+            self.kwargs["input_data"] = Namelist(self.kwargs.get("input_data"))
+            self.user_calc_params = self.kwargs
+
         self._pseudo_path = (
-            self._user_calc_params.get("input_data", {})
+            self.user_calc_params.get("input_data", {})
             .get("control", {})
             .get("pseudo_dir", str(SETTINGS.ESPRESSO_PSEUDO))
         )
@@ -349,7 +443,7 @@ class Espresso(Espresso_):
         super().__init__(
             profile=self.profile,
             parallel_info=self.parallel_info,
-            **self._user_calc_params,
+            **self.user_calc_params,
         )
 
         self.template = template
@@ -367,9 +461,8 @@ class Espresso(Espresso_):
         -------
         None
         """
-
         if self.kwargs.get("directory"):
-            raise ValueError("quacc does not support the directory argument.")
+            raise NotImplementedError("quacc does not support the directory argument.")
 
         self.kwargs["input_data"] = Namelist(self.kwargs.get("input_data"))
         self.kwargs["input_data"].to_nested(binary=self._binary, **self.kwargs)
@@ -385,11 +478,8 @@ class Espresso(Espresso_):
                     calc_preset["pseudopotentials"], self.input_atoms
                 )
                 calc_preset.pop("pseudopotentials", None)
-                if "kpts" in self.kwargs:
-                    calc_preset.pop("kspacing", None)
-                if "kspacing" in self.kwargs:
-                    calc_preset.pop("kpts", None)
-                self._user_calc_params = recursive_dict_merge(
+                calc_preset = remove_conflicting_kpts_kspacing(calc_preset, self.kwargs)
+                self.user_calc_params = recursive_dict_merge(
                     calc_preset,
                     {
                         "input_data": {
@@ -400,11 +490,9 @@ class Espresso(Espresso_):
                     self.kwargs,
                 )
             else:
-                self._user_calc_params = recursive_dict_merge(calc_preset, self.kwargs)
+                self.user_calc_params = recursive_dict_merge(calc_preset, self.kwargs)
         else:
-            self._user_calc_params = self.kwargs
+            self.user_calc_params = self.kwargs
 
-        if self._user_calc_params.get("kpts") and self._user_calc_params.get(
-            "kspacing"
-        ):
+        if self.user_calc_params.get("kpts") and self.user_calc_params.get("kspacing"):
             raise ValueError("Cannot specify both kpts and kspacing.")

@@ -1,8 +1,12 @@
+from __future__ import annotations
+
 from pathlib import Path
 
 import pytest
 
 pytest.importorskip("phonopy")
+pytest.importorskip("seekpath")
+
 from ase.build import bulk
 
 from quacc.recipes.emt.phonons import phonon_flow
@@ -19,8 +23,8 @@ def test_phonon_flow(tmp_path, monkeypatch):
     assert "mesh_properties" in output["results"]
     assert "total_dos" in output["results"]
     results_dir = Path(output["dir_name"])
-    assert Path(results_dir / "phonopy.yaml").is_file()
-    assert Path(results_dir, "phonopy_auto_band_structure.yaml").is_file()
+    assert Path(results_dir / "phonopy.yaml.gz").is_file()
+    assert Path(results_dir, "phonopy_auto_band_structure.yaml.gz").is_file()
 
     atoms = bulk("Cu")
     output = phonon_flow(atoms, supercell_matrix=((2, 0, 0), (0, 2, 0), (0, 0, 2)))

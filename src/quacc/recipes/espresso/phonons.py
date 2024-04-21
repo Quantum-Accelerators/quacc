@@ -5,6 +5,7 @@ ph.x binary from Quantum ESPRESSO via the quacc library.
 The recipes provided in this module are jobs and flows that can be used to perform
 phonon calculations in different fashion.
 """
+
 from __future__ import annotations
 
 from copy import deepcopy
@@ -16,53 +17,74 @@ from ase.io.espresso import Namelist
 from quacc import Job, flow, job, subflow
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.calculators.espresso.utils import grid_copy_files, grid_prepare_repr
-from quacc.recipes.espresso._base import base_fn
+from quacc.recipes.espresso._base import run_and_summarize
 from quacc.recipes.espresso.core import relax_job
 from quacc.utils.dicts import recursive_dict_merge
-from quacc.wflow_tools.customizers import customize_funcs, strip_decorator
+from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:
-    from typing import Any, Callable
+    from typing import Any, Callable, TypedDict
 
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
+    from quacc.utils.files import Filenames, SourceDirectory
+
+    class PhononDosSchema(TypedDict):
+        relax_job: RunSchema
+        phonon_job: RunSchema
+        q2r_job: RunSchema
+        matdyn_job: RunSchema
 
 
 @job
 def phonon_job(
-    prev_dir: str | Path,
+    copy_files: (
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
+    prev_outdir: SourceDirectory | None = None,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
+    use_phcg: bool = False,
     **calc_kwargs,
 ) -> RunSchema:
     """
     Function to carry out a basic ph.x calculation. It should allow you to
     use all the features of the [ph.x binary](https://www.quantum-espresso.org/Doc/INPUT_PH.html)
 
-    This job requires the results of a previous pw.x calculation, you might
-    want to create your own flow to run both jobs in sequence.
+    `ph.x` calculates the dynamical matrix at a set of q-points within the Density
+    Functional Perturbation Theory (DFPT) framework. The dynamical matrix is used to calculate the phonon frequencies and eigenvectors. Various other properties can be
+    calculated using other post-processing tools.
 
     Parameters
     ----------
-    prev_dir
-        Outdir of the previously ran pw.x calculation. This is used to copy
-        the entire tree structure of that directory to the working directory
-        of this calculation.
+    copy_files
+        Source directory or directories to copy files from. If a `SourceDirectory` or a
+        list of `SourceDirectory` is provided, this interface will automatically guess
+        which files have to be copied over by looking at the binary and `input_data`.
+        If a dict is provided, the mode is manual, keys are source directories and values
+        are relative path to files or directories to copy. Glob patterns are supported.
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
     test_run
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
+    use_phcg
+        If True, the calculation is performed using the `phcg.x` code which uses a faster algorithm.
+        It can be used only if you sample the Brillouin Zone at Gamma and you only need the phonon
+        modes at Gamma (molecules typically). It cannot be used with spin-polarization, USPP and PAW.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
-        `ase.io.espresso.write_espresso_ph` for more information. Some notable keys are:
-
-        - input_data: dict
-        - qpts: list[list[float]] | list[tuple[float]] | list[float]
-        - nat_todo: list[int]
+        [quacc.calculators.espresso.espresso.Espresso][] for more information.
 
     Returns
     -------
@@ -70,7 +92,6 @@ def phonon_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-
     calc_defaults = {
         "input_data": {
             "inputph": {"tr2_ph": 1e-12, "alpha_mix(1)": 0.1, "verbosity": "high"}
@@ -78,22 +99,219 @@ def phonon_job(
         "qpts": (0, 0, 0),
     }
 
-    return base_fn(
-        template=EspressoTemplate("ph", test_run=test_run),
+    binary = "phcg" if use_phcg else "ph"
+
+    return run_and_summarize(
+        template=EspressoTemplate(binary, test_run=test_run, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
-        additional_fields={"name": "ph.x Phonon"},
-        copy_files=prev_dir,
+        additional_fields={"name": f"{binary}.x Phonon"},
+        copy_files=copy_files,
     )
+
+
+@job
+def q2r_job(
+    copy_files: (
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
+    parallel_info: dict[str] | None = None,
+    **calc_kwargs,
+) -> RunSchema:
+    """
+    Function to carry out a basic q2r.x calculation. It should allow you to
+    use all the features of the [q2r.x binary](https://www.quantum-espresso.org/Doc/INPUT_Q2R.html#idm51)
+
+    `q2r.x` reads force constant matrices C(q) produced by the `ph.x` code
+    for a grid of q-points and calculates the corresponding set
+    of interatomic force constants (IFC), C(R)
+
+    Parameters
+    ----------
+    copy_files
+        Source directory or directories to copy files from. If a `SourceDirectory` or a
+        list of `SourceDirectory` is provided, this interface will automatically guess
+        which files have to be copied over by looking at the binary and `input_data`.
+        If a dict is provided, the mode is manual, keys are source directories and values
+        are relative path to files or directories to copy. Glob patterns are supported.
+    parallel_info
+        Dictionary containing information about the parallelization of the
+        calculation. See the ASE documentation for more information.
+    **calc_kwargs
+        Additional keyword arguments to pass to the Espresso calculator. Set a value to
+        `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
+        [quacc.calculators.espresso.espresso.Espresso][] for more information.
+
+    Returns
+    -------
+    RunSchema
+        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        See the type-hint for the data structure.
+    """
+    return run_and_summarize(
+        template=EspressoTemplate("q2r"),
+        calc_defaults={},
+        calc_swaps=calc_kwargs,
+        parallel_info=parallel_info,
+        additional_fields={"name": "q2r.x Phonon"},
+        copy_files=copy_files,
+    )
+
+
+@job
+def matdyn_job(
+    copy_files: (
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
+    parallel_info: dict[str] | None = None,
+    **calc_kwargs,
+) -> RunSchema:
+    """
+    Function to carry out a basic `matdyn.x` calculation. It should allow you to use
+    all the features of the [matdyn.x binary](https://www.quantum-espresso.org/Doc/INPUT_MATDYN.html#idm138)
+
+    This program calculates the phonon frequencies for a list of generic
+    q vectors starting from the interatomic force constants generated
+    from the dynamical matrices as written by DFPT phonon code through
+    the program `q2r.x`
+
+    Parameters
+    ----------
+    copy_files
+        Source directory or directories to copy files from. If a `SourceDirectory` or a
+        list of `SourceDirectory` is provided, this interface will automatically guess
+        which files have to be copied over by looking at the binary and `input_data`.
+        If a dict is provided, the mode is manual, keys are source directories and values
+        are relative path to files or directories to copy. Glob patterns are supported.
+    parallel_info
+        Dictionary containing information about the parallelization of the
+        calculation. See the ASE documentation for more information.
+    **calc_kwargs
+        Additional keyword arguments to pass to the Espresso calculator. Set a value to
+        `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
+        [quacc.calculators.espresso.espresso.Espresso][] for more information.
+
+    Returns
+    -------
+    RunSchema
+        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        See the type-hint for the data structure.
+    """
+    return run_and_summarize(
+        template=EspressoTemplate("matdyn"),
+        calc_defaults={},
+        calc_swaps=calc_kwargs,
+        parallel_info=parallel_info,
+        additional_fields={"name": "matdyn Phonon"},
+        copy_files=copy_files,
+    )
+
+
+@flow
+def phonon_dos_flow(
+    atoms: Atoms,
+    job_params: dict[str, Any] | None = None,
+    job_decorators: dict[str, Callable | None] | None = None,
+) -> PhononDosSchema:
+    """
+    Function to carry out a phonon DOS calculation. The phonon calculation is carried
+    out on a coarse q-grid, the force constants are calculated and extrapolated to a
+    finer q-grid, and the phonon DOS is calculated.
+
+    Consists of following jobs that can be modified:
+
+    1. pw.x relaxation
+        - name: "relax_job"
+        - job: [quacc.recipes.espresso.core.relax_job][]
+    2. ph.x calculation
+        - name: "phonon_job"
+        - job: [quacc.recipes.espresso.phonons.phonon_job][]
+    3. q2r.x calculation
+        - name: "q2r_job"
+        - job: [quacc.recipes.espresso.phonons.q2r_job][]
+    4. matdyn.x calculation
+        - name: "matdyn_job"
+        - job: [quacc.recipes.espresso.phonons.matdyn_job][]
+
+    Parameters
+    ----------
+    atoms
+        Atoms object to calculate the phonon DOS.
+    job_params
+        Custom parameters to pass to each Job in the Flow. This is a dictionary where the keys are the names of the jobs and the values are dictionaries of parameters.
+    job_decorators
+        Custom decorators to apply to each Job in the Flow. This is a dictionary where the keys are the names of the jobs and the values are decorators.
+
+    Returns
+    -------
+    RunSchema
+        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        See the type-hint for the data structure.
+    """
+    relax_job_defaults = {
+        "input_data": {
+            "control": {"forc_conv_thr": 5.0e-5},
+            "electrons": {"conv_thr": 1e-12},
+        }
+    }
+    ph_job_defaults = {
+        "input_data": {
+            "inputph": {
+                "tr2_ph": 1e-12,
+                "alpha_mix(1)": 0.1,
+                "verbosity": "high",
+                "ldisp": True,
+                "nq1": 4,
+                "nq2": 4,
+                "nq3": 4,
+            }
+        }
+    }
+    matdyn_job_defaults = {
+        "input_data": {"input": {"dos": True, "nk1": 32, "nk2": 32, "nk3": 32}}
+    }
+
+    calc_defaults = {
+        "relax_job": relax_job_defaults,
+        "phonon_job": ph_job_defaults,
+        "matdyn_job": matdyn_job_defaults,
+    }
+
+    job_params = recursive_dict_merge(calc_defaults, job_params)
+
+    pw_job, ph_job, fc_job, dos_job = customize_funcs(
+        ["relax_job", "phonon_job", "q2r_job", "matdyn_job"],
+        [relax_job, phonon_job, q2r_job, matdyn_job],
+        parameters=job_params,
+        decorators=job_decorators,
+    )
+
+    pw_job_results = pw_job(atoms)
+    ph_job_results = ph_job(prev_outdir=pw_job_results["dir_name"])
+    fc_job_results = fc_job(copy_files=ph_job_results["dir_name"])
+    dos_job_results = dos_job(copy_files=fc_job_results["dir_name"])
+
+    return {
+        "relax_job": pw_job_results,
+        "phonon_job": ph_job_results,
+        "q2r_job": fc_job_results,
+        "matdyn_job": dos_job_results,
+    }
 
 
 @flow
 def grid_phonon_flow(
     atoms: Atoms,
     nblocks: int = 1,
-    job_decorators: dict[str, Callable | None] | None = None,
     job_params: dict[str, Any] | None = None,
+    job_decorators: dict[str, Callable | None] | None = None,
 ) -> RunSchema:
     """
     This function performs grid parallelization of a ph.x calculation. Each
@@ -118,12 +336,6 @@ def grid_phonon_flow(
     groups multiple representations together in a single job, reducing the
     data size by a factor of nblocks, but also reducing the level of parallelization.
     In the case of nblocks = 0, each job will contain all the representations for each q-point.
-
-    WARNING: Using the ph.x gamma trick is only partially supported by this function.
-    The gamma trick will lead to explicit calculations for each mode. If some of them
-    can be calculated using symmetry a full job will still be dispatched. This is
-    will become a problem if you system is large: you will dispatch large HPC calculations
-    for nothing. This can be tempered by setting a large or zero nblocks value.
 
     Consists of following jobs that can be modified:
 
@@ -166,23 +378,23 @@ def grid_phonon_flow(
         See the type-hint for the data structure.
     """
 
-    @job
-    def _ph_recover_job(grid_results: list[RunSchema]) -> RunSchema:
+    @subflow
+    def _ph_recover_subflow(grid_results: list[RunSchema]) -> RunSchema:
         prev_dirs = {}
         for result in grid_results:
             prev_dirs[result["dir_name"]] = [
-                "**/*.xml.*",
-                "**/data-file-schema.xml.*",
-                "**/charge-density.*",
-                "**/wfc*.*",
-                "**/paw.txt.*",
+                Path("**", "*.xml.*"),
+                Path("**", "data-file-schema.xml.*"),
+                Path("**", "charge-density.*"),
+                Path("**", "wfc*.*"),
+                Path("**", "paw.txt.*"),
             ]
-        return strip_decorator(ph_recover_job)(prev_dirs)
+        return ph_recover_job(prev_dirs)
 
     @subflow
     def _grid_phonon_subflow(
         ph_input_data: dict | None,
-        ph_init_job_results: str | Path,
+        ph_init_job_results: RunSchema,
         ph_job: Job,
         nblocks: int = 1,
     ) -> list[RunSchema]:
@@ -199,35 +411,39 @@ def grid_phonon_flow(
         ph_job
             The phonon job to be executed.
         nblocks
-            The number of blocks for grouping representations. Defaults to 1.
+            The number of blocks for grouping representations.
 
         Returns
         -------
         list[RunSchema]
             A list of results from each phonon job.
         """
-
         ph_input_data = Namelist(ph_input_data)
         ph_input_data.to_nested(binary="ph")
 
+        prev_outdir = ph_init_job_results["parameters"]["input_data"]["inputph"][
+            "outdir"
+        ]
+
         grid_results = []
-        for qpoint, qdata in ph_init_job_results["results"].items():
-            ph_input_data["inputph"]["start_q"] = qdata["qnum"]
-            ph_input_data["inputph"]["last_q"] = qdata["qnum"]
+        for qnum, qdata in ph_init_job_results["results"].items():
+            ph_input_data["inputph"]["start_q"] = qnum
+            ph_input_data["inputph"]["last_q"] = qnum
             repr_to_do = grid_prepare_repr(qdata["representations"], nblocks)
-            file_to_copy = grid_copy_files(
-                ph_input_data, ph_init_job_results["dir_name"], qdata["qnum"], qpoint
+            files_to_copy = grid_copy_files(
+                ph_input_data, prev_outdir, qnum, qdata["qpoint"]
             )
             for representation in repr_to_do:
                 ph_input_data["inputph"]["start_irr"] = representation[0]
                 ph_input_data["inputph"]["last_irr"] = representation[-1]
                 ph_job_results = ph_job(
-                    deepcopy(file_to_copy), input_data=deepcopy(ph_input_data)
+                    deepcopy(files_to_copy), input_data=deepcopy(ph_input_data)
                 )
                 grid_results.append(ph_job_results)
 
         return grid_results
 
+    job_params = job_params or {}
     relax_job_defaults = {
         "input_data": {
             "control": {"forc_conv_thr": 5.0e-5},
@@ -236,7 +452,7 @@ def grid_phonon_flow(
     }
     ph_init_job_defaults = recursive_dict_merge(
         {"input_data": {"inputph": {"lqdir": True, "only_init": True}}},
-        job_params.get("ph_job", {}),
+        job_params.get("ph_job"),
     )
     ph_job_defaults = {
         "input_data": {
@@ -245,7 +461,7 @@ def grid_phonon_flow(
     }
     ph_recover_job_defaults = recursive_dict_merge(
         {"input_data": {"inputph": {"recover": True, "lqdir": True}}},
-        job_params.get("ph_job", {}),
+        job_params.get("ph_job"),
     )
 
     calc_defaults = {
@@ -266,10 +482,153 @@ def grid_phonon_flow(
 
     pw_job_results = pw_job(atoms)
 
-    ph_init_job_results = ph_init_job(pw_job_results["dir_name"])
+    ph_init_job_results = ph_init_job(prev_outdir=pw_job_results["dir_name"])
 
     grid_results = _grid_phonon_subflow(
         job_params["ph_job"]["input_data"], ph_init_job_results, ph_job, nblocks=nblocks
     )
 
-    return _ph_recover_job(grid_results)
+    return _ph_recover_subflow(grid_results)
+
+
+@job
+def dvscf_q2r_job(
+    copy_files: (
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
+    prev_outdir: SourceDirectory | None = None,
+    parallel_info: dict[str] | None = None,
+    **calc_kwargs,
+) -> RunSchema:
+    """
+    Function to carry out a basic dvscf_q2r calculation allowing phonon potential
+    interpolation from coarse to fine q-point grids using Fourier interpolation.
+    It should allow you to use all the features of the dvscf_q2r binary which does
+    not have an official documentation.
+
+    To use this, run a [quacc.recipes.espresso.phonons.phonon_job][] on a coarse q-point
+    grid, dvscf_q2r.x can then be used to inverse Fourier transform the phonon potentials
+    to a real-space supercell, you can later run an additional
+    [quacc.recipes.espresso.phonons.phonon_job][] with `ldvscf_interpolation = True`
+    to Fourier transform the potentials to desired q points.
+
+    Only one card, &input:
+
+    prefix  : Prepended to input/output filenames, default: 'pwscf'
+    outdir  : Directory containing input, output, and scratch files.
+              In quacc this is always set to the current working directory.
+    fildyn  : File where the dynamical matrix is written.
+              In quacc this should always be set to 'matdyn'.
+    fildvscf : File where the potential variation is written.
+               In quacc this should always be set to 'dvscf'.
+               (character, Default: 'dvscf')
+    wpot_dir : Directory where the w_pot binary files are written.
+               In quacc this is always set to outdir / w_pot
+    do_long_range : If .true., subtract the long-range part of the potential
+                    before interpolation. Requires epsilon and Born effective
+                    charge data in _ph0/prefix.phsave/tensor.xml. default: .false.
+    do_charge_neutral : If .true., renormalize phonon potential to impose
+                    neutrality of Born effective charges. default: .false.
+    verbosity : If 'high', write more information to stdout.
+
+    Parameters
+    ----------
+    copy_files
+        Source directory or directories to copy files from. If a `SourceDirectory` or a
+        list of `SourceDirectory` is provided, this interface will automatically guess
+        which files have to be copied over by looking at the binary and `input_data`.
+        If a dict is provided, the mode is manual, keys are source directories and values
+        are relative path to files or directories to copy. Glob patterns are supported.
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
+    parallel_info
+        Dictionary containing information about the parallelization of the
+        calculation. See the ASE documentation for more information.
+    **calc_kwargs
+        Additional keyword arguments to pass to the Espresso calculator. Set a value to
+        `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
+        [quacc.calculators.espresso.espresso.Espresso][] for more information.
+
+    Returns
+    -------
+    RunSchema
+        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        See the type-hint for the data structure.
+    """
+    return run_and_summarize(
+        template=EspressoTemplate("dvscf_q2r", outdir=prev_outdir),
+        calc_defaults={},
+        calc_swaps=calc_kwargs,
+        parallel_info=parallel_info,
+        additional_fields={"name": "dvscf_q2r Phonon"},
+        copy_files=copy_files,
+    )
+
+
+@job
+def postahc_job(
+    copy_files: (
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
+    prev_outdir: SourceDirectory | None = None,
+    parallel_info: dict[str] | None = None,
+    **calc_kwargs,
+) -> RunSchema:
+    """
+    Function to carry out a basic postahc calculation. It should allow you to
+    use all the features of the [postahc.x binary](https://www.quantum-espresso.org/Doc/INPUT_POSTAHC.html#idm11)
+
+    Calculate the phonon-induced electron self-energy in the full matrix form
+    at a given temperature. This requires the results of a previous ph.x calculation
+    with `electron_phonon='ahc'`
+
+    self energies calculated and printed by `postahc.x`
+
+    - Total self-energy in the on-shell approximation (OSA)
+    - Debye-Waller self-energy in the RIA
+    - Total Fan self-energy in the OSA
+    - Upper Fan self-energy
+    - Lower Fan self-energy in the OSA
+
+    Parameters
+    ----------
+    copy_files
+        Source directory or directories to copy files from. If a `SourceDirectory` or a
+        list of `SourceDirectory` is provided, this interface will automatically guess
+        which files have to be copied over by looking at the binary and `input_data`.
+        If a dict is provided, the mode is manual, keys are source directories and values
+        are relative path to files or directories to copy. Glob patterns are supported.
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
+    parallel_info
+        Dictionary containing information about the parallelization of the
+        calculation. See the ASE documentation for more information.
+    **calc_kwargs
+        Additional keyword arguments to pass to the Espresso calculator. Set a value to
+        `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
+        [quacc.calculators.espresso.espresso.Espresso][] for more information.
+
+    Returns
+    -------
+    RunSchema
+        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        See the type-hint for the data structure.
+    """
+    return run_and_summarize(
+        template=EspressoTemplate("postahc", outdir=prev_outdir),
+        calc_defaults={},
+        calc_swaps=calc_kwargs,
+        parallel_info=parallel_info,
+        additional_fields={"name": "postahc Phonon"},
+        copy_files=copy_files,
+    )

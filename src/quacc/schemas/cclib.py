@@ -1,4 +1,5 @@
 """Schemas for molecular DFT codes parsed by cclib."""
+
 from __future__ import annotations
 
 import logging
@@ -10,49 +11,55 @@ from typing import TYPE_CHECKING
 import cclib
 from ase.atoms import Atoms
 from cclib.io import ccread
-from monty.json import jsanitize
 
 from quacc import SETTINGS
-from quacc.schemas.ase import summarize_run
-from quacc.utils.dicts import clean_task_doc
+from quacc.atoms.core import get_final_atoms_from_dynamics
+from quacc.schemas.ase import summarize_opt_run, summarize_run
+from quacc.utils.dicts import finalize_dict, recursive_dict_merge
 from quacc.utils.files import find_recent_logfile
-from quacc.wflow_tools.db import results_to_db
 
 if TYPE_CHECKING:
     from typing import Any, Literal
 
+    from ase.io import Trajectory
+    from ase.optimize.optimize import Optimizer
     from maggma.core import Store
 
     from quacc.schemas._aliases.cclib import (
         PopAnalysisAttributes,
+        cclibASEOptSchema,
         cclibBaseSchema,
         cclibSchema,
     )
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
+
+_DEFAULT_SETTING = ()
 
 
 def cclib_summarize_run(
     final_atoms: Atoms,
     logfile_extensions: str | list[str],
-    dir_path: Path | str | None = None,
-    pop_analyses: list[
-        Literal[
-            "cpsa",
-            "mpa",
-            "lpa",
-            "bickelhaupt",
-            "density",
-            "mbo",
-            "bader",
-            "ddec6",
-            "hirshfeld",
+    directory: Path | str | None = None,
+    pop_analyses: (
+        list[
+            Literal[
+                "cpsa",
+                "mpa",
+                "lpa",
+                "bickelhaupt",
+                "density",
+                "mbo",
+                "bader",
+                "ddec6",
+                "hirshfeld",
+            ]
         ]
-    ]
-    | None = None,
-    check_convergence: bool | None = None,
+        | None
+    ) = None,
+    check_convergence: bool = _DEFAULT_SETTING,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None = None,
+    store: Store | None = _DEFAULT_SETTING,
 ) -> cclibSchema:
     """
     Get tabulated results from a molecular DFT run and store them in a database-friendly
@@ -68,13 +75,13 @@ def cclib_summarize_run(
         will match `.log.gz` and `.log.1.gz`. If multiple files with this
         extension are found, the one with the most recent change time will be
         used. For an exact match only, put in the full file name.
-    dir_path
+    directory
         The path to the folder containing the calculation outputs. A value of
         None specifies the calculator directory.
     pop_analyses
         The name(s) of any cclib post-processing analysis to run. Note that for
         bader, ddec6, and hirshfeld, a cube file (.cube, .cub) must reside in
-        dir_path. Supports: "cpsa", "mpa", "lpa", "bickelhaupt", "density",
+        directory. Supports: "cpsa", "mpa", "lpa", "bickelhaupt", "density",
         "mbo", "bader", "ddec6", "hirshfeld".
     check_convergence
          Whether to throw an error if geometry optimization convergence is not
@@ -82,31 +89,31 @@ def cclib_summarize_run(
     additional_fields
         Additional fields to add to the task document.
     store
-        Maggma Store object to store the results in. If None,
-        `SETTINGS.PRIMARY_STORE` will be used.
+        Maggma Store object to store the results in. Defaults to `SETTINGS.STORE`
 
     Returns
     -------
     cclibSchema
         Dictionary representation of the task document
     """
-
-    dir_path = Path(dir_path or final_atoms.calc.directory)
+    directory = Path(directory or final_atoms.calc.directory)
     check_convergence = (
-        SETTINGS.CHECK_CONVERGENCE if check_convergence is None else check_convergence
+        SETTINGS.CHECK_CONVERGENCE
+        if check_convergence == _DEFAULT_SETTING
+        else check_convergence
     )
+    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
     additional_fields = additional_fields or {}
-    store = SETTINGS.PRIMARY_STORE if store is None else store
 
     # Get the cclib base task document
     cclib_task_doc = _make_cclib_schema(
-        dir_path, logfile_extensions, analysis=pop_analyses
+        directory, logfile_extensions, analysis=pop_analyses
     )
     attributes = cclib_task_doc["attributes"]
     metadata = attributes["metadata"]
 
     if check_convergence and attributes.get("optdone") is False:
-        msg = f"Optimization not complete. Refer to {dir_path}"
+        msg = f"Optimization not complete. Refer to {directory}"
         raise RuntimeError(msg)
 
     # Now we construct the input Atoms object. Note that this is not necessarily
@@ -122,28 +129,127 @@ def cclib_summarize_run(
     else:
         input_atoms = cclib_task_doc["trajectory"][0]
 
+    if nsteps := len([f for f in os.listdir(directory) if f.startswith("step")]):
+        intermediate_cclib_task_docs = {
+            "steps": {
+                n: _make_cclib_schema(Path(directory, f"step{n}"), logfile_extensions)
+                for n in range(nsteps)
+            }
+        }
+    else:
+        intermediate_cclib_task_docs = {}
+
     # Get the base task document for the ASE run
     run_task_doc = summarize_run(
         final_atoms,
         input_atoms,
         charge_and_multiplicity=(attributes["charge"], attributes["mult"]),
-        move_magmoms=False,
-        store=False,
+        store=None,
     )
 
     # Create a dictionary of the inputs/outputs
-    unsorted_task_doc = run_task_doc | cclib_task_doc | additional_fields
-    task_doc = clean_task_doc(unsorted_task_doc)
+    unsorted_task_doc = (
+        run_task_doc | intermediate_cclib_task_docs | cclib_task_doc | additional_fields
+    )
+    return finalize_dict(
+        unsorted_task_doc, directory, gzip_file=SETTINGS.GZIP_FILES, store=store
+    )
 
-    # Store the results
-    if store:
-        results_to_db(store, task_doc)
 
-    return task_doc
+def summarize_cclib_opt_run(
+    optimizer: Optimizer,
+    logfile_extensions: str | list[str],
+    trajectory: Trajectory | list[Atoms] | None = None,
+    directory: Path | str | None = None,
+    pop_analyses: (
+        list[
+            Literal[
+                "cpsa",
+                "mpa",
+                "lpa",
+                "bickelhaupt",
+                "density",
+                "mbo",
+                "bader",
+                "ddec6",
+                "hirshfeld",
+            ]
+        ]
+        | None
+    ) = None,
+    check_convergence: bool = _DEFAULT_SETTING,
+    additional_fields: dict[str, Any] | None = None,
+    store: Store | None = _DEFAULT_SETTING,
+) -> cclibASEOptSchema:
+    """
+    Merges the results of a cclib run with the results of an ASE optimizer run.
+
+    Parameters
+    ----------
+    optimizer
+        The ASE optimizer object
+    logfile_extensions
+        Possible extensions of the log file (e.g. ".log", ".out", ".txt",
+        ".chk"). Note that only a partial match is needed. For instance, `.log`
+        will match `.log.gz` and `.log.1.gz`. If multiple files with this
+        extension are found, the one with the most recent change time will be
+        used. For an exact match only, put in the full file name.
+    trajectory
+        ASE Trajectory object or list[Atoms] from reading a trajectory file. If
+        None, the trajectory must be found in dyn.traj_atoms.
+    directory
+        The path to the folder containing the calculation outputs. A value of
+        None specifies the calculator directory.
+    pop_analyses
+        The name(s) of any cclib post-processing analysis to run. Note that for
+        bader, ddec6, and hirshfeld, a cube file (.cube, .cub) must reside in
+        directory. Supports: "cpsa", "mpa", "lpa", "bickelhaupt", "density",
+        "mbo", "bader", "ddec6", "hirshfeld".
+    check_convergence
+         Whether to throw an error if geometry optimization convergence is not
+         reached. Defaults to True in settings.
+    additional_fields
+        Additional fields to add to the task document.
+    store
+        Maggma Store object to store the results in. Defaults to `SETTINGS.STORE`
+
+    Returns
+    -------
+    cclibASEOptSchema
+        Dictionary representation of the task document
+    """
+    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
+
+    final_atoms = get_final_atoms_from_dynamics(optimizer)
+    directory = Path(directory or final_atoms.calc.directory)
+    cclib_summary = cclib_summarize_run(
+        final_atoms,
+        logfile_extensions,
+        directory=directory,
+        pop_analyses=pop_analyses,
+        check_convergence=check_convergence,
+        additional_fields=additional_fields,
+        store=None,
+    )
+    opt_run_summary = summarize_opt_run(
+        optimizer,
+        trajectory=trajectory,
+        check_convergence=check_convergence,
+        charge_and_multiplicity=(
+            cclib_summary["charge"],
+            cclib_summary["spin_multiplicity"],
+        ),
+        additional_fields=additional_fields,
+        store=None,
+    )
+    unsorted_task_doc = recursive_dict_merge(cclib_summary, opt_run_summary)
+    return finalize_dict(
+        unsorted_task_doc, directory, gzip_file=SETTINGS.GZIP_FILES, store=store
+    )
 
 
 def _make_cclib_schema(
-    dir_name: str | Path,
+    directory: str | Path,
     logfile_extensions: str | list[str],
     analysis: str | list[str] | None = None,
     proatom_dir: Path | str | None = None,
@@ -156,7 +262,7 @@ def _make_cclib_schema(
 
     Parameters
     ----------
-    dir_name
+    directory
         The path to the folder containing the calculation outputs.
     logfile_extensions
         Possible extensions of the log file (e.g. ".log", ".out", ".txt",
@@ -181,12 +287,11 @@ def _make_cclib_schema(
         A TaskDocument dictionary summarizing the inputs/outputs of the log
         file.
     """
-
     # Find the most recent log file with the given extension in the
     # specified directory.
-    logfile = find_recent_logfile(dir_name, logfile_extensions)
+    logfile = find_recent_logfile(directory, logfile_extensions)
     if not logfile:
-        msg = f"Could not find file with extension {logfile_extensions} in {dir_name}"
+        msg = f"Could not find file with extension {logfile_extensions} in {directory}"
         raise FileNotFoundError(msg)
 
     # Let's parse the log file with cclib
@@ -196,7 +301,7 @@ def _make_cclib_schema(
         raise RuntimeError(msg)
 
     # Fetch all the attributes (i.e. all input/outputs from cclib)
-    attributes = jsanitize(cclib_obj.getattributes())
+    attributes = cclib_obj.getattributes()
 
     # monty datetime bug workaround:
     # github.com/materialsvirtuallab/monty/issues/275
@@ -242,7 +347,7 @@ def _make_cclib_schema(
         analysis = [a.lower() for a in analysis]
 
         # Look for .cube or .cub files
-        cubefile_path = find_recent_logfile(dir_name, [".cube", ".cub"])
+        cubefile_path = find_recent_logfile(directory, [".cube", ".cub"])
 
         for analysis_name in analysis:
             if calc_attributes := _cclib_calculate(
@@ -287,7 +392,6 @@ def _cclib_calculate(
     PopAnalysisAttributes | None
         The results of the population analysis.
     """
-
     method = method.lower()
     cube_methods = ["bader", "ddec6", "hirshfeld"]
     proatom_methods = ["ddec6", "hirshfeld"]
@@ -333,7 +437,7 @@ def _cclib_calculate(
     try:
         m.calculate()
     except Exception as e:
-        logger.warning(f"Could not calculate {method}: {e}")
+        LOGGER.warning(f"Could not calculate {method}: {e}")
         return None
 
     # The list of available attributes after a calculation. This is hardcoded

@@ -1,4 +1,5 @@
 """Utility functions for dealing with defects."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -19,7 +20,7 @@ except ImportError:
 if TYPE_CHECKING:
     from ase.atoms import Atoms
     from numpy.typing import NDArray
-    from pymatgen.core import Structure
+    from pymatgen.core.structure import Structure
 
     if has_deps:
         from pymatgen.analysis.defects.core import Defect
@@ -63,6 +64,8 @@ def make_defects_from_bulk(
         bulk atoms
     defect_gen
         defect generator
+    defect_charge
+        charge state of defect
     sc_mat
         supercell matrix
     min_atoms
@@ -73,8 +76,6 @@ def make_defects_from_bulk(
         minimum length of supercell
     force_diagonal
         force supercell to be diagonal
-    defect_charge
-        charge state of defect
     **defect_gen_kwargs
         keyword arguments to pass to the pymatgen.analysis.defects.generators
         get_defects() method
@@ -84,7 +85,6 @@ def make_defects_from_bulk(
     list[Atoms]
         All generated defects
     """
-
     # Use pymatgen-analysis-defects and ShakeNBreak to generate defects
     struct = AseAtomsAdaptor.get_structure(atoms)
 
@@ -112,18 +112,18 @@ def make_defects_from_bulk(
         )
 
         # Instantiate class to apply rattle and bond distortion to all defects
-        Dist = Distortions([defect_entry])
+        dist = Distortions([defect_entry])
 
         # Apply rattle and bond distortion to all defects
-        defect_dict, distortion_metadata = Dist.apply_distortions()
-        defect_symbol = list(distortion_metadata["defects"].keys())[0]
+        defect_dict, distortion_metadata = dist.apply_distortions()
+        defect_symbol = next(iter(distortion_metadata["defects"].keys()))
         distortion_dict = defect_dict[defect_symbol]["charges"][defect_charge][
             "structures"
         ]["distortions"]
 
         # Make atoms objects and store defect stats
         for distortions, defect_struct in distortion_dict.items():
-            final_defect = AseAtomsAdaptor.get_atoms(defect_struct)
+            final_defect = defect_struct.to_ase_atoms()
             defect_stats = {
                 "defect_symbol": defect_symbol,
                 "defect_charge": defect_charge,
@@ -166,7 +166,8 @@ def _get_defect_entry_from_defect(
     defect_supercell.remove(dummy_site)
 
     computed_structure_entry = ComputedStructureEntry(
-        structure=defect_supercell, energy=0.0  # needs to be set, so set to 0.0
+        structure=defect_supercell,
+        energy=0.0,  # needs to be set, so set to 0.0
     )
 
     return DefectEntry(

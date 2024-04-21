@@ -20,7 +20,7 @@ The following are typical guidelines for jobs:
 
 - The function generally should take an `Atoms` object as the input, along with any other keyword arguments needed to set calculator parameters and define the logic flow.
 
-- The returned object should typically be a dictionary of results, as defined in `quacc.schemas`.
+- The returned object should typically be a dictionary of results, as defined in `quacc.schemas`. If a dictionary is returned, the keys cannot have "." in them.
 
 - Calculations should be executed using a runner from `quacc.runners`.
 

@@ -4,6 +4,180 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.6]
+
+### Fixed
+
+- Fixed file extension for the optimizer trajectories, which should have been `.json` instead of `.pckl`
+
+## [0.7.5]
+
+### Changed
+
+- Removed the `atoms_info` field from the `AtomsSchema` since this is already available in the database via Pymatgen's `MSONAtoms` serialization
+
+## [0.7.4]
+
+### Changed
+
+- Only call `jsanitize` once before uploading to the `Store`
+
+## [0.7.3]
+
+### Added
+
+- Added new Espresso recipes to perform electron-phonon calculations and Fourier interpolation of the phonon potential
+
+### Fixed
+
+- Fixed potential issues with I/O settings and Espresso
+- Fixed passing of custom decorators in the Espresso `grid_phonon_flow`
+
+## [0.7.2]
+
+### Changed
+
+- Calculator executable commands are now `str` type instead of `Path`
+- Removed `slowconv` from the default parameters of the ORCA recipes
+- The Q-Chem calculator now uses the TaskDoc from emmet in its `results` attribute
+
+### Fixed
+
+- Fixed user setting of logger level
+- Fixed a glob-based issue with `copy_decompress_files`
+
+## [0.7.1]
+
+### Added
+
+- Added an optional MP compatability checker for MP recipes
+- Summaries for intermediate ASE optimization steps are now stored in the output schema for VASP and cclib-based recipes when `store_intermediate_results=True`
+- Added a `WRITE_PICKLE` setting, which by default, will write out a `.pkl` file containing the result schema to the directory
+
+### Changed
+
+- Updated `ruff` settings
+- The Gaussian and ORCA `static_job` routines do a force calculation by default now
+
+### Fixed
+
+- Fixed input file formatting for `orcablocks` in ORCA recipes
+
+### Removed
+
+- Removed the `CHDIR` setting
+
+## [0.7.0]
+
+### Added
+
+- Added a `non_scf_job` for VASP
+
+### Changed
+
+- There are no more `os.chdir` calls to ensure thread safety
+- Use `pymatgen.io.ase.MSONAtoms` to make MSONable `Atoms`
+- Changed default NEDOS value from 5001 to 3001 for VASP static jobs (10x the default)
+
+### Fixed
+
+- Fixed multithreaded `@task` distribution with VASP and Q-Chem
+- Fixed a bug where, with Prefect, the `State` would raise an indexing error when passing around deferred `dict` entries
+- Fixed a bug when `job_parameters` and `job_decorators` are both passed to `customize_funcs()`
+- Raise a `ValueError` when the user provides `SCRATCH_DIR` or `RESULTS_DIR` as a relative path
+
+## [0.6.10]
+
+### Fixed
+
+- Fixed pickle-ability of the schemas
+- Fixed multithreaded `@task` distribution with GULP, Espresso, and common phonon flow recipes
+- Fixed concurrency issues with VASP/Q-Chem due to refactoring
+
+### Removed
+
+- Removed the `quacc.schemas.atoms._quacc_sanitize` function
+
+## [0.6.9]
+
+### Added
+
+- Added MP compatability corrections in VASP MP recipes
+- Added various phonon recipes for Espresso
+- Added various DOS recipes for Espresso
+
+### Fixed
+
+- Fixed a rare edge case where final magmoms would not be moved to initial magmoms of next run in MP VASP recipes
+
+## [0.6.8]
+
+### Added
+
+- Added an option to prevent `os.chdir` calls for multithread safety
+- Added a common elastic calculation
+
+### Changed
+
+- Switched to `ruff` for formatting, replacing the need for `black` and `isort`
+- Changed VASP double relaxes to be flows and not jobs
+- Changed the behavior of `quacc.utils.files.copy_decompress_files`
+
+### Fixed
+
+- Fixed `copy_files` handling with workflow engines
+- Fixed MP VASP double relaxes, where the same relaxation was done twice by mistake
+- Fixed use of `**calc_kwargs` in MP flow recipes
+
+## [0.6.7]
+
+### Added
+
+- Added a `store_intermediate_results` keyword option to `quacc.runners.ase.run_opt()` to allow for storing of the logfiles in intermediate geometry optimization steps.
+- Added support for Pymatgen-based input sets in VASP jobs
+- Added an MP meta-GGA VASP static job
+- Added MP GGA relax job, MP GGA static job, and MP GGA relax flow
+- Added a validity checker on CLI parameters
+
+### Changed
+
+- Changed the default ASE optimizer from `FIRE` to `BFGS` for most recipes
+- Changed the VASP `DoubleRelaxSchema` to be consistent between flows
+- Refactored VASP and Q-Chem execution commands in custom calculators
+
+### Fixed
+
+- Fixed `dir_name` in VASP output schema
+- Fixed auto-detection of the Prefect workflow engine in settings
+- Fixed compatability of MP meta-GGA workflow with that in atomate2
+
+## [0.6.6]
+
+### Fixed
+
+- Using environment variables to set a setting to `None` now works as expected
+- Overall, more intuitive and robust handling of settings across the various input methods
+
+## [0.6.5]
+
+### Added
+
+- PDOS jobs and flows for Espresso
+
+### Changed
+
+- Modified the Espresso results schema to be DB-compatible
+- The `PRIMARY_STORE` setting has changed to `STORE` and is now formatted more intuitively
+- Uses 2024 stable release of `black`
+
+### Fixed
+
+- Fixed usage of `MontyStore` as the data store option
+
+### Removed
+
+- Removed the deprecated "q-chem legacy" recipes
+
 ## [0.6.4]
 
 ### Added
@@ -456,7 +630,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 - VASP: Fixed a scenario where SIGMA was set to 0.05 if the user provided SIGMA > 0.05. This was supposed to happen when ISMEAR = 0 but was previously done when ISMEAR = -5, which is not influenced by SIGMA.
-- Fixed `mp_relax_flow` to use a `#!Python @flow` decorator instead of `#!Python @job`
+- Fixed `mp_metagga_relax_flow` to use a `#!Python @flow` decorator instead of `#!Python @job`
 - Fixed the Q-Chem Quasi-IRC job to run as one `#!Python @job` instead of two.
 
 ## [0.2.3]

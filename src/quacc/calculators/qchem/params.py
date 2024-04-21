@@ -1,10 +1,10 @@
 """Parameter-related utilities for the Q-Chem calculator."""
+
 from __future__ import annotations
 
 import logging
 from typing import TYPE_CHECKING
 
-from ase import Atoms
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.qchem.inputs import QCInput
 from pymatgen.io.qchem.sets import QChemDictSet
@@ -14,6 +14,8 @@ from quacc.utils.dicts import recursive_dict_merge, sort_dict
 
 if TYPE_CHECKING:
     from typing import Any
+
+    from ase.atoms import Atoms
 
     from quacc.calculators.qchem.qchem import QChem
 
@@ -37,7 +39,6 @@ def make_qc_input(qchem: QChem, atoms: Atoms) -> QCInput:
     QCInput
         The QCInput object.
     """
-
     atoms.charge = qchem.charge
     atoms.spin_multiplicity = qchem.spin_multiplicity
     molecule = AseAtomsAdaptor().get_molecule(atoms)

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import platform
 from pathlib import Path
@@ -8,8 +10,8 @@ from typer.testing import CliRunner
 from quacc import SETTINGS, __version__
 from quacc._cli.quacc import app
 
-TEST_YAML = Path.cwd() / "test_quacc.yaml"
-DEFAULT_SETTINGS = SETTINGS.model_copy()
+FILE_PATH = Path(__file__).parent
+TEST_YAML = FILE_PATH / "test_quacc.yaml"
 
 
 def setup_module():
@@ -69,6 +71,9 @@ def test_set(runner):
             if "VASP_PARALLEL_CMD" in line:
                 val = line.split(":")[-1].strip()
     assert val == "dummy"
+
+    response = runner.invoke(app, ["set", "WORKFLOW_ENGINE", "invalid"])
+    assert response.exit_code == 1
 
     response = runner.invoke(app, ["set", "GZIP_FILES", "True"])
     assert response.exit_code == 0

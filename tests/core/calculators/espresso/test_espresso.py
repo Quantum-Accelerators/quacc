@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from ase import Atoms
+from ase.atoms import Atoms
 
 from quacc.calculators.espresso.espresso import Espresso, EspressoTemplate
 
@@ -133,7 +133,7 @@ def test_espresso_presets_gamma():
 
 
 def test_espresso_bad_kpts():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Cannot specify both kpts and kspacing"):
         Espresso(kpts=(1, 1, 1), kspacing=0.5)
 
 
@@ -147,32 +147,25 @@ def test_espresso_kpts():
 def test_output_handler(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    parameters = {"input_data": {"system": {"outdir": "../test3/test2/test1"}}}
+    parameters = {"input_data": {"control": {"outdir": "../test3/test2/test1"}}}
 
     test_path = "../test3/test2/test1"
     fake_template = EspressoTemplate()
-    with pytest.raises(ValueError):
-        new_parameters = fake_template._output_handler(parameters, Path())
+    new_parameters = fake_template._output_handler(parameters, Path())
+
+    assert str(new_parameters["input_data"]["control"]["outdir"]) != test_path
 
     test_path = "/test3/test2/test1"
-    parameters["input_data"]["system"]["outdir"] = test_path
+    parameters["input_data"]["control"]["outdir"] = test_path
     fake_template = EspressoTemplate()
-    with pytest.raises(ValueError):
-        new_parameters = fake_template._output_handler(parameters, Path())
 
-    test_path = Path("test3/test2/test1")
-    parameters["input_data"]["system"]["outdir"] = test_path
-    fake_template = EspressoTemplate()
     new_parameters = fake_template._output_handler(parameters, Path())
-    assert (
-        new_parameters["input_data"]["system"]["outdir"]
-        == test_path.expanduser().resolve()
-    )
-    assert Path(tmp_path, "test3/test2/test1").exists()
+
+    assert str(new_parameters["input_data"]["control"]["outdir"]) != test_path
 
 
 def test_bad_calculator_params():
     atoms = Atoms(symbols="LiLaOZr")
 
-    with pytest.raises(ValueError):
+    with pytest.raises(NotImplementedError, match="does not support the directory"):
         Espresso(input_atoms=atoms, kpts=(1, 1, 1), directory="bad")

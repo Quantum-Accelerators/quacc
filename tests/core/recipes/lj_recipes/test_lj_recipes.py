@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 import pytest
 from ase.build import bulk, molecule
@@ -10,11 +12,11 @@ DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 
 def setup_module():
-    SETTINGS.PRIMARY_STORE = MemoryStore()
+    SETTINGS.STORE = MemoryStore()
 
 
 def teardown_module():
-    SETTINGS.PRIMARY_STORE = DEFAULT_SETTINGS.PRIMARY_STORE
+    SETTINGS.STORE = DEFAULT_SETTINGS.STORE
 
 
 def test_static_job(tmp_path, monkeypatch):

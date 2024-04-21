@@ -1,10 +1,9 @@
-"""A wrapper around ASE's Vasp calculator that makes it better suited for high-
-throughput DFT."""
+"""A wrapper around ASE's Vasp calculator that makes it better suited for high-throughput DFT."""
+
 from __future__ import annotations
 
-import inspect
 import os
-import sys
+import subprocess
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -13,41 +12,51 @@ from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.vasp import setups as ase_setups
 from ase.constraints import FixAtoms
 
-from quacc.calculators.vasp import vasp_custodian
 from quacc.calculators.vasp.io import load_vasp_yaml_calc
 from quacc.calculators.vasp.params import (
     get_param_swaps,
+    get_pmg_input_set_params,
+    normalize_params,
     remove_unused_flags,
     set_auto_dipole,
     set_pmg_kpts,
 )
+from quacc.calculators.vasp.vasp_custodian import run_custodian
 from quacc.schemas.prep import set_magmoms
+from quacc.utils.dicts import sort_dict
 
 if TYPE_CHECKING:
     from typing import Literal
 
     from ase.atoms import Atoms
+    from pymatgen.io.vasp.sets import DictSet
+
+_DEFAULT_SETTING = ()
 
 
 class Vasp(Vasp_):
     """This is a wrapper around the ASE Vasp calculator that adjusts INCAR parameters
     on-the-fly, allows for ASE to run VASP via Custodian, and supports several automatic
-    k-point generation schemes from Pymatgen."""
+    k-point generation schemes from Pymatgen.
+    """
 
     def __init__(
         self,
         input_atoms: Atoms,
         preset: None | str = None,
-        use_custodian: bool | None = None,
-        incar_copilot: Literal["off", "on", "aggressive"] | None = None,
-        copy_magmoms: bool | None = None,
-        preset_mag_default: float | None = None,
-        mag_cutoff: None | float = None,
+        use_custodian: bool = _DEFAULT_SETTING,
+        incar_copilot: Literal["off", "on", "aggressive"] = _DEFAULT_SETTING,
+        copy_magmoms: bool = _DEFAULT_SETTING,
+        preset_mag_default: float = _DEFAULT_SETTING,
+        mag_cutoff: float = _DEFAULT_SETTING,
         elemental_magmoms: dict[str, float] | None = None,
-        pmg_kpts: dict[Literal["line_density", "kppvol", "kppa"], float]
-        | dict[Literal["length_densities"], list[float]]
-        | None = None,
+        pmg_kpts: (
+            dict[Literal["line_density", "kppvol", "kppa"], float]
+            | dict[Literal["length_densities"], list[float]]
+            | None
+        ) = None,
         auto_dipole: bool | None = None,
+        pmg_input_set: DictSet | None = None,
         **kwargs,
     ) -> None:
         """
@@ -92,6 +101,9 @@ class Vasp(Vasp_):
         auto_dipole
             If True, will automatically set dipole moment correction parameters
             based on the center of mass (in the c dimension by default).
+        pmg_input_set
+            A Pymatgen input set to use for the VASP calculation, taken from a
+            `pymatgen.io.vasp.sets.DictSet` object.
         **kwargs
             Additional arguments to be passed to the VASP calculator, e.g.
             `xc='PBE'`, `encut=520`. Takes all valid ASE calculator arguments.
@@ -104,20 +116,28 @@ class Vasp(Vasp_):
 
         # Set defaults
         use_custodian = (
-            SETTINGS.VASP_USE_CUSTODIAN if use_custodian is None else use_custodian
+            SETTINGS.VASP_USE_CUSTODIAN
+            if use_custodian == _DEFAULT_SETTING
+            else use_custodian
         )
         incar_copilot = (
-            SETTINGS.VASP_INCAR_COPILOT if incar_copilot is None else incar_copilot
+            SETTINGS.VASP_INCAR_COPILOT
+            if incar_copilot == _DEFAULT_SETTING
+            else incar_copilot
         )
         copy_magmoms = (
-            SETTINGS.VASP_COPY_MAGMOMS if copy_magmoms is None else copy_magmoms
+            SETTINGS.VASP_COPY_MAGMOMS
+            if copy_magmoms == _DEFAULT_SETTING
+            else copy_magmoms
         )
         preset_mag_default = (
             SETTINGS.VASP_PRESET_MAG_DEFAULT
-            if preset_mag_default is None
+            if preset_mag_default == _DEFAULT_SETTING
             else preset_mag_default
         )
-        mag_cutoff = SETTINGS.VASP_MAG_CUTOFF if mag_cutoff is None else mag_cutoff
+        mag_cutoff = (
+            SETTINGS.VASP_MAG_CUTOFF if mag_cutoff == _DEFAULT_SETTING else mag_cutoff
+        )
 
         # Assign variables to self
         self.input_atoms = input_atoms
@@ -130,6 +150,7 @@ class Vasp(Vasp_):
         self.elemental_magmoms = elemental_magmoms
         self.pmg_kpts = pmg_kpts
         self.auto_dipole = auto_dipole
+        self.pmg_input_set = pmg_input_set
         self.kwargs = kwargs
 
         # Initialize for later
@@ -140,11 +161,11 @@ class Vasp(Vasp_):
 
         # Get VASP executable command, if necessary, and specify child
         # environment variables
-        command = self._manage_environment()
+        self.command = self._manage_environment()
 
         # Instantiate the calculator!
         super().__init__(
-            atoms=self.input_atoms, command=command, **self.user_calc_params
+            atoms=self.input_atoms, command=self.command, **self.user_calc_params
         )
 
     def _manage_environment(self) -> str:
@@ -169,11 +190,6 @@ class Vasp(Vasp_):
             raise OSError(
                 "VASP_VDW setting was not provided, yet you requested a vdW functional."
             )
-
-        # Return Custodian executable command
-        if self.use_custodian:
-            run_vasp_custodian_file = Path(inspect.getfile(vasp_custodian)).resolve()
-            return f"{sys.executable} {run_vasp_custodian_file}"
 
         # Return vanilla ASE command
         vasp_cmd = (
@@ -206,6 +222,14 @@ class Vasp(Vasp_):
             msg = "Atoms object has a constraint that is not compatible with Custodian."
             raise ValueError(msg)
 
+        # Get Pymatgen VASP input set parameters
+        if self.pmg_input_set:
+            pmg_calc_params, self.input_atoms = get_pmg_input_set_params(
+                self.pmg_input_set, self.input_atoms
+            )
+        else:
+            pmg_calc_params = {}
+
         # Get user-defined preset parameters for the calculator
         if self.preset:
             calc_preset = load_vasp_yaml_calc(SETTINGS.VASP_PRESET_DIR / self.preset)[
@@ -216,7 +240,7 @@ class Vasp(Vasp_):
 
         # Collect all the calculator parameters and prioritize the kwargs in the
         # case of duplicates.
-        self.user_calc_params = calc_preset | self.kwargs
+        self.user_calc_params = pmg_calc_params | calc_preset | self.kwargs
 
         # Allow the user to use setups='mysetups.yaml' to load in a custom
         # setups from a YAML file
@@ -268,5 +292,43 @@ class Vasp(Vasp_):
             self.user_calc_params, self.pmg_kpts, self.input_atoms, self.incar_copilot
         )
 
-        # Remove unused INCAR flags
-        self.user_calc_params = remove_unused_flags(self.user_calc_params)
+        # Clean up the user calc parameters
+        self.user_calc_params = sort_dict(
+            normalize_params(remove_unused_flags(self.user_calc_params))
+        )
+
+    def _run(
+        self,
+        command: list[str] | None = None,
+        out: Path | str | None = None,
+        directory: Path | str | None = None,
+    ) -> int:
+        """
+        Override the Vasp calculator's run method to use Custodian if necessary.
+
+        Parameters
+        ----------
+        command
+            The command to run the VASP calculation. If None, will use the
+            self.command attribute.
+        out
+            The stdout file path.
+        directory
+            The directory to run the calculation in. If None, will use the
+            self.directory attribute.
+
+        Returns
+        -------
+        int
+            The return code.
+        """
+        if command is None:
+            command = self.command
+        if directory is None:
+            directory = self.directory
+
+        if self.use_custodian:
+            run_custodian(directory=directory)
+            return 0
+
+        return subprocess.call(command, shell=True, stdout=out, cwd=directory)

@@ -1,6 +1,6 @@
-# Pre-Defined Workflows
+# Intro to Flows
 
-In addition to individual jobs, quacc ships with a variety of pre-made workflows. Here, we will run the following pre-made workflow with EMT, defined by [quacc.recipes.emt.slabs.bulk_to_slabs_flow][].
+In addition to individual jobs, quacc ships with a variety of pre-made workflows, which we call flows for short. Here, we will run a pre-made flow with EMT, defined by [quacc.recipes.emt.slabs.bulk_to_slabs_flow][] and described by the following graph representation:
 
 ```mermaid
 graph LR
@@ -31,14 +31,12 @@ result = bulk_to_slabs_flow(atoms)
 print(result)
 ```
 
-??? Tip "Modifying the Parameters for Jobs in a Pre-Made Flow"
+!!! Tip "Modifying the Parameters for Jobs in a Pre-Made Flow"
 
     To modify the default parameters of a subset of jobs in a pre-made workflow, you can pass a dictionary of parameters to the `job_params` keyword argument of the workflow function. For example, to tighten the force tolerance of the `relax_job` step in the aforementioned recipe, you can do the following:
 
     ```python
-    bulk_to_slabs_flow(
-        atoms, job_params={"relax_job": {"opt_params": {"fmax": 1e-4}}}
-    )
+    bulk_to_slabs_flow(atoms, job_params={"relax_job": {"opt_params": {"fmax": 1e-4}}})
     ```
 
     To modify the default parameters of all the jobs in a pre-made workflow, such as the EMT calculator's `asap_cutoff` paramter, you can use the "all" keyword as a shorthand:

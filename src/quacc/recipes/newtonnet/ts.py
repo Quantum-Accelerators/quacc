@@ -1,4 +1,5 @@
 """Transition state recipes for the NewtonNet code."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -66,9 +67,8 @@ def ts_job(
     freq_job_kwargs
         Keyword arguments to use for the [quacc.recipes.newtonnet.ts.freq_job][]
     opt_params
-        Dictionary of custom kwargs for the optimization process. Set a value
-        to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [quacc.runners.ase.run_opt][].
+        Dictionary of custom kwargs for the optimization process. For a list
+        of available keys, refer to [quacc.runners.ase.run_opt][].
     **calc_kwargs
         Dictionary of custom kwargs for the NewtonNet calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -87,12 +87,10 @@ def ts_job(
         "hess_method": "autograd",
     }
     opt_defaults = {
-        "fmax": 0.01,
-        "max_steps": 1000,
         "optimizer": Sella,
-        "optimizer_kwargs": {"diag_every_n": 0, "order": 1}
-        if use_custom_hessian
-        else {"order": 1},
+        "optimizer_kwargs": (
+            {"diag_every_n": 0, "order": 1} if use_custom_hessian else {"order": 1}
+        ),
     }
 
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
@@ -148,9 +146,8 @@ def irc_job(
     freq_job_kwargs
         Keyword arguments to use for the [quacc.recipes.newtonnet.ts.freq_job][]
     opt_params
-        Dictionary of custom kwargs for the optimization process. Set a value
-        to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [quacc.runners.ase.run_opt][].
+        Dictionary of custom kwargs for the optimization process. For a list
+        of available keys, refer to [quacc.runners.ase.run_opt][].
     **calc_kwargs
         Custom kwargs for the NewtonNet calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -170,8 +167,6 @@ def irc_job(
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
     }
     opt_defaults = {
-        "fmax": 0.01,
-        "max_steps": 1000,
         "optimizer": IRC,
         "optimizer_kwargs": {"dx": 0.1, "eta": 1e-4, "gamma": 0.4, "keep_going": True},
         "run_kwargs": {"direction": direction},

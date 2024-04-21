@@ -1,10 +1,11 @@
 """Core recipes for DFTB+"""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
 from quacc import job
-from quacc.recipes.dftb._base import base_fn
+from quacc.recipes.dftb._base import run_and_summarize
 
 if TYPE_CHECKING:
     from typing import Literal
@@ -12,12 +13,14 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.ase import RunSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
 
 @job
 def static_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     kpts: tuple | list[tuple] | dict | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -32,11 +35,13 @@ def static_job(
         Method to use.
     kpts
         k-point grid to use.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Custom kwargs for the calculator that would override the
         calculator defaults. Set a value to `quacc.Remove` to remove a pre-existing key
         entirely. For a list of available keys, refer to the
-        `ase.calculators.dftb.Dftb` calculator.
+        [ase.calculators.dftb.Dftb][] calculator.
 
     Returns
     -------
@@ -44,7 +49,6 @@ def static_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
         See the return type-hint for the data structure.
     """
-
     calc_defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
         "Hamiltonian_MaxSccIterations": 200,
@@ -53,11 +57,12 @@ def static_job(
     if "xtb" in method.lower():
         calc_defaults["Hamiltonian_Method"] = method
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "DFTB+ Static"},
+        copy_files=copy_files,
     )
 
 
@@ -67,6 +72,7 @@ def relax_job(
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
     kpts: tuple | list[tuple] | dict | None = None,
     relax_cell: bool = False,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -83,11 +89,13 @@ def relax_job(
     relax_cell
         Whether to relax the unit cell shape/volume in addition to the
         positions.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Custom kwargs for the calculator that would override the
         calculator defaults. Set a value to `quacc.Remove` to remove a pre-existing key
         entirely. For a list of available keys, refer to the
-        `ase.calculators.dftb.Dftb` calculator.
+        [ase.calculators.dftb.Dftb][] calculator.
 
     Returns
     -------
@@ -95,7 +103,6 @@ def relax_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
         See the return type-hint for the data structure.
     """
-
     calc_defaults = {
         "Driver_": "GeometryOptimization",
         "Driver_AppendGeometries": "Yes",
@@ -108,9 +115,10 @@ def relax_job(
     if "xtb" in method.lower():
         calc_defaults["Hamiltonian_Method"] = method
 
-    return base_fn(
+    return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "DFTB+ Relax"},
+        copy_files=copy_files,
     )

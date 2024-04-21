@@ -1,4 +1,5 @@
 """Base jobs for Gaussian."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -11,24 +12,24 @@ from quacc.schemas.cclib import cclib_summarize_run
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from typing import Any
 
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.cclib import cclibSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
 _LABEL = "Gaussian"
 LOG_FILE = f"{_LABEL}.log"
 GAUSSIAN_CMD = f"{SETTINGS.GAUSSIAN_CMD} < {_LABEL}.com > {LOG_FILE}"
 
 
-def base_fn(
+def run_and_summarize(
     atoms: Atoms,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: str | Path | list[str | Path] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> cclibSchema:
     """
     Base job function for carrying out Gaussian recipes.
@@ -42,11 +43,11 @@ def base_fn(
     calc_swaps
         Dictionary of custom kwargs for the Gaussian calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `ase.calculators.gaussian.Gaussian` calculator.
+        keys, refer to the [ase.calculators.gaussian.Gaussian][] calculator.
     additional_fields
         Additional fields to supply to the summarizer.
     copy_files
-        File(s) to copy to the runtime directory. If a directory is provided, it will be recursively unpacked.
+        Files to copy (and decompress) from source to the runtime directory.
 
     Returns
     -------

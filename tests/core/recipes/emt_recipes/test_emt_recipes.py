@@ -1,7 +1,12 @@
+from __future__ import annotations
+
+from pathlib import Path
+
 import numpy as np
 import pytest
 from ase.build import bulk, molecule
 from ase.constraints import FixAtoms
+from ase.optimize import FIRE
 
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
@@ -36,9 +41,9 @@ def test_relax_job(tmp_path, monkeypatch):
     output = relax_job(atoms)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] is False
-    assert output["results"]["energy"] == pytest.approx(-0.04543069081693929)
+    assert output["results"]["energy"] == pytest.approx(-0.045446842063617154)
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
-    assert len(output["trajectory"]) == 30
+    assert len(output["trajectory"]) > 1
     assert output["atoms"] != output["input_atoms"]["atoms"]
     assert output["trajectory"][0] == output["input_atoms"]["atoms"]
     assert output["trajectory"][-1] == output["atoms"]
@@ -67,14 +72,16 @@ def test_relax_job(tmp_path, monkeypatch):
     output = relax_job(atoms, opt_params={"fmax": 0.03}, asap_cutoff=True)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] is True
-    assert output["results"]["energy"] == pytest.approx(-0.004528885890177747)
+    assert output["results"]["energy"] == pytest.approx(-0.004774645162642699)
     assert 0.01 < np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.03
 
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += [0.1, 0.1, 0.1]
     c = FixAtoms(indices=[0, 1])
     atoms.set_constraint(c)
-    output = relax_job(atoms, opt_params={"fmax": 0.03}, asap_cutoff=True)
+    output = relax_job(
+        atoms, opt_params={"fmax": 0.03, "optimizer": FIRE}, asap_cutoff=True
+    )
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] is True
     assert output["results"]["energy"] == pytest.approx(0.04996032884581858)
@@ -121,6 +128,7 @@ def test_customizer_v2():
     results = bulk_to_slabs_flow(atoms, job_params={"relax_job": {"asap_cutoff": True}})
     for result in results:
         assert result["parameters"]["asap_cutoff"] is False
+        assert Path(result["dir_name"], "quacc_results.pkl.gz").exists()
 
 
 def test_all_customizers():

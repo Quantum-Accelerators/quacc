@@ -1,4 +1,5 @@
 """Utility functions for dealing with slabs."""
+
 from __future__ import annotations
 
 import logging
@@ -6,8 +7,8 @@ from copy import deepcopy
 from typing import TYPE_CHECKING
 
 import numpy as np
-from ase import Atoms
 from pymatgen.analysis.adsorption import AdsorbateSiteFinder
+from pymatgen.core.structure import Structure
 from pymatgen.core.surface import Slab, center_slab, generate_all_slabs
 from pymatgen.io.ase import AseAtomsAdaptor
 
@@ -16,15 +17,23 @@ from quacc.atoms.core import copy_atoms
 if TYPE_CHECKING:
     from typing import Literal, TypedDict
 
+    from ase.atoms import Atoms
     from numpy.typing import ArrayLike
-    from pymatgen.core import Structure
 
     class AdsSiteFinderKwargs(TypedDict, total=False):
+        """
+        Type hint for `ads_site_finder_kwargs` in [quacc.atoms.slabs.make_adsorbate_structures][].
+        """
+
         selective_dynamics: bool  # default = False
         height: float  # default = 0.9
         mi_vec: ArrayLike | None  # default = None
 
     class FindAdsSitesKwargs(TypedDict, total=False):
+        """
+        Type hint for `find_ads_sites_kwargs` in [quacc.atoms.slabs.make_adsorbate_structures][].
+        """
+
         distance: float  # default = 2.0
         put_inside: bool  # default = True
         symm_reduce: float  # default = 1e-2
@@ -57,11 +66,9 @@ def flip_atoms(
     Atoms | Structure | Slab
         Inverted slab
     """
-
-    if isinstance(atoms, Atoms):
-        new_atoms = copy_atoms(atoms)
-    else:
-        new_atoms = AseAtomsAdaptor.get_atoms(atoms)
+    new_atoms = (
+        atoms.to_ase_atoms() if isinstance(atoms, Structure) else copy_atoms(atoms)
+    )
 
     new_atoms.rotate(180, "x")
     new_atoms.wrap()
@@ -113,7 +120,6 @@ def make_slabs_from_bulk(
     list[Atoms]
         All generated slabs
     """
-
     # Note: This will not work properly for 2D structures. See Oxana/Martin's
     # code for adjustments for 2D:
     # https://github.com/oxana-a/atomate/blob/ads_wf/atomate/vasp/firetasks/adsorption_tasks.py
@@ -202,7 +208,7 @@ def make_slabs_from_bulk(
 
     # Make atoms objects and store slab stats
     for slab_with_props in slabs_with_props:
-        final_slab = AseAtomsAdaptor.get_atoms(slab_with_props)
+        final_slab = slab_with_props.to_ase_atoms()
         slab_stats = {
             "bulk": atoms,
             "miller_index": slab_with_props.miller_index,
@@ -257,7 +263,7 @@ def make_adsorbate_structures(
         AdsorbateSiteFinder.find_adsorption_sites().
 
     Returns
-    --------
+    -------
     list[Atoms]
         The structures with adsorbates
     """
@@ -313,7 +319,7 @@ def make_adsorbate_structures(
             struct_with_adsorbate = ads_finder.add_adsorbate(mol, ads_coord)
 
             # Convert back to Atoms object
-            atoms_with_adsorbate = AseAtomsAdaptor.get_atoms(struct_with_adsorbate)
+            atoms_with_adsorbate = struct_with_adsorbate.to_ase_atoms()
 
             # Get distance matrix between adsorbate binding atom and surface
             d = atoms_with_adsorbate.get_all_distances(mic=True)[
@@ -371,7 +377,7 @@ def get_surface_energy(
     asymmetric slabs, this is better thought of as the cleavage energy.
 
     Parameters
-    -----------
+    ----------
     bulk
         The bulk structure.
     slab
@@ -386,8 +392,7 @@ def get_surface_energy(
     np.floating
         The surface energy in eV/A^2.
     """
-
     alpha = len(slab) / len(bulk)
     cell = slab.get_cell()
-    A = np.linalg.norm(np.cross(cell[0], cell[1]))
-    return (slab_energy - alpha * bulk_energy) / (2 * A)
+    area = np.linalg.norm(np.cross(cell[0], cell[1]))
+    return (slab_energy - alpha * bulk_energy) / (2 * area)
