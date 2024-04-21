@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING
 import numpy as np
 from ase import units
 from ase.thermochemistry import IdealGasThermo
-
-from quacc.schemas.atoms import atoms_to_metadata
+from emmet.core.symmetry import PointGroupData
+from pymatgen.io.ase import AseAtomsAdaptor
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
@@ -77,12 +77,13 @@ def run_ideal_gas(
 
     # Get symmetry for later use
     natoms = len(atoms)
-    metadata = atoms_to_metadata(atoms)
+    mol = AseAtomsAdaptor().get_molecule(atoms, charge_spin_check=False)
+    point_group_data = PointGroupData().from_molecule(mol)
 
     # Get the geometry
     if natoms == 1:
         geometry = "monatomic"
-    elif metadata["symmetry"]["linear"]:
+    elif point_group_data.linear:
         geometry = "linear"
     else:
         geometry = "nonlinear"
@@ -92,7 +93,7 @@ def run_ideal_gas(
         geometry,
         potentialenergy=energy,
         atoms=atoms,
-        symmetrynumber=metadata["symmetry"]["rotation_number"],
+        symmetrynumber=point_group_data.rotation_number,
         spin=spin,
         ignore_imag_modes=True,
     )
