@@ -36,7 +36,7 @@ if TYPE_CHECKING:
 
     class OptimizerKwargs(TypedDict, total=False):
         """
-        Type hint for `optimizer_kwargs` in [quacc.runners.ase.run_opt][].
+        Type hint for `optimizer_kwargs` in [quacc.runners.ase.Runner.run_opt][].
         """
 
         restart: Path | str | None  # default = None
@@ -44,7 +44,7 @@ if TYPE_CHECKING:
 
     class VibKwargs(TypedDict, total=False):
         """
-        Type hint for `vib_kwargs` in [quacc.runners.ase.run_vib][].
+        Type hint for `vib_kwargs` in [quacc.runners.ase.Runner.run_vib][].
         """
 
         indices: list[int] | None  # default = None

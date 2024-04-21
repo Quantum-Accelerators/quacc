@@ -95,7 +95,7 @@ def run_and_summarize_opt(
     opt_defaults
         Default arguments for the ASE optimizer.
     opt_params
-        Dictionary of custom kwargs for [quacc.runners.ase.run_opt][]
+        Dictionary of custom kwargs for [quacc.runners.ase.Runner.run_opt][]
     report_mp_corrections
         Whether to report the Materials Project corrections in the results.
     additional_fields

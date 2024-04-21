@@ -100,7 +100,7 @@ def run_and_summarize_opt(
     opt_defaults
         Default arguments for the ASE optimizer.
     opt_params
-        Dictionary of custom kwargs for [quacc.runners.ase.run_opt][]
+        Dictionary of custom kwargs for [quacc.runners.ase.Runner.run_opt][]
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
 

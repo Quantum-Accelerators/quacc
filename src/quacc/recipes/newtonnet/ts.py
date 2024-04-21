@@ -68,7 +68,7 @@ def ts_job(
         Keyword arguments to use for the [quacc.recipes.newtonnet.ts.freq_job][]
     opt_params
         Dictionary of custom kwargs for the optimization process. For a list
-        of available keys, refer to [quacc.runners.ase.run_opt][].
+        of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
     **calc_kwargs
         Dictionary of custom kwargs for the NewtonNet calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -147,7 +147,7 @@ def irc_job(
         Keyword arguments to use for the [quacc.recipes.newtonnet.ts.freq_job][]
     opt_params
         Dictionary of custom kwargs for the optimization process. For a list
-        of available keys, refer to [quacc.runners.ase.run_opt][].
+        of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
     **calc_kwargs
         Custom kwargs for the NewtonNet calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
