@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc.calculators.vasp import Vasp
-from quacc.runners.ase import run_calc, run_opt
+from quacc.runners.ase import Runner
 from quacc.schemas.vasp import summarize_vasp_opt_run, vasp_summarize_run
 from quacc.utils.dicts import recursive_dict_merge
 
@@ -57,7 +57,7 @@ def run_and_summarize(
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
     atoms.calc = Vasp(atoms, preset=preset, **calc_flags)
-    final_atoms = run_calc(atoms, copy_files=copy_files)
+    final_atoms = Runner(atoms, copy_files=copy_files).run_calc()
 
     return vasp_summarize_run(
         final_atoms,
@@ -112,7 +112,7 @@ def run_and_summarize_opt(
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
     atoms.calc = Vasp(atoms, preset=preset, **calc_flags)
-    dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
+    dyn = Runner(atoms, copy_files=copy_files).run_opt(**opt_flags)
 
     return summarize_vasp_opt_run(
         dyn,

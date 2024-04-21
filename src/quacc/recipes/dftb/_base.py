@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from ase.calculators.dftb import Dftb
 
-from quacc.runners.ase import run_calc
+from quacc.runners.ase import Runner
 from quacc.schemas.ase import summarize_run
 from quacc.utils.dicts import recursive_dict_merge
 
@@ -56,6 +56,6 @@ def run_and_summarize(
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
     atoms.calc = Dftb(**calc_flags)
-    final_atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
+    final_atoms = Runner(atoms,copy_files=copy_files).run_calc(geom_file=GEOM_FILE)
 
     return summarize_run(final_atoms, atoms, additional_fields=additional_fields)

@@ -18,7 +18,7 @@ from quacc.calculators.espresso.utils import (
     prepare_copy_files,
     remove_conflicting_kpts_kspacing,
 )
-from quacc.runners.ase import run_calc, run_opt
+from quacc.runners.ase import Runner
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import recursive_dict_merge
 
@@ -94,7 +94,7 @@ def run_and_summarize(
 
     geom_file = template.outputname if template.binary == "pw" else None
 
-    final_atoms = run_calc(atoms, geom_file=geom_file, copy_files=updated_copy_files)
+    final_atoms = Runner(atoms, copy_files=updated_copy_files).run_calc(geom_file=geom_file)
 
     return summarize_run(
         final_atoms, atoms, move_magmoms=True, additional_fields=additional_fields
@@ -177,9 +177,7 @@ def run_and_summarize_opt(
 
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
-    dyn = run_opt(
-        atoms, relax_cell=relax_cell, copy_files=updated_copy_files, **opt_flags
-    )
+    dyn = Runner(atoms, copy_files=updated_copy_files).run_opt(relax_cell=relax_cell, **opt_flags)
 
     return summarize_opt_run(
         dyn, move_magmoms=True, additional_fields=additional_fields

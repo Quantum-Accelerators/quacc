@@ -115,7 +115,7 @@ def calc_cleanup(
         msg = f"{tmpdir} does not appear to be a tmpdir... exiting for safety!"
         raise ValueError(msg)
 
-    # Reset the calculator's directory
+    # Update the calculator's directory
     if atoms is not None:
         atoms.calc.directory = job_results_dir
 

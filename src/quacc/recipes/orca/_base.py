@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from ase.calculators.orca import ORCA, OrcaProfile, OrcaTemplate
 
 from quacc import SETTINGS
-from quacc.runners.ase import run_calc, run_opt
+from quacc.runners.ase import Runner
 from quacc.schemas.cclib import cclib_summarize_run, summarize_cclib_opt_run
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.utils.lists import merge_list_params
@@ -80,7 +80,7 @@ def run_and_summarize(
         **calc_kwargs,
     )
 
-    atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
+    atoms = Runner(atoms, copy_files=copy_files).run_calc(geom_file=GEOM_FILE)
 
     return cclib_summarize_run(atoms, LOG_FILE, additional_fields=additional_fields)
 
@@ -147,7 +147,7 @@ def run_and_summarize_opt(
     )
 
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
-    dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
+    dyn = Runner(atoms, copy_files=copy_files).run_opt(**opt_flags)
     return summarize_cclib_opt_run(dyn, LOG_FILE, additional_fields=additional_fields)
 
 

@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 from ase.calculators.gulp import GULP
 
 from quacc import SETTINGS
-from quacc.runners.ase import run_calc
+from quacc.runners.ase import Runner
 from quacc.schemas.ase import summarize_run
 from quacc.utils.lists import merge_list_params
 
@@ -101,11 +101,10 @@ def run_and_summarize(
         library=library,
         **calc_kwargs,
     )
-    final_atoms = run_calc(
+    final_atoms = Runner(
         atoms,
-        geom_file=GEOM_FILE_PBC if atoms.pbc.any() else GEOM_FILE_NOPBC,
         copy_files=copy_files,
-    )
+    ).run_calc(geom_file=GEOM_FILE_PBC if atoms.pbc.any() else GEOM_FILE_NOPBC)
 
     if (
         SETTINGS.CHECK_CONVERGENCE

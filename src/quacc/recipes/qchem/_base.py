@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc.calculators.qchem import QChem
-from quacc.runners.ase import run_calc, run_opt
+from quacc.runners.ase import Runner
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import recursive_dict_merge
 
@@ -59,7 +59,7 @@ def run_and_summarize(
     atoms.calc = QChem(
         atoms, charge=charge, spin_multiplicity=spin_multiplicity, **calc_flags
     )
-    final_atoms = run_calc(atoms, copy_files=copy_files)
+    final_atoms = Runner(atoms, copy_files=copy_files).run_calc()
 
     return summarize_run(
         final_atoms,
@@ -118,7 +118,7 @@ def run_and_summarize_opt(
     atoms.calc = QChem(
         atoms, charge=charge, spin_multiplicity=spin_multiplicity, **calc_flags
     )
-    dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
+    dyn = Runner(atoms, copy_files=copy_files).run_opt(**opt_flags)
 
     return summarize_opt_run(
         dyn,

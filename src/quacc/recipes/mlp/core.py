@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from quacc import job
 from quacc.recipes.mlp._base import pick_calculator
-from quacc.runners.ase import run_calc, run_opt
+from quacc.runners.ase import Runner
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import recursive_dict_merge
 
@@ -44,7 +44,7 @@ def static_job(
         See the type-hint for the data structure.
     """
     atoms.calc = pick_calculator(method, **calc_kwargs)
-    final_atoms = run_calc(atoms, get_forces=True)
+    final_atoms = Runner(atoms).run_calc(get_forces=True)
     return summarize_run(
         final_atoms, atoms, additional_fields={"name": f"{method} Static"}
     )
@@ -89,6 +89,6 @@ def relax_job(
 
     atoms.calc = pick_calculator(method, **calc_kwargs)
 
-    dyn = run_opt(atoms, relax_cell=relax_cell, **opt_flags)
+    dyn = Runner(atoms).run_opt(relax_cell=relax_cell, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields={"name": f"{method} Relax"})

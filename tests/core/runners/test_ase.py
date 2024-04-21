@@ -15,7 +15,7 @@ from ase.optimize import BFGS, BFGSLineSearch
 from ase.optimize.sciopt import SciPyFminBFGS
 
 from quacc import SETTINGS
-from quacc.runners.ase import run_calc, run_opt, run_vib
+from quacc.runners.ase import Runner
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.propagate = True
@@ -57,7 +57,7 @@ def test_run_calc(tmp_path, monkeypatch):
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
-    new_atoms = run_calc(atoms, copy_files={Path(): "test_file.txt"})
+    new_atoms = Runner(atoms, copy_files={Path(): "test_file.txt"}).run_calc()
     results_dir = _find_results_dir()
 
     assert atoms.calc.results is not None
@@ -82,7 +82,7 @@ def test_run_calc_no_gzip(tmp_path, monkeypatch):
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
-    new_atoms = run_calc(atoms, copy_files={Path(): "test_file.txt"})
+    new_atoms = Runner(atoms, copy_files={Path(): "test_file.txt"}).run_calc()
     results_dir = _find_results_dir()
 
     assert atoms.calc.results is not None
@@ -104,7 +104,7 @@ def test_run_opt1(tmp_path, monkeypatch):
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
-    dyn = run_opt(atoms, copy_files={Path(): "test_file.txt"})
+    dyn = Runner(atoms, copy_files={Path(): "test_file.txt"}).run_calc()
     traj = dyn.traj_atoms
     results_dir = _find_results_dir()
 
@@ -123,19 +123,20 @@ def test_run_opt2(tmp_path, monkeypatch):
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
-    dyn = run_opt(
+    dyn = Runner(
         atoms,
+        copy_files={Path(): "test_file.txt"}).run_opt(
         optimizer=BFGS,
-        copy_files={Path(): "test_file.txt"},
+
         optimizer_kwargs={"restart": None},
     )
     traj = dyn.traj_atoms
     assert traj[-1].calc.results is not None
 
-    dyn = run_opt(
+    dyn = Runner(
         traj[-1],
+        copy_files={Path(): "test_file.txt"}).run_opt(
         optimizer=BFGSLineSearch,
-        copy_files={Path(): "test_file.txt"},
         optimizer_kwargs={"restart": None},
     )
     traj = dyn.traj_atoms
@@ -148,7 +149,7 @@ def test_run_scipy_opt(tmp_path, monkeypatch):
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
-    dyn = run_opt(atoms, optimizer=SciPyFminBFGS)
+    dyn = Runner(atoms).run_opt( optimizer=SciPyFminBFGS)
     traj = dyn.traj_atoms
     assert traj[-1].calc.results is not None
     assert dyn.todict().get("restart") is None
@@ -160,7 +161,7 @@ def test_run_vib(tmp_path, monkeypatch):
 
     o2 = molecule("O2")
     o2.calc = LennardJones()
-    vib = run_vib(o2, copy_files={Path(): "test_file.txt"})
+    vib = Runner(o2, copy_files={Path(): "test_file.txt"}).run_vib()
     results_dir = _find_results_dir()
 
     assert np.real(vib.get_frequencies()[-1]) == pytest.approx(255.6863883406967)
@@ -177,18 +178,18 @@ def test_bad_runs(tmp_path, monkeypatch, caplog):
 
     # No file
     with caplog.at_level(logging.WARNING):
-        run_calc(atoms, copy_files={Path(): "test_file.txt"})
+        Runner(atoms, copy_files={Path(): "test_file.txt"}).run_calc()
     assert "Cannot find file" in caplog.text
 
     # No file again
     with caplog.at_level(logging.WARNING):
-        run_opt(atoms, copy_files={Path(): "test_file.txt"})
+        Runner(atoms, copy_files={Path(): "test_file.txt"}).run_opt()
     assert "Cannot find file" in caplog.text
 
     # No trajectory kwarg
     with pytest.raises(ValueError):
-        run_opt(
-            atoms,
+        Runner(
+            atoms).run_opt(
             optimizer=BFGSLineSearch,
             optimizer_kwargs={"restart": None, "trajectory": "test.traj"},
         )
@@ -204,7 +205,7 @@ def test_unique_workdir(tmp_path, monkeypatch):
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
-    run_calc(atoms, copy_files={Path(): "test_file.txt"})
+    Runner(atoms, copy_files={Path(): "test_file.txt"}).run_calc()
     results_dir = _find_results_dir()
     assert atoms.calc.results is not None
     assert not os.path.exists(os.path.join(results_dir, "test_file.txt"))
@@ -215,7 +216,7 @@ def test_unique_workdir(tmp_path, monkeypatch):
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
-    run_calc(atoms, copy_files={Path(): "test_file.txt"})
+    Runner(atoms, copy_files={Path(): "test_file.txt"}).run_calc()
     results_dir = _find_results_dir()
     assert atoms.calc.results is not None
     assert not os.path.exists(os.path.join(results_dir, "test_file.txt"))

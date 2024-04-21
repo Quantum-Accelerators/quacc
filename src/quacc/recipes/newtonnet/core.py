@@ -8,7 +8,7 @@ from ase.vibrations.data import VibrationsData
 from monty.dev import requires
 
 from quacc import SETTINGS, job
-from quacc.runners.ase import run_calc, run_opt
+from quacc.runners.ase import Runner
 from quacc.runners.thermo import run_ideal_gas
 from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
 from quacc.utils.dicts import recursive_dict_merge
@@ -66,7 +66,7 @@ def static_job(
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
 
     atoms.calc = NewtonNet(**calc_flags)
-    final_atoms = run_calc(atoms, copy_files=copy_files)
+    final_atoms = Runner(atoms, copy_files=copy_files).run_calc()
 
     return summarize_run(
         final_atoms, atoms, additional_fields={"name": "NewtonNet Static"}
@@ -114,7 +114,7 @@ def relax_job(
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
     atoms.calc = NewtonNet(**calc_flags)
-    dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
+    dyn = Runner(atoms, copy_files=copy_files).run_opt(**opt_flags)
 
     return _add_stdev_and_hess(
         summarize_opt_run(dyn, additional_fields={"name": "NewtonNet Relax"})
@@ -162,7 +162,7 @@ def freq_job(
 
     ml_calculator = NewtonNet(**calc_flags)
     atoms.calc = ml_calculator
-    final_atoms = run_calc(atoms, copy_files=copy_files)
+    final_atoms = Runner(atoms, copy_files=copy_files).run_calc()
 
     summary = summarize_run(
         final_atoms, atoms, additional_fields={"name": "NewtonNet Hessian"}
@@ -210,7 +210,7 @@ def _add_stdev_and_hess(summary: dict[str, Any]) -> dict[str, Any]:
             settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
         )
         atoms.calc = ml_calculator
-        results = run_calc(atoms).calc.results
+        results = Runner(atoms).run_calc().calc.results
         summary["trajectory_results"][i]["hessian"] = results["hessian"]
         summary["trajectory_results"][i]["energy_std"] = results["energy_disagreement"]
         summary["trajectory_results"][i]["forces_std"] = results["forces_disagreement"]

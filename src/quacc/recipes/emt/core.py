@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 from ase.calculators.emt import EMT
 
 from quacc import job
-from quacc.runners.ase import run_calc, run_opt
+from quacc.runners.ase import Runner
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 
 if TYPE_CHECKING:
@@ -50,7 +50,7 @@ def static_job(
         See the type-hint for the data structure.
     """
     atoms.calc = EMT(**calc_kwargs)
-    final_atoms = run_calc(atoms, copy_files=copy_files)
+    final_atoms = Runner(atoms, copy_files=copy_files).run_calc()
 
     return summarize_run(final_atoms, atoms, additional_fields={"name": "EMT Static"})
 
@@ -91,6 +91,6 @@ def relax_job(
     opt_params = opt_params or {}
 
     atoms.calc = EMT(**calc_kwargs)
-    dyn = run_opt(atoms, relax_cell=relax_cell, copy_files=copy_files, **opt_params)
+    dyn = Runner(atoms,  copy_files=copy_files).run_opt(relax_cell=relax_cell, **opt_params)
 
     return summarize_opt_run(dyn, additional_fields={"name": "EMT Relax"})
