@@ -10,7 +10,6 @@ from copy import deepcopy
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from quacc import SETTINGS
 from quacc.wflow_tools.db import results_to_db
 
 if TYPE_CHECKING:
@@ -205,7 +204,7 @@ def clean_dict(start_dict: dict[str, Any]) -> dict[str, Any]:
 
 
 def finalize_dict(
-    task_doc: dict, directory: str | Path | None, store: Store | None = None
+    task_doc: dict, directory: str | Path | None,gzip_file:bool=True, store: Store | None = None
 ) -> dict:
     """
     Finalize a schema by cleaning it and storing it in a database and/or file.
@@ -216,6 +215,8 @@ def finalize_dict(
         Dictionary representation of the task document.
     directory
         Directory where the results file is stored.
+    gzip_file
+        Whether to gzip the results file.
     store
         Maggma Store object to store the results in.
 
@@ -224,12 +225,13 @@ def finalize_dict(
     dict
         Cleaned task document
     """
+
     cleaned_task_doc = clean_dict(task_doc)
 
     if directory:
         with (
             gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
-            if SETTINGS.GZIP_FILES
+            if gzip_file
             else Path(directory, "quacc_results.pkl").open("wb")
         ) as f:
             pickle.dump(task_doc, f)

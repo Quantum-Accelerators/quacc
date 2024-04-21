@@ -151,7 +151,7 @@ def cclib_summarize_run(
     unsorted_task_doc = (
         run_task_doc | intermediate_cclib_task_docs | cclib_task_doc | additional_fields
     )
-    return finalize_dict(unsorted_task_doc, directory, store=store)
+    return finalize_dict(unsorted_task_doc, directory,gzip_file=SETTINGS.GZIP_FILES,  store=store)
 
 
 def summarize_cclib_opt_run(
@@ -241,7 +241,7 @@ def summarize_cclib_opt_run(
         store=None,
     )
     unsorted_task_doc = recursive_dict_merge(cclib_summary, opt_run_summary)
-    return finalize_dict(unsorted_task_doc, directory, store=store)
+    return finalize_dict(unsorted_task_doc, directory,gzip_file=SETTINGS.GZIP_FILES,  store=store)
 
 
 def _make_cclib_schema(
