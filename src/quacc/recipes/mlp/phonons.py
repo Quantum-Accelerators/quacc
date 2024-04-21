@@ -31,6 +31,7 @@ if TYPE_CHECKING:
 def phonon_flow(
     atoms: Atoms,
     method: Literal["mace", "m3gnet", "chgnet"],
+    fixed_atoms: list[int] | None = None,
     min_lengths: float | tuple[float, float, float] | None = 20.0,
     phonopy_kwargs: dict[str, Any] | None = None,
     force_constants_kwargs: dict[str, Any] | None = None,
@@ -109,6 +110,7 @@ def phonon_flow(
         atoms,
         static_job_,
         relax_job=relax_job_ if run_relax else None,
+        fixed_atoms=fixed_atoms,
         min_lengths=min_lengths,
         phonopy_kwargs=phonopy_kwargs,
         force_constants_kwargs=force_constants_kwargs,
