@@ -9,7 +9,7 @@ from monty.dev import requires
 
 from quacc import SETTINGS, job
 from quacc.runners.ase import Runner
-from quacc.runners.thermo import run_ideal_gas
+from quacc.runners.thermo import ThermoRunner
 from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
 from quacc.utils.dicts import recursive_dict_merge
 
@@ -172,7 +172,7 @@ def freq_job(
 
     vib = VibrationsData(final_atoms, hessian)
 
-    igt = run_ideal_gas(final_atoms, vib.get_frequencies(), energy=energy)
+    igt = ThermoRunner(final_atoms).run_ideal_gas(vib.get_frequencies(), energy=energy)
 
     return summarize_vib_and_thermo(
         vib,
