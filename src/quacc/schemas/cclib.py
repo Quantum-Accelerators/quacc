@@ -35,7 +35,7 @@ if TYPE_CHECKING:
         cclibSchema,
     )
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLOGGER(__name__)
 
 _DEFAULT_SETTING = ()
 
@@ -463,7 +463,7 @@ def _cclib_calculate(
     try:
         m.calculate()
     except Exception as e:
-        logger.warning(f"Could not calculate {method}: {e}")
+        LOGGER.warning(f"Could not calculate {method}: {e}")
         return None
 
     # The list of available attributes after a calculation. This is hardcoded

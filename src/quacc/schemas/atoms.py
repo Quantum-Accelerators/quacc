@@ -12,7 +12,6 @@ from quacc.atoms.core import (
     get_charge_attribute,
     get_spin_multiplicity_attribute,
 )
-from quacc.utils.dicts import clean_task_doc
 
 if TYPE_CHECKING:
     from typing import Any
@@ -84,10 +83,7 @@ def atoms_to_metadata(
     # Store Atoms object
     results["atoms"] = atoms
 
-    # Combine the metadata and results dictionaries
-    atoms_doc_unsorted = metadata | results | additional_fields
-
-    return clean_task_doc(atoms_doc_unsorted)
+    return metadata | results | additional_fields
 
 
 def _set_charge_and_spin(
