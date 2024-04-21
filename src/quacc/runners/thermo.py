@@ -7,6 +7,7 @@ from ase import units
 from ase.thermochemistry import IdealGasThermo
 
 from quacc.runners.ase import Runner
+from quacc.schemas.atoms import atoms_to_metadata
 
 
 class ThermoRunner(Runner):
@@ -71,7 +72,7 @@ class ThermoRunner(Runner):
 
         # Get symmetry for later use
         natoms = len(self.atoms)
-        metadata = self.atoms_to_metadata(self.atoms)
+        metadata = atoms_to_metadata(self.atoms)
 
         # Get the geometry
         if natoms == 1:
