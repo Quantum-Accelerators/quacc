@@ -88,4 +88,6 @@ def summarize_phonopy(
 
     atoms_metadata = atoms_to_metadata(input_atoms)
     unsorted_task_doc = atoms_metadata | inputs | results | additional_fields
-    return finalize_dict(unsorted_task_doc, directory,gzip_file=SETTINGS.GZIP_FILES,  store=store)
+    return finalize_dict(
+        unsorted_task_doc, directory, gzip_file=SETTINGS.GZIP_FILES, store=store
+    )

@@ -204,7 +204,10 @@ def clean_dict(start_dict: dict[str, Any]) -> dict[str, Any]:
 
 
 def finalize_dict(
-    task_doc: dict, directory: str | Path | None,gzip_file:bool=True, store: Store | None = None
+    task_doc: dict,
+    directory: str | Path | None,
+    gzip_file: bool = True,
+    store: Store | None = None,
 ) -> dict:
     """
     Finalize a schema by cleaning it and storing it in a database and/or file.

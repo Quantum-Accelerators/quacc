@@ -166,7 +166,9 @@ def vasp_summarize_run(
     unsorted_task_doc = (
         intermediate_vasp_task_docs | vasp_task_doc | base_task_doc | additional_fields
     )
-    return finalize_dict(unsorted_task_doc, directory,gzip_file=SETTINGS.GZIP_FILES,  store=store)
+    return finalize_dict(
+        unsorted_task_doc, directory, gzip_file=SETTINGS.GZIP_FILES, store=store
+    )
 
 
 def summarize_vasp_opt_run(
@@ -239,7 +241,9 @@ def summarize_vasp_opt_run(
         store=None,
     )
     unsorted_task_doc = recursive_dict_merge(vasp_summary, opt_run_summary)
-    return finalize_dict(unsorted_task_doc, directory, gzip_file=SETTINGS.GZIP_FILES, store=store)
+    return finalize_dict(
+        unsorted_task_doc, directory, gzip_file=SETTINGS.GZIP_FILES, store=store
+    )
 
 
 def _bader_runner(path: Path | str) -> BaderSchema:

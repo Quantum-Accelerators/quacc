@@ -113,7 +113,9 @@ def summarize_run(
 
     unsorted_task_doc = final_atoms_metadata | inputs | results | additional_fields
 
-    return finalize_dict(unsorted_task_doc, directory,gzip_file=SETTINGS.GZIP_FILES, store=store)
+    return finalize_dict(
+        unsorted_task_doc, directory, gzip_file=SETTINGS.GZIP_FILES, store=store
+    )
 
 
 def summarize_opt_run(
@@ -207,7 +209,9 @@ def summarize_opt_run(
     # Create a dictionary of the inputs/outputs
     unsorted_task_doc = base_task_doc | opt_fields | additional_fields
 
-    return finalize_dict(unsorted_task_doc, directory,gzip_file=SETTINGS.GZIP_FILES,  store=store)
+    return finalize_dict(
+        unsorted_task_doc, directory, gzip_file=SETTINGS.GZIP_FILES, store=store
+    )
 
 
 def summarize_vib_and_thermo(
@@ -265,7 +269,8 @@ def summarize_vib_and_thermo(
 
     return finalize_dict(
         unsorted_task_doc,
-        vib.atoms.calc.directory if isinstance(vib, Vibrations) else None,gzip_file=SETTINGS.GZIP_FILES,
+        vib.atoms.calc.directory if isinstance(vib, Vibrations) else None,
+        gzip_file=SETTINGS.GZIP_FILES,
         store=store,
     )
 
