@@ -35,8 +35,15 @@ def test_phonon_flow_fixed_atoms(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     _set_dtype(64)
     atoms = read(data_dir / "pt_slab_water.xyz")
-    output = phonon_flow(atoms, method="mace", min_lengths=5.0)
-    #assert output["results"]["force_constants"].shape == (8, 8, 3, 3)
+    job_params = {"relax_job": {"dispersion": True}}
+    output = phonon_flow(
+        atoms,
+        fixed_atoms=list(range(15)),
+        method="mace",
+        min_lengths=5.0,
+        job_params=job_params,
+    )
+    # assert output["results"]["force_constants"].shape == (8, 8, 3, 3)
     assert len(output["results"]["thermal_properties"]["temperatures"]) == 104
 
 
