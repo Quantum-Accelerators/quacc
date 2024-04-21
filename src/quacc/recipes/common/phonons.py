@@ -6,14 +6,12 @@ from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
 import numpy as np
-from ase.units import _c as c
 from monty.dev import requires
 
 from quacc import flow, job, subflow
-from quacc.atoms.phonons import get_phonopy, phonopy_atoms_to_ase_atoms
+from quacc.atoms.phonons import phonopy_atoms_to_ase_atoms, prep_phonopy
 from quacc.runners.phonons import run_phonopy
 from quacc.schemas.phonons import summarize_phonopy
-from quacc.utils.dicts import recursive_dict_merge
 
 has_deps = find_spec("phonopy") is not None and find_spec("seekpath") is not None
 
@@ -34,6 +32,7 @@ def phonon_flow(
     atoms: Atoms,
     force_job: Job,
     relax_job: Job | None = None,
+    fixed_atoms: list[int] | None = None,
     min_lengths: float | tuple[float, float, float] | None = 20.0,
     phonopy_kwargs: dict[str, Any] | None = None,
     force_constants_kwargs: dict[str, Any] | None = None,
@@ -80,65 +79,49 @@ def phonon_flow(
     PhononSchema
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][]
     """
+    fixed_atoms = fixed_atoms or []
+    fixed_atoms = np.array([i in fixed_atoms for i in range(len(atoms))])
 
-    force_constants_kwargs = force_constants_kwargs or {}
-    thermal_properties_kwargs = thermal_properties_kwargs or {}
-
-    auto_band_structure_defaults = {
-        "write_yaml": True,
-        "filename": "phonopy_auto_band_structure.yaml",
-    }
-
-    auto_band_structure_kwargs = recursive_dict_merge(
-        auto_band_structure_defaults, auto_band_structure_kwargs
+    phonon, atoms_to_add = prep_phonopy(
+        atoms,
+        fixed_atoms=fixed_atoms,
+        min_lengths=min_lengths,
+        phonopy_kwargs=phonopy_kwargs,
+        generate_displacements_kwargs=generate_displacements_kwargs,
     )
 
-    total_dos_defaults = {"freq_pitch": c*100*1.0e-12}
-    total_dos_kwargs = recursive_dict_merge(total_dos_defaults, total_dos_kwargs)
-
-    if not set.intersection(
-        set(thermal_properties_kwargs.keys()),
-        {"t_step", "t_min", "t_max", "temperatures"},
-    ):
-        temperatures = np.append(
-            np.linspace(0, 1000, 101, endpoint=True), [273.15, 293.15, 298.15]
-        )
-        thermal_properties_kwargs["temperatures"] = np.sort(temperatures)
+    supercells = [
+        atoms_to_add + phonopy_atoms_to_ase_atoms(s)
+        for s in phonon.supercells_with_displacements
+    ]
 
     @subflow
-    def _get_forces_subflow(atoms: Atoms) -> list[dict]:
-        phonon = get_phonopy(
-            atoms,
-            min_lengths=min_lengths,
-            phonopy_kwargs=phonopy_kwargs,
-            generate_displacements_kwargs=generate_displacements_kwargs,
-        )
-        supercells = [
-            phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
-        ]
+    def _get_forces_subflow(supercells) -> list[dict]:
         return [
             force_job(supercell) for supercell in supercells if supercell is not None
         ]
 
     @job
     def _thermo_job(atoms: Atoms, force_job_results: list[dict]) -> PhononSchema:
-        phonon = get_phonopy(
-            atoms, min_lengths=min_lengths, phonopy_kwargs=phonopy_kwargs
-        )
         parameters = force_job_results[-1].get("parameters")
-        forces = [output["results"]["forces"] for output in force_job_results]
-        phonon.forces = forces
-        phonon.produce_force_constants(**force_constants_kwargs)
-        phonon.run_mesh(**mesh_kwargs)
-        phonon.run_total_dos(**total_dos_kwargs)
-        phonon.run_thermal_properties(**thermal_properties_kwargs)
-        phonon.auto_band_structure(**auto_band_structure_kwargs)
-        phonon = run_phonopy(phonon, forces, t_step=t_step, t_min=t_min, t_max=t_max)
+        forces = [
+            output["results"]["forces"][~fixed_atoms, :] for output in force_job_results
+        ]
+
+        phonon_done = run_phonopy(
+            phonon,
+            forces,
+            force_constants_kwargs,
+            mesh_kwargs,
+            total_dos_kwargs,
+            thermal_properties_kwargs,
+            auto_band_structure_kwargs,
+        )
 
         return summarize_phonopy(
-            phonon,
+            phonon_done,
             atoms,
-            phonon.directory,
+            phonon_done.directory,
             parameters=parameters,
             additional_fields=additional_fields,
         )
@@ -146,5 +129,5 @@ def phonon_flow(
     if relax_job is not None:
         atoms = relax_job(atoms)["atoms"]
 
-    force_job_results = _get_forces_subflow(atoms)
+    force_job_results = _get_forces_subflow(supercells)
     return _thermo_job(atoms, force_job_results)
