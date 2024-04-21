@@ -21,6 +21,7 @@ if TYPE_CHECKING:
     if phonopy:
         from phonopy import Phonopy
 
+
 @requires(has_deps, "Phonopy or seekpath is not installed.")
 class PhonopyRunner(Runner):
     def run_phonopy(
