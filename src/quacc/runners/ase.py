@@ -254,8 +254,6 @@ class Runner:
         ----------
         vib_kwargs
             Dictionary of kwargs for the [ase.vibrations.Vibrations][] class.
-        copy_files
-            Files to copy (and decompress) from source to the runtime directory.
 
         Returns
         -------
