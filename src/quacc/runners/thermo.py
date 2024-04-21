@@ -9,8 +9,6 @@ from ase import units
 from ase.thermochemistry import IdealGasThermo
 from emmet.core.symmetry import PointGroupData
 
-from quacc.schemas.atoms import atoms_to_metadata
-
 if TYPE_CHECKING:
     from ase.atoms import Atoms
 
