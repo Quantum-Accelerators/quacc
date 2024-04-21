@@ -43,7 +43,7 @@ def test_phonon_flow_fixed_atoms(tmp_path, monkeypatch):
         method="mace",
         min_lengths=2.0,
         job_params=job_params,
-        mesh_kwargs={"mesh": 1}
+        mesh_kwargs={"mesh": 1},
     )
     assert output["results"]["force_constants"].shape == (6, 6, 3, 3)
     assert len(output["results"]["thermal_properties"]["temperatures"]) == 104
