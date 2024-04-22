@@ -67,7 +67,9 @@ def get_cluster_info_from_slab(
     )
 
     # Get the center of the cluster from the atom indices
-    slab_center_position = adsorbate_slab[slab_center_indices].get_positions().sum(axis=0) / len(slab_center_indices)
+    slab_center_position = adsorbate_slab[slab_center_indices].get_positions().sum(
+        axis=0
+    ) / len(slab_center_indices)
 
     adsorbate = adsorbate_slab[adsorbate_indices]
 
