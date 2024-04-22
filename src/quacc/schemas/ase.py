@@ -83,15 +83,14 @@ def summarize_run(
 
     directory = final_atoms.calc.directory
     uri = get_uri(directory)
-    input_atoms_metadata = (
-        atoms_to_metadata(
+    if input_atoms:
+        input_atoms_metadata = atoms_to_metadata(
             input_atoms,
             charge_and_multiplicity=charge_and_multiplicity,
             store_pmg=False,
         )
-        if input_atoms
-        else None
-    )
+    else:
+        input_atoms_metadata = {}
     inputs = {
         "parameters": final_atoms.calc.parameters,
         "nid": uri.split(":")[0],
