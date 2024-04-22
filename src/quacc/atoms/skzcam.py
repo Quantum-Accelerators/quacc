@@ -253,12 +253,14 @@ def create_skzcam_clusters(
 
     # Write the quantum clusters to files
     if write_clusters:
-        for idx, cluster in enumerate(quantum_cluster_indices):
-            cluster_atoms = embedded_cluster[cluster]
+        for idx in range(len(quantum_cluster_indices)):
+            quantum_atoms = embedded_cluster[quantum_cluster_indices[idx]]
             if write_include_ecp:
                 ecp_atoms = embedded_cluster[ecp_region_indices[idx]]
                 ecp_atoms.set_chemical_symbols(np.array(["U"] * len(ecp_atoms)))
-                cluster_atoms = cluster_atoms.copy() + ecp_atoms.copy()
+                cluster_atoms = quantum_atoms + ecp_atoms
+            else:
+                cluster_atoms = quantum_atoms
             write(
                 Path(write_clusters_path, f"SKZCAM_cluster_{idx}.xyz"),
                 cluster_atoms,
