@@ -174,7 +174,7 @@ def test_generate_chemshell_cluster():
     from quacc.atoms.skzcam import generate_chemshell_cluster
     # First create the slab
     slab = read(Path(FILE_DIR, "skzcam_files", "NO_MgO.poscar.gz"))
-    slab = slab[2:].copy()
+    slab = slab[2:]
 
     # Run ChemShell
     generate_chemshell_cluster(

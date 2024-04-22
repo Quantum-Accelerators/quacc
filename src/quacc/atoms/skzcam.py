@@ -398,7 +398,7 @@ def insert_adsorbate_to_embedded_cluster(
     adsorbate.set_array("atom_type", np.array(["adsorbate"] * len(adsorbate)))
 
     # Add the adsorbate to the embedded cluster
-    embedded_cluster = adsorbate.copy() + embedded_cluster.copy()
+    embedded_adsorbate_cluster = adsorbate + embedded_cluster
 
     # Update the quantum cluster and ECP region indices
     if quantum_cluster_idx is not None:
@@ -410,7 +410,7 @@ def insert_adsorbate_to_embedded_cluster(
             [idx + len(adsorbate) for idx in cluster] for cluster in ecp_region_idx
         ]
 
-    return embedded_cluster, quantum_cluster_idx, ecp_region_idx
+    return embedded_adsorbate_cluster, quantum_cluster_idx, ecp_region_idx
 
 
 def _get_atom_distances(embedded_cluster: Atoms, center_position: NDArray) -> NDArray:
