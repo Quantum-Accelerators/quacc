@@ -20,7 +20,7 @@ has_chemshell = find_spec("chemsh") is not None
 
 
 def get_cluster_info_from_slab(
-    adsorbate_slab_file: Path, slab_center_idx: list[int], adsorbate_idx: list[int]
+    adsorbate_slab_file: str | Path, slab_center_idx: list[int], adsorbate_idx: list[int]
 ) -> tuple[Atoms, Atoms, int, NDArray, NDArray]:
     """
     Read the file containing the periodic slab and adsorbate (geometry optimized) and return the key information needed to create an embedded cluster in ChemShell.
@@ -62,7 +62,7 @@ def get_cluster_info_from_slab(
         index for index, x in enumerate(slab_idx) if x == slab_center_idx[0]
     )
 
-    # Get the centre of the cluster from the atom indices
+    # Get the center of the cluster from the atom indices
     slab_center_position = np.zeros(3)
     for atom_idx in slab_center_idx:
         slab_center_position += adsorbate_slab.get_positions()[atom_idx]
