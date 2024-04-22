@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import copy
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from ase import Atoms
 
 
-def perturb(mol: Atoms, vector: List[List[float]], scale: float):
+def perturb(mol: Atoms, vector: list[list[float]], scale: float):
     mol_copy = copy.deepcopy(mol)
     mode_copy = copy.deepcopy(vector)
 

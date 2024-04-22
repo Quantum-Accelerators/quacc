@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 import psutil
 
@@ -293,7 +293,7 @@ def ase_relax_job(
 @job
 def ase_quasi_irc_perturb_job(
     atoms: Atoms,
-    mode: List[List[float]],
+    mode: list[list[float]],
     charge: int = 0,
     spin_multiplicity: int = 1,
     perturb_magnitude: float = 0.6,
