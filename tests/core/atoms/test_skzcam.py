@@ -170,7 +170,7 @@ def test_get_cluster_info_from_slab():
     )
 
 
-def test_generate_chemshell_cluster():
+def test_generate_chemshell_cluster(tmp_path):
     from quacc.atoms.skzcam import generate_chemshell_cluster
 
     # First create the slab
@@ -181,18 +181,14 @@ def test_generate_chemshell_cluster():
         slab,
         30,
         {"Mg": 2.0, "O": -2.0},
-        Path(FILE_DIR, "ChemShell_cluster"),
+        tmp_path,
         chemsh_radius_active=15.0,
         chemsh_radius_cluster=25.0,
         write_xyz_file=True,
     )
 
     # Read the output .xyz file
-    chemshell_embedded_cluster = read(Path(FILE_DIR, "ChemShell_cluster.xyz"))
-
-    # Remove from original folder
-    if os.path.isfile(Path(FILE_DIR, "ChemShell_cluster.xyz")):
-        os.remove(Path(FILE_DIR, "ChemShell_cluster.xyz"))
+    chemshell_embedded_cluster = read(Path(tmp_path,"ChemShell_cluster.xyz"))
 
     # Check that the positions and atomic numbers match reference
     assert_allclose(
@@ -521,7 +517,7 @@ def test_get_ecp_region(embedded_cluster, distance_matrix):
     assert np.all(ecp_region_idx[0] == [6, 7, 8, 9, 10, 11, 12, 13, 18, 19, 20, 21, 22])
 
 
-def test_create_skzcam_clusters(tmpdir):
+def test_create_skzcam_clusters(tmp_path):
     # Get quantum cluster and ECP region indices
     _, quantum_cluster_idx, ecp_region_idx = create_skzcam_clusters(
         Path(FILE_DIR, "skzcam_files", "mgo_shells_cluster.pun.gz"),
@@ -531,7 +527,7 @@ def test_create_skzcam_clusters(tmpdir):
         ecp_dist=3.0,
         shell_width=0.005,
         write_clusters=True,
-        write_clusters_path=Path(tmpdir),
+        write_clusters_path=tmp_path,
     )
 
     # Check quantum cluster indices match with reference
@@ -603,7 +599,7 @@ def test_create_skzcam_clusters(tmpdir):
         ]
     )
     # Read the written output and check that it matches with the reference positions and atomic numbers
-    skzcam_cluster = read(Path(tmpdir, "SKZCAM_cluster_0.xyz"))
+    skzcam_cluster = read(Path(tmp_path, "SKZCAM_cluster_0.xyz"))
 
     assert_allclose(
         skzcam_cluster.get_positions(),
