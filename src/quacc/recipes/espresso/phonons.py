@@ -17,7 +17,7 @@ from ase.io.espresso import Namelist
 from quacc import Job, flow, job, subflow
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.calculators.espresso.utils import grid_copy_files, grid_prepare_repr
-from quacc.recipes.espresso._base import run_and_summarize
+from quacc.recipes.espresso._base import RunAndSummarize
 from quacc.recipes.espresso.core import relax_job
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs
@@ -101,14 +101,14 @@ def phonon_job(
 
     binary = "phcg" if use_phcg else "ph"
 
-    return run_and_summarize(
+    return RunAndSummarize(
         template=EspressoTemplate(binary, test_run=test_run, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": f"{binary}.x Phonon"},
         copy_files=copy_files,
-    )
+    ).calculate()
 
 
 @job
@@ -152,14 +152,14 @@ def q2r_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    return run_and_summarize(
+    return RunAndSummarize(
         template=EspressoTemplate("q2r"),
         calc_defaults={},
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "q2r.x Phonon"},
         copy_files=copy_files,
-    )
+    ).calculate()
 
 
 @job
@@ -204,14 +204,14 @@ def matdyn_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    return run_and_summarize(
+    return RunAndSummarize(
         template=EspressoTemplate("matdyn"),
         calc_defaults={},
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "matdyn Phonon"},
         copy_files=copy_files,
-    )
+    ).calculate()
 
 
 @flow
@@ -560,14 +560,14 @@ def dvscf_q2r_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    return run_and_summarize(
+    return RunAndSummarize(
         template=EspressoTemplate("dvscf_q2r", outdir=prev_outdir),
         calc_defaults={},
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "dvscf_q2r Phonon"},
         copy_files=copy_files,
-    )
+    ).calculate()
 
 
 @job
@@ -624,11 +624,11 @@ def postahc_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    return run_and_summarize(
+    return RunAndSummarize(
         template=EspressoTemplate("postahc", outdir=prev_outdir),
         calc_defaults={},
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "postahc Phonon"},
         copy_files=copy_files,
-    )
+    ).calculate()

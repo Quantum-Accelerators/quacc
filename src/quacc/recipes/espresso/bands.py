@@ -13,7 +13,7 @@ from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 
 from quacc import flow, job
 from quacc.calculators.espresso.espresso import EspressoTemplate
-from quacc.recipes.espresso._base import run_and_summarize
+from quacc.recipes.espresso._base import RunAndSummarize
 from quacc.utils.kpts import convert_pmg_kpts
 from quacc.wflow_tools.customizers import customize_funcs
 
@@ -111,7 +111,7 @@ def bands_pw_job(
             cell=atoms.get_cell(),
         )
 
-    return run_and_summarize(
+    return RunAndSummarize(
         atoms,
         template=EspressoTemplate("pw", test_run=test_run, outdir=prev_outdir),
         calc_defaults=calc_defaults,
@@ -119,7 +119,7 @@ def bands_pw_job(
         parallel_info=parallel_info,
         additional_fields={"name": "pw.x bands"},
         copy_files=copy_files,
-    )
+    ).calculate()
 
 
 @job
@@ -169,14 +169,14 @@ def bands_pp_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    return run_and_summarize(
+    return RunAndSummarize(
         template=EspressoTemplate("bands", test_run=test_run, outdir=prev_outdir),
         calc_defaults={},
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "bands.x post-processing"},
         copy_files=copy_files,
-    )
+    ).calculate()
 
 
 @job
@@ -225,14 +225,14 @@ def fermi_surface_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    return run_and_summarize(
+    return RunAndSummarize(
         template=EspressoTemplate("fs", test_run=test_run, outdir=prev_outdir),
         calc_defaults={},
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "fs.x fermi_surface"},
         copy_files=copy_files,
-    )
+    ).calculate()
 
 
 @flow

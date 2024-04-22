@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from quacc import flow, job
 from quacc.calculators.espresso.espresso import EspressoTemplate
-from quacc.recipes.espresso._base import run_and_summarize
+from quacc.recipes.espresso._base import RunAndSummarize
 from quacc.recipes.espresso.core import non_scf_job, static_job
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs
@@ -74,14 +74,14 @@ def dos_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    return run_and_summarize(
+    return RunAndSummarize(
         template=EspressoTemplate("dos", test_run=test_run, outdir=prev_outdir),
         calc_defaults=None,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "dos.x Density-of-States"},
         copy_files=copy_files,
-    )
+    ).calculate()
 
 
 @job
@@ -129,14 +129,14 @@ def projwfc_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    return run_and_summarize(
+    return RunAndSummarize(
         template=EspressoTemplate("projwfc", test_run=test_run, outdir=prev_outdir),
         calc_defaults=None,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "projwfc.x Projects-wavefunctions"},
         copy_files=copy_files,
-    )
+    ).calculate()
 
 
 @flow

@@ -9,7 +9,7 @@ from ase.optimize import BFGSLineSearch
 from quacc import job
 from quacc.atoms.core import check_is_metal
 from quacc.calculators.espresso.espresso import EspressoTemplate
-from quacc.recipes.espresso._base import run_and_summarize, run_and_summarize_opt
+from quacc.recipes.espresso._base import RunAndSummarize
 
 if TYPE_CHECKING:
     from typing import Any
@@ -94,7 +94,7 @@ def static_job(
     calc_defaults = BASE_SET_METAL if is_metal else BASE_SET_NON_METAL
     calc_defaults["input_data"]["control"] = {"calculation": "scf"}
 
-    return run_and_summarize(
+    return RunAndSummarize(
         atoms,
         preset=preset,
         template=EspressoTemplate("pw", test_run=test_run, outdir=prev_outdir),
@@ -103,7 +103,7 @@ def static_job(
         parallel_info=parallel_info,
         additional_fields={"name": "pw.x Static"},
         copy_files=copy_files,
-    )
+    ).calculate()
 
 
 @job
@@ -169,7 +169,7 @@ def relax_job(
         "calculation": "vc-relax" if relax_cell else "relax"
     }
 
-    return run_and_summarize(
+    return RunAndSummarize(
         atoms,
         preset=preset,
         template=EspressoTemplate("pw", test_run=test_run, outdir=prev_outdir),
@@ -178,7 +178,7 @@ def relax_job(
         parallel_info=parallel_info,
         additional_fields={"name": "pw.x Relax"},
         copy_files=copy_files,
-    )
+    ).calculate()
 
 
 @job
@@ -252,20 +252,20 @@ def ase_relax_job(
         "tprnfor": True,
     }
 
-    opt_defaults = {"optimizer": BFGSLineSearch}
+    opt_defaults = {"optimizer": BFGSLineSearch, "relax_cell": relax_cell}
 
-    return run_and_summarize_opt(
+    return RunAndSummarize(
         atoms,
         preset=preset,
-        relax_cell=relax_cell,
         template=EspressoTemplate("pw", autorestart=autorestart, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        opt_defaults=opt_defaults,
-        opt_params=opt_params,
         parallel_info=parallel_info,
         additional_fields={"name": "pw.x ExternalRelax"},
         copy_files=copy_files,
+    ).optimize(
+        opt_defaults=opt_defaults,
+        opt_params=opt_params,
     )
 
 
@@ -325,14 +325,14 @@ def post_processing_job(
         }
     }
 
-    return run_and_summarize(
+    return RunAndSummarize(
         template=EspressoTemplate("pp", test_run=test_run, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
         additional_fields={"name": "pp.x post-processing"},
         copy_files=copy_files,
-    )
+    ).calculate()
 
 
 @job
@@ -390,7 +390,7 @@ def non_scf_job(
     """
     calc_defaults = {"input_data": {"control": {"calculation": "nscf"}}}
 
-    return run_and_summarize(
+    return RunAndSummarize(
         atoms,
         preset=preset,
         template=EspressoTemplate("pw", test_run=test_run, outdir=prev_outdir),
@@ -399,4 +399,4 @@ def non_scf_job(
         parallel_info=parallel_info,
         additional_fields={"name": "pw.x Non SCF"},
         copy_files=copy_files,
-    )
+    ).calculate()

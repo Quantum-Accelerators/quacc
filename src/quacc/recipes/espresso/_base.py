@@ -117,7 +117,6 @@ class RunAndSummarize:
 
     def optimize(
         self,
-        relax_cell: bool = False,
         opt_defaults: dict[str, Any] | None = None,
         opt_params: dict[str, Any] | None = None,
     ) -> RunSchema:
@@ -126,8 +125,6 @@ class RunAndSummarize:
 
         Parameters
         ----------
-        relax_cell
-            Whether to relax the cell or not.
         opt_defaults
             The default optimization parameters.
         opt_params
@@ -143,7 +140,6 @@ class RunAndSummarize:
         opt_flags = recursive_dict_merge(opt_defaults, opt_params)
         dyn = run_opt(
             self.input_atoms,
-            relax_cell=relax_cell,
             copy_files=self.updated_copy_files,
             **opt_flags,
         )
