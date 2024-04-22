@@ -67,11 +67,7 @@ def get_cluster_info_from_slab(
     )
 
     # Get the center of the cluster from the atom indices
-    slab_center_position = np.zeros(3)
-    for atom_idx in slab_center_indices:
-        slab_center_position += adsorbate_slab.get_positions()[atom_idx]
-
-    slab_center_position /= len(slab_center_indices)
+    slab_center_position = adsorbate_slab[slab_center_indices].get_positions().sum(axis=0) / len(slab_center_indices)
 
     adsorbate = adsorbate_slab[adsorbate_indices]
 
@@ -290,9 +286,6 @@ def convert_pun_to_atoms(
         The `oxi_states` array contains the atomic charges, and the `atom_type` array contains the
         atom types (cation, anion, neutral).
     """
-
-    # Create an empty embedded_cluster Atoms object
-    embedded_cluster = Atoms()
 
     # Create a dictionary containing the atom types and whether they are cations or anions
     atom_type_dict = {
