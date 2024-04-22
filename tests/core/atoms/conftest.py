@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-FILE_DIR = Path(__file__).resolve().parent
+FILE_DIR = Path(__file__).parent
 
 
 def mock_generate_chemshell_cluster(*args, filepath, **kwargs):
