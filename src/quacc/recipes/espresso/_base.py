@@ -174,9 +174,7 @@ def run_and_summarize_opt(
 
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
-    dyn = run_opt(
-        atoms, copy_files=updated_copy_files, **opt_flags
-    )
+    dyn = run_opt(atoms, copy_files=updated_copy_files, **opt_flags)
 
     return summarize_opt_run(
         dyn, move_magmoms=True, additional_fields=additional_fields
