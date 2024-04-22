@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from pathlib import Path
 
 import numpy as np
@@ -188,7 +187,7 @@ def test_generate_chemshell_cluster(tmp_path):
     )
 
     # Read the output .xyz file
-    chemshell_embedded_cluster = read(Path(tmp_path,"ChemShell_cluster.xyz"))
+    chemshell_embedded_cluster = read(Path(tmp_path, "ChemShell_cluster.xyz"))
 
     # Check that the positions and atomic numbers match reference
     assert_allclose(
