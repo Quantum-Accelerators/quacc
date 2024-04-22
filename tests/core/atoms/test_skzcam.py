@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from pathlib import Path
+import shutil
+import os
 
 import numpy as np
 import pytest
@@ -14,7 +16,6 @@ from quacc.atoms.skzcam import (
     _get_ecp_region,
     convert_pun_to_atoms,
     create_skzcam_clusters,
-    generate_chemshell_cluster,
     get_cluster_info_from_slab,
     insert_adsorbate_to_embedded_cluster,
 )
@@ -169,27 +170,29 @@ def test_get_cluster_info_from_slab():
     )
 
 
-def test_generate_chemshell_cluster(tmpdir):
+def test_generate_chemshell_cluster():
+    from quacc.atoms.skzcam import generate_chemshell_cluster
     # First create the slab
     slab = read(Path(FILE_DIR, "skzcam_files", "NO_MgO.poscar.gz"))
     slab = slab[2:].copy()
 
     # Run ChemShell
-    # text_trap = io.StringIO()
-    # sys.stdout = text_trap
     generate_chemshell_cluster(
         slab,
         30,
         {"Mg": 2.0, "O": -2.0},
-        filepath=Path(tmpdir, "ChemShell_cluster"),
+        filepath=Path(FILE_DIR, "ChemShell_cluster"),
         chemsh_radius_active=15.0,
         chemsh_radius_cluster=25.0,
         write_xyz_file=True,
     )
-    # sys.stdout = sys.__stdout__
 
     # Read the output .xyz file
-    chemshell_embedded_cluster = read(Path(tmpdir, "ChemShell_cluster.xyz"))
+    chemshell_embedded_cluster = read(Path(FILE_DIR, "ChemShell_cluster.xyz"))
+
+    # Remove from original folder
+    if os.path.isfile(Path(FILE_DIR, "ChemShell_cluster.xyz")):
+        os.remove(Path(FILE_DIR, "ChemShell_cluster.xyz"))
 
     # Check that the positions and atomic numbers match reference
     np.testing.assert_allclose(
@@ -438,74 +441,6 @@ def test_insert_adsorbate_to_embedded_cluster(embedded_cluster):
     # Check that the quantum_idx and ecp_idx match the reference
     assert np.all(quantum_idx == [[2, 3, 5, 6], [7, 8, 9, 10]])
     assert np.all(ecp_idx == [[2, 3, 5, 6], [7, 8, 9, 10]])
-
-
-def test_insert_adsorbate_to_embedded_cluster(embedded_cluster):
-    # Create a CO molecule
-    adsorbate = Atoms(
-        "CO", positions=[[0.0, 0.0, 0.0], [0.0, 0.0, 1.128]], pbc=[False, False, False]
-    )
-
-    # Insert the CO molecule to the embedded cluster
-    embedded_cluster, quantum_idx, ecp_idx = insert_adsorbate_to_embedded_cluster(
-        embedded_cluster,
-        adsorbate,
-        [0.0, 0.0, 2.0],
-        [[0, 1, 3, 4], [5, 6, 7, 8]],
-        [[0, 1, 3, 4], [5, 6, 7, 8]],
-    )
-
-    # Check that the positions of the first 10 atoms of the embedded cluster matches the reference positions, oxi_states and atom_type
-    np.testing.assert_allclose(
-        embedded_cluster.get_positions()[:10],
-        np.array(
-            [
-                [0.0, 0.0, 2.0],
-                [0.0, 0.0, 3.128],
-                [0.0, 0.0, 0.0],
-                [-2.12018426, 0.0, 0.00567209],
-                [0.0, 2.12018426, 0.00567209],
-                [2.12018426, 0.0, 0.00567209],
-                [0.0, -2.12018426, 0.00567209],
-                [0.0, 0.0, -2.14129966],
-                [-2.11144262, 2.11144262, -0.04367284],
-                [2.11144262, 2.11144262, -0.04367284],
-            ]
-        ),
-        rtol=1e-05,
-        atol=1e-07,
-    )
-
-    assert np.all(
-        embedded_cluster.get_chemical_symbols()[:10]
-        == ["C", "O", "Mg", "O", "O", "O", "O", "O", "Mg", "Mg"]
-    )
-    np.testing.assert_allclose(
-        embedded_cluster.get_array("oxi_states")[:10],
-        np.array([0.0, 0.0, 2.0, -2.0, -2.0, -2.0, -2.0, -2.0, 2.0, 2.0]),
-        rtol=1e-05,
-        atol=1e-07,
-    )
-    assert np.all(
-        embedded_cluster.get_array("atom_type")[:10]
-        == [
-            "adsorbate",
-            "adsorbate",
-            "cation",
-            "anion",
-            "anion",
-            "anion",
-            "anion",
-            "anion",
-            "cation",
-            "cation",
-        ]
-    )
-
-    # Check that the quantum_idx and ecp_idx match the reference
-    assert np.all(quantum_idx == [[2, 3, 5, 6], [7, 8, 9, 10]])
-    assert np.all(ecp_idx == [[2, 3, 5, 6], [7, 8, 9, 10]])
-
 
 def test_get_atom_distances():
     # Creating a H2 molecule as an Atoms object
