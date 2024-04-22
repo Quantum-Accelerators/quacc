@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 import psutil
 
 from quacc import job
-from quacc.recipes.gaussian._base import run_and_summarize
+from quacc.recipes.gaussian._base import RunAndSummarize
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
@@ -70,13 +70,13 @@ def static_job(
         "gfinput": "",
         "ioplist": ["6/7=3", "2/9=2000"],  # see ASE issue #660
     }
-    return run_and_summarize(
+    return RunAndSummarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "Gaussian Static"},
         copy_files=copy_files,
-    )
+    ).calculate()
 
 
 @job
@@ -138,10 +138,10 @@ def relax_job(
     if freq:
         calc_defaults["freq"] = ""
 
-    return run_and_summarize(
+    return RunAndSummarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "Gaussian Relax"},
         copy_files=copy_files,
-    )
+    ).calculate()
