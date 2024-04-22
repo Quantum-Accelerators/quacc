@@ -42,7 +42,7 @@ class RunAndSummarize:
         calc_swaps: dict[str, Any] | None = None,
         parallel_info: dict[str, Any] | None = None,
         additional_fields: dict[str, Any] | None = None,
-     s   copy_files: (
+        copy_files: (
             SourceDirectory
             | list[SourceDirectory]
             | dict[SourceDirectory, Filenames]
