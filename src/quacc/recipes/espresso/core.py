@@ -48,6 +48,7 @@ def static_job(
         | dict[SourceDirectory, Filenames]
         | None
     ) = None,
+    prev_outdir: SourceDirectory | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -73,6 +74,10 @@ def static_job(
         which files have to be copied over by looking at the binary and `input_data`.
         If a dict is provided, the mode is manual, keys are source directories and values
         are relative path to files or directories to copy. Glob patterns are supported.
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -92,7 +97,7 @@ def static_job(
     return run_and_summarize(
         atoms,
         preset=preset,
-        template=EspressoTemplate("pw", test_run=test_run),
+        template=EspressoTemplate("pw", test_run=test_run, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
@@ -114,6 +119,7 @@ def relax_job(
         | dict[SourceDirectory, Filenames]
         | None
     ) = None,
+    prev_outdir: SourceDirectory | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -141,6 +147,10 @@ def relax_job(
         which files have to be copied over by looking at the binary and `input_data`.
         If a dict is provided, the mode is manual, keys are source directories and values
         are relative path to files or directories to copy. Glob patterns are supported.
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -162,7 +172,7 @@ def relax_job(
     return run_and_summarize(
         atoms,
         preset=preset,
-        template=EspressoTemplate("pw", test_run=test_run),
+        template=EspressoTemplate("pw", test_run=test_run, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
@@ -185,6 +195,7 @@ def ase_relax_job(
         | dict[SourceDirectory, Filenames]
         | None
     ) = None,
+    prev_outdir: SourceDirectory | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -217,6 +228,10 @@ def ase_relax_job(
         which files have to be copied over by looking at the binary and `input_data`.
         If a dict is provided, the mode is manual, keys are source directories and values
         are relative path to files or directories to copy. Glob patterns are supported.
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -243,7 +258,7 @@ def ase_relax_job(
         atoms,
         preset=preset,
         relax_cell=relax_cell,
-        template=EspressoTemplate("pw", autorestart=autorestart),
+        template=EspressoTemplate("pw", autorestart=autorestart, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         opt_defaults=opt_defaults,
@@ -257,8 +272,12 @@ def ase_relax_job(
 @job
 def post_processing_job(
     copy_files: (
-        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
-    ),
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
+    prev_outdir: SourceDirectory | None = None,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -277,6 +296,10 @@ def post_processing_job(
         which files have to be copied over by looking at the binary and `input_data`.
         If a dict is provided, the mode is manual, keys are source directories and values
         are relative path to files or directories to copy. Glob patterns are supported.
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -303,7 +326,7 @@ def post_processing_job(
     }
 
     return run_and_summarize(
-        template=EspressoTemplate("pp", test_run=test_run),
+        template=EspressoTemplate("pp", test_run=test_run, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
@@ -316,8 +339,12 @@ def post_processing_job(
 def non_scf_job(
     atoms: Atoms,
     copy_files: (
-        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
-    ),
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
+    prev_outdir: SourceDirectory | None = None,
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
@@ -336,6 +363,10 @@ def non_scf_job(
         which files have to be copied over by looking at the binary and `input_data`.
         If a dict is provided, the mode is manual, keys are source directories and values
         are relative path to files or directories to copy. Glob patterns are supported.
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     preset
         The name of a YAML file containing a list of parameters to use as
         a "preset" for the calculator. quacc will automatically look in the
@@ -362,7 +393,7 @@ def non_scf_job(
     return run_and_summarize(
         atoms,
         preset=preset,
-        template=EspressoTemplate("pw", test_run=test_run),
+        template=EspressoTemplate("pw", test_run=test_run, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,

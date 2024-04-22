@@ -32,8 +32,12 @@ if TYPE_CHECKING:
 @job
 def dos_job(
     copy_files: (
-        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
-    ),
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
+    prev_outdir: SourceDirectory | None = None,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -52,6 +56,10 @@ def dos_job(
         which files have to be copied over by looking at the binary and `input_data`.
         If a dict is provided, the mode is manual, keys are source directories and values
         are relative path to files or directories to copy. Glob patterns are supported.
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -67,7 +75,7 @@ def dos_job(
         See the type-hint for the data structure.
     """
     return run_and_summarize(
-        template=EspressoTemplate("dos", test_run=test_run),
+        template=EspressoTemplate("dos", test_run=test_run, outdir=prev_outdir),
         calc_defaults=None,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
@@ -79,8 +87,12 @@ def dos_job(
 @job
 def projwfc_job(
     copy_files: (
-        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
-    ),
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
+    prev_outdir: SourceDirectory | None = None,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -88,7 +100,7 @@ def projwfc_job(
     """
     Function to carry out a basic projwfc.x calculation.
     It is mainly used to extract the charge density and wavefunction from a previous pw.x calculation.
-    It can generate partial dos, local dos, spilling paramenter and more. Fore more details please see
+    It can generate partial dos, local dos, spilling parameter and more. Fore more details please see
     https://www.quantum-espresso.org/Doc/INPUT_PROJWFC.html
 
     Parameters
@@ -99,6 +111,10 @@ def projwfc_job(
         which files have to be copied over by looking at the binary and `input_data`.
         If a dict is provided, the mode is manual, keys are source directories and values
         are relative path to files or directories to copy. Glob patterns are supported.
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -114,7 +130,7 @@ def projwfc_job(
         See the type-hint for the data structure.
     """
     return run_and_summarize(
-        template=EspressoTemplate("projwfc", test_run=test_run),
+        template=EspressoTemplate("projwfc", test_run=test_run, outdir=prev_outdir),
         calc_defaults=None,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
@@ -194,9 +210,9 @@ def dos_flow(
 
     static_results = static_job_(atoms)
 
-    non_scf_results = non_scf_job_(atoms, static_results["dir_name"])
+    non_scf_results = non_scf_job_(atoms, prev_outdir=static_results["dir_name"])
 
-    dos_results = dos_job_(non_scf_results["dir_name"])
+    dos_results = dos_job_(prev_outdir=static_results["dir_name"])
 
     return {
         "static_job": static_results,
@@ -276,9 +292,9 @@ def projwfc_flow(
 
     static_results = static_job_(atoms)
 
-    non_scf_results = non_scf_job_(atoms, static_results["dir_name"])
+    non_scf_results = non_scf_job_(atoms, prev_outdir=static_results["dir_name"])
 
-    projwfc_results = projwfc_job_(non_scf_results["dir_name"])
+    projwfc_results = projwfc_job_(prev_outdir=static_results["dir_name"])
 
     return {
         "static_job": static_results,

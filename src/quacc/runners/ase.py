@@ -186,7 +186,7 @@ def run_opt(
     optimizer_kwargs = recursive_dict_merge(
         {
             "logfile": "-" if SETTINGS.DEBUG else tmpdir / "opt.log",
-            "restart": tmpdir / "opt.pckl",
+            "restart": tmpdir / "opt.json",
         },
         optimizer_kwargs,
     )
@@ -199,7 +199,7 @@ def run_opt(
 
     # Handle optimizer kwargs
     if optimizer.__name__.startswith("SciPy"):
-        optimizer_kwargs.pop("restart")
+        optimizer_kwargs.pop("restart", None)
     elif optimizer.__name__ == "Sella":
         _set_sella_kwargs(atoms, optimizer_kwargs)
     elif optimizer.__name__ == "IRC":
