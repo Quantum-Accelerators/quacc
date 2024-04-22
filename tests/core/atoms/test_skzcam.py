@@ -450,9 +450,7 @@ def test_get_atom_distances():
     # Run _get_atom_distances function to get distance of h2 molecule atoms from a center position
     atom_distances = _get_atom_distances(h2_molecule, [2, 0, 0])
 
-    assert_allclose(
-        atom_distances, np.array([2.0, 2.82842712]), rtol=1e-05, atol=1e-07
-    )
+    assert_allclose(atom_distances, np.array([2.0, 2.82842712]), rtol=1e-05, atol=1e-07)
 
 
 def test_find_cation_shells(embedded_cluster):
