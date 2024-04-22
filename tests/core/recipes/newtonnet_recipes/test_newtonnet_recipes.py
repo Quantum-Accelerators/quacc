@@ -17,7 +17,7 @@ DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 
 def setup_module():
-    current_file_path = Path(__file__).parent.resolve()
+    current_file_path = Path(__file__).parent
 
     SETTINGS.NEWTONNET_CONFIG_PATH = current_file_path / "config0.yml"
     SETTINGS.NEWTONNET_MODEL_PATH = current_file_path / "best_model_state.tar"
