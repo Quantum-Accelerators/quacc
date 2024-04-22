@@ -31,6 +31,7 @@ class ThermoRunner:
         Potential energy in eV. If 0 eV, then the thermochemical correction is
         computed.
     """
+
     atoms: Atoms
     vib_freqs: list[float | complex]
     energy: float = 0.0
