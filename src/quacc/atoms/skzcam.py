@@ -215,9 +215,7 @@ def create_skzcam_clusters(
     embedded_cluster = convert_pun_to_atoms(pun_file, atom_oxi_states)
 
     # Get distances of all atoms from the cluster center
-    atom_center_distances = np.array(
-        [np.linalg.norm(atom.position - center_position) for atom in embedded_cluster]
-    )
+    atom_center_distances = _get_atom_distances(embedded_cluster,center_position)
 
     # Determine the cation shells from the center of the embedded cluster
     _, cation_shells_idx = _find_cation_shells(
@@ -244,9 +242,7 @@ def create_skzcam_clusters(
     for shell_idx in range(shell_max):
         dummy_cation_indices += cation_shells_idx[shell_idx]
         dummy_anion_indices += anion_coord_idx[shell_idx]
-        quantum_cluster_indices += [
-            list(set(dummy_cation_indices + dummy_anion_indices))
-        ]
+        quantum_cluster_indices += [list(set(dummy_cation_indices + dummy_anion_indices))]
 
     # Get the ECP region for each quantum cluster
     ecp_region_idx = _get_ecp_region(
@@ -408,8 +404,7 @@ def insert_adsorbate_to_embedded_cluster(
     # Update the quantum cluster and ECP region indices
     if quantum_cluster_indices is not None:
         quantum_cluster_indices = [
-            [idx + len(adsorbate) for idx in cluster]
-            for cluster in quantum_cluster_indices
+            [idx + len(adsorbate) for idx in cluster] for cluster in quantum_cluster_indices
         ]
     if ecp_region_idx is not None:
         ecp_region_idx = [
@@ -417,6 +412,27 @@ def insert_adsorbate_to_embedded_cluster(
         ]
 
     return embedded_adsorbate_cluster, quantum_cluster_indices, ecp_region_idx
+
+def _get_atom_distances(embedded_cluster: Atoms, center_position: NDArray) -> NDArray:
+    """
+    Returns the distance of all atoms from the center position of the embedded cluster
+
+    Parameters
+    ----------
+    embedded_cluster
+        The ASE Atoms object containing the atomic coordinates of the embedded cluster.
+    center_position
+        The position of the center of the embedded cluster (i.e., position of the adsorbate).
+
+    Returns
+    -------
+    NDArray
+        An array containing the distances of each atom in the Atoms object from the cluster center.
+    """
+
+    return np.array(
+        [np.linalg.norm(atom.position - center_position) for atom in embedded_cluster]
+    )
 
 
 def _find_cation_shells(
