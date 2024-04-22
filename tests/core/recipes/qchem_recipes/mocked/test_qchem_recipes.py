@@ -620,7 +620,7 @@ def test_quasi_irc_perturb_job(monkeypatch, tmp_path, test_qirc_atoms):
         [0.036, 0.032, 0.021],
         [-0.003, -0.032, 0.011],
         [-0.006, -0.009, -0.118],
-        [0.014, -0.034, 0.094]
+        [0.014, -0.034, 0.094],
     ]
 
     charge, spin_multiplicity = check_charge_and_spin(test_qirc_atoms)
@@ -632,7 +632,7 @@ def test_quasi_irc_perturb_job(monkeypatch, tmp_path, test_qirc_atoms):
         direction="forward",
         method="wb97mv",
         opt_params={"max_steps": 5},
-        basis="def2-svpd"
+        basis="def2-svpd",
     )
 
     assert output["atoms"] != test_qirc_atoms
@@ -656,7 +656,7 @@ def test_quasi_irc_perturb_job(monkeypatch, tmp_path, test_qirc_atoms):
         direction="reverse",
         basis="def2-tzvpd",
         opt_params={"max_steps": 6},
-        rem={"scf_algorithm": "gdm"}
+        rem={"scf_algorithm": "gdm"},
     )
 
     assert output["atoms"] != test_qirc_atoms

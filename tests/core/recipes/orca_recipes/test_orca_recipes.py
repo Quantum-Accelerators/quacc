@@ -8,13 +8,12 @@ from ase.build import molecule
 from ase.io import read
 
 from quacc.recipes.orca.core import (
+    ase_quasi_irc_perturb_job,
     ase_relax_job,
+    freq_job,
     relax_job,
     static_job,
-    freq_job,
-    ase_quasi_irc_perturb_job
 )
-
 
 FILE_DIR = Path(__file__).parent
 
@@ -200,7 +199,7 @@ def test_ase_quasi_irc_perturb_job(test_atoms, tmp_path, monkeypatch):
         [0.035434, 0.032613, 0.019516],
         [-0.002674, -0.03398, 0.011123],
         [-0.006118, -0.009193, -0.122432],
-        [0.014124, -0.035613, 0.097518]
+        [0.014124, -0.035613, 0.097518],
     ]
 
     output = ase_quasi_irc_perturb_job(

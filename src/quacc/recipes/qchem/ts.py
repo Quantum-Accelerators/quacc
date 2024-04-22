@@ -9,8 +9,8 @@ from monty.dev import requires
 from quacc import SETTINGS, job, strip_decorator
 from quacc.recipes.qchem._base import run_and_summarize_opt
 from quacc.recipes.qchem.core import _BASE_SET, relax_job
-from quacc.utils.dicts import recursive_dict_merge
 from quacc.utils.coords import perturb
+from quacc.utils.dicts import recursive_dict_merge
 
 try:
     from sella import IRC, Sella
@@ -19,7 +19,7 @@ except ImportError:
     Sella = False
 
 if TYPE_CHECKING:
-    from typing import Any, List, Literal
+    from typing import Any, Literal
 
     from ase.atoms import Atoms
 
@@ -238,7 +238,7 @@ def quasi_irc_perturb_job(
     atoms: Atoms,
     charge: int,
     spin_multiplicity: int,
-    mode: List[List[float]],
+    mode: list[list[float]],
     perturb_magnitude: float = 0.6,
     direction: Literal["forward", "reverse"] = "forward",
     method: str = "wb97mv",
@@ -252,7 +252,7 @@ def quasi_irc_perturb_job(
     Perturbs the structure of `atoms` by a finite amount (0.6 * the normalized mode magnitude) along the specified
     vibrational frequency mode (assumed to be the transition mode), and then performs a `relax_job` on the perturbed
     structure.
-    
+
     Parameters
     ----------
     atoms
@@ -295,10 +295,7 @@ def quasi_irc_perturb_job(
     )
     opt_defaults = {"optimizer": Sella} if (Sella is not False) else {}
 
-    if direction == "forward":
-        scale = perturb_magnitude
-    else:
-        scale = perturb_magnitude * -1
+    scale = perturb_magnitude if direction == "forward" else perturb_magnitude * -1
 
     return run_and_summarize_opt(
         perturb(atoms, mode, scale),

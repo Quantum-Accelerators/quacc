@@ -355,10 +355,7 @@ def ase_quasi_irc_perturb_job(
     default_inputs = [xc, basis, "engrad", "normalprint"]
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
-    if direction == "forward":
-        scale = perturb_magnitude
-    else:
-        scale = perturb_magnitude * -1
+    scale = perturb_magnitude if direction == "forward" else perturb_magnitude * -1
 
     return run_and_summarize_opt(
         perturb(atoms, mode, scale),

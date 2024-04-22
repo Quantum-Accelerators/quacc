@@ -1,12 +1,14 @@
 """Utilities for working with atomic coordinates."""
 
 from __future__ import annotations
+
 import copy
-from typing import List
+from typing import List, TYPE_CHECKING
 
 import numpy as np
 
-from ase import Atoms
+if TYPE_CHECKING:
+    from ase import Atoms
 
 
 def perturb(mol: Atoms, vector: List[List[float]], scale: float):
