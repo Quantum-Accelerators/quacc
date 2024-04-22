@@ -2,9 +2,6 @@
 
 from __future__ import annotations
 
-import gzip
-import pickle
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -17,9 +14,8 @@ from quacc import SETTINGS, __version__
 from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.schemas.prep import prep_next_run
-from quacc.utils.dicts import clean_task_doc, recursive_dict_merge
+from quacc.utils.dicts import finalize_dict, recursive_dict_merge
 from quacc.utils.files import get_uri
-from quacc.wflow_tools.db import results_to_db
 
 if TYPE_CHECKING:
     from typing import Any
@@ -87,15 +83,16 @@ def summarize_run(
 
     directory = final_atoms.calc.directory
     uri = get_uri(directory)
-    input_atoms_metadata = (
-        atoms_to_metadata(
+
+    if input_atoms:
+        input_atoms_metadata = atoms_to_metadata(
             input_atoms,
             charge_and_multiplicity=charge_and_multiplicity,
             store_pmg=False,
         )
-        if input_atoms
-        else None
-    )
+    else:
+        input_atoms_metadata = {}
+
     inputs = {
         "parameters": final_atoms.calc.parameters,
         "nid": uri.split(":")[0],
@@ -103,7 +100,6 @@ def summarize_run(
         "input_atoms": input_atoms_metadata,
         "quacc_version": __version__,
     }
-
     results = {"results": final_atoms.calc.results}
 
     atoms_to_store = prep_next_run(final_atoms, move_magmoms=move_magmoms)
@@ -116,20 +112,10 @@ def summarize_run(
         final_atoms_metadata = {}
 
     unsorted_task_doc = final_atoms_metadata | inputs | results | additional_fields
-    task_doc = clean_task_doc(unsorted_task_doc)
 
-    if SETTINGS.WRITE_PICKLE:
-        with (
-            gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
-            if SETTINGS.GZIP_FILES
-            else Path(directory, "quacc_results.pkl").open("wb")
-        ) as f:
-            pickle.dump(task_doc, f)
-
-    if store:
-        results_to_db(store, task_doc)
-
-    return task_doc
+    return finalize_dict(
+        unsorted_task_doc, directory, gzip_file=SETTINGS.GZIP_FILES, store=store
+    )
 
 
 def summarize_opt_run(
@@ -222,20 +208,10 @@ def summarize_opt_run(
 
     # Create a dictionary of the inputs/outputs
     unsorted_task_doc = base_task_doc | opt_fields | additional_fields
-    task_doc = clean_task_doc(unsorted_task_doc)
 
-    if SETTINGS.WRITE_PICKLE:
-        with (
-            gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
-            if SETTINGS.GZIP_FILES
-            else Path(directory, "quacc_results.pkl").open("wb")
-        ) as f:
-            pickle.dump(task_doc, f)
-
-    if store:
-        results_to_db(store, task_doc)
-
-    return task_doc
+    return finalize_dict(
+        unsorted_task_doc, directory, gzip_file=SETTINGS.GZIP_FILES, store=store
+    )
 
 
 def summarize_vib_and_thermo(
@@ -279,41 +255,29 @@ def summarize_vib_and_thermo(
     vib_task_doc = _summarize_vib_run(
         vib,
         charge_and_multiplicity=charge_and_multiplicity,
-        store=None,
-        additional_fields=additional_fields,
     )
     thermo_task_doc = _summarize_ideal_gas_thermo(
         igt,
         temperature=temperature,
         pressure=pressure,
         charge_and_multiplicity=charge_and_multiplicity,
-        store=None,
-        additional_fields=additional_fields,
     )
 
-    unsorted_task_doc = recursive_dict_merge(vib_task_doc, thermo_task_doc)
-    task_doc = clean_task_doc(unsorted_task_doc)
+    unsorted_task_doc = recursive_dict_merge(
+        vib_task_doc, thermo_task_doc, additional_fields
+    )
 
-    if isinstance(vib, Vibrations):
-        directory = vib.atoms.calc.directory
-        if SETTINGS.WRITE_PICKLE:
-            with (
-                gzip.open(Path(directory, "quacc_results.pkl.gz"), "wb")
-                if SETTINGS.GZIP_FILES
-                else Path(directory, "quacc_results.pkl").open("wb")
-            ) as f:
-                pickle.dump(task_doc, f)
-    if store:
-        results_to_db(store, task_doc)
-
-    return task_doc
+    return finalize_dict(
+        unsorted_task_doc,
+        vib.atoms.calc.directory if isinstance(vib, Vibrations) else None,
+        gzip_file=SETTINGS.GZIP_FILES,
+        store=store,
+    )
 
 
 def _summarize_vib_run(
     vib: Vibrations | VibrationsData,
     charge_and_multiplicity: tuple[int, int] | None = None,
-    additional_fields: dict[str, Any] | None = None,
-    store: Store | None = None,
 ) -> VibSchema:
     """
     Get tabulated results from an ASE Vibrations object and store them in a database-
@@ -326,19 +290,12 @@ def _summarize_vib_run(
     charge_and_multiplicity
         Charge and spin multiplicity of the Atoms object, only used for Molecule
         metadata.
-    additional_fields
-        Additional fields to add to the task document.
-    store
-        Maggma Store object to store the results in. Defaults to `SETTINGS.STORE`.
 
     Returns
     -------
     VibSchema
         Dictionary representation of the task document
     """
-    additional_fields = additional_fields or {}
-    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
-
     vib_freqs_raw = vib.get_frequencies().tolist()
     vib_energies_raw = vib.get_energies().tolist()
 
@@ -411,13 +368,7 @@ def _summarize_vib_run(
         }
     }
 
-    unsorted_task_doc = atoms_metadata | inputs | results | additional_fields
-    task_doc = clean_task_doc(unsorted_task_doc)
-
-    if store:
-        results_to_db(store, task_doc)
-
-    return task_doc
+    return atoms_metadata | inputs | results
 
 
 def _summarize_ideal_gas_thermo(
@@ -425,8 +376,6 @@ def _summarize_ideal_gas_thermo(
     temperature: float = 298.15,
     pressure: float = 1.0,
     charge_and_multiplicity: tuple[int, int] | None = None,
-    additional_fields: dict[str, Any] | None = None,
-    store: Store | None = _DEFAULT_SETTING,
 ) -> ThermoSchema:
     """
     Get tabulated results from an ASE IdealGasThermo object and store them in a
@@ -445,17 +394,12 @@ def _summarize_ideal_gas_thermo(
         metadata.
     additional_fields
         Additional fields to add to the task document.
-    store
-        Maggma Store object to store the results in. Defaults to `SETTINGS.STORE`
 
     Returns
     -------
     ThermoSchema
         Dictionary representation of the task document
     """
-    additional_fields = additional_fields or {}
-    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
-
     spin_multiplicity = round(2 * igt.spin + 1)
 
     inputs = {
@@ -494,10 +438,4 @@ def _summarize_ideal_gas_thermo(
         igt.atoms, charge_and_multiplicity=charge_and_multiplicity
     )
 
-    unsorted_task_doc = atoms_metadata | inputs | results | additional_fields
-    task_doc = clean_task_doc(unsorted_task_doc)
-
-    if store:
-        results_to_db(store, task_doc)
-
-    return task_doc
+    return atoms_metadata | inputs | results

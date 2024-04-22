@@ -141,10 +141,10 @@ class EspressoTemplate(EspressoTemplate_):
                 **parameters,
             )
         elif self.binary in ["ph", "phcg"]:
-            with Path.open(directory / self.inputname, "w") as fd:
+            with Path(directory, self.inputname).open(mode="w") as fd:
                 write_espresso_ph(fd=fd, properties=properties, **parameters)
         else:
-            with Path.open(directory / self.inputname, "w") as fd:
+            with Path(directory, self.inputname).open(mode="w") as fd:
                 write_fortran_namelist(
                     fd,
                     binary=self.binary if self._ase_known_binary else None,
@@ -222,16 +222,16 @@ class EspressoTemplate(EspressoTemplate_):
             atoms = read(directory / self.outputname, format="espresso-out")
             results = dict(atoms.calc.properties())
         elif self.binary in ["ph", "phcg"]:
-            with Path.open(directory / self.outputname, "r") as fd:
+            with Path(directory, self.outputname).open() as fd:
                 results = read_espresso_ph(fd)
         elif self.binary == "dos":
-            with Path.open(directory / "pwscf.dos", "r") as fd:
+            with Path(directory, "pwscf.dos").open() as fd:
                 lines = fd.readlines()
                 fermi = float(re.search(r"-?\d+\.?\d*", lines[0])[0])
                 dos = np.loadtxt(lines[1:])
             results = {"dos_results": {"dos": dos, "fermi": fermi}}
         elif self.binary == "projwfc":
-            with Path.open(directory / "pwscf.pdos_tot", "r") as fd:
+            with Path(directory, "pwscf.pdos_tot").open() as fd:
                 lines = np.loadtxt(fd.readlines())
                 energy = lines[1:, 0]
                 dos = lines[1:, 1]
