@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 import psutil
 
 from quacc import job
-from quacc.recipes.orca._base import run_and_summarize, run_and_summarize_opt
+from quacc.recipes.orca._base import RunAndSummarize
 
 if TYPE_CHECKING:
     from typing import Any, Literal
@@ -68,7 +68,7 @@ def static_job(
     default_inputs = [xc, basis, "engrad", "normalprint"]
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
-    return run_and_summarize(
+    return RunAndSummarize(
         atoms,
         charge,
         spin_multiplicity,
@@ -78,7 +78,7 @@ def static_job(
         block_swaps=orcablocks,
         additional_fields={"name": "ORCA Static"},
         copy_files=copy_files,
-    )
+    ).calculate()
 
 
 @job
@@ -131,24 +131,22 @@ def relax_job(
         See the type-hint for the data structure.
     """
     nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
-
     default_inputs = [xc, basis, "normalprint", "opt"]
     if run_freq:
         default_inputs.append("freq")
-
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
-    return run_and_summarize(
+    return RunAndSummarize(
         atoms,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge,
+        spin_multiplicity,
         default_inputs=default_inputs,
         default_blocks=default_blocks,
         input_swaps=orcasimpleinput,
         block_swaps=orcablocks,
         additional_fields={"name": "ORCA Relax"},
         copy_files=copy_files,
-    )
+    ).calculate()
 
 
 @job
@@ -203,15 +201,14 @@ def ase_relax_job(
     default_inputs = [xc, basis, "engrad", "normalprint"]
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
-    return run_and_summarize_opt(
+    return RunAndSummarize(
         atoms,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge,
+        spin_multiplicity,
         default_inputs=default_inputs,
         default_blocks=default_blocks,
         input_swaps=orcasimpleinput,
         block_swaps=orcablocks,
-        opt_params=opt_params,
         additional_fields={"name": "ORCA ASE Relax"},
         copy_files=copy_files,
-    )
+    ).optimize(opt_defaults={}, opt_params=opt_params)

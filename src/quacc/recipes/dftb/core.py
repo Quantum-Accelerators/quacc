@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc import job
-from quacc.recipes.dftb._base import run_and_summarize
+from quacc.recipes.dftb._base import RunAndSummarize
 
 if TYPE_CHECKING:
     from typing import Literal
@@ -57,13 +57,13 @@ def static_job(
     if "xtb" in method.lower():
         calc_defaults["Hamiltonian_Method"] = method
 
-    return run_and_summarize(
+    return RunAndSummarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "DFTB+ Static"},
         copy_files=copy_files,
-    )
+    ).calculate()
 
 
 @job
@@ -115,10 +115,10 @@ def relax_job(
     if "xtb" in method.lower():
         calc_defaults["Hamiltonian_Method"] = method
 
-    return run_and_summarize(
+    return RunAndSummarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "DFTB+ Relax"},
         copy_files=copy_files,
-    )
+    ).calculate()

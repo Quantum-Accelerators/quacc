@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from ase.calculators.dftb import Dftb
@@ -22,17 +23,12 @@ LOG_FILE = "dftb.out"
 GEOM_FILE = "geo_end.gen"
 
 
-def run_and_summarize(
-    atoms: Atoms,
-    calc_defaults: dict[str, Any] | None = None,
-    calc_swaps: dict[str, Any] | None = None,
-    additional_fields: dict[str, Any] | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-) -> RunSchema:
+@dataclass
+class RunAndSummarize:
     """
-    Base job function for DFTB+ recipes.
+    Initialize the class.
 
-    Parameters
+    Attributes
     ----------
     atoms
         Atoms object
@@ -47,15 +43,28 @@ def run_and_summarize(
         Any additional fields to supply to the summarizer.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
-
-    Returns
-    -------
-    RunSchema
-        Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
-    calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
-    atoms.calc = Dftb(**calc_flags)
-    final_atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
+    atoms: Atoms
+    calc_defaults: dict[str, Any] | None = None
+    calc_swaps: dict[str, Any] | None = None
+    additional_fields: dict[str, Any] | None = None
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None
 
-    return summarize_run(final_atoms, atoms, additional_fields=additional_fields)
+    def calculate(self) -> RunSchema:
+        """
+        Base job function for DFTB+ recipes.
+
+        Returns
+        -------
+        RunSchema
+            Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
+        """
+        calc_flags = recursive_dict_merge(self.calc_defaults, self.calc_swaps)
+        self.atoms.calc = Dftb(**calc_flags)
+        final_atoms = run_calc(
+            self.atoms, geom_file=GEOM_FILE, copy_files=self.copy_files
+        )
+        return summarize_run(
+            final_atoms, self.atoms, additional_fields=self.additional_fields
+        )
