@@ -244,7 +244,9 @@ def create_skzcam_clusters(
     for shell_idx in range(shell_max):
         dummy_cation_indices += cation_shells_idx[shell_idx]
         dummy_anion_indices += anion_coord_idx[shell_idx]
-        quantum_cluster_indices += [list(set(dummy_cation_indices + dummy_anion_indices))]
+        quantum_cluster_indices += [
+            list(set(dummy_cation_indices + dummy_anion_indices))
+        ]
 
     # Get the ECP region for each quantum cluster
     ecp_region_idx = _get_ecp_region(
@@ -406,7 +408,8 @@ def insert_adsorbate_to_embedded_cluster(
     # Update the quantum cluster and ECP region indices
     if quantum_cluster_indices is not None:
         quantum_cluster_indices = [
-            [idx + len(adsorbate) for idx in cluster] for cluster in quantum_cluster_indices
+            [idx + len(adsorbate) for idx in cluster]
+            for cluster in quantum_cluster_indices
         ]
     if ecp_region_idx is not None:
         ecp_region_idx = [
