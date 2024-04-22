@@ -27,7 +27,7 @@ QUACC_BASE_UNITS = {
 }
 
 
-def md_units(dynamics_kwargs: dict[str, Any], inverse: bool = False) -> dict[str, Any]:
+def convert_md_units(dynamics_kwargs: dict[str, Any], inverse: bool = False) -> dict[str, Any]:
     """
     Convert units for molecular dynamics parameters to ensure consistency.
     Quacc ALWAYS uses the following units:

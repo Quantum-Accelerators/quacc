@@ -16,7 +16,7 @@ from quacc.schemas.atoms import atoms_to_metadata
 from quacc.schemas.prep import prep_next_run
 from quacc.utils.dicts import finalize_dict, recursive_dict_merge
 from quacc.utils.files import get_uri
-from quacc.utils.units import md_units
+from quacc.utils.units import convert_md_units
 
 if TYPE_CHECKING:
     from typing import Any
@@ -282,7 +282,7 @@ def summarize_md_run(
     parameters_md = dyn.todict()
     parameters_md.pop("logfile", None)
 
-    parameters_md = md_units(parameters_md, inverse=True)
+    parameters_md = convert_md_units(parameters_md, inverse=True)
 
     trajectory_log = []
     trajectory_results = []

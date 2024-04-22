@@ -20,7 +20,7 @@ from quacc import SETTINGS
 from quacc.atoms.core import copy_atoms, get_final_atoms_from_dynamics
 from quacc.runners.prep import calc_cleanup, calc_setup
 from quacc.utils.dicts import recursive_dict_merge
-from quacc.utils.units import md_units
+from quacc.utils.units import convert_md_units
 
 LOGGER = logging.getLogger(__name__)
 
@@ -298,7 +298,7 @@ def run_md(
     dynamics_kwargs["timestep"] = timestep
 
     dynamics_kwargs = _md_params_handler(dynamics_kwargs)
-    dynamics_kwargs = md_units(dynamics_kwargs)
+    dynamics_kwargs = convert_md_units(dynamics_kwargs)
 
     timestep = dynamics_kwargs.pop("timestep", timestep)
 
