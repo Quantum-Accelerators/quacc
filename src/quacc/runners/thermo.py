@@ -44,9 +44,6 @@ def run_ideal_gas(
     -------
     IdealGasThermo object
     """
-    # Switch off PBC since this is only for molecules
-    atoms.set_pbc(False)
-
     # Ensure all negative modes are made complex
     for i, f in enumerate(vib_freqs):
         if not isinstance(f, complex) and f < 0:

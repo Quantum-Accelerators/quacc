@@ -276,11 +276,6 @@ def test_summarize_ideal_gas_thermo(tmp_path, monkeypatch):
     assert results["results"]["energy"] == 0
     assert "pymatgen_version" in results["builder_meta"]
 
-    # Test DB
-    atoms = molecule("N2")
-    igt = IdealGasThermo([0.34], "linear", atoms=atoms, spin=0, symmetrynumber=2)
-    _summarize_ideal_gas_thermo(igt)
-
     # Make sure right number of vib energies are reported
     atoms = molecule("N2")
     igt = IdealGasThermo(
