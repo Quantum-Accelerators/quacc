@@ -104,7 +104,9 @@ class RunAndSummarize:
         cclibSchema
             Dictionary of results
         """
-        final_atoms = run_calc(self.input_atoms, geom_file=GEOM_FILE, copy_files=self.copy_files)
+        final_atoms = run_calc(
+            self.input_atoms, geom_file=GEOM_FILE, copy_files=self.copy_files
+        )
         return cclib_summarize_run(
             final_atoms, LOG_FILE, additional_fields=self.additional_fields
         )
