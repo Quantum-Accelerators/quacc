@@ -187,7 +187,7 @@ def test_generate_chemshell_cluster(tmp_path):
     )
 
     # Read the output .xyz file
-    chemshell_embedded_cluster = read(Path(tmp_path, "ChemShell_cluster.xyz"))
+    chemshell_embedded_cluster = read(tmp_path / "ChemShell_cluster.xyz")
 
     # Check that the positions and atomic numbers match reference
     assert_allclose(
@@ -598,7 +598,7 @@ def test_create_skzcam_clusters(tmp_path):
         ]
     )
     # Read the written output and check that it matches with the reference positions and atomic numbers
-    skzcam_cluster = read(Path(tmp_path, "SKZCAM_cluster_0.xyz"))
+    skzcam_cluster = read(tmp_path / "SKZCAM_cluster_0.xyz")
 
     assert_allclose(
         skzcam_cluster.get_positions(),
