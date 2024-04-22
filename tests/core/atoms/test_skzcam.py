@@ -434,7 +434,7 @@ def test_insert_adsorbate_to_embedded_cluster(embedded_cluster):
     )
 
     # Check that the quantum_idx and ecp_idx match the reference
-    assert np.all(quantum_idx == [[2, 3, 5, 6], [7, 8, 9, 10]])
+    assert np.all(quantum_idx == [[0, 1, 2, 3, 5, 6], [0, 1, 7, 8, 9, 10]])
     assert np.all(ecp_idx == [[2, 3, 5, 6], [7, 8, 9, 10]])
 
 

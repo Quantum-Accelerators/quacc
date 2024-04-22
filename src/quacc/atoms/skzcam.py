@@ -405,7 +405,7 @@ def insert_adsorbate_to_embedded_cluster(
     # Update the quantum cluster and ECP region indices
     if quantum_cluster_indices is not None:
         quantum_cluster_indices = [
-            [idx + len(adsorbate) for idx in cluster]
+            list(range(len(adsorbate))) + [idx + len(adsorbate) for idx in cluster]
             for cluster in quantum_cluster_indices
         ]
     if ecp_region_idx is not None:
