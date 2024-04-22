@@ -28,23 +28,27 @@ if TYPE_CHECKING:
     from quacc.schemas._aliases.ase import RunSchema
     from quacc.utils.files import Filenames, SourceDirectory
 
+
 class RunAndSummarize:
     """Run and summarize a Quantum Espresso calculation."""
-    def __init__(self,
-    input_atoms: Atoms | None = None,
-    preset: str | None = None,
-    template: EspressoTemplate | None = None,
-    profile: EspressoProfile | None = None,
-    calc_defaults: dict[str, Any] | None = None,
-    calc_swaps: dict[str, Any] | None = None,
-    parallel_info: dict[str, Any] | None = None,
-    additional_fields: dict[str, Any] | None = None,
-    copy_files: (
-        SourceDirectory
-        | list[SourceDirectory]
-        | dict[SourceDirectory, Filenames]
-        | None
-    ) = None)->None:
+
+    def __init__(
+        self,
+        input_atoms: Atoms | None = None,
+        preset: str | None = None,
+        template: EspressoTemplate | None = None,
+        profile: EspressoProfile | None = None,
+        calc_defaults: dict[str, Any] | None = None,
+        calc_swaps: dict[str, Any] | None = None,
+        parallel_info: dict[str, Any] | None = None,
+        additional_fields: dict[str, Any] | None = None,
+        copy_files: (
+            SourceDirectory
+            | list[SourceDirectory]
+            | dict[SourceDirectory, Filenames]
+            | None
+        ) = None,
+    ) -> None:
         """
         Initialize the class.
 
@@ -70,7 +74,7 @@ class RunAndSummarize:
             Any additional fields to supply to the summarizer.
         copy_files
             Files to copy (and decompress) from source to the runtime directory.
-        
+
         Returns
         -------
         None
@@ -86,14 +90,9 @@ class RunAndSummarize:
         self.copy_files = copy_files
 
         self._prepare_calc()
-        self._prepare_copy(
-            copy_files=copy_files,
-            calc_params=self.input_atoms.calc.user_calc_params,
-            binary=,
-        )
+        self._prepare_copy()
 
-    def calculate(self
-    ) -> RunSchema:
+    def calculate(self) -> RunSchema:
         """
         Base function to carry out espresso recipes.
 
@@ -106,13 +105,18 @@ class RunAndSummarize:
             Dictionary of results from [quacc.schemas.ase.summarize_run][]
         """
         geom_file = self.template.outputname if self.template.binary == "pw" else None
-        final_atoms = run_calc(self.input_atoms, geom_file=geom_file, copy_files=self.copy_files)
+        final_atoms = run_calc(
+            self.input_atoms, geom_file=geom_file, copy_files=self.copy_files
+        )
         return summarize_run(
-            final_atoms, self.input_atoms, move_magmoms=True, additional_fields=self.additional_fields
+            final_atoms,
+            self.input_atoms,
+            move_magmoms=True,
+            additional_fields=self.additional_fields,
         )
 
-
-    def optimize(self,
+    def optimize(
+        self,
         relax_cell: bool = False,
         opt_defaults: dict[str, Any] | None = None,
         opt_params: dict[str, Any] | None = None,
@@ -138,15 +142,16 @@ class RunAndSummarize:
         """
         opt_flags = recursive_dict_merge(opt_defaults, opt_params)
         dyn = run_opt(
-            self.input_atoms, relax_cell=relax_cell, copy_files=self.updated_copy_files, **opt_flags
+            self.input_atoms,
+            relax_cell=relax_cell,
+            copy_files=self.updated_copy_files,
+            **opt_flags,
         )
         return summarize_opt_run(
             dyn, move_magmoms=True, additional_fields=self.additional_fields
         )
 
-
-    def _prepare_calc(self
-    ) -> None:
+    def _prepare_calc(self) -> None:
         """
         Commonly used preparation function to merge parameters
         and attach an Espresso calculator accordingly.
@@ -154,20 +159,26 @@ class RunAndSummarize:
         -------
         None
         """
-        input_atoms = Atoms() if self.input_atoms is None else input_atoms
+        self.input_atoms = Atoms() if self.input_atoms is None else self.input_atoms
         self.calc_defaults = self.calc_defaults or {}
         self.calc_swaps = self.calc_swaps or {}
 
-        self.calc_defaults["input_data"] = Namelist(self.calc_defaults.get("input_data"))
+        self.calc_defaults["input_data"] = Namelist(
+            self.calc_defaults.get("input_data")
+        )
         self.calc_swaps["input_data"] = Namelist(self.calc_swaps.get("input_data"))
 
         binary = self.template.binary if self.template else "pw"
 
         if binary in ALL_KEYS:
-            self.calc_defaults["input_data"].to_nested(binary=binary, **self.calc_defaults)
+            self.calc_defaults["input_data"].to_nested(
+                binary=binary, **self.calc_defaults
+            )
             self.calc_swaps["input_data"].to_nested(binary=binary, **self.calc_swaps)
 
-        self.calc_defaults = remove_conflicting_kpts_kspacing(self.calc_defaults, self.calc_swaps)
+        self.calc_defaults = remove_conflicting_kpts_kspacing(
+            self.calc_defaults, self.calc_swaps
+        )
 
         self.calc_flags = recursive_dict_merge(self.calc_defaults, self.calc_swaps)
 
@@ -180,9 +191,7 @@ class RunAndSummarize:
             **self.calc_flags,
         )
 
-
-    def _prepare_copy(self
-    ) -> None:
+    def _prepare_copy(self) -> None:
         """
         Function that will prepare the files to copy.
 
@@ -194,6 +203,9 @@ class RunAndSummarize:
             self.copy_files = [self.copy_files]
 
         if isinstance(self.copy_files, list):
-            exact_files_to_copy = prepare_copy_files(self.calc_flags, binary=self.input_atoms.calc.template.binary)
-            self.copy_files= {source: exact_files_to_copy for source in self.copy_files}
-
+            exact_files_to_copy = prepare_copy_files(
+                self.calc_flags, binary=self.input_atoms.calc.template.binary
+            )
+            self.copy_files = {
+                source: exact_files_to_copy for source in self.copy_files
+            }
