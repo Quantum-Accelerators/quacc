@@ -30,7 +30,7 @@ class RunAndSummarize:
 
     def __init__(
         self,
-        atoms: Atoms,
+        input_atoms: Atoms,
         charge: int,
         spin_multiplicity: int,
         default_inputs: list[str] | None = None,
@@ -46,7 +46,7 @@ class RunAndSummarize:
 
         Parameters
         ----------
-        atoms
+        input_atoms
             Atoms object
         charge
             Charge of the system.
@@ -69,7 +69,7 @@ class RunAndSummarize:
         **calc_kwargs
             Any other keyword arguments to pass to the `ORCA` calculator.
         """
-        self.atoms = atoms
+        self.input_atoms = input_atoms
         self.charge = charge
         self.spin_multiplicity = spin_multiplicity
         self.default_inputs = default_inputs
@@ -86,7 +86,7 @@ class RunAndSummarize:
             inputs.append("xyzfile")
         orcasimpleinput = " ".join(inputs)
         orcablocks = "\n".join(blocks)
-        self.atoms.calc = ORCA(
+        self.input_atoms.calc = ORCA(
             profile=OrcaProfile(SETTINGS.ORCA_CMD),
             charge=self.charge,
             mult=self.spin_multiplicity,
@@ -104,9 +104,9 @@ class RunAndSummarize:
         cclibSchema
             Dictionary of results
         """
-        atoms = run_calc(self.atoms, geom_file=GEOM_FILE, copy_files=self.copy_files)
+        final_atoms = run_calc(self.input_atoms, geom_file=GEOM_FILE, copy_files=self.copy_files)
         return cclib_summarize_run(
-            atoms, LOG_FILE, additional_fields=self.additional_fields
+            final_atoms, LOG_FILE, additional_fields=self.additional_fields
         )
 
     def optimize(
@@ -130,7 +130,7 @@ class RunAndSummarize:
             Dictionary of results
         """
         opt_flags = recursive_dict_merge(opt_defaults, opt_params)
-        dyn = run_opt(self.atoms, copy_files=self.copy_files, **opt_flags)
+        dyn = run_opt(self.input_atoms, copy_files=self.copy_files, **opt_flags)
         return summarize_cclib_opt_run(
             dyn, LOG_FILE, additional_fields=self.additional_fields
         )

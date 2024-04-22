@@ -26,7 +26,7 @@ class RunAndSummarize:
     """Run and summarize a DFTB+ calculation."""
     def __init__(
         self,
-        atoms: Atoms,
+        input_atoms: Atoms,
         calc_defaults: dict[str, Any] | None = None,
         calc_swaps: dict[str, Any] | None = None,
         additional_fields: dict[str, Any] | None = None,
@@ -37,7 +37,7 @@ class RunAndSummarize:
 
         Parameters
         ----------
-        atoms
+        input_atoms
             Atoms object
         calc_defaults
             The default calculator parameters to use.
@@ -55,14 +55,14 @@ class RunAndSummarize:
         -------
         None
         """
-        self.atoms = atoms
+        self.input_atoms = input_atoms
         self.calc_defaults = calc_defaults
         self.calc_swaps = calc_swaps
         self.additional_fields = additional_fields
         self.copy_files = copy_files
 
         calc_flags = recursive_dict_merge(self.calc_defaults, self.calc_swaps)
-        self.atoms.calc = Dftb(**calc_flags)
+        self.input_atoms.calc = Dftb(**calc_flags)
 
     def calculate(self) -> RunSchema:
         """
@@ -74,8 +74,8 @@ class RunAndSummarize:
             Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
         """
         final_atoms = run_calc(
-            self.atoms, geom_file=GEOM_FILE, copy_files=self.copy_files
+            self.input_atoms, geom_file=GEOM_FILE, copy_files=self.copy_files
         )
         return summarize_run(
-            final_atoms, self.atoms, additional_fields=self.additional_fields
+            final_atoms, self.input_atoms, additional_fields=self.additional_fields
         )
