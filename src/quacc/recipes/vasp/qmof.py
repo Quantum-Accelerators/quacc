@@ -13,7 +13,7 @@ from ase.optimize import BFGSLineSearch
 
 from quacc import job
 from quacc.calculators.vasp import Vasp
-from quacc.recipes.vasp._base import run_and_summarize
+from quacc.recipes.vasp._base import RunAndSummarize
 from quacc.runners.ase import run_opt
 from quacc.schemas.ase import summarize_opt_run
 from quacc.utils.dicts import recursive_dict_merge
@@ -134,11 +134,13 @@ def _prerelax(
         "nelm": 225,
         "nsw": 0,
     }
-    calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
-    atoms.calc = Vasp(atoms, preset=preset, **calc_flags)
-    dyn = run_opt(atoms, fmax=fmax, optimizer=BFGSLineSearch)
-
-    return summarize_opt_run(dyn, additional_fields={"name": "QMOF Prerelax"})
+    return RunAndSummarize(
+        atoms,
+        preset=preset,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        additional_fields={"name": "QMOF Prerelax"},
+    ).optimize(opt_defaults={"fmax": fmax, "optimizer": BFGSLineSearch})
 
 
 def _loose_relax_positions(
@@ -175,13 +177,13 @@ def _loose_relax_positions(
         "lwave": True,
         "nsw": 250,
     }
-    return run_and_summarize(
+    return RunAndSummarize(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "QMOF Loose Relax"},
-    )
+    ).calculate()
 
 
 def _loose_relax_cell(
@@ -216,13 +218,13 @@ def _loose_relax_cell(
         "lwave": True,
         "nsw": 500,
     }
-    return run_and_summarize(
+    return RunAndSummarize(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "QMOF Loose Relax Volume"},
-    )
+    ).calculate()
 
 
 def _double_relax(
@@ -259,13 +261,13 @@ def _double_relax(
         "lwave": True,
         "nsw": 500 if relax_cell else 250,
     }
-    summary1 = run_and_summarize(
+    summary1 = RunAndSummarize(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "QMOF DoubleRelax 1"},
-    )
+    ).calculate()
 
     # Update atoms for Relaxation 2
     atoms = summary1["atoms"]
@@ -274,13 +276,13 @@ def _double_relax(
     del calc_defaults["lreal"]
 
     # Run second relaxation
-    summary2 = run_and_summarize(
+    summary2 = RunAndSummarize(
         summary1["atoms"],
         preset=preset,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "QMOF DoubleRelax 2"},
-    )
+    ).calculate()
     return [summary1, summary2]
 
 
@@ -311,10 +313,10 @@ def _static(atoms: Atoms, preset: str | None = "QMOFSet", **calc_kwargs) -> Vasp
         "lwave": True,
         "nsw": 0,
     }
-    return run_and_summarize(
+    return RunAndSummarize(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "QMOF Static"},
-    )
+    ).calculate()

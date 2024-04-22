@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from quacc import flow, job
 from quacc.recipes.common.slabs import bulk_to_slabs_subflow, slab_to_ads_subflow
-from quacc.recipes.vasp._base import run_and_summarize
+from quacc.recipes.vasp._base import RunAndSummarize
 from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:
@@ -58,14 +58,14 @@ def static_job(
         "nedos": 3001,
         "nsw": 0,
     }
-    return run_and_summarize(
+    return RunAndSummarize(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "VASP Slab Static"},
         copy_files=copy_files,
-    )
+    ).calculate()
 
 
 @job
@@ -108,14 +108,14 @@ def relax_job(
         "nsw": 200,
         "symprec": 1e-8,
     }
-    return run_and_summarize(
+    return RunAndSummarize(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "VASP Slab Relax"},
         copy_files=copy_files,
-    )
+    ).calculate()
 
 
 @flow

@@ -23,7 +23,7 @@ from typing import TYPE_CHECKING
 from pymatgen.io.vasp.sets import MPRelaxSet, MPScanRelaxSet, MPStaticSet
 
 from quacc import flow, job
-from quacc.recipes.vasp._base import run_and_summarize
+from quacc.recipes.vasp._base import RunAndSummarize
 from quacc.wflow_tools.customizers import customize_funcs
 
 try:
@@ -105,14 +105,14 @@ def mp_gga_relax_job(
         Dictionary of results.
     """
     calc_defaults = {"pmg_input_set": MPRelaxSet}
-    output = run_and_summarize(
+    output = RunAndSummarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         report_mp_corrections=True,
         additional_fields={"name": "MP GGA Relax"},
         copy_files=copy_files,
-    )
+    ).calculate()
     _validate_mp_compatability(output["dir_name"])
 
     return output
@@ -154,14 +154,14 @@ def mp_gga_static_job(
         "lwave": True,  # Deviation from MP (but logical)
         "lreal": False,
     }
-    output = run_and_summarize(
+    output = RunAndSummarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         report_mp_corrections=True,
         additional_fields={"name": "MP GGA Static"},
         copy_files=copy_files,
-    )
+    ).calculate()
     _validate_mp_compatability(output["dir_name"])
 
     return output
@@ -210,14 +210,14 @@ def mp_metagga_prerelax_job(
         "lwave": True,
         "metagga": None,
     }
-    output = run_and_summarize(
+    output = RunAndSummarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         report_mp_corrections=True,
         additional_fields={"name": "MP Meta-GGA Pre-Relax"},
         copy_files=copy_files,
-    )
+    ).calculate()
     _validate_mp_compatability(output["dir_name"])
     return output
 
@@ -261,14 +261,14 @@ def mp_metagga_relax_job(
         "lvtot": False,  # Deviation from MP (but logical)
         "lwave": True,
     }
-    output = run_and_summarize(
+    output = RunAndSummarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         report_mp_corrections=True,
         additional_fields={"name": "MP Meta-GGA Relax"},
         copy_files=copy_files,
-    )
+    ).calculate()
     _validate_mp_compatability(output["dir_name"])
 
     return output
@@ -314,14 +314,14 @@ def mp_metagga_static_job(
         "lwave": True,  # Deviation from MP (but logical)
         "nsw": 0,
     }
-    output = run_and_summarize(
+    output = RunAndSummarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         report_mp_corrections=True,
         additional_fields={"name": "MP Meta-GGA Static"},
         copy_files=copy_files,
-    )
+    ).calculate()
     _validate_mp_compatability(output["dir_name"])
     return output
 

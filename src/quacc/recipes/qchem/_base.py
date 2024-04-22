@@ -36,7 +36,7 @@ class RunAndSummarize:
 
         Parameters
         ----------
-        atoms
+        input_atoms
             Atoms object
         charge
             Charge of the system.

@@ -10,7 +10,7 @@ from monty.os.path import zpath
 from pymatgen.io.vasp import Vasprun
 
 from quacc import flow, job
-from quacc.recipes.vasp._base import run_and_summarize, run_and_summarize_opt
+from quacc.recipes.vasp._base import RunAndSummarize
 
 if TYPE_CHECKING:
     from typing import Any
@@ -59,14 +59,14 @@ def static_job(
         "nedos": 3001,
         "nsw": 0,
     }
-    return run_and_summarize(
+    return RunAndSummarize(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "VASP Static"},
         copy_files=copy_files,
-    )
+    ).calculate()
 
 
 @job
@@ -112,14 +112,14 @@ def relax_job(
         "nsw": 200,
         "symprec": 1e-8,
     }
-    return run_and_summarize(
+    return RunAndSummarize(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "VASP Relax"},
         copy_files=copy_files,
-    )
+    ).calculate()
 
 
 @flow
@@ -216,7 +216,7 @@ def ase_relax_job(
     """
     calc_defaults = {"lcharg": False, "lwave": False, "nsw": 0}
     opt_defaults = {"relax_cell": relax_cell}
-    return run_and_summarize_opt(
+    return RunAndSummarize(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
@@ -225,7 +225,7 @@ def ase_relax_job(
         opt_params=opt_params,
         additional_fields={"name": "VASP ASE Relax"},
         copy_files=copy_files,
-    )
+    ).optimize()
 
 
 @job
@@ -307,11 +307,11 @@ def non_scf_job(
     if calculate_optics:
         calc_defaults |= {"cshift": 1e-5, "loptics": True, "lreal": False}
 
-    return run_and_summarize(
+    return RunAndSummarize(
         atoms,
         preset=preset,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "VASP Non-SCF"},
         copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
-    )
+    ).calculate()
