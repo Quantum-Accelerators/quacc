@@ -10,19 +10,19 @@ from quacc.runners.thermo import ThermoRunner
 
 def test_run_ideal_gas():
     co2 = molecule("CO2")
-    igt = ThermoRunner(co2).run_ideal_gas([526, 526, 1480, 2565], spin_multiplicity=2)
+    igt = ThermoRunner(co2, [526, 526, 1480, 2565]).run_ideal_gas(spin_multiplicity=2)
     assert igt.geometry == "linear"
     assert igt.spin == 0.5
 
     co2 = molecule("CO2")
     co2.calc = EMT()
     co2.calc.results["magmom"] = 1.0
-    igt = ThermoRunner(co2).run_ideal_gas([526, 526, 1480, 2565])
+    igt = ThermoRunner(co2, [526, 526, 1480, 2565]).run_ideal_gas()
     assert igt.spin == 0.5
     assert igt.get_ZPE_correction() == pytest.approx(2548.5 * invcm)
 
     co2 = molecule("CO2")
     co2.calc = EMT()
     co2.calc.results["magmom"] = 1.0
-    igt = ThermoRunner(co2).run_ideal_gas([-12, 526, 526, 1480, 2565])
+    igt = ThermoRunner(co2, [-12, 526, 526, 1480, 2565]).run_ideal_gas()
     assert igt.get_ZPE_correction() == pytest.approx(2548.5 * invcm)

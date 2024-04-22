@@ -172,7 +172,9 @@ def freq_job(
 
     vib = VibrationsData(final_atoms, hessian)
 
-    igt = ThermoRunner(final_atoms).run_ideal_gas(vib.get_frequencies(), energy=energy)
+    igt = ThermoRunner(
+        final_atoms, vib.get_frequencies(), energy=energy
+    ).run_ideal_gas()
 
     return summarize_vib_and_thermo(
         vib,

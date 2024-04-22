@@ -24,13 +24,19 @@ class ThermoRunner:
     ----------
     atoms
         The Atoms object associated with the vibrational analysis.
+    vib_freqs
+        The list of vibrations to use in cm^-1, typically obtained from
+        Vibrations.get_frequencies().
+    energy
+        Potential energy in eV. If 0 eV, then the thermochemical correction is
+        computed.
     """
     atoms: Atoms
+    vib_freqs: list[float | complex]
+    energy: float = 0.0
 
     def run_ideal_gas(
         self,
-        vib_freqs: list[float | complex],
-        energy: float = 0.0,
         spin_multiplicity: int | None = None,
     ) -> IdealGasThermo:
         """
@@ -41,12 +47,6 @@ class ThermoRunner:
 
         Parameters
         ----------
-        vib_freqs
-            The list of vibrations to use in cm^-1, typically obtained from
-            Vibrations.get_frequencies().
-        energy
-            Potential energy in eV. If 0 eV, then the thermochemical correction is
-            computed.
         spin_multiplicity
             The spin multiplicity (2S+1). If None, this will be determined
             automatically from the attached magnetic moments.
@@ -56,12 +56,12 @@ class ThermoRunner:
         IdealGasThermo object
         """
         # Ensure all negative modes are made complex
-        for i, f in enumerate(vib_freqs):
+        for i, f in enumerate(self.vib_freqs):
             if not isinstance(f, complex) and f < 0:
-                vib_freqs[i] = complex(0 - f * 1j)
+                self.vib_freqs[i] = complex(0 - f * 1j)
 
         # Convert vibrational frequencies to energies
-        vib_energies = [f * units.invcm for f in vib_freqs]
+        vib_energies = [f * units.invcm for f in self.vib_freqs]
 
         # Get the spin from the Atoms object.
         if spin_multiplicity:
@@ -99,7 +99,7 @@ class ThermoRunner:
         return IdealGasThermo(
             vib_energies,
             geometry,
-            potentialenergy=energy,
+            potentialenergy=self.energy,
             atoms=self.atoms,
             symmetrynumber=point_group_data.rotation_number,
             spin=spin,

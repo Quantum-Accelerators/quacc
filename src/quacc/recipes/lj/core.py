@@ -137,7 +137,9 @@ def freq_job(
 
     atoms.calc = LennardJones(**calc_kwargs)
     vibrations = Runner(atoms, copy_files=copy_files).run_vib(vib_kwargs=vib_kwargs)
-    igt = ThermoRunner(atoms).run_ideal_gas(vibrations.get_frequencies(), energy=energy)
+    igt = ThermoRunner(
+        atoms, vibrations.get_frequencies(), energy=energy
+    ).run_ideal_gas()
 
     return summarize_vib_and_thermo(
         vibrations,
