@@ -11,11 +11,13 @@ FILE_DIR = Path(__file__).resolve().parent
 
 def mock_generate_chemshell_cluster(*args, **kwargs):
     # Copy the file to the output directory
-    with gzip.open(
-        f"{FILE_DIR}/skzcam_files/REF_ChemShell_cluster.xyz.gz", "rb"
-    ) as f_in:
-        with open(f"{FILE_DIR}/ChemShell_cluster.xyz", "wb") as f_out:
-            shutil.copyfileobj(f_in, f_out)
+    with (
+        gzip.open(
+            f"{FILE_DIR}/skzcam_files/REF_ChemShell_cluster.xyz.gz", "rb"
+        ) as f_in,
+        open(f"{FILE_DIR}/ChemShell_cluster.xyz", "wb") as f_out,
+    ):
+        shutil.copyfileobj(f_in, f_out)
 
 
 @pytest.fixture(autouse=True)
