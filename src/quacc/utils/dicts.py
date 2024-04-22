@@ -232,7 +232,6 @@ def finalize_dict(
 
     cleaned_task_doc = clean_dict(task_doc)
     if directory:
-
         if "tmp-quacc" in str(directory):
             raise ValueError("The directory should not be a temporary directory.")
 
