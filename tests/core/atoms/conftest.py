@@ -10,7 +10,6 @@ FILE_DIR = Path(__file__).parent
 
 
 def mock_generate_chemshell_cluster(slab, slab_center_idx, atom_oxi_states, filepath, **kwargs):
-    # Copy the file to the output directory
     with (
         gzip.open(
             Path(FILE_DIR, "skzcam_files", "REF_ChemShell_cluster.xyz.gz"), "rb"
