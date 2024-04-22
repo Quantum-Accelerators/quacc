@@ -30,7 +30,9 @@ QUACC_BASE_UNITS = {
 def convert_md_units(dynamics_kwargs: dict[str, Any], inverse: bool = False) -> dict[str, Any]:
     """
     Convert units for molecular dynamics parameters to ensure consistency.
-    Quacc ALWAYS uses the following units:
+
+    Quacc always uses the following units:
+
     - Time: femtoseconds (fs)
     - Pressure: GPa
     - Temperature: Kelvin (K)
@@ -38,9 +40,9 @@ def convert_md_units(dynamics_kwargs: dict[str, Any], inverse: bool = False) -> 
 
     Parameters
     ----------
-    dynamics_kwargs: dict[str, Any]
+    dynamics_kwargs
         Dictionary of keyword arguments for the molecular dynamics calculation.
-    inverse: bool
+    inverse
         If True, convert from Quacc units to ASE units.
 
     Returns
