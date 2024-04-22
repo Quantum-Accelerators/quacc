@@ -124,10 +124,10 @@ def generate_chemshell_cluster(
         The oxidation states of the atoms in the slab as a dictionary
     filepath
         The location where the ChemShell output files will be written.
-    chemsh_radius_cluster
-        The radius of the total embedded cluster in Angstroms.
     chemsh_radius_active
         The radius of the active region in Angstroms. This 'active' region is simply region where the charge fitting is performed to ensure correct Madelung potential; it can be a relatively large value.
+    chemsh_radius_cluster
+        The radius of the total embedded cluster in Angstroms.
     chemsh_bq_layer
         The height above the surface to place some additional fitting point charges in Angstroms; simply for better reproduction of the electrostatic potential close to the adsorbate.
     write_xyz_file
