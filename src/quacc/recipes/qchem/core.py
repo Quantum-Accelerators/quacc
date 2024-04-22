@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc import job
-from quacc.recipes.qchem._base import run_and_summarize, run_and_summarize_opt
+from quacc.recipes.qchem._base import RunAndSummarize
 from quacc.utils.dicts import recursive_dict_merge
 
 try:
@@ -80,15 +80,15 @@ def static_job(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
 
-    return run_and_summarize(
+    return RunAndSummarize(
         atoms,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge,
+        spin_multiplicity,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "Q-Chem Static"},
         copy_files=copy_files,
-    )
+    ).calculate()
 
 
 @job
@@ -139,17 +139,15 @@ def relax_job(
     )
     opt_defaults = {"optimizer": Sella} if has_sella else {}
 
-    return run_and_summarize_opt(
+    return RunAndSummarize(
         atoms,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge,
+        spin_multiplicity,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        opt_defaults=opt_defaults,
-        opt_params=opt_params,
         additional_fields={"name": "Q-Chem Optimization"},
         copy_files=copy_files,
-    )
+    ).optimize(opt_defaults=opt_defaults, opt_params=opt_params)
 
 
 @job
@@ -193,12 +191,12 @@ def freq_job(
         _BASE_SET, {"rem": {"job_type": "freq", "method": method, "basis": basis}}
     )
 
-    return run_and_summarize(
+    return RunAndSummarize(
         atoms,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge,
+        spin_multiplicity,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         copy_files=copy_files,
         additional_fields={"name": "Q-Chem Frequency"},
-    )
+    ).calculate()

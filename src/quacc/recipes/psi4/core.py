@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from monty.dev import requires
 
 from quacc import job
-from quacc.recipes.psi4._base import run_and_summarize
+from quacc.recipes.psi4._base import RunAndSummarize
 
 try:
     import psi4
@@ -69,12 +69,12 @@ def static_job(
         "multiplicity": spin_multiplicity,
         "reference": "uks" if spin_multiplicity > 1 else "rks",
     }
-    return run_and_summarize(
+    return RunAndSummarize(
         atoms,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge,
+        spin_multiplicity,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "Psi4 Static"},
         copy_files=copy_files,
-    )
+    ).calculate()

@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from monty.dev import requires
 
 from quacc import SETTINGS, job, strip_decorator
-from quacc.recipes.qchem._base import run_and_summarize_opt
+from quacc.recipes.qchem._base import RunAndSummarize
 from quacc.recipes.qchem.core import _BASE_SET, relax_job
 from quacc.utils.dicts import recursive_dict_merge
 
@@ -78,17 +78,15 @@ def ts_job(
     if opt_params and opt_params.get("optimizer", Sella) is not Sella:
         raise ValueError("Only Sella should be used for TS optimization.")
 
-    return run_and_summarize_opt(
+    return RunAndSummarize(
         atoms,
         charge,
         spin_multiplicity,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        opt_defaults=opt_defaults,
-        opt_params=opt_params,
         additional_fields={"name": "Q-Chem TS"},
         copy_files=copy_files,
-    )
+    ).optimize(opt_defaults=opt_defaults, opt_params=opt_params)
 
 
 @job
@@ -148,17 +146,15 @@ def irc_job(
     if opt_params and opt_params.get("optimizer", IRC) is not IRC:
         raise ValueError("Only Sella's IRC should be used for IRC optimization.")
 
-    return run_and_summarize_opt(
+    return RunAndSummarize(
         atoms,
         charge,
         spin_multiplicity,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        opt_defaults=opt_defaults,
-        opt_params=opt_params,
         additional_fields={"name": "Q-Chem IRC"},
         copy_files=copy_files,
-    )
+    ).optimize(opt_defaults=opt_defaults, opt_params=opt_params)
 
 
 @job
