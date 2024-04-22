@@ -305,7 +305,7 @@ def summarize_md_run(
     }
 
     # Create a dictionary of the inputs/outputs
-    unsorted_task_doc = base_task_doc | opt_fields |  additional_fields
+    unsorted_task_doc = base_task_doc | opt_fields | additional_fields
 
     return finalize_dict(
         unsorted_task_doc, directory, gzip_file=SETTINGS.GZIP_FILES, store=store
