@@ -6,7 +6,13 @@ from pathlib import Path
 import pytest
 from ase.build import molecule
 
-from quacc.recipes.orca.core import ase_relax_job, relax_job, static_job
+from quacc.recipes.orca.core import (
+    ase_relax_job,
+    relax_job,
+    static_job,
+    freq_job,
+    ase_quasi_irc_perturb_job
+)
 
 
 def test_static_job(tmp_path, monkeypatch):
@@ -141,3 +147,24 @@ def test_ase_relax_job_store(tmp_path, monkeypatch):
         assert "orca.xyz.gz" in os.listdir(Path(output["dir_name"], f"step{i}"))
     assert len(output["steps"]) == nsteps
     assert "attributes" in output["steps"][0]
+
+
+@pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
+def test_freq_job(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    atoms = molecule("H2")
+
+    output = freq_job(
+        atoms,
+        xc="hf",
+        basis="def2-svp",
+        charge=0,
+        spin_multiplicity=1,
+        nprocs=2,
+        orcasimpleinput=["#normalprint"],
+    )
+    assert output["natoms"] == len(atoms)
+    assert output["parameters"]["charge"] == 0
+    assert output["parameters"]["mult"] == 1
+    assert output["parameters"]["orcasimpleinput"] == "def2-svp freq hf xyzfile"
