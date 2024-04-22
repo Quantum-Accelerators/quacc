@@ -388,7 +388,7 @@ def insert_adsorbate_to_embedded_cluster(
     """
 
     # Remove PBC from the adsorbate
-    adsorbate.set_pbc([False, False, False])
+    adsorbate.set_pbc(False)
 
     # Translate the adsorbate to the correct position relative to the slab
     adsorbate.translate(-adsorbate[0].position + adsorbate_vector_from_slab)
