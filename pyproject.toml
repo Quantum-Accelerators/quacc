@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "quacc"
 description="A platform to enable high-throughput, database-driven quantum chemistry and computational materials science"
-version = "0.7.5"
+version = "0.7.7"
 readme = "README.md"
 license = { text = "BSD-3" }
 authors = [{ name = "Andrew S. Rosen", email = "asrosen@princeton.edu" }]
@@ -160,6 +160,7 @@ lint.select = [
 ]
 lint.ignore = [
   "E501",   # Line too long
+  "ISC001",   # single-line-implicit-string-concatenation
   "PLR",    # Design related pylint codes
   "PERF203",  # try-except-in-loop
   "PT004",  # Fixture does not return anything

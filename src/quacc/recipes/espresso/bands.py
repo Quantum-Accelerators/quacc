@@ -35,8 +35,12 @@ if TYPE_CHECKING:
 def bands_pw_job(
     atoms: Atoms,
     copy_files: (
-        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
-    ),
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
+    prev_outdir: SourceDirectory | None = None,
     make_bandpath: bool = True,
     line_density: float = 20,
     force_gamma: bool = True,
@@ -61,6 +65,10 @@ def bands_pw_job(
         which files have to be copied over by looking at the binary and `input_data`.
         If a dict is provided, the mode is manual, keys are source directories and values
         are relative path to files or directories to copy. Glob patterns are supported.
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     make_bandpath
         If True, it returns the primitive cell for your structure and generates
         the high symmetry k-path using Latmer-Munro approach.
@@ -105,7 +113,7 @@ def bands_pw_job(
 
     return run_and_summarize(
         atoms,
-        template=EspressoTemplate("pw", test_run=test_run),
+        template=EspressoTemplate("pw", test_run=test_run, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
@@ -116,10 +124,13 @@ def bands_pw_job(
 
 @job
 def bands_pp_job(
-    atoms: Atoms,
     copy_files: (
-        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
-    ),
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
+    prev_outdir: SourceDirectory | None = None,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -131,14 +142,16 @@ def bands_pp_job(
 
     Parameters
     ----------
-    atoms
-        The Atoms object.
     copy_files
         Source directory or directories to copy files from. If a `SourceDirectory` or a
         list of `SourceDirectory` is provided, this interface will automatically guess
         which files have to be copied over by looking at the binary and `input_data`.
         If a dict is provided, the mode is manual, keys are source directories and values
         are relative path to files or directories to copy. Glob patterns are supported.
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -157,8 +170,7 @@ def bands_pp_job(
         See the type-hint for the data structure.
     """
     return run_and_summarize(
-        atoms,
-        template=EspressoTemplate("bands", test_run=test_run),
+        template=EspressoTemplate("bands", test_run=test_run, outdir=prev_outdir),
         calc_defaults={},
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
@@ -169,10 +181,13 @@ def bands_pp_job(
 
 @job
 def fermi_surface_job(
-    atoms: Atoms,
     copy_files: (
-        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
-    ),
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
+    prev_outdir: SourceDirectory | None = None,
     parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
@@ -183,14 +198,16 @@ def fermi_surface_job(
 
     Parameters
     ----------
-    atoms
-        The Atoms object.
     copy_files
         Source directory or directories to copy files from. If a `SourceDirectory` or a
         list of `SourceDirectory` is provided, this interface will automatically guess
         which files have to be copied over by looking at the binary and `input_data`.
         If a dict is provided, the mode is manual, keys are source directories and values
         are relative path to files or directories to copy. Glob patterns are supported.
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
@@ -209,8 +226,7 @@ def fermi_surface_job(
         See the type-hint for the data structure.
     """
     return run_and_summarize(
-        atoms,
-        template=EspressoTemplate("fs", test_run=test_run),
+        template=EspressoTemplate("fs", test_run=test_run, outdir=prev_outdir),
         calc_defaults={},
         calc_swaps=calc_kwargs,
         parallel_info=parallel_info,
@@ -231,7 +247,6 @@ def bands_flow(
     line_density: float = 20,
     force_gamma: bool = True,
     parallel_info: dict[str] | None = None,
-    test_run: bool = False,
     job_params: dict[str, Any] | None = None,
     job_decorators: dict[str, Callable | None] | None = None,
 ) -> BandsSchema:
@@ -279,9 +294,6 @@ def bands_flow(
     parallel_info
         Dictionary containing information about the parallelization of the
         calculation. See the ASE documentation for more information.
-    test_run
-        If True, a test run is performed to check that the calculation input_data is correct or
-        to generate some files/info if needed.
     job_params
         Custom parameters to pass to each Job in the Flow. This is a dictinoary where
         the keys are the names of the jobs and the values are dictionaries of parameters.
@@ -302,31 +314,25 @@ def bands_flow(
         decorators=job_decorators,
     )
 
-    bands_result = bands_pw_job_(
+    bands_results = bands_pw_job_(
         atoms,
         copy_files,
         make_bandpath=make_bandpath,
         line_density=line_density,
         force_gamma=force_gamma,
         parallel_info=parallel_info,
-        test_run=test_run,
     )
-    results = {"bands_pw": bands_result}
+    results = {"bands_pw": bands_results}
+
     if run_bands_pp:
         bands_pp_results = bands_pp_job_(
-            atoms,
-            bands_result["dir_name"],
-            parallel_info=parallel_info,
-            test_run=test_run,
+            prev_outdir=bands_results["dir_name"], parallel_info=parallel_info
         )
         results["bands_pp"] = bands_pp_results
 
     if run_fermi_surface:
         fermi_results = fermi_surface_job_(
-            atoms,
-            bands_result["dir_name"],
-            parallel_info=parallel_info,
-            test_run=test_run,
+            prev_outdir=bands_results["dir_name"], parallel_info=parallel_info
         )
         results["fermi_surface"] = fermi_results
 
