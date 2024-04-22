@@ -54,22 +54,22 @@ def get_cluster_info_from_slab(
     adsorbate_slab = read(adsorbate_slab_file)
 
     # Find indices (within adsorbate_slab) of the slab
-    slab_idx = [i for i, _ in enumerate(adsorbate_slab) if i not in adsorbate_indices]
+    slab_indices = [
+        i for i, _ in enumerate(adsorbate_slab) if i not in adsorbate_indices
+    ]
 
     # Create slab from adsorbate_slab
-    slab = adsorbate_slab[slab_idx]
+    slab = adsorbate_slab[slab_indices]
 
     # Find index of the first center atom of the slab as listed in slab_center_indices
     slab_first_atom_idx = next(
-        index for index, x in enumerate(slab_idx) if x == slab_center_indices[0]
+        index for index, x in enumerate(slab_indices) if x == slab_center_indices[0]
     )
 
     # Get the center of the cluster from the atom indices
-    slab_center_position = np.zeros(3)
-    for atom_idx in slab_center_indices:
-        slab_center_position += adsorbate_slab.get_positions()[atom_idx]
-
-    slab_center_position = slab_center_position / len(slab_center_indices)
+    slab_center_position = adsorbate_slab[slab_center_indices].get_positions().sum(
+        axis=0
+    ) / len(slab_center_indices)
 
     adsorbate = adsorbate_slab[adsorbate_indices]
 
