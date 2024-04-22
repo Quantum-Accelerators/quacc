@@ -316,8 +316,8 @@ def convert_pun_to_atoms(
         )
 
     raw_atom_positions = raw_pun_file[4 : 4 + n_atoms]
-    raw_charge_list = raw_pun_file[7 + n_atoms : 7 + 2 * n_atoms]
-    charge_list = [float(charge) for charge in raw_charge_list]
+    raw_charges = raw_pun_file[7 + n_atoms : 7 + 2 * n_atoms]
+    charges = [float(charge) for charge in raw_charges]
 
     # Add the atomic positions the embedded_cluster Atoms object (converting from Bohr to Angstrom)
     atom_types = []
@@ -351,7 +351,7 @@ def convert_pun_to_atoms(
     embedded_cluster.translate(-embedded_cluster[0].position)
 
     # Add the `oxi_states` and `atom_type` arrays to the Atoms object
-    embedded_cluster.set_array("oxi_states", np.array(charge_list))
+    embedded_cluster.set_array("oxi_states", np.array(charges))
     embedded_cluster.set_array("atom_type", np.array(atom_types))
 
     return embedded_cluster
