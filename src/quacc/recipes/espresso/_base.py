@@ -54,7 +54,7 @@ class RunAndSummarize:
 
         Parameters
         ----------
-        atoms
+        input_atoms
             Atoms object
         preset
             Name of the preset to use
@@ -152,6 +152,7 @@ class RunAndSummarize:
         Commonly used preparation function to merge parameters
         and attach an Espresso calculator accordingly.
 
+        Returns
         -------
         None
         """
