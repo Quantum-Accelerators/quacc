@@ -24,6 +24,7 @@ GEOM_FILE = "geo_end.gen"
 
 class RunAndSummarize:
     """Run and summarize a DFTB+ calculation."""
+
     def __init__(
         self,
         input_atoms: Atoms,
