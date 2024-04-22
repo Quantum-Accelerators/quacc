@@ -26,7 +26,7 @@ GEOM_FILE = f"{_LABEL}.xyz"
 
 
 class RunAndSummarize:
-    """Handler for running and summarizing ORCA calculations."""
+    """Run and summarize an ORCA calculation."""
 
     def __init__(
         self,
@@ -79,7 +79,21 @@ class RunAndSummarize:
         self.additional_fields = additional_fields
         self.copy_files = copy_files
         self.calc_kwargs = calc_kwargs
-        self.atoms.calc = self._prep_calculator()
+
+        inputs = merge_list_params(self.default_inputs, self.input_swaps)
+        blocks = merge_list_params(self.default_blocks, self.block_swaps)
+        if "xyzfile" not in inputs:
+            inputs.append("xyzfile")
+        orcasimpleinput = " ".join(inputs)
+        orcablocks = "\n".join(blocks)
+        self.atoms.calc = ORCA(
+            profile=OrcaProfile(SETTINGS.ORCA_CMD),
+            charge=self.charge,
+            mult=self.spin_multiplicity,
+            orcasimpleinput=orcasimpleinput,
+            orcablocks=orcablocks,
+            **self.calc_kwargs,
+        )
 
     def calculate(self) -> cclibSchema:
         """
@@ -119,29 +133,4 @@ class RunAndSummarize:
         dyn = run_opt(self.atoms, copy_files=self.copy_files, **opt_flags)
         return summarize_cclib_opt_run(
             dyn, LOG_FILE, additional_fields=self.additional_fields
-        )
-
-    def _prep_calculator(self) -> ORCA:
-        """
-        Prepare the ORCA calculator.
-
-        Returns
-        -------
-        ORCA
-            The ORCA calculator
-        """
-        inputs = merge_list_params(self.default_inputs, self.input_swaps)
-        blocks = merge_list_params(self.default_blocks, self.block_swaps)
-        if "xyzfile" not in inputs:
-            inputs.append("xyzfile")
-        orcasimpleinput = " ".join(inputs)
-        orcablocks = "\n".join(blocks)
-
-        return ORCA(
-            profile=OrcaProfile(SETTINGS.ORCA_CMD),
-            charge=self.charge,
-            mult=self.spin_multiplicity,
-            orcasimpleinput=orcasimpleinput,
-            orcablocks=orcablocks,
-            **self.calc_kwargs,
         )
