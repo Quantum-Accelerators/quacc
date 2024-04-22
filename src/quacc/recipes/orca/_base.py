@@ -123,7 +123,7 @@ class RunAndSummarize:
             dyn, LOG_FILE, additional_fields=self.additional_fields
         )
 
-    def _prepare_calc(self)->None:
+    def _prepare_calc(self) -> None:
         """
         Prepare the ORCA calculator.
 
