@@ -140,15 +140,15 @@ class RunAndSummarize:
         keywords = merge_list_params(self.keyword_defaults, self.keyword_swaps)
         options = merge_list_params(self.option_defaults, self.option_swaps)
 
-        gulp_keywords = " ".join(keywords)
-        gulp_options = list(options)
+        self.gulp_keywords = " ".join(keywords)
+        self.gulp_options = list(options)
 
         if SETTINGS.GULP_LIB:
             os.environ["GULP_LIB"] = str(SETTINGS.GULP_LIB)
         self.input_atoms.calc = GULP(
             command=GULP_CMD,
-            keywords=gulp_keywords,
-            options=gulp_options,
+            keywords=self.gulp_keywords,
+            options=self.gulp_options,
             library=self.library,
             **self.calc_kwargs,
         )

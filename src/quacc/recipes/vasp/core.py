@@ -221,11 +221,9 @@ def ase_relax_job(
         preset=preset,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        opt_defaults=opt_defaults,
-        opt_params=opt_params,
         additional_fields={"name": "VASP ASE Relax"},
         copy_files=copy_files,
-    ).optimize()
+    ).optimize(opt_defaults=opt_defaults, opt_params=opt_params)
 
 
 @job
