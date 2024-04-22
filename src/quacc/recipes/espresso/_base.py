@@ -104,7 +104,6 @@ def run_and_summarize(
 def run_and_summarize_opt(
     atoms: Atoms | None = None,
     preset: str | None = None,
-    relax_cell: bool = False,
     template: EspressoTemplate | None = None,
     profile: EspressoProfile | None = None,
     calc_defaults: dict[str, Any] | None = None,
@@ -129,8 +128,6 @@ def run_and_summarize_opt(
         Atoms object
     preset
         Name of the preset to use
-    relax_cell
-        Whether to relax the cell or not.
     template
         EspressoTemplate to use
     profile
@@ -178,7 +175,7 @@ def run_and_summarize_opt(
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
     dyn = run_opt(
-        atoms, relax_cell=relax_cell, copy_files=updated_copy_files, **opt_flags
+        atoms, copy_files=updated_copy_files, **opt_flags
     )
 
     return summarize_opt_run(

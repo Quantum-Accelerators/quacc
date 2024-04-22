@@ -252,12 +252,11 @@ def ase_relax_job(
         "tprnfor": True,
     }
 
-    opt_defaults = {"optimizer": BFGSLineSearch}
+    opt_defaults = {"optimizer": BFGSLineSearch, "relax_cell": relax_cell}
 
     return run_and_summarize_opt(
         atoms,
         preset=preset,
-        relax_cell=relax_cell,
         template=EspressoTemplate("pw", autorestart=autorestart, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
