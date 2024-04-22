@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from pathlib import Path
-import shutil
 import os
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -172,6 +171,7 @@ def test_get_cluster_info_from_slab():
 
 def test_generate_chemshell_cluster():
     from quacc.atoms.skzcam import generate_chemshell_cluster
+
     # First create the slab
     slab = read(Path(FILE_DIR, "skzcam_files", "NO_MgO.poscar.gz"))
     slab = slab[2:]
@@ -441,6 +441,7 @@ def test_insert_adsorbate_to_embedded_cluster(embedded_cluster):
     # Check that the quantum_idx and ecp_idx match the reference
     assert np.all(quantum_idx == [[2, 3, 5, 6], [7, 8, 9, 10]])
     assert np.all(ecp_idx == [[2, 3, 5, 6], [7, 8, 9, 10]])
+
 
 def test_get_atom_distances():
     # Creating a H2 molecule as an Atoms object
