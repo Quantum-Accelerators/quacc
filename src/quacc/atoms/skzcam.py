@@ -247,7 +247,7 @@ def create_skzcam_clusters(
         ]
 
     # Get the ECP region for each quantum cluster
-    ecp_region_idx = _get_ecp_region(
+    ecp_region_indices = _get_ecp_region(
         embedded_cluster, quantum_cluster_indices, embedded_cluster_all_dist, ecp_dist
     )
 
@@ -256,7 +256,7 @@ def create_skzcam_clusters(
         for idx, cluster in enumerate(quantum_cluster_indices):
             cluster_atoms = embedded_cluster[cluster]
             if write_include_ecp:
-                ecp_atoms = embedded_cluster[ecp_region_idx[idx]]
+                ecp_atoms = embedded_cluster[ecp_region_indices[idx]]
                 ecp_atoms.set_chemical_symbols(np.array(["U"] * len(ecp_atoms)))
                 cluster_atoms = cluster_atoms.copy() + ecp_atoms.copy()
             write(
@@ -264,7 +264,7 @@ def create_skzcam_clusters(
                 cluster_atoms,
             )
 
-    return embedded_cluster, quantum_cluster_indices, ecp_region_idx
+    return embedded_cluster, quantum_cluster_indices, ecp_region_indices
 
 
 def convert_pun_to_atoms(
