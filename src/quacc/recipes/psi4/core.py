@@ -30,7 +30,7 @@ def static_job(
     method: str = "wb97x-v",
     basis: str = "def2-tzvp",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-    **kwargs,
+    **calc_kwargs,
 ) -> RunSchema:
     """
     Function to carry out a single-point calculation.
@@ -49,7 +49,7 @@ def static_job(
         Basis set
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
-    **kwargs
+    **calc_kwargs
         Custom kwargs for the Psi4 calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to the [ase.calculators.psi4.Psi4][] calculator.
@@ -74,7 +74,7 @@ def static_job(
         charge=charge,
         spin_multiplicity=spin_multiplicity,
         calc_defaults=calc_defaults,
-        calc_swaps=kwargs,
+        calc_swaps=calc_kwargs,
         additional_fields={"name": "Psi4 Static"},
         copy_files=copy_files,
     )

@@ -728,3 +728,65 @@ def test_phonon_induced_renormalization(
     assert Path(postahc_coarse_results["dir_name"], "selfen_real.dat.gz").exists()
 
     SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO
+
+
+def test_phonon_dvscf_q2r_inplace(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OMP_NUM_THREADS", "1")
+
+    SETTINGS.ESPRESSO_PSEUDO = tmp_path
+
+    copy_decompress_files(DATA_DIR, ["C.UPF.gz"], tmp_path)
+
+    atoms = bulk("C")
+
+    pseudopotentials = {"C": "C.UPF"}
+
+    c_scf_results = static_job(
+        atoms,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
+        pseudopotentials=pseudopotentials,
+        kspacing=0.1,
+    )
+
+    c_ph_params = {
+        "input_data": {
+            "inputph": {
+                "fildvscf": "dvscf",
+                "ldisp": True,
+                "nq1": 2,
+                "nq2": 2,
+                "nq3": 2,
+                "tr2_ph": 1.0e-6,
+            }
+        }
+    }
+
+    c_ph_results = phonon_job(
+        prev_outdir=c_scf_results["dir_name"],
+        **c_ph_params,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
+    )
+
+    dvscf_q2r_params = {
+        "input_data": {
+            "input": {
+                "fildvscf": "dvscf",
+                "do_long_range": False,
+                "do_charge_neutral": False,
+            }
+        }
+    }
+
+    dvscf_q2r_results = dvscf_q2r_job(
+        prev_outdir=c_scf_results["dir_name"],
+        copy_files=c_ph_results["dir_name"],
+        **dvscf_q2r_params,
+        parallel_info=ESPRESSO_PARALLEL_INFO,
+    )
+
+    assert (
+        dvscf_q2r_results["parameters"]["input_data"]["input"]["outdir"]
+        == c_scf_results["dir_name"]
+    )
+    assert Path(dvscf_q2r_results["dir_name"], "matdyn0.gz").exists()
