@@ -34,7 +34,7 @@ def get_cluster_info_from_slab(
     adsorbate_indices
         The indices of the atoms that make up the adsorbate molecule.
     slab_center_indices
-        The the adsorbate_slab_file, this gives the indices of the atoms that are at the 'center' of the slab right beneath the adsorbate.
+        The indices of the atoms that are at the 'center' of the slab right beneath the adsorbate.
 
     Returns
     -------
