@@ -80,27 +80,32 @@ def phonon_flow(
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][]
     """
 
-    phonon = get_phonopy(
-        atoms,
-        min_lengths=min_lengths,
-        supercell_matrix=supercell_matrix,
-        symprec=symprec,
-        displacement=displacement,
-        phonopy_kwargs=phonopy_kwargs,
-    )
+    @job
+    def _get_phonon_job(atoms: Atoms):
+        return get_phonopy(
+            atoms,
+            min_lengths=min_lengths,
+            supercell_matrix=supercell_matrix,
+            symprec=symprec,
+            displacement=displacement,
+            phonopy_kwargs=phonopy_kwargs,
+        )
 
-    supercells = [
-        phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
-    ]
+    phonon = _get_phonon_job(atoms)
 
     @subflow
-    def _get_forces_subflow(supercells: list[Atoms]) -> list[dict]:
+    def _get_forces_subflow(phonon) -> list[dict]:
+        supercells = [
+            phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
+        ]
         return [
             force_job(supercell) for supercell in supercells if supercell is not None
         ]
 
     @job
-    def _thermo_job(atoms: Atoms, force_job_results: list[dict]) -> PhononSchema:
+    def _thermo_job(
+        atoms: Atoms, force_job_results: list[dict], phonon
+    ) -> PhononSchema:
         parameters = force_job_results[-1].get("parameters")
         forces = [output["results"]["forces"] for output in force_job_results]
 
@@ -119,5 +124,5 @@ def phonon_flow(
     if relax_job is not None:
         atoms = relax_job(atoms)["atoms"]
 
-    force_job_results = _get_forces_subflow(supercells)
-    return _thermo_job(atoms, force_job_results)
+    force_job_results = _get_forces_subflow(phonon)
+    return _thermo_job(atoms, force_job_results, phonon)
