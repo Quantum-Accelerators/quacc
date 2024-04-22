@@ -18,6 +18,55 @@ if TYPE_CHECKING:
 
 has_chemshell = find_spec("chemsh") is not None
 
+def create_orca_point_charge_file(
+        embedded_cluster: Atoms,
+        quantum_cluster_indices: list[int],
+        ecp_region_indices: list[int],
+        pc_file: str | Path
+) -> None:
+    """
+    Create a point charge file that can be read by ORCA. This requires the embedded_cluster Atoms object containing both atom_type and oxi_states arrays, as well as the indices of the quantum cluster and ECP region.
+
+    Parameters
+    ----------
+    embedded_cluster
+        The ASE Atoms object containing the atomic coordinates and atomic charges from the .pun file.
+    quantum_cluster_idx
+        A list of lists containing the indices of the atoms in each quantum cluster.
+    ecp_region_idx
+        A list of lists containing the indices of the atoms in the ECP region for each quantum cluster.
+    pc_file
+        A file containing the point charges to be read by ORCA.
+
+    Returns
+    -------
+    None
+    """
+
+    # Get the oxi_states arrays from the embedded_cluster
+    oxi_states= embedded_cluster.get_array("oxi_states")
+
+    # Check that none of the indices in quantum_cluster_indices are in ecp_region_indices
+    if np.all([True if x not in ecp_region_indices else False for x in quantum_cluster_indices]) == False:
+        raise ValueError("An atom in the quantum cluster is also in the ECP region.")
+    
+    # Get the number of point charges for this system
+    total_indices = quantum_cluster_indices + ecp_region_indices
+    num_pc = len(embedded_cluster) - len(total_indices)
+    counter = 0
+    with open(pc_file, "w") as f:
+        # Write the number of point charges first
+        f.write(f"{num_pc}\n")
+        for i in range(len(embedded_cluster)):
+            if i not in total_indices:
+                counter +=1
+                position = embedded_cluster[i].position
+                if counter != num_pc:
+                    f.write(f"{oxi_states[i]:-16.11f} {position[0]:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f}\n")
+                else:
+                    f.write(f"{oxi_states[i]:-16.11f} {position[0]:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f}")                    
+
+
 
 def get_cluster_info_from_slab(
     adsorbate_slab_file: str | Path,
@@ -330,7 +379,7 @@ def convert_pun_to_atoms(
         if line_info[0] in atom_type_dict:
             atom_types.append(atom_type_dict[line_info[0]])
         elif line_info[0] == "F":
-            atom_types.append("fitting charge")
+            atom_types.append("pc")
         else:
             atom_types.append("unknown")
 

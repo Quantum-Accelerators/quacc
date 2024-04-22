@@ -14,6 +14,7 @@ from quacc.atoms.skzcam import (
     _get_atom_distances,
     _get_ecp_region,
     convert_pun_to_atoms,
+    create_orca_point_charge_file,
     create_skzcam_clusters,
     get_cluster_info_from_slab,
     insert_adsorbate_to_embedded_cluster,
@@ -29,10 +30,58 @@ def embedded_cluster():
         {"Mg": 2.0, "O": -2.0},
     )
 
+@pytest.fixture()
+def embedded_adsorbed_cluster():
+    embedded_cluster, quantum_cluster_indices, ecp_region_indices = create_skzcam_clusters(Path(FILE_DIR, "skzcam_files", "mgo_shells_cluster.pun.gz"), [0,0,2], {'Mg': 2.0, 'O': -2.0}, shell_max=2,ecp_dist=3,write_clusters=False)
+    adsorbate = Atoms('CO', positions = [[0.0,0.0,0.0],
+                                     [0.0,0.0,1.128]], pbc=[False,False,False])
+
+    embedded_adsorbed_cluster, quantum_cluster_indices, ecp_region_indices = insert_adsorbate_to_embedded_cluster(embedded_cluster, adsorbate, [0.0,0.0,2.0], quantum_cluster_indices, ecp_region_indices)
+    return embedded_adsorbed_cluster
 
 @pytest.fixture()
 def distance_matrix(embedded_cluster):
     return embedded_cluster.get_all_distances()
+
+
+def test_create_orca_point_charge_file(embedded_adsorbed_cluster, tmpdir):
+    
+    # Create the point charge file
+    create_orca_point_charge_file(embedded_adsorbed_cluster, [0, 1, 2, 3, 4, 5, 6, 7], [8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24], Path(tmpdir,'orca.pc'))
+
+    # Read the written file
+    orca_pc_file = np.loadtxt(Path(tmpdir,'orca.pc'),skiprows=1)
+    
+    # Check that the contents of the file match the reference
+    assert len(orca_pc_file) == 371
+
+    assert_allclose(orca_pc_file[::30],np.array([[-2.00000000e+00, -2.11070451e+00,  2.11070451e+00,
+        -2.14923990e+00],
+       [ 2.00000000e+00,  2.11024676e+00, -2.11024676e+00,
+        -4.26789529e+00],
+       [ 2.00000000e+00,  6.32954443e+00,  2.11144262e+00,
+        -4.36728442e-02],
+       [-2.00000000e+00, -4.22049353e+00,  6.32889566e+00,
+         7.72802266e-03],
+       [ 2.00000000e+00, -6.33074029e+00, -2.11024676e+00,
+        -4.26789529e+00],
+       [-2.00000000e+00,  4.22049353e+00, -6.33074029e+00,
+        -4.26789529e+00],
+       [-2.00000000e+00,  6.33074029e+00,  2.11024676e+00,
+        -6.37814205e+00],
+       [-2.00000000e+00,  2.11024676e+00, -8.44098706e+00,
+        -4.26789529e+00],
+       [-2.00000000e+00, -8.44098706e+00, -6.32080280e+00,
+         5.67209089e-03],
+       [ 2.00000000e+00, -2.11024676e+00,  8.44098706e+00,
+        -6.37814205e+00],
+       [ 8.00000000e-01, -4.64254288e+01,  3.79844418e+01,
+        -3.99237095e-02],
+       [ 3.12302613e+00, -0.00000000e+00, -5.71441194e+01,
+        -2.36698692e+01],
+       [ 2.10472999e+00, -2.36698692e+01,  5.71441194e+01,
+         2.59086514e+01]]),    rtol=1e-05,
+        atol=1e-07,)
 
 
 def test_get_cluster_info_from_slab():
