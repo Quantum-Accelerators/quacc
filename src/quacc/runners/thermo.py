@@ -25,6 +25,7 @@ class ThermoRunner:
     atoms
         The Atoms object associated with the vibrational analysis.
     """
+
     atoms: Atoms
 
     def run_ideal_gas(
