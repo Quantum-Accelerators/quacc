@@ -12,11 +12,7 @@ from typing import TYPE_CHECKING
 from ase.optimize import BFGSLineSearch
 
 from quacc import job
-from quacc.calculators.vasp import Vasp
 from quacc.recipes.vasp._base import RunAndSummarize
-from quacc.runners.ase import run_opt
-from quacc.schemas.ase import summarize_opt_run
-from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
