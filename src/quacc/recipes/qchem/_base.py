@@ -64,14 +64,7 @@ class RunAndSummarize:
         self.calc_swaps = calc_swaps
         self.additional_fields = additional_fields
         self.copy_files = copy_files
-
-        calc_flags = recursive_dict_merge(self.calc_defaults, self.calc_swaps)
-        self.input_atoms.calc = QChem(
-            self.input_atoms,
-            charge=self.charge,
-            spin_multiplicity=self.spin_multiplicity,
-            **calc_flags,
-        )
+        self._prepare_calc()
 
     def calculate(self) -> RunSchema:
         """
@@ -111,14 +104,20 @@ class RunAndSummarize:
         OptSchema
             Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
         """
-        # TODO:
-        #   - passing initial Hessian?
-
         opt_flags = recursive_dict_merge(opt_defaults, opt_params)
         dyn = run_opt(self.input_atoms, copy_files=self.copy_files, **opt_flags)
-
         return summarize_opt_run(
             dyn,
             charge_and_multiplicity=(self.charge, self.spin_multiplicity),
             additional_fields=self.additional_fields,
+        )
+
+    def _prepare_calc(self) -> None:
+        """Prepare the Q-Chem calculator."""
+        calc_flags = recursive_dict_merge(self.calc_defaults, self.calc_swaps)
+        self.input_atoms.calc = QChem(
+            self.input_atoms,
+            charge=self.charge,
+            spin_multiplicity=self.spin_multiplicity,
+            **calc_flags,
         )

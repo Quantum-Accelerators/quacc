@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc import job
-from quacc.recipes.gulp._base import run_and_summarize
+from quacc.recipes.gulp._base import RunAndSummarize
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
@@ -54,7 +54,7 @@ def static_job(
     keyword_defaults = ["gfnff", "gwolf"] if use_gfnff else []
     option_defaults = ["dump every gulp.res"]
 
-    return run_and_summarize(
+    return RunAndSummarize(
         atoms,
         library=library,
         keyword_defaults=keyword_defaults,
@@ -63,7 +63,7 @@ def static_job(
         option_swaps=options,
         additional_fields={"name": "GULP Static"},
         copy_files=copy_files,
-    )
+    ).calculate()
 
 
 @job
@@ -112,7 +112,7 @@ def relax_job(
 
     option_defaults = ["dump every gulp.res"]
 
-    return run_and_summarize(
+    return RunAndSummarize(
         atoms,
         library=library,
         keyword_defaults=keyword_defaults,
@@ -121,4 +121,4 @@ def relax_job(
         option_swaps=options,
         additional_fields={"name": "GULP Relax"},
         copy_files=copy_files,
-    )
+    ).calculate()

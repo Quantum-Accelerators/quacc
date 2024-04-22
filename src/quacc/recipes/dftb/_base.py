@@ -61,9 +61,7 @@ class RunAndSummarize:
         self.calc_swaps = calc_swaps
         self.additional_fields = additional_fields
         self.copy_files = copy_files
-
-        calc_flags = recursive_dict_merge(self.calc_defaults, self.calc_swaps)
-        self.input_atoms.calc = Dftb(**calc_flags)
+        self._prepare_calc()
 
     def calculate(self) -> RunSchema:
         """
@@ -80,3 +78,14 @@ class RunAndSummarize:
         return summarize_run(
             final_atoms, self.input_atoms, additional_fields=self.additional_fields
         )
+
+    def _prepare_calc(self) -> None:
+        """
+        Prepare the calculator.
+
+        Returns
+        -------
+        None
+        """
+        calc_flags = recursive_dict_merge(self.calc_defaults, self.calc_swaps)
+        self.input_atoms.calc = Dftb(**calc_flags)

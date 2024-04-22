@@ -58,19 +58,7 @@ class RunAndSummarize:
         self.calc_swaps = calc_swaps
         self.additional_fields = additional_fields
         self.copy_files = copy_files
-
-        calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
-        self.input_atoms.calc = Onetep(
-            pseudo_path=str(SETTINGS.ONETEP_PP_PATH)
-            if SETTINGS.ONETEP_PP_PATH
-            else ".",
-            parallel_info=SETTINGS.ONETEP_PARALLEL_CMD,
-            profile=OnetepProfile(
-                SETTINGS.ONETEP_CMD
-            ),  # TODO: If the ASE merge is successful, we need to change ONETEP_PARALLEL_CMD to a list[str] and remove parallel info.
-            # If we also have access to post_args we can point not to the binary but to the launcher which takes -t nthreads as a post_args
-            **calc_flags,
-        )
+        self._prepare_calc()
 
     def calculate(self) -> RunSchema:
         """
@@ -86,7 +74,7 @@ class RunAndSummarize:
             final_atoms, self.input_atoms, additional_fields=self.additional_fields
         )
 
-    def run_and_summarize_opt(
+    def optimize(
         self,
         opt_defaults: dict[str, Any] | None = None,
         opt_params: dict[str, Any] | None = None,
@@ -111,3 +99,24 @@ class RunAndSummarize:
         opt_flags = recursive_dict_merge(opt_defaults, opt_params)
         dyn = run_opt(self.input_atoms, copy_files=self.copy_files, **opt_flags)
         return summarize_opt_run(dyn, additional_fields=self.additional_fields)
+
+    def _prepare_calc(self) -> None:
+        """
+        Prepare the Onetep calculator.
+
+        Returns
+        -------
+        None
+        """
+        calc_flags = recursive_dict_merge(self.calc_defaults, self.calc_swaps)
+        self.input_atoms.calc = Onetep(
+            pseudo_path=str(SETTINGS.ONETEP_PP_PATH)
+            if SETTINGS.ONETEP_PP_PATH
+            else ".",
+            parallel_info=SETTINGS.ONETEP_PARALLEL_CMD,
+            profile=OnetepProfile(
+                SETTINGS.ONETEP_CMD
+            ),  # TODO: If the ASE merge is successful, we need to change ONETEP_PARALLEL_CMD to a list[str] and remove parallel info.
+            # If we also have access to post_args we can point not to the binary but to the launcher which takes -t nthreads as a post_args
+            **calc_flags,
+        )

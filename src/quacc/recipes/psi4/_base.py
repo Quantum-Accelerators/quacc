@@ -65,9 +65,7 @@ class RunAndSummarize:
         self.calc_swaps = calc_swaps
         self.additional_fields = additional_fields
         self.copy_files = copy_files
-
-        calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
-        self.input_atoms.calc = Psi4(**calc_flags)
+        self._prepare_calc()
 
     def calculate(self) -> RunSchema:
         """
@@ -85,3 +83,15 @@ class RunAndSummarize:
             charge_and_multiplicity=(self.charge, self.spin_multiplicity),
             additional_fields=self.additional_fields,
         )
+
+    def _prepare_calc(self) -> None:
+        """
+        Prepare the PSI4 calculator.
+
+        Returns
+        -------
+        None
+        """
+
+        calc_flags = recursive_dict_merge(self.calc_defaults, self.calc_swaps)
+        self.input_atoms.calc = Psi4(**calc_flags)

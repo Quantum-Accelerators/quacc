@@ -64,9 +64,7 @@ class RunAndSummarize:
         self.report_mp_corrections = report_mp_corrections
         self.additional_fields = additional_fields
         self.copy_files = copy_files
-
-        calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
-        self.input_atoms.calc = Vasp(self.input_atoms, preset=preset, **calc_flags)
+        self._prepare_calc()
 
     def calculate(self) -> VaspSchema:
         """
@@ -111,3 +109,14 @@ class RunAndSummarize:
             report_mp_corrections=self.report_mp_corrections,
             additional_fields=self.additional_fields,
         )
+
+    def _prepare_calc(self) -> None:
+        """
+        Prepare the VASP calculator.
+
+        Returns
+        -------
+        None
+        """
+        calc_flags = recursive_dict_merge(self.calc_defaults, self.calc_swaps)
+        self.input_atoms.calc = Vasp(self.input_atoms, preset=self.preset, **calc_flags)

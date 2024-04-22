@@ -79,21 +79,7 @@ class RunAndSummarize:
         self.additional_fields = additional_fields
         self.copy_files = copy_files
         self.calc_kwargs = calc_kwargs
-
-        inputs = merge_list_params(self.default_inputs, self.input_swaps)
-        blocks = merge_list_params(self.default_blocks, self.block_swaps)
-        if "xyzfile" not in inputs:
-            inputs.append("xyzfile")
-        orcasimpleinput = " ".join(inputs)
-        orcablocks = "\n".join(blocks)
-        self.input_atoms.calc = ORCA(
-            profile=OrcaProfile(SETTINGS.ORCA_CMD),
-            charge=self.charge,
-            mult=self.spin_multiplicity,
-            orcasimpleinput=orcasimpleinput,
-            orcablocks=orcablocks,
-            **self.calc_kwargs,
-        )
+        self._prepare_calc()
 
     def calculate(self) -> cclibSchema:
         """
@@ -135,4 +121,27 @@ class RunAndSummarize:
         dyn = run_opt(self.input_atoms, copy_files=self.copy_files, **opt_flags)
         return summarize_cclib_opt_run(
             dyn, LOG_FILE, additional_fields=self.additional_fields
+        )
+
+    def _prepare_calc(self)->None:
+        """
+        Prepare the ORCA calculator.
+
+        Returns
+        -------
+        None
+        """
+        inputs = merge_list_params(self.default_inputs, self.input_swaps)
+        blocks = merge_list_params(self.default_blocks, self.block_swaps)
+        if "xyzfile" not in inputs:
+            inputs.append("xyzfile")
+        orcasimpleinput = " ".join(inputs)
+        orcablocks = "\n".join(blocks)
+        self.input_atoms.calc = ORCA(
+            profile=OrcaProfile(SETTINGS.ORCA_CMD),
+            charge=self.charge,
+            mult=self.spin_multiplicity,
+            orcasimpleinput=orcasimpleinput,
+            orcablocks=orcablocks,
+            **self.calc_kwargs,
         )
