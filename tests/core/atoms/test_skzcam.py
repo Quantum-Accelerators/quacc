@@ -45,8 +45,8 @@ def test_get_cluster_info_from_slab():
         adsorbate_vector_from_slab,
     ) = get_cluster_info_from_slab(
         Path(FILE_DIR, "skzcam_files", "NO_MgO.poscar.gz"),
-        [0, 1],
         [32, 33],
+        [0, 1],
     )
 
     # Check adsorbate matches reference
