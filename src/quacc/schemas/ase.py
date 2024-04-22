@@ -83,6 +83,7 @@ def summarize_run(
 
     directory = final_atoms.calc.directory
     uri = get_uri(directory)
+
     if input_atoms:
         input_atoms_metadata = atoms_to_metadata(
             input_atoms,
@@ -91,6 +92,7 @@ def summarize_run(
         )
     else:
         input_atoms_metadata = {}
+
     inputs = {
         "parameters": final_atoms.calc.parameters,
         "nid": uri.split(":")[0],
@@ -98,7 +100,6 @@ def summarize_run(
         "input_atoms": input_atoms_metadata,
         "quacc_version": __version__,
     }
-
     results = {"results": final_atoms.calc.results}
 
     atoms_to_store = prep_next_run(final_atoms, move_magmoms=move_magmoms)
