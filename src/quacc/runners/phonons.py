@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 @requires(has_deps, "Phonopy or seekpath is not installed.")
 class PhonopyRunner(Runner):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, atoms=None, **kwargs)
+        super().__init__(None, *args, **kwargs)
 
     def run_phonopy(
         self,
