@@ -62,7 +62,7 @@ def get_cluster_info_from_slab(
     slab = adsorbate_slab[slab_indices]
 
     # Find index of the first center atom of the slab as listed in slab_center_indices
-    slab_first_atom_idx = next(
+    slab_center_idx = next(
         index for index, x in enumerate(slab_indices) if x == slab_center_indices[0]
     )
 
@@ -94,7 +94,7 @@ def get_cluster_info_from_slab(
     return (
         adsorbate,
         slab,
-        slab_first_atom_idx,
+        slab_center_idx,
         center_position,
         adsorbate_vector_from_slab,
     )
