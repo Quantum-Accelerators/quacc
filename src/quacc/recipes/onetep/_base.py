@@ -50,7 +50,7 @@ def run_and_summarize(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    atoms.calc = _prep_calculator(calc_defaults=calc_defaults, calc_swaps=calc_swaps)
+    atoms.calc = prep_calculator(calc_defaults=calc_defaults, calc_swaps=calc_swaps)
     final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(final_atoms, atoms, additional_fields=additional_fields)
@@ -96,14 +96,14 @@ def run_and_summarize_opt(
     """
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
-    atoms.calc = _prep_calculator(calc_defaults=calc_defaults, calc_swaps=calc_swaps)
+    atoms.calc = prep_calculator(calc_defaults=calc_defaults, calc_swaps=calc_swaps)
 
     dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields=additional_fields)
 
 
-def _prep_calculator(
+def prep_calculator(
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
 ) -> Onetep:
@@ -129,9 +129,6 @@ def _prep_calculator(
     return Onetep(
         pseudo_path=str(SETTINGS.ONETEP_PP_PATH) if SETTINGS.ONETEP_PP_PATH else ".",
         parallel_info=SETTINGS.ONETEP_PARALLEL_CMD,
-        profile=OnetepProfile(
-            SETTINGS.ONETEP_CMD
-        ),  # TODO: If the ASE merge is successful, we need to change ONETEP_PARALLEL_CMD to a list[str] and remove parallel info.
-        # If we also have access to post_args we can point not to the binary but to the launcher which takes -t nthreads as a post_args
+        profile=OnetepProfile(SETTINGS.ONETEP_CMD),
         **calc_flags,
     )

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "quacc"
 description="A platform to enable high-throughput, database-driven quantum chemistry and computational materials science"
-version = "0.7.6"
+version = "0.7.7"
 readme = "README.md"
 license = { text = "BSD-3" }
 authors = [{ name = "Andrew S. Rosen", email = "asrosen@princeton.edu" }]
@@ -172,7 +172,12 @@ src = ["src"]
 lint.pydocstyle.convention = "numpy"
 lint.isort.known-first-party = ["quacc"]
 lint.isort.required-imports = ["from __future__ import annotations"]
+lint.isort.split-on-trailing-comma=false
 extend-include = ["*.ipynb"]
+
+[tool.ruff.format]
+docstring-code-format = true
+skip-magic-trailing-comma = true
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
