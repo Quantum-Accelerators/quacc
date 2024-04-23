@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING
 import psutil
 
 from quacc import job
-from quacc.recipes.orca._base import run_and_summarize, run_and_summarize_opt
 from quacc.atoms.core import perturb
+from quacc.recipes.orca._base import run_and_summarize, run_and_summarize_opt
 
 if TYPE_CHECKING:
     from typing import Any, Literal
