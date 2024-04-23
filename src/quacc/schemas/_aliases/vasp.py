@@ -75,5 +75,5 @@ class QMOFRelaxSchema(VaspSchema):
     double_relax: VaspSchema
 
 
-class VaspASESchema(VaspSchema, OptSchema):
+class VaspASEOptSchema(VaspSchema, OptSchema):
     """Type hint associated with VASP relaxations run via ASE"""
