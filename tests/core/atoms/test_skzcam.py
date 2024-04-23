@@ -822,6 +822,7 @@ s 1
         == "NewECP\nN_core 0\nlmax s\ns 1\n1      1.732000000   14.676000000 2\nend\n"
     )
 
+
 def test_generate_orca_input_preamble(embedded_adsorbed_cluster):
     # Set-up some information needed for generating orca input
     element_info = {
