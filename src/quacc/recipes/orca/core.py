@@ -12,8 +12,9 @@ from quacc.utils.coords import perturb
 
 if TYPE_CHECKING:
     from typing import Any, Literal
-    from numpy.typing import NDArray
+
     from ase.atoms import Atoms
+    from numpy.typing import NDArray
 
     from quacc.schemas._aliases.cclib import cclibSchema
     from quacc.utils.files import Filenames, SourceDirectory
