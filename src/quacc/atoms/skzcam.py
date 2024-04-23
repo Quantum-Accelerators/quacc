@@ -18,6 +18,116 @@ if TYPE_CHECKING:
 
 has_chemshell = find_spec("chemsh") is not None
 
+def generate_coords_block(
+    embedded_adsorbed_cluster: Atoms,
+    quantum_cluster_indices: list[int],
+    ecp_region_indices: list[int],
+    ecp_info: dict = {'ad_slab': 1, 'ad': 1, 'slab': 1},
+    include_cp: bool = True,
+    multiplicity: dict = [1,1,1]
+) -> tuple[str,str,str]:
+    """
+    Generates the coordinates block for the ORCA input file. This includes the coordinates of the quantum cluster, the ECP region, and the point charges. It will return three strings for the adsorbate-slab complex, adsorbate and slab.
+
+    Parameters
+    ----------
+    embedded_adsorbed_cluster
+        The ASE Atoms object containing the atomic coordinates and atomic charges from the .pun file, as well as the atom type.
+    quantum_cluster_indices
+        A list containing the indices of the atoms in each quantum cluster.
+    ecp_region_indices
+        A list containing the indices of the atoms in each ECP region.
+    ecp_info
+        A dictionary with the ECP data (in ORCA format) for the cations in the ECP region.
+    include_cp
+        If True, the coords strings will include the counterpoise correction for the adsorbate and slab.
+    multiplicity
+        The multiplicity of the adsorbate-slab complex, adsorbate and slab respectively.
+
+    Returns
+    -------
+    Tuple[str,str,str]
+        The coordinates block for the adsorbate-slab complex, the adsorbate, and the slab.
+    """
+
+    # Create the quantum cluster and ECP region cluster
+    quantum_cluster = embedded_adsorbed_cluster[quantum_cluster_indices]
+    ecp_region = embedded_adsorbed_cluster[ecp_region_indices]
+
+    # Get the indices of the adsorbates from the quantum cluster
+    adsorbate_indices = [i for i in range(len(quantum_cluster)) if quantum_cluster.get_array("atom_type")[i] == "adsorbate"]
+
+    # Get the indices of the slab from the quantum cluster
+    slab_indices = [i for i in range(len(quantum_cluster)) if quantum_cluster.get_array("atom_type")[i] != "adsorbate"]
+
+    # Get the charge of the quantum cluster
+    charge = int(sum(quantum_cluster.get_array("oxi_states")))
+
+    # Create the coords strings for the adsorbate-slab complex
+    ad_slab_coords = f"""%coords
+CTyp xyz
+Mult {multiplicity['ad_slab']}
+Units angs
+Charge {charge}
+coords
+"""
+    for i in range(len(quantum_cluster)):
+        position = quantum_cluster[i].position
+        ad_slab_coords += f"{quantum_cluster.get_chemical_symbols()[i].ljust(3)} {' '*16} {position[0]:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f}\n"
+
+    # Create the coords section for the ECP region
+    ecp_region_coords_section = ""
+    for i in range(len(ecp_region)):
+        position = ecp_region[i].position
+        pc_charge = ecp_region.get_array("oxi_states")[i]
+        ecp_region_coords_section += f"{(ecp_region.get_chemical_symbols()[i] + '>').ljust(3)} {position[0]:-16.11f} {pc_charge:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f}\n"
+        if ecp_region[i].symbol in ecp_info.keys():
+            atom_ecp_info = format_ecp_info(ecp_info[ecp_region[i].symbol])
+            ecp_region_coords_section += f"{atom_ecp_info}"
+
+    # Add the ECP region coords section to the ads_slab_coords string
+    ad_slab_coords += ecp_region_coords_section
+    ad_slab_coords += "end\nend\n"
+
+    # Create the coords string for the adsorbate
+    ad_coords = f"""%coords
+CTyp xyz
+Mult {multiplicity['ad']}
+Units angs
+Charge 0
+coords
+"""
+    for i in range(len(quantum_cluster)):
+        if i in adsorbate_indices:
+            position = quantum_cluster[i].position
+            ad_coords += f"{quantum_cluster.get_chemical_symbols()[i].ljust(3)} {' '*16} {position[0]:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f}\n"
+        elif include_cp:
+            position = quantum_cluster[i].position
+            ad_coords += f"{(quantum_cluster.get_chemical_symbols()[i]+':').ljust(3)} {' '*16} {position[0]:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f}\n"
+    ad_coords += "end\nend\n"
+
+    # Create the coords string for the slab
+    slab_coords = f"""%coords
+CTyp xyz
+Mult {multiplicity['slab']}
+Units angs
+Charge {charge}
+coords
+"""
+    for i in range(len(quantum_cluster)):
+        if i in slab_indices:
+            position = quantum_cluster[i].position
+            slab_coords += f"{quantum_cluster.get_chemical_symbols()[i].ljust(3)} {' '*16} {position[0]:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f}\n"
+        elif include_cp:
+            position = quantum_cluster[i].position
+            slab_coords += f"{(quantum_cluster.get_chemical_symbols()[i] + ':').ljust(3)} {' '*16} {position[0]:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f}\n"
+
+    # Add the ECP coords section to the slab_coords string
+    slab_coords += ecp_region_coords_section
+    slab_coords += "end\nend\n"
+
+    return ad_slab_coords, ad_coords, slab_coords
+
 def format_ecp_info(
     atom_ecp_info: str
 ) -> str:

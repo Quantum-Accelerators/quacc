@@ -16,6 +16,7 @@ from quacc.atoms.skzcam import (
     convert_pun_to_atoms,
     create_orca_point_charge_file,
     format_ecp_info,
+    generate_coords_block,
     generate_orca_input_preamble,
     create_skzcam_clusters,
     get_cluster_info_from_slab,
@@ -44,6 +45,53 @@ def embedded_adsorbed_cluster():
 @pytest.fixture()
 def distance_matrix(embedded_cluster):
     return embedded_cluster.get_all_distances()
+
+def test_get_coords_block(embedded_adsorbed_cluster):
+    ecp_info = {
+    'Mg': """NewECP
+N_core 0
+lmax f
+s 1
+1      1.732000000   14.676000000 2
+p 1
+1      1.115000000    5.175700000 2
+d 1
+1      1.203000000   -1.816000000 2
+f 1
+1      1.000000000    0.000000000 2
+end"""
+}
+
+    ad_slab_coords, ad_coords, slab_coords = generate_coords_block(embedded_adsorbed_cluster, [0, 1, 2, 3, 4, 5, 6, 7], [8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24], ecp_info,include_cp=True,multiplicity={'ad_slab': 1, 'slab': 2, 'ad': 3})
+
+    # Check that the strings and floats in ad_slab_coords matches reference
+    assert_allclose([float(x) for x in ad_slab_coords.split()[::10] if x.replace('.','',1).replace('-','',1).isdigit()], [0.0, 0.0, 1.0, 2.11144262254, 1.732, 1.0, 2.0, 1.0, -2.11144262254, 1.732, 1.0, 2.0, 1.0, 2.10705287155, 1.732, 1.0, 2.0, 1.0, -2.10705287155, 1.732, 1.0, 2.0, 1.0, 4.22049352791, 1.732, 1.0, 2.0, 1.0, -4.22049352791, 1.732, 1.0, 2.0, 1.0], rtol=1e-05, atol=1e-07)
+
+    assert np.all([x for x in ad_slab_coords.split()[::5] if not x.replace('.','',1).replace('-','',1).isdigit()] == ['%coords', 'Units', 'C', 'O', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f'])
+
+    # Check that the strings and floats in ad_coords matches reference
+    assert_allclose([float(x) for x in ad_coords.split()[::2] if x.replace('.','',1).replace('-','',1).isdigit()],[3.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.12018425659, 0.0, -2.12018425659, 0.0], rtol=1e-05, atol=1e-07)
+
+    assert np.all( [x for x in ad_coords.split()[::2] if not x.replace('.','',1).replace('-','',1).isdigit()] == ['%coords', 'xyz', 'angs', 'C', 'O', 'Mg:', 'O:', 'O:', 'O:', 'O:', 'O:', 'end'])
+
+    # Check that the strings and floats in slab_coords matches reference
+    assert_allclose([float(x) for x in slab_coords.split()[::10] if x.replace('.','',1).replace('-','',1).isdigit()], [0.0, 0.0, 1.0, 2.11144262254, 1.732, 1.0, 2.0, 1.0, -2.11144262254, 1.732, 1.0, 2.0, 1.0, 2.10705287155, 1.732, 1.0, 2.0, 1.0, -2.10705287155, 1.732, 1.0, 2.0, 1.0, 4.22049352791, 1.732, 1.0, 2.0, 1.0, -4.22049352791, 1.732, 1.0, 2.0, 1.0], rtol=1e-05, atol=1e-07)
+
+    assert np.all([x for x in slab_coords.split()[::5] if not x.replace('.','',1).replace('-','',1).isdigit()] == ['%coords', 'Units', 'C:', 'O', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f'])
+
+    # Also check the case where include_cp is False
+    ad_slab_coords, ad_coords, slab_coords = generate_coords_block(embedded_adsorbed_cluster, [0, 1, 2, 3, 4, 5, 6, 7], [8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24], ecp_info,include_cp=False,multiplicity={'ad_slab': 1, 'slab': 2, 'ad': 3})
+
+    # Check that the strings and floats in ad_coords matches reference
+    assert_allclose([float(x) for x in ad_coords.split()[::2] if x.replace('.','',1).replace('-','',1).isdigit()],[3.0, 0.0, 0.0, 0.0], rtol=1e-05, atol=1e-07)
+
+    assert np.all( [x for x in ad_coords.split()[::2] if not x.replace('.','',1).replace('-','',1).isdigit()] == ['%coords', 'xyz', 'angs', 'C', 'O', 'end'])
+
+
+    # Check that the strings and float in slab_coords matches reference
+    assert_allclose([float(x) for x in slab_coords.split()[::10] if x.replace('.','',1).replace('-','',1).isdigit()], [2.12018425659, -1.816, 2.11144262254, 1.0, 2.0, 1.0, -1.816, -2.11144262254, 1.0, 2.0, 1.0, -1.816, 0.0, 1.0, 2.0, 1.0, -1.816, 0.0, 1.0, 2.0, 1.0, -1.816, 0.0, 1.0, 2.0, 1.0, -1.816, 0.0, 1.0, 2.0, 1.0, -1.816], rtol=1e-05, atol=1e-07)
+
+    assert np.all([x for x in slab_coords.split()[::5] if not x.replace('.','',1).replace('-','',1).isdigit()] == ['%coords', 'Units', 'Mg', 'O', 'N_core', 'p', 'N_core', 'p', 'N_core', 'p', 'N_core', 'p', 'N_core', 'p', 'N_core', 'p', 'N_core', 'p', 'N_core', 'p', 'N_core', 'p', 'N_core', 'p', 'N_core', 'p', 'N_core', 'p', 'N_core', 'p', 'end'])
 
 def test_format_ecp_info():
     atom_ecp_info = """dummy_info
@@ -176,7 +224,7 @@ def test_create_orca_point_charge_file(embedded_adsorbed_cluster, tmpdir):
         -2.36698692e+01],
        [ 2.10472999e+00, -2.36698692e+01,  5.71441194e+01,
          2.59086514e+01]]),    rtol=1e-05,
-        atol=1e-07,)
+        atol=1e-07)
 
 
 def test_get_cluster_info_from_slab():
