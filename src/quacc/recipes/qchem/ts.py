@@ -34,8 +34,8 @@ if TYPE_CHECKING:
 @requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def ts_job(
     atoms: Atoms,
-    charge: int,
-    spin_multiplicity: int,
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     method: str = "wb97mv",
     basis: str = "def2-svpd",
     opt_params: dict[str, Any] | None = None,
@@ -99,8 +99,8 @@ def ts_job(
 @requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def irc_job(
     atoms: Atoms,
-    charge: int,
-    spin_multiplicity: int,
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     direction: Literal["forward", "reverse"] = "forward",
     method: str = "wb97mv",
     basis: str = "def2-svpd",
@@ -169,8 +169,8 @@ def irc_job(
 @requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def quasi_irc_job(
     atoms: Atoms,
-    charge: int,
-    spin_multiplicity: int,
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     direction: Literal["forward", "reverse"] = "forward",
     method: str = "wb97mv",
     basis: str = "def2-svpd",
@@ -239,9 +239,9 @@ def quasi_irc_job(
 @requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def quasi_irc_perturb_job(
     atoms: Atoms,
-    charge: int,
-    spin_multiplicity: int,
     mode: list[list[float]] | NDArray,
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     perturb_magnitude: float = 0.6,
     direction: Literal["forward", "reverse"] = "forward",
     method: str = "wb97mv",
@@ -260,12 +260,12 @@ def quasi_irc_perturb_job(
     ----------
     atoms
         Atoms object.
+    mode
+        Transition mode. This should be an Nx3 matrix, where N is the number of atoms in `atoms`.
     charge
         Charge of the system.
     spin_multiplicity
         Multiplicity of the system.
-    mode
-        Transition mode. This should be an Nx3 matrix, where N is the number of atoms in `atoms`.
     perturb_magnitude
         Factor to multiply the transition mode. Default is 0.6. In some cases, it may be advisable to increase this
         factor, perhaps to 1.0 or 1.1. Lowering it is not generally found to be helpful.

@@ -625,10 +625,10 @@ def test_quasi_irc_perturb_job(monkeypatch, tmp_path, test_qirc_atoms):
 
     charge, spin_multiplicity = check_charge_and_spin(test_qirc_atoms)
     output = quasi_irc_perturb_job(
-        atoms=test_qirc_atoms,
+        test_qirc_atoms,
+        mode,
         charge=charge,
         spin_multiplicity=spin_multiplicity,
-        mode=mode,
         direction="forward",
         method="wb97mv",
         opt_params={"max_steps": 5},
@@ -649,9 +649,9 @@ def test_quasi_irc_perturb_job(monkeypatch, tmp_path, test_qirc_atoms):
 
     output = quasi_irc_perturb_job(
         test_qirc_atoms,
+        mode,
         charge=-1,
         spin_multiplicity=2,
-        mode=mode,
         perturb_magnitude=1.0,
         direction="reverse",
         basis="def2-tzvpd",

@@ -202,8 +202,8 @@ def test_ase_quasi_irc_perturb_job(test_atoms, tmp_path, monkeypatch):
     ]
 
     output = ase_quasi_irc_perturb_job(
-        atoms=test_atoms,
-        mode=mode,
+        test_atoms,
+        mode,
         charge=0,
         spin_multiplicity=1,
         perturb_magnitude=1.0,
