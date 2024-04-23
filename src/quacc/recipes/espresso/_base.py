@@ -96,9 +96,6 @@ class RunAndSummarize:
         """
         Base function to carry out espresso recipes.
 
-        Parameters
-        ----------
-
         Returns
         -------
         RunSchema
