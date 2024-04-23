@@ -14,6 +14,7 @@ from quacc.utils.dicts import recursive_dict_merge
 
 try:
     from sella import IRC, Sella
+
     has_sella = True
 
 except ImportError:
@@ -21,9 +22,9 @@ except ImportError:
 
 if TYPE_CHECKING:
     from typing import Any, Literal
-    from numpy.typing import NDArray
 
     from ase.atoms import Atoms
+    from numpy.typing import NDArray
 
     from quacc.schemas._aliases.ase import OptSchema
     from quacc.utils.files import Filenames, SourceDirectory
