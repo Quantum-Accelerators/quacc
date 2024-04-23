@@ -91,8 +91,6 @@ def phonon_flow(
             phonopy_kwargs=phonopy_kwargs,
         )
 
-    phonon = _get_phonon_job(atoms)
-
     @subflow
     def _get_forces_subflow(phonon) -> list[dict]:
         supercells = [
@@ -116,7 +114,7 @@ def phonon_flow(
         return summarize_phonopy(
             phonon_results,
             atoms,
-            phonon.directory,
+            phonon_results.directory,
             parameters=parameters,
             additional_fields=additional_fields,
         )
@@ -124,5 +122,6 @@ def phonon_flow(
     if relax_job is not None:
         atoms = relax_job(atoms)["atoms"]
 
+    phonon = _get_phonon_job(atoms)
     force_job_results = _get_forces_subflow(phonon)
     return _thermo_job(atoms, force_job_results, phonon)
