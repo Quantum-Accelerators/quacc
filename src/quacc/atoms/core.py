@@ -273,7 +273,7 @@ def perturb(mol: Atoms, matrix: list[list[float]] | NDArray, scale: float) -> At
 
     Returns
     -------
-    mol_copy
+    Atoms
         The input molecule after perturbation
     """
 
