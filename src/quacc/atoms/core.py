@@ -15,6 +15,7 @@ from pymatgen.io.ase import AseAtomsAdaptor
 if TYPE_CHECKING:
     from ase.atoms import Atoms
     from ase.optimize.optimize import Dynamics
+    from numpy.typing import NDArray
 
 logger = logging.getLogger(__name__)
 
@@ -254,3 +255,34 @@ def get_final_atoms_from_dynamics(dynamics: Dynamics) -> Atoms:
     return (
         dynamics.atoms.atoms if isinstance(dynamics.atoms, Filter) else dynamics.atoms
     )
+
+
+def perturb(mol: Atoms, matrix: list[list[float]] | NDArray, scale: float) -> Atoms:
+    """
+    Perturb each atom in a molecule by a (scaled) 1x3 vector, reflecting e.g. a vibrational normal mode.
+    
+    Parameters
+    ----------
+    mol
+        ASE Atoms object representing a molecule
+    matrix
+        Nx3 matrix, where N is the numebr of atoms. This means that there is potentially a different translation
+        vector for each atom in the molecule.
+    scale
+        Scaling factor for perturbation
+
+    Returns
+    -------
+    mol_copy
+        The input molecule after perturbation
+    """
+
+    mol_copy = copy_atoms(mol)
+    mode = np.asarray(matrix)
+
+    orig_pos = mol_copy.get_positions()
+
+    pos = orig_pos + mode * scale
+    mol_copy.set_positions(pos)
+
+    return mol_copy

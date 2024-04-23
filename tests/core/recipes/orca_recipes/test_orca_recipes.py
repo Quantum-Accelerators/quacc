@@ -169,7 +169,6 @@ def test_freq_job(tmp_path, monkeypatch):
         basis="def2-svp",
         charge=0,
         spin_multiplicity=1,
-        nprocs=2,
         orcasimpleinput=["#normalprint"],
     )
     assert output["natoms"] == len(atoms)
@@ -211,7 +210,6 @@ def test_ase_quasi_irc_perturb_job(test_atoms, tmp_path, monkeypatch):
         direction="reverse",
         xc="hf",
         basis="def2-svp",
-        nprocs=2,
         orcasimpleinput=["#normalprint"],
     )
     assert output["natoms"] == len(test_atoms)

@@ -14,12 +14,14 @@ from quacc.utils.dicts import recursive_dict_merge
 
 try:
     from sella import IRC, Sella
+    has_sella = True
 
 except ImportError:
-    Sella = False
+    has_sella = False
 
 if TYPE_CHECKING:
     from typing import Any, Literal
+    from numpy.typing import NDArray
 
     from ase.atoms import Atoms
 
@@ -28,7 +30,7 @@ if TYPE_CHECKING:
 
 
 @job
-@requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
+@requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def ts_job(
     atoms: Atoms,
     charge: int,
@@ -93,7 +95,7 @@ def ts_job(
 
 
 @job
-@requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
+@requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def irc_job(
     atoms: Atoms,
     charge: int,
@@ -163,7 +165,7 @@ def irc_job(
 
 
 @job
-@requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
+@requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def quasi_irc_job(
     atoms: Atoms,
     charge: int,
@@ -233,12 +235,12 @@ def quasi_irc_job(
 
 
 @job
-@requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
+@requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def quasi_irc_perturb_job(
     atoms: Atoms,
     charge: int,
     spin_multiplicity: int,
-    mode: list[list[float]],
+    mode: list[list[float]] | NDArray,
     perturb_magnitude: float = 0.6,
     direction: Literal["forward", "reverse"] = "forward",
     method: str = "wb97mv",
@@ -262,7 +264,7 @@ def quasi_irc_perturb_job(
     spin_multiplicity
         Multiplicity of the system.
     mode
-        Transition mode
+        Transition mode. This should be an Nx3 matrix, where N is the number of atoms in `atoms`.
     perturb_magnitude
         Factor to multiply the transition mode. Default is 0.6. In some cases, it may be advisable to increase this
         factor, perhaps to 1.0 or 1.1. Lowering it is not generally found to be helpful.
@@ -293,7 +295,7 @@ def quasi_irc_perturb_job(
     calc_defaults = recursive_dict_merge(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
-    opt_defaults = {"optimizer": Sella} if (Sella is not False) else {}
+    opt_defaults = {"optimizer": Sella} if has_sella else {}
 
     scale = perturb_magnitude if direction == "forward" else perturb_magnitude * -1
 

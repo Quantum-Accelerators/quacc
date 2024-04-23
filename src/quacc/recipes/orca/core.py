@@ -12,7 +12,7 @@ from quacc.utils.coords import perturb
 
 if TYPE_CHECKING:
     from typing import Any, Literal
-
+    from numpy.typing import NDArray
     from ase.atoms import Atoms
 
     from quacc.schemas._aliases.cclib import cclibSchema
@@ -89,7 +89,7 @@ def freq_job(
     spin_multiplicity: int = 1,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
-    numeric: bool = False,
+    numerical: bool = False,
     orcasimpleinput: list[str] | None = None,
     orcablocks: list[str] | None = None,
     nprocs: int | Literal["max"] = "max",
@@ -110,7 +110,7 @@ def freq_job(
         Exchange-correlation functional
     basis
         Basis set
-    numeric
+    numerical
         If True (default False), a numeric frequency calculation will be requested
     orcasimpleinput
         List of `orcasimpleinput` swaps for the calculator. To remove entries
@@ -132,12 +132,8 @@ def freq_job(
         See the type-hint for the data structure.
     """
     nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
-    default_inputs = [xc, basis, "normalprint"]
 
-    if numeric:
-        default_inputs.append("numfreq")
-    else:
-        default_inputs.append("freq")
+    default_inputs = [xc, basis, "normalprint", "numfreq" if numerical else "freq"]
 
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
@@ -293,7 +289,7 @@ def ase_relax_job(
 @job
 def ase_quasi_irc_perturb_job(
     atoms: Atoms,
-    mode: list[list[float]],
+    mode: list[list[float]] | NDArray,
     charge: int = 0,
     spin_multiplicity: int = 1,
     perturb_magnitude: float = 0.6,
@@ -316,12 +312,12 @@ def ase_quasi_irc_perturb_job(
     ----------
     atoms
         Atoms object
+    mode
+        Transition mode. This should be an Nx3 matrix, where N is the number of atoms in `atoms`.
     charge
         Charge of the system.
     spin_multiplicity
         Multiplicity of the system.
-    mode
-        Transition mode
     perturb_magnitude
         Factor to multiply the transition mode. Default is 0.6. In some cases, it may be advisable to increase this
         factor, perhaps to 1.0 or 1.1. Lowering it is not generally found to be helpful.
