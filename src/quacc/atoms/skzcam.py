@@ -18,6 +18,108 @@ if TYPE_CHECKING:
 
 has_chemshell = find_spec("chemsh") is not None
 
+
+def generate_orca_input_preamble(
+        embedded_cluster: Atoms,
+        quantum_cluster_indices: list[int],
+        element_info: Dict,
+        pal_nprocs_block: Dict,
+        method_block: Dict,
+        scf_block: Dict
+) -> str:
+    """
+    From the quantum cluster Atoms object, generate the ORCA input preamble for the basis, method, pal, and scf blocks.
+
+    Parameters
+    ----------
+    embedded_cluster
+        The ASE Atoms object containing the atomic coordinates and atomic charges from the .pun ChemShell file.
+    quantum_cluster_indices
+        A list containing the indices of the atoms of embedded_cluster that form a quantum cluster.
+    element_info
+        A dictionary with elements as keys which gives the (1) number of core electrons as 'core', (2) basis set as 'basis', (3) effective core potential as 'ecp', (4) resolution-of-identity/density-fitting auxiliary basis set for DFT/HF calculations as 'ri_scf_basis' and (5) resolution-of-identity/density-fitting for correlated wave-function methods as 'ri_cwft_basis'.
+    pal_nprocs_block
+        A dictionary with the number of processors for the PAL block as 'nprocs' and the maximum memory-per-core blocks as 'maxcore'.
+    method_block
+        A dictionary that contains the method block for the ORCA input file.
+    scf_block
+        A dictionary that contains the SCF block for the ORCA input file.
+
+    Returns
+    -------
+    str
+        The ORCA input preamble.
+    """
+
+    # Create the quantum cluster
+    quantum_cluster = embedded_cluster[quantum_cluster_indices]
+
+    # Get the set of element symbols from the quantum cluster
+    element_symbols = list(set(quantum_cluster.get_chemical_symbols()))
+    element_symbols.sort()
+
+    # Check all element symbols are provided in element_info keys
+    if not all([element in element_info.keys() for element in element_symbols]):
+        raise ValueError("Not all element symbols are provided in the element_info dictionary.")
+
+    # Initialize preamble_info
+    preamble_info = """"""
+
+    # Add the pal_nprocs_block
+    preamble_info += f"%pal nprocs {pal_nprocs_block['nprocs']} end\n"
+    preamble_info += f"%pal maxcore {pal_nprocs_block['maxcore']} end\n"
+
+    # Add pointcharge file to read. It will be assumed that it is in the same folder as the input file
+    preamble_info += '%pointcharges "orca.bq"\n'
+
+    # Make the method block
+    preamble_info += "%method\n"
+    # Iterate through the keys of method_block and add key value
+    for key in method_block.keys():
+        preamble_info += f"{key} {method_block[key]}\n"
+    # Iterate over the core value for each element (if it has been given)
+    for element in element_symbols:
+        if 'core' in element_info[element].keys():
+            preamble_info += f"NewNCore {element} {element_info[element]['core']} end\n"
+    preamble_info += "end\n"
+
+    # Make the basis block
+    preamble_info += "%basis\n"
+
+    # First check if the basis key is the same for all elements. We use """ here because an option for these keys is "AutoAux"
+    if len(set([element_info[element]['basis'] for element in element_symbols])) == 1:
+        preamble_info += f"""Basis {element_info[element_symbols[0]]['basis']}\n"""
+    else:
+        for element in element_symbols:
+            element_basis = element_info[element]['basis']
+            preamble_info += f"""NewGTO {element} "{element_basis}" end\n"""
+
+    # Do the same for ri_scf_basis and ri_cwft_basis.
+    if len(set([element_info[element]['ri_scf_basis'] for element in element_symbols])) == 1:
+        preamble_info += f"""Aux {element_info[element_symbols[0]]['ri_scf_basis']}\n"""
+    else:
+        for element in element_symbols:
+            element_basis = element_info[element]['ri_scf_basis']
+            preamble_info += f'NewAuxJGTO {element} "{element_basis}" end\n'
+
+    if len(list(set([element_info[element]['ri_cwft_basis'] for element in element_symbols]))) == 1:
+        preamble_info += f"""AuxC {element_info[element_symbols[0]]['ri_cwft_basis']}\n"""
+    else:
+        for element in element_symbols:
+            element_basis = element_info[element]['ri_cwft_basis']
+            preamble_info += f"""NewAuxCGTO {element} "{element_basis}" end\n"""
+
+    preamble_info += "end\n"
+
+    # Write the scf block
+    preamble_info += "%scf\n"
+    for key in scf_block.keys():
+        preamble_info += f"""{key} {scf_block[key]}\n"""
+    preamble_info += "end\n"
+    
+    return preamble_info
+
+
 def create_orca_point_charge_file(
         embedded_cluster: Atoms,
         quantum_cluster_indices: list[int],

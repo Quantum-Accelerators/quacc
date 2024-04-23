@@ -15,6 +15,7 @@ from quacc.atoms.skzcam import (
     _get_ecp_region,
     convert_pun_to_atoms,
     create_orca_point_charge_file,
+    generate_orca_input_preamble,
     create_skzcam_clusters,
     get_cluster_info_from_slab,
     insert_adsorbate_to_embedded_cluster,
@@ -42,6 +43,82 @@ def embedded_adsorbed_cluster():
 @pytest.fixture()
 def distance_matrix(embedded_cluster):
     return embedded_cluster.get_all_distances()
+
+def test_generate_orca_input_preamble(embedded_adsorbed_cluster):
+    
+    # Set-up some information needed for generating orca input
+    element_info = {
+    'C': {
+        'basis': 'aug-cc-pVDZ',
+        'core': 2,
+        'ri_scf_basis': 'def2/J',
+        'ri_cwft_basis': 'aug-cc-pVDZ/C'
+    },
+    'O': {
+        'basis': 'aug-cc-pVDZ',
+        'core': 2,
+        'ri_scf_basis': 'def2/JK',
+        'ri_cwft_basis': 'aug-cc-pVDZ/C'
+    },
+    'Mg': {
+        'basis': 'cc-pVDZ',
+        'core': 2,
+        'ri_scf_basis': 'def2/J',
+        'ri_cwft_basis': 'cc-pVDZ/C'
+    }  
+    }
+
+    pal_nprocs_block = {
+        'nprocs': 1,
+        'maxcore': 5000
+    }
+
+    method_block = {
+        'Method': 'hf',
+        'RI': 'on',
+        'RunTyp': 'Energy'
+    }
+
+    scf_block = {
+        'HFTyp': 'rhf',
+        'Guess': 'MORead',
+        'MOInp': '"orca_svp_start.gbw"',
+        'SCFMode': 'Direct',
+        'sthresh': '1e-6',
+        'AutoTRAHIter': 60,
+        'MaxIter': 1000
+    }
+
+    # Generate the orca input preamble
+    preamble_input = generate_orca_input_preamble(embedded_adsorbed_cluster,[0, 1, 2, 3, 4, 5, 6, 7],element_info = element_info, pal_nprocs_block=pal_nprocs_block, method_block = method_block, scf_block = scf_block)
+
+    assert preamble_input == '%pal nprocs 1 end\n%pal maxcore 5000 end\n%pointcharges "orca.bq"\n%method\nMethod hf\nRI on\nRunTyp Energy\nNewNCore C 2 end\nNewNCore Mg 2 end\nNewNCore O 2 end\nend\n%basis\nNewGTO C "aug-cc-pVDZ" end\nNewGTO Mg "cc-pVDZ" end\nNewGTO O "aug-cc-pVDZ" end\nNewAuxJGTO C "def2/J" end\nNewAuxJGTO Mg "def2/J" end\nNewAuxJGTO O "def2/JK" end\nNewAuxCGTO C "aug-cc-pVDZ/C" end\nNewAuxCGTO Mg "cc-pVDZ/C" end\nNewAuxCGTO O "aug-cc-pVDZ/C" end\nend\n%scf\nHFTyp rhf\nGuess MORead\nMOInp "orca_svp_start.gbw"\nSCFMode Direct\nsthresh 1e-6\nAutoTRAHIter 60\nMaxIter 1000\nend\n'
+
+    # Check the case if the element_info has all of the same values
+    element_info = {
+    'C': {
+        'basis': 'def2-SVP',
+        'core': 2,
+        'ri_scf_basis': 'def2/J',
+        'ri_cwft_basis': 'def2-SVP/C'
+    },
+    'O': {
+        'basis': 'def2-SVP',
+        'core': 2,
+        'ri_scf_basis': 'def2/J',
+        'ri_cwft_basis': 'def2-SVP/C'
+    },
+    'Mg': {
+        'basis': 'def2-SVP',
+        'core': 2,
+        'ri_scf_basis': 'def2/J',
+        'ri_cwft_basis': 'def2-SVP/C'
+    }  
+    }
+
+    preamble_input = generate_orca_input_preamble(embedded_adsorbed_cluster,[0, 1, 2, 3, 4, 5, 6, 7],element_info = element_info, pal_nprocs_block=pal_nprocs_block, method_block = method_block, scf_block = scf_block)
+    
+    assert preamble_input == '%pal nprocs 1 end\n%pal maxcore 5000 end\n%pointcharges "orca.bq"\n%method\nMethod hf\nRI on\nRunTyp Energy\nNewNCore C 2 end\nNewNCore Mg 2 end\nNewNCore O 2 end\nend\n%basis\nBasis def2-SVP\nAux def2/J\nAuxC def2-SVP/C\nend\n%scf\nHFTyp rhf\nGuess MORead\nMOInp "orca_svp_start.gbw"\nSCFMode Direct\nsthresh 1e-6\nAutoTRAHIter 60\nMaxIter 1000\nend\n'
 
 
 def test_create_orca_point_charge_file(embedded_adsorbed_cluster, tmpdir):
