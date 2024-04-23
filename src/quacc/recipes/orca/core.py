@@ -8,7 +8,7 @@ import psutil
 
 from quacc import job
 from quacc.recipes.orca._base import run_and_summarize, run_and_summarize_opt
-from quacc.utils.coords import perturb
+from quacc.atoms.core import perturb
 
 if TYPE_CHECKING:
     from typing import Any, Literal
