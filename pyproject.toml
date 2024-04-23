@@ -172,7 +172,12 @@ src = ["src"]
 lint.pydocstyle.convention = "numpy"
 lint.isort.known-first-party = ["quacc"]
 lint.isort.required-imports = ["from __future__ import annotations"]
+lint.isort.split-on-trailing-comma=false
 extend-include = ["*.ipynb"]
+
+[tool.ruff.format]
+docstring-code-format = true
+skip-magic-trailing-comma = true
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
