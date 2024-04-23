@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from numpy.typing import NDArray
 
-    from quacc.schemas._aliases.cclib import cclibSchema
+    from quacc.schemas._aliases.cclib import cclibASEOptSchema, cclibSchema
     from quacc.utils.files import Filenames, SourceDirectory
 
 
@@ -233,7 +233,7 @@ def ase_relax_job(
     opt_params: dict[str, Any] | None = None,
     nprocs: int | Literal["max"] = "max",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-) -> cclibSchema:
+) -> cclibASEOptSchema:
     """
     Carry out a geometry optimization.
 
@@ -302,7 +302,7 @@ def ase_quasi_irc_perturb_job(
     opt_params: dict[str, Any] | None = None,
     nprocs: int | Literal["max"] = "max",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-) -> cclibSchema:
+) -> cclibASEOptSchema:
     """
     Quasi-IRC to optimize a reaction endpoint from a transition-state with known vibrational frequency modes.
     Perturbs the structure of `atoms` by a finite amount (0.6 * the normalized mode magnitude) along the specified
