@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
-from quacc import flow, job, subflow
+from quacc import job, subflow
 from quacc.atoms.phonons import get_phonopy, phonopy_atoms_to_ase_atoms
 from quacc.runners.phonons import run_phonopy
 from quacc.schemas.phonons import summarize_phonopy
@@ -23,11 +23,11 @@ if TYPE_CHECKING:
     from quacc.schemas._aliases.phonons import PhononSchema
 
 
-@flow
+@subflow
 @requires(
     has_deps, "Phonopy and seekpath must be installed. Run `pip install quacc[phonons]`"
 )
-def phonon_flow(
+def phonon_subflow(
     atoms: Atoms,
     force_job: Job,
     relax_job: Job | None = None,
@@ -80,19 +80,21 @@ def phonon_flow(
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][]
     """
 
+    phonon = get_phonopy(
+        atoms,
+        min_lengths=min_lengths,
+        supercell_matrix=supercell_matrix,
+        symprec=symprec,
+        displacement=displacement,
+        phonopy_kwargs=phonopy_kwargs,
+    )
+
+    supercells = [
+        phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
+    ]
+
     @subflow
-    def _get_forces_subflow(atoms: Atoms) -> list[dict]:
-        phonon = get_phonopy(
-            atoms,
-            min_lengths=min_lengths,
-            supercell_matrix=supercell_matrix,
-            symprec=symprec,
-            displacement=displacement,
-            phonopy_kwargs=phonopy_kwargs,
-        )
-        supercells = [
-            phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
-        ]
+    def _get_forces_subflow(supercells: list[Atoms]) -> list[dict]:
         return [
             force_job(supercell) for supercell in supercells if supercell is not None
         ]
@@ -109,12 +111,12 @@ def phonon_flow(
         )
         parameters = force_job_results[-1].get("parameters")
         forces = [output["results"]["forces"] for output in force_job_results]
-        phonon = run_phonopy(phonon, forces, t_step=t_step, t_min=t_min, t_max=t_max)
+        phonon_results = run_phonopy(phonon, forces, t_step=t_step, t_min=t_min, t_max=t_max)
 
         return summarize_phonopy(
             phonon,
             atoms,
-            phonon.directory,
+            phonon_results.directory,
             parameters=parameters,
             additional_fields=additional_fields,
         )
@@ -122,5 +124,5 @@ def phonon_flow(
     if relax_job is not None:
         atoms = relax_job(atoms)["atoms"]
 
-    force_job_results = _get_forces_subflow(atoms)
+    force_job_results = _get_forces_subflow(supercells)
     return _thermo_job(atoms, force_job_results)
