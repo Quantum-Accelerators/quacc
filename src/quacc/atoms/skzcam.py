@@ -18,13 +18,84 @@ if TYPE_CHECKING:
 
 has_chemshell = find_spec("chemsh") is not None
 
+def create_orca_eint_blocks(
+    embedded_adsorbed_cluster: Atoms,
+    quantum_cluster_indices: list[int],
+    ecp_region_indices: list[int],
+    element_info: dict = None,
+    pal_nprocs_block: dict = None,
+    method_block: dict = None,
+    scf_block: dict = None,
+    ecp_info: dict = {'ad_slab': 1, 'ad': 1, 'slab': 1},
+    include_cp: bool = True,
+    multiplicity: dict = [1,1,1]
+) -> tuple[str,str,str]:
+    """
+    Creates the orcablocks input for the ORCA ASE calculator.
+    
+    Parameters
+    ----------
+    embedded_adsorbed_cluster
+        The ASE Atoms object containing the atomic coordinates and atomic charges from the .pun file, as well as the atom type.
+    quantum_cluster_indices
+        A list containing the indices of the atoms in each quantum cluster.
+    ecp_region_indices
+        A list containing the indices of the atoms in each ECP region.
+    element_info
+        A dictionary with elements as keys which gives the (1) number of core electrons as 'core', (2) basis set as 'basis', (3) effective core potential as 'ecp', (4) resolution-of-identity/density-fitting auxiliary basis set for DFT/HF calculations as 'ri_scf_basis' and (5) resolution-of-identity/density-fitting for correlated wave-function methods as 'ri_cwft_basis'.
+    pal_nprocs_block
+        A dictionary with the number of processors for the PAL block as 'nprocs' and the maximum memory-per-core blocks as 'maxcore'.
+    method_block
+        A dictionary that contains the method block for the ORCA input file.
+    scf_block
+        A dictionary that contains the SCF block for the ORCA input file.
+    ecp_info
+        A dictionary with the ECP data (in ORCA format) for the cations in the ECP region.
+    include_cp
+        If True, the coords strings will include the counterpoise correction for the adsorbate and slab.
+    multiplicity
+        The multiplicity of the adsorbate-slab complex, adsorbate and slab respectively.
+
+    Returns
+    -------
+    Tuple[str,str,str]
+        The coordinates block for the adsorbate-slab complex, the adsorbate, and the slab.
+    """
+
+    # First generate the preamble block
+    preamble_block = generate_orca_input_preamble(
+        embedded_adsorbed_cluster,
+        quantum_cluster_indices,
+        element_info,
+        pal_nprocs_block,
+        method_block,
+        scf_block
+    )
+
+    # Generate the coords block
+    ad_slab_coords, ad_coords, slab_coords = generate_coords_block(
+        embedded_adsorbed_cluster,
+        quantum_cluster_indices,
+        ecp_region_indices,
+        ecp_info,
+        include_cp,
+        multiplicity
+    )
+
+    # Combine the blocks
+    ad_slab_block = preamble_block + ad_slab_coords
+    ad_block = preamble_block + ad_coords
+    slab_block = preamble_block + slab_coords
+
+    return ad_slab_block, ad_block, slab_block
+
 def generate_coords_block(
     embedded_adsorbed_cluster: Atoms,
     quantum_cluster_indices: list[int],
     ecp_region_indices: list[int],
-    ecp_info: dict = {'ad_slab': 1, 'ad': 1, 'slab': 1},
+    ecp_info: dict = None,
     include_cp: bool = True,
-    multiplicity: dict = [1,1,1]
+    multiplicity: dict = {'ad_slab': 1, 'ad': 1, 'slab': 1}
 ) -> tuple[str,str,str]:
     """
     Generates the coordinates block for the ORCA input file. This includes the coordinates of the quantum cluster, the ECP region, and the point charges. It will return three strings for the adsorbate-slab complex, adsorbate and slab.
@@ -81,7 +152,7 @@ coords
         position = ecp_region[i].position
         pc_charge = ecp_region.get_array("oxi_states")[i]
         ecp_region_coords_section += f"{(ecp_region.get_chemical_symbols()[i] + '>').ljust(3)} {position[0]:-16.11f} {pc_charge:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f}\n"
-        if ecp_region[i].symbol in ecp_info.keys():
+        if ecp_region[i].symbol in ecp_info.keys() and ecp_info[ecp_region[i].symbol] is not None:
             atom_ecp_info = format_ecp_info(ecp_info[ecp_region[i].symbol])
             ecp_region_coords_section += f"{atom_ecp_info}"
 
@@ -165,10 +236,10 @@ def format_ecp_info(
 def generate_orca_input_preamble(
         embedded_cluster: Atoms,
         quantum_cluster_indices: list[int],
-        element_info: Dict,
-        pal_nprocs_block: Dict,
-        method_block: Dict,
-        scf_block: Dict
+        element_info: dict = None,
+        pal_nprocs_block: dict = None,
+        method_block: dict = None,
+        scf_block: dict = None
 ) -> str:
     """
     From the quantum cluster Atoms object, generate the ORCA input preamble for the basis, method, pal, and scf blocks.
@@ -202,63 +273,71 @@ def generate_orca_input_preamble(
     element_symbols.sort()
 
     # Check all element symbols are provided in element_info keys
-    if not all([element in element_info.keys() for element in element_symbols]):
-        raise ValueError("Not all element symbols are provided in the element_info dictionary.")
+    if element_info is not None:
+        if not all([element in element_info.keys() for element in element_symbols]):
+            raise ValueError("Not all element symbols are provided in the element_info dictionary.")
 
     # Initialize preamble_info
     preamble_info = """"""
 
     # Add the pal_nprocs_block
-    preamble_info += f"%pal nprocs {pal_nprocs_block['nprocs']} end\n"
-    preamble_info += f"%pal maxcore {pal_nprocs_block['maxcore']} end\n"
+    if pal_nprocs_block is not None:
+        preamble_info += f"%pal nprocs {pal_nprocs_block['nprocs']} end\n"
+        preamble_info += f"%maxcore {pal_nprocs_block['maxcore']} end\n"
 
     # Add pointcharge file to read. It will be assumed that it is in the same folder as the input file
-    preamble_info += '%pointcharges "orca.bq"\n'
+    preamble_info += '%pointcharges "orca.pc"\n'
 
     # Make the method block
-    preamble_info += "%method\n"
+    if method_block is not None and element_info is not None:
+        preamble_info += "%method\n"
     # Iterate through the keys of method_block and add key value
-    for key in method_block.keys():
-        preamble_info += f"{key} {method_block[key]}\n"
+    if method_block is not None:
+        for key in method_block.keys():
+            preamble_info += f"{key} {method_block[key]}\n"
     # Iterate over the core value for each element (if it has been given)
-    for element in element_symbols:
-        if 'core' in element_info[element].keys():
-            preamble_info += f"NewNCore {element} {element_info[element]['core']} end\n"
-    preamble_info += "end\n"
+    if element_info is not None:
+        for element in element_symbols:
+            if 'core' in element_info[element].keys():
+                preamble_info += f"NewNCore {element} {element_info[element]['core']} end\n"
+    if method_block is not None and element_info is not None:
+        preamble_info += "end\n"
 
     # Make the basis block
-    preamble_info += "%basis\n"
 
     # First check if the basis key is the same for all elements. We use """ here because an option for these keys is "AutoAux"
-    if len(set([element_info[element]['basis'] for element in element_symbols])) == 1:
-        preamble_info += f"""Basis {element_info[element_symbols[0]]['basis']}\n"""
-    else:
-        for element in element_symbols:
-            element_basis = element_info[element]['basis']
-            preamble_info += f"""NewGTO {element} "{element_basis}" end\n"""
+    if element_info is not None:
+        preamble_info += "%basis\n"
+        if len(set([element_info[element]['basis'] for element in element_symbols])) == 1:
+            preamble_info += f"""Basis {element_info[element_symbols[0]]['basis']}\n"""
+        else:
+            for element in element_symbols:
+                element_basis = element_info[element]['basis']
+                preamble_info += f"""NewGTO {element} "{element_basis}" end\n"""
 
-    # Do the same for ri_scf_basis and ri_cwft_basis.
-    if len(set([element_info[element]['ri_scf_basis'] for element in element_symbols])) == 1:
-        preamble_info += f"""Aux {element_info[element_symbols[0]]['ri_scf_basis']}\n"""
-    else:
-        for element in element_symbols:
-            element_basis = element_info[element]['ri_scf_basis']
-            preamble_info += f'NewAuxJGTO {element} "{element_basis}" end\n'
+        # Do the same for ri_scf_basis and ri_cwft_basis.
+        if len(set([element_info[element]['ri_scf_basis'] for element in element_symbols])) == 1:
+            preamble_info += f"""Aux {element_info[element_symbols[0]]['ri_scf_basis']}\n"""
+        else:
+            for element in element_symbols:
+                element_basis = element_info[element]['ri_scf_basis']
+                preamble_info += f'NewAuxJGTO {element} "{element_basis}" end\n'
 
-    if len(list(set([element_info[element]['ri_cwft_basis'] for element in element_symbols]))) == 1:
-        preamble_info += f"""AuxC {element_info[element_symbols[0]]['ri_cwft_basis']}\n"""
-    else:
-        for element in element_symbols:
-            element_basis = element_info[element]['ri_cwft_basis']
-            preamble_info += f"""NewAuxCGTO {element} "{element_basis}" end\n"""
+        if len(list(set([element_info[element]['ri_cwft_basis'] for element in element_symbols]))) == 1:
+            preamble_info += f"""AuxC {element_info[element_symbols[0]]['ri_cwft_basis']}\n"""
+        else:
+            for element in element_symbols:
+                element_basis = element_info[element]['ri_cwft_basis']
+                preamble_info += f"""NewAuxCGTO {element} "{element_basis}" end\n"""
 
-    preamble_info += "end\n"
+        preamble_info += "end\n"
 
     # Write the scf block
-    preamble_info += "%scf\n"
-    for key in scf_block.keys():
-        preamble_info += f"""{key} {scf_block[key]}\n"""
-    preamble_info += "end\n"
+    if scf_block is not None:
+        preamble_info += "%scf\n"
+        for key in scf_block.keys():
+            preamble_info += f"""{key} {scf_block[key]}\n"""
+        preamble_info += "end\n"
     
     return preamble_info
 

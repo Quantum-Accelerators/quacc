@@ -15,6 +15,7 @@ from quacc.atoms.skzcam import (
     _get_ecp_region,
     convert_pun_to_atoms,
     create_orca_point_charge_file,
+    create_orca_eint_blocks,
     format_ecp_info,
     generate_coords_block,
     generate_orca_input_preamble,
@@ -45,6 +46,84 @@ def embedded_adsorbed_cluster():
 @pytest.fixture()
 def distance_matrix(embedded_cluster):
     return embedded_cluster.get_all_distances()
+
+def test_create_orca_eint_blocks(embedded_adsorbed_cluster):
+    element_info = {
+    'C': {
+        'basis': 'aug-cc-pVDZ',
+        'core': 2,
+        'ri_scf_basis': 'def2/J',
+        'ri_cwft_basis': 'aug-cc-pVDZ/C'
+    },
+    'O': {
+        'basis': 'aug-cc-pVDZ',
+        'core': 2,
+        'ri_scf_basis': 'def2/JK',
+        'ri_cwft_basis': 'aug-cc-pVDZ/C'
+    },
+    'Mg': {
+        'basis': 'cc-pVDZ',
+        'core': 2,
+        'ri_scf_basis': 'def2/J',
+        'ri_cwft_basis': 'cc-pVDZ/C'
+    }  
+}
+
+    pal_nprocs_block = {
+    'nprocs': 1,
+    'maxcore': 5000
+}
+
+    method_block = {
+    'Method': 'hf',
+    'RI': 'on',
+    'RunTyp': 'Energy'
+}
+
+    scf_block = {
+    'HFTyp': 'rhf',
+    'Guess': 'MORead',
+    'MOInp': '"orca_svp_start.gbw"',
+    'SCFMode': 'Direct',
+    'sthresh': '1e-6',
+    'AutoTRAHIter': 60,
+    'MaxIter': 1000
+}
+
+    ecp_info = {
+    'Mg': """NewECP
+N_core 0
+lmax f
+s 1
+1      1.732000000   14.676000000 2
+p 1
+1      1.115000000    5.175700000 2
+d 1
+1      1.203000000   -1.816000000 2
+f 1
+1      1.000000000    0.000000000 2
+end"""
+}
+     
+
+
+    ad_slab_block, ad_block, slab_block = create_orca_eint_blocks(embedded_adsorbed_cluster,[0, 1, 2, 3, 4, 5, 6, 7], [8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],     element_info,    pal_nprocs_block,    method_block,    scf_block,ecp_info,include_cp=True,multiplicity={'ad_slab': 1, 'slab': 2, 'ad': 3})
+    # Check that the strings and floats in ad_slab_coords matches reference
+    assert_allclose([float(x) for x in ad_slab_block.split()[::10] if x.replace('.','',1).replace('-','',1).isdigit()], [3.128, 0.0, 0.00567209089, 2.0, 1.203, 5.1757, 1.0, 2.0, 1.203, 5.1757, 1.0, 2.0, 1.203, 5.1757, 1.0, 2.0, 1.203, 5.1757, 1.0, 2.0, 1.203, 5.1757, 1.0, 2.0, 1.203, 5.1757, 1.0, 2.0, 1.203], rtol=1e-05, atol=1e-07)
+
+    assert np.all([x for x in ad_slab_block.split()[::5] if not x.replace('.','',1).replace('-','',1).isdigit()] == ['%pal', 'Method', 'Energy', 'NewNCore', 'O', 'NewGTO', 'Mg', '"aug-cc-pVDZ"', 'end', 'NewAuxJGTO', 'C', '"cc-pVDZ/C"', 'end', 'Guess', 'Direct', 'MaxIter', 'xyz', 'Charge', 'O', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'end'])
+
+    # Check that the strings and floats in ad_coords matches reference
+    assert_allclose([float(x) for x in ad_block.split()[::2] if x.replace('.','',1).replace('-','',1).isdigit()],[1.0, 2.0, 2.0, 2.0, 0.0, 2.0, 0.0, 3.128, 0.0, 0.0, -2.12018425659, 0.00567209089, 0.0, 0.00567209089, 2.12018425659, 0.00567209089, 0.0, 0.00567209089, 0.0, -2.14129966123]
+, rtol=1e-05, atol=1e-07)
+
+    assert np.all( [x for x in ad_block.split()[::2] if not x.replace('.','',1).replace('-','',1).isdigit()] == ['%pal', '%maxcore', 'end', '"orca.pc"', 'Method', 'RI', 'RunTyp', 'NewNCore', 'NewNCore', 'NewNCore', 'end', 'NewGTO', '"aug-cc-pVDZ"', 'NewGTO', '"cc-pVDZ"', 'NewGTO', '"aug-cc-pVDZ"', 'NewAuxJGTO', '"def2/J"', 'NewAuxJGTO', '"def2/J"', 'NewAuxJGTO', '"def2/JK"', 'NewAuxCGTO', '"aug-cc-pVDZ/C"', 'NewAuxCGTO', '"cc-pVDZ/C"', 'NewAuxCGTO', '"aug-cc-pVDZ/C"', 'end', 'HFTyp', 'Guess', 'MOInp', 'SCFMode', 'sthresh', 'AutoTRAHIter', 'MaxIter', 'end', 'CTyp', 'Mult', 'Units', 'Charge', 'coords', 'end'])
+
+    # Check that the strings and floats in slab_coords matches reference
+    assert_allclose([float(x) for x in slab_block.split()[::10] if x.replace('.','',1).replace('-','',1).isdigit()], [3.128, 0.0, 0.00567209089, 2.0, 1.203, 5.1757, 1.0, 2.0, 1.203, 5.1757, 1.0, 2.0, 1.203, 5.1757, 1.0, 2.0, 1.203, 5.1757, 1.0, 2.0, 1.203, 5.1757, 1.0, 2.0, 1.203, 5.1757, 1.0, 2.0, 1.203], rtol=1e-05, atol=1e-07)
+
+    assert np.all([x for x in slab_block.split()[::5] if not x.replace('.','',1).replace('-','',1).isdigit()] == ['%pal', 'Method', 'Energy', 'NewNCore', 'O', 'NewGTO', 'Mg', '"aug-cc-pVDZ"', 'end', 'NewAuxJGTO', 'C', '"cc-pVDZ/C"', 'end', 'Guess', 'Direct', 'MaxIter', 'xyz', 'Charge', 'O', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'end'])
+
 
 def test_get_coords_block(embedded_adsorbed_cluster):
     ecp_info = {
@@ -158,7 +237,7 @@ def test_generate_orca_input_preamble(embedded_adsorbed_cluster):
     # Generate the orca input preamble
     preamble_input = generate_orca_input_preamble(embedded_adsorbed_cluster,[0, 1, 2, 3, 4, 5, 6, 7],element_info = element_info, pal_nprocs_block=pal_nprocs_block, method_block = method_block, scf_block = scf_block)
 
-    assert preamble_input == '%pal nprocs 1 end\n%pal maxcore 5000 end\n%pointcharges "orca.bq"\n%method\nMethod hf\nRI on\nRunTyp Energy\nNewNCore C 2 end\nNewNCore Mg 2 end\nNewNCore O 2 end\nend\n%basis\nNewGTO C "aug-cc-pVDZ" end\nNewGTO Mg "cc-pVDZ" end\nNewGTO O "aug-cc-pVDZ" end\nNewAuxJGTO C "def2/J" end\nNewAuxJGTO Mg "def2/J" end\nNewAuxJGTO O "def2/JK" end\nNewAuxCGTO C "aug-cc-pVDZ/C" end\nNewAuxCGTO Mg "cc-pVDZ/C" end\nNewAuxCGTO O "aug-cc-pVDZ/C" end\nend\n%scf\nHFTyp rhf\nGuess MORead\nMOInp "orca_svp_start.gbw"\nSCFMode Direct\nsthresh 1e-6\nAutoTRAHIter 60\nMaxIter 1000\nend\n'
+    assert preamble_input == '%pal nprocs 1 end\n%maxcore 5000 end\n%pointcharges "orca.pc"\n%method\nMethod hf\nRI on\nRunTyp Energy\nNewNCore C 2 end\nNewNCore Mg 2 end\nNewNCore O 2 end\nend\n%basis\nNewGTO C "aug-cc-pVDZ" end\nNewGTO Mg "cc-pVDZ" end\nNewGTO O "aug-cc-pVDZ" end\nNewAuxJGTO C "def2/J" end\nNewAuxJGTO Mg "def2/J" end\nNewAuxJGTO O "def2/JK" end\nNewAuxCGTO C "aug-cc-pVDZ/C" end\nNewAuxCGTO Mg "cc-pVDZ/C" end\nNewAuxCGTO O "aug-cc-pVDZ/C" end\nend\n%scf\nHFTyp rhf\nGuess MORead\nMOInp "orca_svp_start.gbw"\nSCFMode Direct\nsthresh 1e-6\nAutoTRAHIter 60\nMaxIter 1000\nend\n'
 
     # Check the case if the element_info has all of the same values
     element_info = {
@@ -184,7 +263,12 @@ def test_generate_orca_input_preamble(embedded_adsorbed_cluster):
 
     preamble_input = generate_orca_input_preamble(embedded_adsorbed_cluster,[0, 1, 2, 3, 4, 5, 6, 7],element_info = element_info, pal_nprocs_block=pal_nprocs_block, method_block = method_block, scf_block = scf_block)
 
-    assert preamble_input == '%pal nprocs 1 end\n%pal maxcore 5000 end\n%pointcharges "orca.bq"\n%method\nMethod hf\nRI on\nRunTyp Energy\nNewNCore C 2 end\nNewNCore Mg 2 end\nNewNCore O 2 end\nend\n%basis\nBasis def2-SVP\nAux def2/J\nAuxC def2-SVP/C\nend\n%scf\nHFTyp rhf\nGuess MORead\nMOInp "orca_svp_start.gbw"\nSCFMode Direct\nsthresh 1e-6\nAutoTRAHIter 60\nMaxIter 1000\nend\n'
+    assert preamble_input == '%pal nprocs 1 end\n%maxcore 5000 end\n%pointcharges "orca.pc"\n%method\nMethod hf\nRI on\nRunTyp Energy\nNewNCore C 2 end\nNewNCore Mg 2 end\nNewNCore O 2 end\nend\n%basis\nBasis def2-SVP\nAux def2/J\nAuxC def2-SVP/C\nend\n%scf\nHFTyp rhf\nGuess MORead\nMOInp "orca_svp_start.gbw"\nSCFMode Direct\nsthresh 1e-6\nAutoTRAHIter 60\nMaxIter 1000\nend\n'
+
+    # Testing the case if we provide no blocks
+    preamble_input = generate_orca_input_preamble(embedded_adsorbed_cluster,[0, 1, 2, 3, 4, 5, 6, 7])
+
+    assert preamble_input == '%pointcharges "orca.pc"\n'
 
 
 def test_create_orca_point_charge_file(embedded_adsorbed_cluster, tmpdir):
