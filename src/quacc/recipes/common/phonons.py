@@ -88,7 +88,6 @@ def phonon_subflow(
         displacement=displacement,
         phonopy_kwargs=phonopy_kwargs,
     )
-
     supercells = [
         phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
     ]
