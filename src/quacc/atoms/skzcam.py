@@ -290,10 +290,12 @@ def generate_orca_input_preamble(
     element_symbols.sort()
 
     # Check all element symbols are provided in element_info keys
-    if element_info is not None and not all(element in element_info for element in element_symbols):
+    if element_info is not None and not all(
+        element in element_info for element in element_symbols
+    ):
         raise ValueError(
-                "Not all element symbols are provided in the element_info dictionary."
-            )
+            "Not all element symbols are provided in the element_info dictionary."
+        )
 
     # Initialize preamble_info
     preamble_info = """"""
