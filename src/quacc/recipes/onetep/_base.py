@@ -129,8 +129,6 @@ def prep_calculator(
     return Onetep(
         pseudo_path=str(SETTINGS.ONETEP_PP_PATH) if SETTINGS.ONETEP_PP_PATH else ".",
         parallel_info=SETTINGS.ONETEP_PARALLEL_CMD,
-        profile=OnetepProfile(
-            SETTINGS.ONETEP_CMD
-        ),
+        profile=OnetepProfile(SETTINGS.ONETEP_CMD),
         **calc_flags,
     )

@@ -284,9 +284,7 @@ def prepare_copy_files(
 
             if recover:
                 to_copy.extend(
-                    [
-                        Path("_ph*", "pwscf.q_*", "pwscf.save", "charge-density.*")
-                    ]
+                    [Path("_ph*", "pwscf.q_*", "pwscf.save", "charge-density.*")]
                 )
 
         if recover:
