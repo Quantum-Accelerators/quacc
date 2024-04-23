@@ -290,9 +290,8 @@ def generate_orca_input_preamble(
     element_symbols.sort()
 
     # Check all element symbols are provided in element_info keys
-    if element_info is not None:
-        if not all(element in element_info for element in element_symbols):
-            raise ValueError(
+    if element_info is not None and not all(element in element_info for element in element_symbols):
+        raise ValueError(
                 "Not all element symbols are provided in the element_info dictionary."
             )
 
@@ -416,7 +415,7 @@ def create_orca_point_charge_file(
     total_indices = quantum_cluster_indices + ecp_region_indices
     num_pc = len(embedded_cluster) - len(total_indices)
     counter = 0
-    with open(pc_file, "w") as f:
+    with Path.open(pc_file, "w") as f:
         # Write the number of point charges first
         f.write(f"{num_pc}\n")
         for i in range(len(embedded_cluster)):
