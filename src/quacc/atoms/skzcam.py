@@ -18,21 +18,22 @@ if TYPE_CHECKING:
 
 has_chemshell = find_spec("chemsh") is not None
 
+
 def create_orca_eint_blocks(
     embedded_adsorbed_cluster: Atoms,
     quantum_cluster_indices: list[int],
     ecp_region_indices: list[int],
-    element_info: dict = None,
-    pal_nprocs_block: dict = None,
-    method_block: dict = None,
-    scf_block: dict = None,
-    ecp_info: dict = {'ad_slab': 1, 'ad': 1, 'slab': 1},
+    element_info: dict | None = None,
+    pal_nprocs_block: dict | None = None,
+    method_block: dict | None = None,
+    scf_block: dict | None = None,
+    ecp_info: dict | None = None,
     include_cp: bool = True,
-    multiplicity: dict = [1,1,1]
-) -> tuple[str,str,str]:
+    multiplicity: dict | None = None,
+) -> tuple[str, str, str]:
     """
     Creates the orcablocks input for the ORCA ASE calculator.
-    
+
     Parameters
     ----------
     embedded_adsorbed_cluster
@@ -63,13 +64,17 @@ def create_orca_eint_blocks(
     """
 
     # First generate the preamble block
+    if multiplicity is None:
+        multiplicity = [1, 1, 1]
+    if ecp_info is None:
+        ecp_info = {"ad_slab": 1, "ad": 1, "slab": 1}
     preamble_block = generate_orca_input_preamble(
         embedded_adsorbed_cluster,
         quantum_cluster_indices,
         element_info,
         pal_nprocs_block,
         method_block,
-        scf_block
+        scf_block,
     )
 
     # Generate the coords block
@@ -79,7 +84,7 @@ def create_orca_eint_blocks(
         ecp_region_indices,
         ecp_info,
         include_cp,
-        multiplicity
+        multiplicity,
     )
 
     # Combine the blocks
@@ -89,14 +94,15 @@ def create_orca_eint_blocks(
 
     return ad_slab_block, ad_block, slab_block
 
+
 def generate_coords_block(
     embedded_adsorbed_cluster: Atoms,
     quantum_cluster_indices: list[int],
     ecp_region_indices: list[int],
-    ecp_info: dict = None,
+    ecp_info: dict | None = None,
     include_cp: bool = True,
-    multiplicity: dict = {'ad_slab': 1, 'ad': 1, 'slab': 1}
-) -> tuple[str,str,str]:
+    multiplicity: dict | None = None,
+) -> tuple[str, str, str]:
     """
     Generates the coordinates block for the ORCA input file. This includes the coordinates of the quantum cluster, the ECP region, and the point charges. It will return three strings for the adsorbate-slab complex, adsorbate and slab.
 
@@ -122,14 +128,24 @@ def generate_coords_block(
     """
 
     # Create the quantum cluster and ECP region cluster
+    if multiplicity is None:
+        multiplicity = {"ad_slab": 1, "ad": 1, "slab": 1}
     quantum_cluster = embedded_adsorbed_cluster[quantum_cluster_indices]
     ecp_region = embedded_adsorbed_cluster[ecp_region_indices]
 
     # Get the indices of the adsorbates from the quantum cluster
-    adsorbate_indices = [i for i in range(len(quantum_cluster)) if quantum_cluster.get_array("atom_type")[i] == "adsorbate"]
+    adsorbate_indices = [
+        i
+        for i in range(len(quantum_cluster))
+        if quantum_cluster.get_array("atom_type")[i] == "adsorbate"
+    ]
 
     # Get the indices of the slab from the quantum cluster
-    slab_indices = [i for i in range(len(quantum_cluster)) if quantum_cluster.get_array("atom_type")[i] != "adsorbate"]
+    slab_indices = [
+        i
+        for i in range(len(quantum_cluster))
+        if quantum_cluster.get_array("atom_type")[i] != "adsorbate"
+    ]
 
     # Get the charge of the quantum cluster
     charge = int(sum(quantum_cluster.get_array("oxi_states")))
@@ -152,7 +168,10 @@ coords
         position = ecp_region[i].position
         pc_charge = ecp_region.get_array("oxi_states")[i]
         ecp_region_coords_section += f"{(ecp_region.get_chemical_symbols()[i] + '>').ljust(3)} {position[0]:-16.11f} {pc_charge:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f}\n"
-        if ecp_region[i].symbol in ecp_info.keys() and ecp_info[ecp_region[i].symbol] is not None:
+        if (
+            ecp_region[i].symbol in ecp_info
+            and ecp_info[ecp_region[i].symbol] is not None
+        ):
             atom_ecp_info = format_ecp_info(ecp_info[ecp_region[i].symbol])
             ecp_region_coords_section += f"{atom_ecp_info}"
 
@@ -199,9 +218,8 @@ coords
 
     return ad_slab_coords, ad_coords, slab_coords
 
-def format_ecp_info(
-    atom_ecp_info: str
-) -> str:
+
+def format_ecp_info(atom_ecp_info: str) -> str:
     """
     Formats the ECP info so that it can be inputted to ORCA without problems.
 
@@ -229,17 +247,16 @@ def format_ecp_info(
         end_pos = len(atom_ecp_info)
 
     # Extract content between "NewECP" and "end", exclusive of "end", then add correctly formatted "NewECP" and "end"
-    formatted_atom_ecp_info = "NewECP\n" + atom_ecp_info[start_pos:end_pos].strip() + "\nend\n"
+    return "NewECP\n" + atom_ecp_info[start_pos:end_pos].strip() + "\nend\n"
 
-    return formatted_atom_ecp_info
 
 def generate_orca_input_preamble(
-        embedded_cluster: Atoms,
-        quantum_cluster_indices: list[int],
-        element_info: dict = None,
-        pal_nprocs_block: dict = None,
-        method_block: dict = None,
-        scf_block: dict = None
+    embedded_cluster: Atoms,
+    quantum_cluster_indices: list[int],
+    element_info: dict | None = None,
+    pal_nprocs_block: dict | None = None,
+    method_block: dict | None = None,
+    scf_block: dict | None = None,
 ) -> str:
     """
     From the quantum cluster Atoms object, generate the ORCA input preamble for the basis, method, pal, and scf blocks.
@@ -274,8 +291,10 @@ def generate_orca_input_preamble(
 
     # Check all element symbols are provided in element_info keys
     if element_info is not None:
-        if not all([element in element_info.keys() for element in element_symbols]):
-            raise ValueError("Not all element symbols are provided in the element_info dictionary.")
+        if not all(element in element_info for element in element_symbols):
+            raise ValueError(
+                "Not all element symbols are provided in the element_info dictionary."
+            )
 
     # Initialize preamble_info
     preamble_info = """"""
@@ -293,13 +312,15 @@ def generate_orca_input_preamble(
         preamble_info += "%method\n"
     # Iterate through the keys of method_block and add key value
     if method_block is not None:
-        for key in method_block.keys():
+        for key in method_block:
             preamble_info += f"{key} {method_block[key]}\n"
     # Iterate over the core value for each element (if it has been given)
     if element_info is not None:
         for element in element_symbols:
-            if 'core' in element_info[element].keys():
-                preamble_info += f"NewNCore {element} {element_info[element]['core']} end\n"
+            if "core" in element_info[element]:
+                preamble_info += (
+                    f"NewNCore {element} {element_info[element]['core']} end\n"
+                )
     if method_block is not None and element_info is not None:
         preamble_info += "end\n"
 
@@ -308,26 +329,43 @@ def generate_orca_input_preamble(
     # First check if the basis key is the same for all elements. We use """ here because an option for these keys is "AutoAux"
     if element_info is not None:
         preamble_info += "%basis\n"
-        if len(set([element_info[element]['basis'] for element in element_symbols])) == 1:
+        if len({element_info[element]["basis"] for element in element_symbols}) == 1:
             preamble_info += f"""Basis {element_info[element_symbols[0]]['basis']}\n"""
         else:
             for element in element_symbols:
-                element_basis = element_info[element]['basis']
+                element_basis = element_info[element]["basis"]
                 preamble_info += f"""NewGTO {element} "{element_basis}" end\n"""
 
         # Do the same for ri_scf_basis and ri_cwft_basis.
-        if len(set([element_info[element]['ri_scf_basis'] for element in element_symbols])) == 1:
-            preamble_info += f"""Aux {element_info[element_symbols[0]]['ri_scf_basis']}\n"""
+        if (
+            len({element_info[element]["ri_scf_basis"] for element in element_symbols})
+            == 1
+        ):
+            preamble_info += (
+                f"""Aux {element_info[element_symbols[0]]['ri_scf_basis']}\n"""
+            )
         else:
             for element in element_symbols:
-                element_basis = element_info[element]['ri_scf_basis']
+                element_basis = element_info[element]["ri_scf_basis"]
                 preamble_info += f'NewAuxJGTO {element} "{element_basis}" end\n'
 
-        if len(list(set([element_info[element]['ri_cwft_basis'] for element in element_symbols]))) == 1:
-            preamble_info += f"""AuxC {element_info[element_symbols[0]]['ri_cwft_basis']}\n"""
+        if (
+            len(
+                list(
+                    {
+                        element_info[element]["ri_cwft_basis"]
+                        for element in element_symbols
+                    }
+                )
+            )
+            == 1
+        ):
+            preamble_info += (
+                f"""AuxC {element_info[element_symbols[0]]['ri_cwft_basis']}\n"""
+            )
         else:
             for element in element_symbols:
-                element_basis = element_info[element]['ri_cwft_basis']
+                element_basis = element_info[element]["ri_cwft_basis"]
                 preamble_info += f"""NewAuxCGTO {element} "{element_basis}" end\n"""
 
         preamble_info += "end\n"
@@ -335,18 +373,18 @@ def generate_orca_input_preamble(
     # Write the scf block
     if scf_block is not None:
         preamble_info += "%scf\n"
-        for key in scf_block.keys():
+        for key in scf_block:
             preamble_info += f"""{key} {scf_block[key]}\n"""
         preamble_info += "end\n"
-    
+
     return preamble_info
 
 
 def create_orca_point_charge_file(
-        embedded_cluster: Atoms,
-        quantum_cluster_indices: list[int],
-        ecp_region_indices: list[int],
-        pc_file: str | Path
+    embedded_cluster: Atoms,
+    quantum_cluster_indices: list[int],
+    ecp_region_indices: list[int],
+    pc_file: str | Path,
 ) -> None:
     """
     Create a point charge file that can be read by ORCA. This requires the embedded_cluster Atoms object containing both atom_type and oxi_states arrays, as well as the indices of the quantum cluster and ECP region.
@@ -368,12 +406,12 @@ def create_orca_point_charge_file(
     """
 
     # Get the oxi_states arrays from the embedded_cluster
-    oxi_states= embedded_cluster.get_array("oxi_states")
+    oxi_states = embedded_cluster.get_array("oxi_states")
 
     # Check that none of the indices in quantum_cluster_indices are in ecp_region_indices
-    if np.all([True if x not in ecp_region_indices else False for x in quantum_cluster_indices]) == False:
+    if np.all([x not in ecp_region_indices for x in quantum_cluster_indices]) is False:
         raise ValueError("An atom in the quantum cluster is also in the ECP region.")
-    
+
     # Get the number of point charges for this system
     total_indices = quantum_cluster_indices + ecp_region_indices
     num_pc = len(embedded_cluster) - len(total_indices)
@@ -383,13 +421,16 @@ def create_orca_point_charge_file(
         f.write(f"{num_pc}\n")
         for i in range(len(embedded_cluster)):
             if i not in total_indices:
-                counter +=1
+                counter += 1
                 position = embedded_cluster[i].position
                 if counter != num_pc:
-                    f.write(f"{oxi_states[i]:-16.11f} {position[0]:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f}\n")
+                    f.write(
+                        f"{oxi_states[i]:-16.11f} {position[0]:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f}\n"
+                    )
                 else:
-                    f.write(f"{oxi_states[i]:-16.11f} {position[0]:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f}")                    
-
+                    f.write(
+                        f"{oxi_states[i]:-16.11f} {position[0]:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f}"
+                    )
 
 
 def get_cluster_info_from_slab(

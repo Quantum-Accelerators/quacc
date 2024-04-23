@@ -14,12 +14,12 @@ from quacc.atoms.skzcam import (
     _get_atom_distances,
     _get_ecp_region,
     convert_pun_to_atoms,
-    create_orca_point_charge_file,
     create_orca_eint_blocks,
+    create_orca_point_charge_file,
+    create_skzcam_clusters,
     format_ecp_info,
     generate_coords_block,
     generate_orca_input_preamble,
-    create_skzcam_clusters,
     get_cluster_info_from_slab,
     insert_adsorbate_to_embedded_cluster,
 )
@@ -34,64 +34,78 @@ def embedded_cluster():
         {"Mg": 2.0, "O": -2.0},
     )
 
+
 @pytest.fixture()
 def embedded_adsorbed_cluster():
-    embedded_cluster, quantum_cluster_indices, ecp_region_indices = create_skzcam_clusters(Path(FILE_DIR, "skzcam_files", "mgo_shells_cluster.pun.gz"), [0,0,2], {'Mg': 2.0, 'O': -2.0}, shell_max=2,ecp_dist=3,write_clusters=False)
-    adsorbate = Atoms('CO', positions = [[0.0,0.0,0.0],
-                                     [0.0,0.0,1.128]], pbc=[False,False,False])
+    embedded_cluster, quantum_cluster_indices, ecp_region_indices = (
+        create_skzcam_clusters(
+            Path(FILE_DIR, "skzcam_files", "mgo_shells_cluster.pun.gz"),
+            [0, 0, 2],
+            {"Mg": 2.0, "O": -2.0},
+            shell_max=2,
+            ecp_dist=3,
+            write_clusters=False,
+        )
+    )
+    adsorbate = Atoms(
+        "CO", positions=[[0.0, 0.0, 0.0], [0.0, 0.0, 1.128]], pbc=[False, False, False]
+    )
 
-    embedded_adsorbed_cluster, quantum_cluster_indices, ecp_region_indices = insert_adsorbate_to_embedded_cluster(embedded_cluster, adsorbate, [0.0,0.0,2.0], quantum_cluster_indices, ecp_region_indices)
+    embedded_adsorbed_cluster, quantum_cluster_indices, ecp_region_indices = (
+        insert_adsorbate_to_embedded_cluster(
+            embedded_cluster,
+            adsorbate,
+            [0.0, 0.0, 2.0],
+            quantum_cluster_indices,
+            ecp_region_indices,
+        )
+    )
     return embedded_adsorbed_cluster
+
 
 @pytest.fixture()
 def distance_matrix(embedded_cluster):
     return embedded_cluster.get_all_distances()
 
+
 def test_create_orca_eint_blocks(embedded_adsorbed_cluster):
     element_info = {
-    'C': {
-        'basis': 'aug-cc-pVDZ',
-        'core': 2,
-        'ri_scf_basis': 'def2/J',
-        'ri_cwft_basis': 'aug-cc-pVDZ/C'
-    },
-    'O': {
-        'basis': 'aug-cc-pVDZ',
-        'core': 2,
-        'ri_scf_basis': 'def2/JK',
-        'ri_cwft_basis': 'aug-cc-pVDZ/C'
-    },
-    'Mg': {
-        'basis': 'cc-pVDZ',
-        'core': 2,
-        'ri_scf_basis': 'def2/J',
-        'ri_cwft_basis': 'cc-pVDZ/C'
-    }  
-}
+        "C": {
+            "basis": "aug-cc-pVDZ",
+            "core": 2,
+            "ri_scf_basis": "def2/J",
+            "ri_cwft_basis": "aug-cc-pVDZ/C",
+        },
+        "O": {
+            "basis": "aug-cc-pVDZ",
+            "core": 2,
+            "ri_scf_basis": "def2/JK",
+            "ri_cwft_basis": "aug-cc-pVDZ/C",
+        },
+        "Mg": {
+            "basis": "cc-pVDZ",
+            "core": 2,
+            "ri_scf_basis": "def2/J",
+            "ri_cwft_basis": "cc-pVDZ/C",
+        },
+    }
 
-    pal_nprocs_block = {
-    'nprocs': 1,
-    'maxcore': 5000
-}
+    pal_nprocs_block = {"nprocs": 1, "maxcore": 5000}
 
-    method_block = {
-    'Method': 'hf',
-    'RI': 'on',
-    'RunTyp': 'Energy'
-}
+    method_block = {"Method": "hf", "RI": "on", "RunTyp": "Energy"}
 
     scf_block = {
-    'HFTyp': 'rhf',
-    'Guess': 'MORead',
-    'MOInp': '"orca_svp_start.gbw"',
-    'SCFMode': 'Direct',
-    'sthresh': '1e-6',
-    'AutoTRAHIter': 60,
-    'MaxIter': 1000
-}
+        "HFTyp": "rhf",
+        "Guess": "MORead",
+        "MOInp": '"orca_svp_start.gbw"',
+        "SCFMode": "Direct",
+        "sthresh": "1e-6",
+        "AutoTRAHIter": 60,
+        "MaxIter": 1000,
+    }
 
     ecp_info = {
-    'Mg': """NewECP
+        "Mg": """NewECP
 N_core 0
 lmax f
 s 1
@@ -103,31 +117,333 @@ d 1
 f 1
 1      1.000000000    0.000000000 2
 end"""
-}
-     
+    }
 
-
-    ad_slab_block, ad_block, slab_block = create_orca_eint_blocks(embedded_adsorbed_cluster,[0, 1, 2, 3, 4, 5, 6, 7], [8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],     element_info,    pal_nprocs_block,    method_block,    scf_block,ecp_info,include_cp=True,multiplicity={'ad_slab': 1, 'slab': 2, 'ad': 3})
+    ad_slab_block, ad_block, slab_block = create_orca_eint_blocks(
+        embedded_adsorbed_cluster,
+        [0, 1, 2, 3, 4, 5, 6, 7],
+        [8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
+        element_info,
+        pal_nprocs_block,
+        method_block,
+        scf_block,
+        ecp_info,
+        include_cp=True,
+        multiplicity={"ad_slab": 1, "slab": 2, "ad": 3},
+    )
     # Check that the strings and floats in ad_slab_coords matches reference
-    assert_allclose([float(x) for x in ad_slab_block.split()[::10] if x.replace('.','',1).replace('-','',1).isdigit()], [3.128, 0.0, 0.00567209089, 2.0, 1.203, 5.1757, 1.0, 2.0, 1.203, 5.1757, 1.0, 2.0, 1.203, 5.1757, 1.0, 2.0, 1.203, 5.1757, 1.0, 2.0, 1.203, 5.1757, 1.0, 2.0, 1.203, 5.1757, 1.0, 2.0, 1.203], rtol=1e-05, atol=1e-07)
+    assert_allclose(
+        [
+            float(x)
+            for x in ad_slab_block.split()[::10]
+            if x.replace(".", "", 1).replace("-", "", 1).isdigit()
+        ],
+        [
+            3.128,
+            0.0,
+            0.00567209089,
+            2.0,
+            1.203,
+            5.1757,
+            1.0,
+            2.0,
+            1.203,
+            5.1757,
+            1.0,
+            2.0,
+            1.203,
+            5.1757,
+            1.0,
+            2.0,
+            1.203,
+            5.1757,
+            1.0,
+            2.0,
+            1.203,
+            5.1757,
+            1.0,
+            2.0,
+            1.203,
+            5.1757,
+            1.0,
+            2.0,
+            1.203,
+        ],
+        rtol=1e-05,
+        atol=1e-07,
+    )
 
-    assert np.all([x for x in ad_slab_block.split()[::5] if not x.replace('.','',1).replace('-','',1).isdigit()] == ['%pal', 'Method', 'Energy', 'NewNCore', 'O', 'NewGTO', 'Mg', '"aug-cc-pVDZ"', 'end', 'NewAuxJGTO', 'C', '"cc-pVDZ/C"', 'end', 'Guess', 'Direct', 'MaxIter', 'xyz', 'Charge', 'O', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'end'])
+    assert np.all(
+        [
+            x
+            for x in ad_slab_block.split()[::5]
+            if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
+        ]
+        == [
+            "%pal",
+            "Method",
+            "Energy",
+            "NewNCore",
+            "O",
+            "NewGTO",
+            "Mg",
+            '"aug-cc-pVDZ"',
+            "end",
+            "NewAuxJGTO",
+            "C",
+            '"cc-pVDZ/C"',
+            "end",
+            "Guess",
+            "Direct",
+            "MaxIter",
+            "xyz",
+            "Charge",
+            "O",
+            "Mg>",
+            "NewECP",
+            "s",
+            "Mg>",
+            "NewECP",
+            "s",
+            "Mg>",
+            "NewECP",
+            "s",
+            "Mg>",
+            "NewECP",
+            "s",
+            "Mg>",
+            "NewECP",
+            "s",
+            "Mg>",
+            "NewECP",
+            "s",
+            "Mg>",
+            "NewECP",
+            "s",
+            "Mg>",
+            "NewECP",
+            "s",
+            "Mg>",
+            "NewECP",
+            "s",
+            "Mg>",
+            "NewECP",
+            "s",
+            "Mg>",
+            "NewECP",
+            "s",
+            "Mg>",
+            "NewECP",
+            "s",
+            "Mg>",
+            "NewECP",
+            "s",
+            "end",
+        ]
+    )
 
     # Check that the strings and floats in ad_coords matches reference
-    assert_allclose([float(x) for x in ad_block.split()[::2] if x.replace('.','',1).replace('-','',1).isdigit()],[1.0, 2.0, 2.0, 2.0, 0.0, 2.0, 0.0, 3.128, 0.0, 0.0, -2.12018425659, 0.00567209089, 0.0, 0.00567209089, 2.12018425659, 0.00567209089, 0.0, 0.00567209089, 0.0, -2.14129966123]
-, rtol=1e-05, atol=1e-07)
+    assert_allclose(
+        [
+            float(x)
+            for x in ad_block.split()[::2]
+            if x.replace(".", "", 1).replace("-", "", 1).isdigit()
+        ],
+        [
+            1.0,
+            2.0,
+            2.0,
+            2.0,
+            0.0,
+            2.0,
+            0.0,
+            3.128,
+            0.0,
+            0.0,
+            -2.12018425659,
+            0.00567209089,
+            0.0,
+            0.00567209089,
+            2.12018425659,
+            0.00567209089,
+            0.0,
+            0.00567209089,
+            0.0,
+            -2.14129966123,
+        ],
+        rtol=1e-05,
+        atol=1e-07,
+    )
 
-    assert np.all( [x for x in ad_block.split()[::2] if not x.replace('.','',1).replace('-','',1).isdigit()] == ['%pal', '%maxcore', 'end', '"orca.pc"', 'Method', 'RI', 'RunTyp', 'NewNCore', 'NewNCore', 'NewNCore', 'end', 'NewGTO', '"aug-cc-pVDZ"', 'NewGTO', '"cc-pVDZ"', 'NewGTO', '"aug-cc-pVDZ"', 'NewAuxJGTO', '"def2/J"', 'NewAuxJGTO', '"def2/J"', 'NewAuxJGTO', '"def2/JK"', 'NewAuxCGTO', '"aug-cc-pVDZ/C"', 'NewAuxCGTO', '"cc-pVDZ/C"', 'NewAuxCGTO', '"aug-cc-pVDZ/C"', 'end', 'HFTyp', 'Guess', 'MOInp', 'SCFMode', 'sthresh', 'AutoTRAHIter', 'MaxIter', 'end', 'CTyp', 'Mult', 'Units', 'Charge', 'coords', 'end'])
+    assert np.all(
+        [
+            x
+            for x in ad_block.split()[::2]
+            if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
+        ]
+        == [
+            "%pal",
+            "%maxcore",
+            "end",
+            '"orca.pc"',
+            "Method",
+            "RI",
+            "RunTyp",
+            "NewNCore",
+            "NewNCore",
+            "NewNCore",
+            "end",
+            "NewGTO",
+            '"aug-cc-pVDZ"',
+            "NewGTO",
+            '"cc-pVDZ"',
+            "NewGTO",
+            '"aug-cc-pVDZ"',
+            "NewAuxJGTO",
+            '"def2/J"',
+            "NewAuxJGTO",
+            '"def2/J"',
+            "NewAuxJGTO",
+            '"def2/JK"',
+            "NewAuxCGTO",
+            '"aug-cc-pVDZ/C"',
+            "NewAuxCGTO",
+            '"cc-pVDZ/C"',
+            "NewAuxCGTO",
+            '"aug-cc-pVDZ/C"',
+            "end",
+            "HFTyp",
+            "Guess",
+            "MOInp",
+            "SCFMode",
+            "sthresh",
+            "AutoTRAHIter",
+            "MaxIter",
+            "end",
+            "CTyp",
+            "Mult",
+            "Units",
+            "Charge",
+            "coords",
+            "end",
+        ]
+    )
 
     # Check that the strings and floats in slab_coords matches reference
-    assert_allclose([float(x) for x in slab_block.split()[::10] if x.replace('.','',1).replace('-','',1).isdigit()], [3.128, 0.0, 0.00567209089, 2.0, 1.203, 5.1757, 1.0, 2.0, 1.203, 5.1757, 1.0, 2.0, 1.203, 5.1757, 1.0, 2.0, 1.203, 5.1757, 1.0, 2.0, 1.203, 5.1757, 1.0, 2.0, 1.203, 5.1757, 1.0, 2.0, 1.203], rtol=1e-05, atol=1e-07)
+    assert_allclose(
+        [
+            float(x)
+            for x in slab_block.split()[::10]
+            if x.replace(".", "", 1).replace("-", "", 1).isdigit()
+        ],
+        [
+            3.128,
+            0.0,
+            0.00567209089,
+            2.0,
+            1.203,
+            5.1757,
+            1.0,
+            2.0,
+            1.203,
+            5.1757,
+            1.0,
+            2.0,
+            1.203,
+            5.1757,
+            1.0,
+            2.0,
+            1.203,
+            5.1757,
+            1.0,
+            2.0,
+            1.203,
+            5.1757,
+            1.0,
+            2.0,
+            1.203,
+            5.1757,
+            1.0,
+            2.0,
+            1.203,
+        ],
+        rtol=1e-05,
+        atol=1e-07,
+    )
 
-    assert np.all([x for x in slab_block.split()[::5] if not x.replace('.','',1).replace('-','',1).isdigit()] == ['%pal', 'Method', 'Energy', 'NewNCore', 'O', 'NewGTO', 'Mg', '"aug-cc-pVDZ"', 'end', 'NewAuxJGTO', 'C', '"cc-pVDZ/C"', 'end', 'Guess', 'Direct', 'MaxIter', 'xyz', 'Charge', 'O', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'Mg>', 'NewECP', 's', 'end'])
+    assert np.all(
+        [
+            x
+            for x in slab_block.split()[::5]
+            if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
+        ]
+        == [
+            "%pal",
+            "Method",
+            "Energy",
+            "NewNCore",
+            "O",
+            "NewGTO",
+            "Mg",
+            '"aug-cc-pVDZ"',
+            "end",
+            "NewAuxJGTO",
+            "C",
+            '"cc-pVDZ/C"',
+            "end",
+            "Guess",
+            "Direct",
+            "MaxIter",
+            "xyz",
+            "Charge",
+            "O",
+            "Mg>",
+            "NewECP",
+            "s",
+            "Mg>",
+            "NewECP",
+            "s",
+            "Mg>",
+            "NewECP",
+            "s",
+            "Mg>",
+            "NewECP",
+            "s",
+            "Mg>",
+            "NewECP",
+            "s",
+            "Mg>",
+            "NewECP",
+            "s",
+            "Mg>",
+            "NewECP",
+            "s",
+            "Mg>",
+            "NewECP",
+            "s",
+            "Mg>",
+            "NewECP",
+            "s",
+            "Mg>",
+            "NewECP",
+            "s",
+            "Mg>",
+            "NewECP",
+            "s",
+            "Mg>",
+            "NewECP",
+            "s",
+            "Mg>",
+            "NewECP",
+            "s",
+            "end",
+        ]
+    )
 
 
 def test_get_coords_block(embedded_adsorbed_cluster):
     ecp_info = {
-    'Mg': """NewECP
+        "Mg": """NewECP
 N_core 0
 lmax f
 s 1
@@ -139,38 +455,340 @@ d 1
 f 1
 1      1.000000000    0.000000000 2
 end"""
-}
+    }
 
-    ad_slab_coords, ad_coords, slab_coords = generate_coords_block(embedded_adsorbed_cluster, [0, 1, 2, 3, 4, 5, 6, 7], [8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24], ecp_info,include_cp=True,multiplicity={'ad_slab': 1, 'slab': 2, 'ad': 3})
+    ad_slab_coords, ad_coords, slab_coords = generate_coords_block(
+        embedded_adsorbed_cluster,
+        [0, 1, 2, 3, 4, 5, 6, 7],
+        [8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
+        ecp_info,
+        include_cp=True,
+        multiplicity={"ad_slab": 1, "slab": 2, "ad": 3},
+    )
 
     # Check that the strings and floats in ad_slab_coords matches reference
-    assert_allclose([float(x) for x in ad_slab_coords.split()[::10] if x.replace('.','',1).replace('-','',1).isdigit()], [0.0, 0.0, 1.0, 2.11144262254, 1.732, 1.0, 2.0, 1.0, -2.11144262254, 1.732, 1.0, 2.0, 1.0, 2.10705287155, 1.732, 1.0, 2.0, 1.0, -2.10705287155, 1.732, 1.0, 2.0, 1.0, 4.22049352791, 1.732, 1.0, 2.0, 1.0, -4.22049352791, 1.732, 1.0, 2.0, 1.0], rtol=1e-05, atol=1e-07)
+    assert_allclose(
+        [
+            float(x)
+            for x in ad_slab_coords.split()[::10]
+            if x.replace(".", "", 1).replace("-", "", 1).isdigit()
+        ],
+        [
+            0.0,
+            0.0,
+            1.0,
+            2.11144262254,
+            1.732,
+            1.0,
+            2.0,
+            1.0,
+            -2.11144262254,
+            1.732,
+            1.0,
+            2.0,
+            1.0,
+            2.10705287155,
+            1.732,
+            1.0,
+            2.0,
+            1.0,
+            -2.10705287155,
+            1.732,
+            1.0,
+            2.0,
+            1.0,
+            4.22049352791,
+            1.732,
+            1.0,
+            2.0,
+            1.0,
+            -4.22049352791,
+            1.732,
+            1.0,
+            2.0,
+            1.0,
+        ],
+        rtol=1e-05,
+        atol=1e-07,
+    )
 
-    assert np.all([x for x in ad_slab_coords.split()[::5] if not x.replace('.','',1).replace('-','',1).isdigit()] == ['%coords', 'Units', 'C', 'O', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f'])
+    assert np.all(
+        [
+            x
+            for x in ad_slab_coords.split()[::5]
+            if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
+        ]
+        == [
+            "%coords",
+            "Units",
+            "C",
+            "O",
+            "lmax",
+            "f",
+            "lmax",
+            "f",
+            "lmax",
+            "f",
+            "lmax",
+            "f",
+            "lmax",
+            "f",
+            "lmax",
+            "f",
+            "lmax",
+            "f",
+            "lmax",
+            "f",
+            "lmax",
+            "f",
+            "lmax",
+            "f",
+            "lmax",
+            "f",
+            "lmax",
+            "f",
+            "lmax",
+            "f",
+        ]
+    )
 
     # Check that the strings and floats in ad_coords matches reference
-    assert_allclose([float(x) for x in ad_coords.split()[::2] if x.replace('.','',1).replace('-','',1).isdigit()],[3.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.12018425659, 0.0, -2.12018425659, 0.0], rtol=1e-05, atol=1e-07)
+    assert_allclose(
+        [
+            float(x)
+            for x in ad_coords.split()[::2]
+            if x.replace(".", "", 1).replace("-", "", 1).isdigit()
+        ],
+        [3.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.12018425659, 0.0, -2.12018425659, 0.0],
+        rtol=1e-05,
+        atol=1e-07,
+    )
 
-    assert np.all( [x for x in ad_coords.split()[::2] if not x.replace('.','',1).replace('-','',1).isdigit()] == ['%coords', 'xyz', 'angs', 'C', 'O', 'Mg:', 'O:', 'O:', 'O:', 'O:', 'O:', 'end'])
+    assert np.all(
+        [
+            x
+            for x in ad_coords.split()[::2]
+            if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
+        ]
+        == [
+            "%coords",
+            "xyz",
+            "angs",
+            "C",
+            "O",
+            "Mg:",
+            "O:",
+            "O:",
+            "O:",
+            "O:",
+            "O:",
+            "end",
+        ]
+    )
 
     # Check that the strings and floats in slab_coords matches reference
-    assert_allclose([float(x) for x in slab_coords.split()[::10] if x.replace('.','',1).replace('-','',1).isdigit()], [0.0, 0.0, 1.0, 2.11144262254, 1.732, 1.0, 2.0, 1.0, -2.11144262254, 1.732, 1.0, 2.0, 1.0, 2.10705287155, 1.732, 1.0, 2.0, 1.0, -2.10705287155, 1.732, 1.0, 2.0, 1.0, 4.22049352791, 1.732, 1.0, 2.0, 1.0, -4.22049352791, 1.732, 1.0, 2.0, 1.0], rtol=1e-05, atol=1e-07)
+    assert_allclose(
+        [
+            float(x)
+            for x in slab_coords.split()[::10]
+            if x.replace(".", "", 1).replace("-", "", 1).isdigit()
+        ],
+        [
+            0.0,
+            0.0,
+            1.0,
+            2.11144262254,
+            1.732,
+            1.0,
+            2.0,
+            1.0,
+            -2.11144262254,
+            1.732,
+            1.0,
+            2.0,
+            1.0,
+            2.10705287155,
+            1.732,
+            1.0,
+            2.0,
+            1.0,
+            -2.10705287155,
+            1.732,
+            1.0,
+            2.0,
+            1.0,
+            4.22049352791,
+            1.732,
+            1.0,
+            2.0,
+            1.0,
+            -4.22049352791,
+            1.732,
+            1.0,
+            2.0,
+            1.0,
+        ],
+        rtol=1e-05,
+        atol=1e-07,
+    )
 
-    assert np.all([x for x in slab_coords.split()[::5] if not x.replace('.','',1).replace('-','',1).isdigit()] == ['%coords', 'Units', 'C:', 'O', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f', 'lmax', 'f'])
+    assert np.all(
+        [
+            x
+            for x in slab_coords.split()[::5]
+            if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
+        ]
+        == [
+            "%coords",
+            "Units",
+            "C:",
+            "O",
+            "lmax",
+            "f",
+            "lmax",
+            "f",
+            "lmax",
+            "f",
+            "lmax",
+            "f",
+            "lmax",
+            "f",
+            "lmax",
+            "f",
+            "lmax",
+            "f",
+            "lmax",
+            "f",
+            "lmax",
+            "f",
+            "lmax",
+            "f",
+            "lmax",
+            "f",
+            "lmax",
+            "f",
+            "lmax",
+            "f",
+        ]
+    )
 
     # Also check the case where include_cp is False
-    ad_slab_coords, ad_coords, slab_coords = generate_coords_block(embedded_adsorbed_cluster, [0, 1, 2, 3, 4, 5, 6, 7], [8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24], ecp_info,include_cp=False,multiplicity={'ad_slab': 1, 'slab': 2, 'ad': 3})
+    ad_slab_coords, ad_coords, slab_coords = generate_coords_block(
+        embedded_adsorbed_cluster,
+        [0, 1, 2, 3, 4, 5, 6, 7],
+        [8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
+        ecp_info,
+        include_cp=False,
+        multiplicity={"ad_slab": 1, "slab": 2, "ad": 3},
+    )
 
     # Check that the strings and floats in ad_coords matches reference
-    assert_allclose([float(x) for x in ad_coords.split()[::2] if x.replace('.','',1).replace('-','',1).isdigit()],[3.0, 0.0, 0.0, 0.0], rtol=1e-05, atol=1e-07)
+    assert_allclose(
+        [
+            float(x)
+            for x in ad_coords.split()[::2]
+            if x.replace(".", "", 1).replace("-", "", 1).isdigit()
+        ],
+        [3.0, 0.0, 0.0, 0.0],
+        rtol=1e-05,
+        atol=1e-07,
+    )
 
-    assert np.all( [x for x in ad_coords.split()[::2] if not x.replace('.','',1).replace('-','',1).isdigit()] == ['%coords', 'xyz', 'angs', 'C', 'O', 'end'])
-
+    assert np.all(
+        [
+            x
+            for x in ad_coords.split()[::2]
+            if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
+        ]
+        == ["%coords", "xyz", "angs", "C", "O", "end"]
+    )
 
     # Check that the strings and float in slab_coords matches reference
-    assert_allclose([float(x) for x in slab_coords.split()[::10] if x.replace('.','',1).replace('-','',1).isdigit()], [2.12018425659, -1.816, 2.11144262254, 1.0, 2.0, 1.0, -1.816, -2.11144262254, 1.0, 2.0, 1.0, -1.816, 0.0, 1.0, 2.0, 1.0, -1.816, 0.0, 1.0, 2.0, 1.0, -1.816, 0.0, 1.0, 2.0, 1.0, -1.816, 0.0, 1.0, 2.0, 1.0, -1.816], rtol=1e-05, atol=1e-07)
+    assert_allclose(
+        [
+            float(x)
+            for x in slab_coords.split()[::10]
+            if x.replace(".", "", 1).replace("-", "", 1).isdigit()
+        ],
+        [
+            2.12018425659,
+            -1.816,
+            2.11144262254,
+            1.0,
+            2.0,
+            1.0,
+            -1.816,
+            -2.11144262254,
+            1.0,
+            2.0,
+            1.0,
+            -1.816,
+            0.0,
+            1.0,
+            2.0,
+            1.0,
+            -1.816,
+            0.0,
+            1.0,
+            2.0,
+            1.0,
+            -1.816,
+            0.0,
+            1.0,
+            2.0,
+            1.0,
+            -1.816,
+            0.0,
+            1.0,
+            2.0,
+            1.0,
+            -1.816,
+        ],
+        rtol=1e-05,
+        atol=1e-07,
+    )
 
-    assert np.all([x for x in slab_coords.split()[::5] if not x.replace('.','',1).replace('-','',1).isdigit()] == ['%coords', 'Units', 'Mg', 'O', 'N_core', 'p', 'N_core', 'p', 'N_core', 'p', 'N_core', 'p', 'N_core', 'p', 'N_core', 'p', 'N_core', 'p', 'N_core', 'p', 'N_core', 'p', 'N_core', 'p', 'N_core', 'p', 'N_core', 'p', 'N_core', 'p', 'end'])
+    assert np.all(
+        [
+            x
+            for x in slab_coords.split()[::5]
+            if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
+        ]
+        == [
+            "%coords",
+            "Units",
+            "Mg",
+            "O",
+            "N_core",
+            "p",
+            "N_core",
+            "p",
+            "N_core",
+            "p",
+            "N_core",
+            "p",
+            "N_core",
+            "p",
+            "N_core",
+            "p",
+            "N_core",
+            "p",
+            "N_core",
+            "p",
+            "N_core",
+            "p",
+            "N_core",
+            "p",
+            "N_core",
+            "p",
+            "N_core",
+            "p",
+            "N_core",
+            "p",
+            "end",
+        ]
+    )
+
 
 def test_format_ecp_info():
     atom_ecp_info = """dummy_info
@@ -187,128 +805,145 @@ eNd
 """
     formatted_atom_ecp_info = format_ecp_info(atom_ecp_info)
 
-    assert formatted_atom_ecp_info == 'NewECP\nN_core 0\nlmax s\ns 1\n1      1.732000000   14.676000000 2\nend\n'
+    assert (
+        formatted_atom_ecp_info
+        == "NewECP\nN_core 0\nlmax s\ns 1\n1      1.732000000   14.676000000 2\nend\n"
+    )
+
 
 def test_generate_orca_input_preamble(embedded_adsorbed_cluster):
-    
     # Set-up some information needed for generating orca input
     element_info = {
-    'C': {
-        'basis': 'aug-cc-pVDZ',
-        'core': 2,
-        'ri_scf_basis': 'def2/J',
-        'ri_cwft_basis': 'aug-cc-pVDZ/C'
-    },
-    'O': {
-        'basis': 'aug-cc-pVDZ',
-        'core': 2,
-        'ri_scf_basis': 'def2/JK',
-        'ri_cwft_basis': 'aug-cc-pVDZ/C'
-    },
-    'Mg': {
-        'basis': 'cc-pVDZ',
-        'core': 2,
-        'ri_scf_basis': 'def2/J',
-        'ri_cwft_basis': 'cc-pVDZ/C'
-    }  
+        "C": {
+            "basis": "aug-cc-pVDZ",
+            "core": 2,
+            "ri_scf_basis": "def2/J",
+            "ri_cwft_basis": "aug-cc-pVDZ/C",
+        },
+        "O": {
+            "basis": "aug-cc-pVDZ",
+            "core": 2,
+            "ri_scf_basis": "def2/JK",
+            "ri_cwft_basis": "aug-cc-pVDZ/C",
+        },
+        "Mg": {
+            "basis": "cc-pVDZ",
+            "core": 2,
+            "ri_scf_basis": "def2/J",
+            "ri_cwft_basis": "cc-pVDZ/C",
+        },
     }
 
-    pal_nprocs_block = {
-        'nprocs': 1,
-        'maxcore': 5000
-    }
+    pal_nprocs_block = {"nprocs": 1, "maxcore": 5000}
 
-    method_block = {
-        'Method': 'hf',
-        'RI': 'on',
-        'RunTyp': 'Energy'
-    }
+    method_block = {"Method": "hf", "RI": "on", "RunTyp": "Energy"}
 
     scf_block = {
-        'HFTyp': 'rhf',
-        'Guess': 'MORead',
-        'MOInp': '"orca_svp_start.gbw"',
-        'SCFMode': 'Direct',
-        'sthresh': '1e-6',
-        'AutoTRAHIter': 60,
-        'MaxIter': 1000
+        "HFTyp": "rhf",
+        "Guess": "MORead",
+        "MOInp": '"orca_svp_start.gbw"',
+        "SCFMode": "Direct",
+        "sthresh": "1e-6",
+        "AutoTRAHIter": 60,
+        "MaxIter": 1000,
     }
 
     # Generate the orca input preamble
-    preamble_input = generate_orca_input_preamble(embedded_adsorbed_cluster,[0, 1, 2, 3, 4, 5, 6, 7],element_info = element_info, pal_nprocs_block=pal_nprocs_block, method_block = method_block, scf_block = scf_block)
+    preamble_input = generate_orca_input_preamble(
+        embedded_adsorbed_cluster,
+        [0, 1, 2, 3, 4, 5, 6, 7],
+        element_info=element_info,
+        pal_nprocs_block=pal_nprocs_block,
+        method_block=method_block,
+        scf_block=scf_block,
+    )
 
-    assert preamble_input == '%pal nprocs 1 end\n%maxcore 5000 end\n%pointcharges "orca.pc"\n%method\nMethod hf\nRI on\nRunTyp Energy\nNewNCore C 2 end\nNewNCore Mg 2 end\nNewNCore O 2 end\nend\n%basis\nNewGTO C "aug-cc-pVDZ" end\nNewGTO Mg "cc-pVDZ" end\nNewGTO O "aug-cc-pVDZ" end\nNewAuxJGTO C "def2/J" end\nNewAuxJGTO Mg "def2/J" end\nNewAuxJGTO O "def2/JK" end\nNewAuxCGTO C "aug-cc-pVDZ/C" end\nNewAuxCGTO Mg "cc-pVDZ/C" end\nNewAuxCGTO O "aug-cc-pVDZ/C" end\nend\n%scf\nHFTyp rhf\nGuess MORead\nMOInp "orca_svp_start.gbw"\nSCFMode Direct\nsthresh 1e-6\nAutoTRAHIter 60\nMaxIter 1000\nend\n'
+    assert (
+        preamble_input
+        == '%pal nprocs 1 end\n%maxcore 5000 end\n%pointcharges "orca.pc"\n%method\nMethod hf\nRI on\nRunTyp Energy\nNewNCore C 2 end\nNewNCore Mg 2 end\nNewNCore O 2 end\nend\n%basis\nNewGTO C "aug-cc-pVDZ" end\nNewGTO Mg "cc-pVDZ" end\nNewGTO O "aug-cc-pVDZ" end\nNewAuxJGTO C "def2/J" end\nNewAuxJGTO Mg "def2/J" end\nNewAuxJGTO O "def2/JK" end\nNewAuxCGTO C "aug-cc-pVDZ/C" end\nNewAuxCGTO Mg "cc-pVDZ/C" end\nNewAuxCGTO O "aug-cc-pVDZ/C" end\nend\n%scf\nHFTyp rhf\nGuess MORead\nMOInp "orca_svp_start.gbw"\nSCFMode Direct\nsthresh 1e-6\nAutoTRAHIter 60\nMaxIter 1000\nend\n'
+    )
 
     # Check the case if the element_info has all of the same values
     element_info = {
-    'C': {
-        'basis': 'def2-SVP',
-        'core': 2,
-        'ri_scf_basis': 'def2/J',
-        'ri_cwft_basis': 'def2-SVP/C'
-    },
-    'O': {
-        'basis': 'def2-SVP',
-        'core': 2,
-        'ri_scf_basis': 'def2/J',
-        'ri_cwft_basis': 'def2-SVP/C'
-    },
-    'Mg': {
-        'basis': 'def2-SVP',
-        'core': 2,
-        'ri_scf_basis': 'def2/J',
-        'ri_cwft_basis': 'def2-SVP/C'
-    }  
+        "C": {
+            "basis": "def2-SVP",
+            "core": 2,
+            "ri_scf_basis": "def2/J",
+            "ri_cwft_basis": "def2-SVP/C",
+        },
+        "O": {
+            "basis": "def2-SVP",
+            "core": 2,
+            "ri_scf_basis": "def2/J",
+            "ri_cwft_basis": "def2-SVP/C",
+        },
+        "Mg": {
+            "basis": "def2-SVP",
+            "core": 2,
+            "ri_scf_basis": "def2/J",
+            "ri_cwft_basis": "def2-SVP/C",
+        },
     }
 
-    preamble_input = generate_orca_input_preamble(embedded_adsorbed_cluster,[0, 1, 2, 3, 4, 5, 6, 7],element_info = element_info, pal_nprocs_block=pal_nprocs_block, method_block = method_block, scf_block = scf_block)
+    preamble_input = generate_orca_input_preamble(
+        embedded_adsorbed_cluster,
+        [0, 1, 2, 3, 4, 5, 6, 7],
+        element_info=element_info,
+        pal_nprocs_block=pal_nprocs_block,
+        method_block=method_block,
+        scf_block=scf_block,
+    )
 
-    assert preamble_input == '%pal nprocs 1 end\n%maxcore 5000 end\n%pointcharges "orca.pc"\n%method\nMethod hf\nRI on\nRunTyp Energy\nNewNCore C 2 end\nNewNCore Mg 2 end\nNewNCore O 2 end\nend\n%basis\nBasis def2-SVP\nAux def2/J\nAuxC def2-SVP/C\nend\n%scf\nHFTyp rhf\nGuess MORead\nMOInp "orca_svp_start.gbw"\nSCFMode Direct\nsthresh 1e-6\nAutoTRAHIter 60\nMaxIter 1000\nend\n'
+    assert (
+        preamble_input
+        == '%pal nprocs 1 end\n%maxcore 5000 end\n%pointcharges "orca.pc"\n%method\nMethod hf\nRI on\nRunTyp Energy\nNewNCore C 2 end\nNewNCore Mg 2 end\nNewNCore O 2 end\nend\n%basis\nBasis def2-SVP\nAux def2/J\nAuxC def2-SVP/C\nend\n%scf\nHFTyp rhf\nGuess MORead\nMOInp "orca_svp_start.gbw"\nSCFMode Direct\nsthresh 1e-6\nAutoTRAHIter 60\nMaxIter 1000\nend\n'
+    )
 
     # Testing the case if we provide no blocks
-    preamble_input = generate_orca_input_preamble(embedded_adsorbed_cluster,[0, 1, 2, 3, 4, 5, 6, 7])
+    preamble_input = generate_orca_input_preamble(
+        embedded_adsorbed_cluster, [0, 1, 2, 3, 4, 5, 6, 7]
+    )
 
     assert preamble_input == '%pointcharges "orca.pc"\n'
 
 
 def test_create_orca_point_charge_file(embedded_adsorbed_cluster, tmpdir):
-    
     # Create the point charge file
-    create_orca_point_charge_file(embedded_adsorbed_cluster, [0, 1, 2, 3, 4, 5, 6, 7], [8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24], Path(tmpdir,'orca.pc'))
+    create_orca_point_charge_file(
+        embedded_adsorbed_cluster,
+        [0, 1, 2, 3, 4, 5, 6, 7],
+        [8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
+        Path(tmpdir, "orca.pc"),
+    )
 
     # Read the written file
-    orca_pc_file = np.loadtxt(Path(tmpdir,'orca.pc'),skiprows=1)
-    
+    orca_pc_file = np.loadtxt(Path(tmpdir, "orca.pc"), skiprows=1)
+
     # Check that the contents of the file match the reference
     assert len(orca_pc_file) == 371
 
-    assert_allclose(orca_pc_file[::30],np.array([[-2.00000000e+00, -2.11070451e+00,  2.11070451e+00,
-        -2.14923990e+00],
-       [ 2.00000000e+00,  2.11024676e+00, -2.11024676e+00,
-        -4.26789529e+00],
-       [ 2.00000000e+00,  6.32954443e+00,  2.11144262e+00,
-        -4.36728442e-02],
-       [-2.00000000e+00, -4.22049353e+00,  6.32889566e+00,
-         7.72802266e-03],
-       [ 2.00000000e+00, -6.33074029e+00, -2.11024676e+00,
-        -4.26789529e+00],
-       [-2.00000000e+00,  4.22049353e+00, -6.33074029e+00,
-        -4.26789529e+00],
-       [-2.00000000e+00,  6.33074029e+00,  2.11024676e+00,
-        -6.37814205e+00],
-       [-2.00000000e+00,  2.11024676e+00, -8.44098706e+00,
-        -4.26789529e+00],
-       [-2.00000000e+00, -8.44098706e+00, -6.32080280e+00,
-         5.67209089e-03],
-       [ 2.00000000e+00, -2.11024676e+00,  8.44098706e+00,
-        -6.37814205e+00],
-       [ 8.00000000e-01, -4.64254288e+01,  3.79844418e+01,
-        -3.99237095e-02],
-       [ 3.12302613e+00, -0.00000000e+00, -5.71441194e+01,
-        -2.36698692e+01],
-       [ 2.10472999e+00, -2.36698692e+01,  5.71441194e+01,
-         2.59086514e+01]]),    rtol=1e-05,
-        atol=1e-07)
+    assert_allclose(
+        orca_pc_file[::30],
+        np.array(
+            [
+                [-2.00000000e00, -2.11070451e00, 2.11070451e00, -2.14923990e00],
+                [2.00000000e00, 2.11024676e00, -2.11024676e00, -4.26789529e00],
+                [2.00000000e00, 6.32954443e00, 2.11144262e00, -4.36728442e-02],
+                [-2.00000000e00, -4.22049353e00, 6.32889566e00, 7.72802266e-03],
+                [2.00000000e00, -6.33074029e00, -2.11024676e00, -4.26789529e00],
+                [-2.00000000e00, 4.22049353e00, -6.33074029e00, -4.26789529e00],
+                [-2.00000000e00, 6.33074029e00, 2.11024676e00, -6.37814205e00],
+                [-2.00000000e00, 2.11024676e00, -8.44098706e00, -4.26789529e00],
+                [-2.00000000e00, -8.44098706e00, -6.32080280e00, 5.67209089e-03],
+                [2.00000000e00, -2.11024676e00, 8.44098706e00, -6.37814205e00],
+                [8.00000000e-01, -4.64254288e01, 3.79844418e01, -3.99237095e-02],
+                [3.12302613e00, -0.00000000e00, -5.71441194e01, -2.36698692e01],
+                [2.10472999e00, -2.36698692e01, 5.71441194e01, 2.59086514e01],
+            ]
+        ),
+        rtol=1e-05,
+        atol=1e-07,
+    )
 
 
 def test_get_cluster_info_from_slab():
