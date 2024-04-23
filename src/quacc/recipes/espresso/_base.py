@@ -140,7 +140,7 @@ class RunAndSummarize:
         opt_flags = recursive_dict_merge(opt_defaults, opt_params)
         dyn = run_opt(
             self.input_atoms,
-            copy_files=self.updated_copy_files,
+            copy_files=self.copy_files,
             **opt_flags,
         )
         return summarize_opt_run(
