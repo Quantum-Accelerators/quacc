@@ -13,7 +13,7 @@ from ase.optimize import BFGSLineSearch
 
 from quacc import job
 from quacc.calculators.vasp import Vasp
-from quacc.recipes.vasp._base import run_and_summarize
+from quacc.recipes.vasp._base import run_and_summarize, run_and_summarize_opt
 from quacc.runners.ase import run_opt
 from quacc.schemas.ase import summarize_opt_run
 from quacc.utils.dicts import recursive_dict_merge
@@ -134,12 +134,7 @@ def _prerelax(
         "nelm": 225,
         "nsw": 0,
     }
-    calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
-    atoms.calc = Vasp(atoms, preset=preset, **calc_flags)
-    dyn = run_opt(atoms, fmax=fmax, optimizer=BFGSLineSearch)
-
-    return summarize_opt_run(dyn, additional_fields={"name": "QMOF Prerelax"})
-
+    return run_and_summarize_opt(atoms,preset=preset,calc_defaults=calc_defaults,calc_swaps=calc_kwargs,opt_defaults={"fmax":fmax,"optimizer":BFGSLineSearch},additional_fields={"name":"QMOF Prerelax"})
 
 def _loose_relax_positions(
     atoms: Atoms, preset: str | None = "QMOFSet", **calc_kwargs
