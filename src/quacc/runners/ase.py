@@ -77,7 +77,7 @@ class Runner:
         -------
         None
         """
-        self.atoms = copy_atoms(atoms) if atoms is not None else atoms
+        self.atoms = copy_atoms(atoms) if atoms else atoms
         self.copy_files = copy_files
         self.tmpdir, self.job_results_dir = calc_setup(
             self.atoms, copy_files=self.copy_files
@@ -85,7 +85,7 @@ class Runner:
 
     def run_calc(self, geom_file: str | None = None, get_forces: bool = False) -> Atoms:
         """
-        This is a wrapper around atoms.get_potential_energy(). Note: This function
+        This is a wrapper around `atoms.get_potential_energy()`. Note: This function
         does not modify the atoms object in-place.
 
         Parameters
@@ -94,8 +94,8 @@ class Runner:
             The filename of the log file that contains the output geometry, used to
             update the atoms object's positions and cell after a job. It is better
             to specify this rather than relying on ASE's
-            atoms.get_potential_energy() function to update the positions, as this
-            varies between codes.
+            `atoms.get_potential_energy()` function to update the positions, as the
+            latter behavior varies between codes.
         get_forces
             Whether to use `atoms.get_forces()` instead of `atoms.get_potential_energy()`.
 
@@ -175,7 +175,7 @@ class Runner:
             optimization. If enabled, they will be stored in a directory named
             `stepN` where `N` is the step number, starting at 0.
         run_kwargs
-            Dictionary of kwargs for the run() method of the optimizer.
+            Dictionary of kwargs for the `run()` method of the optimizer.
 
         Returns
         -------
@@ -238,10 +238,7 @@ class Runner:
 
         return dyn
 
-    def run_vib(
-        self,
-        vib_kwargs: VibKwargs | None = None,
-    ) -> Vibrations:
+    def run_vib(self, vib_kwargs: VibKwargs | None = None) -> Vibrations:
         """
         Run an ASE-based vibration analysis in a scratch directory and copy the results back
         to the original directory. This can be useful if file I/O is slow in the working
