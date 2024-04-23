@@ -102,15 +102,11 @@ def ase_relax_job(
         BASE_SET,
         {"keywords": {"write_forces": True, "forces_output_detail": "verbose"}},
     )
-
     opt_defaults = {"optimizer": LBFGS, "relax_cell": relax_cell}
-
     return RunAndSummarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        opt_defaults=opt_defaults,
-        opt_params=opt_params,
         additional_fields={"name": "ONETEP ASE Relax"},
         copy_files=copy_files,
-    ).optimize()
+    ).optimize(opt_defaults=opt_defaults, opt_params=opt_params)
