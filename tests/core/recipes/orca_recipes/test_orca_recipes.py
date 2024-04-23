@@ -5,8 +5,22 @@ from pathlib import Path
 
 import pytest
 from ase.build import molecule
+from ase.io import read
 
-from quacc.recipes.orca.core import ase_relax_job, relax_job, static_job
+from quacc.recipes.orca.core import (
+    ase_quasi_irc_perturb_job,
+    ase_relax_job,
+    freq_job,
+    relax_job,
+    static_job,
+)
+
+FILE_DIR = Path(__file__).parent
+
+
+@pytest.fixture()
+def test_atoms():
+    return read(FILE_DIR / "xyz" / "ts_test.xyz")
 
 
 def test_static_job(tmp_path, monkeypatch):
@@ -141,3 +155,66 @@ def test_ase_relax_job_store(tmp_path, monkeypatch):
         assert "orca.xyz.gz" in os.listdir(Path(output["dir_name"], f"step{i}"))
     assert len(output["steps"]) == nsteps
     assert "attributes" in output["steps"][0]
+
+
+@pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
+def test_freq_job(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    atoms = molecule("H2")
+
+    output = freq_job(
+        atoms,
+        xc="hf",
+        basis="def2-svp",
+        charge=0,
+        spin_multiplicity=1,
+        orcasimpleinput=["#normalprint"],
+    )
+    assert output["natoms"] == len(atoms)
+    assert output["parameters"]["charge"] == 0
+    assert output["parameters"]["mult"] == 1
+    assert output["parameters"]["orcasimpleinput"] == "def2-svp freq hf xyzfile"
+    assert output.get("attributes")
+
+
+@pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
+def test_ase_quasi_irc_perturb_job(test_atoms, tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    mode = [
+        [-0.164243, 0.289973, 0.026016],
+        [0.111755, -0.021282, -0.002864],
+        [0.011866, -0.071662, -0.040428],
+        [-0.087153, 0.038657, -0.038008],
+        [-0.017777, 0.013758, 0.001151],
+        [0.030409, -0.18767, 0.028847],
+        [0.750577, -0.378458, 0.179569],
+        [0.042058, 0.035122, 0.024727],
+        [-0.008014, -0.000956, -0.009153],
+        [-0.052972, -0.176662, -0.077928],
+        [0.037381, 0.036482, 0.028861],
+        [0.043279, 0.040925, 0.022537],
+        [0.035434, 0.032613, 0.019516],
+        [-0.002674, -0.03398, 0.011123],
+        [-0.006118, -0.009193, -0.122432],
+        [0.014124, -0.035613, 0.097518],
+    ]
+
+    output = ase_quasi_irc_perturb_job(
+        atoms=test_atoms,
+        mode=mode,
+        charge=0,
+        spin_multiplicity=1,
+        perturb_magnitude=1.0,
+        direction="reverse",
+        xc="hf",
+        basis="def2-svp",
+        orcasimpleinput=["#normalprint"],
+    )
+    assert output["natoms"] == len(test_atoms)
+    assert output["atoms"] != test_atoms
+    assert output["parameters"]["charge"] == 0
+    assert output["parameters"]["mult"] == 1
+    assert output["parameters"]["orcasimpleinput"] == "def2-svp engrad hf xyzfile"
+    assert output.get("attributes")
