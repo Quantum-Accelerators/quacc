@@ -15,6 +15,7 @@ from quacc.atoms.skzcam import (
     _get_ecp_region,
     convert_pun_to_atoms,
     create_orca_point_charge_file,
+    format_ecp_info,
     generate_orca_input_preamble,
     create_skzcam_clusters,
     get_cluster_info_from_slab,
@@ -43,6 +44,23 @@ def embedded_adsorbed_cluster():
 @pytest.fixture()
 def distance_matrix(embedded_cluster):
     return embedded_cluster.get_all_distances()
+
+def test_format_ecp_info():
+    atom_ecp_info = """dummy_info
+
+NewECP
+
+
+N_core 0
+lmax s
+s 1
+1      1.732000000   14.676000000 2
+eNd
+
+"""
+    formatted_atom_ecp_info = format_ecp_info(atom_ecp_info)
+
+    assert formatted_atom_ecp_info == 'NewECP\nN_core 0\nlmax s\ns 1\n1      1.732000000   14.676000000 2\nend\n'
 
 def test_generate_orca_input_preamble(embedded_adsorbed_cluster):
     
@@ -117,7 +135,7 @@ def test_generate_orca_input_preamble(embedded_adsorbed_cluster):
     }
 
     preamble_input = generate_orca_input_preamble(embedded_adsorbed_cluster,[0, 1, 2, 3, 4, 5, 6, 7],element_info = element_info, pal_nprocs_block=pal_nprocs_block, method_block = method_block, scf_block = scf_block)
-    
+
     assert preamble_input == '%pal nprocs 1 end\n%pal maxcore 5000 end\n%pointcharges "orca.bq"\n%method\nMethod hf\nRI on\nRunTyp Energy\nNewNCore C 2 end\nNewNCore Mg 2 end\nNewNCore O 2 end\nend\n%basis\nBasis def2-SVP\nAux def2/J\nAuxC def2-SVP/C\nend\n%scf\nHFTyp rhf\nGuess MORead\nMOInp "orca_svp_start.gbw"\nSCFMode Direct\nsthresh 1e-6\nAutoTRAHIter 60\nMaxIter 1000\nend\n'
 
 

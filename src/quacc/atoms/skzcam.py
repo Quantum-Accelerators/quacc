@@ -18,6 +18,39 @@ if TYPE_CHECKING:
 
 has_chemshell = find_spec("chemsh") is not None
 
+def format_ecp_info(
+    atom_ecp_info: str
+) -> str:
+    """
+    Formats the ECP info so that it can be inputted to ORCA without problems.
+
+    Parameters
+    ----------
+    atom_ecp_info
+        The ECP info for a single atom.
+
+    Returns
+    -------
+    str
+        The formatted ECP info.
+    """
+    # Find the starting position of "NewECP" and "end"
+    start_pos = atom_ecp_info.lower().find("newecp")
+    end_pos = atom_ecp_info.lower().find("end", start_pos)
+
+    # If "NewECP" or "end" is not found, then we assume that ecp_info has been given without these lines but in the correct format
+    if start_pos == -1:
+        start_pos = 0
+    else:
+        # Adjust start_pos to point to the character after "NewECP"
+        start_pos += len("NewECP")
+    if end_pos == -1:
+        end_pos = len(atom_ecp_info)
+
+    # Extract content between "NewECP" and "end", exclusive of "end", then add correctly formatted "NewECP" and "end"
+    formatted_atom_ecp_info = "NewECP\n" + atom_ecp_info[start_pos:end_pos].strip() + "\nend\n"
+
+    return formatted_atom_ecp_info
 
 def generate_orca_input_preamble(
         embedded_cluster: Atoms,
