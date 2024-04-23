@@ -29,7 +29,7 @@ def create_orca_eint_blocks(
     scf_block: dict | None = None,
     ecp_info: dict | None = None,
     include_cp: bool = True,
-    multiplicity: dict | None = None,
+    multiplicity: dict = {"ad_slab": 1, "ad": 1, "slab": 1},
 ) -> tuple[str, str, str]:
     """
     Creates the orcablocks input for the ORCA ASE calculator.
@@ -64,10 +64,6 @@ def create_orca_eint_blocks(
     """
 
     # First generate the preamble block
-    if multiplicity is None:
-        multiplicity = [1, 1, 1]
-    if ecp_info is None:
-        ecp_info = {"ad_slab": 1, "ad": 1, "slab": 1}
     preamble_block = generate_orca_input_preamble(
         embedded_adsorbed_cluster,
         quantum_cluster_indices,
@@ -101,7 +97,7 @@ def generate_coords_block(
     ecp_region_indices: list[int],
     ecp_info: dict | None = None,
     include_cp: bool = True,
-    multiplicity: dict | None = None,
+    multiplicity: dict = {"ad_slab": 1, "ad": 1, "slab": 1},
 ) -> tuple[str, str, str]:
     """
     Generates the coordinates block for the ORCA input file. This includes the coordinates of the quantum cluster, the ECP region, and the point charges. It will return three strings for the adsorbate-slab complex, adsorbate and slab.
@@ -128,8 +124,6 @@ def generate_coords_block(
     """
 
     # Create the quantum cluster and ECP region cluster
-    if multiplicity is None:
-        multiplicity = {"ad_slab": 1, "ad": 1, "slab": 1}
     quantum_cluster = embedded_adsorbed_cluster[quantum_cluster_indices]
     ecp_region = embedded_adsorbed_cluster[ecp_region_indices]
 
@@ -168,8 +162,7 @@ coords
         position = ecp_region[i].position
         pc_charge = ecp_region.get_array("oxi_states")[i]
         ecp_region_coords_section += f"{(ecp_region.get_chemical_symbols()[i] + '>').ljust(3)} {position[0]:-16.11f} {pc_charge:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f}\n"
-        if (
-            ecp_region[i].symbol in ecp_info
+        if (ecp_info is not None and ecp_region[i].symbol in ecp_info
             and ecp_info[ecp_region[i].symbol] is not None
         ):
             atom_ecp_info = format_ecp_info(ecp_info[ecp_region[i].symbol])

@@ -810,6 +810,17 @@ eNd
         == "NewECP\nN_core 0\nlmax s\ns 1\n1      1.732000000   14.676000000 2\nend\n"
     )
 
+    atom_ecp_info = """
+N_core 0
+lmax s
+s 1
+1      1.732000000   14.676000000 2
+
+"""
+    assert (
+        formatted_atom_ecp_info
+        == "NewECP\nN_core 0\nlmax s\ns 1\n1      1.732000000   14.676000000 2\nend\n"
+    )
 
 def test_generate_orca_input_preamble(embedded_adsorbed_cluster):
     # Set-up some information needed for generating orca input
