@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 from functools import lru_cache
 from typing import TYPE_CHECKING
+from monty.dev import deprecated
 
 if TYPE_CHECKING:
     from typing import Literal
@@ -16,10 +17,14 @@ logger = logging.getLogger(__name__)
 
 @lru_cache
 def pick_calculator(
-    method: Literal["mace", "m3gnet", "chgnet"], **kwargs
+    method: Literal["mace-mp-0", "m3gnet", "chgnet", "mace"], **kwargs
 ) -> Calculator:
     """
     Adapted from `matcalc.util.get_universal_calculator`.
+    .. deprecated:: 0.7.6
+            method `mace` will be removed in a later version, it is replaced by 'mace-mp-0'
+            which more accurately reflects the nature of the model and allow for versioning
+            in the future.
 
     Parameters
     ----------
@@ -56,9 +61,19 @@ def pick_calculator(
 
         calc = CHGNetCalculator(**kwargs)
 
+    elif method.lower() == "mace-mp-0":
+        from mace import __version__
+        from mace.calculators import mace_mp
+
+        if "default_dtype" not in kwargs:
+            kwargs["default_dtype"] = "float64"
+        calc = mace_mp(**kwargs)
+    
     elif method.lower() == "mace":
         from mace import __version__
         from mace.calculators import mace_mp
+
+        deprecated("DEPRECATION WARNING: 'mace' has been deprecated, 'mace-mp-0' should be used instead")
 
         if "default_dtype" not in kwargs:
             kwargs["default_dtype"] = "float64"

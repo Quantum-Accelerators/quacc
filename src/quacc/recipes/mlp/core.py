@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 @job
 def static_job(
-    atoms: Atoms, method: Literal["mace", "m3gnet", "chgnet"], **calc_kwargs
+    atoms: Atoms, method: Literal["mace-mp-0", "m3gnet", "chgnet", "mace"], **calc_kwargs
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -53,7 +53,7 @@ def static_job(
 @job
 def relax_job(
     atoms: Atoms,
-    method: Literal["mace", "m3gnet", "chgnet"],
+    method: Literal["mace-mp-0", "m3gnet", "chgnet", "mace"],
     relax_cell: bool = False,
     opt_params: dict[str, Any] | None = None,
     **calc_kwargs,
