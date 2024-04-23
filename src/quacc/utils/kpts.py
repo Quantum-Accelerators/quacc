@@ -70,7 +70,6 @@ def convert_pmg_kpts(
     struct = AseAtomsAdaptor.get_structure(input_atoms)
 
     if pmg_kpts.get("line_density"):
-        # TODO: Support methods other than latimer-munro
         kpath = HighSymmKpath(
             struct,
             path_type="latimer_munro",

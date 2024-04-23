@@ -109,9 +109,6 @@ def run_and_summarize_opt(
     OptSchema
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
-    # TODO:
-    #   - passing initial Hessian?
-
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
