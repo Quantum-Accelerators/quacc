@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 @job
 def static_job(
     atoms: Atoms,
-    method: Literal["mace-mp-0", "m3gnet", "chgnet", "mace"],
+    method: Literal["mace-mp-0", "m3gnet", "chgnet"],
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -55,7 +55,7 @@ def static_job(
 @job
 def relax_job(
     atoms: Atoms,
-    method: Literal["mace-mp-0", "m3gnet", "chgnet", "mace"],
+    method: Literal["mace-mp-0", "m3gnet", "chgnet"],
     relax_cell: bool = False,
     opt_params: dict[str, Any] | None = None,
     **calc_kwargs,
