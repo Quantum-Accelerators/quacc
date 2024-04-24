@@ -70,6 +70,7 @@ def pick_calculator(
             warn(
                 "'mace' is deprecated and support will be removed. Use 'mace-mp-0' instead!",
                 DeprecationWarning,
+                stacklevel=3
             )
 
         if "default_dtype" not in kwargs:
