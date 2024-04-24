@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 @lru_cache
 def pick_calculator(
-    method: Literal["mace-mp-0", "m3gnet", "chgnet", "mace"], **kwargs
+    method: Literal["mace-mp-0", "m3gnet", "chgnet"], **kwargs
 ) -> Calculator:
     """
     Adapted from `matcalc.util.get_universal_calculator`.
