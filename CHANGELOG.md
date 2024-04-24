@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.7]
+
+### Added
+
+- Added quasi IRC recipes to ORCA and Q-Chem
+- Added frequency recipe to ORCA
+
+### Fixed
+
+- Fixed various type hints
+- Improved performance for the common phonon flow
+- Improved performance for ideal gas thermo calculations
+
 ## [0.7.6]
 
 ### Fixed
