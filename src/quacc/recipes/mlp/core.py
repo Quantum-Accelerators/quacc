@@ -20,9 +20,7 @@ if TYPE_CHECKING:
 
 @job
 def static_job(
-    atoms: Atoms,
-    method: Literal["mace-mp-0", "m3gnet", "chgnet"],
-    **calc_kwargs,
+    atoms: Atoms, method: Literal["mace-mp-0", "m3gnet", "chgnet"], **calc_kwargs
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
