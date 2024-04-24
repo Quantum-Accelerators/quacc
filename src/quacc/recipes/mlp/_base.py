@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 from functools import lru_cache
 from typing import TYPE_CHECKING
+
 from monty.dev import deprecated
 
 if TYPE_CHECKING:
@@ -68,12 +69,12 @@ def pick_calculator(
         if "default_dtype" not in kwargs:
             kwargs["default_dtype"] = "float64"
         calc = mace_mp(**kwargs)
-    
+
     elif method.lower() == "mace":
         from mace import __version__
         from mace.calculators import mace_mp
 
-        deprecated("DEPRECATION WARNING: 'mace' has been deprecated, 'mace-mp-0' should be used instead")
+        mace_warning()
 
         if "default_dtype" not in kwargs:
             kwargs["default_dtype"] = "float64"
@@ -85,3 +86,11 @@ def pick_calculator(
     calc.parameters["version"] = __version__
 
     return calc
+
+
+@deprecated(
+    None,
+    "\u001b[33mWarning: 'mace' is deprecated and support will be removed. Use 'mace-mp-0' instead!\u001b[0m",
+)
+def mace_warning():
+    return
