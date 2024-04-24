@@ -33,7 +33,7 @@ if TYPE_CHECKING:
     from quacc.schemas._aliases.vasp import (
         BaderSchema,
         ChargemolSchema,
-        VaspASESchema,
+        VaspASEOptSchema,
         VaspSchema,
     )
 
@@ -182,7 +182,7 @@ def summarize_vasp_opt_run(
     report_mp_corrections: bool = False,
     additional_fields: dict[str, Any] | None = None,
     store: Store | None = _DEFAULT_SETTING,
-) -> VaspASESchema:
+) -> VaspASEOptSchema:
     """
     Merges the `vasp_summarize_run` with an `summarize_opt_run`, meant to
     be used for an ASE-based VASP relaxation.

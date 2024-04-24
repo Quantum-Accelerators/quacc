@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from numpy.typing import NDArray
 
-    from quacc.schemas._aliases.cclib import cclibSchema
+    from quacc.schemas._aliases.cclib import cclibASEOptSchema, cclibSchema
     from quacc.utils.files import Filenames, SourceDirectory
 
 
@@ -233,7 +233,7 @@ def ase_relax_job(
     opt_params: dict[str, Any] | None = None,
     nprocs: int | Literal["max"] = "max",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-) -> cclibSchema:
+) -> cclibASEOptSchema:
     """
     Carry out a geometry optimization.
 
@@ -291,10 +291,10 @@ def ase_relax_job(
 def ase_quasi_irc_perturb_job(
     atoms: Atoms,
     mode: list[list[float]] | NDArray,
-    charge: int = 0,
-    spin_multiplicity: int = 1,
     perturb_magnitude: float = 0.6,
     direction: Literal["forward", "reverse"] = "forward",
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
     orcasimpleinput: list[str] | None = None,
@@ -302,7 +302,7 @@ def ase_quasi_irc_perturb_job(
     opt_params: dict[str, Any] | None = None,
     nprocs: int | Literal["max"] = "max",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-) -> cclibSchema:
+) -> cclibASEOptSchema:
     """
     Quasi-IRC to optimize a reaction endpoint from a transition-state with known vibrational frequency modes.
     Perturbs the structure of `atoms` by a finite amount (0.6 * the normalized mode magnitude) along the specified
@@ -315,15 +315,15 @@ def ase_quasi_irc_perturb_job(
         Atoms object
     mode
         Transition mode. This should be an Nx3 matrix, where N is the number of atoms in `atoms`.
-    charge
-        Charge of the system.
-    spin_multiplicity
-        Multiplicity of the system.
     perturb_magnitude
         Factor to multiply the transition mode. Default is 0.6. In some cases, it may be advisable to increase this
         factor, perhaps to 1.0 or 1.1. Lowering it is not generally found to be helpful.
     direction
         Direction of the (Quasi)IRC. Should be "forward" or "reverse".
+    charge
+        Charge of the system.
+    spin_multiplicity
+        Multiplicity of the system.
     xc
         Exchange-correlation functional
     basis
