@@ -21,6 +21,7 @@ def pick_calculator(
 ) -> Calculator:
     """
     Adapted from `matcalc.util.get_universal_calculator`.
+
     .. deprecated:: 0.7.6
             method `mace` will be removed in a later version, it is replaced by 'mace-mp-0'
             which more accurately reflects the nature of the model and allows for versioning
@@ -67,9 +68,8 @@ def pick_calculator(
 
         if method.lower() == "mace":
             warn(
-                "\033[33m'mace' is deprecated and support will be removed. Use 'mace-mp-0' instead!\033[0m",
-                DeprecationWarning,
-                stacklevel=3,
+                "'mace' is deprecated and support will be removed. Use 'mace-mp-0' instead!",
+                DeprecationWarning
             )
 
         if "default_dtype" not in kwargs:
