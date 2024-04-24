@@ -14,6 +14,7 @@ try:
     import mace
 
     methods.append("mace")
+    methods.append("mace-mp-0")
 
 except ImportError:
     mace = None
@@ -48,7 +49,7 @@ def _set_dtype(size, type_="float"):
 def test_static_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
 
-    if method == "mace":
+    if method == "mace" or method == "mace-mp-0":
         _set_dtype(64)
     else:
         _set_dtype(32)
@@ -56,6 +57,7 @@ def test_static_job(tmp_path, monkeypatch, method):
     ref_energy = {
         "chgnet": -4.083308219909668,
         "m3gnet": -4.0938973,
+        "mace-mp-0": -4.083906650543213,
         "mace": -4.083906650543213,
     }
     atoms = bulk("Cu")
@@ -69,13 +71,14 @@ def test_static_job(tmp_path, monkeypatch, method):
 def test_relax_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
 
-    if method == "mace":
+    if method == "mace" or method == "mace-mp-0":
         _set_dtype(64)
     else:
         _set_dtype(32)
     ref_energy = {
         "chgnet": -32.665428161621094,
         "m3gnet": -32.75003433227539,
+        "mace-mp-0": -32.6711566550002,
         "mace": -32.6711566550002,
     }
 
@@ -106,7 +109,7 @@ def test_relax_job_dispersion(tmp_path, monkeypatch):
 def test_relax_cell_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
 
-    if method == "mace":
+    if method == "mace" or method == "mace-mp-0":
         _set_dtype(64)
     else:
         _set_dtype(32)
@@ -114,6 +117,7 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
     ref_energy = {
         "chgnet": -32.66698455810547,
         "m3gnet": -32.750858306884766,
+        "mace-mp-0": -32.67840391814377,
         "mace": -32.67840391814377,
     }
 

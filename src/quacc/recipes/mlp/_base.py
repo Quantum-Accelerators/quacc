@@ -11,7 +11,7 @@ from monty.dev import deprecated
 if TYPE_CHECKING:
     from typing import Literal
 
-    from ase.calculator.calculator import Calculator
+    from ase.calculators.calculator import Calculator
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ def pick_calculator(
     Adapted from `matcalc.util.get_universal_calculator`.
     .. deprecated:: 0.7.6
             method `mace` will be removed in a later version, it is replaced by 'mace-mp-0'
-            which more accurately reflects the nature of the model and allow for versioning
+            which more accurately reflects the nature of the model and allows for versioning
             in the future.
 
     Parameters

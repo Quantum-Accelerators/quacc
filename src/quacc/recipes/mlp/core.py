@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 
 @job
-def staftic_job(
+def static_job(
     atoms: Atoms,
     method: Literal["mace-mp-0", "m3gnet", "chgnet", "mace"],
     **calc_kwargs,
