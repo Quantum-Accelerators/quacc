@@ -23,7 +23,7 @@
      <a href="https://quantum-accelerators.github.io/quacc/"><b><i>Learn More Here!</i></b></a>
 </p>
 
-... or skip straight to one of the following sections:
+... or skip to one of the following sections:
 
 - 🔧 [Installation Guide](https://quantum-accelerators.github.io/quacc/install/install.html)
 - 🧠 [User Guide](https://quantum-accelerators.github.io/quacc/user/recipes/recipes_intro.html)
