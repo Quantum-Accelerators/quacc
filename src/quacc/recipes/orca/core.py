@@ -291,10 +291,10 @@ def ase_relax_job(
 def ase_quasi_irc_perturb_job(
     atoms: Atoms,
     mode: list[list[float]] | NDArray,
-    charge: int = 0,
-    spin_multiplicity: int = 1,
     perturb_magnitude: float = 0.6,
     direction: Literal["forward", "reverse"] = "forward",
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
     orcasimpleinput: list[str] | None = None,
@@ -315,15 +315,15 @@ def ase_quasi_irc_perturb_job(
         Atoms object
     mode
         Transition mode. This should be an Nx3 matrix, where N is the number of atoms in `atoms`.
-    charge
-        Charge of the system.
-    spin_multiplicity
-        Multiplicity of the system.
     perturb_magnitude
         Factor to multiply the transition mode. Default is 0.6. In some cases, it may be advisable to increase this
         factor, perhaps to 1.0 or 1.1. Lowering it is not generally found to be helpful.
     direction
         Direction of the (Quasi)IRC. Should be "forward" or "reverse".
+    charge
+        Charge of the system.
+    spin_multiplicity
+        Multiplicity of the system.
     xc
         Exchange-correlation functional
     basis
