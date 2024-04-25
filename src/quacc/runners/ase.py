@@ -181,7 +181,7 @@ def run_opt(
         `stepN` where `N` is the step number, starting at 0.
     fn_hook
         A custom function to call after each step of the optimization.
-        The function must take the instantiated Optimizer object as
+        The function must take the instantiated dynamics class as
         its only argument.
     run_kwargs
         Dictionary of kwargs for the run() method of the optimizer.
@@ -233,20 +233,23 @@ def run_opt(
 
     # Run optimization
     with traj, optimizer(atoms, **optimizer_kwargs) as dyn:
-        opt = dyn.irun(fmax=fmax, steps=max_steps, **run_kwargs)
-        for i, _ in enumerate(opt):
-            if store_intermediate_results:
-                _copy_intermediate_files(
-                    tmpdir,
-                    i,
-                    files_to_ignore=[
-                        traj_file,
-                        optimizer_kwargs["restart"],
-                        optimizer_kwargs["logfile"],
-                    ],
-                )
-            if fn_hook:
-                fn_hook(opt)
+        if optimizer.__name__.startswith("SciPy"):
+            # https://gitlab.com/ase/ase/-/issues/1475
+            dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
+        else:
+            for i, _ in enumerate(dyn.irun(fmax=fmax, steps=max_steps, **run_kwargs)):
+                if store_intermediate_results:
+                    _copy_intermediate_files(
+                        tmpdir,
+                        i,
+                        files_to_ignore=[
+                            traj_file,
+                            optimizer_kwargs["restart"],
+                            optimizer_kwargs["logfile"],
+                        ],
+                    )
+                if fn_hook:
+                    fn_hook(dyn)
 
     # Store the trajectory atoms
     dyn.traj_atoms = read(traj_file, index=":")
