@@ -218,7 +218,7 @@ def test_check_charge_and_spin(os_atoms):
 
 def test_perturb():
     atoms = Atoms("H2", positions=[(0, 0, 0), (0, 0, 0.74)])
-    original_positions = atoms.get_positions().copy()
+    atoms.get_positions().copy()
     matrix = [[0.1, 0.1, 0.1], [0.2, 0.2, 0.2]]
     scale = 0.5
     perturbed_atoms = perturb(atoms, matrix, scale)
