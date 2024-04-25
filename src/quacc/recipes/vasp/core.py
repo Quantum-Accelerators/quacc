@@ -17,6 +17,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
+    from quacc.runners.ase import OptParams
     from quacc.schemas._aliases.vasp import VaspASEOptSchema, VaspSchema
     from quacc.utils.files import Filenames, SourceDirectory
 
@@ -183,7 +184,7 @@ def ase_relax_job(
     atoms: Atoms,
     preset: str | None = "BulkSet",
     relax_cell: bool = True,
-    opt_params: dict[str, Any] | None = None,
+    opt_params:OptParams | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> VaspASEOptSchema:

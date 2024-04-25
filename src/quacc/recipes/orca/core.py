@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from numpy.typing import NDArray
 
+    from quacc.runners.ase import OptParams
     from quacc.schemas._aliases.cclib import cclibASEOptSchema, cclibSchema
     from quacc.utils.files import Filenames, SourceDirectory
 
@@ -230,7 +231,7 @@ def ase_relax_job(
     basis: str = "def2-tzvp",
     orcasimpleinput: list[str] | None = None,
     orcablocks: list[str] | None = None,
-    opt_params: dict[str, Any] | None = None,
+    opt_params: OptParams | None = None,
     nprocs: int | Literal["max"] = "max",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> cclibASEOptSchema:
@@ -299,7 +300,7 @@ def ase_quasi_irc_perturb_job(
     basis: str = "def2-tzvp",
     orcasimpleinput: list[str] | None = None,
     orcablocks: list[str] | None = None,
-    opt_params: dict[str, Any] | None = None,
+    opt_params: OptParams | None = None,
     nprocs: int | Literal["max"] = "max",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> cclibASEOptSchema:
