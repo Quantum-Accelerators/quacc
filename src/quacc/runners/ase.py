@@ -229,8 +229,7 @@ def run_opt(
     # Run optimization
     with traj, optimizer(atoms, **optimizer_kwargs) as dyn:
         if store_intermediate_results:
-            opt = dyn.irun(fmax=fmax, steps=max_steps, **run_kwargs)
-            for i, _ in enumerate(opt):
+            for i, _ in enumerate(dyn.irun(fmax=fmax, steps=max_steps, **run_kwargs)):
                 _copy_intermediate_files(
                     tmpdir,
                     i,
