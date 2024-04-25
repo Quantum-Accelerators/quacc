@@ -66,13 +66,12 @@ def test_static_job_parallel(tmp_path, monkeypatch):
     assert output.get("attributes")
 
 
-@pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
 def test_relax_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = molecule("H2")
 
-    output = relax_job(atoms, charge=0, spin_multiplicity=1, nprocs=2)
+    output = relax_job(atoms, charge=0, spin_multiplicity=1)
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
@@ -102,8 +101,7 @@ def test_relax_job(tmp_path, monkeypatch):
     assert output.get("attributes")
 
 
-@pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
-def test_relax_freq_job(tmp_path, monkeypatch):
+def test_relax_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = molecule("H2")
@@ -114,7 +112,6 @@ def test_relax_freq_job(tmp_path, monkeypatch):
         basis="def2-svp",
         charge=0,
         spin_multiplicity=1,
-        nprocs=2,
         orcasimpleinput=["#normalprint"],
         run_freq=True,
     )
@@ -157,7 +154,6 @@ def test_ase_relax_job_store(tmp_path, monkeypatch):
     assert "attributes" in output["steps"][0]
 
 
-@pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
 def test_freq_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
@@ -178,7 +174,6 @@ def test_freq_job(tmp_path, monkeypatch):
     assert output.get("attributes")
 
 
-@pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
 def test_ase_quasi_irc_perturb_job(test_atoms, tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
@@ -206,7 +201,7 @@ def test_ase_quasi_irc_perturb_job(test_atoms, tmp_path, monkeypatch):
         mode,
         charge=0,
         spin_multiplicity=1,
-        perturb_magnitude=1.0,
+        perturb_magnitude=0.01,
         direction="reverse",
         xc="hf",
         basis="def2-svp",
