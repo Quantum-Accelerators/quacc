@@ -181,7 +181,8 @@ def run_opt(
         `stepN` where `N` is the step number, starting at 0.
     fn_hook
         A custom function to call after each step of the optimization.
-        The function must take the atoms object as its only argument.
+        The function must take the instantiated Optimizer object as
+        its only argument.
     run_kwargs
         Dictionary of kwargs for the run() method of the optimizer.
     copy_files
@@ -245,7 +246,7 @@ def run_opt(
                     ],
                 )
             if fn_hook:
-                fn_hook(atoms)
+                fn_hook(opt)
 
     # Store the trajectory atoms
     dyn.traj_atoms = read(traj_file, index=":")
