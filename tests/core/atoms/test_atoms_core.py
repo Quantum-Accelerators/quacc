@@ -7,6 +7,7 @@ import pytest
 from ase.atoms import Atoms
 from ase.build import bulk, molecule
 from ase.io import read
+from numpy.testing import assert_allclose
 
 from quacc.atoms.core import (
     check_charge_and_spin,
@@ -217,14 +218,11 @@ def test_check_charge_and_spin(os_atoms):
 
 def test_perturb():
     atoms = Atoms("H2", positions=[(0, 0, 0), (0, 0, 0.74)])
+    original_positions = atoms.get_positions().copy()
     matrix = [[0.1, 0.1, 0.1], [0.2, 0.2, 0.2]]
     scale = 0.5
     perturbed_atoms = perturb(atoms, matrix, scale)
-    assert np.allclose(
-        perturbed_atoms.get_positions(),
-        [[0.05, 0.05, 0.05], [0.1, 0.1, 0.84]],
-        atol=1e-3,
-    ), "Perturbation did not work as expected"
-    assert np.allclose(
-        atoms.get_positions(), [[0, 0, 0], [0, 0, 0.74]], atol=1e-3
-    ), "Original atoms object was modified"
+    assert_allclose(
+        perturbed_atoms.get_positions(), [[0.05, 0.05, 0.05], [0.1, 0.1, 0.84]]
+    )
+    assert_allclose(atoms.get_positions(), original_positions)
