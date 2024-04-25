@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import sys
 from shutil import copy, copytree
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
 import numpy as np
 from ase.filters import FrechetCellFilter
@@ -147,6 +147,7 @@ def run_opt(
     optimizer: Optimizer = BFGS,
     optimizer_kwargs: OptimizerKwargs | None = None,
     store_intermediate_results: bool = False,
+    fn_hook: Callable | None = None,
     run_kwargs: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> Optimizer:
@@ -178,6 +179,9 @@ def run_opt(
         Whether to store the files generated at each intermediate step in the
         optimization. If enabled, they will be stored in a directory named
         `stepN` where `N` is the step number, starting at 0.
+    fn_hook
+        A custom function to call after each step of the optimization.
+        The function must take the atoms object as its only argument.
     run_kwargs
         Dictionary of kwargs for the run() method of the optimizer.
     copy_files
@@ -228,9 +232,9 @@ def run_opt(
 
     # Run optimization
     with traj, optimizer(atoms, **optimizer_kwargs) as dyn:
-        if store_intermediate_results:
-            opt = dyn.irun(fmax=fmax, steps=max_steps, **run_kwargs)
-            for i, _ in enumerate(opt):
+        opt = dyn.irun(fmax=fmax, steps=max_steps, **run_kwargs)
+        for i, _ in enumerate(opt):
+            if store_intermediate_results:
                 _copy_intermediate_files(
                     tmpdir,
                     i,
@@ -240,8 +244,8 @@ def run_opt(
                         optimizer_kwargs["logfile"],
                     ],
                 )
-        else:
-            dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
+            if fn_hook:
+                fn_hook(atoms)
 
     # Store the trajectory atoms
     dyn.traj_atoms = read(traj_file, index=":")
