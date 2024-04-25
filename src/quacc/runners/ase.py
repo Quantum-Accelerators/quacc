@@ -38,6 +38,7 @@ if TYPE_CHECKING:
         """
         Type hint for `opt_params` used throughout quacc.
         """
+
         fmax: float
         max_steps: int
         optimizer: Optimizer = BFGS

@@ -12,7 +12,6 @@ from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.recipes.espresso._base import run_and_summarize, run_and_summarize_opt
 
 if TYPE_CHECKING:
-
     from ase.atoms import Atoms
 
     from quacc.runners.ase import OptParams

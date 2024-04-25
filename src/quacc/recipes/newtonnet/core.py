@@ -78,7 +78,7 @@ def static_job(
 @requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
 def relax_job(
     atoms: Atoms,
-    opt_params:OptParams | None = None,
+    opt_params: OptParams | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
