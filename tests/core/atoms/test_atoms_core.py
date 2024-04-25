@@ -225,4 +225,4 @@ def test_perturb():
     assert_allclose(
         perturbed_atoms.get_positions(), [[0.05, 0.05, 0.05], [0.1, 0.1, 0.84]]
     )
-    assert atoms == atoms
+    assert atoms == Atoms("H2", positions=[(0, 0, 0), (0, 0, 0.74)])
