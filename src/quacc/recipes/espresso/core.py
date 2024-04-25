@@ -12,10 +12,9 @@ from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.recipes.espresso._base import run_and_summarize, run_and_summarize_opt
 
 if TYPE_CHECKING:
-    from typing import Any
-
     from ase.atoms import Atoms
 
+    from quacc.runners.ase import OptParams
     from quacc.schemas._aliases.ase import RunSchema
     from quacc.utils.files import Filenames, SourceDirectory
 
@@ -188,7 +187,7 @@ def ase_relax_job(
     autorestart: bool = True,
     relax_cell: bool = False,
     parallel_info: dict[str] | None = None,
-    opt_params: dict[str, Any] | None = None,
+    opt_params: OptParams | None = None,
     copy_files: (
         SourceDirectory
         | list[SourceDirectory]
