@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
+    from quacc.runners.ase import OptParams
     from quacc.schemas._aliases.ase import OptSchema, RunSchema
     from quacc.utils.files import Filenames, SourceDirectory
 
@@ -76,7 +77,7 @@ def run_and_summarize_opt(
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     opt_defaults: dict[str, Any] | None = None,
-    opt_params: dict[str, Any] | None = None,
+    opt_params: OptParams | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> OptSchema:

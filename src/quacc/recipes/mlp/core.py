@@ -11,10 +11,11 @@ from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
-    from typing import Any, Literal
+    from typing import Literal
 
     from ase.atoms import Atoms
 
+    from quacc.runners.ase import OptParams
     from quacc.schemas._aliases.ase import OptSchema, RunSchema
 
 
@@ -55,7 +56,7 @@ def relax_job(
     atoms: Atoms,
     method: Literal["mace-mp-0", "m3gnet", "chgnet"],
     relax_cell: bool = False,
-    opt_params: dict[str, Any] | None = None,
+    opt_params: OptParams | None = None,
     **calc_kwargs,
 ) -> OptSchema:
     """

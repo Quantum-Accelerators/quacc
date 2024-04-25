@@ -34,6 +34,18 @@ if TYPE_CHECKING:
 
     from quacc.utils.files import Filenames, SourceDirectory
 
+    class OptParams(TypedDict, total=False):
+        """
+        Type hint for `opt_params` used throughout quacc.
+        """
+
+        fmax: float
+        max_steps: int
+        optimizer: Optimizer = BFGS
+        optimizer_kwargs: OptimizerKwargs | None
+        store_intermediate_results: bool
+        run_kwargs: dict[str, Any] | None
+
     class OptimizerKwargs(TypedDict, total=False):
         """
         Type hint for `optimizer_kwargs` in [quacc.runners.ase.run_opt][].

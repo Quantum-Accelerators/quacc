@@ -29,6 +29,7 @@ if TYPE_CHECKING:
     from numpy.typing import NDArray
 
     from quacc.recipes.newtonnet.core import FreqSchema
+    from quacc.runners.ase import OptParams
     from quacc.schemas._aliases.ase import OptSchema
 
     class TSSchema(OptSchema):
@@ -50,7 +51,7 @@ def ts_job(
     use_custom_hessian: bool = False,
     run_freq: bool = True,
     freq_job_kwargs: dict[str, Any] | None = None,
-    opt_params: dict[str, Any] | None = None,
+    opt_params: OptParams | None = None,
     **calc_kwargs,
 ) -> TSSchema:
     """
@@ -129,7 +130,7 @@ def irc_job(
     direction: Literal["forward", "reverse"] = "forward",
     run_freq: bool = True,
     freq_job_kwargs: dict[str, Any] | None = None,
-    opt_params: dict[str, Any] | None = None,
+    opt_params: OptParams | None = None,
     **calc_kwargs,
 ) -> IRCSchema:
     """
