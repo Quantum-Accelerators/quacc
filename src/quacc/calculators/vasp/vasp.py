@@ -232,18 +232,9 @@ class Vasp(Vasp_):
 
         # Get user-defined preset parameters for the calculator
         if self.preset:
-            calc_preset = None
-            for preset_dir in SETTINGS.VASP_PRESET_DIR:
-                preset_path = preset_dir / self.preset
-                if preset_path.suffix.lower() != ".yaml":
-                    preset_path = preset_dir / f"{self.preset}.yaml"
-
-                if preset_path.exists():
-                    calc_preset = load_vasp_yaml_calc(preset_path)["inputs"]
-            if calc_preset is None:
-                raise FileNotFoundError(
-                    {f"Preset {self.preset} not found in any of the preset directories"}
-                )
+            calc_preset = load_vasp_yaml_calc(SETTINGS.VASP_PRESET_DIR / self.preset)[
+                "inputs"
+            ]
         else:
             calc_preset = {}
 
@@ -257,18 +248,9 @@ class Vasp(Vasp_):
             isinstance(self.user_calc_params.get("setups"), (str, Path))
             and self.user_calc_params["setups"] not in ase_setups.setups_defaults
         ):
-            setup_preset = None
-            for preset_dir in SETTINGS.VASP_PRESET_DIR:
-                preset_path = preset_dir / self.user_calc_params["setups"]
-                if preset_path.suffix.lower() != ".yaml":
-                    preset_path = preset_dir / f"{self.preset}.yaml"
-                if preset_path.exists():
-                    setup_preset = load_vasp_yaml_calc(preset_path)["inputs"]["setups"]
-            if setup_preset is None:
-                raise FileNotFoundError(
-                    f"Setup {self.user_calc_params['setups']} not found in any of the setup directories"
-                )
-            self.user_calc_params["setups"] = setup_preset
+            self.user_calc_params["setups"] = load_vasp_yaml_calc(
+                SETTINGS.VASP_PRESET_DIR / self.user_calc_params["setups"]
+            )["inputs"]["setups"]
 
         # Handle special arguments in the user calc parameters that ASE does not
         # natively support

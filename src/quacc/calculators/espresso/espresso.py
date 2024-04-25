@@ -468,17 +468,9 @@ class Espresso(Espresso_):
         self.kwargs["input_data"].to_nested(binary=self._binary, **self.kwargs)
 
         if self.preset:
-            calc_preset = None
-            for preset_dir in SETTINGS.ESPRESSO_PRESET_DIR:
-                preset_path = preset_dir / f"{self.preset}"
-                if preset_path.suffix.lower() != ".yaml":
-                    preset_path = preset_dir / f"{self.preset}.yaml"
-                if preset_path.exists():
-                    calc_preset = load_yaml_calc(preset_path)
-            if calc_preset is None:
-                raise FileNotFoundError(
-                    {f"Preset {self.preset} not found in any of the preset directories"}
-                )
+            calc_preset = load_yaml_calc(
+                SETTINGS.ESPRESSO_PRESET_DIR / f"{self.preset}"
+            )
             calc_preset["input_data"] = Namelist(calc_preset.get("input_data"))
             calc_preset["input_data"].to_nested(binary=self._binary, **calc_preset)
             if "pseudopotentials" in calc_preset:
