@@ -101,7 +101,7 @@ def test_relax_job(tmp_path, monkeypatch):
     assert output.get("attributes")
 
 
-def test_relax_job(tmp_path, monkeypatch):
+def test_relax_freq_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = molecule("H2")
