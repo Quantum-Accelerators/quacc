@@ -231,5 +231,8 @@ def test_fn_hook(tmp_path, monkeypatch):
         if dyn.atoms:
             raise ValueError("Test error")
 
+    atoms = bulk("Cu")
+    atoms.calc = EMT()
+
     with pytest.raises(ValueError, match="Test error"):
-        run_opt(bulk("Cu"), fn_hook=fn_hook)
+        run_opt(atoms, fn_hook=fn_hook)
