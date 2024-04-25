@@ -11,7 +11,6 @@ import numpy as np
 from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.vasp import setups as ase_setups
 from ase.constraints import FixAtoms
-
 from quacc.calculators.vasp.io import load_vasp_yaml_calc
 from quacc.calculators.vasp.params import (
     get_param_swaps,
@@ -41,23 +40,23 @@ class Vasp(Vasp_):
     """
 
     def __init__(
-        self,
-        input_atoms: Atoms,
-        preset: None | str = None,
-        use_custodian: bool = _DEFAULT_SETTING,
-        incar_copilot: Literal["off", "on", "aggressive"] = _DEFAULT_SETTING,
-        copy_magmoms: bool = _DEFAULT_SETTING,
-        preset_mag_default: float = _DEFAULT_SETTING,
-        mag_cutoff: float = _DEFAULT_SETTING,
-        elemental_magmoms: dict[str, float] | None = None,
-        pmg_kpts: (
-            dict[Literal["line_density", "kppvol", "kppa"], float]
-            | dict[Literal["length_densities"], list[float]]
-            | None
-        ) = None,
-        auto_dipole: bool | None = None,
-        pmg_input_set: DictSet | None = None,
-        **kwargs,
+            self,
+            input_atoms: Atoms,
+            preset: None | str = None,
+            use_custodian: bool = _DEFAULT_SETTING,
+            incar_copilot: Literal["off", "on", "aggressive"] = _DEFAULT_SETTING,
+            copy_magmoms: bool = _DEFAULT_SETTING,
+            preset_mag_default: float = _DEFAULT_SETTING,
+            mag_cutoff: float = _DEFAULT_SETTING,
+            elemental_magmoms: dict[str, float] | None = None,
+            pmg_kpts: (
+                    dict[Literal["line_density", "kppvol", "kppa"], float]
+                    | dict[Literal["length_densities"], list[float]]
+                    | None
+            ) = None,
+            auto_dipole: bool | None = None,
+            pmg_input_set: DictSet | None = None,
+            **kwargs,
     ) -> None:
         """
         Initialize the VASP calculator.
@@ -235,15 +234,15 @@ class Vasp(Vasp_):
             calc_preset = None
             for preset_dir in SETTINGS.VASP_PRESET_DIR:
                 preset_path = preset_dir / self.preset
-                if preset_path.suffix.lower() != ".yaml":
+                if not preset_path.suffix.lower() == ".yaml":
                     preset_path = preset_dir / f"{self.preset}.yaml"
 
                 if preset_path.exists():
-                    calc_preset = load_vasp_yaml_calc(preset_path)["inputs"]
+                    calc_preset = load_vasp_yaml_calc(preset_path)[
+                        "inputs"
+                    ]
             if calc_preset is None:
-                raise FileNotFoundError(
-                    {f"Preset {self.preset} not found in any of the preset directories"}
-                )
+                raise FileNotFoundError({f"Preset {self.preset} not found in any of the preset directories"})
         else:
             calc_preset = {}
 
@@ -260,14 +259,13 @@ class Vasp(Vasp_):
             setup_preset = None
             for preset_dir in SETTINGS.VASP_PRESET_DIR:
                 preset_path = preset_dir / self.user_calc_params["setups"]
-                if preset_path.suffix.lower() != ".yaml":
+                if not preset_path.suffix.lower() == ".yaml":
                     preset_path = preset_dir / f"{self.preset}.yaml"
                 if preset_path.exists():
                     setup_preset = load_vasp_yaml_calc(preset_path)["inputs"]["setups"]
             if setup_preset is None:
                 raise FileNotFoundError(
-                    f"Setup {self.user_calc_params['setups']} not found in any of the setup directories"
-                )
+                    f"Setup {self.user_calc_params['setups']} not found in any of the setup directories")
             self.user_calc_params["setups"] = setup_preset
 
         # Handle special arguments in the user calc parameters that ASE does not

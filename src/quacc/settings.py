@@ -6,7 +6,8 @@ import os
 from importlib import util
 from pathlib import Path
 from shutil import which
-from typing import TYPE_CHECKING, Literal, Optional, Union, list
+from typing import List
+from typing import TYPE_CHECKING, Literal, Optional, Union
 
 import psutil
 from maggma.core import Store
@@ -185,7 +186,7 @@ class QuaccSettings(BaseSettings):
     ESPRESSO_PSEUDO: Optional[Path] = Field(
         None, description=("Path to a pseudopotential library for espresso.")
     )
-    ESPRESSO_PRESET_DIR: list[Path] = Field(
+    ESPRESSO_PRESET_DIR: List[Path] = Field(
         [Path(__file__).parent / "calculators" / "espresso" / "presets"],
         description="Path to the espresso preset directory",
     )
@@ -307,7 +308,7 @@ class QuaccSettings(BaseSettings):
             """
         ),
     )
-    VASP_PRESET_DIR: list[Path] = Field(
+    VASP_PRESET_DIR: List[Path] = Field(
         [Path(__file__).parent / "calculators" / "vasp" / "presets"],
         description="Path to the VASP preset directory",
     )
@@ -425,15 +426,13 @@ class QuaccSettings(BaseSettings):
         "VASP_VDW",
     )
     @classmethod
-    def expand_paths(
-        cls, v: Optional[Union[Path, list[Path]]]
-    ) -> Optional[Union[Path, list[Path]]]:
+    def expand_paths(cls, v: Optional[Union[Path,List[Path]]]) -> Optional[Union[Path,List[Path]]]:
         """Expand ~/ and $ENV_VARS in paths."""
         if isinstance(v, list):
             return [Path(os.path.expandvars(item)).expanduser() for item in v]
         elif v:
-            return Path(os.path.expandvars(v)).expanduser()
-        return None
+            v = Path(os.path.expandvars(v)).expanduser()
+            return  v
 
     @field_validator("RESULTS_DIR", "SCRATCH_DIR")
     @classmethod
