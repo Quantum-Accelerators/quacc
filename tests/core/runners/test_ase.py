@@ -224,6 +224,7 @@ def test_unique_workdir(tmp_path, monkeypatch):
     SETTINGS.CREATE_UNIQUE_DIR = DEFAULT_SETTINGS.CREATE_UNIQUE_DIR
     SETTINGS.RESULTS_DIR = DEFAULT_SETTINGS.RESULTS_DIR
 
+
 def test_fn_hook(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
