@@ -5,7 +5,6 @@ from pathlib import Path
 
 import pytest
 from ase.build import molecule
-from ase.io import read
 
 from quacc.recipes.orca.core import (
     ase_quasi_irc_perturb_job,
@@ -174,10 +173,7 @@ def test_ase_quasi_irc_perturb_job(tmp_path, monkeypatch):
 
     atoms = molecule("H2")
 
-    mode = [
-        [0.0, 0.0, 0.1],
-        [0.0, 0.1, 0.0]
-    ]
+    mode = [[0.0, 0.0, 0.1], [0.0, 0.1, 0.0]]
 
     output = ase_quasi_irc_perturb_job(
         atoms,
