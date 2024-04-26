@@ -44,6 +44,7 @@ if TYPE_CHECKING:
         optimizer: Optimizer = BFGS
         optimizer_kwargs: OptimizerKwargs | None
         store_intermediate_results: bool
+        fn_hook: Callable | None
         run_kwargs: dict[str, Any] | None
 
     class OptimizerKwargs(TypedDict, total=False):
