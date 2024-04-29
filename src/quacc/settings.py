@@ -208,8 +208,8 @@ class QuaccSettings(BaseSettings):
             "Parallelization flags to run ONETEP that are prepended to the executable."
         ),
     )
-    ONETEP_PP_PATH: Optional[Path] = Field(
-        None, description=("Path to pseudopotentials.")
+    ONETEP_PP_PATH: Path = Field(
+        Path(), description=("Path to pseudopotentials.")
     )
 
     # ---------------------------
