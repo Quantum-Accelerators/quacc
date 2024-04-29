@@ -441,7 +441,7 @@ class Espresso(GenericFileIOCalculator):
             profile,
             ".",
             parallel_info=self.parallel_info,
-            **self.user_calc_params,
+            parameters=self.user_calc_params,
         )
 
     def _cleanup_params(self) -> None:
