@@ -437,11 +437,11 @@ class Espresso(GenericFileIOCalculator):
         )
 
         super().__init__(
-            template,
-            profile,
-            ".",
-            parallel_info=self.parallel_info,
+            template=template,
+            profile=profile,
+            directory=".",
             parameters=self.user_calc_params,
+            parallel_info=self.parallel_info,
         )
 
     def _cleanup_params(self) -> None:
