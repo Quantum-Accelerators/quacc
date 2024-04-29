@@ -202,10 +202,10 @@ class QuaccSettings(BaseSettings):
     ONETEP_CMD: Optional[str] = Field(
         "onetep.arch", description=("Path to the ONETEP executable.")
     )
-    ONETEP_PARALLEL_CMD: Optional[dict] = Field(
-        None,
+    ONETEP_PARALLEL_CMD: str = Field(
+        "",
         description=(
-            "Parallelization commands to run ONETEP that are prepended to the executable."
+            "Parallelization flags to run ONETEP that are prepended to the executable."
         ),
     )
     ONETEP_PP_PATH: Optional[Path] = Field(
