@@ -183,7 +183,7 @@ class QuaccSettings(BaseSettings):
         },
         description="Name for each espresso binary.",
     )
-    ESPRESSO_PARALLLEL_CMD: str = Field(
+    ESPRESSO_PARALLEL_CMD: str = Field(
         "",
         description=(
             """
