@@ -17,7 +17,7 @@ pytestmark = pytest.mark.skipif(
 DATA_DIR = Path(__file__).parent / "data"
 
 
-def test_bands_flow(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
+def test_bands_flow(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -29,12 +29,9 @@ def test_bands_flow(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
         "bands_pw_job": {
             "input_data": {"control": {"pseudo_dir": tmp_path}},
             "pseudopotentials": pseudopotentials,
-            "parallel_info": ESPRESSO_PARALLEL_INFO,
         },
-        "bands_pp_job": {"parallel_info": ESPRESSO_PARALLEL_INFO},
         "fermi_surface_job": {
             "input_data": {"fermi": {}},
-            "parallel_info": ESPRESSO_PARALLEL_INFO,
         },
     }
 
@@ -53,7 +50,7 @@ def test_bands_flow(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     assert output["bands_pp"]["name"] == "bands.x post-processing"
 
 
-def test_bands_flow_with_fermi(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
+def test_bands_flow_with_fermi(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -66,11 +63,9 @@ def test_bands_flow_with_fermi(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
             "input_data": {"control": {"pseudo_dir": tmp_path}},
             "pseudopotentials": pseudopotentials,
             "kspacing": 0.9,
-            "parallel_info": ESPRESSO_PARALLEL_INFO,
         },
         "fermi_surface_job": {
             "input_data": {"fermi": {}},
-            "parallel_info": ESPRESSO_PARALLEL_INFO,
         },
     }
 

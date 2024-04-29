@@ -17,7 +17,7 @@ pytestmark = pytest.mark.skipif(
 DATA_DIR = Path(__file__).parent / "data"
 
 
-def test_dos_flow(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
+def test_dos_flow(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -34,9 +34,8 @@ def test_dos_flow(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
         "static_job": {
             "input_data": input_data,
             "pseudopotentials": pseudopotentials,
-            "parallel_info": ESPRESSO_PARALLEL_INFO,
         },
-        "non_scf_job": {"kspacing": 0.05, "parallel_info": ESPRESSO_PARALLEL_INFO},
+        "non_scf_job": {"kspacing": 0.05},
     }
 
     output = dos_flow(atoms, job_params=job_params)
@@ -76,7 +75,7 @@ def test_dos_flow(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     assert output["dos_job"]["results"]["dos_results"]["fermi"] == pytest.approx(6.772)
 
 
-def test_projwfc_flow(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
+def test_projwfc_flow(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -93,9 +92,8 @@ def test_projwfc_flow(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
         "static_job": {
             "input_data": input_data,
             "pseudopotentials": pseudopotentials,
-            "parallel_info": ESPRESSO_PARALLEL_INFO,
         },
-        "non_scf_job": {"kspacing": 0.05, "parallel_info": ESPRESSO_PARALLEL_INFO},
+        "non_scf_job": {"kspacing": 0.05},
     }
 
     output = projwfc_flow(atoms, job_params=job_params)
