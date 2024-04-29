@@ -1,4 +1,4 @@
-ase @ https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
+ase @ git+https://gitlab.com/ase/ase.git@profile-changes
 cclib==1.8.1
 custodian==2024.4.18
 emmet-core==0.82.2
