@@ -128,7 +128,9 @@ def prep_calculator(
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
     return Onetep(
-        profile=OnetepProfile(SETTINGS.ONETEP_CMD, command=f"{SETTINGS.ONETEP_PARALLEL_CMD} ${{binary}}"),
+        profile=OnetepProfile(
+            SETTINGS.ONETEP_CMD, command=f"{SETTINGS.ONETEP_PARALLEL_CMD} ${{binary}}"
+        ),
         pseudo_path=str(SETTINGS.ONETEP_PP_PATH),
         **calc_flags,
     )
