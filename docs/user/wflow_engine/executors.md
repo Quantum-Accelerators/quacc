@@ -379,6 +379,7 @@ If you haven't done so already:
     ```python
     import parsl
     from parsl.config import Config
+    from parsl.dataflow.dependency_resolvers import DEEP_DEPENDENCY_RESOLVER
     from parsl.executors import HighThroughputExecutor
     from parsl.launchers import SrunLauncher
     from parsl.providers import SlurmProvider
@@ -394,24 +395,25 @@ If you haven't done so already:
     env_vars = f"export OMP_NUM_THREADS={cores_per_job},1"  # (1)!
 
     config = Config(
-        strategy="htex_auto_scale",  # (2)!
+        dependency_resolver=DEEP_DEPENDENCY_RESOLVER,  # (2)!
+        strategy="htex_auto_scale",  # (3)!
         executors=[
             HighThroughputExecutor(
-                label="quacc_parsl",  # (3)!
-                max_workers_per_node=cores_per_node,  # (4)!
-                cores_per_worker=cores_per_job,  # (5)!
+                label="quacc_parsl",  # (4)!
+                max_workers_per_node=cores_per_node,  # (5)!
+                cores_per_worker=cores_per_job,  # (6)!
                 provider=SlurmProvider(
                     account=account,
                     qos="debug",
                     constraint="cpu",
-                    worker_init=f"source ~/.bashrc && conda activate quacc && {env_vars}",  # (6)!
-                    walltime="00:10:00",  # (7)!
-                    nodes_per_block=nodes_per_allocation,  # (8)!
-                    init_blocks=0,  # (9)!
-                    min_blocks=min_allocations,  # (10)!
-                    max_blocks=max_allocations,  # (11)!
-                    launcher=SrunLauncher(),  # (12)!
-                    cmd_timeout=60,  # (13)!
+                    worker_init=f"source ~/.bashrc && conda activate quacc && {env_vars}",  # (7)!
+                    walltime="00:10:00",  # (8)!
+                    nodes_per_block=nodes_per_allocation,  # (9)!
+                    init_blocks=0,  # (10)!
+                    min_blocks=min_allocations,  # (11)!
+                    max_blocks=max_allocations,  # (12)!
+                    launcher=SrunLauncher(),  # (13)!
+                    cmd_timeout=60,  # (14)!
                 ),
             )
         ],
@@ -422,29 +424,31 @@ If you haven't done so already:
 
     1. Since we are running single-core jobs, we need to set the `OMP_NUM_THREADS` environment variable to "1,1" according to the [TBLite documentation](https://tblite.readthedocs.io/en/latest/tutorial/parallel.html#running-tblite-in-parallel).
 
-    2. Unique to the `HighThroughputExecutor`, this `strategy` will automatically scale the number of active blocks (i.e. Slurm allocations) up or down based on the number of jobs remaining. We set `max_blocks=1` here so it can't scale up beyond 1 Slurm job, but it can scale down from 1 to 0 since `min_blocks=0`. By setting `init_blocks=0`, no Slurm allocation will be requested until jobs are launched.
+    2. This is an opt-in feature needed when using Parsl to ensure all features in quacc are supported.
 
-    3. This is just an arbitrary label for file I/O.
+    3. Unique to the `HighThroughputExecutor`, this `strategy` will automatically scale the number of active blocks (i.e. Slurm allocations) up or down based on the number of jobs remaining. We set `max_blocks=1` here so it can't scale up beyond 1 Slurm job, but it can scale down from 1 to 0 since `min_blocks=0`. By setting `init_blocks=0`, no Slurm allocation will be requested until jobs are launched.
 
-    4. The maximum number of running jobs per node. If you are running a non-MPI job, this value will generally be the number of physical cores per node (this example). Perlmutter has 128 physical CPU cores, so we have set a value of 128 here.
+    4. This is just an arbitrary label for file I/O.
 
-    5. The number of cores per job. We are running single-core jobs in this example.
+    5. The maximum number of running jobs per node. If you are running a non-MPI job, this value will generally be the number of physical cores per node (this example). Perlmutter has 128 physical CPU cores, so we have set a value of 128 here.
 
-    6. Any commands to run before carrying out any of the Parsl jobs. This is useful for setting environment variables, activating a given Conda environment, and loading modules.
+    6. The number of cores per job. We are running single-core jobs in this example.
 
-    7. The walltime for each block (i.e. Slurm allocation).
+    7. Any commands to run before carrying out any of the Parsl jobs. This is useful for setting environment variables, activating a given Conda environment, and loading modules.
 
-    8. The number of nodes that each block (i.e. Slurm allocation) should allocate.
+    8. The walltime for each block (i.e. Slurm allocation).
 
-    9. Sets the number of blocks (e.g. Slurm allocations) to provision during initialization of the workflow. We set this to a value of 0 so that there isn't a running Slurm job before any jobs have been submitted to Parsl.
+    9. The number of nodes that each block (i.e. Slurm allocation) should allocate.
 
-    10. Sets the minimum number of blocks (e.g. Slurm allocations) to maintain during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 0 so that Slurm jobs aren't running when there are no remaining jobs.
+    10. Sets the number of blocks (e.g. Slurm allocations) to provision during initialization of the workflow. We set this to a value of 0 so that there isn't a running Slurm job before any jobs have been submitted to Parsl.
 
-    11. Sets the maximum number of active blocks (e.g. Slurm allocations) during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 1 here, but it can be increased to have multiple Slurm jobs running simultaneously. Raising `max_blocks` to a larger value will allow the "htex_auto_scale" strategy to upscale resources as needed.
+    11. Sets the minimum number of blocks (e.g. Slurm allocations) to maintain during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 0 so that Slurm jobs aren't running when there are no remaining jobs.
 
-    12. The type of Launcher to use. `SrunLauncher()` will distribute jobs across the cores and nodes of the Slurm allocation. It should not be used for `PythonApp`s that themselves call MPI, which should use `SimpleLauncher()` instead.
+    12. Sets the maximum number of active blocks (e.g. Slurm allocations) during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 1 here, but it can be increased to have multiple Slurm jobs running simultaneously. Raising `max_blocks` to a larger value will allow the "htex_auto_scale" strategy to upscale resources as needed.
 
-    13. The maximum time to wait (in seconds) for the job scheduler info to be retrieved/sent.
+    13. The type of Launcher to use. `SrunLauncher()` will distribute jobs across the cores and nodes of the Slurm allocation. It should not be used for `PythonApp`s that themselves call MPI, which should use `SimpleLauncher()` instead.
+
+    14. The maximum time to wait (in seconds) for the job scheduler info to be retrieved/sent.
 
     Now we define the workflow, apply it to all molecules in the "g2" collection, and monitor the progress of our calculations.
 
@@ -779,6 +783,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     ```python
     import parsl
     from parsl.config import Config
+    from parsl.dataflow.dependency_resolvers import DEEP_DEPENDENCY_RESOLVER
     from parsl.executors import HighThroughputExecutor
     from parsl.launchers import SimpleLauncher
     from parsl.providers import SlurmProvider
@@ -795,6 +800,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     max_allocations = 1
 
     config = Config(
+        dependency_resolver=DEEP_DEPENDENCY_RESOLVER,
         strategy="htex_auto_scale",
         executors=[
             HighThroughputExecutor(
