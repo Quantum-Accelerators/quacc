@@ -430,11 +430,7 @@ class Espresso(GenericFileIOCalculator):
             .get("pseudo_dir", str(SETTINGS.ESPRESSO_PSEUDO))
         )
 
-        profile = EspressoProfile(
-            binary=self._bin_path,
-            parallel_info=parallel_info,
-            pseudo_dir=self._pseudo_path,
-        )
+        profile = EspressoProfile(self._bin_path, self._pseudo_path)
 
         super().__init__(
             template=template,
