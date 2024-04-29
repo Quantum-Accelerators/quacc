@@ -183,6 +183,15 @@ class QuaccSettings(BaseSettings):
         },
         description="Name for each espresso binary.",
     )
+    ESPRESSO_PARALLLEL_CMD: str = Field(
+        "",
+        description=(
+            """
+            Parallelization flags to run espresso that are prepended to the executable.
+            For example: `"mpirun -np 4"`.
+            """
+        ),
+    )
     ESPRESSO_PSEUDO: Optional[Path] = Field(
         None, description=("Path to a pseudopotential library for espresso.")
     )
