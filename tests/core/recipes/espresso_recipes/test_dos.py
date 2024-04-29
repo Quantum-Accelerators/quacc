@@ -31,10 +31,7 @@ def test_dos_flow(tmp_path, monkeypatch):
     pseudopotentials = {"Si": "Si.upf"}
 
     job_params = {
-        "static_job": {
-            "input_data": input_data,
-            "pseudopotentials": pseudopotentials,
-        },
+        "static_job": {"input_data": input_data, "pseudopotentials": pseudopotentials},
         "non_scf_job": {"kspacing": 0.05},
     }
 
@@ -89,10 +86,7 @@ def test_projwfc_flow(tmp_path, monkeypatch):
     pseudopotentials = {"Si": "Si.upf"}
 
     job_params = {
-        "static_job": {
-            "input_data": input_data,
-            "pseudopotentials": pseudopotentials,
-        },
+        "static_job": {"input_data": input_data, "pseudopotentials": pseudopotentials},
         "non_scf_job": {"kspacing": 0.05},
     }
 

@@ -45,9 +45,7 @@ def test_static_job(tmp_path, monkeypatch):
     input_data = {"control": {"pseudo_dir": tmp_path}}
 
     results = static_job(
-        atoms,
-        input_data=input_data,
-        pseudopotentials=pseudopotentials,
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials
     )
 
     assert_allclose(
@@ -83,10 +81,7 @@ def test_static_job_v2(tmp_path, monkeypatch):
     pseudopotentials = {"Si": "Si.upf"}
 
     results = static_job(
-        atoms,
-        input_data=input_data,
-        pseudopotentials=pseudopotentials,
-        kspacing=0.5,
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.5
     )
 
     assert_allclose(
@@ -127,10 +122,7 @@ def test_static_job_outdir_inplace(tmp_path, monkeypatch):
     pseudopotentials = {"Si": "Si.upf"}
 
     results = static_job(
-        atoms,
-        input_data=input_data,
-        pseudopotentials=pseudopotentials,
-        kspacing=0.5,
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.5
     )
 
     pp_results = post_processing_job(prev_outdir=results["dir_name"])
@@ -154,10 +146,7 @@ def test_static_job_outdir(tmp_path, monkeypatch):
     pseudopotentials = {"Si": "Si.upf"}
 
     results = static_job(
-        atoms,
-        input_data=input_data,
-        pseudopotentials=pseudopotentials,
-        kpts=None,
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=None
     )
 
     assert_allclose(
@@ -195,10 +184,7 @@ def test_static_job_outdir_abs(tmp_path, monkeypatch):
     pseudopotentials = {"Si": "Si.upf"}
 
     results = static_job(
-        atoms,
-        input_data=input_data,
-        pseudopotentials=pseudopotentials,
-        kpts=None,
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=None
     )
 
     assert (
@@ -255,10 +241,7 @@ def test_relax_job(tmp_path, monkeypatch):
     input_data = {"control": {"pseudo_dir": tmp_path}}
 
     results = relax_job(
-        atoms,
-        input_data=input_data,
-        pseudopotentials=pseudopotentials,
-        kpts=None,
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=None
     )
 
     with pytest.raises(AssertionError):
@@ -386,10 +369,7 @@ def test_non_scf_job(tmp_path, monkeypatch):
     pseudopotentials = {"Si": "Si.upf"}
     input_data = {"control": {"pseudo_dir": tmp_path}}
     static_result = static_job(
-        atoms,
-        input_data=input_data,
-        pseudopotentials=pseudopotentials,
-        kpts=None,
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=None
     )
 
     results = non_scf_job(
@@ -429,10 +409,7 @@ def test_pw_restart(tmp_path, monkeypatch):
     input_data = {"control": {"pseudo_dir": tmp_path, "max_seconds": 5}}
 
     results = static_job(
-        atoms,
-        input_data=input_data,
-        pseudopotentials=pseudopotentials,
-        kpts=None,
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=None
     )
 
     new_input_data = results["parameters"]["input_data"]
@@ -470,10 +447,7 @@ def test_pw_restart_inplace(tmp_path, monkeypatch):
     input_data = {"control": {"pseudo_dir": tmp_path, "max_seconds": 5}}
 
     results = static_job(
-        atoms,
-        input_data=input_data,
-        pseudopotentials=pseudopotentials,
-        kpts=None,
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kpts=None
     )
 
     new_input_data = results["parameters"]["input_data"]

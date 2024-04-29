@@ -30,9 +30,7 @@ def test_bands_flow(tmp_path, monkeypatch):
             "input_data": {"control": {"pseudo_dir": tmp_path}},
             "pseudopotentials": pseudopotentials,
         },
-        "fermi_surface_job": {
-            "input_data": {"fermi": {}},
-        },
+        "fermi_surface_job": {"input_data": {"fermi": {}}},
     }
 
     output = bands_flow(atoms, tmp_path, line_density=1, job_params=job_params)
@@ -64,9 +62,7 @@ def test_bands_flow_with_fermi(tmp_path, monkeypatch):
             "pseudopotentials": pseudopotentials,
             "kspacing": 0.9,
         },
-        "fermi_surface_job": {
-            "input_data": {"fermi": {}},
-        },
+        "fermi_surface_job": {"input_data": {"fermi": {}}},
     }
 
     output = bands_flow(

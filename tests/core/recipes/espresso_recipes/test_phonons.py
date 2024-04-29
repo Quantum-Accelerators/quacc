@@ -60,16 +60,10 @@ def test_phonon_job(tmp_path, monkeypatch):
     pseudopotentials = {"Li": "Li.upf"}
 
     pw_results = static_job(
-        atoms,
-        input_data=input_data,
-        pseudopotentials=pseudopotentials,
-        kspacing=0.5,
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.5
     )
 
-    ph_results = phonon_job(
-        pw_results["dir_name"],
-        input_data=ph_loose,
-    )
+    ph_results = phonon_job(pw_results["dir_name"], input_data=ph_loose)
 
     assert_allclose(
         ph_results["results"][1]["atoms"].get_positions(),
@@ -100,10 +94,7 @@ def test_phonon_job(tmp_path, monkeypatch):
 
     ph_loose["inputph"]["recover"] = True
 
-    recover_ph_results = phonon_job(
-        ph_results["dir_name"],
-        input_data=ph_loose,
-    )
+    recover_ph_results = phonon_job(ph_results["dir_name"], input_data=ph_loose)
 
     with zopen(Path(recover_ph_results["dir_name"], "ph.out.gz")) as f:
         lines = str(f.read())
@@ -140,16 +131,11 @@ def test_phonon_job_lqdir(tmp_path, monkeypatch):
     pseudopotentials = {"Li": "Li.upf"}
 
     pw_results = static_job(
-        atoms,
-        input_data=input_data,
-        pseudopotentials=pseudopotentials,
-        kspacing=0.5,
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.5
     )
 
     ph_results = phonon_job(
-        pw_results["dir_name"],
-        input_data=ph_loose,
-        qpts=[(0, 0, 0, 1), (0.1, 0, 0, 1)],
+        pw_results["dir_name"], input_data=ph_loose, qpts=[(0, 0, 0, 1), (0.1, 0, 0, 1)]
     )
 
     assert_allclose(
@@ -182,9 +168,7 @@ def test_phonon_job_lqdir(tmp_path, monkeypatch):
     ph_loose["inputph"]["recover"] = True
 
     recover_ph_results = phonon_job(
-        ph_results["dir_name"],
-        input_data=ph_loose,
-        qpts=[(0, 0, 0, 1), (0.1, 0, 0, 1)],
+        ph_results["dir_name"], input_data=ph_loose, qpts=[(0, 0, 0, 1), (0.1, 0, 0, 1)]
     )
 
     with zopen(Path(recover_ph_results["dir_name"], "ph.out.gz")) as f:
@@ -220,10 +204,7 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
     pseudopotentials = {"Li": "Li.upf"}
 
     pw_results = static_job(
-        atoms,
-        input_data=input_data,
-        pseudopotentials=pseudopotentials,
-        kspacing=0.5,
+        atoms, input_data=input_data, pseudopotentials=pseudopotentials, kspacing=0.5
     )
 
     qpts = [(0, 0, 0, 1), (1 / 3, 0, 0, 1), (1 / 2, 0, 0, 1)]
@@ -275,10 +256,7 @@ def test_q2r_job(tmp_path, monkeypatch):
 
     additional_cards = ["1 1 1", "1", "matdyn"]
 
-    q2r_results = q2r_job(
-        tmp_path,
-        additional_cards=additional_cards,
-    )
+    q2r_results = q2r_job(tmp_path, additional_cards=additional_cards)
 
     assert Path(q2r_results["dir_name"], "q2r.fc.gz").exists()
 
@@ -300,9 +278,7 @@ def test_matdyn_job(tmp_path, monkeypatch):
     copy_decompress_files(DATA_DIR / "matdyn_test", "q2r.fc", tmp_path)
 
     input_data = {"input": {"dos": True, "nk1": 4, "nk2": 4, "nk3": 4}}
-    matdyn_results = matdyn_job(
-        tmp_path, input_data=input_data
-    )
+    matdyn_results = matdyn_job(tmp_path, input_data=input_data)
 
     assert Path(matdyn_results["dir_name"], "q2r.fc.gz").exists()
     assert Path(matdyn_results["dir_name"], "matdyn.dos.gz").exists()
@@ -346,7 +322,7 @@ def test_phonon_dos_flow(tmp_path, monkeypatch):
             "pseudopotentials": pseudopotentials,
             "input_data": input_data,
             "kspacing": 1.0,
-        },
+        }
     }
 
     assert phonon_dos_flow(atoms, job_params=job_params)
@@ -354,9 +330,7 @@ def test_phonon_dos_flow(tmp_path, monkeypatch):
     SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO
 
 
-def test_phonon_calculation_spin_orbit_example_06(
-    tmp_path, monkeypatch
-):
+def test_phonon_calculation_spin_orbit_example_06(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -398,7 +372,7 @@ def test_phonon_calculation_spin_orbit_example_06(
     pt_phonon_x_params = {
         "input_data": {
             "inputph": {"aMass(1)": 195.078, "fildYn": "ptdyn", "TR2_ph": 1.0e-10}
-        },
+        }
     }
     pt_phonon_x_results = phonon_job(
         pt_relax_results["dir_name"], **pt_phonon_x_params, qpts=(1.0, 0.0, 0.0)
@@ -413,9 +387,7 @@ def test_phonon_calculation_spin_orbit_example_06(
     SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO
 
 
-def test_phonon_calculation_si_spin_orbit(
-    tmp_path, monkeypatch, caplog
-):
+def test_phonon_calculation_si_spin_orbit(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -455,7 +427,7 @@ def test_phonon_calculation_si_spin_orbit(
                 "fildyn": "Sig.dyn",
                 "amass(1)": 28.0855,
             }
-        },
+        }
     }
     si_phonon_results = phonon_job(
         si_relax_results["dir_name"], **si_phonon_params, qpts=(0.0, 0.0, 0.0)
@@ -480,9 +452,7 @@ def test_phonon_calculation_si_spin_orbit(
     SETTINGS.ESPRESSO_PSEUDO = DEFAULT_SETTINGS.ESPRESSO_PSEUDO
 
 
-def test_phonon_induced_renormalization(
-    tmp_path, monkeypatch, caplog
-):
+def test_phonon_induced_renormalization(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -512,9 +482,7 @@ def test_phonon_induced_renormalization(
         "pseudopotentials": pseudopotential,
         "kpts": (3, 3, 3),
     }
-    c_scf_results = relax_job(
-        atoms, **c_scf_params
-    )
+    c_scf_results = relax_job(atoms, **c_scf_params)
 
     c_ph_params = {
         "input_data": {
@@ -531,10 +499,7 @@ def test_phonon_induced_renormalization(
     }
 
     with caplog.at_level(logging.WARNING):
-        c_ph_results = phonon_job(
-            c_scf_results["dir_name"],
-            **c_ph_params,
-        )
+        c_ph_results = phonon_job(c_scf_results["dir_name"], **c_ph_params)
         assert "Overwriting key 'fildyn'" in caplog.text
 
     q2r_params = {
@@ -542,9 +507,7 @@ def test_phonon_induced_renormalization(
             "input": {"fildyn": "diam.dyn", "zasr": "crystal", "flfrc": "diam.ifc"}
         }
     }
-    q2r_results = q2r_job(
-        c_ph_results["dir_name"], **q2r_params
-    )
+    q2r_results = q2r_job(c_ph_results["dir_name"], **q2r_params)
 
     assert q2r_results["parameters"]["input_data"]["input"]["flfrc"] == "q2r.fc"
     assert q2r_results["parameters"]["input_data"]["input"]["fildyn"] == "matdyn"
@@ -563,10 +526,7 @@ def test_phonon_induced_renormalization(
     }
 
     with caplog.at_level(logging.WARNING):
-        dvscf_q2r_results = dvscf_q2r_job(
-            c_ph_results["dir_name"],
-            **dvscf_q2r_params,
-        )
+        dvscf_q2r_results = dvscf_q2r_job(c_ph_results["dir_name"], **dvscf_q2r_params)
 
         assert "Overwriting key 'fildyn'" in caplog.text
         assert "Overwriting key 'wpot_dir'" in caplog.text
@@ -597,9 +557,7 @@ def test_phonon_induced_renormalization(
     }
 
     c_nscf_results = non_scf_job(
-        c_scf_results["atoms"],
-        c_scf_results["dir_name"],
-        **c_nscf_params,
+        c_scf_results["atoms"], c_scf_results["dir_name"], **c_nscf_params
     )
 
     c_ahc_coarse_params = {
@@ -719,11 +677,7 @@ def test_phonon_dvscf_q2r_inplace(tmp_path, monkeypatch):
 
     pseudopotentials = {"C": "C.UPF"}
 
-    c_scf_results = static_job(
-        atoms,
-        pseudopotentials=pseudopotentials,
-        kspacing=0.1,
-    )
+    c_scf_results = static_job(atoms, pseudopotentials=pseudopotentials, kspacing=0.1)
 
     c_ph_params = {
         "input_data": {
@@ -738,10 +692,7 @@ def test_phonon_dvscf_q2r_inplace(tmp_path, monkeypatch):
         }
     }
 
-    c_ph_results = phonon_job(
-        prev_outdir=c_scf_results["dir_name"],
-        **c_ph_params,
-    )
+    c_ph_results = phonon_job(prev_outdir=c_scf_results["dir_name"], **c_ph_params)
 
     dvscf_q2r_params = {
         "input_data": {
