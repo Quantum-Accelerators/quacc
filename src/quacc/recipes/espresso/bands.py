@@ -305,15 +305,11 @@ def bands_flow(
     results = {"bands_pw": bands_results}
 
     if run_bands_pp:
-        bands_pp_results = bands_pp_job_(
-            prev_outdir=bands_results["dir_name"]
-        )
+        bands_pp_results = bands_pp_job_(prev_outdir=bands_results["dir_name"])
         results["bands_pp"] = bands_pp_results
 
     if run_fermi_surface:
-        fermi_results = fermi_surface_job_(
-            prev_outdir=bands_results["dir_name"]
-        )
+        fermi_results = fermi_surface_job_(prev_outdir=bands_results["dir_name"])
         results["fermi_surface"] = fermi_results
 
     return results
