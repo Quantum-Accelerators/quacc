@@ -186,10 +186,6 @@ class Vasp(Vasp_):
         # Set the ASE_VASP_VDW environmentvariable
         if SETTINGS.VASP_VDW:
             os.environ["ASE_VASP_VDW"] = str(SETTINGS.VASP_VDW)
-        if self.user_calc_params.get("luse_vdw") and "ASE_VASP_VDW" not in os.environ:
-            raise OSError(
-                "VASP_VDW setting was not provided, yet you requested a vdW functional."
-            )
 
         # Return vanilla ASE command
         vasp_cmd = (
