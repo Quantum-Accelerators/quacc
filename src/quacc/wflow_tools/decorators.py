@@ -162,7 +162,22 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     elif SETTINGS.WORKFLOW_ENGINE == "parsl":
         from parsl import python_app
 
-        return python_app(_func, **kwargs)
+        stdout = kwargs.pop("stdout", None)
+        stderr = kwargs.pop("stderr", None)
+        walltime = kwargs.pop("walltime", None)
+        parsl_resource_specification = kwargs.pop("parsl_resource_specification", None)
+
+        def wrapper(
+            *f_args,
+            stdout=stdout,
+            stderr=stderr,
+            walltime=walltime,
+            parsl_resource_specification=parsl_resource_specification,
+            **f_kwargs,
+        ):
+            return _func(*f_args, **f_kwargs)
+
+        return python_app(wrapper, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
         from redun import task
 
