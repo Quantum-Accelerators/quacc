@@ -26,6 +26,7 @@ if TYPE_CHECKING:
 def run_phonopy(
     phonon: Phonopy,
     forces: NDArray,
+    symmetrize: bool = False,
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
@@ -40,6 +41,8 @@ def run_phonopy(
         Phonopy object
     forces
         Forces on the atoms
+    symmetrize
+        Whether to symmetrize the force constants
     t_step
         Temperature step
     t_min
@@ -60,6 +63,11 @@ def run_phonopy(
     # Run phonopy
     phonon.forces = forces
     phonon.produce_force_constants()
+
+    if symmetrize:
+        phonon.symmetrize_force_constants()
+        phonon.symmetrize_force_constants_by_space_group()
+
     phonon.run_mesh(with_eigenvectors=True)
     phonon.run_total_dos()
     phonon.run_thermal_properties(t_step=t_step, t_max=t_max, t_min=t_min)

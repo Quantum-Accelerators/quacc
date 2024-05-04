@@ -79,17 +79,26 @@ def phonon_subflow(
     PhononSchema
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][]
     """
+    fixed_atoms = fixed_atoms or []
+    fixed_atoms = np.array([i in fixed_atoms for i in range(len(atoms))])
 
-    phonon = get_phonopy(
+    phonon, atoms_to_add = get_phonopy(
         atoms,
+        fixed_atoms=fixed_atoms,
         min_lengths=min_lengths,
         supercell_matrix=supercell_matrix,
         symprec=symprec,
         displacement=displacement,
         phonopy_kwargs=phonopy_kwargs,
     )
+
+    fixed_atoms = np.full(len(phonon.supercell), False)
+    fixed_atoms = np.append(fixed_atoms, [True] * len(atoms_to_add))
+    fixed_atoms = fixed_atoms.astype(bool)
+
     supercells = [
-        phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
+        phonopy_atoms_to_ase_atoms(s) + atoms_to_add
+        for s in phonon.supercells_with_displacements
     ]
 
     @subflow
@@ -109,9 +118,16 @@ def phonon_subflow(
             phonopy_kwargs=phonopy_kwargs,
         )
         parameters = force_job_results[-1].get("parameters")
-        forces = [output["results"]["forces"] for output in force_job_results]
+        forces = [
+            output["results"]["forces"][~fixed_atoms, :] for output in force_job_results
+        ]
         phonon_results = run_phonopy(
-            phonon, forces, t_step=t_step, t_min=t_min, t_max=t_max
+            phonon,
+            forces,
+            symmetrize=fixed_atoms.any(),
+            t_step=t_step,
+            t_min=t_min,
+            t_max=t_max,
         )
 
         return summarize_phonopy(

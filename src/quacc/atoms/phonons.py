@@ -28,6 +28,7 @@ if TYPE_CHECKING:
 @requires(has_phonopy, "Phonopy not installed.")
 def get_phonopy(
     atoms: Atoms,
+    fixed_atoms: list[int] | None = None,
     min_lengths: float | tuple[float, float, float] | None = None,
     supercell_matrix: (
         tuple[tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]] | None
@@ -62,16 +63,21 @@ def get_phonopy(
     """
     phonopy_kwargs = phonopy_kwargs or {}
 
-    structure = AseAtomsAdaptor().get_structure(atoms)
+    structure = AseAtomsAdaptor.get_structure(atoms)
     structure = SpacegroupAnalyzer(
         structure, symprec=symprec
     ).get_symmetrized_structure()
+    atoms = AseAtomsAdaptor.get_atoms(structure)
+
+    fixed, non_fixed = atoms[fixed_atoms], atoms[~fixed_atoms]
+
+    non_fixed = AseAtomsAdaptor.get_structure(non_fixed)
 
     if supercell_matrix is None and min_lengths is not None:
         n_supercells = np.round(np.ceil(min_lengths / atoms.cell.lengths()))
-        supercell_matrix = np.diag([n_supercells, n_supercells, n_supercells])
+        supercell_matrix = np.diag(np.diag([n_supercells, n_supercells, n_supercells]))
 
-    phonopy_atoms = get_phonopy_structure(structure)
+    phonopy_atoms = get_phonopy_structure(non_fixed)
     phonon = phonopy.Phonopy(
         phonopy_atoms,
         symprec=symprec,
@@ -79,7 +85,13 @@ def get_phonopy(
         **phonopy_kwargs,
     )
     phonon.generate_displacements(distance=displacement)
-    return phonon
+
+    if len(fixed) > 0:
+        fixed = get_phonopy_structure(AseAtomsAdaptor.get_structure(fixed))
+        fixed = phonopy.structure.cells.get_supercell(fixed, supercell_matrix)
+        fixed = AseAtomsAdaptor.get_atoms(get_pmg_structure(fixed))
+
+    return phonon, fixed
 
 
 def phonopy_atoms_to_ase_atoms(phonpy_atoms: PhonopyAtoms) -> Atoms:
