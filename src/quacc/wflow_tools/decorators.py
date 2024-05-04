@@ -580,7 +580,22 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
     elif SETTINGS.WORKFLOW_ENGINE == "parsl":
         from parsl import join_app
 
-        return join_app(_func, **kwargs)
+        stdout = kwargs.pop("stdout", None)
+        stderr = kwargs.pop("stderr", None)
+        walltime = kwargs.pop("walltime", None)
+        parsl_resource_specification = kwargs.pop("parsl_resource_specification", None)
+
+        def wrapper(
+            *f_args,
+            stdout=stdout,
+            stderr=stderr,
+            walltime=walltime,
+            parsl_resource_specification=parsl_resource_specification,
+            **f_kwargs,
+        ):
+            return _func(*f_args, **f_kwargs)
+
+        return join_app(wrapper, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "prefect":
         from prefect import flow as prefect_flow
 
