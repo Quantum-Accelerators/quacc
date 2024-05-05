@@ -44,6 +44,9 @@ def get_phonopy(
     ----------
     atoms
         ASE atoms object.
+    fixed_atoms
+        List of indices of fixed atoms for the phono calculation.
+        WARNING: This is an important approximation and should be used with caution.
     min_lengths
         Minimum length of each lattice dimension (A).
     supercell_matrix
@@ -64,6 +67,7 @@ def get_phonopy(
     phonopy_kwargs = phonopy_kwargs or {}
 
     fixed_atoms = fixed_atoms or []
+    fixed_atoms = np.array([i in fixed_atoms for i in range(len(atoms))])
 
     structure = AseAtomsAdaptor.get_structure(atoms)
     structure = SpacegroupAnalyzer(

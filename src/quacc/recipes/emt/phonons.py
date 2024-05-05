@@ -59,7 +59,8 @@ def phonon_flow(
     min_lengths
         Minimum length of each lattice dimension (A).
     fixed_atoms
-        List of fixed atoms during the phonon calculation
+        List of indices of fixed atoms for the phono calculation.
+        WARNING: This is an important approximation and should be used with caution.
     supercell_matrix
         The supercell matrix to use. If specified, it will override any
         value specified by `min_lengths`.

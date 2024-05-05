@@ -56,6 +56,9 @@ def phonon_subflow(
         The static job to calculate the forces.
     relax_job
         The job used to relax the structure before calculating the forces.
+    fixed_atoms
+        List of indices of fixed atoms for the phono calculation.
+        WARNING: This is an important approximation and should be used with caution.
     symprec
         Precision for symmetry detection.
     min_lengths
@@ -81,9 +84,6 @@ def phonon_subflow(
     PhononSchema
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][]
     """
-    fixed_atoms = fixed_atoms or []
-    fixed_atoms = np.array([i in fixed_atoms for i in range(len(atoms))])
-
     phonon, atoms_to_add = get_phonopy(
         atoms,
         fixed_atoms=fixed_atoms,
