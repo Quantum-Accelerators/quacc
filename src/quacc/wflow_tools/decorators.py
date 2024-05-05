@@ -177,6 +177,8 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
         ):
             return _func(*f_args, **f_kwargs)
 
+        wrapper.__name__ = _func.__name__
+
         return python_app(wrapper, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
         from redun import task
@@ -594,6 +596,8 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
             **f_kwargs,
         ):
             return _func(*f_args, **f_kwargs)
+
+        wrapper.__name__ = _func.__name__
 
         return join_app(wrapper, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "prefect":
