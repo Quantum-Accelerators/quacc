@@ -23,6 +23,7 @@ def phonon_flow(
     atoms: Atoms,
     symprec: float = 1e-4,
     min_lengths: float | tuple[float, float, float] | None = 20.0,
+    fixed_atoms: list[int] | None = None,
     supercell_matrix: (
         tuple[tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]] | None
     ) = None,
@@ -57,6 +58,8 @@ def phonon_flow(
         Precision for symmetry detection.
     min_lengths
         Minimum length of each lattice dimension (A).
+    fixed_atoms
+        List of fixed atoms during the phonon calculation
     supercell_matrix
         The supercell matrix to use. If specified, it will override any
         value specified by `min_lengths`.
@@ -97,6 +100,7 @@ def phonon_flow(
         atoms,
         static_job_,
         relax_job=relax_job_ if run_relax else None,
+        fixed_atoms=fixed_atoms,
         symprec=symprec,
         min_lengths=min_lengths,
         supercell_matrix=supercell_matrix,

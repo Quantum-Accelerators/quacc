@@ -7,7 +7,7 @@ import pytest
 pytest.importorskip("phonopy")
 pytest.importorskip("seekpath")
 
-from ase.build import bulk
+from ase.build import bulk, molecule
 
 from quacc.recipes.emt.phonons import phonon_flow
 
@@ -71,3 +71,31 @@ def test_phonon_flow_v4(tmp_path, monkeypatch):
     assert output["results"]["force_constants"].shape == (8, 8, 3, 3)
     assert "mesh_properties" in output["results"]
     assert output["atoms"] != atoms
+
+
+def test_phonon_flow_fixed(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    atoms = molecule("H2", vacuum=20.0)
+    output = phonon_flow(atoms, run_relax=True, min_lengths=5.0)
+
+    atoms1 = molecule("H2", vacuum=20.0)
+    atoms2 = molecule("H2", vacuum=20.0)
+
+    atoms2.positions += [10, 10, 10]
+
+    output_fixed = phonon_flow(
+        atoms1 + atoms2, run_relax=True, min_lengths=5.0, fixed_atoms=[2, 3]
+    )
+
+    # Should be very close but not exactly the same
+    assert output["results"]["mesh_properties"]["frequencies"] == pytest.approx(
+        output_fixed["results"]["mesh_properties"]["frequencies"], rel=0.0, abs=1e-5
+    )
+
+    output_wrong = phonon_flow(
+        atoms1 + atoms2, run_relax=True, min_lengths=5.0, fixed_atoms=[0, 2]
+    )
+
+    assert output["results"]["mesh_properties"]["frequencies"] != pytest.approx(
+        output_wrong["results"]["mesh_properties"]["frequencies"], rel=0.0, abs=1e-2
+    )

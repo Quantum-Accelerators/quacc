@@ -5,6 +5,7 @@ from __future__ import annotations
 from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
+import numpy as np
 from monty.dev import requires
 
 from quacc import job, subflow
@@ -31,6 +32,7 @@ def phonon_subflow(
     atoms: Atoms,
     force_job: Job,
     relax_job: Job | None = None,
+    fixed_atoms: list[int] | None = None,
     symprec: float = 1e-4,
     min_lengths: float | tuple[float, float, float] | None = 20.0,
     supercell_matrix: (
@@ -109,14 +111,6 @@ def phonon_subflow(
 
     @job
     def _thermo_job(atoms: Atoms, force_job_results: list[dict]) -> PhononSchema:
-        phonon = get_phonopy(
-            atoms,
-            min_lengths=min_lengths,
-            supercell_matrix=supercell_matrix,
-            symprec=symprec,
-            displacement=displacement,
-            phonopy_kwargs=phonopy_kwargs,
-        )
         parameters = force_job_results[-1].get("parameters")
         forces = [
             output["results"]["forces"][~fixed_atoms, :] for output in force_job_results
