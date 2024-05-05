@@ -119,6 +119,7 @@ def test_strip_decorators():
     stripped_add3 = strip_decorator(add3)
     assert stripped_add3(1, 2) == 3
 
+
 def test_special_params(tmpdir, monkeypatch):
     monkeypatch.chdir(tmpdir)
 
