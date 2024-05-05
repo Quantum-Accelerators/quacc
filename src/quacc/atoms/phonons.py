@@ -63,6 +63,8 @@ def get_phonopy(
     """
     phonopy_kwargs = phonopy_kwargs or {}
 
+    fixed_atoms = fixed_atoms or []
+
     structure = AseAtomsAdaptor.get_structure(atoms)
     structure = SpacegroupAnalyzer(
         structure, symprec=symprec
