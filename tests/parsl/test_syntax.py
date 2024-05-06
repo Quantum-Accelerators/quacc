@@ -143,3 +143,7 @@ def test_special_params(tmpdir, monkeypatch):
 
     assert add(1, 2).result() == 3
     assert add2(1, 2).result() == [4, 6, 8, 10, 12, 14]
+    assert "mystdout.txt" in tmpdir
+    assert "mystderr.txt" in tmpdir
+    assert "mystdout2.txt" in tmpdir
+    assert "mystderr2.txt" in tmpdir
