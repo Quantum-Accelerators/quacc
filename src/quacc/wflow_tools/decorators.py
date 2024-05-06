@@ -605,7 +605,7 @@ def _get_parsl_wrapped_func(
     """
     walltime = decorator_kwargs.pop("walltime", None)
     parsl_resource_specification = decorator_kwargs.pop(
-        "parsl_resource_specification", None
+        "parsl_resource_specification", {}
     )
 
     def wrapper(
