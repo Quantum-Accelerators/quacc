@@ -594,18 +594,15 @@ def _get_parsl_wrapped_func(
         The function to wrap.
     decorator_kwargs
         Decorator keyword arguments, including Parsl-specific ones that
-        are meant to be passed to the underlying function. The `stdout`,
-        `stderr`, `walltime`, and `parsl_resource_specification` arguments
-        will be injected into the function call and removed from the
-        decorator arguments.
+        are meant to be passed to the underlying function. The `walltime`
+        and `parsl_resource_specification` arguments will be injected
+        into the function call and removed from the decorator arguments.
 
     Returns
     -------
     callable
         The wrapped function.
     """
-    stdout = decorator_kwargs.pop("stdout", None)
-    stderr = decorator_kwargs.pop("stderr", None)
     walltime = decorator_kwargs.pop("walltime", None)
     parsl_resource_specification = decorator_kwargs.pop(
         "parsl_resource_specification", None
@@ -613,8 +610,6 @@ def _get_parsl_wrapped_func(
 
     def wrapper(
         *f_args,
-        stdout=stdout,  # noqa: ARG001
-        stderr=stderr,  # noqa: ARG001
         walltime=walltime,  # noqa: ARG001
         parsl_resource_specification=parsl_resource_specification,  # noqa: ARG001
         **f_kwargs,
