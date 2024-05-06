@@ -10,7 +10,7 @@ Flow = TypeVar("Flow")
 Subflow = TypeVar("Subflow")
 
 if TYPE_CHECKING:
-    from typing import Callable
+    from typing import Any, Callable
 
 
 def job(_func: Callable | None = None, **kwargs) -> Job:
@@ -162,7 +162,9 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     elif SETTINGS.WORKFLOW_ENGINE == "parsl":
         from parsl import python_app
 
-        return python_app(_func, **kwargs)
+        wrapped_fn = _get_parsl_wrapped_func(_func, kwargs)
+
+        return python_app(wrapped_fn, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
         from redun import task
 
@@ -565,7 +567,9 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
     elif SETTINGS.WORKFLOW_ENGINE == "parsl":
         from parsl import join_app
 
-        return join_app(_func, **kwargs)
+        wrapped_fn = _get_parsl_wrapped_func(_func, kwargs)
+
+        return join_app(wrapped_fn, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "prefect":
         from prefect import flow as prefect_flow
 
@@ -576,6 +580,44 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
         return task(_func, namespace=_func.__module__, **kwargs)
     else:
         return _func
+
+
+def _get_parsl_wrapped_func(
+    func: Callable, decorator_kwargs: dict[str, Any]
+) -> Callable:
+    """
+    Wrap a function to handle special Parsl arguments.
+
+    Parameters
+    ----------
+    func
+        The function to wrap.
+    decorator_kwargs
+        Decorator keyword arguments, including Parsl-specific ones that
+        are meant to be passed to the underlying function. The `walltime`
+        and `parsl_resource_specification` arguments will be injected
+        into the function call and removed from the decorator arguments.
+
+    Returns
+    -------
+    callable
+        The wrapped function.
+    """
+    walltime = decorator_kwargs.pop("walltime", None)
+    parsl_resource_specification = decorator_kwargs.pop(
+        "parsl_resource_specification", None
+    )
+
+    def wrapper(
+        *f_args,
+        walltime=walltime,  # noqa: ARG001
+        parsl_resource_specification=parsl_resource_specification,  # noqa: ARG001
+        **f_kwargs,
+    ):
+        return func(*f_args, **f_kwargs)
+
+    wrapper.__name__ = func.__name__
+    return wrapper
 
 
 class Delayed_:
