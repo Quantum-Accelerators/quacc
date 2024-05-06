@@ -162,24 +162,9 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     elif SETTINGS.WORKFLOW_ENGINE == "parsl":
         from parsl import python_app
 
-        stdout = kwargs.pop("stdout", None)
-        stderr = kwargs.pop("stderr", None)
-        walltime = kwargs.pop("walltime", None)
-        parsl_resource_specification = kwargs.pop("parsl_resource_specification", None)
+        wrapped_fn = _get_parsl_wrapped_func(_func, kwargs)
 
-        def wrapper(
-            *f_args,
-            stdout=stdout,
-            stderr=stderr,
-            walltime=walltime,
-            parsl_resource_specification=parsl_resource_specification,
-            **f_kwargs,
-        ):
-            return _func(*f_args, **f_kwargs)
-
-        wrapper.__name__ = _func.__name__
-
-        return python_app(wrapper, **kwargs)
+        return python_app(wrapped_fn, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
         from redun import task
 
@@ -581,25 +566,8 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
         return delayed(wrapper, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "parsl":
         from parsl import join_app
-
-        stdout = kwargs.pop("stdout", None)
-        stderr = kwargs.pop("stderr", None)
-        walltime = kwargs.pop("walltime", None)
-        parsl_resource_specification = kwargs.pop("parsl_resource_specification", None)
-
-        def wrapper(
-            *f_args,
-            stdout=stdout,
-            stderr=stderr,
-            walltime=walltime,
-            parsl_resource_specification=parsl_resource_specification,
-            **f_kwargs,
-        ):
-            return _func(*f_args, **f_kwargs)
-
-        wrapper.__name__ = _func.__name__
-
-        return join_app(wrapper, **kwargs)
+        wrapped_fn = _get_parsl_wrapped_func(_func, **kwargs)
+        return join_app(wrapped_fn, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "prefect":
         from prefect import flow as prefect_flow
 
@@ -610,6 +578,42 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
         return task(_func, namespace=_func.__module__, **kwargs)
     else:
         return _func
+
+
+def _get_parsl_wrapped_func(func: Callable, **kwargs) -> Callable:
+    """
+    Wrap a function to handle special Parsl arguments.
+
+    Parameters
+    ----------
+    func
+        The function to wrap.
+    kwargs
+        Decorator keyword arguments, including Parsl-specific ones that
+        are meant to be passed to the underlying function.
+
+    Returns
+    -------
+    callable
+        The wrapped function.
+    """
+    stdout = kwargs.pop("stdout", None)
+    stderr = kwargs.pop("stderr", None)
+    walltime = kwargs.pop("walltime", None)
+    parsl_resource_specification = kwargs.pop("parsl_resource_specification", None)
+
+    def wrapper(
+        *f_args,
+        stdout=stdout,  # noqa: ARG001
+        stderr=stderr,  # noqa: ARG001
+        walltime=walltime,  # noqa: ARG001
+        parsl_resource_specification=parsl_resource_specification,  # noqa: ARG001
+        **f_kwargs,
+    ):
+        return func(*f_args, **f_kwargs)
+
+    wrapper.__name__ = func.__name__
+    return wrapper
 
 
 class Delayed_:
