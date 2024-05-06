@@ -162,7 +162,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     elif SETTINGS.WORKFLOW_ENGINE == "parsl":
         from parsl import python_app
 
-        wrapped_fn = _get_parsl_wrapped_func(_func, kwargs)
+        wrapped_fn = _get_parsl_wrapped_func(_func, **kwargs)
 
         return python_app(wrapped_fn, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
