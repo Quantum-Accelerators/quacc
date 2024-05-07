@@ -398,7 +398,7 @@ If you haven't done so already:
         executors=[
             HighThroughputExecutor(
                 label="quacc_parsl",  # (3)!
-                max_workers_per_node=cores_per_node,  # (4)!
+                max_workers=cores_per_node,  # (4)!
                 cores_per_worker=cores_per_job,  # (5)!
                 provider=SlurmProvider(
                     account=account,
@@ -821,7 +821,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     parsl.load(config)
     ```
 
-    1. Unlike the prior example, here `max_workers_per_node` is defining the maximum number of concurrent jobs in total and not the maximum number of jobs run per node.
+    1. Unlike the prior example, here `max_workers` is defining the maximum number of concurrent jobs in total and not the maximum number of jobs run per node.
 
     2. This is recommended in the Parsl manual for jobs that spawn MPI processes.
 
