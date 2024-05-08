@@ -34,7 +34,7 @@ def test_phonon_flow_dispersion(tmp_path, monkeypatch):
         atoms,
         method="m3gnet",
         min_lengths=5.0,
-        job_params={"all": {"dispersion": True}},
+        job_params={"all": {"compute_stress": False}},
     )
     assert output["results"]["force_constants"].shape == (8, 8, 3, 3)
     assert len(output["results"]["thermal_properties"]["temperatures"]) == 101
