@@ -13,7 +13,7 @@ methods = []
 try:
     import mace
 
-    methods.append("mace-mp-0")
+    # methods.append("mace-mp-0")
 
 except ImportError:
     mace = None
