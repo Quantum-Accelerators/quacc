@@ -386,7 +386,7 @@ jobs:
         run: |
           pip install uv
           uv pip install --system -r tests/requirements.txt -r tests/requirements-mlp.txt -r tests/requirements-newtonnet.txt -r tests/requirements-sella.txt -r tests/requirements-phonopy.txt "quacc[dev] @ ."
-          python -c "import matgl; matgl.clear_cache()" | echo "y"
+          rm /home/runner/.cache/matgl
 
       - name: Run tests with pytest
         run: pytest -k 'mlp or newtonnet' --durations=10 --cov=quacc --cov-report=xml
