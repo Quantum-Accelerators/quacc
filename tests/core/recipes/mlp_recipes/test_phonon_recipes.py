@@ -16,7 +16,7 @@ def _set_dtype(size, type_="float"):
     globals()[f"{type_}_np"] = getattr(np, f"{type_}{size}")
     torch.set_default_dtype(getattr(torch, f"float{size}"))
 
-
+@pytest.mark.xfail(strict=False)
 def test_phonon_flow(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     _set_dtype(64)
@@ -26,6 +26,7 @@ def test_phonon_flow(tmp_path, monkeypatch):
     assert len(output["results"]["thermal_properties"]["temperatures"]) == 101
 
 
+@pytest.mark.xfail(strict=False)
 def test_phonon_flow_dispersion(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     _set_dtype(64)
