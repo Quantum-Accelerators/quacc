@@ -31,7 +31,10 @@ def test_phonon_flow_dispersion(tmp_path, monkeypatch):
     _set_dtype(64)
     atoms = bulk("Cu")
     output = phonon_flow(
-        atoms, method="m3gnet", min_lengths=5.0, job_params={"all": {"dispersion": True}}
+        atoms,
+        method="m3gnet",
+        min_lengths=5.0,
+        job_params={"all": {"dispersion": True}},
     )
     assert output["results"]["force_constants"].shape == (8, 8, 3, 3)
     assert len(output["results"]["thermal_properties"]["temperatures"]) == 101
