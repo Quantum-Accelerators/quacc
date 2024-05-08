@@ -70,7 +70,7 @@ def get_phonopy(
             if isinstance(constr, FixAtoms)
         ]
     )
-    
+
     fixed_indices.flatten()
     is_fixed_atoms = np.array([i in fixed_indices for i in range(len(atoms))])
 
@@ -85,7 +85,9 @@ def get_phonopy(
     non_fixed_atoms = AseAtomsAdaptor.get_structure(non_fixed_atoms)
 
     if supercell_matrix is None and min_lengths is not None:
-        supercell_matrix = np.diag(np.round(np.ceil(min_lengths / atoms.cell.lengths())))
+        supercell_matrix = np.diag(
+            np.round(np.ceil(min_lengths / atoms.cell.lengths()))
+        )
 
     phonopy_atoms = get_phonopy_structure(non_fixed_atoms)
     phonon = phonopy.Phonopy(
