@@ -32,7 +32,6 @@ def phonon_subflow(
     atoms: Atoms,
     force_job: Job,
     relax_job: Job | None = None,
-    fixed_atoms: list[int] | None = None,
     symprec: float = 1e-4,
     min_lengths: float | tuple[float, float, float] | None = 20.0,
     supercell_matrix: (
@@ -56,9 +55,6 @@ def phonon_subflow(
         The static job to calculate the forces.
     relax_job
         The job used to relax the structure before calculating the forces.
-    fixed_atoms
-        List of indices of fixed atoms for the phono calculation.
-        WARNING: This is an important approximation and should be used with caution.
     symprec
         Precision for symmetry detection.
     min_lengths
@@ -84,9 +80,8 @@ def phonon_subflow(
     PhononSchema
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][]
     """
-    phonon, atoms_to_add = get_phonopy(
+    phonon, fixed_atoms = get_phonopy(
         atoms,
-        fixed_atoms=fixed_atoms,
         min_lengths=min_lengths,
         supercell_matrix=supercell_matrix,
         symprec=symprec,
@@ -94,12 +89,12 @@ def phonon_subflow(
         phonopy_kwargs=phonopy_kwargs,
     )
 
-    fixed_atoms = np.full(len(phonon.supercell), False)
-    fixed_atoms = np.append(fixed_atoms, [True] * len(atoms_to_add))
-    fixed_atoms = fixed_atoms.astype(bool)
+    fixed_indices = np.full(len(phonon.supercell), False)
+    fixed_indices = np.append(fixed_indices, [True] * len(fixed_atoms))
+    fixed_indices = fixed_indices.astype(bool)
 
     supercells = [
-        phonopy_atoms_to_ase_atoms(s) + atoms_to_add
+        phonopy_atoms_to_ase_atoms(s) + fixed_atoms
         for s in phonon.supercells_with_displacements
     ]
 
@@ -113,12 +108,12 @@ def phonon_subflow(
     def _thermo_job(atoms: Atoms, force_job_results: list[dict]) -> PhononSchema:
         parameters = force_job_results[-1].get("parameters")
         forces = [
-            output["results"]["forces"][~fixed_atoms, :] for output in force_job_results
+            output["results"]["forces"][~fixed_indices, :] for output in force_job_results
         ]
         phonon_results = run_phonopy(
             phonon,
             forces,
-            symmetrize=fixed_atoms.any(),
+            symmetrize=fixed_indices.any(),
             t_step=t_step,
             t_min=t_min,
             t_max=t_max,

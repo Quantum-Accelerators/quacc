@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
+from ase.constraints import FixAtoms
 from monty.dev import requires
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.phonopy import get_phonopy_structure, get_pmg_structure
@@ -28,7 +29,6 @@ if TYPE_CHECKING:
 @requires(has_phonopy, "Phonopy not installed.")
 def get_phonopy(
     atoms: Atoms,
-    fixed_atoms: list[int] | None = None,
     min_lengths: float | tuple[float, float, float] | None = None,
     supercell_matrix: (
         tuple[tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]] | None
@@ -44,9 +44,6 @@ def get_phonopy(
     ----------
     atoms
         ASE atoms object.
-    fixed_atoms
-        List of indices of fixed atoms for the phono calculation.
-        WARNING: This is an important approximation and should be used with caution.
     min_lengths
         Minimum length of each lattice dimension (A).
     supercell_matrix
@@ -66,24 +63,31 @@ def get_phonopy(
     """
     phonopy_kwargs = phonopy_kwargs or {}
 
-    fixed_atoms = fixed_atoms or []
-    fixed_atoms = np.array([i in fixed_atoms for i in range(len(atoms))])
+    fixed_indices = np.array(
+        [
+            constr.get_indices()
+            for constr in atoms.constraints
+            if isinstance(constr, FixAtoms)
+        ]
+    )
+    
+    fixed_indices.flatten()
+    is_fixed_atoms = np.array([i in fixed_indices for i in range(len(atoms))])
 
     structure = AseAtomsAdaptor.get_structure(atoms)
     structure = SpacegroupAnalyzer(
         structure, symprec=symprec
     ).get_symmetrized_structure()
-    atoms = AseAtomsAdaptor.get_atoms(structure)
+    atoms = structure.to_ase_atoms()
 
-    fixed, non_fixed = atoms[fixed_atoms], atoms[~fixed_atoms]
+    fixed_atoms, non_fixed_atoms = atoms[is_fixed_atoms], atoms[~is_fixed_atoms]
 
-    non_fixed = AseAtomsAdaptor.get_structure(non_fixed)
+    non_fixed_atoms = AseAtomsAdaptor.get_structure(non_fixed_atoms)
 
     if supercell_matrix is None and min_lengths is not None:
-        n_supercells = np.round(np.ceil(min_lengths / atoms.cell.lengths()))
-        supercell_matrix = np.diag(np.diag([n_supercells, n_supercells, n_supercells]))
+        supercell_matrix = np.diag(np.round(np.ceil(min_lengths / atoms.cell.lengths())))
 
-    phonopy_atoms = get_phonopy_structure(non_fixed)
+    phonopy_atoms = get_phonopy_structure(non_fixed_atoms)
     phonon = phonopy.Phonopy(
         phonopy_atoms,
         symprec=symprec,
@@ -92,12 +96,15 @@ def get_phonopy(
     )
     phonon.generate_displacements(distance=displacement)
 
-    if len(fixed) > 0:
-        fixed = get_phonopy_structure(AseAtomsAdaptor.get_structure(fixed))
-        fixed = phonopy.structure.cells.get_supercell(fixed, supercell_matrix)
-        fixed = AseAtomsAdaptor.get_atoms(get_pmg_structure(fixed))
+    if fixed_atoms:
+        fixed_atoms = phonopy_atoms_to_ase_atoms(
+            phonopy.structure.cells.get_supercell(
+                get_phonopy_structure(AseAtomsAdaptor.get_structure(fixed_atoms)),
+                supercell_matrix,
+            )
+        )
 
-    return phonon, fixed
+    return phonon, fixed_atoms
 
 
 def phonopy_atoms_to_ase_atoms(phonpy_atoms: PhonopyAtoms) -> Atoms:
