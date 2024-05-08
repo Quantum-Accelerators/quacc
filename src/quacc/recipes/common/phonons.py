@@ -47,6 +47,11 @@ def phonon_subflow(
     """
     Calculate phonon properties.
 
+    In Quacc the ASE constraints can be used to fix atoms. These atoms will
+    not be displaced during the phonon calculation. This will greatly reduce
+    the computational cost of the calculation. However, this is an important
+    approximation and should be used with caution.
+
     Parameters
     ----------
     atoms
@@ -108,7 +113,8 @@ def phonon_subflow(
     def _thermo_job(atoms: Atoms, force_job_results: list[dict]) -> PhononSchema:
         parameters = force_job_results[-1].get("parameters")
         forces = [
-            output["results"]["forces"][~fixed_indices, :] for output in force_job_results
+            output["results"]["forces"][~fixed_indices, :]
+            for output in force_job_results
         ]
         phonon_results = run_phonopy(
             phonon,
