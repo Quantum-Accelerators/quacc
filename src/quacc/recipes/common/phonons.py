@@ -44,7 +44,6 @@ def phonon_subflow(
     t_min: float = 0,
     t_max: float = 1000,
     phonopy_kwargs: dict[str, Any] | None = None,
-    additional_fields: dict[str, Any] | None = None,
 ) -> PhononSchema:
     """
     Calculate phonon properties.
@@ -74,8 +73,6 @@ def phonon_subflow(
         Max temperature (K).
     phonopy_kwargs
         Additional kwargs to pass to the Phonopy class.
-    additional_fields
-        Additional fields to store in the database.
 
     Returns
     -------
@@ -91,7 +88,7 @@ def phonon_subflow(
 
     @job
     def _thermo_job(
-        atoms: Atoms, phonon: Phonopy, force_job_results: list[dict]
+        atoms: Atoms, phonon: Phonopy, force_job_results: list[dict], t_step: float, t_min: float, t_max: float)
     ) -> PhononSchema:
         parameters = force_job_results[-1].get("parameters")
         forces = [output["results"]["forces"] for output in force_job_results]
@@ -104,7 +101,6 @@ def phonon_subflow(
             atoms,
             phonon_results.directory,
             parameters=parameters,
-            additional_fields=additional_fields,
         )
 
     phonon = get_phonopy(
@@ -123,4 +119,4 @@ def phonon_subflow(
         atoms = relax_job(atoms)["atoms"]
 
     force_job_results = _get_forces_subflow(supercells)
-    return _thermo_job(atoms, phonon, force_job_results)
+    return _thermo_job(atoms, phonon, force_job_results, t_step, t_min, t_max)
