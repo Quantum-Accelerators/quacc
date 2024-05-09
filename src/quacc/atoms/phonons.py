@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -9,8 +10,6 @@ from monty.dev import requires
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.phonopy import get_phonopy_structure, get_pmg_structure
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
-
-from importlib.util import find_spec
 
 has_phonopy = find_spec("phonopy")
 
