@@ -93,7 +93,7 @@ def phonon_flow(
         decorators=job_decorators,
     )
     if run_relax:
-        atoms = relax_job(atoms)["atoms"]
+        atoms = relax_job_(atoms)["atoms"]
 
     return phonon_subflow(
         atoms,
