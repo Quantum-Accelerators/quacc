@@ -68,7 +68,7 @@ def get_phonopy(
     fixed_indices = fixed_indices or []
 
     symmetrized_structure = SpacegroupAnalyzer(
-        AseAtomsAdaptor.get_structure(atoms), symprec=symprec
+        AseAtomsAdaptor().get_structure(atoms), symprec=symprec
     ).get_symmetrized_structure()
 
     if supercell_matrix is None and min_lengths is not None:

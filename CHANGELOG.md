@@ -10,6 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Added support for Parsl "special" keyword arguments (e.g. `timeout`, `parsl_resource_specification`)
 
+### Fixed
+
+- Fixed bug where the common phonon subflow would generate a `Phonopy` object based on the unrelaxed, rather than relaxed, structure
+- Sped up the common phonon subflow by removing duplicate `get_phonopy()` calls
+
 ## [0.7.7]
 
 ### Added
