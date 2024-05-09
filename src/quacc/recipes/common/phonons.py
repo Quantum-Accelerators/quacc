@@ -102,7 +102,7 @@ def phonon_subflow(
         )
 
         return summarize_phonopy(
-            phonopy, atoms, phonopy_results.directory, parameters=parameters
+            phonopy, atoms, phonopy_results.directory, parameters=parameters, additional_fields={"name": "Phonopy Thermo"}
         )
 
     if relax_job is not None:
