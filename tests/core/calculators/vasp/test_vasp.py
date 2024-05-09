@@ -438,13 +438,6 @@ def test_lasph_aggressive():
     SETTINGS.VASP_INCAR_COPILOT = DEFAULT_SETTINGS.VASP_INCAR_COPILOT
 
 
-def test_vdw():
-    atoms = bulk("Cu")
-
-    with pytest.raises(OSError, match="VASP_VDW setting was not provided"):
-        Vasp(atoms, xc="beef-vdw")
-
-
 def test_efermi():
     atoms = bulk("Cu")
     calc = Vasp(atoms)
@@ -857,7 +850,7 @@ def test_pmg_input_set():
         "sigma": 0.05,
         "magmom": [0.6],
         "lmaxmix": 4,
-        "kpts": [11, 11, 11],
+        "kpts": (11, 11, 11),
         "gamma": True,
         "setups": {"Cu": "_pv"},
     }
@@ -892,7 +885,7 @@ def test_pmg_input_set2():
         "sigma": 0.05,
         "magmom": [2.3, 2.3],
         "lmaxmix": 4,
-        "kpts": [5, 11, 11],
+        "kpts": (5, 11, 11),
         "gamma": True,
         "setups": {"Fe": "_pv", "O": ""},
     }

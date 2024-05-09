@@ -26,6 +26,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from numpy.typing import NDArray
 
+    from quacc.runners.ase import OptParams
     from quacc.schemas._aliases.ase import OptSchema
     from quacc.utils.files import Filenames, SourceDirectory
 
@@ -38,7 +39,7 @@ def ts_job(
     spin_multiplicity: int = 1,
     method: str = "wb97mv",
     basis: str = "def2-svpd",
-    opt_params: dict[str, Any] | None = None,
+    opt_params: OptParams | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
@@ -104,7 +105,7 @@ def irc_job(
     direction: Literal["forward", "reverse"] = "forward",
     method: str = "wb97mv",
     basis: str = "def2-svpd",
-    opt_params: dict[str, Any] | None = None,
+    opt_params: OptParams | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
@@ -246,7 +247,7 @@ def quasi_irc_perturb_job(
     spin_multiplicity: int = 1,
     method: str = "wb97mv",
     basis: str = "def2-svpd",
-    opt_params: dict[str, Any] | None = None,
+    opt_params: OptParams | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> OptSchema:

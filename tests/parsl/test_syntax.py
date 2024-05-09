@@ -118,3 +118,18 @@ def test_strip_decorators():
 
     stripped_add3 = strip_decorator(add3)
     assert stripped_add3(1, 2) == 3
+
+
+def test_special_params(tmpdir, monkeypatch):
+    monkeypatch.chdir(tmpdir)
+
+    @job(walltime=30, parsl_resource_specification={})
+    def add(a, b):
+        return a + b
+
+    @subflow(walltime=20, parsl_resource_specification={})
+    def add2(a, b):
+        return [add(i, i + 2) for i in range(a, b + 5)]
+
+    assert add(1, 2).result() == 3
+    assert add2(1, 2).result() == [4, 6, 8, 10, 12, 14]
