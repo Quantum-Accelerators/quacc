@@ -93,10 +93,9 @@ def phonon_subflow(
         displacement=displacement,
         phonopy_kwargs=phonopy_kwargs,
     )
-
-    fixed_indices = np.full(len(phonon.supercell), False)
-    fixed_indices = np.append(fixed_indices, [True] * len(fixed_atoms))
-    fixed_indices = fixed_indices.astype(bool)
+    fixed_indices = np.array(
+        [False] * len(phonon.supercell) + [True] * len(fixed_atoms)
+    )
 
     supercells = [
         phonopy_atoms_to_ase_atoms(s) + fixed_atoms
