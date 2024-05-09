@@ -72,7 +72,7 @@ def get_phonopy(
         )
 
     phonon = phonopy.Phonopy(
-        get_phonopy_structure(structure),
+        get_phonopy_structure(symmetrized_structure),
         symprec=symprec,
         supercell_matrix=supercell_matrix,
         **phonopy_kwargs,
