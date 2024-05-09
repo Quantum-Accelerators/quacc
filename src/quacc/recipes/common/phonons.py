@@ -50,11 +50,6 @@ def phonon_subflow(
     """
     Calculate phonon properties.
 
-    In Quacc the ASE constraints can be used to fix atoms. These atoms will
-    not be displaced during the phonon calculation. This will greatly reduce
-    the computational cost of the calculation. However, this is an important
-    approximation and should be used with caution.
-
     Parameters
     ----------
     atoms
