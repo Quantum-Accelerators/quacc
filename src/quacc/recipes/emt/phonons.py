@@ -104,5 +104,5 @@ def phonon_flow(
         t_step=t_step,
         t_min=t_min,
         t_max=t_max,
-        additional_fields={"name": "EMT Phonons"}
+        additional_fields={"name": "EMT Phonons"},
     )
