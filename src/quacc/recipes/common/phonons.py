@@ -107,7 +107,6 @@ def phonon_subflow(
             additional_fields=additional_fields,
         )
 
-
     phonon = get_phonopy(
         atoms,
         min_lengths=min_lengths,
@@ -119,7 +118,7 @@ def phonon_subflow(
     supercells = [
         phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
     ]
-    
+
     if relax_job is not None:
         atoms = relax_job(atoms)["atoms"]
 
