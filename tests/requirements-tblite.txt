@@ -1,1 +1,1 @@
-tblite==0.3.0
+tblite[ase]==0.3.0
