@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 from monty.dev import requires
 
 from quacc import flow
-from quacc.recipes.common.phonons import phonon_flow as common_phonon_flow
+from quacc.recipes.common.phonons import phonon_subflow
 from quacc.recipes.mlp.core import relax_job, static_job
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs
@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 )
 def phonon_flow(
     atoms: Atoms,
-    method: Literal["mace", "m3gnet", "chgnet"],
+    method: Literal["mace-mp-0", "m3gnet", "chgnet"],
     symprec: float = 1e-4,
     min_lengths: float | tuple[float, float, float] | None = 20.0,
     supercell_matrix: (
@@ -106,7 +106,7 @@ def phonon_flow(
         decorators=job_decorators,
     )
 
-    return common_phonon_flow(
+    return phonon_subflow(
         atoms,
         static_job_,
         relax_job=relax_job_ if run_relax else None,

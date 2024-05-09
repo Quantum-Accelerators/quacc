@@ -25,6 +25,7 @@ from quacc.utils.dicts import recursive_dict_merge
 if TYPE_CHECKING:
     from typing import Any
 
+    from quacc.runners.ase import OptParams
     from quacc.schemas._aliases.ase import RunSchema
     from quacc.utils.files import Filenames, SourceDirectory
 
@@ -104,13 +105,12 @@ def run_and_summarize(
 def run_and_summarize_opt(
     atoms: Atoms | None = None,
     preset: str | None = None,
-    relax_cell: bool = False,
     template: EspressoTemplate | None = None,
     profile: EspressoProfile | None = None,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     opt_defaults: dict[str, Any] | None = None,
-    opt_params: dict[str, Any] | None = None,
+    opt_params: OptParams | None = None,
     parallel_info: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: (
@@ -129,8 +129,6 @@ def run_and_summarize_opt(
         Atoms object
     preset
         Name of the preset to use
-    relax_cell
-        Whether to relax the cell or not.
     template
         EspressoTemplate to use
     profile
@@ -177,9 +175,7 @@ def run_and_summarize_opt(
 
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
-    dyn = run_opt(
-        atoms, relax_cell=relax_cell, copy_files=updated_copy_files, **opt_flags
-    )
+    dyn = run_opt(atoms, copy_files=updated_copy_files, **opt_flags)
 
     return summarize_opt_run(
         dyn, move_magmoms=True, additional_fields=additional_fields

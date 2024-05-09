@@ -1,1 +1,1 @@
-pymatgen-io-validation==0.0.1
+pymatgen-io-validation==0.0.2
