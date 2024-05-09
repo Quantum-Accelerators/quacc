@@ -36,7 +36,7 @@ def get_phonopy(
     symprec: float = 1e-5,
     displacement: float = 0.01,
     phonopy_kwargs: dict | None = None,
-) -> (Phonopy, Atoms):
+) -> tuple[Phonopy, Atoms]:
     """
     Convert an ASE atoms object to a phonopy object with displacements generated.
 
@@ -59,7 +59,9 @@ def get_phonopy(
     Returns
     -------
     Phonopy
-        Phonopy object plus the fixed atoms as an ASE atoms object.
+        Phonopy object
+    Atoms
+        The fixed atoms as an ASE atoms object.
     """
     phonopy_kwargs = phonopy_kwargs or {}
 
