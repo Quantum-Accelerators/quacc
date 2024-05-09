@@ -102,7 +102,7 @@ def phonon_subflow(
         )
 
         return summarize_phonopy(
-            phonon, atoms, phonopy_results.directory, parameters=parameters
+            phonopy, atoms, phonopy_results.directory, parameters=parameters
         )
 
     phonopy = get_phonopy(
