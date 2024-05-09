@@ -429,11 +429,10 @@ class QuaccSettings(BaseSettings):
         cls, v: Optional[Union[Path, list[Path]]]
     ) -> Optional[Union[Path, list[Path]]]:
         """Expand ~/ and $ENV_VARS in paths."""
-        if isinstance(v, list):
-            return [Path(os.path.expandvars(item)).expanduser() for item in v]
-        elif v:
-            return Path(os.path.expandvars(v)).expanduser()
-        return None
+        if not isinstance(v, list):
+            v = [v]
+        
+        return [Path(os.path.expandvars(item)).expanduser() for item in v]
 
     @field_validator("RESULTS_DIR", "SCRATCH_DIR")
     @classmethod
