@@ -62,19 +62,17 @@ def get_phonopy(
     """
     phonopy_kwargs = phonopy_kwargs or {}
 
-    structure = AseAtomsAdaptor().get_structure(atoms)
-    structure = SpacegroupAnalyzer(
-        structure, symprec=symprec
+    symmetrized_structure = SpacegroupAnalyzer(
+        AseAtomsAdaptor().get_structure(atoms), symprec=symprec
     ).get_symmetrized_structure()
 
     if supercell_matrix is None and min_lengths is not None:
         supercell_matrix = np.diag(
-            np.round(np.ceil(min_lengths / atoms.cell.lengths()))
+            np.round(np.ceil(min_lengths / np.array(symmetrized_structure.lattice.abc)))
         )
 
-    phonopy_atoms = get_phonopy_structure(structure)
     phonon = phonopy.Phonopy(
-        phonopy_atoms,
+        get_phonopy_structure(structure),
         symprec=symprec,
         supercell_matrix=supercell_matrix,
         **phonopy_kwargs,
