@@ -33,7 +33,6 @@ if TYPE_CHECKING:
 def phonon_subflow(
     atoms: Atoms,
     force_job: Job,
-    relax_job: Job | None = None,
     symprec: float = 1e-4,
     min_lengths: float | tuple[float, float, float] | None = 20.0,
     supercell_matrix: (
@@ -55,8 +54,6 @@ def phonon_subflow(
         Atoms object with calculator attached.
     force_job
         The static job to calculate the forces.
-    relax_job
-        The job used to relax the structure before calculating the forces.
     symprec
         Precision for symmetry detection.
     min_lengths
@@ -112,9 +109,6 @@ def phonon_subflow(
             parameters=parameters,
             additional_fields=additional_fields,
         )
-
-    if relax_job is not None:
-        atoms = relax_job(atoms)["atoms"]
 
     phonopy = get_phonopy(
         atoms,
