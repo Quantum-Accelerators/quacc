@@ -105,6 +105,10 @@ def phonon_subflow(
             phonopy, atoms, phonopy_results.directory, parameters=parameters
         )
 
+    if relax_job is not None:
+        atoms = relax_job(atoms)["atoms"]
+
+
     phonopy = get_phonopy(
         atoms,
         min_lengths=min_lengths,
@@ -116,9 +120,5 @@ def phonon_subflow(
     supercells = [
         phonopy_atoms_to_ase_atoms(s) for s in phonopy.supercells_with_displacements
     ]
-
-    if relax_job is not None:
-        atoms = relax_job(atoms)["atoms"]
-
     force_job_results = _get_forces_subflow(supercells)
     return _thermo_job(atoms, phonopy, force_job_results, t_step, t_min, t_max)
