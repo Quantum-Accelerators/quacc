@@ -19,7 +19,6 @@ if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
-    from numpy.typing import NDArray
 
     from quacc import Job
     from quacc.schemas._aliases.phonons import PhononSchema
@@ -108,8 +107,7 @@ def phonon_subflow(
     ) -> PhononSchema:
         parameters = force_job_results[-1].get("parameters")
         forces = [
-            output["results"]["forces"][~fixed_mask, :]
-            for output in force_job_results
+            output["results"]["forces"][~fixed_mask, :] for output in force_job_results
         ]
         phonopy_results = run_phonopy(
             phonopy,
