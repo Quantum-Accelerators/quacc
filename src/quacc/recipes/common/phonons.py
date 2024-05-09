@@ -83,18 +83,6 @@ def phonon_subflow(
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][]
     """
 
-    phonon = get_phonopy(
-        atoms,
-        min_lengths=min_lengths,
-        supercell_matrix=supercell_matrix,
-        symprec=symprec,
-        displacement=displacement,
-        phonopy_kwargs=phonopy_kwargs,
-    )
-    supercells = [
-        phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
-    ]
-
     @subflow
     def _get_forces_subflow(supercells: list[Atoms]) -> list[dict]:
         return [
@@ -119,6 +107,19 @@ def phonon_subflow(
             additional_fields=additional_fields,
         )
 
+
+    phonon = get_phonopy(
+        atoms,
+        min_lengths=min_lengths,
+        supercell_matrix=supercell_matrix,
+        symprec=symprec,
+        displacement=displacement,
+        phonopy_kwargs=phonopy_kwargs,
+    )
+    supercells = [
+        phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
+    ]
+    
     if relax_job is not None:
         atoms = relax_job(atoms)["atoms"]
 
