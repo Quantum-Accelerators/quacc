@@ -89,7 +89,7 @@ def phonon_subflow(
     @job
     def _thermo_job(
         atoms: Atoms,
-        phonon: Phonopy,
+        phonopy: Phonopy,
         force_job_results: list[dict],
         t_step: float,
         t_min: float,
@@ -97,15 +97,15 @@ def phonon_subflow(
     ) -> PhononSchema:
         parameters = force_job_results[-1].get("parameters")
         forces = [output["results"]["forces"] for output in force_job_results]
-        phonon_results = run_phonopy(
-            phonon, forces, t_step=t_step, t_min=t_min, t_max=t_max
+        phonopy_results = run_phonopy(
+            phonopy, forces, t_step=t_step, t_min=t_min, t_max=t_max
         )
 
         return summarize_phonopy(
-            phonon, atoms, phonon_results.directory, parameters=parameters
+            phonon, atoms, phonopy_results.directory, parameters=parameters
         )
 
-    phonon = get_phonopy(
+    phonopy = get_phonopy(
         atoms,
         min_lengths=min_lengths,
         supercell_matrix=supercell_matrix,
@@ -114,11 +114,11 @@ def phonon_subflow(
         phonopy_kwargs=phonopy_kwargs,
     )
     supercells = [
-        phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
+        phonopy_atoms_to_ase_atoms(s) for s in phonopy.supercells_with_displacements
     ]
 
     if relax_job is not None:
         atoms = relax_job(atoms)["atoms"]
 
     force_job_results = _get_forces_subflow(supercells)
-    return _thermo_job(atoms, phonon, force_job_results, t_step, t_min, t_max)
+    return _thermo_job(atoms, phonopy, force_job_results, t_step, t_min, t_max)
