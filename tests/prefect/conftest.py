@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from shutil import rmtree
 
 import pytest
 
@@ -30,8 +31,6 @@ if prefect:
                 yield
 
     def pytest_sessionfinish(exitstatus):
+        rmtree(TEST_RESULTS_DIR, ignore_errors=True)
         if exitstatus == 0:
-            from shutil import rmtree
-
-            rmtree(TEST_RESULTS_DIR, ignore_errors=True)
             rmtree(TEST_SCRATCH_DIR, ignore_errors=True)
