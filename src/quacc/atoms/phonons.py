@@ -68,8 +68,9 @@ def get_phonopy(
     ).get_symmetrized_structure()
 
     if supercell_matrix is None and min_lengths is not None:
-        n_supercells = np.round(np.ceil(min_lengths / atoms.cell.lengths()))
-        supercell_matrix = np.diag([n_supercells, n_supercells, n_supercells])
+        supercell_matrix = np.diag(
+            np.round(np.ceil(min_lengths / atoms.cell.lengths()))
+        )
 
     phonopy_atoms = get_phonopy_structure(structure)
     phonon = phonopy.Phonopy(
