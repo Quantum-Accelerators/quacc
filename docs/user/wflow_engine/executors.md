@@ -261,7 +261,7 @@ If you haven't done so already:
             },  # (2)!
             job_attributes_kwargs={
                 "duration": 10,  # minutes
-                "project_name": "YourAccountName",
+                "account": "YourAccountName",
                 "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
             },  # (3)!
             # Remote Python env parameters
@@ -696,7 +696,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
             },
             job_attributes_kwargs={
                 "duration": 30,
-                "project_name": "YourAccountName",
+                "account": "YourAccountName",
                 "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
             },
             pre_launch_cmds=["module load vasp/6.4.1-cpu"],
@@ -799,7 +799,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
         executors=[
             HighThroughputExecutor(
                 label="quacc_parsl",
-                max_workers=nodes_per_job * nodes_per_allocation,  # (1)!
+                max_workers_per_node=nodes_per_allocation // nodes_per_job,  # (1)!
                 cores_per_worker=1e-6,  # (2)!
                 provider=SlurmProvider(
                     account=account,

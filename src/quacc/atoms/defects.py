@@ -105,7 +105,7 @@ def make_defects_from_bulk(
         )
 
         # Generate DefectEntry object from Defect object
-        defect_entry = _get_defect_entry_from_defect(
+        defect_entry = get_defect_entry_from_defect(
             defect=defect,
             defect_supercell=defect_supercell,
             defect_charge=defect_charge,
@@ -136,7 +136,7 @@ def make_defects_from_bulk(
     return final_defects
 
 
-def _get_defect_entry_from_defect(
+def get_defect_entry_from_defect(
     defect: Defect, defect_supercell: Structure, defect_charge: int
 ) -> DefectEntry:
     """

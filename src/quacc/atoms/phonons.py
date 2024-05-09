@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -14,9 +13,9 @@ from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 try:
     import phonopy
 
-    has_deps = find_spec("seekpath") is not None
+    has_phonopy = True
 except ImportError:
-    has_deps = False
+    has_phonopy = False
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
@@ -26,7 +25,7 @@ if TYPE_CHECKING:
         from phonopy.structure.atoms import PhonopyAtoms
 
 
-@requires(has_deps, "Phonopy or seekpath is not installed.")
+@requires(has_phonopy, "Phonopy not installed.")
 def get_phonopy(
     atoms: Atoms,
     min_lengths: float | tuple[float, float, float] | None = None,
