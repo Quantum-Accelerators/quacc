@@ -8,7 +8,6 @@ pytest.importorskip("phonopy")
 pytest.importorskip("seekpath")
 
 from ase.build import bulk, molecule
-from ase.constraints import FixAtoms
 
 from quacc.recipes.emt.phonons import phonon_flow
 
@@ -85,20 +84,15 @@ def test_phonon_flow_fixed(tmp_path, monkeypatch):
     atoms2.positions += [10, 10, 10]
 
     full_system = atoms1 + atoms2
-    full_system.set_constraint(FixAtoms(indices=[0, 1]))
-
-    output_fixed = phonon_flow(full_system, run_relax=True, min_lengths=5.0)
 
     # Should be very close but not exactly the same
+    output_fixed = phonon_flow(full_system, run_relax=True, min_lengths=5.0, fixed_indices=[0, 1])
     assert output["results"]["mesh_properties"]["frequencies"] == pytest.approx(
         output_fixed["results"]["mesh_properties"]["frequencies"], rel=0.0, abs=1e-5
     )
 
-    full_system = atoms1 + atoms2
-    full_system.set_constraint(FixAtoms(indices=[0, 2]))
 
-    output_wrong = phonon_flow(full_system, run_relax=True, min_lengths=5.0)
-
+    output_wrong = phonon_flow(full_system, run_relax=True, min_lengths=5.0, fixed_indices=[0, 2])
     assert output["results"]["mesh_properties"]["frequencies"] != pytest.approx(
         output_wrong["results"]["mesh_properties"]["frequencies"], rel=0.0, abs=1e-2
     )
