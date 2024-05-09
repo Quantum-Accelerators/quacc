@@ -21,8 +21,10 @@ if TYPE_CHECKING:
 
     from quacc import Job
     from quacc.schemas._aliases.phonons import PhononSchema
+
     if has_deps:
         from phonopy import Phonopy
+
 
 @subflow
 @requires(
@@ -100,7 +102,9 @@ def phonon_subflow(
         ]
 
     @job
-    def _thermo_job(atoms: Atoms, phonon: Phonopy, force_job_results: list[dict]) -> PhononSchema:
+    def _thermo_job(
+        atoms: Atoms, phonon: Phonopy, force_job_results: list[dict]
+    ) -> PhononSchema:
         parameters = force_job_results[-1].get("parameters")
         forces = [output["results"]["forces"] for output in force_job_results]
         phonon_results = run_phonopy(
