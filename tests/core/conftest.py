@@ -18,5 +18,4 @@ def pytest_sessionstart():
 def pytest_sessionfinish(exitstatus):
     rmtree(TEST_RESULTS_DIR, ignore_errors=True)
     if exitstatus == 0:
-
         rmtree(TEST_SCRATCH_DIR, ignore_errors=True)
