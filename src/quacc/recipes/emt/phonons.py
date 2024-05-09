@@ -31,6 +31,7 @@ def phonon_flow(
     t_min: float = 0,
     t_max: float = 1000,
     run_relax: bool = True,
+    fixed_indices: list[int] | None = None,
     job_params: dict[str, dict[str, Any]] | None = None,
     job_decorators: dict[str, Callable | None] | None = None,
 ) -> PhononSchema:
@@ -62,6 +63,8 @@ def phonon_flow(
         value specified by `min_lengths`.
     displacement
         Atomic displacement (A).
+    fixed_indices
+        Indices of `atoms` to fix during the phonon calculation.
     t_step
         Temperature step (K).
     t_min
@@ -102,6 +105,7 @@ def phonon_flow(
         min_lengths=min_lengths,
         supercell_matrix=supercell_matrix,
         displacement=displacement,
+        fixed_indices=fixed_indices,
         t_step=t_step,
         t_min=t_min,
         t_max=t_max,

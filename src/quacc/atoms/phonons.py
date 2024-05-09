@@ -2,27 +2,24 @@
 
 from __future__ import annotations
 
+from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
 import numpy as np
-from ase.constraints import FixAtoms
 from monty.dev import requires
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.phonopy import get_phonopy_structure, get_pmg_structure
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 
-try:
-    import phonopy
+has_phonopy = find_spec("phonopy")
 
-    has_phonopy = True
-except ImportError:
-    has_phonopy = False
+if has_phonopy:
+    from phonopy import Phonopy
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
 
-    if phonopy:
-        from phonopy import Phonopy
+    if has_phonopy:
         from phonopy.structure.atoms import PhonopyAtoms
 
 
@@ -35,8 +32,9 @@ def get_phonopy(
     ) = None,
     symprec: float = 1e-5,
     displacement: float = 0.01,
+    fixed_indices: list[int] | None = None,
     phonopy_kwargs: dict | None = None,
-) -> tuple[Phonopy, Atoms]:
+) -> tuple[Phonopy, Phonopy | None]:
     """
     Convert an ASE atoms object to a phonopy object with displacements generated.
 
@@ -53,62 +51,50 @@ def get_phonopy(
         Precision for symmetry detection.
     displacement
         Atomic displacement (A).
+    fixed_indices
+        Indices of atoms to fix for the phonon calculation.
     phonopy_kwargs
         Additional kwargs to pass to the Phonopy class.
 
     Returns
     -------
     Phonopy
-        Phonopy object
-    Atoms
-        The fixed atoms as an ASE atoms object.
+        Phonopy object with displacements generated for the unfixed atoms.
+    Phonopy | None
+        Phonopy object for the fixed atoms if `fixed_indices` is specified.
+        Otherwise, None.
     """
     phonopy_kwargs = phonopy_kwargs or {}
+    fixed_indices = fixed_indices or []
 
-    fixed_indices = np.array(
-        [
-            constr.get_indices()
-            for constr in atoms.constraints
-            if isinstance(constr, FixAtoms)
-        ]
-    )
-
-    fixed_indices.flatten()
-    is_fixed_atoms = np.array([i in fixed_indices for i in range(len(atoms))])
-
-    structure = AseAtomsAdaptor.get_structure(atoms)
-    structure = SpacegroupAnalyzer(
-        structure, symprec=symprec
+    symmetrized_structure = SpacegroupAnalyzer(
+        AseAtomsAdaptor.get_structure(atoms), symprec=symprec
     ).get_symmetrized_structure()
-    atoms = structure.to_ase_atoms()
-
-    fixed_atoms, non_fixed_atoms = atoms[is_fixed_atoms], atoms[~is_fixed_atoms]
-
-    non_fixed_atoms = AseAtomsAdaptor.get_structure(non_fixed_atoms)
 
     if supercell_matrix is None and min_lengths is not None:
         supercell_matrix = np.diag(
-            np.round(np.ceil(min_lengths / atoms.cell.lengths()))
+            np.round(np.ceil(min_lengths / np.array(symmetrized_structure.lattice.abc)))
         )
 
-    phonopy_atoms = get_phonopy_structure(non_fixed_atoms)
-    phonon = phonopy.Phonopy(
-        phonopy_atoms,
+    unfixed_structure = symmetrized_structure.copy().remove_sites(fixed_indices)
+    fixed_structure = symmetrized_structure.copy().remove_sites(
+        [i for i in range(len(symmetrized_structure)) if i not in fixed_indices]
+    )
+
+    unfixed_phonopy = Phonopy(
+        get_phonopy_structure(unfixed_structure),
         symprec=symprec,
         supercell_matrix=supercell_matrix,
         **phonopy_kwargs,
     )
-    phonon.generate_displacements(distance=displacement)
+    unfixed_phonopy.generate_displacements(distance=displacement)
+    fixed_phonopy = (
+        Phonopy(get_phonopy_structure(fixed_structure), supercell_matrix)
+        if fixed_indices
+        else None
+    )
 
-    if fixed_atoms:
-        fixed_atoms = phonopy_atoms_to_ase_atoms(
-            phonopy.structure.cells.get_supercell(
-                get_phonopy_structure(AseAtomsAdaptor.get_structure(fixed_atoms)),
-                supercell_matrix,
-            )
-        )
-
-    return phonon, fixed_atoms
+    return unfixed_phonopy, fixed_phonopy
 
 
 def phonopy_atoms_to_ase_atoms(phonpy_atoms: PhonopyAtoms) -> Atoms:

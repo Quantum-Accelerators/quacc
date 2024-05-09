@@ -42,6 +42,7 @@ def phonon_flow(
         tuple[tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]] | None
     ) = None,
     displacement: float = 0.01,
+    fixed_indices: list[int] | None = None,
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
@@ -77,6 +78,8 @@ def phonon_flow(
         value specified by `min_lengths`.
     displacement
         Atomic displacement (A).
+    fixed_indices
+        Indices of `atoms` to fix during the phonon calculation.
     t_step
         Temperature step (K).
     t_min
@@ -115,6 +118,7 @@ def phonon_flow(
         min_lengths=min_lengths,
         supercell_matrix=supercell_matrix,
         displacement=displacement,
+        fixed_indices=fixed_indices,
         t_step=t_step,
         t_min=t_min,
         t_max=t_max,

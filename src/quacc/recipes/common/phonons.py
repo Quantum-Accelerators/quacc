@@ -19,6 +19,7 @@ if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
+    from numpy.typing import NDArray
 
     from quacc import Job
     from quacc.schemas._aliases.phonons import PhononSchema
@@ -40,6 +41,7 @@ def phonon_subflow(
         tuple[tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]] | None
     ) = None,
     displacement: float = 0.01,
+    fixed_indices: list[int] | None = None,
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
@@ -69,6 +71,8 @@ def phonon_subflow(
         value specified by `min_lengths`.
     displacement
         Atomic displacement (A).
+    fixed_indices
+        Indices of `atoms` to fix during the phonon calculation.
     t_step
         Temperature step (K).
     t_min
@@ -104,13 +108,13 @@ def phonon_subflow(
     ) -> PhononSchema:
         parameters = force_job_results[-1].get("parameters")
         forces = [
-            output["results"]["forces"][~fixed_indices, :]
+            output["results"]["forces"][~fixed_mask, :]
             for output in force_job_results
         ]
         phonopy_results = run_phonopy(
             phonopy,
             forces,
-            symmetrize=fixed_indices.any(),
+            symmetrize=fixed_mask.any(),
             t_step=t_step,
             t_min=t_min,
             t_max=t_max,
@@ -124,22 +128,33 @@ def phonon_subflow(
             additional_fields=additional_fields,
         )
 
-    phonopy, fixed_atoms = get_phonopy(
+    unfixed_phonopy, fixed_phonopy = get_phonopy(
         atoms,
         min_lengths=min_lengths,
         supercell_matrix=supercell_matrix,
         symprec=symprec,
         displacement=displacement,
+        fixed_indices=fixed_indices,
         phonopy_kwargs=phonopy_kwargs,
     )
-    fixed_indices = np.array(
-        [False] * len(phonopy.supercell) + [True] * len(fixed_atoms)
-    )
+    fixed_mask = [False] * len(unfixed_phonopy.supercell)
     supercells = [
-        phonopy_atoms_to_ase_atoms(s) + fixed_atoms
-        for s in phonopy.supercells_with_displacements
+        phonopy_atoms_to_ase_atoms(s)
+        for s in unfixed_phonopy.supercells_with_displacements
     ]
+    if fixed_phonopy:
+        fixed_mask += [True] * len(fixed_phonopy.supercell)
+        supercells = [
+            s + phonopy_atoms_to_ase_atoms(fixed_phonopy.supercell) for s in supercells
+        ]
+    fixed_mask = np.array(fixed_mask)
     force_job_results = _get_forces_subflow(supercells)
     return _thermo_job(
-        atoms, phonopy, force_job_results, t_step, t_min, t_max, additional_fields
+        atoms,
+        unfixed_phonopy,
+        force_job_results,
+        t_step,
+        t_min,
+        t_max,
+        additional_fields,
     )

@@ -7,7 +7,6 @@ pytest.importorskip("seekpath")
 
 import numpy as np
 from ase.build import bulk
-from ase.constraints import FixAtoms
 from numpy.testing import assert_almost_equal, assert_array_equal
 
 from quacc.atoms.phonons import get_phonopy
@@ -15,8 +14,9 @@ from quacc.atoms.phonons import get_phonopy
 
 def test_get_phonopy():
     atoms = bulk("Cu")
-    phonopy, _ = get_phonopy(atoms)
+    phonopy, should_be_done = get_phonopy(atoms)
     assert_array_equal(phonopy.supercell_matrix, [[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+    assert should_be_done is None
 
     phonopy, _ = get_phonopy(atoms, min_lengths=5)
     assert_array_equal(phonopy.supercell_matrix, [[2, 0, 0], [0, 2, 0], [0, 0, 2]])
@@ -32,10 +32,5 @@ def test_get_phonopy():
     phonopy, _ = get_phonopy(atoms, symprec=1e-8)
     assert phonopy.symmetry.tolerance == 1e-8
 
-    atoms = bulk("Cu") * (2, 2, 2)
-
-    atoms.set_constraint(FixAtoms(indices=[0, 1, 2, 3]))
-
-    phonopy, fixed_atoms = get_phonopy(atoms, min_lengths=5)
-
+    phonopy, fixed_atoms = get_phonopy(atoms, min_lengths=5, fixed_indices=[0, 1, 2, 3])
     assert len(fixed_atoms) == 4
