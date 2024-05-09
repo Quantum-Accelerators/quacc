@@ -103,9 +103,17 @@ def phonon_subflow(
         additional_fields: dict[str, Any] | None,
     ) -> PhononSchema:
         parameters = force_job_results[-1].get("parameters")
-        forces = [output["results"]["forces"][~fixed_indices, :] for output in force_job_results]
+        forces = [
+            output["results"]["forces"][~fixed_indices, :]
+            for output in force_job_results
+        ]
         phonopy_results = run_phonopy(
-            phonopy, forces, symmetrize=fixed_indices.any(), t_step=t_step, t_min=t_min, t_max=t_max
+            phonopy,
+            forces,
+            symmetrize=fixed_indices.any(),
+            t_step=t_step,
+            t_min=t_min,
+            t_max=t_max,
         )
 
         return summarize_phonopy(
@@ -128,7 +136,8 @@ def phonon_subflow(
         [False] * len(phonopy.supercell) + [True] * len(fixed_atoms)
     )
     supercells = [
-        phonopy_atoms_to_ase_atoms(s) + fixed_atoms for s in phonopy.supercells_with_displacements
+        phonopy_atoms_to_ase_atoms(s) + fixed_atoms
+        for s in phonopy.supercells_with_displacements
     ]
     force_job_results = _get_forces_subflow(supercells)
     return _thermo_job(
