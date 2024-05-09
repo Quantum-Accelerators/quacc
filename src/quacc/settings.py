@@ -431,7 +431,7 @@ class QuaccSettings(BaseSettings):
         """Expand ~/ and $ENV_VARS in paths."""
         if not isinstance(v, list):
             v = [v]
-        
+
         return [Path(os.path.expandvars(item)).expanduser() for item in v]
 
     @field_validator("RESULTS_DIR", "SCRATCH_DIR")
