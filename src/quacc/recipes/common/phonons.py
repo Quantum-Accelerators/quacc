@@ -88,7 +88,12 @@ def phonon_subflow(
 
     @job
     def _thermo_job(
-        atoms: Atoms, phonon: Phonopy, force_job_results: list[dict], t_step: float, t_min: float, t_max: float)
+        atoms: Atoms,
+        phonon: Phonopy,
+        force_job_results: list[dict],
+        t_step: float,
+        t_min: float,
+        t_max: float,
     ) -> PhononSchema:
         parameters = force_job_results[-1].get("parameters")
         forces = [output["results"]["forces"] for output in force_job_results]
@@ -97,10 +102,7 @@ def phonon_subflow(
         )
 
         return summarize_phonopy(
-            phonon,
-            atoms,
-            phonon_results.directory,
-            parameters=parameters,
+            phonon, atoms, phonon_results.directory, parameters=parameters
         )
 
     phonon = get_phonopy(
