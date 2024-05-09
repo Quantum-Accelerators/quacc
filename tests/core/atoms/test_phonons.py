@@ -32,6 +32,8 @@ def test_get_phonopy():
     phonopy, _ = get_phonopy(atoms, symprec=1e-8)
     assert phonopy.symmetry.tolerance == 1e-8
 
-    unfixed_phonopy, fixed_phonopy = get_phonopy(atoms, min_lengths=5, fixed_indices=[0, 1])
+    unfixed_phonopy, fixed_phonopy = get_phonopy(
+        atoms, min_lengths=5, fixed_indices=[0, 1]
+    )
     assert len(unfixed_phonopy) == 2
     assert len(fixed_phonopy) == 2
