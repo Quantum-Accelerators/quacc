@@ -108,7 +108,6 @@ def phonon_subflow(
     if relax_job is not None:
         atoms = relax_job(atoms)["atoms"]
 
-
     phonopy = get_phonopy(
         atoms,
         min_lengths=min_lengths,
