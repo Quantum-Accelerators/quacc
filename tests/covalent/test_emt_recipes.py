@@ -30,18 +30,18 @@ def test_functools(tmp_path, monkeypatch, job_decorators):
     assert output.result[-1]["fmax"] == 0.1
 
 
-# def test_copy_files(tmp_path, monkeypatch):
-#     monkeypatch.chdir(tmp_path)
-#     atoms = bulk("Cu")
+def test_copy_files(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    atoms = bulk("Cu")
 
-#     @flow
-#     def myflow(atoms):
-#         result1 = relax_job(atoms)
-#         return relax_job(result1["atoms"], copy_files={result1["dir_name"]: "opt.*"})
+    @flow
+    def myflow(atoms):
+        result1 = relax_job(atoms)
+        return relax_job(result1["atoms"], copy_files={result1["dir_name"]: "opt.*"})
 
-#     dispatch_id = ct.dispatch(myflow)(atoms)
-#     output = ct.get_result(dispatch_id, wait=True)
-#     assert "atoms" in output.result
+    dispatch_id = ct.dispatch(myflow)(atoms)
+    output = ct.get_result(dispatch_id, wait=True)
+    assert "atoms" in output.result
 
 
 def test_phonon_flow(tmp_path, monkeypatch):
