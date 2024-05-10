@@ -99,7 +99,7 @@ def phonon_flow(
         decorators=job_decorators,
     )
     if run_relax and not non_displaced_atoms:
-        atoms = relax_job_(atoms)["atoms"]
+        relax_job_(atoms)["atoms"]
 
     return phonon_subflow(
         displaced_atoms,
