@@ -83,7 +83,7 @@ def test_phonon_flow_fixed(tmp_path, monkeypatch):
 
     atoms2.positions += [10, 10, 10]
 
-    output_fixed = phonon_flow(atoms1, additional_atoms=atoms2, min_lengths=5.0)
+    output_fixed = phonon_flow(atoms1, non_displaced_atoms=atoms2, min_lengths=5.0)
 
     # Should be very close but not exactly the same
     assert output["results"]["mesh_properties"]["frequencies"] == pytest.approx(

@@ -34,9 +34,9 @@ if TYPE_CHECKING:
     has_deps, "Phonopy and seekpath must be installed. Run `pip install quacc[phonons]`"
 )
 def phonon_subflow(
-    atoms: Atoms,
+    displaced_atoms: Atoms,
     force_job: Job,
-    additional_atoms: Atoms | None = None,
+    non_displaced_atoms: Atoms | None = None,
     symprec: float = 1e-4,
     min_lengths: float | tuple[float, float, float] | None = 20.0,
     supercell_matrix: (
@@ -59,11 +59,11 @@ def phonon_subflow(
 
     Parameters
     ----------
-    atoms
+    displaced_atoms
         Atoms object with calculator attached.
     force_job
         The static job to calculate the forces.
-    additional_atoms
+    non_displaced_atoms
         Additional atoms to add to the supercells i.e. fixed atoms.
         These atoms will not be displaced during the phonon calculation.
         Useful for adsorbates on surfaces with weak coupling etc.
@@ -94,10 +94,10 @@ def phonon_subflow(
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][]
     """
 
-    additional_atoms = additional_atoms or Atoms()
+    non_displaced_atoms = non_displaced_atoms or Atoms()
 
     phonopy = get_phonopy(
-        atoms,
+        displaced_atoms,
         min_lengths=min_lengths,
         supercell_matrix=supercell_matrix,
         symprec=symprec,
@@ -105,13 +105,13 @@ def phonon_subflow(
         phonopy_kwargs=phonopy_kwargs,
     )
 
-    if additional_atoms:
-        additional_atoms = get_atoms_supercell_by_phonopy(
-            additional_atoms, phonopy.supercell_matrix
+    if non_displaced_atoms:
+        non_displaced_atoms = get_atoms_supercell_by_phonopy(
+            non_displaced_atoms, phonopy.supercell_matrix
         )
 
     supercells = [
-        phonopy_atoms_to_ase_atoms(s) + additional_atoms
+        phonopy_atoms_to_ase_atoms(s) + non_displaced_atoms
         for s in phonopy.supercells_with_displacements
     ]
 
@@ -139,7 +139,7 @@ def phonon_subflow(
         phonopy_results = run_phonopy(
             phonopy,
             forces,
-            symmetrize=bool(additional_atoms),
+            symmetrize=bool(non_displaced_atoms),
             t_step=t_step,
             t_min=t_min,
             t_max=t_max,
@@ -155,5 +155,11 @@ def phonon_subflow(
 
     force_job_results = _get_forces_subflow(supercells)
     return _thermo_job(
-        atoms, phonopy, force_job_results, t_step, t_min, t_max, additional_fields
+        displaced_atoms,
+        phonopy,
+        force_job_results,
+        t_step,
+        t_min,
+        t_max,
+        additional_fields,
     )
