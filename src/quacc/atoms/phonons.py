@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -9,18 +10,16 @@ from monty.dev import requires
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.phonopy import get_phonopy_structure, get_pmg_structure
 
-try:
-    import phonopy
+has_phonopy = find_spec("phonopy")
 
-    has_phonopy = True
-except ImportError:
-    has_phonopy = False
+if has_phonopy:
+    from phonopy import Phonopy
+    from phonopy.structure.cells import get_supercell
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
 
-    if phonopy:
-        from phonopy import Phonopy
+    if has_phonopy:
         from phonopy.structure.atoms import PhonopyAtoms
 
 
@@ -68,9 +67,8 @@ def get_phonopy(
 
     structure = AseAtomsAdaptor.get_structure(atoms)
 
-    phonopy_atoms = get_phonopy_structure(structure)
-    phonon = phonopy.Phonopy(
-        phonopy_atoms,
+    phonon = Phonopy(
+        get_phonopy_structure(structure),
         symprec=symprec,
         supercell_matrix=supercell_matrix,
         **phonopy_kwargs,
@@ -121,7 +119,7 @@ def get_atoms_supercell_by_phonopy(
     """
 
     return phonopy_atoms_to_ase_atoms(
-        phonopy.structure.cells.get_supercell(
+        get_supercell(
             get_phonopy_structure(AseAtomsAdaptor.get_structure(atoms)),
             supercell_matrix,
         )

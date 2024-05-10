@@ -25,6 +25,9 @@ if TYPE_CHECKING:
     from quacc import Job
     from quacc.schemas._aliases.phonons import PhononSchema
 
+    if has_deps:
+        pass
+
 
 @subflow
 @requires(
@@ -83,7 +86,7 @@ def phonon_subflow(
     phonopy_kwargs
         Additional kwargs to pass to the Phonopy class.
     additional_fields
-        Additional fields to store in the database.
+        Additional fields to add to the output schema.
 
     Returns
     -------
@@ -93,7 +96,7 @@ def phonon_subflow(
 
     additional_atoms = additional_atoms or Atoms()
 
-    phonon = get_phonopy(
+    phonopy = get_phonopy(
         atoms,
         min_lengths=min_lengths,
         supercell_matrix=supercell_matrix,
@@ -104,12 +107,12 @@ def phonon_subflow(
 
     if additional_atoms:
         additional_atoms = get_atoms_supercell_by_phonopy(
-            additional_atoms, phonon.supercell_matrix
+            additional_atoms, phonopy.supercell_matrix
         )
 
     supercells = [
         phonopy_atoms_to_ase_atoms(s) + additional_atoms
-        for s in phonon.supercells_with_displacements
+        for s in phonopy.supercells_with_displacements
     ]
 
     @subflow
@@ -119,14 +122,22 @@ def phonon_subflow(
         ]
 
     @job
-    def _thermo_job(atoms: Atoms, force_job_results: list[dict]) -> PhononSchema:
+    def _thermo_job(
+        atoms: Atoms,
+        phonopy,
+        force_job_results: list[dict],
+        t_step,
+        t_min,
+        t_max,
+        additional_fields,
+    ) -> PhononSchema:
         parameters = force_job_results[-1].get("parameters")
         forces = [
-            output["results"]["forces"][: len(phonon.supercell)]
+            output["results"]["forces"][: len(phonopy.supercell)]
             for output in force_job_results
         ]
-        phonon_results = run_phonopy(
-            phonon,
+        phonopy_results = run_phonopy(
+            phonopy,
             forces,
             symmetrize=bool(additional_atoms),
             t_step=t_step,
@@ -135,12 +146,14 @@ def phonon_subflow(
         )
 
         return summarize_phonopy(
-            phonon,
+            phonopy,
             atoms,
-            phonon_results.directory,
+            phonopy_results.directory,
             parameters=parameters,
             additional_fields=additional_fields,
         )
 
     force_job_results = _get_forces_subflow(supercells)
-    return _thermo_job(atoms, force_job_results)
+    return _thermo_job(
+        atoms, phonopy, force_job_results, t_step, t_min, t_max, additional_fields
+    )

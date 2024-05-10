@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.8]
+
+### Added
+
+- Added support for Parsl "special" keyword arguments (e.g. `timeout`, `parsl_resource_specification`)
+
+### Fixed
+
+- Fixed bug where the common phonon subflow would generate a `Phonopy` object based on the unrelaxed, rather than relaxed, structure
+- Sped up the common phonon subflow by removing duplicate `get_phonopy()` calls
+
 ## [0.7.7]
 
 ### Added
