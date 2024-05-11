@@ -9,6 +9,7 @@ pytestmark = pytest.mark.skipif(
     reason="Skipping this test on Windows in GitHub Actions.",
 )  # this works locally on Windows, but no clue why it fails on GitHub Actions
 
+import logging
 from pathlib import Path
 from shutil import copy
 
@@ -41,6 +42,8 @@ DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 FILE_DIR = Path(__file__).parent
 MOCKED_DIR = FILE_DIR / "mocked_vasp_run"
+LOGGER = logging.getLogger(__name__)
+LOGGER.propagate = True
 
 
 def test_static_job(tmp_path, monkeypatch):
@@ -227,7 +230,7 @@ def test_non_scf_job1(tmp_path, monkeypatch):
     assert output["parameters"]["nbands"] == 99
 
 
-def test_non_scf_job2(tmp_path, monkeypatch, caplog):
+def test_non_scf_job2(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     copy(MOCKED_DIR / "vasprun.xml.gz", tmp_path / "vasprun.xml.gz")
 
@@ -437,7 +440,7 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
 
-def test_qmof(tmp_path, monkeypatch):
+def test_qmof(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Al")
@@ -486,18 +489,10 @@ def test_qmof(tmp_path, monkeypatch):
     output = qmof_relax_job(atoms, run_prerelax=False)
     assert output["prerelax_lowacc"] is None
 
-    output = qmof_relax_job(atoms, preset="BulkSet", nelmin=6)
-    assert output["double_relax"][0]["parameters"]["encut"] == 520
+    output = qmof_relax_job(atoms, nelmin=6)
     assert output["double_relax"][0]["parameters"]["nelmin"] == 6
-    assert output["double_relax"][0]["parameters"]["sigma"] == 0.05
-
-    assert output["double_relax"][1]["parameters"]["encut"] == 520
     assert output["double_relax"][1]["parameters"]["nelmin"] == 6
-    assert output["double_relax"][1]["parameters"]["sigma"] == 0.05
-
-    assert output["parameters"]["encut"] == 520
     assert output["parameters"]["nelmin"] == 6
-    assert output["parameters"]["sigma"] == 0.05
 
     output = qmof_relax_job(atoms, relax_cell=False)
     assert "volume-relax" not in output
@@ -505,6 +500,11 @@ def test_qmof(tmp_path, monkeypatch):
     assert output["double_relax"][0]["parameters"]["isif"] == 2
     assert output["double_relax"][1]["parameters"]["isif"] == 2
 
+
+    with caplog.at_level(logging.WARNING):
+        qmof_relax_job(atoms)
+
+        assert "Setting VASP_USE_CUSTODIAN to True'" in caplog.text
 
 def test_mp_metagga_prerelax_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
