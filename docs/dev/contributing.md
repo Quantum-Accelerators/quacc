@@ -80,7 +80,7 @@ Each PR will report the code coverage once your tests pass, but if you'd like to
 
 For recipes that involve a calculation that cannot be easily run in the test suite (e.g. the underlying calculator cannot be installed via `pip` or `conda`), you will need to make a `conftest.py` file in the recipe directory that monkeypatches the relevant functions (refer to the Gaussian recipe tests for an example). Ideally, the tests should be written in such a way that they would also pass if the executable were actually available and the `conftest.py` file were not applied. To run the test on your own machine without the `conftest.py` file applied, you can use the `--noconftest` flag when calling `pytest`. If this is not practical (e.g. because it would take too long), a separate minimal test suite can be made specifically for running on an HPC machine.
 
-!!! Note
+!!! Warning
 
     Never put a `quacc` import in the global scope of a `conftest.py` file. This causes havoc with patching the quacc `SETTINGS` variable.
 
