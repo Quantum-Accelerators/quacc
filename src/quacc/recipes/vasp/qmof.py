@@ -83,9 +83,7 @@ def qmof_relax_job(
 
     # 3. Optional: Volume relaxation (loose)
     if relax_cell:
-        summary3 = _loose_relax_cell(
-            atoms, preset, copy_files, **calc_kwargs
-        )
+        summary3 = _loose_relax_cell(atoms, preset, copy_files=copy_files, **calc_kwargs)
         atoms = summary3["atoms"]
         copy_files = {summary3["dir_name"]: ["WAVECAR*"]}
 
@@ -100,9 +98,7 @@ def qmof_relax_job(
     copy_files = {summary4[1]["dir_name"]: ["WAVECAR*"]}
 
     # 5. Static Calculation
-    summary5 = _static(
-        atoms, preset, copy_files=copy_files, **calc_kwargs
-    )
+    summary5 = _static(atoms, preset, copy_files=copy_files, **calc_kwargs)
     summary5["prerelax_lowacc"] = summary1 if run_prerelax else None
     summary5["position_relax_lowacc"] = summary2
     summary5["volume_relax_lowacc"] = summary3 if relax_cell else None
