@@ -19,14 +19,15 @@ if TYPE_CHECKING:
 
     from quacc.schemas._aliases.ase import OptSchema
     from quacc.schemas._aliases.vasp import QMOFRelaxSchema, VaspSchema
+    from quacc.utils.files import Filenames, SourceDirectory
 
 
 @job
 def qmof_relax_job(
     atoms: Atoms,
-    preset: str | None = "QMOFSet",
     relax_cell: bool = True,
     run_prerelax: bool = True,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> QMOFRelaxSchema:
     """
@@ -48,8 +49,6 @@ def qmof_relax_job(
     ----------
     atoms
         Atoms object
-    preset
-        Preset to use from `quacc.calculators.vasp.presets`. Applies for all jobs.
     relax_cell
         True if a volume relaxation should be performed. False if only the
         positions should be updated.
@@ -57,6 +56,8 @@ def qmof_relax_job(
         If True, a pre-relax will be carried out with BFGSLineSearch.
         Recommended if starting from hypothetical structures or materials with
         very high starting forces.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely. Applies for all jobs.
@@ -70,22 +71,18 @@ def qmof_relax_job(
 
     # 1. Pre-relaxation
     if run_prerelax:
-        summary1 = _prerelax(atoms, preset, fmax=5.0, **calc_kwargs)
+        summary1 = _prerelax(atoms, **calc_kwargs)
         atoms = summary1["atoms"]
         copy_files = {summary1["dir_name"]: ["WAVECAR*"]}
 
     # 2. Position relaxation (loose)
-    summary2 = _loose_relax_positions(
-        atoms, preset, copy_files=copy_files, **calc_kwargs
-    )
+    summary2 = _loose_relax_positions(atoms, copy_files=copy_files, **calc_kwargs)
     atoms = summary2["atoms"]
     copy_files = {summary2["dir_name"]: ["WAVECAR*"]}
 
     # 3. Optional: Volume relaxation (loose)
     if relax_cell:
-        summary3 = _loose_relax_cell(
-            atoms, preset, copy_files=copy_files, **calc_kwargs
-        )
+        summary3 = _loose_relax_cell(atoms, copy_files=copy_files, **calc_kwargs)
         atoms = summary3["atoms"]
         copy_files = {summary3["dir_name"]: ["WAVECAR*"]}
 
@@ -94,13 +91,13 @@ def qmof_relax_job(
     # resolve repadding issues when dV is large; b) because we can use LREAL =
     # Auto for the first relaxation and the default LREAL for the second.
     summary4 = _double_relax(
-        atoms, preset, relax_cell=relax_cell, copy_files=copy_files, **calc_kwargs
+        atoms, relax_cell=relax_cell, copy_files=copy_files, **calc_kwargs
     )
-    atoms = summary4[1]["atoms"]
-    copy_files = {summary4[1]["dir_name"]: ["WAVECAR*"]}
+    atoms = summary4[-1]["atoms"]
+    copy_files = {summary4[-1]["dir_name"]: ["WAVECAR*"]}
 
     # 5. Static Calculation
-    summary5 = _static(atoms, preset, copy_files=copy_files, **calc_kwargs)
+    summary5 = _static(atoms, copy_files=copy_files, **calc_kwargs)
     summary5["prerelax_lowacc"] = summary1 if run_prerelax else None
     summary5["position_relax_lowacc"] = summary2
     summary5["volume_relax_lowacc"] = summary3 if relax_cell else None
@@ -110,7 +107,9 @@ def qmof_relax_job(
 
 
 def _prerelax(
-    atoms: Atoms, preset: str | None = "QMOFSet", fmax: float = 5.0, **calc_kwargs
+    atoms: Atoms,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    **calc_kwargs,
 ) -> OptSchema:
     """
     A "pre-relaxation" with BFGSLineSearch to resolve very high forces.
@@ -119,10 +118,8 @@ def _prerelax(
     ----------
     atoms
         Atoms object
-    preset
-        Preset to use from `quacc.calculators.vasp.presets`.
-    fmax
-        Maximum force in eV/A.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
     **kwargs
         Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely.
@@ -145,16 +142,19 @@ def _prerelax(
     }
     return run_and_summarize_opt(
         atoms,
-        preset=preset,
+        preset="QMOFSet",
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        opt_defaults={"fmax": fmax, "optimizer": BFGSLineSearch},
+        opt_defaults={"fmax": 5.0, "optimizer": BFGSLineSearch},
         additional_fields={"name": "QMOF Prerelax"},
+        copy_files=copy_files,
     )
 
 
 def _loose_relax_positions(
-    atoms: Atoms, preset: str | None = "QMOFSet", **calc_kwargs
+    atoms: Atoms,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    **calc_kwargs,
 ) -> VaspSchema:
     """
     Position relaxation with default ENCUT and coarse k-point grid.
@@ -163,8 +163,8 @@ def _loose_relax_positions(
     ----------
     atoms
         Atoms object
-    preset
-        Preset to use from `quacc.calculators.vasp.presets`.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
     **kwargs
         Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely.
@@ -189,15 +189,18 @@ def _loose_relax_positions(
     }
     return run_and_summarize(
         atoms,
-        preset=preset,
+        preset="QMOFSet",
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "QMOF Loose Relax"},
+        copy_files=copy_files,
     )
 
 
 def _loose_relax_cell(
-    atoms: Atoms, preset: str | None = "QMOFSet", **calc_kwargs
+    atoms: Atoms,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    **calc_kwargs,
 ) -> VaspSchema:
     """
     Volume relaxation with coarse k-point grid.
@@ -206,8 +209,8 @@ def _loose_relax_cell(
     ----------
     atoms
         Atoms object
-    preset
-        Preset to use from `quacc.calculators.vasp.presets`.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely.
@@ -230,15 +233,19 @@ def _loose_relax_cell(
     }
     return run_and_summarize(
         atoms,
-        preset=preset,
+        preset="QMOFSet",
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "QMOF Loose Relax Volume"},
+        copy_files=copy_files,
     )
 
 
 def _double_relax(
-    atoms: Atoms, preset: str | None = "QMOFSet", relax_cell: bool = True, **calc_kwargs
+    atoms: Atoms,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    relax_cell: bool = True,
+    **calc_kwargs,
 ) -> list[VaspSchema]:
     """
     Double relaxation using production-quality settings.
@@ -247,10 +254,10 @@ def _double_relax(
     ----------
     atoms
         Atoms object
-    preset
-        Preset to use from `quacc.calculators.vasp.presets`.
     relax_cell
         True if a volume relaxation should be performed.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely.
@@ -273,10 +280,11 @@ def _double_relax(
     }
     summary1 = run_and_summarize(
         atoms,
-        preset=preset,
+        preset="QMOFSet",
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "QMOF DoubleRelax 1"},
+        copy_files=copy_files,
     )
 
     # Update atoms for Relaxation 2
@@ -288,15 +296,20 @@ def _double_relax(
     # Run second relaxation
     summary2 = run_and_summarize(
         summary1["atoms"],
-        preset=preset,
+        preset="QMOFSet",
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "QMOF DoubleRelax 2"},
+        copy_files={summary1["dir_name"]: ["WAVECAR*"]},
     )
     return [summary1, summary2]
 
 
-def _static(atoms: Atoms, preset: str | None = "QMOFSet", **calc_kwargs) -> VaspSchema:
+def _static(
+    atoms: Atoms,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    **calc_kwargs,
+) -> VaspSchema:
     """
     Static calculation using production-quality settings.
 
@@ -304,8 +317,8 @@ def _static(atoms: Atoms, preset: str | None = "QMOFSet", **calc_kwargs) -> Vasp
     ----------
     atoms
         Atoms object
-    preset
-        Preset to use from `quacc.calculators.presets.vasp`.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
     **kwargs
         Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely.
@@ -325,8 +338,9 @@ def _static(atoms: Atoms, preset: str | None = "QMOFSet", **calc_kwargs) -> Vasp
     }
     return run_and_summarize(
         atoms,
-        preset=preset,
+        preset="QMOFSet",
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "QMOF Static"},
+        copy_files=copy_files,
     )
