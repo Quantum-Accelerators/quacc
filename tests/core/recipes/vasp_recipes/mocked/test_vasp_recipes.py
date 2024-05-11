@@ -502,9 +502,11 @@ def test_qmof(tmp_path, monkeypatch, caplog):
 
 
     with caplog.at_level(logging.WARNING):
+        SETTINGS.VASP_USE_CUSTODIAN = False
         qmof_relax_job(atoms)
 
         assert "Setting VASP_USE_CUSTODIAN to True'" in caplog.text
+        SETTINGS.VASP_USE_CUSTODIAN = DEFAULT_SETTINGS.VASP_USE_CUSTODIAN
 
 def test_mp_metagga_prerelax_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
