@@ -83,7 +83,9 @@ def qmof_relax_job(
 
     # 3. Optional: Volume relaxation (loose)
     if relax_cell:
-        summary3 = _loose_relax_cell(atoms, preset, copy_files=copy_files, **calc_kwargs)
+        summary3 = _loose_relax_cell(
+            atoms, preset, copy_files=copy_files, **calc_kwargs
+        )
         atoms = summary3["atoms"]
         copy_files = {summary3["dir_name"]: ["WAVECAR*"]}
 
