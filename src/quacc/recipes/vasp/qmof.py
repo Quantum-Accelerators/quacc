@@ -128,7 +128,7 @@ def _prerelax(
         Atoms object
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
-    **kwargs
+    **calc_kwargs
         Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely.
 
@@ -173,7 +173,7 @@ def _loose_relax_positions(
         Atoms object
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
-    **kwargs
+    **calc_kwargs
         Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely.
 
@@ -327,7 +327,7 @@ def _static(
         Atoms object
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
-    **kwargs
+    **calc_kwargs
         Custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely.
 
