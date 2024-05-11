@@ -500,11 +500,11 @@ def test_qmof(tmp_path, monkeypatch, caplog):
     assert output["double_relax"][0]["parameters"]["isif"] == 2
     assert output["double_relax"][1]["parameters"]["isif"] == 2
 
-
     with caplog.at_level(logging.WARNING):
         qmof_relax_job(atoms)
 
         assert "Setting VASP_USE_CUSTODIAN to True'" in caplog.text
+
 
 def test_mp_metagga_prerelax_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
