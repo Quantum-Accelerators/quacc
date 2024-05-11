@@ -72,22 +72,37 @@ def qmof_relax_job(
         atoms = summary1["atoms"]
 
     # 2. Position relaxation (loose)
-    summary2 = _loose_relax_positions(atoms, preset, **calc_kwargs)
+    copy_files = {summary1["dir_name"]: ["WAVECAR*"]} if run_prerelax else None
+    summary2 = _loose_relax_positions(
+        atoms, preset, copy_files=copy_files, **calc_kwargs
+    )
     atoms = summary2["atoms"]
 
     # 3. Optional: Volume relaxation (loose)
     if relax_cell:
-        summary3 = _loose_relax_cell(atoms, preset, **calc_kwargs)
+        summary3 = _loose_relax_cell(
+            atoms, preset, copy_files={summary2["dir_name"]: ["WAVECAR"]}, **calc_kwargs
+        )
         atoms = summary3["atoms"]
 
-    # 4. Double Relaxation This is done for two reasons: a) because it can
+    # 4. Double Relaxation
+    # This is done for two reasons: a) because it can
     # resolve repadding issues when dV is large; b) because we can use LREAL =
     # Auto for the first relaxation and the default LREAL for the second.
-    summary4 = _double_relax(atoms, preset, relax_cell=relax_cell, **calc_kwargs)
+    copy_files = (
+        {summary3["dir_name"]: ["WAVECAR*"]}
+        if relax_cell
+        else {summary2["dir_name"]: ["WAVECAR*"]}
+    )
+    summary4 = _double_relax(
+        atoms, preset, relax_cell=relax_cell, copy_files=copy_files, **calc_kwargs
+    )
     atoms = summary4[1]["atoms"]
 
     # 5. Static Calculation
-    summary5 = _static(atoms, preset, **calc_kwargs)
+    summary5 = _static(
+        atoms, preset, copy_files={summary4["dir_name"]: ["WAVECAR*"]}, **calc_kwargs
+    )
     summary5["prerelax_lowacc"] = summary1 if run_prerelax else None
     summary5["position_relax_lowacc"] = summary2
     summary5["volume_relax_lowacc"] = summary3 if relax_cell else None
