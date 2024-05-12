@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from shutil import rmtree
 
 from parsl.config import Config
 from parsl.dataflow.dependency_resolvers import DEEP_DEPENDENCY_RESOLVER
@@ -29,9 +30,7 @@ def pytest_sessionstart():
 def pytest_sessionfinish(exitstatus):
     if parsl:
         parsl.clear()
+    rmtree(TEST_RESULTS_DIR, ignore_errors=True)
     if exitstatus == 0:
-        from shutil import rmtree
-
-        rmtree(TEST_RESULTS_DIR, ignore_errors=True)
         rmtree(TEST_SCRATCH_DIR, ignore_errors=True)
         rmtree(TEST_RUNINFO, ignore_errors=True)

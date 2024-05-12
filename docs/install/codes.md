@@ -28,7 +28,7 @@ export QUACC_GAUSSIAN_CMD="/path/to/g16"
 
 ## GULP
 
-To use quacc with GULP, you will need to download and compile GULP 6.1.2+ [per the official manual](https://gulp.curtin.edu.au/download.html). Then you will define the `GULP_CMD` setting to be the path of the GULP executable and the `GULP_LIB` setting to be the path to the GULP force field library. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md), such as by defining the following environment variables in your `~/.bashrc`:
+To use quacc with GULP, you will need to download and compile GULP 6.2+ [per the official manual](https://gulp.curtin.edu.au/download.html). Then you will define the `GULP_CMD` setting to be the path of the GULP executable and the `GULP_LIB` setting to be the path to the GULP force field library. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md), such as by defining the following environment variables in your `~/.bashrc`:
 
 ```bash
 export QUACC_GULP_CMD="/path/to/gulp"
@@ -37,7 +37,7 @@ export QUACC_GULP_LIB="/path/to/gulp-#.#.#/Libraries"
 
 ??? Tip "Receive a Compilation Error?"
 
-    If you receive an error upon compilation, refer to [this forum post](https://matsci.org/t/installing-gulp/43158/18?u=arosen).
+    If you receive an error upon compilation, you likely are using an old version of gfortran. Try `./mkgulp_old_gfortran` instead of `./mkgulp` in the `Src` directory.
 
 ## Lennard Jones
 
