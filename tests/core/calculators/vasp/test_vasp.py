@@ -16,6 +16,7 @@ from pymatgen.io.vasp.sets import MPRelaxSet, MPScanRelaxSet
 
 from quacc import SETTINGS, change_settings
 from quacc.calculators.vasp import Vasp, presets
+from quacc.calculators.vasp.params import MPtoASEConverter
 from quacc.schemas.prep import prep_next_run
 
 FILE_DIR = Path(__file__).parent
@@ -72,7 +73,8 @@ def test_presets():
     assert calc.exp_params["ediff"] == 1e-5
     assert calc.float_params["encut"] == 450
 
-    calc = Vasp(atoms, xc="scan", pmg_input_set=MPScanRelaxSet)
+    parameters = MPtoASEConverter(atoms=atoms).convert_dict_set(MPScanRelaxSet)
+    calc = Vasp(atoms, xc="scan", **parameters)
     assert calc.xc.lower() == "scan"
     assert calc.string_params["algo"].lower() == "all"
     assert calc.exp_params["ediff"] == 1e-5
@@ -189,7 +191,8 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
 
     atoms = bulk("Cu") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
-    calc = Vasp(atoms, pmg_input_set=MPScanRelaxSet)
+    parameters = MPtoASEConverter(atoms=atoms).convert_dict_set(MPScanRelaxSet)
+    calc = Vasp(atoms, **parameters)
     atoms.calc = calc
     assert atoms.get_chemical_symbols() == ["Cu", "Cu", "Cu", "Fe"]
     assert calc.parameters["magmom"] == [0.6, 0.6, 0.6, 5.0]
@@ -197,7 +200,8 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
     atoms = bulk("Cu") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
     atoms.set_initial_magnetic_moments([3.14] * (len(atoms) - 1) + [1.0])
-    calc = Vasp(atoms, pmg_input_set=MPScanRelaxSet)
+    parameters = MPtoASEConverter(atoms=atoms).convert_dict_set(MPScanRelaxSet)
+    calc = Vasp(atoms, **parameters)
     atoms.calc = calc
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * (
         len(atoms) - 1
@@ -694,7 +698,8 @@ def test_setups():
     assert calc.parameters["setups"]["Cu"] == ""
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, pmg_input_set=MPScanRelaxSet)
+    parameters = MPtoASEConverter(atoms=atoms).convert_dict_set(MPScanRelaxSet)
+    calc = Vasp(atoms, **parameters)
     assert calc.parameters["setups"]["Cu"] == "_pv"
 
     atoms = bulk("Cu")
@@ -707,11 +712,6 @@ def test_setups():
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, setups="minimal", preset="BulkSet")
-    assert isinstance(calc.parameters["setups"], str)
-    assert calc.parameters["setups"] == "minimal"
-
-    atoms = bulk("Cu")
-    calc = Vasp(atoms, setups="minimal", pmg_input_set=MPScanRelaxSet)
     assert isinstance(calc.parameters["setups"], str)
     assert calc.parameters["setups"] == "minimal"
 
@@ -818,7 +818,8 @@ def test_preset_override():
 
 def test_pmg_input_set():
     atoms = bulk("Cu")
-    calc = Vasp(atoms, pmg_input_set=MPRelaxSet, incar_copilot="off")
+    parameters = MPtoASEConverter(atoms=atoms).convert_dict_set(MPRelaxSet)
+    calc = Vasp(atoms, incar_copilot="off", **parameters)
     assert calc.parameters == {
         "algo": "fast",
         "ediff": 5e-05,
@@ -847,7 +848,8 @@ def test_pmg_input_set():
 def test_pmg_input_set2():
     atoms = bulk("Fe") * (2, 1, 1)
     atoms[0].symbol = "O"
-    calc = Vasp(atoms, pmg_input_set=MPRelaxSet, incar_copilot="off")
+    parameters = MPtoASEConverter(atoms=atoms).convert_dict_set(MPRelaxSet)
+    calc = Vasp(atoms, incar_copilot="off", **parameters)
     assert calc.parameters == {
         "algo": "fast",
         "ediff": 0.0001,

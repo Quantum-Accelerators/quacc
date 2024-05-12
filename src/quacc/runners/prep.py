@@ -78,7 +78,8 @@ def calc_setup(
             copy_files = {copy_files: "*"}
 
         for source_directory, filenames in copy_files.items():
-            copy_decompress_files(source_directory, filenames, tmpdir)
+            if source_directory is not None:
+                copy_decompress_files(source_directory, filenames, tmpdir)
 
     return tmpdir, job_results_dir
 
