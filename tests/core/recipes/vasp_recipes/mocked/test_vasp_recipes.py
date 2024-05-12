@@ -16,7 +16,7 @@ from shutil import copy
 import numpy as np
 from ase.build import bulk, molecule
 
-from quacc import SETTINGS
+from quacc import SETTINGS, change_settings
 from quacc.recipes.vasp.core import (
     ase_relax_job,
     double_relax_flow,
@@ -37,8 +37,6 @@ from quacc.recipes.vasp.qmof import qmof_relax_job
 from quacc.recipes.vasp.slabs import bulk_to_slabs_flow, slab_to_ads_flow
 from quacc.recipes.vasp.slabs import relax_job as slab_relax_job
 from quacc.recipes.vasp.slabs import static_job as slab_static_job
-
-DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 FILE_DIR = Path(__file__).parent
 MOCKED_DIR = FILE_DIR / "mocked_vasp_run"
@@ -80,16 +78,18 @@ def test_static_job(tmp_path, monkeypatch):
 def test_static_job_incar_copilot_aggressive(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    atoms = bulk("Al")
+    with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
+        atoms = bulk("Al")
 
-    SETTINGS.VASP_INCAR_COPILOT = "aggressive"
-    output = static_job(atoms, ivdw=11, lasph=False, prec=None, lwave=None, efermi=None)
-    assert output["parameters"]["ivdw"] == 11
-    assert output["parameters"]["lasph"] is False
-    assert "prec" not in output["parameters"]
-    assert "lwave" not in output["parameters"]
-    assert output["parameters"]["efermi"] == "midgap"
-    SETTINGS.VASP_INCAR_COPILOT = DEFAULT_SETTINGS.VASP_INCAR_COPILOT
+        SETTINGS.VASP_INCAR_COPILOT = "aggressive"
+        output = static_job(
+            atoms, ivdw=11, lasph=False, prec=None, lwave=None, efermi=None
+        )
+        assert output["parameters"]["ivdw"] == 11
+        assert output["parameters"]["lasph"] is False
+        assert "prec" not in output["parameters"]
+        assert "lwave" not in output["parameters"]
+        assert output["parameters"]["efermi"] == "midgap"
 
 
 def test_relax_job(tmp_path, monkeypatch):
