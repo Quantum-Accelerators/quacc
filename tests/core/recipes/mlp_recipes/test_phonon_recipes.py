@@ -19,7 +19,6 @@ def _set_dtype(size, type_="float"):
 
 def test_phonon_flow(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    _set_dtype(64)
     atoms = bulk("Cu")
     output = phonon_flow(atoms, method="m3gnet", min_lengths=5.0)
     assert output["results"]["force_constants"].shape == (8, 8, 3, 3)
@@ -28,7 +27,6 @@ def test_phonon_flow(tmp_path, monkeypatch):
 
 def test_phonon_flow_dispersion(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    _set_dtype(64)
     atoms = bulk("Cu")
     output = phonon_flow(
         atoms,
