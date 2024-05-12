@@ -7,12 +7,11 @@ import pytest
 from ase.build import bulk
 from maggma.stores import MemoryStore
 
-from quacc import SETTINGS
+from quacc import SETTINGS, change_settings
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.settings import QuaccSettings
 
 FILE_DIR = Path(__file__).parent
-DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 
 def test_file(tmp_path, monkeypatch):
@@ -40,10 +39,10 @@ def test_results_dir(tmp_path, monkeypatch):
     atoms = bulk("Cu")
     output = relax_job(atoms)
     assert "opt.traj.gz" in os.listdir(output["dir_name"])
-    SETTINGS.GZIP_FILES = False
-    output = relax_job(atoms)
-    assert "opt.traj" in os.listdir(output["dir_name"])
-    SETTINGS.GZIP_FILES = DEFAULT_SETTINGS.GZIP_FILES
+
+    with change_settings({"GZIP_FILES": False}):
+        output = relax_job(atoms)
+        assert "opt.traj" in os.listdir(output["dir_name"])
 
 
 def test_bad_dir():

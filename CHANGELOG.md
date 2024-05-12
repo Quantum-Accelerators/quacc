@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0]
+
+### Added
+
+- Added a context handler, `quacc.settings.change_settings`, that can be used to temporarily modify global settings
+
+### Fixed
+
+- Fixed copying of WAVECAR between steps of the QMOF recipes
+
+### Changed
+
+- The workflow engine must be directly specified with `WORKFLOW_ENGINE`, as noted in the docs
+- Changed `VASP_MAG_CUTOFF` from 0.05 to 0.02
+- Removed the `preset` keyword argument from the QMOF recipes
+
 ## [0.7.8]
 
 ### Added
