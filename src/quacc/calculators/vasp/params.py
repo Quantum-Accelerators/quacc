@@ -445,6 +445,7 @@ class MPtoASEConverter:
             The ASE VASP parameters.
         """
         input_set_generator = VaspMaker().input_set_generator
+        assert hasattr(input_set_generator, "sort_structure")
         input_set_generator.sort_structure = False
         input_set = input_set_generator.get_input_set(
             structure=self.structure, potcar_spec=True, prev_dir=self.prev_dir
@@ -480,13 +481,5 @@ class MPtoASEConverter:
                 "kpts": kpts_dict["kpoints"][0],
                 "gamma": kpts_dict["generation_style"].lower() == "gamma",
             }
-
-        if self.atoms and (
-            self.poscar.structure.to_ase_atoms().get_chemical_symbols()
-            != self.atoms.get_chemical_symbols()
-        ):
-            raise ValueError(
-                "The atoms object does not match the input set. This is a bug."
-            )
 
         return full_input_params
