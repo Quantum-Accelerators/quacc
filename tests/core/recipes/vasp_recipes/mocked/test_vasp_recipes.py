@@ -44,6 +44,7 @@ MOCKED_DIR = FILE_DIR / "mocked_vasp_runs"
 LOGGER = logging.getLogger(__name__)
 LOGGER.propagate = True
 
+
 class DummyBandStructureMetal:
     def __init__(self, *args, **kwargs):
         pass
@@ -55,6 +56,8 @@ class DummyBandStructureMetal:
     @staticmethod
     def get_band_gap():
         return {"energy": 0}
+
+
 class DummyBandStructureSemi:
     def __init__(self, *args, **kwargs):
         pass
@@ -67,6 +70,7 @@ class DummyBandStructureSemi:
     def get_band_gap():
         return {"energy": 0.5}
 
+
 class DummyBandStructureNonMetal:
     def __init__(self, *args, **kwargs):
         pass
@@ -78,6 +82,7 @@ class DummyBandStructureNonMetal:
     @staticmethod
     def get_band_gap():
         return {"energy": 10}
+
 
 def test_static_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
@@ -605,6 +610,7 @@ def test_mp_metagga_prerelax_job(tmp_path, monkeypatch):
     assert output["parameters"]["pp"] == "pbe"
     assert "metagga" not in output["parameters"]
 
+
 def test_mp_metagga_relax_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
@@ -679,6 +685,7 @@ def test_mp_metagga_relax_job(tmp_path, monkeypatch):
     assert output["parameters"]["sigma"] == 0.05
     assert output["parameters"]["pp"] == "pbe"
 
+
 def test_mp_metagga_static_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
@@ -717,7 +724,7 @@ def test_mp_metagga_static_job(tmp_path, monkeypatch):
 def test_mp_metagga_relax_flow(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    with change_settings({"CREATE_UNIQUE_DIR": False, "RESULTS_DIR":tmp_path}):
+    with change_settings({"CREATE_UNIQUE_DIR": False, "RESULTS_DIR": tmp_path}):
         copy_r(MOCKED_DIR / "metallic", tmp_path)
         monkeypatch.setattr(
             "pymatgen.io.vasp.Vasprun.get_band_structure", DummyBandStructureMetal
@@ -865,7 +872,7 @@ def test_mp_gga_static_job():
 def test_mp_gga_relax_flow(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
 
-    with change_settings({"CREATE_UNIQUE_DIR": False, "RESULTS_DIR":tmp_path}):
+    with change_settings({"CREATE_UNIQUE_DIR": False, "RESULTS_DIR": tmp_path}):
         copy_r(MOCKED_DIR / "nonmetallic", tmp_path)
         monkeypatch.setattr(
             "pymatgen.io.vasp.Vasprun.get_band_structure", DummyBandStructureSemi
@@ -940,8 +947,8 @@ def test_mp_gga_relax_flow(monkeypatch, tmp_path):
         }
 
 
-def test_mp_relax_flow_custom(monkeypatch,tmp_path):
-    with change_settings({"CREATE_UNIQUE_DIR": False, "RESULTS_DIR":tmp_path}):
+def test_mp_relax_flow_custom(monkeypatch, tmp_path):
+    with change_settings({"CREATE_UNIQUE_DIR": False, "RESULTS_DIR": tmp_path}):
         copy_r(MOCKED_DIR / "nonmetallic", tmp_path)
         monkeypatch.setattr(
             "pymatgen.io.vasp.Vasprun.get_band_structure", DummyBandStructureMetal
@@ -951,9 +958,9 @@ def test_mp_relax_flow_custom(monkeypatch,tmp_path):
         atoms[0].symbol = "O"
         del atoms.arrays["initial_magmoms"]
         output = mp_metagga_relax_flow(
-            mp_gga_relax_flow(atoms, job_params={"mp_gga_relax_job": {"nsw": 0}})["static"][
-                "atoms"
-            ],
+            mp_gga_relax_flow(atoms, job_params={"mp_gga_relax_job": {"nsw": 0}})[
+                "static"
+            ]["atoms"],
             job_params={"mp_metagga_relax_job": {"nsw": 0}},
         )
         assert output["relax2"]["parameters"]["nsw"] == 0
