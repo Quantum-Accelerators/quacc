@@ -11,7 +11,12 @@ PSEUDO_DIR = FILE_DIR / "fake_pseudos"
 
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
-    MOCK_TASKDOC = TaskDoc.from_directory(FILE_DIR / "mocked_vasp_runs" / "metallic")
+    MOCK_METALLIC_TASKDOC = TaskDoc.from_directory(
+        FILE_DIR / "mocked_vasp_runs" / "metallic"
+    )
+    MOCK_NONMETALLIC_TASKDOC = TaskDoc.from_directory(
+        FILE_DIR / "mocked_vasp_runs" / "nonmetallic"
+    )
 
 
 def mock_run(self, *args, **kwargs):
@@ -29,10 +34,10 @@ def patch_run(monkeypatch):
 
 
 def mock_read_results(self, *args, **kwargs):
-    from ase.calculators.emt import EMT
+    from ase.calculators.lj import LennardJones
 
     atoms = self.atoms
-    atoms.calc = EMT()
+    atoms.calc = LennardJones()
     atoms.get_potential_energy()
     self.results.update(atoms.calc.results)
 
@@ -44,18 +49,55 @@ def patch_read_results(monkeypatch):
     monkeypatch.setattr(Vasp, "read_results", mock_read_results)
 
 
-def mock_taskdoc(dir_name, *args, **kwargs):
-    from ase.io import read
-    from monty.os.path import zpath
+def mock_metallic_taskdoc(dir_name, *args, **kwargs):
+    return MOCK_METALLIC_TASKDOC
 
-    from quacc.atoms.core import check_is_metal
 
-    MOCK_TASKDOC.output.bandgap = (
-        0.0 if check_is_metal(read(zpath(Path(dir_name, "CONTCAR")))) else 0.5
+@pytest.fixture()
+def patch_metallic_taskdoc(monkeypatch):
+    monkeypatch.setattr(
+        "quacc.schemas.vasp.TaskDoc.from_directory", mock_metallic_taskdoc
     )
-    return MOCK_TASKDOC
+
+    class DummyBandStructure:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        @staticmethod
+        def is_metal():
+            return True
+
+        @staticmethod
+        def get_band_gap():
+            return {"energy": MOCK_METALLIC_TASKDOC.output.bandgap}
+
+    monkeypatch.setattr(
+        "pymatgen.io.vasp.Vasprun.get_band_structure", DummyBandStructure
+    )
 
 
-@pytest.fixture(autouse=True)
-def patch_taskdoc(monkeypatch):
-    monkeypatch.setattr("quacc.schemas.vasp.TaskDoc.from_directory", mock_taskdoc)
+def mock_nonmetallic_taskdoc(dir_name, *args, **kwargs):
+    return MOCK_NONMETALLIC_TASKDOC
+
+
+@pytest.fixture()
+def patch_nonmetallic_taskdoc(monkeypatch):
+    monkeypatch.setattr(
+        "quacc.schemas.vasp.TaskDoc.from_directory", mock_nonmetallic_taskdoc
+    )
+
+    class DummyBandStructure:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        @staticmethod
+        def is_metal():
+            return False
+
+        @staticmethod
+        def get_band_gap():
+            return {"energy": MOCK_NONMETALLIC_TASKDOC.output.bandgap}
+
+    monkeypatch.setattr(
+        "pymatgen.io.vasp.Vasprun.get_band_structure", DummyBandStructure
+    )

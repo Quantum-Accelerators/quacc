@@ -45,48 +45,7 @@ LOGGER = logging.getLogger(__name__)
 LOGGER.propagate = True
 
 
-class DummyBandStructureMetal:
-    def __init__(self, *args, **kwargs):
-        pass
-
-    @staticmethod
-    def is_metal():
-        return True
-
-    @staticmethod
-    def get_band_gap():
-        return {"energy": 0}
-
-
-class DummyBandStructureSemi:
-    def __init__(self, *args, **kwargs):
-        pass
-
-    @staticmethod
-    def is_metal():
-        return False
-
-    @staticmethod
-    def get_band_gap():
-        return {"energy": 0.5}
-
-
-class DummyBandStructureNonMetal:
-    def __init__(self, *args, **kwargs):
-        pass
-
-    @staticmethod
-    def is_metal():
-        return False
-
-    @staticmethod
-    def get_band_gap():
-        return {"energy": 10}
-
-
-def test_static_job(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_static_job(patch_metallic_taskdoc):
     atoms = bulk("Al")
 
     output = static_job(atoms)
@@ -115,13 +74,9 @@ def test_static_job(tmp_path, monkeypatch):
     assert "efermi" not in output["parameters"]
 
 
-def test_static_job_incar_copilot_aggressive(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_static_job_incar_copilot_aggressive(patch_metallic_taskdoc):
     with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
         atoms = bulk("Al")
-
-        SETTINGS.VASP_INCAR_COPILOT = "aggressive"
         output = static_job(
             atoms, ivdw=11, lasph=False, prec=None, lwave=None, efermi=None
         )
@@ -132,9 +87,7 @@ def test_static_job_incar_copilot_aggressive(tmp_path, monkeypatch):
         assert output["parameters"]["efermi"] == "midgap"
 
 
-def test_relax_job(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_relax_job(patch_metallic_taskdoc):
     atoms = bulk("Al")
 
     output = relax_job(atoms)
@@ -163,9 +116,7 @@ def test_relax_job(tmp_path, monkeypatch):
     assert output["parameters"]["isif"] == 2
 
 
-def test_doublerelax_flow(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_doublerelax_flow(patch_metallic_taskdoc):
     atoms = bulk("Al")
 
     output = double_relax_flow(atoms)
@@ -214,9 +165,7 @@ def test_doublerelax_flow(tmp_path, monkeypatch):
     assert double_relax_flow(atoms, relax1_kwargs={"kpts": [1, 1, 1]})
 
 
-def test_ase_relax_job(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_ase_relax_job(patch_metallic_taskdoc):
     atoms = bulk("Al")
 
     output = ase_relax_job(atoms)
@@ -229,9 +178,7 @@ def test_ase_relax_job(tmp_path, monkeypatch):
     assert len(output["trajectory_results"]) > 1
 
 
-def test_ase_relax_job2(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_ase_relax_job2(patch_metallic_taskdoc):
     atoms = bulk("Al")
 
     output = ase_relax_job(atoms, opt_params={"store_intermediate_results": True})
@@ -245,13 +192,10 @@ def test_ase_relax_job2(tmp_path, monkeypatch):
     assert len(output["steps"]) == len(output["trajectory_results"])
 
 
-def test_non_scf_job1(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-    copy(MOCKED_DIR / "metallic" / "vasprun.xml.gz", tmp_path / "vasprun.xml.gz")
-
+def test_non_scf_job1(patch_metallic_taskdoc):
     atoms = bulk("Al")
 
-    output = non_scf_job(atoms, tmp_path)
+    output = non_scf_job(atoms, MOCKED_DIR / "metallic")
 
     assert "nsites" in output
     assert "parameters" in output
@@ -270,14 +214,15 @@ def test_non_scf_job1(tmp_path, monkeypatch):
     assert output["parameters"]["nbands"] == 99
 
 
-def test_non_scf_job2(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-    copy(MOCKED_DIR / "metallic" / "vasprun.xml.gz", tmp_path / "vasprun.xml.gz")
-
+def test_non_scf_job2(patch_metallic_taskdoc):
     atoms = bulk("Al")
 
     output = non_scf_job(
-        atoms, tmp_path, preset="BulkSet", nbands_factor=1, calculate_optics=True
+        atoms,
+        MOCKED_DIR / "metallic",
+        preset="BulkSet",
+        nbands_factor=1,
+        calculate_optics=True,
     )
 
     assert "nsites" in output
@@ -298,47 +243,34 @@ def test_non_scf_job2(tmp_path, monkeypatch):
     assert output["parameters"].get("kspacing") is None
 
 
-@pytest.mark.parametrize("_is_metal", [True, False])
-def test_non_scf_job3(tmp_path, monkeypatch, _is_metal):  # noqa: PT019
-    monkeypatch.chdir(tmp_path)
-
-    if _is_metal:
-        monkeypatch.setattr(
-            "pymatgen.io.vasp.Vasprun.get_band_structure", DummyBandStructureMetal
-        )
-        copy(MOCKED_DIR / "metallic" / "vasprun.xml.gz", tmp_path / "vasprun.xml.gz")
-    else:
-        monkeypatch.setattr(
-            "pymatgen.io.vasp.Vasprun.get_band_structure", DummyBandStructureSemi
-        )
-        copy(MOCKED_DIR / "nonmetallic" / "vasprun.xml.gz", tmp_path / "vasprun.xml.gz")
-
+def test_non_scf_job3(patch_metallic_taskdoc):
     atoms = bulk("Al")
-    output = non_scf_job(atoms, tmp_path, preset="BulkSet", kpts_mode="line")
+    output = non_scf_job(
+        atoms, MOCKED_DIR / "metallic", preset="BulkSet", kpts_mode="line"
+    )
     assert np.shape(output["parameters"]["kpts"]) == (250, 3)
-    if _is_metal:
-        assert output["parameters"]["sigma"] == 0.2
-        assert output["parameters"]["ismear"] == 1
-    else:
-        assert output["parameters"]["sigma"] == 0.01
-        assert output["parameters"]["ismear"] == 0
+    assert output["parameters"]["sigma"] == 0.2
+    assert output["parameters"]["ismear"] == 1
 
 
-def test_non_scf_job4(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
+def test_non_scf_job4(patch_nonmetallic_taskdoc):
+    atoms = bulk("Si")
+    output = non_scf_job(
+        atoms, MOCKED_DIR / "nonmetallic", preset="BulkSet", kpts_mode="line"
+    )
+    assert np.shape(output["parameters"]["kpts"]) == (193, 3)
+    assert output["parameters"]["sigma"] == 0.01
+    assert output["parameters"]["ismear"] == 0
 
-    copy(MOCKED_DIR / "metallic" / "vasprun.xml.gz", tmp_path / "vasprun.xml.gz")
-    atoms = bulk("Al")
 
+def test_non_scf_job5(patch_metallic_taskdoc):
     with pytest.raises(
         ValueError, match="Supported kpoint modes are 'uniform' and 'line' at present"
     ):
-        non_scf_job(atoms, tmp_path, kpts_mode="dummy")
+        non_scf_job(bulk("Al"), MOCKED_DIR / "metallic", kpts_mode="dummy")
 
 
-def test_slab_static_job(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_slab_static_job(patch_metallic_taskdoc):
     atoms = bulk("Al")
 
     output = slab_static_job(atoms)
@@ -364,9 +296,7 @@ def test_slab_static_job(tmp_path, monkeypatch):
     assert "encut" not in output["parameters"]
 
 
-def test_slab_relax_job(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_slab_relax_job(patch_metallic_taskdoc):
     atoms = bulk("Al")
 
     output = slab_relax_job(atoms)
@@ -387,9 +317,7 @@ def test_slab_relax_job(tmp_path, monkeypatch):
     assert output["parameters"]["nelmin"] == 6
 
 
-def test_slab_dynamic_jobs(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_slab_dynamic_jobs(patch_metallic_taskdoc):
     atoms = bulk("Al")
 
     ### --------- Test bulk_to_slabs_flow --------- ###
@@ -477,10 +405,8 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
 
-def test_qmof(tmp_path, monkeypatch, caplog):
-    monkeypatch.chdir(tmp_path)
-
-    atoms = bulk("Al")
+def test_qmof(patch_nonmetallic_taskdoc):
+    atoms = bulk("Si")
     output = qmof_relax_job(atoms)
     assert output["prerelax_lowacc"]["nsites"] == len(atoms)
     assert output["prerelax_lowacc"]["parameters"]["sigma"] == 0.01
@@ -538,9 +464,7 @@ def test_qmof(tmp_path, monkeypatch, caplog):
     assert output["double_relax"][1]["parameters"]["isif"] == 2
 
 
-def test_mp_metagga_prerelax_job(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_mp_metagga_prerelax_job_metallic(patch_metallic_taskdoc):
     atoms = bulk("Al")
     output = mp_metagga_prerelax_job(atoms)
     assert output["nsites"] == len(atoms)
@@ -585,6 +509,9 @@ def test_mp_metagga_prerelax_job(tmp_path, monkeypatch):
     assert output["parameters"]["pp"] == "pbe"
     assert "metagga" not in output["parameters"]
 
+
+def test_mp_metagga_prerelax_job_nonmetallic(patch_nonmetallic_taskdoc):
+    atoms = bulk("Si")
     output = mp_metagga_prerelax_job(atoms, prev_dir=MOCKED_DIR / "nonmetallic")
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["gga"] == "ps"
@@ -596,26 +523,9 @@ def test_mp_metagga_prerelax_job(tmp_path, monkeypatch):
     assert output["parameters"]["pp"] == "pbe"
     assert "metagga" not in output["parameters"]
 
-    monkeypatch.setattr(
-        "pymatgen.io.vasp.Vasprun.get_band_structure", DummyBandStructureNonMetal
-    )
-    output = mp_metagga_prerelax_job(atoms, prev_dir=MOCKED_DIR / "nonmetallic")
-    assert output["nsites"] == len(atoms)
-    assert output["parameters"]["gga"] == "ps"
-    assert output["parameters"]["ediffg"] == -0.05
-    assert output["parameters"]["encut"] == 680
-    assert output["parameters"]["kspacing"] == 0.44
-    assert output["parameters"]["ismear"] == 0
-    assert output["parameters"]["sigma"] == 0.05
-    assert output["parameters"]["pp"] == "pbe"
-    assert "metagga" not in output["parameters"]
 
-
-def test_mp_metagga_relax_job(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_mp_metagga_relax_job_metallic(patch_metallic_taskdoc):
     atoms = bulk("Al")
-
     ref_parameters = {
         "algo": "all",
         "ediff": 1e-5,
@@ -662,6 +572,9 @@ def test_mp_metagga_relax_job(tmp_path, monkeypatch):
     assert output["parameters"]["sigma"] == 0.05
     assert output["parameters"]["pp"] == "pbe"
 
+
+def test_mp_metagga_relax_job_nonmetallic(patch_nonmetallic_taskdoc):
+    atoms = bulk("Si")
     output = mp_metagga_relax_job(atoms, prev_dir=MOCKED_DIR / "nonmetallic")
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["metagga"].lower() == "r2scan"
@@ -672,23 +585,8 @@ def test_mp_metagga_relax_job(tmp_path, monkeypatch):
     assert output["parameters"]["sigma"] == 0.05
     assert output["parameters"]["pp"] == "pbe"
 
-    monkeypatch.setattr(
-        "pymatgen.io.vasp.Vasprun.get_band_structure", DummyBandStructureNonMetal
-    )
-    output = mp_metagga_relax_job(atoms, prev_dir=MOCKED_DIR / "nonmetallic")
-    assert output["nsites"] == len(atoms)
-    assert output["parameters"]["metagga"].lower() == "r2scan"
-    assert output["parameters"]["ediffg"] == -0.02
-    assert output["parameters"]["encut"] == 680
-    assert output["parameters"]["kspacing"] == 0.44
-    assert output["parameters"]["ismear"] == 0
-    assert output["parameters"]["sigma"] == 0.05
-    assert output["parameters"]["pp"] == "pbe"
 
-
-def test_mp_metagga_static_job(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_mp_metagga_static_job(patch_metallic_taskdoc):
     atoms = bulk("Al")
 
     output = mp_metagga_static_job(atoms)
@@ -721,14 +619,9 @@ def test_mp_metagga_static_job(tmp_path, monkeypatch):
     }
 
 
-def test_mp_metagga_relax_flow(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_mp_metagga_relax_flow_metallic(tmp_path, patch_metallic_taskdoc):
     with change_settings({"CREATE_UNIQUE_DIR": False, "RESULTS_DIR": tmp_path}):
         copy_r(MOCKED_DIR / "metallic", tmp_path)
-        monkeypatch.setattr(
-            "pymatgen.io.vasp.Vasprun.get_band_structure", DummyBandStructureMetal
-        )
         atoms = bulk("Al")
         output = mp_metagga_relax_flow(atoms)
         assert output["static"]["nsites"] == len(atoms)
@@ -746,11 +639,11 @@ def test_mp_metagga_relax_flow(tmp_path, monkeypatch):
         assert output["relax2"]["parameters"]["kspacing"] == 0.22
         assert output["relax2"]["parameters"]["pp"] == "pbe"
 
+
+def test_mp_metagga_relax_flow_nonmetallic(tmp_path, patch_nonmetallic_taskdoc):
+    with change_settings({"CREATE_UNIQUE_DIR": False, "RESULTS_DIR": tmp_path}):
         copy_r(MOCKED_DIR / "nonmetallic", tmp_path)
-        monkeypatch.setattr(
-            "pymatgen.io.vasp.Vasprun.get_band_structure", DummyBandStructureSemi
-        )
-        atoms = bulk("C")
+        atoms = bulk("Si")
         atoms.set_initial_magnetic_moments([0.0, 0.0])
         output = mp_metagga_relax_flow(atoms)
         assert output["prerelax"]["parameters"]["ismear"] == 0
@@ -763,7 +656,7 @@ def test_mp_metagga_relax_flow(tmp_path, monkeypatch):
         assert output["relax2"]["parameters"]["encut"] == 680
         assert output["relax2"]["parameters"]["ismear"] == 0
         assert output["relax2"]["parameters"]["kspacing"] == pytest.approx(
-            0.28329488761304206
+            0.28752476644932956
         )
         assert output["relax2"]["parameters"]["pp"] == "pbe"
         assert output["static"]["nsites"] == len(atoms)
@@ -782,7 +675,7 @@ def test_mp_metagga_relax_flow(tmp_path, monkeypatch):
         assert output["relax2"]["parameters"]["encut"] == 680
         assert output["relax2"]["parameters"]["ismear"] == 0
         assert output["relax2"]["parameters"]["kspacing"] == pytest.approx(
-            0.28329488761304206
+            0.28752476644932956
         )
         assert output["relax2"]["parameters"]["pp"] == "pbe"
         assert output["relax2"]["parameters"]["magmom"] == [0.0, 0.0]
@@ -793,7 +686,7 @@ def test_mp_metagga_relax_flow(tmp_path, monkeypatch):
         assert output["static"]["parameters"]["magmom"] == [0.0, 0.0]
 
 
-def test_mp_gga_relax_job():
+def test_mp_gga_relax_job(patch_nonmetallic_taskdoc):
     atoms = bulk("Ni") * (2, 1, 1)
     atoms[0].symbol = "O"
     del atoms.arrays["initial_magmoms"]
@@ -833,7 +726,7 @@ def test_mp_gga_relax_job():
     assert output["atoms"].get_chemical_symbols() == ["O", "Ni"]
 
 
-def test_mp_gga_static_job():
+def test_mp_gga_static_job(patch_nonmetallic_taskdoc):
     atoms = bulk("Ni") * (2, 1, 1)
     atoms[0].symbol = "O"
     del atoms.arrays["initial_magmoms"]
@@ -869,14 +762,9 @@ def test_mp_gga_static_job():
     }
 
 
-def test_mp_gga_relax_flow(monkeypatch, tmp_path):
-    monkeypatch.chdir(tmp_path)
-
+def test_mp_gga_relax_flow(tmp_path, patch_nonmetallic_taskdoc):
     with change_settings({"CREATE_UNIQUE_DIR": False, "RESULTS_DIR": tmp_path}):
         copy_r(MOCKED_DIR / "nonmetallic", tmp_path)
-        monkeypatch.setattr(
-            "pymatgen.io.vasp.Vasprun.get_band_structure", DummyBandStructureSemi
-        )
 
         atoms = bulk("Ni") * (2, 1, 1)
         atoms[0].symbol = "O"
@@ -947,12 +835,9 @@ def test_mp_gga_relax_flow(monkeypatch, tmp_path):
         }
 
 
-def test_mp_relax_flow_custom(monkeypatch, tmp_path):
+def test_mp_relax_flow_custom(tmp_path, patch_nonmetallic_taskdoc):
     with change_settings({"CREATE_UNIQUE_DIR": False, "RESULTS_DIR": tmp_path}):
         copy_r(MOCKED_DIR / "nonmetallic", tmp_path)
-        monkeypatch.setattr(
-            "pymatgen.io.vasp.Vasprun.get_band_structure", DummyBandStructureMetal
-        )
 
         atoms = bulk("Ni") * (2, 1, 1)
         atoms[0].symbol = "O"
