@@ -186,7 +186,7 @@ class QuaccSettings(BaseSettings):
         None, description=("Path to a pseudopotential library for espresso.")
     )
     ESPRESSO_PRESET_DIR: Union[Path, list[Path]] = Field(
-        [Path(__file__).parent / "calculators" / "espresso" / "presets"],
+        Path(__file__).parent / "calculators" / "espresso" / "presets",
         description="Path to the espresso preset directory",
     )
     # ---------------------------
@@ -307,8 +307,8 @@ class QuaccSettings(BaseSettings):
             """
         ),
     )
-    VASP_PRESET_DIR: list[Path] = Field(
-        [Path(__file__).parent / "calculators" / "vasp" / "presets"],
+    VASP_PRESET_DIR: Union[Path, list[Path]] = Field(
+        Path(__file__).parent / "calculators" / "vasp" / "presets",
         description="Path to the VASP preset directory",
     )
     VASP_USE_CUSTODIAN: bool = Field(
