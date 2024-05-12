@@ -5,7 +5,7 @@ from pathlib import Path
 
 from ase.build import bulk, molecule
 
-from quacc import SETTINGS, change_settings
+from quacc import change_settings
 from quacc.recipes.gulp.core import relax_job, static_job
 
 

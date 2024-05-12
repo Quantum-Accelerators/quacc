@@ -9,7 +9,7 @@ import numpy as np
 from ase.build import bulk, molecule
 from numpy.testing import assert_array_equal
 
-from quacc import SETTINGS, change_settings
+from quacc import change_settings
 from quacc.recipes.tblite.core import freq_job, relax_job, static_job
 
 

@@ -82,7 +82,9 @@ def test_static_job_incar_copilot_aggressive(tmp_path, monkeypatch):
         atoms = bulk("Al")
 
         SETTINGS.VASP_INCAR_COPILOT = "aggressive"
-        output = static_job(atoms, ivdw=11, lasph=False, prec=None, lwave=None, efermi=None)
+        output = static_job(
+            atoms, ivdw=11, lasph=False, prec=None, lwave=None, efermi=None
+        )
         assert output["parameters"]["ivdw"] == 11
         assert output["parameters"]["lasph"] is False
         assert "prec" not in output["parameters"]

@@ -72,7 +72,7 @@ def qmof_relax_job(
     """
     with change_settings({"VASP_USE_CUSTODIAN": True}):
         copy_files = None
- 
+
         # 1. Pre-relaxation
         if run_prerelax:
             summary1 = _prerelax(atoms, **calc_kwargs)

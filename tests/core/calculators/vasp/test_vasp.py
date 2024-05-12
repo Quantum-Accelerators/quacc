@@ -787,11 +787,17 @@ def test_constraints():
 
 
 def test_envvars():
-    with change_settings({"VASP_PP_PATH": str(Path("/path/to/pseudos")), "ASE_VASP_VDW": str(Path("/path/to/kernel"))}):
+    with change_settings(
+        {
+            "VASP_PP_PATH": str(Path("/path/to/pseudos")),
+            "ASE_VASP_VDW": str(Path("/path/to/kernel")),
+        }
+    ):
         atoms = bulk("Cu")
         atoms.calc = Vasp(atoms, xc="beef-vdw")
         assert os.environ.get("VASP_PP_PATH") == "/path/to/pseudos"
         assert os.environ.get("ASE_VASP_VDW") == "/path/to/kernel"
+
 
 def test_bad():
     atoms = bulk("Cu")

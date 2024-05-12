@@ -161,7 +161,7 @@ def irc_job(
         See the type-hint for the data structure.
     """
     freq_job_kwargs = freq_job_kwargs or {}
-    default_settings = SETTINGS.model_copy()
+    SETTINGS.model_copy()
 
     calc_defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
@@ -180,7 +180,7 @@ def irc_job(
     atoms.calc = NewtonNet(**calc_flags)
 
     # Run IRC
-    with change_settings({"CHECK_CONVERGENCE":False}):
+    with change_settings({"CHECK_CONVERGENCE": False}):
         dyn = run_opt(atoms, **opt_flags)
         opt_irc_summary = _add_stdev_and_hess(
             summarize_opt_run(

@@ -38,6 +38,7 @@ DATA_DIR = Path(__file__).parent / "data"
 LOGGER = logging.getLogger(__name__)
 LOGGER.propagate = True
 
+
 def test_phonon_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
@@ -203,7 +204,6 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
     with change_settings({"ESPRESSO_PSEUDO": tmp_path}):
-
         atoms = bulk("Li")
 
         copy_decompress_files(DATA_DIR, ["Li.upf.gz"], tmp_path)
@@ -271,7 +271,6 @@ def test_q2r_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
     with change_settings({"ESPRESSO_PSEUDO": tmp_path}):
-
         copy_decompress_files(DATA_DIR / "q2r_test", "matdyn", tmp_path)
 
         additional_cards = ["1 1 1", "1", "matdyn"]
@@ -300,7 +299,6 @@ def test_matdyn_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
     with change_settings({"ESPRESSO_PSEUDO": tmp_path}):
-
         copy_decompress_files(DATA_DIR / "matdyn_test", "q2r.fc", tmp_path)
 
         input_data = {"input": {"dos": True, "nk1": 4, "nk2": 4, "nk3": 4}}
@@ -312,7 +310,10 @@ def test_matdyn_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
         assert Path(matdyn_results["dir_name"], "matdyn.dos.gz").exists()
         assert Path(matdyn_results["dir_name"], "matdyn.freq.gz").exists()
         assert Path(matdyn_results["dir_name"], "matdyn.modes.gz").exists()
-        assert matdyn_results["results"]["matdyn_results"]["phonon_dos"].shape == (561, 3)
+        assert matdyn_results["results"]["matdyn_results"]["phonon_dos"].shape == (
+            561,
+            3,
+        )
 
         decompress_file(Path(matdyn_results["dir_name"], "matdyn.in.gz"))
 
@@ -467,10 +468,14 @@ def test_phonon_calculation_si_spin_orbit(
             si_relax_results["dir_name"], **si_phonon_params, qpts=(0.0, 0.0, 0.0)
         )
 
-        assert si_phonon_results["parameters"]["input_data"]["inputph"]["prefix"] == "pwscf"
+        assert (
+            si_phonon_results["parameters"]["input_data"]["inputph"]["prefix"]
+            == "pwscf"
+        )
 
         assert (
-            si_phonon_results["parameters"]["input_data"]["inputph"]["fildyn"] == "matdyn"
+            si_phonon_results["parameters"]["input_data"]["inputph"]["fildyn"]
+            == "matdyn"
         )
 
         with zopen(Path(si_phonon_results["dir_name"], "ph.out.gz")) as f:
@@ -490,7 +495,6 @@ def test_phonon_induced_renormalization(
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
     with change_settings({"ESPRESSO_PSEUDO": tmp_path}):
-
         copy_decompress_files(DATA_DIR, ["C.UPF.gz"], tmp_path)
 
         atoms = bulk("C")
@@ -577,8 +581,12 @@ def test_phonon_induced_renormalization(
             assert "Overwriting key 'wpot_dir'" in caplog.text
             assert "Overwriting key 'prefix'" in caplog.text
 
-        assert dvscf_q2r_results["parameters"]["input_data"]["input"]["fildyn"] == "matdyn"
-        assert dvscf_q2r_results["parameters"]["input_data"]["input"]["prefix"] == "pwscf"
+        assert (
+            dvscf_q2r_results["parameters"]["input_data"]["input"]["fildyn"] == "matdyn"
+        )
+        assert (
+            dvscf_q2r_results["parameters"]["input_data"]["input"]["prefix"] == "pwscf"
+        )
 
         c_nscf_params = {
             "input_data": {
@@ -719,7 +727,6 @@ def test_phonon_dvscf_q2r_inplace(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
     with change_settings({"ESPRESSO_PSEUDO": tmp_path}):
-
         copy_decompress_files(DATA_DIR, ["C.UPF.gz"], tmp_path)
 
         atoms = bulk("C")

@@ -138,6 +138,7 @@ def test_calc_setup_v3_2(tmp_path, monkeypatch, copy_files):
 @pytest.mark.parametrize("copy_files", [{"saved": "*"}])
 def test_calc_setup_v4(tmp_path, monkeypatch, copy_files):
     from quacc import SETTINGS
+
     monkeypatch.chdir(tmp_path)
     make_files3()
 

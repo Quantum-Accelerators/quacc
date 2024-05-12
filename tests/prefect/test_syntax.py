@@ -103,7 +103,6 @@ def test_prefect_decorators(tmp_path, monkeypatch):
 
 def test_prefect_decorators_local(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    from quacc import SETTINGS
 
     with change_settings({"PREFECT_AUTO_SUBMIT": False}):
 
