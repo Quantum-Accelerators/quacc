@@ -518,7 +518,6 @@ def test_mp_metagga_prerelax_job(tmp_path, monkeypatch):
         "algo": "all",
         "ediff": 1e-5,
         "ediffg": -0.05,
-        "efermi": "midgap",  # added by copilot
         "enaug": 1360,
         "encut": 680,
         "gga": "ps",
@@ -577,7 +576,6 @@ def test_mp_metagga_relax_job(tmp_path, monkeypatch):
         "algo": "all",
         "ediff": 1e-5,
         "ediffg": -0.02,
-        "efermi": "midgap",  # added by copilot
         "enaug": 1360,
         "encut": 680,
         "ibrion": 2,
@@ -641,7 +639,6 @@ def test_mp_metagga_static_job(tmp_path, monkeypatch):
     assert output["parameters"] == {
         "algo": "fast",
         "ediff": 1e-05,
-        "efermi": "midgap",  # added by copilot
         "enaug": 1360,
         "encut": 680,
         "ismear": -5,
@@ -741,7 +738,6 @@ def test_mp_gga_relax_job():
     assert output["parameters"] == {
         "algo": "fast",
         "ediff": 0.0001,
-        "efermi": "midgap",  # added by copilot
         "encut": 520,
         "gamma": True,
         "ibrion": 2,
@@ -781,7 +777,6 @@ def test_mp_gga_static_job():
     assert output["parameters"] == {
         "algo": "fast",
         "ediff": 0.0001,
-        "efermi": "midgap",  # added by copilot
         "encut": 520,
         "gamma": True,
         "ismear": -5,
@@ -817,7 +812,6 @@ def test_mp_gga_relax_flow():
     relax_params = {
         "algo": "fast",
         "ediff": 0.0001,
-        "efermi": "midgap",  # added by copilot
         "encut": 520,
         "gamma": True,
         "ibrion": 2,
@@ -853,7 +847,6 @@ def test_mp_gga_relax_flow():
     assert output["static"]["parameters"] == {
         "algo": "fast",
         "ediff": 0.0001,
-        "efermi": "midgap",  # added by copilot
         "encut": 520,
         "gamma": True,
         "ismear": -5,
