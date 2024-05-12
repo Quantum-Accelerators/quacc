@@ -255,7 +255,9 @@ class Vasp(Vasp_):
             setup_preset = None
             for preset_dir in SETTINGS.VASP_PRESET_DIR:
                 try:
-                    setup_preset = load_vasp_yaml_calc(preset_dir / self.user_calc_params["setups"])["inputs"]["setups"]
+                    setup_preset = load_vasp_yaml_calc(
+                        preset_dir / self.user_calc_params["setups"]
+                    )["inputs"]["setups"]
                     break
                 except FileNotFoundError:
                     continue
