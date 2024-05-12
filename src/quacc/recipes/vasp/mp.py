@@ -132,10 +132,8 @@ def mp_metagga_prerelax_job(
     ----------
     atoms
         Atoms object
-    bandgap
-        Estimate for the bandgap in eV.
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+    prev_dir
+        A previous directory for a prior step in the workflow.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
