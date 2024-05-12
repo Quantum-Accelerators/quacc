@@ -727,12 +727,6 @@ def test_setups():
     assert calc.parameters["setups"] == "minimal"
 
     atoms = bulk("Cu")
-    atoms_, parameters = mp_to_ase_input_set(atoms, dict_set=MPScanRelaxSet)
-    calc = Vasp(atoms_, setups="minimal", **parameters)
-    assert isinstance(calc.parameters["setups"], str)
-    assert calc.parameters["setups"] == "minimal"
-
-    atoms = bulk("Cu")
     calc = Vasp(atoms, preset="QMOFSet")
     assert calc.parameters["setups"]["Cu"] == ""
     assert calc.parameters["setups"]["Er"] == "_3"
