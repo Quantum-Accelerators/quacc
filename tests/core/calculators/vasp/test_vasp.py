@@ -790,7 +790,7 @@ def test_envvars():
     with change_settings(
         {
             "VASP_PP_PATH": str(Path("/path/to/pseudos")),
-            "ASE_VASP_VDW": str(Path("/path/to/kernel")),
+            "VASP_VDW": str(Path("/path/to/kernel")),
         }
     ):
         atoms = bulk("Cu")
