@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - Added a context handler, `quacc.settings.change_settings`, that can be used to temporarily modify global settings
+- Added `quacc.calculators.vasp.params.MPtoASEConverter` to convert between Pymatgen- and Atomate2-style input parameters to ASE-compatabile parameters
 
 ### Fixed
 
@@ -16,9 +17,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- Overhauled the MP recipes to ensure better compatability with atomate2 workflows
 - The workflow engine must be directly specified with `WORKFLOW_ENGINE`, as noted in the docs
 - Changed `VASP_MAG_CUTOFF` from 0.05 to 0.02
 - Removed the `preset` keyword argument from the QMOF recipes
+
+### Removed
+
+- Removed the `pmg_input_set` keyword argument from the `Vasp` calculator
 
 ## [0.7.8]
 
