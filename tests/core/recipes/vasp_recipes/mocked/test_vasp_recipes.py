@@ -754,8 +754,8 @@ def test_mp_gga_relax_job():
         "ldau": True,
         "ldauj": [0, 0],
         "ldaul": [0, 2],
-        "ldauprint": 1,  # added by copilot
-        "ldautype": 2,  # added by copilot
+        "ldauprint": 1,
+        "ldautype": 2,
         "ldauu": [0, 6.2],
         "lmaxmix": 4,
         "lorbit": 11,
@@ -792,8 +792,8 @@ def test_mp_gga_static_job():
         "ldau": True,
         "ldauj": [0, 0],
         "ldaul": [0, 2],
-        "ldauprint": 1,  # added by copilot
-        "ldautype": 2,  # added by copilot
+        "ldauprint": 1,
+        "ldautype": 2,
         "ldauu": [0, 6.2],
         "lmaxmix": 4,
         "lorbit": 11,
@@ -830,8 +830,8 @@ def test_mp_gga_relax_flow():
         "ldau": True,
         "ldauj": [0, 0],
         "ldaul": [0, 2],
-        "ldauprint": 1,  # added by copilot
-        "ldautype": 2,  # added by copilot
+        "ldauprint": 1,
+        "ldautype": 2,
         "ldauu": [0, 6.2],
         "lmaxmix": 4,
         "lorbit": 11,
@@ -864,7 +864,7 @@ def test_mp_gga_relax_flow():
         "ldau": True,
         "ldauj": [0, 0],
         "ldaul": [0, 2],
-        "ldauprint": 1,  # added by copilot
+        "ldauprint": 1,
         "ldautype": 2,
         "ldauu": [0, 6.2],
         "lmaxmix": 4,
