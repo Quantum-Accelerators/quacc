@@ -13,6 +13,7 @@ from quacc.atoms.core import check_is_metal
 from quacc.utils.kpts import convert_pmg_kpts
 
 if TYPE_CHECKING:
+    import contextlib
     from typing import Any, Literal
 
     from ase.atoms import Atoms
@@ -20,10 +21,8 @@ if TYPE_CHECKING:
 
     from quacc.utils.kpts import PmgKpts
 
-    try:
+    with contextlib.suppress(ImportError):
         from atomate2.vasp.jobs.base import BaseVaspMaker
-    except ImportError:
-        pass
 
 logger = logging.getLogger(__name__)
 
@@ -374,7 +373,9 @@ def set_pmg_kpts(
     return user_calc_params
 
 
-def mp_to_ase_input_set( atoms: Atoms,VaspMaker:BaseVaspMaker=None,dict_set: DictSet=None) -> tuple[Atoms, dict]:
+def mp_to_ase_input_set(
+    atoms: Atoms, VaspMaker: BaseVaspMaker = None, dict_set: DictSet = None
+) -> tuple[Atoms, dict]:
     """
     Convert an atomate2 or Pymatgen VASP input set into an ASE-compatible set of
     calculator parameters. Only one of VaspMaker or dict_set can be provided.
@@ -403,9 +404,7 @@ def mp_to_ase_input_set( atoms: Atoms,VaspMaker:BaseVaspMaker=None,dict_set: Dic
     structure = AseAtomsAdaptor.get_structure(atoms)
     if VaspMaker:
         input_set_generator = VaspMaker().input_set_generator
-        input_set = input_set_generator.get_input_set(
-            structure, potcar_spec=True
-        )
+        input_set = input_set_generator.get_input_set(structure, potcar_spec=True)
         potcar_symbols = input_set.potcar
         potcar_functional = input_set_generator.potcar_functional
     else:

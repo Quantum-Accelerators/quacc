@@ -109,7 +109,7 @@ def mp_gga_static_job(
     VaspSchema
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
     """
-    atoms, calc_defaults = mp_to_ase_input_set(atoms,VaspMaker=MPGGAStaticMaker)
+    atoms, calc_defaults = mp_to_ase_input_set(atoms, VaspMaker=MPGGAStaticMaker)
     return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
@@ -153,7 +153,7 @@ def mp_metagga_prerelax_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
         See the type-hint for the data structure.
     """
-    atoms,calc_defaults = mp_to_ase_input_set(atoms,VaspMaker=MPPreRelaxMaker)
+    atoms, calc_defaults = mp_to_ase_input_set(atoms, VaspMaker=MPPreRelaxMaker)
     return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
@@ -196,7 +196,7 @@ def mp_metagga_relax_job(
     VaspSchema
         Dictionary of results.
     """
-    atoms,calc_defaults = mp_to_ase_input_set(atoms,MPMetaGGARelaxMaker)
+    atoms, calc_defaults = mp_to_ase_input_set(atoms, MPMetaGGARelaxMaker)
     return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
@@ -238,7 +238,7 @@ def mp_metagga_static_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
         See the type-hint for the data structure.
     """
-    atoms, calc_defaults = mp_to_ase_input_set(atoms,MPMetaGGAStaticMaker)
+    atoms, calc_defaults = mp_to_ase_input_set(atoms, MPMetaGGAStaticMaker)
     return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
