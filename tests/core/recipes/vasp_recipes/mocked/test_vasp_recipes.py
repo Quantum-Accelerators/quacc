@@ -1,14 +1,11 @@
 from __future__ import annotations
 
-import os
-
-import pytest
-
 import logging
 from pathlib import Path
 from shutil import copy
 
 import numpy as np
+import pytest
 from ase.build import bulk, molecule
 
 from quacc import SETTINGS, change_settings
