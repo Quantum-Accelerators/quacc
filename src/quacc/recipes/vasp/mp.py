@@ -16,7 +16,7 @@ from typing import TYPE_CHECKING
 from monty.dev import requires
 
 from quacc import flow, job
-from quacc.calculators.vasp.params import mp_to_ase_input_set
+from quacc.calculators.vasp.params import MPtoASEConverter
 from quacc.recipes.vasp._base import run_and_summarize
 from quacc.wflow_tools.customizers import customize_funcs
 
@@ -40,15 +40,13 @@ if TYPE_CHECKING:
         MPMetaGGARelaxFlowSchema,
         VaspSchema,
     )
-    from quacc.utils.files import Filenames, SourceDirectory
+    from quacc.utils.files import SourceDirectory
 
 
 @job
 @requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
 def mp_gga_relax_job(
-    atoms: Atoms,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-    **calc_kwargs,
+    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs
 ) -> VaspSchema:
     """
     Function to relax a structure with the original Materials Project GGA(+U) settings.
@@ -57,8 +55,8 @@ def mp_gga_relax_job(
     ----------
     atoms
         Atoms object
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+    prev_dir
+        A previous directory for a prior step in the workflow.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -69,24 +67,23 @@ def mp_gga_relax_job(
     VaspSchema
         Dictionary of results.
     """
-    atoms, calc_defaults = mp_to_ase_input_set(atoms, VaspMaker=MPGGARelaxMaker)
+    calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
+        MPGGARelaxMaker
+    )
     return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         report_mp_corrections=True,
         additional_fields={"name": "MP GGA Relax"},
-        copy_files=copy_files,
+        copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
     )
 
 
 @job
 @requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
 def mp_gga_static_job(
-    atoms: Atoms,
-    bandgap: float | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-    **calc_kwargs,
+    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs
 ) -> VaspSchema:
     """
     Function to run a static calculation on a structure with the original Materials Project GGA(+U) settings.
@@ -95,10 +92,8 @@ def mp_gga_static_job(
     ----------
     atoms
         Atoms object
-    bandgap
-        The bandgap in eV, if known from a prior calculation.
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+    prev_dir
+        A previous directory for a prior step in the workflow.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -109,24 +104,23 @@ def mp_gga_static_job(
     VaspSchema
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
     """
-    atoms, calc_defaults = mp_to_ase_input_set(atoms, VaspMaker=MPGGAStaticMaker)
+    calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
+        MPGGAStaticMaker
+    )
     return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         report_mp_corrections=True,
         additional_fields={"name": "MP GGA Static"},
-        copy_files=copy_files,
+        copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
     )
 
 
 @job
 @requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
 def mp_metagga_prerelax_job(
-    atoms: Atoms,
-    bandgap: float | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-    **calc_kwargs,
+    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs
 ) -> VaspSchema:
     """
     Function to pre-relax a structure with Materials Project r2SCAN workflow settings. By default, this
@@ -153,24 +147,23 @@ def mp_metagga_prerelax_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
         See the type-hint for the data structure.
     """
-    atoms, calc_defaults = mp_to_ase_input_set(atoms, VaspMaker=MPPreRelaxMaker)
+    calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
+        MPPreRelaxMaker
+    )
     return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         report_mp_corrections=True,
         additional_fields={"name": "MP Meta-GGA Pre-Relax"},
-        copy_files=copy_files,
+        copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
     )
 
 
 @job
 @requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
 def mp_metagga_relax_job(
-    atoms: Atoms,
-    bandgap: float | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-    **calc_kwargs,
+    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs
 ) -> VaspSchema:
     """
     Function to relax a structure with Materials Project r2SCAN workflow settings. By default, this uses
@@ -182,10 +175,8 @@ def mp_metagga_relax_job(
     ----------
     atoms
         Atoms object
-    bandgap
-        Estimate for the bandgap in eV.
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+    prev_dir
+        A previous directory for a prior step in the workflow.
     **calc_kwargs
         Dictionary of custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -196,24 +187,23 @@ def mp_metagga_relax_job(
     VaspSchema
         Dictionary of results.
     """
-    atoms, calc_defaults = mp_to_ase_input_set(atoms, MPMetaGGARelaxMaker)
+    calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
+        MPMetaGGARelaxMaker
+    )
     return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         report_mp_corrections=True,
         additional_fields={"name": "MP Meta-GGA Relax"},
-        copy_files=copy_files,
+        copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
     )
 
 
 @job
 @requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
 def mp_metagga_static_job(
-    atoms: Atoms,
-    bandgap: float | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-    **calc_kwargs,
+    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs
 ) -> VaspSchema:
     """
     Function to run a static calculation on a structure with r2SCAN workflow Materials Project settings.
@@ -223,10 +213,8 @@ def mp_metagga_static_job(
     ----------
     atoms
         Atoms object
-    bandgap
-        Estimate for the bandgap in eV.
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+    prev_dir
+        A previous directory for a prior step in the workflow.
     **calc_kwargs
         Dictionary of custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -238,14 +226,16 @@ def mp_metagga_static_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
         See the type-hint for the data structure.
     """
-    atoms, calc_defaults = mp_to_ase_input_set(atoms, MPMetaGGAStaticMaker)
+    calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
+        MPMetaGGAStaticMaker
+    )
     return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         report_mp_corrections=True,
         additional_fields={"name": "MP Meta-GGA Static"},
-        copy_files=copy_files,
+        copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
     )
 
 
@@ -299,15 +289,12 @@ def mp_gga_relax_flow(
 
     # Run the second relax
     double_relax_results = mp_gga_relax_job_(
-        relax_results["atoms"],
-        copy_files={relax_results["dir_name"]: ["CHGCAR*", "WAVECAR*"]},
+        relax_results["atoms"], prev_dir=relax_results["dir_name"]
     )
 
     # Run the static
     static_results = mp_gga_static_job_(
-        double_relax_results["atoms"],
-        bandgap=double_relax_results["output"]["bandgap"],
-        copy_files={double_relax_results["dir_name"]: ["CHGCAR*", "WAVECAR*"]},
+        double_relax_results["atoms"], prev_dir=double_relax_results["dir_name"]
     )
 
     return {
@@ -379,23 +366,17 @@ def mp_metagga_relax_flow(
 
     # Run the relax
     relax_results = mp_metagga_relax_job_(
-        prerelax_results["atoms"],
-        bandgap=prerelax_results["output"]["bandgap"],
-        copy_files={prerelax_results["dir_name"]: ["CHGCAR*", "WAVECAR*"]},
+        prerelax_results["atoms"], prev_dir=prerelax_results["dir_name"]
     )
 
     # Run the second relax
     double_relax_results = mp_metagga_relax_job_(
-        relax_results["atoms"],
-        bandgap=relax_results["output"]["bandgap"],
-        copy_files={relax_results["dir_name"]: ["CHGCAR*", "WAVECAR*"]},
+        relax_results["atoms"], prev_dir=relax_results["dir_name"]
     )
 
     # Run the static
     static_results = mp_metagga_static_job_(
-        double_relax_results["atoms"],
-        bandgap=double_relax_results["output"]["bandgap"],
-        copy_files={double_relax_results["dir_name"]: ["CHGCAR*", "WAVECAR*"]},
+        double_relax_results["atoms"], prev_dir=double_relax_results["dir_name"]
     )
 
     return {

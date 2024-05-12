@@ -19,6 +19,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from pymatgen.io.vasp.sets import DictSet
 
+    from quacc.utils.files import SourceDirectory
     from quacc.utils.kpts import PmgKpts
 
     with contextlib.suppress(ImportError):
@@ -373,61 +374,116 @@ def set_pmg_kpts(
     return user_calc_params
 
 
-def mp_to_ase_input_set(
-    atoms: Atoms, VaspMaker: BaseVaspMaker = None, dict_set: DictSet = None
-) -> tuple[Atoms, dict]:
+class MPtoASEConverter:
     """
-    Convert an atomate2 or Pymatgen VASP input set into an ASE-compatible set of
-    calculator parameters. Only one of VaspMaker or dict_set can be provided.
-
-    Parameters
-    ----------
-    atoms
-        The input atoms.
-    VaspMaker
-        An Atomate2 VaspMaker class.
-    dict_set
-        The Pymatgen VASP input set.
-
-    Returns
-    -------
-    Atoms
-        The input atoms to match the pymatgen input set.
-    dict
-        The ASE-compatible set of calculator parameters.
+    Convert an MP-formatted input set to an ASE-formatted input set.
     """
-    if dict_set is None and VaspMaker is None:
-        raise ValueError("Either dict_set or VaspMaker must be provided.")
-    if dict_set and VaspMaker:
-        raise ValueError("Only one of dict_set or VaspMaker can be provided.")
 
-    structure = AseAtomsAdaptor.get_structure(atoms)
-    if VaspMaker:
+    def __init__(
+        self, atoms: Atoms | None = None, prev_dir: SourceDirectory | None = None
+    ) -> None:
+        """
+        Initialize the converter.
+
+        Parameters
+        ----------
+        atoms
+            The ASE atoms object.
+        prev_dir
+            The previous directory.
+
+        Returns
+        -------
+        None
+        """
+        self.atoms = atoms
+        self.prev_dir = prev_dir
+        self.structure = AseAtomsAdaptor.get_structure(atoms)
+        if atoms is None and prev_dir is None:
+            raise ValueError("Either atoms or prev_dir must be provided.")
+
+    def convert_dict_set(self, dict_set: DictSet) -> dict:
+        """
+        Convert a Pymatgen DictSet to a dictionary of ASE VASP parameters.
+
+        Parameters
+        ----------
+        dict_set
+            The pymatgen DictSet.
+
+        Returns
+        -------
+        dict
+            The ASE VASP parameters.
+        """
+        input_set = dict_set(sort_structure=False)
+        vasp_input = input_set.get_input_set(
+            structure=self.structure, potcar_spec=True, prev_dir=self.prev_dir
+        )
+        self.incar_dict = vasp_input["INCAR"]
+        self.pmg_kpts = vasp_input.get("KPOINTS")
+        self.potcar_symbols = vasp_input["POTCAR"]
+        self.potcar_functional = input_set.potcar_functional
+        self.poscar = vasp_input["POSCAR"]
+        return self._convert()
+
+    def convert_vasp_maker(self, VaspMaker: BaseVaspMaker) -> dict:
+        """
+        Convert an atomate2 VaspMaker to a dictionary of ASE VASP parameters.
+
+        Parameters
+        ----------
+        BaseVaspMaker
+            The atomate2 VaspMaker.
+
+        Returns
+        -------
+        dict
+            The ASE VASP parameters.
+        """
         input_set_generator = VaspMaker().input_set_generator
         input_set_generator.sort_structure = False
-        input_set = input_set_generator.get_input_set(structure, potcar_spec=True)
-        potcar_symbols = input_set.potcar
-        potcar_functional = input_set_generator.potcar_functional
-    else:
-        input_set = dict_set(structure=structure, sort_structure=False)
-        potcar_symbols = input_set.potcar_symbols
-        potcar_functional = input_set.potcar_functional
+        input_set = input_set_generator.get_input_set(
+            structure=self.structure, potcar_spec=True, prev_dir=self.prev_dir
+        )
+        self.incar_dict = input_set.incar
+        self.pmg_kpts = input_set.kpoints
+        self.potcar_symbols = input_set.potcar
+        self.potcar_functional = input_set_generator.potcar_functional
+        self.poscar = input_set.poscar
+        return self._convert()
 
-    incar_dict = {k.lower(): v for k, v in input_set.incar.items()}
-    pp = potcar_functional.split("_")[0]
-    potcar_setups = {symbol.split("_")[0]: symbol for symbol in potcar_symbols}
-    for k, v in potcar_setups.items():
-        if k in v:
-            potcar_setups[k] = v.split(k)[-1]
+    def _convert(self) -> dict:
+        """
+        Convert the MP input to a dictionary of ASE VASP parameters.
 
-    full_input_params = incar_dict | {"setups": potcar_setups, "pp": pp}
+        Returns
+        -------
+        dict
+            The ASE VASP parameters.
+        """
+        self.incar_dict = {k.lower(): v for k, v in self.incar_dict.items()}
+        pp = self.potcar_functional.split("_")[0]
+        potcar_setups = {symbol.split("_")[0]: symbol for symbol in self.potcar_symbols}
+        for k, v in potcar_setups.items():
+            if k in v:
+                potcar_setups[k] = v.split(k)[-1]
 
-    pmg_kpts = input_set.kpoints
-    if pmg_kpts is not None:
-        kpoints_dict = input_set.kpoints.as_dict()
-        full_input_params |= {
-            "kpts": kpoints_dict["kpoints"][0],
-            "gamma": kpoints_dict["generation_style"] == "Gamma",
-        }
+        full_input_params = self.incar_dict | {"setups": potcar_setups, "pp": pp}
 
-    return input_set.poscar.structure.to_ase_atoms(), full_input_params
+        if self.pmg_kpts is not None:
+            kpts_dict = self.pmg_kpts.as_dict()
+            full_input_params |= {
+                "kpts": kpts_dict["kpoints"][0],
+                "gamma": kpts_dict["generation_style"].lower() == "gamma",
+            }
+
+        if (
+            self.poscar.structure.to_ase_atoms().get_chemical_symbols()
+            != self.atoms.get_chemical_symbols()
+        ):
+            raise ValueError(
+                "The atoms object does not match the input set. This is a bug."
+            )
+
+        return full_input_params
