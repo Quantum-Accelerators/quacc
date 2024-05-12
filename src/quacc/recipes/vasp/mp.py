@@ -449,6 +449,7 @@ def mp_metagga_relax_flow(
         "static": static_results,
     }
 
+
 def _validate_mp_compatability(directory: Path | str) -> EmmetBaseModel | None:
     """
     Validate the output of a VASP calculation for Materials Project compatibility.
