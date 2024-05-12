@@ -92,11 +92,12 @@ def phonon_flow(
         parameters=job_params,
         decorators=job_decorators,
     )
+    if run_relax:
+        atoms = relax_job_(atoms)["atoms"]
 
     return phonon_subflow(
         atoms,
         static_job_,
-        relax_job=relax_job_ if run_relax else None,
         symprec=symprec,
         min_lengths=min_lengths,
         supercell_matrix=supercell_matrix,

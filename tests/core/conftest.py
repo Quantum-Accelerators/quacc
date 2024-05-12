@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+from shutil import rmtree
 
 TEST_RESULTS_DIR = Path(__file__).parent / "_test_results"
 TEST_SCRATCH_DIR = Path(__file__).parent / "_test_scratch"
@@ -15,8 +16,6 @@ def pytest_sessionstart():
 
 
 def pytest_sessionfinish(exitstatus):
+    rmtree(TEST_RESULTS_DIR, ignore_errors=True)
     if exitstatus == 0:
-        from shutil import rmtree
-
-        rmtree(TEST_RESULTS_DIR, ignore_errors=True)
         rmtree(TEST_SCRATCH_DIR, ignore_errors=True)
