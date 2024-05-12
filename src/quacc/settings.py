@@ -526,7 +526,7 @@ def _type_handler(settings: dict[str, Any]) -> dict[str, Any]:
 
 
 @contextmanager
-def change_settings(changes: dict[str, Any]) -> QuaccSettings:  # type: ignore
+def change_settings(changes: dict[str, Any]):
     """
     Temporarily change an attribute of an object.
 
