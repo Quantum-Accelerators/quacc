@@ -227,6 +227,7 @@ class Vasp(Vasp_):
             pmg_calc_params = {}
 
         # Get user-defined preset parameters for the calculator
+        calc_preset = {}
         if self.preset:
             for preset_dir in SETTINGS.VASP_PRESET_DIR:
                 try:
@@ -236,8 +237,10 @@ class Vasp(Vasp_):
                     break
                 except FileNotFoundError:
                     continue
-        else:
-            calc_preset = {}
+            if not calc_preset:
+                raise FileNotFoundError(
+                    {f"Preset {self.preset} not found in any of the preset directories"}
+                )
 
         # Collect all the calculator parameters and prioritize the kwargs in the
         # case of duplicates.
