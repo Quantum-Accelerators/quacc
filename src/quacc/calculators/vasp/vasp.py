@@ -254,11 +254,11 @@ class Vasp(Vasp_):
         ):
             setup_preset = None
             for preset_dir in SETTINGS.VASP_PRESET_DIR:
-                preset_path = preset_dir / self.user_calc_params["setups"]
-                if preset_path.suffix.lower() != ".yaml":
-                    preset_path = preset_dir / f"{self.preset}.yaml"
-                if preset_path.exists():
-                    setup_preset = load_vasp_yaml_calc(preset_path)["inputs"]["setups"]
+                try:
+                    setup_preset = load_vasp_yaml_calc(preset_dir / self.user_calc_params["setups"])["inputs"]["setups"]
+                    break
+                except FileNotFoundError:
+                    continue
             if setup_preset is None:
                 raise FileNotFoundError(
                     f"Setup {self.user_calc_params['setups']} not found in any of the setup directories"
