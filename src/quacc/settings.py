@@ -311,6 +311,8 @@ class QuaccSettings(BaseSettings):
         Path(__file__).parent / "calculators" / "vasp" / "presets",
         description="Path to the VASP preset directory",
     )
+
+    # VASP Settings: Custodian
     VASP_USE_CUSTODIAN: bool = Field(
         True, description="Whether Custodian should be used to run VASP"
     )
