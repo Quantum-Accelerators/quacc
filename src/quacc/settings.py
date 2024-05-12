@@ -16,7 +16,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 if TYPE_CHECKING:
     from typing import Any
 
-installed_engine = next(
+
+_INSTALLED_ENGINE = next(
     (
         wflow_engine
         for wflow_engine in ["parsl", "covalent", "prefect", "dask", "redun", "jobflow"]
@@ -66,7 +67,7 @@ class QuaccSettings(BaseSettings):
 
     WORKFLOW_ENGINE: Optional[
         Literal["covalent", "dask", "parsl", "prefect", "redun", "jobflow"]
-    ] = Field(installed_engine, description=("The workflow manager to use, if any."))
+    ] = Field(_INSTALLED_ENGINE, description=("The workflow manager to use, if any."))
 
     # ---------------------------
     # General Settings
