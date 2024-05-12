@@ -161,7 +161,6 @@ def irc_job(
         See the type-hint for the data structure.
     """
     freq_job_kwargs = freq_job_kwargs or {}
-    SETTINGS.model_copy()
 
     calc_defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
