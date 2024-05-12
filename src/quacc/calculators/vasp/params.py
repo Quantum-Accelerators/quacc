@@ -404,6 +404,7 @@ def mp_to_ase_input_set(
     structure = AseAtomsAdaptor.get_structure(atoms)
     if VaspMaker:
         input_set_generator = VaspMaker().input_set_generator
+        input_set_generator.sort_structure = False
         input_set = input_set_generator.get_input_set(structure, potcar_spec=True)
         potcar_symbols = input_set.potcar
         potcar_functional = input_set_generator.potcar_functional
