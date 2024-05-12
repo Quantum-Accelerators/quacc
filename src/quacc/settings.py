@@ -414,6 +414,7 @@ class QuaccSettings(BaseSettings):
     )
 
     # --8<-- [end:settings]
+
     @field_validator(
         "RESULTS_DIR",
         "SCRATCH_DIR",
