@@ -461,14 +461,14 @@ class Espresso(GenericFileIOCalculator):
         self.kwargs["input_data"].to_nested(binary=self._binary, **self.kwargs)
 
         if self.preset:
+            calc_preset = {}
             for preset_dir in SETTINGS.ESPRESSO_PRESET_DIR:
-                calc_preset = None
                 try:
                     calc_preset = load_yaml_calc(preset_dir / self.preset)
                     break
                 except FileNotFoundError:
                     continue
-            if calc_preset is None:
+            if not calc_preset:
                 raise FileNotFoundError(
                     {f"Preset {self.preset} not found in any of the preset directories"}
                 )
