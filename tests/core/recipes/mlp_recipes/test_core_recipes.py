@@ -44,7 +44,6 @@ def _set_dtype(size, type_="float"):
     torch.set_default_dtype(getattr(torch, f"float{size}"))
 
 
-@pytest.mark.xfail(strict=False)
 @pytest.mark.parametrize("method", methods)
 def test_static_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
@@ -66,7 +65,6 @@ def test_static_job(tmp_path, monkeypatch, method):
     assert output["atoms"] == atoms
 
 
-@pytest.mark.xfail(strict=False)
 @pytest.mark.parametrize("method", methods)
 def test_relax_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
@@ -90,7 +88,6 @@ def test_relax_job(tmp_path, monkeypatch, method):
     assert output["atoms"].get_volume() == pytest.approx(atoms.get_volume())
 
 
-@pytest.mark.xfail(strict=False)
 def test_relax_job_dispersion(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
@@ -105,7 +102,6 @@ def test_relax_job_dispersion(tmp_path, monkeypatch):
     assert output["atoms"].get_volume() == pytest.approx(atoms.get_volume())
 
 
-@pytest.mark.xfail(strict=False)
 @pytest.mark.parametrize("method", methods)
 def test_relax_cell_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
