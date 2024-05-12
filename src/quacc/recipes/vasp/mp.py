@@ -42,7 +42,7 @@ if TYPE_CHECKING:
     )
     from quacc.utils.files import SourceDirectory
 
-MP_SETTINGS = {"VASP_INCAR_COPILOT": "off", "VASP_USE_CUSTODIAN": True}
+_MP_SETTINGS = {"VASP_INCAR_COPILOT": "off", "VASP_USE_CUSTODIAN": True}
 
 
 @job
@@ -72,7 +72,7 @@ def mp_gga_relax_job(
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
         MPGGARelaxMaker
     )
-    with change_settings(MP_SETTINGS):
+    with change_settings(_MP_SETTINGS):
         return run_and_summarize(
             atoms,
             calc_defaults=calc_defaults,
@@ -110,7 +110,7 @@ def mp_gga_static_job(
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
         MPGGAStaticMaker
     )
-    with change_settings(MP_SETTINGS):
+    with change_settings(_MP_SETTINGS):
         return run_and_summarize(
             atoms,
             calc_defaults=calc_defaults,
@@ -152,7 +152,7 @@ def mp_metagga_prerelax_job(
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
         MPPreRelaxMaker
     )
-    with change_settings(MP_SETTINGS):
+    with change_settings(_MP_SETTINGS):
         return run_and_summarize(
             atoms,
             calc_defaults=calc_defaults,
@@ -193,7 +193,7 @@ def mp_metagga_relax_job(
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
         MPMetaGGARelaxMaker
     )
-    with change_settings(MP_SETTINGS):
+    with change_settings(_MP_SETTINGS):
         return run_and_summarize(
             atoms,
             calc_defaults=calc_defaults,
@@ -233,7 +233,7 @@ def mp_metagga_static_job(
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
         MPMetaGGAStaticMaker
     )
-    with change_settings(MP_SETTINGS):
+    with change_settings(_MP_SETTINGS):
         return run_and_summarize(
             atoms,
             calc_defaults=calc_defaults,
