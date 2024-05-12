@@ -436,7 +436,7 @@ class MPtoASEConverter:
 
         Parameters
         ----------
-        BaseVaspMaker
+        VaspMaker
             The atomate2 VaspMaker.
 
         Returns
