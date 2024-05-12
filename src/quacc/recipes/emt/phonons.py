@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc import flow
-from quacc.recipes.common.phonons import phonon_flow as common_phonon_flow
+from quacc.recipes.common.phonons import phonon_subflow
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs
@@ -92,11 +92,12 @@ def phonon_flow(
         parameters=job_params,
         decorators=job_decorators,
     )
+    if run_relax:
+        atoms = relax_job_(atoms)["atoms"]
 
-    return common_phonon_flow(
+    return phonon_subflow(
         atoms,
         static_job_,
-        relax_job=relax_job_ if run_relax else None,
         symprec=symprec,
         min_lengths=min_lengths,
         supercell_matrix=supercell_matrix,

@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 import sys
 from shutil import copy, copytree
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
 import numpy as np
 from ase.filters import FrechetCellFilter
@@ -39,6 +39,19 @@ if TYPE_CHECKING:
     from ase.optimize.optimize import Optimizer
 
     from quacc.utils.files import Filenames, SourceDirectory
+
+    class OptParams(TypedDict, total=False):
+        """
+        Type hint for `opt_params` used throughout quacc.
+        """
+
+        fmax: float
+        max_steps: int
+        optimizer: Optimizer = BFGS
+        optimizer_kwargs: OptimizerKwargs | None
+        store_intermediate_results: bool
+        fn_hook: Callable | None
+        run_kwargs: dict[str, Any] | None
 
     class OptimizerKwargs(TypedDict, total=False):
         """
@@ -141,6 +154,7 @@ def run_opt(
     optimizer: Optimizer = BFGS,
     optimizer_kwargs: OptimizerKwargs | None = None,
     store_intermediate_results: bool = False,
+    fn_hook: Callable | None = None,
     run_kwargs: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> Optimizer:
@@ -172,6 +186,10 @@ def run_opt(
         Whether to store the files generated at each intermediate step in the
         optimization. If enabled, they will be stored in a directory named
         `stepN` where `N` is the step number, starting at 0.
+    fn_hook
+        A custom function to call after each step of the optimization.
+        The function must take the instantiated dynamics class as
+        its only argument.
     run_kwargs
         Dictionary of kwargs for the run() method of the optimizer.
     copy_files
@@ -222,20 +240,23 @@ def run_opt(
 
     # Run optimization
     with traj, optimizer(atoms, **optimizer_kwargs) as dyn:
-        if store_intermediate_results:
-            opt = dyn.irun(fmax=fmax, steps=max_steps, **run_kwargs)
-            for i, _ in enumerate(opt):
-                _copy_intermediate_files(
-                    tmpdir,
-                    i,
-                    files_to_ignore=[
-                        traj_file,
-                        optimizer_kwargs["restart"],
-                        optimizer_kwargs["logfile"],
-                    ],
-                )
-        else:
+        if optimizer.__name__.startswith("SciPy"):
+            # https://gitlab.com/ase/ase/-/issues/1475
             dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
+        else:
+            for i, _ in enumerate(dyn.irun(fmax=fmax, steps=max_steps, **run_kwargs)):
+                if store_intermediate_results:
+                    _copy_intermediate_files(
+                        tmpdir,
+                        i,
+                        files_to_ignore=[
+                            traj_file,
+                            optimizer_kwargs["restart"],
+                            optimizer_kwargs["logfile"],
+                        ],
+                    )
+                if fn_hook:
+                    fn_hook(dyn)
 
     # Store the trajectory atoms
     dyn.traj_atoms = read(traj_file, index=":")

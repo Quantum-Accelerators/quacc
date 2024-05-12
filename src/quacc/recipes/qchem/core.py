@@ -16,10 +16,9 @@ except ImportError:
     has_sella = False
 
 if TYPE_CHECKING:
-    from typing import Any
-
     from ase.atoms import Atoms
 
+    from quacc.runners.ase import OptParams
     from quacc.schemas._aliases.ase import OptSchema, RunSchema
     from quacc.utils.files import Filenames, SourceDirectory
 
@@ -98,7 +97,7 @@ def relax_job(
     spin_multiplicity: int = 1,
     method: str = "wb97mv",
     basis: str = "def2-svpd",
-    opt_params: dict[str, Any] | None = None,
+    opt_params: OptParams | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> OptSchema:

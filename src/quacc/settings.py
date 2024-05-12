@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import os
-from importlib import util
+from contextlib import contextmanager
 from pathlib import Path
 from shutil import which
 from typing import TYPE_CHECKING, Literal, Optional, Union
@@ -16,15 +16,6 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 if TYPE_CHECKING:
     from typing import Any
 
-
-installed_engine = next(
-    (
-        wflow_engine
-        for wflow_engine in ["parsl", "covalent", "prefect", "dask", "redun", "jobflow"]
-        if util.find_spec(wflow_engine)
-    ),
-    None,
-)
 _DEFAULT_CONFIG_FILE_PATH = Path("~", ".quacc.yaml").expanduser().resolve()
 
 
@@ -67,7 +58,7 @@ class QuaccSettings(BaseSettings):
 
     WORKFLOW_ENGINE: Optional[
         Literal["covalent", "dask", "parsl", "prefect", "redun", "jobflow"]
-    ] = Field(installed_engine, description=("The workflow manager to use, if any."))
+    ] = Field(None, description=("The workflow manager to use, if any."))
 
     # ---------------------------
     # General Settings
@@ -292,7 +283,7 @@ class QuaccSettings(BaseSettings):
         ),
     )
     VASP_MAG_CUTOFF: float = Field(
-        0.05,
+        0.02,
         description=(
             """
             If the absolute value of all magnetic moments are below this value,
@@ -516,7 +507,7 @@ def _type_handler(settings: dict[str, Any]) -> dict[str, Any]:
 
     Parameters
     ----------
-    settings : dict
+    settings
         Initial settings.
 
     Returns
@@ -532,3 +523,32 @@ def _type_handler(settings: dict[str, Any]) -> dict[str, Any]:
                 settings[key] = value.lower() == "true"
 
     return settings
+
+
+@contextmanager
+def change_settings(changes: dict[str, Any]) -> QuaccSettings:  # type: ignore
+    """
+    Temporarily change an attribute of an object.
+
+    Parameters
+    ----------
+    changes
+        Dictionary of changes to make formatted as attribute: value.
+
+    Returns
+    -------
+    QuaccSettings
+        Updated settings.
+    """
+    from quacc import SETTINGS
+
+    original_values = {attr: getattr(SETTINGS, attr) for attr in changes}
+
+    for attr, new_value in changes.items():
+        setattr(SETTINGS, attr, new_value)
+
+    try:
+        yield
+    finally:
+        for attr, original_value in original_values.items():
+            setattr(SETTINGS, attr, original_value)

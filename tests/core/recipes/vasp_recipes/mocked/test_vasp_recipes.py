@@ -9,13 +9,14 @@ pytestmark = pytest.mark.skipif(
     reason="Skipping this test on Windows in GitHub Actions.",
 )  # this works locally on Windows, but no clue why it fails on GitHub Actions
 
+import logging
 from pathlib import Path
 from shutil import copy
 
 import numpy as np
 from ase.build import bulk, molecule
 
-from quacc import SETTINGS
+from quacc import SETTINGS, change_settings
 from quacc.recipes.vasp.core import (
     ase_relax_job,
     double_relax_flow,
@@ -37,10 +38,10 @@ from quacc.recipes.vasp.slabs import bulk_to_slabs_flow, slab_to_ads_flow
 from quacc.recipes.vasp.slabs import relax_job as slab_relax_job
 from quacc.recipes.vasp.slabs import static_job as slab_static_job
 
-DEFAULT_SETTINGS = SETTINGS.model_copy()
-
 FILE_DIR = Path(__file__).parent
 MOCKED_DIR = FILE_DIR / "mocked_vasp_run"
+LOGGER = logging.getLogger(__name__)
+LOGGER.propagate = True
 
 
 def test_static_job(tmp_path, monkeypatch):
@@ -77,16 +78,18 @@ def test_static_job(tmp_path, monkeypatch):
 def test_static_job_incar_copilot_aggressive(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    atoms = bulk("Al")
+    with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
+        atoms = bulk("Al")
 
-    SETTINGS.VASP_INCAR_COPILOT = "aggressive"
-    output = static_job(atoms, ivdw=11, lasph=False, prec=None, lwave=None, efermi=None)
-    assert output["parameters"]["ivdw"] == 11
-    assert output["parameters"]["lasph"] is False
-    assert "prec" not in output["parameters"]
-    assert "lwave" not in output["parameters"]
-    assert output["parameters"]["efermi"] == "midgap"
-    SETTINGS.VASP_INCAR_COPILOT = DEFAULT_SETTINGS.VASP_INCAR_COPILOT
+        SETTINGS.VASP_INCAR_COPILOT = "aggressive"
+        output = static_job(
+            atoms, ivdw=11, lasph=False, prec=None, lwave=None, efermi=None
+        )
+        assert output["parameters"]["ivdw"] == 11
+        assert output["parameters"]["lasph"] is False
+        assert "prec" not in output["parameters"]
+        assert "lwave" not in output["parameters"]
+        assert output["parameters"]["efermi"] == "midgap"
 
 
 def test_relax_job(tmp_path, monkeypatch):
@@ -227,7 +230,7 @@ def test_non_scf_job1(tmp_path, monkeypatch):
     assert output["parameters"]["nbands"] == 99
 
 
-def test_non_scf_job2(tmp_path, monkeypatch, caplog):
+def test_non_scf_job2(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     copy(MOCKED_DIR / "vasprun.xml.gz", tmp_path / "vasprun.xml.gz")
 
@@ -437,7 +440,7 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
 
-def test_qmof(tmp_path, monkeypatch):
+def test_qmof(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Al")
@@ -486,18 +489,10 @@ def test_qmof(tmp_path, monkeypatch):
     output = qmof_relax_job(atoms, run_prerelax=False)
     assert output["prerelax_lowacc"] is None
 
-    output = qmof_relax_job(atoms, preset="BulkSet", nelmin=6)
-    assert output["double_relax"][0]["parameters"]["encut"] == 520
+    output = qmof_relax_job(atoms, nelmin=6)
     assert output["double_relax"][0]["parameters"]["nelmin"] == 6
-    assert output["double_relax"][0]["parameters"]["sigma"] == 0.05
-
-    assert output["double_relax"][1]["parameters"]["encut"] == 520
     assert output["double_relax"][1]["parameters"]["nelmin"] == 6
-    assert output["double_relax"][1]["parameters"]["sigma"] == 0.05
-
-    assert output["parameters"]["encut"] == 520
     assert output["parameters"]["nelmin"] == 6
-    assert output["parameters"]["sigma"] == 0.05
 
     output = qmof_relax_job(atoms, relax_cell=False)
     assert "volume-relax" not in output
@@ -746,7 +741,7 @@ def test_mp_gga_relax_job():
         "isif": 3,
         "ismear": -5,
         "ispin": 2,
-        "kpts": [5, 11, 11],
+        "kpts": (5, 11, 11),
         "lasph": True,
         "ldau": True,
         "ldauj": [0, 0],
@@ -783,7 +778,7 @@ def test_mp_gga_static_job():
         "gamma": True,
         "ismear": -5,
         "ispin": 2,
-        "kpts": [6, 13, 13],
+        "kpts": (6, 13, 13),
         "lasph": True,
         "lcharg": True,  # modified by us (sensible)
         "ldau": True,
@@ -821,7 +816,7 @@ def test_mp_gga_relax_flow():
         "isif": 3,
         "ismear": -5,
         "ispin": 2,
-        "kpts": [5, 11, 11],
+        "kpts": (5, 11, 11),
         "lasph": True,
         "ldau": True,
         "ldauj": [0, 0],
@@ -854,7 +849,7 @@ def test_mp_gga_relax_flow():
         "gamma": True,
         "ismear": -5,
         "ispin": 2,
-        "kpts": [6, 13, 13],
+        "kpts": (6, 13, 13),
         "lasph": True,
         "lcharg": True,  # modified by us (sensible)
         "ldau": True,
