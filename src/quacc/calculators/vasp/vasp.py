@@ -228,18 +228,12 @@ class Vasp(Vasp_):
 
         # Get user-defined preset parameters for the calculator
         if self.preset:
-            calc_preset = None
             for preset_dir in SETTINGS.VASP_PRESET_DIR:
-                preset_path = preset_dir / self.preset
-                if preset_path.suffix.lower() != ".yaml":
-                    preset_path = preset_dir / f"{self.preset}.yaml"
-
-                if preset_path.exists():
-                    calc_preset = load_vasp_yaml_calc(preset_path)["inputs"]
-            if calc_preset is None:
-                raise FileNotFoundError(
-                    {f"Preset {self.preset} not found in any of the preset directories"}
-                )
+                try:
+                    calc_preset = load_vasp_yaml_calc(preset_dir / self.preset)["inputs"]
+                    break
+                except FileNotFoundError:
+                    continue
         else:
             calc_preset = {}
 
