@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING
 
 from ase.optimize import BFGSLineSearch
 
-from quacc import job
+from quacc import change_settings, job
 from quacc.recipes.vasp._base import run_and_summarize, run_and_summarize_opt
 
 if TYPE_CHECKING:
@@ -70,43 +70,44 @@ def qmof_relax_job(
     QMOFRelaxSchema
         Dictionary of results. See the type-hint for the data structure.
     """
-    copy_files = None
+    with change_settings({"VASP_USE_CUSTODIAN": True}):
+        copy_files = None
+ 
+        # 1. Pre-relaxation
+        if run_prerelax:
+            summary1 = _prerelax(atoms, **calc_kwargs)
+            atoms = summary1["atoms"]
+            copy_files = {summary1["dir_name"]: ["WAVECAR*"]}
 
-    # 1. Pre-relaxation
-    if run_prerelax:
-        summary1 = _prerelax(atoms, **calc_kwargs)
-        atoms = summary1["atoms"]
-        copy_files = {summary1["dir_name"]: ["WAVECAR*"]}
+        # 2. Position relaxation (loose)
+        summary2 = _loose_relax_positions(atoms, copy_files=copy_files, **calc_kwargs)
+        atoms = summary2["atoms"]
+        copy_files = {summary2["dir_name"]: ["WAVECAR*"]}
 
-    # 2. Position relaxation (loose)
-    summary2 = _loose_relax_positions(atoms, copy_files=copy_files, **calc_kwargs)
-    atoms = summary2["atoms"]
-    copy_files = {summary2["dir_name"]: ["WAVECAR*"]}
+        # 3. Optional: Volume relaxation (loose)
+        if relax_cell:
+            summary3 = _loose_relax_cell(atoms, copy_files=copy_files, **calc_kwargs)
+            atoms = summary3["atoms"]
+            copy_files = {summary3["dir_name"]: ["WAVECAR*"]}
 
-    # 3. Optional: Volume relaxation (loose)
-    if relax_cell:
-        summary3 = _loose_relax_cell(atoms, copy_files=copy_files, **calc_kwargs)
-        atoms = summary3["atoms"]
-        copy_files = {summary3["dir_name"]: ["WAVECAR*"]}
+        # 4. Double Relaxation
+        # This is done for two reasons: a) because it can
+        # resolve repadding issues when dV is large; b) because we can use LREAL =
+        # Auto for the first relaxation and the default LREAL for the second.
+        summary4 = _double_relax(
+            atoms, relax_cell=relax_cell, copy_files=copy_files, **calc_kwargs
+        )
+        atoms = summary4[-1]["atoms"]
+        copy_files = {summary4[-1]["dir_name"]: ["WAVECAR*"]}
 
-    # 4. Double Relaxation
-    # This is done for two reasons: a) because it can
-    # resolve repadding issues when dV is large; b) because we can use LREAL =
-    # Auto for the first relaxation and the default LREAL for the second.
-    summary4 = _double_relax(
-        atoms, relax_cell=relax_cell, copy_files=copy_files, **calc_kwargs
-    )
-    atoms = summary4[-1]["atoms"]
-    copy_files = {summary4[-1]["dir_name"]: ["WAVECAR*"]}
+        # 5. Static Calculation
+        summary5 = _static(atoms, copy_files=copy_files, **calc_kwargs)
+        summary5["prerelax_lowacc"] = summary1 if run_prerelax else None
+        summary5["position_relax_lowacc"] = summary2
+        summary5["volume_relax_lowacc"] = summary3 if relax_cell else None
+        summary5["double_relax"] = summary4
 
-    # 5. Static Calculation
-    summary5 = _static(atoms, copy_files=copy_files, **calc_kwargs)
-    summary5["prerelax_lowacc"] = summary1 if run_prerelax else None
-    summary5["position_relax_lowacc"] = summary2
-    summary5["volume_relax_lowacc"] = summary3 if relax_cell else None
-    summary5["double_relax"] = summary4
-
-    return summary5
+        return summary5
 
 
 def _prerelax(

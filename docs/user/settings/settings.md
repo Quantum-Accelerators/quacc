@@ -66,6 +66,15 @@ from quacc import SETTINGS
 SETTINGS.RESULTS_DIR = "/new/path/to/store/results"
 ```
 
+If you only want to temporarily modify the settings for a specific calculation, you can use the context handler function [quacc.settings.change_settings][] as follows:
+
+```python
+from quacc import change_settings
+
+with change_settings(RESULTS_DIR="/new/path/to/store/results"):
+    # Your calculation here
+```
+
 ??? Tip "When is This Method Ideal?"
 
     This approach is ideal for debugging scenarios, such as when using a Jupyter Notebook. Note that when deploying calculations via a workflow engine, changes to in-memory global variables on the local machine will not be reflected on the remote machine. To modify global settings in a script, ensure the setting re-assignment takes place in the decorated function itself.

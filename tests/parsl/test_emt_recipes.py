@@ -6,14 +6,9 @@ parsl = pytest.importorskip("parsl")
 
 from ase.build import bulk
 
-from quacc import SETTINGS, job
+from quacc import job
 from quacc.recipes.emt.core import relax_job  # skipcq: PYL-C0412
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow  # skipcq: PYL-C0412
-
-# from quacc import flow
-
-
-DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 
 @pytest.mark.parametrize("job_decorators", [None, {"relax_job": job()}])

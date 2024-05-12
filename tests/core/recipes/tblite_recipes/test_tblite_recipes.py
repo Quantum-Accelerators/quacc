@@ -9,7 +9,7 @@ import numpy as np
 from ase.build import bulk, molecule
 from numpy.testing import assert_array_equal
 
-from quacc import SETTINGS
+from quacc import SETTINGS, change_settings
 from quacc.recipes.tblite.core import freq_job, relax_job, static_job
 
 
@@ -175,9 +175,7 @@ def test_freq_job_v3(tmp_path, monkeypatch):
 
 def test_unique_workdir(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    DEFAULT_SETTINGS = SETTINGS.model_copy()
 
-    SETTINGS.CREATE_UNIQUE_DIR = True
-    test_static_job_v1(tmp_path, monkeypatch)
-    test_relax_job(tmp_path, monkeypatch)
-    SETTINGS.CREATE_UNIQUE_DIR = DEFAULT_SETTINGS.CREATE_UNIQUE_DIR
+    with change_settings({"CREATE_UNIQUE_DIR": True}):
+        test_static_job_v1(tmp_path, monkeypatch)
+        test_relax_job(tmp_path, monkeypatch)

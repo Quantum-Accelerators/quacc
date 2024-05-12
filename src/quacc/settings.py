@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+from contextlib import contextmanager
 from pathlib import Path
 from shutil import which
 from typing import TYPE_CHECKING, Literal, Optional, Union
@@ -522,3 +523,35 @@ def _type_handler(settings: dict[str, Any]) -> dict[str, Any]:
                 settings[key] = value.lower() == "true"
 
     return settings
+
+
+@contextmanager
+def change_settings(changes: dict[str, Any]) -> QuaccSettings:  # type: ignore
+    """
+    Temporarily change an attribute of an object.
+
+    Parameters
+    ----------
+    changes
+        Dictionary of changes to make formatted as attribute: value, e.g.
+        `{"RESULTS_DIR": "/path/to/results", "DEBUG": True}`.
+
+    Returns
+    -------
+    QuaccSettings
+        Updated settings.
+    """
+    from quacc import SETTINGS
+
+    original_values = {attr: getattr(SETTINGS, attr) for attr in changes}
+
+    for attr, new_value in changes.items():
+        setattr(SETTINGS, attr, new_value)
+
+    try:
+        # Yield control back to the with block
+        yield
+    finally:
+        # Restore the original values
+        for attr, original_value in original_values.items():
+            setattr(SETTINGS, attr, original_value)
