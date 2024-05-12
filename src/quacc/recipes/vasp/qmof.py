@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING
 
 from ase.optimize import BFGSLineSearch
 
-from quacc import SETTINGS, job
+from quacc import job
 from quacc.recipes.vasp._base import run_and_summarize, run_and_summarize_opt
 
 if TYPE_CHECKING:
@@ -71,11 +71,6 @@ def qmof_relax_job(
         Dictionary of results. See the type-hint for the data structure.
     """
     copy_files = None
-    if not SETTINGS.VASP_USE_CUSTODIAN:
-        SETTINGS.VASP_USE_CUSTODIAN = True
-        LOGGER.warning(
-            "Setting VASP_USE_CUSTODIAN to True since it is required for this recipe."
-        )
 
     # 1. Pre-relaxation
     if run_prerelax:
