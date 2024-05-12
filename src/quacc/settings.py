@@ -185,7 +185,7 @@ class QuaccSettings(BaseSettings):
     ESPRESSO_PSEUDO: Optional[Path] = Field(
         None, description=("Path to a pseudopotential library for espresso.")
     )
-    ESPRESSO_PRESET_DIR: list[Path] = Field(
+    ESPRESSO_PRESET_DIR: Union[Path, list[Path]] = Field(
         [Path(__file__).parent / "calculators" / "espresso" / "presets"],
         description="Path to the espresso preset directory",
     )
