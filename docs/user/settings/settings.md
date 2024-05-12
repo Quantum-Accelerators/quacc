@@ -71,7 +71,7 @@ If you only want to temporarily modify the settings for a specific calculation, 
 ```python
 from quacc import change_settings
 
-with change_settings(RESULTS_DIR="/new/path/to/store/results"):
+with change_settings({RESULTS_DIR: "/new/path/to/store/results"}):
     # Your calculation here
 ```
 
