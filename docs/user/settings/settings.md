@@ -77,4 +77,4 @@ with change_settings({RESULTS_DIR: "/new/path/to/store/results"}):
 
 ??? Tip "When is This Method Ideal?"
 
-    This approach is ideal for debugging scenarios, such as when using a Jupyter Notebook. Note that when deploying calculations via a workflow engine, changes to in-memory global variables on the local machine will not be reflected on the remote machine. To modify global settings in a script, ensure the setting re-assignment takes place in the decorated function itself.
+    This approach is ideal for fine-tuned modifications to settings within your workflow and for debugging scenarios (e.g. in a Jupyter Notebook). Note that when deploying calculations via a workflow engine, changes to in-memory global variables on the local machine will not be reflected on the remote machine. To modify global settings in a script, ensure the setting re-assignment takes place in the decorated function itself.
