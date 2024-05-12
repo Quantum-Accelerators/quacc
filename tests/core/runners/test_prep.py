@@ -37,7 +37,7 @@ def test_calc_setup(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     make_files()
 
-    with change_settings({"SCRATCH_DIR": None}):
+    with change_settings({"SCRATCH_DIR": tmp_path}):
         atoms = bulk("Cu")
         atoms.calc = EMT()
 
