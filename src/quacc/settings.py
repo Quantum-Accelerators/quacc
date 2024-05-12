@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import os
-from importlib import util
 from pathlib import Path
 from shutil import which
 from typing import TYPE_CHECKING, Literal, Optional, Union
