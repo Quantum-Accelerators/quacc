@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
-from quacc import flow, job
+from quacc import change_settings, flow, job
 from quacc.calculators.vasp.params import MPtoASEConverter
 from quacc.recipes.vasp._base import run_and_summarize
 from quacc.wflow_tools.customizers import customize_funcs
@@ -70,14 +70,15 @@ def mp_gga_relax_job(
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
         MPGGARelaxMaker
     )
-    return run_and_summarize(
-        atoms,
-        calc_defaults=calc_defaults,
-        calc_swaps=calc_kwargs,
-        report_mp_corrections=True,
-        additional_fields={"name": "MP GGA Relax"},
-        copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
-    )
+    with change_settings({"VASP_INCAR_COPILOT": "off"}):
+        return run_and_summarize(
+            atoms,
+            calc_defaults=calc_defaults,
+            calc_swaps=calc_kwargs,
+            report_mp_corrections=True,
+            additional_fields={"name": "MP GGA Relax"},
+            copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
+        )
 
 
 @job
@@ -107,14 +108,15 @@ def mp_gga_static_job(
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
         MPGGAStaticMaker
     )
-    return run_and_summarize(
-        atoms,
-        calc_defaults=calc_defaults,
-        calc_swaps=calc_kwargs,
-        report_mp_corrections=True,
-        additional_fields={"name": "MP GGA Static"},
-        copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
-    )
+    with change_settings({"VASP_INCAR_COPILOT": "off"}):
+        return run_and_summarize(
+            atoms,
+            calc_defaults=calc_defaults,
+            calc_swaps=calc_kwargs,
+            report_mp_corrections=True,
+            additional_fields={"name": "MP GGA Static"},
+            copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
+        )
 
 
 @job
@@ -148,14 +150,15 @@ def mp_metagga_prerelax_job(
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
         MPPreRelaxMaker
     )
-    return run_and_summarize(
-        atoms,
-        calc_defaults=calc_defaults,
-        calc_swaps=calc_kwargs,
-        report_mp_corrections=True,
-        additional_fields={"name": "MP Meta-GGA Pre-Relax"},
-        copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
-    )
+    with change_settings({"VASP_INCAR_COPILOT": "off"}):
+        return run_and_summarize(
+            atoms,
+            calc_defaults=calc_defaults,
+            calc_swaps=calc_kwargs,
+            report_mp_corrections=True,
+            additional_fields={"name": "MP Meta-GGA Pre-Relax"},
+            copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
+        )
 
 
 @job
@@ -188,14 +191,15 @@ def mp_metagga_relax_job(
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
         MPMetaGGARelaxMaker
     )
-    return run_and_summarize(
-        atoms,
-        calc_defaults=calc_defaults,
-        calc_swaps=calc_kwargs,
-        report_mp_corrections=True,
-        additional_fields={"name": "MP Meta-GGA Relax"},
-        copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
-    )
+    with change_settings({"VASP_INCAR_COPILOT": "off"}):
+        return run_and_summarize(
+            atoms,
+            calc_defaults=calc_defaults,
+            calc_swaps=calc_kwargs,
+            report_mp_corrections=True,
+            additional_fields={"name": "MP Meta-GGA Relax"},
+            copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
+        )
 
 
 @job
@@ -227,14 +231,15 @@ def mp_metagga_static_job(
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
         MPMetaGGAStaticMaker
     )
-    return run_and_summarize(
-        atoms,
-        calc_defaults=calc_defaults,
-        calc_swaps=calc_kwargs,
-        report_mp_corrections=True,
-        additional_fields={"name": "MP Meta-GGA Static"},
-        copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
-    )
+    with change_settings({"VASP_INCAR_COPILOT": "off"}):
+        return run_and_summarize(
+            atoms,
+            calc_defaults=calc_defaults,
+            calc_swaps=calc_kwargs,
+            report_mp_corrections=True,
+            additional_fields={"name": "MP Meta-GGA Static"},
+            copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
+        )
 
 
 @flow
