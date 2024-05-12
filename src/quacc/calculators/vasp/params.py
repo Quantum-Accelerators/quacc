@@ -471,14 +471,14 @@ class MPtoASEConverter:
 
         full_input_params = self.incar_dict | {"setups": potcar_setups, "pp": pp}
 
-        if self.pmg_kpts is not None:
+        if self.pmg_kpts:
             kpts_dict = self.pmg_kpts.as_dict()
             full_input_params |= {
                 "kpts": kpts_dict["kpoints"][0],
                 "gamma": kpts_dict["generation_style"].lower() == "gamma",
             }
 
-        if (
+        if self.atoms and (
             self.poscar.structure.to_ase_atoms().get_chemical_symbols()
             != self.atoms.get_chemical_symbols()
         ):
