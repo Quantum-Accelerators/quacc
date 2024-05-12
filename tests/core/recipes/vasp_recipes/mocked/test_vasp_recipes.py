@@ -15,6 +15,7 @@ from shutil import copy
 
 import numpy as np
 from ase.build import bulk, molecule
+from monty.shutil import copy_r
 
 from quacc import SETTINGS, change_settings
 from quacc.recipes.vasp.core import (
@@ -39,10 +40,44 @@ from quacc.recipes.vasp.slabs import relax_job as slab_relax_job
 from quacc.recipes.vasp.slabs import static_job as slab_static_job
 
 FILE_DIR = Path(__file__).parent
-MOCKED_DIR = FILE_DIR / "mocked_vasp_run"
+MOCKED_DIR = FILE_DIR / "mocked_vasp_runs"
 LOGGER = logging.getLogger(__name__)
 LOGGER.propagate = True
 
+class DummyBandStructureMetal:
+    def __init__(self, *args, **kwargs):
+        pass
+
+    @staticmethod
+    def is_metal():
+        return True
+
+    @staticmethod
+    def get_band_gap():
+        return {"energy": 0}
+class DummyBandStructureSemi:
+    def __init__(self, *args, **kwargs):
+        pass
+
+    @staticmethod
+    def is_metal():
+        return False
+
+    @staticmethod
+    def get_band_gap():
+        return {"energy": 0.5}
+
+class DummyBandStructureNonMetal:
+    def __init__(self, *args, **kwargs):
+        pass
+
+    @staticmethod
+    def is_metal():
+        return False
+
+    @staticmethod
+    def get_band_gap():
+        return {"energy": 10}
 
 def test_static_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
@@ -207,7 +242,7 @@ def test_ase_relax_job2(tmp_path, monkeypatch):
 
 def test_non_scf_job1(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    copy(MOCKED_DIR / "vasprun.xml.gz", tmp_path / "vasprun.xml.gz")
+    copy(MOCKED_DIR / "metallic" / "vasprun.xml.gz", tmp_path / "vasprun.xml.gz")
 
     atoms = bulk("Al")
 
@@ -232,7 +267,7 @@ def test_non_scf_job1(tmp_path, monkeypatch):
 
 def test_non_scf_job2(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    copy(MOCKED_DIR / "vasprun.xml.gz", tmp_path / "vasprun.xml.gz")
+    copy(MOCKED_DIR / "metallic" / "vasprun.xml.gz", tmp_path / "vasprun.xml.gz")
 
     atoms = bulk("Al")
 
@@ -262,21 +297,18 @@ def test_non_scf_job2(tmp_path, monkeypatch):
 def test_non_scf_job3(tmp_path, monkeypatch, _is_metal):  # noqa: PT019
     monkeypatch.chdir(tmp_path)
 
-    class DummyBandStructure:
-        def __init__(self):
-            pass
-
-        @staticmethod
-        def is_metal():
-            return _is_metal
-
-    monkeypatch.setattr(
-        "pymatgen.io.vasp.Vasprun.get_band_structure", DummyBandStructure
-    )
-    copy(MOCKED_DIR / "vasprun.xml.gz", tmp_path / "vasprun.xml.gz")
+    if _is_metal:
+        monkeypatch.setattr(
+            "pymatgen.io.vasp.Vasprun.get_band_structure", DummyBandStructureMetal
+        )
+        copy(MOCKED_DIR / "metallic" / "vasprun.xml.gz", tmp_path / "vasprun.xml.gz")
+    else:
+        monkeypatch.setattr(
+            "pymatgen.io.vasp.Vasprun.get_band_structure", DummyBandStructureSemi
+        )
+        copy(MOCKED_DIR / "nonmetallic" / "vasprun.xml.gz", tmp_path / "vasprun.xml.gz")
 
     atoms = bulk("Al")
-
     output = non_scf_job(atoms, tmp_path, preset="BulkSet", kpts_mode="line")
     assert np.shape(output["parameters"]["kpts"]) == (250, 3)
     if _is_metal:
@@ -290,7 +322,7 @@ def test_non_scf_job3(tmp_path, monkeypatch, _is_metal):  # noqa: PT019
 def test_non_scf_job4(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    copy(MOCKED_DIR / "vasprun.xml.gz", tmp_path / "vasprun.xml.gz")
+    copy(MOCKED_DIR / "metallic" / "vasprun.xml.gz", tmp_path / "vasprun.xml.gz")
     atoms = bulk("Al")
 
     with pytest.raises(
@@ -537,7 +569,7 @@ def test_mp_metagga_prerelax_job(tmp_path, monkeypatch):
         "pp": "pbe",
     }
 
-    output = mp_metagga_prerelax_job(atoms, bandgap=0)
+    output = mp_metagga_prerelax_job(atoms, prev_dir=MOCKED_DIR / "metallic")
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["gga"] == "ps"
     assert output["parameters"]["ediffg"] == -0.05
@@ -548,7 +580,21 @@ def test_mp_metagga_prerelax_job(tmp_path, monkeypatch):
     assert output["parameters"]["pp"] == "pbe"
     assert "metagga" not in output["parameters"]
 
-    output = mp_metagga_prerelax_job(atoms, bandgap=100)
+    output = mp_metagga_prerelax_job(atoms, prev_dir=MOCKED_DIR / "nonmetallic")
+    assert output["nsites"] == len(atoms)
+    assert output["parameters"]["gga"] == "ps"
+    assert output["parameters"]["ediffg"] == -0.05
+    assert output["parameters"]["encut"] == 680
+    assert output["parameters"]["kspacing"] == pytest.approx(0.28752476644932956)
+    assert output["parameters"]["ismear"] == 0
+    assert output["parameters"]["sigma"] == 0.05
+    assert output["parameters"]["pp"] == "pbe"
+    assert "metagga" not in output["parameters"]
+
+    monkeypatch.setattr(
+        "pymatgen.io.vasp.Vasprun.get_band_structure", DummyBandStructureNonMetal
+    )
+    output = mp_metagga_prerelax_job(atoms, prev_dir=MOCKED_DIR / "nonmetallic")
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["gga"] == "ps"
     assert output["parameters"]["ediffg"] == -0.05
@@ -558,7 +604,6 @@ def test_mp_metagga_prerelax_job(tmp_path, monkeypatch):
     assert output["parameters"]["sigma"] == 0.05
     assert output["parameters"]["pp"] == "pbe"
     assert "metagga" not in output["parameters"]
-
 
 def test_mp_metagga_relax_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
@@ -601,7 +646,7 @@ def test_mp_metagga_relax_job(tmp_path, monkeypatch):
     assert output["parameters"] == ref_parameters
     assert output["nsites"] == len(atoms)
 
-    output = mp_metagga_relax_job(atoms, bandgap=0)
+    output = mp_metagga_relax_job(atoms, prev_dir=MOCKED_DIR / "metallic")
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["metagga"].lower() == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
@@ -611,7 +656,20 @@ def test_mp_metagga_relax_job(tmp_path, monkeypatch):
     assert output["parameters"]["sigma"] == 0.05
     assert output["parameters"]["pp"] == "pbe"
 
-    output = mp_metagga_relax_job(atoms, bandgap=100)
+    output = mp_metagga_relax_job(atoms, prev_dir=MOCKED_DIR / "nonmetallic")
+    assert output["nsites"] == len(atoms)
+    assert output["parameters"]["metagga"].lower() == "r2scan"
+    assert output["parameters"]["ediffg"] == -0.02
+    assert output["parameters"]["encut"] == 680
+    assert output["parameters"]["kspacing"] == pytest.approx(0.28752476644932956)
+    assert output["parameters"]["ismear"] == 0
+    assert output["parameters"]["sigma"] == 0.05
+    assert output["parameters"]["pp"] == "pbe"
+
+    monkeypatch.setattr(
+        "pymatgen.io.vasp.Vasprun.get_band_structure", DummyBandStructureNonMetal
+    )
+    output = mp_metagga_relax_job(atoms, prev_dir=MOCKED_DIR / "nonmetallic")
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["metagga"].lower() == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
@@ -620,7 +678,6 @@ def test_mp_metagga_relax_job(tmp_path, monkeypatch):
     assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["sigma"] == 0.05
     assert output["parameters"]["pp"] == "pbe"
-
 
 def test_mp_metagga_static_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
@@ -660,65 +717,73 @@ def test_mp_metagga_static_job(tmp_path, monkeypatch):
 def test_mp_metagga_relax_flow(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    atoms = bulk("Al")
+    with change_settings({"CREATE_UNIQUE_DIR": False, "RESULTS_DIR":tmp_path}):
+        copy_r(MOCKED_DIR / "metallic", tmp_path)
+        monkeypatch.setattr(
+            "pymatgen.io.vasp.Vasprun.get_band_structure", DummyBandStructureMetal
+        )
+        atoms = bulk("Al")
+        output = mp_metagga_relax_flow(atoms)
+        assert output["static"]["nsites"] == len(atoms)
+        assert output["prerelax"]["parameters"]["gga"] == "ps"
+        assert output["prerelax"]["parameters"]["ismear"] == 0
+        assert output["prerelax"]["parameters"]["pp"] == "pbe"
+        assert output["prerelax"]["parameters"]["magmom"] == [0.6]
+        assert output["relax1"]["parameters"]["magmom"] == [0.0]
+        assert output["relax2"]["parameters"]["magmom"] == [0.0]
+        assert output["relax2"]["parameters"]["metagga"].lower() == "r2scan"
+        assert output["relax2"]["parameters"]["ediffg"] == -0.02
+        assert output["relax2"]["parameters"]["encut"] == 680
+        assert output["relax2"]["parameters"]["ismear"] == 0
+        assert output["relax2"]["parameters"]["sigma"] == 0.05
+        assert output["relax2"]["parameters"]["kspacing"] == 0.22
+        assert output["relax2"]["parameters"]["pp"] == "pbe"
 
-    output = mp_metagga_relax_flow(atoms)
-    assert output["static"]["nsites"] == len(atoms)
-    assert output["prerelax"]["parameters"]["gga"] == "ps"
-    assert output["prerelax"]["parameters"]["ismear"] == 0
-    assert output["prerelax"]["parameters"]["pp"] == "pbe"
-    assert output["prerelax"]["parameters"]["magmom"] == [0.6]
-    assert output["relax1"]["parameters"]["magmom"] == [0.0]
-    assert output["relax2"]["parameters"]["magmom"] == [0.0]
-    assert output["relax2"]["parameters"]["metagga"].lower() == "r2scan"
-    assert output["relax2"]["parameters"]["ediffg"] == -0.02
-    assert output["relax2"]["parameters"]["encut"] == 680
-    assert output["relax2"]["parameters"]["ismear"] == 0
-    assert output["relax2"]["parameters"]["sigma"] == 0.05
-    assert output["relax2"]["parameters"]["kspacing"] == 0.22
-    assert output["relax2"]["parameters"]["pp"] == "pbe"
+        copy_r(MOCKED_DIR / "nonmetallic", tmp_path)
+        monkeypatch.setattr(
+            "pymatgen.io.vasp.Vasprun.get_band_structure", DummyBandStructureSemi
+        )
+        atoms = bulk("C")
+        atoms.set_initial_magnetic_moments([0.0, 0.0])
+        output = mp_metagga_relax_flow(atoms)
+        assert output["prerelax"]["parameters"]["ismear"] == 0
+        assert output["prerelax"]["parameters"]["pp"] == "pbe"
+        assert output["prerelax"]["parameters"]["magmom"] == [0.0, 0.0]
+        assert output["relax1"]["parameters"]["magmom"] == [0.0, 0.0]
+        assert output["relax2"]["parameters"]["magmom"] == [0.0, 0.0]
+        assert output["relax2"]["parameters"]["metagga"].lower() == "r2scan"
+        assert output["relax2"]["parameters"]["ediffg"] == -0.02
+        assert output["relax2"]["parameters"]["encut"] == 680
+        assert output["relax2"]["parameters"]["ismear"] == 0
+        assert output["relax2"]["parameters"]["kspacing"] == pytest.approx(
+            0.28329488761304206
+        )
+        assert output["relax2"]["parameters"]["pp"] == "pbe"
+        assert output["static"]["nsites"] == len(atoms)
 
-    atoms = bulk("C")
-    atoms.set_initial_magnetic_moments([0.0, 0.0])
-    output = mp_metagga_relax_flow(atoms)
-    assert output["prerelax"]["parameters"]["ismear"] == 0
-    assert output["prerelax"]["parameters"]["pp"] == "pbe"
-    assert output["prerelax"]["parameters"]["magmom"] == [0.0, 0.0]
-    assert output["relax1"]["parameters"]["magmom"] == [0.0, 0.0]
-    assert output["relax2"]["parameters"]["magmom"] == [0.0, 0.0]
-    assert output["relax2"]["parameters"]["metagga"].lower() == "r2scan"
-    assert output["relax2"]["parameters"]["ediffg"] == -0.02
-    assert output["relax2"]["parameters"]["encut"] == 680
-    assert output["relax2"]["parameters"]["ismear"] == 0
-    assert output["relax2"]["parameters"]["kspacing"] == pytest.approx(
-        0.28329488761304206
-    )
-    assert output["relax2"]["parameters"]["pp"] == "pbe"
-    assert output["static"]["nsites"] == len(atoms)
-
-    atoms = molecule("O2")
-    atoms.set_initial_magnetic_moments([1.0, 0.0])
-    atoms.center(vacuum=10)
-    atoms.pbc = True
-    output = mp_metagga_relax_flow(atoms)
-    assert output["prerelax"]["parameters"]["ismear"] == 0
-    assert output["prerelax"]["parameters"]["pp"] == "pbe"
-    assert output["prerelax"]["parameters"]["magmom"] == [1.0, 0.0]
-    assert output["relax1"]["parameters"]["magmom"] == [0.0, 0.0]
-    assert output["relax2"]["parameters"]["metagga"].lower() == "r2scan"
-    assert output["relax2"]["parameters"]["ediffg"] == -0.02
-    assert output["relax2"]["parameters"]["encut"] == 680
-    assert output["relax2"]["parameters"]["ismear"] == 0
-    assert output["relax2"]["parameters"]["kspacing"] == pytest.approx(
-        0.28329488761304206
-    )
-    assert output["relax2"]["parameters"]["pp"] == "pbe"
-    assert output["relax2"]["parameters"]["magmom"] == [0.0, 0.0]
-    assert output["static"]["nsites"] == len(atoms)
-    assert output["static"]["parameters"]["ismear"] == -5
-    assert output["static"]["parameters"]["nsw"] == 0
-    assert output["static"]["parameters"]["algo"] == "fast"
-    assert output["static"]["parameters"]["magmom"] == [0.0, 0.0]
+        atoms = molecule("O2")
+        atoms.set_initial_magnetic_moments([1.0, 0.0])
+        atoms.center(vacuum=10)
+        atoms.pbc = True
+        output = mp_metagga_relax_flow(atoms)
+        assert output["prerelax"]["parameters"]["ismear"] == 0
+        assert output["prerelax"]["parameters"]["pp"] == "pbe"
+        assert output["prerelax"]["parameters"]["magmom"] == [1.0, 0.0]
+        assert output["relax1"]["parameters"]["magmom"] == [0.0, 0.0]
+        assert output["relax2"]["parameters"]["metagga"].lower() == "r2scan"
+        assert output["relax2"]["parameters"]["ediffg"] == -0.02
+        assert output["relax2"]["parameters"]["encut"] == 680
+        assert output["relax2"]["parameters"]["ismear"] == 0
+        assert output["relax2"]["parameters"]["kspacing"] == pytest.approx(
+            0.28329488761304206
+        )
+        assert output["relax2"]["parameters"]["pp"] == "pbe"
+        assert output["relax2"]["parameters"]["magmom"] == [0.0, 0.0]
+        assert output["static"]["nsites"] == len(atoms)
+        assert output["static"]["parameters"]["ismear"] == -5
+        assert output["static"]["parameters"]["nsw"] == 0
+        assert output["static"]["parameters"]["algo"] == "fast"
+        assert output["static"]["parameters"]["magmom"] == [0.0, 0.0]
 
 
 def test_mp_gga_relax_job():
@@ -797,84 +862,98 @@ def test_mp_gga_static_job():
     }
 
 
-def test_mp_gga_relax_flow():
-    atoms = bulk("Ni") * (2, 1, 1)
-    atoms[0].symbol = "O"
-    del atoms.arrays["initial_magmoms"]
-    output = mp_gga_relax_flow(atoms)
-    relax_params = {
-        "algo": "fast",
-        "ediff": 0.0001,
-        "encut": 520,
-        "gamma": True,
-        "ibrion": 2,
-        "isif": 3,
-        "ismear": -5,
-        "ispin": 2,
-        "kpts": (5, 11, 11),
-        "lasph": True,
-        "lcharg": False,
-        "ldau": True,
-        "ldauj": [0, 0],
-        "ldaul": [0, 2],
-        "ldauprint": 1,
-        "ldautype": 2,
-        "ldauu": [0, 6.2],
-        "lmaxmix": 4,
-        "lorbit": 11,
-        "lreal": "auto",
-        "lwave": False,
-        "magmom": [0.6, 5],
-        "nelm": 100,
-        "nsw": 99,
-        "prec": "accurate",
-        "sigma": 0.05,
-        "pp": "pbe",
-        "setups": {"O": "", "Ni": "_pv"},
-    }
-    relax2_params = relax_params.copy()
-    relax2_params["magmom"] = [0.0, 0.0]
+def test_mp_gga_relax_flow(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
 
-    assert output["relax1"]["parameters"] == relax_params
-    assert output["relax2"]["parameters"] == relax2_params
-    assert output["static"]["parameters"] == {
-        "algo": "fast",
-        "ediff": 0.0001,
-        "encut": 520,
-        "gamma": True,
-        "ismear": -5,
-        "ispin": 2,
-        "kpts": (5, 11, 11),
-        "lasph": True,
-        "lcharg": True,
-        "ldau": True,
-        "ldauj": [0, 0],
-        "ldaul": [0, 2],
-        "ldauprint": 1,
-        "ldautype": 2,
-        "ldauu": [0, 6.2],
-        "lmaxmix": 4,
-        "lorbit": 11,
-        "lreal": False,
-        "lwave": False,
-        "magmom": [0.0, 0.0],
-        "nelm": 100,
-        "nsw": 0,
-        "prec": "accurate",
-        "sigma": 0.05,
-        "pp": "pbe",
-        "setups": {"Ni": "_pv", "O": ""},
-    }
+    with change_settings({"CREATE_UNIQUE_DIR": False, "RESULTS_DIR":tmp_path}):
+        copy_r(MOCKED_DIR / "nonmetallic", tmp_path)
+        monkeypatch.setattr(
+            "pymatgen.io.vasp.Vasprun.get_band_structure", DummyBandStructureSemi
+        )
+
+        atoms = bulk("Ni") * (2, 1, 1)
+        atoms[0].symbol = "O"
+        del atoms.arrays["initial_magmoms"]
+        output = mp_gga_relax_flow(atoms)
+        relax_params = {
+            "algo": "fast",
+            "ediff": 0.0001,
+            "encut": 520,
+            "gamma": True,
+            "ibrion": 2,
+            "isif": 3,
+            "ismear": -5,
+            "ispin": 2,
+            "kpts": (5, 11, 11),
+            "lasph": True,
+            "lcharg": False,
+            "ldau": True,
+            "ldauj": [0, 0],
+            "ldaul": [0, 2],
+            "ldauprint": 1,
+            "ldautype": 2,
+            "ldauu": [0, 6.2],
+            "lmaxmix": 4,
+            "lorbit": 11,
+            "lreal": "auto",
+            "lwave": False,
+            "magmom": [0.6, 5],
+            "nelm": 100,
+            "nsw": 99,
+            "prec": "accurate",
+            "sigma": 0.05,
+            "pp": "pbe",
+            "setups": {"O": "", "Ni": "_pv"},
+        }
+        relax2_params = relax_params.copy()
+        relax2_params["magmom"] = [0.0, 0.0]
+
+        assert output["relax1"]["parameters"] == relax_params
+        assert output["relax2"]["parameters"] == relax2_params
+        assert output["static"]["parameters"] == {
+            "algo": "fast",
+            "ediff": 0.0001,
+            "encut": 520,
+            "gamma": True,
+            "ismear": -5,
+            "ispin": 2,
+            "kpts": (5, 11, 11),
+            "lasph": True,
+            "lcharg": True,
+            "ldau": True,
+            "ldauj": [0, 0],
+            "ldaul": [0, 2],
+            "ldauprint": 1,
+            "ldautype": 2,
+            "ldauu": [0, 6.2],
+            "lmaxmix": 4,
+            "lorbit": 11,
+            "lreal": False,
+            "lwave": False,
+            "magmom": [0.0, 0.0],
+            "nelm": 100,
+            "nsw": 0,
+            "prec": "accurate",
+            "sigma": 0.05,
+            "pp": "pbe",
+            "setups": {"Ni": "_pv", "O": ""},
+        }
 
 
-def test_mp_relax_flow_custom():
-    atoms = bulk("Ni") * (2, 1, 1)
-    atoms[0].symbol = "O"
-    del atoms.arrays["initial_magmoms"]
-    output = mp_metagga_relax_flow(
-        mp_gga_relax_flow(atoms, job_params={"mp_gga_relax_job": {"nsw": 0}})["static"][
-            "atoms"
-        ],
-        job_params={"mp_metagga_relax_job": {"nsw": 0}},
-    )
-    assert output["relax2"]["parameters"]["nsw"] == 0
+def test_mp_relax_flow_custom(monkeypatch,tmp_path):
+    with change_settings({"CREATE_UNIQUE_DIR": False, "RESULTS_DIR":tmp_path}):
+        copy_r(MOCKED_DIR / "nonmetallic", tmp_path)
+        monkeypatch.setattr(
+            "pymatgen.io.vasp.Vasprun.get_band_structure", DummyBandStructureMetal
+        )
+
+        atoms = bulk("Ni") * (2, 1, 1)
+        atoms[0].symbol = "O"
+        del atoms.arrays["initial_magmoms"]
+        output = mp_metagga_relax_flow(
+            mp_gga_relax_flow(atoms, job_params={"mp_gga_relax_job": {"nsw": 0}})["static"][
+                "atoms"
+            ],
+            job_params={"mp_metagga_relax_job": {"nsw": 0}},
+        )
+        assert output["relax2"]["parameters"]["nsw"] == 0

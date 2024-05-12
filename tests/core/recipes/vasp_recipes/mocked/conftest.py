@@ -11,7 +11,7 @@ PSEUDO_DIR = FILE_DIR / "fake_pseudos"
 
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
-    MOCK_TASKDOC = TaskDoc.from_directory(FILE_DIR / "mocked_vasp_run")
+    MOCK_TASKDOC = TaskDoc.from_directory(FILE_DIR / "mocked_vasp_runs" / "metallic")
 
 
 def mock_run(self, *args, **kwargs):
