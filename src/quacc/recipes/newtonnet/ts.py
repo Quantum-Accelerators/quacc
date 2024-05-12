@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
-from quacc import SETTINGS, job, strip_decorator
+from quacc import SETTINGS, change_settings, job, strip_decorator
 from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
 from quacc.runners.ase import run_opt
 from quacc.schemas.ase import summarize_opt_run
@@ -161,7 +161,6 @@ def irc_job(
         See the type-hint for the data structure.
     """
     freq_job_kwargs = freq_job_kwargs or {}
-    default_settings = SETTINGS.model_copy()
 
     calc_defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
@@ -180,14 +179,13 @@ def irc_job(
     atoms.calc = NewtonNet(**calc_flags)
 
     # Run IRC
-    SETTINGS.CHECK_CONVERGENCE = False
-    dyn = run_opt(atoms, **opt_flags)
-    opt_irc_summary = _add_stdev_and_hess(
-        summarize_opt_run(
-            dyn, additional_fields={"name": f"NewtonNet IRC: {direction}"}
+    with change_settings({"CHECK_CONVERGENCE": False}):
+        dyn = run_opt(atoms, **opt_flags)
+        opt_irc_summary = _add_stdev_and_hess(
+            summarize_opt_run(
+                dyn, additional_fields={"name": f"NewtonNet IRC: {direction}"}
+            )
         )
-    )
-    SETTINGS.CHECK_CONVERGENCE = default_settings.CHECK_CONVERGENCE
 
     # Run frequency job
     freq_summary = (
