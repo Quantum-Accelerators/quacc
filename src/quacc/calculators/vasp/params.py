@@ -20,6 +20,11 @@ if TYPE_CHECKING:
 
     from quacc.utils.kpts import PmgKpts
 
+    try:
+        from atomate2.vasp.jobs.base import BaseVaspMaker
+    except ImportError:
+        pass
+
 logger = logging.getLogger(__name__)
 
 
@@ -369,45 +374,60 @@ def set_pmg_kpts(
     return user_calc_params
 
 
-def get_pmg_input_set_params(dict_set: DictSet, atoms: Atoms) -> tuple[dict, Atoms]:
+def mp_to_ase_input_set( atoms: Atoms,VaspMaker:BaseVaspMaker=None,dict_set: DictSet=None) -> tuple[Atoms, dict]:
     """
-    Convert a Pymatgen VASP input set into an ASE-compatible set of
-    calculator parameters.
+    Convert an atomate2 or Pymatgen VASP input set into an ASE-compatible set of
+    calculator parameters. Only one of VaspMaker or dict_set can be provided.
 
     Parameters
     ----------
-    dict_set
-        The Pymatgen VASP input set.
     atoms
         The input atoms.
+    VaspMaker
+        An Atomate2 VaspMaker class.
+    dict_set
+        The Pymatgen VASP input set.
 
     Returns
     -------
-    dict
-        The ASE-compatible set of calculator parameters.
     Atoms
         The input atoms to match the pymatgen input set.
+    dict
+        The ASE-compatible set of calculator parameters.
     """
-    structure = AseAtomsAdaptor.get_structure(atoms)
-    pmg_input_set = dict_set(structure=structure, sort_structure=False)
-    incar_dict = {k.lower(): v for k, v in pmg_input_set.incar.items()}
+    if dict_set is None and VaspMaker is None:
+        raise ValueError("Either dict_set or VaspMaker must be provided.")
+    if dict_set and VaspMaker:
+        raise ValueError("Only one of dict_set or VaspMaker can be provided.")
 
-    potcar_symbols = pmg_input_set.potcar_symbols
+    structure = AseAtomsAdaptor.get_structure(atoms)
+    if VaspMaker:
+        input_set_generator = VaspMaker().input_set_generator
+        input_set = input_set_generator.get_input_set(
+            structure, potcar_spec=True
+        )
+        potcar_symbols = input_set.potcar
+        potcar_functional = input_set_generator.potcar_functional
+    else:
+        input_set = dict_set(structure=structure, sort_structure=False)
+        potcar_symbols = input_set.potcar_symbols
+        potcar_functional = input_set.potcar_functional
+
+    incar_dict = {k.lower(): v for k, v in input_set.incar.items()}
+    pp = potcar_functional.split("_")[0]
     potcar_setups = {symbol.split("_")[0]: symbol for symbol in potcar_symbols}
     for k, v in potcar_setups.items():
         if k in v:
             potcar_setups[k] = v.split(k)[-1]
 
-    pp = pmg_input_set.potcar_functional.split("_")[0]
-
     full_input_params = incar_dict | {"setups": potcar_setups, "pp": pp}
 
-    pmg_kpts = pmg_input_set.kpoints
+    pmg_kpts = input_set.kpoints
     if pmg_kpts is not None:
-        kpoints_dict = pmg_input_set.kpoints.as_dict()
+        kpoints_dict = input_set.kpoints.as_dict()
         full_input_params |= {
             "kpts": kpoints_dict["kpoints"][0],
             "gamma": kpoints_dict["generation_style"] == "Gamma",
         }
 
-    return full_input_params, pmg_input_set.poscar.structure.to_ase_atoms()
+    return input_set.poscar.structure.to_ase_atoms(), full_input_params

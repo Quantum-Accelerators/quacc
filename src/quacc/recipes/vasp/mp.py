@@ -1,42 +1,39 @@
 """
 Materials Project-compatible recipes.
 
-This set of recipes is meant to be compatible with the Materials Project
-
 !!! Important
 
     Make sure that you use the Materials Project-compatible pseudpotential
     versions. The GGA workflows use the old (no version) PAW PBE potentials.
     The meta-GGA workflows currently use the v.54 PAW PBE potentials.
-
-!!! Info
-    The one true source of Materials Project workflows is
-    [atomate2](https://github.com/materialsproject/atomate2).
 """
 
 from __future__ import annotations
 
-import logging
-from functools import partial
+from importlib import util
 from typing import TYPE_CHECKING
 
-from pymatgen.io.vasp.sets import MPRelaxSet, MPScanRelaxSet, MPStaticSet
+from monty.dev import requires
 
 from quacc import flow, job
+from quacc.calculators.vasp.params import mp_to_ase_input_set
 from quacc.recipes.vasp._base import run_and_summarize
 from quacc.wflow_tools.customizers import customize_funcs
 
-try:
-    from pymatgen.io.validation import ValidationDoc
-except ImportError:
-    ValidationDoc = None
+has_atomate2 = util.find_spec("atomate2")
+if has_atomate2:
+    from atomate2.vasp.jobs.mp import (
+        MPGGARelaxMaker,
+        MPGGAStaticMaker,
+        MPMetaGGARelaxMaker,
+        MPMetaGGAStaticMaker,
+        MPPreRelaxMaker,
+    )
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from typing import Any, Callable
 
     from ase.atoms import Atoms
-    from emmet.core.base import EmmetBaseModel
 
     from quacc.schemas._aliases.vasp import (
         MPGGARelaxFlowSchema,
@@ -45,10 +42,9 @@ if TYPE_CHECKING:
     )
     from quacc.utils.files import Filenames, SourceDirectory
 
-logger = logging.getLogger(__name__)
-
 
 @job
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
 def mp_gga_relax_job(
     atoms: Atoms,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
@@ -73,8 +69,8 @@ def mp_gga_relax_job(
     VaspSchema
         Dictionary of results.
     """
-    calc_defaults = {"pmg_input_set": MPRelaxSet}
-    output = run_and_summarize(
+    atoms, calc_defaults = mp_to_ase_input_set(atoms, VaspMaker=MPGGARelaxMaker)
+    return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -82,12 +78,10 @@ def mp_gga_relax_job(
         additional_fields={"name": "MP GGA Relax"},
         copy_files=copy_files,
     )
-    _validate_mp_compatability(output["dir_name"])
-
-    return output
 
 
 @job
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
 def mp_gga_static_job(
     atoms: Atoms,
     bandgap: float | None = None,
@@ -115,15 +109,8 @@ def mp_gga_static_job(
     VaspSchema
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
     """
-    calc_defaults = {
-        "pmg_input_set": partial(
-            MPStaticSet, bandgap=bandgap, small_gap_multiply=[1e-4, 3.125]
-        ),
-        "algo": "fast",
-        "lwave": True,  # Deviation from MP (but logical)
-        "lreal": False,
-    }
-    output = run_and_summarize(
+    atoms, calc_defaults = mp_to_ase_input_set(atoms,VaspMaker=MPGGAStaticMaker)
+    return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -131,12 +118,10 @@ def mp_gga_static_job(
         additional_fields={"name": "MP GGA Static"},
         copy_files=copy_files,
     )
-    _validate_mp_compatability(output["dir_name"])
-
-    return output
 
 
 @job
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
 def mp_metagga_prerelax_job(
     atoms: Atoms,
     bandgap: float | None = None,
@@ -168,18 +153,8 @@ def mp_metagga_prerelax_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
         See the type-hint for the data structure.
     """
-    calc_defaults = {
-        "pmg_input_set": partial(
-            MPScanRelaxSet, bandgap=bandgap or 0.0, auto_ismear=False
-        ),
-        "ediffg": -0.05,
-        "gga": "PS",
-        "laechg": False,  # Deviation from MP (but logical)
-        "lvtot": False,  # Deviation from MP (but logical)
-        "lwave": True,
-        "metagga": None,
-    }
-    output = run_and_summarize(
+    atoms,calc_defaults = mp_to_ase_input_set(atoms,VaspMaker=MPPreRelaxMaker)
+    return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -187,11 +162,10 @@ def mp_metagga_prerelax_job(
         additional_fields={"name": "MP Meta-GGA Pre-Relax"},
         copy_files=copy_files,
     )
-    _validate_mp_compatability(output["dir_name"])
-    return output
 
 
 @job
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
 def mp_metagga_relax_job(
     atoms: Atoms,
     bandgap: float | None = None,
@@ -222,15 +196,8 @@ def mp_metagga_relax_job(
     VaspSchema
         Dictionary of results.
     """
-    calc_defaults = {
-        "pmg_input_set": partial(
-            MPScanRelaxSet, bandgap=bandgap or 0.0, auto_ismear=False
-        ),
-        "laechg": False,  # Deviation from MP (but logical)
-        "lvtot": False,  # Deviation from MP (but logical)
-        "lwave": True,
-    }
-    output = run_and_summarize(
+    atoms,calc_defaults = mp_to_ase_input_set(atoms,MPMetaGGARelaxMaker)
+    return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -238,12 +205,10 @@ def mp_metagga_relax_job(
         additional_fields={"name": "MP Meta-GGA Relax"},
         copy_files=copy_files,
     )
-    _validate_mp_compatability(output["dir_name"])
-
-    return output
 
 
 @job
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
 def mp_metagga_static_job(
     atoms: Atoms,
     bandgap: float | None = None,
@@ -273,17 +238,8 @@ def mp_metagga_static_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
         See the type-hint for the data structure.
     """
-    calc_defaults = {
-        "pmg_input_set": partial(
-            MPScanRelaxSet, bandgap=bandgap or 0.0, auto_ismear=False
-        ),
-        "algo": "fast",
-        "ismear": -5,
-        "lreal": False,
-        "lwave": True,  # Deviation from MP (but logical)
-        "nsw": 0,
-    }
-    output = run_and_summarize(
+    atoms, calc_defaults = mp_to_ase_input_set(atoms,MPMetaGGAStaticMaker)
+    return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
@@ -291,11 +247,10 @@ def mp_metagga_static_job(
         additional_fields={"name": "MP Meta-GGA Static"},
         copy_files=copy_files,
     )
-    _validate_mp_compatability(output["dir_name"])
-    return output
 
 
 @flow
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
 def mp_gga_relax_flow(
     atoms: Atoms,
     job_params: dict[str, dict[str, Any]] | None = None,
@@ -363,6 +318,7 @@ def mp_gga_relax_flow(
 
 
 @flow
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
 def mp_metagga_relax_flow(
     atoms: Atoms,
     job_params: dict[str, dict[str, Any]] | None = None,
@@ -448,34 +404,3 @@ def mp_metagga_relax_flow(
         "relax2": double_relax_results,
         "static": static_results,
     }
-
-
-def _validate_mp_compatability(directory: Path | str) -> EmmetBaseModel | None:
-    """
-    Validate the output of a VASP calculation for Materials Project compatibility.
-
-    Parameters
-    ----------
-    directory
-        Path to the directory containing the VASP calculation.
-
-    Returns
-    -------
-    EmmetBaseModel | None
-        The validation document.
-    """
-    if ValidationDoc is None:
-        logger.warning(
-            "pymatgen-io-validation is not installed. Skipping MP compatability check."
-        )
-        return None
-    validation_doc = ValidationDoc.from_directory(dir_name=directory)
-    if not validation_doc.valid:
-        logger.warning(
-            f"Calculation in {directory} is not MP-compatible for the following reasons: {validation_doc.reasons}"
-        )
-    if validation_doc.warnings:
-        logger.warning(
-            f"Calculation in {directory} has the following MP-related warnings: {validation_doc.warnings}"
-        )
-    return validation_doc

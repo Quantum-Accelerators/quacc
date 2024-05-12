@@ -527,14 +527,14 @@ def test_mp_metagga_prerelax_job(tmp_path, monkeypatch):
         "ismear": 0,
         "ispin": 2,
         "kspacing": 0.22,
-        "laechg": False,  # disabled by us
+        "laechg": True,
         "lasph": True,
         "lcharg": True,
         "lelf": False,
         "lmixtau": True,
         "lorbit": 11,
         "lreal": "auto",
-        "lvtot": False,  # disabled by us
+        "lvtot": True,
         "lwave": True,
         "magmom": [0.6],
         "nelm": 200,
@@ -585,14 +585,14 @@ def test_mp_metagga_relax_job(tmp_path, monkeypatch):
         "ismear": 0,
         "ispin": 2,
         "kspacing": 0.22,
-        "laechg": False,  # disabled by us
+        "laechg": True,
         "lasph": True,
         "lcharg": True,
         "lelf": False,
         "lmixtau": True,
         "lorbit": 11,
         "lreal": "auto",
-        "lvtot": False,  # disabled by us
+        "lvtot": True,
         "lwave": True,
         "magmom": [0.6],
         "metagga": "r2scan",
@@ -655,7 +655,7 @@ def test_mp_metagga_static_job(tmp_path, monkeypatch):
         "lorbit": 11,
         "lreal": False,
         "lvtot": True,
-        "lwave": True,  # enabled by us
+        "lwave": False,
         "magmom": [0.6],
         "metagga": "r2scan",
         "nelm": 200,
@@ -748,13 +748,14 @@ def test_mp_gga_relax_job():
         "isif": 3,
         "ismear": -5,
         "ispin": 2,
-        "kpts": (5, 11, 11),
+        "kpts": [5, 11, 11],
         "lasph": True,
+        "lcharg": False,
         "ldau": True,
         "ldauj": [0, 0],
         "ldaul": [0, 2],
-        "ldauprint": 1,  # added by us (sensible)
-        "ldautype": 2,  # added by us (sensible)
+        "ldauprint": 1,  # added by copilot
+        "ldautype": 2,  # added by copilot
         "ldauu": [0, 6.2],
         "lmaxmix": 4,
         "lorbit": 11,
@@ -787,17 +788,16 @@ def test_mp_gga_static_job():
         "ispin": 2,
         "kpts": (6, 13, 13),
         "lasph": True,
-        "lcharg": True,  # modified by us (sensible)
         "ldau": True,
         "ldauj": [0, 0],
         "ldaul": [0, 2],
-        "ldauprint": 1,  # added by us (sensible)
-        "ldautype": 2,  # added by us (sensible)
+        "ldauprint": 1,  # added by copilot
+        "ldautype": 2,  # added by copilot
         "ldauu": [0, 6.2],
         "lmaxmix": 4,
         "lorbit": 11,
         "lreal": False,
-        "lwave": True,  # modified by us (sensible)
+        "lwave": False,
         "magmom": [0.6, 5.0],
         "nelm": 100,
         "nsw": 0,
@@ -828,8 +828,8 @@ def test_mp_gga_relax_flow():
         "ldau": True,
         "ldauj": [0, 0],
         "ldaul": [0, 2],
-        "ldauprint": 1,  # added by us (sensible)
-        "ldautype": 2,  # added by us (sensible)
+        "ldauprint": 1,  # added by copilot
+        "ldautype": 2,  # added by copilot
         "ldauu": [0, 6.2],
         "lmaxmix": 4,
         "lorbit": 11,
@@ -858,17 +858,17 @@ def test_mp_gga_relax_flow():
         "ispin": 2,
         "kpts": (6, 13, 13),
         "lasph": True,
-        "lcharg": True,  # modified by us (sensible)
+        "lcharg": False,
         "ldau": True,
         "ldauj": [0, 0],
         "ldaul": [0, 2],
-        "ldauprint": 1,  # added by us (sensible)
-        "ldautype": 2,  # added by us (sensible)
+        "ldauprint": 1,  # added by copilot
+        "ldautype": 2,
         "ldauu": [0, 6.2],
         "lmaxmix": 4,
         "lorbit": 11,
         "lreal": False,
-        "lwave": True,  # modified by us (sensible)
+        "lwave": False,
         "magmom": [0.0, 0.0],
         "nelm": 100,
         "nsw": 0,
