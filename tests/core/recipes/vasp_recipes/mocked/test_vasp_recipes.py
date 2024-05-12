@@ -11,13 +11,12 @@ pytestmark = pytest.mark.skipif(
 
 import logging
 from pathlib import Path
-from shutil import copy
 
 import numpy as np
 from ase.build import bulk, molecule
 from monty.shutil import copy_r
 
-from quacc import SETTINGS, change_settings
+from quacc import change_settings
 from quacc.recipes.vasp.core import (
     ase_relax_job,
     double_relax_flow,
