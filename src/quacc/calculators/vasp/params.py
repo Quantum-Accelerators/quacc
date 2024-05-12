@@ -3,17 +3,19 @@
 from __future__ import annotations
 
 import logging
+from importlib import util
 from typing import TYPE_CHECKING
 
 import numpy as np
 from ase.calculators.vasp import Vasp as Vasp_
+from monty.dev import requires
 from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc.atoms.core import check_is_metal
 from quacc.utils.kpts import convert_pmg_kpts
 
+has_atomate2 = util.find_spec("atomate2")
 if TYPE_CHECKING:
-    import contextlib
     from typing import Any, Literal
 
     from ase.atoms import Atoms
@@ -22,7 +24,7 @@ if TYPE_CHECKING:
     from quacc.utils.files import SourceDirectory
     from quacc.utils.kpts import PmgKpts
 
-    with contextlib.suppress(ImportError):
+    if has_atomate2:
         from atomate2.vasp.jobs.base import BaseVaspMaker
 
 logger = logging.getLogger(__name__)
@@ -427,6 +429,7 @@ class MPtoASEConverter:
         self.poscar = vasp_input["POSCAR"]
         return self._convert()
 
+    @requires(has_atomate2, "atomate2 is not installed.")
     def convert_vasp_maker(self, VaspMaker: BaseVaspMaker) -> dict:
         """
         Convert an atomate2 VaspMaker to a dictionary of ASE VASP parameters.
