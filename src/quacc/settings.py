@@ -469,60 +469,60 @@ class QuaccSettings(BaseSettings):
         dict
             Loaded settings.
         """
-        return cls._type_handler(cls._use_custom_config_settings(settings))
+        return _type_handler(_use_custom_config_settings(settings))
 
-    @classmethod
-    def _use_custom_config_settings(cls, settings: dict[str, Any]) -> dict[str, Any]:
-        """Parse user settings from a custom YAML.
 
-        Parameters
-        ----------
-        settings : dict
-            Initial settings.
+def _use_custom_config_settings(settings: dict[str, Any]) -> dict[str, Any]:
+    """Parse user settings from a custom YAML.
 
-        Returns
-        -------
-        dict
-            Updated settings based on the custom YAML.
-        """
-        from monty.serialization import loadfn
+    Parameters
+    ----------
+    settings : dict
+        Initial settings.
 
-        config_file_path = (
-            Path(settings.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH))
-            .expanduser()
-            .resolve()
-        )
+    Returns
+    -------
+    dict
+        Updated settings based on the custom YAML.
+    """
+    from monty.serialization import loadfn
 
-        new_settings = {}  # type: dict
-        if config_file_path.exists() and config_file_path.stat().st_size > 0:
-            new_settings |= loadfn(config_file_path)
+    config_file_path = (
+        Path(settings.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH))
+        .expanduser()
+        .resolve()
+    )
 
-        new_settings.update(settings)
-        return new_settings
+    new_settings = {}  # type: dict
+    if config_file_path.exists() and config_file_path.stat().st_size > 0:
+        new_settings |= loadfn(config_file_path)
 
-    @classmethod
-    def _type_handler(cls, settings: dict[str, Any]) -> dict[str, Any]:
-        """
-        Convert common strings to their proper types.
+    new_settings.update(settings)
+    return new_settings
 
-        Parameters
-        ----------
-        settings : dict
-            Initial settings.
 
-        Returns
-        -------
-        dict
-            Updated settings.
-        """
-        for key, value in settings.items():
-            if isinstance(value, str):
-                if value.lower() in {"null", "none"}:
-                    settings[key] = None
-                elif value.lower() in {"true", "false"}:
-                    settings[key] = value.lower() == "true"
+def _type_handler(settings: dict[str, Any]) -> dict[str, Any]:
+    """
+    Convert common strings to their proper types.
 
-        return settings
+    Parameters
+    ----------
+    settings
+        Initial settings.
+
+    Returns
+    -------
+    dict
+        Updated settings.
+    """
+    for key, value in settings.items():
+        if isinstance(value, str):
+            if value.lower() in {"null", "none"}:
+                settings[key] = None
+            elif value.lower() in {"true", "false"}:
+                settings[key] = value.lower() == "true"
+
+    return settings
 
 
 @contextmanager
@@ -548,9 +548,7 @@ def change_settings(changes: dict[str, Any]) -> QuaccSettings:  # type: ignore
         setattr(SETTINGS, attr, new_value)
 
     try:
-        # Yield control back to the with block
         yield
     finally:
-        # Restore the original values
         for attr, original_value in original_values.items():
             setattr(SETTINGS, attr, original_value)
