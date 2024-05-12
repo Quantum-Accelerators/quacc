@@ -282,7 +282,7 @@ class QuaccSettings(BaseSettings):
         ),
     )
     VASP_MAG_CUTOFF: float = Field(
-        0.05,
+        0.02,
         description=(
             """
             If the absolute value of all magnetic moments are below this value,
