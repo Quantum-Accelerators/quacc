@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- The workflow engine must be directly specified with `WORKFLOW_ENGINE`, as noted in the docs
+- Changed `VASP_MAG_CUTOFF` from 0.05 to 0.02
 - Removed the `preset` keyword argument from the QMOF recipes
 
 ## [0.7.8]

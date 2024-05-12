@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+from contextlib import contextmanager
 from pathlib import Path
 from shutil import which
 from typing import TYPE_CHECKING, Literal, Optional, Union
@@ -282,7 +283,7 @@ class QuaccSettings(BaseSettings):
         ),
     )
     VASP_MAG_CUTOFF: float = Field(
-        0.05,
+        0.02,
         description=(
             """
             If the absolute value of all magnetic moments are below this value,
@@ -506,7 +507,7 @@ def _type_handler(settings: dict[str, Any]) -> dict[str, Any]:
 
     Parameters
     ----------
-    settings : dict
+    settings
         Initial settings.
 
     Returns
@@ -522,3 +523,32 @@ def _type_handler(settings: dict[str, Any]) -> dict[str, Any]:
                 settings[key] = value.lower() == "true"
 
     return settings
+
+
+@contextmanager
+def change_settings(changes: dict[str, Any]) -> QuaccSettings:  # type: ignore
+    """
+    Temporarily change an attribute of an object.
+
+    Parameters
+    ----------
+    changes
+        Dictionary of changes to make formatted as attribute: value.
+
+    Returns
+    -------
+    QuaccSettings
+        Updated settings.
+    """
+    from quacc import SETTINGS
+
+    original_values = {attr: getattr(SETTINGS, attr) for attr in changes}
+
+    for attr, new_value in changes.items():
+        setattr(SETTINGS, attr, new_value)
+
+    try:
+        yield
+    finally:
+        for attr, original_value in original_values.items():
+            setattr(SETTINGS, attr, original_value)
