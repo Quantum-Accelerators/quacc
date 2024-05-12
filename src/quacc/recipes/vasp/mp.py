@@ -48,37 +48,6 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-def _validate_mp_compatability(directory: Path | str) -> EmmetBaseModel | None:
-    """
-    Validate the output of a VASP calculation for Materials Project compatibility.
-
-    Parameters
-    ----------
-    directory
-        Path to the directory containing the VASP calculation.
-
-    Returns
-    -------
-    EmmetBaseModel | None
-        The validation document.
-    """
-    if ValidationDoc is None:
-        logger.warning(
-            "pymatgen-io-validation is not installed. Skipping MP compatability check."
-        )
-        return None
-    validation_doc = ValidationDoc.from_directory(dir_name=directory)
-    if not validation_doc.valid:
-        logger.warning(
-            f"Calculation in {directory} is not MP-compatible for the following reasons: {validation_doc.reasons}"
-        )
-    if validation_doc.warnings:
-        logger.warning(
-            f"Calculation in {directory} has the following MP-related warnings: {validation_doc.warnings}"
-        )
-    return validation_doc
-
-
 @job
 def mp_gga_relax_job(
     atoms: Atoms,
@@ -479,3 +448,34 @@ def mp_metagga_relax_flow(
         "relax2": double_relax_results,
         "static": static_results,
     }
+
+
+def _validate_mp_compatability(directory: Path | str) -> EmmetBaseModel | None:
+    """
+    Validate the output of a VASP calculation for Materials Project compatibility.
+
+    Parameters
+    ----------
+    directory
+        Path to the directory containing the VASP calculation.
+
+    Returns
+    -------
+    EmmetBaseModel | None
+        The validation document.
+    """
+    if ValidationDoc is None:
+        logger.warning(
+            "pymatgen-io-validation is not installed. Skipping MP compatability check."
+        )
+        return None
+    validation_doc = ValidationDoc.from_directory(dir_name=directory)
+    if not validation_doc.valid:
+        logger.warning(
+            f"Calculation in {directory} is not MP-compatible for the following reasons: {validation_doc.reasons}"
+        )
+    if validation_doc.warnings:
+        logger.warning(
+            f"Calculation in {directory} has the following MP-related warnings: {validation_doc.warnings}"
+        )
+    return validation_doc
