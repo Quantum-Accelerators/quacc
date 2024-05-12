@@ -230,7 +230,9 @@ class Vasp(Vasp_):
         if self.preset:
             for preset_dir in SETTINGS.VASP_PRESET_DIR:
                 try:
-                    calc_preset = load_vasp_yaml_calc(preset_dir / self.preset)["inputs"]
+                    calc_preset = load_vasp_yaml_calc(preset_dir / self.preset)[
+                        "inputs"
+                    ]
                     break
                 except FileNotFoundError:
                     continue
