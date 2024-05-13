@@ -215,7 +215,10 @@ def test_summarize_mp(monkeypatch, mp_run1, tmp_path, caplog):
     assert "Incorrect POTCAR files were used" in caplog.text
     assert results["entry"].correction == pytest.approx(-3.2280)
     assert results["validation"]["valid"] is False
-    assert "Incorrect POTCAR files were used" in " ".join(results["validation"]["reasons"])
+    assert "Incorrect POTCAR files were used" in " ".join(
+        results["validation"]["reasons"]
+    )
+
 
 def test_summarize_mp_bad(monkeypatch, run1, tmp_path, caplog):
     monkeypatch.chdir(tmp_path)
