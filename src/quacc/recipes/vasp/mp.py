@@ -1,25 +1,11 @@
 """
-Materials Project-compatible recipes. Please cite the following:
+Materials Project-compatible recipes.
 
 !!! Important
 
-    Be careful to use Materials Project-compatible pseudpotential versions!
-
-    Legacy (GGA): use the original (no version) PAW PBE potentials.
-
-    Legacy (Meta-GGA): use the v.54 PAW PBE potentials.
-
-    2024 workflows: v.64 PAW PBE potentials.
-
-!!! Note
-
-    When using these workflows, please cite the following papers:
-
-    Legacy (GGA): https://doi.org/10.1063/1.4812323.
-
-    Legacy (Meta-GGA): https://doi.org/10.1103/PhysRevMaterials.6.013801.
-
-    2024 workflows: Coming soon.
+    Make sure that you use the Materials Project-compatible pseudpotential
+    versions. The GGA workflows use the old (no version) PAW PBE potentials.
+    The meta-GGA workflows currently use the v.54 PAW PBE potentials.
 """
 
 from __future__ import annotations
@@ -43,21 +29,17 @@ if has_atomate2:
         MPMetaGGAStaticMaker,
         MPPreRelaxMaker,
     )
-    from atomate2.vasp.jobs.mp24 import (
-        MP24GGAPreRelaxMaker,
-        MP24GGARelaxMaker,
-        MP24GGAStaticMaker,
-        MP24MetaGGAPreRelaxMaker,
-        MP24MetaGGARelaxMaker,
-        MP24MetaGGAStaticMaker,
-    )
 
 if TYPE_CHECKING:
-    from typing import Any, Callable, Literal
+    from typing import Any, Callable
 
     from ase.atoms import Atoms
 
-    from quacc.schemas._aliases.vasp import MPRelaxFlowSchema, VaspSchema
+    from quacc.schemas._aliases.vasp import (
+        MPGGARelaxFlowSchema,
+        MPMetaGGARelaxFlowSchema,
+        VaspSchema,
+    )
     from quacc.utils.files import SourceDirectory
 
 _MP_SETTINGS = {"VASP_INCAR_COPILOT": "off", "VASP_USE_CUSTODIAN": True}
@@ -65,25 +47,16 @@ _MP_SETTINGS = {"VASP_INCAR_COPILOT": "off", "VASP_USE_CUSTODIAN": True}
 
 @job
 @requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
-def mp_pre_relax_job(
-    atoms: Atoms,
-    method: Literal["gga", "metagga"] = "gga",
-    version: Literal["legacy", "2024"] = "legacy",
-    prev_dir: SourceDirectory | None = None,
-    **calc_kwargs,
+def mp_gga_relax_job(
+    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs
 ) -> VaspSchema:
     """
-    Function to pre-relax a structure with the Materials Project settings.
+    Function to relax a structure with the original Materials Project GGA(+U) settings.
 
     Parameters
     ----------
     atoms
         Atoms object
-    method
-        Whether GGA or Meta-GGA compatability is desired. Note that for the
-        pre-relax step with "metagga", this is still a GGA (PBEsol) functional.
-    version
-        The version of the Materials Project settings to use.
     prev_dir
         A previous directory for a prior step in the workflow.
     **calc_kwargs
@@ -96,67 +69,8 @@ def mp_pre_relax_job(
     VaspSchema
         Dictionary of results.
     """
-    if version == "legacy":
-        vasp_maker = MPGGARelaxMaker if method.lower() == "gga" else MPPreRelaxMaker
-    else:
-        vasp_maker = (
-            MP24GGAPreRelaxMaker
-            if method.lower() == "gga"
-            else MP24MetaGGAPreRelaxMaker
-        )
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
-        vasp_maker
-    )
-    with change_settings(_MP_SETTINGS):
-        return run_and_summarize(
-            atoms,
-            calc_defaults=calc_defaults,
-            calc_swaps=calc_kwargs,
-            additional_fields={"name": vasp_maker.name},
-            copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
-        )
-
-
-@job
-@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
-def mp_relax_job(
-    atoms: Atoms,
-    method: Literal["gga", "metagga"] = "gga",
-    version: Literal["legacy", "2024"] = "legacy",
-    prev_dir: SourceDirectory | None = None,
-    **calc_kwargs,
-) -> VaspSchema:
-    """
-    Function to relax a structure with the Materials Project settings.
-
-    Parameters
-    ----------
-    atoms
-        Atoms object
-    method
-        Whether GGA or Meta-GGA compatability is desired.
-    version
-        The version of the Materials Project settings to use.
-    prev_dir
-        A previous directory for a prior step in the workflow.
-    **calc_kwargs
-        Custom kwargs for the Vasp calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [quacc.calculators.vasp.vasp.Vasp][].
-
-    Returns
-    -------
-    VaspSchema
-        Dictionary of results.
-    """
-    if version == "legacy":
-        vasp_maker = MPGGARelaxMaker if method.lower() == "gga" else MPMetaGGARelaxMaker
-    else:
-        vasp_maker = (
-            MP24GGARelaxMaker if method.lower() == "gga" else MP24MetaGGARelaxMaker
-        )
-    calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
-        vasp_maker
+        MPGGARelaxMaker
     )
     with change_settings(_MP_SETTINGS):
         return run_and_summarize(
@@ -164,31 +78,23 @@ def mp_relax_job(
             calc_defaults=calc_defaults,
             calc_swaps=calc_kwargs,
             report_mp_corrections=True,
-            additional_fields={"name": vasp_maker.name},
+            additional_fields={"name": "MP GGA Relax"},
             copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
         )
 
 
 @job
 @requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
-def mp_static_job(
-    atoms: Atoms,
-    method: Literal["gga", "metagga"] = "gga",
-    version: Literal["legacy", "2024"] = "legacy",
-    prev_dir: SourceDirectory | None = None,
-    **calc_kwargs,
+def mp_gga_static_job(
+    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs
 ) -> VaspSchema:
     """
-    Function to run a static calculation on a structure with the Materials Project settings.
+    Function to run a static calculation on a structure with the original Materials Project GGA(+U) settings.
 
     Parameters
     ----------
     atoms
         Atoms object
-    method
-        Whether GGA or Meta-GGA compatability is desired.
-    version
-        The version of the Materials Project settings to use.
     prev_dir
         A previous directory for a prior step in the workflow.
     **calc_kwargs
@@ -201,16 +107,8 @@ def mp_static_job(
     VaspSchema
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
     """
-    if version == "legacy":
-        vasp_maker = (
-            MPGGAStaticMaker if method.lower() == "gga" else MPMetaGGAStaticMaker
-        )
-    else:
-        vasp_maker = (
-            MP24GGAStaticMaker if method.lower() == "gga" else MP24MetaGGAStaticMaker
-        )
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
-        vasp_maker
+        MPGGAStaticMaker
     )
     with change_settings(_MP_SETTINGS):
         return run_and_summarize(
@@ -218,45 +116,162 @@ def mp_static_job(
             calc_defaults=calc_defaults,
             calc_swaps=calc_kwargs,
             report_mp_corrections=True,
-            additional_fields={"name": vasp_maker.name},
+            additional_fields={"name": "MP GGA Static"},
+            copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
+        )
+
+
+@job
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
+def mp_metagga_prerelax_job(
+    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs
+) -> VaspSchema:
+    """
+    Function to pre-relax a structure with Materials Project r2SCAN workflow settings. By default, this
+    uses a PBEsol pre-relax step.
+
+    Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+    prev_dir
+        A previous directory for a prior step in the workflow.
+    **calc_kwargs
+        Custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to [quacc.calculators.vasp.vasp.Vasp][].
+
+    Returns
+    -------
+    VaspSchema
+        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
+        See the type-hint for the data structure.
+    """
+    calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
+        MPPreRelaxMaker
+    )
+    with change_settings(_MP_SETTINGS):
+        return run_and_summarize(
+            atoms,
+            calc_defaults=calc_defaults,
+            calc_swaps=calc_kwargs,
+            report_mp_corrections=True,
+            additional_fields={"name": "MP Meta-GGA Pre-Relax"},
+            copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
+        )
+
+
+@job
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
+def mp_metagga_relax_job(
+    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs
+) -> VaspSchema:
+    """
+    Function to relax a structure with Materials Project r2SCAN workflow settings. By default, this uses
+    an r2SCAN relax step.
+
+    Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+    prev_dir
+        A previous directory for a prior step in the workflow.
+    **calc_kwargs
+        Dictionary of custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to [quacc.calculators.vasp.vasp.Vasp][].
+
+    Returns
+    -------
+    VaspSchema
+        Dictionary of results.
+    """
+    calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
+        MPMetaGGARelaxMaker
+    )
+    with change_settings(_MP_SETTINGS):
+        return run_and_summarize(
+            atoms,
+            calc_defaults=calc_defaults,
+            calc_swaps=calc_kwargs,
+            report_mp_corrections=True,
+            additional_fields={"name": "MP Meta-GGA Relax"},
+            copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
+        )
+
+
+@job
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
+def mp_metagga_static_job(
+    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs
+) -> VaspSchema:
+    """
+    Function to run a static calculation on a structure with r2SCAN workflow Materials Project settings.
+    By default, this uses an r2SCAN static step.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+    prev_dir
+        A previous directory for a prior step in the workflow.
+    **calc_kwargs
+        Dictionary of custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to `ase.calculators.vasp.vasp.Vasp`.
+
+    Returns
+    -------
+    VaspSchema
+        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
+        See the type-hint for the data structure.
+    """
+    calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
+        MPMetaGGAStaticMaker
+    )
+    with change_settings(_MP_SETTINGS):
+        return run_and_summarize(
+            atoms,
+            calc_defaults=calc_defaults,
+            calc_swaps=calc_kwargs,
+            report_mp_corrections=True,
+            additional_fields={"name": "MP Meta-GGA Static"},
             copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
         )
 
 
 @flow
 @requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
-def mp_relax_flow(
+def mp_gga_relax_flow(
     atoms: Atoms,
-    method: Literal["gga", "metagga"] = "gga",
-    version: Literal["legacy", "2024"] = "legacy",
     job_params: dict[str, dict[str, Any]] | None = None,
     job_decorators: dict[str, Callable | None] | None = None,
-) -> MPRelaxFlowSchema:
+) -> MPGGARelaxFlowSchema:
     """
-    Materials Project relaxation and static workflow consisting of:
+    Materials Project GGA workflow consisting of:
 
-    1. MP-compatible pre-relax
-        - name: "mp_pre_relax_job"
-        - job: [quacc.recipes.vasp.mp.mp_pre_relax_job][]
+    1. MP-compatible relax
+        - name: "mp_gga_relax_job"
+        - job: [quacc.recipes.vasp.mp.mp_gga_relax_job][]
 
-    2. MP-compatible relax
-        - name: "mp_relax_job"
-        - job: [quacc.recipes.vasp.mp.mp_relax_job][]
+    2. MP-compatible (second) relax
+        - name: "mp_gga_relax_job"
+        - job: [quacc.recipes.vasp.mp.mp_gga_relax_job][]
 
     3. MP-compatible static
-        - name: "mp_static_job"
-        - job: [quacc.recipes.vasp.mp.mp_static_job][]
+        - name: "mp_gga_static_job"
+        - job: [quacc.recipes.vasp.mp.mp_gga_static_job][]
 
     Parameters
     ----------
     atoms
         Atoms object for the structure.
-    method
-        Whether GGA or Meta-GGA compatability is desired.
-    version
-        The version of the Materials Project settings to use.
     job_params
-        Custom parameters to pass to each Job in the Flow. This is a dictionary where
+        Custom parameters to pass to each Job in the Flow. This is a dictinoary where
         the keys are the names of the jobs and the values are dictionaries of parameters.
     job_decorators
         Custom decorators to apply to each Job in the Flow. This is a dictionary where
@@ -264,33 +279,114 @@ def mp_relax_flow(
 
     Returns
     -------
-    MPRelaxFlowSchema
+    MPGGARelaxFlowSchema
         Dictionary of results. See the type-hint for the data structure.
     """
-    job_param_defaults = {"all": {"method": method, "version": version}}
-    (mp_pre_relax_job_, mp_relax_job_, mp_static_job_) = customize_funcs(
-        ["mp_pre_relax_job", "mp_relax_job", "mp_static_job"],
-        [mp_pre_relax_job, mp_relax_job, mp_static_job],
-        param_defaults=job_param_defaults,
+    (mp_gga_relax_job_, mp_gga_static_job_) = customize_funcs(
+        ["mp_gga_relax_job", "mp_gga_static_job"],
+        [mp_gga_relax_job, mp_gga_static_job],
         param_swaps=job_params,
         decorators=job_decorators,
     )
 
-    # Run the pre-relax
-    pre_relax_results = mp_pre_relax_job_(atoms)
+    # Run the relax
+    relax_results = mp_gga_relax_job_(atoms)
 
     # Run the second relax
-    relax_results = mp_relax_job_(
-        pre_relax_results["atoms"], prev_dir=pre_relax_results["dir_name"]
-    )
-
-    # Run the static
-    static_results = mp_static_job_(
+    double_relax_results = mp_gga_relax_job_(
         relax_results["atoms"], prev_dir=relax_results["dir_name"]
     )
 
+    # Run the static
+    static_results = mp_gga_static_job_(
+        double_relax_results["atoms"], prev_dir=double_relax_results["dir_name"]
+    )
+
     return {
-        "pre_relax": pre_relax_results,
-        "relax": relax_results,
+        "relax1": relax_results,
+        "relax2": double_relax_results,
+        "static": static_results,
+    }
+
+
+@flow
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
+def mp_metagga_relax_flow(
+    atoms: Atoms,
+    job_params: dict[str, dict[str, Any]] | None = None,
+    job_decorators: dict[str, Callable | None] | None = None,
+) -> MPMetaGGARelaxFlowSchema:
+    """
+    Materials Project r2SCAN workflow consisting of:
+
+    1. MP-compatible pre-relax
+        - name: "mp_metagga_prerelax_job"
+        - job: [quacc.recipes.vasp.mp.mp_metagga_prerelax_job][]
+
+    2. MP-compatible relax
+        - name: "mp_metagga_relax_job"
+        - job: [quacc.recipes.vasp.mp.mp_metagga_relax_job][]
+
+    3. MP-compatible (second) relax
+        - name: "mp_metagga_relax_job"
+        - job: [quacc.recipes.vasp.mp.mp_metagga_relax_job][]
+
+    4. MP-compatible static
+        - name: "mp_metagga_static_job"
+        - job: [quacc.recipes.vasp.mp.mp_metagga_static_job][]
+
+    Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
+
+    Parameters
+    ----------
+    atoms
+        Atoms object for the structure.
+    job_params
+        Custom parameters to pass to each Job in the Flow. This is a dictinoary where
+        the keys are the names of the jobs and the values are dictionaries of parameters.
+    job_decorators
+        Custom decorators to apply to each Job in the Flow. This is a dictionary where
+        the keys are the names of the jobs and the values are decorators.
+
+    Returns
+    -------
+    MPMetaGGARelaxFlowSchema
+        Dictionary of results. See the type-hint for the data structure.
+    """
+    (mp_metagga_prerelax_job_, mp_metagga_relax_job_, mp_metagga_static_job_) = (
+        customize_funcs(
+            [
+                "mp_metagga_prerelax_job",
+                "mp_metagga_relax_job",
+                "mp_metagga_static_job",
+            ],
+            [mp_metagga_prerelax_job, mp_metagga_relax_job, mp_metagga_static_job],
+            param_swaps=job_params,
+            decorators=job_decorators,
+        )
+    )
+
+    # Run the prerelax
+    prerelax_results = mp_metagga_prerelax_job_(atoms)
+
+    # Run the relax
+    relax_results = mp_metagga_relax_job_(
+        prerelax_results["atoms"], prev_dir=prerelax_results["dir_name"]
+    )
+
+    # Run the second relax
+    double_relax_results = mp_metagga_relax_job_(
+        relax_results["atoms"], prev_dir=relax_results["dir_name"]
+    )
+
+    # Run the static
+    static_results = mp_metagga_static_job_(
+        double_relax_results["atoms"], prev_dir=double_relax_results["dir_name"]
+    )
+
+    return {
+        "prerelax": prerelax_results,
+        "relax1": relax_results,
+        "relax2": double_relax_results,
         "static": static_results,
     }
