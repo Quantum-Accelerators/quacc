@@ -125,7 +125,7 @@ def vasp_summarize_run(
 
     # Convert the VASP task model to a dictionary
     vasp_task_doc = vasp_task_model.model_dump()
-    
+
     initial_atoms = read(zpath(directory / "POSCAR"))
     base_task_doc = summarize_run(
         final_atoms, initial_atoms, move_magmoms=move_magmoms, store=None
