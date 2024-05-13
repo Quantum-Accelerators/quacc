@@ -93,8 +93,8 @@ def phonon_flow(
         See the type-hint for the data structure.
     """
     job_param_defaults = {
-        "relax_job": {"method": method, "opt_params": {"fmax": 1e-3}},
-        "static_job": {"method": method},
+        "all": {"method": method},
+        "relax_job": {"opt_params": {"fmax": 1e-3}},
     }
     relax_job_, static_job_ = customize_funcs(
         ["relax_job", "static_job"],
