@@ -83,7 +83,7 @@ def vasp_summarize_run(
         Whether to throw an error if convergence is not reached. Defaults to True in
         settings.
     mp_compatible
-        Whether to apply the MP corrections to the task document. Defaults to False.
+        Whether to apply the MP corrections to the task document and check MP validiity.
     additional_fields
         Additional fields to add to the task document.
     store
@@ -218,7 +218,7 @@ def summarize_vasp_opt_run(
         Whether to throw an error if convergence is not reached. Defaults to True in
         settings.
     mp_compatible
-        Whether to apply the MP corrections to the task document. Defaults to False.
+        Whether to apply the MP corrections to the task document and check MP validiity.
     additional_fields
         Additional fields to add to the task document.
     store
@@ -243,7 +243,7 @@ def summarize_vasp_opt_run(
         run_bader=run_bader,
         run_chargemol=run_chargemol,
         check_convergence=check_convergence,
-        report_mp_corrections=mp_compatible,
+        mp_compatible=mp_compatible,
         additional_fields=additional_fields,
         store=None,
     )
