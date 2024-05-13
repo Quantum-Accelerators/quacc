@@ -113,15 +113,16 @@ def vasp_summarize_run(
 
     # Get MP corrections
     if mp_compatible:
-        vasp_task_doc |= _validate_mp_compatability(directory).model_dump()
-        mp_compat = MaterialsProject2020Compatibility()
+        mp_compat_doc = _validate_mp_compatability(directory).model_dump()
+        mp_compat_scheme = MaterialsProject2020Compatibility()
         try:
-            corrected_entry = mp_compat.process_entry(
+            mp_compat_scheme.process_entry(
                 vasp_task_model.structure_entry, on_error="raise"
             )
-            vasp_task_model.entry = corrected_entry
         except CompatibilityError as err:
             LOGGER.warning(err)
+    else:
+        mp_compat_doc = {}
 
     # Convert the VASP task model to a dictionary
     vasp_task_doc = vasp_task_model.model_dump()
@@ -171,7 +172,7 @@ def vasp_summarize_run(
 
     # Make task document
     unsorted_task_doc = (
-        intermediate_vasp_task_docs | vasp_task_doc | base_task_doc | additional_fields
+        intermediate_vasp_task_docs | vasp_task_doc | base_task_doc | mp_compat_doc | additional_fields
     )
     return finalize_dict(
         unsorted_task_doc, directory, gzip_file=SETTINGS.GZIP_FILES, store=store
