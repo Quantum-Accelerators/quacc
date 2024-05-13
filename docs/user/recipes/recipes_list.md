@@ -148,7 +148,6 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 | ORCA ASE Relax             | `#!Python @job` | [quacc.recipes.orca.core.ase_relax_job][]             |              |
 | ORCA ASE Quasi-IRC Perturb | `#!Python @job` | [quacc.recipes.orca.core.ase_quasi_irc_perturb_job][] |              |
 
-
 </center>
 
 ## Psi4
@@ -243,23 +242,20 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 
 <center>
 
-| Name                            | Decorator        | Documentation                                   | Req'd Extras |
-| ------------------------------- | ---------------- | ----------------------------------------------- | ------------ |
-| VASP Static                     | `#!Python @job`  | [quacc.recipes.vasp.core.static_job][]          |              |
-| VASP Relax                      | `#!Python @job`  | [quacc.recipes.vasp.core.relax_job][]           |              |
-| VASP Double Relax               | `#!Python @flow` | [quacc.recipes.vasp.core.double_relax_flow][]   |              |
-| VASP Non-SCF                    | `#!Python @job`  | [quacc.recipes.vasp.core.non_scf_job][]         |              |
-| VASP Slab Static                | `#!Python @job`  | [quacc.recipes.vasp.slabs.static_job][]         |              |
-| VASP Slab Relax                 | `#!Python @job`  | [quacc.recipes.vasp.slabs.relax_job][]          |              |
-| VASP Bulk to Slabs              | `#!Python @flow` | [quacc.recipes.vasp.slabs.bulk_to_slabs_flow][] |              |
-| VASP Slab to Adsorbates         | `#!Python @flow` | [quacc.recipes.vasp.slabs.slab_to_ads_flow][]   |              |
-| VASP MP GGA Relax               | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_gga_relax_job][]      | `quacc[mp]`  |
-| VASP MP GGA Static              | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_gga_static_job][]     | `quacc[mp]`  |
-| VASP MP GGA Relax Workflow      | `#!Python @flow` | [quacc.recipes.vasp.mp.mp_gga_relax_flow][]     | `quacc[mp]`  |
-| VASP MP Meta-GGA Prerelax       | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_metagga_relax_job][]  | `quacc[mp]`  |
-| VASP MP Meta-GGA Relax          | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_metagga_relax_job][]  | `quacc[mp]`  |
-| VASP MP Meta-GGA Static         | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_metagga_static_job][] | `quacc[mp]`  |
-| VASP MP Meta-GGA Relax Workflow | `#!Python @flow` | [quacc.recipes.vasp.mp.mp_metagga_relax_flow][] | `quacc[mp]`  |
-| VASP QMOF Relax                 | `#!Python @job`  | [quacc.recipes.vasp.qmof.qmof_relax_job][]      |              |
+| Name                    | Decorator        | Documentation                                   | Req'd Extras |
+| ----------------------- | ---------------- | ----------------------------------------------- | ------------ |
+| VASP Static             | `#!Python @job`  | [quacc.recipes.vasp.core.static_job][]          |              |
+| VASP Relax              | `#!Python @job`  | [quacc.recipes.vasp.core.relax_job][]           |              |
+| VASP Double Relax       | `#!Python @flow` | [quacc.recipes.vasp.core.double_relax_flow][]   |              |
+| VASP Non-SCF            | `#!Python @job`  | [quacc.recipes.vasp.core.non_scf_job][]         |              |
+| VASP Slab Static        | `#!Python @job`  | [quacc.recipes.vasp.slabs.static_job][]         |              |
+| VASP Slab Relax         | `#!Python @job`  | [quacc.recipes.vasp.slabs.relax_job][]          |              |
+| VASP Bulk to Slabs      | `#!Python @flow` | [quacc.recipes.vasp.slabs.bulk_to_slabs_flow][] |              |
+| VASP Slab to Adsorbates | `#!Python @flow` | [quacc.recipes.vasp.slabs.slab_to_ads_flow][]   |              |
+| VASP MP Pre-Relax       | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_pre_relax_job][]      | `quacc[mp]`  |
+| VASP MP Relax           | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_relax_job][]          | `quacc[mp]`  |
+| VASP MP Static          | `#!Python @job`  | [quacc.recipes.vasp.mp.mp_static_job][]         | `quacc[mp]`  |
+| VASP MP Relax Workflow  | `#!Python @flow` | [quacc.recipes.vasp.mp.mp_relax_flow][]         | `quacc[mp]`  |
+| VASP QMOF Relax         | `#!Python @job`  | [quacc.recipes.vasp.qmof.qmof_relax_job][]      |              |
 
 </center>
