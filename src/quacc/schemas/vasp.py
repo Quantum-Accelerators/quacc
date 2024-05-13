@@ -172,7 +172,11 @@ def vasp_summarize_run(
 
     # Make task document
     unsorted_task_doc = (
-        intermediate_vasp_task_docs | vasp_task_doc | base_task_doc | mp_compat_doc | additional_fields
+        intermediate_vasp_task_docs
+        | vasp_task_doc
+        | base_task_doc
+        | mp_compat_doc
+        | additional_fields
     )
     return finalize_dict(
         unsorted_task_doc, directory, gzip_file=SETTINGS.GZIP_FILES, store=store
