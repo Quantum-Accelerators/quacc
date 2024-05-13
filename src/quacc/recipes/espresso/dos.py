@@ -179,31 +179,27 @@ def dos_flow(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    static_job_defaults = {
-        "kspacing": 0.2,
-        "input_data": {"system": {"occupations": "tetrahedra"}},
-    }
-    non_scf_job_defaults = recursive_dict_merge(
-        job_params.get("static_job"),
-        {
-            "kspacing": 0.01,
-            "input_data": {
-                "control": {"calculation": "nscf", "verbosity": "high"},
-                "system": {"occupations": "tetrahedra"},
-            },
+    default_job_params = {
+        "static_job": {
+            "kspacing": 0.2,
+            "input_data": {"system": {"occupations": "tetrahedra"}},
         },
-    )
-
-    calc_defaults = {
-        "static_job": static_job_defaults,
-        "non_scf_job": non_scf_job_defaults,
-        "dos_job": None,
+        "non_scf_job": recursive_dict_merge(
+            job_params.get("static_job"),
+            {
+                "kspacing": 0.01,
+                "input_data": {
+                    "control": {"calculation": "nscf", "verbosity": "high"},
+                    "system": {"occupations": "tetrahedra"},
+                },
+            },
+        ),
     }
-    job_params = recursive_dict_merge(calc_defaults, job_params)
 
     static_job_, non_scf_job_, dos_job_ = customize_funcs(
         ["static_job", "non_scf_job", "dos_job"],
         [static_job, non_scf_job, dos_job],
+        param_defaults=default_job_params,
         param_swaps=job_params,
         decorators=job_decorators,
     )
@@ -259,31 +255,26 @@ def projwfc_flow(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    static_job_defaults = {
-        "kspacing": 0.2,
-        "input_data": {"system": {"occupations": "tetrahedra"}},
-    }
-    non_scf_job_defaults = recursive_dict_merge(
-        job_params.get("static_job"),
-        {
-            "kspacing": 0.01,
-            "input_data": {
-                "control": {"calculation": "nscf", "verbosity": "high"},
-                "system": {"occupations": "tetrahedra"},
-            },
+    default_job_params = {
+        "static_job": {
+            "kspacing": 0.2,
+            "input_data": {"system": {"occupations": "tetrahedra"}},
         },
-    )
-
-    calc_defaults = {
-        "static_job": static_job_defaults,
-        "non_scf_job": non_scf_job_defaults,
-        "projwfc_job": None,
+        "non_scf_job": recursive_dict_merge(
+            job_params.get("static_job"),
+            {
+                "kspacing": 0.01,
+                "input_data": {
+                    "control": {"calculation": "nscf", "verbosity": "high"},
+                    "system": {"occupations": "tetrahedra"},
+                },
+            },
+        ),
     }
-    job_params = recursive_dict_merge(calc_defaults, job_params)
-
     static_job_, non_scf_job_, projwfc_job_ = customize_funcs(
         ["static_job", "non_scf_job", "projwfc_job"],
         [static_job, non_scf_job, projwfc_job],
+        param_defaults=default_job_params,
         param_swaps=job_params,
         decorators=job_decorators,
     )
