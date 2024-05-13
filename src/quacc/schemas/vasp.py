@@ -22,12 +22,18 @@ from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import finalize_dict, recursive_dict_merge
 
+try:
+    from pymatgen.io.validation import ValidationDoc
+except ImportError:
+    ValidationDoc = None
+
 if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
     from ase.io import Trajectory
     from ase.optimize.optimize import Optimizer
+    from emmet.core.base import EmmetBaseModel
     from maggma.core import Store
 
     from quacc.schemas._aliases.vasp import (
@@ -37,7 +43,7 @@ if TYPE_CHECKING:
         VaspSchema,
     )
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 _DEFAULT_SETTING = ()
 
@@ -49,7 +55,7 @@ def vasp_summarize_run(
     run_bader: bool = _DEFAULT_SETTING,
     run_chargemol: bool = _DEFAULT_SETTING,
     check_convergence: bool = _DEFAULT_SETTING,
-    report_mp_corrections: bool = False,
+    mp_compatible: bool = False,
     additional_fields: dict[str, Any] | None = None,
     store: Store | None = _DEFAULT_SETTING,
 ) -> VaspSchema:
@@ -76,7 +82,7 @@ def vasp_summarize_run(
     check_convergence
         Whether to throw an error if convergence is not reached. Defaults to True in
         settings.
-    report_mp_corrections
+    mp_compatible
         Whether to apply the MP corrections to the task document. Defaults to False.
     additional_fields
         Additional fields to add to the task document.
@@ -105,17 +111,6 @@ def vasp_summarize_run(
     # already has a handy function for this
     vasp_task_model = TaskDoc.from_directory(directory)
 
-    # Get MP corrections
-    if report_mp_corrections:
-        mp_compat = MaterialsProject2020Compatibility()
-        try:
-            corrected_entry = mp_compat.process_entry(
-                vasp_task_model.structure_entry, on_error="raise"
-            )
-            vasp_task_model.entry = corrected_entry
-        except CompatibilityError as err:
-            logger.warning(err)
-
     # Convert the VASP task model to a dictionary
     vasp_task_doc = vasp_task_model.model_dump()
 
@@ -124,6 +119,18 @@ def vasp_summarize_run(
         raise RuntimeError(
             f"VASP calculation did not converge. Will not store task data. Refer to {directory}"
         )
+
+    # Get MP corrections
+    if mp_compatible:
+        vasp_task_doc |= _validate_mp_compatability(directory).model_dump()
+        mp_compat = MaterialsProject2020Compatibility()
+        try:
+            corrected_entry = mp_compat.process_entry(
+                vasp_task_model.structure_entry, on_error="raise"
+            )
+            vasp_task_model.entry = corrected_entry
+        except CompatibilityError as err:
+            LOGGER.warning(err)
 
     initial_atoms = read(zpath(directory / "POSCAR"))
     base_task_doc = summarize_run(
@@ -179,7 +186,7 @@ def summarize_vasp_opt_run(
     run_bader: bool = _DEFAULT_SETTING,
     run_chargemol: bool = _DEFAULT_SETTING,
     check_convergence: bool = _DEFAULT_SETTING,
-    report_mp_corrections: bool = False,
+    mp_compatible: bool = False,
     additional_fields: dict[str, Any] | None = None,
     store: Store | None = _DEFAULT_SETTING,
 ) -> VaspASEOptSchema:
@@ -210,7 +217,7 @@ def summarize_vasp_opt_run(
     check_convergence
         Whether to throw an error if convergence is not reached. Defaults to True in
         settings.
-    report_mp_corrections
+    mp_compatible
         Whether to apply the MP corrections to the task document. Defaults to False.
     additional_fields
         Additional fields to add to the task document.
@@ -236,7 +243,7 @@ def summarize_vasp_opt_run(
         run_bader=run_bader,
         run_chargemol=run_chargemol,
         check_convergence=check_convergence,
-        report_mp_corrections=report_mp_corrections,
+        report_mp_corrections=mp_compatible,
         additional_fields=additional_fields,
         store=None,
     )
@@ -333,3 +340,34 @@ def _chargemol_runner(
 
     # Run Chargemol analysis
     return ChargemolAnalysis(path=path, atomic_densities_path=atomic_densities_path)
+
+
+def _validate_mp_compatability(directory: Path | str) -> EmmetBaseModel | None:
+    """
+    Validate the output of a VASP calculation for Materials Project compatibility.
+
+    Parameters
+    ----------
+    directory
+        Path to the directory containing the VASP calculation.
+
+    Returns
+    -------
+    EmmetBaseModel | None
+        The validation document.
+    """
+    if ValidationDoc is None:
+        LOGGER.warning(
+            "pymatgen-io-validation is not installed. Skipping MP compatability check."
+        )
+        return None
+    validation_doc = ValidationDoc.from_directory(dir_name=directory)
+    if not validation_doc.valid:
+        LOGGER.warning(
+            f"Calculation in {directory} is not MP-compatible for the following reasons: {validation_doc.reasons}"
+        )
+    if validation_doc.warnings:
+        LOGGER.warning(
+            f"Calculation in {directory} has the following MP-related warnings: {validation_doc.warnings}"
+        )
+    return validation_doc
