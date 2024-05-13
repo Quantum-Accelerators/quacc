@@ -52,12 +52,18 @@ class VaspSchema(RunSchema, TaskDoc):
     steps: dict[int, TaskDoc]  # when store_intermediate_results=True
 
 
-class MPRelaxFlowSchema(VaspSchema):
-    """Type hint associated with the MP relaxation flows."""
+class MPGGARelaxFlowSchema(VaspSchema):
+    """Type hint associated with the MP GGA relaxation flows."""
 
-    pre_relax: VaspSchema
-    relax: VaspSchema
+    relax1: VaspSchema
+    relax2: VaspSchema
     static: VaspSchema
+
+
+class MPMetaGGARelaxFlowSchema(MPGGARelaxFlowSchema):
+    """Type hint associated with the MP meta-GGA relaxation flows."""
+
+    prerelax: VaspSchema
 
 
 class QMOFRelaxSchema(VaspSchema):
