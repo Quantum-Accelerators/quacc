@@ -14,13 +14,13 @@ def test_basic_customizers():
         return a * b * c * d
 
     add_, mult_ = customize_funcs(
-        ["add", "mult"], [add, mult], parameters={"add": {"b": 2}}
+        ["add", "mult"], [add, mult], param_swaps={"add": {"b": 2}}
     )
     assert add_(1) == 5
     assert mult_(1) == 4
 
     add_, mult_ = customize_funcs(
-        ["add", "mult"], [add, mult], parameters={"add": {"b": 2}, "mult": {"b": 2}}
+        ["add", "mult"], [add, mult], param_swaps={"add": {"b": 2}, "mult": {"b": 2}}
     )
     assert add_(1) == 5
     assert mult_(1) == 8
@@ -28,20 +28,20 @@ def test_basic_customizers():
     add_, mult_ = customize_funcs(
         ["add", "mult"],
         [add, mult],
-        parameters={"add": {"b": 2}, "mult": {"b": 2}},
+        param_swaps={"add": {"b": 2}, "mult": {"b": 2}},
         decorators={"add": job(), "mult": job()},
     )
     assert add_(1) == 5
     assert mult_(1) == 8
 
     add_, mult_ = customize_funcs(
-        ["add", "mult"], [add, mult], parameters={"all": {"b": 2}}
+        ["add", "mult"], [add, mult], param_swaps={"all": {"b": 2}}
     )
     assert add_(1) == 5
     assert mult_(1) == 8
 
     with pytest.raises(ValueError):
-        customize_funcs(["add", "mult"], [add, mult], parameters={"bad": {"b": 2}})
+        customize_funcs(["add", "mult"], [add, mult], param_swaps={"bad": {"b": 2}})
 
     with pytest.raises(ValueError):
-        customize_funcs("all", [add], parameters={"all": {"b": 2}})
+        customize_funcs("all", [add], param_swaps={"all": {"b": 2}})

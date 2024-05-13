@@ -71,7 +71,7 @@ def phonon_flow(
     run_relax
         Whether to run a relaxation beforehand.
     job_params
-        Custom parameters to pass to each Job in the Flow. This is a dictinoary where
+        Custom parameters to pass to each Job in the Flow. This is a dictionary where
         the keys are the names of the jobs and the values are dictionaries of parameters.
     job_decorators
         Custom decorators to apply to each Job in the Flow. This is a dictionary where
@@ -83,13 +83,12 @@ def phonon_flow(
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][].
         See the return type-hint for the data structure.
     """
-    calc_defaults = {"relax_job": {"opt_params": {"fmax": 1e-3}}}
-    job_params = recursive_dict_merge(calc_defaults, job_params)
-
+    job_param_defaults = {"relax_job": {"opt_params": {"fmax": 1e-3}}}
     relax_job_, static_job_ = customize_funcs(
         ["relax_job", "static_job"],
         [relax_job, static_job],
-        parameters=job_params,
+        param_defaults=job_param_defaults,
+        param_swaps=job_params,
         decorators=job_decorators,
     )
     if run_relax:

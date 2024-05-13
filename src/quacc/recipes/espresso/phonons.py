@@ -289,7 +289,7 @@ def phonon_dos_flow(
     pw_job, ph_job, fc_job, dos_job = customize_funcs(
         ["relax_job", "phonon_job", "q2r_job", "matdyn_job"],
         [relax_job, phonon_job, q2r_job, matdyn_job],
-        parameters=job_params,
+        param_swaps=job_params,
         decorators=job_decorators,
     )
 
@@ -365,7 +365,7 @@ def grid_phonon_flow(
         If nblocks = 0, each job will contain all the representations for a
         single q-point.
     job_params
-        Custom parameters to pass to each Job in the Flow. This is a dictinoary where
+        Custom parameters to pass to each Job in the Flow. This is a dictionary where
         the keys are the names of the jobs and the values are dictionaries of parameters.
     job_decorators
         Custom decorators to apply to each Job in the Flow. This is a dictionary where
@@ -476,7 +476,7 @@ def grid_phonon_flow(
     pw_job, ph_init_job, ph_job, ph_recover_job = customize_funcs(
         ["relax_job", "ph_init_job", "ph_job", "ph_recover_job"],
         [relax_job, phonon_job, phonon_job, phonon_job],
-        parameters=job_params,
+        param_swaps=job_params,
         decorators=job_decorators,
     )
 
