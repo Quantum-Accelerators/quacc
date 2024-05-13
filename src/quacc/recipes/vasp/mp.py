@@ -68,7 +68,7 @@ _MP_SETTINGS = {"VASP_INCAR_COPILOT": "off", "VASP_USE_CUSTODIAN": True}
 def mp_pre_relax_job(
     atoms: Atoms,
     method: Literal["gga", "metagga"] = "gga",
-    version: Literal["legacy", "2024"] = "legacy",
+    version: Literal["legacy", "2024"] = "2024",
     prev_dir: SourceDirectory | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
@@ -123,7 +123,7 @@ def mp_pre_relax_job(
 def mp_relax_job(
     atoms: Atoms,
     method: Literal["gga", "metagga"] = "gga",
-    version: Literal["legacy", "2024"] = "legacy",
+    version: Literal["legacy", "2024"] = "2024",
     prev_dir: SourceDirectory | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
@@ -175,7 +175,7 @@ def mp_relax_job(
 def mp_static_job(
     atoms: Atoms,
     method: Literal["gga", "metagga"] = "gga",
-    version: Literal["legacy", "2024"] = "legacy",
+    version: Literal["legacy", "2024"] = "2024",
     prev_dir: SourceDirectory | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
