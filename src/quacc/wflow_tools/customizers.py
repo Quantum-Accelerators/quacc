@@ -6,6 +6,8 @@ from copy import deepcopy
 from functools import partial
 from typing import TYPE_CHECKING, Literal
 
+from quacc.utils.dicts import recursive_dict_merge
+
 if TYPE_CHECKING:
     from typing import Any, Callable
 
@@ -138,7 +140,8 @@ def update_parameters(
 def customize_funcs(
     names: list[str] | str,
     funcs: list[Callable] | Callable,
-    parameters: dict[str, dict[str, Any]] | None = None,
+    param_defaults: dict[str, dict[str, Any]] | None = None,
+    param_swaps: dict[str, dict[str, Any]] | None = None,
     decorators: dict[str, Callable | None] | None = None,
 ) -> tuple[Callable, ...] | Callable:
     """
@@ -150,8 +153,12 @@ def customize_funcs(
         The names of the functions to customize, in the order they should be returned.
     funcs
         The functions to customize, in the order they are described in `names`.
-    parameters
-        Custom parameters to apply to each function. The keys of this dictionary correspond
+    param_defaults
+        Default parameters to apply to each function. The keys of this dictionary correspond
+        to the strings in `names`. If the key `"all"` is present, it will be applied to all
+        functions. If the value is `None`, no custom parameters will be applied to that function.
+    param_swaps
+        User-overrides of parameters to apply to each function. The keys of this dictionary correspond
         to the strings in `names`. If the key `"all"` is present, it will be applied to all
         functions. If the value is `None`, no custom parameters will be applied to that function.
     decorators
@@ -164,7 +171,7 @@ def customize_funcs(
     tuple[Callable, ...] | Callable
         The customized functions, returned in the same order as provided in `funcs`.
     """
-    parameters = parameters or {}
+    parameters = recursive_dict_merge(param_defaults, param_swaps)
     decorators = decorators or {}
     updated_funcs = []
 
