@@ -3,9 +3,7 @@ from __future__ import annotations
 from quacc import flow, job, subflow
 
 
-def test_decorators(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_decorators():
     @job
     def add(a, b):
         return a + b
@@ -38,9 +36,7 @@ def test_decorators(tmp_path, monkeypatch):
     assert dynamic_workflow(1, 2, 3) == [6, 6, 6]
 
 
-def test_decorators_v2(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_decorators_v2():
     @job()
     def add(a, b):
         return a + b
@@ -73,9 +69,7 @@ def test_decorators_v2(tmp_path, monkeypatch):
     assert dynamic_workflow(1, 2, 3) == [6, 6, 6]
 
 
-def test_decorators_v3(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_decorators_v3():
     def add(a, b):
         return a + b
 

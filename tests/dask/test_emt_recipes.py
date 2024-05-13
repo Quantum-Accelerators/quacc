@@ -16,8 +16,7 @@ client = get_client()
 
 
 @pytest.mark.parametrize("job_decorators", [None, {"relax_job": job()}])
-def test_functools(tmp_path, monkeypatch, job_decorators):
-    monkeypatch.chdir(tmp_path)
+def test_functools(job_decorators):
     atoms = bulk("Cu")
     delayed = bulk_to_slabs_flow(
         atoms,
@@ -31,8 +30,7 @@ def test_functools(tmp_path, monkeypatch, job_decorators):
     assert result[-1]["fmax"] == 0.1
 
 
-def test_copy_files(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
+def test_copy_files():
     atoms = bulk("Cu")
 
     @flow
@@ -43,11 +41,10 @@ def test_copy_files(tmp_path, monkeypatch):
     assert "atoms" in client.compute(myflow(atoms)).result()
 
 
-def test_dask_phonon_flow(tmp_path, monkeypatch):
+def test_dask_phonon_flow():
     pytest.importorskip("phonopy")
     from quacc.recipes.emt.phonons import phonon_flow
 
-    monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
     future = phonon_flow(atoms)
     assert client.compute(future).result()["results"]["thermal_properties"][
@@ -55,11 +52,10 @@ def test_dask_phonon_flow(tmp_path, monkeypatch):
     ].shape == (101,)
 
 
-def test_dask_phonon_flow_multistep(tmp_path, monkeypatch):
+def test_dask_phonon_flow_multistep():
     pytest.importorskip("phonopy")
     from quacc.recipes.emt.phonons import phonon_flow
 
-    monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
     relaxed = relax_job(atoms)
     future = phonon_flow(relaxed["atoms"])

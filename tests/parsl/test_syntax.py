@@ -7,9 +7,7 @@ parsl = pytest.importorskip("parsl")
 from quacc import flow, job, strip_decorator, subflow
 
 
-def test_parsl_decorators(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_parsl_decorators():
     @job
     def add(a, b):
         return a + b
@@ -62,9 +60,7 @@ def test_parsl_decorators(tmp_path, monkeypatch):
     assert dynamic_workflow3(1, 2, 3).result() == 12
 
 
-def test_parsl_decorators_args(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_parsl_decorators_args():
     @job()
     def add(a, b):
         return a + b
@@ -120,9 +116,7 @@ def test_strip_decorators():
     assert stripped_add3(1, 2) == 3
 
 
-def test_special_params(tmpdir, monkeypatch):
-    monkeypatch.chdir(tmpdir)
-
+def test_special_params():
     @job(walltime=30, parsl_resource_specification={})
     def add(a, b):
         return a + b

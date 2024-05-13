@@ -60,7 +60,6 @@ def bad_mock_cclib_calculate(*args, **kwargs):
 
 
 def test_cclib_summarize_run(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
     copytree(run1, tmp_path / "test1")
     copytree(run2, tmp_path / "test2")
 
@@ -142,9 +141,7 @@ def test_errors():
         cclib_summarize_run(atoms, ".log", directory=run1)
 
 
-def test_cclib_taskdoc(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_cclib_taskdoc():
     p = FILE_DIR / "test_files" / "cclib_data"
 
     # Now we will try two possible extensions, but we will make sure that
@@ -182,9 +179,7 @@ def test_cclib_taskdoc(tmp_path, monkeypatch):
     MontyDecoder().process_decoded(d)
 
 
-def test_cclib_calculate(tmp_path, monkeypatch, cclib_obj):
-    monkeypatch.chdir(tmp_path)
-
+def test_cclib_calculate(cclib_obj):
     with pytest.raises(ValueError):
         _cclib_calculate(cclib_obj, method="fakemethod")
 
@@ -218,8 +213,7 @@ def test_cclib_calculate(tmp_path, monkeypatch, cclib_obj):
         )
 
 
-def test_monkeypatches(tmp_path, monkeypatch, cclib_obj, caplog):
-    monkeypatch.chdir(tmp_path)
+def test_monkeypatches(monkeypatch, cclib_obj, caplog):
     monkeypatch.setenv(
         "PROATOM_DIR", str(FILE_DIR / "test_files" / "cclib_data" / "proatomdata")
     )

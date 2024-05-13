@@ -17,9 +17,7 @@ from numpy.testing import assert_equal
 from quacc.recipes.vasp.core import static_job
 
 
-def test_static_job(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_static_job():
     atoms = bulk("Al")
 
     output = static_job(atoms, kpts=[3, 3, 3])
@@ -33,9 +31,7 @@ def test_static_job(tmp_path, monkeypatch):
     assert output["results"]["energy"] < 0
 
 
-def test_static_job_spin(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_static_job_spin():
     atoms = bulk("Fe")
     atoms.set_initial_magnetic_moments([5.0] * len(atoms))
 

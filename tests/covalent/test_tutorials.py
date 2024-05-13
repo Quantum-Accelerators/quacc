@@ -11,9 +11,7 @@ from quacc.recipes.emt.core import relax_job, static_job  # skipcq: PYL-C0412
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow  # skipcq: PYL-C0412
 
 
-def test_quickstart(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_quickstart():
     # Define the Atoms object
     atoms = bulk("Cu")
 
@@ -25,9 +23,7 @@ def test_quickstart(tmp_path, monkeypatch):
     assert result.status == "COMPLETED"
 
 
-def test_tutorial1a(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_tutorial1a():
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
 
@@ -43,18 +39,14 @@ def test_tutorial1a(tmp_path, monkeypatch):
     assert result.status == "COMPLETED"
 
 
-def test_tutorial1b(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_tutorial1b():
     atoms = bulk("Cu")
     dispatch_id = ct.dispatch(bulk_to_slabs_flow)(atoms)  # (1)!
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
 
 
-def test_tutorial2a(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_tutorial2a():
     # Define the workflow
     @flow  # (1)!
     def workflow(atoms):
@@ -76,9 +68,7 @@ def test_tutorial2a(tmp_path, monkeypatch):
     assert result.status == "COMPLETED"
 
 
-def test_tutorial2b(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_tutorial2b():
     # Define workflow
     @flow
     def workflow(atoms1, atoms2):
@@ -100,9 +90,7 @@ def test_tutorial2b(tmp_path, monkeypatch):
     assert result.status == "COMPLETED"
 
 
-def test_tutorial2c(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_tutorial2c():
     @flow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
@@ -114,9 +102,7 @@ def test_tutorial2c(tmp_path, monkeypatch):
     assert result.status == "COMPLETED"
 
 
-def test_tutorial_excecutor1(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_tutorial_excecutor1():
     @flow(executor="local")
     def workflow4(atoms):
         result1 = relax_job(atoms)
@@ -128,9 +114,7 @@ def test_tutorial_excecutor1(tmp_path, monkeypatch):
     assert result.status == "COMPLETED"
 
 
-def test_tutorial_excecutor2(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_tutorial_excecutor2():
     relax_job.electron_object.executor = "dask"
     static_job.electron_object.executor = "local"
 
@@ -145,9 +129,7 @@ def test_tutorial_excecutor2(tmp_path, monkeypatch):
     assert result.status == "COMPLETED"
 
 
-def test_comparison1(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_comparison1():
     @job  # (1)!
     def add(a, b):
         return a + b
@@ -169,9 +151,7 @@ def test_comparison1(tmp_path, monkeypatch):
     assert result.status == "COMPLETED"
 
 
-def test_comparison2(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_comparison2():
     @job
     def add(a, b):
         return a + b
@@ -200,9 +180,7 @@ def test_comparison2(tmp_path, monkeypatch):
     assert result.status == "COMPLETED"
 
 
-def test_comparison3(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_comparison3():
     @job  #  (1)!
     def add(a, b):
         return a + b

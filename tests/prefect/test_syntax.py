@@ -43,9 +43,7 @@ def test_patch_local():
         assert workflow(1) == {"input": 100, "result": 20000}
 
 
-def test_prefect_decorators(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_prefect_decorators():
     @job
     def add(a, b):
         return a + b
@@ -101,9 +99,7 @@ def test_prefect_decorators(tmp_path, monkeypatch):
     assert dynamic_workflow3(1, 2, 3).result() == 12
 
 
-def test_prefect_decorators_local(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_prefect_decorators_local():
     with change_settings({"PREFECT_AUTO_SUBMIT": False}):
 
         @job

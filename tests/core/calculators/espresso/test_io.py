@@ -42,8 +42,7 @@ def test_read_espresso_ph_1():
     assert results[5]["atoms"].symbols == ["Al"]
 
 
-def test_dos_output(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
+def test_dos_output():
     template = EspressoTemplate(binary="dos")
     results = template.read_results(directory=Path(RUN_PATH))
     assert results["dos_results"]["fermi"] == pytest.approx(5.98)

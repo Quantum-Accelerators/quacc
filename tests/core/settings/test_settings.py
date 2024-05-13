@@ -26,16 +26,13 @@ def test_file(tmp_path, monkeypatch):
     os.remove(tmp_path / "quacc_test.yaml")
 
 
-def test_store(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
+def test_store():
     SETTINGS.STORE = MemoryStore()
     atoms = bulk("Cu")
     static_job(atoms)
 
 
-def test_results_dir(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_results_dir():
     atoms = bulk("Cu")
     output = relax_job(atoms)
     assert "opt.traj.gz" in os.listdir(output["dir_name"])

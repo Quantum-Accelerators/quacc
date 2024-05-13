@@ -887,8 +887,7 @@ def test_pmg_input_set2():
 
 
 @pytest.mark.skipif(which(SETTINGS.VASP_CMD), reason="VASP is installed")
-def test_run(monkeypatch, tmp_path):
-    monkeypatch.chdir(tmp_path)
+def test_run():
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, xc="PBE", use_custodian=False)

@@ -119,8 +119,7 @@ def mock_read(self, **kwargs):
         raise RuntimeError("Results should not be None here.")
 
 
-def test_static_job_v1(monkeypatch, tmp_path, test_atoms):
-    monkeypatch.chdir(tmp_path)
+def test_static_job_v1(monkeypatch, test_atoms):
     monkeypatch.setattr(QChem, "execute", mock_execute1)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
     output = static_job(test_atoms, charge=charge, spin_multiplicity=spin_multiplicity)
@@ -140,9 +139,7 @@ def test_static_job_v1(monkeypatch, tmp_path, test_atoms):
     assert output["results"]["taskdoc"]
 
 
-def test_static_job_v2(monkeypatch, tmp_path, test_atoms):
-    monkeypatch.chdir(tmp_path)
-
+def test_static_job_v2(monkeypatch, test_atoms):
     monkeypatch.setattr(QChem, "execute", mock_execute2)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms, charge=-1)
     output = static_job(
@@ -170,9 +167,7 @@ def test_static_job_v2(monkeypatch, tmp_path, test_atoms):
     assert output["results"]["taskdoc"]
 
 
-def test_static_job_v3(monkeypatch, tmp_path, test_atoms):
-    monkeypatch.chdir(tmp_path)
-
+def test_static_job_v3(monkeypatch, test_atoms):
     monkeypatch.setattr(QChem, "execute", mock_execute3)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
     output = static_job(
@@ -197,17 +192,14 @@ def test_static_job_v3(monkeypatch, tmp_path, test_atoms):
     assert output["results"]["taskdoc"]
 
 
-def test_static_job_v4(monkeypatch, tmp_path, os_atoms):
-    monkeypatch.chdir(tmp_path)
+def test_static_job_v4(monkeypatch, os_atoms):
     monkeypatch.setattr(QChem, "read_results", mock_read)
     monkeypatch.setattr(QChem, "execute", mock_execute4)
     charge, spin_multiplicity = check_charge_and_spin(os_atoms)
     assert static_job(os_atoms, charge=charge, spin_multiplicity=spin_multiplicity)
 
 
-def test_static_job_v5(tmp_path, monkeypatch, test_atoms):
-    monkeypatch.chdir(tmp_path)
-
+def test_static_job_v5(test_atoms):
     with pytest.raises(ValueError):
         static_job(
             test_atoms,
@@ -218,9 +210,7 @@ def test_static_job_v5(tmp_path, monkeypatch, test_atoms):
 
 
 @pytest.mark.skipif(sella is None, reason="Does not have Sella")
-def test_relax_job_v1(monkeypatch, tmp_path, test_atoms):
-    monkeypatch.chdir(tmp_path)
-
+def test_relax_job_v1(monkeypatch, test_atoms):
     monkeypatch.setattr(QChem, "execute", mock_execute1)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
     output = relax_job(
@@ -248,8 +238,7 @@ def test_relax_job_v1(monkeypatch, tmp_path, test_atoms):
 
 
 @pytest.mark.skipif(sella is None, reason="Does not have Sella")
-def test_relax_job_v2(monkeypatch, tmp_path, test_atoms):
-    monkeypatch.chdir(tmp_path)
+def test_relax_job_v2(monkeypatch, test_atoms):
     monkeypatch.setattr(QChem, "execute", mock_execute2)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms, charge=-1)
     output = relax_job(
@@ -279,8 +268,7 @@ def test_relax_job_v2(monkeypatch, tmp_path, test_atoms):
 
 
 @pytest.mark.skipif(sella is None, reason="Does not have Sella")
-def test_relax_job_v3(monkeypatch, tmp_path, test_atoms):
-    monkeypatch.chdir(tmp_path)
+def test_relax_job_v3(monkeypatch, test_atoms):
     monkeypatch.setattr(QChem, "execute", mock_execute3)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
     output = relax_job(
@@ -304,8 +292,7 @@ def test_relax_job_v3(monkeypatch, tmp_path, test_atoms):
 
 
 @pytest.mark.skipif(sella is None, reason="Does not have Sella")
-def test_relax_job_v4(tmp_path, monkeypatch, test_atoms):
-    monkeypatch.chdir(tmp_path)
+def test_relax_job_v4(monkeypatch, test_atoms):
     with pytest.raises(ValueError):
         relax_job(
             test_atoms,
@@ -315,8 +302,7 @@ def test_relax_job_v4(tmp_path, monkeypatch, test_atoms):
         )
 
 
-def test_freq_job_v1(monkeypatch, tmp_path, test_atoms):
-    monkeypatch.chdir(tmp_path)
+def test_freq_job_v1(monkeypatch, test_atoms):
     monkeypatch.setattr(QChem, "execute", mock_execute5)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms, charge=-1)
     output = freq_job(
@@ -341,9 +327,7 @@ def test_freq_job_v1(monkeypatch, tmp_path, test_atoms):
 
 
 @pytest.mark.skipif(sella is None, reason="Does not have Sella")
-def test_ts_job_v1(monkeypatch, tmp_path, test_atoms):
-    monkeypatch.chdir(tmp_path)
-
+def test_ts_job_v1(monkeypatch, test_atoms):
     monkeypatch.setattr(QChem, "execute", mock_execute1)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
     output = ts_job(
@@ -370,8 +354,7 @@ def test_ts_job_v1(monkeypatch, tmp_path, test_atoms):
 
 
 @pytest.mark.skipif(sella is None, reason="Does not have Sella")
-def test_ts_job_v2(monkeypatch, tmp_path, test_atoms):
-    monkeypatch.chdir(tmp_path)
+def test_ts_job_v2(monkeypatch, test_atoms):
     monkeypatch.setattr(QChem, "execute", mock_execute2)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms, charge=-1)
     output = ts_job(
@@ -401,8 +384,7 @@ def test_ts_job_v2(monkeypatch, tmp_path, test_atoms):
 
 
 @pytest.mark.skipif(sella is None, reason="Does not have Sella")
-def test_ts_job_v3(monkeypatch, tmp_path, test_atoms):
-    monkeypatch.chdir(tmp_path)
+def test_ts_job_v3(monkeypatch, test_atoms):
     monkeypatch.setattr(QChem, "execute", mock_execute3)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
     output = ts_job(
@@ -426,8 +408,7 @@ def test_ts_job_v3(monkeypatch, tmp_path, test_atoms):
 
 
 @pytest.mark.skipif(sella is None, reason="Does not have Sella")
-def test_ts_job_v4(tmp_path, monkeypatch, test_atoms):
-    monkeypatch.chdir(tmp_path)
+def test_ts_job_v4(test_atoms):
     with pytest.raises(ValueError):
         ts_job(
             test_atoms,
@@ -447,9 +428,7 @@ def test_ts_job_v4(tmp_path, monkeypatch, test_atoms):
 
 
 @pytest.mark.skipif(sella is None, reason="Does not have Sella")
-def test_irc_job_v1(monkeypatch, tmp_path, test_atoms):
-    monkeypatch.chdir(tmp_path)
-
+def test_irc_job_v1(monkeypatch, test_atoms):
     monkeypatch.setattr(QChem, "read_results", mock_read)
     monkeypatch.setattr(QChem, "execute", mock_execute4)
 
@@ -513,8 +492,7 @@ def test_irc_job_v1(monkeypatch, tmp_path, test_atoms):
 
 
 @pytest.mark.skipif(sella is None, reason="Does not have Sella")
-def test_irc_job_v2(tmp_path, monkeypatch, test_atoms):
-    monkeypatch.chdir(tmp_path)
+def test_irc_job_v2(test_atoms):
     with pytest.raises(ValueError):
         irc_job(test_atoms, charge=0, spin_multiplicity=1, direction="straight")
 
@@ -539,9 +517,7 @@ def test_irc_job_v2(tmp_path, monkeypatch, test_atoms):
 
 
 @pytest.mark.skipif(sella is None, reason="Does not have Sella")
-def test_quasi_irc_job(monkeypatch, tmp_path, test_atoms):
-    monkeypatch.chdir(tmp_path)
-
+def test_quasi_irc_job(monkeypatch, test_atoms):
     monkeypatch.setattr(QChem, "read_results", mock_read)
     monkeypatch.setattr(QChem, "execute", mock_execute4)
 
@@ -597,9 +573,7 @@ def test_quasi_irc_job(monkeypatch, tmp_path, test_atoms):
 
 
 @pytest.mark.skipif(sella is None, reason="Does not have Sella")
-def test_quasi_irc_perturb_job(monkeypatch, tmp_path, test_qirc_atoms):
-    monkeypatch.chdir(tmp_path)
-
+def test_quasi_irc_perturb_job(monkeypatch, test_qirc_atoms):
     monkeypatch.setattr(QChem, "read_results", mock_read)
     monkeypatch.setattr(QChem, "execute", mock_execute4)
 

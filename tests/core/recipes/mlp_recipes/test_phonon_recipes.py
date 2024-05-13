@@ -10,16 +10,14 @@ from ase.build import bulk
 from quacc.recipes.mlp.phonons import phonon_flow
 
 
-def test_phonon_flow(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
+def test_phonon_flow():
     atoms = bulk("Cu")
     output = phonon_flow(atoms, method="m3gnet", min_lengths=5.0)
     assert output["results"]["force_constants"].shape == (8, 8, 3, 3)
     assert len(output["results"]["thermal_properties"]["temperatures"]) == 101
 
 
-def test_phonon_flow_dispersion(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
+def test_phonon_flow_dispersion():
     atoms = bulk("Cu")
     output = phonon_flow(
         atoms,

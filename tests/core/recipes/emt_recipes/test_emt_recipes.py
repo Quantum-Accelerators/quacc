@@ -12,9 +12,7 @@ from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 
-def test_static_job(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_static_job():
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += [0.1, 0.1, 0.1]
     atoms.info = {"test": "hello"}
@@ -32,9 +30,7 @@ def test_static_job(tmp_path, monkeypatch):
     assert output["results"]["energy"] == pytest.approx(0.11074520235398744)
 
 
-def test_relax_job(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_relax_job():
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += [0.1, 0.1, 0.1]
 
@@ -87,9 +83,7 @@ def test_relax_job(tmp_path, monkeypatch):
     assert output["results"]["energy"] == pytest.approx(0.04996032884581858)
 
 
-def test_slab_dynamic_jobs(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_slab_dynamic_jobs():
     atoms = bulk("Cu")
 
     outputs = bulk_to_slabs_flow(atoms, run_static=False)

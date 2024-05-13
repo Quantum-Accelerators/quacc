@@ -13,9 +13,7 @@ from quacc import change_settings
 from quacc.recipes.tblite.core import freq_job, relax_job, static_job
 
 
-def test_static_job_v1(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_static_job_v1():
     atoms = molecule("H2O")
     output = static_job(atoms)
     assert output["spin_multiplicity"] == 1
@@ -27,9 +25,7 @@ def test_static_job_v1(tmp_path, monkeypatch):
     assert output["spin_multiplicity"] == 1
 
 
-def test_static_job_v2(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_static_job_v2():
     atoms = molecule("H2O")
     output = static_job(atoms, method="GFN1-xTB")
     assert output["parameters"]["method"] == "GFN1-xTB"
@@ -38,9 +34,7 @@ def test_static_job_v2(tmp_path, monkeypatch):
     assert output["spin_multiplicity"] == 1
 
 
-def test_static_job_v3(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_static_job_v3():
     atoms = molecule("H")
     atoms.set_initial_magnetic_moments([1.0])
     output = static_job(atoms, method="GFN1-xTB")
@@ -51,9 +45,7 @@ def test_static_job_v3(tmp_path, monkeypatch):
     assert_array_equal(output["atoms"].get_initial_magnetic_moments(), [1.0])
 
 
-def test_relax_job(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_relax_job():
     atoms = molecule("H2O")
     output = relax_job(atoms)
     assert output["spin_multiplicity"] == 1
@@ -64,9 +56,7 @@ def test_relax_job(tmp_path, monkeypatch):
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
 
 
-def test_relax_job_cell(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_relax_job_cell():
     atoms = bulk("Cu")
     atoms.set_initial_magnetic_moments([1.0])
     output = relax_job(atoms, method="GFN1-xTB", relax_cell=True)
@@ -77,9 +67,7 @@ def test_relax_job_cell(tmp_path, monkeypatch):
     assert "spin_multiplicity" not in output
 
 
-def test_freq_job_v1(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_freq_job_v1():
     atoms = molecule("H2O")
     output = freq_job(atoms)
     assert output["atoms"] == molecule("H2O")
@@ -107,9 +95,7 @@ def test_freq_job_v1(tmp_path, monkeypatch):
     assert output["results"]["gibbs_energy"] == pytest.approx(0.05367081893346437)
 
 
-def test_freq_job_v2(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_freq_job_v2():
     atoms = molecule("H")
     atoms.set_initial_magnetic_moments([1.0])
     initial_atoms = deepcopy(atoms)
@@ -133,9 +119,7 @@ def test_freq_job_v2(tmp_path, monkeypatch):
     assert output["results"]["gibbs_energy"] == pytest.approx(-1.290258804047542)
 
 
-def test_freq_job_v3(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_freq_job_v3():
     atoms = molecule("CH3")
     atoms.set_initial_magnetic_moments([1.0, 0.0, 0.0, 0.0])
     initial_atoms = deepcopy(atoms)
@@ -171,11 +155,3 @@ def test_freq_job_v3(tmp_path, monkeypatch):
     assert_array_equal(
         output["atoms"].get_initial_magnetic_moments(), [1.0, 0.0, 0.0, 0.0]
     )
-
-
-def test_unique_workdir(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
-    with change_settings({"CREATE_UNIQUE_DIR": True}):
-        test_static_job_v1(tmp_path, monkeypatch)
-        test_relax_job(tmp_path, monkeypatch)

@@ -14,9 +14,7 @@ from quacc.recipes.emt.slabs import bulk_to_slabs_flow  # skipcq: PYL-C0412
 client = get_client()
 
 
-def test_tutorial1a(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_tutorial1a():
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
 
@@ -28,9 +26,7 @@ def test_tutorial1a(tmp_path, monkeypatch):
     assert "atoms" in dask.compute(delayed)[0]
 
 
-def test_tutorial1b(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_tutorial1b():
     # Define the Atoms object
     atoms = bulk("Cu")
 
@@ -41,9 +37,7 @@ def test_tutorial1b(tmp_path, monkeypatch):
     assert "atoms" in client.compute(delayed).result()[0]
 
 
-def test_tutorial2a(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_tutorial2a():
     # Define the workflow
     def workflow(atoms):
         # Define Job 1
@@ -62,9 +56,7 @@ def test_tutorial2a(tmp_path, monkeypatch):
     assert "atoms" in client.compute(delayed).result()  # (2)!
 
 
-def test_tutorial2b(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_tutorial2b():
     # Define workflow
     def workflow(atoms1, atoms2):
         # Define two independent relaxation jobs
@@ -90,9 +82,7 @@ def test_tutorial2b(tmp_path, monkeypatch):
     assert "atoms" in result2
 
 
-def test_tutorial2c(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_tutorial2c():
     # Define the workflow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)

@@ -45,9 +45,7 @@ def _set_dtype(size, type_="float"):
 
 
 @pytest.mark.parametrize("method", methods)
-def test_static_job(tmp_path, monkeypatch, method):
-    monkeypatch.chdir(tmp_path)
-
+def test_static_job(method):
     if method == "mace-mp-0":
         _set_dtype(64)
     else:
@@ -66,9 +64,7 @@ def test_static_job(tmp_path, monkeypatch, method):
 
 
 @pytest.mark.parametrize("method", methods)
-def test_relax_job(tmp_path, monkeypatch, method):
-    monkeypatch.chdir(tmp_path)
-
+def test_relax_job(method):
     if method == "mace-mp-0":
         _set_dtype(64)
     else:
@@ -88,9 +84,7 @@ def test_relax_job(tmp_path, monkeypatch, method):
     assert output["atoms"].get_volume() == pytest.approx(atoms.get_volume())
 
 
-def test_relax_job_dispersion(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_relax_job_dispersion():
     _set_dtype(64)
 
     atoms = bulk("Cu") * (2, 2, 2)
@@ -103,9 +97,7 @@ def test_relax_job_dispersion(tmp_path, monkeypatch):
 
 
 @pytest.mark.parametrize("method", methods)
-def test_relax_cell_job(tmp_path, monkeypatch, method):
-    monkeypatch.chdir(tmp_path)
-
+def test_relax_cell_job(method):
     if method == "mace-mp-0":
         _set_dtype(64)
     else:

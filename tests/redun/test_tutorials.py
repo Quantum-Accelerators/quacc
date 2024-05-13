@@ -15,9 +15,7 @@ def scheduler():
     return redun.Scheduler()
 
 
-def test_tutorial1a(tmp_path, monkeypatch, scheduler):
-    monkeypatch.chdir(tmp_path)
-
+def test_tutorial1a(scheduler):
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
 
@@ -25,9 +23,7 @@ def test_tutorial1a(tmp_path, monkeypatch, scheduler):
     assert "atoms" in scheduler.run(relax_job(atoms))
 
 
-def test_tutorial1b(tmp_path, monkeypatch, scheduler):
-    monkeypatch.chdir(tmp_path)
-
+def test_tutorial1b(scheduler):
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
 
@@ -35,9 +31,7 @@ def test_tutorial1b(tmp_path, monkeypatch, scheduler):
     assert len(scheduler.run(bulk_to_slabs_flow(atoms))) == 4
 
 
-def test_tutorial2a(tmp_path, monkeypatch, scheduler):
-    monkeypatch.chdir(tmp_path)
-
+def test_tutorial2a(scheduler):
     @flow
     def workflow(atoms):
         result1 = relax_job(atoms)  # (1)!
@@ -49,9 +43,7 @@ def test_tutorial2a(tmp_path, monkeypatch, scheduler):
     assert "atoms" in scheduler.run(workflow(atoms))
 
 
-def test_tutorial2b(tmp_path, monkeypatch, scheduler):
-    monkeypatch.chdir(tmp_path)
-
+def test_tutorial2b(scheduler):
     # Define workflow
     @flow
     def workflow(atoms1, atoms2):
@@ -69,9 +61,7 @@ def test_tutorial2b(tmp_path, monkeypatch, scheduler):
     assert "atoms" in scheduler.run(workflow(atoms1, atoms2))["result1"]
 
 
-def test_tutorial2c(tmp_path, monkeypatch, scheduler):
-    monkeypatch.chdir(tmp_path)
-
+def test_tutorial2c(scheduler):
     # Define the workflow
     @flow
     def workflow(atoms):

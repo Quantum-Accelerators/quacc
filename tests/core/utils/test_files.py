@@ -13,9 +13,7 @@ LOGGER = logging.getLogger(__name__)
 LOGGER.propagate = True
 
 
-def test_make_unique_dir(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_make_unique_dir():
     jobdir = make_unique_dir()
     assert os.path.exists(jobdir)
 

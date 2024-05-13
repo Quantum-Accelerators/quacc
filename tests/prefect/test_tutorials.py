@@ -10,9 +10,7 @@ from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 
-def test_tutorial1a(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_tutorial1a():
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
 
@@ -29,9 +27,7 @@ def test_tutorial1a(tmp_path, monkeypatch):
     assert "atoms" in result
 
 
-def test_tutorial1b(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_tutorial1b():
     # Define the Atoms object
     atoms = bulk("Cu")
 
@@ -44,9 +40,7 @@ def test_tutorial1b(tmp_path, monkeypatch):
         assert "atoms" in result
 
 
-def test_tutorial2a(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_tutorial2a():
     # Define the workflow
     @flow
     def workflow(atoms):
@@ -64,9 +58,7 @@ def test_tutorial2a(tmp_path, monkeypatch):
     assert "atoms" in result
 
 
-def test_tutorial2b(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_tutorial2b():
     # Define workflow
     @flow
     def workflow(atoms1, atoms2):
@@ -90,9 +82,7 @@ def test_tutorial2b(tmp_path, monkeypatch):
     assert "atoms" in result2
 
 
-def test_tutorial2c(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_tutorial2c():
     # Define the workflow
     @flow
     def workflow(atoms):

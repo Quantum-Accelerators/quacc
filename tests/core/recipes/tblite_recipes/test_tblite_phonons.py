@@ -11,8 +11,7 @@ from ase.build import bulk
 from quacc.recipes.tblite.phonons import phonon_flow
 
 
-def test_phonon_flow(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
+def test_phonon_flow():
     atoms = bulk("Cu")
     output = phonon_flow(
         atoms, min_lengths=5.0, job_params={"static_job": {"method": "GFN1-xTB"}}

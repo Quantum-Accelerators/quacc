@@ -27,8 +27,7 @@ def os_atoms():
     return read(FILE_DIR / "OS_test.xyz")
 
 
-def test_qchem_write_input_basic(tmp_path, monkeypatch, test_atoms):
-    monkeypatch.chdir(tmp_path)
+def test_qchem_write_input_basic(test_atoms):
     calc = QChem(
         test_atoms,
         qchem_dict_set_params={
@@ -55,8 +54,7 @@ def test_qchem_write_input_basic(tmp_path, monkeypatch, test_atoms):
         calc.write_input(test_atoms)
 
 
-def test_qchem_write_input_intermediate(tmp_path, monkeypatch, test_atoms):
-    monkeypatch.chdir(tmp_path)
+def test_qchem_write_input_intermediate(test_atoms):
     calc = QChem(
         test_atoms,
         qchem_dict_set_params={
@@ -79,8 +77,7 @@ def test_qchem_write_input_intermediate(tmp_path, monkeypatch, test_atoms):
     assert qcinp.as_dict() == ref_qcinp.as_dict()
 
 
-def test_qchem_write_input_advanced(tmp_path, monkeypatch, test_atoms):
-    monkeypatch.chdir(tmp_path)
+def test_qchem_write_input_advanced( test_atoms):
     calc = QChem(
         test_atoms,
         qchem_dict_set_params={
@@ -104,9 +101,8 @@ def test_qchem_write_input_advanced(tmp_path, monkeypatch, test_atoms):
 
 
 def test_qchem_write_input_open_shell_and_different_charges(
-    tmp_path, monkeypatch, os_atoms
+    os_atoms
 ):
-    monkeypatch.chdir(tmp_path)
     calc = QChem(
         os_atoms,
         spin_multiplicity=2,
@@ -174,8 +170,7 @@ def test_qchem_write_input_open_shell_and_different_charges(
     assert qcinp.as_dict() == ref_qcinp.as_dict()
 
 
-def test_qchem_write_input_freq(tmp_path, monkeypatch, test_atoms):
-    monkeypatch.chdir(tmp_path)
+def test_qchem_write_input_freq(test_atoms):
     calc = QChem(
         test_atoms,
         qchem_dict_set_params={

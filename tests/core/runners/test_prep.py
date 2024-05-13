@@ -31,10 +31,9 @@ def make_files3():
         f.write("file2")
 
 
-def test_calc_setup(tmp_path, monkeypatch):
+def test_calc_setup(tmp_path):
     from quacc import SETTINGS
 
-    monkeypatch.chdir(tmp_path)
     make_files()
 
     with change_settings({"SCRATCH_DIR": tmp_path}):
@@ -59,10 +58,9 @@ def test_calc_setup(tmp_path, monkeypatch):
 @pytest.mark.parametrize(
     "copy_files", [{Path(): ["file1.txt"]}, {Path(): "file1.txt"}, {Path(): "file1*"}]
 )
-def test_calc_setup_v2(tmp_path, monkeypatch, copy_files):
+def test_calc_setup_v2(copy_files):
     from quacc import SETTINGS
 
-    monkeypatch.chdir(tmp_path)
     make_files()
 
     with change_settings({"SCRATCH_DIR": None}):
@@ -90,10 +88,9 @@ def test_calc_setup_v2(tmp_path, monkeypatch, copy_files):
         {"saved": ["file1*"]},
     ],
 )
-def test_calc_setup_v3(tmp_path, monkeypatch, copy_files):
+def test_calc_setup_v3(copy_files):
     from quacc import SETTINGS
 
-    monkeypatch.chdir(tmp_path)
     make_files3()
 
     with change_settings({"SCRATCH_DIR": None}):
@@ -113,10 +110,9 @@ def test_calc_setup_v3(tmp_path, monkeypatch, copy_files):
 
 
 @pytest.mark.parametrize("copy_files", ["saved", Path("saved")])
-def test_calc_setup_v3_2(tmp_path, monkeypatch, copy_files):
+def test_calc_setup_v3_2(copy_files):
     from quacc import SETTINGS
 
-    monkeypatch.chdir(tmp_path)
     make_files3()
 
     with change_settings({"SCRATCH_DIR": None}):
@@ -136,10 +132,9 @@ def test_calc_setup_v3_2(tmp_path, monkeypatch, copy_files):
 
 
 @pytest.mark.parametrize("copy_files", [{"saved": "*"}])
-def test_calc_setup_v4(tmp_path, monkeypatch, copy_files):
+def test_calc_setup_v4(copy_files):
     from quacc import SETTINGS
 
-    monkeypatch.chdir(tmp_path)
     make_files3()
 
     with change_settings({"SCRATCH_DIR": None}):
@@ -158,10 +153,9 @@ def test_calc_setup_v4(tmp_path, monkeypatch, copy_files):
         assert "saved" not in os.listdir(tmpdir)
 
 
-def test_calc_cleanup(tmp_path, monkeypatch):
+def test_calc_cleanup(tmp_path):
     from quacc import SETTINGS
 
-    monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
     atoms.calc = EMT()
 

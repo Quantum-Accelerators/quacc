@@ -29,8 +29,7 @@ FILE_DIR = Path(__file__).parent
 RUN1 = FILE_DIR / "test_files" / "vasp_run1"
 
 
-def test_summarize_run(tmpdir, monkeypatch):
-    monkeypatch.chdir(tmpdir)
+def test_summarize_run():
     # Make sure metadata is made
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
@@ -51,8 +50,7 @@ def test_summarize_run(tmpdir, monkeypatch):
     assert pickle_results["atoms"].info == results["atoms"].info
 
 
-def test_summarize_run2(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
+def test_summarize_run2():
     # Test DB
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
@@ -61,9 +59,7 @@ def test_summarize_run2(tmp_path, monkeypatch):
     assert store.count() == 1
 
 
-def test_summarize_run3(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_summarize_run3():
     # Make sure info tags are handled appropriately
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
@@ -73,8 +69,7 @@ def test_summarize_run3(tmp_path, monkeypatch):
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
 
-def test_summarize_run4(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
+def test_summarize_run4():
     # Make sure magnetic moments are handled appropriately
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
@@ -91,8 +86,7 @@ def test_summarize_run4(tmp_path, monkeypatch):
     assert results["atoms"].calc is None
 
 
-def test_summarize_run5(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
+def test_summarize_run5():
     # Make sure Atoms magmoms were not moved if specified
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
@@ -112,9 +106,7 @@ def test_summarize_run5(tmp_path, monkeypatch):
     MontyDecoder().process_decoded(d)
 
 
-def test_summarize_opt_run(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_summarize_opt_run():
     # Make sure metadata is made
     atoms = bulk("Cu") * (2, 2, 1)
     atoms[0].position += [0.1, 0.1, 0.1]
@@ -191,9 +183,7 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
         summarize_opt_run(dyn)
 
 
-def test_summarize_vib_run(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_summarize_vib_run():
     # Make sure metadata is made
     atoms = molecule("N2")
     atoms.calc = EMT()
@@ -265,9 +255,7 @@ def test_summarize_vib_run(tmp_path, monkeypatch):
     assert len(results["results"]["vib_energies"]) == 6
 
 
-def test_summarize_ideal_gas_thermo(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_summarize_ideal_gas_thermo():
     # Make sure metadata is made
     atoms = molecule("N2")
     igt = IdealGasThermo([0.34], "linear", atoms=atoms, spin=0, symmetrynumber=2)
@@ -348,9 +336,7 @@ def test_summarize_ideal_gas_thermo(tmp_path, monkeypatch):
         _summarize_ideal_gas_thermo(igt, charge_and_multiplicity=[0, 1])
 
 
-def test_errors(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_errors():
     atoms = bulk("Cu")
     with pytest.raises(ValueError):
         summarize_run(atoms, atoms)

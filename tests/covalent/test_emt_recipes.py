@@ -12,8 +12,7 @@ from quacc.recipes.emt.slabs import bulk_to_slabs_flow  # skipcq: PYL-C0412
 
 
 @pytest.mark.parametrize("job_decorators", [None, {"relax_job": job()}])
-def test_functools(tmp_path, monkeypatch, job_decorators):
-    monkeypatch.chdir(tmp_path)
+def test_functools(job_decorators):
     atoms = bulk("Cu")
     dispatch_id = ct.dispatch(bulk_to_slabs_flow)(
         atoms,
@@ -28,8 +27,7 @@ def test_functools(tmp_path, monkeypatch, job_decorators):
     assert output.result[-1]["fmax"] == 0.1
 
 
-def test_copy_files(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
+def test_copy_files():
     atoms = bulk("Cu")
 
     @flow
@@ -42,11 +40,10 @@ def test_copy_files(tmp_path, monkeypatch):
     assert "atoms" in output.result
 
 
-def test_phonon_flow(tmp_path, monkeypatch):
+def test_phonon_flow():
     pytest.importorskip("phonopy")
     from quacc.recipes.emt.phonons import phonon_flow
 
-    monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
     dispatch_id = ct.dispatch(phonon_flow)(atoms)
     output = ct.get_result(dispatch_id, wait=True)

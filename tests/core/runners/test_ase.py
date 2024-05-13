@@ -45,9 +45,7 @@ def teardown_function():
             os.remove(os.path.join(SETTINGS.RESULTS_DIR, f))
 
 
-def test_run_calc(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_run_calc(tmp_path):
     prep_files()
 
     with change_settings({"RESULTS_DIR": tmp_path}):
@@ -66,8 +64,7 @@ def test_run_calc(tmp_path, monkeypatch):
         assert np.array_equal(new_atoms.cell.array, atoms.cell.array) is True
 
 
-def test_run_calc_no_gzip(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
+def test_run_calc_no_gzip(tmp_path):
     prep_files()
 
     with change_settings({"RESULTS_DIR": tmp_path, "GZIP_FILES": False}):
@@ -86,8 +83,7 @@ def test_run_calc_no_gzip(tmp_path, monkeypatch):
         assert np.array_equal(new_atoms.cell.array, atoms.cell.array) is True
 
 
-def test_run_opt1(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
+def test_run_opt1(tmp_path):
     prep_files()
 
     with change_settings({"RESULTS_DIR": tmp_path}):
@@ -107,8 +103,7 @@ def test_run_opt1(tmp_path, monkeypatch):
         assert dyn.todict().get("restart")
 
 
-def test_run_opt2(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
+def test_run_opt2():
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
     atoms.calc = EMT()
@@ -132,8 +127,7 @@ def test_run_opt2(tmp_path, monkeypatch):
     assert traj[-1].calc.results is not None
 
 
-def test_run_scipy_opt(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
+def test_run_scipy_opt():
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
     atoms.calc = EMT()
@@ -144,8 +138,7 @@ def test_run_scipy_opt(tmp_path, monkeypatch):
     assert dyn.todict().get("restart") is None
 
 
-def test_run_vib(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
+def test_run_vib():
     prep_files()
 
     o2 = molecule("O2")
@@ -159,9 +152,7 @@ def test_run_vib(tmp_path, monkeypatch):
     assert os.path.exists(os.path.join(results_dir, "test_file.txt.gz"))
 
 
-def test_bad_runs(tmp_path, monkeypatch, caplog):
-    monkeypatch.chdir(tmp_path)
-
+def test_bad_runs(caplog):
     atoms = bulk("Cu")
     atoms.calc = EMT()
 
@@ -184,8 +175,7 @@ def test_bad_runs(tmp_path, monkeypatch, caplog):
         )
 
 
-def test_unique_workdir(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
+def test_unique_workdir(tmp_path):
     prep_files()
 
     with change_settings({"CREATE_UNIQUE_DIR": True, "RESULTS_DIR": tmp_path}):
@@ -211,9 +201,7 @@ def test_unique_workdir(tmp_path, monkeypatch):
         assert os.path.exists(os.path.join(results_dir, "test_file.txt.gz"))
 
 
-def test_fn_hook(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_fn_hook():
     def fn_hook(dyn):
         if dyn.atoms:
             raise ValueError("Test error")

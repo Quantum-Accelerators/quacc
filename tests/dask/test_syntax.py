@@ -13,9 +13,7 @@ from quacc.wflow_tools.customizers import update_parameters
 client = get_client()
 
 
-def test_dask_decorators(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_dask_decorators():
     @job
     def add(a, b):
         return a + b
@@ -68,9 +66,7 @@ def test_dask_decorators(tmp_path, monkeypatch):
     assert client.compute(dynamic_workflow3(1, 2, 3)).result() == 12
 
 
-def test_dask_decorators_args(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_dask_decorators_args():
     @job()
     def add(a, b):
         return a + b
@@ -137,9 +133,7 @@ def test_strip_decorators():
     assert stripped_add3(1, 2) == 3
 
 
-def test_customize_funcs(monkeypatch, tmp_path):
-    monkeypatch.chdir(tmp_path)
-
+def test_customize_funcs():
     @job
     def add(a, b=1):
         return a + b

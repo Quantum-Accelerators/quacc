@@ -9,9 +9,7 @@ from ase.build import molecule
 from quacc.recipes.psi4.core import static_job
 
 
-def test_static(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_static():
     atoms = molecule("H2")
     output = static_job(atoms, charge=0, spin_multiplicity=1)
     assert output["natoms"] == len(atoms)

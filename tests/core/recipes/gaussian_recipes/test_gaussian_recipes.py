@@ -6,9 +6,7 @@ from numpy.testing import assert_array_equal
 from quacc.recipes.gaussian.core import relax_job, static_job
 
 
-def test_static_job(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_static_job():
     atoms = molecule("H2")
 
     output = static_job(atoms, 0, 1)
@@ -44,9 +42,7 @@ def test_static_job(tmp_path, monkeypatch):
     assert_array_equal(output["atoms"].get_initial_magnetic_moments(), [0, 0])
 
 
-def test_relax_job(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_relax_job():
     atoms = molecule("H2")
     atoms.set_initial_magnetic_moments([0, 0])
 
@@ -76,9 +72,7 @@ def test_relax_job(tmp_path, monkeypatch):
     assert_array_equal(output["atoms"].get_initial_magnetic_moments(), [0, 0])
 
 
-def test_relax_job_v2(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_relax_job_v2():
     atoms = molecule("H2")
     atoms.set_initial_magnetic_moments([0, 3])
 

@@ -11,9 +11,7 @@ from quacc.recipes.emt.core import relax_job, static_job  # skipcq: PYL-C0412
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow  # skipcq: PYL-C0412
 
 
-def test_tutorial1a(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_tutorial1a():
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
 
@@ -24,9 +22,7 @@ def test_tutorial1a(tmp_path, monkeypatch):
     assert "atoms" in future.result()  # (2)!
 
 
-def test_tutorial1b(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_tutorial1b():
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
 
@@ -37,9 +33,7 @@ def test_tutorial1b(tmp_path, monkeypatch):
     assert "atoms" in future.result()[0]  # (2)!
 
 
-def test_tutorial2a(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_tutorial2a():
     # Define the workflow
     def workflow(atoms):
         # Define Job 1
@@ -59,9 +53,7 @@ def test_tutorial2a(tmp_path, monkeypatch):
     assert "atoms" in result
 
 
-def test_tutorial2b(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_tutorial2b():
     # Define workflow
     def workflow(atoms1, atoms2):
         # Define two independent relaxation jobs
@@ -86,9 +78,7 @@ def test_tutorial2b(tmp_path, monkeypatch):
     assert "atoms" in result2
 
 
-def test_tutorial2c(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_tutorial2c():
     # Define the workflow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
@@ -107,9 +97,7 @@ def test_tutorial2c(tmp_path, monkeypatch):
     assert len(result) == 4
 
 
-def test_comparison1(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_comparison1():
     @job  #  (1)!
     def add(a, b):
         return a + b
@@ -125,9 +113,7 @@ def test_comparison1(tmp_path, monkeypatch):
     assert result == 9
 
 
-def test_comparison2(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_comparison2():
     @job
     def add(a, b):
         return a + b
@@ -147,9 +133,7 @@ def test_comparison2(tmp_path, monkeypatch):
     assert future3.result() == [6, 6, 6]
 
 
-def test_comparison3(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_comparison3():
     @job  #  (1)!
     def add(a, b):
         return a + b

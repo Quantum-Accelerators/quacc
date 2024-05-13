@@ -19,8 +19,7 @@ FILE_DIR = Path(__file__).parent
 QCHEM_DIR = FILE_DIR / "qchem_examples"
 
 
-def test_static_job_simple(monkeypatch, tmp_path):
-    monkeypatch.chdir(tmp_path)
+def test_static_job_simple():
     output = static_job(
         molecule("O2"), spin_multiplicity=3, method="pbe", basis="def2-svp"
     )
@@ -33,8 +32,7 @@ def test_static_job_simple(monkeypatch, tmp_path):
     assert output["atoms"] == molecule("O2")
 
 
-def test_relax_job_simple(monkeypatch, tmp_path):
-    monkeypatch.chdir(tmp_path)
+def test_relax_job_simple():
     output = relax_job(
         molecule("O2"), spin_multiplicity=3, method="pbe", basis="def2-svp"
     )

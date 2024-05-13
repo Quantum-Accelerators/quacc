@@ -11,9 +11,7 @@ from sella import Sella
 from quacc.runners.ase import run_opt
 
 
-def test_sella(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_sella():
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
     atoms.calc = EMT()
@@ -30,9 +28,7 @@ def test_sella(tmp_path, monkeypatch):
     assert dyn.user_internal is True
 
 
-def test_dof(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_dof():
     atoms = molecule("C2H6")
     atoms.calc = LennardJones()
     dyn = run_opt(atoms, optimizer=Sella, fmax=1.0)

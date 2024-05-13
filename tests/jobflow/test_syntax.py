@@ -8,9 +8,7 @@ jf = pytest.importorskip("jobflow")
 from quacc import flow, job, strip_decorator, subflow
 
 
-def test_jobflow_decorators(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_jobflow_decorators():
     @job
     def add(a, b):
         return a + b
@@ -37,9 +35,7 @@ def test_jobflow_decorators(tmp_path, monkeypatch):
     assert isinstance(add_distributed([1, 2, 3], 4)[0], jf.Job)
 
 
-def test_jobflow_decorators_args(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_jobflow_decorators_args():
     @job()
     def add(a, b):
         return a + b

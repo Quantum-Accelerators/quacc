@@ -12,8 +12,7 @@ from ase.build import bulk
 from quacc.recipes.emt.phonons import phonon_flow
 
 
-def test_phonon_flow(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
+def test_phonon_flow():
     atoms = bulk("Cu")
     output = phonon_flow(atoms, min_lengths=5.0)
     assert output["results"]["thermal_properties"]["temperatures"].shape == (101,)
@@ -36,8 +35,7 @@ def test_phonon_flow(tmp_path, monkeypatch):
     assert "total_dos" in output["results"]
 
 
-def test_phonon_flow_v2(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
+def test_phonon_flow_v2():
     atoms = bulk("Cu") * (2, 2, 2)
     output = phonon_flow(atoms, min_lengths=None, t_min=10, t_max=20, t_step=5)
     assert output["results"]["thermal_properties"]["temperatures"].shape == (3,)
@@ -47,8 +45,7 @@ def test_phonon_flow_v2(tmp_path, monkeypatch):
     assert "mesh_properties" in output["results"]
 
 
-def test_phonon_flow_v3(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
+def test_phonon_flow_v3():
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += 0.2
     output = phonon_flow(atoms, run_relax=False, min_lengths=5.0)
@@ -60,8 +57,7 @@ def test_phonon_flow_v3(tmp_path, monkeypatch):
     assert output["atoms"] == atoms
 
 
-def test_phonon_flow_v4(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
+def test_phonon_flow_v4():
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += 0.2
     output = phonon_flow(atoms, run_relax=True, min_lengths=5.0)

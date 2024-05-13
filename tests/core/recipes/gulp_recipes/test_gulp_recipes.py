@@ -9,9 +9,7 @@ from quacc import change_settings
 from quacc.recipes.gulp.core import relax_job, static_job
 
 
-def test_static_job(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_static_job():
     atoms = molecule("H2O")
 
     output = static_job(atoms)
@@ -64,9 +62,7 @@ def test_static_job(tmp_path, monkeypatch):
     assert "output cif gulp.cif" in output["parameters"]["options"]
 
 
-def test_relax_job(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_relax_job():
     atoms = molecule("H2O")
 
     output = relax_job(atoms)
@@ -137,9 +133,7 @@ def test_relax_job(tmp_path, monkeypatch):
     assert "output cif gulp.cif" in output["parameters"]["options"]
 
 
-def test_envvars(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_envvars():
     atoms = molecule("H2O")
 
     with change_settings({"GULP_LIB": str(Path("/path/to/lib"))}):

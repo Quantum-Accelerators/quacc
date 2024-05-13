@@ -9,9 +9,7 @@ from covalent._workflow.lattice import Lattice
 from quacc import flow, job, strip_decorator, subflow
 
 
-def test_covalent_decorators(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_covalent_decorators():
     @job
     def add(a, b):
         return a + b
@@ -77,9 +75,7 @@ def test_covalent_decorators(tmp_path, monkeypatch):
     )
 
 
-def test_covalent_decorators_args(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
+def test_covalent_decorators_args():
     @job(executor="local")
     def add(a, b):
         return a + b
