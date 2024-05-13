@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 from quacc import flow
 from quacc.recipes.common.phonons import phonon_subflow
 from quacc.recipes.emt.core import relax_job, static_job
-from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:

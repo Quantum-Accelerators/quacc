@@ -10,7 +10,6 @@ from monty.dev import requires
 from quacc import flow
 from quacc.recipes.common.phonons import phonon_subflow
 from quacc.recipes.mlp.core import relax_job, static_job
-from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs
 
 has_deps = find_spec("phonopy") is not None and find_spec("seekpath") is not None
@@ -100,7 +99,7 @@ def phonon_flow(
     relax_job_, static_job_ = customize_funcs(
         ["relax_job", "static_job"],
         [relax_job, static_job],
-        param_defaults = job_param_defaults,
+        param_defaults=job_param_defaults,
         param_swaps=job_params,
         decorators=job_decorators,
     )
