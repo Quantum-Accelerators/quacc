@@ -851,7 +851,7 @@ def test_mp_relax_flow_custom(tmp_path, patch_nonmetallic_taskdoc):
                 },
             )["static"]["atoms"],
             job_params={
-                "mp_gga_relax_job": {"method": "metagga", "version": "legacy", "nsw": 0}
+                "mp_relax_job": {"method": "metagga", "version": "legacy", "nsw": 0}
             },
         )
         assert output["relax"]["parameters"]["nsw"] == 0
