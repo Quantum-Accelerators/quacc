@@ -61,9 +61,7 @@ def run_and_summarize(
     final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return vasp_summarize_run(
-        final_atoms,
-        mp_compatible=mp_compatible,
-        additional_fields=additional_fields,
+        final_atoms, mp_compatible=mp_compatible, additional_fields=additional_fields
     )
 
 
@@ -116,7 +114,5 @@ def run_and_summarize_opt(
     dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
 
     return summarize_vasp_opt_run(
-        dyn,
-        mp_compatible=mp_compatible,
-        additional_fields=additional_fields,
+        dyn, mp_compatible=mp_compatible, additional_fields=additional_fields
     )
