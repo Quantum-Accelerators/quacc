@@ -130,7 +130,7 @@ def vasp_summarize_run(
     base_task_doc = summarize_run(
         final_atoms, initial_atoms, move_magmoms=move_magmoms, store=None
     )
-    
+
     # Check for calculation convergence
     if check_convergence and vasp_task_doc["state"] != "successful":
         raise RuntimeError(
