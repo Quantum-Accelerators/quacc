@@ -77,7 +77,7 @@ def test_qchem_write_input_intermediate(test_atoms):
     assert qcinp.as_dict() == ref_qcinp.as_dict()
 
 
-def test_qchem_write_input_advanced( test_atoms):
+def test_qchem_write_input_advanced(test_atoms):
     calc = QChem(
         test_atoms,
         qchem_dict_set_params={
@@ -100,9 +100,7 @@ def test_qchem_write_input_advanced( test_atoms):
     assert qcinp.as_dict() == ref_qcinp.as_dict()
 
 
-def test_qchem_write_input_open_shell_and_different_charges(
-    os_atoms
-):
+def test_qchem_write_input_open_shell_and_different_charges(os_atoms):
     calc = QChem(
         os_atoms,
         spin_multiplicity=2,
