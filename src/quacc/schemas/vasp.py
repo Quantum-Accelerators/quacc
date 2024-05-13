@@ -111,9 +111,6 @@ def vasp_summarize_run(
     # already has a handy function for this
     vasp_task_model = TaskDoc.from_directory(directory)
 
-    # Convert the VASP task model to a dictionary
-    vasp_task_doc = vasp_task_model.model_dump()
-
     # Get MP corrections
     if mp_compatible:
         vasp_task_doc |= _validate_mp_compatability(directory).model_dump()
@@ -126,6 +123,9 @@ def vasp_summarize_run(
         except CompatibilityError as err:
             LOGGER.warning(err)
 
+    # Convert the VASP task model to a dictionary
+    vasp_task_doc = vasp_task_model.model_dump()
+    
     initial_atoms = read(zpath(directory / "POSCAR"))
     base_task_doc = summarize_run(
         final_atoms, initial_atoms, move_magmoms=move_magmoms, store=None
