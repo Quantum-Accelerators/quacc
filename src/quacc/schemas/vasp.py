@@ -114,12 +114,6 @@ def vasp_summarize_run(
     # Convert the VASP task model to a dictionary
     vasp_task_doc = vasp_task_model.model_dump()
 
-    # Check for calculation convergence
-    if check_convergence and vasp_task_doc["state"] != "successful":
-        raise RuntimeError(
-            f"VASP calculation did not converge. Will not store task data. Refer to {directory}"
-        )
-
     # Get MP corrections
     if mp_compatible:
         vasp_task_doc |= _validate_mp_compatability(directory).model_dump()
@@ -136,6 +130,12 @@ def vasp_summarize_run(
     base_task_doc = summarize_run(
         final_atoms, initial_atoms, move_magmoms=move_magmoms, store=None
     )
+    
+    # Check for calculation convergence
+    if check_convergence and vasp_task_doc["state"] != "successful":
+        raise RuntimeError(
+            f"VASP calculation did not converge. Will not store task data. Refer to {directory}"
+        )
 
     if nsteps := len([f for f in os.listdir(directory) if f.startswith("step")]):
         intermediate_vasp_task_docs = {
