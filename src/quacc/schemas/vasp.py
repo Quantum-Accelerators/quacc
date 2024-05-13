@@ -123,7 +123,7 @@ def vasp_summarize_run(
             )
             vasp_task_model.entry = corrected_entry
         except CompatibilityError as err:
-            LOGGER.warning(err)     
+            LOGGER.warning(err)
 
     # Convert the VASP task model to a dictionary
     vasp_task_doc = vasp_task_model.model_dump()
