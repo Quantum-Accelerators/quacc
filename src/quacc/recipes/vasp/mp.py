@@ -267,7 +267,7 @@ def mp_relax_flow(
     MPRelaxFlowSchema
         Dictionary of results. See the type-hint for the data structure.
     """
-    job_param_defaults = {"all": {"method": method}}
+    job_param_defaults = {"all": {"method": method, "version": version}}
     (mp_pre_relax_job_, mp_relax_job_, mp_static_job_) = customize_funcs(
         ["mp_pre_relax_job", "mp_relax_job", "mp_static_job"],
         [mp_pre_relax_job, mp_relax_job, mp_static_job],
