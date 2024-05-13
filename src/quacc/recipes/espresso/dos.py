@@ -167,7 +167,7 @@ def dos_flow(
     atoms
         Atoms object
     job_params
-        Custom parameters to pass to each Job in the Flow. This is a dictinoary where
+        Custom parameters to pass to each Job in the Flow. This is a dictionary where
         the keys are the names of the jobs and the values are dictionaries of parameters.
     job_decorators
         Custom decorators to apply to each Job in the Flow. This is a dictionary where
@@ -204,14 +204,12 @@ def dos_flow(
     static_job_, non_scf_job_, dos_job_ = customize_funcs(
         ["static_job", "non_scf_job", "dos_job"],
         [static_job, non_scf_job, dos_job],
-        parameters=job_params,
+        param_swaps=job_params,
         decorators=job_decorators,
     )
 
     static_results = static_job_(atoms)
-
     non_scf_results = non_scf_job_(atoms, prev_outdir=static_results["dir_name"])
-
     dos_results = dos_job_(prev_outdir=static_results["dir_name"])
 
     return {
@@ -249,7 +247,7 @@ def projwfc_flow(
     atoms
         Atoms object
     job_params
-        Custom parameters to pass to each Job in the Flow. This is a dictinoary where
+        Custom parameters to pass to each Job in the Flow. This is a dictionary where
         the keys are the names of the jobs and the values are dictionaries of parameters.
     job_decorators
         Custom decorators to apply to each Job in the Flow. This is a dictionary where
@@ -286,14 +284,12 @@ def projwfc_flow(
     static_job_, non_scf_job_, projwfc_job_ = customize_funcs(
         ["static_job", "non_scf_job", "projwfc_job"],
         [static_job, non_scf_job, projwfc_job],
-        parameters=job_params,
+        param_swaps=job_params,
         decorators=job_decorators,
     )
 
     static_results = static_job_(atoms)
-
     non_scf_results = non_scf_job_(atoms, prev_outdir=static_results["dir_name"])
-
     projwfc_results = projwfc_job_(prev_outdir=static_results["dir_name"])
 
     return {

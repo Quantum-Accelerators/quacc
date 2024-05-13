@@ -98,14 +98,14 @@ def bulk_to_defects_flow(
         or [quacc.schemas.ase.summarize_opt_run][].
         See the return type-hint for the data structure.
     """
-    make_defects_kwargs = recursive_dict_merge(
-        make_defects_kwargs, {"defect_gen": defect_gen, "defect_charge": defect_charge}
-    )
     relax_job_, static_job_ = customize_funcs(
         ["relax_job", "static_job"],
         [relax_job, static_job],
-        parameters=job_params,
+        param_swaps=job_params,
         decorators=job_decorators,
+    )
+    make_defects_kwargs = recursive_dict_merge(
+        make_defects_kwargs, {"defect_gen": defect_gen, "defect_charge": defect_charge}
     )
 
     return bulk_to_defects_subflow(
