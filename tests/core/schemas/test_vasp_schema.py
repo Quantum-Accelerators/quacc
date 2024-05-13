@@ -212,13 +212,12 @@ def test_summarize_mp(monkeypatch, mp_run1, tmp_path, caplog):
     atoms = read(p / "OUTCAR.gz")
     with caplog.at_level(logging.WARNING):
         results = vasp_summarize_run(atoms, directory=p, mp_compatible=True)
-    assert "Incorrect POTCAR files were used" in caplog.text
     assert results["entry"].correction == pytest.approx(-3.2280)
-    assert results["validation"]["valid"] is False
+    assert "Incorrect POTCAR files were used" in caplog.text
     assert "Incorrect POTCAR files were used" in " ".join(
         results["validation"]["reasons"]
     )
-
+    assert results["validation"]["valid"] is False
 
 def test_summarize_mp_bad(monkeypatch, run1, tmp_path, caplog):
     monkeypatch.chdir(tmp_path)
@@ -227,8 +226,8 @@ def test_summarize_mp_bad(monkeypatch, run1, tmp_path, caplog):
     atoms = read(p / "OUTCAR.gz")
     with caplog.at_level(logging.WARNING):
         results = vasp_summarize_run(atoms, directory=p, mp_compatible=True)
-    assert "invalid run type" in caplog.text
     assert results["entry"].correction == 0.0
+    assert "invalid run type" in caplog.text
 
 
 def test_no_bader(tmp_path, monkeypatch, run1, caplog):
