@@ -2,10 +2,17 @@
 
 from __future__ import annotations
 
-from typing import TypedDict
+from typing import TYPE_CHECKING, TypedDict
 
 from quacc.schemas._aliases.ase import OptSchema, RunSchema
 from quacc.schemas._aliases.emmet import TaskDoc
+
+if TYPE_CHECKING:
+    from importlib import util
+
+    has_validation = util.find_spec("pymatgen.io.validation")
+    if has_validation:
+        from pymatgen.io.validation import ValidationDoc
 
 
 class BaderSchema(TypedDict, total=False):
@@ -50,6 +57,7 @@ class VaspSchema(RunSchema, TaskDoc):
     bader: BaderSchema
     chargemol: ChargemolSchema
     steps: dict[int, TaskDoc]  # when store_intermediate_results=True
+    validation: ValidationDoc
 
 
 class MPRelaxFlowSchema(VaspSchema):

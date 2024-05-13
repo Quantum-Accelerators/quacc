@@ -113,12 +113,15 @@ def vasp_summarize_run(
 
     # Get MP corrections
     if mp_compatible:
-        mp_compat_doc = _validate_mp_compatability(directory).model_dump()
+        mp_compat_model = _validate_mp_compatability(directory)
+        if mp_compat_model:
+            mp_compat_doc = {"validation": mp_compat_model.model_dump()}
         mp_compat_scheme = MaterialsProject2020Compatibility()
         try:
-            mp_compat_scheme.process_entry(
+            corrected_entry = mp_compat_scheme.process_entry(
                 vasp_task_model.structure_entry, on_error="raise"
             )
+            vasp_task_model.entry = corrected_entry
         except CompatibilityError as err:
             LOGGER.warning(err)
     else:
