@@ -24,7 +24,7 @@ def run_and_summarize(
     preset: str | None = None,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
-    report_mp_corrections: bool = False,
+    mp_compatible: bool = False,
     additional_fields: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> VaspSchema:
@@ -43,8 +43,8 @@ def run_and_summarize(
         Dictionary of custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.calculators.vasp.vasp.Vasp][].
-    report_mp_corrections
-        Whether to report the Materials Project corrections in the results.
+    mp_compatible
+        Whether to apply the MP corrections to the task document and check MP validiity.
     additional_fields
         Additional fields to supply to the summarizer.
     copy_files
@@ -62,7 +62,7 @@ def run_and_summarize(
 
     return vasp_summarize_run(
         final_atoms,
-        report_mp_corrections=report_mp_corrections,
+        mp_compatible=mp_compatible,
         additional_fields=additional_fields,
     )
 
@@ -74,7 +74,7 @@ def run_and_summarize_opt(
     calc_swaps: dict[str, Any] | None = None,
     opt_defaults: dict[str, Any] | None = None,
     opt_params: OptParams | None = None,
-    report_mp_corrections: bool = False,
+    mp_compatible: bool = False,
     additional_fields: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> VaspASEOptSchema:
@@ -97,8 +97,8 @@ def run_and_summarize_opt(
         Default arguments for the ASE optimizer.
     opt_params
         Dictionary of custom kwargs for [quacc.runners.ase.run_opt][]
-    report_mp_corrections
-        Whether to report the Materials Project corrections in the results.
+    mp_compatible
+        Whether to apply the MP corrections to the task document and check MP validiity.
     additional_fields
         Additional fields to supply to the summarizer.
     copy_files
@@ -117,6 +117,6 @@ def run_and_summarize_opt(
 
     return summarize_vasp_opt_run(
         dyn,
-        report_mp_corrections=report_mp_corrections,
+        mp_compatible=mp_compatible,
         additional_fields=additional_fields,
     )
