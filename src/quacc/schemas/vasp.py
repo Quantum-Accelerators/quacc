@@ -12,10 +12,6 @@ from emmet.core.tasks import TaskDoc
 from monty.os.path import zpath
 from pymatgen.command_line.bader_caller import bader_analysis_from_path
 from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
-from pymatgen.entries.compatibility import (
-    CompatibilityError,
-    MaterialsProject2020Compatibility,
-)
 
 from quacc import SETTINGS
 from quacc.atoms.core import get_final_atoms_from_dynamics
@@ -109,26 +105,16 @@ def vasp_summarize_run(
 
     # Fetch all tabulated results from VASP outputs files. Fortunately, emmet
     # already has a handy function for this
-    vasp_task_model = TaskDoc.from_directory(directory)
+    vasp_task_doc = TaskDoc.from_directory(directory).model_dump()
 
-    # Get MP corrections
+    # Get MP validation doc
     if mp_compatible:
         mp_compat_model = _validate_mp_compatability(directory)
-        if mp_compat_model:
-            mp_compat_doc = {"validation": mp_compat_model.model_dump()}
-        mp_compat_scheme = MaterialsProject2020Compatibility()
-        try:
-            corrected_entry = mp_compat_scheme.process_entry(
-                vasp_task_model.structure_entry, on_error="raise"
-            )
-            vasp_task_model.entry = corrected_entry
-        except CompatibilityError as err:
-            LOGGER.warning(err)
-    else:
-        mp_compat_doc = {}
-
-    # Convert the VASP task model to a dictionary
-    vasp_task_doc = vasp_task_model.model_dump()
+    mp_compat_doc = (
+        {"validation": mp_compat_model.model_dump()}
+        if mp_compatible and mp_compat_model
+        else {}
+    )
 
     # Check for calculation convergence
     if check_convergence and vasp_task_doc["state"] != "successful":
@@ -365,7 +351,7 @@ def _validate_mp_compatability(directory: Path | str) -> EmmetBaseModel | None:
         The validation document.
     """
     if ValidationDoc is None:
-        LOGGER.warning(
+        LOGGER.debug(
             "pymatgen-io-validation is not installed. Skipping MP compatability check."
         )
         return None
