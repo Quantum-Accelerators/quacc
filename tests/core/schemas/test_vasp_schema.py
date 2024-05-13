@@ -219,6 +219,7 @@ def test_summarize_mp(monkeypatch, mp_run1, tmp_path, caplog):
     )
     assert results["validation"]["valid"] is False
 
+
 def test_summarize_mp_bad(monkeypatch, run1, tmp_path, caplog):
     monkeypatch.chdir(tmp_path)
     p = tmp_path / "vasp_run"
