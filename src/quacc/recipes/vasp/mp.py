@@ -285,7 +285,7 @@ def mp_gga_relax_flow(
     (mp_gga_relax_job_, mp_gga_static_job_) = customize_funcs(
         ["mp_gga_relax_job", "mp_gga_static_job"],
         [mp_gga_relax_job, mp_gga_static_job],
-        parameters=job_params,
+        param_swaps=job_params,
         decorators=job_decorators,
     )
 
@@ -361,7 +361,7 @@ def mp_metagga_relax_flow(
                 "mp_metagga_static_job",
             ],
             [mp_metagga_prerelax_job, mp_metagga_relax_job, mp_metagga_static_job],
-            parameters=job_params,
+            param_swaps=job_params,
             decorators=job_decorators,
         )
     )
