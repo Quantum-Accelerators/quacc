@@ -856,6 +856,7 @@ def test_mp_relax_flow_custom(tmp_path, patch_nonmetallic_taskdoc):
         )
         assert output["relax"]["parameters"]["nsw"] == 0
 
+
 def test_mp_2024_flow(tmp_path, patch_metallic_taskdoc):
     with change_settings({"CREATE_UNIQUE_DIR": False, "RESULTS_DIR": tmp_path}):
         copy_r(MOCKED_DIR / "metallic", tmp_path)
