@@ -462,7 +462,7 @@ def test_qmof(patch_nonmetallic_taskdoc):
 
 def test_mp_metagga_prerelax_job_metallic(patch_metallic_taskdoc):
     atoms = bulk("Al")
-    output = mp_pre_relax_job(atoms, version="legacy")
+    output = mp_pre_relax_job(atoms, method="metagga", version="legacy")
     assert output["nsites"] == len(atoms)
     assert output["parameters"] == {
         "algo": "all",

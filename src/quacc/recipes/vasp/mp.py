@@ -134,8 +134,7 @@ def mp_relax_job(
     atoms
         Atoms object
     method
-        Whether GGA or Meta-GGA compatability is desired. Note that for the
-        pre-relax step with "metagga", this is still a GGA (PBEsol) functional.
+        Whether GGA or Meta-GGA compatability is desired.
     version
         The version of the Materials Project settings to use.
     prev_dir
@@ -187,8 +186,7 @@ def mp_static_job(
     atoms
         Atoms object
     method
-        Whether GGA or Meta-GGA compatability is desired. Note that for the
-        pre-relax step with "metagga", this is still a GGA (PBEsol) functional.
+        Whether GGA or Meta-GGA compatability is desired.
     version
         The version of the Materials Project settings to use.
     prev_dir
@@ -230,6 +228,7 @@ def mp_static_job(
 def mp_relax_flow(
     atoms: Atoms,
     method: Literal["gga", "metagga"] = "gga",
+    version: Literal["legacy", "2024"] = "legacy",
     job_params: dict[str, dict[str, Any]] | None = None,
     job_decorators: dict[str, Callable | None] | None = None,
 ) -> MPRelaxFlowSchema:
@@ -252,6 +251,10 @@ def mp_relax_flow(
     ----------
     atoms
         Atoms object for the structure.
+    method
+        Whether GGA or Meta-GGA compatability is desired.
+    version
+        The version of the Materials Project settings to use.
     job_params
         Custom parameters to pass to each Job in the Flow. This is a dictionary where
         the keys are the names of the jobs and the values are dictionaries of parameters.
