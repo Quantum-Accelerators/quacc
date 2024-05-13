@@ -10,7 +10,6 @@ from monty.dev import requires
 from quacc import flow
 from quacc.recipes.common.phonons import phonon_subflow
 from quacc.recipes.tblite.core import relax_job, static_job
-from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs
 
 has_deps_tblite = find_spec("tblite") is not None
