@@ -30,7 +30,7 @@ from typing import TYPE_CHECKING
 from monty.dev import requires
 
 from quacc import change_settings, flow, job
-from quacc.calculators.vasp.params import MPtoASEConverter
+from quacc.calculators.vasp.params import MPtoASEParams
 from quacc.recipes.vasp._base import run_and_summarize
 from quacc.wflow_tools.customizers import customize_funcs
 
@@ -104,7 +104,7 @@ def mp_pre_relax_job(
             if method.lower() == "gga"
             else MP24MetaGGAPreRelaxMaker
         )
-    calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
+    calc_defaults = MPtoASEParams(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
         vasp_maker
     )
     with change_settings(_MP_SETTINGS):
@@ -156,7 +156,7 @@ def mp_relax_job(
         vasp_maker = (
             MP24GGARelaxMaker if method.lower() == "gga" else MP24MetaGGARelaxMaker
         )
-    calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
+    calc_defaults = MPtoASEParams(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
         vasp_maker
     )
     with change_settings(_MP_SETTINGS):
@@ -210,7 +210,7 @@ def mp_static_job(
         vasp_maker = (
             MP24GGAStaticMaker if method.lower() == "gga" else MP24MetaGGAStaticMaker
         )
-    calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
+    calc_defaults = MPtoASEParams(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
         vasp_maker
     )
     with change_settings(_MP_SETTINGS):
