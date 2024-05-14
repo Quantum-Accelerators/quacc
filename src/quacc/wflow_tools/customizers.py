@@ -34,33 +34,33 @@ def strip_decorator(func: Callable) -> Callable:
 
     if SETTINGS.WORKFLOW_ENGINE == "covalent":
         if decorator in ("job", "subflow"):
-            func = func.electron_object.function
+            func_ = func.electron_object.function
 
         if decorator in ("flow", "subflow"):
-            func = func.workflow_function.get_deserialized()
+            func_ = func.workflow_function.get_deserialized()
 
     elif SETTINGS.WORKFLOW_ENGINE == "dask":
         if decorator == "job":
             func = func.func
-        func = func.__wrapped__
+        func_ = func.__wrapped__
         if decorator == "subflow":
-            func = func.__wrapped__
+            func_ = func.__wrapped__
 
     elif SETTINGS.WORKFLOW_ENGINE == "jobflow":
-        func = func.original
+        func_ = func.original
 
     elif SETTINGS.WORKFLOW_ENGINE == "parsl":
-        func = func.func
+        func_ = func.func
 
     elif SETTINGS.WORKFLOW_ENGINE == "prefect":
         if SETTINGS.PREFECT_AUTO_SUBMIT:
             func = func.__wrapped__
-        func = func.fn
+        func_ = func.fn
 
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
-        func = func.func
+        func_ = func.func
 
-    return func
+    return func_
 
 
 def redecorate(func: Callable, decorator: Callable) -> Callable:
