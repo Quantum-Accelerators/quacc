@@ -112,7 +112,7 @@ def mp_pre_relax_job(
             atoms,
             calc_defaults=calc_defaults,
             calc_swaps=calc_kwargs,
-            check_mp_compatibility=bool(version == "mp24"),
+            check_mp_compatibility=(version == "mp24"),
             additional_fields={"name": vasp_maker.name},
             copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
         )
@@ -164,7 +164,7 @@ def mp_relax_job(
             atoms,
             calc_defaults=calc_defaults,
             calc_swaps=calc_kwargs,
-            check_mp_compatibility=bool(version == "mp24"),
+            check_mp_compatibility=(version == "mp24"),
             additional_fields={"name": vasp_maker.name},
             copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
         )
@@ -218,7 +218,7 @@ def mp_static_job(
             atoms,
             calc_defaults=calc_defaults,
             calc_swaps=calc_kwargs,
-            check_mp_compatibility=bool(version == "mp24"),
+            check_mp_compatibility=(version == "mp24"),
             additional_fields={"name": vasp_maker.name},
             copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
         )
