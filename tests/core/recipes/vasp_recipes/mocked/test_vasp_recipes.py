@@ -877,5 +877,5 @@ def test_mp_2024_flow(tmp_path, patch_metallic_taskdoc):
         copy_r(MOCKED_DIR / "metallic", tmp_path)
 
         atoms = bulk("Al")
-        assert mp_relax_flow(atoms, method="gga", version="2024")
-        assert mp_relax_flow(atoms, method="metagga", version="2024")
+        assert mp_relax_flow(atoms, method="gga", version="mp24")
+        assert mp_relax_flow(atoms, method="metagga", version="mp24")

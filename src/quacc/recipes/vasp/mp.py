@@ -68,7 +68,7 @@ _MP_SETTINGS = {"VASP_INCAR_COPILOT": "off", "VASP_USE_CUSTODIAN": True}
 def mp_pre_relax_job(
     atoms: Atoms,
     method: Literal["gga", "metagga"] = "gga",
-    version: Literal["legacy", "2024"] = "2024",
+    version: Literal["legacy", "mp24"] = "mp24",
     prev_dir: SourceDirectory | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
@@ -112,7 +112,7 @@ def mp_pre_relax_job(
             atoms,
             calc_defaults=calc_defaults,
             calc_swaps=calc_kwargs,
-            check_mp_compatibility=bool(version=="2024"),
+            check_mp_compatibility=bool(version=="mp24"),
             additional_fields={"name": vasp_maker.name},
             copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
         )
@@ -123,7 +123,7 @@ def mp_pre_relax_job(
 def mp_relax_job(
     atoms: Atoms,
     method: Literal["gga", "metagga"] = "gga",
-    version: Literal["legacy", "2024"] = "2024",
+    version: Literal["legacy", "mp24"] = "mp24",
     prev_dir: SourceDirectory | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
@@ -164,7 +164,7 @@ def mp_relax_job(
             atoms,
             calc_defaults=calc_defaults,
             calc_swaps=calc_kwargs,
-            check_mp_compatibility=bool(version == "2024"),
+            check_mp_compatibility=bool(version == "mp24"),
             additional_fields={"name": vasp_maker.name},
             copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
         )
@@ -175,7 +175,7 @@ def mp_relax_job(
 def mp_static_job(
     atoms: Atoms,
     method: Literal["gga", "metagga"] = "gga",
-    version: Literal["legacy", "2024"] = "2024",
+    version: Literal["legacy", "mp24"] = "mp24",
     prev_dir: SourceDirectory | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
@@ -218,7 +218,7 @@ def mp_static_job(
             atoms,
             calc_defaults=calc_defaults,
             calc_swaps=calc_kwargs,
-            check_mp_compatibility=bool(version == "2024"),
+            check_mp_compatibility=bool(version == "mp24"),
             additional_fields={"name": vasp_maker.name},
             copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
         )
@@ -229,7 +229,7 @@ def mp_static_job(
 def mp_relax_flow(
     atoms: Atoms,
     method: Literal["gga", "metagga"] = "gga",
-    version: Literal["legacy", "2024"] = "legacy",
+    version: Literal["legacy", "mp24"] = "legacy",
     job_params: dict[str, dict[str, Any]] | None = None,
     job_decorators: dict[str, Callable | None] | None = None,
 ) -> MPRelaxFlowSchema:
