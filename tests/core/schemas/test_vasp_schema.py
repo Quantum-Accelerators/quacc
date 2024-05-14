@@ -219,6 +219,7 @@ def test_validate_mp(monkeypatch, mp_run1, tmp_path, caplog):
     atoms = read(p / "OUTCAR.gz")
     with caplog.at_level(logging.WARNING):
         results = vasp_summarize_run(atoms, directory=p, mp_compatible=True)
+    assert results["entry"].correction == pytest.approx(-3.2280)
     assert "Incorrect POTCAR files were used" in caplog.text
     assert "Incorrect POTCAR files were used" in " ".join(
         results["validation"]["reasons"]
