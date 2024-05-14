@@ -51,7 +51,7 @@ def vasp_summarize_run(
     run_bader: bool = _DEFAULT_SETTING,
     run_chargemol: bool = _DEFAULT_SETTING,
     check_convergence: bool = _DEFAULT_SETTING,
-    mp_compatible: bool = False,
+    check_mp_compatibility: bool = False,
     additional_fields: dict[str, Any] | None = None,
     store: Store | None = _DEFAULT_SETTING,
 ) -> VaspSchema:
@@ -78,8 +78,9 @@ def vasp_summarize_run(
     check_convergence
         Whether to throw an error if convergence is not reached. Defaults to True in
         settings.
-    mp_compatible
-        Whether to apply the MP corrections to the task document and check MP validiity.
+    check_mp_compatibility
+        Whether to check compatibility with the current version of MP.
+        Requires `pymatgen-io-validation` to do the check.
     additional_fields
         Additional fields to add to the task document.
     store
@@ -108,11 +109,11 @@ def vasp_summarize_run(
     vasp_task_doc = TaskDoc.from_directory(directory).model_dump()
 
     # Get MP validation doc
-    if mp_compatible:
+    if check_mp_compatibility:
         mp_compat_model = _validate_mp_compatability(directory)
     mp_compat_doc = (
         {"validation": mp_compat_model.model_dump()}
-        if mp_compatible and mp_compat_model
+        if check_mp_compatibility and mp_compat_model
         else {}
     )
 
@@ -180,7 +181,7 @@ def summarize_vasp_opt_run(
     run_bader: bool = _DEFAULT_SETTING,
     run_chargemol: bool = _DEFAULT_SETTING,
     check_convergence: bool = _DEFAULT_SETTING,
-    mp_compatible: bool = False,
+    check_mp_compatibility: bool = False,
     additional_fields: dict[str, Any] | None = None,
     store: Store | None = _DEFAULT_SETTING,
 ) -> VaspASEOptSchema:
@@ -211,8 +212,9 @@ def summarize_vasp_opt_run(
     check_convergence
         Whether to throw an error if convergence is not reached. Defaults to True in
         settings.
-    mp_compatible
-        Whether to apply the MP corrections to the task document and check MP validiity.
+    check_mp_compatibility
+        Whether to check compatibility with the current version of MP.
+        Requires `pymatgen-io-validation` to do the check.
     additional_fields
         Additional fields to add to the task document.
     store
@@ -237,7 +239,7 @@ def summarize_vasp_opt_run(
         run_bader=run_bader,
         run_chargemol=run_chargemol,
         check_convergence=check_convergence,
-        mp_compatible=mp_compatible,
+        check_mp_compatibility=check_mp_compatibility,
         additional_fields=additional_fields,
         store=None,
     )

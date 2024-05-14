@@ -24,7 +24,7 @@ def run_and_summarize(
     preset: str | None = None,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
-    mp_compatible: bool = False,
+    check_mp_compatibility: bool = False,
     additional_fields: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> VaspSchema:
@@ -43,8 +43,9 @@ def run_and_summarize(
         Dictionary of custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.calculators.vasp.vasp.Vasp][].
-    mp_compatible
-        Whether to apply the MP corrections to the task document and check MP validiity.
+    check_mp_compatibility
+        Whether to check compatibility with the current version of MP.
+        Requires `pymatgen-io-validation` to do the check.
     additional_fields
         Additional fields to supply to the summarizer.
     copy_files
@@ -61,7 +62,9 @@ def run_and_summarize(
     final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return vasp_summarize_run(
-        final_atoms, mp_compatible=mp_compatible, additional_fields=additional_fields
+        final_atoms,
+        check_mp_compatibility=check_mp_compatibility,
+        additional_fields=additional_fields,
     )
 
 
@@ -72,7 +75,7 @@ def run_and_summarize_opt(
     calc_swaps: dict[str, Any] | None = None,
     opt_defaults: dict[str, Any] | None = None,
     opt_params: OptParams | None = None,
-    mp_compatible: bool = False,
+    check_mp_compatibility: bool = False,
     additional_fields: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> VaspASEOptSchema:
@@ -95,8 +98,9 @@ def run_and_summarize_opt(
         Default arguments for the ASE optimizer.
     opt_params
         Dictionary of custom kwargs for [quacc.runners.ase.run_opt][]
-    mp_compatible
-        Whether to apply the MP corrections to the task document and check MP validiity.
+    check_mp_compatibility
+        Whether to check compatibility with the current version of MP.
+        Requires `pymatgen-io-validation` to do the check.
     additional_fields
         Additional fields to supply to the summarizer.
     copy_files
@@ -114,5 +118,7 @@ def run_and_summarize_opt(
     dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
 
     return summarize_vasp_opt_run(
-        dyn, mp_compatible=mp_compatible, additional_fields=additional_fields
+        dyn,
+        check_mp_compatibility=check_mp_compatibility,
+        additional_fields=additional_fields,
     )
