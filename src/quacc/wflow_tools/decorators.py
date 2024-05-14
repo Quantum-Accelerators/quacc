@@ -140,10 +140,10 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     if _func is None:
         return partial(job, **kwargs)
 
-    elif SETTINGS.WORKFLOW_ENGINE == "covalent":
+    if SETTINGS.WORKFLOW_ENGINE == "covalent":
         import covalent as ct
 
-        return ct.electron(_func, **kwargs)
+        decorated_func= ct.electron(_func, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "dask":
         from dask import delayed
 
@@ -153,22 +153,22 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
         def wrapper(*f_args, **f_kwargs):
             return _func(*f_args, **f_kwargs)
 
-        return Delayed_(delayed(wrapper, **kwargs))
+        decorated_func= Delayed_(delayed(wrapper, **kwargs))
 
     elif SETTINGS.WORKFLOW_ENGINE == "jobflow":
         from jobflow import job as jf_job
 
-        return jf_job(_func, **kwargs)
+        decorated_func= jf_job(_func, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "parsl":
         from parsl import python_app
 
         wrapped_fn = _get_parsl_wrapped_func(_func, kwargs)
 
-        return python_app(wrapped_fn, **kwargs)
+        decorated_func= python_app(wrapped_fn, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
         from redun import task
 
-        return task(_func, namespace=_func.__module__, **kwargs)
+        decorated_func= task(_func, namespace=_func.__module__, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "prefect":
         from prefect import task
 
@@ -178,12 +178,14 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
             def wrapper(*f_args, **f_kwargs):
                 decorated = task(_func, **kwargs)
                 return decorated.submit(*f_args, **f_kwargs)
-
-            return wrapper
+            decorated_func = wrapper
         else:
-            return task(_func, **kwargs)
+            decorated_func= task(_func, **kwargs)
     else:
-        return _func
+        decorated_func= _func
+
+    decorated_func.quacc_decorator = "job"
+    return decorated_func
 
 
 def flow(_func: Callable | None = None, **kwargs) -> Flow:
@@ -333,20 +335,23 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
     if _func is None:
         return partial(flow, **kwargs)
 
-    elif SETTINGS.WORKFLOW_ENGINE == "covalent":
+    if SETTINGS.WORKFLOW_ENGINE == "covalent":
         import covalent as ct
 
-        return ct.lattice(_func, **kwargs)
+        decorated_func= ct.lattice(_func, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
         from redun import task
 
-        return task(_func, namespace=_func.__module__, **kwargs)
+        decorated_func= task(_func, namespace=_func.__module__, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "prefect":
         from prefect import flow as prefect_flow
 
-        return prefect_flow(_func, validate_parameters=False, **kwargs)
+        decorated_func= prefect_flow(_func, validate_parameters=False, **kwargs)
     else:
-        return _func
+        decorated_func= _func
+
+    decorated_func.quacc_decorator = "flow"
+    return decorated_func
 
 
 def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
@@ -547,10 +552,10 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
     if _func is None:
         return partial(subflow, **kwargs)
 
-    elif SETTINGS.WORKFLOW_ENGINE == "covalent":
+    if SETTINGS.WORKFLOW_ENGINE == "covalent":
         import covalent as ct
 
-        return ct.electron(ct.lattice(_func), **kwargs)
+        decorated_func= ct.electron(ct.lattice(_func), **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "dask":
         from dask import delayed
         from dask.distributed import worker_client
@@ -563,24 +568,26 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
                 futures = client.compute(_func(*f_args, **f_kwargs))
                 return client.gather(futures)
 
-        return delayed(wrapper, **kwargs)
+        decorated_func= delayed(wrapper, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "parsl":
         from parsl import join_app
 
         wrapped_fn = _get_parsl_wrapped_func(_func, kwargs)
 
-        return join_app(wrapped_fn, **kwargs)
+        decorated_func= join_app(wrapped_fn, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "prefect":
         from prefect import flow as prefect_flow
 
-        return prefect_flow(_func, validate_parameters=False, **kwargs)
+        decorated_func= prefect_flow(_func, validate_parameters=False, **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
         from redun import task
 
-        return task(_func, namespace=_func.__module__, **kwargs)
+        decorated_func= task(_func, namespace=_func.__module__, **kwargs)
     else:
-        return _func
+        decorated_func= _func
 
+    decorated_func.quacc_decorator = "subflow"
+    return decorated_func
 
 def _get_parsl_wrapped_func(
     func: Callable, decorator_kwargs: dict[str, Any]

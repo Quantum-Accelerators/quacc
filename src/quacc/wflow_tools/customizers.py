@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from functools import partial
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 from quacc.utils.dicts import recursive_dict_merge
 
@@ -28,57 +28,42 @@ def strip_decorator(func: Callable) -> Callable:
     """
     from quacc import SETTINGS
 
-    if SETTINGS.WORKFLOW_ENGINE == "covalent":
-        from covalent._workflow.lattice import Lattice
+    decorator = getattr(func, "quacc_decorator", None)
+    if decorator is None:
+        return func
 
-        if hasattr(func, "electron_object"):
+    if SETTINGS.WORKFLOW_ENGINE == "covalent":
+        if decorator in ("job", "subflow"):
             func = func.electron_object.function
 
-        if isinstance(func, Lattice):
+        if decorator in ("flow", "subflow"):
             func = func.workflow_function.get_deserialized()
 
     elif SETTINGS.WORKFLOW_ENGINE == "dask":
-        from dask.delayed import Delayed
-
-        from quacc.wflow_tools.decorators import Delayed_
-
-        if isinstance(func, Delayed_):
+        if decorator == "job":
             func = func.func
-        if isinstance(func, Delayed):
+        func = func.__wrapped__
+        if decorator == "subflow":
             func = func.__wrapped__
-            if hasattr(func, "__wrapped__"):
-                # Needed for custom `@subflow` decorator
-                func = func.__wrapped__
 
     elif SETTINGS.WORKFLOW_ENGINE == "jobflow":
-        if hasattr(func, "original"):
-            func = func.original
+        func = func.original
 
     elif SETTINGS.WORKFLOW_ENGINE == "parsl":
-        from parsl.app.python import PythonApp
-
-        if isinstance(func, PythonApp):
-            func = func.func
+        func = func.func
 
     elif SETTINGS.WORKFLOW_ENGINE == "prefect":
-        from prefect import Flow as PrefectFlow
-        from prefect import Task
-
-        if isinstance(func, (Task, PrefectFlow)):
-            func = func.fn
-        elif hasattr(func, "__wrapped__"):
+        if SETTINGS.PREFECT_AUTO_SUBMIT:
             func = func.__wrapped__
+        func = func.fn
 
     elif SETTINGS.WORKFLOW_ENGINE == "redun":
-        from redun import Task
-
-        if isinstance(func, Task):
-            func = func.func
+        func = func.func
 
     return func
 
 
-def redecorate(func: Callable, decorator: Callable | None) -> Callable:
+def redecorate(func: Callable, decorator: Callable) -> Callable:
     """
     Redecorate a pre-decorated function with a custom decorator.
 
@@ -87,8 +72,7 @@ def redecorate(func: Callable, decorator: Callable | None) -> Callable:
     func
         The pre-decorated function.
     decorator
-        The new decorator to apply. If `None`, the function is stripped of its
-        decorators.
+        The new decorator to apply.
 
     Returns
     -------
@@ -96,14 +80,10 @@ def redecorate(func: Callable, decorator: Callable | None) -> Callable:
         The newly decorated function.
     """
     func = strip_decorator(func)
-    return func if decorator is None else decorator(func)
+    return decorator(func)
 
 
-def update_parameters(
-    func: Callable,
-    params: dict[str, Any],
-    decorator: Literal["job", "flow", "subflow"] | None = "job",
-) -> Callable:
+def update_parameters(func: Callable, params: dict[str, Any]) -> Callable:
     """
     Update the parameters of a (potentially decorated) function.
 
@@ -113,8 +93,6 @@ def update_parameters(
         The function to update.
     params
         The parameters and associated values to update.
-    decorator
-        The decorator associated with `func`.
 
     Returns
     -------
@@ -123,12 +101,15 @@ def update_parameters(
     """
     from quacc import SETTINGS, flow, job, subflow
 
-    if decorator and SETTINGS.WORKFLOW_ENGINE == "dask":
-        if decorator == "job":
+    if (
+        decorators_type := hasattr(func, "quacc_decorator")
+        and SETTINGS.WORKFLOW_ENGINE == "dask"
+    ):
+        if decorators_type == "job":
             decorator = job
-        elif decorator == "flow":
+        elif decorators_type == "flow":
             decorator = flow
-        elif decorator == "subflow":
+        elif decorators_type == "subflow":
             decorator = subflow
 
         func = strip_decorator(func)

@@ -4,6 +4,9 @@ import pytest
 
 prefect = pytest.importorskip("prefect")
 
+from prefect import Flow as PrefectFlow
+from prefect import Task
+
 from quacc import change_settings, flow, job, strip_decorator, subflow
 
 
@@ -178,9 +181,12 @@ def test_strip_decorators():
 
     stripped_add = strip_decorator(add)
     assert stripped_add(1, 2) == 3
+    assert not isinstance(stripped_add, Task)
 
     stripped_add2 = strip_decorator(add2)
     assert stripped_add2(1, 2) == 3
+    assert not isinstance(stripped_add2,PrefectFlow)
 
     stripped_add3 = strip_decorator(add3)
     assert stripped_add3(1, 2) == 3
+    assert not isinstance(stripped_add3,PrefectFlow)
