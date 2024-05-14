@@ -112,7 +112,7 @@ def mp_pre_relax_job(
             atoms,
             calc_defaults=calc_defaults,
             calc_swaps=calc_kwargs,
-            check_mp_compatibility=bool(version=="2024"),
+            check_mp_compatibility=bool(version == "2024"),
             additional_fields={"name": vasp_maker.name},
             copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
         )
