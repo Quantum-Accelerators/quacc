@@ -162,9 +162,7 @@ def test_customize_funcs(monkeypatch, tmp_path):
     def test_dynamic_workflow(a, b, c=3):
         result1 = add(a, b)
         result2 = make_more(result1)
-        return update_parameters(add_distributed, {"d": 1})(
-            result2, c
-        )
+        return update_parameters(add_distributed, {"d": 1})(result2, c)
 
     add_ = update_parameters(add, {"b": 3})
     dynamic_workflow_ = update_parameters(dynamic_workflow, {"c": 4})
