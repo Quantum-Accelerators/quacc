@@ -462,6 +462,7 @@ def test_qmof(patch_nonmetallic_taskdoc):
     assert output["double_relax"][0]["parameters"]["isif"] == 2
     assert output["double_relax"][1]["parameters"]["isif"] == 2
 
+
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
 def test_mp_metagga_prerelax_job_metallic(patch_metallic_taskdoc):
     atoms = bulk("Al")
@@ -510,6 +511,7 @@ def test_mp_metagga_prerelax_job_metallic(patch_metallic_taskdoc):
     assert output["parameters"]["pp"] == "pbe"
     assert "metagga" not in output["parameters"]
 
+
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
 def test_mp_metagga_prerelax_job_nonmetallic(patch_nonmetallic_taskdoc):
     atoms = bulk("Si")
@@ -525,6 +527,7 @@ def test_mp_metagga_prerelax_job_nonmetallic(patch_nonmetallic_taskdoc):
     assert output["parameters"]["sigma"] == 0.05
     assert output["parameters"]["pp"] == "pbe"
     assert "metagga" not in output["parameters"]
+
 
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
 def test_mp_metagga_relax_job_metallic(patch_metallic_taskdoc):
@@ -577,6 +580,7 @@ def test_mp_metagga_relax_job_metallic(patch_metallic_taskdoc):
     assert output["parameters"]["sigma"] == 0.05
     assert output["parameters"]["pp"] == "pbe"
 
+
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
 def test_mp_metagga_relax_job_nonmetallic(patch_nonmetallic_taskdoc):
     atoms = bulk("Si")
@@ -591,6 +595,7 @@ def test_mp_metagga_relax_job_nonmetallic(patch_nonmetallic_taskdoc):
     assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["sigma"] == 0.05
     assert output["parameters"]["pp"] == "pbe"
+
 
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
 def test_mp_metagga_static_job(patch_metallic_taskdoc):
@@ -625,6 +630,7 @@ def test_mp_metagga_static_job(patch_metallic_taskdoc):
         "setups": {"Al": ""},
     }
 
+
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
 def test_mp_metagga_relax_flow_metallic(tmp_path, patch_metallic_taskdoc):
     with change_settings({"CREATE_UNIQUE_DIR": False, "RESULTS_DIR": tmp_path}):
@@ -644,6 +650,7 @@ def test_mp_metagga_relax_flow_metallic(tmp_path, patch_metallic_taskdoc):
         assert output["relax"]["parameters"]["sigma"] == 0.05
         assert output["relax"]["parameters"]["kspacing"] == 0.22
         assert output["relax"]["parameters"]["pp"] == "pbe"
+
 
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
 def test_mp_metagga_relax_flow_nonmetallic(tmp_path, patch_nonmetallic_taskdoc):
@@ -689,6 +696,7 @@ def test_mp_metagga_relax_flow_nonmetallic(tmp_path, patch_nonmetallic_taskdoc):
         assert output["static"]["parameters"]["algo"] == "fast"
         assert output["static"]["parameters"]["magmom"] == [0.0, 0.0]
 
+
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
 def test_mp_gga_relax_job(patch_nonmetallic_taskdoc):
     atoms = bulk("Ni") * (2, 1, 1)
@@ -729,6 +737,7 @@ def test_mp_gga_relax_job(patch_nonmetallic_taskdoc):
     }
     assert output["atoms"].get_chemical_symbols() == ["O", "Ni"]
 
+
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
 def test_mp_gga_static_job(patch_nonmetallic_taskdoc):
     atoms = bulk("Ni") * (2, 1, 1)
@@ -764,6 +773,7 @@ def test_mp_gga_static_job(patch_nonmetallic_taskdoc):
         "pp": "pbe",
         "setups": {"Ni": "_pv", "O": ""},
     }
+
 
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
 def test_mp_gga_relax_flow(tmp_path, patch_nonmetallic_taskdoc):
@@ -838,6 +848,7 @@ def test_mp_gga_relax_flow(tmp_path, patch_nonmetallic_taskdoc):
             "setups": {"Ni": "_pv", "O": ""},
         }
 
+
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
 def test_mp_relax_flow_custom(tmp_path, patch_nonmetallic_taskdoc):
     with change_settings({"CREATE_UNIQUE_DIR": False, "RESULTS_DIR": tmp_path}):
@@ -858,6 +869,7 @@ def test_mp_relax_flow_custom(tmp_path, patch_nonmetallic_taskdoc):
             },
         )
         assert output["relax"]["parameters"]["nsw"] == 0
+
 
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
 def test_mp_2024_flow(tmp_path, patch_metallic_taskdoc):
