@@ -185,8 +185,8 @@ def test_strip_decorators():
 
     stripped_add2 = strip_decorator(add2)
     assert stripped_add2(1, 2) == 3
-    assert not isinstance(stripped_add2,PrefectFlow)
+    assert not isinstance(stripped_add2, PrefectFlow)
 
     stripped_add3 = strip_decorator(add3)
     assert stripped_add3(1, 2) == 3
-    assert not isinstance(stripped_add3,PrefectFlow)
+    assert not isinstance(stripped_add3, PrefectFlow)
