@@ -1,5 +1,5 @@
 """
-Materials Project-compatible recipes. Please cite the following:
+Materials Project-compatible recipes.
 
 !!! Important
 
