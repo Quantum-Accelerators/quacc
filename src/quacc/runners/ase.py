@@ -236,8 +236,8 @@ def run_opt(
         atoms = FrechetCellFilter(atoms)
 
     # Run optimization
-    with traj, optimizer(atoms, **optimizer_kwargs) as dyn:
-        try:
+    try:
+        with traj, optimizer(atoms, **optimizer_kwargs) as dyn:
             if optimizer.__name__.startswith("SciPy"):
                 # https://gitlab.com/ase/ase/-/issues/1475
                 dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
@@ -258,7 +258,6 @@ def run_opt(
                     if fn_hook:
                         fn_hook(dyn)
         except Exception as exception:
-            traj.close()
             terminate(tmpdir, exception)
 
     # Store the trajectory atoms
