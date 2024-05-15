@@ -257,8 +257,8 @@ def run_opt(
                         )
                     if fn_hook:
                         fn_hook(dyn)
-        except Exception as exception:
-            terminate(tmpdir, exception)
+    except Exception as exception:
+        terminate(tmpdir, exception)
 
     # Store the trajectory atoms
     dyn.traj_atoms = read(traj_file, index=":")
