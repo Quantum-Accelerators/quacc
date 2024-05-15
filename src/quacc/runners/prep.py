@@ -141,7 +141,7 @@ def calc_cleanup(
     logger.info(f"Calculation results stored at {job_results_dir}")
 
 
-def terminate(tmpdir: Path | str, exception: Exception) -> RuntimeError:
+def terminate(tmpdir: Path | str, exception: Exception) -> Exception:
     """
     Terminate a calculation and move files to a failed directory.
 
@@ -152,22 +152,24 @@ def terminate(tmpdir: Path | str, exception: Exception) -> RuntimeError:
     exception
         The exception that caused the calculation to fail.
 
-    Returns
+    Raises
     -------
-    RuntimeError
-        An exception with a message about the failed calculation.
+    Exception
+        The exception that caused the calculation to fail.
     """
     job_failed_dir = Path(str(tmpdir).replace("tmp-", "failed-"))
-    msg = f"Calculation failed! Files stored at {job_failed_dir}"
-    logging.info(msg)
+    job_failed_dir.mkdir(parents=True)
 
     # Move files from tmpdir to job_failed_dir
     for file_name in os.listdir(tmpdir):
         move(tmpdir / file_name, job_failed_dir / file_name)
+
+    msg = f"Calculation failed! Files stored at {job_failed_dir}"
+    logging.info(msg)
 
     # Remove symlink to tmpdir
     if os.name != "nt" and SETTINGS.SCRATCH_DIR:
         symlink_path = SETTINGS.RESULTS_DIR / f"symlink-{job_failed_dir.name}"
         symlink_path.symlink_to(job_failed_dir, target_is_directory=True)
 
-    raise RuntimeError(msg) from exception
+    raise exception
