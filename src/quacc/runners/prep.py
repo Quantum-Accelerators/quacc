@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import logging
 import os
-import traceback
 from pathlib import Path
 from shutil import move, rmtree
 from typing import TYPE_CHECKING
