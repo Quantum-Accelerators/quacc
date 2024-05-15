@@ -157,18 +157,16 @@ def terminate(tmpdir: Path | str, exception: Exception) -> Exception:
         The exception that caused the calculation to fail.
     """
     job_failed_dir = Path(str(tmpdir).replace("tmp-", "failed-"))
-    job_failed_dir.mkdir(parents=True)
-
-    # Move files from tmpdir to job_failed_dir
-    for file_name in os.listdir(tmpdir):
-        move(tmpdir / file_name, job_failed_dir / file_name)
+    os.rename(tmpdir, job_failed_dir)
 
     msg = f"Calculation failed! Files stored at {job_failed_dir}"
     logging.info(msg)
 
     # Remove symlink to tmpdir
     if os.name != "nt" and SETTINGS.SCRATCH_DIR:
+        old_symlink_path = SETTINGS.RESULTS_DIR / f"symlink-{tmpdir.name}"
         symlink_path = SETTINGS.RESULTS_DIR / f"symlink-{job_failed_dir.name}"
+        old_symlink_path.unlink(missing_ok=True)
         symlink_path.symlink_to(job_failed_dir, target_is_directory=True)
 
     raise exception
