@@ -258,6 +258,7 @@ def run_opt(
                     if fn_hook:
                         fn_hook(dyn)
         except Exception as exception:
+            traj.close()
             terminate(tmpdir, exception)
 
     # Store the trajectory atoms
