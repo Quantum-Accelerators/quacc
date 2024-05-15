@@ -16,7 +16,7 @@ from monty.os.path import zpath
 
 from quacc import SETTINGS
 from quacc.atoms.core import copy_atoms, get_final_atoms_from_dynamics
-from quacc.runners.prep import calc_cleanup, calc_setup
+from quacc.runners.prep import calc_cleanup, calc_setup, terminate
 from quacc.utils.dicts import recursive_dict_merge
 
 try:
@@ -106,10 +106,13 @@ def run_calc(
     tmpdir, job_results_dir = calc_setup(atoms, copy_files=copy_files)
 
     # Run calculation
-    if get_forces:
-        atoms.get_forces()
-    else:
-        atoms.get_potential_energy()
+    try:
+        if get_forces:
+            atoms.get_forces()
+        else:
+            atoms.get_potential_energy()
+    except Exception as exception:
+        terminate(tmpdir,exception)
 
     # Most ASE calculators do not update the atoms object in-place with a call
     # to .get_potential_energy(), which is important if an internal optimizer is
@@ -234,23 +237,26 @@ def run_opt(
 
     # Run optimization
     with traj, optimizer(atoms, **optimizer_kwargs) as dyn:
-        if optimizer.__name__.startswith("SciPy"):
-            # https://gitlab.com/ase/ase/-/issues/1475
-            dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
-        else:
-            for i, _ in enumerate(dyn.irun(fmax=fmax, steps=max_steps, **run_kwargs)):
-                if store_intermediate_results:
-                    _copy_intermediate_files(
-                        tmpdir,
-                        i,
-                        files_to_ignore=[
-                            traj_file,
-                            optimizer_kwargs["restart"],
-                            optimizer_kwargs["logfile"],
-                        ],
-                    )
-                if fn_hook:
-                    fn_hook(dyn)
+        try:
+            if optimizer.__name__.startswith("SciPy"):
+                # https://gitlab.com/ase/ase/-/issues/1475
+                dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
+            else:
+                for i, _ in enumerate(dyn.irun(fmax=fmax, steps=max_steps, **run_kwargs)):
+                    if store_intermediate_results:
+                        _copy_intermediate_files(
+                            tmpdir,
+                            i,
+                            files_to_ignore=[
+                                traj_file,
+                                optimizer_kwargs["restart"],
+                                optimizer_kwargs["logfile"],
+                            ],
+                        )
+                    if fn_hook:
+                        fn_hook(dyn)
+        except Exception as exception:
+            terminate(tmpdir,exception)
 
     # Store the trajectory atoms
     dyn.traj_atoms = read(traj_file, index=":")
@@ -299,7 +305,10 @@ def run_vib(
 
     # Run calculation
     vib = Vibrations(atoms, name=str(tmpdir / "vib"), **vib_kwargs)
-    vib.run()
+    try:
+        vib.run()
+    except Exception as exception:
+        terminate(tmpdir,exception)
 
     # Summarize run
     vib.summary(log=sys.stdout if SETTINGS.DEBUG else str(tmpdir / "vib_summary.log"))

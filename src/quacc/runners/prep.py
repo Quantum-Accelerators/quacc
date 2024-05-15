@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
+import traceback
 from pathlib import Path
 from shutil import move, rmtree
 from typing import TYPE_CHECKING
@@ -109,7 +110,6 @@ def calc_cleanup(
     None
     """
     job_results_dir, tmpdir = Path(job_results_dir), Path(tmpdir)
-    logger.info(f"Calculation results stored at {job_results_dir}")
 
     # Safety check
     if "tmp-" not in str(tmpdir):
@@ -138,3 +138,21 @@ def calc_cleanup(
 
     # Remove the tmpdir
     rmtree(tmpdir, ignore_errors=True)
+
+    logger.info(f"Calculation results stored at {job_results_dir}")
+
+def terminate(tmpdir: Path | str, exception: Exception)->RuntimeError:
+    job_failed_dir = Path(str(tmpdir).replace("tmp-", "failed-"))
+    msg = f"Calculation failed! Files stored at {job_failed_dir}"
+    logging.info(msg)
+
+    # Move files from tmpdir to job_failed_dir
+    for file_name in os.listdir(tmpdir):
+        move(tmpdir / file_name, job_failed_dir / file_name)
+
+    # Remove symlink to tmpdir
+    if os.name != "nt" and SETTINGS.SCRATCH_DIR:
+        symlink_path = SETTINGS.RESULTS_DIR / f"symlink-{tmpdir.name}"
+        symlink_path.unlink(missing_ok=True)
+
+    raise RuntimeError(msg) from exception
