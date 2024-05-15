@@ -1,4 +1,4 @@
-ase @ git@gitlab.com:yuzie007/ase.git@fix-orca
+ase @ git+https://gitlab.com/yuzie007/ase.git@fix-orca
 cclib==1.8.1
 custodian==2024.4.18
 emmet-core==0.83.6
