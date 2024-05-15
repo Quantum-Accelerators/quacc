@@ -5,7 +5,6 @@ from __future__ import annotations
 import logging
 import os
 from pathlib import Path
-from shutil import move, rmtree
 from typing import TYPE_CHECKING
 
 from monty.shutil import gzip_dir
@@ -133,6 +132,7 @@ def calc_cleanup(
     if os.name != "nt" and SETTINGS.SCRATCH_DIR:
         symlink_path = SETTINGS.RESULTS_DIR / f"symlink-{tmpdir.name}"
         symlink_path.unlink(missing_ok=True)
+
 
 def terminate(tmpdir: Path | str, exception: Exception) -> Exception:
     """
