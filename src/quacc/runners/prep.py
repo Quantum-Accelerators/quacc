@@ -126,19 +126,13 @@ def calc_cleanup(
         gzip_dir(tmpdir)
 
     # Move files from tmpdir to job_results_dir
-    for file_name in os.listdir(tmpdir):
-        move(tmpdir / file_name, job_results_dir / file_name)
+    os.rename(tmpdir, job_results_dir)
+    logger.info(f"Calculation results stored at {job_results_dir}")
 
     # Remove symlink to tmpdir
     if os.name != "nt" and SETTINGS.SCRATCH_DIR:
         symlink_path = SETTINGS.RESULTS_DIR / f"symlink-{tmpdir.name}"
         symlink_path.unlink(missing_ok=True)
-
-    # Remove the tmpdir
-    rmtree(tmpdir, ignore_errors=True)
-
-    logger.info(f"Calculation results stored at {job_results_dir}")
-
 
 def terminate(tmpdir: Path | str, exception: Exception) -> Exception:
     """
