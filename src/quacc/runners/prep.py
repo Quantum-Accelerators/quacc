@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 import os
 from pathlib import Path
+from shutil import move
 from typing import TYPE_CHECKING
 
 from monty.shutil import gzip_dir
@@ -99,8 +100,7 @@ def calc_cleanup(
         deleted after the calculation is complete.
     job_results_dir
         The path to the job_results_dir, where the files will ultimately be
-        stored. A symlink to the tmpdir will be made here during the calculation
-        for convenience.
+        stored.
 
     Returns
     -------
@@ -117,15 +117,16 @@ def calc_cleanup(
     if atoms is not None:
         atoms.calc.directory = job_results_dir
 
-    # Make the results directory
-    job_results_dir.mkdir(parents=True, exist_ok=True)
-
     # Gzip files in tmpdir
     if SETTINGS.GZIP_FILES:
         gzip_dir(tmpdir)
 
     # Move files from tmpdir to job_results_dir
-    tmpdir.rename(job_results_dir)
+    if SETTINGS.CREATE_UNIQUE_DIR:
+        move(tmpdir, job_results_dir)
+    else:
+        for file_name in os.listdir(tmpdir):
+            move(tmpdir / file_name, job_results_dir / file_name)
     logger.info(f"Calculation results stored at {job_results_dir}")
 
     # Remove symlink to tmpdir
