@@ -150,7 +150,7 @@ def terminate(tmpdir: Path | str, exception: Exception) -> Exception:
     Exception
         The exception that caused the calculation to fail.
     """
-    job_failed_dir = Path(str(tmpdir).replace("tmp-", "failed-"))
+    job_failed_dir = tmpdir.with_name(tmpdir.name.replace("tmp-", "failed-"))
     tmpdir.rename(job_failed_dir)
 
     msg = f"Calculation failed! Files stored at {job_failed_dir}"
