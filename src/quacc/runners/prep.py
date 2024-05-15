@@ -128,6 +128,7 @@ def calc_cleanup(
     else:
         for file_name in os.listdir(tmpdir):
             move(tmpdir / file_name, job_results_dir / file_name)
+            rmtree(tmpdir)
     logger.info(f"Calculation results stored at {job_results_dir}")
 
     # Remove symlink to tmpdir
