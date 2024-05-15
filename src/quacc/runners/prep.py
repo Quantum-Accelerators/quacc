@@ -68,9 +68,8 @@ def calc_setup(
 
     # Create a symlink to the tmpdir
     if os.name != "nt" and SETTINGS.SCRATCH_DIR:
-        symlink = SETTINGS.RESULTS_DIR / f"symlink-{tmpdir.name}"
-        symlink.unlink(missing_ok=True)
-        symlink.symlink_to(tmpdir, target_is_directory=True)
+        symlink_path = SETTINGS.RESULTS_DIR / f"symlink-{tmpdir.name}"
+        symlink_path.symlink_to(tmpdir, target_is_directory=True)
 
     # Copy files to tmpdir and decompress them if needed
     if copy_files:
@@ -109,7 +108,6 @@ def calc_cleanup(
     None
     """
     job_results_dir, tmpdir = Path(job_results_dir), Path(tmpdir)
-    logger.info(f"Calculation results stored at {job_results_dir}")
 
     # Safety check
     if "tmp-" not in str(tmpdir):
@@ -120,21 +118,19 @@ def calc_cleanup(
     if atoms is not None:
         atoms.calc.directory = job_results_dir
 
-    # Make the results directory
-    job_results_dir.mkdir(parents=True, exist_ok=True)
-
     # Gzip files in tmpdir
     if SETTINGS.GZIP_FILES:
         gzip_dir(tmpdir)
 
     # Move files from tmpdir to job_results_dir
-    for file_name in os.listdir(tmpdir):
-        move(tmpdir / file_name, job_results_dir / file_name)
+    if SETTINGS.CREATE_UNIQUE_DIR:
+        move(tmpdir, job_results_dir)
+    else:
+        for file_name in os.listdir(tmpdir):
+            move(tmpdir / file_name, job_results_dir / file_name)
+    logger.info(f"Calculation results stored at {job_results_dir}")
 
     # Remove symlink to tmpdir
     if os.name != "nt" and SETTINGS.SCRATCH_DIR:
         symlink_path = SETTINGS.RESULTS_DIR / f"symlink-{tmpdir.name}"
         symlink_path.unlink(missing_ok=True)
-
-    # Remove the tmpdir
-    rmtree(tmpdir, ignore_errors=True)
