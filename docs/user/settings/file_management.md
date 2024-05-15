@@ -90,7 +90,7 @@ SCRATCH_DIR
 
 ### Job Failure
 
-If the job fails or does not complete, then the file structure look slike:
+If the job fails or does not complete, then the file structure looks like:
 
 ```text
 RESULTS_DIR
