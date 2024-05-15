@@ -125,7 +125,7 @@ def calc_cleanup(
         gzip_dir(tmpdir)
 
     # Move files from tmpdir to job_results_dir
-    os.rename(tmpdir, job_results_dir)
+    tmpdir.rename(job_results_dir)
     logger.info(f"Calculation results stored at {job_results_dir}")
 
     # Remove symlink to tmpdir
@@ -151,7 +151,7 @@ def terminate(tmpdir: Path | str, exception: Exception) -> Exception:
         The exception that caused the calculation to fail.
     """
     job_failed_dir = Path(str(tmpdir).replace("tmp-", "failed-"))
-    os.rename(tmpdir, job_failed_dir)
+    tmpdir.rename(job_failed_dir)
 
     msg = f"Calculation failed! Files stored at {job_failed_dir}"
     logging.info(msg)
