@@ -38,7 +38,14 @@ RESULTS_DIR
 
 ### Job Failure
 
-If the job fails or does not complete, then the `tmp-quacc-2023-12-08-67890` directory will remain in `RESULTS_DIR` so you can inspect the files.
+If the job fails or does not complete, then the file structure looks like:
+
+```text
+RESULTS_DIR
+├── failed-quacc-2023-12-08-67890
+│   ├── INPUT
+    └── OUTPUT
+```
 
 ## Scenario 2: Specifying a `SCRATCH_DIR`
 
@@ -83,4 +90,17 @@ SCRATCH_DIR
 
 ### Job Failure
 
-If the job fails or does not complete, then the `tmp-quacc-2023-12-08-67890` directory will remain in `SCRATCH_DIR` so you can inspect the files. The symbolic link in `RESULTS_DIR` will also remain.
+If the job fails or does not complete, then the file structure look slike:
+
+```text
+RESULTS_DIR
+├── symlink-failed-quacc-2023-12-08-67890
+│
+```
+
+```text
+SCRATCH_DIR
+├── failed-quacc-2023-12-08-67890
+│   ├── INPUT
+    └── OUTPUT
+```

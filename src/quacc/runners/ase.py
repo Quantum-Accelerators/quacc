@@ -112,7 +112,7 @@ def run_calc(
         else:
             atoms.get_potential_energy()
     except Exception as exception:
-        terminate(tmpdir,exception)
+        terminate(tmpdir, exception)
 
     # Most ASE calculators do not update the atoms object in-place with a call
     # to .get_potential_energy(), which is important if an internal optimizer is
@@ -242,7 +242,9 @@ def run_opt(
                 # https://gitlab.com/ase/ase/-/issues/1475
                 dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
             else:
-                for i, _ in enumerate(dyn.irun(fmax=fmax, steps=max_steps, **run_kwargs)):
+                for i, _ in enumerate(
+                    dyn.irun(fmax=fmax, steps=max_steps, **run_kwargs)
+                ):
                     if store_intermediate_results:
                         _copy_intermediate_files(
                             tmpdir,
@@ -256,7 +258,7 @@ def run_opt(
                     if fn_hook:
                         fn_hook(dyn)
         except Exception as exception:
-            terminate(tmpdir,exception)
+            terminate(tmpdir, exception)
 
     # Store the trajectory atoms
     dyn.traj_atoms = read(traj_file, index=":")
@@ -308,7 +310,7 @@ def run_vib(
     try:
         vib.run()
     except Exception as exception:
-        terminate(tmpdir,exception)
+        terminate(tmpdir, exception)
 
     # Summarize run
     vib.summary(log=sys.stdout if SETTINGS.DEBUG else str(tmpdir / "vib_summary.log"))

@@ -69,9 +69,8 @@ def calc_setup(
 
     # Create a symlink to the tmpdir
     if os.name != "nt" and SETTINGS.SCRATCH_DIR:
-        symlink = SETTINGS.RESULTS_DIR / f"symlink-{tmpdir.name}"
-        symlink.unlink(missing_ok=True)
-        symlink.symlink_to(tmpdir, target_is_directory=True)
+        symlink_path = SETTINGS.RESULTS_DIR / f"symlink-{tmpdir.name}"
+        symlink_path.symlink_to(tmpdir, target_is_directory=True)
 
     # Copy files to tmpdir and decompress them if needed
     if copy_files:
@@ -141,7 +140,23 @@ def calc_cleanup(
 
     logger.info(f"Calculation results stored at {job_results_dir}")
 
-def terminate(tmpdir: Path | str, exception: Exception)->RuntimeError:
+
+def terminate(tmpdir: Path | str, exception: Exception) -> RuntimeError:
+    """
+    Terminate a calculation and move files to a failed directory.
+
+    Parameters
+    ----------
+    tmpdir
+        The path to the tmpdir, where the calculation was run.
+    exception
+        The exception that caused the calculation to fail.
+
+    Returns
+    -------
+    RuntimeError
+        An exception with a message about the failed calculation.
+    """
     job_failed_dir = Path(str(tmpdir).replace("tmp-", "failed-"))
     msg = f"Calculation failed! Files stored at {job_failed_dir}"
     logging.info(msg)
@@ -152,7 +167,7 @@ def terminate(tmpdir: Path | str, exception: Exception)->RuntimeError:
 
     # Remove symlink to tmpdir
     if os.name != "nt" and SETTINGS.SCRATCH_DIR:
-        symlink_path = SETTINGS.RESULTS_DIR / f"symlink-{tmpdir.name}"
-        symlink_path.unlink(missing_ok=True)
+        symlink_path = SETTINGS.RESULTS_DIR / f"symlink-{job_failed_dir.name}"
+        symlink_path.symlink_to(job_failed_dir, target_is_directory=True)
 
     raise RuntimeError(msg) from exception
