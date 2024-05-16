@@ -124,7 +124,7 @@ print(result)
 
 !!! Note "Loading the JSON Output"
 
-    A serialized version of the output schema, here denoted as `results`, is also written out to the filesystem with the name `quacc_results.json.gz`. It can be read back in as follows:
+    A serialized version of the print outoutput above is also written to the filesystem with the name `quacc_results.json.gz`. It can be read back in as follows:
 
     ```python
     from monty.serialization import loadfn
