@@ -37,16 +37,6 @@ result = relax_job(atoms)
 print(result)
 ```
 
-!!! Note "Loading the JSON Output"
-
-    A serialized version of the output schema, here denoted as `results`, is also written out to the filesystem with the name `quacc_results.json.gz`. It can be read back in as follows:
-
-    ```python
-    from monty.serialization import loadfn
-
-    results = loadfn("quacc_results.json.gz")
-    ```
-
 ??? Info "Printed Output"
 
     ```
@@ -130,6 +120,16 @@ print(result)
                             'stress': array([1.36192652e-02, 1.36192652e-02, 1.36192652e-02, 0.00000000e+00,
           7.55159347e-17, 1.47492060e-19])}],
     'volume': 11.761470249999999}
+    ```
+
+!!! Note "Loading the JSON Output"
+
+    A serialized version of the output schema, here denoted as `results`, is also written out to the filesystem with the name `quacc_results.json.gz`. It can be read back in as follows:
+
+    ```python
+    from monty.serialization import loadfn
+
+    results = loadfn("quacc_results.json.gz")
     ```
 
 ### A Mixed-Code Workflow
