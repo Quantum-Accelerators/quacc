@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
-from pymatgen.io.ase import AseAtomsAdaptor
+from pymatgen.core import Structure
 from pymatgen.io.vasp.inputs import Kpoints
 from pymatgen.symmetry.bandstructure import HighSymmKpath
 
@@ -67,7 +67,7 @@ def convert_pmg_kpts(
     gamma
         Whether the k-points are gamma-centered.
     """
-    struct = AseAtomsAdaptor.get_structure(input_atoms)
+    struct = Structure.from_ase_atoms(input_atoms)
 
     if pmg_kpts.get("line_density"):
         kpath = HighSymmKpath(

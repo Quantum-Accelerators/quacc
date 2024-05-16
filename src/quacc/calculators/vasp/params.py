@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from ase.calculators.vasp import Vasp as Vasp_
 from monty.dev import requires
-from pymatgen.io.ase import AseAtomsAdaptor
+from pymatgen.core import Structure
 
 from quacc.atoms.core import check_is_metal
 from quacc.utils.kpts import convert_pmg_kpts
@@ -402,7 +402,7 @@ class MPtoASEConverter:
             raise ValueError("Either atoms or prev_dir must be provided.")
         self.atoms = atoms
         self.prev_dir = prev_dir
-        self.structure = AseAtomsAdaptor.get_structure(atoms)
+        self.structure = Structure.from_ase_atoms(atoms)
 
     def convert_dict_set(self, dict_set: DictSet) -> dict:
         """

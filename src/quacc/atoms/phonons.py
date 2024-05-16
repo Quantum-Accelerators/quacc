@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from monty.dev import requires
-from pymatgen.io.ase import AseAtomsAdaptor
+from pymatgen.core import Structure
 from pymatgen.io.phonopy import get_phonopy_structure, get_pmg_structure
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 
@@ -61,7 +61,7 @@ def get_phonopy(
     phonopy_kwargs = phonopy_kwargs or {}
 
     symmetrized_structure = SpacegroupAnalyzer(
-        AseAtomsAdaptor().get_structure(atoms), symprec=symprec
+        Structure.from_ase_atoms(atoms), symprec=symprec
     ).get_symmetrized_structure()
 
     if supercell_matrix is None and min_lengths is not None:

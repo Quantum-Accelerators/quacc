@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from pymatgen.analysis.elasticity.strain import DeformedStructureSet
-from pymatgen.io.ase import AseAtomsAdaptor
+from pymatgen.core import Structure
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -38,7 +38,7 @@ def make_deformations_from_bulk(
     list[Atoms]
         All generated deformed structures
     """
-    struct = AseAtomsAdaptor.get_structure(atoms)
+    struct = Structure.from_ase_atoms(atoms)
 
     deformed_set = DeformedStructureSet(
         struct,

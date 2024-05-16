@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 from pymatgen.core.periodic_table import DummySpecies
+from pymatgen.core.structure import Structure
 from pymatgen.entries.computed_entries import ComputedStructureEntry
-from pymatgen.io.ase import AseAtomsAdaptor
 
 try:
     from pymatgen.analysis.defects.generators import VacancyGenerator
@@ -20,7 +20,6 @@ except ImportError:
 if TYPE_CHECKING:
     from ase.atoms import Atoms
     from numpy.typing import NDArray
-    from pymatgen.core.structure import Structure
 
     if has_deps:
         from pymatgen.analysis.defects.core import Defect
@@ -86,7 +85,7 @@ def make_defects_from_bulk(
         All generated defects
     """
     # Use pymatgen-analysis-defects and ShakeNBreak to generate defects
-    struct = AseAtomsAdaptor.get_structure(atoms)
+    struct = Structure.from_ase_atoms(atoms)
 
     # Make all the defects
     defects = defect_gen().get_defects(struct, **defect_gen_kwargs)
