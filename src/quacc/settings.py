@@ -65,7 +65,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
 
     RESULTS_DIR: Path = Field(
-        Path.cwd(),
+        Path(),
         description=(
             """
             Directory to permanently store I/O-based calculation results in.
@@ -432,8 +432,6 @@ class QuaccSettings(BaseSettings):
     def make_directories(cls, v: Optional[Path]) -> Optional[Path]:
         """Make directories."""
         if v:
-            if not v.is_absolute():
-                raise ValueError(f"{v} must be an absolute path.")
             if not v.exists():
                 v.mkdir(parents=True)
         return v
