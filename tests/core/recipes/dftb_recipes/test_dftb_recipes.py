@@ -174,6 +174,7 @@ def test_child_errors(tmp_path, monkeypatch, caplog):
         assert "Calculation failed" in caplog.text
         assert "quacc-failed" in " ".join(os.listdir(tmp_path))
 
+
 def test_child_errors2(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
