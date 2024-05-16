@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Failed calculations are now stored in a `failed-quacc-12345-` directory to distinguish these tasks from the running tasks in `tmp-quacc-12345-`
 - The output schema is now written to a serialized JSON file instead of pickle for security and ease-of-use reasons. It can be rehydrated via `loadfn("quacc_results.json.gz")` where `loadfn` is from `monty.serialization import loadfn`
+- The `fmax` attribute was move from the base level to the `parameters_opt` section since it is an input parameter
 
 ### Fixed
 
