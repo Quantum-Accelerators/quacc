@@ -28,9 +28,9 @@ def test_file(tmp_path, monkeypatch):
 
 def test_store(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    SETTINGS.STORE = MemoryStore()
-    atoms = bulk("Cu")
-    static_job(atoms)
+    with change_settings({"STORE": MemoryStore()}):
+        atoms = bulk("Cu")
+        static_job(atoms)
 
 
 def test_results_dir(tmp_path, monkeypatch):
