@@ -172,7 +172,7 @@ def test_child_errors(tmp_path, monkeypatch, caplog):
     atoms = bulk("Cu")
     with (
         caplog.at_level(logging.INFO),
-        change_settings({"SCRATCH_DIR": tmp_path / "scratch", "RESULTS_DIR"}),
+        change_settings({"SCRATCH_DIR": tmp_path / "scratch"}),
     ):
         with pytest.raises(RuntimeError, match="failed with command"):
             static_job(atoms)
