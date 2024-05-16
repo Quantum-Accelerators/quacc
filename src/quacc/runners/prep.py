@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 import os
 from pathlib import Path
-from shutil import move
+from shutil import move, rmtree
 from typing import TYPE_CHECKING
 
 from monty.shutil import gzip_dir
@@ -127,6 +127,7 @@ def calc_cleanup(
     else:
         for file_name in os.listdir(tmpdir):
             move(tmpdir / file_name, job_results_dir / file_name)
+        rmtree(tmpdir)
     logger.info(f"Calculation results stored at {job_results_dir}")
 
     # Remove symlink to tmpdir
@@ -157,7 +158,6 @@ def terminate(tmpdir: Path | str, exception: Exception) -> Exception:
     msg = f"Calculation failed! Files stored at {job_failed_dir}"
     logging.info(msg)
 
-    # Remove symlink to tmpdir
     if os.name != "nt" and SETTINGS.SCRATCH_DIR:
         old_symlink_path = SETTINGS.RESULTS_DIR / f"symlink-{tmpdir.name}"
         symlink_path = SETTINGS.RESULTS_DIR / f"symlink-{job_failed_dir.name}"
