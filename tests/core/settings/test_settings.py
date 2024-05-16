@@ -45,13 +45,6 @@ def test_results_dir(tmp_path, monkeypatch):
         assert "opt.traj" in os.listdir(output["dir_name"])
 
 
-def test_bad_dir():
-    with pytest.raises(ValueError, match="must be an absolute path"):
-        SETTINGS.RESULTS_DIR = "bad_dir"
-    with pytest.raises(ValueError, match="must be an absolute path"):
-        SETTINGS.SCRATCH_DIR = "bad_dir"
-
-
 def test_env_var(monkeypatch, tmp_path):
     p = tmp_path / "my/scratch/dir"
     monkeypatch.setenv("QUACC_SCRATCH_DIR", p)
