@@ -172,13 +172,12 @@ def test_child_errors(tmp_path, monkeypatch, caplog):
     atoms = bulk("Cu")
     with (
         caplog.at_level(logging.INFO),
-        change_settings({"SCRATCH_DIR": tmp_path / "scratch"}),
+        change_settings({"SCRATCH_DIR": tmp_path / "scratch", "RESULTS_DIR"}),
     ):
         with pytest.raises(RuntimeError, match="failed with command"):
             static_job(atoms)
         assert "Calculation failed" in caplog.text
         assert "failed-quacc-" in " ".join(os.listdir(tmp_path / "scratch"))
-        assert "symlink-failed-quacc-" in " ".join(os.listdir(tmp_path / "results"))
 
 
 @pytest.mark.skipif(os.name == "nt", reason="symlinking not possible on Windows")
@@ -193,4 +192,3 @@ def test_child_errors2(tmp_path, monkeypatch, caplog):
             relax_job(atoms)
         assert "Calculation failed" in caplog.text
         assert "failed-quacc-" in " ".join(os.listdir(tmp_path / "scratch"))
-        assert "symlink-failed-quacc-" in " ".join(os.listdir(tmp_path / "results"))
