@@ -3,11 +3,10 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-import pytest
 from ase.build import bulk
 from maggma.stores import MemoryStore
 
-from quacc import SETTINGS, change_settings
+from quacc import change_settings
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.settings import QuaccSettings
 
