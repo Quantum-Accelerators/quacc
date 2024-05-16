@@ -244,6 +244,8 @@ def finalize_dict(
                 directory,
                 "quacc_results.json.gz" if gzip_file else "quacc_results.json",
             ),
+            fmt="json",
+            indent=4,
         )
 
     if store:
