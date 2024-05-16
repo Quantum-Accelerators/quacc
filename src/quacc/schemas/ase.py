@@ -193,12 +193,11 @@ def summarize_opt_run(
     )
 
     # Clean up the opt parameters
-    parameters_opt = dyn.todict()
+    parameters_opt = dyn.todict() | {"fmax": getattr(dyn, "fmax", None)}
     parameters_opt.pop("logfile", None)
     parameters_opt.pop("restart", None)
 
     opt_fields = {
-        "fmax": getattr(dyn, "fmax", None),
         "parameters_opt": parameters_opt,
         "converged": is_converged,
         "nsteps": dyn.get_number_of_steps(),
