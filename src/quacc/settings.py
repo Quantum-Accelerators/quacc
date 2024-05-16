@@ -431,8 +431,8 @@ class QuaccSettings(BaseSettings):
     @classmethod
     def make_directories(cls, v: Optional[Path]) -> Optional[Path]:
         """Make directories."""
-        if v and not v.exists():
-            v.mkdir(parents=True)
+        if v:
+            v.mkdir(exist_ok=True, parents=True)
         return v
 
     @field_validator("STORE")
