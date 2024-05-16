@@ -8,7 +8,7 @@ from ase.build import bulk
 from ase.calculators.emt import EMT
 
 from quacc import change_settings
-from quacc.runners.prep import calc_cleanup, calc_setup
+from quacc.runners.prep import calc_cleanup, calc_setup, terminate
 
 
 def make_files():
@@ -176,3 +176,12 @@ def test_calc_cleanup(tmp_path, monkeypatch):
 
     with pytest.raises(ValueError):
         calc_cleanup(atoms, "quacc", SETTINGS.RESULTS_DIR)
+
+
+def test_terminate(tmp_path):
+    p = tmp_path / "tmp-quacc-1234"
+    os.mkdir(p)
+    with pytest.raises(ValueError, match="moo"):
+        terminate(p, ValueError("moo"))
+    assert not p.exists()
+    assert Path(tmp_path, "failed-quacc-1234").exists()

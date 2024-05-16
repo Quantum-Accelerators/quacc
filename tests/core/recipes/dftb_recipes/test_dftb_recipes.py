@@ -8,6 +8,7 @@ DFTBPLUS_EXISTS = bool(which("dftb+"))
 
 pytestmark = pytest.mark.skipif(not DFTBPLUS_EXISTS, reason="Needs DFTB+")
 import logging
+import os
 
 import numpy as np
 from ase.build import bulk, molecule
@@ -171,8 +172,13 @@ def test_child_errors(tmp_path, monkeypatch, caplog):
         with pytest.raises(RuntimeError, match="failed with command"):
             static_job(atoms)
         assert "Calculation failed" in caplog.text
+        assert "quacc-failed" in " ".join(os.listdir(tmp_path))
 
+def test_child_errors2(tmp_path, monkeypatch, caplog):
+    monkeypatch.chdir(tmp_path)
+    atoms = bulk("Cu")
     with caplog.at_level(logging.INFO):
         with pytest.raises(RuntimeError, match="failed with command"):
             relax_job(atoms)
         assert "Calculation failed" in caplog.text
+        assert "quacc-failed" in " ".join(os.listdir(tmp_path))
