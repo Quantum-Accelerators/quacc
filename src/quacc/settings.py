@@ -552,3 +552,11 @@ def change_settings(changes: dict[str, Any]) -> QuaccSettings:  # type: ignore
     finally:
         for attr, original_value in original_values.items():
             setattr(SETTINGS, attr, original_value)
+
+def change_settings_wf(func: Callable, changes: Dict, decorator: Callable) -> Callable:
+    from quacc import change_settings, strip_decorator
+    def concatenated(*args, **kwargs):
+        with change_settings(changes):
+            return strip_decorator(func)(*args, **kwargs)
+    
+    return decorator(concatenated)
