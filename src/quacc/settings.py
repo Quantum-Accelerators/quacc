@@ -14,7 +14,7 @@ from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 if TYPE_CHECKING:
-    from typing import Any
+    from typing import Any, Callable
 
 _DEFAULT_CONFIG_FILE_PATH = Path("~", ".quacc.yaml").expanduser().resolve()
 
@@ -553,7 +553,7 @@ def change_settings(changes: dict[str, Any]) -> QuaccSettings:  # type: ignore
         for attr, original_value in original_values.items():
             setattr(SETTINGS, attr, original_value)
 
-def change_settings_wf(func: Callable, changes: Dict, decorator: Callable) -> Callable:
+def change_settings_wf(func: Callable, changes: dict[str, Any], decorator: Callable) -> Callable:
     """
     Temporarily change an attribute of an unwrapped object, and return the redecorated object.
     This is suitable when using workflow management.
