@@ -554,7 +554,7 @@ def change_settings(changes: dict[str, Any]) -> QuaccSettings:  # type: ignore
             setattr(SETTINGS, attr, original_value)
 
 
-def change_settings_wf(func: Callable, changes: Dict, decorator: Callable) -> Callable:
+def change_settings_wf(func: Callable, changes: dict[str, Any], decorator: Callable) -> Callable:
     """
     Temporarily change an attribute of an unwrapped object, and return the redecorated object.
     This is suitable when using workflow management.
