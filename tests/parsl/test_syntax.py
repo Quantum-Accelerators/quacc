@@ -4,9 +4,11 @@ import pytest
 
 parsl = pytest.importorskip("parsl")
 
-from quacc import flow, job, subflow, strip_decorator, change_settings_wf, SETTINGS
+import os
 from pathlib import Path
-import os, time
+
+from quacc import SETTINGS, change_settings_wf, flow, job, strip_decorator, subflow
+
 
 def test_parsl_decorators(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
@@ -135,9 +137,10 @@ def test_special_params(tmpdir, monkeypatch):
     assert add(1, 2).result() == 3
     assert add2(1, 2).result() == [4, 6, 8, 10, 12, 14]
 
+
 def test_change_settings_wf(tmp_path_factory):
     @job
-    def write_file(name='job'):
+    def write_file(name="job"):
         with open(Path(f"{SETTINGS.RESULTS_DIR}/{name}.txt"), "w") as f:
             f.write("test file")
 
@@ -148,20 +151,22 @@ def test_change_settings_wf(tmp_path_factory):
 
     @subflow
     def write_file3():
-        return [write_file(name='subflow')]
-    
+        return [write_file(name="subflow")]
+
     tmp_dir = tmp_path_factory.mktemp("dir1")
     tmp_dir2 = tmp_path_factory.mktemp("dir2")
     tmp_dir3 = tmp_path_factory.mktemp("dir3")
 
     write_file_new = change_settings_wf(write_file, {"RESULTS_DIR": tmp_dir}, job)
     write_file2_new = change_settings_wf(write_file2, {"RESULTS_DIR": tmp_dir2}, flow)
-    write_file3_new = change_settings_wf(write_file3, {"RESULTS_DIR": tmp_dir3}, subflow)
+    write_file3_new = change_settings_wf(
+        write_file3, {"RESULTS_DIR": tmp_dir3}, subflow
+    )
 
     write_file_new().result()
     write_file2_new()
     write_file3_new().result()
 
-    assert os.path.exists(tmp_dir/"job.txt")
-    assert os.path.exists(tmp_dir2/"flow.txt")
-    assert os.path.exists(tmp_dir3/"subflow.txt")
+    assert os.path.exists(tmp_dir / "job.txt")
+    assert os.path.exists(tmp_dir2 / "flow.txt")
+    assert os.path.exists(tmp_dir3 / "subflow.txt")
