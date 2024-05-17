@@ -575,8 +575,9 @@ def change_settings_wf(
     Callable
         The updated function.
     """
-    from quacc import change_settings, strip_decorator
     from functools import wraps
+
+    from quacc import change_settings, strip_decorator
 
     @wraps(func)
     def concatenated(*args, **kwargs):
