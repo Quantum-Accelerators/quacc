@@ -131,7 +131,7 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
     assert "nid" in results
     assert "dir_name" in results
     assert "pymatgen_version" in results["builder_meta"]
-    assert results["fmax"] == dyn.fmax
+    assert results["parameters_opt"]["fmax"] == dyn.fmax
     assert results["parameters_opt"]["max_steps"] == 100
 
     json_results = loadfn(Path(results["dir_name"], "quacc_results.json.gz"))
