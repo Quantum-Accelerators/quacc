@@ -18,19 +18,19 @@ In your newly activated conda environment, run the following commands to install
 For the latest PyPI release:
 
 ```bash
-pip install uv  # (1)!
-uv pip install --force-reinstall --no-deps "ase @ https://gitlab.com/ase/ase/-/archive/master/ase-master.zip"
+# Install development version of ASE
+pip install --force-reinstall --no-deps "ase @ https://gitlab.com/ase/ase/-/archive/master/ase-master.zip"
 
-uv pip install quacc
+# Install quacc
+pip install quacc
 ```
-
-1. It is optional to use `uv`, but it greatly speeds up the installation process.
 
 For the development version:
 
 ```bash
-pip install uv
-uv pip install --force-reinstall --no-deps "ase @ https://gitlab.com/ase/ase/-/archive/master/ase-master.zip"
+# Install development version of ASE
+pip install --force-reinstall --no-deps "ase @ https://gitlab.com/ase/ase/-/archive/master/ase-master.zip"
 
-uv pip install git+https://github.com/quantum-accelerators/quacc.git
+# Install development version of quacc
+pip install git+https://github.com/quantum-accelerators/quacc.git
 ```
