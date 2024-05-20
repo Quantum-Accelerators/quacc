@@ -4,7 +4,6 @@ import pytest
 
 parsl = pytest.importorskip("parsl")
 
-import os
 from pathlib import Path
 
 from quacc import SETTINGS, change_settings_wf, flow, job, strip_decorator, subflow
@@ -167,6 +166,6 @@ def test_change_settings_wf(tmp_path_factory):
     write_file2_new()
     write_file3_new().result()
 
-    assert os.path.exists(tmp_dir / "job.txt")
-    assert os.path.exists(tmp_dir2 / "flow.txt")
-    assert os.path.exists(tmp_dir3 / "subflow.txt")
+    assert Path(tmp_dir / "job.txt").exists()
+    assert Path(tmp_dir2 / "flow.txt").exists()
+    assert Path(tmp_dir3 / "subflow.txt").exists()
