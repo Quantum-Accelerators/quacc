@@ -22,6 +22,7 @@ __all__ = [
     "Subflow",
     "redecorate",
     "change_settings",
+    "change_settinsgs_wf",
     "strip_decorator",
     "Remove",
 ]
