@@ -577,11 +577,11 @@ def change_settings_wf(
     """
     from functools import wraps
 
-    from quacc import change_settings, strip_decorator
+    from quacc import change_settings, redecorate, strip_decorator
 
     @wraps(func)
     def concatenated(*args, **kwargs):
         with change_settings(changes):
             return strip_decorator(func)(*args, **kwargs)
 
-    return decorator(concatenated)
+    return redecorate(concatenated, decorator)
