@@ -8,9 +8,8 @@ from typing import TYPE_CHECKING
 from monty.dev import requires
 
 from quacc import flow
-from quacc.recipes.common.phonons import phonon_flow as common_phonon_flow
+from quacc.recipes.common.phonons import phonon_subflow
 from quacc.recipes.mlp.core import relax_job, static_job
-from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs
 
 has_deps = find_spec("phonopy") is not None and find_spec("seekpath") is not None
@@ -30,7 +29,7 @@ if TYPE_CHECKING:
 )
 def phonon_flow(
     atoms: Atoms,
-    method: Literal["mace", "m3gnet", "chgnet"],
+    method: Literal["mace-mp-0", "m3gnet", "chgnet"],
     symprec: float = 1e-4,
     min_lengths: float | tuple[float, float, float] | None = 20.0,
     supercell_matrix: (
@@ -81,7 +80,7 @@ def phonon_flow(
     t_max
         Max temperature (K).
     job_params
-        Custom parameters to pass to each Job in the Flow. This is a dictinoary where
+        Custom parameters to pass to each Job in the Flow. This is a dictionary where
         the keys are the names of the jobs and the values are dictionaries of parameters.
     job_decorators
         Custom decorators to apply to each Job in the Flow. This is a dictionary where
@@ -93,23 +92,23 @@ def phonon_flow(
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][].
         See the type-hint for the data structure.
     """
-    calc_defaults = {
-        "relax_job": {"method": method, "opt_params": {"fmax": 1e-3}},
-        "static_job": {"method": method},
+    job_param_defaults = {
+        "all": {"method": method},
+        "relax_job": {"opt_params": {"fmax": 1e-3}},
     }
-    job_params = recursive_dict_merge(calc_defaults, job_params)
-
     relax_job_, static_job_ = customize_funcs(
         ["relax_job", "static_job"],
         [relax_job, static_job],
-        parameters=job_params,
+        param_defaults=job_param_defaults,
+        param_swaps=job_params,
         decorators=job_decorators,
     )
+    if run_relax:
+        atoms = relax_job_(atoms)["atoms"]
 
-    return common_phonon_flow(
+    return phonon_subflow(
         atoms,
         static_job_,
-        relax_job=relax_job_ if run_relax else None,
         symprec=symprec,
         min_lengths=min_lengths,
         supercell_matrix=supercell_matrix,

@@ -13,7 +13,7 @@ methods = []
 try:
     import mace
 
-    methods.append("mace")
+    methods.append("mace-mp-0")
 
 except ImportError:
     mace = None
@@ -48,7 +48,7 @@ def _set_dtype(size, type_="float"):
 def test_static_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
 
-    if method == "mace":
+    if method == "mace-mp-0":
         _set_dtype(64)
     else:
         _set_dtype(32)
@@ -56,7 +56,7 @@ def test_static_job(tmp_path, monkeypatch, method):
     ref_energy = {
         "chgnet": -4.083308219909668,
         "m3gnet": -4.0938973,
-        "mace": -4.083906650543213,
+        "mace-mp-0": -4.083906650543213,
     }
     atoms = bulk("Cu")
     output = static_job(atoms, method=method)
@@ -69,14 +69,14 @@ def test_static_job(tmp_path, monkeypatch, method):
 def test_relax_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
 
-    if method == "mace":
+    if method == "mace-mp-0":
         _set_dtype(64)
     else:
         _set_dtype(32)
     ref_energy = {
         "chgnet": -32.665428161621094,
         "m3gnet": -32.75003433227539,
-        "mace": -32.6711566550002,
+        "mace-mp-0": -32.6711566550002,
     }
 
     atoms = bulk("Cu") * (2, 2, 2)
@@ -95,7 +95,7 @@ def test_relax_job_dispersion(tmp_path, monkeypatch):
 
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += 0.1
-    output = relax_job(atoms, method="mace", dispersion=True)
+    output = relax_job(atoms, method="mace-mp-0", dispersion=True)
     assert output["results"]["energy"] == pytest.approx(-37.340311589504076)
     assert np.shape(output["results"]["forces"]) == (8, 3)
     assert output["atoms"] != atoms
@@ -106,7 +106,7 @@ def test_relax_job_dispersion(tmp_path, monkeypatch):
 def test_relax_cell_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
 
-    if method == "mace":
+    if method == "mace-mp-0":
         _set_dtype(64)
     else:
         _set_dtype(32)
@@ -114,7 +114,7 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
     ref_energy = {
         "chgnet": -32.66698455810547,
         "m3gnet": -32.750858306884766,
-        "mace": -32.67840391814377,
+        "mace-mp-0": -32.67840391814377,
     }
 
     atoms = bulk("Cu") * (2, 2, 2)

@@ -261,7 +261,7 @@ If you haven't done so already:
             },  # (2)!
             job_attributes_kwargs={
                 "duration": 10,  # minutes
-                "project_name": "YourAccountName",
+                "account": "YourAccountName",
                 "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
             },  # (3)!
             # Remote Python env parameters
@@ -415,6 +415,7 @@ If you haven't done so already:
                 ),
             )
         ],
+        initialize_logging=False,  # (14)!
     )
 
     parsl.load(config)
@@ -445,6 +446,8 @@ If you haven't done so already:
     12. The type of Launcher to use. `SrunLauncher()` will distribute jobs across the cores and nodes of the Slurm allocation. It should not be used for `PythonApp`s that themselves call MPI, which should use `SimpleLauncher()` instead.
 
     13. The maximum time to wait (in seconds) for the job scheduler info to be retrieved/sent.
+
+    14. This will tidy up the Parsl logging to match the same log level as in quacc (`INFO` by default).
 
     Now we define the workflow, apply it to all molecules in the "g2" collection, and monitor the progress of our calculations.
 
@@ -696,7 +699,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
             },
             job_attributes_kwargs={
                 "duration": 30,
-                "project_name": "YourAccountName",
+                "account": "YourAccountName",
                 "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
             },
             pre_launch_cmds=["module load vasp/6.4.1-cpu"],
@@ -799,7 +802,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
         executors=[
             HighThroughputExecutor(
                 label="quacc_parsl",
-                max_workers=nodes_per_job * nodes_per_allocation,  # (1)!
+                max_workers_per_node=nodes_per_allocation // nodes_per_job,  # (1)!
                 cores_per_worker=1e-6,  # (2)!
                 provider=SlurmProvider(
                     account=account,
@@ -816,6 +819,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
                 ),
             )
         ],
+        initialize_logging=False,
     )
 
     parsl.load(config)

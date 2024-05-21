@@ -28,7 +28,7 @@ export QUACC_GAUSSIAN_CMD="/path/to/g16"
 
 ## GULP
 
-To use quacc with GULP, you will need to download and compile GULP 6.1.2+ [per the official manual](https://gulp.curtin.edu.au/download.html). Then you will define the `GULP_CMD` setting to be the path of the GULP executable and the `GULP_LIB` setting to be the path to the GULP force field library. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md), such as by defining the following environment variables in your `~/.bashrc`:
+To use quacc with GULP, you will need to download and compile GULP 6.2+ [per the official manual](https://gulp.curtin.edu.au/download.html). Then you will define the `GULP_CMD` setting to be the path of the GULP executable and the `GULP_LIB` setting to be the path to the GULP force field library. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md), such as by defining the following environment variables in your `~/.bashrc`:
 
 ```bash
 export QUACC_GULP_CMD="/path/to/gulp"
@@ -37,7 +37,7 @@ export QUACC_GULP_LIB="/path/to/gulp-#.#.#/Libraries"
 
 ??? Tip "Receive a Compilation Error?"
 
-    If you receive an error upon compilation, refer to [this forum post](https://matsci.org/t/installing-gulp/43158/18?u=arosen).
+    If you receive an error upon compilation, you likely are using an old version of gfortran. Try `./mkgulp_old_gfortran` instead of `./mkgulp` in the `Src` directory.
 
 ## Lennard Jones
 
@@ -139,13 +139,10 @@ To use quacc with VASP, you will need to define several environment variables, a
 ```bash
 export QUACC_VASP_PARALLEL_CMD="srun -N 2 --ntasks-per-node 24"
 export QUACC_VASP_PP_PATH="/path/to/POTCARs"
-export QUACC_VASP_VDW="/path/to/directory/containing/kernel"
 ```
 
 The `VASP_PARALLEL_CMD` setting tells Custodian and/or ASE how to parallelize VASP. Note that it does not include the executable.
 
 The `VASP_PP_PATH` setting should point to the directory containing your VASP pseudopotentials. There should be two subdirectories name `potpaw_PBE` and `potpaw` for the PBE and LDA pseudopotentials, respectively. If your pseudopotential directories have a different name, create a symbolic link with the required naming scheme. We recommend setting `QUACC_VASP_PP_PATH` in your `~/.bashrc` file since this rarely changes.
-
-The `VASP_VDW` environment variable is necessary if you are using a vdW functional and should point to the directory that contains the `vdw_kernel.bindat` file distributed with VASP. We also recommend including this in your `~/.bashrc` file since this rarely changes.
 
 Additional settings can be specified as well, such as the name of the VASP executables if they differ from the default values (i.e. `vasp_std`, `vasp_gam`).

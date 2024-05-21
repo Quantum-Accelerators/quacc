@@ -18,11 +18,11 @@ except ImportError:
     TBLite = None
 
 if TYPE_CHECKING:
-    from typing import Any, Literal
+    from typing import Literal
 
     from ase.atoms import Atoms
 
-    from quacc.runners.ase import VibKwargs
+    from quacc.runners.ase import OptParams, VibKwargs
     from quacc.schemas._aliases.ase import OptSchema, RunSchema, VibThermoSchema
 
 
@@ -69,7 +69,7 @@ def relax_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
     relax_cell: bool = False,
-    opt_params: dict[str, Any] | None = None,
+    opt_params: OptParams | None = None,
     **calc_kwargs,
 ) -> OptSchema:
     """

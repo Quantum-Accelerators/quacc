@@ -4,6 +4,69 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.0]
+
+### Added
+
+- The `RESULTS_DIR` and `SCRATCH_DIR` settings can now be relative paths, if desired
+
+### Changed
+
+- The default `RESULTS_DIR` is now `Path()` (relative) instead of `Path.cwd()` (absolute)
+- Failed calculations are now stored in a `failed-quacc-12345-` directory to distinguish these tasks from the running tasks in `tmp-quacc-12345-`
+- The output schema is now written to a serialized JSON file instead of pickle for security and ease-of-use reasons. It can be rehydrated via `loadfn("quacc_results.json.gz")` where `loadfn` is from `monty.serialization import loadfn`
+- The `fmax` attribute was move from the base level to the `parameters_opt` section since it is an input parameter
+
+### Fixed
+
+- File shuttling after a completed calculation is now faster since we simply rename the directory instead of moving each individual file
+
+## [0.8.0]
+
+### Added
+
+- Added a context handler, `quacc.settings.change_settings`, that can be used to modify global settings temporarily
+- Added `quacc.calculators.vasp.params.MPtoASEConverter` to convert between Pymatgen- and Atomate2-style input parameters to ASE-compatabile parameters
+
+### Fixed
+
+- Fixed copying of WAVECAR between steps of the QMOF recipes
+
+### Changed
+
+- Overhauled the MP recipes to ensure better compatability with atomate2 workflows
+- The workflow engine must be directly specified with `WORKFLOW_ENGINE`, as noted in the docs
+- Changed `VASP_MAG_CUTOFF` from 0.05 to 0.02
+- Removed the `preset` keyword argument from the QMOF recipes
+
+### Removed
+
+- Removed the `pmg_input_set` keyword argument from the `Vasp` calculator
+
+## [0.7.8]
+
+### Added
+
+- Added support for Parsl "special" keyword arguments (e.g. `timeout`, `parsl_resource_specification`)
+
+### Fixed
+
+- Fixed bug where the common phonon subflow would generate a `Phonopy` object based on the unrelaxed, rather than relaxed, structure
+- Sped up the common phonon subflow by removing duplicate `get_phonopy()` calls
+
+## [0.7.7]
+
+### Added
+
+- Added quasi IRC recipes to ORCA and Q-Chem
+- Added frequency recipe to ORCA
+
+### Fixed
+
+- Fixed various type hints
+- Improved performance for the common phonon flow
+- Improved performance for ideal gas thermo calculations
+
 ## [0.7.6]
 
 ### Fixed

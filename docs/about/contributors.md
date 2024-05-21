@@ -26,6 +26,7 @@ Additional contributions were made by the individuals listed [here](https://gith
 - [@ViktoriiaBaib](https://github.com/ViktoriiaBaib): Initial testing of quacc.
 - [@zulissimeta](https://github.com/zulissimeta): Dask support
 - [@yw-fang](https://github.com/yw-fang): VASP Non-SCF recipe
+- [@espottesmith](http://github.com/espottesmith): Some ORCA and Q-Chem workflows, mostly re: IRC
 
 ## Inspiration
 

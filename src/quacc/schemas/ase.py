@@ -83,15 +83,16 @@ def summarize_run(
 
     directory = final_atoms.calc.directory
     uri = get_uri(directory)
-    input_atoms_metadata = (
-        atoms_to_metadata(
+
+    if input_atoms:
+        input_atoms_metadata = atoms_to_metadata(
             input_atoms,
             charge_and_multiplicity=charge_and_multiplicity,
             store_pmg=False,
         )
-        if input_atoms
-        else None
-    )
+    else:
+        input_atoms_metadata = {}
+
     inputs = {
         "parameters": final_atoms.calc.parameters,
         "nid": uri.split(":")[0],
@@ -99,7 +100,6 @@ def summarize_run(
         "input_atoms": input_atoms_metadata,
         "quacc_version": __version__,
     }
-
     results = {"results": final_atoms.calc.results}
 
     atoms_to_store = prep_next_run(final_atoms, move_magmoms=move_magmoms)
@@ -193,12 +193,11 @@ def summarize_opt_run(
     )
 
     # Clean up the opt parameters
-    parameters_opt = dyn.todict()
+    parameters_opt = dyn.todict() | {"fmax": getattr(dyn, "fmax", None)}
     parameters_opt.pop("logfile", None)
     parameters_opt.pop("restart", None)
 
     opt_fields = {
-        "fmax": getattr(dyn, "fmax", None),
         "parameters_opt": parameters_opt,
         "converged": is_converged,
         "nsteps": dyn.get_number_of_steps(),
@@ -253,8 +252,7 @@ def summarize_vib_and_thermo(
     store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
 
     vib_task_doc = _summarize_vib_run(
-        vib,
-        charge_and_multiplicity=charge_and_multiplicity,
+        vib, charge_and_multiplicity=charge_and_multiplicity
     )
     thermo_task_doc = _summarize_ideal_gas_thermo(
         igt,

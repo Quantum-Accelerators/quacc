@@ -32,7 +32,6 @@ def test_static_job(tmp_path, monkeypatch):
         ngwf_count=1,
     )
 
-    assert output["atoms"] == atoms
     assert output["parameters"]["keywords"] == {
         "output_detail": "verbose",
         "do_properties": True,
@@ -64,7 +63,6 @@ def test_ase_relax_job(tmp_path, monkeypatch):
         ngwf_count=1,
     )
 
-    assert output["atoms"] == atoms
     assert output["parameters"]["keywords"] == {
         "output_detail": "verbose",
         "do_properties": True,

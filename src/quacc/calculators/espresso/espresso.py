@@ -10,9 +10,9 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from ase.atoms import Atoms
-from ase.calculators.espresso import Espresso as Espresso_
 from ase.calculators.espresso import EspressoProfile
 from ase.calculators.espresso import EspressoTemplate as EspressoTemplate_
+from ase.calculators.genericfileio import GenericFileIOCalculator
 from ase.io import read, write
 from ase.io.espresso import (
     Namelist,
@@ -141,10 +141,10 @@ class EspressoTemplate(EspressoTemplate_):
                 **parameters,
             )
         elif self.binary in ["ph", "phcg"]:
-            with Path.open(directory / self.inputname, "w") as fd:
+            with Path(directory, self.inputname).open(mode="w") as fd:
                 write_espresso_ph(fd=fd, properties=properties, **parameters)
         else:
-            with Path.open(directory / self.inputname, "w") as fd:
+            with Path(directory, self.inputname).open(mode="w") as fd:
                 write_fortran_namelist(
                     fd,
                     binary=self.binary if self._ase_known_binary else None,
@@ -222,16 +222,16 @@ class EspressoTemplate(EspressoTemplate_):
             atoms = read(directory / self.outputname, format="espresso-out")
             results = dict(atoms.calc.properties())
         elif self.binary in ["ph", "phcg"]:
-            with Path.open(directory / self.outputname, "r") as fd:
+            with Path(directory, self.outputname).open() as fd:
                 results = read_espresso_ph(fd)
         elif self.binary == "dos":
-            with Path.open(directory / "pwscf.dos", "r") as fd:
+            with Path(directory, "pwscf.dos").open() as fd:
                 lines = fd.readlines()
                 fermi = float(re.search(r"-?\d+\.?\d*", lines[0])[0])
                 dos = np.loadtxt(lines[1:])
             results = {"dos_results": {"dos": dos, "fermi": fermi}}
         elif self.binary == "projwfc":
-            with Path.open(directory / "pwscf.pdos_tot", "r") as fd:
+            with Path(directory, "pwscf.pdos_tot").open() as fd:
                 lines = np.loadtxt(fd.readlines())
                 energy = lines[1:, 0]
                 dos = lines[1:, 1]
@@ -352,7 +352,7 @@ class EspressoTemplate(EspressoTemplate_):
         return remove_dict_entries(parameters, remove_trigger=Remove)
 
 
-class Espresso(Espresso_):
+class Espresso(GenericFileIOCalculator):
     """
     A wrapper around the ASE Espresso calculator that adjusts input_data
     parameters and allows for the use of presets.
@@ -365,7 +365,6 @@ class Espresso(Espresso_):
         preset: str | None = None,
         parallel_info: dict[str, Any] | None = None,
         template: EspressoTemplate | None = None,
-        profile: EspressoProfile | None = None,
         **kwargs,
     ) -> None:
         """
@@ -389,10 +388,6 @@ class Espresso(Espresso_):
             ASE calculator templace which can be used to specify which espresso
             binary will be used in the calculation. This is taken care of by recipe
             in most cases.
-        profile
-            ASE calculator profile which can be used to specify the location of
-            the espresso binary and pseudopotential files. This is taken care of
-            internally using quacc settings.
         **kwargs
             Additional arguments to be passed to the Espresso calculator. Takes all valid
             ASE calculator arguments, such as `input_data` and `kpts`. Refer to
@@ -434,19 +429,17 @@ class Espresso(Espresso_):
             .get("control", {})
             .get("pseudo_dir", str(SETTINGS.ESPRESSO_PSEUDO))
         )
-        self.profile = profile or EspressoProfile(
-            binary=self._bin_path,
-            parallel_info=parallel_info,
-            pseudo_dir=self._pseudo_path,
+
+        profile = EspressoProfile(
+            self._bin_path, self._pseudo_path, parallel_info=parallel_info
         )
 
         super().__init__(
-            profile=self.profile,
-            parallel_info=self.parallel_info,
-            **self.user_calc_params,
+            template=template,
+            profile=profile,
+            directory=".",
+            parameters=self.user_calc_params,
         )
-
-        self.template = template
 
     def _cleanup_params(self) -> None:
         """

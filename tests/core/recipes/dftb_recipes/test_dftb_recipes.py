@@ -7,11 +7,17 @@ import pytest
 DFTBPLUS_EXISTS = bool(which("dftb+"))
 
 pytestmark = pytest.mark.skipif(not DFTBPLUS_EXISTS, reason="Needs DFTB+")
+import logging
+import os
 
 import numpy as np
 from ase.build import bulk, molecule
 
+from quacc import change_settings
 from quacc.recipes.dftb.core import relax_job, static_job
+
+LOGGER = logging.getLogger(__name__)
+LOGGER.propagate = True
 
 
 def test_static_job_water(tmp_path, monkeypatch):
@@ -160,12 +166,29 @@ def test_relax_job_cu_supercell_errors(tmp_path, monkeypatch):
         relax_job(atoms, kpts=(3, 3, 3), MaxSteps=1, Hamiltonian_MaxSccIterations=100)
 
 
-def test_child_errors(tmp_path, monkeypatch):
+@pytest.mark.skipif(os.name == "nt", reason="symlinking not possible on Windows")
+def test_child_errors(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
-    with pytest.raises(RuntimeError, match="failed with command"):
-        atoms = bulk("Cu")
-        static_job(atoms)
+    atoms = bulk("Cu")
+    with (
+        caplog.at_level(logging.INFO),
+        change_settings({"SCRATCH_DIR": tmp_path / "scratch"}),
+    ):
+        with pytest.raises(RuntimeError, match="failed with command"):
+            static_job(atoms)
+        assert "Calculation failed" in caplog.text
+        assert "failed-quacc-" in " ".join(os.listdir(tmp_path / "scratch"))
 
-    with pytest.raises(RuntimeError, match="failed with command"):
-        atoms = bulk("Cu")
-        relax_job(atoms)
+
+@pytest.mark.skipif(os.name == "nt", reason="symlinking not possible on Windows")
+def test_child_errors2(tmp_path, monkeypatch, caplog):
+    monkeypatch.chdir(tmp_path)
+    atoms = bulk("Cu")
+    with (
+        caplog.at_level(logging.INFO),
+        change_settings({"SCRATCH_DIR": tmp_path / "scratch"}),
+    ):
+        with pytest.raises(RuntimeError, match="failed with command"):
+            relax_job(atoms)
+        assert "Calculation failed" in caplog.text
+        assert "failed-quacc-" in " ".join(os.listdir(tmp_path / "scratch"))
