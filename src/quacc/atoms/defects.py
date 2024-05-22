@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
@@ -9,13 +10,15 @@ from pymatgen.core.periodic_table import DummySpecies
 from pymatgen.entries.computed_entries import ComputedStructureEntry
 from pymatgen.io.ase import AseAtomsAdaptor
 
-try:
+has_deps = (
+    find_spec("pymatgen.analysis.defects") is not None
+    and find_spec("shakenbreak") is not None
+)
+
+if has_deps:
     from pymatgen.analysis.defects.generators import VacancyGenerator
     from shakenbreak.input import Distortions
 
-    has_deps = True
-except ImportError:
-    has_deps = False
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
