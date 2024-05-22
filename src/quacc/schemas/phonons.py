@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
@@ -11,10 +12,7 @@ from quacc.schemas.atoms import atoms_to_metadata
 from quacc.utils.dicts import finalize_dict
 from quacc.utils.files import get_uri
 
-try:
-    import phonopy
-except ImportError:
-    phonopy = None
+has_phonopy = find_spec("phonopy") is not None
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -25,13 +23,13 @@ if TYPE_CHECKING:
 
     from quacc.schemas._aliases.phonons import PhononSchema
 
-    if phonopy:
+    if has_phonopy:
         from phonopy import Phonopy
 
 _DEFAULT_SETTING = ()
 
 
-@requires(phonopy, "This schema relies on phonopy")
+@requires(has_phonopy, "This schema relies on phonopy")
 def summarize_phonopy(
     phonon: Phonopy,
     input_atoms: Atoms,

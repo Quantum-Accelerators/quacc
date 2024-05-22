@@ -8,17 +8,13 @@ from monty.dev import requires
 
 from quacc.runners.prep import calc_cleanup, calc_setup
 
-try:
-    import phonopy
+has_deps = find_spec("phonopy") is not None and find_spec("seekpath") is not None
 
-    has_deps = phonopy is not None and find_spec("seekpath") is not None
-except ImportError:
-    has_deps = False
 
 if TYPE_CHECKING:
     from numpy.typing import NDArray
 
-    if phonopy:
+    if has_deps:
         from phonopy import Phonopy
 
 
