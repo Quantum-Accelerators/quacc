@@ -474,9 +474,9 @@ def create_orca_point_charge_file(
     ----------
     embedded_cluster
         The ASE Atoms object containing the atomic coordinates and atomic charges from the .pun file.
-    quantum_cluster_idx
+    quantum_cluster_indices
         A list of lists containing the indices of the atoms in each quantum cluster.
-    ecp_region_idx
+    ecp_region_indices
         A list of lists containing the indices of the atoms in the ECP region for each quantum cluster.
     pc_file
         A file containing the point charges to be read by ORCA.
