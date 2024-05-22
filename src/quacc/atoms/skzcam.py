@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING, TypedDict
 
 import numpy as np
-from ase.atom import Atom
 from ase.atoms import Atoms
 from ase.data import atomic_numbers
 from ase.io import read, write
@@ -22,7 +21,9 @@ class ElementInfo(TypedDict):
     ri_scf_basis: str
     ri_cwft_basis: str
 
+
 if TYPE_CHECKING:
+    from ase.atom import Atom
     from numpy.typing import NDArray
 
 has_chemshell = find_spec("chemsh") is not None
@@ -34,9 +35,9 @@ def create_orca_eint_blocks(
     ecp_region_indices: list[int],
     element_info: ElementInfo | None = None,
     pal_nprocs_block: dict[str, int] | None = None,
-    method_block: dict[str,str] | None = None,
-    scf_block: dict[str,str] | None = None,
-    ecp_info: dict[str,str] | None = None,
+    method_block: dict[str, str] | None = None,
+    scf_block: dict[str, str] | None = None,
+    ecp_info: dict[str, str] | None = None,
     include_cp: bool = True,
     multiplicity: dict | None = None,
 ) -> tuple[str, str, str]:
@@ -101,11 +102,12 @@ def create_orca_eint_blocks(
 
     return ad_slab_block, ad_block, slab_block
 
+
 def create_atom_coord_string(
     atom: Atom,
     ghost_atom: bool = False,
     atom_ecp_info: str | None = None,
-    pc_charge: float | None = None
+    pc_charge: float | None = None,
 ) -> str:
     """
     Creates a string containing the Atom symbol and coordinates in the ORCA input file format, with additional information for atoms in the ECP region as well as ghost atoms.
@@ -149,9 +151,9 @@ def generate_coords_block(
     embedded_adsorbed_cluster: Atoms,
     quantum_cluster_indices: list[int],
     ecp_region_indices: list[int],
-    ecp_info: dict[str,str] | None = None,
+    ecp_info: dict[str, str] | None = None,
     include_cp: bool = True,
-    multiplicity: dict[str,int] = {"ad_slab": 1, "ad": 1, "slab": 1}
+    multiplicity: dict[str, int] | None = None,
 ) -> tuple[str, str, str]:
     """
     Generates the coordinates block for the ORCA input file. This includes the coordinates of the quantum cluster, the ECP region, and the point charges. It will return three strings for the adsorbate-slab complex, adsorbate and slab.
@@ -178,6 +180,8 @@ def generate_coords_block(
     """
 
     # Create the quantum cluster and ECP region cluster
+    if multiplicity is None:
+        multiplicity = {"ad_slab": 1, "ad": 1, "slab": 1}
     quantum_cluster = embedded_adsorbed_cluster[quantum_cluster_indices]
     ecp_region = embedded_adsorbed_cluster[ecp_region_indices]
 
@@ -221,7 +225,6 @@ Charge {charge}
 coords
 """
 
-
     for i, atom in enumerate(quantum_cluster):
         # Create the coords section for the adsorbate-slab complex
         ad_slab_coords += create_atom_coord_string(atom)
@@ -238,17 +241,20 @@ coords
         else:
             raise ValueError("Atom not in adsorbate or slab.")
 
-
     # Create the coords section for the ECP region
     ecp_region_coords_section = ""
-    for i,atom  in enumerate(ecp_region):
+    for i, atom in enumerate(ecp_region):
         if (
             ecp_info is not None
             and ecp_region[i].symbol in ecp_info
             and ecp_info[ecp_region[i].symbol] is not None
         ):
-            atom_ecp_info=format_ecp_info(ecp_info[atom.symbol])
-            ecp_region_coords_section += create_atom_coord_string(atom, atom_ecp_info=atom_ecp_info, pc_charge=ecp_region.get_array("oxi_states")[i])
+            atom_ecp_info = format_ecp_info(ecp_info[atom.symbol])
+            ecp_region_coords_section += create_atom_coord_string(
+                atom,
+                atom_ecp_info=atom_ecp_info,
+                pc_charge=ecp_region.get_array("oxi_states")[i],
+            )
         else:
             raise ValueError("ECP info not provided for all atoms in the ECP region.")
 
@@ -328,9 +334,9 @@ def generate_orca_input_preamble(
     embedded_cluster: Atoms,
     quantum_cluster_indices: list[int],
     element_info: ElementInfo | None = None,
-    pal_nprocs_block: dict[str,int] | None = None,
-    method_block: dict[str,str] | None = None,
-    scf_block: dict[str,str] | None = None,
+    pal_nprocs_block: dict[str, int] | None = None,
+    method_block: dict[str, str] | None = None,
+    scf_block: dict[str, str] | None = None,
 ) -> str:
     """
     From the quantum cluster Atoms object, generate the ORCA input preamble for the basis, method, pal, and scf blocks.

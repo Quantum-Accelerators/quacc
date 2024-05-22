@@ -441,22 +441,33 @@ end"""
         ]
     )
 
+
 def test_create_atom_coord_string(embedded_adsorbed_cluster):
     atom = embedded_adsorbed_cluster[0]
 
     # First let's try the case where it's a normal atom.
     atom_coord_string = create_atom_coord_string(atom)
 
-    assert atom_coord_string == "C                       0.00000000000    0.00000000000    2.00000000000\n"
+    assert (
+        atom_coord_string
+        == "C                       0.00000000000    0.00000000000    2.00000000000\n"
+    )
 
     # Let's now try the case where it is a ghost atom.
     atom_coord_string = create_atom_coord_string(atom, ghost_atom=True)
-    assert atom_coord_string == "C:                      0.00000000000    0.00000000000    2.00000000000\n"
+    assert (
+        atom_coord_string
+        == "C:                      0.00000000000    0.00000000000    2.00000000000\n"
+    )
 
     # Let's now try the case where it is an atom in the ECP region.
-    atom_coord_string = create_atom_coord_string(atom,atom_ecp_info="NewECP\nECP_info1\nECP_info2\n",pc_charge=2.0)
-    assert atom_coord_string == "C>     2.00000000000    0.00000000000    0.00000000000    2.00000000000\nNewECP\nECP_info1\nECP_info2\n"
-
+    atom_coord_string = create_atom_coord_string(
+        atom, atom_ecp_info="NewECP\nECP_info1\nECP_info2\n", pc_charge=2.0
+    )
+    assert (
+        atom_coord_string
+        == "C>     2.00000000000    0.00000000000    0.00000000000    2.00000000000\nNewECP\nECP_info1\nECP_info2\n"
+    )
 
 
 def test_get_coords_block(embedded_adsorbed_cluster):
@@ -611,39 +622,41 @@ end"""
             for x in slab_coords.split()[::10]
             if x.replace(".", "", 1).replace("-", "", 1).isdigit()
         ],
-        [0.0,
- 0.0,
- 1.0,
- 2.11144262254,
- 1.732,
- 1.0,
- 2.0,
- 1.0,
- -2.11144262254,
- 1.732,
- 1.0,
- 2.0,
- 1.0,
- 2.10705287155,
- 1.732,
- 1.0,
- 2.0,
- 1.0,
- -2.10705287155,
- 1.732,
- 1.0,
- 2.0,
- 1.0,
- 4.22049352791,
- 1.732,
- 1.0,
- 2.0,
- 1.0,
- -4.22049352791,
- 1.732,
- 1.0,
- 2.0,
- 1.0],
+        [
+            0.0,
+            0.0,
+            1.0,
+            2.11144262254,
+            1.732,
+            1.0,
+            2.0,
+            1.0,
+            -2.11144262254,
+            1.732,
+            1.0,
+            2.0,
+            1.0,
+            2.10705287155,
+            1.732,
+            1.0,
+            2.0,
+            1.0,
+            -2.10705287155,
+            1.732,
+            1.0,
+            2.0,
+            1.0,
+            4.22049352791,
+            1.732,
+            1.0,
+            2.0,
+            1.0,
+            -4.22049352791,
+            1.732,
+            1.0,
+            2.0,
+            1.0,
+        ],
         rtol=1e-05,
         atol=1e-07,
     )
@@ -726,38 +739,40 @@ end"""
             for x in slab_coords.split()[::10]
             if x.replace(".", "", 1).replace("-", "", 1).isdigit()
         ],
-[2.12018425659,
- -1.816,
- 2.0,
- 1.0,
- 2.0,
- 1.0,
- -1.816,
- 2.0,
- 1.0,
- 2.0,
- 1.0,
- -1.816,
- 2.0,
- 1.0,
- 2.0,
- 1.0,
- -1.816,
- 2.0,
- 1.0,
- 2.0,
- 1.0,
- -1.816,
- 2.0,
- 1.0,
- 2.0,
- 1.0,
- -1.816,
- 2.0,
- 1.0,
- 2.0,
- 1.0,
- -1.816],
+        [
+            2.12018425659,
+            -1.816,
+            2.0,
+            1.0,
+            2.0,
+            1.0,
+            -1.816,
+            2.0,
+            1.0,
+            2.0,
+            1.0,
+            -1.816,
+            2.0,
+            1.0,
+            2.0,
+            1.0,
+            -1.816,
+            2.0,
+            1.0,
+            2.0,
+            1.0,
+            -1.816,
+            2.0,
+            1.0,
+            2.0,
+            1.0,
+            -1.816,
+            2.0,
+            1.0,
+            2.0,
+            1.0,
+            -1.816,
+        ],
         rtol=1e-05,
         atol=1e-07,
     )
