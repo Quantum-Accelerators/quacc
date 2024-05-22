@@ -840,10 +840,6 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     print(future1.result(), future2.result())
     ```
 
-    !!! Tip "Varying Resources"
-
-        If your jobs require heterogeneous MPI resources, you can supply a `parsl_resource_specification` as described in the ["Writing an MPI App" documentation](https://parsl.readthedocs.io/en/stable/userguide/mpi_apps.html#writing-an-mpi-app).
-
 === "Prefect"
 
     ```python
