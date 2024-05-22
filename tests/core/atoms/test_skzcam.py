@@ -449,7 +449,9 @@ def test_create_atom_coord_string(embedded_adsorbed_cluster):
     atom_coord_string = create_atom_coord_string(atom)
 
     with pytest.raises(ValueError):
-        create_atom_coord_string(atom, atom_ecp_info="NewECP\nECP_info1\nECP_info2\n",ghost_atom=True)
+        create_atom_coord_string(
+            atom, atom_ecp_info="NewECP\nECP_info1\nECP_info2\n", ghost_atom=True
+        )
 
     with pytest.raises(ValueError):
         create_atom_coord_string(atom, atom_ecp_info="NewECP\nECP_info1\nECP_info2\n")
@@ -500,9 +502,9 @@ end"""
         ecp_info,
     )
 
-    assert ad_slab_coords.split()[4] == '1'
-    assert slab_coords.split()[4] == '1'
-    assert ad_coords.split()[4] == '1'
+    assert ad_slab_coords.split()[4] == "1"
+    assert slab_coords.split()[4] == "1"
+    assert ad_coords.split()[4] == "1"
 
     ad_slab_coords, ad_coords, slab_coords = generate_coords_block(
         embedded_adsorbed_cluster,
@@ -912,7 +914,7 @@ def test_generate_orca_input_preamble(embedded_adsorbed_cluster):
 
     # Check whether error raised if not all element_info is not provided
     with pytest.raises(ValueError):
-        element_info_error = {'C': element_info['C']}
+        element_info_error = {"C": element_info["C"]}
         generate_orca_input_preamble(
             embedded_adsorbed_cluster,
             [0, 1, 2, 3, 4, 5, 6, 7],

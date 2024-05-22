@@ -240,23 +240,23 @@ coords
     # Create the coords section for the ECP region
     ecp_region_coords_section = ""
     for i, atom in enumerate(ecp_region):
-            atom_ecp_info = format_ecp_info(ecp_info[atom.symbol])
-            ecp_region_coords_section += create_atom_coord_string(
-                atom,
-                atom_ecp_info=atom_ecp_info,
-                pc_charge=ecp_region.get_array("oxi_states")[i],
-            )
+        atom_ecp_info = format_ecp_info(ecp_info[atom.symbol])
+        ecp_region_coords_section += create_atom_coord_string(
+            atom,
+            atom_ecp_info=atom_ecp_info,
+            pc_charge=ecp_region.get_array("oxi_states")[i],
+        )
 
-        # position = atom.position
-        # pc_charge = ecp_region.get_array("oxi_states")[i]
-        # ecp_region_coords_section += f"{(atom.symbol + '>').ljust(3)} {position[0]:-16.11f} {pc_charge:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f}\n"
-        # if (
-        #     ecp_info is not None
-        #     and ecp_region[i].symbol in ecp_info
-        #     and ecp_info[ecp_region[i].symbol] is not None
-        # ):
-        #     atom_ecp_info = format_ecp_info(ecp_info[ecp_region[i].symbol])
-        #     ecp_region_coords_section += f"{atom_ecp_info}"
+    # position = atom.position
+    # pc_charge = ecp_region.get_array("oxi_states")[i]
+    # ecp_region_coords_section += f"{(atom.symbol + '>').ljust(3)} {position[0]:-16.11f} {pc_charge:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f}\n"
+    # if (
+    #     ecp_info is not None
+    #     and ecp_region[i].symbol in ecp_info
+    #     and ecp_info[ecp_region[i].symbol] is not None
+    # ):
+    #     atom_ecp_info = format_ecp_info(ecp_info[ecp_region[i].symbol])
+    #     ecp_region_coords_section += f"{atom_ecp_info}"
 
     # Add the ECP region coords section to the ads_slab_coords string
     ad_slab_coords += f"{ecp_region_coords_section}end\nend\n"
@@ -471,7 +471,7 @@ def create_orca_point_charge_file(
     oxi_states = embedded_cluster.get_array("oxi_states")
 
     # Check that none of the indices in quantum_cluster_indices are in ecp_region_indices
-    if np.all([x not in ecp_region_indices for x in quantum_cluster_indices]) == False:
+    if np.all([x not in ecp_region_indices for x in quantum_cluster_indices]) is False:
         raise ValueError("An atom in the quantum cluster is also in the ECP region.")
 
     # Get the number of point charges for this system
