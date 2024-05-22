@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
+from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
 from quacc import SETTINGS
-from importlib.util import find_spec
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -17,7 +17,9 @@ has_ob = find_spec("openbabel")
 _DEFAULT_SETTING = ()
 
 
-@requires(has_ob, "Openbabel must be installed. Try conda install -c conda-forge openbabel")
+@requires(
+    has_ob, "Openbabel must be installed. Try conda install -c conda-forge openbabel"
+)
 def run_custodian(
     qchem_cmd: str = _DEFAULT_SETTING,
     qchem_cores: int = _DEFAULT_SETTING,
