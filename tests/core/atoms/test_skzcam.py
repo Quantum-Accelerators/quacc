@@ -843,8 +843,6 @@ def test_format_ecp_info():
     with pytest.raises(ValueError):
         format_ecp_info("dummy_info\nN_core0\nend")
 
-
-
     atom_ecp_info = """
 NewECP
 N_core 0
@@ -969,7 +967,6 @@ def test_generate_orca_input_preamble(embedded_adsorbed_cluster):
 
 
 def test_create_orca_point_charge_file(embedded_adsorbed_cluster, tmpdir):
-
     # Test whether exception is raised if indices shared between quantum region and ecp region
     with pytest.raises(ValueError):
         create_orca_point_charge_file(
@@ -986,8 +983,6 @@ def test_create_orca_point_charge_file(embedded_adsorbed_cluster, tmpdir):
         [8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
         Path(tmpdir, "orca.pc"),
     )
-
-
 
     # Read the written file
     orca_pc_file = np.loadtxt(Path(tmpdir, "orca.pc"), skiprows=1)
