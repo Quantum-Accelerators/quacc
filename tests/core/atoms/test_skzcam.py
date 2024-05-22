@@ -840,35 +840,20 @@ end"""
 
 
 def test_format_ecp_info():
-    atom_ecp_info = """dummy_info
-
-NewECP
-
-
-N_core 0
-lmax s
-s 1
-1      1.732000000   14.676000000 2
-eNd
-
-"""
-    formatted_atom_ecp_info = format_ecp_info(atom_ecp_info)
-
     with pytest.raises(ValueError):
         format_ecp_info("dummy_info\nN_core0\nend")
 
-    assert (
-        formatted_atom_ecp_info
-        == "NewECP\nN_core 0\nlmax s\ns 1\n1      1.732000000   14.676000000 2\nend\n"
-    )
+
 
     atom_ecp_info = """
+NewECP
 N_core 0
 lmax s
 s 1
 1      1.732000000   14.676000000 2
-
+end
 """
+    formatted_atom_ecp_info = format_ecp_info(atom_ecp_info)
     assert (
         formatted_atom_ecp_info
         == "NewECP\nN_core 0\nlmax s\ns 1\n1      1.732000000   14.676000000 2\nend\n"
@@ -984,13 +969,6 @@ def test_generate_orca_input_preamble(embedded_adsorbed_cluster):
 
 
 def test_create_orca_point_charge_file(embedded_adsorbed_cluster, tmpdir):
-    # Create the point charge file
-    create_orca_point_charge_file(
-        embedded_adsorbed_cluster,
-        [0, 1, 2, 3, 4, 5, 6, 7],
-        [8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
-        Path(tmpdir, "orca.pc"),
-    )
 
     # Test whether exception is raised if indices shared between quantum region and ecp region
     with pytest.raises(ValueError):
@@ -1000,6 +978,16 @@ def test_create_orca_point_charge_file(embedded_adsorbed_cluster, tmpdir):
             [7, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
             Path(tmpdir, "orca.pc"),
         )
+
+    # Create the point charge file
+    create_orca_point_charge_file(
+        embedded_adsorbed_cluster,
+        [0, 1, 2, 3, 4, 5, 6, 7],
+        [8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
+        Path(tmpdir, "orca.pc"),
+    )
+
+
 
     # Read the written file
     orca_pc_file = np.loadtxt(Path(tmpdir, "orca.pc"), skiprows=1)

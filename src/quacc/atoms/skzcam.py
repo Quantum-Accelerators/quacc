@@ -306,6 +306,8 @@ def format_ecp_info(atom_ecp_info: str) -> str:
     start_pos = atom_ecp_info.lower().find("newecp")
     end_pos = atom_ecp_info.lower().find("end", start_pos)
 
+    start_pos += len("NewECP")
+
     # If "NewECP" or "end" is not found, then we assume that ecp_info has been given without these lines but in the correct format
     if start_pos == -1 or end_pos == -1:
         raise ValueError("ECP info does not contain 'NewECP' or 'end' keyword.")
@@ -470,7 +472,7 @@ def create_orca_point_charge_file(
     oxi_states = embedded_cluster.get_array("oxi_states")
 
     # Check that none of the indices in quantum_cluster_indices are in ecp_region_indices
-    if np.all([x not in ecp_region_indices for x in quantum_cluster_indices]) is False:
+    if not np.all([x not in ecp_region_indices for x in quantum_cluster_indices]):
         raise ValueError("An atom in the quantum cluster is also in the ECP region.")
 
     # Get the number of point charges for this system
