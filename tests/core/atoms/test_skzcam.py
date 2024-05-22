@@ -448,6 +448,12 @@ def test_create_atom_coord_string(embedded_adsorbed_cluster):
     # First let's try the case where it's a normal atom.
     atom_coord_string = create_atom_coord_string(atom)
 
+    with pytest.raises(ValueError):
+        create_atom_coord_string(atom, atom_ecp_info="NewECP\nECP_info1\nECP_info2\n",ghost_atom=True)
+
+    with pytest.raises(ValueError):
+        create_atom_coord_string(atom, atom_ecp_info="NewECP\nECP_info1\nECP_info2\n")
+
     assert (
         atom_coord_string
         == "C                       0.00000000000    0.00000000000    2.00000000000\n"
@@ -485,6 +491,18 @@ f 1
 1      1.000000000    0.000000000 2
 end"""
     }
+
+    # Confirm that multiplicity given as 1 if not provided
+    ad_slab_coords, ad_coords, slab_coords = generate_coords_block(
+        embedded_adsorbed_cluster,
+        [0, 1, 2, 3, 4, 5, 6, 7],
+        [8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
+        ecp_info,
+    )
+
+    assert ad_slab_coords.split()[4] == '1'
+    assert slab_coords.split()[4] == '1'
+    assert ad_coords.split()[4] == '1'
 
     ad_slab_coords, ad_coords, slab_coords = generate_coords_block(
         embedded_adsorbed_cluster,
@@ -834,6 +852,9 @@ eNd
 """
     formatted_atom_ecp_info = format_ecp_info(atom_ecp_info)
 
+    with pytest.raises(ValueError):
+        format_ecp_info("dummy_info\nN_core0\nend")
+
     assert (
         formatted_atom_ecp_info
         == "NewECP\nN_core 0\nlmax s\ns 1\n1      1.732000000   14.676000000 2\nend\n"
@@ -888,6 +909,18 @@ def test_generate_orca_input_preamble(embedded_adsorbed_cluster):
         "AutoTRAHIter": 60,
         "MaxIter": 1000,
     }
+
+    # Check whether error raised if not all element_info is not provided
+    with pytest.raises(ValueError):
+        element_info_error = {'C': element_info['C']}
+        generate_orca_input_preamble(
+            embedded_adsorbed_cluster,
+            [0, 1, 2, 3, 4, 5, 6, 7],
+            element_info=element_info_error,
+            pal_nprocs_block=pal_nprocs_block,
+            method_block=method_block,
+            scf_block=scf_block,
+        )
 
     # Generate the orca input preamble
     preamble_input = generate_orca_input_preamble(
@@ -956,6 +989,15 @@ def test_create_orca_point_charge_file(embedded_adsorbed_cluster, tmpdir):
         [8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
         Path(tmpdir, "orca.pc"),
     )
+
+    # Test whether exception is raised if indices shared between quantum region and ecp region
+    with pytest.raises(ValueError):
+        create_orca_point_charge_file(
+            embedded_adsorbed_cluster,
+            [0, 1, 2, 3, 4, 5, 6, 7],
+            [7, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
+            Path(tmpdir, "orca.pc"),
+        )
 
     # Read the written file
     orca_pc_file = np.loadtxt(Path(tmpdir, "orca.pc"), skiprows=1)

@@ -74,8 +74,6 @@ def create_orca_eint_blocks(
     """
 
     # First generate the preamble block
-    if multiplicity is None:
-        multiplicity = {"ad_slab": 1, "ad": 1, "slab": 1}
     preamble_block = generate_orca_input_preamble(
         embedded_adsorbed_cluster,
         quantum_cluster_indices,
@@ -238,25 +236,16 @@ coords
             slab_coords += create_atom_coord_string(atom)
             if include_cp:
                 ad_coords += create_atom_coord_string(atom, ghost_atom=True)
-        else:
-            raise ValueError("Atom not in adsorbate or slab.")
 
     # Create the coords section for the ECP region
     ecp_region_coords_section = ""
     for i, atom in enumerate(ecp_region):
-        if (
-            ecp_info is not None
-            and ecp_region[i].symbol in ecp_info
-            and ecp_info[ecp_region[i].symbol] is not None
-        ):
             atom_ecp_info = format_ecp_info(ecp_info[atom.symbol])
             ecp_region_coords_section += create_atom_coord_string(
                 atom,
                 atom_ecp_info=atom_ecp_info,
                 pc_charge=ecp_region.get_array("oxi_states")[i],
             )
-        else:
-            raise ValueError("ECP info not provided for all atoms in the ECP region.")
 
         # position = atom.position
         # pc_charge = ecp_region.get_array("oxi_states")[i]
@@ -319,7 +308,7 @@ def format_ecp_info(atom_ecp_info: str) -> str:
 
     # If "NewECP" or "end" is not found, then we assume that ecp_info has been given without these lines but in the correct format
     if start_pos == -1:
-        start_pos = 0
+        raise ValueError("ECP info does not contain 'NewECP' keyword.")
     else:
         # Adjust start_pos to point to the character after "NewECP"
         start_pos += len("NewECP")
@@ -486,7 +475,7 @@ def create_orca_point_charge_file(
     oxi_states = embedded_cluster.get_array("oxi_states")
 
     # Check that none of the indices in quantum_cluster_indices are in ecp_region_indices
-    if np.all([x not in ecp_region_indices for x in quantum_cluster_indices]) is False:
+    if np.all([x not in ecp_region_indices for x in quantum_cluster_indices]) == False:
         raise ValueError("An atom in the quantum cluster is also in the ECP region.")
 
     # Get the number of point charges for this system
