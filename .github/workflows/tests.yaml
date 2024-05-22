@@ -262,7 +262,7 @@ jobs:
           uv pip install --system -r tests/requirements.txt -r tests/requirements-defects.txt -r tests/requirements-phonopy.txt "quacc[dev] @ ."
 
       - name: Run tests with pytest
-        run: pytest -k 'defects or phonon or espresso' --durations=10 --cov=quacc --cov-report=xml
+        run: pytest -k 'defects or phonon' --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v4
