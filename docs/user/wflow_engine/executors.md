@@ -20,7 +20,7 @@ In the previous examples, we have been running calculations on our local machine
 
     Out-of-the-box, Parsl will run on your local machine. However, in practice you will probably want to run your Parsl workflows on HPC machines.
 
-    To configure Parsl for the high-performance computing environment of your choice, refer to the [executor configuration page in the Parsl documentation](https://parsl.readthedocs.io/en/stable/userguide/configuring.html) for many examples. Additional details can be found in the ["Execution" section](https://parsl.readthedocs.io/en/stable/userguide/execution.html) of the Parsl documentation. Most users of quacc will probably want to the [`HighThroughputExecutor`](https://parsl.readthedocs.io/en/stable/stubs/parsl.executors.HighThroughputExecutor.html#parsl.executors.HighThroughputExecutor).
+    To configure Parsl for the high-performance computing environment of your choice, refer to the [executor configuration page in the Parsl documentation](https://parsl.readthedocs.io/en/stable/userguide/configuring.html) for many examples. Additional details can be found in the ["Execution" section](https://parsl.readthedocs.io/en/stable/userguide/execution.html) of the Parsl documentation. Most users of quacc will probably want to the [`HighThroughputExecutor`](https://parsl.readthedocs.io/en/stable/stubs/parsl.executors.HighThroughputExecutor.html#parsl.executors.HighThroughputExecutor) or [`MPIExecutor](https://parsl.readthedocs.io/en/stable/stubs/parsl.executors.MPIExecutor.html#parsl.executors.MPIExecutor).
 
     !!! Note "Pilot Jobs"
 
@@ -427,7 +427,7 @@ If you haven't done so already:
 
     3. This is just an arbitrary label for file I/O.
 
-    4. The maximum number of running jobs per node. If you are running a non-MPI job, this value will generally be the number of physical cores per node (this example). Perlmutter has 128 physical CPU cores, so we have set a value of 128 here.
+    4. The maximum number of running jobs per node. This value will generally be the number of physical cores per node (this example). Perlmutter has 128 physical CPU cores, so we have set a value of 128 here.
 
     5. The number of cores per job. We are running single-core jobs in this example.
 
@@ -775,14 +775,14 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
 
 === "Parsl"
 
-    Now let's consider a similar configuration but for jobs where the underlying executable is run via MPI, as is typically the case for most quantum chemistry codes that distribute work over multiple cores and/or nodes. The setup here is a bit different. In this example, we are requesting a single Slurm allocation with 2 nodes (containing 128 physical CPU cores per node), and each compute job is running on 1 node of that allocation.
+    Now let's consider a similar configuration but for jobs where the underlying executable is run via MPI, as is typically the case for most quantum chemistry codes that distribute work over multiple cores and/or nodes. The setup here is a bit different. In this example, we are using the [`MPIExecutor`](https://parsl.readthedocs.io/en/stable/stubs/parsl.executors.MPIExecutor.html#parsl.executors.MPIExecutor) to request a single Slurm allocation with 2 nodes (containing 128 physical CPU cores per node), and each compute job is running on 1 node of that allocation.
 
     From an interactive resource like a Jupyter Notebook or IPython kernel from the login node on the remote machine:
 
     ```python
     import parsl
     from parsl.config import Config
-    from parsl.executors import HighThroughputExecutor
+    from parsl.executors import MPIExecutor
     from parsl.launchers import SimpleLauncher
     from parsl.providers import SlurmProvider
 
@@ -790,20 +790,17 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
 
     nodes_per_job = 1
     cores_per_node = 128
-    nodes_per_allocation = 2
+    max_jobs_per_allocation = 2
     vasp_parallel_cmd = (
         f"srun -N {nodes_per_job} --ntasks-per-node={cores_per_node} --cpu_bind=cores"
     )
-    min_allocations = 0
-    max_allocations = 1
 
     config = Config(
         strategy="htex_auto_scale",
         executors=[
-            HighThroughputExecutor(
-                label="quacc_parsl",
-                max_workers_per_node=nodes_per_allocation // nodes_per_job,  # (1)!
-                cores_per_worker=1e-6,  # (2)!
+            MPIExecutor(
+                label="quacc_mpi_parsl",
+                max_workers_per_block=max_jobs_per_allocation,  # (1)!
                 provider=SlurmProvider(
                     account=account,
                     qos="debug",
@@ -811,10 +808,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
                     worker_init=f"source ~/.bashrc && conda activate quacc && module load vasp/6.4.1-cpu && export QUACC_VASP_PARALLEL_CMD='{vasp_parallel_cmd}'",
                     walltime="00:10:00",
                     nodes_per_block=nodes_per_allocation,
-                    init_blocks=0,
-                    min_blocks=min_allocations,
-                    max_blocks=max_allocations,
-                    launcher=SimpleLauncher(),  # (3)!
+                    launcher=SimpleLauncher(),  # (2)!
                     cmd_timeout=60,
                 ),
             )
@@ -825,11 +819,9 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     parsl.load(config)
     ```
 
-    1. Unlike the prior example, here `max_workers_per_node` is defining the maximum number of concurrent jobs in total and not the maximum number of jobs run per node.
+    1. Here, we are defining the maximum number of MPI applications to run at once per allocation.
 
-    2. This is recommended in the Parsl manual for jobs that spawn MPI processes.
-
-    3. The `SimpleLauncher` should be used in place of the `SrunLauncher` for `PythonApp`s that themselves call MPI.
+    2. The `SimpleLauncher` should be used in place of the `SrunLauncher` for `PythonApp`s that themselves call MPI.
 
     Now we launch the VASP jobs:
 
@@ -847,6 +839,10 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     future2 = workflow(bulk("Cu"))
     print(future1.result(), future2.result())
     ```
+
+    !!! Tip "Varying Resources"
+
+        If your jobs require heterogeneous MPI resources, you can supply a `parsl_resource_specification` as described in the ["Writing an MPI App" documentation](https://parsl.readthedocs.io/en/stable/userguide/mpi_apps.html#writing-an-mpi-app).
 
 === "Prefect"
 
