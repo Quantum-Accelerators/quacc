@@ -309,7 +309,6 @@ def format_ecp_info(atom_ecp_info: str) -> str:
     # If "NewECP" or "end" is not found, then we assume that ecp_info has been given without these lines but in the correct format
     if start_pos == -1 or end_pos == -1:
         raise ValueError("ECP info does not contain 'NewECP' or 'end' keyword.")
-    
 
     # Extract content between "NewECP" and "end", exclusive of "end", then add correctly formatted "NewECP" and "end"
     return f"NewECP\n{atom_ecp_info[start_pos:end_pos].strip()}\nend\n"
