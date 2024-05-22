@@ -10,8 +10,8 @@ from pymatgen.entries.computed_entries import ComputedStructureEntry
 from pymatgen.io.ase import AseAtomsAdaptor
 
 try:
-    from pymatgen.analysis.defects.generators import VacancyGenerator
     import shakenbreak  # noqa: F401
+    from pymatgen.analysis.defects.generators import VacancyGenerator
 
     has_deps = True
 except ImportError:
