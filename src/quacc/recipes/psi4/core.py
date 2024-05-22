@@ -5,14 +5,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
-
+from importlib.util import find_spec
 from quacc import job
 from quacc.recipes.psi4._base import run_and_summarize
 
-try:
-    import psi4
-except ImportError:
-    psi4 = None
+has_psi4 = find_spec("psi4") is not None
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
@@ -22,7 +19,7 @@ if TYPE_CHECKING:
 
 
 @job
-@requires(psi4, "Psi4 not installed. Try conda install -c psi4 psi4")
+@requires(has_psi4, "Psi4 not installed. Try conda install -c psi4 psi4")
 def static_job(
     atoms: Atoms,
     charge: int = 0,
