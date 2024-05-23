@@ -1,3 +1,2 @@
 pymatgen-analysis-defects==2024.5.11
 shakenbreak==3.3.3
-doped==2.4.2
