@@ -445,7 +445,8 @@ jobs:
       - tests-engines
       - tests-engines2
       - tests-psi4
-      - tests-defects-phonons-espresso
+      - tests-defects-phonons
+      - tests-espresso
       - tests-tblite-dftbplus
       - tests-qchem-sella
       - tests-mlps
