@@ -130,11 +130,11 @@ def vasp_summarize_run(
         final_atoms, initial_atoms, move_magmoms=move_magmoms, store=None
     )
 
-    if nsteps := len([f for f in os.listdir(directory) if f.startswith("step")]):
+    if step_folders := [f for f in os.listdir(directory) if f.startswith("step")]:
         intermediate_vasp_task_docs = {
             "steps": {
-                n: TaskDoc.from_directory(Path(directory, f"step{n}")).model_dump()
-                for n in range(nsteps)
+                n: TaskDoc.from_directory(Path(directory, step_folder)).model_dump()
+                for n, step_folder in enumerate(step_folders)
             }
         }
     else:
