@@ -12,7 +12,7 @@ from quacc.schemas.atoms import atoms_to_metadata
 from quacc.utils.dicts import finalize_dict
 from quacc.utils.files import get_uri
 
-has_phonopy = find_spec("phonopy") is not None
+has_phonopy = bool(find_spec("phonopy"))
 
 if TYPE_CHECKING:
     from pathlib import Path

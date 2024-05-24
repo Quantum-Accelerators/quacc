@@ -11,7 +11,7 @@ from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.phonopy import get_phonopy_structure, get_pmg_structure
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 
-has_phonopy = find_spec("phonopy")
+has_phonopy = bool(find_spec("phonopy"))
 
 if has_phonopy:
     from phonopy import Phonopy

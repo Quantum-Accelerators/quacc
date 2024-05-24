@@ -8,17 +8,19 @@ from monty.dev import requires
 
 from quacc.runners.prep import calc_cleanup, calc_setup
 
-has_deps = find_spec("phonopy") is not None and find_spec("seekpath") is not None
+has_phonopy = bool(find_spec("phonopy"))
+has_seekpath = bool(find_spec("seekpath"))
 
 
 if TYPE_CHECKING:
     from numpy.typing import NDArray
 
-    if has_deps:
+    if has_phonopy:
         from phonopy import Phonopy
 
 
-@requires(has_deps, "Phonopy or seekpath is not installed.")
+@requires(has_phonopy, "Phonopy is not installed.")
+@requires(has_seekpath, "Seekpath is not installed.")
 def run_phonopy(
     phonon: Phonopy,
     forces: NDArray,

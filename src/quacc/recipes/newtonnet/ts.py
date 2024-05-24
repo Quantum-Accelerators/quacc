@@ -2,15 +2,25 @@
 
 from __future__ import annotations
 
+import os
+from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
+from ase import Atoms
+from ase.atoms import Atoms
+from ase.io import Trajectory, read, write
+from ase.mep.neb import NEBOptimizer
+from ase.neb import NEB
+from geodesic_interpolate.fileio import write_xyz
+from geodesic_interpolate.geodesic import Geodesic
+from geodesic_interpolate.interpolation import redistribute
 from monty.dev import requires
 
+from quacc import SETTINGS, change_settings, job, strip_decorator
+from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
 from quacc.runners.ase import run_opt
 from quacc.schemas.ase import summarize_opt_run
 from quacc.utils.dicts import recursive_dict_merge
-from quacc import SETTINGS, change_settings, job, strip_decorator
-from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
 
 from ase.io import read
 from ase.io import Trajectory
@@ -38,7 +48,8 @@ from ase.mep.neb import NEBOptimizer
 from ase.optimize.optimize import Optimizer
 
 if TYPE_CHECKING:
-    from typing import Any, Literal, Optional, Union, List, Tuple
+    from typing import Any, Literal
+
     from ase.atoms import Atoms
     from numpy.typing import NDArray
 
@@ -116,8 +127,7 @@ def ts_job(
     if use_custom_hessian:
         opt_flags["optimizer_kwargs"]["hessian_function"] = _get_hessian
 
-    ml_calculator = NewtonNet(**calc_flags)
-    atoms.calc = ml_calculator
+    atoms.calc = NewtonNet(**calc_flags)
 
     # Run the TS optimization
     dyn = run_opt(atoms, **opt_flags)
@@ -302,7 +312,8 @@ def _get_hessian(atoms: Atoms) -> NDArray:
 
     return ml_calculator.results["hessian"].reshape((-1, 3 * len(atoms)))
 
-'''
+
+"""
 @job
 @requires(has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation.")
 @requires(has_geodesic_interpolate, "geodesic_interpolate must be installed. "
@@ -341,7 +352,7 @@ def neb_job(
     relax_summary["irc_job"] = irc_summary
 
     return relax_summary
-'''
+"""
 
 
 @job
@@ -505,17 +516,15 @@ def setup_images(
         Path(logdir).mkdir(parents=True)
 
         # Read reactant and product structures
-        reactant = read(xyz_r_p, index='0')
-        product = read(xyz_r_p, index='1')
+        reactant = read(xyz_r_p, index="0")
+        product = read(xyz_r_p, index="1")
 
-        print('yyyyyydddd')
         # Optimize reactant and product structures using sella
-        for atom, name in zip([reactant, product], ['reactant', 'product']):
-            #atom.calc = calc()
+        for atom, name in zip([reactant, product], ["reactant", "product"]):
+            # atom.calc = calc()
             atom.calc = NewtonNet(**calc_flags)
-            traj_file = os.path.join(logdir, f'{name}_opt.traj')
+            traj_file = os.path.join(logdir, f"{name}_opt.traj")
             sella_wrapper(atom, traj_file=traj_file, sella_order=0)
-        print('dddddddddd')
         # Save optimized reactant and product structures
         r_p_path = Path(logdir) / "r_p.xyz"
         write(r_p_path, [reactant.copy(), product.copy()])
@@ -536,11 +545,11 @@ def setup_images(
             ml_calculator = NewtonNet(**calc_flags)
             ml_calculator.calculate(image)
 
-            energy = ml_calculator.results['energy']
-            forces = ml_calculator.results['forces']
+            energy = ml_calculator.results["energy"]
+            forces = ml_calculator.results["forces"]
 
-            image.info['energy'] = energy
-            image.arrays['forces'] = forces
+            image.info["energy"] = energy
+            image.arrays["forces"] = forces
 
         # Save the geodesic path
         geodesic_path = Path(logdir) / 'geodesic_path.xyz'
@@ -548,8 +557,7 @@ def setup_images(
 
         return images
 
-    except Exception as e:
-        print(f"An error occurred: {e}")
+    except Exception:
         return []
 
 
@@ -588,11 +596,7 @@ def run_neb_method(
     Returns:
         List[Atoms]: The optimized images.
     """
-    images = setup_images(
-        logdir,
-        xyz_r_p,
-        n_intermediate=n_intermediate,
-    )
+    images = setup_images(logdir, xyz_r_p, n_intermediate=n_intermediate)
 
     mep = NEB(
         images,
@@ -618,11 +622,8 @@ def run_neb_method(
     # The following was written because of some error in writing the xyz file below
     images_copy = []
     for image in images:
-        image_copy = Atoms(
-            symbols=image.symbols,
-            positions=image.positions,
-        )
-        image_copy.info['energy'] = image.get_potential_energy()
+        image_copy = Atoms(symbols=image.symbols, positions=image.positions)
+        image_copy.info["energy"] = image.get_potential_energy()
         images_copy.append(image_copy)
 
     if logdir is not None:
