@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from importlib.util import find_spec
 from pathlib import Path
 from shutil import rmtree
 
@@ -7,10 +8,9 @@ TEST_RESULTS_DIR = Path(__file__).parent / "_test_results"
 TEST_SCRATCH_DIR = Path(__file__).parent / "_test_scratch"
 TEST_RUNINFO = Path(__file__).parent / "runinfo"
 
-try:
+has_parsl = bool(find_spec("parsl"))
+if has_parsl:
     import parsl
-except ImportError:
-    parsl = None
 
 
 def pytest_sessionstart():

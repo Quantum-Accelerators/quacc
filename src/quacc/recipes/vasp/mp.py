@@ -10,7 +10,7 @@ Materials Project-compatible recipes.
 
 from __future__ import annotations
 
-from importlib import util
+from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
@@ -20,7 +20,7 @@ from quacc.calculators.vasp.params import MPtoASEConverter
 from quacc.recipes.vasp._base import run_and_summarize
 from quacc.wflow_tools.customizers import customize_funcs
 
-has_atomate2 = util.find_spec("atomate2")
+has_atomate2 = bool(find_spec("atomate2"))
 if has_atomate2:
     from atomate2.vasp.jobs.mp import (
         MPGGARelaxMaker,

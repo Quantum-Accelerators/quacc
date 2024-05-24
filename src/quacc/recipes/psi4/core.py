@@ -10,7 +10,7 @@ from monty.dev import requires
 from quacc import job
 from quacc.recipes.psi4._base import run_and_summarize
 
-has_psi4 = find_spec("psi4") is not None
+has_psi4 = bool(find_spec("psi4"))
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
