@@ -4,20 +4,23 @@ import pytest
 
 pytest.importorskip("sella")
 pytest.importorskip("newtonnet")
+import os
 from pathlib import Path
 
 import numpy as np
+from ase import Atoms
 from ase.build import molecule
+from ase.io import read, write
 
 from quacc import SETTINGS
 from quacc.recipes.newtonnet.core import freq_job, relax_job, static_job
-from quacc.recipes.newtonnet.ts import irc_job, quasi_irc_job, ts_job
-
-import os
-from ase import Atoms
-from ase.io import read, write
-from quacc.recipes.newtonnet.ts import setup_images
-from quacc.recipes.newtonnet.ts import geodesic_interpolate_wrapper
+from quacc.recipes.newtonnet.ts import (
+    geodesic_interpolate_wrapper,
+    irc_job,
+    quasi_irc_job,
+    setup_images,
+    ts_job,
+)
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 
@@ -290,7 +293,7 @@ def test_quasi_irc_job_with_custom_irc_swaps(tmp_path, monkeypatch):
     assert output["freq_job"]["results"]["energy"] == pytest.approx(-9.517354965639784)
 
 
-@pytest.fixture
+@pytest.fixture()
 def setup_test_environment(tmp_path):
     # Create temporary directory
     logdir = tmp_path / "log"
@@ -300,7 +303,7 @@ def setup_test_environment(tmp_path):
     xyz_r_p = tmp_path / "r_p.xyz"
 
     reactant = Atoms(
-        symbols='CCHHCHH',
+        symbols="CCHHCHH",
         positions=[
             [1.4835950817281542, -1.0145410211301968, -0.13209027203235943],
             [0.8409564131524673, 0.018549610257914483, -0.07338809662321308],
@@ -308,12 +311,12 @@ def setup_test_environment(tmp_path):
             [-1.0005576455546672, 1.0430257532387608, 0.22197240310602892],
             [1.402180736662139, 0.944112416574632, -0.12179540364365492],
             [-1.1216961389434357, -0.3883639833876232, -0.8769102842015071],
-            [-0.9645026578514683, -0.6204201840686793, 0.9240543090678239]
-        ]
+            [-0.9645026578514683, -0.6204201840686793, 0.9240543090678239],
+        ],
     )
 
     product = Atoms(
-        symbols='CCHHCHH',
+        symbols="CCHHCHH",
         positions=[
             [1.348003553501624, 0.4819311116778978, 0.2752537177143993],
             [0.2386618286631742, -0.3433222966734429, 0.37705518940917926],
@@ -321,8 +324,8 @@ def setup_test_environment(tmp_path):
             [-1.8314843503320921, -0.5547344604780035, 0.1639037492534953],
             [0.3801391040059668, -1.3793340533058087, 0.71035902765307],
             [1.9296265384257907, 0.622088341468767, 1.0901733942191298],
-            [-1.090815880212625, 1.0965111343610956, -0.23791518420660265]
-        ]
+            [-1.090815880212625, 1.0965111343610956, -0.23791518420660265],
+        ],
     )
 
     write(xyz_r_p, [reactant, product])
@@ -332,62 +335,43 @@ def setup_test_environment(tmp_path):
 
 def test_geodesic_interpolate_wrapper(setup_test_environment):
     logdir, xyz_r_p = setup_test_environment
-    print('logdir:', logdir)
-    print('xyz_r_p:', xyz_r_p)
-    atoms_object = read(xyz_r_p, index=':')
-    symbols, smoother_path = geodesic_interpolate_wrapper(
-        atoms_object
-    )
+    atoms_object = read(xyz_r_p, index=":")
+    symbols, smoother_path = geodesic_interpolate_wrapper(atoms_object)
     # assert output == 1
     # assert symbols == 1
-    assert smoother_path[1][0][0] == pytest.approx(
-        1.36055556030,
-        abs=1e-1,
-    )
+    assert smoother_path[1][0][0] == pytest.approx(1.36055556030, abs=1e-1)
 
 
 def test_setup_images(setup_test_environment):
     logdir, xyz_r_p = setup_test_environment
 
     # Call the setup_images function
-    images = setup_images(
-        logdir=str(logdir),
-        xyz_r_p=str(xyz_r_p),
-        n_intermediate=2
-    )
+    images = setup_images(logdir=str(logdir), xyz_r_p=str(xyz_r_p), n_intermediate=2)
 
     # Check that images were returned
     assert len(images) > 0, "No images were generated"
 
     # Verify output files were created
-    assert os.path.isfile(logdir / 'reactant_opt.traj'), "Reactant optimization file not found"
-    assert os.path.isfile(logdir / 'product_opt.traj'), "Product optimization file not found"
-    assert os.path.isfile(logdir / 'r_p.xyz'), "Reactant-Product file not found"
+    assert os.path.isfile(
+        logdir / "reactant_opt.traj"
+    ), "Reactant optimization file not found"
+    assert os.path.isfile(
+        logdir / "product_opt.traj"
+    ), "Product optimization file not found"
+    assert os.path.isfile(logdir / "r_p.xyz"), "Reactant-Product file not found"
 
-    assert images[1].get_positions()[0][0] == pytest.approx(
-        0.838441276,
-        abs=1e-2,
-    )
+    assert images[1].get_positions()[0][0] == pytest.approx(0.838441276, abs=1e-2)
 
     # Check energies and forces
     for image in images:
-        assert 'energy' in image.info, "Energy not found in image info"
-        assert 'forces' in image.arrays, "Forces not found in image arrays"
+        assert "energy" in image.info, "Energy not found in image info"
+        assert "forces" in image.arrays, "Forces not found in image arrays"
 
-    assert images[1].get_potential_energy() == pytest.approx(
-        -24.7835030767,
-        abs=1,
-    )
+    assert images[1].get_potential_energy() == pytest.approx(-24.7835030767, abs=1)
     "Error in first intermediate image's energy for the geodesic path"
 
-    assert images[0].get_potential_energy() == pytest.approx(
-        -24.89597590,
-        abs=1,
-    )
+    assert images[0].get_potential_energy() == pytest.approx(-24.89597590, abs=1)
     "Error in reactant energy prediction for geodesic path."
 
-    assert images[-1].get_potential_energy() == pytest.approx(
-        -24.98959138,
-        abs=1,
-    )
+    assert images[-1].get_potential_energy() == pytest.approx(-24.98959138, abs=1)
     "Error in product energy prediction for geodesic path."

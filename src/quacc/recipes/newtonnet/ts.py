@@ -2,29 +2,24 @@
 
 from __future__ import annotations
 
+import os
 from typing import TYPE_CHECKING
 
-from monty.dev import requires
-
-from quacc.runners.ase import run_opt
-from quacc.schemas.ase import summarize_opt_run
-from quacc.utils.dicts import recursive_dict_merge
-from quacc import SETTINGS, change_settings, job, strip_decorator
-from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
-
-from ase.io import read
-from ase.io import Trajectory
+from ase import Atoms
+from ase.atoms import Atoms
+from ase.io import Trajectory, read, write
+from ase.mep.neb import NEBOptimizer
+from ase.neb import NEB
 from geodesic_interpolate.fileio import write_xyz
 from geodesic_interpolate.geodesic import Geodesic
 from geodesic_interpolate.interpolation import redistribute
+from monty.dev import requires
 
-import os
-from ase import Atoms
-from ase.neb import NEB
-from ase.io import write
-from typing import Optional
-from ase.mep.neb import NEBOptimizer
-from ase.optimize.optimize import Optimizer
+from quacc import SETTINGS, change_settings, job, strip_decorator
+from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
+from quacc.runners.ase import run_opt
+from quacc.schemas.ase import summarize_opt_run
+from quacc.utils.dicts import recursive_dict_merge
 
 try:
     from sella import IRC, Sella
@@ -44,7 +39,7 @@ except ImportError:
 if TYPE_CHECKING:
     from typing import Any, Literal
 
-    from ase.atoms import Atoms
+    from ase.optimize.optimize import Optimizer
     from numpy.typing import NDArray
 
     from quacc.recipes.newtonnet.core import FreqSchema
@@ -307,7 +302,8 @@ def _get_hessian(atoms: Atoms) -> NDArray:
 
     return ml_calculator.results["hessian"].reshape((-1, 3 * len(atoms)))
 
-'''
+
+"""
 @job
 @requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
 def neb_job(
@@ -344,38 +340,24 @@ def neb_job(
     relax_summary["irc_job"] = irc_summary
 
     return relax_summary
-'''
+"""
 
 
 def sella_wrapper(
-                  atoms_object,
-                  traj_file=None,
-                  sella_order=0,
-                  use_internal=True,
-                  traj_log_interval=2,
-                  fmax_cutoff=1e-3,
-                  max_steps=1000
-                 ):
+    atoms_object,
+    traj_file=None,
+    sella_order=0,
+    use_internal=True,
+    traj_log_interval=2,
+    fmax_cutoff=1e-3,
+    max_steps=1000,
+):
     if traj_file:
-        traj = Trajectory(
-                          traj_file,
-                          'w',
-                          atoms_object,
-                         )
-    qn = Sella(
-               atoms_object,
-               order=sella_order,
-               internal=use_internal,
-              )
+        traj = Trajectory(traj_file, "w", atoms_object)
+    qn = Sella(atoms_object, order=sella_order, internal=use_internal)
     if traj_file:
-        qn.attach(
-                  traj.write,
-                  interval=traj_log_interval,
-                 )
-    qn.run(
-           fmax=fmax_cutoff,
-           steps=max_steps,
-          )
+        qn.attach(traj.write, interval=traj_log_interval)
+    qn.run(fmax=fmax_cutoff, steps=max_steps)
     if traj_file:
         traj.close()
 
@@ -383,7 +365,7 @@ def sella_wrapper(
 def geodesic_interpolate_wrapper(
     r_p_atoms: Atoms,
     nimages: int = 17,
-    sweep: bool = None,
+    sweep: bool | None = None,
     output: str = "interpolated.xyz",
     tol: float = 2e-3,
     maxiter: int = 15,
@@ -391,7 +373,8 @@ def geodesic_interpolate_wrapper(
     scaling: float = 1.7,
     friction: float = 1e-2,
     dist_cutoff: float = 3,
-    save_raw: str = None):
+    save_raw: str | None = None,
+):
     """
     Interpolates between two geometries and optimizes the path.
 
@@ -438,11 +421,7 @@ def geodesic_interpolate_wrapper(
     return symbols, smoother.path
 
 
-def setup_images(
-        logdir: str,
-        xyz_r_p: str,
-        n_intermediate: int = 40,
-):
+def setup_images(logdir: str, xyz_r_p: str, n_intermediate: int = 40):
     """
     Sets up intermediate images for NEB calculations between reactant and product states.
 
@@ -466,24 +445,23 @@ def setup_images(
         os.makedirs(logdir, exist_ok=True)
 
         # Read reactant and product structures
-        reactant = read(xyz_r_p, index='0')
-        product = read(xyz_r_p, index='1')
+        reactant = read(xyz_r_p, index="0")
+        product = read(xyz_r_p, index="1")
 
-        print('yyyyyydddd')
         # Optimize reactant and product structures using sella
-        for atom, name in zip([reactant, product], ['reactant', 'product']):
-            #atom.calc = calc()
+        for atom, name in zip([reactant, product], ["reactant", "product"]):
+            # atom.calc = calc()
             atom.calc = NewtonNet(**calc_flags)
-            traj_file = os.path.join(logdir, f'{name}_opt.traj')
+            traj_file = os.path.join(logdir, f"{name}_opt.traj")
             sella_wrapper(atom, traj_file=traj_file, sella_order=0)
-        print('dddddddddd')
         # Save optimized reactant and product structures
         r_p_path = os.path.join(logdir, "r_p.xyz")
         write(r_p_path, [reactant.copy(), product.copy()])
 
         # Generate intermediate images using geodesic interpolation
-        symbols, smoother_path =\
-            geodesic_interpolate_wrapper([reactant.copy(), product.copy()])
+        symbols, smoother_path = geodesic_interpolate_wrapper(
+            [reactant.copy(), product.copy()]
+        )
         images = [Atoms(symbols=symbols, positions=conf) for conf in smoother_path]
 
         # Calculate energies and forces for each intermediate image
@@ -494,34 +472,33 @@ def setup_images(
             ml_calculator = NewtonNet(**calc_flags)
             ml_calculator.calculate(image)
 
-            energy = ml_calculator.results['energy']
-            forces = ml_calculator.results['forces']
+            energy = ml_calculator.results["energy"]
+            forces = ml_calculator.results["forces"]
 
-            image.info['energy'] = energy
-            image.arrays['forces'] = forces
+            image.info["energy"] = energy
+            image.arrays["forces"] = forces
 
         # Save the geodesic path
-        geodesic_path = os.path.join(logdir, 'geodesic_path.xyz')
+        geodesic_path = os.path.join(logdir, "geodesic_path.xyz")
         write(geodesic_path, images)
 
         return images
 
-    except Exception as e:
-        print(f"An error occurred: {e}")
+    except Exception:
         return []
 
 
 def run_neb_method(
-        method: str,
-        optimizer: Optional[Optimizer] = NEBOptimizer,
-        opt_method: Optional[str] = 'aseneb',
-        precon: Optional[str] = None,
-        logdir: Optional[str] = None,
-        xyz_r_p: Optional[str] = None,
-        n_intermediate: Optional[int] = 20,
-        k: Optional[float] = 0.1,
-        max_steps: Optional[int] = 1000,
-        fmax_cutoff: Optional[float] = 1e-2,
+    method: str,
+    optimizer: Optimizer | None = NEBOptimizer,
+    opt_method: str | None = "aseneb",
+    precon: str | None = None,
+    logdir: str | None = None,
+    xyz_r_p: str | None = None,
+    n_intermediate: int | None = 20,
+    k: float | None = 0.1,
+    max_steps: int | None = 1000,
+    fmax_cutoff: float | None = 1e-2,
 ) -> None:
     """
     Run NEB method.
@@ -538,11 +515,7 @@ def run_neb_method(
         max_steps (int, optional): maximum number of optimization steps allowed. Defaults to 1000.
         fmax_cutoff (float: optional): convergence cut-off criteria for the NEB optimization. Defaults to 1e-2.
     """
-    images = setup_images(
-        logdir,
-        xyz_r_p,
-        n_intermediate=n_intermediate,
-    )
+    images = setup_images(logdir, xyz_r_p, n_intermediate=n_intermediate)
 
     mep = NEB(
         images,
@@ -555,7 +528,7 @@ def run_neb_method(
     )
 
     os.makedirs(logdir, exist_ok=True)
-    log_filename = f'neb_band_{method}_{optimizer.__name__}_{precon}.txt'
+    log_filename = f"neb_band_{method}_{optimizer.__name__}_{precon}.txt"
 
     logfile_path = os.path.join(logdir, log_filename)
 
@@ -566,12 +539,12 @@ def run_neb_method(
     # The following was written because of some error in writing the xyz file below
     images_copy = []
     for image in images:
-        image_copy = Atoms(
-            symbols=image.symbols,
-            positions=image.positions,
-        )
-        image_copy.info['energy'] = image.get_potential_energy()
+        image_copy = Atoms(symbols=image.symbols, positions=image.positions)
+        image_copy.info["energy"] = image.get_potential_energy()
         images_copy.append(image_copy)
 
-    write(f'{logdir}/optimized_path_{method}_{optimizer.__name__}_{precon}.xyz', images_copy)
+    write(
+        f"{logdir}/optimized_path_{method}_{optimizer.__name__}_{precon}.xyz",
+        images_copy,
+    )
     return images
