@@ -7,7 +7,6 @@ from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
 from ase import Atoms
-from ase.atoms import Atoms
 from ase.io import Trajectory, read, write
 from ase.mep.neb import NEBOptimizer
 from ase.neb import NEB
