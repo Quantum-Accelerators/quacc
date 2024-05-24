@@ -172,12 +172,9 @@ def freq_job(
     summary = summarize_run(
         final_atoms, atoms, additional_fields={"name": "NewtonNet Hessian"}
     )
-    energy = summary["results"]["energy"]
-    hessian = summary["results"]["hessian"]
 
-    vib = VibrationsData(final_atoms, hessian)
-
-    igt = run_ideal_gas(final_atoms, vib.get_frequencies(), energy=energy)
+    vib = VibrationsData(final_atoms, summary["results"]["hessian"])
+    igt = run_ideal_gas(final_atoms, vib.get_frequencies(), energy=summary["results"]["energy"])
 
     return summarize_vib_and_thermo(
         vib,
