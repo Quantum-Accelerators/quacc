@@ -30,7 +30,6 @@ try:
 except ImportError:
     neb = None
 
-try:
 if has_sella:
     from sella import IRC, Sella
 if has_newtonnet:
