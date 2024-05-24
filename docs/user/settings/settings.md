@@ -53,7 +53,7 @@ If you want to define quacc settings on-the-fly without writing them to a YAML f
 ```python
 from quacc import SETTINGS
 
-SETTINGS.RESULTS_DIR = "/new/path/to/store/results"
+SETTINGS.GZIP_FILES = False
 ```
 
 If you only want to temporarily modify the settings for a specific calculation, you can use the context handler function [quacc.settings.change_settings][] as follows:
@@ -61,7 +61,7 @@ If you only want to temporarily modify the settings for a specific calculation, 
 ```python
 from quacc import change_settings
 
-with change_settings({"RESULTS_DIR": "/new/path/to/store/results"}):
+with change_settings({"GZIP_FILES": False}):
     pass  # Your calculation here
 ```
 
