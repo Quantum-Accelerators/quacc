@@ -387,7 +387,7 @@ def test_setup_images(setup_test_environment):
     "Error in reactant energy prediction for geodesic path."
 
     assert images[-1].get_potential_energy() == pytest.approx(
-        -24.98959138,
+        -25.1172894,
         abs=1,
     )
     "Error in product energy prediction for geodesic path."
