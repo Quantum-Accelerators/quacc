@@ -38,7 +38,7 @@ from ase.mep.neb import NEBOptimizer
 from ase.optimize.optimize import Optimizer
 
 if TYPE_CHECKING:
-    from typing import Any, Literal
+    from typing import Any, Literal, Optional, Union
 
     from ase.atoms import Atoms
     from numpy.typing import NDArray
@@ -345,37 +345,50 @@ def neb_job(
 '''
 
 
+@job
+@requires(has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation.")
+@requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def sella_wrapper(
-                  atoms_object,
-                  traj_file=None,
-                  sella_order=0,
-                  use_internal=True,
-                  traj_log_interval=2,
-                  fmax_cutoff=1e-3,
-                  max_steps=1000
-                 ):
+        atoms_object: Atoms,
+        traj_file: Optional[Union[str, Path]] = None,
+        sella_order: int = 0,
+        use_internal: bool = True,
+        traj_log_interval: int = 2,
+        fmax_cutoff: float = 1e-3,
+        max_steps: int = 1000,
+) -> None:
+    """
+    Wrapper function for running Sella optimization.
+
+    Parameters:
+    -----------
+    atoms_object : Atoms
+        The ASE Atoms object to be optimized.
+    traj_file : Optional[Union[str, Path]], optional
+        The file path to store the trajectory. If None, no trajectory is saved.
+    sella_order : int, optional
+        The order of the transition state optimization (default is 0).
+    use_internal : bool, optional
+        Whether to use internal coordinates for the optimization (default is True).
+    traj_log_interval : int, optional
+        Interval at which the trajectory is logged (default is 2).
+    fmax_cutoff : float, optional
+        The maximum force criterion for convergence (default is 1e-3).
+    max_steps : int, optional
+        The maximum number of optimization steps (default is 1000).
+
+    Returns:
+    --------
+    None
+    """
     if traj_file:
-        traj = Trajectory(
-                          traj_file,
-                          'w',
-                          atoms_object,
-                         )
-    qn = Sella(
-               atoms_object,
-               order=sella_order,
-               internal=use_internal,
-              )
-    if traj_file:
-        qn.attach(
-                  traj.write,
-                  interval=traj_log_interval,
-                 )
-    qn.run(
-           fmax=fmax_cutoff,
-           steps=max_steps,
-          )
-    if traj_file:
-        traj.close()
+        with Trajectory(traj_file, 'w', atoms_object) as traj:
+            qn = Sella(atoms_object, order=sella_order, internal=use_internal)
+            qn.attach(traj.write, interval=traj_log_interval)
+            qn.run(fmax=fmax_cutoff, steps=max_steps)
+    else:
+        qn = Sella(atoms_object, order=sella_order, internal=use_internal)
+        qn.run(fmax=fmax_cutoff, steps=max_steps)
 
 
 @job
