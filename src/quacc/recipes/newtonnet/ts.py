@@ -38,8 +38,7 @@ from ase.mep.neb import NEBOptimizer
 from ase.optimize.optimize import Optimizer
 
 if TYPE_CHECKING:
-    from typing import Any, Literal, Optional, Union
-
+    from typing import Any, Literal, Optional, Union, List, Tuple
     from ase.atoms import Atoms
     from numpy.typing import NDArray
 
@@ -397,44 +396,62 @@ def sella_wrapper(
 @requires(has_geodesic_interpolate, "geodesic_interpolate must be installed. "
                                     "git clone https://github.com/virtualzx-nad/geodesic-interpolate.git.")
 def geodesic_interpolate_wrapper(
-    r_p_atoms: Atoms,
-    nimages: int = 17,
-    sweep: bool = None,
-    output: str = "interpolated.xyz",
+    r_p_atoms: List[Atoms],
+    nimages: int = 20,
+    sweep: Optional[bool] = None,
+    output: Union[str, Path] = "interpolated.xyz",
     tol: float = 2e-3,
     maxiter: int = 15,
     microiter: int = 20,
     scaling: float = 1.7,
     friction: float = 1e-2,
-    dist_cutoff: float = 3,
-    save_raw: str = None):
+    dist_cutoff: float = 3.0,
+    save_raw: Optional[Union[str, Path]] = None
+) -> Tuple[List[str], List[List[float]]]:
     """
     Interpolates between two geometries and optimizes the path.
 
     Parameters:
-    filename (str): XYZ file containing geometries.
-    nimages (int): Number of images. Default is 17.
-    sweep (bool): Sweep across the path optimizing one image at a time.
-                  Default is to perform sweeping updates if there are more than 35 atoms.
-    output (str): Output filename. Default is "interpolated.xyz".
-    tol (float): Convergence tolerance. Default is 2e-3.
-    maxiter (int): Maximum number of minimization iterations. Default is 15.
-    microiter (int): Maximum number of micro iterations for sweeping algorithm. Default is 20.
-    scaling (float): Exponential parameter for Morse potential. Default is 1.7.
-    friction (float): Size of friction term used to prevent very large change of geometry. Default is 1e-2.
-    dist_cutoff (float): Cut-off value for the distance between a pair of atoms to be included in the coordinate system. Default is 3.
-    save_raw (str): When specified, save the raw path after bisections but before smoothing. Default is None.
+    -----------
+    r_p_atoms : List[Atoms]
+        List of ASE Atoms objects containing initial and final geometries.
+    nimages : int, optional
+        Number of images for interpolation. Default is 17.
+    sweep : Optional[bool], optional
+        Whether to sweep across the path optimizing one image at a time.
+        Default is to perform sweeping updates if there are more than 35 atoms.
+    output : Union[str, Path], optional
+        Output filename. Default is "interpolated.xyz".
+    tol : float, optional
+        Convergence tolerance. Default is 2e-3.
+    maxiter : int, optional
+        Maximum number of minimization iterations. Default is 15.
+    microiter : int, optional
+        Maximum number of micro iterations for the sweeping algorithm. Default is 20.
+    scaling : float, optional
+        Exponential parameter for the Morse potential. Default is 1.7.
+    friction : float, optional
+        Size of friction term used to prevent very large changes in geometry. Default is 1e-2.
+    dist_cutoff : float, optional
+        Cut-off value for the distance between a pair of atoms to be included in the coordinate system. Default is 3.0.
+    save_raw : Optional[Union[str, Path]], optional
+        When specified, save the raw path after bisections but before smoothing. Default is None.
+
+    Returns:
+    --------
+    Tuple[List[str], List[List[float]]]
+        A tuple containing the list of symbols and the smoothed path.
     """
+    if len(r_p_atoms) < 2:
+        raise ValueError("Need at least two initial geometries.")
+
     # Read the initial geometries.
     symbols = r_p_atoms[0].get_chemical_symbols()
-
     X = [conf.get_positions() for conf in r_p_atoms]
-
-    if len(X) < 2:
-        raise ValueError("Need at least two initial geometries.")
 
     # First redistribute number of images. Perform interpolation if too few and subsampling if too many images are given
     raw = redistribute(symbols, X, nimages, tol=tol * 5)
+
     if save_raw is not None:
         write_xyz(save_raw, symbols, raw)
 
