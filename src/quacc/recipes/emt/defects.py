@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
@@ -12,13 +13,11 @@ from quacc.recipes.emt.core import relax_job, static_job
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs
 
-try:
-    import shakenbreak  # noqa: F401
+has_deps = bool(find_spec("pymatgen.analysis.defects") and find_spec("shakenbreak"))
+
+if has_deps:
     from pymatgen.analysis.defects.generators import VacancyGenerator
 
-    has_deps = True
-except ImportError:
-    has_deps = False
 
 
 if TYPE_CHECKING:

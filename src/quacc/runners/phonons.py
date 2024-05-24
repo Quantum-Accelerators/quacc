@@ -8,7 +8,7 @@ from monty.dev import requires
 
 from quacc.runners.prep import calc_cleanup, calc_setup
 
-has_deps = find_spec("phonopy") is not None and find_spec("seekpath") is not None
+has_deps = bool(find_spec("phonopy")  and find_spec("seekpath"))
 
 
 if TYPE_CHECKING:

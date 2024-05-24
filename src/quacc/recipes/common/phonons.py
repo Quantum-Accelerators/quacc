@@ -12,7 +12,7 @@ from quacc.atoms.phonons import get_phonopy, phonopy_atoms_to_ase_atoms
 from quacc.runners.phonons import run_phonopy
 from quacc.schemas.phonons import summarize_phonopy
 
-has_deps = find_spec("phonopy") is not None and find_spec("seekpath") is not None
+has_deps = bool(find_spec("phonopy") and find_spec("seekpath") )
 
 if TYPE_CHECKING:
     from typing import Any
