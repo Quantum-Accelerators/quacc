@@ -47,7 +47,7 @@ from ase.mep.neb import NEBOptimizer
 from ase.optimize.optimize import Optimizer
 
 if TYPE_CHECKING:
-    from typing import Any, Literal
+    from typing import Any, Literal, Type, Union, List, Tuple
 
     from ase.atoms import Atoms
     from numpy.typing import NDArray
