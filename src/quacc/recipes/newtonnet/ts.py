@@ -560,7 +560,7 @@ def setup_images(
                                     "git clone https://github.com/virtualzx-nad/geodesic-interpolate.git.")
 def run_neb_method(
         method: str,
-        optimizer: Optional[Optimizer] = NEBOptimizer,
+        optimizer: Optional[Type[Optimizer]] = NEBOptimizer,
         opt_method: Optional[str] = 'aseneb',
         precon: Optional[str] = None,
         logdir: Optional[str] = None,
@@ -569,21 +569,24 @@ def run_neb_method(
         k: Optional[float] = 0.1,
         max_steps: Optional[int] = 1000,
         fmax_cutoff: Optional[float] = 1e-2,
-) -> None:
+) -> List[Atoms]:
     """
     Run NEB method.
 
     Args:
         method (str): NEB method.
-        optimizer (Optimizer, Optional): NEB path Optimizer function, Defaults to NEBOptimizer.
-        precon (str, optional): Preconditioner method. Defaults to None.
-        opt_method (str, Optimizer): Optimization method. Defaults to aseneb.
-        logdir (str, optional): Directory to save logs. Defaults to None.
-        xyz_r_p (str, optional): Path to reactant and product XYZ files. Defaults to None.
-        n_intermediate (int, optional): Number of intermediate images. Defaults to 20.
-        k (float, optional): force constant for the springs in NEB. Defaults to 0.1.
-        max_steps (int, optional): maximum number of optimization steps allowed. Defaults to 1000.
-        fmax_cutoff (float: optional): convergence cut-off criteria for the NEB optimization. Defaults to 1e-2.
+        optimizer (Optional[Type[Optimizer]]): NEB path optimizer class. Defaults to NEBOptimizer.
+        opt_method (Optional[str]): Optimization method. Defaults to 'aseneb'.
+        precon (Optional[str]): Preconditioner method. Defaults to None.
+        logdir (Optional[str]): Directory to save logs. Defaults to None.
+        xyz_r_p (Optional[str]): Path to reactant and product XYZ files. Defaults to None.
+        n_intermediate (Optional[int]): Number of intermediate images. Defaults to 20.
+        k (Optional[float]): Force constant for the springs in NEB. Defaults to 0.1.
+        max_steps (Optional[int]): Maximum number of optimization steps allowed. Defaults to 1000.
+        fmax_cutoff (Optional[float]): Convergence cut-off criteria for the NEB optimization. Defaults to 1e-2.
+
+    Returns:
+        List[Atoms]: The optimized images.
     """
     images = setup_images(
         logdir,
@@ -601,10 +604,12 @@ def run_neb_method(
         parallel=True,
     )
 
-    Path(logdir).mkdir(parents=True)
-    log_filename = f'neb_band_{method}_{optimizer.__name__}_{precon}.txt'
-
-    logfile_path = Path(logdir) / log_filename
+    if logdir is not None:
+        Path(logdir).mkdir(parents=True)
+        log_filename = f'neb_band_{method}_{optimizer.__name__}_{precon}.txt'
+        logfile_path = Path(logdir) / log_filename
+    else:
+        logfile_path = None
 
     opt = optimizer(mep, method=opt_method, logfile=logfile_path, verbose=2)
 
@@ -620,5 +625,7 @@ def run_neb_method(
         image_copy.info['energy'] = image.get_potential_energy()
         images_copy.append(image_copy)
 
-    write(f'{logdir}/optimized_path_{method}_{optimizer.__name__}_{precon}.xyz', images_copy)
+    if logdir is not None:
+        write(f'{logdir}/optimized_path_{method}_{optimizer.__name__}_{precon}.xyz', images_copy)
+
     return images
