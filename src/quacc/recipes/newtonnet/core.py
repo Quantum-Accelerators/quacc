@@ -166,19 +166,17 @@ def freq_job(
     }
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
 
-    ml_calculator = NewtonNet(**calc_flags)
-    atoms.calc = ml_calculator
+    atoms.calc = NewtonNet(**calc_flags)
     final_atoms = run_calc(atoms, copy_files=copy_files)
 
     summary = summarize_run(
         final_atoms, atoms, additional_fields={"name": "NewtonNet Hessian"}
     )
-    energy = summary["results"]["energy"]
-    hessian = summary["results"]["hessian"]
 
-    vib = VibrationsData(final_atoms, hessian)
-
-    igt = run_ideal_gas(final_atoms, vib.get_frequencies(), energy=energy)
+    vib = VibrationsData(final_atoms, summary["results"]["hessian"])
+    igt = run_ideal_gas(
+        final_atoms, vib.get_frequencies(), energy=summary["results"]["energy"]
+    )
 
     return summarize_vib_and_thermo(
         vib,
@@ -211,11 +209,10 @@ def _add_stdev_and_hess(summary: dict[str, Any]) -> dict[str, Any]:
         Hessian values.
     """
     for i, atoms in enumerate(summary["trajectory"]):
-        ml_calculator = NewtonNet(
+        atoms.calc = NewtonNet(
             model_path=SETTINGS.NEWTONNET_MODEL_PATH,
             settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
         )
-        atoms.calc = ml_calculator
         results = run_calc(atoms).calc.results
         summary["trajectory_results"][i]["hessian"] = results["hessian"]
         summary["trajectory_results"][i]["energy_std"] = results["energy_disagreement"]
