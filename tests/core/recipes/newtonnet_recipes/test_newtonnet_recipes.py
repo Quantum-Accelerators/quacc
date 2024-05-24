@@ -375,4 +375,3 @@ def test_setup_images(setup_test_environment):
 
     assert images[-1].get_potential_energy() == pytest.approx(-25.1172894, abs=1)
     "Error in product energy prediction for geodesic path."
-
