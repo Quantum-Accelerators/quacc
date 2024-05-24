@@ -18,7 +18,6 @@ from quacc.recipes.newtonnet.ts import (
     geodesic_interpolate_wrapper,
     irc_job,
     quasi_irc_job,
-    setup_images,
     ts_job,
 )
 
@@ -341,7 +340,8 @@ def test_geodesic_interpolate_wrapper(setup_test_environment):
     # assert symbols == 1
     assert smoother_path[1][0][0] == pytest.approx(1.36055556030, abs=1e-1)
 
-'''
+
+"""
 def test_setup_images(setup_test_environment):
     logdir, xyz_r_p = setup_test_environment
 
@@ -375,4 +375,4 @@ def test_setup_images(setup_test_environment):
 
     assert images[-1].get_potential_energy() == pytest.approx(-25.1172894, abs=1)
     "Error in product energy prediction for geodesic path."
-'''
+"""
