@@ -25,12 +25,10 @@ if TYPE_CHECKING:
 
 @flow
 @requires(
-    has_phonopy,
-    message="Phonopy must be installed. Run `pip install quacc[phonons]`",
+    has_phonopy, message="Phonopy must be installed. Run `pip install quacc[phonons]`"
 )
 @requires(
-    has_seekpath,
-    message="Seekpath must be installed. Run `pip install quacc[phonons]`",
+    has_seekpath, message="Seekpath must be installed. Run `pip install quacc[phonons]`"
 )
 def phonon_flow(
     atoms: Atoms,

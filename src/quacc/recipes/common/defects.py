@@ -14,7 +14,6 @@ has_pmg_defects = bool(find_spec("pymatgen.analysis.defects"))
 has_shakenbreak = bool(find_spec("shakenbreak"))
 
 
-
 if TYPE_CHECKING:
     from typing import Any
 
@@ -22,13 +21,13 @@ if TYPE_CHECKING:
 
     from quacc import Job
 
+
 @subflow
 @requires(
-    has_pmg_defects, "Missing pymatgen-analysis-defects. Please run pip install quacc[defects]"
+    has_pmg_defects,
+    "Missing pymatgen-analysis-defects. Please run pip install quacc[defects]",
 )
-@requires(
-    has_shakenbreak, "Missing shakenbreak. Please run pip install quacc[defects]"
-)
+@requires(has_shakenbreak, "Missing shakenbreak. Please run pip install quacc[defects]")
 def bulk_to_defects_subflow(
     atoms: Atoms,
     relax_job: Job,

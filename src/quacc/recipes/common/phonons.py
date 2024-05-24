@@ -28,12 +28,8 @@ if TYPE_CHECKING:
 
 
 @subflow
-@requires(
-    has_phonopy, "Phonopy must be installed. Run `pip install quacc[phonons]`"
-)
-@requires(
-    has_seekpath, "Seekpath must be installed. Run `pip install quacc[phonons]`"
-)
+@requires(has_phonopy, "Phonopy must be installed. Run `pip install quacc[phonons]`")
+@requires(has_seekpath, "Seekpath must be installed. Run `pip install quacc[phonons]`")
 def phonon_subflow(
     atoms: Atoms,
     force_job: Job,

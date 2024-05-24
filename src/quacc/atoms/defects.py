@@ -36,11 +36,10 @@ if TYPE_CHECKING:
 
 
 @requires(
-    has_pmg_defects, "Missing pymatgen-analysis-defects. Please run pip install quacc[defects]"
+    has_pmg_defects,
+    "Missing pymatgen-analysis-defects. Please run pip install quacc[defects]",
 )
-@requires(
-    has_shakenbreak, "Missing shakenbreak. Please run pip install quacc[defects]"
-)
+@requires(has_shakenbreak, "Missing shakenbreak. Please run pip install quacc[defects]")
 def make_defects_from_bulk(
     atoms: Atoms,
     defect_gen: (
@@ -140,9 +139,9 @@ def make_defects_from_bulk(
     return final_defects
 
 
-
 @requires(
-    has_pmg_defects, "Missing pymatgen-analysis-defects. Please run pip install quacc[defects]"
+    has_pmg_defects,
+    "Missing pymatgen-analysis-defects. Please run pip install quacc[defects]",
 )
 def get_defect_entry_from_defect(
     defect: Defect, defect_supercell: Structure, defect_charge: int

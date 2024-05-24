@@ -39,11 +39,10 @@ if TYPE_CHECKING:
 
 @flow
 @requires(
-    has_pmg_defects, "Missing pymatgen-analysis-defects. Please run pip install quacc[defects]"
+    has_pmg_defects,
+    "Missing pymatgen-analysis-defects. Please run pip install quacc[defects]",
 )
-@requires(
-    has_shakenbreak, "Missing shakenbreak. Please run pip install quacc[defects]"
-)
+@requires(has_shakenbreak, "Missing shakenbreak. Please run pip install quacc[defects]")
 def bulk_to_defects_flow(
     atoms: Atoms,
     defect_gen: (
