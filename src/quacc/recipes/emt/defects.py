@@ -13,9 +13,10 @@ from quacc.recipes.emt.core import relax_job, static_job
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs
 
-has_deps = bool(find_spec("pymatgen.analysis.defects") and find_spec("shakenbreak"))
+has_pmg_defects = bool(find_spec("pymatgen.analysis.defects"))
+has_shakenbreak = bool(find_spec("shakenbreak"))
 
-if has_deps:
+if has_pmg_defects:
     from pymatgen.analysis.defects.generators import VacancyGenerator
 
 
@@ -26,7 +27,7 @@ if TYPE_CHECKING:
 
     from quacc.schemas._aliases.ase import OptSchema, RunSchema
 
-    if has_deps:
+    if has_pmg_defects:
         from pymatgen.analysis.defects.generators import (
             AntiSiteGenerator,
             ChargeInterstitialGenerator,
@@ -38,7 +39,10 @@ if TYPE_CHECKING:
 
 @flow
 @requires(
-    has_deps, "Missing defect dependencies. Please run pip install quacc[defects]"
+    has_pmg_defects, "Missing pymatgen-analysis-defects. Please run pip install quacc[defects]"
+)
+@requires(
+    has_shakenbreak, "Missing shakenbreak. Please run pip install quacc[defects]"
 )
 def bulk_to_defects_flow(
     atoms: Atoms,

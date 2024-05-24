@@ -10,7 +10,9 @@ from monty.dev import requires
 from quacc import subflow
 from quacc.atoms.defects import make_defects_from_bulk
 
-has_deps = bool(find_spec("shakenbreak") and find_spec("pymatgen.analysis.defects"))
+has_pmg_defects = bool(find_spec("pymatgen.analysis.defects"))
+has_shakenbreak = bool(find_spec("shakenbreak"))
+
 
 
 if TYPE_CHECKING:
@@ -20,11 +22,12 @@ if TYPE_CHECKING:
 
     from quacc import Job
 
-
 @subflow
 @requires(
-    has_deps,
-    "shakenbreak and pymatgen-analysis-defects must be installed. Run `pip install quacc[defects]`",
+    has_pmg_defects, "Missing pymatgen-analysis-defects. Please run pip install quacc[defects]"
+)
+@requires(
+    has_shakenbreak, "Missing shakenbreak. Please run pip install quacc[defects]"
 )
 def bulk_to_defects_subflow(
     atoms: Atoms,

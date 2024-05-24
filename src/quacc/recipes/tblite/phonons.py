@@ -12,8 +12,9 @@ from quacc.recipes.common.phonons import phonon_subflow
 from quacc.recipes.tblite.core import relax_job, static_job
 from quacc.wflow_tools.customizers import customize_funcs
 
-has_deps_tblite = bool(find_spec("tblite"))
-has_deps_phonons = bool(find_spec("phonopy") and find_spec("seekpath"))
+has_tblite = bool(find_spec("tblite"))
+has_phonopy = bool(find_spec("phonopy"))
+has_seekpath = bool(find_spec("seekpath"))
 
 if TYPE_CHECKING:
     from typing import Any, Callable
@@ -25,11 +26,15 @@ if TYPE_CHECKING:
 
 @flow
 @requires(
-    has_deps_tblite, "tblite must be installed. Refer to the quacc documentation."
+    has_tblite, "tblite must be installed. Refer to the quacc documentation."
 )
 @requires(
-    has_deps_phonons,
-    message="Phonopy and seekpath must be installed. Run `pip install quacc[phonons]`",
+    has_phonopy,
+    message="Phonopy must be installed. Run `pip install quacc[phonons]`",
+)
+@requires(
+    has_seekpath,
+    message="Seekpath must be installed. Run `pip install quacc[phonons]`",
 )
 def phonon_flow(
     atoms: Atoms,

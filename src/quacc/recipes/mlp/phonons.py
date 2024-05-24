@@ -12,7 +12,8 @@ from quacc.recipes.common.phonons import phonon_subflow
 from quacc.recipes.mlp.core import relax_job, static_job
 from quacc.wflow_tools.customizers import customize_funcs
 
-has_deps = bool(find_spec("phonopy") and find_spec("seekpath"))
+has_phonopy = bool(find_spec("phonopy"))
+has_seekpath = bool(find_spec("seekpath"))
 
 if TYPE_CHECKING:
     from typing import Any, Callable, Literal
@@ -24,8 +25,12 @@ if TYPE_CHECKING:
 
 @flow
 @requires(
-    has_deps,
-    message="Phonopy and seekpath must be installed. Run `pip install quacc[phonons]`",
+    has_phonopy,
+    message="Phonopy must be installed. Run `pip install quacc[phonons]`",
+)
+@requires(
+    has_seekpath,
+    message="Seekpath must be installed. Run `pip install quacc[phonons]`",
 )
 def phonon_flow(
     atoms: Atoms,
