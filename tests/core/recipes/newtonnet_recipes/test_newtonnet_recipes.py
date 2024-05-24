@@ -18,7 +18,6 @@ from quacc.recipes.newtonnet.ts import (
     geodesic_interpolate_wrapper,
     irc_job,
     quasi_irc_job,
-    setup_images,
     ts_job,
 )
 
