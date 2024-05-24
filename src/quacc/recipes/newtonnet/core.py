@@ -174,7 +174,9 @@ def freq_job(
     )
 
     vib = VibrationsData(final_atoms, summary["results"]["hessian"])
-    igt = run_ideal_gas(final_atoms, vib.get_frequencies(), energy=summary["results"]["energy"])
+    igt = run_ideal_gas(
+        final_atoms, vib.get_frequencies(), energy=summary["results"]["energy"]
+    )
 
     return summarize_vib_and_thermo(
         vib,
