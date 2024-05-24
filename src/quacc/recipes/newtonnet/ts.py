@@ -14,32 +14,28 @@ from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_jo
 
 from ase.io import read
 from ase.io import Trajectory
-from geodesic_interpolate.fileio import write_xyz
-from geodesic_interpolate.geodesic import Geodesic
-from geodesic_interpolate.interpolation import redistribute
+from importlib.util import find_spec
+
+has_geodesic_interpolate = bool(find_spec("geodesic_interpolate"))
+has_sella = bool(find_spec("sella"))
+has_newtonnet = bool(find_spec("newtonnet"))
+
+if has_sella:
+    from sella import IRC, Sella
+if has_newtonnet:
+    from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
+if has_geodesic_interpolate:
+    from geodesic_interpolate.fileio import write_xyz
+    from geodesic_interpolate.geodesic import Geodesic
+    from geodesic_interpolate.interpolation import redistribute
 
 import os
-from ase import Atoms
 from ase.neb import NEB
 from ase.io import write
+from pathlib import Path
 from typing import Optional
 from ase.mep.neb import NEBOptimizer
 from ase.optimize.optimize import Optimizer
-
-try:
-    from sella import IRC, Sella
-except ImportError:
-    Sella = None
-
-try:
-    from ase.mep import neb
-except ImportError:
-    neb = None
-
-try:
-    from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
-except ImportError:
-    NewtonNet = None
 
 if TYPE_CHECKING:
     from typing import Any, Literal
@@ -63,8 +59,8 @@ if TYPE_CHECKING:
 
 
 @job
-@requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
-@requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
+@requires(has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation.")
+@requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def ts_job(
     atoms: Atoms,
     use_custom_hessian: bool = False,
@@ -142,8 +138,8 @@ def ts_job(
 
 
 @job
-@requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
-@requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
+@requires(has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation.")
+@requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def irc_job(
     atoms: Atoms,
     direction: Literal["forward", "reverse"] = "forward",
@@ -218,8 +214,8 @@ def irc_job(
 
 
 @job
-@requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
-@requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
+@requires(has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation.")
+@requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def quasi_irc_job(
     atoms: Atoms,
     direction: Literal["forward", "reverse"] = "forward",
@@ -309,7 +305,9 @@ def _get_hessian(atoms: Atoms) -> NDArray:
 
 '''
 @job
-@requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
+@requires(has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation.")
+@requires(has_geodesic_interpolate, "geodesic_interpolate must be installed. "
+                                    "git clone https://github.com/virtualzx-nad/geodesic-interpolate.git.")
 def neb_job(
     atoms: Atoms,
     relax_endpoints: bool = True,
@@ -380,6 +378,11 @@ def sella_wrapper(
         traj.close()
 
 
+@job
+@requires(has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation.")
+@requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
+@requires(has_geodesic_interpolate, "geodesic_interpolate must be installed. "
+                                    "git clone https://github.com/virtualzx-nad/geodesic-interpolate.git.")
 def geodesic_interpolate_wrapper(
     r_p_atoms: Atoms,
     nimages: int = 17,
@@ -438,6 +441,11 @@ def geodesic_interpolate_wrapper(
     return symbols, smoother.path
 
 
+@job
+@requires(has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation.")
+@requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
+@requires(has_geodesic_interpolate, "geodesic_interpolate must be installed. "
+                                    "git clone https://github.com/virtualzx-nad/geodesic-interpolate.git.")
 def setup_images(
         logdir: str,
         xyz_r_p: str,
@@ -458,12 +466,13 @@ def setup_images(
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
     }
-
+    print('calc_defaults:', calc_defaults)
     calc_flags = recursive_dict_merge(calc_defaults, {})
+    print('calc_flags:', calc_flags)
 
     try:
         # Ensure the log directory exists
-        os.makedirs(logdir, exist_ok=True)
+        Path(logdir).mkdir(parents=True)
 
         # Read reactant and product structures
         reactant = read(xyz_r_p, index='0')
@@ -478,12 +487,15 @@ def setup_images(
             sella_wrapper(atom, traj_file=traj_file, sella_order=0)
         print('dddddddddd')
         # Save optimized reactant and product structures
-        r_p_path = os.path.join(logdir, "r_p.xyz")
+        r_p_path = Path(logdir) / "r_p.xyz"
         write(r_p_path, [reactant.copy(), product.copy()])
 
         # Generate intermediate images using geodesic interpolation
         symbols, smoother_path =\
-            geodesic_interpolate_wrapper([reactant.copy(), product.copy()])
+            geodesic_interpolate_wrapper(
+                [reactant.copy(), product.copy()],
+                nimages=n_intermediate,
+            )
         images = [Atoms(symbols=symbols, positions=conf) for conf in smoother_path]
 
         # Calculate energies and forces for each intermediate image
@@ -501,7 +513,7 @@ def setup_images(
             image.arrays['forces'] = forces
 
         # Save the geodesic path
-        geodesic_path = os.path.join(logdir, 'geodesic_path.xyz')
+        geodesic_path = Path(logdir) / 'geodesic_path.xyz'
         write(geodesic_path, images)
 
         return images
@@ -511,6 +523,11 @@ def setup_images(
         return []
 
 
+@job
+@requires(has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation.")
+@requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
+@requires(has_geodesic_interpolate, "geodesic_interpolate must be installed. "
+                                    "git clone https://github.com/virtualzx-nad/geodesic-interpolate.git.")
 def run_neb_method(
         method: str,
         optimizer: Optional[Optimizer] = NEBOptimizer,
@@ -554,10 +571,10 @@ def run_neb_method(
         parallel=True,
     )
 
-    os.makedirs(logdir, exist_ok=True)
+    Path(logdir).mkdir(parents=True)
     log_filename = f'neb_band_{method}_{optimizer.__name__}_{precon}.txt'
 
-    logfile_path = os.path.join(logdir, log_filename)
+    logfile_path = Path(logdir) / log_filename
 
     opt = optimizer(mep, method=opt_method, logfile=logfile_path, verbose=2)
 
