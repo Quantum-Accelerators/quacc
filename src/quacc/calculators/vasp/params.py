@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from importlib import util
+from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -14,7 +14,8 @@ from pymatgen.io.ase import AseAtomsAdaptor
 from quacc.atoms.core import check_is_metal
 from quacc.utils.kpts import convert_pmg_kpts
 
-has_atomate2 = util.find_spec("atomate2")
+has_atomate2 = bool(find_spec("atomate2"))
+
 if TYPE_CHECKING:
     from typing import Any, Literal
 

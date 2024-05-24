@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
 from ase import Atoms
@@ -21,10 +22,8 @@ from quacc.runners.ase import run_opt
 from quacc.schemas.ase import summarize_opt_run
 from quacc.utils.dicts import recursive_dict_merge
 
-try:
-    from sella import IRC, Sella
-except ImportError:
-    Sella = None
+has_sella = bool(find_spec("sella"))
+has_newtonnet = bool(find_spec("newtonnet"))
 
 try:
     from ase.mep import neb
@@ -32,9 +31,11 @@ except ImportError:
     neb = None
 
 try:
+if has_sella:
+    from sella import IRC, Sella
+if has_newtonnet:
     from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
-except ImportError:
-    NewtonNet = None
+
 
 if TYPE_CHECKING:
     from typing import Any, Literal
@@ -58,8 +59,10 @@ if TYPE_CHECKING:
 
 
 @job
-@requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
-@requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
+@requires(
+    has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation."
+)
+@requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def ts_job(
     atoms: Atoms,
     use_custom_hessian: bool = False,
@@ -137,8 +140,10 @@ def ts_job(
 
 
 @job
-@requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
-@requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
+@requires(
+    has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation."
+)
+@requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def irc_job(
     atoms: Atoms,
     direction: Literal["forward", "reverse"] = "forward",
@@ -213,8 +218,10 @@ def irc_job(
 
 
 @job
-@requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
-@requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
+@requires(
+    has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation."
+)
+@requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def quasi_irc_job(
     atoms: Atoms,
     direction: Literal["forward", "reverse"] = "forward",

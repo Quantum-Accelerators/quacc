@@ -12,7 +12,7 @@ from quacc import SETTINGS
 if TYPE_CHECKING:
     from pathlib import Path
 
-has_ob = find_spec("openbabel")
+has_ob = bool(find_spec("openbabel"))
 
 _DEFAULT_SETTING = ()
 

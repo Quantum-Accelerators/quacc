@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sys
+from importlib.util import find_spec
 from shutil import copy, copytree
 from typing import TYPE_CHECKING, Callable
 
@@ -19,11 +20,11 @@ from quacc.atoms.core import copy_atoms, get_final_atoms_from_dynamics
 from quacc.runners.prep import calc_cleanup, calc_setup, terminate
 from quacc.utils.dicts import recursive_dict_merge
 
-try:
-    from sella import Sella
+has_sella = bool(find_spec("sella"))
 
-except ImportError:
-    Sella = None
+if has_sella:
+    pass
+
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -321,7 +322,7 @@ def run_vib(
     return vib
 
 
-@requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
+@requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def _set_sella_kwargs(atoms: Atoms, optimizer_kwargs: dict[str, Any]) -> None:
     """
     Modifies the `optimizer_kwargs` in-place to address various Sella-related
