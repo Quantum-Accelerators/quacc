@@ -19,6 +19,7 @@ from quacc.recipes.newtonnet.ts import (
     irc_job,
     quasi_irc_job,
     ts_job,
+    setup_images,
 )
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
