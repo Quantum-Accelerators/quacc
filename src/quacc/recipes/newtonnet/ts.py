@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
@@ -33,8 +34,6 @@ if has_geodesic_interpolate:
     from geodesic_interpolate.fileio import write_xyz
     from geodesic_interpolate.geodesic import Geodesic
     from geodesic_interpolate.interpolation import redistribute
-
-from pathlib import Path
 
 if TYPE_CHECKING:
     from typing import Any, Literal, Type, Union, List, Tuple
@@ -524,7 +523,8 @@ def setup_images(logdir: str, xyz_r_p: str, n_intermediate: int = 40):
         for atom, name in zip([reactant, product], ["reactant", "product"]):
             # atom.calc = calc()
             atom.calc = NewtonNet(**calc_flags)
-            traj_file = os.path.join(logdir, f"{name}_opt.traj")
+            # traj_file = os.path.join(logdir, f"{name}_opt.traj")
+            traj_file = Path(logdir) / f"{name}_opt.traj"
             sella_wrapper(atom, traj_file=traj_file, sella_order=0)
         # Save optimized reactant and product structures
         r_p_path = Path(logdir) / "r_p.xyz"
