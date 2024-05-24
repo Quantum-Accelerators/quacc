@@ -19,7 +19,6 @@ if has_deps:
     from pymatgen.analysis.defects.generators import VacancyGenerator
 
 
-
 if TYPE_CHECKING:
     from typing import Any, Callable
 

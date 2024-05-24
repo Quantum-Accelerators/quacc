@@ -13,9 +13,7 @@ from quacc.recipes.tblite.core import relax_job, static_job
 from quacc.wflow_tools.customizers import customize_funcs
 
 has_deps_tblite = bool(find_spec("tblite"))
-has_deps_phonons = bool(
-    find_spec("phonopy") and find_spec("seekpath")
-)
+has_deps_phonons = bool(find_spec("phonopy") and find_spec("seekpath"))
 
 if TYPE_CHECKING:
     from typing import Any, Callable

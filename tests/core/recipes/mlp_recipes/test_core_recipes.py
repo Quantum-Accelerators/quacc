@@ -12,13 +12,13 @@ from ase.build import bulk
 from quacc.recipes.mlp.core import relax_job, static_job
 
 methods = []
-if has_mace:=find_spec("mace"):
+if has_mace := find_spec("mace"):
     methods.append("mace-mp-0")
 
-if has_matgl:=find_spec("matgl"):
+if has_matgl := find_spec("matgl"):
     methods.append("m3gnet")
 
-if has_chgnet:=find_spec("chgnet"):
+if has_chgnet := find_spec("chgnet"):
     methods.append("chgnet")
 
 

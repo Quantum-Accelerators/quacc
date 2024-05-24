@@ -10,10 +10,7 @@ from monty.dev import requires
 from quacc import subflow
 from quacc.atoms.defects import make_defects_from_bulk
 
-has_deps = bool(
-    find_spec("shakenbreak")
-    and find_spec("pymatgen.analysis.defects")
-)
+has_deps = bool(find_spec("shakenbreak") and find_spec("pymatgen.analysis.defects"))
 
 
 if TYPE_CHECKING:

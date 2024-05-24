@@ -10,10 +10,7 @@ from pymatgen.core.periodic_table import DummySpecies
 from pymatgen.entries.computed_entries import ComputedStructureEntry
 from pymatgen.io.ase import AseAtomsAdaptor
 
-has_deps = bool(
-    find_spec("pymatgen.analysis.defects")
-    and find_spec("shakenbreak")
-)
+has_deps = bool(find_spec("pymatgen.analysis.defects") and find_spec("shakenbreak"))
 
 if has_deps:
     from pymatgen.analysis.defects.generators import VacancyGenerator
