@@ -21,10 +21,6 @@ from quacc.runners.ase import run_opt
 from quacc.schemas.ase import summarize_opt_run
 from quacc.utils.dicts import recursive_dict_merge
 
-from ase.io import read
-from ase.io import Trajectory
-from importlib.util import find_spec
-
 has_geodesic_interpolate = bool(find_spec("geodesic_interpolate"))
 has_sella = bool(find_spec("sella"))
 has_newtonnet = bool(find_spec("newtonnet"))
@@ -38,18 +34,12 @@ if has_geodesic_interpolate:
     from geodesic_interpolate.geodesic import Geodesic
     from geodesic_interpolate.interpolation import redistribute
 
-import os
-from ase.neb import NEB
-from ase.io import write
 from pathlib import Path
-from typing import Optional
-from ase.mep.neb import NEBOptimizer
-from ase.optimize.optimize import Optimizer
 
 if TYPE_CHECKING:
     from typing import Any, Literal, Type, Union, List, Tuple
 
-    from ase.atoms import Atoms
+    from ase.optimize.optimize import Optimizer
     from numpy.typing import NDArray
 
     from quacc.recipes.newtonnet.core import FreqSchema
@@ -68,7 +58,9 @@ if TYPE_CHECKING:
 
 
 @job
-@requires(has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation.")
+@requires(
+    has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation."
+)
 @requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def ts_job(
     atoms: Atoms,
@@ -146,7 +138,9 @@ def ts_job(
 
 
 @job
-@requires(has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation.")
+@requires(
+    has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation."
+)
 @requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def irc_job(
     atoms: Atoms,
@@ -222,7 +216,9 @@ def irc_job(
 
 
 @job
-@requires(has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation.")
+@requires(
+    has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation."
+)
 @requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def quasi_irc_job(
     atoms: Atoms,
@@ -355,16 +351,18 @@ def neb_job(
 
 
 @job
-@requires(has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation.")
+@requires(
+    has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation."
+)
 @requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def sella_wrapper(
-        atoms_object: Atoms,
-        traj_file: Optional[Union[str, Path]] = None,
-        sella_order: int = 0,
-        use_internal: bool = True,
-        traj_log_interval: int = 2,
-        fmax_cutoff: float = 1e-3,
-        max_steps: int = 1000,
+    atoms_object: Atoms,
+    traj_file: Union[str, Path] | None = None,
+    sella_order: int = 0,
+    use_internal: bool = True,
+    traj_log_interval: int = 2,
+    fmax_cutoff: float = 1e-3,
+    max_steps: int = 1000,
 ) -> None:
     """
     Wrapper function for running Sella optimization.
@@ -391,7 +389,7 @@ def sella_wrapper(
     None
     """
     if traj_file:
-        with Trajectory(traj_file, 'w', atoms_object) as traj:
+        with Trajectory(traj_file, "w", atoms_object) as traj:
             qn = Sella(atoms_object, order=sella_order, internal=use_internal)
             qn.attach(traj.write, interval=traj_log_interval)
             qn.run(fmax=fmax_cutoff, steps=max_steps)
@@ -401,14 +399,19 @@ def sella_wrapper(
 
 
 @job
-@requires(has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation.")
+@requires(
+    has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation."
+)
 @requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
-@requires(has_geodesic_interpolate, "geodesic_interpolate must be installed. "
-                                    "git clone https://github.com/virtualzx-nad/geodesic-interpolate.git.")
+@requires(
+    has_geodesic_interpolate,
+    "geodesic_interpolate must be installed. "
+    "git clone https://github.com/virtualzx-nad/geodesic-interpolate.git.",
+)
 def geodesic_interpolate_wrapper(
     r_p_atoms: List[Atoms],
     nimages: int = 20,
-    sweep: Optional[bool] = None,
+    sweep: bool | None = None,
     output: Union[str, Path] = "interpolated.xyz",
     tol: float = 2e-3,
     maxiter: int = 15,
@@ -416,7 +419,7 @@ def geodesic_interpolate_wrapper(
     scaling: float = 1.7,
     friction: float = 1e-2,
     dist_cutoff: float = 3.0,
-    save_raw: Optional[Union[str, Path]] = None
+    save_raw: Union[str, Path] | None = None,
 ) -> Tuple[List[str], List[List[float]]]:
     """
     Interpolates between two geometries and optimizes the path.
@@ -482,15 +485,16 @@ def geodesic_interpolate_wrapper(
 
 
 @job
-@requires(has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation.")
+@requires(
+    has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation."
+)
 @requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
-@requires(has_geodesic_interpolate, "geodesic_interpolate must be installed. "
-                                    "git clone https://github.com/virtualzx-nad/geodesic-interpolate.git.")
-def setup_images(
-        logdir: str,
-        xyz_r_p: str,
-        n_intermediate: int = 40,
-):
+@requires(
+    has_geodesic_interpolate,
+    "geodesic_interpolate must be installed. "
+    "git clone https://github.com/virtualzx-nad/geodesic-interpolate.git.",
+)
+def setup_images(logdir: str, xyz_r_p: str, n_intermediate: int = 40):
     """
     Sets up intermediate images for NEB calculations between reactant and product states.
 
@@ -506,9 +510,7 @@ def setup_images(
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
     }
-    print('calc_defaults:', calc_defaults)
     calc_flags = recursive_dict_merge(calc_defaults, {})
-    print('calc_flags:', calc_flags)
 
     try:
         # Ensure the log directory exists
@@ -529,11 +531,9 @@ def setup_images(
         write(r_p_path, [reactant.copy(), product.copy()])
 
         # Generate intermediate images using geodesic interpolation
-        symbols, smoother_path =\
-            geodesic_interpolate_wrapper(
-                [reactant.copy(), product.copy()],
-                nimages=n_intermediate,
-            )
+        symbols, smoother_path = geodesic_interpolate_wrapper(
+            [reactant.copy(), product.copy()], nimages=n_intermediate
+        )
         images = [Atoms(symbols=symbols, positions=conf) for conf in smoother_path]
 
         # Calculate energies and forces for each intermediate image
@@ -551,7 +551,7 @@ def setup_images(
             image.arrays["forces"] = forces
 
         # Save the geodesic path
-        geodesic_path = Path(logdir) / 'geodesic_path.xyz'
+        geodesic_path = Path(logdir) / "geodesic_path.xyz"
         write(geodesic_path, images)
 
         return images
@@ -561,21 +561,26 @@ def setup_images(
 
 
 @job
-@requires(has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation.")
+@requires(
+    has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation."
+)
 @requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
-@requires(has_geodesic_interpolate, "geodesic_interpolate must be installed. "
-                                    "git clone https://github.com/virtualzx-nad/geodesic-interpolate.git.")
+@requires(
+    has_geodesic_interpolate,
+    "geodesic_interpolate must be installed. "
+    "git clone https://github.com/virtualzx-nad/geodesic-interpolate.git.",
+)
 def run_neb_method(
-        method: str,
-        optimizer: Optional[Type[Optimizer]] = NEBOptimizer,
-        opt_method: Optional[str] = 'aseneb',
-        precon: Optional[str] = None,
-        logdir: Optional[str] = None,
-        xyz_r_p: Optional[str] = None,
-        n_intermediate: Optional[int] = 20,
-        k: Optional[float] = 0.1,
-        max_steps: Optional[int] = 1000,
-        fmax_cutoff: Optional[float] = 1e-2,
+    method: str,
+    optimizer: Type[Optimizer] | None = NEBOptimizer,
+    opt_method: str | None = "aseneb",
+    precon: str | None = None,
+    logdir: str | None = None,
+    xyz_r_p: str | None = None,
+    n_intermediate: int | None = 20,
+    k: float | None = 0.1,
+    max_steps: int | None = 1000,
+    fmax_cutoff: float | None = 1e-2,
 ) -> List[Atoms]:
     """
     Run NEB method.
@@ -609,7 +614,7 @@ def run_neb_method(
 
     if logdir is not None:
         Path(logdir).mkdir(parents=True)
-        log_filename = f'neb_band_{method}_{optimizer.__name__}_{precon}.txt'
+        log_filename = f"neb_band_{method}_{optimizer.__name__}_{precon}.txt"
         logfile_path = Path(logdir) / log_filename
     else:
         logfile_path = None
@@ -626,6 +631,9 @@ def run_neb_method(
         images_copy.append(image_copy)
 
     if logdir is not None:
-        write(f'{logdir}/optimized_path_{method}_{optimizer.__name__}_{precon}.xyz', images_copy)
+        write(
+            f"{logdir}/optimized_path_{method}_{optimizer.__name__}_{precon}.xyz",
+            images_copy,
+        )
 
     return images
