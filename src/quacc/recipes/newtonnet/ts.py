@@ -6,16 +6,35 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
-from quacc import SETTINGS, change_settings, job, strip_decorator
-from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
 from quacc.runners.ase import run_opt
 from quacc.schemas.ase import summarize_opt_run
 from quacc.utils.dicts import recursive_dict_merge
+from quacc import SETTINGS, change_settings, job, strip_decorator
+from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
+
+from ase.io import read
+from ase.io import Trajectory
+from geodesic_interpolate.fileio import write_xyz
+from geodesic_interpolate.geodesic import Geodesic
+from geodesic_interpolate.interpolation import redistribute
+
+import os
+from ase import Atoms
+from ase.neb import NEB
+from ase.io import write
+from typing import Optional
+from ase.mep.neb import NEBOptimizer
+from ase.optimize.optimize import Optimizer
 
 try:
     from sella import IRC, Sella
 except ImportError:
     Sella = None
+
+try:
+    from ase.mep import neb
+except ImportError:
+    neb = None
 
 try:
     from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
@@ -287,3 +306,272 @@ def _get_hessian(atoms: Atoms) -> NDArray:
     ml_calculator.calculate(atoms)
 
     return ml_calculator.results["hessian"].reshape((-1, 3 * len(atoms)))
+
+'''
+@job
+@requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
+def neb_job(
+    atoms: Atoms,
+    relax_endpoints: bool = True,
+    run_geodesic: bool = True,
+    run_single_ended: bool = True,
+    run_freq: bool = True,
+    neb_job_kwargs: dict[str, Any] | None = None,
+    relax_job_kwargs: dict[str, Any] | None = None,
+    freq_job_kwargs: dict[str, Any] | None = None,
+):
+    relax_job_kwargs = relax_job_kwargs or {}
+    freq_job_kwargs = freq_job_kwargs or {}
+
+    irc_job_defaults = {"max_steps": 5}
+    irc_job_kwargs = recursive_dict_merge(irc_job_defaults, irc_job_kwargs)
+
+    # Run IRC
+    irc_summary = strip_decorator(irc_job)(
+        atoms, direction=direction, run_freq=False, **irc_job_kwargs
+    )
+
+    # Run opt
+    relax_summary = strip_decorator(relax_job)(irc_summary["atoms"], **relax_job_kwargs)
+
+    # Run frequency
+    freq_summary = (
+        strip_decorator(freq_job)(relax_summary["atoms"], **freq_job_kwargs)
+        if run_freq
+        else None
+    )
+    relax_summary["freq_job"] = freq_summary
+    relax_summary["irc_job"] = irc_summary
+
+    return relax_summary
+'''
+
+
+def sella_wrapper(
+                  atoms_object,
+                  traj_file=None,
+                  sella_order=0,
+                  use_internal=True,
+                  traj_log_interval=2,
+                  fmax_cutoff=1e-3,
+                  max_steps=1000
+                 ):
+    if traj_file:
+        traj = Trajectory(
+                          traj_file,
+                          'w',
+                          atoms_object,
+                         )
+    qn = Sella(
+               atoms_object,
+               order=sella_order,
+               internal=use_internal,
+              )
+    if traj_file:
+        qn.attach(
+                  traj.write,
+                  interval=traj_log_interval,
+                 )
+    qn.run(
+           fmax=fmax_cutoff,
+           steps=max_steps,
+          )
+    if traj_file:
+        traj.close()
+
+
+def geodesic_interpolate_wrapper(
+    r_p_atoms: Atoms,
+    nimages: int = 17,
+    sweep: bool = None,
+    output: str = "interpolated.xyz",
+    tol: float = 2e-3,
+    maxiter: int = 15,
+    microiter: int = 20,
+    scaling: float = 1.7,
+    friction: float = 1e-2,
+    dist_cutoff: float = 3,
+    save_raw: str = None):
+    """
+    Interpolates between two geometries and optimizes the path.
+
+    Parameters:
+    filename (str): XYZ file containing geometries.
+    nimages (int): Number of images. Default is 17.
+    sweep (bool): Sweep across the path optimizing one image at a time.
+                  Default is to perform sweeping updates if there are more than 35 atoms.
+    output (str): Output filename. Default is "interpolated.xyz".
+    tol (float): Convergence tolerance. Default is 2e-3.
+    maxiter (int): Maximum number of minimization iterations. Default is 15.
+    microiter (int): Maximum number of micro iterations for sweeping algorithm. Default is 20.
+    scaling (float): Exponential parameter for Morse potential. Default is 1.7.
+    friction (float): Size of friction term used to prevent very large change of geometry. Default is 1e-2.
+    dist_cutoff (float): Cut-off value for the distance between a pair of atoms to be included in the coordinate system. Default is 3.
+    save_raw (str): When specified, save the raw path after bisections but before smoothing. Default is None.
+    """
+    # Read the initial geometries.
+    symbols = r_p_atoms[0].get_chemical_symbols()
+
+    X = [conf.get_positions() for conf in r_p_atoms]
+
+    if len(X) < 2:
+        raise ValueError("Need at least two initial geometries.")
+
+    # First redistribute number of images. Perform interpolation if too few and subsampling if too many images are given
+    raw = redistribute(symbols, X, nimages, tol=tol * 5)
+    if save_raw is not None:
+        write_xyz(save_raw, symbols, raw)
+
+    # Perform smoothing by minimizing distance in Cartesian coordinates with redundant internal metric
+    # to find the appropriate geodesic curve on the hyperspace.
+    smoother = Geodesic(symbols, raw, scaling, threshold=dist_cutoff, friction=friction)
+    if sweep is None:
+        sweep = len(symbols) > 35
+    try:
+        if sweep:
+            smoother.sweep(tol=tol, max_iter=maxiter, micro_iter=microiter)
+        else:
+            smoother.smooth(tol=tol, max_iter=maxiter)
+    finally:
+        # Save the smoothed path to output file. try block is to ensure output is saved if one ^C the process, or there is an error
+        write_xyz(output, symbols, smoother.path)
+    return symbols, smoother.path
+
+
+def setup_images(
+        logdir: str,
+        xyz_r_p: str,
+        n_intermediate: int = 40,
+):
+    """
+    Sets up intermediate images for NEB calculations between reactant and product states.
+
+    Parameters:
+    logdir (str): Directory to save the intermediate files.
+    xyz_r_p (str): Path to the XYZ file containing reactant and product structures.
+    n_intermediate (int): Number of intermediate images to generate.
+
+    Returns:
+    List: List of ASE Atoms objects with calculated energies and forces.
+    """
+    calc_defaults = {
+        "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+        "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+    }
+
+    calc_flags = recursive_dict_merge(calc_defaults, {})
+
+    try:
+        # Ensure the log directory exists
+        os.makedirs(logdir, exist_ok=True)
+
+        # Read reactant and product structures
+        reactant = read(xyz_r_p, index='0')
+        product = read(xyz_r_p, index='1')
+
+        print('yyyyyydddd')
+        # Optimize reactant and product structures using sella
+        for atom, name in zip([reactant, product], ['reactant', 'product']):
+            #atom.calc = calc()
+            atom.calc = NewtonNet(**calc_flags)
+            traj_file = os.path.join(logdir, f'{name}_opt.traj')
+            sella_wrapper(atom, traj_file=traj_file, sella_order=0)
+        print('dddddddddd')
+        # Save optimized reactant and product structures
+        r_p_path = os.path.join(logdir, "r_p.xyz")
+        write(r_p_path, [reactant.copy(), product.copy()])
+
+        # Generate intermediate images using geodesic interpolation
+        symbols, smoother_path =\
+            geodesic_interpolate_wrapper([reactant.copy(), product.copy()])
+        images = [Atoms(symbols=symbols, positions=conf) for conf in smoother_path]
+
+        # Calculate energies and forces for each intermediate image
+        for image in images:
+            # image.calc = calc()
+            # ml_calculator = calc()
+            image.calc = NewtonNet(**calc_flags)
+            ml_calculator = NewtonNet(**calc_flags)
+            ml_calculator.calculate(image)
+
+            energy = ml_calculator.results['energy']
+            forces = ml_calculator.results['forces']
+
+            image.info['energy'] = energy
+            image.arrays['forces'] = forces
+
+        # Save the geodesic path
+        geodesic_path = os.path.join(logdir, 'geodesic_path.xyz')
+        write(geodesic_path, images)
+
+        return images
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return []
+
+
+def run_neb_method(
+        method: str,
+        optimizer: Optional[Optimizer] = NEBOptimizer,
+        opt_method: Optional[str] = 'aseneb',
+        precon: Optional[str] = None,
+        logdir: Optional[str] = None,
+        xyz_r_p: Optional[str] = None,
+        n_intermediate: Optional[int] = 20,
+        k: Optional[float] = 0.1,
+        max_steps: Optional[int] = 1000,
+        fmax_cutoff: Optional[float] = 1e-2,
+) -> None:
+    """
+    Run NEB method.
+
+    Args:
+        method (str): NEB method.
+        optimizer (Optimizer, Optional): NEB path Optimizer function, Defaults to NEBOptimizer.
+        precon (str, optional): Preconditioner method. Defaults to None.
+        opt_method (str, Optimizer): Optimization method. Defaults to aseneb.
+        logdir (str, optional): Directory to save logs. Defaults to None.
+        xyz_r_p (str, optional): Path to reactant and product XYZ files. Defaults to None.
+        n_intermediate (int, optional): Number of intermediate images. Defaults to 20.
+        k (float, optional): force constant for the springs in NEB. Defaults to 0.1.
+        max_steps (int, optional): maximum number of optimization steps allowed. Defaults to 1000.
+        fmax_cutoff (float: optional): convergence cut-off criteria for the NEB optimization. Defaults to 1e-2.
+    """
+    images = setup_images(
+        logdir,
+        xyz_r_p,
+        n_intermediate=n_intermediate,
+    )
+
+    mep = NEB(
+        images,
+        k=k,
+        method=method,
+        climb=True,
+        precon=precon,
+        remove_rotation_and_translation=True,
+        parallel=True,
+    )
+
+    os.makedirs(logdir, exist_ok=True)
+    log_filename = f'neb_band_{method}_{optimizer.__name__}_{precon}.txt'
+
+    logfile_path = os.path.join(logdir, log_filename)
+
+    opt = optimizer(mep, method=opt_method, logfile=logfile_path, verbose=2)
+
+    opt.run(fmax=fmax_cutoff, steps=max_steps)
+
+    # The following was written because of some error in writing the xyz file below
+    images_copy = []
+    for image in images:
+        image_copy = Atoms(
+            symbols=image.symbols,
+            positions=image.positions,
+        )
+        image_copy.info['energy'] = image.get_potential_energy()
+        images_copy.append(image_copy)
+
+    write(f'{logdir}/optimized_path_{method}_{optimizer.__name__}_{precon}.xyz', images_copy)
+    return images

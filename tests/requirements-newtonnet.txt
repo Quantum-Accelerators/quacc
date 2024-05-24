@@ -1,1 +1,2 @@
 newtonnet==1.1.1
+geodesic-interpolate @ git+https://github.com/virtualzx-nad/geodesic-interpolate.git
