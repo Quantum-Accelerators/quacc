@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 from ase import Atoms
 from ase.io import read
-from numpy.testing import assert_allclose
+from numpy.testing import assert_allclose, assert_equal
 
 from quacc.atoms.skzcam import (
     _find_cation_shells,
@@ -56,9 +56,9 @@ def embedded_adsorbed_cluster():
         insert_adsorbate_to_embedded_cluster(
             embedded_cluster,
             adsorbate,
-            [0.0, 0.0, 2.0],
-            quantum_cluster_indices,
-            ecp_region_indices,
+            adsorbate_vector_from_slab = [0.0, 0.0, 2.0],
+            quantum_cluster_indices = quantum_cluster_indices,
+            ecp_region_indices = ecp_region_indices,
         )
     )
     return embedded_adsorbed_cluster
@@ -132,13 +132,43 @@ end"""
         include_cp=True,
         multiplicity={"ad_slab": 1, "slab": 2, "ad": 3},
     )
-    # Check that the strings and floats in ad_slab_coords matches reference
-    assert_allclose(
-        [
+
+    ad_slab_block_float = [
             float(x)
             for x in ad_slab_block.split()[::10]
             if x.replace(".", "", 1).replace("-", "", 1).isdigit()
-        ],
+        ]
+    ad_slab_block_string = [
+            x
+            for x in ad_slab_block.split()[::5]
+            if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
+        ]
+    ad_block_float = [
+            float(x)
+            for x in ad_block.split()[::10]
+            if x.replace(".", "", 1).replace("-", "", 1).isdigit()
+        ]
+    ad_block_string = [
+            x
+            for x in ad_block.split()[::5]
+            if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
+        ]
+    slab_block_float = [
+            float(x)
+            for x in slab_block.split()[::10]
+            if x.replace(".", "", 1).replace("-", "", 1).isdigit()
+        ]
+    slab_block_string = [
+            x
+            for x in slab_block.split()[::5]
+            if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
+        ]
+
+
+
+    # Check that the strings and floats in ad_slab_coords matches reference
+    assert_allclose(
+        ad_slab_block_float,
         [
             3.128,
             0.0,
@@ -174,13 +204,9 @@ end"""
         atol=1e-07,
     )
 
-    assert np.all(
+    assert_equal(
+        ad_slab_block_string,
         [
-            x
-            for x in ad_slab_block.split()[::5]
-            if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
-        ]
-        == [
             "%pal",
             "Method",
             "Energy",
@@ -245,11 +271,7 @@ end"""
 
     # Check that the strings and floats in ad_coords matches reference
     assert_allclose(
-        [
-            float(x)
-            for x in ad_block.split()[::2]
-            if x.replace(".", "", 1).replace("-", "", 1).isdigit()
-        ],
+        ad_block_float,
         [
             1.0,
             2.0,
@@ -276,13 +298,9 @@ end"""
         atol=1e-07,
     )
 
-    assert np.all(
+    assert_equal(
+        ad_block_string,
         [
-            x
-            for x in ad_block.split()[::2]
-            if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
-        ]
-        == [
             "%pal",
             "%maxcore",
             "end",
@@ -332,11 +350,7 @@ end"""
 
     # Check that the strings and floats in slab_coords matches reference
     assert_allclose(
-        [
-            float(x)
-            for x in slab_block.split()[::10]
-            if x.replace(".", "", 1).replace("-", "", 1).isdigit()
-        ],
+        slab_block_float,
         [
             3.128,
             0.0,
@@ -372,13 +386,9 @@ end"""
         atol=1e-07,
     )
 
-    assert np.all(
+    assert_equal(
+        slab_block_string,
         [
-            x
-            for x in slab_block.split()[::5]
-            if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
-        ]
-        == [
             "%pal",
             "Method",
             "Energy",

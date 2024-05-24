@@ -33,7 +33,7 @@ def create_orca_eint_blocks(
     embedded_adsorbed_cluster: Atoms,
     quantum_cluster_indices: list[int],
     ecp_region_indices: list[int],
-    element_info: ElementInfo | None = None,
+    element_info: dict[str,ElementInfo] | None = None,
     pal_nprocs_block: dict[str, int] | None = None,
     method_block: dict[str, str] | None = None,
     scf_block: dict[str, str] | None = None,
@@ -835,7 +835,7 @@ def insert_adsorbate_to_embedded_cluster(
     adsorbate: Atoms,
     adsorbate_vector_from_slab: NDArray,
     quantum_cluster_indices: list[list[int]] | None = None,
-    ecp_region_idx: list[list[int]] | None = None,
+    ecp_region_indices: list[list[int]] | None = None,
 ) -> tuple[Atoms, list[list[int]], list[list[int]]]:
     """
     Insert the adsorbate into the embedded cluster and update the quantum cluster and ECP region indices.
@@ -850,7 +850,7 @@ def insert_adsorbate_to_embedded_cluster(
         The vector from the first atom of the embedded cluster to the center of mass of the adsorbate.
     quantum_cluster_indices
         A list of lists containing the indices of the atoms in each quantum cluster.
-    ecp_region_idx
+    ecp_region_indices
         A list of lists containing the indices of the atoms in the ECP region for each quantum cluster.
 
     Returns
@@ -882,12 +882,12 @@ def insert_adsorbate_to_embedded_cluster(
             list(range(len(adsorbate))) + [idx + len(adsorbate) for idx in cluster]
             for cluster in quantum_cluster_indices
         ]
-    if ecp_region_idx is not None:
-        ecp_region_idx = [
-            [idx + len(adsorbate) for idx in cluster] for cluster in ecp_region_idx
+    if ecp_region_indices is not None:
+        ecp_region_indices = [
+            [idx + len(adsorbate) for idx in cluster] for cluster in ecp_region_indices
         ]
 
-    return embedded_adsorbate_cluster, quantum_cluster_indices, ecp_region_idx
+    return embedded_adsorbate_cluster, quantum_cluster_indices, ecp_region_indices
 
 
 def _get_atom_distances(embedded_cluster: Atoms, center_position: NDArray) -> NDArray:
