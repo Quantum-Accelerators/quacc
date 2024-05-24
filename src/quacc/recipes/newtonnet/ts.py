@@ -529,8 +529,7 @@ def setup_images(logdir: str, xyz_r_p: str, n_intermediate: int = 40):
     write(r_p_path, [reactant.copy(), product.copy()])
     # Generate intermediate images using geodesic interpolation
     symbols, smoother_path = geodesic_interpolate_wrapper(
-        [reactant.copy(), product.copy()],
-        nimages=n_intermediate
+        [reactant.copy(), product.copy()], nimages=n_intermediate
     )
     images = [Atoms(symbols=symbols, positions=conf) for conf in smoother_path]
 
