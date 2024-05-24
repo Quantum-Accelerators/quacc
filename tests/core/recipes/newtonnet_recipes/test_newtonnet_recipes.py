@@ -341,12 +341,12 @@ def test_geodesic_interpolate_wrapper(setup_test_environment):
     # assert symbols == 1
     assert smoother_path[1][0][0] == pytest.approx(1.36055556030, abs=1e-1)
 
-'''
+
 def test_setup_images(setup_test_environment):
     logdir, xyz_r_p = setup_test_environment
 
     # Call the setup_images function
-    images = setup_images(logdir=str(logdir), xyz_r_p=str(xyz_r_p), n_intermediate=2)
+    images = setup_images(logdir=str(logdir), xyz_r_p=str(xyz_r_p), n_intermediate=5)
 
     # Check that images were returned
     assert len(images) > 0, "No images were generated"
@@ -360,14 +360,14 @@ def test_setup_images(setup_test_environment):
     ), "Product optimization file not found"
     assert os.path.isfile(logdir / "r_p.xyz"), "Reactant-Product file not found"
 
-    assert images[1].get_positions()[0][0] == pytest.approx(0.838441276, abs=1e-2)
+    assert images[1].get_positions()[0][0] == pytest.approx(0.730579902, abs=1e-2)
 
     # Check energies and forces
     for image in images:
         assert "energy" in image.info, "Energy not found in image info"
         assert "forces" in image.arrays, "Forces not found in image arrays"
 
-    assert images[1].get_potential_energy() == pytest.approx(-24.7835030767, abs=1)
+    assert images[1].get_potential_energy() == pytest.approx(-22.94382071, abs=1)
     "Error in first intermediate image's energy for the geodesic path"
 
     assert images[0].get_potential_energy() == pytest.approx(-24.89597590, abs=1)
@@ -375,4 +375,4 @@ def test_setup_images(setup_test_environment):
 
     assert images[-1].get_potential_energy() == pytest.approx(-25.1172894, abs=1)
     "Error in product energy prediction for geodesic path."
-'''
+

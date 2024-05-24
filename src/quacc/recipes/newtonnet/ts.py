@@ -510,53 +510,52 @@ def setup_images(logdir: str, xyz_r_p: str, n_intermediate: int = 40):
     }
     calc_flags = recursive_dict_merge(calc_defaults, {})
 
-    try:
-        # Ensure the log directory exists
-        Path(logdir).mkdir(parents=True)
+    # try:
+    # Ensure the log directory exists
+    Path(logdir).mkdir(parents=True, exist_ok=True)
 
-        # Read reactant and product structures
-        reactant = read(xyz_r_p, index="0")
-        product = read(xyz_r_p, index="1")
+    # Read reactant and product structures
+    reactant = read(xyz_r_p, index="0")
+    product = read(xyz_r_p, index="1")
 
-        # Optimize reactant and product structures using sella
-        for atom, name in zip([reactant, product], ["reactant", "product"]):
-            # atom.calc = calc()
-            atom.calc = NewtonNet(**calc_flags)
-            # traj_file = os.path.join(logdir, f"{name}_opt.traj")
-            traj_file = Path(logdir) / f"{name}_opt.traj"
-            sella_wrapper(atom, traj_file=traj_file, sella_order=0)
-        # Save optimized reactant and product structures
-        r_p_path = Path(logdir) / "r_p.xyz"
-        write(r_p_path, [reactant.copy(), product.copy()])
+    # Optimize reactant and product structures using sella
+    for atom, name in zip([reactant, product], ["reactant", "product"]):
+        # atom.calc = calc()
+        atom.calc = NewtonNet(**calc_flags)
+        traj_file = Path(logdir) / f"{name}_opt.traj"
+        sella_wrapper(atom, traj_file=traj_file, sella_order=0)
+    # Save optimized reactant and product structures
+    r_p_path = Path(logdir) / "r_p.xyz"
+    write(r_p_path, [reactant.copy(), product.copy()])
+    # Generate intermediate images using geodesic interpolation
+    symbols, smoother_path = geodesic_interpolate_wrapper(
+        [reactant.copy(), product.copy()],
+        nimages=n_intermediate
+    )
+    images = [Atoms(symbols=symbols, positions=conf) for conf in smoother_path]
 
-        # Generate intermediate images using geodesic interpolation
-        symbols, smoother_path = geodesic_interpolate_wrapper(
-            [reactant.copy(), product.copy()], nimages=n_intermediate
-        )
-        images = [Atoms(symbols=symbols, positions=conf) for conf in smoother_path]
+    # Calculate energies and forces for each intermediate image
+    for image in images:
+        # image.calc = calc()
+        # ml_calculator = calc()
+        image.calc = NewtonNet(**calc_flags)
+        ml_calculator = NewtonNet(**calc_flags)
+        ml_calculator.calculate(image)
 
-        # Calculate energies and forces for each intermediate image
-        for image in images:
-            # image.calc = calc()
-            # ml_calculator = calc()
-            image.calc = NewtonNet(**calc_flags)
-            ml_calculator = NewtonNet(**calc_flags)
-            ml_calculator.calculate(image)
+        energy = ml_calculator.results["energy"]
+        forces = ml_calculator.results["forces"]
 
-            energy = ml_calculator.results["energy"]
-            forces = ml_calculator.results["forces"]
+        image.info["energy"] = energy
+        image.arrays["forces"] = forces
 
-            image.info["energy"] = energy
-            image.arrays["forces"] = forces
+    # Save the geodesic path
+    geodesic_path = Path(logdir) / "geodesic_path.xyz"
+    write(geodesic_path, images)
 
-        # Save the geodesic path
-        geodesic_path = Path(logdir) / "geodesic_path.xyz"
-        write(geodesic_path, images)
+    return images
 
-        return images
-
-    except Exception:
-        return []
+    # except Exception:
+    #     return []
 
 
 @job
@@ -612,7 +611,7 @@ def run_neb_method(
     )
 
     if logdir is not None:
-        Path(logdir).mkdir(parents=True)
+        Path(logdir).mkdir(parents=True, exist_ok=True)
         log_filename = f"neb_band_{method}_{optimizer.__name__}_{precon}.txt"
         logfile_path = Path(logdir) / log_filename
     else:
