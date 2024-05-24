@@ -37,7 +37,7 @@ if has_geodesic_interpolate:
 from pathlib import Path
 
 if TYPE_CHECKING:
-    from typing import Any, Literal, Type, Union, List, Tuple
+    from typing import Any, Literal
 
     from ase.optimize.optimize import Optimizer
     from numpy.typing import NDArray
@@ -357,7 +357,7 @@ def neb_job(
 @requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def sella_wrapper(
     atoms_object: Atoms,
-    traj_file: Union[str, Path] | None = None,
+    traj_file: str | Path | None = None,
     sella_order: int = 0,
     use_internal: bool = True,
     traj_log_interval: int = 2,
@@ -409,18 +409,18 @@ def sella_wrapper(
     "git clone https://github.com/virtualzx-nad/geodesic-interpolate.git.",
 )
 def geodesic_interpolate_wrapper(
-    r_p_atoms: List[Atoms],
+    r_p_atoms: list[Atoms],
     nimages: int = 20,
     sweep: bool | None = None,
-    output: Union[str, Path] = "interpolated.xyz",
+    output: str | Path = "interpolated.xyz",
     tol: float = 2e-3,
     maxiter: int = 15,
     microiter: int = 20,
     scaling: float = 1.7,
     friction: float = 1e-2,
     dist_cutoff: float = 3.0,
-    save_raw: Union[str, Path] | None = None,
-) -> Tuple[List[str], List[List[float]]]:
+    save_raw: str | Path | None = None,
+) -> tuple[list[str], list[list[float]]]:
     """
     Interpolates between two geometries and optimizes the path.
 
@@ -572,7 +572,7 @@ def setup_images(logdir: str, xyz_r_p: str, n_intermediate: int = 40):
 )
 def run_neb_method(
     method: str,
-    optimizer: Type[Optimizer] | None = NEBOptimizer,
+    optimizer: type[Optimizer] | None = NEBOptimizer,
     opt_method: str | None = "aseneb",
     precon: str | None = None,
     logdir: str | None = None,
@@ -581,7 +581,7 @@ def run_neb_method(
     k: float | None = 0.1,
     max_steps: int | None = 1000,
     fmax_cutoff: float | None = 1e-2,
-) -> List[Atoms]:
+) -> list[Atoms]:
     """
     Run NEB method.
 
