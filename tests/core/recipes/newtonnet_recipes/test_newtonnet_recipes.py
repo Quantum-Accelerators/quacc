@@ -369,7 +369,8 @@ def test_geodesic_interpolate_wrapper(
  
 def test_geodesic_interpolate_wrapper_large_system(setup_test_environment):
     logdir, xyz_r_p = setup_test_environment
-    large_atoms = Atoms('H' * 40, positions=np.random.rand(40, 3))
+    rng = np.random.default_rng()  # Create a random number generator instance
+    large_atoms = Atoms('H' * 40, positions=rng.random((40, 3)))
     large_atoms_list = [large_atoms, large_atoms]
 
     # Test with large system to trigger sweeping updates
