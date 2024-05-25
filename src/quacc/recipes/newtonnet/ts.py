@@ -514,7 +514,8 @@ def setup_images(logdir: str, xyz_r_p: str, n_intermediate: int = 40):
 
     # try:
     # Ensure the log directory exists
-    Path(logdir).mkdir(parents=True, exist_ok=True)
+    if logdir is not None:
+        Path(logdir).mkdir(parents=True, exist_ok=True)
 
     # Read reactant and product structures
     reactant = read(xyz_r_p, index="0")
@@ -534,8 +535,10 @@ def setup_images(logdir: str, xyz_r_p: str, n_intermediate: int = 40):
         # traj_file = Path(logdir) / f"{name}_opt.traj"
         # sella_wrapper(atom, traj_file=traj_file, sella_order=0)
     # Save optimized reactant and product structures
-    r_p_path = Path(logdir) / "r_p.xyz"
-    write(r_p_path, [reactant.copy(), product.copy()])
+    if logdir is not None:
+        r_p_path = Path(logdir) / "r_p.xyz"
+        write(r_p_path, [reactant.copy(), product.copy()])
+    
     # Generate intermediate images using geodesic interpolation
     symbols, smoother_path = geodesic_interpolate_wrapper(
         [reactant.copy(), product.copy()], nimages=n_intermediate
@@ -557,8 +560,9 @@ def setup_images(logdir: str, xyz_r_p: str, n_intermediate: int = 40):
         image.arrays["forces"] = forces
 
     # Save the geodesic path
-    geodesic_path = Path(logdir) / "geodesic_path.xyz"
-    write(geodesic_path, images)
+    if logdir is not None:
+        geodesic_path = Path(logdir) / "geodesic_path.xyz"
+        write(geodesic_path, images)
 
     return images
 
