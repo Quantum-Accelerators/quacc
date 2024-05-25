@@ -19,9 +19,9 @@ from quacc.recipes.newtonnet.ts import (
     geodesic_interpolate_wrapper,
     irc_job,
     quasi_irc_job,
+    run_neb_method,
     setup_images,
     ts_job,
-    run_neb_method,
 )
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
@@ -335,22 +335,51 @@ def setup_test_environment(tmp_path):
     return logdir, xyz_r_p
 
 
-#def test_geodesic_interpolate_wrapper(setup_test_environment):
+# def test_geodesic_interpolate_wrapper(setup_test_environment):
 @pytest.mark.parametrize(
-    "nimages, tol, maxiter, microiter, scaling, friction, dist_cutoff, save_raw, expected_length",
+    (
+        "nimages",
+        "tol",
+        "maxiter",
+        "microiter",
+        "scaling",
+        "friction",
+        "dist_cutoff",
+        "save_raw",
+        "expected_length",
+    ),
     [
         (20, 2e-3, 15, 20, 1.7, 1e-2, 3.0, None, 20),  # Default parameters
         (10, 2e-3, 15, 20, 1.7, 1e-2, 3.0, None, 10),  # Different number of images
-        (20, 1e-4, 10, 10, 1.5, 0.01, 2.5, "raw_path.xyz", 20),  # Different interpolation parameters and save_raw
-    ]
+        (
+            20,
+            1e-4,
+            10,
+            10,
+            1.5,
+            0.01,
+            2.5,
+            "raw_path.xyz",
+            20,
+        ),  # Different interpolation parameters and save_raw
+    ],
 )
 def test_geodesic_interpolate_wrapper(
-    setup_test_environment, nimages, tol, maxiter, microiter, scaling, friction, dist_cutoff, save_raw, expected_length
+    setup_test_environment,
+    nimages,
+    tol,
+    maxiter,
+    microiter,
+    scaling,
+    friction,
+    dist_cutoff,
+    save_raw,
+    expected_length,
 ):
     logdir, xyz_r_p = setup_test_environment
     atoms_object = read(xyz_r_p, index=":")
-    #symbols, smoother_path = geodesic_interpolate_wrapper(atoms_object)
-        # Execute the geodesic_interpolate_wrapper function
+    # symbols, smoother_path = geodesic_interpolate_wrapper(atoms_object)
+    # Execute the geodesic_interpolate_wrapper function
     symbols, smoother_path = geodesic_interpolate_wrapper(
         atoms_object,
         nimages=nimages,
@@ -366,7 +395,7 @@ def test_geodesic_interpolate_wrapper(
     # assert symbols == 1
     assert smoother_path[1][0][0] == pytest.approx(1.36055556030, abs=1e-1)
 
- 
+
 def test_geodesic_interpolate_wrapper_large_system(setup_test_environment):
     logdir, xyz_r_p = setup_test_environment
     rng = np.random.default_rng()  # Create a random number generator instance
@@ -376,12 +405,12 @@ def test_geodesic_interpolate_wrapper_large_system(setup_test_environment):
     # Test with large system to trigger sweeping updates
     symbols, smoother_path = geodesic_interpolate_wrapper(large_atoms_list)
     assert len(smoother_path) == 20
- 
+
 
 def test_geodesic_interpolate_wrapper_exceptions():
     # Test to ensure exception is raised for insufficient geometries
     with pytest.raises(ValueError, match="Need at least two initial geometries."):
-        geodesic_interpolate_wrapper([Atoms('H', positions=[[0, 0, 0]])])
+        geodesic_interpolate_wrapper([Atoms("H", positions=[[0, 0, 0]])])
 
 
 def test_setup_images(setup_test_environment):
@@ -418,26 +447,49 @@ def test_setup_images(setup_test_environment):
     assert images[-1].get_potential_energy() == pytest.approx(-20.07328347270, abs=5e-1)
     "Error in product energy prediction for geodesic path."
 
+
 @pytest.mark.parametrize(
-    "method, optimizer, opt_method, precon, logdir, n_intermediate, k, max_steps, fmax_cutoff, expected_logfile",
+    (
+        "method",
+        "optimizer",
+        "opt_method",
+        "precon",
+        "logdir",
+        "n_intermediate",
+        "k",
+        "max_steps",
+        "fmax_cutoff",
+        "expected_logfile",
+    ),
     [
         ("aseneb", NEBOptimizer, "ODE", None, None, 10, 0.1, 3, 1e-3, None),
-        ("aseneb", NEBOptimizer, "ODE", None, "some_logdir", 10, 0.1, 3, 1e-3, "some_logdir"),
-    ]
+        (
+            "aseneb",
+            NEBOptimizer,
+            "ODE",
+            None,
+            "some_logdir",
+            10,
+            0.1,
+            3,
+            1e-3,
+            "some_logdir",
+        ),
+    ],
 )
 def test_run_neb_method(
-        setup_test_environment,
-        tmp_path,
-        method,
-        optimizer,
-        opt_method,
-        precon,
-        logdir,
-        n_intermediate,
-        k,
-        max_steps,
-        fmax_cutoff,
-        expected_logfile
+    setup_test_environment,
+    tmp_path,
+    method,
+    optimizer,
+    opt_method,
+    precon,
+    logdir,
+    n_intermediate,
+    k,
+    max_steps,
+    fmax_cutoff,
+    expected_logfile,
 ):
     # def test_run_neb_method(tmp_path, setup_test_environment):
     logdir, xyz_r_p = setup_test_environment
@@ -446,7 +498,7 @@ def test_run_neb_method(
         logdir = tmp_path / "logs"
     elif expected_logfile is None:
         logdir = None
-    
+
     images = run_neb_method(
         method=method,
         optimizer=optimizer,
@@ -459,60 +511,34 @@ def test_run_neb_method(
         max_steps=max_steps,
         fmax_cutoff=fmax_cutoff,
     )
-    print(f"neb_band_{method}_{optimizer.__name__}_{precon}.txt")
 
-    assert images[0].positions[0][1] == pytest.approx(
-        0.78503956131,
-        abs=1e-2,
-    )
+    assert images[0].positions[0][1] == pytest.approx(0.78503956131, abs=1e-2)
 
     assert images[0].get_potential_energy() == pytest.approx(
-        -24.9895786292,
-        abs=1e-2,
+        -24.9895786292, abs=1e-2
     ), "reactant potential energy"
 
     assert images[0].get_forces()[0, 1] == pytest.approx(
-        -0.0017252843,
-        abs=1e-3,
+        -0.0017252843, abs=1e-3
     ), "reactant potential forces"
 
-    assert images[1].positions[0][1] == pytest.approx(
-        0.78017739462,
-        abs=1e-1,
-    )
+    assert images[1].positions[0][1] == pytest.approx(0.78017739462, abs=1e-1)
 
     assert np.argmax(
-        [
-            image.get_potential_energy() for image in images
-        ]
-    ) == pytest.approx(
-        9,
-    ), "Index of the transition state"
+        [image.get_potential_energy() for image in images]
+    ) == pytest.approx(9), "Index of the transition state"
 
-    assert np.max(
-        [
-            image.get_potential_energy() for image in images
-        ]
-    ) == pytest.approx(
-        -19.946616164,
-        abs=1,
+    assert np.max([image.get_potential_energy() for image in images]) == pytest.approx(
+        -19.946616164, abs=1
     ), "Potential energy of the transition state"
 
     assert images[
-               np.argmax(
-                   [
-                       image.get_potential_energy() for image in images
-                   ]
-               )
-           ].get_forces()[0, 1] == pytest.approx(
-        -0.19927549,
-        abs=1,
+        np.argmax([image.get_potential_energy() for image in images])
+    ].get_forces()[0, 1] == pytest.approx(
+        -0.19927549, abs=1
     ), "Force component in the transition state"
 
-    assert images[-1].positions[0][1] == pytest.approx(
-        0.51475535802,
-        abs=1e-2,
-    )
+    assert images[-1].positions[0][1] == pytest.approx(0.51475535802, abs=1e-2)
     # Ensure the log file is correctly handled
     if expected_logfile is None:
         assert logdir is None
@@ -524,5 +550,5 @@ def test_run_neb_method(
         # 'Could not find the optimization output file for NEB'
 
         assert os.path.exists(
-            f'{logdir}/optimized_path_{method}_{optimizer.__name__}_{precon}.xyz',
+            f"{logdir}/optimized_path_{method}_{optimizer.__name__}_{precon}.xyz"
         ), "Could not find the xyz file for converged NEB calculation."
