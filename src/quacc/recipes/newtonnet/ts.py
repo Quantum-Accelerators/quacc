@@ -347,7 +347,7 @@ def neb_job(
     return relax_summary
 """
 
-
+'''
 @job
 @requires(
     has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation."
@@ -394,7 +394,7 @@ def sella_wrapper(
     else:
         qn = Sella(atoms_object, order=sella_order, internal=use_internal)
         qn.run(fmax=fmax_cutoff, steps=max_steps)
-
+'''
 
 @job
 @requires(
