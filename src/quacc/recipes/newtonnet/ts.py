@@ -508,7 +508,14 @@ def setup_images(logdir: str, xyz_r_p: str, n_intermediate: int = 40):
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
     }
+    opt_defaults = {
+        "optimizer": Sella,
+        "optimizer_kwargs": (
+            {"order": 0}
+        ),
+    }
     calc_flags = recursive_dict_merge(calc_defaults, {})
+    opt_flags = recursive_dict_merge(opt_defaults, {})
 
     # try:
     # Ensure the log directory exists
@@ -522,8 +529,15 @@ def setup_images(logdir: str, xyz_r_p: str, n_intermediate: int = 40):
     for atom, name in zip([reactant, product], ["reactant", "product"]):
         # atom.calc = calc()
         atom.calc = NewtonNet(**calc_flags)
-        traj_file = Path(logdir) / f"{name}_opt.traj"
-        sella_wrapper(atom, traj_file=traj_file, sella_order=0)
+        
+        # Run the TS optimization
+        dyn = run_opt(atom, **opt_flags)
+        opt_ts_summary = _add_stdev_and_hess(
+            summarize_opt_run(dyn, additional_fields={"name": "NewtonNet TS"})
+        )
+        reactant = opt_ts_summary["atoms"].copy()
+        #traj_file = Path(logdir) / f"{name}_opt.traj"
+        #sella_wrapper(atom, traj_file=traj_file, sella_order=0)
     # Save optimized reactant and product structures
     r_p_path = Path(logdir) / "r_p.xyz"
     write(r_p_path, [reactant.copy(), product.copy()])
