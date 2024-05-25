@@ -539,7 +539,7 @@ def setup_images(logdir: str, xyz_r_p: str, n_intermediate: int = 40):
     if logdir is not None:
         r_p_path = Path(logdir) / "r_p.xyz"
         write(r_p_path, [reactant.copy(), product.copy()])
-    
+
     # Generate intermediate images using geodesic interpolation
     symbols, smoother_path = geodesic_interpolate_wrapper(
         [reactant.copy(), product.copy()], nimages=n_intermediate
