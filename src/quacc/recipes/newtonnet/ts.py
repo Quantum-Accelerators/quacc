@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ase import Atoms
-from ase.io import Trajectory, read, write
+from ase.io import read, write
 from ase.mep.neb import NEBOptimizer
 from ase.neb import NEB
 from geodesic_interpolate.fileio import write_xyz
@@ -395,6 +395,7 @@ def sella_wrapper(
         qn = Sella(atoms_object, order=sella_order, internal=use_internal)
         qn.run(fmax=fmax_cutoff, steps=max_steps)
 '''
+
 
 @job
 @requires(
