@@ -18,8 +18,8 @@ from quacc.recipes.newtonnet.ts import (
     geodesic_interpolate_wrapper,
     irc_job,
     quasi_irc_job,
-    ts_job,
     setup_images,
+    ts_job,
 )
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
