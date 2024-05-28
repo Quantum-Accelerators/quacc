@@ -4,11 +4,17 @@ import io
 from io import StringIO
 from pathlib import Path
 
+import pytest
 from ase.atoms import Atoms
 from ase.calculators.calculator import compare_atoms
-import pytest
 
-from quacc.calculators.mrcc.io import read_energy, read_geom_mrccinp, write_mrcc, read_mrcc_output, read_mrcc_outputs
+from quacc.calculators.mrcc.io import (
+    read_energy,
+    read_geom_mrccinp,
+    read_mrcc_output,
+    read_mrcc_outputs,
+    write_mrcc,
+)
 
 
 def test_read_geom_mrccinp():
@@ -32,7 +38,7 @@ O   3.0 0.0 0.0
 
 def test_write_mrcc(tmpdir):
     atoms = Atoms("H2O", positions=[[1.0, 0.0, 0.0], [2.0, 0.0, 0.0], [3.0, 0.0, 0.0]])
-    atoms.set_tags([71,71,0])
+    atoms.set_tags([71, 71, 0])
 
     params = {
         "charge": 0,
@@ -55,27 +61,29 @@ usedisk=0""",
     with open(f"{tmpdir}/MINP") as fd:
         generated_inputfile = fd.readlines()
 
-    reference_inputfile = ['calc=LNO-CCSD(T)\n',
- 'basis=cc-pVDZ\n',
- 'symm=off\n',
- 'localcc=on\n',
- 'lcorthr=normal\n',
- 'ccprog=ccsd\n',
- 'ccsdalg=dfdirect\n',
- 'dfbasis_cor=cc-pVDZ-RI\n',
- 'scfmaxit=1000\n',
- 'usedisk=0 \n',
- 'charge=0\n',
- 'mult=1\n',
- 'geom=xyz\n',
- '3\n',
- '\n',
- 'H   1.0 0.0 0.0\n',
- 'H   2.0 0.0 0.0\n',
- 'O   3.0 0.0 0.0\n',
- '\n',
- 'ghost=serialno\n',
- '1,2']
+    reference_inputfile = [
+        "calc=LNO-CCSD(T)\n",
+        "basis=cc-pVDZ\n",
+        "symm=off\n",
+        "localcc=on\n",
+        "lcorthr=normal\n",
+        "ccprog=ccsd\n",
+        "ccsdalg=dfdirect\n",
+        "dfbasis_cor=cc-pVDZ-RI\n",
+        "scfmaxit=1000\n",
+        "usedisk=0 \n",
+        "charge=0\n",
+        "mult=1\n",
+        "geom=xyz\n",
+        "3\n",
+        "\n",
+        "H   1.0 0.0 0.0\n",
+        "H   2.0 0.0 0.0\n",
+        "O   3.0 0.0 0.0\n",
+        "\n",
+        "ghost=serialno\n",
+        "1,2",
+    ]
 
     assert generated_inputfile == reference_inputfile
     # Test when geom line is present in mrccblocks
@@ -288,27 +296,38 @@ def test_read_mrcc_output(tmpdir):
 
     with open(f"{tmpdir}/mrcc_cwft.out", "w") as fd:
         fd.write(reference_cwft_outputfile)
-    
+
     with open(f"{tmpdir}/mrcc_dft.out", "w") as fd:
         fd.write(reference_dft_outputfile)
-    
 
-    generated_cwft_mrcc_outputs = read_mrcc_outputs('.',f'{tmpdir}/mrcc_cwft.out')
-    generated_dft_mrcc_outputs = read_mrcc_outputs('.',f'{tmpdir}/mrcc_dft.out')
+    generated_cwft_mrcc_outputs = read_mrcc_outputs(".", f"{tmpdir}/mrcc_cwft.out")
+    generated_dft_mrcc_outputs = read_mrcc_outputs(".", f"{tmpdir}/mrcc_dft.out")
 
-    reference_dft_output = {'scf_energy': -2063.959716461294, 'energy': -2063.959716461294}
+    reference_dft_output = {
+        "scf_energy": -2063.959716461294,
+        "energy": -2063.959716461294,
+    }
 
-    reference_cwft_output = {'scf_energy': -2061.028349030339,
- 'energy': -2067.4583788197597,
- 'mp2_corr_energy': -5.5819155543014425,
- 'ccsd_corr_energy': -6.2411833455514785,
- 'ccsd(t)_corr_energy': -6.4300297894207326}
-    
+    reference_cwft_output = {
+        "scf_energy": -2061.028349030339,
+        "energy": -2067.4583788197597,
+        "mp2_corr_energy": -5.5819155543014425,
+        "ccsd_corr_energy": -6.2411833455514785,
+        "ccsd(t)_corr_energy": -6.4300297894207326,
+    }
+
     for key in reference_dft_output:
-        assert generated_dft_mrcc_output[key] == pytest.approx(reference_dft_output[key])
-        assert generated_dft_mrcc_outputs[key] == pytest.approx(reference_dft_output[key])
+        assert generated_dft_mrcc_output[key] == pytest.approx(
+            reference_dft_output[key]
+        )
+        assert generated_dft_mrcc_outputs[key] == pytest.approx(
+            reference_dft_output[key]
+        )
 
     for key in reference_cwft_output:
-        assert generated_cwft_mrcc_output[key] == pytest.approx(reference_cwft_output[key])
-        assert generated_cwft_mrcc_outputs[key] == pytest.approx(reference_cwft_output[key])
-
+        assert generated_cwft_mrcc_output[key] == pytest.approx(
+            reference_cwft_output[key]
+        )
+        assert generated_cwft_mrcc_outputs[key] == pytest.approx(
+            reference_cwft_output[key]
+        )

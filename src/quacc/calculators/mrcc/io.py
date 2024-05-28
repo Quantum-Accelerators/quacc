@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from io import StringIO
-
 from pathlib import Path
 
 from ase.io import read
@@ -119,11 +118,9 @@ def read_mrcc_output(fd):
 
     return results
 
+
 def read_mrcc_outputs(directory, stdout_path):
     stdout_path = Path(stdout_path)
     results = {}
     results.update(read_mrcc_output(stdout_path))
     return results
-
-
-
