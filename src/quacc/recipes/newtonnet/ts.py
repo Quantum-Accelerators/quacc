@@ -425,7 +425,7 @@ def geodesic_interpolate_wrapper(
     r_p_atoms : List[Atoms]
         List of ASE Atoms objects containing initial and final geometries.
     nimages : int, optional
-        Number of images for interpolation. Default is 17.
+        Number of images for interpolation. Default is 20.
     sweep : Optional[bool], optional
         Whether to sweep across the path optimizing one image at a time.
         Default is to perform sweeping updates if there are more than 35 atoms.
