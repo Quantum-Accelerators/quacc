@@ -405,45 +405,45 @@ def sella_wrapper(
     "git clone https://github.com/virtualzx-nad/geodesic-interpolate.git.",
 )
 def geodesic_interpolate_wrapper(
-    r_p_atoms: list[Atoms],
+    reactant_product_atoms: list[Atoms],
     nimages: int = 20,
-    sweep: bool | None = None,
-    output: str | Path = "interpolated.xyz",
-    tol: float = 2e-3,
-    maxiter: int = 15,
-    microiter: int = 20,
-    scaling: float = 1.7,
-    friction: float = 1e-2,
-    dist_cutoff: float = 3.0,
-    save_raw: str | Path | None = None,
+    perform_sweep: bool | None = None,
+    output_filepath: str | Path = "interpolated.xyz",
+    convergence_tolerance: float = 2e-3,
+    max_iterations: int = 15,
+    max_micro_iterations: int = 20,
+    morse_scaling: float = 1.7,
+    geometry_friction: float = 1e-2,
+    distance_cutoff: float = 3.0,
+    save_raw_path: str | Path | None = None,
 ) -> tuple[list[str], list[list[float]]]:
     """
     Interpolates between two geometries and optimizes the path.
 
     Parameters:
     -----------
-    r_p_atoms : List[Atoms]
+    reactant_product_atoms : List[Atoms]
         List of ASE Atoms objects containing initial and final geometries.
     nimages : int, optional
         Number of images for interpolation. Default is 20.
-    sweep : Optional[bool], optional
+    perform_sweep : Optional[bool], optional
         Whether to sweep across the path optimizing one image at a time.
         Default is to perform sweeping updates if there are more than 35 atoms.
-    output : Union[str, Path], optional
+    output_filepath : Union[str, Path], optional
         Output filename. Default is "interpolated.xyz".
-    tol : float, optional
+    convergence_tolerance : float, optional
         Convergence tolerance. Default is 2e-3.
-    maxiter : int, optional
+    max_iterations : int, optional
         Maximum number of minimization iterations. Default is 15.
-    microiter : int, optional
+    max_micro_iterations : int, optional
         Maximum number of micro iterations for the sweeping algorithm. Default is 20.
-    scaling : float, optional
+    morse_scaling : float, optional
         Exponential parameter for the Morse potential. Default is 1.7.
-    friction : float, optional
+    geometry_friction : float, optional
         Size of friction term used to prevent very large changes in geometry. Default is 1e-2.
-    dist_cutoff : float, optional
+    distance_cutoff : float, optional
         Cut-off value for the distance between a pair of atoms to be included in the coordinate system. Default is 3.0.
-    save_raw : Optional[Union[str, Path]], optional
+    save_raw_path : Optional[Union[str, Path]], optional
         When specified, save the raw path after bisections but before smoothing. Default is None.
 
     Returns:
@@ -451,33 +451,55 @@ def geodesic_interpolate_wrapper(
     Tuple[List[str], List[List[float]]]
         A tuple containing the list of symbols and the smoothed path.
     """
-    if len(r_p_atoms) < 2:
+    if len(reactant_product_atoms) < 2:
         raise ValueError("Need at least two initial geometries.")
 
     # Read the initial geometries.
-    symbols = r_p_atoms[0].get_chemical_symbols()
-    X = [conf.get_positions() for conf in r_p_atoms]
+    chemical_symbols = reactant_product_atoms[0].get_chemical_symbols()
+    initial_positions = [configuration.get_positions() for configuration in reactant_product_atoms]
 
     # First redistribute number of images. Perform interpolation if too few and subsampling if too many images are given
-    raw = redistribute(symbols, X, nimages, tol=tol * 5)
+    raw_interpolated_positions = redistribute(
+        chemical_symbols,
+        initial_positions,
+        nimages,
+        tol=convergence_tolerance * 5,
+    )
 
-    if save_raw is not None:
-        write_xyz(save_raw, symbols, raw)
+    if save_raw_path is not None:
+        write_xyz(save_raw_path, chemical_symbols, raw_interpolated_positions)
 
     # Perform smoothing by minimizing distance in Cartesian coordinates with redundant internal metric
     # to find the appropriate geodesic curve on the hyperspace.
-    smoother = Geodesic(symbols, raw, scaling, threshold=dist_cutoff, friction=friction)
-    if sweep is None:
-        sweep = len(symbols) > 35
+    geodesic_smoother = Geodesic(
+        chemical_symbols,
+        raw_interpolated_positions,
+        morse_scaling,
+        threshold=distance_cutoff,
+        friction=geometry_friction,
+    )
+    if perform_sweep is None:
+        perform_sweep = len(chemical_symbols) > 35
     try:
-        if sweep:
-            smoother.sweep(tol=tol, max_iter=maxiter, micro_iter=microiter)
+        if perform_sweep:
+            geodesic_smoother.sweep(
+                tol=convergence_tolerance,
+                max_iter=max_iterations,
+                micro_iter=max_micro_iterations,
+            )
         else:
-            smoother.smooth(tol=tol, max_iter=maxiter)
+            geodesic_smoother.smooth(
+                tol=convergence_tolerance,
+                max_iter=max_iterations,
+            )
     finally:
         # Save the smoothed path to output file. try block is to ensure output is saved if one ^C the process, or there is an error
-        write_xyz(output, symbols, smoother.path)
-    return symbols, smoother.path
+        write_xyz(
+            output_filepath,
+            chemical_symbols,
+            geodesic_smoother.path,
+        )
+    return chemical_symbols, geodesic_smoother.path
 
 
 @job

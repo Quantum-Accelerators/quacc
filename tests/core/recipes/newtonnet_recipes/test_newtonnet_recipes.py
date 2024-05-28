@@ -339,13 +339,13 @@ def setup_test_environment(tmp_path):
 @pytest.mark.parametrize(
     (
         "nimages",
-        "tol",
-        "maxiter",
-        "microiter",
-        "scaling",
-        "friction",
-        "dist_cutoff",
-        "save_raw",
+        "convergence_tolerance",
+        "max_iterations",
+        "max_micro_iterations",
+        "morse_scaling",
+        "geometry_friction",
+        "distance_cutoff",
+        "save_raw_path",
         "expected_length",
     ),
     [
@@ -367,13 +367,13 @@ def setup_test_environment(tmp_path):
 def test_geodesic_interpolate_wrapper(
     setup_test_environment,
     nimages,
-    tol,
-    maxiter,
-    microiter,
-    scaling,
-    friction,
-    dist_cutoff,
-    save_raw,
+    convergence_tolerance,
+    max_iterations,
+    max_micro_iterations,
+    morse_scaling,
+    geometry_friction,
+    distance_cutoff,
+    save_raw_path,
     expected_length,
 ):
     logdir, xyz_r_p = setup_test_environment
@@ -383,13 +383,13 @@ def test_geodesic_interpolate_wrapper(
     symbols, smoother_path = geodesic_interpolate_wrapper(
         atoms_object,
         nimages=nimages,
-        tol=tol,
-        maxiter=maxiter,
-        microiter=microiter,
-        scaling=scaling,
-        friction=friction,
-        dist_cutoff=dist_cutoff,
-        save_raw=save_raw,
+        convergence_tolerance=convergence_tolerance,
+        max_iterations=max_iterations,
+        max_micro_iterations=max_micro_iterations,
+        morse_scaling=morse_scaling,
+        geometry_friction=geometry_friction,
+        distance_cutoff=distance_cutoff,
+        save_raw_path=save_raw_path,
     )
     # assert output == 1
     # assert symbols == 1
