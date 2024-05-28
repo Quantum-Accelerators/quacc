@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from io import StringIO
 
+from pathlib import Path
+
 from ase.io import read
 from ase.units import Hartree
 from ase.utils import reader, writer
@@ -68,7 +70,7 @@ def write_mrcc(fd, atoms, params):
             )
 
         if len(ghost_list) > 0:
-            fd.write("\nghost=serialno")
+            fd.write("\nghost=serialno\n")
             fd.write(",".join([str(atom_idx) for atom_idx in ghost_list]))
 
 
@@ -92,7 +94,7 @@ def read_energy(lines: list[str]) -> float | None:
 
 
 @reader
-def read_mrcc_outputs(fd):
+def read_mrcc_output(fd):
     """From the MRCC output file: Read Energy"""
     lines = fd.readlines()
 
@@ -116,3 +118,12 @@ def read_mrcc_outputs(fd):
         results["energy"] = scf_energy + ccsdt_corr_energy
 
     return results
+
+def read_mrcc_outputs(directory, stdout_path):
+    stdout_path = Path(stdout_path)
+    results = {}
+    results.update(read_mrcc_output(stdout_path))
+    return results
+
+
+
