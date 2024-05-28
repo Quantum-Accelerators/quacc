@@ -10,9 +10,6 @@ from ase import Atoms
 from ase.io import read, write
 from ase.mep.neb import NEBOptimizer
 from ase.neb import NEB
-from geodesic_interpolate.fileio import write_xyz
-from geodesic_interpolate.geodesic import Geodesic
-from geodesic_interpolate.interpolation import redistribute
 from monty.dev import requires
 
 from quacc import SETTINGS, change_settings, job, strip_decorator
