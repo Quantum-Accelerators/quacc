@@ -261,10 +261,7 @@ def create_skzcam_clusters(
                 cluster_atoms = quantum_atoms + ecp_atoms
             else:
                 cluster_atoms = quantum_atoms
-            write(
-                Path(write_clusters_path, f"SKZCAM_cluster_{idx}.xyz"),
-                cluster_atoms,
-            )
+            write(Path(write_clusters_path, f"SKZCAM_cluster_{idx}.xyz"), cluster_atoms)
 
     return embedded_cluster, quantum_cluster_indices, ecp_region_indices
 
@@ -439,9 +436,7 @@ def _get_atom_distances(embedded_cluster: Atoms, center_position: NDArray) -> ND
 
 
 def _find_cation_shells(
-    embedded_cluster: Atoms,
-    distances: NDArray,
-    shell_width: float = 0.1,
+    embedded_cluster: Atoms, distances: NDArray, shell_width: float = 0.1
 ) -> list[list[int]]:
     """
     Returns a list of lists containing the indices of the cations in each shell, based on distance from the embedded cluster center.

@@ -1,12 +1,18 @@
+from __future__ import annotations
+
 import re
 
+from ase.calculators.genericfileio import (
+    BaseProfile,
+    CalculatorTemplate,
+    GenericFileIOCalculator,
+)
+
 import quacc.calculators.mrcc.io as io
-from ase.calculators.genericfileio import (BaseProfile, CalculatorTemplate,
-                                           GenericFileIOCalculator)
 
 
 def get_version_from_mrcc_header(mrcc_header):
-    match = re.search(r'Release date: (.*)$', mrcc_header, re.M)
+    match = re.search(r"Release date: (.*)$", mrcc_header, re.M)
     return match.group(1)
 
 
@@ -27,6 +33,7 @@ class MrccProfile(BaseProfile):
     def version(self):
         # XXX Allow MPI in argv; the version call should not be parallel.
         from ase.calculators.genericfileio import read_stdout
+
         stdout = read_stdout([self.binary, "does_not_exist"])
         return get_version_from_mrcc_header(stdout)
 
@@ -35,29 +42,34 @@ class MrccProfile(BaseProfile):
 
 
 class MrccTemplate(CalculatorTemplate):
-    _label = 'mrcc'
+    _label = "mrcc"
 
     def __init__(self):
-        super().__init__('mrcc',
-                         implemented_properties=['energy', 'mp2_corr_energy','ccsd_corr_energy','ccsd(t)_corr_energy'])
+        super().__init__(
+            "mrcc",
+            implemented_properties=[
+                "energy",
+                "mp2_corr_energy",
+                "ccsd_corr_energy",
+                "ccsd(t)_corr_energy",
+            ],
+        )
 
-        self.inputname = f'MINP'
-        self.outputname = f'{self._label}.out'
-        self.errorname = f'{self._label}.err'
+        self.inputname = "MINP"
+        self.outputname = f"{self._label}.out"
+        self.errorname = f"{self._label}.err"
 
     def execute(self, directory, profile) -> None:
-        profile.run(directory, self.inputname, self.outputname,
-                    errorfile=self.errorname)
+        profile.run(
+            directory, self.inputname, self.outputname, errorfile=self.errorname
+        )
 
     def write_input(self, profile, directory, atoms, parameters, properties):
         parameters = dict(parameters)
 
-        mrccinput = {
-            'calc': 'PBE',
-            'basis': 'def2-SVP'
-        }
+        mrccinput = {"calc": "PBE", "basis": "def2-SVP"}
 
-        kw = dict(charge=0, mult=1, mrccinput=mrccinput, mrccblocks='')
+        kw = {"charge": 0, "mult": 1, "mrccinput": mrccinput, "mrccblocks": ""}
         kw.update(parameters)
 
         io.write_mrcc(directory / self.inputname, atoms, kw)
@@ -78,8 +90,15 @@ class MRCC(GenericFileIOCalculator):
         mrccblocks=' ')
     """
 
-    def __init__(self, *, profile=None, directory='.', parallel_info=None,
-                 parallel=None, **kwargs):
+    def __init__(
+        self,
+        *,
+        profile=None,
+        directory=".",
+        parallel_info=None,
+        parallel=None,
+        **kwargs,
+    ):
         """Construct MRCC-calculator object.
 
         Parameters
@@ -100,22 +119,29 @@ class MRCC(GenericFileIOCalculator):
         >>> from quacc.calculators.mrcc.mrcc import MRCC
         >>> MyMrccProfile = MrccProfile("/path/to/mrcc/dir/dmrcc")
         >>> h = Atoms(
-        ...     'H',
+        ...     "H",
         ...     calculator=MRCC(
         ...         profile=MyMrccProfile,
         ...         charge=0,
         ...         mult=1,
-        ...         directory='water',
-        ...         mrccinput={'calc':PBE, 'basis':'def2-SVP'},
-        ...         mrccblocks=' '))
+        ...         directory="water",
+        ...         mrccinput={"calc": PBE, "basis": "def2-SVP"},
+        ...         mrccblocks=" ",
+        ...     ),
+        ... )
 
         """
 
-        assert parallel is None, \
-            'MRCC does not support keyword parallel - use mrccblocks or mrccinput'
-        assert parallel_info is None, \
-            'MRCC does not support keyword parallel_info - use mrccblocks or mrccinput'
+        assert (
+            parallel is None
+        ), "MRCC does not support keyword parallel - use mrccblocks or mrccinput"
+        assert (
+            parallel_info is None
+        ), "MRCC does not support keyword parallel_info - use mrccblocks or mrccinput"
 
-        super().__init__(template=MrccTemplate(),
-                         profile=profile, directory=directory,
-                         parameters=kwargs)
+        super().__init__(
+            template=MrccTemplate(),
+            profile=profile,
+            directory=directory,
+            parameters=kwargs,
+        )

@@ -43,9 +43,7 @@ def test_get_cluster_info_from_slab():
         center_position,
         adsorbate_vector_from_slab,
     ) = get_cluster_info_from_slab(
-        Path(FILE_DIR, "skzcam_files", "NO_MgO.poscar.gz"),
-        [32, 33],
-        [0, 1],
+        Path(FILE_DIR, "skzcam_files", "NO_MgO.poscar.gz"), [32, 33], [0, 1]
     )
 
     # Check adsorbate matches reference
@@ -506,10 +504,7 @@ def test_get_anion_coordination(embedded_cluster, distance_matrix):
 def test_get_ecp_region(embedded_cluster, distance_matrix):
     # Find the ECP region for the first cluster
     ecp_region_idx = _get_ecp_region(
-        embedded_cluster,
-        [[0, 1, 2, 3, 4, 5]],
-        distance_matrix,
-        ecp_dist=3,
+        embedded_cluster, [[0, 1, 2, 3, 4, 5]], distance_matrix, ecp_dist=3
     )
 
     # Check ECP region indices match with reference
