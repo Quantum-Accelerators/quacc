@@ -456,14 +456,13 @@ def geodesic_interpolate_wrapper(
 
     # Read the initial geometries.
     chemical_symbols = reactant_product_atoms[0].get_chemical_symbols()
-    initial_positions = [configuration.get_positions() for configuration in reactant_product_atoms]
+    initial_positions = [
+        configuration.get_positions() for configuration in reactant_product_atoms
+    ]
 
     # First redistribute number of images. Perform interpolation if too few and subsampling if too many images are given
     raw_interpolated_positions = redistribute(
-        chemical_symbols,
-        initial_positions,
-        nimages,
-        tol=convergence_tolerance * 5,
+        chemical_symbols, initial_positions, nimages, tol=convergence_tolerance * 5
     )
 
     if save_raw_path is not None:
@@ -488,17 +487,10 @@ def geodesic_interpolate_wrapper(
                 micro_iter=max_micro_iterations,
             )
         else:
-            geodesic_smoother.smooth(
-                tol=convergence_tolerance,
-                max_iter=max_iterations,
-            )
+            geodesic_smoother.smooth(tol=convergence_tolerance, max_iter=max_iterations)
     finally:
         # Save the smoothed path to output file. try block is to ensure output is saved if one ^C the process, or there is an error
-        write_xyz(
-            output_filepath,
-            chemical_symbols,
-            geodesic_smoother.path,
-        )
+        write_xyz(output_filepath, chemical_symbols, geodesic_smoother.path)
     return chemical_symbols, geodesic_smoother.path
 
 
