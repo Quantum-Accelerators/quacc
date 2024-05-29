@@ -1,4 +1,4 @@
-<div align="center">
+T<div align="center">
   <img src=https://github.com/Quantum-Accelerators/quacc/blob/main/docs/images/quacc_logo_wide.png width="300"><br>
 </div>
 
