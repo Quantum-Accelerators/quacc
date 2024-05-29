@@ -9,9 +9,11 @@ from typing import TYPE_CHECKING, Callable
 
 import numpy as np
 from ase.filters import FrechetCellFilter
-from ase.io import Trajectory, read
+from ase.io import Trajectory, read, write
 from ase.optimize import BFGS
 from ase.vibrations import Vibrations
+from ase.mep.neb import NEBOptimizer
+from ase.neb import NEB
 from monty.dev import requires
 from monty.os.path import zpath
 
@@ -19,12 +21,24 @@ from quacc import SETTINGS
 from quacc.atoms.core import copy_atoms, get_final_atoms_from_dynamics
 from quacc.runners.prep import calc_cleanup, calc_setup, terminate
 from quacc.utils.dicts import recursive_dict_merge
+from quacc.schemas.ase import summarize_opt_run
 
 has_sella = bool(find_spec("sella"))
 
 if has_sella:
-    pass
+    from sella import Sella
 
+has_newtonnet = bool(find_spec("newtonnet"))
+
+if has_newtonnet:
+    from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
+
+has_geodesic_interpolate = bool(find_spec("geodesic_interpolate"))
+
+if has_geodesic_interpolate:
+    from geodesic_interpolate.fileio import write_xyz
+    from geodesic_interpolate.geodesic import Geodesic
+    from geodesic_interpolate.interpolation import redistribute
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -321,6 +335,310 @@ def run_vib(
 
     return vib
 
+'''
+def run_path_optimization(
+        reactant_product_path: str,
+        logdir: str,
+        num_intermediate_images: int = 20,
+        spring_constant: float = 0.1,
+        max_optimization_steps: int = 1000,
+        force_convergence_tolerance: float = 0.01,
+        neb_method: str = 'aseneb',
+        optimizer_class: type[Optimizer] = NEBOptimizer,
+        preconditioner: str | None = None,
+        store_intermediate_results: bool = False,
+        fn_hook: Callable | None = None,
+        optimizer_kwargs: dict[str, Any] | None = None,
+        run_kwargs: dict[str, Any] | None = None,
+        copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+) -> list[Atoms]:
+    """
+    Run NEB-based path optimization in a scratch directory and copy the results back to
+    the original directory.
+
+    Parameters
+    ----------
+    reactant_product_path : str
+        Path to the XYZ file containing reactant and product structures.
+    logdir : str
+        Directory to save logs and intermediate files.
+    num_intermediate_images : int, optional
+        Number of intermediate images to generate. Default is 20.
+    spring_constant : float, optional
+        Force constant for the springs in NEB. Default is 0.1.
+    max_optimization_steps : int, optional
+        Maximum number of optimization steps allowed. Default is 1000.
+    force_convergence_tolerance : float, optional
+        Convergence tolerance for the forces (in eV/A). Default is 0.01.
+    neb_method : str, optional
+        NEB method to use. Default is 'aseneb'.
+    optimizer_class : type[Optimizer], optional
+        NEB path optimizer class. Default is NEBOptimizer.
+    preconditioner : str | None, optional
+        Preconditioner method. Default is None.
+    store_intermediate_results : bool, optional
+        Whether to store intermediate results at each step. Default is False.
+    fn_hook : Callable | None, optional
+        Custom function to call after each optimization step. Default is None.
+    optimizer_kwargs : dict[str, Any] | None, optional
+        Dictionary of kwargs for the optimizer. Default is None.
+    run_kwargs : dict[str, Any] | None, optional
+        Dictionary of kwargs for the run() method of the optimizer. Default is None.
+    copy_files : SourceDirectory | dict[SourceDirectory, Filenames] | None, optional
+        Files to copy (and decompress) from source to the runtime directory. Default is None.
+
+    Returns
+    -------
+    list[Atoms]
+        The optimized images.
+    """
+    # Setup directories and files
+    Path(logdir).mkdir(parents=True, exist_ok=True)
+    tmpdir, job_results_dir = calc_setup(None, copy_files=copy_files)
+
+    # Generate intermediate images
+    images = _setup_images(logdir, reactant_product_path, num_intermediate_images)
+
+    # Setup the NEB method
+    neb = NEB(
+        images,
+        k=spring_constant,
+        method=neb_method,
+        climb=True,
+        precon=preconditioner,
+        remove_rotation_and_translation=True,
+        parallel=True,
+    )
+
+    # Set optimizer and its kwargs
+    optimizer_kwargs = optimizer_kwargs or {}
+    optimizer_kwargs = recursive_dict_merge(
+        {
+            "logfile": "-" if SETTINGS.DEBUG else tmpdir / "neb_opt.log",
+            "restart": tmpdir / "neb_opt.json",
+        },
+        optimizer_kwargs,
+    )
+    run_kwargs = run_kwargs or {}
+
+    # Check if trajectory kwarg is specified
+    if "trajectory" in optimizer_kwargs:
+        raise ValueError("Quacc does not support setting the `trajectory` kwarg.")
+
+    # Handle optimizer specific kwargs
+    if optimizer_class.__name__.startswith("SciPy"):
+        optimizer_kwargs.pop("restart", None)
+    elif optimizer_class.__name__ == "Sella":
+        _set_sella_kwargs(images[0], optimizer_kwargs)
+
+    # Define the Trajectory object
+    traj_file = tmpdir / "neb_opt.traj"
+    traj = Trajectory(traj_file, "w", atoms=images)
+    optimizer_kwargs["trajectory"] = traj
+
+    # Run optimization
+    try:
+        with traj, optimizer_class(neb, method=neb_method, **optimizer_kwargs) as opt:
+            for i, _ in enumerate(
+                    opt.irun(fmax=force_convergence_tolerance, steps=max_optimization_steps, **run_kwargs)):
+                if store_intermediate_results:
+                    _copy_intermediate_files(
+                        tmpdir,
+                        i,
+                        files_to_ignore=[
+                            traj_file,
+                            optimizer_kwargs["restart"],
+                            optimizer_kwargs["logfile"],
+                        ],
+                    )
+                if fn_hook:
+                    fn_hook(opt)
+    except Exception as exception:
+        terminate(tmpdir, exception)
+
+    # Store the trajectory atoms
+    opt.traj_atoms = read(traj_file, index=":")
+
+    # Perform cleanup operations
+    calc_cleanup(get_final_atoms_from_dynamics(opt), tmpdir, job_results_dir)
+
+    # Save the optimized path
+    optimized_images_path = Path(
+        logdir) / f"optimized_path_{neb_method}_{optimizer_class.__name__}_{preconditioner}.xyz"
+    write(optimized_images_path, images)
+
+    return images
+
+
+def _geodesic_interpolate_wrapper(
+    reactant_product_atoms: list[Atoms],
+    nimages: int = 20,
+    perform_sweep: bool | None = None,
+    output_filepath: str | Path = "interpolated.xyz",
+    convergence_tolerance: float = 2e-3,
+    max_iterations: int = 15,
+    max_micro_iterations: int = 20,
+    morse_scaling: float = 1.7,
+    geometry_friction: float = 1e-2,
+    distance_cutoff: float = 3.0,
+    save_raw_path: str | Path | None = None,
+) -> tuple[list[str], list[list[float]]]:
+    """
+    Interpolates between two geometries and optimizes the path.
+
+    Parameters:
+    -----------
+    reactant_product_atoms : List[Atoms]
+        List of ASE Atoms objects containing initial and final geometries.
+    nimages : int, optional
+        Number of images for interpolation. Default is 20.
+    perform_sweep : Optional[bool], optional
+        Whether to sweep across the path optimizing one image at a time.
+        Default is to perform sweeping updates if there are more than 35 atoms.
+    output_filepath : Union[str, Path], optional
+        Output filename. Default is "interpolated.xyz".
+    convergence_tolerance : float, optional
+        Convergence tolerance. Default is 2e-3.
+    max_iterations : int, optional
+        Maximum number of minimization iterations. Default is 15.
+    max_micro_iterations : int, optional
+        Maximum number of micro iterations for the sweeping algorithm. Default is 20.
+    morse_scaling : float, optional
+        Exponential parameter for the Morse potential. Default is 1.7.
+    geometry_friction : float, optional
+        Size of friction term used to prevent very large changes in geometry. Default is 1e-2.
+    distance_cutoff : float, optional
+        Cut-off value for the distance between a pair of atoms to be included in the coordinate system. Default is 3.0.
+    save_raw_path : Optional[Union[str, Path]], optional
+        When specified, save the raw path after bisections but before smoothing. Default is None.
+
+    Returns:
+    --------
+    Tuple[List[str], List[List[float]]]
+        A tuple containing the list of symbols and the smoothed path.
+    """
+    if len(reactant_product_atoms) < 2:
+        raise ValueError("Need at least two initial geometries.")
+
+    # Read the initial geometries.
+    chemical_symbols = reactant_product_atoms[0].get_chemical_symbols()
+    initial_positions = [configuration.get_positions() for configuration in reactant_product_atoms]
+
+    # First redistribute number of images. Perform interpolation if too few and subsampling if too many images are given
+    raw_interpolated_positions = redistribute(
+        chemical_symbols,
+        initial_positions,
+        nimages,
+        tol=convergence_tolerance * 5,
+    )
+
+    if save_raw_path is not None:
+        write_xyz(save_raw_path, chemical_symbols, raw_interpolated_positions)
+
+    # Perform smoothing by minimizing distance in Cartesian coordinates with redundant internal metric
+    # to find the appropriate geodesic curve on the hyperspace.
+    geodesic_smoother = Geodesic(
+        chemical_symbols,
+        raw_interpolated_positions,
+        morse_scaling,
+        threshold=distance_cutoff,
+        friction=geometry_friction,
+    )
+    if perform_sweep is None:
+        perform_sweep = len(chemical_symbols) > 35
+    try:
+        if perform_sweep:
+            geodesic_smoother.sweep(
+                tol=convergence_tolerance,
+                max_iter=max_iterations,
+                micro_iter=max_micro_iterations,
+            )
+        else:
+            geodesic_smoother.smooth(
+                tol=convergence_tolerance,
+                max_iter=max_iterations,
+            )
+    finally:
+        # Save the smoothed path to output file. try block is to ensure output is saved if one ^C the process, or there is an error
+        write_xyz(
+            output_filepath,
+            chemical_symbols,
+            geodesic_smoother.path,
+        )
+    return chemical_symbols, geodesic_smoother.path
+
+
+def _setup_images(logdir: str, xyz_r_p: str, n_intermediate: int = 40):
+    """
+    Sets up intermediate images for NEB calculations between reactant and product states.
+
+    Parameters:
+    logdir (str): Directory to save the intermediate files.
+    xyz_r_p (str): Path to the XYZ file containing reactant and product structures.
+    n_intermediate (int): Number of intermediate images to generate.
+
+    Returns:
+    List: List of ASE Atoms objects with calculated energies and forces.
+    """
+    calc_defaults = {
+        "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+        "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+    }
+    opt_defaults = {"optimizer": Sella, "optimizer_kwargs": ({"order": 0})}
+    calc_flags = recursive_dict_merge(calc_defaults, {})
+    opt_flags = recursive_dict_merge(opt_defaults, {})
+
+    # try:
+    # Ensure the log directory exists
+    if logdir is not None:
+        Path(logdir).mkdir(parents=True, exist_ok=True)
+
+    # Read reactant and product structures
+    reactant = read(xyz_r_p, index="0")
+    product = read(xyz_r_p, index="1")
+
+    # Optimize reactant and product structures using sella
+    for atom, _name in zip([reactant, product], ["reactant", "product"]):
+        atom.calc = NewtonNet(**calc_flags)
+
+        # Run the TS optimization
+        dyn = run_opt(atom, **opt_flags)
+        opt_ts_summary = summarize_opt_run(dyn, additional_fields={"name": "NewtonNet TS"})
+
+        reactant = opt_ts_summary["atoms"].copy()
+        # traj_file = Path(logdir) / f"{name}_opt.traj"
+        # sella_wrapper(atom, traj_file=traj_file, sella_order=0)
+    # Save optimized reactant and product structures
+    if logdir is not None:
+        r_p_path = Path(logdir) / "r_p.xyz"
+        write(r_p_path, [reactant.copy(), product.copy()])
+
+    # Generate intermediate images using geodesic interpolation
+    symbols, smoother_path = _geodesic_interpolate_wrapper(
+        [reactant.copy(), product.copy()],
+        nimages=n_intermediate,
+    )
+    images = [Atoms(symbols=symbols, positions=conf) for conf in smoother_path]
+
+    # Calculate energies and forces for each intermediate image
+    for image in images:
+        image.calc = NewtonNet(**calc_flags)
+        ml_calculator = NewtonNet(**calc_flags)
+        ml_calculator.calculate(image)
+
+        energy = ml_calculator.results["energy"]
+        forces = ml_calculator.results["forces"]
+
+        image.info["energy"] = energy
+        image.arrays["forces"] = forces
+
+    # Save the geodesic path
+    if logdir is not None:
+        geodesic_path = Path(logdir) / "geodesic_path.xyz"
+        write(geodesic_path, images)
+
+    return images
+
 
 @requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def _set_sella_kwargs(atoms: Atoms, optimizer_kwargs: dict[str, Any]) -> None:
@@ -350,7 +668,7 @@ def _set_sella_kwargs(atoms: Atoms, optimizer_kwargs: dict[str, Any]) -> None:
 
     if not atoms.pbc.any() and "internal" not in optimizer_kwargs:
         optimizer_kwargs["internal"] = True
-
+'''
 
 def _copy_intermediate_files(
     tmpdir: Path, step_number: int, files_to_ignore: list[Path] | None = None
