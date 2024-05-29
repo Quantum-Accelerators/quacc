@@ -1,6 +1,6 @@
 ## Summary of Changes
 
-\>> Provide context and a description of your changes. Make sure to reference any associated issues (e.g. "Closes #123"). <<
+\>> Provide context and a description of your changes. Make sure to reference any associated issues. <<
 
 ### Requirements
 
