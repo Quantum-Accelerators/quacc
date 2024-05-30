@@ -24,7 +24,7 @@ def test_functools(tmp_path, monkeypatch, job_decorators):
     ).result()
     assert len(result) == 4
     assert "atoms" in result[-1]
-    assert result[-1]["fmax"] == 0.1
+    assert result[-1]["parameters_opt"]["fmax"] == 0.1
 
 
 def test_copy_files(tmp_path, monkeypatch):

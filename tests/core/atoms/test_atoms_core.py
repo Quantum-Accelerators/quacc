@@ -20,21 +20,6 @@ FILE_DIR = Path(__file__).parent
 
 
 @pytest.fixture()
-def atoms_mag():
-    return read(FILE_DIR / ".." / "calculators" / "vasp" / "OUTCAR_mag.gz")
-
-
-@pytest.fixture()
-def atoms_nomag():
-    return read(FILE_DIR / ".." / "calculators" / "vasp" / "OUTCAR_nomag.gz")
-
-
-@pytest.fixture()
-def atoms_nospin():
-    return read(FILE_DIR / ".." / "calculators" / "vasp" / "OUTCAR_nospin.gz")
-
-
-@pytest.fixture()
 def os_atoms():
     return read(FILE_DIR / "OS_test.xyz")
 
