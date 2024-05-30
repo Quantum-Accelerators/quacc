@@ -4,9 +4,6 @@ from importlib.util import find_spec
 from pathlib import Path
 from shutil import rmtree
 
-from parsl.config import Config
-from parsl.dataflow.dependency_resolvers import DEEP_DEPENDENCY_RESOLVER
-
 TEST_RESULTS_DIR = Path(__file__).parent / "_test_results"
 TEST_SCRATCH_DIR = Path(__file__).parent / "_test_scratch"
 TEST_RUNINFO = Path(__file__).parent / "runinfo"
@@ -14,7 +11,8 @@ TEST_RUNINFO = Path(__file__).parent / "runinfo"
 has_parsl = bool(find_spec("parsl"))
 if has_parsl:
     import parsl
-
+    from parsl.config import Config
+    from parsl.dataflow.dependency_resolvers import DEEP_DEPENDENCY_RESOLVER
 
 def pytest_sessionstart():
     import os
