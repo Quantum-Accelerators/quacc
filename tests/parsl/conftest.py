@@ -14,6 +14,7 @@ if has_parsl:
     from parsl.config import Config
     from parsl.dataflow.dependency_resolvers import DEEP_DEPENDENCY_RESOLVER
 
+
 def pytest_sessionstart():
     import os
 
