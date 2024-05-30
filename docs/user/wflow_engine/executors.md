@@ -799,15 +799,13 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     vasp_parallel_cmd = (
         f"srun -N {nodes_per_job} --ntasks-per-node={cores_per_node} --cpu_bind=cores"
     )
-    min_allocations = 0
-    max_allocations = 1
 
     config = Config(
         dependency_resolver=DEEP_DEPENDENCY_RESOLVER,
         strategy="htex_auto_scale",
         executors=[
             HighThroughputExecutor(
-                label="quacc_parsl",
+                label="quacc_mpi_parsl",
                 max_workers_per_node=nodes_per_allocation // nodes_per_job,  # (1)!
                 cores_per_worker=1e-6,  # (2)!
                 provider=SlurmProvider(
@@ -817,9 +815,6 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
                     worker_init=f"source ~/.bashrc && conda activate quacc && module load vasp/6.4.1-cpu && export QUACC_VASP_PARALLEL_CMD='{vasp_parallel_cmd}'",
                     walltime="00:10:00",
                     nodes_per_block=nodes_per_allocation,
-                    init_blocks=0,
-                    min_blocks=min_allocations,
-                    max_blocks=max_allocations,
                     launcher=SimpleLauncher(),  # (3)!
                     cmd_timeout=60,
                 ),
@@ -831,7 +826,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     parsl.load(config)
     ```
 
-    1. Unlike the prior example, here `max_workers_per_node` is defining the maximum number of concurrent jobs in total and not the maximum number of jobs run per node.
+    1. Unlike the prior example, here `max_workers_per_node` is defining the maximum number of concurrent MPI jobs to run per allocation.
 
     2. This is recommended in the Parsl manual for jobs that spawn MPI processes.
 
