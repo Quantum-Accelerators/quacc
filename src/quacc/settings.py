@@ -208,7 +208,8 @@ class QuaccSettings(BaseSettings):
     # ONETEP Settings
     # ---------------------------
     ONETEP_CMD: str = Field(
-        "onetep.arch", description=("Full ONETEP command, including parallelization flags.")
+        "onetep.arch",
+        description=("Full ONETEP command, including parallelization flags."),
     )
     ONETEP_PP_PATH: Path = Field(Path(), description=("Path to pseudopotentials."))
 
