@@ -425,8 +425,7 @@ class Espresso(GenericFileIOCalculator):
         )
 
         profile = EspressoProfile(
-            f"{SETTINGS.ESPRESSO_PARALLEL_CMD} {self._bin_path}",
-            self._pseudo_path,
+            f"{SETTINGS.ESPRESSO_PARALLEL_CMD} {self._bin_path}", self._pseudo_path
         )
 
         super().__init__(
