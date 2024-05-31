@@ -8,8 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- No longer need to install `master` branch of ASE
 - Modified Espresso and ONETEP settings to support new ASE profile features
 - Removed `nsteps` from the `OptSchema`
+
 
 ## [0.9.0]
 
