@@ -424,7 +424,9 @@ class Espresso(GenericFileIOCalculator):
             .get("pseudo_dir", str(SETTINGS.ESPRESSO_PSEUDO))
         )
 
-        prefix = os.environ.get("PARSL_MPI_PREFIX", "") or SETTINGS.ESPRESSO_PARALLEL_CMD[0]
+        prefix = (
+            os.environ.get("PARSL_MPI_PREFIX", "") or SETTINGS.ESPRESSO_PARALLEL_CMD[0]
+        )
         suffix = SETTINGS.ESPRESSO_PARALLEL_CMD[1]
 
         profile = EspressoProfile(
