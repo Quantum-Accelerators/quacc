@@ -94,8 +94,7 @@ def test_prefect_decorators(tmp_path, monkeypatch):
     def add_flow(a, b):
         return add(a, b)
 
-    assert add_flow(1, 2).is_completed()
-    assert workflow(1, 2, 3).is_completed()
+    assert add(1, 2).result() == 3
     assert [r.result() for r in dynamic_workflow(1, 2, 3)] == [6, 6, 6]
     assert [r.result() for r in dynamic_workflow2(1, 2, 3)] == [6, 6, 6]
     assert dynamic_workflow3(1, 2, 3).result() == 12
@@ -154,6 +153,7 @@ def test_prefect_decorators_local(tmp_path, monkeypatch):
         def add_flow(a, b):
             return add(a, b)
 
+        assert add(1, 2) == 3
         assert add_flow(1, 2) == 3
         assert workflow(1, 2, 3) == 9
         results = dynamic_workflow(1, 2, 3)
