@@ -37,7 +37,6 @@ def run_and_summarize(
     profile: EspressoProfile | None = None,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
-    parallel_info: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: (
         SourceDirectory
@@ -65,8 +64,6 @@ def run_and_summarize(
         Custom kwargs for the espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to the [ase.calculators.espresso.Espresso][] calculator.
-    parallel_info
-        Dictionary of parallelization information.
     additional_fields
         Any additional fields to supply to the summarizer.
     copy_files
@@ -84,7 +81,6 @@ def run_and_summarize(
         profile=profile,
         calc_defaults=calc_defaults,
         calc_swaps=calc_swaps,
-        parallel_info=parallel_info,
     )
 
     updated_copy_files = prepare_copy(
@@ -111,7 +107,6 @@ def run_and_summarize_opt(
     calc_swaps: dict[str, Any] | None = None,
     opt_defaults: dict[str, Any] | None = None,
     opt_params: OptParams | None = None,
-    parallel_info: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: (
         SourceDirectory
@@ -145,8 +140,6 @@ def run_and_summarize_opt(
         Dictionary of parameters to pass to the optimizer. pass "optimizer"
         to change the optimizer being used. "fmax" and "max_steps" are commonly
         used keywords. See the ASE documentation for more information.
-    parallel_info
-        Dictionary of parallelization information.
     additional_fields
         Any additional fields to supply to the summarizer.
     copy_files
@@ -164,7 +157,6 @@ def run_and_summarize_opt(
         profile=profile,
         calc_defaults=calc_defaults,
         calc_swaps=calc_swaps,
-        parallel_info=parallel_info,
     )
 
     updated_copy_files = prepare_copy(
@@ -189,7 +181,6 @@ def prepare_atoms(
     profile: EspressoProfile | None = None,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
-    parallel_info: dict[str, Any] | None = None,
 ) -> Atoms:
     """
     Commonly used preparation function to merge parameters
@@ -211,8 +202,6 @@ def prepare_atoms(
         Custom kwargs for the espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to the [ase.calculators.espresso.Espresso][] calculator.
-    parallel_info
-        Dictionary of parallelization information.
 
     Returns
     -------
@@ -239,7 +228,6 @@ def prepare_atoms(
     atoms.calc = Espresso(
         input_atoms=atoms,
         preset=preset,
-        parallel_info=parallel_info,
         template=template,
         profile=profile,
         **calc_flags,
