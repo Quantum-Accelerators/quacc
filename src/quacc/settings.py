@@ -459,10 +459,10 @@ class QuaccSettings(BaseSettings):
         else:
             return v
 
-    @field_validator("ESPRESSO_CMD")
+    @field_validator("ESPRESSO_PARALLEL_CMD")
     @classmethod
-    def validate_espresso_cmd(cls, v: Union[str, tuple[str, str]]) -> Store:
-        """Generate the Maggma store."""
+    def validate_espresso_parallel_cmd(cls, v: Union[str, tuple[str, str]]) -> Store:
+        """Clean up Espresso parallel command."""
         if isinstance(v, str):
             return v, ""
         return v
