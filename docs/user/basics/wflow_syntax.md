@@ -185,6 +185,7 @@ graph LR
     def mult(a, b):
         return a * b
 
+
     @flow
     def workflow(a, b, c):  #  (2)!
         output1 = add(a, b)
