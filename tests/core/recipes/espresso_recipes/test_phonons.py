@@ -63,13 +63,11 @@ def test_phonon_job(tmp_path, monkeypatch):
             input_data=input_data,
             pseudopotentials=pseudopotentials,
             kspacing=0.5,
-            parallel_info=ESPRESSO_PARALLEL_INFO,
         )
 
         ph_results = phonon_job(
             pw_results["dir_name"],
             input_data=ph_loose,
-            parallel_info=ESPRESSO_PARALLEL_INFO,
         )
 
         assert_allclose(
@@ -104,7 +102,7 @@ def test_phonon_job(tmp_path, monkeypatch):
         recover_ph_results = phonon_job(
             ph_results["dir_name"],
             input_data=ph_loose,
-            parallel_info=ESPRESSO_PARALLEL_INFO,
+            
         )
 
         with zopen(Path(recover_ph_results["dir_name"], "ph.out.gz")) as f:
@@ -117,7 +115,7 @@ def test_phonon_job(tmp_path, monkeypatch):
         assert "Representation     3      1 modes -  Done" in lines
 
 
-def test_phonon_job_lqdir(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
+def test_phonon_job_lqdir(tmp_path, monkeypatch, ):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -143,13 +141,13 @@ def test_phonon_job_lqdir(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
             input_data=input_data,
             pseudopotentials=pseudopotentials,
             kspacing=0.5,
-            parallel_info=ESPRESSO_PARALLEL_INFO,
+            
         )
 
         ph_results = phonon_job(
             pw_results["dir_name"],
             input_data=ph_loose,
-            parallel_info=ESPRESSO_PARALLEL_INFO,
+            
             qpts=[(0, 0, 0, 1), (0.1, 0, 0, 1)],
         )
 
@@ -185,7 +183,7 @@ def test_phonon_job_lqdir(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
         recover_ph_results = phonon_job(
             ph_results["dir_name"],
             input_data=ph_loose,
-            parallel_info=ESPRESSO_PARALLEL_INFO,
+            
             qpts=[(0, 0, 0, 1), (0.1, 0, 0, 1)],
         )
 
@@ -199,7 +197,7 @@ def test_phonon_job_lqdir(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
         assert "Representation     2      2 modes -  Done" in lines
 
 
-def test_phonon_job_list_to_do(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
+def test_phonon_job_list_to_do(tmp_path, monkeypatch, ):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -223,7 +221,7 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
             input_data=input_data,
             pseudopotentials=pseudopotentials,
             kspacing=0.5,
-            parallel_info=ESPRESSO_PARALLEL_INFO,
+            
         )
 
         qpts = [(0, 0, 0, 1), (1 / 3, 0, 0, 1), (1 / 2, 0, 0, 1)]
@@ -235,7 +233,7 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
             input_data=ph_loose,
             qpts=qpts,
             nat_todo_indices=nat_todo,
-            parallel_info=ESPRESSO_PARALLEL_INFO,
+            
         )
 
         assert_allclose(
@@ -266,7 +264,7 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
             assert key in ph_results["results"][1]
 
 
-def test_q2r_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
+def test_q2r_job(tmp_path, monkeypatch, ):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -278,7 +276,7 @@ def test_q2r_job(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
         q2r_results = q2r_job(
             tmp_path,
             additional_cards=additional_cards,
-            parallel_info=ESPRESSO_PARALLEL_INFO,
+            
         )
 
         assert Path(q2r_results["dir_name"], "q2r.fc.gz").exists()
@@ -303,8 +301,7 @@ def test_matdyn_job(tmp_path, monkeypatch):
 
         input_data = {"input": {"dos": True, "nk1": 4, "nk2": 4, "nk3": 4}}
         matdyn_results = matdyn_job(
-            tmp_path, input_data=input_data, parallel_info=ESPRESSO_PARALLEL_INFO
-        )
+            tmp_path, input_data=input_data        )
 
         assert Path(matdyn_results["dir_name"], "q2r.fc.gz").exists()
         assert Path(matdyn_results["dir_name"], "matdyn.dos.gz").exists()
@@ -350,18 +347,14 @@ def test_phonon_dos_flow(tmp_path, monkeypatch):
                 "pseudopotentials": pseudopotentials,
                 "input_data": input_data,
                 "kspacing": 1.0,
-                "parallel_info": ESPRESSO_PARALLEL_INFO,
-            },
-            "phonon_job": {"parallel_info": ESPRESSO_PARALLEL_INFO},
-            "q2r_job": {"parallel_info": ESPRESSO_PARALLEL_INFO},
-            "matdyn_job": {"parallel_info": ESPRESSO_PARALLEL_INFO},
+            }
         }
 
         assert phonon_dos_flow(atoms, job_params=job_params)
 
 
 def test_phonon_calculation_spin_orbit_example_06(
-    tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO
+    tmp_path, monkeypatch, 
 ):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
@@ -398,7 +391,6 @@ def test_phonon_calculation_spin_orbit_example_06(
             },
             "pseudopotentials": pseudopotential,
             "kpts": (2, 2, 2),
-            "parallel_info": ESPRESSO_PARALLEL_INFO,
         }
         pt_relax_results = relax_job(pt_atoms, **pt_relax_params)
 
@@ -406,7 +398,6 @@ def test_phonon_calculation_spin_orbit_example_06(
             "input_data": {
                 "inputph": {"aMass(1)": 195.078, "fildYn": "ptdyn", "TR2_ph": 1.0e-10}
             },
-            "parallel_info": ESPRESSO_PARALLEL_INFO,
         }
         pt_phonon_x_results = phonon_job(
             pt_relax_results["dir_name"], **pt_phonon_x_params, qpts=(1.0, 0.0, 0.0)
@@ -420,7 +411,7 @@ def test_phonon_calculation_spin_orbit_example_06(
 
 
 def test_phonon_calculation_si_spin_orbit(
-    tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO, caplog
+    tmp_path, monkeypatch, , caplog
 ):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
@@ -445,7 +436,6 @@ def test_phonon_calculation_si_spin_orbit(
             },
             "pseudopotentials": pseudopotential,
             "kpts": (2, 2, 2),
-            "parallel_info": ESPRESSO_PARALLEL_INFO,
         }
 
         with caplog.at_level(logging.WARNING):
@@ -461,8 +451,7 @@ def test_phonon_calculation_si_spin_orbit(
                     "fildyn": "Sig.dyn",
                     "amass(1)": 28.0855,
                 }
-            },
-            "parallel_info": ESPRESSO_PARALLEL_INFO,
+            }
         }
         si_phonon_results = phonon_job(
             si_relax_results["dir_name"], **si_phonon_params, qpts=(0.0, 0.0, 0.0)
@@ -490,7 +479,7 @@ def test_phonon_calculation_si_spin_orbit(
 
 
 def test_phonon_induced_renormalization(
-    tmp_path, monkeypatch, caplog, ESPRESSO_PARALLEL_INFO
+    tmp_path, monkeypatch, caplog, 
 ):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
@@ -520,7 +509,7 @@ def test_phonon_induced_renormalization(
             "kpts": (3, 3, 3),
         }
         c_scf_results = relax_job(
-            atoms, **c_scf_params, parallel_info=ESPRESSO_PARALLEL_INFO
+            atoms, **c_scf_params
         )
 
         c_ph_params = {
@@ -541,7 +530,7 @@ def test_phonon_induced_renormalization(
             c_ph_results = phonon_job(
                 c_scf_results["dir_name"],
                 **c_ph_params,
-                parallel_info=ESPRESSO_PARALLEL_INFO,
+                
             )
             assert "Overwriting key 'fildyn'" in caplog.text
 
@@ -551,7 +540,7 @@ def test_phonon_induced_renormalization(
             }
         }
         q2r_results = q2r_job(
-            c_ph_results["dir_name"], **q2r_params, parallel_info=ESPRESSO_PARALLEL_INFO
+            c_ph_results["dir_name"], **q2r_params
         )
 
         assert q2r_results["parameters"]["input_data"]["input"]["flfrc"] == "q2r.fc"
@@ -574,7 +563,7 @@ def test_phonon_induced_renormalization(
             dvscf_q2r_results = dvscf_q2r_job(
                 c_ph_results["dir_name"],
                 **dvscf_q2r_params,
-                parallel_info=ESPRESSO_PARALLEL_INFO,
+                
             )
 
             assert "Overwriting key 'fildyn'" in caplog.text
@@ -613,7 +602,7 @@ def test_phonon_induced_renormalization(
             c_scf_results["atoms"],
             c_scf_results["dir_name"],
             **c_nscf_params,
-            parallel_info=ESPRESSO_PARALLEL_INFO,
+            
         )
 
         c_ahc_coarse_params = {
@@ -638,7 +627,7 @@ def test_phonon_induced_renormalization(
         c_ahc_coarse_results = phonon_job(
             [dvscf_q2r_results["dir_name"], c_nscf_results["dir_name"]],
             **c_ahc_coarse_params,
-            parallel_info=ESPRESSO_PARALLEL_INFO,
+            
         )
 
         matdyn_coarse_params = {
@@ -685,7 +674,6 @@ def test_phonon_induced_renormalization(
                 "-0.333333333333333E+00 0.333333333333333E+00 -0.100000000000000E+01",
                 "0.333333333333333E+00 -0.333333333333333E+00 -0.333333333333333E+00",
             ],
-            "parallel_info": ESPRESSO_PARALLEL_INFO,
         }
         matdyn_coarse_results = matdyn_job(
             [q2r_results["dir_name"], c_ahc_coarse_results["dir_name"]],
@@ -714,7 +702,7 @@ def test_phonon_induced_renormalization(
         postahc_coarse_results = postahc_job(
             [c_ahc_coarse_results["dir_name"], matdyn_coarse_results["dir_name"]],
             **postahc_coarse_params,
-            parallel_info=ESPRESSO_PARALLEL_INFO,
+            
         )
 
         assert Path(postahc_coarse_results["dir_name"], "postahc.out.gz").exists()
@@ -722,7 +710,7 @@ def test_phonon_induced_renormalization(
         assert Path(postahc_coarse_results["dir_name"], "selfen_real.dat.gz").exists()
 
 
-def test_phonon_dvscf_q2r_inplace(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO):
+def test_phonon_dvscf_q2r_inplace(tmp_path, monkeypatch, ):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -735,7 +723,7 @@ def test_phonon_dvscf_q2r_inplace(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO)
 
         c_scf_results = static_job(
             atoms,
-            parallel_info=ESPRESSO_PARALLEL_INFO,
+            
             pseudopotentials=pseudopotentials,
             kspacing=0.1,
         )
@@ -756,7 +744,7 @@ def test_phonon_dvscf_q2r_inplace(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO)
         c_ph_results = phonon_job(
             prev_outdir=c_scf_results["dir_name"],
             **c_ph_params,
-            parallel_info=ESPRESSO_PARALLEL_INFO,
+            
         )
 
         dvscf_q2r_params = {
@@ -773,7 +761,7 @@ def test_phonon_dvscf_q2r_inplace(tmp_path, monkeypatch, ESPRESSO_PARALLEL_INFO)
             prev_outdir=c_scf_results["dir_name"],
             copy_files=c_ph_results["dir_name"],
             **dvscf_q2r_params,
-            parallel_info=ESPRESSO_PARALLEL_INFO,
+            
         )
 
         assert (
