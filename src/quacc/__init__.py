@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import logging
 from importlib.metadata import version
 
@@ -36,6 +37,9 @@ Atoms.from_dict = MSONAtoms.from_dict
 
 # Load the settings
 SETTINGS = QuaccSettings()
+
+# Ignore ASE config file
+os.environ["ASE_CONFIG_PATH"] = ""
 
 # Set logging info
 logging.basicConfig(level=logging.DEBUG if SETTINGS.DEBUG else logging.INFO)
