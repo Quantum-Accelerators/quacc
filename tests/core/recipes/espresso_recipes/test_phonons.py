@@ -102,7 +102,7 @@ def test_phonon_job(tmp_path, monkeypatch):
         recover_ph_results = phonon_job(
             ph_results["dir_name"],
             input_data=ph_loose,
-            
+
         )
 
         with zopen(Path(recover_ph_results["dir_name"], "ph.out.gz")) as f:
@@ -141,13 +141,13 @@ def test_phonon_job_lqdir(tmp_path, monkeypatch, ):
             input_data=input_data,
             pseudopotentials=pseudopotentials,
             kspacing=0.5,
-            
+
         )
 
         ph_results = phonon_job(
             pw_results["dir_name"],
             input_data=ph_loose,
-            
+
             qpts=[(0, 0, 0, 1), (0.1, 0, 0, 1)],
         )
 
@@ -183,7 +183,7 @@ def test_phonon_job_lqdir(tmp_path, monkeypatch, ):
         recover_ph_results = phonon_job(
             ph_results["dir_name"],
             input_data=ph_loose,
-            
+
             qpts=[(0, 0, 0, 1), (0.1, 0, 0, 1)],
         )
 
@@ -221,7 +221,7 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch, ):
             input_data=input_data,
             pseudopotentials=pseudopotentials,
             kspacing=0.5,
-            
+
         )
 
         qpts = [(0, 0, 0, 1), (1 / 3, 0, 0, 1), (1 / 2, 0, 0, 1)]
@@ -233,7 +233,7 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch, ):
             input_data=ph_loose,
             qpts=qpts,
             nat_todo_indices=nat_todo,
-            
+
         )
 
         assert_allclose(
@@ -276,7 +276,7 @@ def test_q2r_job(tmp_path, monkeypatch, ):
         q2r_results = q2r_job(
             tmp_path,
             additional_cards=additional_cards,
-            
+
         )
 
         assert Path(q2r_results["dir_name"], "q2r.fc.gz").exists()
@@ -354,7 +354,7 @@ def test_phonon_dos_flow(tmp_path, monkeypatch):
 
 
 def test_phonon_calculation_spin_orbit_example_06(
-    tmp_path, monkeypatch, 
+    tmp_path, monkeypatch,
 ):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
@@ -479,7 +479,7 @@ def test_phonon_calculation_si_spin_orbit(
 
 
 def test_phonon_induced_renormalization(
-    tmp_path, monkeypatch, caplog, 
+    tmp_path, monkeypatch, caplog,
 ):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
@@ -530,7 +530,7 @@ def test_phonon_induced_renormalization(
             c_ph_results = phonon_job(
                 c_scf_results["dir_name"],
                 **c_ph_params,
-                
+
             )
             assert "Overwriting key 'fildyn'" in caplog.text
 
@@ -563,7 +563,7 @@ def test_phonon_induced_renormalization(
             dvscf_q2r_results = dvscf_q2r_job(
                 c_ph_results["dir_name"],
                 **dvscf_q2r_params,
-                
+
             )
 
             assert "Overwriting key 'fildyn'" in caplog.text
@@ -602,7 +602,7 @@ def test_phonon_induced_renormalization(
             c_scf_results["atoms"],
             c_scf_results["dir_name"],
             **c_nscf_params,
-            
+
         )
 
         c_ahc_coarse_params = {
@@ -627,7 +627,7 @@ def test_phonon_induced_renormalization(
         c_ahc_coarse_results = phonon_job(
             [dvscf_q2r_results["dir_name"], c_nscf_results["dir_name"]],
             **c_ahc_coarse_params,
-            
+
         )
 
         matdyn_coarse_params = {
@@ -702,7 +702,7 @@ def test_phonon_induced_renormalization(
         postahc_coarse_results = postahc_job(
             [c_ahc_coarse_results["dir_name"], matdyn_coarse_results["dir_name"]],
             **postahc_coarse_params,
-            
+
         )
 
         assert Path(postahc_coarse_results["dir_name"], "postahc.out.gz").exists()
@@ -723,7 +723,7 @@ def test_phonon_dvscf_q2r_inplace(tmp_path, monkeypatch, ):
 
         c_scf_results = static_job(
             atoms,
-            
+
             pseudopotentials=pseudopotentials,
             kspacing=0.1,
         )
@@ -744,7 +744,7 @@ def test_phonon_dvscf_q2r_inplace(tmp_path, monkeypatch, ):
         c_ph_results = phonon_job(
             prev_outdir=c_scf_results["dir_name"],
             **c_ph_params,
-            
+
         )
 
         dvscf_q2r_params = {
@@ -761,7 +761,7 @@ def test_phonon_dvscf_q2r_inplace(tmp_path, monkeypatch, ):
             prev_outdir=c_scf_results["dir_name"],
             copy_files=c_ph_results["dir_name"],
             **dvscf_q2r_params,
-            
+
         )
 
         assert (
