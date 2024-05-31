@@ -16,13 +16,8 @@ def test_tutorial1a(tmp_path, monkeypatch):
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
 
-    # Define the workflow
-    @flow
-    def workflow(atoms):
-        return relax_job(atoms)  # (1)!
-
     # Dispatch the workflow
-    future = workflow(atoms)  # (2)!
+    future = relax_job(atoms)  # (2)!
 
     # Fetch the result
     result = future.result()  # (3)!
