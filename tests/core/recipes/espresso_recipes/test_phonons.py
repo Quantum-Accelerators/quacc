@@ -411,7 +411,7 @@ def test_phonon_calculation_spin_orbit_example_06(
 
 
 def test_phonon_calculation_si_spin_orbit(
-    tmp_path, monkeypatch, , caplog
+    tmp_path, monkeypatch, caplog
 ):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
