@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
 from ase.vibrations.data import VibrationsData
@@ -13,27 +14,28 @@ from quacc.runners.thermo import run_ideal_gas
 from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
 from quacc.utils.dicts import recursive_dict_merge
 
-try:
-    from sella import Sella
-except ImportError:
-    Sella = None
+has_sella = bool(find_spec("sella"))
+has_newtonnet = bool(find_spec("newtonnet"))
 
-try:
+if has_sella:
+    from sella import Sella
+if has_newtonnet:
     from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
-except ImportError:
-    NewtonNet = None
 
 if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
 
+    from quacc.runners.ase import OptParams
     from quacc.schemas._aliases.ase import OptSchema, RunSchema, VibThermoSchema
     from quacc.utils.files import Filenames, SourceDirectory
 
 
 @job
-@requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
+@requires(
+    has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation."
+)
 def static_job(
     atoms: Atoms,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
@@ -74,10 +76,12 @@ def static_job(
 
 
 @job
-@requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
+@requires(
+    has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation."
+)
 def relax_job(
     atoms: Atoms,
-    opt_params: dict[str, Any] | None = None,
+    opt_params: OptParams | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
@@ -108,7 +112,7 @@ def relax_job(
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
     }
-    opt_defaults = {"optimizer": Sella} if Sella else {}
+    opt_defaults = {"optimizer": Sella} if has_sella else {}
 
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
@@ -122,7 +126,9 @@ def relax_job(
 
 
 @job
-@requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
+@requires(
+    has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation."
+)
 def freq_job(
     atoms: Atoms,
     temperature: float = 298.15,
@@ -160,19 +166,17 @@ def freq_job(
     }
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
 
-    ml_calculator = NewtonNet(**calc_flags)
-    atoms.calc = ml_calculator
+    atoms.calc = NewtonNet(**calc_flags)
     final_atoms = run_calc(atoms, copy_files=copy_files)
 
     summary = summarize_run(
         final_atoms, atoms, additional_fields={"name": "NewtonNet Hessian"}
     )
-    energy = summary["results"]["energy"]
-    hessian = summary["results"]["hessian"]
 
-    vib = VibrationsData(final_atoms, hessian)
-
-    igt = run_ideal_gas(final_atoms, vib.get_frequencies(), energy=energy)
+    vib = VibrationsData(final_atoms, summary["results"]["hessian"])
+    igt = run_ideal_gas(
+        final_atoms, vib.get_frequencies(), energy=summary["results"]["energy"]
+    )
 
     return summarize_vib_and_thermo(
         vib,
@@ -200,16 +204,15 @@ def _add_stdev_and_hess(summary: dict[str, Any]) -> dict[str, Any]:
 
     Returns
     -------
-    Dict
+    dict[str, Any]
         The modified summary dictionary with added standard deviation and
         Hessian values.
     """
     for i, atoms in enumerate(summary["trajectory"]):
-        ml_calculator = NewtonNet(
+        atoms.calc = NewtonNet(
             model_path=SETTINGS.NEWTONNET_MODEL_PATH,
             settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
         )
-        atoms.calc = ml_calculator
         results = run_calc(atoms).calc.results
         summary["trajectory_results"][i]["hessian"] = results["hessian"]
         summary["trajectory_results"][i]["energy_std"] = results["energy_disagreement"]

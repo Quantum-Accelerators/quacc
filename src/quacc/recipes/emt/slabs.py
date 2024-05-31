@@ -47,7 +47,7 @@ def bulk_to_slabs_flow(
     make_slabs_kwargs
         Additional keyword arguments to pass to [quacc.atoms.slabs.make_slabs_from_bulk][]
     job_params
-        Custom parameters to pass to each Job in the Flow. This is a dictinoary where
+        Custom parameters to pass to each Job in the Flow. This is a dictionary where
         the keys are the names of the jobs and the values are dictionaries of parameters.
     job_decorators
         Custom decorators to apply to each Job in the Flow. This is a dictionary where
@@ -63,7 +63,7 @@ def bulk_to_slabs_flow(
     relax_job_, static_job_ = customize_funcs(
         ["relax_job", "static_job"],
         [relax_job, static_job],
-        parameters=job_params,
+        param_swaps=job_params,
         decorators=job_decorators,
     )
 

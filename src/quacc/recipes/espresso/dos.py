@@ -38,7 +38,6 @@ def dos_job(
         | None
     ) = None,
     prev_outdir: SourceDirectory | None = None,
-    parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
 ) -> RunSchema:
@@ -60,9 +59,6 @@ def dos_job(
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
         to manually copy files. The directory will be ungzipped if necessary.
-    parallel_info
-        Dictionary containing information about the parallelization of the
-        calculation. See the ASE documentation for more information.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -78,7 +74,6 @@ def dos_job(
         template=EspressoTemplate("dos", test_run=test_run, outdir=prev_outdir),
         calc_defaults=None,
         calc_swaps=calc_kwargs,
-        parallel_info=parallel_info,
         additional_fields={"name": "dos.x Density-of-States"},
         copy_files=copy_files,
     )
@@ -93,7 +88,6 @@ def projwfc_job(
         | None
     ) = None,
     prev_outdir: SourceDirectory | None = None,
-    parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
 ) -> RunSchema:
@@ -115,9 +109,6 @@ def projwfc_job(
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
         to manually copy files. The directory will be ungzipped if necessary.
-    parallel_info
-        Dictionary containing information about the parallelization of the
-        calculation. See the ASE documentation for more information.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -133,7 +124,6 @@ def projwfc_job(
         template=EspressoTemplate("projwfc", test_run=test_run, outdir=prev_outdir),
         calc_defaults=None,
         calc_swaps=calc_kwargs,
-        parallel_info=parallel_info,
         additional_fields={"name": "projwfc.x Projects-wavefunctions"},
         copy_files=copy_files,
     )
@@ -167,7 +157,7 @@ def dos_flow(
     atoms
         Atoms object
     job_params
-        Custom parameters to pass to each Job in the Flow. This is a dictinoary where
+        Custom parameters to pass to each Job in the Flow. This is a dictionary where
         the keys are the names of the jobs and the values are dictionaries of parameters.
     job_decorators
         Custom decorators to apply to each Job in the Flow. This is a dictionary where
@@ -179,39 +169,33 @@ def dos_flow(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    static_job_defaults = {
-        "kspacing": 0.2,
-        "input_data": {"system": {"occupations": "tetrahedra"}},
-    }
-    non_scf_job_defaults = recursive_dict_merge(
-        job_params.get("static_job"),
-        {
-            "kspacing": 0.01,
-            "input_data": {
-                "control": {"calculation": "nscf", "verbosity": "high"},
-                "system": {"occupations": "tetrahedra"},
-            },
+    default_job_params = {
+        "static_job": {
+            "kspacing": 0.2,
+            "input_data": {"system": {"occupations": "tetrahedra"}},
         },
-    )
-
-    calc_defaults = {
-        "static_job": static_job_defaults,
-        "non_scf_job": non_scf_job_defaults,
-        "dos_job": None,
+        "non_scf_job": recursive_dict_merge(
+            job_params.get("static_job"),
+            {
+                "kspacing": 0.01,
+                "input_data": {
+                    "control": {"calculation": "nscf", "verbosity": "high"},
+                    "system": {"occupations": "tetrahedra"},
+                },
+            },
+        ),
     }
-    job_params = recursive_dict_merge(calc_defaults, job_params)
 
     static_job_, non_scf_job_, dos_job_ = customize_funcs(
         ["static_job", "non_scf_job", "dos_job"],
         [static_job, non_scf_job, dos_job],
-        parameters=job_params,
+        param_defaults=default_job_params,
+        param_swaps=job_params,
         decorators=job_decorators,
     )
 
     static_results = static_job_(atoms)
-
     non_scf_results = non_scf_job_(atoms, prev_outdir=static_results["dir_name"])
-
     dos_results = dos_job_(prev_outdir=static_results["dir_name"])
 
     return {
@@ -249,7 +233,7 @@ def projwfc_flow(
     atoms
         Atoms object
     job_params
-        Custom parameters to pass to each Job in the Flow. This is a dictinoary where
+        Custom parameters to pass to each Job in the Flow. This is a dictionary where
         the keys are the names of the jobs and the values are dictionaries of parameters.
     job_decorators
         Custom decorators to apply to each Job in the Flow. This is a dictionary where
@@ -261,39 +245,32 @@ def projwfc_flow(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    static_job_defaults = {
-        "kspacing": 0.2,
-        "input_data": {"system": {"occupations": "tetrahedra"}},
-    }
-    non_scf_job_defaults = recursive_dict_merge(
-        job_params.get("static_job"),
-        {
-            "kspacing": 0.01,
-            "input_data": {
-                "control": {"calculation": "nscf", "verbosity": "high"},
-                "system": {"occupations": "tetrahedra"},
-            },
+    default_job_params = {
+        "static_job": {
+            "kspacing": 0.2,
+            "input_data": {"system": {"occupations": "tetrahedra"}},
         },
-    )
-
-    calc_defaults = {
-        "static_job": static_job_defaults,
-        "non_scf_job": non_scf_job_defaults,
-        "projwfc_job": None,
+        "non_scf_job": recursive_dict_merge(
+            job_params.get("static_job"),
+            {
+                "kspacing": 0.01,
+                "input_data": {
+                    "control": {"calculation": "nscf", "verbosity": "high"},
+                    "system": {"occupations": "tetrahedra"},
+                },
+            },
+        ),
     }
-    job_params = recursive_dict_merge(calc_defaults, job_params)
-
     static_job_, non_scf_job_, projwfc_job_ = customize_funcs(
         ["static_job", "non_scf_job", "projwfc_job"],
         [static_job, non_scf_job, projwfc_job],
-        parameters=job_params,
+        param_defaults=default_job_params,
+        param_swaps=job_params,
         decorators=job_decorators,
     )
 
     static_results = static_job_(atoms)
-
     non_scf_results = non_scf_job_(atoms, prev_outdir=static_results["dir_name"])
-
     projwfc_results = projwfc_job_(prev_outdir=static_results["dir_name"])
 
     return {

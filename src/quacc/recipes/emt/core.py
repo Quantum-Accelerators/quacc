@@ -15,10 +15,9 @@ from quacc.runners.ase import run_calc, run_opt
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 
 if TYPE_CHECKING:
-    from typing import Any
-
     from ase.atoms import Atoms
 
+    from quacc.runners.ase import OptParams
     from quacc.schemas._aliases.ase import OptSchema, RunSchema
     from quacc.utils.files import Filenames, SourceDirectory
 
@@ -59,7 +58,7 @@ def static_job(
 def relax_job(
     atoms: Atoms,
     relax_cell: bool = False,
-    opt_params: dict[str, Any] | None = None,
+    opt_params: OptParams | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> OptSchema:

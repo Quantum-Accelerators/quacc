@@ -44,7 +44,6 @@ def bands_pw_job(
     make_bandpath: bool = True,
     line_density: float = 20,
     force_gamma: bool = True,
-    parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
 ) -> RunSchema:
@@ -80,9 +79,6 @@ def bands_pw_job(
     force_gamma
         Forces gamma-centered k-points when using make_bandpath
         For more information [quacc.utils.kpts.convert_pmg_kpts][]
-    parallel_info
-        Dictionary containing information about the parallelization of the
-        calculation. See the ASE documentation for more information.
     test_run
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
@@ -116,7 +112,6 @@ def bands_pw_job(
         template=EspressoTemplate("pw", test_run=test_run, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        parallel_info=parallel_info,
         additional_fields={"name": "pw.x bands"},
         copy_files=copy_files,
     )
@@ -131,7 +126,6 @@ def bands_pp_job(
         | None
     ) = None,
     prev_outdir: SourceDirectory | None = None,
-    parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
 ) -> RunSchema:
@@ -152,9 +146,6 @@ def bands_pp_job(
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
         to manually copy files. The directory will be ungzipped if necessary.
-    parallel_info
-        Dictionary containing information about the parallelization of the
-        calculation. See the ASE documentation for more information.
     test_run
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
@@ -173,7 +164,6 @@ def bands_pp_job(
         template=EspressoTemplate("bands", test_run=test_run, outdir=prev_outdir),
         calc_defaults={},
         calc_swaps=calc_kwargs,
-        parallel_info=parallel_info,
         additional_fields={"name": "bands.x post-processing"},
         copy_files=copy_files,
     )
@@ -188,7 +178,6 @@ def fermi_surface_job(
         | None
     ) = None,
     prev_outdir: SourceDirectory | None = None,
-    parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
 ) -> RunSchema:
@@ -208,9 +197,6 @@ def fermi_surface_job(
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
         to manually copy files. The directory will be ungzipped if necessary.
-    parallel_info
-        Dictionary containing information about the parallelization of the
-        calculation. See the ASE documentation for more information.
     test_run
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
@@ -229,7 +215,6 @@ def fermi_surface_job(
         template=EspressoTemplate("fs", test_run=test_run, outdir=prev_outdir),
         calc_defaults={},
         calc_swaps=calc_kwargs,
-        parallel_info=parallel_info,
         additional_fields={"name": "fs.x fermi_surface"},
         copy_files=copy_files,
     )
@@ -246,7 +231,6 @@ def bands_flow(
     make_bandpath: bool = True,
     line_density: float = 20,
     force_gamma: bool = True,
-    parallel_info: dict[str] | None = None,
     job_params: dict[str, Any] | None = None,
     job_decorators: dict[str, Callable | None] | None = None,
 ) -> BandsSchema:
@@ -291,11 +275,8 @@ def bands_flow(
     force_gamma
         Forces gamma-centered k-points when using make_bandpath
         For more information [quacc.utils.kpts.convert_pmg_kpts][]
-    parallel_info
-        Dictionary containing information about the parallelization of the
-        calculation. See the ASE documentation for more information.
     job_params
-        Custom parameters to pass to each Job in the Flow. This is a dictinoary where
+        Custom parameters to pass to each Job in the Flow. This is a dictionary where
         the keys are the names of the jobs and the values are dictionaries of parameters.
     job_decorators
         Custom decorators to apply to each Job in the Flow. This is a dictionary where
@@ -310,7 +291,7 @@ def bands_flow(
     (bands_pw_job_, bands_pp_job_, fermi_surface_job_) = customize_funcs(
         ["bands_pw_job", "bands_pp_job", "fermi_surface_job"],
         [bands_pw_job, bands_pp_job, fermi_surface_job],
-        parameters=job_params,
+        param_swaps=job_params,
         decorators=job_decorators,
     )
 
@@ -320,20 +301,15 @@ def bands_flow(
         make_bandpath=make_bandpath,
         line_density=line_density,
         force_gamma=force_gamma,
-        parallel_info=parallel_info,
     )
     results = {"bands_pw": bands_results}
 
     if run_bands_pp:
-        bands_pp_results = bands_pp_job_(
-            prev_outdir=bands_results["dir_name"], parallel_info=parallel_info
-        )
+        bands_pp_results = bands_pp_job_(prev_outdir=bands_results["dir_name"])
         results["bands_pp"] = bands_pp_results
 
     if run_fermi_surface:
-        fermi_results = fermi_surface_job_(
-            prev_outdir=bands_results["dir_name"], parallel_info=parallel_info
-        )
+        fermi_results = fermi_surface_job_(prev_outdir=bands_results["dir_name"])
         results["fermi_surface"] = fermi_results
 
     return results

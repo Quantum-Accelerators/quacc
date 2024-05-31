@@ -17,6 +17,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
+    from quacc.runners.ase import OptParams
     from quacc.schemas._aliases.cclib import cclibASEOptSchema, cclibSchema
     from quacc.utils.files import Filenames, SourceDirectory
 
@@ -94,7 +95,7 @@ def run_and_summarize_opt(
     input_swaps: list[str] | None = None,
     block_swaps: list[str] | None = None,
     opt_defaults: dict[str, Any] | None = None,
-    opt_params: dict[str, Any] | None = None,
+    opt_params: OptParams | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
@@ -195,7 +196,7 @@ def prep_calculator(
     orcablocks = "\n".join(blocks)
 
     return ORCA(
-        profile=OrcaProfile(SETTINGS.ORCA_CMD),
+        profile=OrcaProfile(command=SETTINGS.ORCA_CMD),
         charge=charge,
         mult=spin_multiplicity,
         orcasimpleinput=orcasimpleinput,

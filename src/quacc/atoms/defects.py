@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
@@ -9,20 +10,21 @@ from pymatgen.core.periodic_table import DummySpecies
 from pymatgen.entries.computed_entries import ComputedStructureEntry
 from pymatgen.io.ase import AseAtomsAdaptor
 
-try:
+has_pmg_defects = bool(find_spec("pymatgen.analysis.defects"))
+has_shakenbreak = bool(find_spec("shakenbreak"))
+if has_pmg_defects:
     from pymatgen.analysis.defects.generators import VacancyGenerator
+    from pymatgen.analysis.defects.thermo import DefectEntry
+if has_shakenbreak:
     from shakenbreak.input import Distortions
 
-    has_deps = True
-except ImportError:
-    has_deps = False
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
     from numpy.typing import NDArray
     from pymatgen.core.structure import Structure
 
-    if has_deps:
+    if has_pmg_defects:
         from pymatgen.analysis.defects.core import Defect
         from pymatgen.analysis.defects.generators import (
             AntiSiteGenerator,
@@ -31,12 +33,13 @@ if TYPE_CHECKING:
             SubstitutionGenerator,
             VoronoiInterstitialGenerator,
         )
-        from pymatgen.analysis.defects.thermo import DefectEntry
 
 
 @requires(
-    has_deps, "Missing defect dependencies. Please run pip install quacc[defects]"
+    has_pmg_defects,
+    "Missing pymatgen-analysis-defects. Please run pip install quacc[defects]",
 )
+@requires(has_shakenbreak, "Missing shakenbreak. Please run pip install quacc[defects]")
 def make_defects_from_bulk(
     atoms: Atoms,
     defect_gen: (
@@ -105,7 +108,7 @@ def make_defects_from_bulk(
         )
 
         # Generate DefectEntry object from Defect object
-        defect_entry = _get_defect_entry_from_defect(
+        defect_entry = get_defect_entry_from_defect(
             defect=defect,
             defect_supercell=defect_supercell,
             defect_charge=defect_charge,
@@ -136,7 +139,11 @@ def make_defects_from_bulk(
     return final_defects
 
 
-def _get_defect_entry_from_defect(
+@requires(
+    has_pmg_defects,
+    "Missing pymatgen-analysis-defects. Please run pip install quacc[defects]",
+)
+def get_defect_entry_from_defect(
     defect: Defect, defect_supercell: Structure, defect_charge: int
 ) -> DefectEntry:
     """
@@ -156,8 +163,6 @@ def _get_defect_entry_from_defect(
     DefectEntry
         defect entry
     """
-    from pymatgen.analysis.defects.thermo import DefectEntry  # skipcq: PYL-W0621
-
     # Find defect's fractional coordinates and remove it from supercell
     for site in defect_supercell:
         if site.species.elements[0].symbol == DummySpecies().symbol:
