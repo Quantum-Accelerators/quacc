@@ -145,32 +145,22 @@ graph LR
 
     ```python
     from ase.build import bulk
-    from quacc import flow
     from quacc.recipes.emt.core import relax_job
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
 
-
-    # Define the workflow
-    @flow
-    def workflow(atoms):
-        return relax_job(atoms)  # (1)!
-
-
     # Dispatch the workflow
-    future = workflow(atoms)  # (2)!
+    future = relax_job(atoms)  # (1)!
 
     # Fetch the result
-    result = future.result()  # (3)!
+    result = future.result()  # (2)!
     print(result)
     ```
 
-    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
+    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here. The workflow has been dispatched to the Prefect server at this point.
 
-    2. The workflow has been dispatched to the Prefect server at this point.
-
-    3. Finally, we fetch the result of the completed workflow.
+    2. Finally, we wait and fetch the result of the completed workflow.
 
 === "Redun"
 
