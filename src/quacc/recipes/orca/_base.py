@@ -196,7 +196,7 @@ def prep_calculator(
     orcablocks = "\n".join(blocks)
 
     return ORCA(
-        profile=OrcaProfile(SETTINGS.ORCA_CMD),
+        profile=OrcaProfile(command=SETTINGS.ORCA_CMD),
         charge=charge,
         mult=spin_multiplicity,
         orcasimpleinput=orcasimpleinput,

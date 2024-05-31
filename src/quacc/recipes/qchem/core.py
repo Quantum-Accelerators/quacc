@@ -2,18 +2,17 @@
 
 from __future__ import annotations
 
+from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
 from quacc import job
 from quacc.recipes.qchem._base import run_and_summarize, run_and_summarize_opt
 from quacc.utils.dicts import recursive_dict_merge
 
-try:
-    from sella import Sella
+has_sella = bool(find_spec("sella"))
 
-    has_sella = True
-except ImportError:
-    has_sella = False
+if has_sella:
+    from sella import Sella
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
