@@ -65,7 +65,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
 
     RESULTS_DIR: Path = Field(
-        Path(),
+        Path.cwd(),
         description=(
             """
             Directory to permanently store I/O-based calculation results in.

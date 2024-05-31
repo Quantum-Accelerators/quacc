@@ -20,9 +20,7 @@ class Parameters(TypedDict):
 
 
 class ParametersOpt(TypedDict):
-    """Dictionary of parameters from Optimizer.todict() and fmax"""
-
-    fmax: float | None
+    """Dictionary of parameters from Optimizer.todict()"""
 
 
 class RunSchema(AtomsSchema):
