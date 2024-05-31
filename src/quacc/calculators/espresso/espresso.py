@@ -428,8 +428,7 @@ class Espresso(GenericFileIOCalculator):
         suffix = SETTINGS.ESPRESSO_PARALLEL_CMD[1]
 
         profile = EspressoProfile(
-            f"{prefix} {self._bin_path} {suffix}",
-            self._pseudo_path,
+            f"{prefix} {self._bin_path} {suffix}", self._pseudo_path
         )
 
         super().__init__(
