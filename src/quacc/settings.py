@@ -464,7 +464,7 @@ class QuaccSettings(BaseSettings):
     def validate_espresso_parallel_cmd(cls, v: Union[str, tuple[str, str]]) -> Store:
         """Clean up Espresso parallel command."""
         if isinstance(v, str):
-            return v, ""
+            v = (v, "")
         return v
 
     @model_validator(mode="before")
