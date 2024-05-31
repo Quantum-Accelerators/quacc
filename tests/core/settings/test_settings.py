@@ -3,16 +3,14 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-import pytest
 from ase.build import bulk
 from maggma.stores import MemoryStore
 
-from quacc import SETTINGS
+from quacc import change_settings
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.settings import QuaccSettings
 
 FILE_DIR = Path(__file__).parent
-DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 
 def test_file(tmp_path, monkeypatch):
@@ -29,9 +27,9 @@ def test_file(tmp_path, monkeypatch):
 
 def test_store(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    SETTINGS.STORE = MemoryStore()
-    atoms = bulk("Cu")
-    static_job(atoms)
+    with change_settings({"STORE": MemoryStore()}):
+        atoms = bulk("Cu")
+        static_job(atoms)
 
 
 def test_results_dir(tmp_path, monkeypatch):
@@ -40,17 +38,10 @@ def test_results_dir(tmp_path, monkeypatch):
     atoms = bulk("Cu")
     output = relax_job(atoms)
     assert "opt.traj.gz" in os.listdir(output["dir_name"])
-    SETTINGS.GZIP_FILES = False
-    output = relax_job(atoms)
-    assert "opt.traj" in os.listdir(output["dir_name"])
-    SETTINGS.GZIP_FILES = DEFAULT_SETTINGS.GZIP_FILES
 
-
-def test_bad_dir():
-    with pytest.raises(ValueError, match="must be an absolute path"):
-        SETTINGS.RESULTS_DIR = "bad_dir"
-    with pytest.raises(ValueError, match="must be an absolute path"):
-        SETTINGS.SCRATCH_DIR = "bad_dir"
+    with change_settings({"GZIP_FILES": False}):
+        output = relax_job(atoms)
+        assert "opt.traj" in os.listdir(output["dir_name"])
 
 
 def test_env_var(monkeypatch, tmp_path):

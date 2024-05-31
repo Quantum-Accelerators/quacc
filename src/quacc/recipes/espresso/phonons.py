@@ -240,41 +240,35 @@ def phonon_dos_flow(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    relax_job_defaults = {
-        "input_data": {
-            "control": {"forc_conv_thr": 5.0e-5},
-            "electrons": {"conv_thr": 1e-12},
-        }
-    }
-    ph_job_defaults = {
-        "input_data": {
-            "inputph": {
-                "tr2_ph": 1e-12,
-                "alpha_mix(1)": 0.1,
-                "verbosity": "high",
-                "ldisp": True,
-                "nq1": 4,
-                "nq2": 4,
-                "nq3": 4,
+    default_job_params = {
+        "relax_job": {
+            "input_data": {
+                "control": {"forc_conv_thr": 5.0e-5},
+                "electrons": {"conv_thr": 1e-12},
             }
-        }
+        },
+        "phonon_job": {
+            "input_data": {
+                "inputph": {
+                    "tr2_ph": 1e-12,
+                    "alpha_mix(1)": 0.1,
+                    "verbosity": "high",
+                    "ldisp": True,
+                    "nq1": 4,
+                    "nq2": 4,
+                    "nq3": 4,
+                }
+            }
+        },
+        "matdyn_job": {
+            "input_data": {"input": {"dos": True, "nk1": 32, "nk2": 32, "nk3": 32}}
+        },
     }
-    matdyn_job_defaults = {
-        "input_data": {"input": {"dos": True, "nk1": 32, "nk2": 32, "nk3": 32}}
-    }
-
-    calc_defaults = {
-        "relax_job": relax_job_defaults,
-        "phonon_job": ph_job_defaults,
-        "matdyn_job": matdyn_job_defaults,
-    }
-
-    job_params = recursive_dict_merge(calc_defaults, job_params)
-
     pw_job, ph_job, fc_job, dos_job = customize_funcs(
         ["relax_job", "phonon_job", "q2r_job", "matdyn_job"],
         [relax_job, phonon_job, q2r_job, matdyn_job],
-        parameters=job_params,
+        param_defaults=default_job_params,
+        param_swaps=job_params,
         decorators=job_decorators,
     )
 
@@ -350,7 +344,7 @@ def grid_phonon_flow(
         If nblocks = 0, each job will contain all the representations for a
         single q-point.
     job_params
-        Custom parameters to pass to each Job in the Flow. This is a dictinoary where
+        Custom parameters to pass to each Job in the Flow. This is a dictionary where
         the keys are the names of the jobs and the values are dictionaries of parameters.
     job_decorators
         Custom decorators to apply to each Job in the Flow. This is a dictionary where
@@ -428,40 +422,32 @@ def grid_phonon_flow(
 
         return grid_results
 
-    job_params = job_params or {}
-    relax_job_defaults = {
-        "input_data": {
-            "control": {"forc_conv_thr": 5.0e-5},
-            "electrons": {"conv_thr": 1e-12},
-        }
+    default_job_params = {
+        "relax_job": {
+            "input_data": {
+                "control": {"forc_conv_thr": 5.0e-5},
+                "electrons": {"conv_thr": 1e-12},
+            }
+        },
+        "ph_init_job": recursive_dict_merge(
+            {"input_data": {"inputph": {"lqdir": True, "only_init": True}}},
+            job_params.get("ph_job"),
+        ),
+        "ph_job": {
+            "input_data": {
+                "inputph": {"lqdir": True, "low_directory_check": True, "recover": True}
+            }
+        },
+        "ph_recover_job": recursive_dict_merge(
+            {"input_data": {"inputph": {"recover": True, "lqdir": True}}},
+            job_params.get("ph_job"),
+        ),
     }
-    ph_init_job_defaults = recursive_dict_merge(
-        {"input_data": {"inputph": {"lqdir": True, "only_init": True}}},
-        job_params.get("ph_job"),
-    )
-    ph_job_defaults = {
-        "input_data": {
-            "inputph": {"lqdir": True, "low_directory_check": True, "recover": True}
-        }
-    }
-    ph_recover_job_defaults = recursive_dict_merge(
-        {"input_data": {"inputph": {"recover": True, "lqdir": True}}},
-        job_params.get("ph_job"),
-    )
-
-    calc_defaults = {
-        "relax_job": relax_job_defaults,
-        "ph_init_job": ph_init_job_defaults,
-        "ph_job": ph_job_defaults,
-        "ph_recover_job": ph_recover_job_defaults,
-    }
-
-    job_params = recursive_dict_merge(calc_defaults, job_params)
-
     pw_job, ph_init_job, ph_job, ph_recover_job = customize_funcs(
         ["relax_job", "ph_init_job", "ph_job", "ph_recover_job"],
         [relax_job, phonon_job, phonon_job, phonon_job],
-        parameters=job_params,
+        param_defaults=default_job_params,
+        param_swaps=job_params,
         decorators=job_decorators,
     )
 

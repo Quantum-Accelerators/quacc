@@ -12,7 +12,8 @@ from quacc.atoms.phonons import get_phonopy, phonopy_atoms_to_ase_atoms
 from quacc.runners.phonons import run_phonopy
 from quacc.schemas.phonons import summarize_phonopy
 
-has_deps = find_spec("phonopy") is not None and find_spec("seekpath") is not None
+has_phonopy = bool(find_spec("phonopy"))
+has_seekpath = bool(find_spec("seekpath"))
 
 if TYPE_CHECKING:
     from typing import Any
@@ -22,15 +23,16 @@ if TYPE_CHECKING:
     from quacc import Job
     from quacc.schemas._aliases.phonons import PhononSchema
 
+    if has_phonopy:
+        from phonopy import Phonopy
+
 
 @subflow
-@requires(
-    has_deps, "Phonopy and seekpath must be installed. Run `pip install quacc[phonons]`"
-)
+@requires(has_phonopy, "Phonopy must be installed. Run `pip install quacc[phonons]`")
+@requires(has_seekpath, "Seekpath must be installed. Run `pip install quacc[phonons]`")
 def phonon_subflow(
     atoms: Atoms,
     force_job: Job,
-    relax_job: Job | None = None,
     symprec: float = 1e-4,
     min_lengths: float | tuple[float, float, float] | None = 20.0,
     supercell_matrix: (
@@ -52,8 +54,6 @@ def phonon_subflow(
         Atoms object with calculator attached.
     force_job
         The static job to calculate the forces.
-    relax_job
-        The job used to relax the structure before calculating the forces.
     symprec
         Precision for symmetry detection.
     min_lengths
@@ -72,25 +72,13 @@ def phonon_subflow(
     phonopy_kwargs
         Additional kwargs to pass to the Phonopy class.
     additional_fields
-        Additional fields to store in the database.
+        Additional fields to add to the output schema.
 
     Returns
     -------
     PhononSchema
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][]
     """
-
-    phonon = get_phonopy(
-        atoms,
-        min_lengths=min_lengths,
-        supercell_matrix=supercell_matrix,
-        symprec=symprec,
-        displacement=displacement,
-        phonopy_kwargs=phonopy_kwargs,
-    )
-    supercells = [
-        phonopy_atoms_to_ase_atoms(s) for s in phonon.supercells_with_displacements
-    ]
 
     @subflow
     def _get_forces_subflow(supercells: list[Atoms]) -> list[dict]:
@@ -99,31 +87,41 @@ def phonon_subflow(
         ]
 
     @job
-    def _thermo_job(atoms: Atoms, force_job_results: list[dict]) -> PhononSchema:
-        phonon = get_phonopy(
-            atoms,
-            min_lengths=min_lengths,
-            supercell_matrix=supercell_matrix,
-            symprec=symprec,
-            displacement=displacement,
-            phonopy_kwargs=phonopy_kwargs,
-        )
+    def _thermo_job(
+        atoms: Atoms,
+        phonopy: Phonopy,
+        force_job_results: list[dict],
+        t_step: float,
+        t_min: float,
+        t_max: float,
+        additional_fields: dict[str, Any] | None,
+    ) -> PhononSchema:
         parameters = force_job_results[-1].get("parameters")
         forces = [output["results"]["forces"] for output in force_job_results]
-        phonon_results = run_phonopy(
-            phonon, forces, t_step=t_step, t_min=t_min, t_max=t_max
+        phonopy_results = run_phonopy(
+            phonopy, forces, t_step=t_step, t_min=t_min, t_max=t_max
         )
 
         return summarize_phonopy(
-            phonon,
+            phonopy,
             atoms,
-            phonon_results.directory,
+            phonopy_results.directory,
             parameters=parameters,
             additional_fields=additional_fields,
         )
 
-    if relax_job is not None:
-        atoms = relax_job(atoms)["atoms"]
-
+    phonopy = get_phonopy(
+        atoms,
+        min_lengths=min_lengths,
+        supercell_matrix=supercell_matrix,
+        symprec=symprec,
+        displacement=displacement,
+        phonopy_kwargs=phonopy_kwargs,
+    )
+    supercells = [
+        phonopy_atoms_to_ase_atoms(s) for s in phonopy.supercells_with_displacements
+    ]
     force_job_results = _get_forces_subflow(supercells)
-    return _thermo_job(atoms, force_job_results)
+    return _thermo_job(
+        atoms, phonopy, force_job_results, t_step, t_min, t_max, additional_fields
+    )

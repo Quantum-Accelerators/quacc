@@ -15,11 +15,11 @@ def patch_execute(monkeypatch):
 
 
 def mock_read_results(self, directory, *args, **kwargs):
-    from ase.calculators.emt import EMT
+    from ase.calculators.lj import LennardJones
     from ase.io import read
 
     atoms = read(directory / "onetep.dat")
-    atoms.calc = EMT()
+    atoms.calc = LennardJones()
     atoms.get_potential_energy()
     return atoms.calc.results
 

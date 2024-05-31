@@ -276,7 +276,7 @@ def bands_flow(
         Forces gamma-centered k-points when using make_bandpath
         For more information [quacc.utils.kpts.convert_pmg_kpts][]
     job_params
-        Custom parameters to pass to each Job in the Flow. This is a dictinoary where
+        Custom parameters to pass to each Job in the Flow. This is a dictionary where
         the keys are the names of the jobs and the values are dictionaries of parameters.
     job_decorators
         Custom decorators to apply to each Job in the Flow. This is a dictionary where
@@ -291,7 +291,7 @@ def bands_flow(
     (bands_pw_job_, bands_pp_job_, fermi_surface_job_) = customize_funcs(
         ["bands_pw_job", "bands_pp_job", "fermi_surface_job"],
         [bands_pw_job, bands_pp_job, fermi_surface_job],
-        parameters=job_params,
+        param_swaps=job_params,
         decorators=job_decorators,
     )
 

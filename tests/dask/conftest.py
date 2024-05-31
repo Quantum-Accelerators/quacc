@@ -1,15 +1,16 @@
 from __future__ import annotations
 
 import contextlib
-from importlib import util
+from importlib.util import find_spec
 from pathlib import Path
+from shutil import rmtree
 
 TEST_RESULTS_DIR = Path(__file__).parent / "_test_results"
 TEST_SCRATCH_DIR = Path(__file__).parent / "_test_scratch"
 
-has_import = util.find_spec("dask.distributed") is not None
+has_distributed = bool(find_spec("dask.distributed"))
 
-if has_import:
+if has_distributed:
 
     def pytest_sessionstart():
         import os
@@ -27,7 +28,7 @@ if has_import:
             Client()
 
     def pytest_sessionfinish(exitstatus):
-        from shutil import rmtree
+        rmtree(TEST_RESULTS_DIR, ignore_errors=True)
 
         if exitstatus == 0:
             from dask.distributed import default_client
@@ -35,5 +36,4 @@ if has_import:
             with contextlib.suppress(Exception):
                 default_client().close()
 
-            rmtree(TEST_RESULTS_DIR, ignore_errors=True)
             rmtree(TEST_SCRATCH_DIR, ignore_errors=True)

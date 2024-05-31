@@ -4,34 +4,25 @@ import pytest
 
 torch = pytest.importorskip("torch")
 
+from importlib.util import find_spec
+
 import numpy as np
 from ase.build import bulk
 
 from quacc.recipes.mlp.core import relax_job, static_job
 
 methods = []
-try:
-    import mace
-
+if has_mace := find_spec("mace"):
     methods.append("mace-mp-0")
 
-except ImportError:
-    mace = None
-try:
-    import matgl
-
+if has_matgl := find_spec("matgl"):
     methods.append("m3gnet")
-except ImportError:
-    matgl = None
-try:
-    import chgnet
 
+if has_chgnet := find_spec("chgnet"):
     methods.append("chgnet")
-except ImportError:
-    chgnet = None
 
 
-@pytest.mark.skipif(chgnet is None, reason="chgnet not installed")
+@pytest.mark.skipif(has_chgnet is None, reason="chgnet not installed")
 def test_bad_method():
     atoms = bulk("Cu")
     with pytest.raises(ValueError):
