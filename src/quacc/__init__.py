@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import os
 import logging
+import os
 from importlib.metadata import version
 
 from ase.atoms import Atoms
