@@ -38,7 +38,6 @@ def dos_job(
         | None
     ) = None,
     prev_outdir: SourceDirectory | None = None,
-    parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
 ) -> RunSchema:
@@ -60,9 +59,6 @@ def dos_job(
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
         to manually copy files. The directory will be ungzipped if necessary.
-    parallel_info
-        Dictionary containing information about the parallelization of the
-        calculation. See the ASE documentation for more information.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -78,7 +74,6 @@ def dos_job(
         template=EspressoTemplate("dos", test_run=test_run, outdir=prev_outdir),
         calc_defaults=None,
         calc_swaps=calc_kwargs,
-        parallel_info=parallel_info,
         additional_fields={"name": "dos.x Density-of-States"},
         copy_files=copy_files,
     )
@@ -93,7 +88,6 @@ def projwfc_job(
         | None
     ) = None,
     prev_outdir: SourceDirectory | None = None,
-    parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
 ) -> RunSchema:
@@ -115,9 +109,6 @@ def projwfc_job(
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
         to manually copy files. The directory will be ungzipped if necessary.
-    parallel_info
-        Dictionary containing information about the parallelization of the
-        calculation. See the ASE documentation for more information.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -133,7 +124,6 @@ def projwfc_job(
         template=EspressoTemplate("projwfc", test_run=test_run, outdir=prev_outdir),
         calc_defaults=None,
         calc_swaps=calc_kwargs,
-        parallel_info=parallel_info,
         additional_fields={"name": "projwfc.x Projects-wavefunctions"},
         copy_files=copy_files,
     )
