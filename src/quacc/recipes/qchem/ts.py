@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
@@ -12,13 +13,9 @@ from quacc.recipes.qchem._base import run_and_summarize_opt
 from quacc.recipes.qchem.core import _BASE_SET, relax_job
 from quacc.utils.dicts import recursive_dict_merge
 
-try:
+has_sella = bool(find_spec("sella"))
+if has_sella:
     from sella import IRC, Sella
-
-    has_sella = True
-
-except ImportError:
-    has_sella = False
 
 if TYPE_CHECKING:
     from typing import Any, Literal

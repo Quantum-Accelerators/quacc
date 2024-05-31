@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from importlib.util import find_spec
 from pathlib import Path
 from shutil import copy
 
@@ -16,10 +17,8 @@ from quacc.calculators.qchem import QChem
 from quacc.recipes.qchem.core import freq_job, relax_job, static_job
 from quacc.recipes.qchem.ts import irc_job, quasi_irc_job, quasi_irc_perturb_job, ts_job
 
-try:
-    import sella
-except ImportError:
-    sella = None
+has_sella = bool(find_spec("sella"))
+
 
 FILE_DIR = Path(__file__).parent
 QCHEM_DIR = FILE_DIR / "qchem_examples"
@@ -217,7 +216,7 @@ def test_static_job_v5(tmp_path, monkeypatch, test_atoms):
         )
 
 
-@pytest.mark.skipif(sella is None, reason="Does not have Sella")
+@pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
 def test_relax_job_v1(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
 
@@ -247,7 +246,7 @@ def test_relax_job_v1(monkeypatch, tmp_path, test_atoms):
     assert len(output["results"]["taskdoc"]["input"]) > 1
 
 
-@pytest.mark.skipif(sella is None, reason="Does not have Sella")
+@pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
 def test_relax_job_v2(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(QChem, "execute", mock_execute2)
@@ -278,7 +277,7 @@ def test_relax_job_v2(monkeypatch, tmp_path, test_atoms):
     qcinput_nearly_equal(qcin, ref_qcin)
 
 
-@pytest.mark.skipif(sella is None, reason="Does not have Sella")
+@pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
 def test_relax_job_v3(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(QChem, "execute", mock_execute3)
@@ -303,7 +302,7 @@ def test_relax_job_v3(monkeypatch, tmp_path, test_atoms):
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826311086011256)
 
 
-@pytest.mark.skipif(sella is None, reason="Does not have Sella")
+@pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
 def test_relax_job_v4(tmp_path, monkeypatch, test_atoms):
     monkeypatch.chdir(tmp_path)
     with pytest.raises(ValueError):
@@ -340,7 +339,7 @@ def test_freq_job_v1(monkeypatch, tmp_path, test_atoms):
     assert output["results"]["taskdoc"]["output"]["enthalpy"] is not None
 
 
-@pytest.mark.skipif(sella is None, reason="Does not have Sella")
+@pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
 def test_ts_job_v1(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
 
@@ -369,7 +368,7 @@ def test_ts_job_v1(monkeypatch, tmp_path, test_atoms):
     qcinput_nearly_equal(qcin, ref_qcin)
 
 
-@pytest.mark.skipif(sella is None, reason="Does not have Sella")
+@pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
 def test_ts_job_v2(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(QChem, "execute", mock_execute2)
@@ -400,7 +399,7 @@ def test_ts_job_v2(monkeypatch, tmp_path, test_atoms):
     qcinput_nearly_equal(qcin, ref_qcin)
 
 
-@pytest.mark.skipif(sella is None, reason="Does not have Sella")
+@pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
 def test_ts_job_v3(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(QChem, "execute", mock_execute3)
@@ -425,7 +424,7 @@ def test_ts_job_v3(monkeypatch, tmp_path, test_atoms):
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826311086011256)
 
 
-@pytest.mark.skipif(sella is None, reason="Does not have Sella")
+@pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
 def test_ts_job_v4(tmp_path, monkeypatch, test_atoms):
     monkeypatch.chdir(tmp_path)
     with pytest.raises(ValueError):
@@ -446,7 +445,7 @@ def test_ts_job_v4(tmp_path, monkeypatch, test_atoms):
         )
 
 
-@pytest.mark.skipif(sella is None, reason="Does not have Sella")
+@pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
 def test_irc_job_v1(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
 
@@ -512,7 +511,7 @@ def test_irc_job_v1(monkeypatch, tmp_path, test_atoms):
     assert output["parameters"]["spin_multiplicity"] == 1
 
 
-@pytest.mark.skipif(sella is None, reason="Does not have Sella")
+@pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
 def test_irc_job_v2(tmp_path, monkeypatch, test_atoms):
     monkeypatch.chdir(tmp_path)
     with pytest.raises(ValueError):
@@ -538,7 +537,7 @@ def test_irc_job_v2(tmp_path, monkeypatch, test_atoms):
         )
 
 
-@pytest.mark.skipif(sella is None, reason="Does not have Sella")
+@pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
 def test_quasi_irc_job(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
 
@@ -596,7 +595,7 @@ def test_quasi_irc_job(monkeypatch, tmp_path, test_atoms):
     qcinput_nearly_equal(qcin, ref_qcin)
 
 
-@pytest.mark.skipif(sella is None, reason="Does not have Sella")
+@pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
 def test_quasi_irc_perturb_job(monkeypatch, tmp_path, test_qirc_atoms):
     monkeypatch.chdir(tmp_path)
 

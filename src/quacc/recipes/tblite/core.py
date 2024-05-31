@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
@@ -12,10 +13,9 @@ from quacc.runners.thermo import run_ideal_gas
 from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
 from quacc.utils.dicts import recursive_dict_merge
 
-try:
+has_tblite = bool(find_spec("tblite"))
+if has_tblite:
     from tblite.ase import TBLite
-except ImportError:
-    TBLite = None
 
 if TYPE_CHECKING:
     from typing import Literal
@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 
 
 @job
-@requires(TBLite, "tblite must be installed. Refer to the quacc documentation.")
+@requires(has_tblite, "tblite must be installed. Refer to the quacc documentation.")
 def static_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
@@ -64,7 +64,7 @@ def static_job(
 
 
 @job
-@requires(TBLite, "tblite must be installed. Refer to the quacc documentation.")
+@requires(has_tblite, "tblite must be installed. Refer to the quacc documentation.")
 def relax_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
@@ -107,7 +107,7 @@ def relax_job(
 
 
 @job
-@requires(TBLite, "tblite must be installed. Refer to the quacc documentation.")
+@requires(has_tblite, "tblite must be installed. Refer to the quacc documentation.")
 def freq_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
