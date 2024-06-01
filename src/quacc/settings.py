@@ -104,7 +104,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # Data Store Settings
     # ---------------------------
-    STORE: dict[str, dict] | Store] | None = Field(
+    STORE: dict[str, dict] | Store | None = Field(
         None,
         description=(
             """
