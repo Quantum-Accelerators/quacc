@@ -6,7 +6,7 @@ import os
 from contextlib import contextmanager
 from pathlib import Path
 from shutil import which
-from typing import TYPE_CHECKING, Literal, Optional, Union
+from typing import TYPE_CHECKING, Literal
 
 import psutil
 from maggma.core import Store
@@ -56,9 +56,8 @@ class QuaccSettings(BaseSettings):
     # Workflow Engine
     # ---------------------------
 
-    WORKFLOW_ENGINE: Optional[
-        Literal["covalent", "dask", "parsl", "prefect", "redun", "jobflow"]
-    ] = Field(None, description=("The workflow manager to use, if any."))
+    WORKFLOW_ENGINE: 
+        Literal["covalent", "dask", "parsl", "prefect", "redun", "jobflow"] | None = Field(None, description=("The workflow manager to use, if any."))
 
     # ---------------------------
     # General Settings
@@ -73,7 +72,7 @@ class QuaccSettings(BaseSettings):
             """
         ),
     )
-    SCRATCH_DIR: Optional[Path] = Field(
+    SCRATCH_DIR: Path | None = Field(
         None,
         description=(
             """
@@ -106,7 +105,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # Data Store Settings
     # ---------------------------
-    STORE: Optional[Union[dict[str, dict], Store]] = Field(
+    STORE: dict[str, dict] | Store] | None = Field(
         None,
         description=(
             """
@@ -174,7 +173,7 @@ class QuaccSettings(BaseSettings):
         },
         description="Name for each espresso binary.",
     )
-    ESPRESSO_PARALLEL_CMD: Union[str, tuple[str, str]] = Field(
+    ESPRESSO_PARALLEL_CMD: str | tuple[str, str] = Field(
         "",
         description=(
             """
@@ -191,7 +190,7 @@ class QuaccSettings(BaseSettings):
             """
         ),
     )
-    ESPRESSO_PSEUDO: Optional[Path] = Field(
+    ESPRESSO_PSEUDO: Path | None = Field(
         None, description=("Path to a pseudopotential library for espresso.")
     )
     ESPRESSO_PRESET_DIR: Path = Field(
@@ -217,7 +216,7 @@ class QuaccSettings(BaseSettings):
     # GULP Settings
     # ---------------------------
     GULP_CMD: str = Field("gulp", description=("Path to the GULP executable."))
-    GULP_LIB: Optional[Path] = Field(
+    GULP_LIB: Path | None = Field(
         None,
         description=(
             "Path to the GULP force field library. If not specified, the GULP_LIB environment variable will be used (if present)."
@@ -245,11 +244,11 @@ class QuaccSettings(BaseSettings):
     VASP_GAMMA_CMD: str = Field(
         "vasp_gam", description="Command to run the gamma-point only version of VASP."
     )
-    VASP_PP_PATH: Optional[Path] = Field(
+    VASP_PP_PATH: Path | None = Field(
         None,
         description="Path to the VASP pseudopotential library. Must contain the directories `potpaw_PBE` and `potpaw` for PBE and LDA pseudopotentials, respectively.",
     )
-    VASP_VDW: Optional[Path] = Field(
+    VASP_VDW: Path | None = Field(
         None, description="Path to the vdw_kernel.bindat file for VASP vdW functionals."
     )
 
@@ -350,7 +349,7 @@ class QuaccSettings(BaseSettings):
         ["VasprunXMLValidator", "VaspFilesValidator"],
         description="Validators for Custodian",
     )
-    VASP_CUSTODIAN_WALL_TIME: Optional[int] = Field(
+    VASP_CUSTODIAN_WALL_TIME: int | None = Field(
         None,
         description=(
             """
@@ -389,17 +388,17 @@ class QuaccSettings(BaseSettings):
     )
 
     # NBO Settings
-    QCHEM_NBO_EXE: Optional[Path] = Field(
+    QCHEM_NBO_EXE: Path | None = Field(
         None, description="Full path to the NBO executable."
     )
 
     # ---------------------------
     # NewtonNet Settings
     # ---------------------------
-    NEWTONNET_MODEL_PATH: Union[Path, list[Path]] = Field(
+    NEWTONNET_MODEL_PATH: Path | list[Path] = Field(
         "best_model_state.tar", description="Path to NewtonNet .tar model"
     )
-    NEWTONNET_CONFIG_PATH: Union[Path, list[Path]] = Field(
+    NEWTONNET_CONFIG_PATH: Path | list[Path] = Field(
         "config.yml", description="Path to NewtonNet YAML settings file"
     )
 
@@ -431,7 +430,7 @@ class QuaccSettings(BaseSettings):
         "VASP_VDW",
     )
     @classmethod
-    def expand_paths(cls, v: Optional[Path]) -> Optional[Path]:
+    def expand_paths(cls, v: Path | None) -> Path | None:
         """Expand ~/ and $ENV_VARS in paths."""
         if v:
             v = Path(os.path.expandvars(v)).expanduser()
@@ -439,7 +438,7 @@ class QuaccSettings(BaseSettings):
 
     @field_validator("RESULTS_DIR", "SCRATCH_DIR")
     @classmethod
-    def make_directories(cls, v: Optional[Path]) -> Optional[Path]:
+    def make_directories(cls, v: Path | None) -> Path | None:
         """Make directories."""
         if v:
             v.mkdir(exist_ok=True, parents=True)
@@ -447,7 +446,7 @@ class QuaccSettings(BaseSettings):
 
     @field_validator("STORE")
     @classmethod
-    def generate_store(cls, v: Union[dict[str, dict[str, Any]], Store]) -> Store:
+    def generate_store(cls, v: dict[str] | dict[str, Any] | Store -> Store:
         """Generate the Maggma store."""
         from maggma import stores
 
@@ -462,7 +461,7 @@ class QuaccSettings(BaseSettings):
     @field_validator("ESPRESSO_PARALLEL_CMD")
     @classmethod
     def validate_espresso_parallel_cmd(
-        cls, v: Union[str, tuple[str, str]]
+        cls, v: str | tuple[str, str]
     ) -> tuple[str, str]:
         """Clean up Espresso parallel command."""
         if isinstance(v, str):
