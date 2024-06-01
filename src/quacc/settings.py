@@ -445,7 +445,7 @@ class QuaccSettings(BaseSettings):
 
     @field_validator("STORE")
     @classmethod
-    def generate_store(cls, v: dict[str] | dict[str, Any] | Store -> Store:
+    def generate_store(cls, v: dict[str] | dict[str, Any] | Store) -> Store:
         """Generate the Maggma store."""
         from maggma import stores
 
