@@ -145,12 +145,12 @@ end"""
     ]
     ad_block_float = [
         float(x)
-        for x in ad_block.split()[::10]
+        for x in ad_block.split()[::2]
         if x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
     ad_block_string = [
         x
-        for x in ad_block.split()[::5]
+        for x in ad_block.split()[::2]
         if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
     slab_block_float = [
