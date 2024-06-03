@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from importlib.util import find_spec
 from pathlib import Path
-from typing import TYPE_CHECKING, TypedDict, Literal
+from typing import TYPE_CHECKING, Literal, TypedDict
 
 import numpy as np
 from ase.atoms import Atoms
@@ -22,18 +22,139 @@ class ElementInfo(TypedDict):
     ri_cwft_basis: str
 
 
-
 class BlockInfo(TypedDict):
     adsorbate_slab: str
     adsorbate: str
     slab: str
 
-ElementStr = Literal["H", "He", "Li", "Be", "B", "C", "N", "O", "F", "Ne", "Na", "Mg", "Al", "Si", "P", "S", "Cl", "Ar", "K", "Ca", "Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn", "Ga", "Ge", "As", "Se", "Br", "Kr", "Rb", "Sr", "Y", "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag", "Cd", "In", "Sn", "Sb", "Te", "I", "Xe", "Cs", "Ba", "La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu", "Hf", "Ta", "W", "Re", "Os", "Ir", "Pt", "Au", "Hg", "Tl", "Pb", "Bi", "Po", "At", "Rn", "Fr", "Ra", "Ac", "Th", "Pa", "U", "Np", "Pu", "Am", "Cm", "Bk", "Cf", "Es", "Fm", "Md", "No", "Lr", "Rf", "Db", "Sg", "Bh", "Hs", "Mt", "Ds", "Rg", "Cn", "Nh", "Fl", "Mc", "Lv", "Ts", "Og"]
+
+ElementStr = Literal[
+    "H",
+    "He",
+    "Li",
+    "Be",
+    "B",
+    "C",
+    "N",
+    "O",
+    "F",
+    "Ne",
+    "Na",
+    "Mg",
+    "Al",
+    "Si",
+    "P",
+    "S",
+    "Cl",
+    "Ar",
+    "K",
+    "Ca",
+    "Sc",
+    "Ti",
+    "V",
+    "Cr",
+    "Mn",
+    "Fe",
+    "Co",
+    "Ni",
+    "Cu",
+    "Zn",
+    "Ga",
+    "Ge",
+    "As",
+    "Se",
+    "Br",
+    "Kr",
+    "Rb",
+    "Sr",
+    "Y",
+    "Zr",
+    "Nb",
+    "Mo",
+    "Tc",
+    "Ru",
+    "Rh",
+    "Pd",
+    "Ag",
+    "Cd",
+    "In",
+    "Sn",
+    "Sb",
+    "Te",
+    "I",
+    "Xe",
+    "Cs",
+    "Ba",
+    "La",
+    "Ce",
+    "Pr",
+    "Nd",
+    "Pm",
+    "Sm",
+    "Eu",
+    "Gd",
+    "Tb",
+    "Dy",
+    "Ho",
+    "Er",
+    "Tm",
+    "Yb",
+    "Lu",
+    "Hf",
+    "Ta",
+    "W",
+    "Re",
+    "Os",
+    "Ir",
+    "Pt",
+    "Au",
+    "Hg",
+    "Tl",
+    "Pb",
+    "Bi",
+    "Po",
+    "At",
+    "Rn",
+    "Fr",
+    "Ra",
+    "Ac",
+    "Th",
+    "Pa",
+    "U",
+    "Np",
+    "Pu",
+    "Am",
+    "Cm",
+    "Bk",
+    "Cf",
+    "Es",
+    "Fm",
+    "Md",
+    "No",
+    "Lr",
+    "Rf",
+    "Db",
+    "Sg",
+    "Bh",
+    "Hs",
+    "Mt",
+    "Ds",
+    "Rg",
+    "Cn",
+    "Nh",
+    "Fl",
+    "Mc",
+    "Lv",
+    "Ts",
+    "Og",
+]
+
 
 class MultiplicityDict(TypedDict):
     adsorbate_slab: int
     slab: int
     adsorbate: int
+
 
 if TYPE_CHECKING:
     from ase.atom import Atom
@@ -50,7 +171,7 @@ def create_orca_eint_blocks(
     pal_nprocs_block: dict[str, int] | None = None,
     method_block: dict[str, str] | None = None,
     scf_block: dict[str, str] | None = None,
-    ecp_info: dict[ElementStr,str] | None = None,
+    ecp_info: dict[ElementStr, str] | None = None,
     include_cp: bool = True,
     multiplicities: MultiplicityDict | None = None,
 ) -> BlockInfo:
@@ -107,13 +228,11 @@ def create_orca_eint_blocks(
     )
 
     # Combine the blocks
-    orca_blocks = {
-        'adsorbate_slab': preamble_block + coords_block['adsorbate_slab'],
-        'adsorbate': preamble_block + coords_block['adsorbate'],
-        'slab': preamble_block + coords_block['slab']
+    return {
+        "adsorbate_slab": preamble_block + coords_block["adsorbate_slab"],
+        "adsorbate": preamble_block + coords_block["adsorbate"],
+        "slab": preamble_block + coords_block["slab"],
     }
-
-    return orca_blocks
 
 
 def create_atom_coord_string(
@@ -164,7 +283,7 @@ def generate_coords_block(
     embedded_adsorbed_cluster: Atoms,
     quantum_cluster_indices: list[int],
     ecp_region_indices: list[int],
-    ecp_info: dict[ElementStr,str] | None = None,
+    ecp_info: dict[ElementStr, str] | None = None,
     include_cp: bool = True,
     multiplicities: MultiplicityDict | None = None,
 ) -> BlockInfo:
@@ -216,28 +335,28 @@ def generate_coords_block(
     charge = int(sum(quantum_cluster.get_array("oxi_states")))
 
     # Create the coords strings for the adsorbate-slab complex, adsorbate, and slab
-    coords_block =  {
-        'adsorbate_slab': f"""%coords
+    coords_block = {
+        "adsorbate_slab": f"""%coords
 CTyp xyz
 Mult {multiplicities['adsorbate_slab']}
 Units angs
 Charge {charge}
 coords
 """,
-        'adsorbate': f"""%coords
+        "adsorbate": f"""%coords
 CTyp xyz
 Mult {multiplicities['adsorbate']}
 Units angs
 Charge 0
 coords
 """,
-        'slab': f"""%coords
+        "slab": f"""%coords
 CTyp xyz
 Mult {multiplicities['slab']}
 Units angs
 Charge {charge}
 coords
-"""
+""",
     }
 
     for i, atom in enumerate(quantum_cluster):
@@ -248,11 +367,15 @@ coords
         if i in adsorbate_indices:
             coords_block["adsorbate"] += create_atom_coord_string(atom=atom)
             if include_cp:
-                coords_block["slab"] += create_atom_coord_string(atom=atom, ghost_atom=True)
+                coords_block["slab"] += create_atom_coord_string(
+                    atom=atom, ghost_atom=True
+                )
         elif i in slab_indices:
             coords_block["slab"] += create_atom_coord_string(atom=atom)
             if include_cp:
-                coords_block["adsorbate"] += create_atom_coord_string(atom=atom, ghost_atom=True)
+                coords_block["adsorbate"] += create_atom_coord_string(
+                    atom=atom, ghost_atom=True
+                )
 
     # Create the coords section for the ECP region
     ecp_region_coords_section = ""
@@ -305,7 +428,7 @@ def format_ecp_info(atom_ecp_info: str) -> str:
 def generate_orca_input_preamble(
     embedded_cluster: Atoms,
     quantum_cluster_indices: list[int],
-    element_info: dict[ElementStr,ElementInfo] | None = None,
+    element_info: dict[ElementStr, ElementInfo] | None = None,
     pal_nprocs_block: dict[str, int] | None = None,
     method_block: dict[str, str] | None = None,
     scf_block: dict[str, str] | None = None,
@@ -623,7 +746,9 @@ def generate_chemshell_cluster(
 
     if write_xyz_file:
         # XYZ for visualisation
-        chemsh_embedded_cluster.save(filename=Path(filepath).with_suffix(".xyz"), fmt="xyz")
+        chemsh_embedded_cluster.save(
+            filename=Path(filepath).with_suffix(".xyz"), fmt="xyz"
+        )
 
 
 def create_skzcam_clusters(
@@ -675,14 +800,20 @@ def create_skzcam_clusters(
     """
 
     # Read the .pun file and create the embedded_cluster Atoms object
-    embedded_cluster = convert_pun_to_atoms(pun_file=pun_file, atom_oxi_states=atom_oxi_states)
+    embedded_cluster = convert_pun_to_atoms(
+        pun_file=pun_file, atom_oxi_states=atom_oxi_states
+    )
 
     # Get distances of all atoms from the cluster center
-    atom_center_distances = _get_atom_distances(embedded_cluster=embedded_cluster, center_position=center_position)
+    atom_center_distances = _get_atom_distances(
+        embedded_cluster=embedded_cluster, center_position=center_position
+    )
 
     # Determine the cation shells from the center of the embedded cluster
     _, cation_shells_idx = _find_cation_shells(
-        embedded_cluster=embedded_cluster, distances=atom_center_distances, shell_width=shell_width
+        embedded_cluster=embedded_cluster,
+        distances=atom_center_distances,
+        shell_width=shell_width,
     )
 
     # Create the distance matrix for the embedded cluster
@@ -711,7 +842,10 @@ def create_skzcam_clusters(
 
     # Get the ECP region for each quantum cluster
     ecp_region_indices = _get_ecp_region(
-        embedded_cluster=embedded_cluster, quantum_cluster_indices=quantum_cluster_indices, dist_matrix=embedded_cluster_all_dist, ecp_dist=ecp_dist
+        embedded_cluster=embedded_cluster,
+        quantum_cluster_indices=quantum_cluster_indices,
+        dist_matrix=embedded_cluster_all_dist,
+        ecp_dist=ecp_dist,
     )
 
     # Write the quantum clusters to files

@@ -135,32 +135,32 @@ end"""
 
     adsorbate_slab_block_float = [
         float(x)
-        for x in orca_blocks['adsorbate_slab'].split()[::10]
+        for x in orca_blocks["adsorbate_slab"].split()[::10]
         if x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
     adsorbate_slab_block_string = [
         x
-        for x in orca_blocks['adsorbate_slab'].split()[::5]
+        for x in orca_blocks["adsorbate_slab"].split()[::5]
         if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
     adsorbate_block_float = [
         float(x)
-        for x in orca_blocks['adsorbate'].split()[::2]
+        for x in orca_blocks["adsorbate"].split()[::2]
         if x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
     adsorbate_block_string = [
         x
-        for x in orca_blocks['adsorbate'].split()[::2]
+        for x in orca_blocks["adsorbate"].split()[::2]
         if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
     slab_block_float = [
         float(x)
-        for x in orca_blocks['slab'].split()[::10]
+        for x in orca_blocks["slab"].split()[::10]
         if x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
     slab_block_string = [
         x
-        for x in orca_blocks['slab'].split()[::5]
+        for x in orca_blocks["slab"].split()[::5]
         if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
 
@@ -456,13 +456,16 @@ def test_create_atom_coord_string(embedded_adsorbed_cluster):
     # First let's try the case where it's a normal atom.
     atom_coord_string = create_atom_coord_string(atom=atom)
 
-
-    with pytest.raises(ValueError, match="ECP info cannot be provided for ghost atoms."):
+    with pytest.raises(
+        ValueError, match="ECP info cannot be provided for ghost atoms."
+    ):
         create_atom_coord_string(
             atom, atom_ecp_info="NewECP\nECP_info1\nECP_info2\n", ghost_atom=True
         )
 
-    with pytest.raises(ValueError, match="Point charge value must be given for atoms with ECP info."):
+    with pytest.raises(
+        ValueError, match="Point charge value must be given for atoms with ECP info."
+    ):
         create_atom_coord_string(atom, atom_ecp_info="NewECP\nECP_info1\nECP_info2\n")
 
     assert (
@@ -511,9 +514,9 @@ end"""
         ecp_info=ecp_info,
     )
 
-    assert coords_block['adsorbate_slab'].split()[4] == "1"
-    assert coords_block['slab'].split()[4] == "1"
-    assert coords_block['adsorbate'].split()[4] == "1"
+    assert coords_block["adsorbate_slab"].split()[4] == "1"
+    assert coords_block["slab"].split()[4] == "1"
+    assert coords_block["adsorbate"].split()[4] == "1"
 
     coords_block = generate_coords_block(
         embedded_adsorbed_cluster=embedded_adsorbed_cluster,
@@ -523,16 +526,16 @@ end"""
         include_cp=True,
         multiplicities={"adsorbate_slab": 1, "slab": 2, "adsorbate": 3},
     )
-    
+
     # Check that the strings and floats in adsorbate_slab_coords matches reference
     adsorbate_slab_coords_shortened_list_floats = [
         float(x)
-        for x in coords_block['adsorbate_slab'].split()[::10]
+        for x in coords_block["adsorbate_slab"].split()[::10]
         if x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
     adsorbate_slab_coords_shortened_list_str = [
         x
-        for x in coords_block['adsorbate_slab'].split()[::5]
+        for x in coords_block["adsorbate_slab"].split()[::5]
         if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
     assert_allclose(
@@ -616,12 +619,12 @@ end"""
 
     adsorbate_coords_shortened_list_floats = [
         float(x)
-        for x in coords_block['adsorbate'].split()[::2]
+        for x in coords_block["adsorbate"].split()[::2]
         if x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
     adsorbate_coords_shortened_list_str = [
         x
-        for x in coords_block['adsorbate'].split()[::2]
+        for x in coords_block["adsorbate"].split()[::2]
         if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
 
@@ -653,12 +656,12 @@ end"""
     # Check that the strings and floats in slab_coords matches reference
     slab_coords_shortened_list_floats = [
         float(x)
-        for x in coords_block['slab'].split()[::10]
+        for x in coords_block["slab"].split()[::10]
         if x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
     slab_coords_shortened_list_str = [
         x
-        for x in coords_block['slab'].split()[::5]
+        for x in coords_block["slab"].split()[::5]
         if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
     assert_allclose(
@@ -751,16 +754,19 @@ end"""
     # Check that the strings and floats in ad_coords matches reference
     adsorbate_coords_shortened_list_floats = [
         float(x)
-        for x in coords_block['adsorbate'].split()[::2]
+        for x in coords_block["adsorbate"].split()[::2]
         if x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
     adsorbate_coords_shortened_list_str = [
         x
-        for x in coords_block['adsorbate'].split()[::2]
+        for x in coords_block["adsorbate"].split()[::2]
         if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
     assert_allclose(
-        adsorbate_coords_shortened_list_floats, [3.0, 0.0, 0.0, 0.0], rtol=1e-05, atol=1e-07
+        adsorbate_coords_shortened_list_floats,
+        [3.0, 0.0, 0.0, 0.0],
+        rtol=1e-05,
+        atol=1e-07,
     )
 
     assert_equal(
@@ -770,12 +776,12 @@ end"""
     # Check that the strings and float in slab_coords matches reference
     slab_coords_shortened_list_floats = [
         float(x)
-        for x in coords_block['slab'].split()[::10]
+        for x in coords_block["slab"].split()[::10]
         if x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
     slab_coords_shortened_list_str = [
         x
-        for x in coords_block['slab'].split()[::5]
+        for x in coords_block["slab"].split()[::5]
         if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
     assert_allclose(
