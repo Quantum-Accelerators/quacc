@@ -54,8 +54,8 @@ def embedded_adsorbed_cluster():
 
     embedded_adsorbed_cluster, quantum_cluster_indices, ecp_region_indices = (
         insert_adsorbate_to_embedded_cluster(
-            embedded_cluster,
-            adsorbate,
+            embedded_cluster=embedded_cluster,
+            adsorbate=adsorbate,
             adsorbate_vector_from_slab = [0.0, 0.0, 2.0],
             quantum_cluster_indices = quantum_cluster_indices,
             ecp_region_indices = ecp_region_indices,
@@ -121,16 +121,16 @@ end"""
     }
 
     ad_slab_block, ad_block, slab_block = create_orca_eint_blocks(
-        embedded_adsorbed_cluster,
-        [0, 1, 2, 3, 4, 5, 6, 7],
-        [8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
-        element_info,
-        pal_nprocs_block,
-        method_block,
-        scf_block,
-        ecp_info,
+        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
+        quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
+        ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
+        element_info=element_info,
+        pal_nprocs_block=pal_nprocs_block,
+        method_block=method_block,
+        scf_block=scf_block,
+        ecp_info=ecp_info,
         include_cp=True,
-        multiplicity={"ad_slab": 1, "slab": 2, "ad": 3},
+        multiplicities={"ad_slab": 1, "slab": 2, "ad": 3},
     )
 
     ad_slab_block_float = [
@@ -145,12 +145,12 @@ end"""
         ]
     ad_block_float = [
             float(x)
-            for x in ad_block.split()[::10]
+            for x in ad_block.split()[::2]
             if x.replace(".", "", 1).replace("-", "", 1).isdigit()
         ]
     ad_block_string = [
             x
-            for x in ad_block.split()[::5]
+            for x in ad_block.split()[::2]
             if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
         ]
     slab_block_float = [
@@ -456,7 +456,7 @@ def test_create_atom_coord_string(embedded_adsorbed_cluster):
     atom = embedded_adsorbed_cluster[0]
 
     # First let's try the case where it's a normal atom.
-    atom_coord_string = create_atom_coord_string(atom)
+    atom_coord_string = create_atom_coord_string(atom=atom)
 
     with pytest.raises(ValueError):
         create_atom_coord_string(
@@ -472,7 +472,7 @@ def test_create_atom_coord_string(embedded_adsorbed_cluster):
     )
 
     # Let's now try the case where it is a ghost atom.
-    atom_coord_string = create_atom_coord_string(atom, ghost_atom=True)
+    atom_coord_string = create_atom_coord_string(atom=atom, ghost_atom=True)
     assert (
         atom_coord_string
         == "C:                      0.00000000000    0.00000000000    2.00000000000\n"
@@ -480,7 +480,7 @@ def test_create_atom_coord_string(embedded_adsorbed_cluster):
 
     # Let's now try the case where it is an atom in the ECP region.
     atom_coord_string = create_atom_coord_string(
-        atom, atom_ecp_info="NewECP\nECP_info1\nECP_info2\n", pc_charge=2.0
+        atom=atom, atom_ecp_info="NewECP\nECP_info1\nECP_info2\n", pc_charge=2.0
     )
     assert (
         atom_coord_string
@@ -488,7 +488,7 @@ def test_create_atom_coord_string(embedded_adsorbed_cluster):
     )
 
 
-def test_get_coords_block(embedded_adsorbed_cluster):
+def test_generate_coords_block(embedded_adsorbed_cluster):
     ecp_info = {
         "Mg": """NewECP
 N_core 0
@@ -506,10 +506,10 @@ end"""
 
     # Confirm that multiplicity given as 1 if not provided
     ad_slab_coords, ad_coords, slab_coords = generate_coords_block(
-        embedded_adsorbed_cluster,
-        [0, 1, 2, 3, 4, 5, 6, 7],
-        [8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
-        ecp_info,
+        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
+        quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
+        ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
+        ecp_info=ecp_info,
     )
 
     assert ad_slab_coords.split()[4] == "1"
@@ -517,21 +517,26 @@ end"""
     assert ad_coords.split()[4] == "1"
 
     ad_slab_coords, ad_coords, slab_coords = generate_coords_block(
-        embedded_adsorbed_cluster,
-        [0, 1, 2, 3, 4, 5, 6, 7],
-        [8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
-        ecp_info,
+        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
+        quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
+        ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
+        ecp_info=ecp_info,
         include_cp=True,
-        multiplicity={"ad_slab": 1, "slab": 2, "ad": 3},
+        multiplicities={"ad_slab": 1, "slab": 2, "ad": 3},
     )
 
-    # Check that the strings and floats in ad_slab_coords matches reference
-    assert_allclose(
-        [
+    ad_slab_coords_shortened_list_floats = [
             float(x)
             for x in ad_slab_coords.split()[::10]
             if x.replace(".", "", 1).replace("-", "", 1).isdigit()
-        ],
+        ]
+    ad_slab_coords_shortened_list_str = [
+            x
+            for x in ad_slab_coords.split()[::5]
+            if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
+        ]
+    # Check that the strings and floats in ad_slab_coords matches reference
+    assert_allclose( ad_slab_coords_shortened_list_floats,
         [
             0.0,
             0.0,
@@ -571,13 +576,8 @@ end"""
         atol=1e-07,
     )
 
-    assert np.all(
-        [
-            x
-            for x in ad_slab_coords.split()[::5]
-            if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
-        ]
-        == [
+    assert_equal(
+        ad_slab_coords_shortened_list_str, [
             "%coords",
             "Units",
             "C",
@@ -611,25 +611,29 @@ end"""
         ]
     )
 
+
     # Check that the strings and floats in ad_coords matches reference
-    assert_allclose(
-        [
+
+    ad_coords_shortened_list_floats = [
             float(x)
             for x in ad_coords.split()[::2]
             if x.replace(".", "", 1).replace("-", "", 1).isdigit()
-        ],
+        ]
+    ad_coords_shortened_list_str = [
+            x
+            for x in ad_coords.split()[::2]
+            if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
+        ]
+
+    assert_allclose(
+        ad_coords_shortened_list_floats,
         [3.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.12018425659, 0.0, -2.12018425659, 0.0],
         rtol=1e-05,
         atol=1e-07,
     )
 
-    assert np.all(
-        [
-            x
-            for x in ad_coords.split()[::2]
-            if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
-        ]
-        == [
+    assert_equal(
+        ad_coords_shortened_list_str, [
             "%coords",
             "xyz",
             "angs",
@@ -646,12 +650,17 @@ end"""
     )
 
     # Check that the strings and floats in slab_coords matches reference
-    assert_allclose(
-        [
+    slab_coords_shortened_list_floats =         [
             float(x)
             for x in slab_coords.split()[::10]
             if x.replace(".", "", 1).replace("-", "", 1).isdigit()
-        ],
+        ]
+    slab_coords_shortened_list_str = [
+            x
+            for x in slab_coords.split()[::5]
+            if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
+        ]
+    assert_allclose(slab_coords_shortened_list_floats,
         [
             0.0,
             0.0,
@@ -691,13 +700,9 @@ end"""
         atol=1e-07,
     )
 
-    assert np.all(
+    assert_equal(
+        slab_coords_shortened_list_str,
         [
-            x
-            for x in slab_coords.split()[::5]
-            if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
-        ]
-        == [
             "%coords",
             "Units",
             "C:",
@@ -733,42 +738,49 @@ end"""
 
     # Also check the case where include_cp is False
     ad_slab_coords, ad_coords, slab_coords = generate_coords_block(
-        embedded_adsorbed_cluster,
-        [0, 1, 2, 3, 4, 5, 6, 7],
-        [8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
-        ecp_info,
+        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
+        quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
+        ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
+        ecp_info=ecp_info,
         include_cp=False,
-        multiplicity={"ad_slab": 1, "slab": 2, "ad": 3},
+        multiplicities={"ad_slab": 1, "slab": 2, "ad": 3},
     )
 
     # Check that the strings and floats in ad_coords matches reference
-    assert_allclose(
-        [
+    ad_coords_shortened_list_floats = [
             float(x)
             for x in ad_coords.split()[::2]
             if x.replace(".", "", 1).replace("-", "", 1).isdigit()
-        ],
+        ]
+    ad_coords_shortened_list_str = [
+            x
+            for x in ad_coords.split()[::2]
+            if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
+        ]
+    assert_allclose(
+        ad_coords_shortened_list_floats,
         [3.0, 0.0, 0.0, 0.0],
         rtol=1e-05,
         atol=1e-07,
     )
 
-    assert np.all(
-        [
-            x
-            for x in ad_coords.split()[::2]
-            if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
-        ]
-        == ["%coords", "xyz", "angs", "C", "O", "end"]
+    assert_equal(
+        ad_coords_shortened_list_str, ["%coords", "xyz", "angs", "C", "O", "end"]
     )
 
     # Check that the strings and float in slab_coords matches reference
-    assert_allclose(
-        [
+    slab_coords_shortened_list_floats = [
             float(x)
             for x in slab_coords.split()[::10]
             if x.replace(".", "", 1).replace("-", "", 1).isdigit()
-        ],
+        ]
+    slab_coords_shortened_list_str = [
+            x
+            for x in slab_coords.split()[::5]
+            if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
+        ]
+    assert_allclose(
+        slab_coords_shortened_list_floats,
         [
             2.12018425659,
             -1.816,
@@ -807,13 +819,8 @@ end"""
         atol=1e-07,
     )
 
-    assert np.all(
-        [
-            x
-            for x in slab_coords.split()[::5]
-            if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
-        ]
-        == [
+    assert_equal(
+        slab_coords_shortened_list_str, [
             "%coords",
             "Units",
             "Mg",
@@ -851,7 +858,7 @@ end"""
 
 def test_format_ecp_info():
     with pytest.raises(ValueError):
-        format_ecp_info("dummy_info\nN_core0\nend")
+        format_ecp_info(atom_ecp_info="dummy_info\nN_core0\nend")
 
     atom_ecp_info = """
 NewECP
@@ -861,7 +868,7 @@ s 1
 1      1.732000000   14.676000000 2
 end
 """
-    formatted_atom_ecp_info = format_ecp_info(atom_ecp_info)
+    formatted_atom_ecp_info = format_ecp_info(atom_ecp_info=atom_ecp_info)
     assert (
         formatted_atom_ecp_info
         == "NewECP\nN_core 0\nlmax s\ns 1\n1      1.732000000   14.676000000 2\nend\n"
@@ -909,8 +916,8 @@ def test_generate_orca_input_preamble(embedded_adsorbed_cluster):
     with pytest.raises(ValueError):
         element_info_error = {"C": element_info["C"]}
         generate_orca_input_preamble(
-            embedded_adsorbed_cluster,
-            [0, 1, 2, 3, 4, 5, 6, 7],
+            embedded_cluster=embedded_adsorbed_cluster,
+            quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
             element_info=element_info_error,
             pal_nprocs_block=pal_nprocs_block,
             method_block=method_block,
@@ -919,8 +926,8 @@ def test_generate_orca_input_preamble(embedded_adsorbed_cluster):
 
     # Generate the orca input preamble
     preamble_input = generate_orca_input_preamble(
-        embedded_adsorbed_cluster,
-        [0, 1, 2, 3, 4, 5, 6, 7],
+        embedded_cluster=embedded_adsorbed_cluster,
+        quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
         element_info=element_info,
         pal_nprocs_block=pal_nprocs_block,
         method_block=method_block,
@@ -955,8 +962,8 @@ def test_generate_orca_input_preamble(embedded_adsorbed_cluster):
     }
 
     preamble_input = generate_orca_input_preamble(
-        embedded_adsorbed_cluster,
-        [0, 1, 2, 3, 4, 5, 6, 7],
+        embedded_cluster=embedded_adsorbed_cluster,
+        quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
         element_info=element_info,
         pal_nprocs_block=pal_nprocs_block,
         method_block=method_block,
@@ -970,7 +977,7 @@ def test_generate_orca_input_preamble(embedded_adsorbed_cluster):
 
     # Testing the case if we provide no blocks
     preamble_input = generate_orca_input_preamble(
-        embedded_adsorbed_cluster, [0, 1, 2, 3, 4, 5, 6, 7]
+        embedded_cluster=embedded_adsorbed_cluster, quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7]
     )
 
     assert preamble_input == '%pointcharges "orca.pc"\n'
@@ -980,18 +987,18 @@ def test_create_orca_point_charge_file(embedded_adsorbed_cluster, tmpdir):
     # Test whether exception is raised if indices shared between quantum region and ecp region
     with pytest.raises(ValueError):
         create_orca_point_charge_file(
-            embedded_adsorbed_cluster,
-            [0, 1, 2, 3, 4, 5, 6, 7],
-            [7, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
-            Path(tmpdir, "orca.pc"),
+            embedded_cluster=embedded_adsorbed_cluster,
+            quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
+            ecp_region_indices=[7, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
+            pc_file=Path(tmpdir, "orca.pc"),
         )
 
     # Create the point charge file
     create_orca_point_charge_file(
-        embedded_adsorbed_cluster,
-        [0, 1, 2, 3, 4, 5, 6, 7],
-        [8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
-        Path(tmpdir, "orca.pc"),
+        embedded_cluster=embedded_adsorbed_cluster,
+        quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
+        ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
+        pc_file=Path(tmpdir, "orca.pc"),
     )
 
     # Read the written file
@@ -1032,7 +1039,7 @@ def test_get_cluster_info_from_slab():
         center_position,
         adsorbate_vector_from_slab,
     ) = get_cluster_info_from_slab(
-        Path(FILE_DIR, "skzcam_files", "NO_MgO.poscar.gz"), [32, 33], [0, 1]
+        adsorbate_slab_file=Path(FILE_DIR, "skzcam_files", "NO_MgO.poscar.gz"), slab_center_indices=[32, 33], adsorbate_indices=[0, 1]
     )
 
     # Check adsorbate matches reference
@@ -1047,7 +1054,7 @@ def test_get_cluster_info_from_slab():
         rtol=1e-05,
         atol=1e-07,
     )
-    assert np.all(adsorbate.get_atomic_numbers().tolist() == [7, 8])
+    assert_equal(adsorbate.get_atomic_numbers().tolist(), [7, 8])
 
     # Check slab matches reference
     assert_allclose(
@@ -1066,9 +1073,8 @@ def test_get_cluster_info_from_slab():
         rtol=1e-05,
         atol=1e-07,
     )
-    assert np.all(
-        slab.get_atomic_numbers().tolist()
-        == [
+    assert_equal(
+        slab.get_atomic_numbers().tolist(), [
             12,
             12,
             12,
@@ -1164,10 +1170,10 @@ def test_generate_chemshell_cluster(tmp_path):
 
     # Run ChemShell
     generate_chemshell_cluster(
-        slab,
-        30,
-        {"Mg": 2.0, "O": -2.0},
-        tmp_path,
+        slab=slab,
+        slab_center_idx=30,
+        atom_oxi_states={"Mg": 2.0, "O": -2.0},
+        filepath=tmp_path,
         chemsh_radius_active=15.0,
         chemsh_radius_cluster=25.0,
         write_xyz_file=True,
@@ -1205,9 +1211,9 @@ def test_generate_chemshell_cluster(tmp_path):
         atol=1e-07,
     )
 
-    assert np.all(
+    assert_equal(
         chemshell_embedded_cluster.get_atomic_numbers()[::20].tolist()
-        == [
+        , [
             12,
             12,
             12,
@@ -1304,8 +1310,8 @@ def test_generate_chemshell_cluster(tmp_path):
 
 def test_convert_pun_to_atoms():
     embedded_cluster = convert_pun_to_atoms(
-        Path(FILE_DIR, "skzcam_files", "mgo_shells_cluster.pun.gz"),
-        {"Mg": 2.0, "O": -2.0},
+        pun_file=Path(FILE_DIR, "skzcam_files", "mgo_shells_cluster.pun.gz"),
+        atom_oxi_states={"Mg": 2.0, "O": -2.0},
     )
 
     # Check that number of atoms matches our reference
@@ -1333,9 +1339,9 @@ def test_convert_pun_to_atoms():
     )
 
     # Check that first 10 elements of atom_type array match our reference
-    assert np.all(
+    assert_equal(
         embedded_cluster.get_array("atom_type")[:10]
-        == [
+        , [
             "cation",
             "anion",
             "anion",
@@ -1366,11 +1372,11 @@ def test_insert_adsorbate_to_embedded_cluster(embedded_cluster):
 
     # Insert the CO molecule to the embedded cluster
     embedded_cluster, quantum_idx, ecp_idx = insert_adsorbate_to_embedded_cluster(
-        embedded_cluster,
-        adsorbate,
-        [0.0, 0.0, 2.0],
-        [[0, 1, 3, 4], [5, 6, 7, 8]],
-        [[0, 1, 3, 4], [5, 6, 7, 8]],
+        embedded_cluster=embedded_cluster,
+        adsorbate=adsorbate,
+        adsorbate_vector_from_slab=[0.0, 0.0, 2.0],
+        quantum_cluster_indices=[[0, 1, 3, 4], [5, 6, 7, 8]],
+        ecp_region_indices=[[0, 1, 3, 4], [5, 6, 7, 8]],
     )
 
     # Check that the positions of the first 10 atoms of the embedded cluster matches the reference positions, oxi_states and atom_type
@@ -1394,9 +1400,9 @@ def test_insert_adsorbate_to_embedded_cluster(embedded_cluster):
         atol=1e-07,
     )
 
-    assert np.all(
+    assert_equal(
         embedded_cluster.get_chemical_symbols()[:10]
-        == ["C", "O", "Mg", "O", "O", "O", "O", "O", "Mg", "Mg"]
+        , ["C", "O", "Mg", "O", "O", "O", "O", "O", "Mg", "Mg"]
     )
     assert_allclose(
         embedded_cluster.get_array("oxi_states")[:10],
@@ -1404,9 +1410,9 @@ def test_insert_adsorbate_to_embedded_cluster(embedded_cluster):
         rtol=1e-05,
         atol=1e-07,
     )
-    assert np.all(
+    assert_equal(
         embedded_cluster.get_array("atom_type")[:10]
-        == [
+        , [
             "adsorbate",
             "adsorbate",
             "cation",
@@ -1421,8 +1427,8 @@ def test_insert_adsorbate_to_embedded_cluster(embedded_cluster):
     )
 
     # Check that the quantum_idx and ecp_idx match the reference
-    assert np.all(quantum_idx == [[0, 1, 2, 3, 5, 6], [0, 1, 7, 8, 9, 10]])
-    assert np.all(ecp_idx == [[2, 3, 5, 6], [7, 8, 9, 10]])
+    assert_equal(quantum_idx , [[0, 1, 2, 3, 5, 6], [0, 1, 7, 8, 9, 10]])
+    assert_equal(ecp_idx , [[2, 3, 5, 6], [7, 8, 9, 10]])
 
 
 def test_get_atom_distances():
@@ -1430,18 +1436,18 @@ def test_get_atom_distances():
     h2_molecule = Atoms("H2", positions=[(0, 0, 0), (0, 0, 2)])
 
     # Run _get_atom_distances function to get distance of h2 molecule atoms from a center position
-    atom_distances = _get_atom_distances(h2_molecule, [2, 0, 0])
+    atom_distances = _get_atom_distances(embedded_cluster=h2_molecule, center_position=[2, 0, 0])
 
     assert_allclose(atom_distances, np.array([2.0, 2.82842712]), rtol=1e-05, atol=1e-07)
 
 
 def test_find_cation_shells(embedded_cluster):
     # Get distance of atoms from the center
-    distances = _get_atom_distances(embedded_cluster, [0, 0, 2])
+    distances = _get_atom_distances(embedded_cluster=embedded_cluster, center_position=[0, 0, 2])
 
     # Find the cation shells from the distances
     cation_shells, cation_shells_idx = _find_cation_shells(
-        embedded_cluster, distances, shell_width=0.005
+        embedded_cluster=embedded_cluster, distances=distances, shell_width=0.005
     )
 
     # As these list of lists do not have the same length, we flatten first 5 lists into a 1D list for comparison
@@ -1473,39 +1479,39 @@ def test_find_cation_shells(embedded_cluster):
         atol=1e-07,
     )
 
-    assert np.all(
-        cation_shells_idx_flatten == [0, 9, 8, 6, 7, 11, 12, 10, 13, 19, 21, 18, 20, 22]
+    assert_equal(
+        cation_shells_idx_flatten, [0, 9, 8, 6, 7, 11, 12, 10, 13, 19, 21, 18, 20, 22]
     )
 
 
 def test_get_anion_coordination(embedded_cluster, distance_matrix):
     # Get the anions for the second SKZCAM shell
     anion_shell_idx = _get_anion_coordination(
-        embedded_cluster, [9, 8, 6, 7], distance_matrix
+        embedded_cluster=embedded_cluster, cation_shell_indices=[9, 8, 6, 7], dist_matrix=distance_matrix
     )
 
     # Check anion indices match with reference
-    assert np.all(
-        anion_shell_idx == [1, 2, 3, 4, 14, 15, 16, 17, 23, 24, 25, 26, 27, 28, 29, 30]
+    assert_equal(
+        anion_shell_idx , [1, 2, 3, 4, 14, 15, 16, 17, 23, 24, 25, 26, 27, 28, 29, 30]
     )
 
 
 def test_get_ecp_region(embedded_cluster, distance_matrix):
     # Find the ECP region for the first cluster
     ecp_region_idx = _get_ecp_region(
-        embedded_cluster, [[0, 1, 2, 3, 4, 5]], distance_matrix, ecp_dist=3
+        embedded_cluster=embedded_cluster, quantum_cluster_indices=[[0, 1, 2, 3, 4, 5]], dist_matrix=distance_matrix, ecp_dist=3
     )
 
     # Check ECP region indices match with reference
-    assert np.all(ecp_region_idx[0] == [6, 7, 8, 9, 10, 11, 12, 13, 18, 19, 20, 21, 22])
+    assert_equal(ecp_region_idx[0] , [6, 7, 8, 9, 10, 11, 12, 13, 18, 19, 20, 21, 22])
 
 
 def test_create_skzcam_clusters(tmp_path):
     # Get quantum cluster and ECP region indices
     _, quantum_cluster_idx, ecp_region_idx = create_skzcam_clusters(
-        Path(FILE_DIR, "skzcam_files", "mgo_shells_cluster.pun.gz"),
-        [0, 0, 2],
-        {"Mg": 2.0, "O": -2.0},
+        pun_file=Path(FILE_DIR, "skzcam_files", "mgo_shells_cluster.pun.gz"),
+        center_position=[0, 0, 2],
+        atom_oxi_states={"Mg": 2.0, "O": -2.0},
         shell_max=2,
         ecp_dist=3.0,
         shell_width=0.005,
@@ -1514,9 +1520,9 @@ def test_create_skzcam_clusters(tmp_path):
     )
 
     # Check quantum cluster indices match with reference
-    assert np.all(
+    assert_equal(
         quantum_cluster_idx[1]
-        == [
+        , [
             0,
             1,
             2,
@@ -1543,9 +1549,9 @@ def test_create_skzcam_clusters(tmp_path):
     )
 
     # Check ECP region indices match with reference
-    assert np.all(
+    assert_equal(
         ecp_region_idx[1]
-        == [
+        , [
             10,
             11,
             12,
@@ -1600,4 +1606,4 @@ def test_create_skzcam_clusters(tmp_path):
         atol=1e-07,
     )
 
-    assert np.all(skzcam_cluster.get_atomic_numbers().tolist() == [12, 8, 8, 8, 8, 8])
+    assert_equal(skzcam_cluster.get_atomic_numbers().tolist() , [12, 8, 8, 8, 8, 8])
