@@ -2,25 +2,25 @@
 
 from __future__ import annotations
 
+from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
-from quacc import SETTINGS, job, strip_decorator
+from quacc import SETTINGS, change_settings, job, strip_decorator
 from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
 from quacc.runners.ase import run_opt
 from quacc.schemas.ase import summarize_opt_run
 from quacc.utils.dicts import recursive_dict_merge
 
-try:
-    from sella import IRC, Sella
-except ImportError:
-    Sella = None
+has_sella = bool(find_spec("sella"))
+has_newtonnet = bool(find_spec("newtonnet"))
 
-try:
+if has_sella:
+    from sella import IRC, Sella
+if has_newtonnet:
     from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
-except ImportError:
-    NewtonNet = None
+
 
 if TYPE_CHECKING:
     from typing import Any, Literal
@@ -29,6 +29,7 @@ if TYPE_CHECKING:
     from numpy.typing import NDArray
 
     from quacc.recipes.newtonnet.core import FreqSchema
+    from quacc.runners.ase import OptParams
     from quacc.schemas._aliases.ase import OptSchema
 
     class TSSchema(OptSchema):
@@ -43,14 +44,16 @@ if TYPE_CHECKING:
 
 
 @job
-@requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
-@requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
+@requires(
+    has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation."
+)
+@requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def ts_job(
     atoms: Atoms,
     use_custom_hessian: bool = False,
     run_freq: bool = True,
     freq_job_kwargs: dict[str, Any] | None = None,
-    opt_params: dict[str, Any] | None = None,
+    opt_params: OptParams | None = None,
     **calc_kwargs,
 ) -> TSSchema:
     """
@@ -96,13 +99,10 @@ def ts_job(
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
-    atoms.calc = NewtonNet(**calc_flags)
-
     if use_custom_hessian:
         opt_flags["optimizer_kwargs"]["hessian_function"] = _get_hessian
 
-    ml_calculator = NewtonNet(**calc_flags)
-    atoms.calc = ml_calculator
+    atoms.calc = NewtonNet(**calc_flags)
 
     # Run the TS optimization
     dyn = run_opt(atoms, **opt_flags)
@@ -122,14 +122,16 @@ def ts_job(
 
 
 @job
-@requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
-@requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
+@requires(
+    has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation."
+)
+@requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def irc_job(
     atoms: Atoms,
     direction: Literal["forward", "reverse"] = "forward",
     run_freq: bool = True,
     freq_job_kwargs: dict[str, Any] | None = None,
-    opt_params: dict[str, Any] | None = None,
+    opt_params: OptParams | None = None,
     **calc_kwargs,
 ) -> IRCSchema:
     """
@@ -160,7 +162,6 @@ def irc_job(
         See the type-hint for the data structure.
     """
     freq_job_kwargs = freq_job_kwargs or {}
-    default_settings = SETTINGS.model_copy()
 
     calc_defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
@@ -179,14 +180,13 @@ def irc_job(
     atoms.calc = NewtonNet(**calc_flags)
 
     # Run IRC
-    SETTINGS.CHECK_CONVERGENCE = False
-    dyn = run_opt(atoms, **opt_flags)
-    opt_irc_summary = _add_stdev_and_hess(
-        summarize_opt_run(
-            dyn, additional_fields={"name": f"NewtonNet IRC: {direction}"}
+    with change_settings({"CHECK_CONVERGENCE": False}):
+        dyn = run_opt(atoms, **opt_flags)
+        opt_irc_summary = _add_stdev_and_hess(
+            summarize_opt_run(
+                dyn, additional_fields={"name": f"NewtonNet IRC: {direction}"}
+            )
         )
-    )
-    SETTINGS.CHECK_CONVERGENCE = default_settings.CHECK_CONVERGENCE
 
     # Run frequency job
     freq_summary = (
@@ -200,8 +200,10 @@ def irc_job(
 
 
 @job
-@requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
-@requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
+@requires(
+    has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation."
+)
+@requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def quasi_irc_job(
     atoms: Atoms,
     direction: Literal["forward", "reverse"] = "forward",

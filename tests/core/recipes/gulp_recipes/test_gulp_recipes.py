@@ -5,10 +5,8 @@ from pathlib import Path
 
 from ase.build import bulk, molecule
 
-from quacc import SETTINGS
+from quacc import change_settings
 from quacc.recipes.gulp.core import relax_job, static_job
-
-DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 
 def test_static_job(tmp_path, monkeypatch):
@@ -144,7 +142,6 @@ def test_envvars(tmp_path, monkeypatch):
 
     atoms = molecule("H2O")
 
-    SETTINGS.GULP_LIB = str(Path("/path/to/lib"))
-    assert static_job(atoms)
-    assert os.environ.get("GULP_LIB") == str(Path("/path/to/lib"))
-    SETTINGS.GULP_LIB = DEFAULT_SETTINGS.GULP_LIB
+    with change_settings({"GULP_LIB": str(Path("/path/to/lib"))}):
+        assert static_job(atoms)
+        assert os.environ.get("GULP_LIB") == str(Path("/path/to/lib"))

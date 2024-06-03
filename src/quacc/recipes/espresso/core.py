@@ -12,10 +12,9 @@ from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.recipes.espresso._base import run_and_summarize, run_and_summarize_opt
 
 if TYPE_CHECKING:
-    from typing import Any
-
     from ase.atoms import Atoms
 
+    from quacc.runners.ase import OptParams
     from quacc.schemas._aliases.ase import RunSchema
     from quacc.utils.files import Filenames, SourceDirectory
 
@@ -40,7 +39,6 @@ BASE_SET_NON_METAL = {
 def static_job(
     atoms: Atoms,
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
-    parallel_info: dict[str] | None = None,
     test_run: bool = False,
     copy_files: (
         SourceDirectory
@@ -62,9 +60,6 @@ def static_job(
         The name of a YAML file containing a list of parameters to use as
         a "preset" for the calculator. quacc will automatically look in the
         `ESPRESSO_PRESET_DIR` (default: quacc/calculators/espresso/presets).
-    parallel_info
-        Dictionary containing information about the parallelization of the
-        calculation. See the ASE documentation for more information.
     test_run
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
@@ -100,7 +95,6 @@ def static_job(
         template=EspressoTemplate("pw", test_run=test_run, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        parallel_info=parallel_info,
         additional_fields={"name": "pw.x Static"},
         copy_files=copy_files,
     )
@@ -111,7 +105,6 @@ def relax_job(
     atoms: Atoms,
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
     relax_cell: bool = False,
-    parallel_info: dict[str] | None = None,
     test_run: bool = False,
     copy_files: (
         SourceDirectory
@@ -135,9 +128,6 @@ def relax_job(
         `ESPRESSO_PRESET_DIR` (default: quacc/calculators/espresso/presets).
     relax_cell
         Whether to relax the cell or not.
-    parallel_info
-        Dictionary containing information about the parallelization of the
-        calculation. See the ASE documentation for more information.
     test_run
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
@@ -175,7 +165,6 @@ def relax_job(
         template=EspressoTemplate("pw", test_run=test_run, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        parallel_info=parallel_info,
         additional_fields={"name": "pw.x Relax"},
         copy_files=copy_files,
     )
@@ -187,8 +176,7 @@ def ase_relax_job(
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
     autorestart: bool = True,
     relax_cell: bool = False,
-    parallel_info: dict[str] | None = None,
-    opt_params: dict[str, Any] | None = None,
+    opt_params: OptParams | None = None,
     copy_files: (
         SourceDirectory
         | list[SourceDirectory]
@@ -216,9 +204,6 @@ def ase_relax_job(
         step of the optimization.
     relax_cell
         Whether to relax the cell or not.
-    parallel_info
-        Dictionary containing information about the parallelization of the
-        calculation. See the ASE documentation for more information.
     opt_params
         Dictionary of custom kwargs for the optimization process. For a list
         of available keys, refer to [quacc.runners.ase.run_opt][].
@@ -252,18 +237,16 @@ def ase_relax_job(
         "tprnfor": True,
     }
 
-    opt_defaults = {"optimizer": BFGSLineSearch}
+    opt_defaults = {"optimizer": BFGSLineSearch, "relax_cell": relax_cell}
 
     return run_and_summarize_opt(
         atoms,
         preset=preset,
-        relax_cell=relax_cell,
         template=EspressoTemplate("pw", autorestart=autorestart, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         opt_defaults=opt_defaults,
         opt_params=opt_params,
-        parallel_info=parallel_info,
         additional_fields={"name": "pw.x ExternalRelax"},
         copy_files=copy_files,
     )
@@ -278,7 +261,6 @@ def post_processing_job(
         | None
     ) = None,
     prev_outdir: SourceDirectory | None = None,
-    parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
 ) -> RunSchema:
@@ -300,9 +282,6 @@ def post_processing_job(
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
         to manually copy files. The directory will be ungzipped if necessary.
-    parallel_info
-        Dictionary containing information about the parallelization of the
-        calculation. See the ASE documentation for more information.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -329,7 +308,6 @@ def post_processing_job(
         template=EspressoTemplate("pp", test_run=test_run, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        parallel_info=parallel_info,
         additional_fields={"name": "pp.x post-processing"},
         copy_files=copy_files,
     )
@@ -346,7 +324,6 @@ def non_scf_job(
     ) = None,
     prev_outdir: SourceDirectory | None = None,
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
-    parallel_info: dict[str] | None = None,
     test_run: bool = False,
     **calc_kwargs,
 ) -> RunSchema:
@@ -371,9 +348,6 @@ def non_scf_job(
         The name of a YAML file containing a list of parameters to use as
         a "preset" for the calculator. quacc will automatically look in the
         `ESPRESSO_PRESET_DIR` (default: quacc/calculators/espresso/presets).
-    parallel_info
-        Dictionary containing information about the parallelization of the
-        calculation. See the ASE documentation for more information.
     test_run
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
@@ -396,7 +370,6 @@ def non_scf_job(
         template=EspressoTemplate("pw", test_run=test_run, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        parallel_info=parallel_info,
         additional_fields={"name": "pw.x Non SCF"},
         copy_files=copy_files,
     )

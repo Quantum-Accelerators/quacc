@@ -15,7 +15,6 @@ from ase.constraints import FixAtoms
 from quacc.calculators.vasp.io import load_vasp_yaml_calc
 from quacc.calculators.vasp.params import (
     get_param_swaps,
-    get_pmg_input_set_params,
     normalize_params,
     remove_unused_flags,
     set_auto_dipole,
@@ -29,7 +28,6 @@ if TYPE_CHECKING:
     from typing import Literal
 
     from ase.atoms import Atoms
-    from pymatgen.io.vasp.sets import DictSet
 
 _DEFAULT_SETTING = ()
 
@@ -56,7 +54,6 @@ class Vasp(Vasp_):
             | None
         ) = None,
         auto_dipole: bool | None = None,
-        pmg_input_set: DictSet | None = None,
         **kwargs,
     ) -> None:
         """
@@ -101,9 +98,6 @@ class Vasp(Vasp_):
         auto_dipole
             If True, will automatically set dipole moment correction parameters
             based on the center of mass (in the c dimension by default).
-        pmg_input_set
-            A Pymatgen input set to use for the VASP calculation, taken from a
-            `pymatgen.io.vasp.sets.DictSet` object.
         **kwargs
             Additional arguments to be passed to the VASP calculator, e.g.
             `xc='PBE'`, `encut=520`. Takes all valid ASE calculator arguments.
@@ -150,7 +144,6 @@ class Vasp(Vasp_):
         self.elemental_magmoms = elemental_magmoms
         self.pmg_kpts = pmg_kpts
         self.auto_dipole = auto_dipole
-        self.pmg_input_set = pmg_input_set
         self.kwargs = kwargs
 
         # Initialize for later
@@ -186,10 +179,6 @@ class Vasp(Vasp_):
         # Set the ASE_VASP_VDW environmentvariable
         if SETTINGS.VASP_VDW:
             os.environ["ASE_VASP_VDW"] = str(SETTINGS.VASP_VDW)
-        if self.user_calc_params.get("luse_vdw") and "ASE_VASP_VDW" not in os.environ:
-            raise OSError(
-                "VASP_VDW setting was not provided, yet you requested a vdW functional."
-            )
 
         # Return vanilla ASE command
         vasp_cmd = (
@@ -222,14 +211,6 @@ class Vasp(Vasp_):
             msg = "Atoms object has a constraint that is not compatible with Custodian."
             raise ValueError(msg)
 
-        # Get Pymatgen VASP input set parameters
-        if self.pmg_input_set:
-            pmg_calc_params, self.input_atoms = get_pmg_input_set_params(
-                self.pmg_input_set, self.input_atoms
-            )
-        else:
-            pmg_calc_params = {}
-
         # Get user-defined preset parameters for the calculator
         if self.preset:
             calc_preset = load_vasp_yaml_calc(SETTINGS.VASP_PRESET_DIR / self.preset)[
@@ -240,7 +221,7 @@ class Vasp(Vasp_):
 
         # Collect all the calculator parameters and prioritize the kwargs in the
         # case of duplicates.
-        self.user_calc_params = pmg_calc_params | calc_preset | self.kwargs
+        self.user_calc_params = calc_preset | self.kwargs
 
         # Allow the user to use setups='mysetups.yaml' to load in a custom
         # setups from a YAML file
