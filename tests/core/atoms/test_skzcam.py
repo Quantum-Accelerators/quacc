@@ -120,7 +120,7 @@ f 1
 end"""
     }
 
-    ad_slab_block, ad_block, slab_block = create_orca_eint_blocks(
+    orca_blocks = create_orca_eint_blocks(
         embedded_adsorbed_cluster=embedded_adsorbed_cluster,
         quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
         ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
@@ -130,43 +130,43 @@ end"""
         scf_block=scf_block,
         ecp_info=ecp_info,
         include_cp=True,
-        multiplicities={"ad_slab": 1, "slab": 2, "ad": 3},
+        multiplicities={"adsorbate_slab": 1, "slab": 2, "adsorbate": 3},
     )
 
-    ad_slab_block_float = [
+    adsorbate_slab_block_float = [
         float(x)
-        for x in ad_slab_block.split()[::10]
+        for x in orca_blocks['adsorbate_slab'].split()[::10]
         if x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
-    ad_slab_block_string = [
+    adsorbate_slab_block_string = [
         x
-        for x in ad_slab_block.split()[::5]
+        for x in orca_blocks['adsorbate_slab'].split()[::5]
         if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
-    ad_block_float = [
+    adsorbate_block_float = [
         float(x)
-        for x in ad_block.split()[::2]
+        for x in orca_blocks['adsorbate'].split()[::2]
         if x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
-    ad_block_string = [
+    adsorbate_block_string = [
         x
-        for x in ad_block.split()[::2]
+        for x in orca_blocks['adsorbate'].split()[::2]
         if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
     slab_block_float = [
         float(x)
-        for x in slab_block.split()[::10]
+        for x in orca_blocks['slab'].split()[::10]
         if x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
     slab_block_string = [
         x
-        for x in slab_block.split()[::5]
+        for x in orca_blocks['slab'].split()[::5]
         if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
 
-    # Check that the strings and floats in ad_slab_coords matches reference
+    # Check that the strings and floats in adsorbate_slab_coords matches reference
     assert_allclose(
-        ad_slab_block_float,
+        adsorbate_slab_block_float,
         [
             3.128,
             0.0,
@@ -203,7 +203,7 @@ end"""
     )
 
     assert_equal(
-        ad_slab_block_string,
+        adsorbate_slab_block_string,
         [
             "%pal",
             "Method",
@@ -269,7 +269,7 @@ end"""
 
     # Check that the strings and floats in ad_coords matches reference
     assert_allclose(
-        ad_block_float,
+        adsorbate_block_float,
         [
             1.0,
             2.0,
@@ -297,7 +297,7 @@ end"""
     )
 
     assert_equal(
-        ad_block_string,
+        adsorbate_block_string,
         [
             "%pal",
             "%maxcore",
@@ -456,12 +456,13 @@ def test_create_atom_coord_string(embedded_adsorbed_cluster):
     # First let's try the case where it's a normal atom.
     atom_coord_string = create_atom_coord_string(atom=atom)
 
-    with pytest.raises(ValueError):
+
+    with pytest.raises(ValueError, match="ECP info cannot be provided for ghost atoms."):
         create_atom_coord_string(
             atom, atom_ecp_info="NewECP\nECP_info1\nECP_info2\n", ghost_atom=True
         )
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Point charge value must be given for atoms with ECP info."):
         create_atom_coord_string(atom, atom_ecp_info="NewECP\nECP_info1\nECP_info2\n")
 
     assert (
@@ -503,39 +504,39 @@ end"""
     }
 
     # Confirm that multiplicity given as 1 if not provided
-    ad_slab_coords, ad_coords, slab_coords = generate_coords_block(
+    coords_block = generate_coords_block(
         embedded_adsorbed_cluster=embedded_adsorbed_cluster,
         quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
         ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
         ecp_info=ecp_info,
     )
 
-    assert ad_slab_coords.split()[4] == "1"
-    assert slab_coords.split()[4] == "1"
-    assert ad_coords.split()[4] == "1"
+    assert coords_block['adsorbate_slab'].split()[4] == "1"
+    assert coords_block['slab'].split()[4] == "1"
+    assert coords_block['adsorbate'].split()[4] == "1"
 
-    ad_slab_coords, ad_coords, slab_coords = generate_coords_block(
+    coords_block = generate_coords_block(
         embedded_adsorbed_cluster=embedded_adsorbed_cluster,
         quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
         ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
         ecp_info=ecp_info,
         include_cp=True,
-        multiplicities={"ad_slab": 1, "slab": 2, "ad": 3},
+        multiplicities={"adsorbate_slab": 1, "slab": 2, "adsorbate": 3},
     )
-
-    ad_slab_coords_shortened_list_floats = [
+    
+    # Check that the strings and floats in adsorbate_slab_coords matches reference
+    adsorbate_slab_coords_shortened_list_floats = [
         float(x)
-        for x in ad_slab_coords.split()[::10]
+        for x in coords_block['adsorbate_slab'].split()[::10]
         if x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
-    ad_slab_coords_shortened_list_str = [
+    adsorbate_slab_coords_shortened_list_str = [
         x
-        for x in ad_slab_coords.split()[::5]
+        for x in coords_block['adsorbate_slab'].split()[::5]
         if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
-    # Check that the strings and floats in ad_slab_coords matches reference
     assert_allclose(
-        ad_slab_coords_shortened_list_floats,
+        adsorbate_slab_coords_shortened_list_floats,
         [
             0.0,
             0.0,
@@ -576,7 +577,7 @@ end"""
     )
 
     assert_equal(
-        ad_slab_coords_shortened_list_str,
+        adsorbate_slab_coords_shortened_list_str,
         [
             "%coords",
             "Units",
@@ -613,26 +614,26 @@ end"""
 
     # Check that the strings and floats in ad_coords matches reference
 
-    ad_coords_shortened_list_floats = [
+    adsorbate_coords_shortened_list_floats = [
         float(x)
-        for x in ad_coords.split()[::2]
+        for x in coords_block['adsorbate'].split()[::2]
         if x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
-    ad_coords_shortened_list_str = [
+    adsorbate_coords_shortened_list_str = [
         x
-        for x in ad_coords.split()[::2]
+        for x in coords_block['adsorbate'].split()[::2]
         if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
 
     assert_allclose(
-        ad_coords_shortened_list_floats,
+        adsorbate_coords_shortened_list_floats,
         [3.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.12018425659, 0.0, -2.12018425659, 0.0],
         rtol=1e-05,
         atol=1e-07,
     )
 
     assert_equal(
-        ad_coords_shortened_list_str,
+        adsorbate_coords_shortened_list_str,
         [
             "%coords",
             "xyz",
@@ -652,12 +653,12 @@ end"""
     # Check that the strings and floats in slab_coords matches reference
     slab_coords_shortened_list_floats = [
         float(x)
-        for x in slab_coords.split()[::10]
+        for x in coords_block['slab'].split()[::10]
         if x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
     slab_coords_shortened_list_str = [
         x
-        for x in slab_coords.split()[::5]
+        for x in coords_block['slab'].split()[::5]
         if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
     assert_allclose(
@@ -738,43 +739,43 @@ end"""
     )
 
     # Also check the case where include_cp is False
-    ad_slab_coords, ad_coords, slab_coords = generate_coords_block(
+    coords_block = generate_coords_block(
         embedded_adsorbed_cluster=embedded_adsorbed_cluster,
         quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
         ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
         ecp_info=ecp_info,
         include_cp=False,
-        multiplicities={"ad_slab": 1, "slab": 2, "ad": 3},
+        multiplicities={"adsorbate_slab": 1, "slab": 2, "adsorbate": 3},
     )
 
     # Check that the strings and floats in ad_coords matches reference
-    ad_coords_shortened_list_floats = [
+    adsorbate_coords_shortened_list_floats = [
         float(x)
-        for x in ad_coords.split()[::2]
+        for x in coords_block['adsorbate'].split()[::2]
         if x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
-    ad_coords_shortened_list_str = [
+    adsorbate_coords_shortened_list_str = [
         x
-        for x in ad_coords.split()[::2]
+        for x in coords_block['adsorbate'].split()[::2]
         if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
     assert_allclose(
-        ad_coords_shortened_list_floats, [3.0, 0.0, 0.0, 0.0], rtol=1e-05, atol=1e-07
+        adsorbate_coords_shortened_list_floats, [3.0, 0.0, 0.0, 0.0], rtol=1e-05, atol=1e-07
     )
 
     assert_equal(
-        ad_coords_shortened_list_str, ["%coords", "xyz", "angs", "C", "O", "end"]
+        adsorbate_coords_shortened_list_str, ["%coords", "xyz", "angs", "C", "O", "end"]
     )
 
     # Check that the strings and float in slab_coords matches reference
     slab_coords_shortened_list_floats = [
         float(x)
-        for x in slab_coords.split()[::10]
+        for x in coords_block['slab'].split()[::10]
         if x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
     slab_coords_shortened_list_str = [
         x
-        for x in slab_coords.split()[::5]
+        for x in coords_block['slab'].split()[::5]
         if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
     ]
     assert_allclose(

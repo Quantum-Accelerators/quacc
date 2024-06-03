@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from importlib.util import find_spec
 from pathlib import Path
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING, TypedDict, Literal
 
 import numpy as np
 from ase.atoms import Atoms
@@ -22,9 +22,18 @@ class ElementInfo(TypedDict):
     ri_cwft_basis: str
 
 
-class ECPRegionInfo(TypedDict):
-    element: str
 
+class BlockInfo(TypedDict):
+    adsorbate_slab: str
+    adsorbate: str
+    slab: str
+
+ElementStr = Literal["H", "He", "Li", "Be", "B", "C", "N", "O", "F", "Ne", "Na", "Mg", "Al", "Si", "P", "S", "Cl", "Ar", "K", "Ca", "Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn", "Ga", "Ge", "As", "Se", "Br", "Kr", "Rb", "Sr", "Y", "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag", "Cd", "In", "Sn", "Sb", "Te", "I", "Xe", "Cs", "Ba", "La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu", "Hf", "Ta", "W", "Re", "Os", "Ir", "Pt", "Au", "Hg", "Tl", "Pb", "Bi", "Po", "At", "Rn", "Fr", "Ra", "Ac", "Th", "Pa", "U", "Np", "Pu", "Am", "Cm", "Bk", "Cf", "Es", "Fm", "Md", "No", "Lr", "Rf", "Db", "Sg", "Bh", "Hs", "Mt", "Ds", "Rg", "Cn", "Nh", "Fl", "Mc", "Lv", "Ts", "Og"]
+
+class MultiplicityDict(TypedDict):
+    adsorbate_slab: int
+    slab: int
+    adsorbate: int
 
 if TYPE_CHECKING:
     from ase.atom import Atom
@@ -37,44 +46,44 @@ def create_orca_eint_blocks(
     embedded_adsorbed_cluster: Atoms,
     quantum_cluster_indices: list[int],
     ecp_region_indices: list[int],
-    element_info: dict[str, ElementInfo] | None = None,
+    element_info: dict[ElementStr, ElementInfo] | None = None,
     pal_nprocs_block: dict[str, int] | None = None,
     method_block: dict[str, str] | None = None,
     scf_block: dict[str, str] | None = None,
-    ecp_info: ECPRegionInfo | None = None,
+    ecp_info: dict[ElementStr,str] | None = None,
     include_cp: bool = True,
-    multiplicities: dict | None = None,
-) -> tuple[str, str, str]:
+    multiplicities: MultiplicityDict | None = None,
+) -> BlockInfo:
     """
     Creates the orcablocks input for the ORCA ASE calculator.
 
     Parameters
     ----------
     embedded_adsorbed_cluster
-        The ASE Atoms object containing the atomic coordinates and atomic charges from the .pun file, as well as the atom type. This object is created by the generate_skzcam_clusters function.
+        The ASE Atoms object containing the atomic coordinates and atomic charges from the .pun file, as well as the atom type. This object is created by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
     quantum_cluster_indices
-        A list containing the indices of the atoms in each quantum cluster. These indices are provided by the generate_skzcam_clusters function.
+        A list containing the indices of the atoms in each quantum cluster. These indices are provided by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
     ecp_region_indices
-        A list containing the indices of the atoms in each ECP region. These indices are provided by the generate_skzcam_clusters function.
+        A list containing the indices of the atoms in each ECP region. These indices are provided by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
     element_info
         A dictionary with elements as keys which gives the (1) number of core electrons as 'core', (2) basis set as 'basis', (3) effective core potential as 'ecp', (4) resolution-of-identity/density-fitting auxiliary basis set for DFT/HF calculations as 'ri_scf_basis' and (5) resolution-of-identity/density-fitting for correlated wave-function methods as 'ri_cwft_basis'.
     pal_nprocs_block
         A dictionary with the number of processors for the PAL block as 'nprocs' and the maximum memory-per-core in megabytes blocks as 'maxcore'.
     method_block
-        A dictionary that contains the method block for the ORCA input file.
+        A dictionary that contains the method block for the ORCA input file. The key is the ORCA setting and the value is that setting's value.
     scf_block
-        A dictionary that contains the SCF block for the ORCA input file.
+        A dictionary that contains the SCF block for the ORCA input file. The key is the ORCA setting and the value is that setting's value.
     ecp_info
         A dictionary with the ECP data (in ORCA format) for the cations in the ECP region.
     include_cp
         If True, the coords strings will include the counterpoise correction for the adsorbate and slab.
     multiplicities
-        The multiplicity of the adsorbate-slab complex, adsorbate and slab respectively.
+        The multiplicity of the adsorbate-slab complex, adsorbate and slab respectively, with the keys 'adsorbate_slab', 'adsorbate', and 'slab'.
 
     Returns
     -------
-    tuple[str,str,str]
-        The coordinates block for the adsorbate-slab complex, the adsorbate, and the slab.
+    BlockInfo
+        The ORCA input block (to be put in 'orcablocks' parameter) as a string for the adsorbate-slab complex, the adsorbate, and the slab in a dictionary with the keys 'adsorbate_slab', 'adsorbate', and 'slab' respectively.
     """
 
     # First generate the preamble block
@@ -88,7 +97,7 @@ def create_orca_eint_blocks(
     )
 
     # Generate the coords block
-    ad_slab_coords, ad_coords, slab_coords = generate_coords_block(
+    coords_block = generate_coords_block(
         embedded_adsorbed_cluster=embedded_adsorbed_cluster,
         quantum_cluster_indices=quantum_cluster_indices,
         ecp_region_indices=ecp_region_indices,
@@ -98,11 +107,13 @@ def create_orca_eint_blocks(
     )
 
     # Combine the blocks
-    ad_slab_block = preamble_block + ad_slab_coords
-    ad_block = preamble_block + ad_coords
-    slab_block = preamble_block + slab_coords
+    orca_blocks = {
+        'adsorbate_slab': preamble_block + coords_block['adsorbate_slab'],
+        'adsorbate': preamble_block + coords_block['adsorbate'],
+        'slab': preamble_block + coords_block['slab']
+    }
 
-    return ad_slab_block, ad_block, slab_block
+    return orca_blocks
 
 
 def create_atom_coord_string(
@@ -153,37 +164,37 @@ def generate_coords_block(
     embedded_adsorbed_cluster: Atoms,
     quantum_cluster_indices: list[int],
     ecp_region_indices: list[int],
-    ecp_info: ECPRegionInfo | None = None,
+    ecp_info: dict[ElementStr,str] | None = None,
     include_cp: bool = True,
-    multiplicities: dict[str, int] | None = None,
-) -> tuple[str, str, str]:
+    multiplicities: MultiplicityDict | None = None,
+) -> BlockInfo:
     """
     Generates the coordinates block for the ORCA input file. This includes the coordinates of the quantum cluster, the ECP region, and the point charges. It will return three strings for the adsorbate-slab complex, adsorbate and slab.
 
     Parameters
     ----------
     embedded_adsorbed_cluster
-        The ASE Atoms object containing the atomic coordinates and atomic charges from the .pun file, as well as the atom type.
+        The ASE Atoms object containing the atomic coordinates and atomic charges from the .pun file, as well as the atom type. This Atoms object is typically produced from [quacc.atoms.skzcam.create_skzcam_clusters][].
     quantum_cluster_indices
-        A list containing the indices of the atoms in each quantum cluster. These indices are provided by the generate_skzcam_clusters function.
+        A list containing the indices of the atoms in each quantum cluster. These indices are provided by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
     ecp_region_indices
-        A list containing the indices of the atoms in each ECP region. These indices are provided by the generate_skzcam_clusters function.
+        A list containing the indices of the atoms in each ECP region. These indices are provided by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
     ecp_info
         A dictionary with the ECP data (in ORCA format) for the cations in the ECP region.
     include_cp
         If True, the coords strings will include the counterpoise correction for the adsorbate and slab.
     multiplicities
-        The multiplicity of the adsorbate-slab complex, adsorbate and slab respectively.
+        The multiplicity of the adsorbate-slab complex, adsorbate and slab respectively, with the keys 'adsorbate_slab', 'adsorbate', and 'slab'.
 
     Returns
     -------
-    tuple[str,str,str]
-        The coordinates block for the adsorbate-slab complex, the adsorbate, and the slab.
+    BlockInfo
+        The coordinates block for the ORCA input block (to be put in 'orcablocks' parameter) as a string for the adsorbate-slab complex, the adsorbate, and the slab in a dictionary with the keys 'adsorbate_slab', 'adsorbate', and 'slab' respectively.
     """
 
     # Create the quantum cluster and ECP region cluster
     if multiplicities is None:
-        multiplicities = {"ad_slab": 1, "ad": 1, "slab": 1}
+        multiplicities = {"adsorbate_slab": 1, "adsorbate": 1, "slab": 1}
     quantum_cluster = embedded_adsorbed_cluster[quantum_cluster_indices]
     ecp_region = embedded_adsorbed_cluster[ecp_region_indices]
 
@@ -205,60 +216,62 @@ def generate_coords_block(
     charge = int(sum(quantum_cluster.get_array("oxi_states")))
 
     # Create the coords strings for the adsorbate-slab complex, adsorbate, and slab
-    ad_slab_coords = f"""%coords
+    coords_block =  {
+        'adsorbate_slab': f"""%coords
 CTyp xyz
-Mult {multiplicities['ad_slab']}
+Mult {multiplicities['adsorbate_slab']}
 Units angs
 Charge {charge}
 coords
-"""
-    ad_coords = f"""%coords
+""",
+        'adsorbate': f"""%coords
 CTyp xyz
-Mult {multiplicities['ad']}
+Mult {multiplicities['adsorbate']}
 Units angs
 Charge 0
 coords
-"""
-    slab_coords = f"""%coords
+""",
+        'slab': f"""%coords
 CTyp xyz
 Mult {multiplicities['slab']}
 Units angs
 Charge {charge}
 coords
 """
+    }
 
     for i, atom in enumerate(quantum_cluster):
         # Create the coords section for the adsorbate-slab complex
-        ad_slab_coords += create_atom_coord_string(atom)
+        coords_block["adsorbate_slab"] += create_atom_coord_string(atom=atom)
 
         # Create the coords section for the adsorbate and slab
         if i in adsorbate_indices:
-            ad_coords += create_atom_coord_string(atom)
+            coords_block["adsorbate"] += create_atom_coord_string(atom=atom)
             if include_cp:
-                slab_coords += create_atom_coord_string(atom, ghost_atom=True)
+                coords_block["slab"] += create_atom_coord_string(atom=atom, ghost_atom=True)
         elif i in slab_indices:
-            slab_coords += create_atom_coord_string(atom)
+            coords_block["slab"] += create_atom_coord_string(atom=atom)
             if include_cp:
-                ad_coords += create_atom_coord_string(atom, ghost_atom=True)
+                coords_block["adsorbate"] += create_atom_coord_string(atom=atom, ghost_atom=True)
 
     # Create the coords section for the ECP region
     ecp_region_coords_section = ""
     for i, atom in enumerate(ecp_region):
-        atom_ecp_info = format_ecp_info(ecp_info[atom.symbol])
+        atom_ecp_info = format_ecp_info(atom_ecp_info=ecp_info[atom.symbol])
         ecp_region_coords_section += create_atom_coord_string(
-            atom,
+            atom=atom,
             atom_ecp_info=atom_ecp_info,
             pc_charge=ecp_region.get_array("oxi_states")[i],
         )
 
     # Add the ECP region coords section to the ads_slab_coords string
-    ad_slab_coords += f"{ecp_region_coords_section}end\nend\n"
-    slab_coords += f"{ecp_region_coords_section}end\nend\n"
-    ad_coords += "end\nend\n"
+    coords_block["adsorbate_slab"] += f"{ecp_region_coords_section}end\nend\n"
+    coords_block["slab"] += f"{ecp_region_coords_section}end\nend\n"
+    coords_block["adsorbate"] += "end\nend\n"
 
     # Add the ECP coords section to the slab_coords string
 
-    return ad_slab_coords, ad_coords, slab_coords
+    return coords_block
 
 
 def format_ecp_info(atom_ecp_info: str) -> str:
@@ -292,7 +305,7 @@ def format_ecp_info(atom_ecp_info: str) -> str:
 def generate_orca_input_preamble(
     embedded_cluster: Atoms,
     quantum_cluster_indices: list[int],
-    element_info: ElementInfo | None = None,
+    element_info: dict[ElementStr,ElementInfo] | None = None,
     pal_nprocs_block: dict[str, int] | None = None,
     method_block: dict[str, str] | None = None,
     scf_block: dict[str, str] | None = None,
@@ -303,17 +316,17 @@ def generate_orca_input_preamble(
     Parameters
     ----------
     embedded_cluster
-        The ASE Atoms object containing the atomic coordinates and atomic charges from the .pun ChemShell file.
+        The ASE Atoms object containing the atomic coordinates and atomic charges from the .pun ChemShell file. This object is created by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
     quantum_cluster_indices
-        A list containing the indices of the atoms of embedded_cluster that form a quantum cluster.
+        A list containing the indices of the atoms of embedded_cluster that form a quantum cluster. These indices are provided by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
     element_info
         A dictionary with elements as keys which gives the (1) number of core electrons as 'core', (2) basis set as 'basis', (3) effective core potential as 'ecp', (4) resolution-of-identity/density-fitting auxiliary basis set for DFT/HF calculations as 'ri_scf_basis' and (5) resolution-of-identity/density-fitting for correlated wave-function methods as 'ri_cwft_basis'.
     pal_nprocs_block
         A dictionary with the number of processors for the PAL block as 'nprocs' and the maximum memory-per-core blocks as 'maxcore'.
     method_block
-        A dictionary that contains the method block for the ORCA input file.
+        A dictionary that contains the method block for the ORCA input file. The key is the ORCA setting and the value is that setting's value.
     scf_block
-        A dictionary that contains the SCF block for the ORCA input file.
+        A dictionary that contains the SCF block for the ORCA input file. The key is the ORCA setting and the value is that setting's value.
 
     Returns
     -------
@@ -432,13 +445,13 @@ def create_orca_point_charge_file(
     Parameters
     ----------
     embedded_cluster
-        The ASE Atoms object containing the atomic coordinates and atomic charges from the .pun file.
+        The ASE Atoms object containing the atomic coordinates and atomic charges from the .pun file. This object is created by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
     quantum_cluster_indices
-        A list of lists containing the indices of the atoms in each quantum cluster.
+        A list of lists containing the indices of the atoms in each quantum cluster. These indices are provided by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
     ecp_region_indices
-        A list of lists containing the indices of the atoms in the ECP region for each quantum cluster.
+        A list of lists containing the indices of the atoms in the ECP region for each quantum cluster. These indices are provided by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
     pc_file
-        A file containing the point charges to be read by ORCA.
+        A file containing the point charges to be written by ORCA.
     """
 
     # Get the oxi_states arrays from the embedded_cluster
@@ -606,11 +619,11 @@ def generate_chemshell_cluster(
     )
 
     # Save the final cluster to a .pun file
-    chemsh_embedded_cluster.save(Path(filepath).with_suffix(".pun"), "pun")
+    chemsh_embedded_cluster.save(filename=Path(filepath).with_suffix(".pun"), fmt="pun")
 
     if write_xyz_file:
         # XYZ for visualisation
-        chemsh_embedded_cluster.save(Path(filepath).with_suffix(".xyz"), "xyz")
+        chemsh_embedded_cluster.save(filename=Path(filepath).with_suffix(".xyz"), fmt="xyz")
 
 
 def create_skzcam_clusters(
@@ -662,14 +675,14 @@ def create_skzcam_clusters(
     """
 
     # Read the .pun file and create the embedded_cluster Atoms object
-    embedded_cluster = convert_pun_to_atoms(pun_file, atom_oxi_states)
+    embedded_cluster = convert_pun_to_atoms(pun_file=pun_file, atom_oxi_states=atom_oxi_states)
 
     # Get distances of all atoms from the cluster center
-    atom_center_distances = _get_atom_distances(embedded_cluster, center_position)
+    atom_center_distances = _get_atom_distances(embedded_cluster=embedded_cluster, center_position=center_position)
 
     # Determine the cation shells from the center of the embedded cluster
     _, cation_shells_idx = _find_cation_shells(
-        embedded_cluster, atom_center_distances, shell_width
+        embedded_cluster=embedded_cluster, distances=atom_center_distances, shell_width=shell_width
     )
 
     # Create the distance matrix for the embedded cluster
@@ -698,7 +711,7 @@ def create_skzcam_clusters(
 
     # Get the ECP region for each quantum cluster
     ecp_region_indices = _get_ecp_region(
-        embedded_cluster, quantum_cluster_indices, embedded_cluster_all_dist, ecp_dist
+        embedded_cluster=embedded_cluster, quantum_cluster_indices=quantum_cluster_indices, dist_matrix=embedded_cluster_all_dist, ecp_dist=ecp_dist
     )
 
     # Write the quantum clusters to files
@@ -919,22 +932,22 @@ def _find_cation_shells(
             distances_sorted.append(distances[i])
             distances_sorted_indices.append(i)
 
-    curr_point = distances_sorted[0]
-    curr_shell = [curr_point]
-    curr_shell_idx = [distances_sorted_indices[0]]
+    current_point = distances_sorted[0]
+    current_shell = [current_point]
+    current_shell_idx = [distances_sorted_indices[0]]
 
     for idx, point in enumerate(distances_sorted[1:]):
-        if point <= curr_point + shell_width:
-            curr_shell.append(point)
-            curr_shell_idx.append(distances_sorted_indices[idx + 1])
+        if point <= current_point + shell_width:
+            current_shell.append(point)
+            current_shell_idx.append(distances_sorted_indices[idx + 1])
         else:
-            shells.append(curr_shell)
-            shells_indices.append(curr_shell_idx)
-            curr_shell = [point]
-            curr_shell_idx = [distances_sorted_indices[idx + 1]]
-        curr_point = point
-    shells.append(curr_shell)
-    shells_indices.append(curr_shell_idx)
+            shells.append(current_shell)
+            shells_indices.append(current_shell_idx)
+            current_shell = [point]
+            current_shell_idx = [distances_sorted_indices[idx + 1]]
+        current_point = point
+    shells.append(current_shell)
+    shells_indices.append(current_shell_idx)
 
     return shells, shells_indices
 
