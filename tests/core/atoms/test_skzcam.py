@@ -56,9 +56,9 @@ def embedded_adsorbed_cluster():
         insert_adsorbate_to_embedded_cluster(
             embedded_cluster,
             adsorbate,
-            adsorbate_vector_from_slab = [0.0, 0.0, 2.0],
-            quantum_cluster_indices = quantum_cluster_indices,
-            ecp_region_indices = ecp_region_indices,
+            adsorbate_vector_from_slab=[0.0, 0.0, 2.0],
+            quantum_cluster_indices=quantum_cluster_indices,
+            ecp_region_indices=ecp_region_indices,
         )
     )
     return embedded_adsorbed_cluster
@@ -134,37 +134,35 @@ end"""
     )
 
     ad_slab_block_float = [
-            float(x)
-            for x in ad_slab_block.split()[::10]
-            if x.replace(".", "", 1).replace("-", "", 1).isdigit()
-        ]
+        float(x)
+        for x in ad_slab_block.split()[::10]
+        if x.replace(".", "", 1).replace("-", "", 1).isdigit()
+    ]
     ad_slab_block_string = [
-            x
-            for x in ad_slab_block.split()[::5]
-            if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
-        ]
+        x
+        for x in ad_slab_block.split()[::5]
+        if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
+    ]
     ad_block_float = [
-            float(x)
-            for x in ad_block.split()[::10]
-            if x.replace(".", "", 1).replace("-", "", 1).isdigit()
-        ]
+        float(x)
+        for x in ad_block.split()[::10]
+        if x.replace(".", "", 1).replace("-", "", 1).isdigit()
+    ]
     ad_block_string = [
-            x
-            for x in ad_block.split()[::5]
-            if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
-        ]
+        x
+        for x in ad_block.split()[::5]
+        if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
+    ]
     slab_block_float = [
-            float(x)
-            for x in slab_block.split()[::10]
-            if x.replace(".", "", 1).replace("-", "", 1).isdigit()
-        ]
+        float(x)
+        for x in slab_block.split()[::10]
+        if x.replace(".", "", 1).replace("-", "", 1).isdigit()
+    ]
     slab_block_string = [
-            x
-            for x in slab_block.split()[::5]
-            if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
-        ]
-
-
+        x
+        for x in slab_block.split()[::5]
+        if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
+    ]
 
     # Check that the strings and floats in ad_slab_coords matches reference
     assert_allclose(
@@ -266,7 +264,7 @@ end"""
             "NewECP",
             "s",
             "end",
-        ]
+        ],
     )
 
     # Check that the strings and floats in ad_coords matches reference
@@ -345,7 +343,7 @@ end"""
             "Charge",
             "coords",
             "end",
-        ]
+        ],
     )
 
     # Check that the strings and floats in slab_coords matches reference
@@ -448,7 +446,7 @@ end"""
             "NewECP",
             "s",
             "end",
-        ]
+        ],
     )
 
 
