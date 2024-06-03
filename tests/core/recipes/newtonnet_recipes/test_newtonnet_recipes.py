@@ -351,17 +351,7 @@ def setup_test_environment(tmp_path):
     [
         (20, 2e-3, 15, 20, 1.7, 1e-2, 3.0, None, 20),  # Default parameters
         (10, 2e-3, 15, 20, 1.7, 1e-2, 3.0, None, 10),  # Different number of images
-        (
-            20,
-            1e-4,
-            10,
-            10,
-            1.5,
-            0.01,
-            2.5,
-            "raw_path.xyz",
-            20,
-        ),  # Different interpolation parameters and save_raw
+        (20, 1e-4, 10, 10, 1.5, 0.01, 2.5, "raw_path.xyz", 20),  # Different interpolation parameters and save_raw
     ],
 )
 def test_geodesic_interpolate_wrapper(
@@ -463,18 +453,7 @@ def test_setup_images(setup_test_environment):
     ),
     [
         ("aseneb", NEBOptimizer, "ODE", None, None, 10, 0.1, 3, 1e-3, None),
-        (
-            "aseneb",
-            NEBOptimizer,
-            "ODE",
-            None,
-            "some_logdir",
-            10,
-            0.1,
-            3,
-            1e-3,
-            "some_logdir",
-        ),
+        ("aseneb", NEBOptimizer, "ODE", None, "some_logdir", 10, 0.1, 3, 1e-3, "some_logdir"),
     ],
 )
 def test_run_neb_method(

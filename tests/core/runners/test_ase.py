@@ -13,9 +13,12 @@ from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
 from ase.optimize import BFGS, BFGSLineSearch
 from ase.optimize.sciopt import SciPyFminBFGS
+from ase.mep.neb import NEBOptimizer
+from ase.io import write
+from ase import Atoms
 
 from quacc import SETTINGS, change_settings
-from quacc.runners.ase import run_calc, run_opt, run_vib
+from quacc.runners.ase import run_calc, run_opt, run_vib, run_path_opt
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.propagate = True
@@ -43,6 +46,156 @@ def teardown_function():
     for f in ["test_file.txt", "test_file.txt.gz"]:
         if os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, f)):
             os.remove(os.path.join(SETTINGS.RESULTS_DIR, f))
+
+
+@pytest.fixture()
+def setup_test_environment(tmp_path):
+    # Create temporary directory
+    logdir = tmp_path / "log"
+    os.makedirs(logdir, exist_ok=True)
+
+    # Create a mock XYZ file with reactant and product structures
+    xyz_r_p = tmp_path / "r_p.xyz"
+
+    reactant = Atoms(
+        symbols="CCHHCHH",
+        positions=[
+            [1.4835950817281542, -1.0145410211301968, -0.13209027203235943],
+            [0.8409564131524673, 0.018549610257914483, -0.07338809662321308],
+            [-0.6399757891931867, 0.01763740851518944, 0.0581573443268891],
+            [-1.0005576455546672, 1.0430257532387608, 0.22197240310602892],
+            [1.402180736662139, 0.944112416574632, -0.12179540364365492],
+            [-1.1216961389434357, -0.3883639833876232, -0.8769102842015071],
+            [-0.9645026578514683, -0.6204201840686793, 0.9240543090678239],
+        ],
+    )
+
+    product = Atoms(
+        symbols="CCHHCHH",
+        positions=[
+            [1.348003553501624, 0.4819311116778978, 0.2752537177143993],
+            [0.2386618286631742, -0.3433222966734429, 0.37705518940917926],
+            [-0.9741307940518336, 0.07686022294949588, 0.08710778043683955],
+            [-1.8314843503320921, -0.5547344604780035, 0.1639037492534953],
+            [0.3801391040059668, -1.3793340533058087, 0.71035902765307],
+            [1.9296265384257907, 0.622088341468767, 1.0901733942191298],
+            [-1.090815880212625, 1.0965111343610956, -0.23791518420660265],
+        ],
+    )
+
+    write(xyz_r_p, [reactant, product])
+
+    return logdir, xyz_r_p
+
+from sella import Sella
+@pytest.mark.parametrize(
+    (
+        "method",
+        "optimizer_class",
+        "precon",
+        "logdir",
+        "n_intermediate",
+        "k",
+        "max_steps",
+        "fmax_cutoff",
+        "expected_logfile",
+        "first_image_positions",
+        "first_image_pot_energy",
+        "first_image_forces",
+        "second_images_positions",
+        "index_ts",
+        "pot_energy_ts",
+        "forces_ts",
+        "last_images_positions",
+    ),
+    [
+        # ("aseneb", NEBOptimizer, None, None, 10, 0.1, 3, 1e-3, None),
+        # ("aseneb", SciPyFminBFGS, None, "some_logdir", 1000, 0.1, 3, 1e-3, "some_logdir",
+        #   0.78503956131, -24.9895786292, -0.0017252843, 0.78017739462, 9, -19.946616164,
+        #   -0.19927549, 0.51475535802),
+        ("aseneb", NEBOptimizer, None, "some_logdir", 10, 0.1, 3, 1e-3, "some_logdir",
+         0.78503956131, -24.9895786292, -0.0017252843, 0.78017739462, 9, -19.946616164,
+         -0.19927549, 0.51475535802),
+    ],
+)
+def test_run_neb_method(
+    setup_test_environment,
+    tmp_path,
+    method,
+    optimizer_class,
+    precon,
+    logdir,
+    n_intermediate,
+    k,
+    max_steps,
+    fmax_cutoff,
+    expected_logfile,
+    first_image_positions,
+    first_image_pot_energy,
+    first_image_forces,
+    second_images_positions,
+    index_ts,
+    pot_energy_ts,
+    forces_ts,
+    last_images_positions,
+):
+    # def test_run_neb_method(tmp_path, setup_test_environment):
+    logdir, xyz_r_p = setup_test_environment
+
+    if expected_logfile == "some_logdir":
+        logdir = tmp_path / "logs"
+    elif expected_logfile is None:
+        logdir = None
+
+    # images = run_neb_method(
+    images = run_path_opt(
+        xyz_r_p,
+        logdir=str(logdir) if logdir else None,
+        method=method,
+        optimizer_class=optimizer_class,
+        n_intermediate=n_intermediate,
+        precon=precon,
+        max_steps=max_steps,
+        fmax_cutoff=fmax_cutoff,
+    )
+
+    assert images[0].positions[0][1] == pytest.approx(first_image_positions, abs=1e-2)
+
+    assert images[0].get_potential_energy() == pytest.approx(first_image_pot_energy, abs=1e-2
+    ), "reactant potential energy"
+
+    assert images[0].get_forces()[0, 1] == pytest.approx(
+       first_image_forces, abs=1e-3
+    ), "reactant potential forces"
+
+    assert images[1].positions[0][1] == pytest.approx(second_images_positions, abs=1e-1)
+
+    assert np.argmax(
+        [image.get_potential_energy() for image in images]
+    ) == pytest.approx(index_ts), "Index of the transition state"
+
+    assert np.max([image.get_potential_energy() for image in images]) == pytest.approx(
+        pot_energy_ts, abs=1), "Potential energy of the transition state"
+
+    assert images[
+        np.argmax([image.get_potential_energy() for image in images])
+    ].get_forces()[0, 1] == pytest.approx(
+        forces_ts, abs=1), "Force component in the transition state"
+
+    assert images[-1].positions[0][1] == pytest.approx(last_images_positions, abs=1e-2)
+    # # Ensure the log file is correctly handled
+    # if expected_logfile is None:
+    #     assert logdir is None
+    # else:
+    #     assert logdir is not None
+    #     log_filename = f"neb_band_{method}_{optimizer.__name__}_{precon}.txt"
+    #     logfile_path = Path(logdir) / log_filename
+    #     assert logfile_path.exists()
+    #     # 'Could not find the optimization output file for NEB'
+    #
+    #     assert os.path.exists(
+    #         f"{logdir}/optimized_path_{method}_{optimizer.__name__}_{precon}.xyz"
+    #     ), "Could not find the xyz file for converged NEB calculation."
 
 
 def test_run_calc(tmp_path, monkeypatch):

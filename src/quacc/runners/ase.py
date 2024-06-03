@@ -4,16 +4,18 @@ from __future__ import annotations
 
 import sys
 from importlib.util import find_spec
+from pathlib import Path
 from shutil import copy, copytree
 from typing import TYPE_CHECKING, Callable
 
 import numpy as np
+from ase import Atoms
 from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read, write
 from ase.optimize import BFGS
 from ase.vibrations import Vibrations
 from ase.mep.neb import NEBOptimizer
-from ase.neb import NEB
+from ase.mep import NEB
 from monty.dev import requires
 from monty.os.path import zpath
 
@@ -24,8 +26,9 @@ from quacc.utils.dicts import recursive_dict_merge
 from quacc.schemas.ase import summarize_opt_run
 
 has_sella = bool(find_spec("sella"))
-
+#
 if has_sella:
+    # pass
     from sella import Sella
 
 has_newtonnet = bool(find_spec("newtonnet"))
@@ -79,6 +82,7 @@ if TYPE_CHECKING:
         delta: float  # default = 0.01
         nfree: int  # default = 2
 
+import inspect
 
 def run_calc(
     atoms: Atoms,
@@ -335,22 +339,16 @@ def run_vib(
 
     return vib
 
-'''
-def run_path_optimization(
-        reactant_product_path: str,
-        logdir: str,
-        num_intermediate_images: int = 20,
-        spring_constant: float = 0.1,
-        max_optimization_steps: int = 1000,
-        force_convergence_tolerance: float = 0.01,
-        neb_method: str = 'aseneb',
-        optimizer_class: type[Optimizer] = NEBOptimizer,
-        preconditioner: str | None = None,
-        store_intermediate_results: bool = False,
-        fn_hook: Callable | None = None,
-        optimizer_kwargs: dict[str, Any] | None = None,
-        run_kwargs: dict[str, Any] | None = None,
-        copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+
+def run_path_opt(
+        xyz_r_p,
+        logdir=None,
+        method=None,
+        optimizer_class=None,
+        n_intermediate: int | None = 20,
+        precon: str | None = None,
+        max_steps: int | None = 1000,
+        fmax_cutoff: float | None = 1e-2,
 ) -> list[Atoms]:
     """
     Run NEB-based path optimization in a scratch directory and copy the results back to
@@ -392,80 +390,14 @@ def run_path_optimization(
     list[Atoms]
         The optimized images.
     """
-    # Setup directories and files
-    Path(logdir).mkdir(parents=True, exist_ok=True)
-    tmpdir, job_results_dir = calc_setup(None, copy_files=copy_files)
-
     # Generate intermediate images
-    images = _setup_images(logdir, reactant_product_path, num_intermediate_images)
+    images = _setup_images(logdir, xyz_r_p, n_intermediate)
 
-    # Setup the NEB method
-    neb = NEB(
-        images,
-        k=spring_constant,
-        method=neb_method,
-        climb=True,
-        precon=preconditioner,
-        remove_rotation_and_translation=True,
-        parallel=True,
-    )
-
-    # Set optimizer and its kwargs
-    optimizer_kwargs = optimizer_kwargs or {}
-    optimizer_kwargs = recursive_dict_merge(
-        {
-            "logfile": "-" if SETTINGS.DEBUG else tmpdir / "neb_opt.log",
-            "restart": tmpdir / "neb_opt.json",
-        },
-        optimizer_kwargs,
-    )
-    run_kwargs = run_kwargs or {}
-
-    # Check if trajectory kwarg is specified
-    if "trajectory" in optimizer_kwargs:
-        raise ValueError("Quacc does not support setting the `trajectory` kwarg.")
-
-    # Handle optimizer specific kwargs
-    if optimizer_class.__name__.startswith("SciPy"):
-        optimizer_kwargs.pop("restart", None)
-    elif optimizer_class.__name__ == "Sella":
-        _set_sella_kwargs(images[0], optimizer_kwargs)
-
-    # Define the Trajectory object
-    traj_file = tmpdir / "neb_opt.traj"
-    traj = Trajectory(traj_file, "w", atoms=images)
-    optimizer_kwargs["trajectory"] = traj
-
-    # Run optimization
-    try:
-        with traj, optimizer_class(neb, method=neb_method, **optimizer_kwargs) as opt:
-            for i, _ in enumerate(
-                    opt.irun(fmax=force_convergence_tolerance, steps=max_optimization_steps, **run_kwargs)):
-                if store_intermediate_results:
-                    _copy_intermediate_files(
-                        tmpdir,
-                        i,
-                        files_to_ignore=[
-                            traj_file,
-                            optimizer_kwargs["restart"],
-                            optimizer_kwargs["logfile"],
-                        ],
-                    )
-                if fn_hook:
-                    fn_hook(opt)
-    except Exception as exception:
-        terminate(tmpdir, exception)
-
-    # Store the trajectory atoms
-    opt.traj_atoms = read(traj_file, index=":")
-
-    # Perform cleanup operations
-    calc_cleanup(get_final_atoms_from_dynamics(opt), tmpdir, job_results_dir)
-
-    # Save the optimized path
-    optimized_images_path = Path(
-        logdir) / f"optimized_path_{neb_method}_{optimizer_class.__name__}_{preconditioner}.xyz"
-    write(optimized_images_path, images)
+    neb = NEB(images)
+    neb.interpolate()
+    # qn = BFGS(neb, trajectory='neb.traj')
+    qn = optimizer_class(neb, trajectory='neb.traj')
+    qn.run(fmax=0.05)
 
     return images
 
@@ -580,10 +512,18 @@ def _setup_images(logdir: str, xyz_r_p: str, n_intermediate: int = 40):
     Returns:
     List: List of ASE Atoms objects with calculated energies and forces.
     """
+    current_file_path = Path(__file__).parent
+    print('current_file_path:\n\n', current_file_path)
+    conf_path = (current_file_path / '../../../tests/core/recipes/newtonnet_recipes').resolve()
+    print('conf_path:\n\n', conf_path)
+    NEWTONNET_CONFIG_PATH = conf_path / "config0.yml"
+    NEWTONNET_MODEL_PATH = conf_path / "best_model_state.tar"
+    SETTINGS.CHECK_CONVERGENCE = False
     calc_defaults = {
-        "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-        "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        "model_path": NEWTONNET_MODEL_PATH,
+        "settings_path": NEWTONNET_CONFIG_PATH,
     }
+    print('calc_defaults:\n\n\n\n\n\n', calc_defaults)
     opt_defaults = {"optimizer": Sella, "optimizer_kwargs": ({"order": 0})}
     calc_flags = recursive_dict_merge(calc_defaults, {})
     opt_flags = recursive_dict_merge(opt_defaults, {})
@@ -608,6 +548,7 @@ def _setup_images(logdir: str, xyz_r_p: str, n_intermediate: int = 40):
         reactant = opt_ts_summary["atoms"].copy()
         # traj_file = Path(logdir) / f"{name}_opt.traj"
         # sella_wrapper(atom, traj_file=traj_file, sella_order=0)
+    print('done with opt\n\n\n\n\n\n\n')
     # Save optimized reactant and product structures
     if logdir is not None:
         r_p_path = Path(logdir) / "r_p.xyz"
@@ -668,7 +609,7 @@ def _set_sella_kwargs(atoms: Atoms, optimizer_kwargs: dict[str, Any]) -> None:
 
     if not atoms.pbc.any() and "internal" not in optimizer_kwargs:
         optimizer_kwargs["internal"] = True
-'''
+
 
 def _copy_intermediate_files(
     tmpdir: Path, step_number: int, files_to_ignore: list[Path] | None = None
