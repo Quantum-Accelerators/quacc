@@ -36,7 +36,7 @@ def create_orca_eint_blocks(
     embedded_adsorbed_cluster: Atoms,
     quantum_cluster_indices: list[int],
     ecp_region_indices: list[int],
-    element_info: dict[str,ElementInfo] | None = None,
+    element_info: dict[str, ElementInfo] | None = None,
     pal_nprocs_block: dict[str, int] | None = None,
     method_block: dict[str, str] | None = None,
     scf_block: dict[str, str] | None = None,
