@@ -21,6 +21,7 @@ class ElementInfo(TypedDict):
     ri_scf_basis: str
     ri_cwft_basis: str
 
+
 class ECPRegionInfo(TypedDict):
     element: str
 
