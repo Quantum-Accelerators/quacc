@@ -190,14 +190,6 @@ class MRCC(GenericFileIOCalculator):
 
         Parameters
         ----------
-        charge: int
-            The charge of the system.
-        mult: int
-            The multiplicity of the system.
-        mrccinput : dict[str,str]
-            The input for the MRCC calculation. The keys are the MRCC settings with the values being the corresponding value for each setting.
-        mrccblocks: str
-            The MRCC blocks to be written that goes after mrccinput.
         profile: MrccProfile
             The MRCC profile to use.
         directory: str
