@@ -10,7 +10,7 @@ from ase.calculators.genericfileio import (
     read_stdout,
 )
 
-from quacc.calculators.mrcc.io import write_mrcc, read_mrcc_outputs
+from quacc.calculators.mrcc.io import read_mrcc_outputs, write_mrcc
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -108,12 +108,7 @@ class MrccTemplate(CalculatorTemplate):
         )
 
     def write_input(
-        self,
-        *,
-        directory: Path | str,
-        atoms: Atoms,
-        parameters: ParamsInfo,
-        **kwargs
+        self, *, directory: Path | str, atoms: Atoms, parameters: ParamsInfo, **kwargs
     ) -> None:
         """
         Write the MRCC input file.

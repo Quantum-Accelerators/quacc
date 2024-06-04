@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 from io import StringIO
+from pathlib import Path
 from typing import TYPE_CHECKING, TypedDict
 
 from ase.io import read
 from ase.units import Hartree
 
-from pathlib import Path
-from pathlib import Path
-from ase import Atoms
+if TYPE_CHECKING:
+    from ase import Atoms
 
 
 class ParamsInfo(TypedDict):
@@ -48,7 +48,7 @@ def read_geom_mrccinp(file_path: Path | str) -> Atoms:
 
     if len(xyz_line_index) != 1:
         raise ValueError("Geometry incorrectly provided in MRCC input file")
-    
+
     xyz_line_index = xyz_line_index[0]
 
     # Get the number of atoms

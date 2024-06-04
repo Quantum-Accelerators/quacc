@@ -11,7 +11,10 @@ MRCC_DIR = Path(FILE_DIR, "mrcc_run")
 def mock_execute(self, directory, *args, **kwargs):
     import gzip
 
-    with gzip.open(MRCC_DIR / "mrcc.out.gz", "rb") as f, open(Path(directory, "mrcc.out"), "wb") as out:
+    with (
+        gzip.open(MRCC_DIR / "mrcc.out.gz", "rb") as f,
+        open(Path(directory, "mrcc.out"), "wb") as out,
+    ):
         out.write(f.read())
 
 
