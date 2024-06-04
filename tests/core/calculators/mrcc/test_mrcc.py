@@ -38,7 +38,7 @@ def test_mrcc_version_from_executable():
 def test_mrcc_singlepoint(tmp_path):
     dmrcc_path = shutil.which("dmrcc")
 
-    MyMrccProfile = MrccProfile(command = dmrcc_path)
+    MyMrccProfile = MrccProfile(command=dmrcc_path)
 
     calc = MRCC(
         label="mrcc",

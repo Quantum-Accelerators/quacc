@@ -1,14 +1,16 @@
 from __future__ import annotations
 
 from io import StringIO
-from pathlib import Path
+from typing import TYPE_CHECKING, TypedDict
 
 from ase.io import read
 from ase.units import Hartree
-from ase.utils import reader, writer
-from ase import Atoms
 
-from typing import TextIO, TypedDict, Optional
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from ase import Atoms
+
 
 class ParamsInfo(TypedDict):
     mrccinput: dict[str, str]
@@ -16,16 +18,16 @@ class ParamsInfo(TypedDict):
     charge: int
     mult: int
 
+
 class EnergyInfo(TypedDict):
-    energy: Optional[float]
-    scf_energy: Optional[float]
-    mp2_corr_energy: Optional[float]
-    ccsd_corr_energy: Optional[float]
-    ccsdt_corr_energy: Optional[float]
+    energy: float | None
+    scf_energy: float | None
+    mp2_corr_energy: float | None
+    ccsd_corr_energy: float | None
+    ccsdt_corr_energy: float | None
 
 
-def read_geom_mrccinp(
-        file_path: Path | str) -> Atoms:
+def read_geom_mrccinp(file_path: Path | str) -> Atoms:
     """
     Read geometry from an MRCC input file.
 
@@ -33,7 +35,7 @@ def read_geom_mrccinp(
     ----------
     file_path: Path | str
         The path to the MRCC input file.
-        
+
     Returns
     -------
     Atoms
@@ -41,7 +43,7 @@ def read_geom_mrccinp(
     """
 
     # Get the lines as a list
-    with open(file_path, "r") as fd:
+    with open(file_path) as fd:
         lines = fd.readlines()
     xyz_line_index = [index for index, line in enumerate(lines) if "xyz" in line]
 
@@ -49,13 +51,13 @@ def read_geom_mrccinp(
         raise ValueError("Geometry incorrectly provided in MRCC input file")
     else:
         xyz_line_index = xyz_line_index[0]
-    
+
     # Get the number of atoms
     atoms_length = int(lines[xyz_line_index + 1])
 
     # Format and send the string to be read by ase.io.read()
 
-    xyz_text =  f"{atoms_length}\n geometry\n"
+    xyz_text = f"{atoms_length}\n geometry\n"
     for line in lines[xyz_line_index + 3 : xyz_line_index + 3 + atoms_length]:
         xyz_text += line
     atoms = read(StringIO(xyz_text), format="xyz")
@@ -67,10 +69,7 @@ def read_geom_mrccinp(
     return atoms
 
 
-def write_mrcc(
-    file_path : Path | str, 
-    atoms: Atoms,
-    parameters: ParamsInfo):
+def write_mrcc(file_path: Path | str, atoms: Atoms, parameters: ParamsInfo):
     """
     Write MRCC input file given the Atoms object and the parameters.
 
@@ -88,7 +87,6 @@ def write_mrcc(
         - mult : int <-- Multiplicity of the system.
     """
 
-
     with open(file_path, "w") as file_path:
         # Write the MRCC input file
         for key, value in parameters["mrccinput"].items():
@@ -98,24 +96,27 @@ def write_mrcc(
         file_path.write(f"{parameters['mrccblocks']} \n")
 
         # If the geometry is not provided in the MRCC blocks, write it here.
-        ghost_list = [] # List of indices of the ghost atoms.
+        ghost_list = []  # List of indices of the ghost atoms.
         if "geom" not in parameters["mrccblocks"]:
-            file_path.write(f'charge={parameters["charge"]}\nmult={parameters["mult"]}\ngeom=xyz\n{len(atoms)}\n\n')
+            file_path.write(
+                f'charge={parameters["charge"]}\nmult={parameters["mult"]}\ngeom=xyz\n{len(atoms)}\n\n'
+            )
             for atom_idx, atom in enumerate(atoms):
                 if atom.tag == 71:  # 71 is ascii G (Ghost)
                     ghost_list += [atom_idx + 1]
 
                 symbol = atom.symbol
                 position = atom.position
-                file_path.write(f"{symbol.ljust(3)} {position[0]:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f}\n")
+                file_path.write(
+                    f"{symbol.ljust(3)} {position[0]:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f}\n"
+                )
 
             if ghost_list:
                 file_path.write("\nghost=serialno\n")
                 file_path.write(",".join([str(atom_idx) for atom_idx in ghost_list]))
 
 
-def read_energy(
-        lines: list[str]) -> EnergyInfo:
+def read_energy(lines: list[str]) -> EnergyInfo:
     """
     Reads the energy components (SCF energy, MP2 correlation energy, CCSD correlation energy, CCSD(T) correlation energy) from the MRCC output file where available.
 
@@ -135,23 +136,23 @@ def read_energy(
         - ccsdt_corr_energy : float <-- CCSD(T) correlation energy.
     """
 
-    energy_dict ={
+    energy_dict = {
         "energy": None,
         "scf_energy": None,
         "mp2_corr_energy": None,
         "ccsd_corr_energy": None,
-        "ccsdt_corr_energy": None
+        "ccsdt_corr_energy": None,
     }
 
     for line in lines:
         if "FINAL HARTREE-FOCK ENERGY" in line or "FINAL KOHN-SHAM ENERGY" in line:
-            energy_dict['scf_energy'] = float(line.split()[-2]) * Hartree
+            energy_dict["scf_energy"] = float(line.split()[-2]) * Hartree
         elif "MP2 correlation energy" in line:
-            energy_dict['mp2_corr_energy'] = float(line.split()[-1]) * Hartree
+            energy_dict["mp2_corr_energy"] = float(line.split()[-1]) * Hartree
         elif "CCSD correlation energy" in line:
-            energy_dict['ccsd_corr_energy'] = float(line.split()[-1]) * Hartree
+            energy_dict["ccsd_corr_energy"] = float(line.split()[-1]) * Hartree
         elif "CCSD(T) correlation energy" in line:
-            energy_dict['ccsdt_corr_energy'] = float(line.split()[-1]) * Hartree
+            energy_dict["ccsdt_corr_energy"] = float(line.split()[-1]) * Hartree
 
     return energy_dict
 
@@ -159,12 +160,12 @@ def read_energy(
 def read_mrcc_outputs(output_file_path: Path | str) -> EnergyInfo:
     """
     Reads the energy components (SCF energy, MP2 correlation energy, CCSD correlation energy, CCSD(T) correlation energy) from the MRCC output file where available and calculates the total energy (based on the highest level of theory)
-    
+
     Parameters
     ----------
     output_file_path : Path | str
         Path to the MRCC output file.
-        
+
     Returns
     -------
     EnergyInfo
@@ -176,7 +177,7 @@ def read_mrcc_outputs(output_file_path: Path | str) -> EnergyInfo:
         - ccsdt_corr_energy : float | None <-- CCSD(T) correlation energy.
     """
     # with open(stdout_path, "r") as fd:
-    with open(output_file_path, "r") as output_textio:
+    with open(output_file_path) as output_textio:
         lines = output_textio.readlines()
 
     energy_dict = read_energy(lines)
@@ -184,15 +185,20 @@ def read_mrcc_outputs(output_file_path: Path | str) -> EnergyInfo:
     # Raise error if scf_energy is None
     if energy_dict["scf_energy"] is None:
         raise ValueError("SCF energy not found in MRCC output file")
-    
-    if energy_dict['ccsdt_corr_energy'] is not None:
-        energy_dict["energy"] = energy_dict["scf_energy"] + energy_dict["ccsdt_corr_energy"]
-    elif energy_dict['ccsd_corr_energy'] is not None:
-        energy_dict["energy"] = energy_dict["scf_energy"] + energy_dict["ccsd_corr_energy"]
-    elif energy_dict['mp2_corr_energy'] is not None:
-        energy_dict["energy"] = energy_dict["scf_energy"] + energy_dict["mp2_corr_energy"]
+
+    if energy_dict["ccsdt_corr_energy"] is not None:
+        energy_dict["energy"] = (
+            energy_dict["scf_energy"] + energy_dict["ccsdt_corr_energy"]
+        )
+    elif energy_dict["ccsd_corr_energy"] is not None:
+        energy_dict["energy"] = (
+            energy_dict["scf_energy"] + energy_dict["ccsd_corr_energy"]
+        )
+    elif energy_dict["mp2_corr_energy"] is not None:
+        energy_dict["energy"] = (
+            energy_dict["scf_energy"] + energy_dict["mp2_corr_energy"]
+        )
     else:
         energy_dict["energy"] = energy_dict["scf_energy"]
 
     return energy_dict
-

@@ -21,4 +21,3 @@ def patch_execute(monkeypatch):
     from quacc.calculators.mrcc.mrcc import MrccTemplate
 
     monkeypatch.setattr(MrccTemplate, "execute", mock_execute)
-

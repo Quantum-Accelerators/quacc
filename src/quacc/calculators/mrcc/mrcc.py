@@ -1,25 +1,26 @@
 from __future__ import annotations
 
 import re
+from typing import TYPE_CHECKING
 
 from ase.calculators.genericfileio import (
     BaseProfile,
     CalculatorTemplate,
     GenericFileIOCalculator,
-    read_stdout
+    read_stdout,
 )
-
-from ase import Atoms
-
-from pathlib import Path
 
 from quacc.calculators import mrcc
 
-from typing import List
-from quacc.calculators.mrcc.io import ParamsInfo, EnergyInfo
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from ase import Atoms
+
+    from quacc.calculators.mrcc.io import ParamsInfo
 
 
-def _get_version_from_mrcc_header(mrcc_header:str) -> str:
+def _get_version_from_mrcc_header(mrcc_header: str) -> str:
     """
     Get the version of MRCC from the header of the output file.
 
@@ -51,16 +52,15 @@ class MrccProfile(BaseProfile):
         stdout = read_stdout([self.command, "does_not_exist"])
         return _get_version_from_mrcc_header(stdout)
 
-    def get_calculator_command(self, 
-        inputfile: str) -> List[str]:
+    def get_calculator_command(self, inputfile: str) -> list[str]:
         """
         Get the command to run the MRCC calculation.
-        
+
         Parameters
         ----------
         inputfile
             The input file to run the calculation.
-            
+
         Returns
         -------
         List[str]
@@ -87,10 +87,7 @@ class MrccTemplate(CalculatorTemplate):
         self.outputname = f"{self._label}.out"
         self.errorname = f"{self._label}.err"
 
-    def execute(
-            self, 
-            directory: Path | str,
-            profile: MrccProfile) -> None:
+    def execute(self, directory: Path | str, profile: MrccProfile) -> None:
         """
         Execute the MRCC calculation.
 
@@ -105,22 +102,22 @@ class MrccTemplate(CalculatorTemplate):
         -------
         None
         """
-        
+
         profile.run(
             directory, self.inputname, self.outputname, errorfile=self.errorname
         )
 
     def write_input(
-            self, 
-            profile: MrccProfile,
-            directory: Path | str, 
-            atoms: Atoms,
-            parameters: ParamsInfo,
-            properties: List[str]
-            ) -> None:
+        self,
+        profile: MrccProfile,
+        directory: Path | str,
+        atoms: Atoms,
+        parameters: ParamsInfo,
+        properties: list[str],
+    ) -> None:
         """
         Write the MRCC input file.
-        
+
         Parameters
         ----------
         profile
@@ -134,23 +131,25 @@ class MrccTemplate(CalculatorTemplate):
 
         Returns
         -------
-        None    
+        None
         """
         parameters = dict(parameters)
 
         mrccinput = {"calc": "PBE", "basis": "def2-SVP"}
 
-        all_parameters = {"charge": 0, "mult": 1, "mrccinput": mrccinput, "mrccblocks": ""}
+        all_parameters = {
+            "charge": 0,
+            "mult": 1,
+            "mrccinput": mrccinput,
+            "mrccblocks": "",
+        }
         all_parameters.update(parameters)
 
         mrcc.io.write_mrcc(
-            file_path= directory / self.inputname, 
-            atoms = atoms, 
-            parameters = all_parameters)
+            file_path=directory / self.inputname, atoms=atoms, parameters=all_parameters
+        )
 
-    def read_results(
-            self,
-            directory: Path | str):
+    def read_results(self, directory: Path | str):
         """
         Reads the MRCC output files.
 
@@ -168,9 +167,9 @@ class MrccTemplate(CalculatorTemplate):
             - mp2_corr_energy : float <-- MP2 correlation energy.
             - ccsd_corr_energy : float <-- CCSD correlation energy.
             - ccsdt_corr_energy : float <-- CCSD(T) correlation energy.
-        
+
         """
-        return mrcc.io.read_mrcc_outputs(output_file_path = directory / self.outputname)
+        return mrcc.io.read_mrcc_outputs(output_file_path=directory / self.outputname)
 
     def load_profile(self, cfg, **kwargs):
         return MrccProfile.from_config(cfg, self.name, **kwargs)
@@ -186,13 +185,7 @@ class MRCC(GenericFileIOCalculator):
         mrccblocks=' ')
     """
 
-    def __init__(
-        self,
-        *,
-        profile=None,
-        directory=".",
-        **kwargs,
-    ):
+    def __init__(self, *, profile=None, directory=".", **kwargs):
         """Construct MRCC-calculator object.
 
         Parameters
