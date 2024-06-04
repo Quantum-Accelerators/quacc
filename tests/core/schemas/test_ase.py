@@ -162,7 +162,7 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
     atoms[0].position += [0.1, 0.1, 0.1]
     atoms.calc = EMT()
     dyn = BFGS(atoms, trajectory="test.traj")
-    dyn.run(steps=5)
+    dyn.run(steps=1)
     traj = read("test.traj", index=":")
 
     with pytest.raises(RuntimeError, match="Optimization did not converge"):
