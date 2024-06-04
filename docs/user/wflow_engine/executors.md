@@ -91,7 +91,6 @@ If you haven't done so already:
     On both the local and remote machines:
 
     ```bash
-    pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
     pip install quacc[covalent]
     quacc set WORKFLOW_ENGINE covalent && quacc set CREATE_UNIQUE_DIR false  # (1)!
     ```
@@ -118,7 +117,6 @@ If you haven't done so already:
     On the remote machine:
 
     ```bash
-    pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
     pip install quacc[dask]
     quacc set WORKFLOW_ENGINE dask
     ```
@@ -132,7 +130,6 @@ If you haven't done so already:
     On the remote machine:
 
     ```bash
-    pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
     pip install quacc[parsl]
     quacc set WORKFLOW_ENGINE parsl
     ```
@@ -142,7 +139,6 @@ If you haven't done so already:
     On the remote machine:
 
     ```bash
-    pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
     pip install quacc[prefect]
     quacc set WORKFLOW_ENGINE prefect
     ```
@@ -162,7 +158,6 @@ If you haven't done so already:
     On both the local and remote machines:
 
     ```bash
-    pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
     pip install quacc[jobflow]
     quacc set WORKFLOW_ENGINE jobflow && quacc set CREATE_UNIQUE_DIR false  # (1)!
     ```
