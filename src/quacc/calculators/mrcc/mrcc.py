@@ -10,7 +10,7 @@ from ase.calculators.genericfileio import (
     read_stdout,
 )
 
-from quacc.calculators import mrcc
+from quacc.calculators.mrcc.io import write_mrcc, read_mrcc_outputs
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -109,11 +109,11 @@ class MrccTemplate(CalculatorTemplate):
 
     def write_input(
         self,
-        profile: MrccProfile,
+        *,
         directory: Path | str,
         atoms: Atoms,
         parameters: ParamsInfo,
-        properties: list[str],
+        **kwargs
     ) -> None:
         """
         Write the MRCC input file.
@@ -145,7 +145,7 @@ class MrccTemplate(CalculatorTemplate):
         }
         all_parameters.update(parameters)
 
-        mrcc.io.write_mrcc(
+        write_mrcc(
             file_path=directory / self.inputname, atoms=atoms, parameters=all_parameters
         )
 
@@ -169,7 +169,7 @@ class MrccTemplate(CalculatorTemplate):
             - ccsdt_corr_energy : float <-- CCSD(T) correlation energy.
 
         """
-        return mrcc.io.read_mrcc_outputs(output_file_path=directory / self.outputname)
+        return read_mrcc_outputs(output_file_path=directory / self.outputname)
 
     def load_profile(self, cfg, **kwargs):
         return MrccProfile.from_config(cfg, self.name, **kwargs)
@@ -198,25 +198,10 @@ class MRCC(GenericFileIOCalculator):
             The input for the MRCC calculation. The keys are the MRCC settings with the values being the corresponding value for each setting.
         mrccblocks: str
             The MRCC blocks to be written that goes after mrccinput.
-
-
-        Examples
-        ========
-        Use default values:
-
-        >>> from quacc.calculators.mrcc.mrcc import MRCC
-        >>> MyMrccProfile = MrccProfile(command="/path/to/mrcc/dir/dmrcc")
-        >>> h = Atoms(
-        ...     "H",
-        ...     calculator=MRCC(
-        ...         profile=MyMrccProfile,
-        ...         charge=0,
-        ...         mult=1,
-        ...         directory="water",
-        ...         mrccinput={"calc": PBE, "basis": "def2-SVP"},
-        ...         mrccblocks=" ",
-        ...     ),
-        ... )
+        profile: MrccProfile
+            The MRCC profile to use.
+        directory: str
+            The directory in which to run the calculation.
 
         """
 

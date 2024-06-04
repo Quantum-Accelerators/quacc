@@ -6,10 +6,9 @@ from typing import TYPE_CHECKING, TypedDict
 from ase.io import read
 from ase.units import Hartree
 
-if TYPE_CHECKING:
-    from pathlib import Path
-
-    from ase import Atoms
+from pathlib import Path
+from pathlib import Path
+from ase import Atoms
 
 
 class ParamsInfo(TypedDict):
@@ -43,14 +42,14 @@ def read_geom_mrccinp(file_path: Path | str) -> Atoms:
     """
 
     # Get the lines as a list
-    with open(file_path) as fd:
+    with Path.open(file_path) as fd:
         lines = fd.readlines()
     xyz_line_index = [index for index, line in enumerate(lines) if "xyz" in line]
 
     if len(xyz_line_index) != 1:
         raise ValueError("Geometry incorrectly provided in MRCC input file")
-    else:
-        xyz_line_index = xyz_line_index[0]
+    
+    xyz_line_index = xyz_line_index[0]
 
     # Get the number of atoms
     atoms_length = int(lines[xyz_line_index + 1])
@@ -87,7 +86,7 @@ def write_mrcc(file_path: Path | str, atoms: Atoms, parameters: ParamsInfo):
         - mult : int <-- Multiplicity of the system.
     """
 
-    with open(file_path, "w") as file_path:
+    with Path.open(file_path, "w") as file_path:
         # Write the MRCC input file
         for key, value in parameters["mrccinput"].items():
             file_path.write(f"{key}={value}\n")
@@ -177,7 +176,7 @@ def read_mrcc_outputs(output_file_path: Path | str) -> EnergyInfo:
         - ccsdt_corr_energy : float | None <-- CCSD(T) correlation energy.
     """
     # with open(stdout_path, "r") as fd:
-    with open(output_file_path) as output_textio:
+    with Path.open(output_file_path) as output_textio:
         lines = output_textio.readlines()
 
     energy_dict = read_energy(lines)
