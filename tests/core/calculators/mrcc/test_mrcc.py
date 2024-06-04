@@ -6,7 +6,7 @@ import shutil
 import pytest
 from ase.atoms import Atoms
 
-from quacc.calculators.mrcc.mrcc import MRCC, MrccProfile, get_version_from_mrcc_header
+from quacc.calculators.mrcc.mrcc import MRCC, MrccProfile, _get_version_from_mrcc_header
 
 
 def test_mrcc_version_from_string():
@@ -16,7 +16,7 @@ def test_mrcc_version_from_string():
 
  ************************ 2024-05-28 17:14:24 *************************
  """
-    version = get_version_from_mrcc_header(reference_outputfile)
+    version = _get_version_from_mrcc_header(reference_outputfile)
     assert version == "August 28, 2023"
 
 
@@ -35,17 +35,17 @@ def test_mrcc_version_from_executable():
     assert version_regexp.match(version)
 
 
-def test_mrcc_singlepoint(tmpdir):
+def test_mrcc_singlepoint(tmp_path):
     dmrcc_path = shutil.which("dmrcc")
 
-    MyMrccProfile = MrccProfile(dmrcc_path)
+    MyMrccProfile = MrccProfile(command = dmrcc_path)
 
     calc = MRCC(
         label="mrcc",
         profile=MyMrccProfile,
         mrccinput={"calc": "PBE", "basis": "STO-3G"},
         mrccblocks="""symm=off""",
-        directory=tmpdir,
+        directory=tmp_path,
     )
 
     # Geometry input. Either like this:

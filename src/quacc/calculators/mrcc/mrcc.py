@@ -6,39 +6,67 @@ from ase.calculators.genericfileio import (
     BaseProfile,
     CalculatorTemplate,
     GenericFileIOCalculator,
+    read_stdout
 )
 
-import quacc.calculators.mrcc.io as io
+from ase import Atoms
+
+from pathlib import Path
+
+from quacc.calculators import mrcc
+
+from typing import List
+from quacc.calculators.mrcc.io import ParamsInfo, EnergyInfo
 
 
-def get_version_from_mrcc_header(mrcc_header):
+def _get_version_from_mrcc_header(mrcc_header:str) -> str:
+    """
+    Get the version of MRCC from the header of the output file.
+
+    Parameters
+    ----------
+    mrcc_header
+        The header of the MRCC output file.
+
+    Returns
+    -------
+    str
+        The version of the MRCC executable normally in Month DD, YYYY.
+    """
+
     match = re.search(r"Release date: (.*)$", mrcc_header, re.M)
     return match.group(1)
 
 
 class MrccProfile(BaseProfile):
-    def __init__(self, binary, **kwargs):
+    def version(self) -> str:
         """
+        Gives the version of the MRCC executable.
+
+        Returns
+        -------
+        str
+            The version of the MRCC executable normally in Month DD, YYYY.
+        """
+        stdout = read_stdout([self.command, "does_not_exist"])
+        return _get_version_from_mrcc_header(stdout)
+
+    def get_calculator_command(self, 
+        inputfile: str) -> List[str]:
+        """
+        Get the command to run the MRCC calculation.
+        
         Parameters
         ----------
-        binary : str
-            Full path to the dmrcc binary, the path to the dmrcc_mpi binary must be specified if MRCC is to be run in parallel.
+        inputfile
+            The input file to run the calculation.
+            
+        Returns
+        -------
+        List[str]
+            The command to run the MRCC calculation.
         """
-        # Because MRCC handles its parallelization without being called with
-        # mpirun/mpiexec/etc parallel should be set to False.
-        # Whether or not it is run in parallel is controlled by mrccinput or mrccblocks
-        super().__init__(parallel=False, parallel_info={})
-        self.binary = binary
-
-    def version(self):
-        # XXX Allow MPI in argv; the version call should not be parallel.
-        from ase.calculators.genericfileio import read_stdout
-
-        stdout = read_stdout([self.binary, "does_not_exist"])
-        return get_version_from_mrcc_header(stdout)
-
-    def get_calculator_command(self, inputfile):
-        return [self.binary, inputfile]
+        return [inputfile]
 
 
 class MrccTemplate(CalculatorTemplate):
@@ -49,40 +77,108 @@ class MrccTemplate(CalculatorTemplate):
             "mrcc",
             implemented_properties=[
                 "energy",
+                "scf_energy",
                 "mp2_corr_energy",
                 "ccsd_corr_energy",
-                "ccsd(t)_corr_energy",
+                "ccsdt_corr_energy",
             ],
         )
-
         self.inputname = "MINP"
         self.outputname = f"{self._label}.out"
         self.errorname = f"{self._label}.err"
 
-    def execute(self, directory, profile) -> None:
+    def execute(
+            self, 
+            directory: Path | str,
+            profile: MrccProfile) -> None:
+        """
+        Execute the MRCC calculation.
+
+        Parameters
+        ----------
+        directory
+            The directory in which to run the calculation.
+        profile
+            The MRCCProfile class.
+
+        Returns
+        -------
+        None
+        """
+        
         profile.run(
             directory, self.inputname, self.outputname, errorfile=self.errorname
         )
 
-    def write_input(self, profile, directory, atoms, parameters, properties):
+    def write_input(
+            self, 
+            profile: MrccProfile,
+            directory: Path | str, 
+            atoms: Atoms,
+            parameters: ParamsInfo,
+            properties: List[str]
+            ) -> None:
+        """
+        Write the MRCC input file.
+        
+        Parameters
+        ----------
+        profile
+            The MRCC profile.
+        directory
+            The directory in which to write the input file.
+        atoms
+            The Atoms object.
+        parameters
+            The parameters for the calculation.
+
+        Returns
+        -------
+        None    
+        """
         parameters = dict(parameters)
 
         mrccinput = {"calc": "PBE", "basis": "def2-SVP"}
 
-        kw = {"charge": 0, "mult": 1, "mrccinput": mrccinput, "mrccblocks": ""}
-        kw.update(parameters)
+        all_parameters = {"charge": 0, "mult": 1, "mrccinput": mrccinput, "mrccblocks": ""}
+        all_parameters.update(parameters)
 
-        io.write_mrcc(directory / self.inputname, atoms, kw)
+        mrcc.io.write_mrcc(
+            file_path= directory / self.inputname, 
+            atoms = atoms, 
+            parameters = all_parameters)
 
-    def read_results(self, directory):
-        return io.read_mrcc_outputs(directory, directory / self.outputname)
+    def read_results(
+            self,
+            directory: Path | str):
+        """
+        Reads the MRCC output files.
+
+        Parameters
+        ----------
+        directory
+            The directory in which the calculation was run.
+
+        Returns
+        -------
+        EnergyInfo
+            Dictionary with the energy components. The keys are the following:
+            - energy : float <-- Total energy which will not be computed in this function.
+            - scf_energy : float <-- SCF energy.
+            - mp2_corr_energy : float <-- MP2 correlation energy.
+            - ccsd_corr_energy : float <-- CCSD correlation energy.
+            - ccsdt_corr_energy : float <-- CCSD(T) correlation energy.
+        
+        """
+        return mrcc.io.read_mrcc_outputs(output_file_path = directory / self.outputname)
 
     def load_profile(self, cfg, **kwargs):
         return MrccProfile.from_config(cfg, self.name, **kwargs)
 
 
 class MRCC(GenericFileIOCalculator):
-    """Class for doing MRCC calculations.
+    """
+    Class for performing MRCC calculations.
 
     Example:
 
@@ -95,21 +191,20 @@ class MRCC(GenericFileIOCalculator):
         *,
         profile=None,
         directory=".",
-        parallel_info=None,
-        parallel=None,
         **kwargs,
     ):
         """Construct MRCC-calculator object.
 
         Parameters
-        ==========
+        ----------
         charge: int
-
+            The charge of the system.
         mult: int
-
+            The multiplicity of the system.
         mrccinput : dict[str,str]
-
+            The input for the MRCC calculation. The keys are the MRCC settings with the values being the corresponding value for each setting.
         mrccblocks: str
+            The MRCC blocks to be written that goes after mrccinput.
 
 
         Examples
@@ -117,7 +212,7 @@ class MRCC(GenericFileIOCalculator):
         Use default values:
 
         >>> from quacc.calculators.mrcc.mrcc import MRCC
-        >>> MyMrccProfile = MrccProfile("/path/to/mrcc/dir/dmrcc")
+        >>> MyMrccProfile = MrccProfile(command="/path/to/mrcc/dir/dmrcc")
         >>> h = Atoms(
         ...     "H",
         ...     calculator=MRCC(
@@ -131,13 +226,6 @@ class MRCC(GenericFileIOCalculator):
         ... )
 
         """
-
-        assert (
-            parallel is None
-        ), "MRCC does not support keyword parallel - use mrccblocks or mrccinput"
-        assert (
-            parallel_info is None
-        ), "MRCC does not support keyword parallel_info - use mrccblocks or mrccinput"
 
         super().__init__(
             template=MrccTemplate(),
