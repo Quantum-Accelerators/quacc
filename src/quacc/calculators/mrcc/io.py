@@ -8,7 +8,7 @@ from ase.io import read
 from ase.units import Hartree
 
 if TYPE_CHECKING:
-    from ase import Atoms
+    from ase.atoms import Atoms
 
     class ParamsInfo(TypedDict):
         mrccinput: dict[str, str]
