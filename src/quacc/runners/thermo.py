@@ -36,10 +36,7 @@ class ThermoRunner:
     vib_freqs: list[float | complex]
     energy: float = 0.0
 
-    def run_ideal_gas(
-        self,
-        spin_multiplicity: int | None = None,
-    ) -> IdealGasThermo:
+    def run_ideal_gas(self, spin_multiplicity: int | None = None) -> IdealGasThermo:
         """
         Create an IdealGasThermo object for a molecule from a given vibrational analysis.
         This is for free gases only and will not be valid for solids or adsorbates on

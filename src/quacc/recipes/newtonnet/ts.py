@@ -181,7 +181,7 @@ def irc_job(
 
     # Run IRC
     with change_settings({"CHECK_CONVERGENCE": False}):
-        dyn = Runner(atoms).run_opt(**opt_flags)
+        Runner(atoms).run_opt(**opt_flags)
         opt_irc_summary = _add_stdev_and_hess(
             summarize_opt_run(dyn, additional_fields={"name": f"NewtonNet IRC: {direction}"})
         )
