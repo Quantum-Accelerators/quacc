@@ -364,13 +364,13 @@ coords
             coords_block["adsorbate"] += create_atom_coord_string(atom=atom)
             if include_cp:
                 coords_block["slab"] += create_atom_coord_string(
-                    atom=atom, ghost_atom=True
+                    atom=atom, is_ghost_atom=True
                 )
         elif i in slab_indices:
             coords_block["slab"] += create_atom_coord_string(atom=atom)
             if include_cp:
                 coords_block["adsorbate"] += create_atom_coord_string(
-                    atom=atom, ghost_atom=True
+                    atom=atom, is_ghost_atom=True
                 )
 
     # Create the coords section for the ECP region
