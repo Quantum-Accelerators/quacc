@@ -35,7 +35,7 @@ def test_mrcc_version_from_executable():
     assert version_regexp.match(version)
 
 
-def test_mrcc_singlepoint(tmp_path, monkeypatch):
+def test_mrcc_singlepoint(tmp_path):
     dmrcc_path = shutil.which("dmrcc")
 
     MyMrccProfile = MrccProfile(command=dmrcc_path or "")
