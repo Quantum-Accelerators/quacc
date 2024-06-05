@@ -79,9 +79,6 @@ if TYPE_CHECKING:
         nfree: int  # default = 2
 
 
-from ase.atoms import Atoms
-
-
 def run_calc(
     atoms: Atoms,
     geom_file: str | None = None,
