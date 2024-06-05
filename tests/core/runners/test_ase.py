@@ -148,7 +148,7 @@ def test_run_neb_method(
         logdir = None
 
     # images = run_neb_method(
-    images = run_path_opt(
+    images, neb_summary = run_path_opt(
         xyz_r_p,
         logdir=str(logdir) if logdir else None,
         method=method,
@@ -196,6 +196,7 @@ def test_run_neb_method(
     #     assert os.path.exists(
     #         f"{logdir}/optimized_path_{method}_{optimizer.__name__}_{precon}.xyz"
     #     ), "Could not find the xyz file for converged NEB calculation."
+    # assert neb_summary[0] == 1
 
 
 def test_run_calc(tmp_path, monkeypatch):

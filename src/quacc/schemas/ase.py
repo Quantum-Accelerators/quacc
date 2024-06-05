@@ -272,6 +272,23 @@ def summarize_vib_and_thermo(
     )
 
 
+def summarize_path_opt_run(
+        traj,
+        neb,
+        qn,
+):
+    neb_dict = {
+        "images": [image.get_positions() for image in traj],
+        "fmax": neb.fmax,
+        "residuals": neb.residuals,
+        "k": neb.k,
+        "neb_method": neb.neb_method,
+        "nimages": neb.nimages,
+        "precon": neb.precon,
+        "optimizer": qn,
+    }
+    return neb_dict
+
 def _summarize_vib_run(
     vib: Vibrations | VibrationsData,
     charge_and_multiplicity: tuple[int, int] | None = None,
@@ -436,3 +453,4 @@ def _summarize_ideal_gas_thermo(
     )
 
     return atoms_metadata | inputs | results
+

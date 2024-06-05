@@ -23,7 +23,7 @@ from quacc import SETTINGS
 from quacc.atoms.core import copy_atoms, get_final_atoms_from_dynamics
 from quacc.runners.prep import calc_cleanup, calc_setup, terminate
 from quacc.utils.dicts import recursive_dict_merge
-from quacc.schemas.ase import summarize_opt_run
+from quacc.schemas.ase import summarize_opt_run, summarize_path_opt_run
 
 has_sella = bool(find_spec("sella"))
 #
@@ -395,11 +395,15 @@ def run_path_opt(
 
     neb = NEB(images)
     neb.interpolate()
+
     # qn = BFGS(neb, trajectory='neb.traj')
     qn = optimizer_class(neb, trajectory='neb.traj')
     qn.run(fmax=0.05)
+    traj = read('neb.traj', ':')
 
-    return images
+    neb_summary = summarize_path_opt_run(traj, neb, qn)
+
+    return images, neb_summary
 
 
 def _geodesic_interpolate_wrapper(
