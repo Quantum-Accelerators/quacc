@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from quacc.schemas._aliases.phonons import PhononSchema
 
     if has_phonopy:
-        from phonopy import Phonopy
+        pass
 
 
 @subflow
