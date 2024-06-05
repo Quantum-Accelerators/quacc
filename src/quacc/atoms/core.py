@@ -258,7 +258,7 @@ def get_final_atoms_from_dynamics(dynamics: Dynamics) -> Atoms:
     )
 
 
-def perturb(mol: Atoms, matrix: list[list[float]] | NDArray, *, scale: float) -> Atoms:
+def perturb(mol: Atoms, matrix: list[list[float]] | NDArray, scale: float) -> Atoms:
     """
     Perturb each atom in a molecule by a (scaled) 1x3 vector, reflecting e.g. a vibrational normal mode.
 
