@@ -44,7 +44,7 @@ def test_mrcc_singlepoint(tmp_path):
         label="mrcc",
         profile=MyMrccProfile,
         mrccinput={"calc": "PBE", "basis": "STO-3G"},
-        mrccblocks="""symm=off""",
+        mrccblocks="symm=off",
         directory=tmp_path,
     )
 
