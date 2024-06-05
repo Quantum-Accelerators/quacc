@@ -287,7 +287,7 @@ class Runner:
         try:
             vib.run()
         except Exception as exception:
-            terminate(tmpdir, exception)
+            terminate(self.tmpdir, exception)
 
         # Summarize run
         vib.summary(
