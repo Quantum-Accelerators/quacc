@@ -427,7 +427,6 @@ def setup_images(logdir: str, xyz_r_p: str, n_intermediate: int = 40):
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
     }
-    print('calc_defaults:\n\n\n\n\n\n\n\n\n\n\n\n\n', calc_defaults)
     opt_defaults = {"optimizer": Sella, "optimizer_kwargs": ({"order": 0})}
     calc_flags = recursive_dict_merge(calc_defaults, {})
     opt_flags = recursive_dict_merge(opt_defaults, {})
