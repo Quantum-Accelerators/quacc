@@ -10,7 +10,7 @@ from monty.dev import requires
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.phonopy import get_phonopy_structure, get_pmg_structure
 
-has_phonopy = find_spec("phonopy")
+has_phonopy = bool(find_spec("phonopy"))
 
 if has_phonopy:
     from phonopy import Phonopy

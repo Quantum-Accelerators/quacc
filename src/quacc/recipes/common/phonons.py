@@ -17,7 +17,8 @@ from quacc.atoms.phonons import (
 from quacc.runners.phonons import run_phonopy
 from quacc.schemas.phonons import summarize_phonopy
 
-has_deps = find_spec("phonopy") is not None and find_spec("seekpath") is not None
+has_phonopy = bool(find_spec("phonopy"))
+has_seekpath = bool(find_spec("seekpath"))
 
 if TYPE_CHECKING:
     from typing import Any
@@ -25,14 +26,13 @@ if TYPE_CHECKING:
     from quacc import Job
     from quacc.schemas._aliases.phonons import PhononSchema
 
-    if has_deps:
-        pass
+    if has_phonopy:
+        from phonopy import Phonopy
 
 
 @subflow
-@requires(
-    has_deps, "Phonopy and seekpath must be installed. Run `pip install quacc[phonons]`"
-)
+@requires(has_phonopy, "Phonopy must be installed. Run `pip install quacc[phonons]`")
+@requires(has_seekpath, "Seekpath must be installed. Run `pip install quacc[phonons]`")
 def phonon_subflow(
     displaced_atoms: Atoms,
     force_job: Job,

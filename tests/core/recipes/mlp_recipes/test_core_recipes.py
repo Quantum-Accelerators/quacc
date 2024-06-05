@@ -4,34 +4,25 @@ import pytest
 
 torch = pytest.importorskip("torch")
 
+from importlib.util import find_spec
+
 import numpy as np
 from ase.build import bulk
 
 from quacc.recipes.mlp.core import relax_job, static_job
 
 methods = []
-try:
-    import mace
-
+if has_mace := find_spec("mace"):
     methods.append("mace-mp-0")
 
-except ImportError:
-    mace = None
-try:
-    import matgl
-
+if has_matgl := find_spec("matgl"):
     methods.append("m3gnet")
-except ImportError:
-    matgl = None
-try:
-    import chgnet
 
+if has_chgnet := find_spec("chgnet"):
     methods.append("chgnet")
-except ImportError:
-    chgnet = None
 
 
-@pytest.mark.skipif(chgnet is None, reason="chgnet not installed")
+@pytest.mark.skipif(has_chgnet is None, reason="chgnet not installed")
 def test_bad_method():
     atoms = bulk("Cu")
     with pytest.raises(ValueError):
@@ -44,7 +35,6 @@ def _set_dtype(size, type_="float"):
     torch.set_default_dtype(getattr(torch, f"float{size}"))
 
 
-@pytest.mark.xfail(strict=False)
 @pytest.mark.parametrize("method", methods)
 def test_static_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
@@ -66,7 +56,6 @@ def test_static_job(tmp_path, monkeypatch, method):
     assert output["atoms"] == atoms
 
 
-@pytest.mark.xfail(strict=False)
 @pytest.mark.parametrize("method", methods)
 def test_relax_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
@@ -90,7 +79,6 @@ def test_relax_job(tmp_path, monkeypatch, method):
     assert output["atoms"].get_volume() == pytest.approx(atoms.get_volume())
 
 
-@pytest.mark.xfail(strict=False)
 def test_relax_job_dispersion(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
@@ -105,7 +93,6 @@ def test_relax_job_dispersion(tmp_path, monkeypatch):
     assert output["atoms"].get_volume() == pytest.approx(atoms.get_volume())
 
 
-@pytest.mark.xfail(strict=False)
 @pytest.mark.parametrize("method", methods)
 def test_relax_cell_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
