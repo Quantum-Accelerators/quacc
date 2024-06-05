@@ -65,10 +65,11 @@ def check_is_metal(atoms: Atoms) -> bool:
     bool
         True if the structure is likely a metal; False otherwise
     """
-    if atoms.pbc.any():
-        struct = AseAtomsAdaptor.get_structure(atoms)
-    else:
-        struct = AseAtomsAdaptor.get_molecule(atoms, charge_spin_check=False)
+    struct = (
+        AseAtomsAdaptor().get_structure(atoms)
+        if atoms.pbc.any()
+        else AseAtomsAdaptor().get_molecule(atoms, charge_spin_check=False)
+    )
 
     return all(k.is_metal for k in struct.composition)
 
@@ -257,7 +258,7 @@ def get_final_atoms_from_dynamics(dynamics: Dynamics) -> Atoms:
     )
 
 
-def perturb(mol: Atoms, matrix: list[list[float]] | NDArray, scale: float) -> Atoms:
+def perturb(mol: Atoms, matrix: list[list[float]] | NDArray, *, scale: float) -> Atoms:
     """
     Perturb each atom in a molecule by a (scaled) 1x3 vector, reflecting e.g. a vibrational normal mode.
 
@@ -266,7 +267,7 @@ def perturb(mol: Atoms, matrix: list[list[float]] | NDArray, scale: float) -> At
     mol
         ASE Atoms object representing a molecule
     matrix
-        Nx3 matrix, where N is the numebr of atoms. This means that there is potentially a different translation
+        Nx3 matrix, where N is the number of atoms. This means that there is potentially a different translation
         vector for each atom in the molecule.
     scale
         Scaling factor for perturbation
