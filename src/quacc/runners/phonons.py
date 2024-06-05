@@ -20,7 +20,6 @@ if TYPE_CHECKING:
 
 
 class PhonopyRunner(Runner):
-
     def __init__(self, *args, **kwargs):
         super().__init__(None, *args, **kwargs)
 
