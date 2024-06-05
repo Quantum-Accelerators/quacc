@@ -109,15 +109,13 @@ class MrccTemplate(CalculatorTemplate):
         )
 
     def write_input(
-        self, *, directory: Path | str, atoms: Atoms, parameters: ParamsInfo, **kwargs
+        self, *, directory: Path | str, atoms: Atoms, parameters: ParamsInfo
     ) -> None:
         """
         Write the MRCC input file.
 
         Parameters
         ----------
-        profile
-            The MRCC profile.
         directory
             The directory in which to write the input file.
         atoms
