@@ -204,7 +204,7 @@ def _add_stdev_and_hess(summary: dict[str, Any]) -> dict[str, Any]:
 
     Returns
     -------
-    Dict
+    dict[str, Any]
         The modified summary dictionary with added standard deviation and
         Hessian values.
     """

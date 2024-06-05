@@ -108,8 +108,6 @@ def ts_job(
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
-    atoms.calc = NewtonNet(**calc_flags)
-
     if use_custom_hessian:
         opt_flags["optimizer_kwargs"]["hessian_function"] = _get_hessian
 

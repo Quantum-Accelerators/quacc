@@ -11,13 +11,15 @@ TEST_RUNINFO = Path(__file__).parent / "runinfo"
 has_parsl = bool(find_spec("parsl"))
 if has_parsl:
     import parsl
+    from parsl.config import Config
+    from parsl.dataflow.dependency_resolvers import DEEP_DEPENDENCY_RESOLVER
 
 
 def pytest_sessionstart():
     import os
 
     if parsl:
-        parsl.load()
+        parsl.load(Config(dependency_resolver=DEEP_DEPENDENCY_RESOLVER))
     file_dir = Path(__file__).parent
     os.environ["QUACC_CONFIG_FILE"] = str(file_dir / "quacc.yaml")
     os.environ["QUACC_RESULTS_DIR"] = str(TEST_RESULTS_DIR)

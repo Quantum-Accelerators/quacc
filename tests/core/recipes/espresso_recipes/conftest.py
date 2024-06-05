@@ -3,13 +3,15 @@ from __future__ import annotations
 import pytest
 
 
-@pytest.fixture()
-def ESPRESSO_PARALLEL_INFO():
+@pytest.fixture(autouse=True)
+def ESPRESSO_PARALLEL_CMD():
     from shutil import which
 
     import psutil
 
+    from quacc import SETTINGS
+
     if which("mpirun") and psutil.cpu_count(logical=False) >= 2:
-        return {"binary": "mpirun", "-np": 2}
+        SETTINGS.ESPRESSO_PARALLEL_CMD = "mpirun -np 2"
     else:
-        return None
+        SETTINGS.ESPRESSO_PARALLEL_CMD = ""
