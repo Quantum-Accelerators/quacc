@@ -39,7 +39,7 @@ def get_pseudopotential_info(
     float
         The max(ecutrho) value
     dict[str, str]
-        The pseudopotentials dictinoary, e.g. {"O": "O.pbe-n-kjpaw_psl.0.1.UPF"}
+        The pseudopotentials dictionary, e.g. {"O": "O.pbe-n-kjpaw_psl.0.1.UPF"}
     """
     unique_elements = list(set(atoms.get_chemical_symbols()))
     ecutwfc, ecutrho = 0, 0
@@ -284,10 +284,7 @@ def prepare_copy_files(
 
             if recover:
                 to_copy.extend(
-                    [
-                        Path("_ph*", "pwscf.q_*", "pwscf.save", "charge-density.*"),
-                        # Path("_ph*", "pwscf.q_*", "pwscf.wfc*.gz"),
-                    ]
+                    [Path("_ph*", "pwscf.q_*", "pwscf.save", "charge-density.*")]
                 )
 
         if recover:

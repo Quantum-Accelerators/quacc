@@ -11,22 +11,19 @@ from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.phonopy import get_phonopy_structure, get_pmg_structure
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 
-try:
-    import phonopy
+has_phonopy = bool(find_spec("phonopy"))
 
-    has_deps = find_spec("seekpath") is not None
-except ImportError:
-    has_deps = False
+if has_phonopy:
+    from phonopy import Phonopy
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
 
-    if phonopy:
-        from phonopy import Phonopy
+    if has_phonopy:
         from phonopy.structure.atoms import PhonopyAtoms
 
 
-@requires(has_deps, "Phonopy or seekpath is not installed.")
+@requires(has_phonopy, "Phonopy not installed.")
 def get_phonopy(
     atoms: Atoms,
     min_lengths: float | tuple[float, float, float] | None = None,
@@ -63,18 +60,17 @@ def get_phonopy(
     """
     phonopy_kwargs = phonopy_kwargs or {}
 
-    structure = AseAtomsAdaptor().get_structure(atoms)
-    structure = SpacegroupAnalyzer(
-        structure, symprec=symprec
+    symmetrized_structure = SpacegroupAnalyzer(
+        AseAtomsAdaptor().get_structure(atoms), symprec=symprec
     ).get_symmetrized_structure()
 
     if supercell_matrix is None and min_lengths is not None:
-        n_supercells = np.round(np.ceil(min_lengths / atoms.cell.lengths()))
-        supercell_matrix = np.diag([n_supercells, n_supercells, n_supercells])
+        supercell_matrix = np.diag(
+            np.round(np.ceil(min_lengths / np.array(symmetrized_structure.lattice.abc)))
+        )
 
-    phonopy_atoms = get_phonopy_structure(structure)
-    phonon = phonopy.Phonopy(
-        phonopy_atoms,
+    phonon = Phonopy(
+        get_phonopy_structure(symmetrized_structure),
         symprec=symprec,
         supercell_matrix=supercell_matrix,
         **phonopy_kwargs,

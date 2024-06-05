@@ -14,7 +14,8 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.schemas._aliases.vasp import VaspASESchema, VaspSchema
+    from quacc.runners.ase import OptParams
+    from quacc.schemas._aliases.vasp import VaspASEOptSchema, VaspSchema
     from quacc.utils.files import Filenames, SourceDirectory
 
 
@@ -72,11 +73,11 @@ def run_and_summarize_opt(
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     opt_defaults: dict[str, Any] | None = None,
-    opt_params: dict[str, Any] | None = None,
+    opt_params: OptParams | None = None,
     report_mp_corrections: bool = False,
     additional_fields: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-) -> VaspASESchema:
+) -> VaspASEOptSchema:
     """
     Base job function for VASP recipes with ASE optimizers.
 
@@ -105,7 +106,7 @@ def run_and_summarize_opt(
 
     Returns
     -------
-    VaspASESchema
+    VaspASEOptSchema
         Dictionary of results
     """
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)

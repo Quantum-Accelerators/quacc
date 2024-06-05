@@ -198,10 +198,8 @@ def summarize_opt_run(
     parameters_opt.pop("restart", None)
 
     opt_fields = {
-        "fmax": getattr(dyn, "fmax", None),
         "parameters_opt": parameters_opt,
         "converged": is_converged,
-        "nsteps": dyn.get_number_of_steps(),
         "trajectory": trajectory,
         "trajectory_results": [atoms.calc.results for atoms in trajectory],
     }
@@ -253,8 +251,7 @@ def summarize_vib_and_thermo(
     store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
 
     vib_task_doc = _summarize_vib_run(
-        vib,
-        charge_and_multiplicity=charge_and_multiplicity,
+        vib, charge_and_multiplicity=charge_and_multiplicity
     )
     thermo_task_doc = _summarize_ideal_gas_thermo(
         igt,

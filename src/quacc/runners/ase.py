@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import sys
+from importlib.util import find_spec
 from shutil import copy, copytree
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
 import numpy as np
 from ase.filters import FrechetCellFilter
@@ -16,14 +17,14 @@ from monty.os.path import zpath
 
 from quacc import SETTINGS
 from quacc.atoms.core import copy_atoms
-from quacc.runners.prep import calc_cleanup, calc_setup
+from quacc.runners.prep import calc_cleanup, calc_setup, terminate
 from quacc.utils.dicts import recursive_dict_merge
 
-try:
-    from sella import Sella
+has_sella = bool(find_spec("sella"))
 
-except ImportError:
-    Sella = None
+if has_sella:
+    pass
+
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -33,6 +34,19 @@ if TYPE_CHECKING:
     from ase.optimize.optimize import Optimizer
 
     from quacc.utils.files import Filenames, SourceDirectory
+
+    class OptParams(TypedDict, total=False):
+        """
+        Type hint for `opt_params` used throughout quacc.
+        """
+
+        fmax: float
+        max_steps: int
+        optimizer: Optimizer = BFGS
+        optimizer_kwargs: OptimizerKwargs | None
+        store_intermediate_results: bool
+        fn_hook: Callable | None
+        run_kwargs: dict[str, Any] | None
 
     class OptimizerKwargs(TypedDict, total=False):
         """
@@ -66,6 +80,7 @@ class Runner:
         """
         Initialize the Runner object.
 
+            Files to copy (and decompress) from source to the runtime directory.
         Parameters
         ----------
         atoms
@@ -105,10 +120,13 @@ class Runner:
             The updated Atoms object.
         """
         # Run calculation
-        if get_forces:
-            self.atoms.get_forces()
-        else:
-            self.atoms.get_potential_energy()
+        try:
+            if get_forces:
+                atoms.get_forces()
+            else:
+                atoms.get_potential_energy()
+        except Exception as exception:
+            terminate(tmpdir, exception)
 
         # Most ASE calculators do not update the atoms object in-place with a call
         # to .get_potential_energy(), which is important if an internal optimizer is
@@ -215,20 +233,26 @@ class Runner:
             self.atoms = FrechetCellFilter(self.atoms)
 
         # Run optimization
-        with traj, optimizer(self.atoms, **optimizer_kwargs) as dyn:
-            if store_intermediate_results:
-                opt = dyn.irun(fmax=fmax, steps=max_steps, **run_kwargs)
-                for i, _ in enumerate(opt):
-                    self._copy_intermediate_files(
-                        i,
-                        files_to_ignore=[
-                            traj_file,
-                            optimizer_kwargs["restart"],
-                            optimizer_kwargs["logfile"],
-                        ],
-                    )
-            else:
-                dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
+        try:
+            with traj, optimizer(self.atoms, **optimizer_kwargs) as dyn:
+                if optimizer.__name__.startswith("SciPy"):
+                    # https://gitlab.coms/ase/ase/-/issues/1475
+                    dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
+                else:
+                    for i, _ in enumerate(dyn.irun(fmax=fmax, steps=max_steps, **run_kwargs)):
+                        if store_intermediate_results:
+                            self._copy_intermediate_files(
+                                i,
+                                files_to_ignore=[
+                                    traj_file,
+                                    optimizer_kwargs["restart"],
+                                    optimizer_kwargs["logfile"],
+                                ],
+                            )
+                        if fn_hook:
+                            fn_hook(dyn)
+            except Exception as exception:
+                terminate(tmpdir, exception)
 
         # Store the trajectory atoms
         dyn.traj_atoms = read(traj_file, index=":")
@@ -262,7 +286,10 @@ class Runner:
 
         # Run calculation
         vib = Vibrations(self.atoms, name=str(self.tmpdir / "vib"), **vib_kwargs)
-        vib.run()
+        try:
+            vib.run()
+        except Exception as exception:
+            terminate(tmpdir, exception)
 
         # Summarize run
         vib.summary(

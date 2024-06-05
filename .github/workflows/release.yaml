@@ -19,8 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install build
-          pip install -r tests/requirements.txt
-          pip install -e .
+          pip install .
 
       - name: Build sdist
         run: python -m build --sdist

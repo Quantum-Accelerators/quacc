@@ -16,11 +16,9 @@ from quacc.runners.thermo import ThermoRunner
 from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
 
 if TYPE_CHECKING:
-    from typing import Any
-
     from ase.atoms import Atoms
 
-    from quacc.runners.ase import VibKwargs
+    from quacc.runners.ase import OptParams, VibKwargs
     from quacc.schemas._aliases.ase import OptSchema, RunSchema, VibThermoSchema
     from quacc.utils.files import Filenames, SourceDirectory
 
@@ -60,7 +58,7 @@ def static_job(
 @job
 def relax_job(
     atoms: Atoms,
-    opt_params: dict[str, Any] | None = None,
+    opt_params: OptParams | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
