@@ -75,6 +75,7 @@ class MrccTemplate(CalculatorTemplate):
     """
     The MRCC calculator template class.
     """
+
     _label = "mrcc"
 
     def __init__(self) -> None:
@@ -119,7 +120,12 @@ class MrccTemplate(CalculatorTemplate):
         )
 
     def write_input(
-        self, profile: MrccProfile, directory: Path | str, atoms: Atoms, parameters: ParamsInfo, properties: dict[str, Any]
+        self,
+        profile: MrccProfile,
+        directory: Path | str,
+        atoms: Atoms,
+        parameters: ParamsInfo,
+        properties: dict[str, Any],
     ) -> None:
         """
         Write the MRCC input file.
@@ -151,9 +157,7 @@ class MrccTemplate(CalculatorTemplate):
         }
         kw.update(parameters)
 
-        write_mrcc(
-            directory / self.inputname, atoms, kw
-        )
+        write_mrcc(directory / self.inputname, atoms, kw)
 
     def read_results(self, directory: Path | str) -> EnergyInfo:
         """
