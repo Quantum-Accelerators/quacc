@@ -121,11 +121,11 @@ class MrccTemplate(CalculatorTemplate):
 
     def write_input(
         self,
-        profile: MrccProfile,
+        profile: MrccProfile, # noqa: ARG002
         directory: Path | str,
         atoms: Atoms,
         parameters: ParamsInfo,
-        properties: dict[str, Any],
+        properties: dict[str, Any], # noqa: ARG002
     ) -> None:
         """
         Write the MRCC input file.
