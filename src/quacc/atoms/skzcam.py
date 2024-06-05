@@ -234,7 +234,7 @@ def create_orca_eint_blocks(
 
 def create_atom_coord_string(
     atom: Atom,
-    ghost_atom: bool = False,
+    is_ghost_atom: bool = False,
     atom_ecp_info: str | None = None,
     pc_charge: float | None = None,
 ) -> str:
@@ -245,10 +245,10 @@ def create_atom_coord_string(
     ----------
     atom
         The ASE Atom (not Atoms) object containing the atomic coordinates.
+    is_ghost_atom
+        If True, then the atom is a ghost atom.
     atom_ecp_info
         If not None, then assume this is an atom in the ECP region and adds the ECP info.
-    ghost_atom
-        If True, then the atom is a ghost atom.
     pc_charge
         The point charge value for the ECP region atom.
 
@@ -259,14 +259,14 @@ def create_atom_coord_string(
     """
 
     # If ecp_info is not None and ghost_atom is True, raise an error
-    if atom_ecp_info and ghost_atom:
+    if atom_ecp_info and is_ghost_atom:
         raise ValueError("ECP info cannot be provided for ghost atoms.")
 
     # Check that pc_charge is a float if atom_ecp_info is not None
     if atom_ecp_info and pc_charge is None:
         raise ValueError("Point charge value must be given for atoms with ECP info.")
 
-    if ghost_atom:
+    if is_ghost_atom:
         atom_coord_str = f"{(atom.symbol + ':').ljust(3)} {' '*16} {atom.position[0]:-16.11f} {atom.position[1]:-16.11f} {atom.position[2]:-16.11f}\n"
     elif atom_ecp_info is not None:
         atom_coord_str = f"{(atom.symbol + '>').ljust(3)} {pc_charge:-16.11f} {atom.position[0]:-16.11f} {atom.position[1]:-16.11f} {atom.position[2]:-16.11f}\n{atom_ecp_info}"
