@@ -156,7 +156,6 @@ if TYPE_CHECKING:
     ]
 
 
-
 has_chemshell = find_spec("chemsh") is not None
 
 
