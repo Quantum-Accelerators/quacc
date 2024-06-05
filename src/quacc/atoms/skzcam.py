@@ -916,7 +916,6 @@ def convert_pun_to_atoms(
     atom_types = []
     atom_numbers = []
     atom_positions = []
-    # Add the atomic positions the embedded_cluster Atoms object (converting from Bohr to Angstrom)
     for _, line in enumerate(raw_atom_positions):
         line_info = line.split()
 
