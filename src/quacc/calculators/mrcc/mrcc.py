@@ -15,9 +15,9 @@ from quacc.calculators.mrcc.io import read_mrcc_outputs, write_mrcc
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from ase import Atoms
-
-    from quacc.calculators.mrcc.io import ParamsInfo
+    from ase.atoms import Atoms
+    from ase.config import Config
+    from quacc.calculators.mrcc.io import ParamsInfo, EnergyInfo
 
 
 def _get_version_from_mrcc_header(mrcc_header: str) -> str:
@@ -72,7 +72,7 @@ class MrccProfile(BaseProfile):
 class MrccTemplate(CalculatorTemplate):
     _label = "mrcc"
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             "mrcc",
             implemented_properties=[
@@ -144,7 +144,7 @@ class MrccTemplate(CalculatorTemplate):
             file_path=directory / self.inputname, atoms=atoms, parameters=all_parameters
         )
 
-    def read_results(self, directory: Path | str):
+    def read_results(self, directory: Path | str) -> EnergyInfo:
         """
         Reads the MRCC output files.
 
@@ -166,7 +166,7 @@ class MrccTemplate(CalculatorTemplate):
         """
         return read_mrcc_outputs(output_file_path=directory / self.outputname)
 
-    def load_profile(self, cfg, **kwargs):
+    def load_profile(self, cfg: Config, **kwargs) -> MrccProfile:
         return MrccProfile.from_config(cfg, self.name, **kwargs)
 
 
@@ -180,7 +180,7 @@ class MRCC(GenericFileIOCalculator):
         mrccblocks=' ')
     """
 
-    def __init__(self, *, profile=None, directory=".", **kwargs):
+    def __init__(self, *, profile: MrccProfile=None, directory:str|Path=".", **kwargs) -> None:
         """Construct MRCC-calculator object.
 
         Parameters
