@@ -15,7 +15,6 @@ from ase.optimize import BFGS, BFGSLineSearch
 from ase.optimize.sciopt import SciPyFminBFGS
 
 from quacc import SETTINGS, change_settings
-from quacc import SETTINGS
 from quacc.runners.ase import Runner
 
 LOGGER = logging.getLogger(__name__)
@@ -218,4 +217,4 @@ def test_fn_hook(tmp_path, monkeypatch):
     atoms.calc = EMT()
 
     with pytest.raises(ValueError, match="Test error"):
-        run_opt(atoms, fn_hook=fn_hook)
+        Runner(atoms).run_opt(fn_hook=fn_hook)

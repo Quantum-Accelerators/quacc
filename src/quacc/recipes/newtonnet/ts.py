@@ -183,7 +183,7 @@ def irc_job(
     with change_settings({"CHECK_CONVERGENCE": False}):
         dyn = Runner(atoms).run_opt(**opt_flags)
         opt_irc_summary = _add_stdev_and_hess(
-            summarize_opt_run(yn, additional_fields={"name": f"NewtonNet IRC: {direction}"})
+            summarize_opt_run(dyn, additional_fields={"name": f"NewtonNet IRC: {direction}"})
         )
 
     # Run frequency job

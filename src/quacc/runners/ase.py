@@ -119,15 +119,6 @@ class Runner:
         Atoms
             The updated Atoms object.
         """
-        # Run calculation
-        try:
-            if get_forces:
-                atoms.get_forces()
-            else:
-                atoms.get_potential_energy()
-        except Exception as exception:
-            terminate(tmpdir, exception)
-
         # Most ASE calculators do not update the atoms object in-place with a call
         # to .get_potential_energy(), which is important if an internal optimizer is
         # used. This section is done to ensure that the atoms object is updated to
@@ -168,6 +159,7 @@ class Runner:
         optimizer: Optimizer = BFGS,
         optimizer_kwargs: OptimizerKwargs | None = None,
         store_intermediate_results: bool = False,
+        fn_hook: Callable | None = None,
         run_kwargs: dict[str, Any] | None = None,
     ) -> Optimizer:
         """
@@ -192,6 +184,10 @@ class Runner:
             Whether to store the files generated at each intermediate step in the
             optimization. If enabled, they will be stored in a directory named
             `stepN` where `N` is the step number, starting at 0.
+        fn_hook
+            A custom function to call after each step of the optimization.
+            The function must take the instantiated dynamics class as
+            its only argument.
         run_kwargs
             Dictionary of kwargs for the `run()` method of the optimizer.
 
@@ -251,8 +247,8 @@ class Runner:
                             )
                         if fn_hook:
                             fn_hook(dyn)
-            except Exception as exception:
-                terminate(tmpdir, exception)
+        except Exception as exception:
+            terminate(self.tmpdir, exception)
 
         # Store the trajectory atoms
         dyn.traj_atoms = read(traj_file, index=":")
@@ -340,7 +336,7 @@ class Runner:
                 elif item.is_dir():
                     copytree(item, store_path / item.name)
 
-    @requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
+    @requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
     def _set_sella_kwargs(self, optimizer_kwargs: dict[str, Any]) -> None:
         """
         Modifies the `optimizer_kwargs` in-place to address various Sella-related
