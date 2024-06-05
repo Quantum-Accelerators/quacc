@@ -29,6 +29,11 @@ if TYPE_CHECKING:
         adsorbate: str
         slab: str
 
+    class MultiplicityDict(TypedDict):
+        adsorbate_slab: int
+        slab: int
+        adsorbate: int
+
     ElementStr = Literal[
         "H",
         "He",
@@ -150,10 +155,6 @@ if TYPE_CHECKING:
         "Og",
     ]
 
-    class MultiplicityDict(TypedDict):
-        adsorbate_slab: int
-        slab: int
-        adsorbate: int
 
 
 has_chemshell = find_spec("chemsh") is not None
