@@ -235,7 +235,9 @@ class Runner:
                     # https://gitlab.coms/ase/ase/-/issues/1475
                     dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
                 else:
-                    for i, _ in enumerate(dyn.irun(fmax=fmax, steps=max_steps, **run_kwargs)):
+                    for i, _ in enumerate(
+                        dyn.irun(fmax=fmax, steps=max_steps, **run_kwargs)
+                    ):
                         if store_intermediate_results:
                             self._copy_intermediate_files(
                                 i,
