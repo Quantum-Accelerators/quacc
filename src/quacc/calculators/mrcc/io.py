@@ -66,7 +66,7 @@ def read_geom_mrccinp(file_path: Path | str) -> Atoms:
     return atoms
 
 
-def write_mrcc(file_path: Path | str, atoms: Atoms, parameters: ParamsInfo):
+def write_mrcc(file_path: Path | str, atoms: Atoms, parameters: ParamsInfo) -> None:
     """
     Write MRCC input file given the Atoms object and the parameters.
 
@@ -173,7 +173,6 @@ def read_mrcc_outputs(output_file_path: Path | str) -> EnergyInfo:
         - ccsd_corr_energy : float | None <-- CCSD correlation energy.
         - ccsdt_corr_energy : float | None <-- CCSD(T) correlation energy.
     """
-    # with open(stdout_path, "r") as fd:
     with Path.open(output_file_path) as output_textio:
         lines = output_textio.readlines()
 
