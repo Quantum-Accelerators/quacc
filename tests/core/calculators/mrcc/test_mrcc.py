@@ -35,10 +35,11 @@ def test_mrcc_version_from_executable():
     assert version_regexp.match(version)
 
 
-def test_mrcc_singlepoint(tmp_path):
+def test_mrcc_singlepoint(tmp_path, monkeypatch):
+
     dmrcc_path = shutil.which("dmrcc")
 
-    MyMrccProfile = MrccProfile(command=dmrcc_path)
+    MyMrccProfile = MrccProfile(command=dmrcc_path or "")
 
     calc = MRCC(
         label="mrcc",
