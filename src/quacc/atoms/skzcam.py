@@ -13,25 +13,22 @@ from monty.dev import requires
 from monty.io import zopen
 from monty.os.path import zpath
 
-
 if TYPE_CHECKING:
     from ase.atom import Atom
     from numpy.typing import NDArray
-    
+
     class ElementInfo(TypedDict):
         core: int
         basis: str
         ecp: str
         ri_scf_basis: str
         ri_cwft_basis: str
-    
-    
+
     class BlockInfo(TypedDict):
         adsorbate_slab: str
         adsorbate: str
         slab: str
-    
-    
+
     ElementStr = Literal[
         "H",
         "He",
@@ -152,12 +149,12 @@ if TYPE_CHECKING:
         "Ts",
         "Og",
     ]
-    
-    
+
     class MultiplicityDict(TypedDict):
         adsorbate_slab: int
         slab: int
         adsorbate: int
+
 
 has_chemshell = find_spec("chemsh") is not None
 
