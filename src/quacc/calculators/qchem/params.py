@@ -150,7 +150,7 @@ def get_rem_swaps(rem: dict[str, Any], restart: bool = False) -> dict[str, Any]:
 
     Returns
     -------
-    dict
+    dict[str, Any]
         rem dictionary with swaps
     """
     if restart and "scf_guess" not in rem:

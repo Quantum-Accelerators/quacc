@@ -60,8 +60,15 @@ class VaspSchema(RunSchema, TaskDoc):
     validation: ValidationDoc
 
 
-class MPRelaxFlowSchema(VaspSchema):
-    """Type hint associated with the MP relaxation flows."""
+class DoubleRelaxSchema(TypedDict):
+    """Type hint associated with the double relaxation jobs."""
+
+    relax1: VaspSchema
+    relax2: VaspSchema
+
+
+class MPGGARelaxFlowSchema(VaspSchema):
+    """Type hint associated with the MP GGA relaxation flows."""
 
     pre_relax: VaspSchema
     relax: VaspSchema
