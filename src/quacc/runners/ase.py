@@ -25,9 +25,8 @@ from quacc.schemas.ase import summarize_opt_run, summarize_path_opt_run
 from quacc.utils.dicts import recursive_dict_merge
 
 has_sella = bool(find_spec("sella"))
-#
+
 if has_sella:
-    # pass
     from sella import Sella
 
 has_newtonnet = bool(find_spec("newtonnet"))
