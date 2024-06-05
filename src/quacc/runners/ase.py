@@ -119,6 +119,15 @@ class Runner:
         Atoms
             The updated Atoms object.
         """
+        # Run calculation
+        try:
+            if get_forces:
+                self.atoms.get_forces()
+            else:
+                self.atoms.get_potential_energy()
+        except Exception as exception:
+            terminate(self.tmpdir, exception)
+
         # Most ASE calculators do not update the atoms object in-place with a call
         # to .get_potential_energy(), which is important if an internal optimizer is
         # used. This section is done to ensure that the atoms object is updated to
