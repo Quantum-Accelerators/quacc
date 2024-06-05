@@ -17,7 +17,8 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
     from ase.config import Config
-    from quacc.calculators.mrcc.io import ParamsInfo, EnergyInfo
+
+    from quacc.calculators.mrcc.io import EnergyInfo, ParamsInfo
 
 
 def _get_version_from_mrcc_header(mrcc_header: str) -> str:
@@ -180,7 +181,9 @@ class MRCC(GenericFileIOCalculator):
         mrccblocks=' ')
     """
 
-    def __init__(self, *, profile: MrccProfile=None, directory:str|Path=".", **kwargs) -> None:
+    def __init__(
+        self, *, profile: MrccProfile = None, directory: str | Path = ".", **kwargs
+    ) -> None:
         """Construct MRCC-calculator object.
 
         Parameters
