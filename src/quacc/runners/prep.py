@@ -68,9 +68,8 @@ def calc_setup(
 
     # Create a symlink to the tmpdir
     if os.name != "nt" and SETTINGS.SCRATCH_DIR:
-        symlink = SETTINGS.RESULTS_DIR / f"symlink-{tmpdir.name}"
-        symlink.unlink(missing_ok=True)
-        symlink.symlink_to(tmpdir, target_is_directory=True)
+        symlink_path = SETTINGS.RESULTS_DIR / f"symlink-{tmpdir.name}"
+        symlink_path.symlink_to(tmpdir, target_is_directory=True)
 
     # Copy files to tmpdir and decompress them if needed
     if copy_files:
@@ -101,15 +100,13 @@ def calc_cleanup(
         deleted after the calculation is complete.
     job_results_dir
         The path to the job_results_dir, where the files will ultimately be
-        stored. A symlink to the tmpdir will be made here during the calculation
-        for convenience.
+        stored.
 
     Returns
     -------
     None
     """
     job_results_dir, tmpdir = Path(job_results_dir), Path(tmpdir)
-    logger.info(f"Calculation results stored at {job_results_dir}")
 
     # Safety check
     if "tmp-" not in str(tmpdir):
@@ -120,21 +117,51 @@ def calc_cleanup(
     if atoms is not None:
         atoms.calc.directory = job_results_dir
 
-    # Make the results directory
-    job_results_dir.mkdir(parents=True, exist_ok=True)
-
     # Gzip files in tmpdir
     if SETTINGS.GZIP_FILES:
         gzip_dir(tmpdir)
 
     # Move files from tmpdir to job_results_dir
-    for file_name in os.listdir(tmpdir):
-        move(tmpdir / file_name, job_results_dir / file_name)
+    if SETTINGS.CREATE_UNIQUE_DIR:
+        move(tmpdir, job_results_dir)
+    else:
+        for file_name in os.listdir(tmpdir):
+            move(tmpdir / file_name, job_results_dir / file_name)
+        rmtree(tmpdir)
+    logger.info(f"Calculation results stored at {job_results_dir}")
 
     # Remove symlink to tmpdir
     if os.name != "nt" and SETTINGS.SCRATCH_DIR:
         symlink_path = SETTINGS.RESULTS_DIR / f"symlink-{tmpdir.name}"
         symlink_path.unlink(missing_ok=True)
 
-    # Remove the tmpdir
-    rmtree(tmpdir, ignore_errors=True)
+
+def terminate(tmpdir: Path | str, exception: Exception) -> Exception:
+    """
+    Terminate a calculation and move files to a failed directory.
+
+    Parameters
+    ----------
+    tmpdir
+        The path to the tmpdir, where the calculation was run.
+    exception
+        The exception that caused the calculation to fail.
+
+    Raises
+    -------
+    Exception
+        The exception that caused the calculation to fail.
+    """
+    job_failed_dir = tmpdir.with_name(tmpdir.name.replace("tmp-", "failed-"))
+    tmpdir.rename(job_failed_dir)
+
+    msg = f"Calculation failed! Files stored at {job_failed_dir}"
+    logging.info(msg)
+
+    if os.name != "nt" and SETTINGS.SCRATCH_DIR:
+        old_symlink_path = SETTINGS.RESULTS_DIR / f"symlink-{tmpdir.name}"
+        symlink_path = SETTINGS.RESULTS_DIR / f"symlink-{job_failed_dir.name}"
+        old_symlink_path.unlink(missing_ok=True)
+        symlink_path.symlink_to(job_failed_dir, target_is_directory=True)
+
+    raise exception

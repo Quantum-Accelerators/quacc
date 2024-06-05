@@ -4,6 +4,31 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.1]
+
+### Changed
+
+- No longer need to install `master` branch of ASE
+- Modified Espresso and ONETEP settings to support new ASE profile features
+- Removed `nsteps` from the `OptSchema`
+
+
+## [0.9.0]
+
+### Added
+
+- The `RESULTS_DIR` and `SCRATCH_DIR` settings can now be relative paths, if desired
+
+### Changed
+
+- Failed calculations are now stored in a `failed-quacc-12345-` directory to distinguish these tasks from the running tasks in `tmp-quacc-12345-`
+- The output schema is now written to a serialized JSON file instead of pickle for security and ease-of-use reasons. It can be rehydrated via `loadfn("quacc_results.json.gz")` where `loadfn` is from `monty.serialization import loadfn`
+- The `fmax` attribute was moved from the base level to the `parameters_opt` section since it is an input parameter
+
+### Fixed
+
+- File shuttling after a completed calculation is now faster since we simply rename the directory instead of moving each individual file
+
 ## [0.8.0]
 
 ### Added

@@ -18,9 +18,6 @@ In your newly activated conda environment, run the following commands to install
 For the latest PyPI release:
 
 ```bash
-# Install development version of ASE
-pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
-
 # Install quacc
 pip install quacc
 ```
@@ -28,9 +25,6 @@ pip install quacc
 For the development version:
 
 ```bash
-# Install development version of ASE
-pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
-
 # Install development version of quacc
 pip install git+https://github.com/quantum-accelerators/quacc.git
 ```

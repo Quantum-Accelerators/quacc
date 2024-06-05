@@ -173,7 +173,7 @@ def test_ase_relax_job(patch_metallic_taskdoc):
     assert output["parameters"]["lwave"] is False
     assert output["parameters"]["lcharg"] is False
     assert output["parameters"]["encut"] == 520
-    assert output["fmax"] == 0.01
+    assert output["parameters_opt"]["fmax"] == 0.01
     assert len(output["trajectory_results"]) > 1
 
 
@@ -186,7 +186,7 @@ def test_ase_relax_job2(patch_metallic_taskdoc):
     assert output["parameters"]["lwave"] is False
     assert output["parameters"]["lcharg"] is False
     assert output["parameters"]["encut"] == 520
-    assert output["fmax"] == 0.01
+    assert output["parameters_opt"]["fmax"] == 0.01
     assert len(output["trajectory_results"]) > 1
     assert len(output["steps"]) == len(output["trajectory_results"])
 
