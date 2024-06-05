@@ -36,7 +36,6 @@ def test_mrcc_version_from_executable():
 
 
 def test_mrcc_singlepoint(tmp_path, monkeypatch):
-
     dmrcc_path = shutil.which("dmrcc")
 
     MyMrccProfile = MrccProfile(command=dmrcc_path or "")
