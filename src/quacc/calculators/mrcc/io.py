@@ -53,7 +53,6 @@ def read_geom_mrccinp(file_path: Path | str) -> Atoms:
     atoms_length = int(lines[xyz_line_index + 1])
 
     # Format and send the string to be read by ase.io.read()
-
     xyz_text = f"{atoms_length}\n geometry\n"
     for line in lines[xyz_line_index + 3 : xyz_line_index + 3 + atoms_length]:
         xyz_text += line
