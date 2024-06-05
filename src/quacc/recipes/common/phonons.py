@@ -98,7 +98,7 @@ def phonon_subflow(
     ) -> PhononSchema:
         parameters = force_job_results[-1].get("parameters")
         forces = [output["results"]["forces"] for output in force_job_results]
-        phonopy = PhonopyRunner().run_phonopy(
+        phonopy_results = PhonopyRunner().run_phonopy(
             phonopy, forces, t_step=t_step, t_min=t_min, t_max=t_max
         )
 
