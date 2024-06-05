@@ -101,10 +101,9 @@ def run_and_summarize(
         library=library,
         **calc_kwargs,
     )
-    final_atoms = Runner(
-        atoms,
-        copy_files=copy_files,
-    ).run_calc(geom_file=GEOM_FILE_PBC if atoms.pbc.any() else GEOM_FILE_NOPBC)
+    final_atoms = Runner(atoms, copy_files=copy_files).run_calc(
+        geom_file=GEOM_FILE_PBC if atoms.pbc.any() else GEOM_FILE_NOPBC
+    )
 
     if (
         SETTINGS.CHECK_CONVERGENCE

@@ -15,7 +15,6 @@ from ase.optimize import BFGS, BFGSLineSearch
 from ase.optimize.sciopt import SciPyFminBFGS
 
 from quacc import SETTINGS, change_settings
-from quacc import SETTINGS
 from quacc.runners.ase import Runner
 
 LOGGER = logging.getLogger(__name__)
@@ -115,15 +114,13 @@ def test_run_opt2(tmp_path, monkeypatch):
     atoms.calc = EMT()
 
     dyn = Runner(atoms, copy_files={Path(): "test_file.txt"}).run_opt(
-        optimizer=BFGS,
-        optimizer_kwargs={"restart": None},
+        optimizer=BFGS, optimizer_kwargs={"restart": None}
     )
     traj = dyn.traj_atoms
     assert traj[-1].calc.results is not None
 
     dyn = Runner(traj[-1], copy_files={Path(): "test_file.txt"}).run_opt(
-        optimizer=BFGSLineSearch,
-        optimizer_kwargs={"restart": None},
+        optimizer=BFGSLineSearch, optimizer_kwargs={"restart": None}
     )
     traj = dyn.traj_atoms
     assert traj[-1].calc.results is not None
