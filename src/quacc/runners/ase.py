@@ -12,23 +12,21 @@ import numpy as np
 from ase import Atoms
 from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read, write
+from ase.mep import NEB
 from ase.optimize import BFGS
 from ase.vibrations import Vibrations
-from ase.mep.neb import NEBOptimizer
-from ase.mep import NEB
 from monty.dev import requires
 from monty.os.path import zpath
 
 from quacc import SETTINGS
 from quacc.atoms.core import copy_atoms, get_final_atoms_from_dynamics
 from quacc.runners.prep import calc_cleanup, calc_setup, terminate
-from quacc.utils.dicts import recursive_dict_merge
 from quacc.schemas.ase import summarize_opt_run, summarize_path_opt_run
+from quacc.utils.dicts import recursive_dict_merge
 
 has_sella = bool(find_spec("sella"))
-#
+
 if has_sella:
-    # pass
     from sella import Sella
 
 has_newtonnet = bool(find_spec("newtonnet"))
@@ -44,10 +42,8 @@ if has_geodesic_interpolate:
     from geodesic_interpolate.interpolation import redistribute
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from typing import Any, TypedDict
 
-    from ase.atoms import Atoms
     from ase.optimize.optimize import Optimizer
 
     from quacc.utils.files import Filenames, SourceDirectory
@@ -82,7 +78,9 @@ if TYPE_CHECKING:
         delta: float  # default = 0.01
         nfree: int  # default = 2
 
-import inspect
+
+from ase.atoms import Atoms
+
 
 def run_calc(
     atoms: Atoms,
@@ -341,14 +339,14 @@ def run_vib(
 
 
 def run_path_opt(
-        xyz_r_p,
-        logdir=None,
-        method=None,
-        optimizer_class=None,
-        n_intermediate: int | None = 20,
-        precon: str | None = None,
-        max_steps: int | None = 1000,
-        fmax_cutoff: float | None = 1e-2,
+    xyz_r_p,
+    logdir=None,
+    method=None,
+    optimizer_class=None,
+    n_intermediate: int | None = 20,
+    precon: str | None = None,
+    max_steps: int | None = 1000,
+    fmax_cutoff: float | None = 1e-2,
 ) -> list[Atoms]:
     """
     Run NEB-based path optimization in a scratch directory and copy the results back to
@@ -397,9 +395,9 @@ def run_path_opt(
     neb.interpolate()
 
     # qn = BFGS(neb, trajectory='neb.traj')
-    qn = optimizer_class(neb, trajectory='neb.traj')
+    qn = optimizer_class(neb, trajectory="neb.traj")
     qn.run(fmax=0.05)
-    traj = read('neb.traj', ':')
+    traj = read("neb.traj", ":")
 
     neb_summary = summarize_path_opt_run(traj, neb, qn)
 
@@ -458,14 +456,13 @@ def _geodesic_interpolate_wrapper(
 
     # Read the initial geometries.
     chemical_symbols = reactant_product_atoms[0].get_chemical_symbols()
-    initial_positions = [configuration.get_positions() for configuration in reactant_product_atoms]
+    initial_positions = [
+        configuration.get_positions() for configuration in reactant_product_atoms
+    ]
 
     # First redistribute number of images. Perform interpolation if too few and subsampling if too many images are given
     raw_interpolated_positions = redistribute(
-        chemical_symbols,
-        initial_positions,
-        nimages,
-        tol=convergence_tolerance * 5,
+        chemical_symbols, initial_positions, nimages, tol=convergence_tolerance * 5
     )
 
     if save_raw_path is not None:
@@ -490,17 +487,10 @@ def _geodesic_interpolate_wrapper(
                 micro_iter=max_micro_iterations,
             )
         else:
-            geodesic_smoother.smooth(
-                tol=convergence_tolerance,
-                max_iter=max_iterations,
-            )
+            geodesic_smoother.smooth(tol=convergence_tolerance, max_iter=max_iterations)
     finally:
         # Save the smoothed path to output file. try block is to ensure output is saved if one ^C the process, or there is an error
-        write_xyz(
-            output_filepath,
-            chemical_symbols,
-            geodesic_smoother.path,
-        )
+        write_xyz(output_filepath, chemical_symbols, geodesic_smoother.path)
     return chemical_symbols, geodesic_smoother.path
 
 
@@ -517,9 +507,9 @@ def _setup_images(logdir: str, xyz_r_p: str, n_intermediate: int = 40):
     List: List of ASE Atoms objects with calculated energies and forces.
     """
     current_file_path = Path(__file__).parent
-    print('current_file_path:\n\n', current_file_path)
-    conf_path = (current_file_path / '../../../tests/core/recipes/newtonnet_recipes').resolve()
-    print('conf_path:\n\n', conf_path)
+    conf_path = (
+        current_file_path / "../../../tests/core/recipes/newtonnet_recipes"
+    ).resolve()
     NEWTONNET_CONFIG_PATH = conf_path / "config0.yml"
     NEWTONNET_MODEL_PATH = conf_path / "best_model_state.tar"
     SETTINGS.CHECK_CONVERGENCE = False
@@ -527,7 +517,6 @@ def _setup_images(logdir: str, xyz_r_p: str, n_intermediate: int = 40):
         "model_path": NEWTONNET_MODEL_PATH,
         "settings_path": NEWTONNET_CONFIG_PATH,
     }
-    print('calc_defaults:\n\n\n\n\n\n', calc_defaults)
     opt_defaults = {"optimizer": Sella, "optimizer_kwargs": ({"order": 0})}
     calc_flags = recursive_dict_merge(calc_defaults, {})
     opt_flags = recursive_dict_merge(opt_defaults, {})
@@ -547,12 +536,13 @@ def _setup_images(logdir: str, xyz_r_p: str, n_intermediate: int = 40):
 
         # Run the TS optimization
         dyn = run_opt(atom, **opt_flags)
-        opt_ts_summary = summarize_opt_run(dyn, additional_fields={"name": "NewtonNet TS"})
+        opt_ts_summary = summarize_opt_run(
+            dyn, additional_fields={"name": "NewtonNet TS"}
+        )
 
         reactant = opt_ts_summary["atoms"].copy()
         # traj_file = Path(logdir) / f"{name}_opt.traj"
         # sella_wrapper(atom, traj_file=traj_file, sella_order=0)
-    print('done with opt\n\n\n\n\n\n\n')
     # Save optimized reactant and product structures
     if logdir is not None:
         r_p_path = Path(logdir) / "r_p.xyz"
@@ -560,8 +550,7 @@ def _setup_images(logdir: str, xyz_r_p: str, n_intermediate: int = 40):
 
     # Generate intermediate images using geodesic interpolation
     symbols, smoother_path = _geodesic_interpolate_wrapper(
-        [reactant.copy(), product.copy()],
-        nimages=n_intermediate,
+        [reactant.copy(), product.copy()], nimages=n_intermediate
     )
     images = [Atoms(symbols=symbols, positions=conf) for conf in smoother_path]
 

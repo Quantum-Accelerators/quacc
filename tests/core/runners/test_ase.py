@@ -8,17 +8,17 @@ from shutil import rmtree
 
 import numpy as np
 import pytest
+from ase import Atoms
 from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
+from ase.io import write
+from ase.mep.neb import NEBOptimizer
 from ase.optimize import BFGS, BFGSLineSearch
 from ase.optimize.sciopt import SciPyFminBFGS
-from ase.mep.neb import NEBOptimizer
-from ase.io import write
-from ase import Atoms
 
 from quacc import SETTINGS, change_settings
-from quacc.runners.ase import run_calc, run_opt, run_vib, run_path_opt
+from quacc.runners.ase import run_calc, run_opt, run_path_opt, run_vib
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.propagate = True
@@ -87,7 +87,7 @@ def setup_test_environment(tmp_path):
 
     return logdir, xyz_r_p
 
-from sella import Sella
+
 @pytest.mark.parametrize(
     (
         "method",
@@ -113,9 +113,25 @@ from sella import Sella
         # ("aseneb", SciPyFminBFGS, None, "some_logdir", 1000, 0.1, 3, 1e-3, "some_logdir",
         #   0.78503956131, -24.9895786292, -0.0017252843, 0.78017739462, 9, -19.946616164,
         #   -0.19927549, 0.51475535802),
-        ("aseneb", NEBOptimizer, None, "some_logdir", 10, 0.1, 3, 1e-3, "some_logdir",
-         0.78503956131, -24.9895786292, -0.0017252843, 0.78017739462, 9, -19.946616164,
-         -0.19927549, 0.51475535802),
+        (
+            "aseneb",
+            NEBOptimizer,
+            None,
+            "some_logdir",
+            10,
+            0.1,
+            3,
+            1e-3,
+            "some_logdir",
+            0.78503956131,
+            -24.9895786292,
+            -0.0017252843,
+            0.78017739462,
+            9,
+            -19.946616164,
+            -0.19927549,
+            0.51475535802,
+        )
     ],
 )
 def test_run_neb_method(
@@ -161,11 +177,12 @@ def test_run_neb_method(
 
     assert images[0].positions[0][1] == pytest.approx(first_image_positions, abs=1e-2)
 
-    assert images[0].get_potential_energy() == pytest.approx(first_image_pot_energy, abs=1e-2
+    assert images[0].get_potential_energy() == pytest.approx(
+        first_image_pot_energy, abs=1e-2
     ), "reactant potential energy"
 
     assert images[0].get_forces()[0, 1] == pytest.approx(
-       first_image_forces, abs=1e-3
+        first_image_forces, abs=1e-3
     ), "reactant potential forces"
 
     assert images[1].positions[0][1] == pytest.approx(second_images_positions, abs=1e-1)
@@ -175,12 +192,14 @@ def test_run_neb_method(
     ) == pytest.approx(index_ts), "Index of the transition state"
 
     assert np.max([image.get_potential_energy() for image in images]) == pytest.approx(
-        pot_energy_ts, abs=1), "Potential energy of the transition state"
+        pot_energy_ts, abs=1
+    ), "Potential energy of the transition state"
 
     assert images[
         np.argmax([image.get_potential_energy() for image in images])
     ].get_forces()[0, 1] == pytest.approx(
-        forces_ts, abs=1), "Force component in the transition state"
+        forces_ts, abs=1
+    ), "Force component in the transition state"
 
     assert images[-1].positions[0][1] == pytest.approx(last_images_positions, abs=1e-2)
     # # Ensure the log file is correctly handled

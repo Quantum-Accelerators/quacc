@@ -46,7 +46,6 @@ def phonon_job(
         | None
     ) = None,
     prev_outdir: SourceDirectory | None = None,
-    parallel_info: dict[str] | None = None,
     test_run: bool = False,
     use_phcg: bool = False,
     **calc_kwargs,
@@ -71,9 +70,6 @@ def phonon_job(
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
         to manually copy files. The directory will be ungzipped if necessary.
-    parallel_info
-        Dictionary containing information about the parallelization of the
-        calculation. See the ASE documentation for more information.
     test_run
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
@@ -105,7 +101,6 @@ def phonon_job(
         template=EspressoTemplate(binary, test_run=test_run, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        parallel_info=parallel_info,
         additional_fields={"name": f"{binary}.x Phonon"},
         copy_files=copy_files,
     )
@@ -119,7 +114,6 @@ def q2r_job(
         | dict[SourceDirectory, Filenames]
         | None
     ) = None,
-    parallel_info: dict[str] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -138,9 +132,6 @@ def q2r_job(
         which files have to be copied over by looking at the binary and `input_data`.
         If a dict is provided, the mode is manual, keys are source directories and values
         are relative path to files or directories to copy. Glob patterns are supported.
-    parallel_info
-        Dictionary containing information about the parallelization of the
-        calculation. See the ASE documentation for more information.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -156,7 +147,6 @@ def q2r_job(
         template=EspressoTemplate("q2r"),
         calc_defaults={},
         calc_swaps=calc_kwargs,
-        parallel_info=parallel_info,
         additional_fields={"name": "q2r.x Phonon"},
         copy_files=copy_files,
     )
@@ -170,7 +160,6 @@ def matdyn_job(
         | dict[SourceDirectory, Filenames]
         | None
     ) = None,
-    parallel_info: dict[str] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -190,9 +179,6 @@ def matdyn_job(
         which files have to be copied over by looking at the binary and `input_data`.
         If a dict is provided, the mode is manual, keys are source directories and values
         are relative path to files or directories to copy. Glob patterns are supported.
-    parallel_info
-        Dictionary containing information about the parallelization of the
-        calculation. See the ASE documentation for more information.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -208,7 +194,6 @@ def matdyn_job(
         template=EspressoTemplate("matdyn"),
         calc_defaults={},
         calc_swaps=calc_kwargs,
-        parallel_info=parallel_info,
         additional_fields={"name": "matdyn Phonon"},
         copy_files=copy_files,
     )
@@ -486,7 +471,6 @@ def dvscf_q2r_job(
         | None
     ) = None,
     prev_outdir: SourceDirectory | None = None,
-    parallel_info: dict[str] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -532,9 +516,6 @@ def dvscf_q2r_job(
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
         to manually copy files. The directory will be ungzipped if necessary.
-    parallel_info
-        Dictionary containing information about the parallelization of the
-        calculation. See the ASE documentation for more information.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -550,7 +531,6 @@ def dvscf_q2r_job(
         template=EspressoTemplate("dvscf_q2r", outdir=prev_outdir),
         calc_defaults={},
         calc_swaps=calc_kwargs,
-        parallel_info=parallel_info,
         additional_fields={"name": "dvscf_q2r Phonon"},
         copy_files=copy_files,
     )
@@ -565,7 +545,6 @@ def postahc_job(
         | None
     ) = None,
     prev_outdir: SourceDirectory | None = None,
-    parallel_info: dict[str] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -596,9 +575,6 @@ def postahc_job(
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
         to manually copy files. The directory will be ungzipped if necessary.
-    parallel_info
-        Dictionary containing information about the parallelization of the
-        calculation. See the ASE documentation for more information.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -614,7 +590,6 @@ def postahc_job(
         template=EspressoTemplate("postahc", outdir=prev_outdir),
         calc_defaults={},
         calc_swaps=calc_kwargs,
-        parallel_info=parallel_info,
         additional_fields={"name": "postahc Phonon"},
         copy_files=copy_files,
     )
