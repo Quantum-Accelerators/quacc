@@ -9,14 +9,13 @@ from ase.units import Hartree
 
 if TYPE_CHECKING:
     from ase import Atoms
-    
+
     class ParamsInfo(TypedDict):
         mrccinput: dict[str, str]
         mrccblocks: str
         charge: int
         mult: int
-    
-    
+
     class EnergyInfo(TypedDict):
         energy: float | None
         scf_energy: float | None
