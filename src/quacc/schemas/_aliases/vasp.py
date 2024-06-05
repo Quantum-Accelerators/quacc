@@ -52,6 +52,13 @@ class VaspSchema(RunSchema, TaskDoc):
     steps: dict[int, TaskDoc]  # when store_intermediate_results=True
 
 
+class DoubleRelaxSchema(TypedDict):
+    """Type hint associated with the double relaxation jobs."""
+
+    relax1: VaspSchema
+    relax2: VaspSchema
+
+
 class MPGGARelaxFlowSchema(VaspSchema):
     """Type hint associated with the MP GGA relaxation flows."""
 

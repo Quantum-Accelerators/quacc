@@ -22,9 +22,6 @@ from quacc.utils.dicts import recursive_dict_merge
 
 has_sella = bool(find_spec("sella"))
 
-if has_sella:
-    pass
-
 
 if TYPE_CHECKING:
     from pathlib import Path
