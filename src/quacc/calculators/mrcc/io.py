@@ -17,7 +17,7 @@ if TYPE_CHECKING:
         mult: int
 
     class EnergyInfo(TypedDict):
-        energy: float | None
+        energy: float
         scf_energy: float | None
         mp2_corr_energy: float | None
         ccsd_corr_energy: float | None
