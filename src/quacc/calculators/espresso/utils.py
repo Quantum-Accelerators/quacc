@@ -75,7 +75,7 @@ def grid_copy_files(
 
     Returns
     -------
-    dict
+    dict[SourceDirectory, Filenames]
         The dictionary of files to copy
     """
     lqdir = ph_input_data["inputph"].get("lqdir", False)
@@ -148,7 +148,7 @@ def espresso_prepare_dir(outdir: str | Path, binary: str = "pw") -> dict[str, An
 
     Returns
     -------
-    dict
+    dict[str, Any]
         Input data for the espresso calculation
     """
     outkeys = {
@@ -218,6 +218,7 @@ def prepare_copy_files(
 
     Returns
     -------
+    dict[SourceDirectory, Filenames]
         The modified dictionary
     """
     to_copy = []
@@ -347,7 +348,7 @@ def remove_conflicting_kpts_kspacing(
 
     Returns
     -------
-    dict
+    dict[str, Any]
         The modified dictionary
     """
     if "kpts" in reference_dict:
