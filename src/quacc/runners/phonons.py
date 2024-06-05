@@ -20,11 +20,12 @@ if TYPE_CHECKING:
 
 
 class PhonopyRunner(Runner):
-    @requires(has_phonopy, "Phonopy is not installed.")
-    @requires(has_seekpath, "Seekpath is not installed")
+
     def __init__(self, *args, **kwargs):
         super().__init__(None, *args, **kwargs)
 
+    @requires(has_phonopy, "Phonopy is not installed.")
+    @requires(has_seekpath, "Seekpath is not installed")
     def run_phonopy(
         self,
         phonon: Phonopy,
