@@ -391,7 +391,7 @@ def run_path_opt(
         The optimized images.
     """
     # Generate intermediate images
-    images = _setup_images(logdir, xyz_r_p, n_intermediate)
+    images = _setup_images(xyz_r_p, n_intermediate)
 
     neb = NEB(images)
     neb.interpolate()
@@ -504,12 +504,11 @@ def _geodesic_interpolate_wrapper(
     return chemical_symbols, geodesic_smoother.path
 
 
-def _setup_images(logdir: str, xyz_r_p: str, n_intermediate: int = 40):
+def _setup_images(xyz_r_p: str, n_intermediate: int = 40):
     """
     Sets up intermediate images for NEB calculations between reactant and product states.
 
     Parameters:
-    logdir (str): Directory to save the intermediate files.
     xyz_r_p (str): Path to the XYZ file containing reactant and product structures.
     n_intermediate (int): Number of intermediate images to generate.
 
