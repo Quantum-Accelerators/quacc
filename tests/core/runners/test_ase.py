@@ -85,7 +85,7 @@ def setup_test_environment(tmp_path):
 
     write(xyz_r_p, [reactant, product])
 
-    return logdir, xyz_r_p
+    return logdir, xyz_r_p, [reactant, product]
 
 from sella import Sella
 @pytest.mark.parametrize(
@@ -140,7 +140,7 @@ def test_run_neb_method(
     last_images_positions,
 ):
     # def test_run_neb_method(tmp_path, setup_test_environment):
-    logdir, xyz_r_p = setup_test_environment
+    logdir, xyz_r_p, r_p = setup_test_environment
 
     if expected_logfile == "some_logdir":
         logdir = tmp_path / "logs"
