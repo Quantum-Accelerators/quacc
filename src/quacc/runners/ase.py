@@ -90,8 +90,8 @@ def run_calc(
         varies between codes.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
-    get_forces
-        Whether to use `atoms.get_forces()` instead of `atoms.get_potential_energy()`.
+    properties
+        List of properties to calculate. Defaults to ["energy"] if `None`.
 
     Returns
     -------
