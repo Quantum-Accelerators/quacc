@@ -50,10 +50,6 @@ def teardown_function():
 
 @pytest.fixture()
 def setup_test_environment(tmp_path):
-    # Create temporary directory
-    logdir = tmp_path / "log"
-    os.makedirs(logdir, exist_ok=True)
-
     # Create a mock XYZ file with reactant and product structures
     xyz_r_p = tmp_path / "r_p.xyz"
 
@@ -85,7 +81,7 @@ def setup_test_environment(tmp_path):
 
     write(xyz_r_p, [reactant, product])
 
-    return logdir, xyz_r_p, [reactant, product]
+    return xyz_r_p, [reactant, product]
 
 from sella import Sella
 @pytest.mark.parametrize(
@@ -93,7 +89,6 @@ from sella import Sella
         "method",
         "optimizer_class",
         "precon",
-        "logdir",
         "n_intermediate",
         "k",
         "max_steps",
@@ -109,11 +104,11 @@ from sella import Sella
         "last_images_positions",
     ),
     [
-        # ("aseneb", NEBOptimizer, None, None, 10, 0.1, 3, 1e-3, None),
-        # ("aseneb", SciPyFminBFGS, None, "some_logdir", 1000, 0.1, 3, 1e-3, "some_logdir",
+        # ("aseneb", NEBOptimizer, None, 10, 0.1, 3, 1e-3, None),
+        # ("aseneb", SciPyFminBFGS, None, 1000, 0.1, 3, 1e-3, "some_logdir",
         #   0.78503956131, -24.9895786292, -0.0017252843, 0.78017739462, 9, -19.946616164,
         #   -0.19927549, 0.51475535802),
-        ("aseneb", NEBOptimizer, None, "some_logdir", 10, 0.1, 3, 1e-3, "some_logdir",
+        ("aseneb", NEBOptimizer, None, 10, 0.1, 3, 1e-3, "some_logdir",
          0.78503956131, -24.9895786292, -0.0017252843, 0.78017739462, 9, -19.946616164,
          -0.19927549, 0.51475535802),
     ],
@@ -124,7 +119,6 @@ def test_run_neb_method(
     method,
     optimizer_class,
     precon,
-    logdir,
     n_intermediate,
     k,
     max_steps,
@@ -140,17 +134,10 @@ def test_run_neb_method(
     last_images_positions,
 ):
     # def test_run_neb_method(tmp_path, setup_test_environment):
-    logdir, xyz_r_p, r_p = setup_test_environment
+    xyz_r_p, r_p = setup_test_environment
 
-    if expected_logfile == "some_logdir":
-        logdir = tmp_path / "logs"
-    elif expected_logfile is None:
-        logdir = None
-
-    # images = run_neb_method(
     images, neb_summary = run_path_opt(
         xyz_r_p,
-        logdir=str(logdir) if logdir else None,
         method=method,
         optimizer_class=optimizer_class,
         n_intermediate=n_intermediate,
