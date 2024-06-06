@@ -96,7 +96,9 @@ class Runner:
             self.atoms, copy_files=self.copy_files
         )
 
-    def run_calc(self, geom_file: str | None = None, properties: list[str] | None = None) -> Atoms:
+    def run_calc(
+        self, geom_file: str | None = None, properties: list[str] | None = None
+    ) -> Atoms:
         """
         This is a wrapper around `atoms.get_potential_energy()`. Note: This function
         does not modify the atoms object in-place.
