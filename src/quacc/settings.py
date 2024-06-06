@@ -150,6 +150,18 @@ class QuaccSettings(BaseSettings):
     )
 
     # ---------------------------
+    # MRCC Settings
+    # ---------------------------
+    MRCC_CMD: str = Field(
+        "dmrcc",
+        description=(
+            """
+            Path to the MRCC executable.
+            """
+        ),
+    )
+
+    # ---------------------------
     # ESPRESSO Settings
     # ---------------------------
     ESPRESSO_BIN_DIR: Path = Field(
