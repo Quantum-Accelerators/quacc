@@ -337,10 +337,7 @@ def run_vib(
 
 
 def run_path_opt(
-    xyz_r_p,
-    logdir=None,
-    optimizer_class=None,
-    n_intermediate: int | None = 20,
+    xyz_r_p, logdir=None, optimizer_class=None, n_intermediate: int | None = 20
 ) -> list[Atoms]:
     """
     Run NEB-based path optimization in a scratch directory and copy the results back to
