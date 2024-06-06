@@ -36,7 +36,7 @@ def static_job(
     method
         Universal ML interatomic potential method to use
     properties
-        A list of properties to obtain. Defaults to energy/forces
+        A list of properties to obtain. Defaults to ["energy", "forces"]
     **calc_kwargs
         Custom kwargs for the underlying calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
