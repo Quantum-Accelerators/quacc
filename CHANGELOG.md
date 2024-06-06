@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Added support for controlling which properties to calculate with MLP static jobs
 
+### Changed
+
+- Bumped minimum version of pymatgen
+
 ## [0.9.1]
 
 ### Changed
