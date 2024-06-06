@@ -347,7 +347,7 @@ def create_mrcc_atomtype_basis(
     for atom in quantum_region:
         basis_str += f"{element_basis_info[atom.symbol]}\n"
     if ecp_region is not None:
-        basis_str += "no-basis-set\n"*len(ecp_region)
+        basis_str += "no-basis-set\n" * len(ecp_region)
 
     return basis_str
 
