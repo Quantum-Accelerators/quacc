@@ -124,7 +124,7 @@ class Runner:
 
         # Run calculation
         try:
-            atoms.calc.calculate(atoms, properties, calculator.all_changes)
+            self.atoms.calc.calculate(self.atoms, properties, calculator.all_changes)
         except Exception as exception:
             terminate(self.tmpdir, exception)
 
