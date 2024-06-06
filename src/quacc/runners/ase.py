@@ -532,11 +532,6 @@ def _setup_images(logdir: str, xyz_r_p: str, n_intermediate: int = 40):
     calc_flags = recursive_dict_merge(calc_defaults, {})
     opt_flags = recursive_dict_merge(opt_defaults, {})
 
-    # try:
-    # Ensure the log directory exists
-    if logdir is not None:
-        Path(logdir).mkdir(parents=True, exist_ok=True)
-
     # Read reactant and product structures
     reactant = read(xyz_r_p, index="0")
     product = read(xyz_r_p, index="1")
@@ -553,10 +548,6 @@ def _setup_images(logdir: str, xyz_r_p: str, n_intermediate: int = 40):
         # traj_file = Path(logdir) / f"{name}_opt.traj"
         # sella_wrapper(atom, traj_file=traj_file, sella_order=0)
     print('done with opt\n\n\n\n\n\n\n')
-    # Save optimized reactant and product structures
-    if logdir is not None:
-        r_p_path = Path(logdir) / "r_p.xyz"
-        write(r_p_path, [reactant.copy(), product.copy()])
 
     # Generate intermediate images using geodesic interpolation
     symbols, smoother_path = _geodesic_interpolate_wrapper(
@@ -576,11 +567,6 @@ def _setup_images(logdir: str, xyz_r_p: str, n_intermediate: int = 40):
 
         image.info["energy"] = energy
         image.arrays["forces"] = forces
-
-    # Save the geodesic path
-    if logdir is not None:
-        geodesic_path = Path(logdir) / "geodesic_path.xyz"
-        write(geodesic_path, images)
 
     return images
 
