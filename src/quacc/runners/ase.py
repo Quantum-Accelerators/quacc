@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Callable
 
 import numpy as np
 from ase import Atoms
+from ase.calculators import calculator
 from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read, write
 from ase.mep import NEB
@@ -83,7 +84,7 @@ def run_calc(
     atoms: Atoms,
     geom_file: str | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-    get_forces: bool = False,
+    properties: list[str] | None = None,
 ) -> Atoms:
     """
     Run a calculation in a scratch directory and copy the results back to the original
@@ -105,8 +106,8 @@ def run_calc(
         varies between codes.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
-    get_forces
-        Whether to use `atoms.get_forces()` instead of `atoms.get_potential_energy()`.
+    properties
+        List of properties to calculate. Defaults to ["energy"] if `None`.
 
     Returns
     -------
@@ -120,11 +121,11 @@ def run_calc(
     tmpdir, job_results_dir = calc_setup(atoms, copy_files=copy_files)
 
     # Run calculation
+    if properties is None:
+        properties = ["energy"]
+
     try:
-        if get_forces:
-            atoms.get_forces()
-        else:
-            atoms.get_potential_energy()
+        atoms.calc.calculate(atoms, properties, calculator.all_changes)
     except Exception as exception:
         terminate(tmpdir, exception)
 
