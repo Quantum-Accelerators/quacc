@@ -321,7 +321,6 @@ def test_create_mrcc_atomtype_basis(embedded_adsorbed_cluster, element_info):
 
 
 def test_generate_mrcc_coords_block(embedded_adsorbed_cluster, element_info):
-
     # Check if multiplicity is read
 
     mrcc_blocks = generate_mrcc_coords_block(
@@ -330,12 +329,12 @@ def test_generate_mrcc_coords_block(embedded_adsorbed_cluster, element_info):
         ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
         element_info=element_info,
         include_cp=True,
-        multiplicities={'adsorbate_slab':3, 'adsorbate':1, 'slab': 2}
+        multiplicities={"adsorbate_slab": 3, "adsorbate": 1, "slab": 2},
     )
 
-    assert mrcc_blocks['adsorbate'].split()[1][-1] == '1'
-    assert mrcc_blocks['adsorbate_slab'].split()[1][-1] == '3'
-    assert mrcc_blocks['slab'].split()[1][-1] == '2'
+    assert mrcc_blocks["adsorbate"].split()[1][-1] == "1"
+    assert mrcc_blocks["adsorbate_slab"].split()[1][-1] == "3"
+    assert mrcc_blocks["slab"].split()[1][-1] == "2"
 
     mrcc_blocks = generate_mrcc_coords_block(
         embedded_adsorbed_cluster=embedded_adsorbed_cluster,
@@ -460,14 +459,15 @@ def test_generate_mrcc_coords_block(embedded_adsorbed_cluster, element_info):
 
 
 def test_generate_mrcc_point_charge_block(embedded_adsorbed_cluster):
-
-    with pytest.raises(ValueError, match="An atom in the quantum cluster is also in the ECP region."):
+    with pytest.raises(
+        ValueError, match="An atom in the quantum cluster is also in the ECP region."
+    ):
         generate_mrcc_point_charge_block(
-        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
-        quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
-        ecp_region_indices=[7, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24]
-    )
-        
+            embedded_adsorbed_cluster=embedded_adsorbed_cluster,
+            quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
+            ecp_region_indices=[7, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
+        )
+
     generated_point_charge_block = generate_mrcc_point_charge_block(
         embedded_adsorbed_cluster=embedded_adsorbed_cluster,
         quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
@@ -1415,7 +1415,9 @@ def test_generate_orca_input_preamble(embedded_adsorbed_cluster):
 
 def test_create_orca_point_charge_file(embedded_adsorbed_cluster, tmpdir):
     # Test whether exception is raised if indices shared between quantum region and ecp region
-    with pytest.raises(ValueError, match="An atom in the quantum cluster is also in the ECP region."):
+    with pytest.raises(
+        ValueError, match="An atom in the quantum cluster is also in the ECP region."
+    ):
         create_orca_point_charge_file(
             embedded_cluster=embedded_adsorbed_cluster,
             quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
