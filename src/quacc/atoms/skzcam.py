@@ -160,7 +160,7 @@ has_chemshell = find_spec("chemsh") is not None
 
 
 def create_mrcc_eint_blocks(
-    embedded_cluster: Atoms,
+    embedded_adsorbed_cluster: Atoms,
     quantum_cluster_indices: list[int],
     ecp_region_indices: list[int],
     element_info: dict[ElementStr, ElementInfo] | None = None,
@@ -172,7 +172,7 @@ def create_mrcc_eint_blocks(
 
     Parameters
     ----------
-    embedded_cluster
+    embedded_adsorbed_cluster
         The ASE Atoms object containing the atomic coordinates and atomic charges from the .pun file, as well as the atom type. This object is created by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
     quantum_cluster_indices
         A list containing the indices of the atoms in each quantum cluster. These indices are provided by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
@@ -193,7 +193,7 @@ def create_mrcc_eint_blocks(
 
     # Create the blocks for the basis sets (basis, basis_sm, dfbasis_scf, dfbasis_cor, ecp)
     basis_ecp_block = generate_mrcc_basis_ecp_block(
-        embedded_cluster=embedded_cluster,
+        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
         quantum_cluster_indices=quantum_cluster_indices,
         ecp_region_indices=ecp_region_indices,
         element_info=element_info,
@@ -202,7 +202,7 @@ def create_mrcc_eint_blocks(
 
     # Create the blocks for the coordinates
     coords_block = generate_mrcc_coords_block(
-        embedded_cluster=embedded_cluster,
+        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
         quantum_cluster_indices=quantum_cluster_indices,
         ecp_region_indices=ecp_region_indices,
         element_info=element_info,
@@ -212,7 +212,7 @@ def create_mrcc_eint_blocks(
 
     # Create the point charge block
     point_charge_block = generate_mrcc_point_charge_block(
-        embedded_cluster=embedded_cluster,
+        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
         quantum_cluster_indices=quantum_cluster_indices,
         ecp_region_indices=ecp_region_indices,
     )
@@ -228,7 +228,7 @@ def create_mrcc_eint_blocks(
 
 
 def generate_mrcc_basis_ecp_block(
-    embedded_cluster: Atoms,
+    embedded_adsorbed_cluster: Atoms,
     quantum_cluster_indices: list[int],
     ecp_region_indices: list[int],
     element_info: dict[ElementStr, ElementInfo] | None = None,
@@ -239,8 +239,8 @@ def generate_mrcc_basis_ecp_block(
 
     Parameters
     ----------
-    embedded_cluster
-        The ASE Atoms object containing the atomic coordinates and atomic charges from the .pun file. This object is created by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
+    embedded_adsorbed_cluster
+        The ASE Atoms object containing the atomic coordinates and atomic charges from the .pun file. This object is created by the [quacc.atoms.skzcam.create_skzcam_clusters][] function and should contain the atom_types for the adsorbate and slab.
     quantum_cluster_indices
         A list of lists containing the indices of the atoms in each quantum cluster. These indices are provided by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
     ecp_region_indices
@@ -257,8 +257,8 @@ def generate_mrcc_basis_ecp_block(
     """
 
     # Create the quantum cluster and ECP region cluster
-    adsorbate_slab_cluster = embedded_cluster[quantum_cluster_indices]
-    ecp_region = embedded_cluster[ecp_region_indices]
+    adsorbate_slab_cluster = embedded_adsorbed_cluster[quantum_cluster_indices]
+    ecp_region = embedded_adsorbed_cluster[ecp_region_indices]
 
     # Get the indices of the adsorbates from the quantum cluster
     adsorbate_indices = [
@@ -329,10 +329,13 @@ def create_mrcc_atomtype_basis(
 
     Parameters
     ----------
-    embedded_cluster
-        The ASE Atoms object containing the atomic coordinates and atomic charges from the .pun file. This object is created by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
+    quantum_region
+        The ASE Atoms object containing the atomic coordinates of the quantum cluster region (could be the adsorbate-slab complex, slab or adsorbate by itself).
     element_basis_info
          A dictionary with elements as keys which gives the basis set for each element.
+    ecp_region
+        The ASE atoms object containing the atomic coordinates of the capped ECP region.
+
 
     Returns
     -------
@@ -344,14 +347,13 @@ def create_mrcc_atomtype_basis(
     for atom in quantum_region:
         basis_str += f"{element_basis_info[atom.symbol]}\n"
     if ecp_region is not None:
-        for atom in ecp_region:
-            basis_str += "no-basis-set\n"
+        basis_str += "no-basis-set\n"*len(ecp_region)
 
     return basis_str
 
 
 def generate_mrcc_coords_block(
-    embedded_cluster: Atoms,
+    embedded_adsorbed_cluster: Atoms,
     quantum_cluster_indices: list[int],
     ecp_region_indices: list[int],
     element_info: ElementInfo,
@@ -363,7 +365,7 @@ def generate_mrcc_coords_block(
 
     Parameters
     ----------
-    embedded_cluster
+    embedded_adsorbed_cluster
         The ASE Atoms object containing the atomic coordinates and atomic charges from the .pun file, as well as the atom type. This Atoms object is typically produced from [quacc.atoms.skzcam.create_skzcam_clusters][].
     quantum_cluster_indices
         A list containing the indices of the atoms in each quantum cluster. These indices are provided by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
@@ -385,8 +387,8 @@ def generate_mrcc_coords_block(
     # Create the quantum cluster and ECP region cluster
     if multiplicities is None:
         multiplicities = {"adsorbate_slab": 1, "adsorbate": 1, "slab": 1}
-    quantum_cluster = embedded_cluster[quantum_cluster_indices]
-    ecp_region = embedded_cluster[ecp_region_indices]
+    quantum_cluster = embedded_adsorbed_cluster[quantum_cluster_indices]
+    ecp_region = embedded_adsorbed_cluster[ecp_region_indices]
 
     # Get the indices of the adsorbates from the quantum cluster
     adsorbate_indices = [
@@ -477,7 +479,7 @@ geom=xyz
                 coords_block["adsorbate"] += create_atom_coord_string(atom=atom)
 
     # Create the coords section for the ECP region
-    for i, atom in enumerate(ecp_region):
+    for atom in ecp_region:
         coords_block["adsorbate_slab"] += create_atom_coord_string(atom=atom)
         coords_block["slab"] += create_atom_coord_string(atom=atom)
 
@@ -498,7 +500,7 @@ geom=xyz
 
 
 def generate_mrcc_point_charge_block(
-    embedded_cluster: Atoms,
+    embedded_adsorbed_cluster: Atoms,
     quantum_cluster_indices: list[int],
     ecp_region_indices: list[int],
 ) -> str:
@@ -507,8 +509,8 @@ def generate_mrcc_point_charge_block(
 
     Parameters
     ----------
-    embedded_cluster
-        The ASE Atoms object containing the atomic coordinates and atomic charges from the .pun file. This object is created by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
+    embedded_adsorbed_cluster
+        The ASE Atoms object containing the atomic coordinates and atomic charges from the .pun file. This object can be created by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
     quantum_cluster_indices
         A list of lists containing the indices of the atoms in each quantum cluster. These indices are provided by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
     ecp_region_indices
@@ -521,7 +523,7 @@ def generate_mrcc_point_charge_block(
     """
 
     # Get the oxi_states arrays from the embedded_cluster
-    oxi_states = embedded_cluster.get_array("oxi_states")
+    oxi_states = embedded_adsorbed_cluster.get_array("oxi_states")
 
     # Check that none of the indices in quantum_cluster_indices are in ecp_region_indices
     if not np.all([x not in ecp_region_indices for x in quantum_cluster_indices]):
@@ -530,7 +532,7 @@ def generate_mrcc_point_charge_block(
     # Get the number of point charges for this system. There is a point charge associated with each capped ECP as well.
     pc_region_indices = ecp_region_indices + [
         atom.index
-        for atom in embedded_cluster
+        for atom in embedded_adsorbed_cluster
         if atom not in quantum_cluster_indices + ecp_region_indices
     ]
 
@@ -539,7 +541,7 @@ def generate_mrcc_point_charge_block(
 
     # Add the ecp_region indices
     for i in pc_region_indices:
-        position = embedded_cluster[i].position
+        position = embedded_adsorbed_cluster[i].position
         pc_block += f"  {position[0]:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f} {oxi_states[i]:-16.11f}\n"
 
     return pc_block

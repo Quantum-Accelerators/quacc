@@ -100,7 +100,7 @@ def distance_matrix(embedded_cluster):
 
 def test_create_mrcc_eint_blocks(embedded_adsorbed_cluster, element_info):
     mrcc_blocks = create_mrcc_eint_blocks(
-        embedded_cluster=embedded_adsorbed_cluster,
+        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
         quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
         ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
         element_info=element_info,
@@ -108,7 +108,7 @@ def test_create_mrcc_eint_blocks(embedded_adsorbed_cluster, element_info):
     )
 
     mrcc_blocks_nocp = create_mrcc_eint_blocks(
-        embedded_cluster=embedded_adsorbed_cluster,
+        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
         quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
         ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
         element_info=element_info,
@@ -203,7 +203,7 @@ def test_create_mrcc_eint_blocks(embedded_adsorbed_cluster, element_info):
 
 def test_generate_mrcc_basis_ecp_block(embedded_adsorbed_cluster, element_info):
     generated_mrcc_blocks = generate_mrcc_basis_ecp_block(
-        embedded_cluster=embedded_adsorbed_cluster,
+        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
         quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
         ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
         element_info=element_info,
@@ -211,7 +211,7 @@ def test_generate_mrcc_basis_ecp_block(embedded_adsorbed_cluster, element_info):
     )
 
     generated_mrcc_blocks_nocp = generate_mrcc_basis_ecp_block(
-        embedded_cluster=embedded_adsorbed_cluster,
+        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
         quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
         ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
         element_info=element_info,
@@ -322,7 +322,7 @@ def test_create_mrcc_atomtype_basis(embedded_adsorbed_cluster, element_info):
 
 def test_generate_mrcc_coords_block(embedded_adsorbed_cluster, element_info):
     mrcc_blocks = generate_mrcc_coords_block(
-        embedded_cluster=embedded_adsorbed_cluster,
+        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
         quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
         ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
         element_info=element_info,
@@ -330,7 +330,7 @@ def test_generate_mrcc_coords_block(embedded_adsorbed_cluster, element_info):
     )
 
     mrcc_blocks_nocp = generate_mrcc_coords_block(
-        embedded_cluster=embedded_adsorbed_cluster,
+        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
         quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
         ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
         element_info=element_info,
@@ -445,7 +445,7 @@ def test_generate_mrcc_coords_block(embedded_adsorbed_cluster, element_info):
 
 def test_generate_mrcc_point_charge_block(embedded_adsorbed_cluster):
     generated_point_charge_block = generate_mrcc_point_charge_block(
-        embedded_cluster=embedded_adsorbed_cluster,
+        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
         quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
         ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
     ).split()
