@@ -348,6 +348,7 @@ def run_path_opt(
         precon: str | None = None,
         max_steps: int | None = 1000,
         fmax_cutoff: float | None = 1e-2,
+        copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> list[Atoms]:
     """
     Run NEB-based path optimization in a scratch directory and copy the results back to
@@ -392,6 +393,13 @@ def run_path_opt(
     # Generate intermediate images
     images = _setup_images(xyz_r_p, n_intermediate)
 
+    # Copy atoms so we don't modify it in-place
+    images = copy_atoms(images)
+
+    # Perform staging operations
+    tmpdir1, job_results_dir1 = calc_setup(images[0], copy_files=copy_files)
+    tmpdir2, job_results_dir2 = calc_setup(images[1], copy_files=copy_files)
+
     neb = NEB(images)
     neb.interpolate()
 
@@ -401,6 +409,10 @@ def run_path_opt(
     traj = read('neb.traj', ':')
 
     neb_summary = summarize_path_opt_run(traj, neb, qn)
+
+    # Perform cleanup operations
+    calc_cleanup(images[0], tmpdir1, job_results_dir1)
+    calc_cleanup(images[1], tmpdir2, job_results_dir2)
 
     return images, neb_summary
 
