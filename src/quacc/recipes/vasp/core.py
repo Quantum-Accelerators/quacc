@@ -18,7 +18,11 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.runners.ase import OptParams
-    from quacc.schemas._aliases.vasp import VaspASEOptSchema, VaspSchema
+    from quacc.schemas._aliases.vasp import (
+        DoubleRelaxSchema,
+        VaspASEOptSchema,
+        VaspSchema,
+    )
     from quacc.utils.files import Filenames, SourceDirectory
 
 
@@ -130,7 +134,7 @@ def double_relax_flow(
     relax_cell: bool = True,
     relax1_kwargs: dict[str, Any] | None = None,
     relax2_kwargs: dict[str, Any] | None = None,
-) -> dict[Literal["relax1"], VaspSchema, Literal["relax2"], VaspSchema]:
+) -> DoubleRelaxSchema:
     """
     Double-relax a structure. This is particularly useful for a few reasons:
 
@@ -158,7 +162,7 @@ def double_relax_flow(
 
     Returns
     -------
-    dict[Literal["relax1"], VaspSchema, Literal["relax2"], VaspSchema]
+    DoubleRelaxSchema
         Dictionary of results from each step.
     """
     relax1_kwargs = relax1_kwargs or {}

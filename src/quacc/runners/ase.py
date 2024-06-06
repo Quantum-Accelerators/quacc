@@ -8,6 +8,7 @@ from shutil import copy, copytree
 from typing import TYPE_CHECKING, Callable
 
 import numpy as np
+from ase.calculators import calculator
 from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read
 from ase.optimize import BFGS
@@ -21,9 +22,6 @@ from quacc.runners.prep import calc_cleanup, calc_setup, terminate
 from quacc.utils.dicts import recursive_dict_merge
 
 has_sella = bool(find_spec("sella"))
-
-if has_sella:
-    pass
 
 
 if TYPE_CHECKING:
@@ -98,7 +96,7 @@ class Runner:
             self.atoms, copy_files=self.copy_files
         )
 
-    def run_calc(self, geom_file: str | None = None, get_forces: bool = False) -> Atoms:
+    def run_calc(self, geom_file: str | None = None, properties: list[str] | None = None) -> Atoms:
         """
         This is a wrapper around `atoms.get_potential_energy()`. Note: This function
         does not modify the atoms object in-place.
@@ -111,20 +109,20 @@ class Runner:
             to specify this rather than relying on ASE's
             `atoms.get_potential_energy()` function to update the positions, as the
             latter behavior varies between codes.
-        get_forces
-            Whether to use `atoms.get_forces()` instead of `atoms.get_potential_energy()`.
+        properties
+            List of properties to calculate. Defaults to ["energy"] if `None`.
 
         Returns
         -------
         Atoms
             The updated Atoms object.
         """
+        if properties is None:
+            properties = ["energy"]
+
         # Run calculation
         try:
-            if get_forces:
-                self.atoms.get_forces()
-            else:
-                self.atoms.get_potential_energy()
+            atoms.calc.calculate(atoms, properties, calculator.all_changes)
         except Exception as exception:
             terminate(self.tmpdir, exception)
 

@@ -425,7 +425,7 @@ class MPtoASEConverter:
         )
         self.incar_dict = vasp_input["INCAR"]
         self.pmg_kpts = vasp_input.get("KPOINTS")
-        self.potcar_symbols = vasp_input["POTCAR"]
+        self.potcar_symbols = vasp_input["POTCAR.spec"].split("\n")
         self.potcar_functional = input_set.potcar_functional
         self.poscar = vasp_input["POSCAR"]
         return self._convert()
