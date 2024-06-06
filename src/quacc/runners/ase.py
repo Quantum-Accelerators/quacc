@@ -14,6 +14,7 @@ from ase.optimize import BFGS
 from ase.vibrations import Vibrations
 from monty.dev import requires
 from monty.os.path import zpath
+from ase.calculators import calculator
 
 from quacc import SETTINGS
 from quacc.atoms.core import copy_atoms, get_final_atoms_from_dynamics
@@ -67,7 +68,7 @@ def run_calc(
     atoms: Atoms,
     geom_file: str | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-    get_forces: bool = False,
+    properties: list[str] | None = None,
 ) -> Atoms:
     """
     Run a calculation in a scratch directory and copy the results back to the original
@@ -104,11 +105,11 @@ def run_calc(
     tmpdir, job_results_dir = calc_setup(atoms, copy_files=copy_files)
 
     # Run calculation
+    if properties is None:
+        properties = ["energy"]
+
     try:
-        if get_forces:
-            atoms.get_forces()
-        else:
-            atoms.get_potential_energy()
+        atoms.calc.calculate(atoms, properties, calculator.all_changes)
     except Exception as exception:
         terminate(tmpdir, exception)
 

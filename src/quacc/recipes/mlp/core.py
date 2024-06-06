@@ -21,7 +21,10 @@ if TYPE_CHECKING:
 
 @job
 def static_job(
-    atoms: Atoms, method: Literal["mace-mp-0", "m3gnet", "chgnet"], **calc_kwargs
+    atoms: Atoms,
+    method: Literal["mace-mp-0", "m3gnet", "chgnet"],
+    properties: list[str] | None = None,
+    **calc_kwargs,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -32,6 +35,8 @@ def static_job(
         Atoms object
     method
         Universal ML interatomic potential method to use
+    properties
+        A list of properties to obtain. Defaults to energy/forces
     **calc_kwargs
         Custom kwargs for the underlying calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -45,7 +50,9 @@ def static_job(
         See the type-hint for the data structure.
     """
     atoms.calc = pick_calculator(method, **calc_kwargs)
-    final_atoms = run_calc(atoms, get_forces=True)
+    if properties is None:
+        properties = ["energy", "forces"]
+    final_atoms = run_calc(atoms, properties=properties)
     return summarize_run(
         final_atoms, atoms, additional_fields={"name": f"{method} Static"}
     )
