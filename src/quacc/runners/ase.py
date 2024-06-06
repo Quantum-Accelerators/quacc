@@ -8,13 +8,13 @@ from shutil import copy, copytree
 from typing import TYPE_CHECKING, Callable
 
 import numpy as np
+from ase.calculators import calculator
 from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read
 from ase.optimize import BFGS
 from ase.vibrations import Vibrations
 from monty.dev import requires
 from monty.os.path import zpath
-from ase.calculators import calculator
 
 from quacc import SETTINGS
 from quacc.atoms.core import copy_atoms, get_final_atoms_from_dynamics
