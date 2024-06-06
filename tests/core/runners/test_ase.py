@@ -92,7 +92,7 @@ from sella import Sella
         "n_intermediate",
         "k",
         "max_steps",
-        "fmax_cutoff",
+        "fmax",
         "expected_logfile",
         "first_image_positions",
         "first_image_pot_energy",
@@ -122,7 +122,7 @@ def test_run_neb_method(
     n_intermediate,
     k,
     max_steps,
-    fmax_cutoff,
+    fmax,
     expected_logfile,
     first_image_positions,
     first_image_pot_energy,
@@ -143,7 +143,7 @@ def test_run_neb_method(
         n_intermediate=n_intermediate,
         precon=precon,
         max_steps=max_steps,
-        fmax_cutoff=fmax_cutoff,
+        fmax=fmax,
     )
 
     assert images[0].positions[0][1] == pytest.approx(first_image_positions, abs=1e-2)

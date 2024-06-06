@@ -346,8 +346,13 @@ def run_path_opt(
         optimizer_class=None,
         n_intermediate: int | None = 20,
         precon: str | None = None,
+        relax_cell: bool = False,
+        fmax: float = 0.01,
         max_steps: int | None = 1000,
-        fmax_cutoff: float | None = 1e-2,
+        optimizer: Optimizer = BFGS,
+        optimizer_kwargs: OptimizerKwargs | None = None,
+        store_intermediate_results: bool = False,
+        run_kwargs: dict[str, Any] | None = None,
         copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> list[Atoms]:
     """
@@ -397,8 +402,35 @@ def run_path_opt(
     images = copy_atoms(images)
 
     # Perform staging operations
+    # this calc_setup function is not suited for multiple Atoms objects
     tmpdir1, job_results_dir1 = calc_setup(images[0], copy_files=copy_files)
     tmpdir2, job_results_dir2 = calc_setup(images[1], copy_files=copy_files)
+
+    # Set defaults
+    optimizer_kwargs = recursive_dict_merge(
+        {
+            "logfile": "-" if SETTINGS.DEBUG else tmpdir1 / "opt.log",
+            "restart": tmpdir1 / "opt.json",
+        },
+        optimizer_kwargs,
+    )
+    run_kwargs = run_kwargs or {}
+
+    # Check if trajectory kwarg is specified
+    if "trajectory" in optimizer_kwargs:
+        msg = "Quacc does not support setting the `trajectory` kwarg."
+        raise ValueError(msg)
+
+    # Define the Trajectory object
+    traj_file = tmpdir1 / "neb.traj"
+    traj = Trajectory(traj_file, "w", atoms=images)
+    optimizer_kwargs["trajectory"] = traj
+
+    # Set volume relaxation constraints, if relevant
+    if relax_cell and images[0].pbc.any():
+        images[0] = FrechetCellFilter(images[0])
+    if relax_cell and images[1].pbc.any():
+        images[1] = FrechetCellFilter(images[1])
 
     neb = NEB(images)
     neb.interpolate()
