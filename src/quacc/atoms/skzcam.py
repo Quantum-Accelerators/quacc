@@ -336,7 +336,6 @@ def create_mrcc_atomtype_basis(
     ecp_region
         The ASE atoms object containing the atomic coordinates of the capped ECP region.
 
-
     Returns
     -------
     str
