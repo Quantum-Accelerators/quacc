@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.2]
+
+### Added
+
+- Added support for controlling which properties to calculate with MLP static jobs
+
 ## [0.9.1]
 
 ### Changed
@@ -11,7 +17,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - No longer need to install `master` branch of ASE
 - Modified Espresso and ONETEP settings to support new ASE profile features
 - Removed `nsteps` from the `OptSchema`
-
 
 ## [0.9.0]
 
