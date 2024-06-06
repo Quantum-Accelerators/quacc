@@ -13,152 +13,148 @@ from monty.dev import requires
 from monty.io import zopen
 from monty.os.path import zpath
 
-
-class ElementInfo(TypedDict):
-    core: int
-    basis: str
-    ecp: str
-    ri_scf_basis: str
-    ri_cwft_basis: str
-
-
-class BlockInfo(TypedDict):
-    adsorbate_slab: str
-    adsorbate: str
-    slab: str
-
-
-ElementStr = Literal[
-    "H",
-    "He",
-    "Li",
-    "Be",
-    "B",
-    "C",
-    "N",
-    "O",
-    "F",
-    "Ne",
-    "Na",
-    "Mg",
-    "Al",
-    "Si",
-    "P",
-    "S",
-    "Cl",
-    "Ar",
-    "K",
-    "Ca",
-    "Sc",
-    "Ti",
-    "V",
-    "Cr",
-    "Mn",
-    "Fe",
-    "Co",
-    "Ni",
-    "Cu",
-    "Zn",
-    "Ga",
-    "Ge",
-    "As",
-    "Se",
-    "Br",
-    "Kr",
-    "Rb",
-    "Sr",
-    "Y",
-    "Zr",
-    "Nb",
-    "Mo",
-    "Tc",
-    "Ru",
-    "Rh",
-    "Pd",
-    "Ag",
-    "Cd",
-    "In",
-    "Sn",
-    "Sb",
-    "Te",
-    "I",
-    "Xe",
-    "Cs",
-    "Ba",
-    "La",
-    "Ce",
-    "Pr",
-    "Nd",
-    "Pm",
-    "Sm",
-    "Eu",
-    "Gd",
-    "Tb",
-    "Dy",
-    "Ho",
-    "Er",
-    "Tm",
-    "Yb",
-    "Lu",
-    "Hf",
-    "Ta",
-    "W",
-    "Re",
-    "Os",
-    "Ir",
-    "Pt",
-    "Au",
-    "Hg",
-    "Tl",
-    "Pb",
-    "Bi",
-    "Po",
-    "At",
-    "Rn",
-    "Fr",
-    "Ra",
-    "Ac",
-    "Th",
-    "Pa",
-    "U",
-    "Np",
-    "Pu",
-    "Am",
-    "Cm",
-    "Bk",
-    "Cf",
-    "Es",
-    "Fm",
-    "Md",
-    "No",
-    "Lr",
-    "Rf",
-    "Db",
-    "Sg",
-    "Bh",
-    "Hs",
-    "Mt",
-    "Ds",
-    "Rg",
-    "Cn",
-    "Nh",
-    "Fl",
-    "Mc",
-    "Lv",
-    "Ts",
-    "Og",
-]
-
-
-class MultiplicityDict(TypedDict):
-    adsorbate_slab: int
-    slab: int
-    adsorbate: int
-
-
 if TYPE_CHECKING:
     from ase.atom import Atom
     from numpy.typing import NDArray
+
+    class ElementInfo(TypedDict):
+        core: int
+        basis: str
+        ecp: str
+        ri_scf_basis: str
+        ri_cwft_basis: str
+
+    class BlockInfo(TypedDict):
+        adsorbate_slab: str
+        adsorbate: str
+        slab: str
+
+    class MultiplicityDict(TypedDict):
+        adsorbate_slab: int
+        slab: int
+        adsorbate: int
+
+    ElementStr = Literal[
+        "H",
+        "He",
+        "Li",
+        "Be",
+        "B",
+        "C",
+        "N",
+        "O",
+        "F",
+        "Ne",
+        "Na",
+        "Mg",
+        "Al",
+        "Si",
+        "P",
+        "S",
+        "Cl",
+        "Ar",
+        "K",
+        "Ca",
+        "Sc",
+        "Ti",
+        "V",
+        "Cr",
+        "Mn",
+        "Fe",
+        "Co",
+        "Ni",
+        "Cu",
+        "Zn",
+        "Ga",
+        "Ge",
+        "As",
+        "Se",
+        "Br",
+        "Kr",
+        "Rb",
+        "Sr",
+        "Y",
+        "Zr",
+        "Nb",
+        "Mo",
+        "Tc",
+        "Ru",
+        "Rh",
+        "Pd",
+        "Ag",
+        "Cd",
+        "In",
+        "Sn",
+        "Sb",
+        "Te",
+        "I",
+        "Xe",
+        "Cs",
+        "Ba",
+        "La",
+        "Ce",
+        "Pr",
+        "Nd",
+        "Pm",
+        "Sm",
+        "Eu",
+        "Gd",
+        "Tb",
+        "Dy",
+        "Ho",
+        "Er",
+        "Tm",
+        "Yb",
+        "Lu",
+        "Hf",
+        "Ta",
+        "W",
+        "Re",
+        "Os",
+        "Ir",
+        "Pt",
+        "Au",
+        "Hg",
+        "Tl",
+        "Pb",
+        "Bi",
+        "Po",
+        "At",
+        "Rn",
+        "Fr",
+        "Ra",
+        "Ac",
+        "Th",
+        "Pa",
+        "U",
+        "Np",
+        "Pu",
+        "Am",
+        "Cm",
+        "Bk",
+        "Cf",
+        "Es",
+        "Fm",
+        "Md",
+        "No",
+        "Lr",
+        "Rf",
+        "Db",
+        "Sg",
+        "Bh",
+        "Hs",
+        "Mt",
+        "Ds",
+        "Rg",
+        "Cn",
+        "Nh",
+        "Fl",
+        "Mc",
+        "Lv",
+        "Ts",
+        "Og",
+    ]
+
 
 has_chemshell = find_spec("chemsh") is not None
 
@@ -490,7 +486,7 @@ def create_orca_eint_blocks(
 
 def create_atom_coord_string(
     atom: Atom,
-    ghost_atom: bool = False,
+    is_ghost_atom: bool = False,
     atom_ecp_info: str | None = None,
     pc_charge: float | None = None,
 ) -> str:
@@ -501,10 +497,10 @@ def create_atom_coord_string(
     ----------
     atom
         The ASE Atom (not Atoms) object containing the atomic coordinates.
+    is_ghost_atom
+        If True, then the atom is a ghost atom.
     atom_ecp_info
         If not None, then assume this is an atom in the ECP region and adds the ECP info.
-    ghost_atom
-        If True, then the atom is a ghost atom.
     pc_charge
         The point charge value for the ECP region atom.
 
@@ -515,14 +511,14 @@ def create_atom_coord_string(
     """
 
     # If ecp_info is not None and ghost_atom is True, raise an error
-    if atom_ecp_info and ghost_atom:
+    if atom_ecp_info and is_ghost_atom:
         raise ValueError("ECP info cannot be provided for ghost atoms.")
 
     # Check that pc_charge is a float if atom_ecp_info is not None
     if atom_ecp_info and pc_charge is None:
         raise ValueError("Point charge value must be given for atoms with ECP info.")
 
-    if ghost_atom:
+    if is_ghost_atom:
         atom_coord_str = f"{(atom.symbol + ':').ljust(3)} {' '*16} {atom.position[0]:-16.11f} {atom.position[1]:-16.11f} {atom.position[2]:-16.11f}\n"
     elif atom_ecp_info is not None:
         atom_coord_str = f"{(atom.symbol + '>').ljust(3)} {pc_charge:-16.11f} {atom.position[0]:-16.11f} {atom.position[1]:-16.11f} {atom.position[2]:-16.11f}\n{atom_ecp_info}"
@@ -621,13 +617,13 @@ coords
             coords_block["adsorbate"] += create_atom_coord_string(atom=atom)
             if include_cp:
                 coords_block["slab"] += create_atom_coord_string(
-                    atom=atom, ghost_atom=True
+                    atom=atom, is_ghost_atom=True
                 )
         elif i in slab_indices:
             coords_block["slab"] += create_atom_coord_string(atom=atom)
             if include_cp:
                 coords_block["adsorbate"] += create_atom_coord_string(
-                    atom=atom, ghost_atom=True
+                    atom=atom, is_ghost_atom=True
                 )
 
     # Create the coords section for the ECP region
@@ -812,7 +808,7 @@ def create_orca_point_charge_file(
     quantum_cluster_indices: list[int],
     ecp_region_indices: list[int],
     pc_file: str | Path,
-):
+) -> None:
     """
     Create a point charge file that can be read by ORCA. This requires the embedded_cluster Atoms object containing both atom_type and oxi_states arrays, as well as the indices of the quantum cluster and ECP region.
 
@@ -826,6 +822,10 @@ def create_orca_point_charge_file(
         A list of lists containing the indices of the atoms in the ECP region for each quantum cluster. These indices are provided by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
     pc_file
         A file containing the point charges to be written by ORCA.
+
+    Returns
+    -------
+    None
     """
 
     # Get the oxi_states arrays from the embedded_cluster
@@ -1167,7 +1167,6 @@ def convert_pun_to_atoms(
     atom_types = []
     atom_numbers = []
     atom_positions = []
-    # Add the atomic positions the embedded_cluster Atoms object (converting from Bohr to Angstrom)
     for _, line in enumerate(raw_atom_positions):
         line_info = line.split()
 

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "quacc"
 description="A platform to enable high-throughput, database-driven quantum chemistry and computational materials science"
-version = "0.9.1"
+version = "0.9.2"
 readme = "README.md"
 license = { text = "BSD-3" }
 authors = [{ name = "Andrew S. Rosen", email = "asrosen@princeton.edu" }]
@@ -27,7 +27,7 @@ classifiers = [
 ]
 requires-python = ">=3.9"
 dependencies = [
-    "ase>=3.23.0b1", # for Atoms object and calculators
+    "ase>=3.23.0", # for Atoms object and calculators
     "cclib>=1.8", # for I/O parsing of molecular DFT codes
     "custodian>=2024.3.12", # for automated error corrections
     "emmet-core>=0.80.0", # for pre-made schemas
@@ -37,7 +37,7 @@ dependencies = [
     "psutil", # for getting compute architecture details
     "pydantic>=2.0.1", # for settings management
     "pydantic-settings>=2.2.0", # for settings management
-    "pymatgen>=2024.4.13", # for structure manipulation
+    "pymatgen>=2024.5.31", # for structure manipulation
     "ruamel.yaml>=0.17.40", # for YAML
     "typer>=0.12.1", # for the CLI
 ]

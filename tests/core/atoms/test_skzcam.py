@@ -460,7 +460,7 @@ def test_create_atom_coord_string(embedded_adsorbed_cluster):
         ValueError, match="ECP info cannot be provided for ghost atoms."
     ):
         create_atom_coord_string(
-            atom, atom_ecp_info="NewECP\nECP_info1\nECP_info2\n", ghost_atom=True
+            atom, atom_ecp_info="NewECP\nECP_info1\nECP_info2\n", is_ghost_atom=True
         )
 
     with pytest.raises(
@@ -474,7 +474,7 @@ def test_create_atom_coord_string(embedded_adsorbed_cluster):
     )
 
     # Let's now try the case where it is a ghost atom.
-    atom_coord_string = create_atom_coord_string(atom=atom, ghost_atom=True)
+    atom_coord_string = create_atom_coord_string(atom=atom, is_ghost_atom=True)
     assert (
         atom_coord_string
         == "C:                      0.00000000000    0.00000000000    2.00000000000\n"
