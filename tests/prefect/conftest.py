@@ -10,15 +10,15 @@ TEST_RESULTS_DIR = Path(__file__).parent / "_test_results"
 TEST_SCRATCH_DIR = Path(__file__).parent / "_test_scratch"
 has_prefect = bool(find_spec("prefect"))
 if has_prefect:
-    import os
 
     from prefect.testing.utilities import prefect_test_harness
 
     def pytest_sessionstart():
         file_dir = Path(__file__).parent
-        os.environ["QUACC_CONFIG_FILE"] = str(file_dir / "quacc.yaml")
-        os.environ["QUACC_RESULTS_DIR"] = str(TEST_RESULTS_DIR)
-        os.environ["QUACC_SCRATCH_DIR"] = str(TEST_SCRATCH_DIR)
+        monkeypatch = pytest.MonkeyPatch()
+        monkeypatch.setenv("QUACC_CONFIG_FILE", str(file_dir / "quacc.yaml"))
+        monkeypatch.setenv("QUACC_RESULTS_DIR", str(TEST_RESULTS_DIR))
+        monkeypatch.setenv("QUACC_SCRATCH_DIR", str(TEST_SCRATCH_DIR))
 
         @pytest.fixture(autouse=True, scope="session")
         def prefect_test_fixture():

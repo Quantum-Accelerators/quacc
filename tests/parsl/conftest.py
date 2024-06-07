@@ -16,14 +16,15 @@ if has_parsl:
 
 
 def pytest_sessionstart():
-    import os
+    import pytest
+    monkeypatch = pytest.MonkeyPatch()
 
     if parsl:
         parsl.load(Config(dependency_resolver=DEEP_DEPENDENCY_RESOLVER))
     file_dir = Path(__file__).parent
-    os.environ["QUACC_CONFIG_FILE"] = str(file_dir / "quacc.yaml")
-    os.environ["QUACC_RESULTS_DIR"] = str(TEST_RESULTS_DIR)
-    os.environ["QUACC_SCRATCH_DIR"] = str(TEST_SCRATCH_DIR)
+    monkeypatch.setenv("QUACC_CONFIG_FILE", str(file_dir / "quacc.yaml"))
+    monkeypatch.setenv("QUACC_RESULTS_DIR", str(TEST_RESULTS_DIR))
+    monkeypatch.setenv("QUACC_SCRATCH_DIR", str(TEST_SCRATCH_DIR))
 
 
 def pytest_sessionfinish(exitstatus):
