@@ -15,8 +15,8 @@ has_distributed = bool(find_spec("dask.distributed"))
 if has_distributed:
 
     def pytest_sessionstart():
-
         from dask.distributed import Client, get_client
+
         monkeypatch = pytest.MonkeyPatch()
 
         file_dir = Path(__file__).parent

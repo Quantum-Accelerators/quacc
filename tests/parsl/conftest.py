@@ -17,6 +17,7 @@ if has_parsl:
 
 def pytest_sessionstart():
     import pytest
+
     monkeypatch = pytest.MonkeyPatch()
 
     if parsl:

@@ -10,7 +10,6 @@ TEST_RESULTS_DIR = Path(__file__).parent / "_test_results"
 TEST_SCRATCH_DIR = Path(__file__).parent / "_test_scratch"
 has_prefect = bool(find_spec("prefect"))
 if has_prefect:
-
     from prefect.testing.utilities import prefect_test_harness
 
     def pytest_sessionstart():

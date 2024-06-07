@@ -10,7 +10,6 @@ TEST_SCRATCH_DIR = Path(__file__).parent / "_test_scratch"
 
 
 def pytest_sessionstart():
-
     file_dir = Path(__file__).parent
     monkeypatch = pytest.MonkeyPatch()
     monkeypatch.setenv("QUACC_CONFIG_FILE", str(file_dir / "quacc.yaml"))
