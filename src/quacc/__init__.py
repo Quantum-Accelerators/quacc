@@ -6,6 +6,7 @@ import logging
 import os
 from importlib.metadata import version
 
+from importlib.util import find_spec
 from ase.atoms import Atoms
 from pymatgen.io.ase import MSONAtoms
 
@@ -46,8 +47,9 @@ logging.basicConfig(level=logging.DEBUG if SETTINGS.DEBUG else logging.INFO)
 
 # Monkeypatching for Prefect
 if SETTINGS.WORKFLOW_ENGINE == "prefect":
-    from prefect.futures import PrefectConcurrentFuture, PrefectFuture
+    from prefect.futures import PrefectFuture
     from prefect.states import State
+    
 
     def _patched_getitem(self, index):
         @job
@@ -56,6 +58,10 @@ if SETTINGS.WORKFLOW_ENGINE == "prefect":
 
         return _getitem(self, index)
 
-    PrefectConcurrentFuture.__getitem__ = _patched_getitem
     PrefectFuture.__getitem__ = _patched_getitem
     State.__getitem__ = _patched_getitem
+
+    prefect_version = int(version('prefect')[0])
+    if prefect_version >= 3:
+        from prefect.futures import PrefectConcurrentFuture
+        PrefectConcurrentFuture.__getitem__ = _patched_getitem
