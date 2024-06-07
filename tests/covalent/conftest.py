@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 from shutil import rmtree
+from pytest import MonkeyPatch
 
-monkeypatch = pytest.MonkeyPatch()
+monkeypatch = MonkeyPatch()
 TEST_RESULTS_DIR = Path(__file__).parent / "_test_results"
 TEST_SCRATCH_DIR = Path(__file__).parent / "_test_scratch"
 
