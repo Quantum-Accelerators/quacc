@@ -159,6 +159,393 @@ if TYPE_CHECKING:
 has_chemshell = find_spec("chemsh") is not None
 
 
+def create_mrcc_eint_blocks(
+    embedded_adsorbed_cluster: Atoms,
+    quantum_cluster_indices: list[int],
+    ecp_region_indices: list[int],
+    element_info: dict[ElementStr, ElementInfo] | None = None,
+    include_cp: bool = True,
+    multiplicities: MultiplicityDict | None = None,
+) -> BlockInfo:
+    """
+    Creates the orcablocks input for the MRCC ASE calculator.
+
+    Parameters
+    ----------
+    embedded_adsorbed_cluster
+        The ASE Atoms object containing the atomic coordinates and atomic charges from the .pun file, as well as the atom type. This object is created by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
+    quantum_cluster_indices
+        A list containing the indices of the atoms in each quantum cluster. These indices are provided by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
+    ecp_region_indices
+        A list containing the indices of the atoms in each ECP region. These indices are provided by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
+    element_info
+        A dictionary with elements as keys which gives the (1) number of core electrons as 'core', (2) basis set as 'basis', (3) effective core potential as 'ecp', (4) resolution-of-identity/density-fitting auxiliary basis set for DFT/HF calculations as 'ri_scf_basis' and (5) resolution-of-identity/density-fitting for correlated wave-function methods as 'ri_cwft_basis'.
+    include_cp
+        If True, the coords strings will include the counterpoise correction for the adsorbate and slab.
+    multiplicities
+        The multiplicity of the adsorbate-slab complex, adsorbate and slab respectively, with the keys 'adsorbate_slab', 'adsorbate', and 'slab'.
+
+    Returns
+    -------
+    BlockInfo
+        The ORCA input block (to be put in 'orcablocks' parameter) as a string for the adsorbate-slab complex, the adsorbate, and the slab in a dictionary with the keys 'adsorbate_slab', 'adsorbate', and 'slab' respectively.
+    """
+
+    # Create the blocks for the basis sets (basis, basis_sm, dfbasis_scf, dfbasis_cor, ecp)
+    basis_ecp_block = generate_mrcc_basis_ecp_block(
+        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
+        quantum_cluster_indices=quantum_cluster_indices,
+        ecp_region_indices=ecp_region_indices,
+        element_info=element_info,
+        include_cp=include_cp,
+    )
+
+    # Create the blocks for the coordinates
+    coords_block = generate_mrcc_coords_block(
+        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
+        quantum_cluster_indices=quantum_cluster_indices,
+        ecp_region_indices=ecp_region_indices,
+        element_info=element_info,
+        include_cp=include_cp,
+        multiplicities=multiplicities,
+    )
+
+    # Create the point charge block
+    point_charge_block = generate_mrcc_point_charge_block(
+        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
+        quantum_cluster_indices=quantum_cluster_indices,
+        ecp_region_indices=ecp_region_indices,
+    )
+
+    # Combine the blocks
+    return {
+        "adsorbate_slab": basis_ecp_block["adsorbate_slab"]
+        + coords_block["adsorbate_slab"]
+        + point_charge_block,
+        "adsorbate": basis_ecp_block["adsorbate"] + coords_block["adsorbate"],
+        "slab": basis_ecp_block["slab"] + coords_block["slab"] + point_charge_block,
+    }
+
+
+def generate_mrcc_basis_ecp_block(
+    embedded_adsorbed_cluster: Atoms,
+    quantum_cluster_indices: list[int],
+    ecp_region_indices: list[int],
+    element_info: dict[ElementStr, ElementInfo] | None = None,
+    include_cp: bool = True,
+) -> BlockInfo:
+    """
+    Generates the basis and ECP block for the MRCC input file.
+
+    Parameters
+    ----------
+    embedded_adsorbed_cluster
+        The ASE Atoms object containing the atomic coordinates and atomic charges from the .pun file. This object is created by the [quacc.atoms.skzcam.create_skzcam_clusters][] function and should contain the atom_types for the adsorbate and slab.
+    quantum_cluster_indices
+        A list of lists containing the indices of the atoms in each quantum cluster. These indices are provided by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
+    ecp_region_indices
+        A list of lists containing the indices of the atoms in the ECP region for each quantum cluster. These indices are provided by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
+    element_info
+        A dictionary with elements as keys which gives the (1) number of core electrons as 'core', (2) basis set as 'basis', (3) effective core potential as 'ecp', (4) resolution-of-identity/density-fitting auxiliary basis set for DFT/HF calculations as 'ri_scf_basis' and (5) resolution-of-identity/density-fitting for correlated wave-function methods as 'ri_cwft_basis'.
+    include_cp
+        If True, the coords strings will include the counterpoise correction (i.e., ghost atoms) for the adsorbate and slab.
+
+    Returns
+    -------
+    BlockInfo
+        The basis and ECP block for the MRCC input file for the adsorbate-slab complex, the adsorbate, and the slab in a dictionary with the keys 'adsorbate_slab', 'adsorbate', and 'slab' respectively.
+    """
+
+    # Create the quantum cluster and ECP region cluster
+    adsorbate_slab_cluster = embedded_adsorbed_cluster[quantum_cluster_indices]
+    ecp_region = embedded_adsorbed_cluster[ecp_region_indices]
+
+    # Get the indices of the adsorbates from the quantum cluster
+    adsorbate_indices = [
+        i
+        for i in range(len(adsorbate_slab_cluster))
+        if adsorbate_slab_cluster.get_array("atom_type")[i] == "adsorbate"
+    ]
+
+    # Get the indices of the slab from the quantum cluster
+    slab_indices = [
+        i
+        for i in range(len(adsorbate_slab_cluster))
+        if adsorbate_slab_cluster.get_array("atom_type")[i] != "adsorbate"
+    ]
+
+    adsorbate_cluster = adsorbate_slab_cluster[adsorbate_indices]
+    slab_cluster = adsorbate_slab_cluster[slab_indices]
+
+    # Helper to generate basis strings for MRCC
+    def _create_basis_block(quantum_region, ecp_region=None):
+        return f"""
+basis_sm=atomtype
+{create_mrcc_atomtype_basis(quantum_region=quantum_region, ecp_region=ecp_region, element_basis_info={element: 'def2-SVP' for element in element_info})}
+
+basis=atomtype
+{create_mrcc_atomtype_basis(quantum_region=quantum_region, ecp_region=ecp_region, element_basis_info={element: element_info[element]['basis'] for element in element_info})}
+
+dfbasis_scf=atomtype
+{create_mrcc_atomtype_basis(quantum_region=quantum_region, ecp_region=ecp_region, element_basis_info={element: element_info[element]['ri_scf_basis'] for element in element_info})}
+
+dfbasis_cor=atomtype
+{create_mrcc_atomtype_basis(quantum_region=quantum_region, ecp_region=ecp_region, element_basis_info={element: element_info[element]['ri_cwft_basis'] for element in element_info})}
+"""
+
+    if include_cp:
+        return {
+            "adsorbate_slab": _create_basis_block(
+                quantum_region=adsorbate_slab_cluster, ecp_region=ecp_region
+            ),
+            "slab": _create_basis_block(
+                quantum_region=adsorbate_slab_cluster, ecp_region=ecp_region
+            ),
+            "adsorbate": _create_basis_block(
+                quantum_region=adsorbate_slab_cluster, ecp_region=None
+            ),
+        }
+    else:
+        return {
+            "adsorbate_slab": _create_basis_block(
+                quantum_region=adsorbate_slab_cluster, ecp_region=ecp_region
+            ),
+            "slab": _create_basis_block(
+                quantum_region=slab_cluster, ecp_region=ecp_region
+            ),
+            "adsorbate": _create_basis_block(
+                quantum_region=adsorbate_cluster, ecp_region=None
+            ),
+        }
+
+
+def create_mrcc_atomtype_basis(
+    quantum_region: Atoms,
+    element_basis_info: dict[ElementStr, str],
+    ecp_region: Atoms | None = None,
+) -> str:
+    """
+    Creates a column for the basis set for each atom in the Atoms object, given by element_info.
+
+    Parameters
+    ----------
+    quantum_region
+        The ASE Atoms object containing the atomic coordinates of the quantum cluster region (could be the adsorbate-slab complex, slab or adsorbate by itself).
+    element_basis_info
+         A dictionary with elements as keys which gives the basis set for each element.
+    ecp_region
+        The ASE atoms object containing the atomic coordinates of the capped ECP region.
+
+    Returns
+    -------
+    str
+        The basis set for each atom in the Atoms object given as a column (of size N, where N is the number of atoms).
+    """
+
+    basis_str = ""
+    for atom in quantum_region:
+        basis_str += f"{element_basis_info[atom.symbol]}\n"
+    if ecp_region is not None:
+        basis_str += "no-basis-set\n" * len(ecp_region)
+
+    return basis_str
+
+
+def generate_mrcc_coords_block(
+    embedded_adsorbed_cluster: Atoms,
+    quantum_cluster_indices: list[int],
+    ecp_region_indices: list[int],
+    element_info: ElementInfo,
+    include_cp: bool = True,
+    multiplicities: MultiplicityDict | None = None,
+) -> BlockInfo:
+    """
+    Generates the coordinates block for the MRCC input file. This includes the coordinates of the quantum cluster, the ECP region, and the point charges. It will return three strings for the adsorbate-slab complex, adsorbate and slab.
+
+    Parameters
+    ----------
+    embedded_adsorbed_cluster
+        The ASE Atoms object containing the atomic coordinates and atomic charges from the .pun file, as well as the atom type. This Atoms object is typically produced from [quacc.atoms.skzcam.create_skzcam_clusters][].
+    quantum_cluster_indices
+        A list containing the indices of the atoms in each quantum cluster. These indices are provided by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
+    ecp_region_indices
+        A list containing the indices of the atoms in each ECP region. These indices are provided by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
+    element_info
+        A dictionary with elements as keys which gives the (1) number of core electrons as 'core', (2) basis set as 'basis', (3) effective core potential as 'ecp', (4) resolution-of-identity/density-fitting auxiliary basis set for DFT/HF calculations as 'ri_scf_basis' and (5) resolution-of-identity/density-fitting for correlated wave-function methods as 'ri_cwft_basis'.
+    include_cp
+        If True, the coords strings will include the counterpoise correction for the adsorbate and slab.
+    multiplicities
+        The multiplicity of the adsorbate-slab complex, adsorbate and slab respectively, with the keys 'adsorbate_slab', 'adsorbate', and 'slab'.
+
+    Returns
+    -------
+    BlockInfo
+        The coordinates block for the ORCA input block (to be put in 'orcablocks' parameter) as a string for the adsorbate-slab complex, the adsorbate, and the slab in a dictionary with the keys 'adsorbate_slab', 'adsorbate', and 'slab' respectively.
+    """
+
+    # Create the quantum cluster and ECP region cluster
+    if multiplicities is None:
+        multiplicities = {"adsorbate_slab": 1, "adsorbate": 1, "slab": 1}
+    quantum_cluster = embedded_adsorbed_cluster[quantum_cluster_indices]
+    ecp_region = embedded_adsorbed_cluster[ecp_region_indices]
+
+    # Get the indices of the adsorbates from the quantum cluster
+    adsorbate_indices = [
+        i
+        for i in range(len(quantum_cluster))
+        if quantum_cluster.get_array("atom_type")[i] == "adsorbate"
+    ]
+
+    # Get the indices of the slab from the quantum cluster
+    slab_indices = [
+        i
+        for i in range(len(quantum_cluster))
+        if quantum_cluster.get_array("atom_type")[i] != "adsorbate"
+    ]
+
+    # Get the charge of the quantum cluster
+    charge = int(sum(quantum_cluster.get_array("oxi_states")))
+
+    # Get the total number of core electrons for the quantum cluster
+    core = {
+        "adsorbate_slab": sum(
+            [element_info[atom.symbol]["core"] for atom in quantum_cluster]
+        ),
+        "adsorbate": sum(
+            [
+                element_info[atom.symbol]["core"]
+                for atom in quantum_cluster
+                if atom.index in adsorbate_indices
+            ]
+        ),
+        "slab": sum(
+            [
+                element_info[atom.symbol]["core"]
+                for atom in quantum_cluster
+                if atom.index in slab_indices
+            ]
+        ),
+    }
+
+    # Create the coords strings for the adsorbate-slab complex, adsorbate, and slab
+    coords_block = {
+        "adsorbate_slab": f"""charge={charge}
+mult={multiplicities['adsorbate_slab']}
+core={int(core['adsorbate_slab']/2)}
+unit=angs
+geom=xyz
+""",
+        "adsorbate": f"""charge=0
+mult={multiplicities['adsorbate']}
+core={int(core['adsorbate']/2)}
+unit=angs
+geom=xyz
+""",
+        "slab": f"""charge={charge}
+mult={multiplicities['slab']}
+core={int(core['slab']/2)}
+unit=angs
+geom=xyz
+""",
+    }
+
+    # Set the number of atoms for each system
+    if include_cp:
+        coords_block["adsorbate_slab"] += (
+            f"{len(quantum_cluster) + len(ecp_region)}\n\n"
+        )
+        coords_block["adsorbate"] += f"{len(quantum_cluster)}\n\n"
+        coords_block["slab"] += f"{len(quantum_cluster) + len(ecp_region)}\n\n"
+    else:
+        coords_block["adsorbate_slab"] += (
+            f"{len(quantum_cluster) + len(ecp_region)}\n\n"
+        )
+        coords_block["adsorbate"] += f"{len(adsorbate_indices)}\n\n"
+        coords_block["slab"] += f"{len(slab_indices) + len(ecp_region)}\n\n"
+
+    for i, atom in enumerate(quantum_cluster):
+        # Create the coords section for the adsorbate-slab complex
+        coords_block["adsorbate_slab"] += create_atom_coord_string(atom=atom)
+
+        # Create the coords section for the adsorbate and slab
+        if i in adsorbate_indices:
+            coords_block["adsorbate"] += create_atom_coord_string(atom=atom)
+            if include_cp:
+                coords_block["slab"] += create_atom_coord_string(atom=atom)
+        elif i in slab_indices:
+            coords_block["slab"] += create_atom_coord_string(atom=atom)
+            if include_cp:
+                coords_block["adsorbate"] += create_atom_coord_string(atom=atom)
+
+    # Create the coords section for the ECP region
+    for atom in ecp_region:
+        coords_block["adsorbate_slab"] += create_atom_coord_string(atom=atom)
+        coords_block["slab"] += create_atom_coord_string(atom=atom)
+
+    # Adding the ghost atoms for the counterpoise correction
+    for system in ["adsorbate_slab", "adsorbate", "slab"]:
+        coords_block[system] += "\nghost=serialno\n"
+        if include_cp and system in ["adsorbate"]:
+            coords_block[system] += ",".join(
+                [str(atom_idx + 1) for atom_idx in slab_indices]
+            )
+        elif include_cp and system in ["slab"]:
+            coords_block[system] += ",".join(
+                [str(atom_idx + 1) for atom_idx in adsorbate_indices]
+            )
+        coords_block[system] += "\n\n"
+
+    return coords_block
+
+
+def generate_mrcc_point_charge_block(
+    embedded_adsorbed_cluster: Atoms,
+    quantum_cluster_indices: list[int],
+    ecp_region_indices: list[int],
+) -> str:
+    """
+    Create the point charge block for the MRCC input file. This requires the embedded_cluster Atoms object containing both atom_type and oxi_states arrays, as well as the indices of the quantum cluster and ECP region. Such arrays are created by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
+
+    Parameters
+    ----------
+    embedded_adsorbed_cluster
+        The ASE Atoms object containing the atomic coordinates and atomic charges from the .pun file. This object can be created by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
+    quantum_cluster_indices
+        A list of lists containing the indices of the atoms in each quantum cluster. These indices are provided by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
+    ecp_region_indices
+        A list of lists containing the indices of the atoms in the ECP region for each quantum cluster. These indices are provided by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
+
+    Returns
+    -------
+    str
+        The point charge block for the MRCC input file.
+    """
+
+    # Get the oxi_states arrays from the embedded_cluster
+    oxi_states = embedded_adsorbed_cluster.get_array("oxi_states")
+
+    # Check that none of the indices in quantum_cluster_indices are in ecp_region_indices
+    if not np.all([x not in ecp_region_indices for x in quantum_cluster_indices]):
+        raise ValueError("An atom in the quantum cluster is also in the ECP region.")
+
+    # Get the number of point charges for this system. There is a point charge associated with each capped ECP as well.
+    pc_region_indices = ecp_region_indices + [
+        atom.index
+        for atom in embedded_adsorbed_cluster
+        if atom not in quantum_cluster_indices + ecp_region_indices
+    ]
+
+    num_pc = len(pc_region_indices)
+    pc_block = f"qmmm=Amber\npointcharges\n{num_pc}\n"
+
+    # Add the ecp_region indices
+    for i in pc_region_indices:
+        position = embedded_adsorbed_cluster[i].position
+        pc_block += f"  {position[0]:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f} {oxi_states[i]:-16.11f}\n"
+
+    return pc_block
+
+
 def create_orca_eint_blocks(
     embedded_adsorbed_cluster: Atoms,
     quantum_cluster_indices: list[int],
@@ -387,8 +774,6 @@ coords
     coords_block["adsorbate_slab"] += f"{ecp_region_coords_section}end\nend\n"
     coords_block["slab"] += f"{ecp_region_coords_section}end\nend\n"
     coords_block["adsorbate"] += "end\nend\n"
-
-    # Add the ECP coords section to the slab_coords string
 
     return coords_block
 
