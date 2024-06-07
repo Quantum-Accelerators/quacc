@@ -168,7 +168,7 @@ def create_mrcc_eint_blocks(
     multiplicities: MultiplicityDict | None = None,
 ) -> BlockInfo:
     """
-    Creates the orcablocks input for the ORCA ASE calculator.
+    Creates the orcablocks input for the MRCC ASE calculator.
 
     Parameters
     ----------
@@ -278,7 +278,7 @@ def generate_mrcc_basis_ecp_block(
     slab_cluster = adsorbate_slab_cluster[slab_indices]
 
     # Helper to generate basis strings for MRCC
-    def create_basis_block(quantum_region, ecp_region=None):
+    def _create_basis_block(quantum_region, ecp_region=None):
         return f"""
 basis_sm=atomtype
 {create_mrcc_atomtype_basis(quantum_region=quantum_region, ecp_region=ecp_region, element_basis_info={element: 'def2-SVP' for element in element_info})}
@@ -295,25 +295,25 @@ dfbasis_cor=atomtype
 
     if include_cp:
         return {
-            "adsorbate_slab": create_basis_block(
+            "adsorbate_slab": _create_basis_block(
                 quantum_region=adsorbate_slab_cluster, ecp_region=ecp_region
             ),
-            "slab": create_basis_block(
+            "slab": _create_basis_block(
                 quantum_region=adsorbate_slab_cluster, ecp_region=ecp_region
             ),
-            "adsorbate": create_basis_block(
+            "adsorbate": _create_basis_block(
                 quantum_region=adsorbate_slab_cluster, ecp_region=None
             ),
         }
     else:
         return {
-            "adsorbate_slab": create_basis_block(
+            "adsorbate_slab": _create_basis_block(
                 quantum_region=adsorbate_slab_cluster, ecp_region=ecp_region
             ),
-            "slab": create_basis_block(
+            "slab": _create_basis_block(
                 quantum_region=slab_cluster, ecp_region=ecp_region
             ),
-            "adsorbate": create_basis_block(
+            "adsorbate": _create_basis_block(
                 quantum_region=adsorbate_cluster, ecp_region=None
             ),
         }
