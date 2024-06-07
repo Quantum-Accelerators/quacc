@@ -46,7 +46,7 @@ logging.basicConfig(level=logging.DEBUG if SETTINGS.DEBUG else logging.INFO)
 
 # Monkeypatching for Prefect
 if SETTINGS.WORKFLOW_ENGINE == "prefect":
-    from prefect.futures import PrefectFuture
+    from prefect.futures import PrefectConcurrentFuture, PrefectFuture
     from prefect.states import State
 
     def _patched_getitem(self, index):
@@ -56,5 +56,6 @@ if SETTINGS.WORKFLOW_ENGINE == "prefect":
 
         return _getitem(self, index)
 
+    PrefectConcurrentFuture.__getitem__ = _patched_getitem
     PrefectFuture.__getitem__ = _patched_getitem
     State.__getitem__ = _patched_getitem
