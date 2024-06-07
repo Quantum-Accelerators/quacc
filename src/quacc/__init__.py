@@ -48,7 +48,6 @@ logging.basicConfig(level=logging.DEBUG if SETTINGS.DEBUG else logging.INFO)
 if SETTINGS.WORKFLOW_ENGINE == "prefect":
     from prefect.futures import PrefectFuture
     from prefect.states import State
-    
 
     def _patched_getitem(self, index):
         @job
@@ -60,7 +59,8 @@ if SETTINGS.WORKFLOW_ENGINE == "prefect":
     PrefectFuture.__getitem__ = _patched_getitem
     State.__getitem__ = _patched_getitem
 
-    prefect_version = int(version('prefect')[0])
+    prefect_version = int(version("prefect")[0])
     if prefect_version >= 3:
         from prefect.futures import PrefectConcurrentFuture
+
         PrefectConcurrentFuture.__getitem__ = _patched_getitem
