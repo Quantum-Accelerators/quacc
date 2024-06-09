@@ -6,25 +6,25 @@ import numpy as np
 import pytest
 from ase import Atoms
 from ase.io import read
+from ase.calculators.calculator import compare_atoms
+
+from copy import deepcopy
+
 from numpy.testing import assert_allclose, assert_equal
 
 from quacc.atoms.skzcam import (
+    MRCCInputGenerator,
     _find_cation_shells,
     _get_anion_coordination,
     _get_atom_distances,
     _get_ecp_region,
     convert_pun_to_atoms,
     create_atom_coord_string,
-    create_mrcc_atomtype_basis,
-    create_mrcc_eint_blocks,
     create_orca_eint_blocks,
     create_orca_point_charge_file,
     create_skzcam_clusters,
     format_ecp_info,
     generate_coords_block,
-    generate_mrcc_basis_ecp_block,
-    generate_mrcc_coords_block,
-    generate_mrcc_point_charge_block,
     generate_orca_input_preamble,
     get_cluster_info_from_slab,
     insert_adsorbate_to_embedded_cluster,
@@ -40,6 +40,16 @@ def embedded_cluster():
         {"Mg": 2.0, "O": -2.0},
     )
 
+@pytest.fixture()
+def mrcc_input_generator(embedded_adsorbed_cluster, element_info):
+    return MRCCInputGenerator(
+        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
+        quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
+        ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
+        element_info=element_info,
+        include_cp=True,
+        multiplicities={"adsorbate_slab": 3, "adsorbate": 1, "slab": 2},
+    )
 
 @pytest.fixture()
 def embedded_adsorbed_cluster():
@@ -97,54 +107,77 @@ def element_info():
 def distance_matrix(embedded_cluster):
     return embedded_cluster.get_all_distances()
 
+def test_MRCCInputGenerator_init(embedded_adsorbed_cluster, element_info):
 
-def test_create_mrcc_eint_blocks(embedded_adsorbed_cluster, element_info):
-    mrcc_blocks = create_mrcc_eint_blocks(
+    # Check what happens if multiplicities is not provided
+    mrcc_input_generator = MRCCInputGenerator(
+        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
+        quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
+        ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
+        element_info=element_info,
+        include_cp=True
+    )
+
+    assert mrcc_input_generator.multiplicities == {"adsorbate_slab": 1, "adsorbate": 1, "slab": 1}
+
+    mrcc_input_generator = MRCCInputGenerator(
         embedded_adsorbed_cluster=embedded_adsorbed_cluster,
         quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
         ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
         element_info=element_info,
         include_cp=True,
+        multiplicities={"adsorbate_slab": 3, "adsorbate": 1, "slab": 2},
     )
 
-    mrcc_blocks_nocp = create_mrcc_eint_blocks(
-        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
-        quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
-        ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
-        element_info=element_info,
-        include_cp=False,
-    )
+    assert not compare_atoms(mrcc_input_generator.embedded_adsorbed_cluster, embedded_adsorbed_cluster)
+    assert_equal(mrcc_input_generator.quantum_cluster_indices,[0, 1, 2, 3, 4, 5, 6, 7])
+    assert_equal(mrcc_input_generator.adsorbate_indices,[0, 1])
+    assert_equal(mrcc_input_generator.slab_indices,[2, 3, 4, 5, 6, 7])
+    assert_equal(mrcc_input_generator.ecp_region_indices,[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24])
+    assert mrcc_input_generator.element_info == element_info
+    assert mrcc_input_generator.include_cp == True
+    assert mrcc_input_generator.multiplicities == {"adsorbate_slab": 3, "adsorbate": 1, "slab": 2}
 
-    reference_block_collated = {
-        "adsorbate_slab": {
-            "float": [21.0, 2.0, -2.0, -2.0, 2.0, -8.9536039173],
-            "string": ["basis_sm=atomtype", "def2/JK", "O"],
-        },
-        "adsorbate": {"float": [8.0], "string": ["basis_sm=atomtype", "3,4,5,6,7,8"]},
-        "slab": {
-            "float": [21.0, 2.0, -2.0, -2.0, 2.0, -8.9536039173],
-            "string": ["basis_sm=atomtype", "def2/JK", "O"],
-        },
-    }
+    # Check if error raise if quantum_cluster_indices and ecp_region_indices overlap
 
-    reference_block_nocp_collated = {
-        "adsorbate_slab": {
-            "float": [21.0, 2.0, -2.0, -2.0, 2.0, -8.9536039173],
-            "string": ["basis_sm=atomtype", "def2/JK", "O"],
-        },
-        "adsorbate": {"float": [2.0], "string": ["basis_sm=atomtype"]},
-        "slab": {
-            "float": [
-                19.0,
-                -4.22049352791,
-                0.0,
-                -6.33028254133,
-                10.55242967836,
-                30.92617453977,
-            ],
-            "string": ["basis_sm=atomtype", "no-basis-set", "Mg"],
-        },
-    }
+    with pytest.raises(
+        ValueError, match="An atom in the quantum cluster is also in the ECP region."
+    ):
+        mrcc_input_generator = MRCCInputGenerator(
+            embedded_adsorbed_cluster=embedded_adsorbed_cluster,
+            quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
+            ecp_region_indices=[7, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
+            element_info=element_info,
+            include_cp=True
+        )
+
+
+def test_MRCCInputGenerator_create_eint_blocks(mrcc_input_generator):
+
+    mrcc_input_generator_nocp = deepcopy(mrcc_input_generator)
+
+    mrcc_input_generator_nocp.include_cp = False
+    mrcc_input_generator_nocp.generate_input()
+    
+    mrcc_input_generator.generate_input()
+
+
+    reference_block_collated = {'adsorbate_slab': {'float': [21.0, -2.0, 2.0, 2.0, 2.0, 0.1474277671],
+  'string': ['basis_sm=atomtype', 'def2/JK', 'O']},
+ 'adsorbate': {'float': [8.0], 'string': ['basis_sm=atomtype', '3,4,5,6,7,8']},
+ 'slab': {'float': [21.0, -2.0, 2.0, 2.0, 2.0, 0.1474277671],
+  'string': ['basis_sm=atomtype', 'def2/JK', 'O']}}
+
+    reference_block_nocp_collated = {'adsorbate_slab': {'float': [21.0, -2.0, 2.0, 2.0, 2.0, 0.1474277671],
+  'string': ['basis_sm=atomtype', 'def2/JK', 'O']},
+ 'adsorbate': {'float': [2.0], 'string': ['basis_sm=atomtype']},
+ 'slab': {'float': [19.0,
+   -4.22049352791,
+   4.22049352791,
+   4.22049352791,
+   2.11024676395,
+   -0.0],
+  'string': ['basis_sm=atomtype', 'no-basis-set', 'Mg']}}
 
     generated_block_collated = {
         system: {"float": [], "string": []}
@@ -158,23 +191,23 @@ def test_create_mrcc_eint_blocks(embedded_adsorbed_cluster, element_info):
     for system in ["adsorbate_slab", "adsorbate", "slab"]:
         generated_block_collated[system]["float"] = [
             float(x)
-            for x in mrcc_blocks[system].split()
+            for x in mrcc_input_generator.mrccblocks[system].split()
             if x.replace(".", "", 1).replace("-", "", 1).isdigit()
         ][::300]
         generated_block_collated[system]["string"] = [
             x
-            for x in mrcc_blocks[system].split()
+            for x in mrcc_input_generator.mrccblocks[system].split()
             if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
         ][::50]
 
         generated_block_nocp_collated[system]["float"] = [
             float(x)
-            for x in mrcc_blocks_nocp[system].split()
+            for x in mrcc_input_generator_nocp.mrccblocks[system].split()
             if x.replace(".", "", 1).replace("-", "", 1).isdigit()
         ][::300]
         generated_block_nocp_collated[system]["string"] = [
             x
-            for x in mrcc_blocks_nocp[system].split()
+            for x in mrcc_input_generator_nocp.mrccblocks[system].split()
             if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
         ][::50]
 
@@ -201,22 +234,16 @@ def test_create_mrcc_eint_blocks(embedded_adsorbed_cluster, element_info):
         )
 
 
-def test_generate_mrcc_basis_ecp_block(embedded_adsorbed_cluster, element_info):
-    generated_mrcc_blocks = generate_mrcc_basis_ecp_block(
-        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
-        quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
-        ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
-        element_info=element_info,
-        include_cp=True,
-    )
+def test_MRCCInputGenerator_generate_basis_ecp_block(mrcc_input_generator):
 
-    generated_mrcc_blocks_nocp = generate_mrcc_basis_ecp_block(
-        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
-        quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
-        ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
-        element_info=element_info,
-        include_cp=False,
-    )
+    mrcc_input_generator_nocp = deepcopy(mrcc_input_generator)
+
+
+    mrcc_input_generator_nocp.include_cp = False
+    mrcc_input_generator_nocp.generate_basis_ecp_block()
+    
+    mrcc_input_generator.generate_basis_ecp_block()
+
 
     reference_mrcc_blocks_collated = {
         "adsorbate_slab": [
@@ -276,10 +303,10 @@ def test_generate_mrcc_basis_ecp_block(embedded_adsorbed_cluster, element_info):
         system: [] for system in ["adsorbate_slab", "slab", "adsorbate"]
     }
     for system in ["adsorbate_slab", "adsorbate", "slab"]:
-        generated_mrcc_blocks_collated[system] = generated_mrcc_blocks[system].split()[
+        generated_mrcc_blocks_collated[system] = mrcc_input_generator.mrccblocks[system].split()[
             ::10
         ]
-        generated_mrcc_blocks_nocp_collated[system] = generated_mrcc_blocks_nocp[
+        generated_mrcc_blocks_nocp_collated[system] = mrcc_input_generator_nocp.mrccblocks[
             system
         ].split()[::10]
 
@@ -293,24 +320,21 @@ def test_generate_mrcc_basis_ecp_block(embedded_adsorbed_cluster, element_info):
         )
 
 
-def test_create_mrcc_atomtype_basis(embedded_adsorbed_cluster, element_info):
-    quantum_region = embedded_adsorbed_cluster[[0, 1, 2, 3, 4, 5, 6, 7]]
-    ecp_region = embedded_adsorbed_cluster[
-        [8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24]
-    ]
+def test_MRCCInputGenerator_create_atomtype_basis(mrcc_input_generator):
 
-    generated_basis_block_without_ecp = create_mrcc_atomtype_basis(
-        quantum_region=quantum_region,
+
+    generated_basis_block_without_ecp = mrcc_input_generator.create_atomtype_basis(
+        quantum_region=mrcc_input_generator.adsorbate_slab_cluster,
         element_basis_info={
-            element: element_info[element]["ri_cwft_basis"] for element in element_info
+            element: mrcc_input_generator.element_info[element]["ri_cwft_basis"] for element in mrcc_input_generator.element_info
         },
     )
-    generated_basis_block_with_ecp = create_mrcc_atomtype_basis(
-        quantum_region=quantum_region,
+    generated_basis_block_with_ecp = mrcc_input_generator.create_atomtype_basis(
+        quantum_region=mrcc_input_generator.adsorbate_slab_cluster,
         element_basis_info={
-            element: element_info[element]["ri_cwft_basis"] for element in element_info
+            element: mrcc_input_generator.element_info[element]["ri_cwft_basis"] for element in mrcc_input_generator.element_info
         },
-        ecp_region=ecp_region,
+        ecp_region=mrcc_input_generator.ecp_region,
     )
 
     reference_basis_block_without_ecp = "aug-cc-pVDZ/C\naug-cc-pVDZ/C\ncc-pVDZ/C\naug-cc-pVDZ/C\naug-cc-pVDZ/C\naug-cc-pVDZ/C\naug-cc-pVDZ/C\naug-cc-pVDZ/C\n"
@@ -320,37 +344,16 @@ def test_create_mrcc_atomtype_basis(embedded_adsorbed_cluster, element_info):
     assert generated_basis_block_with_ecp == reference_basis_block_with_ecp
 
 
-def test_generate_mrcc_coords_block(embedded_adsorbed_cluster, element_info):
-    # Check if multiplicity is read
+def test_MRCCInputGenerator_generate_coords_block(mrcc_input_generator):
 
-    mrcc_blocks = generate_mrcc_coords_block(
-        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
-        quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
-        ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
-        element_info=element_info,
-        include_cp=True,
-        multiplicities={"adsorbate_slab": 3, "adsorbate": 1, "slab": 2},
-    )
+    mrcc_input_generator_nocp = deepcopy(mrcc_input_generator)
 
-    assert mrcc_blocks["adsorbate"].split()[1][-1] == "1"
-    assert mrcc_blocks["adsorbate_slab"].split()[1][-1] == "3"
-    assert mrcc_blocks["slab"].split()[1][-1] == "2"
+    mrcc_input_generator_nocp.include_cp = False
+    mrcc_input_generator_nocp.generate_coords_block()
+    
+    mrcc_input_generator.generate_coords_block()
 
-    mrcc_blocks = generate_mrcc_coords_block(
-        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
-        quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
-        ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
-        element_info=element_info,
-        include_cp=True,
-    )
 
-    mrcc_blocks_nocp = generate_mrcc_coords_block(
-        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
-        quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
-        ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
-        element_info=element_info,
-        include_cp=False,
-    )
 
     reference_block_collated = {
         "adsorbate_slab": {
@@ -415,23 +418,23 @@ def test_generate_mrcc_coords_block(embedded_adsorbed_cluster, element_info):
     for system in ["adsorbate_slab", "adsorbate", "slab"]:
         generated_block_collated[system]["float"] = [
             float(x)
-            for x in mrcc_blocks[system].split()
+            for x in mrcc_input_generator.mrccblocks[system].split()
             if x.replace(".", "", 1).replace("-", "", 1).isdigit()
         ][::10]
         generated_block_collated[system]["string"] = [
             x
-            for x in mrcc_blocks[system].split()
+            for x in mrcc_input_generator.mrccblocks[system].split()
             if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
         ][::5]
 
         generated_block_nocp_collated[system]["float"] = [
             float(x)
-            for x in mrcc_blocks_nocp[system].split()
+            for x in mrcc_input_generator_nocp.mrccblocks[system].split()
             if x.replace(".", "", 1).replace("-", "", 1).isdigit()
         ][::10]
         generated_block_nocp_collated[system]["string"] = [
             x
-            for x in mrcc_blocks_nocp[system].split()
+            for x in mrcc_input_generator_nocp.mrccblocks[system].split()
             if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
         ][::5]
 
@@ -458,52 +461,23 @@ def test_generate_mrcc_coords_block(embedded_adsorbed_cluster, element_info):
         )
 
 
-def test_generate_mrcc_point_charge_block(embedded_adsorbed_cluster):
-    with pytest.raises(
-        ValueError, match="An atom in the quantum cluster is also in the ECP region."
-    ):
-        generate_mrcc_point_charge_block(
-            embedded_adsorbed_cluster=embedded_adsorbed_cluster,
-            quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
-            ecp_region_indices=[7, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
-        )
-
-    generated_point_charge_block = generate_mrcc_point_charge_block(
-        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
-        quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
-        ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
-    ).split()
+def test_MRCCInputGenerator_generate_point_charge_block(mrcc_input_generator):
+    
+    generated_point_charge_block = mrcc_input_generator.generate_point_charge_block()
 
     generated_point_charge_block_shortened = [
-        float(x) for x in generated_point_charge_block[5::70]
+        float(x) for x in generated_point_charge_block.split()[5::180]
     ]
 
-    reference_point_charge_block_shortened = [
-        -0.04367284424,
-        2.12018425659,
-        -0.04269731856,
-        0.0,
-        -4.26789528527,
-        -2.11024676395,
-        -6.37814204923,
-        -6.32889565859,
-        -2.14445912302,
-        4.22049352791,
-        -2.14129966123,
-        6.32954443328,
-        -2.14923989662,
-        0.0,
-        -4.26789528527,
-        8.44098705582,
-        -6.37814204923,
-        8.44098705582,
-        -4.26789528527,
-        -54.86641586281,
-        -57.14411935233,
-        49.48825903601,
-        0.0,
-        43.73621546646,
-    ]
+    reference_point_charge_block_shortened = [-0.04367284424,
+ -0.03992370948,
+ -2.14923989662,
+ -6.37814204923,
+ -2.1415520695,
+ -4.26789528527,
+ -2.1415520695,
+ -0.03992370948,
+ 0.0]
 
     assert_allclose(
         generated_point_charge_block_shortened,
