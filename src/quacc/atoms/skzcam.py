@@ -1039,7 +1039,7 @@ class CreateSKZCAMClusters:
             dist_matrix=slab_embedded_cluster_all_dist,
             ecp_dist=ecp_dist,
         )
-        # print(slab_quantum_cluster_indices)
+
         # Create the adsorbate_slab_embedded_cluster from slab_embedded_cluster and adsorbate atoms objects. This also sets the final quantum_cluster_indices and ecp_region_indices for the adsorbate_slab_embedded_cluster
         self.create_adsorbate_slab_embedded_cluster(
             quantum_cluster_indices=slab_quantum_cluster_indices,
