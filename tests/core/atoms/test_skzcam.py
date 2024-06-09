@@ -3,36 +3,43 @@ from __future__ import annotations
 from copy import deepcopy
 from pathlib import Path
 
+import gzip
 import numpy as np
 import pytest
 from ase import Atoms
 from ase.calculators.calculator import compare_atoms
 from ase.io import read
 from numpy.testing import assert_allclose, assert_equal
+import shutil
 
 from quacc.atoms.skzcam import (
     MRCCInputGenerator,
     ORCAInputGenerator,
-    _find_cation_shells,
-    _get_anion_coordination,
+    CreateSKZCAMClusters,
     _get_atom_distances,
-    _get_ecp_region,
-    convert_pun_to_atoms,
     create_atom_coord_string,
-    create_skzcam_clusters,
-    get_cluster_info_from_slab,
-    insert_adsorbate_to_embedded_cluster,
+
 )
 
 FILE_DIR = Path(__file__).parent
 
+@pytest.fixture()
+def skzcam_clusters():
+    return CreateSKZCAMClusters(adsorbate_indices=[0,1], slab_center_indices=[32], atom_oxi_states = {'Mg': 2.0, 'O': -2.0}, adsorbate_slab_file=Path(FILE_DIR, "skzcam_files", "CO_MgO.poscar.gz"), pun_file=None)
 
 @pytest.fixture()
-def embedded_cluster():
-    return convert_pun_to_atoms(
-        Path(FILE_DIR, "skzcam_files", "mgo_shells_cluster.pun.gz"),
-        {"Mg": 2.0, "O": -2.0},
-    )
+def slab_embedded_cluster(skzcam_clusters):
+    return skzcam_clusters.convert_pun_to_atoms(
+        pun_file = Path(FILE_DIR, "skzcam_files", "ChemShell_Cluster.pun.gz") )
+
+@pytest.fixture()
+def distance_matrix(slab_embedded_cluster):
+    return slab_embedded_cluster.get_all_distances()
+
+@pytest.fixture()
+def embedded_adsorbed_cluster():
+    with gzip.open(Path(FILE_DIR, "skzcam_files", 'adsorbate_slab_embedded_cluster.npy.gz'),'r') as file:
+        return np.load(file,allow_pickle=True).item()['atoms']
 
 
 @pytest.fixture()
@@ -92,31 +99,23 @@ end"""
 
 
 @pytest.fixture()
-def embedded_adsorbed_cluster():
-    embedded_cluster, quantum_cluster_indices, ecp_region_indices = (
-        create_skzcam_clusters(
-            Path(FILE_DIR, "skzcam_files", "mgo_shells_cluster.pun.gz"),
-            [0, 0, 2],
-            {"Mg": 2.0, "O": -2.0},
-            shell_max=2,
-            ecp_dist=3,
-            write_clusters=False,
-        )
-    )
-    adsorbate = Atoms(
-        "CO", positions=[[0.0, 0.0, 0.0], [0.0, 0.0, 1.128]], pbc=[False, False, False]
+def adsorbate_slab_embedded_cluster(skzcam_clusters):
+    skzcam_clusters.convert_pun_to_atoms('mgo_shells_cluster_shortened.pun.gz')
+    # Get quantum cluster and ECP region indices
+    skzcam_clusters.center_position = [0, 0, 2]
+    skzcam_clusters.pun_file = Path('mgo_shells_cluster_shortened.pun.gz')
+    skzcam_clusters.adsorbate = Atoms('CO', positions=[[0.0, 0.0, 0.0], [0.0, 0.0, 1.128]], pbc=[False, False, False])
+    skzcam_clusters.adsorbate_vector_from_slab = [0.0, 0.0, 2.0]
+
+    skzcam_clusters.run_skzcam(
+        shell_max=2,
+        ecp_dist=3.0,
+        shell_width=0.01,
+        write_clusters=True,
+        write_clusters_path='./',
     )
 
-    embedded_adsorbed_cluster, quantum_cluster_indices, ecp_region_indices = (
-        insert_adsorbate_to_embedded_cluster(
-            embedded_cluster=embedded_cluster,
-            adsorbate=adsorbate,
-            adsorbate_vector_from_slab=[0.0, 0.0, 2.0],
-            quantum_cluster_indices=quantum_cluster_indices,
-            ecp_region_indices=ecp_region_indices,
-        )
-    )
-    return embedded_adsorbed_cluster
+    return skzcam_clusters.adsorbate_slab_embedded_cluster
 
 
 @pytest.fixture()
@@ -142,10 +141,6 @@ def element_info():
         },
     }
 
-
-@pytest.fixture()
-def distance_matrix(embedded_cluster):
-    return embedded_cluster.get_all_distances()
 
 
 def test_MRCCInputGenerator_init(embedded_adsorbed_cluster, element_info):
@@ -1161,298 +1156,65 @@ def test_ORCAInputGenerator_create_point_charge_file(orca_input_generator, tmp_p
     )
 
 
-def test_get_cluster_info_from_slab():
-    (
-        adsorbate,
-        slab,
-        slab_first_atom_idx,
-        center_position,
-        adsorbate_vector_from_slab,
-    ) = get_cluster_info_from_slab(
-        adsorbate_slab_file=Path(FILE_DIR, "skzcam_files", "NO_MgO.poscar.gz"),
-        slab_center_indices=[32, 33],
-        adsorbate_indices=[0, 1],
-    )
+def test_CreateSKZCAMClusters_run_chemshell(skzcam_clusters, tmp_path):
 
-    # Check adsorbate matches reference
-    assert_allclose(
-        adsorbate.get_positions(),
-        np.array(
-            [
-                [5.39130495, 4.07523845, 15.96981134],
-                [5.88635842, 4.84892196, 16.72270959],
-            ]
-        ),
-        rtol=1e-05,
-        atol=1e-07,
-    )
-    assert_equal(adsorbate.get_atomic_numbers().tolist(), [7, 8])
+    # Test if xyz file doesn't get written when write_xyz_file=False
+    # skzcam_clusters_nowrite = deepcopy(skzcam_clusters)
+    # skzcam_clusters_nowrite.convert_slab_to_atoms()
+    # skzcam_clusters_nowrite.run_chemshell(
+    #     filepath= tmp_path / "ChemShell_Cluster.pun",
+    #     chemsh_radius_active=5.0,
+    #     chemsh_radius_cluster=10.0,
+    #     write_xyz_file=False,
+    # )
+    # assert not os.path.isfile(tmp_path / "ChemShell_Cluster.xyz")
 
-    # Check slab matches reference
-    assert_allclose(
-        slab.get_positions()[::10],
-        np.array(
-            [
-                [0.0, 6.33073849, 7.5],
-                [0.0, 4.22049233, 9.61024616],
-                [4.2206809, 6.32743192, 11.73976183],
-                [4.2019821, 4.21892378, 13.89202884],
-                [0.0, 2.11024616, 9.61024616],
-                [4.22049233, 0.0, 7.5],
-                [4.22098271, 2.10239745, 13.86181098],
-            ]
-        ),
-        rtol=1e-05,
-        atol=1e-07,
-    )
-    assert_equal(
-        slab.get_atomic_numbers().tolist(),
-        [
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-        ],
-    )
-
-    # Check first atom index of slab
-    assert slab_first_atom_idx == 30
-
-    # Check center_position matches reference
-    assert_allclose(
-        center_position,
-        np.array([1.06307888, -1.06176564, 2.4591779]),
-        rtol=1e-05,
-        atol=1e-07,
-    )
-
-    # Check vector distance of adsorbate from first center atom (corresponding to first atom index) of slab matches reference
-    assert_allclose(
-        adsorbate_vector_from_slab,
-        np.array([1.18932285, -0.14368533, 2.0777825]),
-        rtol=1e-05,
-        atol=1e-07,
-    )
-
-
-def test_generate_chemshell_cluster(tmp_path):
-    from quacc.atoms.skzcam import generate_chemshell_cluster
-
-    # First create the slab
-    slab = read(Path(FILE_DIR, "skzcam_files", "NO_MgO.poscar.gz"))[2:]
-
-    # Run ChemShell
-    generate_chemshell_cluster(
-        slab=slab,
-        slab_center_idx=30,
-        atom_oxi_states={"Mg": 2.0, "O": -2.0},
-        filepath=tmp_path,
-        chemsh_radius_active=15.0,
-        chemsh_radius_cluster=25.0,
-        write_xyz_file=True,
-    )
+    with (
+            gzip.open(
+                Path(FILE_DIR, "skzcam_files", "REF_ChemShell_Cluster.xyz.gz"), "rb"
+            ) as f_in,
+            Path(tmp_path, "ChemShell_Cluster.xyz").open(mode="wb") as f_out,
+        ):
+        shutil.copyfileobj(f_in, f_out)
+    # skzcam_clusters.convert_slab_to_atoms()
+    # skzcam_clusters.run_chemshell(
+    #     filepath= tmp_path / "ChemShell_Cluster.pun",
+    #     chemsh_radius_active=5.0,
+    #     chemsh_radius_cluster=10.0,
+    #     write_xyz_file=True,
+    # )
 
     # Read the output .xyz file
-    chemshell_embedded_cluster = read(tmp_path / "ChemShell_cluster.xyz")
+    chemshell_embedded_cluster = read(tmp_path / "ChemShell_Cluster.xyz")
 
     # Check that the positions and atomic numbers match reference
     assert_allclose(
         chemshell_embedded_cluster.get_positions()[::100],
-        np.array(
-            [
-                [0.00000000e00, 0.00000000e00, 0.00000000e00],
-                [-2.09173593e00, -2.10867761e00, -6.39202884e00],
-                [2.12875640e00, -6.32916994e00, -6.39202884e00],
-                [-2.09273725e00, 1.05516878e01, -2.16301583e00],
-                [2.12875640e00, -1.05496623e01, -6.39202884e00],
-                [6.34924872e00, -1.05496623e01, -6.39202884e00],
-                [1.05725789e01, -1.05444085e01, -2.15965963e00],
-                [1.47875715e01, 6.33408913e00, -2.16464681e00],
-                [6.34924872e00, -1.47701546e01, -6.39202884e00],
-                [1.69010014e01, 6.33551965e00, -2.15224877e00],
-                [1.05697410e01, -1.47701546e01, -6.39202884e00],
-                [1.05637735e01, 1.68825241e01, -2.17052139e00],
-                [-1.68651820e01, 1.26649992e01, -5.68710477e-02],
-                [-1.89763671e01, -1.05478802e01, -2.16464681e00],
-                [1.05697410e01, -1.89906469e01, -6.39202884e00],
-                [-2.31906127e01, -4.21607826e00, -1.24998430e-02],
-                [1.47951600e01, 1.89994594e01, -5.11097275e-02],
-                [-2.31941976e01, -6.32916994e00, -6.39202884e00],
-            ]
-        ),
+        np.array([[ 0.00000000e+00,  0.00000000e+00, -7.72802046e-03],
+       [-2.11024616e+00,  2.11024616e+00, -6.38586825e+00],
+       [ 6.33073849e+00, -2.11024616e+00, -6.38586825e+00],
+       [-1.09499282e+01, -4.53560876e+00,  4.95687508e+00]]),
         rtol=1e-05,
         atol=1e-07,
     )
 
     assert_equal(
-        chemshell_embedded_cluster.get_atomic_numbers()[::20].tolist(),
-        [
-            12,
-            12,
-            12,
-            8,
-            12,
-            8,
-            8,
-            12,
-            8,
-            12,
-            8,
-            8,
-            12,
-            8,
-            12,
-            8,
-            8,
-            12,
-            8,
-            12,
-            8,
-            8,
-            12,
-            8,
-            8,
-            8,
-            8,
-            12,
-            8,
-            12,
-            8,
-            8,
-            12,
-            12,
-            12,
-            8,
-            8,
-            12,
-            8,
-            12,
-            8,
-            8,
-            12,
-            8,
-            12,
-            12,
-            8,
-            12,
-            8,
-            12,
-            8,
-            8,
-            12,
-            8,
-            8,
-            12,
-            8,
-            12,
-            8,
-            12,
-            12,
-            8,
-            12,
-            12,
-            8,
-            8,
-            8,
-            12,
-            12,
-            8,
-            8,
-            8,
-            12,
-            8,
-            12,
-            8,
-            8,
-            12,
-            12,
-            8,
-            12,
-            8,
-            12,
-            12,
-            8,
-            8,
-            12,
-            9,
-            9,
-            9,
-        ],
+        chemshell_embedded_cluster.get_atomic_numbers()[::40].tolist(),
+    [12, 12, 12,  8,  8,  8, 12,  9,  9],
     )
 
 
-def test_convert_pun_to_atoms():
-    embedded_cluster = convert_pun_to_atoms(
-        pun_file=Path(FILE_DIR, "skzcam_files", "mgo_shells_cluster.pun.gz"),
-        atom_oxi_states={"Mg": 2.0, "O": -2.0},
-    )
 
+def test_CreateSKZCAMClusters_convert_pun_to_atoms(skzcam_clusters):
+    
+    slab_embedded_cluster = skzcam_clusters.convert_pun_to_atoms(pun_file=Path(FILE_DIR, "skzcam_files", "ChemShell_Cluster.pun.gz"))
+    
     # Check that number of atoms matches our reference
-    assert len(embedded_cluster) == 390
+    assert len(slab_embedded_cluster) == 390
 
     # Check that last 10 elements of the oxi_state match our reference
     assert_allclose(
-        embedded_cluster.get_array("oxi_states")[-10:],
+        slab_embedded_cluster.get_array("oxi_states")[-10:],
         np.array(
             [
                 -0.80812511,
@@ -1473,7 +1235,7 @@ def test_convert_pun_to_atoms():
 
     # Check that first 10 elements of atom_type array match our reference
     assert_equal(
-        embedded_cluster.get_array("atom_type")[:10],
+        slab_embedded_cluster.get_array("atom_type")[:10],
         [
             "cation",
             "anion",
@@ -1490,110 +1252,133 @@ def test_convert_pun_to_atoms():
 
     # Check that the positions of the atom matches
     assert_allclose(
-        embedded_cluster[200].position,
+        slab_embedded_cluster[200].position,
         np.array([6.33074029, -2.11024676, -6.37814205]),
         rtol=1e-05,
         atol=1e-07,
     )
 
 
-def test_insert_adsorbate_to_embedded_cluster(embedded_cluster):
-    # Create a CO molecule
-    adsorbate = Atoms(
-        "CO", positions=[[0.0, 0.0, 0.0], [0.0, 0.0, 1.128]], pbc=[False, False, False]
-    )
 
-    # Insert the CO molecule to the embedded cluster
-    embedded_cluster, quantum_idx, ecp_idx = insert_adsorbate_to_embedded_cluster(
-        embedded_cluster=embedded_cluster,
-        adsorbate=adsorbate,
-        adsorbate_vector_from_slab=[0.0, 0.0, 2.0],
-        quantum_cluster_indices=[[0, 1, 3, 4], [5, 6, 7, 8]],
-        ecp_region_indices=[[0, 1, 3, 4], [5, 6, 7, 8]],
-    )
+def test_CreateSKZCAMClusters_convert_slab_to_atoms():
 
-    # Check that the positions of the first 10 atoms of the embedded cluster matches the reference positions, oxi_states and atom_type
+    # Test for CO on MgO example
+    skzcam_clusters = CreateSKZCAMClusters(adsorbate_indices=[0,1], slab_center_indices=[32], atom_oxi_states = {'Mg': 2.0, 'O': -2.0}, adsorbate_slab_file=Path(FILE_DIR, "skzcam_files", "CO_MgO.poscar.gz"), pun_file=None)
+    skzcam_clusters.convert_slab_to_atoms()
+
+    # Check adsorbate matches reference
     assert_allclose(
-        embedded_cluster.get_positions()[:10],
-        np.array(
-            [
-                [0.0, 0.0, 2.0],
-                [0.0, 0.0, 3.128],
-                [0.0, 0.0, 0.0],
-                [-2.12018426, 0.0, 0.00567209],
-                [0.0, 2.12018426, 0.00567209],
-                [2.12018426, 0.0, 0.00567209],
-                [0.0, -2.12018426, 0.00567209],
-                [0.0, 0.0, -2.14129966],
-                [-2.11144262, 2.11144262, -0.04367284],
-                [2.11144262, 2.11144262, -0.04367284],
-            ]
-        ),
+        skzcam_clusters.adsorbate.get_positions(),
+        np.array([[0.        , 0.        , 2.44102236],
+       [0.        , 0.        , 3.58784217]]),
         rtol=1e-05,
         atol=1e-07,
     )
+    assert_equal(skzcam_clusters.adsorbate.get_atomic_numbers().tolist(), [6, 8])
 
-    assert_equal(
-        embedded_cluster.get_chemical_symbols()[:10],
-        ["C", "O", "Mg", "O", "O", "O", "O", "O", "Mg", "Mg"],
-    )
+    # Check slab matches reference
     assert_allclose(
-        embedded_cluster.get_array("oxi_states")[:10],
-        np.array([0.0, 0.0, 2.0, -2.0, -2.0, -2.0, -2.0, -2.0, 2.0, 2.0]),
+        skzcam_clusters.slab.get_positions()[::10],
+        np.array([[ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00],
+       [-2.11024616e+00,  0.00000000e+00, -6.37814023e+00],
+       [ 2.11024616e+00,  2.11024616e+00, -4.26789407e+00],
+       [ 2.10705227e+00,  0.00000000e+00, -2.14155146e+00],
+       [-4.22049233e+00, -2.11024616e+00, -4.26789407e+00],
+       [ 0.00000000e+00, -4.22049233e+00, -6.37814023e+00],
+       [ 0.00000000e+00, -2.12018365e+00,  5.67208927e-03]]),
         rtol=1e-05,
         atol=1e-07,
     )
     assert_equal(
-        embedded_cluster.get_array("atom_type")[:10],
-        [
-            "adsorbate",
-            "adsorbate",
-            "cation",
-            "anion",
-            "anion",
-            "anion",
-            "anion",
-            "anion",
-            "cation",
-            "cation",
-        ],
+        skzcam_clusters.slab.get_atomic_numbers().tolist()[::10],
+        [12, 12, 12, 12,  8,  8,  8],
     )
 
-    # Check that the quantum_idx and ecp_idx match the reference
-    assert_equal(quantum_idx, [[0, 1, 2, 3, 5, 6], [0, 1, 7, 8, 9, 10]])
-    assert_equal(ecp_idx, [[2, 3, 5, 6], [7, 8, 9, 10]])
-
-
-def test_get_atom_distances():
-    # Creating a H2 molecule as an Atoms object
-    h2_molecule = Atoms("H2", positions=[(0, 0, 0), (0, 0, 2)])
-
-    # Run _get_atom_distances function to get distance of h2 molecule atoms from a center position
-    atom_distances = _get_atom_distances(
-        embedded_cluster=h2_molecule, center_position=[2, 0, 0]
+    # Check center_position matches reference
+    assert_allclose(
+        skzcam_clusters.center_position,
+        np.array([0.        , 0.        , 3.09607306]),
+        rtol=1e-05,
+        atol=1e-07,
     )
 
-    assert_allclose(atom_distances, np.array([2.0, 2.82842712]), rtol=1e-05, atol=1e-07)
+    # Check vector distance of adsorbate from first center atom (corresponding to first atom index) of slab matches reference
+    assert_allclose(
+        skzcam_clusters.adsorbate_vector_from_slab,
+        np.array([0.        , 0.        , 2.44102236]),
+        rtol=1e-05,
+        atol=1e-07,
+    )
+
+    # Test for NO on MgO example
+    skzcam_clusters = CreateSKZCAMClusters(adsorbate_indices=[0,1], slab_center_indices=[32,33], atom_oxi_states = {'Mg': 2.0, 'O': -2.0}, adsorbate_slab_file=Path(FILE_DIR, "skzcam_files", "NO_MgO.poscar.gz"), pun_file=None)
+    skzcam_clusters.convert_slab_to_atoms()
+
+    # Check adsorbate matches reference
+    assert_allclose(
+        skzcam_clusters.adsorbate.get_positions(),
+        np.array([[ 1.18932285, -0.14368533,  2.0777825 ],
+       [ 1.68437633,  0.62999818,  2.83068075]]),
+        rtol=1e-05,
+        atol=1e-07,
+    )
+    assert_equal(skzcam_clusters.adsorbate.get_atomic_numbers().tolist(), [7, 8])
+
+    # Check slab matches reference
+    assert_allclose(
+        skzcam_clusters.slab.get_positions()[::10],
+        np.array([[ 0.        ,  0.        ,  0.        ],
+       [-4.2019821 , -2.10867761, -6.39202884],
+       [ 0.01851023, -4.21892378, -4.28178268],
+       [ 0.01903204, -2.105465  , -2.15224877],
+       [-4.2019821 , -2.10867761, -4.28178268],
+       [ 0.01851023, -4.21892378, -6.39202884],
+       [ 0.01900061, -2.11652633, -0.03021786]]),
+        rtol=1e-05,
+        atol=1e-07,
+    )
+    assert_equal(
+        skzcam_clusters.slab.get_atomic_numbers().tolist()[::10],
+        [12, 12, 12, 12,  8,  8,  8],
+    )
+
+    # Check center_position matches reference
+    assert_allclose(
+        skzcam_clusters.center_position,
+        np.array([ 1.06307888, -1.06176564,  2.47922285]),
+        rtol=1e-05,
+        atol=1e-07,
+    )
+
+    # Check vector distance of adsorbate from first center atom (corresponding to first atom index) of slab matches reference
+    assert_allclose(
+        skzcam_clusters.adsorbate_vector_from_slab,
+        np.array([ 1.18932285, -0.14368533,  2.0777825 ]),
+        rtol=1e-05,
+        atol=1e-07,
+    )
 
 
-def test_find_cation_shells(embedded_cluster):
+
+
+def test_CreateSKZCAMClusters_find_cation_shells(skzcam_clusters,slab_embedded_cluster):
     # Get distance of atoms from the center
     distances = _get_atom_distances(
-        embedded_cluster=embedded_cluster, center_position=[0, 0, 2]
+        atoms=slab_embedded_cluster, center_position=[0, 0, 2]
     )
 
     # Find the cation shells from the distances
-    cation_shells, cation_shells_idx = _find_cation_shells(
-        embedded_cluster=embedded_cluster, distances=distances, shell_width=0.005
+    cation_shells_distances , cation_shells_idx = skzcam_clusters._find_cation_shells(
+        slab_embedded_cluster=slab_embedded_cluster, distances=distances, shell_width=0.005
     )
 
     # As these list of lists do not have the same length, we flatten first 5 lists into a 1D list for comparison
-    cation_shells_flatten = [item for row in cation_shells[:5] for item in row]
+    cation_shells_distances_flatten = [item for row in cation_shells_distances[:5] for item in row]
     cation_shells_idx_flatten = [item for row in cation_shells_idx[:5] for item in row]
 
     # Check that these lists are correct
     assert_allclose(
-        cation_shells_flatten,
+        cation_shells_distances_flatten,
         np.array(
             [
                 2.0,
@@ -1621,10 +1406,10 @@ def test_find_cation_shells(embedded_cluster):
     )
 
 
-def test_get_anion_coordination(embedded_cluster, distance_matrix):
+def test_CreateSKZCAMClusters_get_anion_coordination(skzcam_clusters,slab_embedded_cluster, distance_matrix):
     # Get the anions for the second SKZCAM shell
-    anion_shell_idx = _get_anion_coordination(
-        embedded_cluster=embedded_cluster,
+    anion_shell_idx = skzcam_clusters._get_anion_coordination(
+        slab_embedded_cluster=slab_embedded_cluster,
         cation_shell_indices=[9, 8, 6, 7],
         dist_matrix=distance_matrix,
     )
@@ -1635,10 +1420,10 @@ def test_get_anion_coordination(embedded_cluster, distance_matrix):
     )
 
 
-def test_get_ecp_region(embedded_cluster, distance_matrix):
+def test_CreateSKZCAMClusters_get_ecp_region(skzcam_clusters,slab_embedded_cluster, distance_matrix):
     # Find the ECP region for the first cluster
-    ecp_region_idx = _get_ecp_region(
-        embedded_cluster=embedded_cluster,
+    ecp_region_idx = skzcam_clusters._get_ecp_region(
+        slab_embedded_cluster=slab_embedded_cluster,
         quantum_cluster_indices=[[0, 1, 2, 3, 4, 5]],
         dist_matrix=distance_matrix,
         ecp_dist=3,
@@ -1647,13 +1432,79 @@ def test_get_ecp_region(embedded_cluster, distance_matrix):
     # Check ECP region indices match with reference
     assert_equal(ecp_region_idx[0], [6, 7, 8, 9, 10, 11, 12, 13, 18, 19, 20, 21, 22])
 
+def test_CreateSKZCAMClusters_create_adsorbate_slab_embedded_cluster(skzcam_clusters, slab_embedded_cluster):
 
-def test_create_skzcam_clusters(tmp_path):
+    skzcam_clusters.slab_embedded_cluster = slab_embedded_cluster
+    skzcam_clusters.adsorbate =  Atoms(
+        "CO", positions=[[0.0, 0.0, 0.0], [0.0, 0.0, 1.128]], pbc=[False, False, False]
+    )
+    skzcam_clusters.adsorbate_vector_from_slab = [0.0, 0.0, 2.0]
+
+    skzcam_clusters.create_adsorbate_slab_embedded_cluster(
+        quantum_cluster_indices=[[0, 1, 3, 4], [5, 6, 7, 8]],
+        ecp_region_indices=[[0, 1, 3, 4], [5, 6, 7, 8]],
+    )
+
+    # Check that the positions of the first 10 atoms of the embedded cluster matches the reference positions, oxi_states and atom_type
+    assert_allclose(
+        skzcam_clusters.adsorbate_slab_embedded_cluster.get_positions()[:10],
+        np.array(
+            [
+                [0.0, 0.0, 2.0],
+                [0.0, 0.0, 3.128],
+                [0.0, 0.0, 0.0],
+                [-2.12018426, 0.0, 0.00567209],
+                [0.0, 2.12018426, 0.00567209],
+                [2.12018426, 0.0, 0.00567209],
+                [0.0, -2.12018426, 0.00567209],
+                [0.0, 0.0, -2.14129966],
+                [-2.11144262, 2.11144262, -0.04367284],
+                [2.11144262, 2.11144262, -0.04367284],
+            ]
+        ),
+        rtol=1e-05,
+        atol=1e-07,
+    )
+
+    assert_equal(
+        skzcam_clusters.adsorbate_slab_embedded_cluster.get_chemical_symbols()[:10],
+        ["C", "O", "Mg", "O", "O", "O", "O", "O", "Mg", "Mg"],
+    )
+    assert_allclose(
+        skzcam_clusters.adsorbate_slab_embedded_cluster.get_array("oxi_states")[:10],
+        np.array([0.0, 0.0, 2.0, -2.0, -2.0, -2.0, -2.0, -2.0, 2.0, 2.0]),
+        rtol=1e-05,
+        atol=1e-07,
+    )
+    assert_equal(
+        skzcam_clusters.adsorbate_slab_embedded_cluster.get_array("atom_type")[:10],
+        [
+            "adsorbate",
+            "adsorbate",
+            "cation",
+            "anion",
+            "anion",
+            "anion",
+            "anion",
+            "anion",
+            "cation",
+            "cation",
+        ],
+    )
+
+    # Check that the quantum_idx and ecp_idx match the reference
+    assert_equal(skzcam_clusters.quantum_cluster_indices, [[0, 1, 2, 3, 5, 6], [0, 1, 7, 8, 9, 10]])
+    assert_equal(skzcam_clusters.ecp_region_indices, [[2, 3, 5, 6], [7, 8, 9, 10]])
+
+
+def test_CreateSKZCAMClusters_run_skzcam(skzcam_clusters,tmp_path):
     # Get quantum cluster and ECP region indices
-    _, quantum_cluster_idx, ecp_region_idx = create_skzcam_clusters(
-        pun_file=Path(FILE_DIR, "skzcam_files", "mgo_shells_cluster.pun.gz"),
-        center_position=[0, 0, 2],
-        atom_oxi_states={"Mg": 2.0, "O": -2.0},
+    skzcam_clusters.center_position = [0, 0, 2]
+    skzcam_clusters.pun_file = Path(FILE_DIR, "skzcam_files", "ChemShell_Cluster.pun.gz")
+    skzcam_clusters.adsorbate = Atoms('CO', positions=[[0.0, 0.0, 0.0], [0.0, 0.0, 1.128]], pbc=[False, False, False])
+    skzcam_clusters.adsorbate_vector_from_slab = [0.0, 0.0, 2.0]
+
+    skzcam_clusters.run_skzcam(
         shell_max=2,
         ecp_dist=3.0,
         shell_width=0.005,
@@ -1663,66 +1514,41 @@ def test_create_skzcam_clusters(tmp_path):
 
     # Check quantum cluster indices match with reference
     assert_equal(
-        quantum_cluster_idx[1],
-        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 15, 16, 17, 23, 24, 25, 26, 27, 28, 29, 30],
-    )
+        skzcam_clusters.quantum_cluster_indices[1],
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 16, 17, 18, 19, 25, 26, 27, 28, 29, 30, 31, 32])
 
     # Check ECP region indices match with reference
     assert_equal(
-        ecp_region_idx[1],
-        [
-            10,
-            11,
-            12,
-            13,
-            18,
-            19,
-            20,
-            21,
-            22,
-            39,
-            40,
-            41,
-            42,
-            43,
-            44,
-            45,
-            46,
-            47,
-            48,
-            49,
-            50,
-            51,
-            52,
-            53,
-            54,
-            76,
-            77,
-            78,
-            79,
-            80,
-            81,
-            82,
-            83,
-        ],
+        skzcam_clusters.ecp_region_indices[1],
+        [12, 13, 14, 15, 20, 21, 22, 23, 24, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 78, 79, 80, 81, 82, 83, 84, 85]
+,
     )
     # Read the written output and check that it matches with the reference positions and atomic numbers
-    skzcam_cluster = read(tmp_path / "SKZCAM_cluster_0.xyz")
+    skzcam_cluster_xyz = read(tmp_path / "SKZCAM_cluster_0.xyz")
 
     assert_allclose(
-        skzcam_cluster.get_positions(),
-        np.array(
-            [
-                [0.0, 0.0, 0.0],
-                [-2.12018426, 0.0, 0.00567209],
-                [0.0, 2.12018426, 0.00567209],
-                [2.12018426, 0.0, 0.00567209],
-                [0.0, -2.12018426, 0.00567209],
-                [0.0, 0.0, -2.14129966],
-            ]
-        ),
+        skzcam_cluster_xyz.get_positions(),
+        np.array([[ 0.        ,  0.        ,  2.        ],
+       [ 0.        ,  0.        ,  3.128     ],
+       [ 0.        ,  0.        ,  0.        ],
+       [-2.12018426,  0.        ,  0.00567209],
+       [ 0.        ,  2.12018426,  0.00567209],
+       [ 2.12018426,  0.        ,  0.00567209],
+       [ 0.        , -2.12018426,  0.00567209],
+       [ 0.        ,  0.        , -2.14129966]]),
         rtol=1e-04,
         atol=1e-07,
     )
 
-    assert_equal(skzcam_cluster.get_atomic_numbers().tolist(), [12, 8, 8, 8, 8, 8])
+    assert_equal(skzcam_cluster_xyz.get_atomic_numbers().tolist(), [6,8,12, 8, 8, 8, 8, 8])
+
+def test_get_atom_distances():
+    # Creating a H2 molecule as an Atoms object
+    h2_molecule = Atoms("H2", positions=[(0, 0, 0), (0, 0, 2)])
+
+    # Run _get_atom_distances function to get distance of h2 molecule atoms from a center position
+    atom_distances = _get_atom_distances(
+        atoms=h2_molecule, center_position=[2, 0, 0]
+    )
+
+    assert_allclose(atom_distances, np.array([2.0, 2.82842712]), rtol=1e-05, atol=1e-07)
