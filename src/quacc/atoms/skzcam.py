@@ -162,7 +162,7 @@ has_chemshell = find_spec("chemsh") is not None
 class MRCCInputGenerator:
     def __init__(
         self,
-        embedded_adsorbed_cluster: Atoms,
+        adsorbate_slab_embedded_cluster: Atoms,
         quantum_cluster_indices: list[int],
         ecp_region_indices: list[int],
         element_info: dict[ElementStr, ElementInfo] | None = None,
@@ -172,7 +172,7 @@ class MRCCInputGenerator:
         """
         Parameters
         ----------
-        embedded_adsorbed_cluster
+        adsorbate_slab_embedded_cluster
             The ASE Atoms object containing the atomic coordinates and atomic charges from the .pun file, as well as the atom type. This object is created by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
         quantum_cluster_indices
             A list containing the indices of the atoms in each quantum cluster. These indices are provided by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
@@ -196,7 +196,7 @@ class MRCCInputGenerator:
                 "An atom in the quantum cluster is also in the ECP region."
             )
 
-        self.embedded_adsorbed_cluster = embedded_adsorbed_cluster
+        self.adsorbate_slab_embedded_cluster = adsorbate_slab_embedded_cluster
         self.quantum_cluster_indices = quantum_cluster_indices
         self.ecp_region_indices = ecp_region_indices
         self.element_info = element_info
@@ -208,10 +208,10 @@ class MRCCInputGenerator:
             self.multiplicities = multiplicities
 
         # Create the adsorbate-slab complex quantum cluster and ECP region cluster
-        self.adsorbate_slab_cluster = self.embedded_adsorbed_cluster[
+        self.adsorbate_slab_cluster = self.adsorbate_slab_embedded_cluster[
             self.quantum_cluster_indices
         ]
-        self.ecp_region = self.embedded_adsorbed_cluster[self.ecp_region_indices]
+        self.ecp_region = self.adsorbate_slab_embedded_cluster[self.ecp_region_indices]
 
         # Get the indices of the adsorbates from the quantum cluster
         self.adsorbate_indices = [
@@ -467,12 +467,12 @@ geom=xyz
         """
 
         # Get the oxi_states arrays from the embedded_cluster
-        oxi_states = self.embedded_adsorbed_cluster.get_array("oxi_states")
+        oxi_states = self.adsorbate_slab_embedded_cluster.get_array("oxi_states")
 
         # Get the number of point charges for this system. There is a point charge associated with each capped ECP as well.
         pc_region_indices = [
             atom.index
-            for atom in self.embedded_adsorbed_cluster
+            for atom in self.adsorbate_slab_embedded_cluster
             if atom.index not in self.quantum_cluster_indices
         ]
 
@@ -481,7 +481,7 @@ geom=xyz
 
         # Add the ecp_region indices
         for i in pc_region_indices:
-            position = self.embedded_adsorbed_cluster[i].position
+            position = self.adsorbate_slab_embedded_cluster[i].position
             pc_block += f"  {position[0]:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f} {oxi_states[i]:-16.11f}\n"
 
         return pc_block
@@ -490,7 +490,7 @@ geom=xyz
 class ORCAInputGenerator:
     def __init__(
         self,
-        embedded_adsorbed_cluster: Atoms,
+        adsorbate_slab_embedded_cluster: Atoms,
         quantum_cluster_indices: list[int],
         ecp_region_indices: list[int],
         element_info: dict[ElementStr, ElementInfo] | None = None,
@@ -504,7 +504,7 @@ class ORCAInputGenerator:
         """
         Parameters
         ----------
-        embedded_adsorbed_cluster
+        adsorbate_slab_embedded_cluster
             The ASE Atoms object containing the atomic coordinates and atomic charges from the .pun file, as well as the atom type. This object is created by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
         quantum_cluster_indices
             A list containing the indices of the atoms in each quantum cluster. These indices are provided by the [quacc.atoms.skzcam.create_skzcam_clusters][] function.
@@ -536,7 +536,7 @@ class ORCAInputGenerator:
                 "An atom in the quantum cluster is also in the ECP region."
             )
 
-        self.embedded_adsorbed_cluster = embedded_adsorbed_cluster
+        self.adsorbate_slab_embedded_cluster = adsorbate_slab_embedded_cluster
         self.quantum_cluster_indices = quantum_cluster_indices
         self.ecp_region_indices = ecp_region_indices
         self.element_info = element_info
@@ -548,10 +548,10 @@ class ORCAInputGenerator:
             self.multiplicities = multiplicities
 
         # Create the adsorbate-slab complex quantum cluster and ECP region cluster
-        self.adsorbate_slab_cluster = self.embedded_adsorbed_cluster[
+        self.adsorbate_slab_cluster = self.adsorbate_slab_embedded_cluster[
             self.quantum_cluster_indices
         ]
-        self.ecp_region = self.embedded_adsorbed_cluster[self.ecp_region_indices]
+        self.ecp_region = self.adsorbate_slab_embedded_cluster[self.ecp_region_indices]
 
         # Get the indices of the adsorbates from the quantum cluster
         self.adsorbate_indices = [
@@ -839,19 +839,19 @@ coords
         """
 
         # Get the oxi_states arrays from the embedded_cluster
-        oxi_states = self.embedded_adsorbed_cluster.get_array("oxi_states")
+        oxi_states = self.adsorbate_slab_embedded_cluster.get_array("oxi_states")
 
         # Get the number of point charges for this system
         total_indices = self.quantum_cluster_indices + self.ecp_region_indices
-        num_pc = len(self.embedded_adsorbed_cluster) - len(total_indices)
+        num_pc = len(self.adsorbate_slab_embedded_cluster) - len(total_indices)
         counter = 0
         with Path.open(pc_file, "w") as f:
             # Write the number of point charges first
             f.write(f"{num_pc}\n")
-            for i in range(len(self.embedded_adsorbed_cluster)):
+            for i in range(len(self.adsorbate_slab_embedded_cluster)):
                 if i not in total_indices:
                     counter += 1
-                    position = self.embedded_adsorbed_cluster[i].position
+                    position = self.adsorbate_slab_embedded_cluster[i].position
                     if counter != num_pc:
                         f.write(
                             f"{oxi_states[i]:-16.11f} {position[0]:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f}\n"

@@ -47,7 +47,7 @@ def distance_matrix(slab_embedded_cluster):
 
 
 @pytest.fixture()
-def embedded_adsorbed_cluster():
+def adsorbate_slab_embedded_cluster():
     with gzip.open(
         Path(FILE_DIR, "skzcam_files", "adsorbate_slab_embedded_cluster.npy.gz"), "r"
     ) as file:
@@ -55,9 +55,9 @@ def embedded_adsorbed_cluster():
 
 
 @pytest.fixture()
-def mrcc_input_generator(embedded_adsorbed_cluster, element_info):
+def mrcc_input_generator(adsorbate_slab_embedded_cluster, element_info):
     return MRCCInputGenerator(
-        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
+        adsorbate_slab_embedded_cluster=adsorbate_slab_embedded_cluster,
         quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
         ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
         element_info=element_info,
@@ -67,7 +67,7 @@ def mrcc_input_generator(embedded_adsorbed_cluster, element_info):
 
 
 @pytest.fixture()
-def orca_input_generator(embedded_adsorbed_cluster, element_info):
+def orca_input_generator(adsorbate_slab_embedded_cluster, element_info):
     pal_nprocs_block = {"nprocs": 1, "maxcore": 5000}
 
     method_block = {"Method": "hf", "RI": "on", "RunTyp": "Energy"}
@@ -97,7 +97,7 @@ f 1
 end"""
     }
     return ORCAInputGenerator(
-        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
+        adsorbate_slab_embedded_cluster=adsorbate_slab_embedded_cluster,
         quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
         ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
         element_info=element_info,
@@ -108,29 +108,6 @@ end"""
         scf_block=scf_block,
         ecp_info=ecp_info,
     )
-
-
-@pytest.fixture()
-def adsorbate_slab_embedded_cluster(skzcam_clusters):
-    skzcam_clusters.convert_pun_to_atoms("mgo_shells_cluster_shortened.pun.gz")
-    # Get quantum cluster and ECP region indices
-    skzcam_clusters.center_position = [0, 0, 2]
-    skzcam_clusters.pun_file = Path("mgo_shells_cluster_shortened.pun.gz")
-    skzcam_clusters.adsorbate = Atoms(
-        "CO", positions=[[0.0, 0.0, 0.0], [0.0, 0.0, 1.128]], pbc=[False, False, False]
-    )
-    skzcam_clusters.adsorbate_vector_from_slab = [0.0, 0.0, 2.0]
-
-    skzcam_clusters.run_skzcam(
-        shell_max=2,
-        ecp_dist=3.0,
-        shell_width=0.01,
-        write_clusters=True,
-        write_clusters_path="./",
-    )
-
-    return skzcam_clusters.adsorbate_slab_embedded_cluster
-
 
 @pytest.fixture()
 def element_info():
@@ -156,10 +133,10 @@ def element_info():
     }
 
 
-def test_MRCCInputGenerator_init(embedded_adsorbed_cluster, element_info):
+def test_MRCCInputGenerator_init(adsorbate_slab_embedded_cluster, element_info):
     # Check what happens if multiplicities is not provided
     mrcc_input_generator = MRCCInputGenerator(
-        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
+        adsorbate_slab_embedded_cluster=adsorbate_slab_embedded_cluster,
         quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
         ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
         element_info=element_info,
@@ -173,7 +150,7 @@ def test_MRCCInputGenerator_init(embedded_adsorbed_cluster, element_info):
     }
 
     mrcc_input_generator = MRCCInputGenerator(
-        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
+        adsorbate_slab_embedded_cluster=adsorbate_slab_embedded_cluster,
         quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
         ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
         element_info=element_info,
@@ -182,7 +159,7 @@ def test_MRCCInputGenerator_init(embedded_adsorbed_cluster, element_info):
     )
 
     assert not compare_atoms(
-        mrcc_input_generator.embedded_adsorbed_cluster, embedded_adsorbed_cluster
+        mrcc_input_generator.adsorbate_slab_embedded_cluster, adsorbate_slab_embedded_cluster
     )
     assert_equal(mrcc_input_generator.quantum_cluster_indices, [0, 1, 2, 3, 4, 5, 6, 7])
     assert_equal(mrcc_input_generator.adsorbate_indices, [0, 1])
@@ -205,7 +182,7 @@ def test_MRCCInputGenerator_init(embedded_adsorbed_cluster, element_info):
         ValueError, match="An atom in the quantum cluster is also in the ECP region."
     ):
         mrcc_input_generator = MRCCInputGenerator(
-            embedded_adsorbed_cluster=embedded_adsorbed_cluster,
+            adsorbate_slab_embedded_cluster=adsorbate_slab_embedded_cluster,
             quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
             ecp_region_indices=[7, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
             element_info=element_info,
@@ -555,7 +532,7 @@ def test_MRCCInputGenerator_generate_point_charge_block(mrcc_input_generator):
     )
 
 
-def test_ORCAInputGenerator_init(embedded_adsorbed_cluster, element_info):
+def test_ORCAInputGenerator_init(adsorbate_slab_embedded_cluster, element_info):
     pal_nprocs_block = {"nprocs": 1, "maxcore": 5000}
 
     method_block = {"Method": "hf", "RI": "on", "RunTyp": "Energy"}
@@ -585,7 +562,7 @@ f 1
 end"""
     }
     orca_input_generator = ORCAInputGenerator(
-        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
+        adsorbate_slab_embedded_cluster=adsorbate_slab_embedded_cluster,
         quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
         ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
         element_info=element_info,
@@ -604,7 +581,7 @@ end"""
     }
 
     orca_input_generator = ORCAInputGenerator(
-        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
+        adsorbate_slab_embedded_cluster=adsorbate_slab_embedded_cluster,
         quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
         ecp_region_indices=[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
         element_info=element_info,
@@ -617,7 +594,7 @@ end"""
     )
 
     assert not compare_atoms(
-        orca_input_generator.embedded_adsorbed_cluster, embedded_adsorbed_cluster
+        orca_input_generator.adsorbate_slab_embedded_cluster, adsorbate_slab_embedded_cluster
     )
     assert_equal(orca_input_generator.quantum_cluster_indices, [0, 1, 2, 3, 4, 5, 6, 7])
     assert_equal(orca_input_generator.adsorbate_indices, [0, 1])
@@ -645,7 +622,7 @@ end"""
         ValueError, match="An atom in the quantum cluster is also in the ECP region."
     ):
         orca_input_generator = ORCAInputGenerator(
-            embedded_adsorbed_cluster=embedded_adsorbed_cluster,
+            adsorbate_slab_embedded_cluster=adsorbate_slab_embedded_cluster,
             quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
             ecp_region_indices=[7, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
             element_info=element_info,
@@ -825,8 +802,8 @@ def test_ORCAInputGenerator_generate_input(orca_input_generator):
         )
 
 
-def test_create_atom_coord_string(embedded_adsorbed_cluster):
-    atom = embedded_adsorbed_cluster[0]
+def test_create_atom_coord_string(adsorbate_slab_embedded_cluster):
+    atom = adsorbate_slab_embedded_cluster[0]
 
     # First let's try the case where it's a normal atom.
     atom_coord_string = create_atom_coord_string(atom=atom)
@@ -1167,6 +1144,25 @@ def test_ORCAInputGenerator_create_point_charge_file(orca_input_generator, tmp_p
         rtol=1e-05,
         atol=1e-07,
     )
+
+def test_CreateSKZCAMClusters_init():
+    skzcam_clusters = CreateSKZCAMClusters(adsorbate_indices=[0,1], slab_center_indices=[32], atom_oxi_states = {'Mg': 2.0, 'O': -2.0}, adsorbate_slab_file=Path(FILE_DIR, "skzcam_files", "CO_MgO.poscar.gz"), pun_file='test.pun')
+
+    assert_equal(skzcam_clusters.adsorbate_indices, [0, 1])
+    assert skzcam_clusters.slab_center_indices == [32]
+    assert skzcam_clusters.atom_oxi_states == {'Mg': 2.0, 'O': -2.0}
+    assert skzcam_clusters.adsorbate_slab_file == Path(FILE_DIR, "skzcam_files", "CO_MgO.poscar.gz")
+    assert skzcam_clusters.pun_file == 'test.pun'
+
+    # Check if error raised if adsorbate_indices and slab_center_indices overlap
+    with pytest.raises(ValueError, match="The adsorbate and slab center indices cannot be the same."):
+        skzcam_clusters = CreateSKZCAMClusters(adsorbate_indices=[0,1], slab_center_indices=[0], atom_oxi_states = {'Mg': 2.0, 'O': -2.0}, adsorbate_slab_file=Path(FILE_DIR, "skzcam_files", "CO_MgO.poscar.gz"), pun_file='test.pun')
+
+    # Check if error raised if both adsorbate_slab_file and pun_file are None
+    with pytest.raises(ValueError, match="Either the adsorbate_slab_file or pun_file must be provided."):
+        skzcam_clusters = CreateSKZCAMClusters(adsorbate_indices=[0,1], slab_center_indices=[32], atom_oxi_states = {'Mg': 2.0, 'O': -2.0}, adsorbate_slab_file=None, pun_file=None)
+
+
 
 
 def test_CreateSKZCAMClusters_run_chemshell(skzcam_clusters, tmp_path):
