@@ -199,10 +199,16 @@ class MRCCInputGenerator:
         self.ecp_region_indices = ecp_region_indices
         self.element_info = element_info
         self.include_cp = include_cp
-        self.multiplicities = {"adsorbate_slab": 1, "adsorbate": 1, "slab": 1} if multiplicities is None else multiplicities
+        self.multiplicities = (
+            {"adsorbate_slab": 1, "adsorbate": 1, "slab": 1}
+            if multiplicities is None
+            else multiplicities
+        )
 
         # Check that none of the indices in quantum_cluster_indices are in ecp_region_indices
-        if not np.all([x not in self.ecp_region_indices for x in self.quantum_cluster_indices]):
+        if not np.all(
+            [x not in self.ecp_region_indices for x in self.quantum_cluster_indices]
+        ):
             raise ValueError(
                 "An atom in the quantum cluster is also in the ECP region."
             )
@@ -525,14 +531,20 @@ class ORCAInputGenerator:
         self.ecp_region_indices = ecp_region_indices
         self.element_info = element_info
         self.include_cp = include_cp
-        self.multiplicities = {"adsorbate_slab": 1, "adsorbate": 1, "slab": 1} if multiplicities is None else multiplicities
+        self.multiplicities = (
+            {"adsorbate_slab": 1, "adsorbate": 1, "slab": 1}
+            if multiplicities is None
+            else multiplicities
+        )
         self.pal_nprocs_block = pal_nprocs_block
         self.method_block = method_block
         self.scf_block = scf_block
         self.ecp_info = ecp_info
 
         # Check that none of the indices in quantum_cluster_indices are in ecp_region_indices
-        if not np.all([x not in self.ecp_region_indices for x in self.quantum_cluster_indices]):
+        if not np.all(
+            [x not in self.ecp_region_indices for x in self.quantum_cluster_indices]
+        ):
             raise ValueError(
                 "An atom in the quantum cluster is also in the ECP region."
             )
