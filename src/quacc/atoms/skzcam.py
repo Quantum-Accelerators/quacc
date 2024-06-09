@@ -194,22 +194,18 @@ class MRCCInputGenerator:
         None
         """
 
-        # Check that none of the indices in quantum_cluster_indices are in ecp_region_indices
-        if not np.all([x not in ecp_region_indices for x in quantum_cluster_indices]):
-            raise ValueError(
-                "An atom in the quantum cluster is also in the ECP region."
-            )
-
         self.adsorbate_slab_embedded_cluster = adsorbate_slab_embedded_cluster
         self.quantum_cluster_indices = quantum_cluster_indices
         self.ecp_region_indices = ecp_region_indices
         self.element_info = element_info
+        self.include_cp = include_cp
+        self.multiplicities = {"adsorbate_slab": 1, "adsorbate": 1, "slab": 1} if multiplicities is None else multiplicities
 
-        # Set multiplicities
-        if multiplicities is None:
-            self.multiplicities = {"adsorbate_slab": 1, "adsorbate": 1, "slab": 1}
-        else:
-            self.multiplicities = multiplicities
+        # Check that none of the indices in quantum_cluster_indices are in ecp_region_indices
+        if not np.all([x not in self.ecp_region_indices for x in self.quantum_cluster_indices]):
+            raise ValueError(
+                "An atom in the quantum cluster is also in the ECP region."
+            )
 
         # Create the adsorbate-slab complex quantum cluster and ECP region cluster
         self.adsorbate_slab_cluster = self.adsorbate_slab_embedded_cluster[
@@ -233,8 +229,6 @@ class MRCCInputGenerator:
         # Create the adsorbate and slab quantum clusters
         self.adsorbate_cluster = self.adsorbate_slab_cluster[self.adsorbate_indices]
         self.slab_cluster = self.adsorbate_slab_cluster[self.slab_indices]
-
-        self.include_cp = include_cp
 
         # Initialize the mrccblocks input strings for the adsorbate-slab complex, adsorbate, and slab
         self.mrccblocks = {"adsorbate_slab": "", "adsorbate": "", "slab": ""}
@@ -526,22 +520,22 @@ class ORCAInputGenerator:
         None
         """
 
-        # Check that none of the indices in quantum_cluster_indices are in ecp_region_indices
-        if not np.all([x not in ecp_region_indices for x in quantum_cluster_indices]):
-            raise ValueError(
-                "An atom in the quantum cluster is also in the ECP region."
-            )
-
         self.adsorbate_slab_embedded_cluster = adsorbate_slab_embedded_cluster
         self.quantum_cluster_indices = quantum_cluster_indices
         self.ecp_region_indices = ecp_region_indices
         self.element_info = element_info
+        self.include_cp = include_cp
+        self.multiplicities = {"adsorbate_slab": 1, "adsorbate": 1, "slab": 1} if multiplicities is None else multiplicities
+        self.pal_nprocs_block = pal_nprocs_block
+        self.method_block = method_block
+        self.scf_block = scf_block
+        self.ecp_info = ecp_info
 
-        # Set multiplicities
-        if multiplicities is None:
-            self.multiplicities = {"adsorbate_slab": 1, "adsorbate": 1, "slab": 1}
-        else:
-            self.multiplicities = multiplicities
+        # Check that none of the indices in quantum_cluster_indices are in ecp_region_indices
+        if not np.all([x not in self.ecp_region_indices for x in self.quantum_cluster_indices]):
+            raise ValueError(
+                "An atom in the quantum cluster is also in the ECP region."
+            )
 
         # Create the adsorbate-slab complex quantum cluster and ECP region cluster
         self.adsorbate_slab_cluster = self.adsorbate_slab_embedded_cluster[
@@ -565,13 +559,6 @@ class ORCAInputGenerator:
         # Create the adsorbate and slab quantum clusters
         self.adsorbate_cluster = self.adsorbate_slab_cluster[self.adsorbate_indices]
         self.slab_cluster = self.adsorbate_slab_cluster[self.slab_indices]
-
-        self.include_cp = include_cp
-
-        self.pal_nprocs_block = pal_nprocs_block
-        self.method_block = method_block
-        self.scf_block = scf_block
-        self.ecp_info = ecp_info
 
         # Initialize the orcablocks input strings for the adsorbate-slab complex, adsorbate, and slab
         self.orcablocks = {"adsorbate_slab": "", "adsorbate": "", "slab": ""}
@@ -928,21 +915,20 @@ class CreateSKZCAMClusters:
         self.slab_center_indices = slab_center_indices
         self.slab_indices = None  # This will be set later
         self.atom_oxi_states = atom_oxi_states
+        self.adsorbate_slab_file = adsorbate_slab_file
+        self.pun_file = pun_file
 
         # Check that the adsorbate_indices and slab_center_indices are not the same
-        if any(x in adsorbate_indices for x in slab_center_indices):
+        if any(x in self.adsorbate_indices for x in self.slab_center_indices):
             raise ValueError(
                 "The adsorbate and slab center indices cannot be the same."
             )
 
         # Check that the adsorbate_slab_file and pun_file are not both None
-        if adsorbate_slab_file is None and pun_file is None:
+        if self.adsorbate_slab_file is None and self.pun_file is None:
             raise ValueError(
                 "Either the adsorbate_slab_file or pun_file must be provided."
             )
-
-        self.adsorbate_slab_file = adsorbate_slab_file
-        self.pun_file = pun_file
 
         # Initialize the adsorbate, slab and adsorbate_slab Atoms object which contains the adsorbate, slab and adsorbate-slab complex respectively
         self.adsorbate = None
