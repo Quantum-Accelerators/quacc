@@ -1129,9 +1129,6 @@ class CreateSKZCAMClusters:
         """
         Read the file containing the periodic slab and adsorbate (geometry optimized) and format the resulting Atoms object to be used to create a .pun file in ChemShell.
 
-        Parameters
-        ----------
-
         Returns
         -------
         None
