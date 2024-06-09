@@ -905,14 +905,15 @@ def create_atom_coord_string(
 
     return atom_coord_str
 
+
 class CreateSKZCAMClusters:
     def __init__(
-            self,
-            adsorbate_indices: list[int],
-            slab_center_indices: list[int],
-            atom_oxi_states: dict[str, int],
-            adsorbate_slab_file: str | Path | None = None,
-            pun_file: str | Path | None = None,
+        self,
+        adsorbate_indices: list[int],
+        slab_center_indices: list[int],
+        atom_oxi_states: dict[str, int],
+        adsorbate_slab_file: str | Path | None = None,
+        pun_file: str | Path | None = None,
     ):
         """
         Parameters
@@ -931,16 +932,20 @@ class CreateSKZCAMClusters:
 
         self.adsorbate_indices = adsorbate_indices
         self.slab_center_indices = slab_center_indices
-        self.slab_indices = None # This will be set later
+        self.slab_indices = None  # This will be set later
         self.atom_oxi_states = atom_oxi_states
 
         # Check that the adsorbate_indices and slab_center_indices are not the same
-        if any([x in adsorbate_indices for x in slab_center_indices]):
-            raise ValueError("The adsorbate and slab center indices cannot be the same.")
-        
+        if any(x in adsorbate_indices for x in slab_center_indices):
+            raise ValueError(
+                "The adsorbate and slab center indices cannot be the same."
+            )
+
         # Check that the adsorbate_slab_file and pun_file are not both None
         if adsorbate_slab_file is None and pun_file is None:
-            raise ValueError("Either the adsorbate_slab_file or pun_file must be provided.")
+            raise ValueError(
+                "Either the adsorbate_slab_file or pun_file must be provided."
+            )
 
         self.adsorbate_slab_file = adsorbate_slab_file
         self.pun_file = pun_file
@@ -994,9 +999,7 @@ class CreateSKZCAMClusters:
         """
 
         # Read the .pun file and create the embedded_cluster Atoms object
-        self.slab_embedded_cluster = self.convert_pun_to_atoms(
-            pun_file=self.pun_file
-        )
+        self.slab_embedded_cluster = self.convert_pun_to_atoms(pun_file=self.pun_file)
 
         # Get distances of all atoms from the cluster center
         atom_center_distances = _get_atom_distances(
@@ -1019,8 +1022,10 @@ class CreateSKZCAMClusters:
             shell_indices = cation_shells_idx[shell_idx]
             anion_coord_idx += [
                 self._get_anion_coordination(
-                    slab_embedded_cluster=self.slab_embedded_cluster,         cation_shell_indices = shell_indices,
-         dist_matrix = slab_embedded_cluster_all_dist, bond_dist = bond_dist
+                    slab_embedded_cluster=self.slab_embedded_cluster,
+                    cation_shell_indices=shell_indices,
+                    dist_matrix=slab_embedded_cluster_all_dist,
+                    bond_dist=bond_dist,
                 )
             ]
 
@@ -1044,20 +1049,29 @@ class CreateSKZCAMClusters:
         )
         # print(slab_quantum_cluster_indices)
         # Create the adsorbate_slab_embedded_cluster from slab_embedded_cluster and adsorbate atoms objects. This also sets the final quantum_cluster_indices and ecp_region_indices for the adsorbate_slab_embedded_cluster
-        self.create_adsorbate_slab_embedded_cluster(quantum_cluster_indices=slab_quantum_cluster_indices, ecp_region_indices=slab_ecp_region_indices)
+        self.create_adsorbate_slab_embedded_cluster(
+            quantum_cluster_indices=slab_quantum_cluster_indices,
+            ecp_region_indices=slab_ecp_region_indices,
+        )
 
         # Write the quantum clusters to files
         if write_clusters:
             for idx in range(len(self.quantum_cluster_indices)):
-                quantum_atoms = self.adsorbate_slab_embedded_cluster[self.quantum_cluster_indices[idx]]
+                quantum_atoms = self.adsorbate_slab_embedded_cluster[
+                    self.quantum_cluster_indices[idx]
+                ]
                 if write_include_ecp:
-                    ecp_atoms = self.adsorbate_slab_embedded_cluster[self.ecp_region_indices[idx]]
+                    ecp_atoms = self.adsorbate_slab_embedded_cluster[
+                        self.ecp_region_indices[idx]
+                    ]
                     ecp_atoms.set_chemical_symbols(np.array(["U"] * len(ecp_atoms)))
                     cluster_atoms = quantum_atoms + ecp_atoms
                 else:
                     cluster_atoms = quantum_atoms
-                write(Path(write_clusters_path, f"SKZCAM_cluster_{idx}.xyz"), cluster_atoms)
-
+                write(
+                    Path(write_clusters_path, f"SKZCAM_cluster_{idx}.xyz"),
+                    cluster_atoms,
+                )
 
     @requires(has_chemshell, "ChemShell is not installed")
     def run_chemshell(
@@ -1106,7 +1120,9 @@ class CreateSKZCAMClusters:
         )
 
         # Save the final cluster to a .pun file
-        chemsh_slab_embedded_cluster.save(filename=Path(filepath).with_suffix(".pun"), fmt="pun")
+        chemsh_slab_embedded_cluster.save(
+            filename=Path(filepath).with_suffix(".pun"), fmt="pun"
+        )
         self.pun_file = Path(filepath).with_suffix(".pun")
 
         if write_xyz_file:
@@ -1115,11 +1131,7 @@ class CreateSKZCAMClusters:
                 filename=Path(filepath).with_suffix(".xyz"), fmt="xyz"
             )
 
-
-
-    def convert_slab_to_atoms(
-        self
-    ) -> None:
+    def convert_slab_to_atoms(self) -> None:
         """
         Read the file containing the periodic slab and adsorbate (geometry optimized) and format the resulting Atoms object to be used to create a .pun file in ChemShell.
 
@@ -1145,27 +1157,25 @@ class CreateSKZCAMClusters:
 
         # Find indices (within adsorbate_slab) of the slab
         slab_indices = self.slab_center_indices + [
-            i for i, _ in enumerate(adsorbate_slab) if i not in (self.adsorbate_indices + self.slab_center_indices)
+            i
+            for i, _ in enumerate(adsorbate_slab)
+            if i not in (self.adsorbate_indices + self.slab_center_indices)
         ]
 
-        # Create adsorbate and slab from adsorbate_slab 
+        # Create adsorbate and slab from adsorbate_slab
         slab = adsorbate_slab[slab_indices]
         adsorbate = adsorbate_slab[self.adsorbate_indices]
 
         adsorbate.translate(-slab[0].position)
         slab.translate(-slab[0].position)
 
-
         # Get the relative distance of the adsorbate from the first center atom of the slab as defined in the slab_center_indices
-        adsorbate_vector_from_slab = (
-            adsorbate[0].position - slab[0].position
-        )
+        adsorbate_vector_from_slab = adsorbate[0].position - slab[0].position
 
         # Get the center of the cluster from the slab_center_indices
-        slab_center_position = slab[:len(self.slab_center_indices)].get_positions().sum(
-            axis=0
-        ) / len(self.slab_center_indices)
-
+        slab_center_position = slab[
+            : len(self.slab_center_indices)
+        ].get_positions().sum(axis=0) / len(self.slab_center_indices)
 
         # Add the height of the adsorbate from the slab along the z-direction relative to the slab_center
         adsorbate_com_z_disp = (
@@ -1173,8 +1183,7 @@ class CreateSKZCAMClusters:
         )
 
         center_position = (
-            np.array([0.0, 0.0, adsorbate_com_z_disp])
-            + slab_center_position
+            np.array([0.0, 0.0, adsorbate_com_z_disp]) + slab_center_position
         )
 
         self.adsorbate = adsorbate
@@ -1183,11 +1192,7 @@ class CreateSKZCAMClusters:
         self.adsorbate_vector_from_slab = adsorbate_vector_from_slab
         self.center_position = center_position
 
-
-    def convert_pun_to_atoms(
-        self,
-        pun_file: str | Path
-    ) -> Atoms:
+    def convert_pun_to_atoms(self, pun_file: str | Path) -> Atoms:
         """
         Reads a .pun file and returns an ASE Atoms object containing the atomic coordinates,
         point charges/oxidation states, and atom types.
@@ -1216,7 +1221,9 @@ class CreateSKZCAMClusters:
         # Load the pun file as a list of strings
         with zopen(zpath(Path(pun_file))) as f:
             raw_pun_file = [
-                line.rstrip().decode("utf-8") if isinstance(line, bytes) else line.rstrip()
+                line.rstrip().decode("utf-8")
+                if isinstance(line, bytes)
+                else line.rstrip()
                 for line in f
             ]
 
@@ -1270,7 +1277,6 @@ class CreateSKZCAMClusters:
 
         return slab_embedded_cluster
 
-
     def create_adsorbate_slab_embedded_cluster(
         self,
         quantum_cluster_indices: list[list[int]] | None = None,
@@ -1297,35 +1303,41 @@ class CreateSKZCAMClusters:
         self.adsorbate.set_pbc(False)
 
         # Translate the adsorbate to the correct position relative to the slab
-        self.adsorbate.translate(self.slab_embedded_cluster[0].position - self.adsorbate[0].position + self.adsorbate_vector_from_slab)
+        self.adsorbate.translate(
+            self.slab_embedded_cluster[0].position
+            - self.adsorbate[0].position
+            + self.adsorbate_vector_from_slab
+        )
 
         # Set oxi_state and atom_type arrays for the adsorbate
         self.adsorbate.set_array("oxi_states", np.array([0.0] * len(self.adsorbate)))
-        self.adsorbate.set_array("atom_type", np.array(["adsorbate"] * len(self.adsorbate)))
+        self.adsorbate.set_array(
+            "atom_type", np.array(["adsorbate"] * len(self.adsorbate))
+        )
 
         # Add the adsorbate to the embedded cluster
-        self.adsorbate_slab_embedded_cluster = self.adsorbate + self.slab_embedded_cluster
+        self.adsorbate_slab_embedded_cluster = (
+            self.adsorbate + self.slab_embedded_cluster
+        )
 
         # Update the quantum cluster and ECP region indices
         if quantum_cluster_indices is not None:
             quantum_cluster_indices = [
-                list(range(len(self.adsorbate))) + [idx + len(self.adsorbate) for idx in cluster]
+                list(range(len(self.adsorbate)))
+                + [idx + len(self.adsorbate) for idx in cluster]
                 for cluster in quantum_cluster_indices
             ]
         if ecp_region_indices is not None:
             ecp_region_indices = [
-                [idx + len(self.adsorbate) for idx in cluster] for cluster in ecp_region_indices
+                [idx + len(self.adsorbate) for idx in cluster]
+                for cluster in ecp_region_indices
             ]
 
         self.quantum_cluster_indices = quantum_cluster_indices
         self.ecp_region_indices = ecp_region_indices
 
-
-
-
-
-    def _find_cation_shells(self, 
-        slab_embedded_cluster: Atoms, distances: NDArray, shell_width: float = 0.1
+    def _find_cation_shells(
+        self, slab_embedded_cluster: Atoms, distances: NDArray, shell_width: float = 0.1
     ) -> list[list[int]]:
         """
         Returns a list of lists containing the indices of the cations in each shell, based on distance from the embedded cluster center.
@@ -1379,8 +1391,8 @@ class CreateSKZCAMClusters:
 
         return shells_distances, shells_indices
 
-
-    def _get_anion_coordination(self, 
+    def _get_anion_coordination(
+        self,
         slab_embedded_cluster: Atoms,
         cation_shell_indices: list[int],
         dist_matrix: NDArray,
@@ -1422,8 +1434,8 @@ class CreateSKZCAMClusters:
 
         return list(set(anion_coord_indices))
 
-
-    def _get_ecp_region(self, 
+    def _get_ecp_region(
+        self,
         slab_embedded_cluster: Atoms,
         quantum_cluster_indices: list[int],
         dist_matrix: NDArray,
@@ -1462,14 +1474,16 @@ class CreateSKZCAMClusters:
                     if (
                         dist < ecp_dist
                         and idx not in dummy_cation_indices
-                        and slab_embedded_cluster.get_array("atom_type")[idx] == "cation"
+                        and slab_embedded_cluster.get_array("atom_type")[idx]
+                        == "cation"
                     ):
                         cluster_ecp_region_idx += [idx]
 
             ecp_region_indices += [list(set(cluster_ecp_region_idx))]
 
         return ecp_region_indices
-    
+
+
 def _get_atom_distances(atoms: Atoms, center_position: NDArray) -> NDArray:
     """
     Returns the distance of all atoms from the center position of the embedded cluster
@@ -1487,6 +1501,4 @@ def _get_atom_distances(atoms: Atoms, center_position: NDArray) -> NDArray:
         An array containing the distances of each atom in the Atoms object from the cluster center.
     """
 
-    return np.array(
-        [np.linalg.norm(atom.position - center_position) for atom in atoms]
-    )
+    return np.array([np.linalg.norm(atom.position - center_position) for atom in atoms])
