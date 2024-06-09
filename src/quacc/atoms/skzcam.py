@@ -483,6 +483,7 @@ class ORCAInputGenerator:
     """
     A class to generate the skzcam input for the ORCA ASE calculator.
     """
+
     def __init__(
         self,
         adsorbate_slab_embedded_cluster: Atoms,
@@ -895,6 +896,7 @@ class CreateSKZCAMClusters:
     """
     A class to create the quantum clusters and ECP regions for the SKZCAM protocol.
     """
+
     def __init__(
         self,
         adsorbate_indices: list[int],
@@ -1317,7 +1319,7 @@ class CreateSKZCAMClusters:
 
     def _find_cation_shells(
         self, slab_embedded_cluster: Atoms, distances: NDArray, shell_width: float = 0.1
-    ) -> tuple[list[list[int]],list[list[int]]]:
+    ) -> tuple[list[list[int]], list[list[int]]]:
         """
         Returns a list of lists containing the indices of the cations in each shell, based on distance from the embedded cluster center.
         This is achieved by clustering the data based on the DBSCAN clustering algorithm.
