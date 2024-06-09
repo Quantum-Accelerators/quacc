@@ -486,6 +486,7 @@ geom=xyz
 
         return pc_block
 
+
 class ORCAInputGenerator:
     def __init__(
         self,
@@ -579,9 +580,7 @@ class ORCAInputGenerator:
         # Initialize the orcablocks input strings for the adsorbate-slab complex, adsorbate, and slab
         self.orcablocks = {"adsorbate_slab": "", "adsorbate": "", "slab": ""}
 
-    def generate_input(
-        self
-    ) -> None:
+    def generate_input(self) -> None:
         """
         Creates the orcablocks input for the ORCA ASE calculator.
 
@@ -602,15 +601,13 @@ class ORCAInputGenerator:
         # Combine the blocks
         return self.orcablocks
 
-    def generate_coords_block(
-        self
-    ) -> None:
+    def generate_coords_block(self) -> None:
         """
         Generates the coordinates block for the ORCA input file. This includes the coordinates of the quantum cluster, the ECP region, and the point charges. It will return three strings for the adsorbate-slab complex, adsorbate and slab.
 
         Parameters
         ----------
-        
+
 
         Returns
         -------
@@ -664,7 +661,9 @@ coords
         # Create the coords section for the ECP region
         ecp_region_coords_section = ""
         for i, atom in enumerate(self.ecp_region):
-            atom_ecp_info = self.format_ecp_info(atom_ecp_info=self.ecp_info[atom.symbol])
+            atom_ecp_info = self.format_ecp_info(
+                atom_ecp_info=self.ecp_info[atom.symbol]
+            )
             ecp_region_coords_section += create_atom_coord_string(
                 atom=atom,
                 atom_ecp_info=atom_ecp_info,
@@ -676,9 +675,7 @@ coords
         self.orcablocks["slab"] += f"{ecp_region_coords_section}end\nend\n"
         self.orcablocks["adsorbate"] += "end\nend\n"
 
-
-
-    def format_ecp_info(self,atom_ecp_info: str) -> str:
+    def format_ecp_info(self, atom_ecp_info: str) -> str:
         """
         Formats the ECP info so that it can be inputted to ORCA without problems.
 
@@ -705,10 +702,7 @@ coords
         # Extract content between "NewECP" and "end", exclusive of "end", then add correctly formatted "NewECP" and "end"
         return f"NewECP\n{atom_ecp_info[start_pos:end_pos].strip()}\nend\n"
 
-
-    def generate_preamble_block(
-        self
-    ) -> str:
+    def generate_preamble_block(self) -> str:
         """
         From the quantum cluster Atoms object, generate the ORCA input preamble for the basis, method, pal, and scf blocks.
 
@@ -719,7 +713,6 @@ coords
         -------
         None
         """
-
 
         # Get the set of element symbols from the quantum cluster
         element_symbols = list(set(self.adsorbate_slab_cluster.get_chemical_symbols()))
@@ -766,8 +759,15 @@ coords
         # First check if the basis key is the same for all elements. We use """ here because an option for these keys is "AutoAux"
         if self.element_info is not None:
             preamble_input += "%basis\n"
-            if len({self.element_info[element]["basis"] for element in element_symbols}) == 1:
-                preamble_input += f"""Basis {self.element_info[element_symbols[0]]['basis']}\n"""
+            if (
+                len(
+                    {self.element_info[element]["basis"] for element in element_symbols}
+                )
+                == 1
+            ):
+                preamble_input += (
+                    f"""Basis {self.element_info[element_symbols[0]]['basis']}\n"""
+                )
             else:
                 for element in element_symbols:
                     element_basis = self.element_info[element]["basis"]
@@ -775,7 +775,12 @@ coords
 
             # Do the same for ri_scf_basis and ri_cwft_basis.
             if (
-                len({self.element_info[element]["ri_scf_basis"] for element in element_symbols})
+                len(
+                    {
+                        self.element_info[element]["ri_scf_basis"]
+                        for element in element_symbols
+                    }
+                )
                 == 1
             ):
                 preamble_input += (
@@ -797,13 +802,13 @@ coords
                 )
                 == 1
             ):
-                preamble_input += (
-                    f"""AuxC {self.element_info[element_symbols[0]]['ri_cwft_basis']}\n"""
-                )
+                preamble_input += f"""AuxC {self.element_info[element_symbols[0]]['ri_cwft_basis']}\n"""
             else:
                 for element in element_symbols:
                     element_basis = self.element_info[element]["ri_cwft_basis"]
-                    preamble_input += f"""NewAuxCGTO {element} "{element_basis}" end\n"""
+                    preamble_input += (
+                        f"""NewAuxCGTO {element} "{element_basis}" end\n"""
+                    )
 
             preamble_input += "end\n"
 
@@ -819,10 +824,7 @@ coords
         self.orcablocks["adsorbate"] += preamble_input
         self.orcablocks["slab"] += preamble_input
 
-    def create_point_charge_file(
-        self,
-        pc_file: str | Path,
-    ) -> None:
+    def create_point_charge_file(self, pc_file: str | Path) -> None:
         """
         Create a point charge file that can be read by ORCA. This requires the embedded_cluster Atoms object containing both atom_type and oxi_states arrays, as well as the indices of the quantum cluster and ECP region.
 
@@ -858,6 +860,7 @@ coords
                         f.write(
                             f"{oxi_states[i]:-16.11f} {position[0]:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f}"
                         )
+
 
 def create_atom_coord_string(
     atom: Atom,

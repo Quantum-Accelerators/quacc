@@ -13,13 +13,12 @@ from numpy.testing import assert_allclose, assert_equal
 from quacc.atoms.skzcam import (
     MRCCInputGenerator,
     ORCAInputGenerator,
-    create_atom_coord_string,
     _find_cation_shells,
     _get_anion_coordination,
     _get_atom_distances,
     _get_ecp_region,
     convert_pun_to_atoms,
-
+    create_atom_coord_string,
     create_skzcam_clusters,
     get_cluster_info_from_slab,
     insert_adsorbate_to_embedded_cluster,
@@ -46,6 +45,7 @@ def mrcc_input_generator(embedded_adsorbed_cluster, element_info):
         include_cp=True,
         multiplicities={"adsorbate_slab": 3, "adsorbate": 1, "slab": 2},
     )
+
 
 @pytest.fixture()
 def orca_input_generator(embedded_adsorbed_cluster, element_info):
@@ -87,7 +87,7 @@ end"""
         pal_nprocs_block=pal_nprocs_block,
         method_block=method_block,
         scf_block=scf_block,
-        ecp_info=ecp_info
+        ecp_info=ecp_info,
     )
 
 
@@ -546,6 +546,7 @@ def test_MRCCInputGenerator_generate_point_charge_block(mrcc_input_generator):
         atol=1e-07,
     )
 
+
 def test_ORCAInputGenerator_init(embedded_adsorbed_cluster, element_info):
     pal_nprocs_block = {"nprocs": 1, "maxcore": 5000}
 
@@ -584,7 +585,7 @@ end"""
         pal_nprocs_block=pal_nprocs_block,
         method_block=method_block,
         scf_block=scf_block,
-        ecp_info=ecp_info
+        ecp_info=ecp_info,
     )
 
     # Check when multiplicities is not provided
@@ -604,7 +605,7 @@ end"""
         pal_nprocs_block=pal_nprocs_block,
         method_block=method_block,
         scf_block=scf_block,
-        ecp_info=ecp_info
+        ecp_info=ecp_info,
     )
 
     assert not compare_atoms(
@@ -636,17 +637,17 @@ end"""
         ValueError, match="An atom in the quantum cluster is also in the ECP region."
     ):
         orca_input_generator = ORCAInputGenerator(
-        embedded_adsorbed_cluster=embedded_adsorbed_cluster,
-        quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
-        ecp_region_indices=[7, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
-        element_info=element_info,
-        include_cp=True,
-        multiplicities={"adsorbate_slab": 3, "adsorbate": 1, "slab": 2},
-        pal_nprocs_block=pal_nprocs_block,
-        method_block=method_block,
-        scf_block=scf_block,
-        ecp_info=ecp_info
-    )
+            embedded_adsorbed_cluster=embedded_adsorbed_cluster,
+            quantum_cluster_indices=[0, 1, 2, 3, 4, 5, 6, 7],
+            ecp_region_indices=[7, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
+            element_info=element_info,
+            include_cp=True,
+            multiplicities={"adsorbate_slab": 3, "adsorbate": 1, "slab": 2},
+            pal_nprocs_block=pal_nprocs_block,
+            method_block=method_block,
+            scf_block=scf_block,
+            ecp_info=ecp_info,
+        )
 
 
 def test_ORCAInputGenerator_generate_input(orca_input_generator):
@@ -657,81 +658,109 @@ def test_ORCAInputGenerator_generate_input(orca_input_generator):
 
     orca_input_generator.generate_input()
 
-    reference_block_collated = {'adsorbate_slab': {'float': [1.0, 2.0, 1.0, 0.0, 2.0],
-  'string': ['%pal',
-   'NewNCore',
-   'O',
-   '"aug-cc-pVDZ/C"',
-   '"orca_svp_start.gbw"',
-   'O',
-   'Mg>',
-   'd',
-   'f',
-   'NewECP',
-   'f',
-   's',
-   'N_core',
-   'end']},
- 'adsorbate': {'float': [1.0],
-  'string': ['%pal',
-   'NewNCore',
-   'O',
-   '"aug-cc-pVDZ/C"',
-   '"orca_svp_start.gbw"',
-   'O']},
- 'slab': {'float': [1.0, 2.0, 1.0, 0.0, 2.0],
-  'string': ['%pal',
-   'NewNCore',
-   'O',
-   '"aug-cc-pVDZ/C"',
-   '"orca_svp_start.gbw"',
-   'O:',
-   'Mg>',
-   'd',
-   'f',
-   'NewECP',
-   'f',
-   's',
-   'N_core',
-   'end']}}
-    
-    reference_block_nocp_collated = {'adsorbate_slab': {'float': [1.0, 2.0, 1.0, 0.0, 2.0],
-  'string': ['%pal',
-   'NewNCore',
-   'O',
-   '"aug-cc-pVDZ/C"',
-   '"orca_svp_start.gbw"',
-   'O',
-   'Mg>',
-   'd',
-   'f',
-   'NewECP',
-   'f',
-   's',
-   'N_core',
-   'end']},
- 'adsorbate': {'float': [1.0],
-  'string': ['%pal',
-   'NewNCore',
-   'O',
-   '"aug-cc-pVDZ/C"',
-   '"orca_svp_start.gbw"',
-   'O']},
- 'slab': {'float': [1.0, 2.0, 2.10705287155, 0.0, 1.0],
-  'string': ['%pal',
-   'NewNCore',
-   'O',
-   '"aug-cc-pVDZ/C"',
-   '"orca_svp_start.gbw"',
-   'O',
-   'N_core',
-   'end',
-   'p',
-   'lmax',
-   'Mg>',
-   'd',
-   'f',
-   'end']}}
+    reference_block_collated = {
+        "adsorbate_slab": {
+            "float": [1.0, 2.0, 1.0, 0.0, 2.0],
+            "string": [
+                "%pal",
+                "NewNCore",
+                "O",
+                '"aug-cc-pVDZ/C"',
+                '"orca_svp_start.gbw"',
+                "O",
+                "Mg>",
+                "d",
+                "f",
+                "NewECP",
+                "f",
+                "s",
+                "N_core",
+                "end",
+            ],
+        },
+        "adsorbate": {
+            "float": [1.0],
+            "string": [
+                "%pal",
+                "NewNCore",
+                "O",
+                '"aug-cc-pVDZ/C"',
+                '"orca_svp_start.gbw"',
+                "O",
+            ],
+        },
+        "slab": {
+            "float": [1.0, 2.0, 1.0, 0.0, 2.0],
+            "string": [
+                "%pal",
+                "NewNCore",
+                "O",
+                '"aug-cc-pVDZ/C"',
+                '"orca_svp_start.gbw"',
+                "O:",
+                "Mg>",
+                "d",
+                "f",
+                "NewECP",
+                "f",
+                "s",
+                "N_core",
+                "end",
+            ],
+        },
+    }
+
+    reference_block_nocp_collated = {
+        "adsorbate_slab": {
+            "float": [1.0, 2.0, 1.0, 0.0, 2.0],
+            "string": [
+                "%pal",
+                "NewNCore",
+                "O",
+                '"aug-cc-pVDZ/C"',
+                '"orca_svp_start.gbw"',
+                "O",
+                "Mg>",
+                "d",
+                "f",
+                "NewECP",
+                "f",
+                "s",
+                "N_core",
+                "end",
+            ],
+        },
+        "adsorbate": {
+            "float": [1.0],
+            "string": [
+                "%pal",
+                "NewNCore",
+                "O",
+                '"aug-cc-pVDZ/C"',
+                '"orca_svp_start.gbw"',
+                "O",
+            ],
+        },
+        "slab": {
+            "float": [1.0, 2.0, 2.10705287155, 0.0, 1.0],
+            "string": [
+                "%pal",
+                "NewNCore",
+                "O",
+                '"aug-cc-pVDZ/C"',
+                '"orca_svp_start.gbw"',
+                "O",
+                "N_core",
+                "end",
+                "p",
+                "lmax",
+                "Mg>",
+                "d",
+                "f",
+                "end",
+            ],
+        },
+    }
 
     generated_block_collated = {
         system: {"float": [], "string": []}
@@ -754,7 +783,10 @@ def test_ORCAInputGenerator_generate_input(orca_input_generator):
             if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
         ][::17]
 
-        assert_equal(reference_block_collated[system]["string"], generated_block_collated[system]["string"])
+        assert_equal(
+            reference_block_collated[system]["string"],
+            generated_block_collated[system]["string"],
+        )
         assert_allclose(
             generated_block_collated[system]["float"],
             reference_block_collated[system]["float"],
@@ -773,14 +805,16 @@ def test_ORCAInputGenerator_generate_input(orca_input_generator):
             if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
         ][::17]
 
-        assert_equal(reference_block_nocp_collated[system]["string"], generated_block_nocp_collated[system]["string"])
+        assert_equal(
+            reference_block_nocp_collated[system]["string"],
+            generated_block_nocp_collated[system]["string"],
+        )
         assert_allclose(
             generated_block_nocp_collated[system]["float"],
             reference_block_nocp_collated[system]["float"],
             rtol=1e-05,
             atol=1e-07,
         )
-
 
 
 def test_create_atom_coord_string(embedded_adsorbed_cluster):
@@ -831,100 +865,120 @@ def test_ORCAInputGenerator_generate_coords_block(orca_input_generator):
 
     orca_input_generator.generate_coords_block()
 
-    reference_block_collated = {'adsorbate_slab': {'float': [3.0, 1.0, 5.1757, 1.0, 0.0, 2.0, 1.0],
-  'string': ['%coords',
-   'coords',
-   'O',
-   's',
-   'N_core',
-   'end',
-   'p',
-   'lmax',
-   'Mg>',
-   'd',
-   'f',
-   'NewECP',
-   'f',
-   's',
-   'N_core',
-   'end',
-   'p',
-   'lmax',
-   'Mg>',
-   'd',
-   'f',
-   'end']},
- 'adsorbate': {'float': [1.0], 'string': ['%coords', 'coords', 'O:']},
- 'slab': {'float': [2.0, 1.0, 5.1757, 1.0, 0.0, 2.0, 1.0],
-  'string': ['%coords',
-   'coords',
-   'O',
-   's',
-   'N_core',
-   'end',
-   'p',
-   'lmax',
-   'Mg>',
-   'd',
-   'f',
-   'NewECP',
-   'f',
-   's',
-   'N_core',
-   'end',
-   'p',
-   'lmax',
-   'Mg>',
-   'd',
-   'f',
-   'end']}}
-    
-    reference_block_nocp_collated = {'adsorbate_slab': {'float': [3.0, 1.0, 5.1757, 1.0, 0.0, 2.0, 1.0],
-  'string': ['%coords',
-   'coords',
-   'O',
-   's',
-   'N_core',
-   'end',
-   'p',
-   'lmax',
-   'Mg>',
-   'd',
-   'f',
-   'NewECP',
-   'f',
-   's',
-   'N_core',
-   'end',
-   'p',
-   'lmax',
-   'Mg>',
-   'd',
-   'f',
-   'end']},
- 'adsorbate': {'float': [1.0], 'string': ['%coords', 'coords']},
- 'slab': {'float': [2.0, 1.115, 2.0, 2.10705287155, 14.676, 1.0, 1.0],
-  'string': ['%coords',
-   'coords',
-   'Mg>',
-   'd',
-   'f',
-   'NewECP',
-   'f',
-   's',
-   'N_core',
-   'end',
-   'p',
-   'lmax',
-   'Mg>',
-   'd',
-   'f',
-   'NewECP',
-   'f',
-   's',
-   'N_core',
-   'end',
-   'p']}}
+    reference_block_collated = {
+        "adsorbate_slab": {
+            "float": [3.0, 1.0, 5.1757, 1.0, 0.0, 2.0, 1.0],
+            "string": [
+                "%coords",
+                "coords",
+                "O",
+                "s",
+                "N_core",
+                "end",
+                "p",
+                "lmax",
+                "Mg>",
+                "d",
+                "f",
+                "NewECP",
+                "f",
+                "s",
+                "N_core",
+                "end",
+                "p",
+                "lmax",
+                "Mg>",
+                "d",
+                "f",
+                "end",
+            ],
+        },
+        "adsorbate": {"float": [1.0], "string": ["%coords", "coords", "O:"]},
+        "slab": {
+            "float": [2.0, 1.0, 5.1757, 1.0, 0.0, 2.0, 1.0],
+            "string": [
+                "%coords",
+                "coords",
+                "O",
+                "s",
+                "N_core",
+                "end",
+                "p",
+                "lmax",
+                "Mg>",
+                "d",
+                "f",
+                "NewECP",
+                "f",
+                "s",
+                "N_core",
+                "end",
+                "p",
+                "lmax",
+                "Mg>",
+                "d",
+                "f",
+                "end",
+            ],
+        },
+    }
+
+    reference_block_nocp_collated = {
+        "adsorbate_slab": {
+            "float": [3.0, 1.0, 5.1757, 1.0, 0.0, 2.0, 1.0],
+            "string": [
+                "%coords",
+                "coords",
+                "O",
+                "s",
+                "N_core",
+                "end",
+                "p",
+                "lmax",
+                "Mg>",
+                "d",
+                "f",
+                "NewECP",
+                "f",
+                "s",
+                "N_core",
+                "end",
+                "p",
+                "lmax",
+                "Mg>",
+                "d",
+                "f",
+                "end",
+            ],
+        },
+        "adsorbate": {"float": [1.0], "string": ["%coords", "coords"]},
+        "slab": {
+            "float": [2.0, 1.115, 2.0, 2.10705287155, 14.676, 1.0, 1.0],
+            "string": [
+                "%coords",
+                "coords",
+                "Mg>",
+                "d",
+                "f",
+                "NewECP",
+                "f",
+                "s",
+                "N_core",
+                "end",
+                "p",
+                "lmax",
+                "Mg>",
+                "d",
+                "f",
+                "NewECP",
+                "f",
+                "s",
+                "N_core",
+                "end",
+                "p",
+            ],
+        },
+    }
 
     generated_block_collated = {
         system: {"float": [], "string": []}
@@ -947,7 +1001,10 @@ def test_ORCAInputGenerator_generate_coords_block(orca_input_generator):
             if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
         ][::7]
 
-        assert_equal(reference_block_collated[system]["string"], generated_block_collated[system]["string"])
+        assert_equal(
+            reference_block_collated[system]["string"],
+            generated_block_collated[system]["string"],
+        )
         assert_allclose(
             generated_block_collated[system]["float"],
             reference_block_collated[system]["float"],
@@ -966,7 +1023,10 @@ def test_ORCAInputGenerator_generate_coords_block(orca_input_generator):
             if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
         ][::7]
 
-        assert_equal(reference_block_nocp_collated[system]["string"], generated_block_nocp_collated[system]["string"])
+        assert_equal(
+            reference_block_nocp_collated[system]["string"],
+            generated_block_nocp_collated[system]["string"],
+        )
         assert_allclose(
             generated_block_nocp_collated[system]["float"],
             reference_block_nocp_collated[system]["float"],
@@ -987,7 +1047,9 @@ s 1
 1      1.732000000   14.676000000 2
 end
 """
-    formatted_atom_ecp_info = orca_input_generator.format_ecp_info(atom_ecp_info=atom_ecp_info)
+    formatted_atom_ecp_info = orca_input_generator.format_ecp_info(
+        atom_ecp_info=atom_ecp_info
+    )
     assert (
         formatted_atom_ecp_info
         == "NewECP\nN_core 0\nlmax s\ns 1\n1      1.732000000   14.676000000 2\nend\n"
@@ -995,24 +1057,27 @@ end
 
 
 def test_ORCAInputGenerator_generate_preamble_block(orca_input_generator):
-
     # Make copy of orca_input_generator for further tests
     orca_input_generator_1 = deepcopy(orca_input_generator)
     orca_input_generator_2 = deepcopy(orca_input_generator)
     orca_input_generator_3 = deepcopy(orca_input_generator)
 
-
     # Generate the orca input preamble
     orca_input_generator_1.generate_preamble_block()
 
     assert (
-        orca_input_generator_1.orcablocks['adsorbate_slab']
+        orca_input_generator_1.orcablocks["adsorbate_slab"]
         == '%pal nprocs 1 end\n%maxcore 5000 end\n%pointcharges "orca.pc"\n%method\nMethod hf\nRI on\nRunTyp Energy\nNewNCore C 2 end\nNewNCore Mg 2 end\nNewNCore O 2 end\nend\n%basis\nNewGTO C "aug-cc-pVDZ" end\nNewGTO Mg "cc-pVDZ" end\nNewGTO O "aug-cc-pVDZ" end\nNewAuxJGTO C "def2/J" end\nNewAuxJGTO Mg "def2/J" end\nNewAuxJGTO O "def2/JK" end\nNewAuxCGTO C "aug-cc-pVDZ/C" end\nNewAuxCGTO Mg "cc-pVDZ/C" end\nNewAuxCGTO O "aug-cc-pVDZ/C" end\nend\n%scf\nHFTyp rhf\nGuess MORead\nMOInp "orca_svp_start.gbw"\nSCFMode Direct\nsthresh 1e-6\nAutoTRAHIter 60\nMaxIter 1000\nend\n'
     )
 
-    assert orca_input_generator_1.orcablocks['adsorbate_slab'] == orca_input_generator_1.orcablocks['adsorbate']
-    assert orca_input_generator_1.orcablocks['adsorbate_slab'] == orca_input_generator_1.orcablocks['slab']
-
+    assert (
+        orca_input_generator_1.orcablocks["adsorbate_slab"]
+        == orca_input_generator_1.orcablocks["adsorbate"]
+    )
+    assert (
+        orca_input_generator_1.orcablocks["adsorbate_slab"]
+        == orca_input_generator_1.orcablocks["slab"]
+    )
 
     # Check the case if the element_info has all of the same values
     element_info = {
@@ -1039,7 +1104,7 @@ def test_ORCAInputGenerator_generate_preamble_block(orca_input_generator):
     orca_input_generator_2.generate_preamble_block()
 
     assert (
-        orca_input_generator_2.orcablocks['adsorbate_slab']
+        orca_input_generator_2.orcablocks["adsorbate_slab"]
         == '%pal nprocs 1 end\n%maxcore 5000 end\n%pointcharges "orca.pc"\n%method\nMethod hf\nRI on\nRunTyp Energy\nNewNCore C 2 end\nNewNCore Mg 2 end\nNewNCore O 2 end\nend\n%basis\nBasis def2-SVP\nAux def2/J\nAuxC def2-SVP/C\nend\n%scf\nHFTyp rhf\nGuess MORead\nMOInp "orca_svp_start.gbw"\nSCFMode Direct\nsthresh 1e-6\nAutoTRAHIter 60\nMaxIter 1000\nend\n'
     )
 
@@ -1050,8 +1115,10 @@ def test_ORCAInputGenerator_generate_preamble_block(orca_input_generator):
     orca_input_generator_3.element_info = None
     orca_input_generator_3.generate_preamble_block()
 
-
-    assert orca_input_generator_3.orcablocks['adsorbate_slab'] == '%pointcharges "orca.pc"\n'
+    assert (
+        orca_input_generator_3.orcablocks["adsorbate_slab"]
+        == '%pointcharges "orca.pc"\n'
+    )
 
     # Check whether error raised if not all element_info is provided
     with pytest.raises(ValueError):
@@ -1060,11 +1127,9 @@ def test_ORCAInputGenerator_generate_preamble_block(orca_input_generator):
         orca_input_generator_3.generate_preamble_block()
 
 
-
 def test_ORCAInputGenerator_create_point_charge_file(orca_input_generator, tmp_path):
-
     # Create the point charge file
-    orca_input_generator.create_point_charge_file(pc_file=tmp_path / "orca.pc" )
+    orca_input_generator.create_point_charge_file(pc_file=tmp_path / "orca.pc")
 
     # Read the written file
     orca_pc_file = np.loadtxt(tmp_path / "orca.pc", skiprows=1)
