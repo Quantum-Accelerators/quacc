@@ -109,6 +109,7 @@ end"""
         ecp_info=ecp_info,
     )
 
+
 @pytest.fixture()
 def element_info():
     return {
@@ -159,7 +160,8 @@ def test_MRCCInputGenerator_init(adsorbate_slab_embedded_cluster, element_info):
     )
 
     assert not compare_atoms(
-        mrcc_input_generator.adsorbate_slab_embedded_cluster, adsorbate_slab_embedded_cluster
+        mrcc_input_generator.adsorbate_slab_embedded_cluster,
+        adsorbate_slab_embedded_cluster,
     )
     assert_equal(mrcc_input_generator.quantum_cluster_indices, [0, 1, 2, 3, 4, 5, 6, 7])
     assert_equal(mrcc_input_generator.adsorbate_indices, [0, 1])
@@ -594,7 +596,8 @@ end"""
     )
 
     assert not compare_atoms(
-        orca_input_generator.adsorbate_slab_embedded_cluster, adsorbate_slab_embedded_cluster
+        orca_input_generator.adsorbate_slab_embedded_cluster,
+        adsorbate_slab_embedded_cluster,
     )
     assert_equal(orca_input_generator.quantum_cluster_indices, [0, 1, 2, 3, 4, 5, 6, 7])
     assert_equal(orca_input_generator.adsorbate_indices, [0, 1])
@@ -1145,24 +1148,47 @@ def test_ORCAInputGenerator_create_point_charge_file(orca_input_generator, tmp_p
         atol=1e-07,
     )
 
+
 def test_CreateSKZCAMClusters_init():
-    skzcam_clusters = CreateSKZCAMClusters(adsorbate_indices=[0,1], slab_center_indices=[32], atom_oxi_states = {'Mg': 2.0, 'O': -2.0}, adsorbate_slab_file=Path(FILE_DIR, "skzcam_files", "CO_MgO.poscar.gz"), pun_file='test.pun')
+    skzcam_clusters = CreateSKZCAMClusters(
+        adsorbate_indices=[0, 1],
+        slab_center_indices=[32],
+        atom_oxi_states={"Mg": 2.0, "O": -2.0},
+        adsorbate_slab_file=Path(FILE_DIR, "skzcam_files", "CO_MgO.poscar.gz"),
+        pun_file="test.pun",
+    )
 
     assert_equal(skzcam_clusters.adsorbate_indices, [0, 1])
     assert skzcam_clusters.slab_center_indices == [32]
-    assert skzcam_clusters.atom_oxi_states == {'Mg': 2.0, 'O': -2.0}
-    assert skzcam_clusters.adsorbate_slab_file == Path(FILE_DIR, "skzcam_files", "CO_MgO.poscar.gz")
-    assert skzcam_clusters.pun_file == 'test.pun'
+    assert skzcam_clusters.atom_oxi_states == {"Mg": 2.0, "O": -2.0}
+    assert skzcam_clusters.adsorbate_slab_file == Path(
+        FILE_DIR, "skzcam_files", "CO_MgO.poscar.gz"
+    )
+    assert skzcam_clusters.pun_file == "test.pun"
 
     # Check if error raised if adsorbate_indices and slab_center_indices overlap
-    with pytest.raises(ValueError, match="The adsorbate and slab center indices cannot be the same."):
-        skzcam_clusters = CreateSKZCAMClusters(adsorbate_indices=[0,1], slab_center_indices=[0], atom_oxi_states = {'Mg': 2.0, 'O': -2.0}, adsorbate_slab_file=Path(FILE_DIR, "skzcam_files", "CO_MgO.poscar.gz"), pun_file='test.pun')
+    with pytest.raises(
+        ValueError, match="The adsorbate and slab center indices cannot be the same."
+    ):
+        skzcam_clusters = CreateSKZCAMClusters(
+            adsorbate_indices=[0, 1],
+            slab_center_indices=[0],
+            atom_oxi_states={"Mg": 2.0, "O": -2.0},
+            adsorbate_slab_file=Path(FILE_DIR, "skzcam_files", "CO_MgO.poscar.gz"),
+            pun_file="test.pun",
+        )
 
     # Check if error raised if both adsorbate_slab_file and pun_file are None
-    with pytest.raises(ValueError, match="Either the adsorbate_slab_file or pun_file must be provided."):
-        skzcam_clusters = CreateSKZCAMClusters(adsorbate_indices=[0,1], slab_center_indices=[32], atom_oxi_states = {'Mg': 2.0, 'O': -2.0}, adsorbate_slab_file=None, pun_file=None)
-
-
+    with pytest.raises(
+        ValueError, match="Either the adsorbate_slab_file or pun_file must be provided."
+    ):
+        skzcam_clusters = CreateSKZCAMClusters(
+            adsorbate_indices=[0, 1],
+            slab_center_indices=[32],
+            atom_oxi_states={"Mg": 2.0, "O": -2.0},
+            adsorbate_slab_file=None,
+            pun_file=None,
+        )
 
 
 def test_CreateSKZCAMClusters_run_chemshell(skzcam_clusters, tmp_path):
