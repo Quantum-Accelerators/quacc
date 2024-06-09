@@ -23,6 +23,4 @@ def mock_run_chemshell(slab, slab_center_idx, atom_oxi_states, filepath, **kwarg
 def patch_run_chemshell(monkeypatch):
     from quacc.atoms.skzcam import CreateSKZCAMClusters
 
-    monkeypatch.setattr(
-        CreateSKZCAMClusters, "run_chemshell", mock_run_chemshell
-    )
+    monkeypatch.setattr(CreateSKZCAMClusters, "run_chemshell", mock_run_chemshell)
