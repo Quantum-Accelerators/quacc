@@ -3,6 +3,7 @@ from __future__ import annotations
 import glob
 import logging
 import os
+from importlib.util import find_spec
 from pathlib import Path
 from shutil import rmtree
 
@@ -28,7 +29,6 @@ from quacc.runners.ase import (
 )
 from quacc.schemas.ase import summarize_path_opt_run
 
-from importlib.util import find_spec
 has_newtonnet = bool(find_spec("newtonnet"))
 if has_newtonnet:
     from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
