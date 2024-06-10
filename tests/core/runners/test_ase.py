@@ -3,7 +3,6 @@ from __future__ import annotations
 import glob
 import logging
 import os
-from importlib.util import find_spec
 from pathlib import Path
 from shutil import rmtree
 
@@ -28,8 +27,8 @@ from quacc.runners.ase import (
 )
 from quacc.schemas.ase import summarize_opt_run, summarize_path_opt_run
 
-#has_newtonnet = bool(find_spec("newtonnet"))
-#if has_newtonnet:
+# has_newtonnet = bool(find_spec("newtonnet"))
+# if has_newtonnet:
 #    from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
 
 LOGGER = logging.getLogger(__name__)
@@ -168,17 +167,17 @@ def test_run_neb_method(
     reactant, product, calc_defaults = setup_test_environment
 
     for i in [reactant, product]:
-        #i.calc = NewtonNet(**calc_defaults)
+        # i.calc = NewtonNet(**calc_defaults)
         i.calc = EMT()
-    #opt_defaults = {"optimizer": Sella, "optimizer_kwargs": ({"order": 0})}
+    # opt_defaults = {"optimizer": Sella, "optimizer_kwargs": ({"order": 0})}
     opt_defaults = {"optimizer": BFGS}
 
     optimized_r = summarize_opt_run(run_opt(reactant, **opt_defaults))["atoms"]
     optimized_p = summarize_opt_run(run_opt(product, **opt_defaults))["atoms"]
     optimized_r.calc = EMT()
     optimized_p.calc = EMT()
-    #optimized_r.calc = NewtonNet(**calc_defaults)
-    #optimized_p.calc = NewtonNet(**calc_defaults)
+    # optimized_r.calc = NewtonNet(**calc_defaults)
+    # optimized_p.calc = NewtonNet(**calc_defaults)
 
     images = _geodesic_interpolate_wrapper(
         optimized_r.copy(), optimized_p.copy(), nimages=n_intermediate
@@ -206,8 +205,7 @@ def test_run_neb_method(
     neb_summary = summarize_path_opt_run(dyn)
 
     assert neb_summary["trajectory_results"][1]["energy"] == pytest.approx(
-        1.09889737,
-        abs=0.1,
+        1.09889737, abs=0.1
     )
     # assert neb_summary["trajectory_results"][1]["energy"] == pytest.approx(
     #     -24.650358983, abs=1
