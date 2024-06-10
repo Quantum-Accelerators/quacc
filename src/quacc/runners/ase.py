@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import sys
 from importlib.util import find_spec
-from pathlib import Path
 from shutil import copy, copytree
 from typing import TYPE_CHECKING, Callable
 
@@ -12,7 +11,7 @@ import numpy as np
 from ase import Atoms
 from ase.calculators import calculator
 from ase.filters import FrechetCellFilter
-from ase.io import Trajectory, read, write
+from ase.io import Trajectory, read
 from ase.mep import NEB
 from ase.optimize import BFGS
 from ase.vibrations import Vibrations
@@ -25,6 +24,7 @@ from quacc import SETTINGS
 from quacc.atoms.core import copy_atoms, get_final_atoms_from_dynamics
 from quacc.runners.prep import calc_cleanup, calc_setup, terminate
 from quacc.utils.dicts import recursive_dict_merge
+
 has_sella = bool(find_spec("sella"))
 has_geodesic_interpolate = bool(find_spec("geodesic_interpolate"))
 
@@ -33,7 +33,8 @@ if has_geodesic_interpolate:
     from geodesic_interpolate.interpolation import redistribute
 
 if TYPE_CHECKING:
-    from typing import Any, TypedDict
+    from pathlib import Path
+    from typing import Any, TypedDict, Union
 
     from ase.optimize.optimize import Optimizer
 
@@ -466,11 +467,11 @@ def _geodesic_interpolate_wrapper(
             micro_iter=max_micro_iterations,
         )
     else:
-        geodesic_smoother.smooth(
-            tol=convergence_tolerance,
-            max_iter=max_iterations,
-        )
-    return [Atoms(symbols=chemical_symbols, positions=geom) for geom in geodesic_smoother.path]
+        geodesic_smoother.smooth(tol=convergence_tolerance, max_iter=max_iterations)
+    return [
+        Atoms(symbols=chemical_symbols, positions=geom)
+        for geom in geodesic_smoother.path
+    ]
 
 
 @requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")

@@ -3,6 +3,7 @@ from __future__ import annotations
 import glob
 import logging
 import os
+from importlib.util import find_spec
 from pathlib import Path
 from shutil import rmtree
 
@@ -12,20 +13,20 @@ from ase import Atoms
 from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
-from ase.io import write
 from ase.mep.neb import NEBOptimizer
 from ase.optimize import BFGS, BFGSLineSearch
 from ase.optimize.sciopt import SciPyFminBFGS
-from ase.mep.neb import NEBOptimizer
-from ase import Atoms
+from sella import Sella
 
 from quacc import SETTINGS, change_settings
-from quacc.runners.ase import run_calc, run_opt, run_vib, run_path_opt
-from quacc.runners.ase import _geodesic_interpolate_wrapper
-from sella import Sella
-from quacc.schemas.ase import summarize_opt_run
-from quacc.schemas.ase import summarize_path_opt_run
-from importlib.util import find_spec
+from quacc.runners.ase import (
+    _geodesic_interpolate_wrapper,
+    run_calc,
+    run_opt,
+    run_path_opt,
+    run_vib,
+)
+from quacc.schemas.ase import summarize_opt_run, summarize_path_opt_run
 
 has_newtonnet = bool(find_spec("newtonnet"))
 if has_newtonnet:
@@ -61,7 +62,6 @@ def teardown_function():
 
 @pytest.fixture()
 def setup_test_environment(tmp_path):
-
     reactant = Atoms(
         symbols="CCHHCHH",
         positions=[
@@ -88,7 +88,9 @@ def setup_test_environment(tmp_path):
         ],
     )
     current_file_path = Path(__file__).parent
-    conf_path = (current_file_path / '../../../tests/core/recipes/newtonnet_recipes').resolve()
+    conf_path = (
+        current_file_path / "../../../tests/core/recipes/newtonnet_recipes"
+    ).resolve()
     NEWTONNET_CONFIG_PATH = conf_path / "config0.yml"
     NEWTONNET_MODEL_PATH = conf_path / "best_model_state.tar"
     SETTINGS.CHECK_CONVERGENCE = False
@@ -123,16 +125,45 @@ def setup_test_environment(tmp_path):
         # ("aseneb", SciPyFminBFGS, None, 1000, 0.1, 3, 1e-3, "some_logdir",
         #   0.78503956131, -24.9895786292, -0.0017252843, 0.78017739462, 9, -19.946616164,
         #   -0.19927549, 0.51475535802),
-        ("aseneb", NEBOptimizer, None, 10, 0.1, 3, 1e-3, "some_logdir",
-         0.78503956131, -24.9895786292, -0.0017252843, 0.78017739462, 9, -19.946616164,
-         -0.19927549, 0.51475535802),
+        (
+            "aseneb",
+            NEBOptimizer,
+            None,
+            10,
+            0.1,
+            3,
+            1e-3,
+            "some_logdir",
+            0.78503956131,
+            -24.9895786292,
+            -0.0017252843,
+            0.78017739462,
+            9,
+            -19.946616164,
+            -0.19927549,
+            0.51475535802,
+        )
     ],
 )
 def test_run_neb_method(
-    setup_test_environment, tmp_path, method, optimizer_class, precon,
-    n_intermediate, k, max_steps, fmax, expected_logfile, first_image_positions,
-    first_image_pot_energy, first_image_forces, second_images_positions, index_ts,
-    pot_energy_ts, forces_ts, last_images_positions,
+    setup_test_environment,
+    tmp_path,
+    method,
+    optimizer_class,
+    precon,
+    n_intermediate,
+    k,
+    max_steps,
+    fmax,
+    expected_logfile,
+    first_image_positions,
+    first_image_pot_energy,
+    first_image_forces,
+    second_images_positions,
+    index_ts,
+    pot_energy_ts,
+    forces_ts,
+    last_images_positions,
 ):
     reactant, product, calc_defaults = setup_test_environment
 
@@ -140,61 +171,50 @@ def test_run_neb_method(
         i.calc = NewtonNet(**calc_defaults)
     opt_defaults = {"optimizer": Sella, "optimizer_kwargs": ({"order": 0})}
 
-    optimized_r = summarize_opt_run(run_opt(reactant, **opt_defaults))['atoms']
-    optimized_p = summarize_opt_run(run_opt(product, **opt_defaults))['atoms']
+    optimized_r = summarize_opt_run(run_opt(reactant, **opt_defaults))["atoms"]
+    optimized_p = summarize_opt_run(run_opt(product, **opt_defaults))["atoms"]
     optimized_r.calc = NewtonNet(**calc_defaults)
     optimized_p.calc = NewtonNet(**calc_defaults)
 
-
     images = _geodesic_interpolate_wrapper(
-        optimized_r.copy(),
-        optimized_p.copy(),
-        nimages=n_intermediate,
+        optimized_r.copy(), optimized_p.copy(), nimages=n_intermediate
     )
     for image in images:
         image.calc = NewtonNet(**calc_defaults)
     assert 1 == 1
     # assert optimized_p.positions[0][1] == pytest.approx(
-    #assert images[0].positions[0][1] == pytest.approx(first_image_positions, abs=1e-2)
+    # assert images[0].positions[0][1] == pytest.approx(first_image_positions, abs=1e-2)
 
-    #assert optimized_p.get_potential_energy() == pytest.approx(first_image_pot_energy, abs=1e-2), "reactant pot. energy"
+    # assert optimized_p.get_potential_energy() == pytest.approx(first_image_pot_energy, abs=1e-2), "reactant pot. energy"
 
-    #assert optimized_p.get_forces()[0, 1] == pytest.approx(first_image_forces, abs=1e-3), "reactant forces"
+    # assert optimized_p.get_forces()[0, 1] == pytest.approx(first_image_forces, abs=1e-3), "reactant forces"
 
     # assert images[0].positions[0][1] == pytest.approx(
     #     last_images_positions,
     #     abs=1e-2,
     # )
 
-    neb_kwargs = {
-        'method': 'aseneb',
-        'precon': None,
-    }
+    neb_kwargs = {"method": "aseneb", "precon": None}
 
-    dyn = run_path_opt(
-        images,
-        optimizer=NEBOptimizer,
-        neb_kwargs=neb_kwargs,
-    )
+    dyn = run_path_opt(images, optimizer=NEBOptimizer, neb_kwargs=neb_kwargs)
 
     neb_summary = summarize_path_opt_run(dyn)
-    
-    assert neb_summary['trajectory_results'][1]['energy'] == pytest.approx(
-        -24.650358983,
-        abs=1,
+
+    assert neb_summary["trajectory_results"][1]["energy"] == pytest.approx(
+        -24.650358983, abs=1
     )
-    #assert images[1].positions[0][1] == pytest.approx(second_images_positions, abs=1e-1)
+    # assert images[1].positions[0][1] == pytest.approx(second_images_positions, abs=1e-1)
 
-    #assert np.argmax(
+    # assert np.argmax(
     #    [image.get_potential_energy() for image in images]
-    #) == pytest.approx(index_ts), "Index of the transition state"
+    # ) == pytest.approx(index_ts), "Index of the transition state"
 
-    #assert np.max([image.get_potential_energy() for image in images]) == pytest.approx(
+    # assert np.max([image.get_potential_energy() for image in images]) == pytest.approx(
     #    pot_energy_ts, abs=1), "Potential energy of the transition state"
 
-    #assert images[
+    # assert images[
     #    np.argmax([image.get_potential_energy() for image in images])
-    #].get_forces()[0, 1] == pytest.approx(
+    # ].get_forces()[0, 1] == pytest.approx(
     #    forces_ts, abs=1), "Force component in the transition state"
 
     # # Ensure the log file is correctly handled
