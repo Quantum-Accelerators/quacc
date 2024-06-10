@@ -11,6 +11,7 @@ from ase import Atoms
 from ase.calculators.calculator import compare_atoms
 from ase.io import read
 from numpy.testing import assert_allclose, assert_equal
+import os
 
 from quacc.atoms.skzcam import (
     CreateSKZCAMClusters,
@@ -1193,30 +1194,23 @@ def test_CreateSKZCAMClusters_init():
 
 def test_CreateSKZCAMClusters_run_chemshell(skzcam_clusters, tmp_path):
     # Test if xyz file doesn't get written when write_xyz_file=False
-    # skzcam_clusters_nowrite = deepcopy(skzcam_clusters)
-    # skzcam_clusters_nowrite.convert_slab_to_atoms()
-    # skzcam_clusters_nowrite.run_chemshell(
-    #     filepath= tmp_path / "ChemShell_Cluster.pun",
-    #     chemsh_radius_active=5.0,
-    #     chemsh_radius_cluster=10.0,
-    #     write_xyz_file=False,
-    # )
-    # assert not os.path.isfile(tmp_path / "ChemShell_Cluster.xyz")
+    skzcam_clusters_nowrite = deepcopy(skzcam_clusters)
+    skzcam_clusters_nowrite.convert_slab_to_atoms()
+    skzcam_clusters_nowrite.run_chemshell(
+        filepath= tmp_path / "ChemShell_Cluster.pun",
+        chemsh_radius_active=5.0,
+        chemsh_radius_cluster=10.0,
+        write_xyz_file=False,
+    )
+    assert not os.path.isfile(tmp_path / "ChemShell_Cluster.xyz")
 
-    with (
-        gzip.open(
-            Path(FILE_DIR, "skzcam_files", "REF_ChemShell_Cluster.xyz.gz"), "rb"
-        ) as f_in,
-        Path(tmp_path, "ChemShell_Cluster.xyz").open(mode="wb") as f_out,
-    ):
-        shutil.copyfileobj(f_in, f_out)
-    # skzcam_clusters.convert_slab_to_atoms()
-    # skzcam_clusters.run_chemshell(
-    #     filepath= tmp_path / "ChemShell_Cluster.pun",
-    #     chemsh_radius_active=5.0,
-    #     chemsh_radius_cluster=10.0,
-    #     write_xyz_file=True,
-    # )
+    skzcam_clusters.convert_slab_to_atoms()
+    skzcam_clusters.run_chemshell(
+        filepath= tmp_path / "ChemShell_Cluster.pun",
+        chemsh_radius_active=5.0,
+        chemsh_radius_cluster=10.0,
+        write_xyz_file=True,
+    )
 
     # Read the output .xyz file
     chemshell_embedded_cluster = read(tmp_path / "ChemShell_Cluster.xyz")
