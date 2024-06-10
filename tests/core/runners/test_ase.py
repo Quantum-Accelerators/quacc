@@ -17,7 +17,7 @@ from ase.mep.neb import NEBOptimizer
 from ase.optimize import BFGS, BFGSLineSearch
 from ase.optimize.sciopt import SciPyFminBFGS
 
-# from sella import Sella
+from sella import Sella
 from quacc import SETTINGS, change_settings
 from quacc.runners.ase import (
     _geodesic_interpolate_wrapper,
@@ -27,10 +27,12 @@ from quacc.runners.ase import (
     run_vib,
 )
 from quacc.schemas.ase import summarize_opt_run, summarize_path_opt_run
+from quacc.recipes.newtonnet.ts import relax_job
+from quacc import strip_decorator
 
-#has_newtonnet = bool(find_spec("newtonnet"))
-#if has_newtonnet:
-#    from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
+has_newtonnet = bool(find_spec("newtonnet"))
+if has_newtonnet:
+    from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.propagate = True
@@ -98,6 +100,8 @@ def setup_test_environment(tmp_path):
         "model_path": NEWTONNET_MODEL_PATH,
         "settings_path": NEWTONNET_CONFIG_PATH,
     }
+    SETTINGS.NEWTONNET_MODEL_PATH = NEWTONNET_MODEL_PATH
+    SETTINGS.NEWTONNET_CONFIG_PATH = NEWTONNET_CONFIG_PATH
     return reactant, product, calc_defaults
 
 
@@ -167,25 +171,27 @@ def test_run_neb_method(
 ):
     reactant, product, calc_defaults = setup_test_environment
 
-    for i in [reactant, product]:
-        #i.calc = NewtonNet(**calc_defaults)
-        i.calc = EMT()
-    #opt_defaults = {"optimizer": Sella, "optimizer_kwargs": ({"order": 0})}
-    opt_defaults = {"optimizer": BFGS}
-
-    optimized_r = summarize_opt_run(run_opt(reactant, **opt_defaults))["atoms"]
-    optimized_p = summarize_opt_run(run_opt(product, **opt_defaults))["atoms"]
-    optimized_r.calc = EMT()
-    optimized_p.calc = EMT()
-    #optimized_r.calc = NewtonNet(**calc_defaults)
-    #optimized_p.calc = NewtonNet(**calc_defaults)
+    #for i in [reactant, product]:
+    #    i.calc = NewtonNet(**calc_defaults)
+    #    #i.calc = EMT()
+    opt_defaults = {"optimizer": Sella, "optimizer_kwargs": ({"order": 0})}
+    #opt_defaults = {"optimizer": BFGS}
+    relax_job_kwargs = {'calc_kwargs': calc_defaults, 'opt_kwargs': opt_defaults}
+    optimized_r = strip_decorator(relax_job)(reactant, **relax_job_kwargs)["atoms"]
+    optimized_p = strip_decorator(relax_job)(product, **relax_job_kwargs)["atoms"]
+    #optimized_r = summarize_opt_run(run_opt(reactant, **opt_defaults))["atoms"]
+    #optimized_p = summarize_opt_run(run_opt(product, **opt_defaults))["atoms"]
+    #optimized_r.calc = EMT()
+    #optimized_p.calc = EMT()
+    optimized_r.calc = NewtonNet(**calc_defaults)
+    optimized_p.calc = NewtonNet(**calc_defaults)
 
     images = _geodesic_interpolate_wrapper(
         optimized_r.copy(), optimized_p.copy(), nimages=n_intermediate
     )
     for image in images:
-        # image.calc = NewtonNet(**calc_defaults)
-        image.calc = EMT()
+        image.calc = NewtonNet(**calc_defaults)
+        #image.calc = EMT()
     assert 1 == 1
     # assert optimized_p.positions[0][1] == pytest.approx(
     # assert images[0].positions[0][1] == pytest.approx(first_image_positions, abs=1e-2)
@@ -205,13 +211,13 @@ def test_run_neb_method(
 
     neb_summary = summarize_path_opt_run(dyn)
 
+    #assert neb_summary["trajectory_results"][1]["energy"] == pytest.approx(
+    #    1.09889737,
+    #    abs=0.1,
+    #)
     assert neb_summary["trajectory_results"][1]["energy"] == pytest.approx(
-        1.09889737,
-        abs=0.1,
+        -24.650358983, abs=1
     )
-    # assert neb_summary["trajectory_results"][1]["energy"] == pytest.approx(
-    #     -24.650358983, abs=1
-    # )
     # assert images[1].positions[0][1] == pytest.approx(second_images_positions, abs=1e-1)
 
     # assert np.argmax(
