@@ -847,8 +847,6 @@ coords
         self.orcablocks["slab"] += preamble_input
 
 
-
-
 class CreateSKZCAMClusters:
     """
     A class to create the quantum clusters and ECP regions for the SKZCAM protocol.
