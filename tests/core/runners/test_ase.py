@@ -29,6 +29,7 @@ from quacc.schemas.ase import summarize_opt_run, summarize_path_opt_run
 from quacc.recipes.newtonnet.ts import relax_job
 from quacc import strip_decorator
 
+from importlib.util import find_spec
 has_newtonnet = bool(find_spec("newtonnet"))
 if has_newtonnet:
     from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
