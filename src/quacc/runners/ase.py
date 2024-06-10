@@ -16,6 +16,8 @@ from ase.io import Trajectory, read, write
 from ase.mep import NEB
 from ase.optimize import BFGS
 from ase.vibrations import Vibrations
+from typing import Union, Any, Optional, Dict
+from ase.mep.neb import NEBOptimizer
 from monty.dev import requires
 from monty.os.path import zpath
 
@@ -329,7 +331,7 @@ def run_path_opt(
         relax_cell: bool = False,
         fmax: float = 0.01,
         max_steps: int | None = 1000,
-        optimizer: Optimizer = NEBOptimizer,
+        optimizer: Union[NEBOptimizer, BFGS] = NEBOptimizer,
         optimizer_kwargs: OptimizerKwargs | None = None,
         run_kwargs: dict[str, Any] | None = None,
         neb_kwargs: dict[str, Any] | None = None,
@@ -375,9 +377,9 @@ def run_path_opt(
     optimizer_kwargs["trajectory"] = traj
 
     # Set volume relaxation constraints, if relevant
-    for image in images:
-        if relax_cell and image.pbc.any():
-            image = FrechetCellFilter(image)
+    for i in range(len(images)):
+        if relax_cell and images[i].pbc.any():
+            images[i] = FrechetCellFilter(images[i])
 
     # Run optimization
     with traj, optimizer(neb, **optimizer_kwargs) as dyn:
