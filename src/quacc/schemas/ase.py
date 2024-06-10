@@ -272,10 +272,7 @@ def summarize_vib_and_thermo(
     )
 
 
-def summarize_path_opt_run(
-        dyn: Optimizer,
-) -> OptSchema:
-
+def summarize_path_opt_run(dyn: Optimizer) -> OptSchema:
     # Get trajectory
     trajectory = (
         dyn.traj_atoms
@@ -288,14 +285,13 @@ def summarize_path_opt_run(
     parameters_opt.pop("logfile", None)
     parameters_opt.pop("restart", None)
 
-    opt_fields = {
+    return {
         "parameters_opt": parameters_opt,
         "trajectory": trajectory,
         "trajectory_results": [atoms.calc.results for atoms in trajectory],
     }
 
     # Create a dictionary of the inputs/outputs
-    return opt_fields
 
     # neb_dict = {
     #     "images": [image.get_positions() for image in traj],
