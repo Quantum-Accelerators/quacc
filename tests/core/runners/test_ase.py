@@ -16,8 +16,8 @@ from ase.calculators.lj import LennardJones
 from ase.mep.neb import NEBOptimizer
 from ase.optimize import BFGS, BFGSLineSearch
 from ase.optimize.sciopt import SciPyFminBFGS
-# from sella import Sella
 
+# from sella import Sella
 from quacc import SETTINGS, change_settings
 from quacc.runners.ase import (
     _geodesic_interpolate_wrapper,
