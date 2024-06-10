@@ -273,21 +273,42 @@ def summarize_vib_and_thermo(
 
 
 def summarize_path_opt_run(
-        traj,
-        neb,
-        qn,
-):
-    neb_dict = {
-        "images": [image.get_positions() for image in traj],
-        "fmax": neb.fmax,
-        "residuals": neb.residuals,
-        "k": neb.k,
-        "neb_method": neb.neb_method,
-        "nimages": neb.nimages,
-        "precon": neb.precon,
-        "optimizer": qn,
+        dyn: Optimizer,
+) -> OptSchema:
+
+    # Get trajectory
+    trajectory = (
+        dyn.traj_atoms
+        if hasattr(dyn, "traj_atoms")
+        else read(dyn.trajectory.filename, index=":")
+    )
+
+    # Clean up the opt parameters
+    parameters_opt = dyn.todict()
+    parameters_opt.pop("logfile", None)
+    parameters_opt.pop("restart", None)
+
+    opt_fields = {
+        "parameters_opt": parameters_opt,
+        "trajectory": trajectory,
+        "trajectory_results": [atoms.calc.results for atoms in trajectory],
     }
-    return neb_dict
+
+    # Create a dictionary of the inputs/outputs
+    return opt_fields
+
+    # neb_dict = {
+    #     "images": [image.get_positions() for image in traj],
+    #     "fmax": neb.fmax,
+    #     "residuals": neb.residuals,
+    #     "k": neb.k,
+    #     "neb_method": neb.neb_method,
+    #     "nimages": neb.nimages,
+    #     "precon": neb.precon,
+    #     "optimizer": qn,
+    # }
+    # return neb_dict
+
 
 def _summarize_vib_run(
     vib: Vibrations | VibrationsData,
