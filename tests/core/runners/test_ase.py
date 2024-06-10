@@ -16,7 +16,7 @@ from ase.calculators.lj import LennardJones
 from ase.mep.neb import NEBOptimizer
 from ase.optimize import BFGS, BFGSLineSearch
 from ase.optimize.sciopt import SciPyFminBFGS
-from sella import Sella
+# from sella import Sella
 
 from quacc import SETTINGS, change_settings
 from quacc.runners.ase import (
@@ -169,7 +169,8 @@ def test_run_neb_method(
 
     for i in [reactant, product]:
         i.calc = NewtonNet(**calc_defaults)
-    opt_defaults = {"optimizer": Sella, "optimizer_kwargs": ({"order": 0})}
+    #opt_defaults = {"optimizer": Sella, "optimizer_kwargs": ({"order": 0})}
+    opt_defaults = {"optimizer": BFGS}
 
     optimized_r = summarize_opt_run(run_opt(reactant, **opt_defaults))["atoms"]
     optimized_p = summarize_opt_run(run_opt(product, **opt_defaults))["atoms"]
