@@ -3,7 +3,6 @@ from __future__ import annotations
 import glob
 import logging
 import os
-from importlib.util import find_spec
 from pathlib import Path
 from shutil import rmtree
 
