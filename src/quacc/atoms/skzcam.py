@@ -250,20 +250,20 @@ class MRCCInputGenerator:
         """
 
         # Create the blocks for the basis sets (basis, basis_sm, dfbasis_scf, dfbasis_cor, ecp)
-        self.generate_basis_ecp_block()
+        self._generate_basis_ecp_block()
 
         # Create the blocks for the coordinates
-        self.generate_coords_block()
+        self._generate_coords_block()
 
         # Create the point charge block and add it to the adsorbate-slab complex and slab blocks
-        point_charge_block = self.generate_point_charge_block()
+        point_charge_block = self._generate_point_charge_block()
         self.mrccblocks["adsorbate_slab"] += point_charge_block
         self.mrccblocks["slab"] += point_charge_block
 
         # Combine the blocks
         return self.mrccblocks
 
-    def generate_basis_ecp_block(self) -> None:
+    def _generate_basis_ecp_block(self) -> None:
         """
         Generates the basis and ECP block for the MRCC input file.
 
@@ -276,16 +276,16 @@ class MRCCInputGenerator:
         def _create_basis_block(quantum_region, ecp_region=None):
             return f"""
 basis_sm=atomtype
-{self.create_atomtype_basis(quantum_region=quantum_region, ecp_region=ecp_region, element_basis_info={element: 'def2-SVP' for element in self.element_info})}
+{self._create_atomtype_basis(quantum_region=quantum_region, ecp_region=ecp_region, element_basis_info={element: 'def2-SVP' for element in self.element_info})}
 
 basis=atomtype
-{self.create_atomtype_basis(quantum_region=quantum_region, ecp_region=ecp_region, element_basis_info={element: self.element_info[element]['basis'] for element in self.element_info})}
+{self._create_atomtype_basis(quantum_region=quantum_region, ecp_region=ecp_region, element_basis_info={element: self.element_info[element]['basis'] for element in self.element_info})}
 
 dfbasis_scf=atomtype
-{self.create_atomtype_basis(quantum_region=quantum_region, ecp_region=ecp_region, element_basis_info={element: self.element_info[element]['ri_scf_basis'] for element in self.element_info})}
+{self._create_atomtype_basis(quantum_region=quantum_region, ecp_region=ecp_region, element_basis_info={element: self.element_info[element]['ri_scf_basis'] for element in self.element_info})}
 
 dfbasis_cor=atomtype
-{self.create_atomtype_basis(quantum_region=quantum_region, ecp_region=ecp_region, element_basis_info={element: self.element_info[element]['ri_cwft_basis'] for element in self.element_info})}
+{self._create_atomtype_basis(quantum_region=quantum_region, ecp_region=ecp_region, element_basis_info={element: self.element_info[element]['ri_cwft_basis'] for element in self.element_info})}
 """
 
         if self.include_cp:
@@ -309,7 +309,7 @@ dfbasis_cor=atomtype
                 quantum_region=self.adsorbate_cluster, ecp_region=None
             )
 
-    def create_atomtype_basis(
+    def _create_atomtype_basis(
         self,
         quantum_region: Atoms,
         element_basis_info: dict[ElementStr, str],
@@ -341,7 +341,7 @@ dfbasis_cor=atomtype
 
         return basis_str
 
-    def generate_coords_block(self) -> None:
+    def _generate_coords_block(self) -> None:
         """
         Generates the coordinates block for the MRCC input file. This includes the coordinates of the quantum cluster, the ECP region, and the point charges. It will return three strings for the adsorbate-slab complex, adsorbate and slab.
 
@@ -448,7 +448,7 @@ geom=xyz
                 self.mrccblocks["slab"] += create_atom_coord_string(atom=atom)
             self.mrccblocks["slab"] += ecp_region_block
 
-    def generate_point_charge_block(self) -> str:
+    def _generate_point_charge_block(self) -> str:
         """
         Create the point charge block for the MRCC input file. This requires the embedded_cluster Atoms object containing both atom_type and oxi_states arrays, as well as the indices of the quantum cluster and ECP region. Such arrays are created by the [quacc.atoms.skzcam.CreateSKZCAMClusters][] class.
 
@@ -585,15 +585,52 @@ class ORCAInputGenerator:
         """
 
         # First generate the preamble block
-        self.generate_preamble_block()
+        self._generate_preamble_block()
 
         # Create the blocks for the coordinates
-        self.generate_coords_block()
+        self._generate_coords_block()
 
         # Combine the blocks
         return self.orcablocks
 
-    def generate_coords_block(self) -> None:
+    def create_point_charge_file(self, pc_file: str | Path) -> None:
+        """
+        Create a point charge file that can be read by ORCA. This requires the embedded_cluster Atoms object containing both atom_type and oxi_states arrays, as well as the indices of the quantum cluster and ECP region.
+
+        Parameters
+        ----------
+        pc_file
+            A file containing the point charges to be written by ORCA.
+
+        Returns
+        -------
+        None
+        """
+
+        # Get the oxi_states arrays from the embedded_cluster
+        oxi_states = self.adsorbate_slab_embedded_cluster.get_array("oxi_states")
+
+        # Get the number of point charges for this system
+        total_indices = self.quantum_cluster_indices + self.ecp_region_indices
+        num_pc = len(self.adsorbate_slab_embedded_cluster) - len(total_indices)
+        counter = 0
+        with Path.open(pc_file, "w") as f:
+            # Write the number of point charges first
+            f.write(f"{num_pc}\n")
+            for i in range(len(self.adsorbate_slab_embedded_cluster)):
+                if i not in total_indices:
+                    counter += 1
+                    position = self.adsorbate_slab_embedded_cluster[i].position
+                    if counter != num_pc:
+                        f.write(
+                            f"{oxi_states[i]:-16.11f} {position[0]:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f}\n"
+                        )
+                    else:
+                        f.write(
+                            f"{oxi_states[i]:-16.11f} {position[0]:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f}"
+                        )
+
+    def _generate_coords_block(self) -> None:
         """
         Generates the coordinates block for the ORCA input file. This includes the coordinates of the quantum cluster, the ECP region, and the point charges. It will return three strings for the adsorbate-slab complex, adsorbate and slab.
 
@@ -649,7 +686,7 @@ coords
         # Create the coords section for the ECP region
         ecp_region_coords_section = ""
         for i, atom in enumerate(self.ecp_region):
-            atom_ecp_info = self.format_ecp_info(
+            atom_ecp_info = self._format_ecp_info(
                 atom_ecp_info=self.ecp_info[atom.symbol]
             )
             ecp_region_coords_section += create_atom_coord_string(
@@ -663,7 +700,7 @@ coords
         self.orcablocks["slab"] += f"{ecp_region_coords_section}end\nend\n"
         self.orcablocks["adsorbate"] += "end\nend\n"
 
-    def format_ecp_info(self, atom_ecp_info: str) -> str:
+    def _format_ecp_info(self, atom_ecp_info: str) -> str:
         """
         Formats the ECP info so that it can be inputted to ORCA without problems.
 
@@ -690,7 +727,7 @@ coords
         # Extract content between "NewECP" and "end", exclusive of "end", then add correctly formatted "NewECP" and "end"
         return f"NewECP\n{atom_ecp_info[start_pos:end_pos].strip()}\nend\n"
 
-    def generate_preamble_block(self) -> str:
+    def _generate_preamble_block(self) -> str:
         """
         From the quantum cluster Atoms object, generate the ORCA input preamble for the basis, method, pal, and scf blocks.
 
@@ -809,86 +846,7 @@ coords
         self.orcablocks["adsorbate"] += preamble_input
         self.orcablocks["slab"] += preamble_input
 
-    def create_point_charge_file(self, pc_file: str | Path) -> None:
-        """
-        Create a point charge file that can be read by ORCA. This requires the embedded_cluster Atoms object containing both atom_type and oxi_states arrays, as well as the indices of the quantum cluster and ECP region.
 
-        Parameters
-        ----------
-        pc_file
-            A file containing the point charges to be written by ORCA.
-
-        Returns
-        -------
-        None
-        """
-
-        # Get the oxi_states arrays from the embedded_cluster
-        oxi_states = self.adsorbate_slab_embedded_cluster.get_array("oxi_states")
-
-        # Get the number of point charges for this system
-        total_indices = self.quantum_cluster_indices + self.ecp_region_indices
-        num_pc = len(self.adsorbate_slab_embedded_cluster) - len(total_indices)
-        counter = 0
-        with Path.open(pc_file, "w") as f:
-            # Write the number of point charges first
-            f.write(f"{num_pc}\n")
-            for i in range(len(self.adsorbate_slab_embedded_cluster)):
-                if i not in total_indices:
-                    counter += 1
-                    position = self.adsorbate_slab_embedded_cluster[i].position
-                    if counter != num_pc:
-                        f.write(
-                            f"{oxi_states[i]:-16.11f} {position[0]:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f}\n"
-                        )
-                    else:
-                        f.write(
-                            f"{oxi_states[i]:-16.11f} {position[0]:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f}"
-                        )
-
-
-def create_atom_coord_string(
-    atom: Atom,
-    is_ghost_atom: bool = False,
-    atom_ecp_info: str | None = None,
-    pc_charge: float | None = None,
-) -> str:
-    """
-    Creates a string containing the Atom symbol and coordinates for both MRCC and ORCA, with additional information for atoms in the ECP region as well as ghost atoms.
-
-    Parameters
-    ----------
-    atom
-        The ASE Atom (not Atoms) object containing the atomic coordinates.
-    is_ghost_atom
-        If True, then the atom is a ghost atom.
-    atom_ecp_info
-        If not None, then assume this is an atom in the ECP region and adds the ECP info.
-    pc_charge
-        The point charge value for the ECP region atom.
-
-    Returns
-    -------
-    str
-        The atom symbol and coordinates in the ORCA input file format.
-    """
-
-    # If ecp_info is not None and ghost_atom is True, raise an error
-    if atom_ecp_info and is_ghost_atom:
-        raise ValueError("ECP info cannot be provided for ghost atoms.")
-
-    # Check that pc_charge is a float if atom_ecp_info is not None
-    if atom_ecp_info and pc_charge is None:
-        raise ValueError("Point charge value must be given for atoms with ECP info.")
-
-    if is_ghost_atom:
-        atom_coord_str = f"{(atom.symbol + ':').ljust(3)} {' '*16} {atom.position[0]:-16.11f} {atom.position[1]:-16.11f} {atom.position[2]:-16.11f}\n"
-    elif atom_ecp_info is not None:
-        atom_coord_str = f"{(atom.symbol + '>').ljust(3)} {pc_charge:-16.11f} {atom.position[0]:-16.11f} {atom.position[1]:-16.11f} {atom.position[2]:-16.11f}\n{atom_ecp_info}"
-    else:
-        atom_coord_str = f"{atom.symbol.ljust(3)} {' '*16} {atom.position[0]:-16.11f} {atom.position[1]:-16.11f} {atom.position[2]:-16.11f}\n"
-
-    return atom_coord_str
 
 
 class CreateSKZCAMClusters:
@@ -955,115 +913,54 @@ class CreateSKZCAMClusters:
         self.quantum_cluster_indices = None
         self.ecp_region_indices = None
 
-    def run_skzcam(
-        self,
-        shell_max: int = 10,
-        shell_width: float = 0.1,
-        bond_dist: float = 2.5,
-        ecp_dist: float = 6.0,
-        write_clusters: bool = False,
-        write_clusters_path: str | Path = ".",
-        write_include_ecp: bool = False,
-    ) -> None:
+    def convert_slab_to_atoms(self) -> None:
         """
-        From a provided .pun file (generated by ChemShell), this function creates quantum clusters using the SKZCAM protocol. It will return the embedded cluster Atoms object and the indices of the atoms in the quantum clusters and the ECP region. The number of clusters created is controlled by the rdf_max parameter.
-
-        Parameters
-        ----------
-        shell_max
-            The maximum number of quantum clusters to be created.
-        shell_width
-            Defines the distance between atoms within shells; this is the maximum distance between any two atoms within the shell.
-        bond_dist
-            The distance within which an anion is considered to be coordinating a cation.
-        ecp_dist
-            The distance from edges of the quantum cluster to define the ECP region.
-        write_clusters
-            If True, the quantum clusters will be written to a file.
-        write_clusters_path
-            The path to the file where the quantum clusters will be written.
-        write_include_ecp
-            If True, the ECP region will be included in the quantum clusters.
+        Read the file containing the periodic slab and adsorbate (geometry optimized) and format the resulting Atoms object to be used to create a .pun file in ChemShell.
 
         Returns
         -------
         None
         """
 
-        # Read the .pun file and create the embedded_cluster Atoms object
-        self.slab_embedded_cluster = self.convert_pun_to_atoms(pun_file=self.pun_file)
+        # Get the necessary information for the cluster from a provided slab file (in any format that ASE can read)
+        adsorbate_slab = read(self.adsorbate_slab_file)
 
-        # Get distances of all atoms from the cluster center
-        atom_center_distances = _get_atom_distances(
-            atoms=self.slab_embedded_cluster, center_position=self.center_position
+        # Find indices (within adsorbate_slab) of the slab
+        slab_indices = self.slab_center_indices + [
+            i
+            for i, _ in enumerate(adsorbate_slab)
+            if i not in (self.adsorbate_indices + self.slab_center_indices)
+        ]
+
+        # Create adsorbate and slab from adsorbate_slab
+        slab = adsorbate_slab[slab_indices]
+        adsorbate = adsorbate_slab[self.adsorbate_indices]
+
+        adsorbate.translate(-slab[0].position)
+        slab.translate(-slab[0].position)
+
+        # Get the relative distance of the adsorbate from the first center atom of the slab as defined in the slab_center_indices
+        adsorbate_vector_from_slab = adsorbate[0].position - slab[0].position
+
+        # Get the center of the cluster from the slab_center_indices
+        slab_center_position = slab[
+            : len(self.slab_center_indices)
+        ].get_positions().sum(axis=0) / len(self.slab_center_indices)
+
+        # Add the height of the adsorbate from the slab along the z-direction relative to the slab_center
+        adsorbate_com_z_disp = (
+            adsorbate.get_center_of_mass()[2] - slab_center_position[2]
         )
 
-        # Determine the cation shells from the center of the embedded cluster
-        _, cation_shells_idx = self._find_cation_shells(
-            slab_embedded_cluster=self.slab_embedded_cluster,
-            distances=atom_center_distances,
-            shell_width=shell_width,
+        center_position = (
+            np.array([0.0, 0.0, adsorbate_com_z_disp]) + slab_center_position
         )
 
-        # Create the distance matrix for the embedded cluster
-        slab_embedded_cluster_all_dist = self.slab_embedded_cluster.get_all_distances()
-
-        # Create the anion coordination list for each cation shell
-        anion_coord_idx = []
-        for shell_idx in range(shell_max):
-            shell_indices = cation_shells_idx[shell_idx]
-            anion_coord_idx += [
-                self._get_anion_coordination(
-                    slab_embedded_cluster=self.slab_embedded_cluster,
-                    cation_shell_indices=shell_indices,
-                    dist_matrix=slab_embedded_cluster_all_dist,
-                    bond_dist=bond_dist,
-                )
-            ]
-
-        # Create the quantum clusters by summing up the indices of the cations and their coordinating anions
-        slab_quantum_cluster_indices = []
-        dummy_cation_indices = []
-        dummy_anion_indices = []
-        for shell_idx in range(shell_max):
-            dummy_cation_indices += cation_shells_idx[shell_idx]
-            dummy_anion_indices += anion_coord_idx[shell_idx]
-            slab_quantum_cluster_indices += [
-                list(set(dummy_cation_indices + dummy_anion_indices))
-            ]
-
-        # Get the ECP region for each quantum cluster
-        slab_ecp_region_indices = self._get_ecp_region(
-            slab_embedded_cluster=self.slab_embedded_cluster,
-            quantum_cluster_indices=slab_quantum_cluster_indices,
-            dist_matrix=slab_embedded_cluster_all_dist,
-            ecp_dist=ecp_dist,
-        )
-
-        # Create the adsorbate_slab_embedded_cluster from slab_embedded_cluster and adsorbate atoms objects. This also sets the final quantum_cluster_indices and ecp_region_indices for the adsorbate_slab_embedded_cluster
-        self.create_adsorbate_slab_embedded_cluster(
-            quantum_cluster_indices=slab_quantum_cluster_indices,
-            ecp_region_indices=slab_ecp_region_indices,
-        )
-
-        # Write the quantum clusters to files
-        if write_clusters:
-            for idx in range(len(self.quantum_cluster_indices)):
-                quantum_atoms = self.adsorbate_slab_embedded_cluster[
-                    self.quantum_cluster_indices[idx]
-                ]
-                if write_include_ecp:
-                    ecp_atoms = self.adsorbate_slab_embedded_cluster[
-                        self.ecp_region_indices[idx]
-                    ]
-                    ecp_atoms.set_chemical_symbols(np.array(["U"] * len(ecp_atoms)))
-                    cluster_atoms = quantum_atoms + ecp_atoms
-                else:
-                    cluster_atoms = quantum_atoms
-                write(
-                    Path(write_clusters_path, f"SKZCAM_cluster_{idx}.xyz"),
-                    cluster_atoms,
-                )
+        self.adsorbate = adsorbate
+        self.slab = slab
+        self.adsorbate_slab = adsorbate_slab
+        self.adsorbate_vector_from_slab = adsorbate_vector_from_slab
+        self.center_position = center_position
 
     @requires(has_chemshell, "ChemShell is not installed")
     def run_chemshell(
@@ -1123,56 +1020,117 @@ class CreateSKZCAMClusters:
                 filename=Path(filepath).with_suffix(".xyz"), fmt="xyz"
             )
 
-    def convert_slab_to_atoms(self) -> None:
+    def run_skzcam(
+        self,
+        shell_max: int = 10,
+        shell_width: float = 0.1,
+        bond_dist: float = 2.5,
+        ecp_dist: float = 6.0,
+        write_clusters: bool = False,
+        write_clusters_path: str | Path = ".",
+        write_include_ecp: bool = False,
+    ) -> None:
         """
-        Read the file containing the periodic slab and adsorbate (geometry optimized) and format the resulting Atoms object to be used to create a .pun file in ChemShell.
+        From a provided .pun file (generated by ChemShell), this function creates quantum clusters using the SKZCAM protocol. It will return the embedded cluster Atoms object and the indices of the atoms in the quantum clusters and the ECP region. The number of clusters created is controlled by the rdf_max parameter.
+
+        Parameters
+        ----------
+        shell_max
+            The maximum number of quantum clusters to be created.
+        shell_width
+            Defines the distance between atoms within shells; this is the maximum distance between any two atoms within the shell.
+        bond_dist
+            The distance within which an anion is considered to be coordinating a cation.
+        ecp_dist
+            The distance from edges of the quantum cluster to define the ECP region.
+        write_clusters
+            If True, the quantum clusters will be written to a file.
+        write_clusters_path
+            The path to the file where the quantum clusters will be written.
+        write_include_ecp
+            If True, the ECP region will be included in the quantum clusters.
 
         Returns
         -------
         None
         """
 
-        # Get the necessary information for the cluster from a provided slab file (in any format that ASE can read)
-        adsorbate_slab = read(self.adsorbate_slab_file)
+        # Read the .pun file and create the embedded_cluster Atoms object
+        self.slab_embedded_cluster = self._convert_pun_to_atoms(pun_file=self.pun_file)
 
-        # Find indices (within adsorbate_slab) of the slab
-        slab_indices = self.slab_center_indices + [
-            i
-            for i, _ in enumerate(adsorbate_slab)
-            if i not in (self.adsorbate_indices + self.slab_center_indices)
-        ]
-
-        # Create adsorbate and slab from adsorbate_slab
-        slab = adsorbate_slab[slab_indices]
-        adsorbate = adsorbate_slab[self.adsorbate_indices]
-
-        adsorbate.translate(-slab[0].position)
-        slab.translate(-slab[0].position)
-
-        # Get the relative distance of the adsorbate from the first center atom of the slab as defined in the slab_center_indices
-        adsorbate_vector_from_slab = adsorbate[0].position - slab[0].position
-
-        # Get the center of the cluster from the slab_center_indices
-        slab_center_position = slab[
-            : len(self.slab_center_indices)
-        ].get_positions().sum(axis=0) / len(self.slab_center_indices)
-
-        # Add the height of the adsorbate from the slab along the z-direction relative to the slab_center
-        adsorbate_com_z_disp = (
-            adsorbate.get_center_of_mass()[2] - slab_center_position[2]
+        # Get distances of all atoms from the cluster center
+        atom_center_distances = _get_atom_distances(
+            atoms=self.slab_embedded_cluster, center_position=self.center_position
         )
 
-        center_position = (
-            np.array([0.0, 0.0, adsorbate_com_z_disp]) + slab_center_position
+        # Determine the cation shells from the center of the embedded cluster
+        _, cation_shells_idx = self._find_cation_shells(
+            slab_embedded_cluster=self.slab_embedded_cluster,
+            distances=atom_center_distances,
+            shell_width=shell_width,
         )
 
-        self.adsorbate = adsorbate
-        self.slab = slab
-        self.adsorbate_slab = adsorbate_slab
-        self.adsorbate_vector_from_slab = adsorbate_vector_from_slab
-        self.center_position = center_position
+        # Create the distance matrix for the embedded cluster
+        slab_embedded_cluster_all_dist = self.slab_embedded_cluster.get_all_distances()
 
-    def convert_pun_to_atoms(self, pun_file: str | Path) -> Atoms:
+        # Create the anion coordination list for each cation shell
+        anion_coord_idx = []
+        for shell_idx in range(shell_max):
+            shell_indices = cation_shells_idx[shell_idx]
+            anion_coord_idx += [
+                self._get_anion_coordination(
+                    slab_embedded_cluster=self.slab_embedded_cluster,
+                    cation_shell_indices=shell_indices,
+                    dist_matrix=slab_embedded_cluster_all_dist,
+                    bond_dist=bond_dist,
+                )
+            ]
+
+        # Create the quantum clusters by summing up the indices of the cations and their coordinating anions
+        slab_quantum_cluster_indices = []
+        dummy_cation_indices = []
+        dummy_anion_indices = []
+        for shell_idx in range(shell_max):
+            dummy_cation_indices += cation_shells_idx[shell_idx]
+            dummy_anion_indices += anion_coord_idx[shell_idx]
+            slab_quantum_cluster_indices += [
+                list(set(dummy_cation_indices + dummy_anion_indices))
+            ]
+
+        # Get the ECP region for each quantum cluster
+        slab_ecp_region_indices = self._get_ecp_region(
+            slab_embedded_cluster=self.slab_embedded_cluster,
+            quantum_cluster_indices=slab_quantum_cluster_indices,
+            dist_matrix=slab_embedded_cluster_all_dist,
+            ecp_dist=ecp_dist,
+        )
+
+        # Create the adsorbate_slab_embedded_cluster from slab_embedded_cluster and adsorbate atoms objects. This also sets the final quantum_cluster_indices and ecp_region_indices for the adsorbate_slab_embedded_cluster
+        self._create_adsorbate_slab_embedded_cluster(
+            quantum_cluster_indices=slab_quantum_cluster_indices,
+            ecp_region_indices=slab_ecp_region_indices,
+        )
+
+        # Write the quantum clusters to files
+        if write_clusters:
+            for idx in range(len(self.quantum_cluster_indices)):
+                quantum_atoms = self.adsorbate_slab_embedded_cluster[
+                    self.quantum_cluster_indices[idx]
+                ]
+                if write_include_ecp:
+                    ecp_atoms = self.adsorbate_slab_embedded_cluster[
+                        self.ecp_region_indices[idx]
+                    ]
+                    ecp_atoms.set_chemical_symbols(np.array(["U"] * len(ecp_atoms)))
+                    cluster_atoms = quantum_atoms + ecp_atoms
+                else:
+                    cluster_atoms = quantum_atoms
+                write(
+                    Path(write_clusters_path, f"SKZCAM_cluster_{idx}.xyz"),
+                    cluster_atoms,
+                )
+
+    def _convert_pun_to_atoms(self, pun_file: str | Path) -> Atoms:
         """
         Reads a .pun file and returns an ASE Atoms object containing the atomic coordinates,
         point charges/oxidation states, and atom types.
@@ -1255,7 +1213,7 @@ class CreateSKZCAMClusters:
 
         return slab_embedded_cluster
 
-    def create_adsorbate_slab_embedded_cluster(
+    def _create_adsorbate_slab_embedded_cluster(
         self,
         quantum_cluster_indices: list[list[int]] | None = None,
         ecp_region_indices: list[list[int]] | None = None,
@@ -1478,3 +1436,47 @@ def _get_atom_distances(atoms: Atoms, center_position: NDArray) -> NDArray:
     """
 
     return np.array([np.linalg.norm(atom.position - center_position) for atom in atoms])
+
+
+def create_atom_coord_string(
+    atom: Atom,
+    is_ghost_atom: bool = False,
+    atom_ecp_info: str | None = None,
+    pc_charge: float | None = None,
+) -> str:
+    """
+    Creates a string containing the Atom symbol and coordinates for both MRCC and ORCA, with additional information for atoms in the ECP region as well as ghost atoms.
+
+    Parameters
+    ----------
+    atom
+        The ASE Atom (not Atoms) object containing the atomic coordinates.
+    is_ghost_atom
+        If True, then the atom is a ghost atom.
+    atom_ecp_info
+        If not None, then assume this is an atom in the ECP region and adds the ECP info.
+    pc_charge
+        The point charge value for the ECP region atom.
+
+    Returns
+    -------
+    str
+        The atom symbol and coordinates in the ORCA input file format.
+    """
+
+    # If ecp_info is not None and ghost_atom is True, raise an error
+    if atom_ecp_info and is_ghost_atom:
+        raise ValueError("ECP info cannot be provided for ghost atoms.")
+
+    # Check that pc_charge is a float if atom_ecp_info is not None
+    if atom_ecp_info and pc_charge is None:
+        raise ValueError("Point charge value must be given for atoms with ECP info.")
+
+    if is_ghost_atom:
+        atom_coord_str = f"{(atom.symbol + ':').ljust(3)} {' '*16} {atom.position[0]:-16.11f} {atom.position[1]:-16.11f} {atom.position[2]:-16.11f}\n"
+    elif atom_ecp_info is not None:
+        atom_coord_str = f"{(atom.symbol + '>').ljust(3)} {pc_charge:-16.11f} {atom.position[0]:-16.11f} {atom.position[1]:-16.11f} {atom.position[2]:-16.11f}\n{atom_ecp_info}"
+    else:
+        atom_coord_str = f"{atom.symbol.ljust(3)} {' '*16} {atom.position[0]:-16.11f} {atom.position[1]:-16.11f} {atom.position[2]:-16.11f}\n"
+
+    return atom_coord_str

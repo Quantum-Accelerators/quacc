@@ -37,7 +37,7 @@ def skzcam_clusters():
 
 @pytest.fixture()
 def slab_embedded_cluster(skzcam_clusters):
-    return skzcam_clusters.convert_pun_to_atoms(
+    return skzcam_clusters._convert_pun_to_atoms(
         pun_file=Path(FILE_DIR, "skzcam_files", "ChemShell_Cluster.pun.gz")
     )
 
@@ -193,7 +193,7 @@ def test_MRCCInputGenerator_init(adsorbate_slab_embedded_cluster, element_info):
         )
 
 
-def test_MRCCInputGenerator_create_eint_blocks(mrcc_input_generator):
+def test_MRCCInputGenerator_generate_input(mrcc_input_generator):
     mrcc_input_generator_nocp = deepcopy(mrcc_input_generator)
 
     mrcc_input_generator_nocp.include_cp = False
@@ -291,9 +291,9 @@ def test_MRCCInputGenerator_generate_basis_ecp_block(mrcc_input_generator):
     mrcc_input_generator_nocp = deepcopy(mrcc_input_generator)
 
     mrcc_input_generator_nocp.include_cp = False
-    mrcc_input_generator_nocp.generate_basis_ecp_block()
+    mrcc_input_generator_nocp._generate_basis_ecp_block()
 
-    mrcc_input_generator.generate_basis_ecp_block()
+    mrcc_input_generator._generate_basis_ecp_block()
 
     reference_mrcc_blocks_collated = {
         "adsorbate_slab": [
@@ -371,14 +371,14 @@ def test_MRCCInputGenerator_generate_basis_ecp_block(mrcc_input_generator):
 
 
 def test_MRCCInputGenerator_create_atomtype_basis(mrcc_input_generator):
-    generated_basis_block_without_ecp = mrcc_input_generator.create_atomtype_basis(
+    generated_basis_block_without_ecp = mrcc_input_generator._create_atomtype_basis(
         quantum_region=mrcc_input_generator.adsorbate_slab_cluster,
         element_basis_info={
             element: mrcc_input_generator.element_info[element]["ri_cwft_basis"]
             for element in mrcc_input_generator.element_info
         },
     )
-    generated_basis_block_with_ecp = mrcc_input_generator.create_atomtype_basis(
+    generated_basis_block_with_ecp = mrcc_input_generator._create_atomtype_basis(
         quantum_region=mrcc_input_generator.adsorbate_slab_cluster,
         element_basis_info={
             element: mrcc_input_generator.element_info[element]["ri_cwft_basis"]
@@ -398,9 +398,9 @@ def test_MRCCInputGenerator_generate_coords_block(mrcc_input_generator):
     mrcc_input_generator_nocp = deepcopy(mrcc_input_generator)
 
     mrcc_input_generator_nocp.include_cp = False
-    mrcc_input_generator_nocp.generate_coords_block()
+    mrcc_input_generator_nocp._generate_coords_block()
 
-    mrcc_input_generator.generate_coords_block()
+    mrcc_input_generator._generate_coords_block()
 
     reference_block_collated = {
         "adsorbate_slab": {
@@ -509,7 +509,7 @@ def test_MRCCInputGenerator_generate_coords_block(mrcc_input_generator):
 
 
 def test_MRCCInputGenerator_generate_point_charge_block(mrcc_input_generator):
-    generated_point_charge_block = mrcc_input_generator.generate_point_charge_block()
+    generated_point_charge_block = mrcc_input_generator._generate_point_charge_block()
 
     generated_point_charge_block_shortened = [
         float(x) for x in generated_point_charge_block.split()[5::180]
@@ -850,9 +850,9 @@ def test_ORCAInputGenerator_generate_coords_block(orca_input_generator):
     orca_input_generator_nocp = deepcopy(orca_input_generator)
 
     orca_input_generator_nocp.include_cp = False
-    orca_input_generator_nocp.generate_coords_block()
+    orca_input_generator_nocp._generate_coords_block()
 
-    orca_input_generator.generate_coords_block()
+    orca_input_generator._generate_coords_block()
 
     reference_block_collated = {
         "adsorbate_slab": {
@@ -1026,7 +1026,7 @@ def test_ORCAInputGenerator_generate_coords_block(orca_input_generator):
 
 def test_ORCAInputGenerator_format_ecp_info(orca_input_generator):
     with pytest.raises(ValueError):
-        orca_input_generator.format_ecp_info(atom_ecp_info="dummy_info\nN_core0\nend")
+        orca_input_generator._format_ecp_info(atom_ecp_info="dummy_info\nN_core0\nend")
 
     atom_ecp_info = """
 NewECP
@@ -1036,7 +1036,7 @@ s 1
 1      1.732000000   14.676000000 2
 end
 """
-    formatted_atom_ecp_info = orca_input_generator.format_ecp_info(
+    formatted_atom_ecp_info = orca_input_generator._format_ecp_info(
         atom_ecp_info=atom_ecp_info
     )
     assert (
@@ -1052,7 +1052,7 @@ def test_ORCAInputGenerator_generate_preamble_block(orca_input_generator):
     orca_input_generator_3 = deepcopy(orca_input_generator)
 
     # Generate the orca input preamble
-    orca_input_generator_1.generate_preamble_block()
+    orca_input_generator_1._generate_preamble_block()
 
     assert (
         orca_input_generator_1.orcablocks["adsorbate_slab"]
@@ -1090,7 +1090,7 @@ def test_ORCAInputGenerator_generate_preamble_block(orca_input_generator):
         },
     }
     orca_input_generator_2.element_info = element_info
-    orca_input_generator_2.generate_preamble_block()
+    orca_input_generator_2._generate_preamble_block()
 
     assert (
         orca_input_generator_2.orcablocks["adsorbate_slab"]
@@ -1102,7 +1102,7 @@ def test_ORCAInputGenerator_generate_preamble_block(orca_input_generator):
     orca_input_generator_3.method_block = None
     orca_input_generator_3.pal_nprocs_block = None
     orca_input_generator_3.element_info = None
-    orca_input_generator_3.generate_preamble_block()
+    orca_input_generator_3._generate_preamble_block()
 
     assert (
         orca_input_generator_3.orcablocks["adsorbate_slab"]
@@ -1113,7 +1113,7 @@ def test_ORCAInputGenerator_generate_preamble_block(orca_input_generator):
     with pytest.raises(ValueError):
         element_info_error = {"C": element_info["C"]}
         orca_input_generator_3.element_info = element_info_error
-        orca_input_generator_3.generate_preamble_block()
+        orca_input_generator_3._generate_preamble_block()
 
 
 def test_ORCAInputGenerator_create_point_charge_file(orca_input_generator, tmp_path):
@@ -1237,7 +1237,7 @@ def test_CreateSKZCAMClusters_run_chemshell(skzcam_clusters, tmp_path):
 
 
 def test_CreateSKZCAMClusters_convert_pun_to_atoms(skzcam_clusters):
-    slab_embedded_cluster = skzcam_clusters.convert_pun_to_atoms(
+    slab_embedded_cluster = skzcam_clusters._convert_pun_to_atoms(
         pun_file=Path(FILE_DIR, "skzcam_files", "ChemShell_Cluster.pun.gz")
     )
 
@@ -1500,7 +1500,7 @@ def test_CreateSKZCAMClusters_create_adsorbate_slab_embedded_cluster(
     )
     skzcam_clusters.adsorbate_vector_from_slab = [0.0, 0.0, 2.0]
 
-    skzcam_clusters.create_adsorbate_slab_embedded_cluster(
+    skzcam_clusters._create_adsorbate_slab_embedded_cluster(
         quantum_cluster_indices=[[0, 1, 3, 4], [5, 6, 7, 8]],
         ecp_region_indices=[[0, 1, 3, 4], [5, 6, 7, 8]],
     )
