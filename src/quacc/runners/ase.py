@@ -5,7 +5,7 @@ from __future__ import annotations
 import sys
 from importlib.util import find_spec
 from shutil import copy, copytree
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
 import numpy as np
 from ase import Atoms
@@ -13,10 +13,9 @@ from ase.calculators import calculator
 from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read
 from ase.mep import NEB
+from ase.mep.neb import NEBOptimizer
 from ase.optimize import BFGS
 from ase.vibrations import Vibrations
-from typing import Union, Any, Optional, Dict
-from ase.mep.neb import NEBOptimizer
 from monty.dev import requires
 from monty.os.path import zpath
 
@@ -34,7 +33,7 @@ if has_geodesic_interpolate:
 
 if TYPE_CHECKING:
     from pathlib import Path
-    from typing import Any, TypedDict, Union
+    from typing import Any, TypedDict
 
     from ase.optimize.optimize import Optimizer
 
@@ -328,15 +327,15 @@ def run_vib(
 
 
 def run_path_opt(
-        images,
-        relax_cell: bool = False,
-        fmax: float = 0.01,
-        max_steps: int | None = 1000,
-        optimizer: Union[NEBOptimizer, BFGS] = NEBOptimizer,
-        optimizer_kwargs: OptimizerKwargs | None = None,
-        run_kwargs: dict[str, Any] | None = None,
-        neb_kwargs: dict[str, Any] | None = None,
-        copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    images,
+    relax_cell: bool = False,
+    fmax: float = 0.01,
+    max_steps: int | None = 1000,
+    optimizer: NEBOptimizer | BFGS = NEBOptimizer,
+    optimizer_kwargs: OptimizerKwargs | None = None,
+    run_kwargs: dict[str, Any] | None = None,
+    neb_kwargs: dict[str, Any] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> list[Atoms]:
     """
     Run NEB
