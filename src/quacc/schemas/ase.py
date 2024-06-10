@@ -175,7 +175,7 @@ def summarize_opt_run(
     trajectory_results = [atoms.calc.results for atoms in trajectory]
     for traj_atoms in trajectory:
         traj_atoms.calc = None
-    
+
     initial_atoms = trajectory[0]
     final_atoms = get_final_atoms_from_dynamics(dyn)
     directory = final_atoms.calc.directory
