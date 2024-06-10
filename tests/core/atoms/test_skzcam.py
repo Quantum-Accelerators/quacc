@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import gzip
-import shutil
+import os
 from copy import deepcopy
 from pathlib import Path
 
@@ -11,7 +11,6 @@ from ase import Atoms
 from ase.calculators.calculator import compare_atoms
 from ase.io import read
 from numpy.testing import assert_allclose, assert_equal
-import os
 
 from quacc.atoms.skzcam import (
     CreateSKZCAMClusters,
@@ -1197,7 +1196,7 @@ def test_CreateSKZCAMClusters_run_chemshell(skzcam_clusters, tmp_path):
     skzcam_clusters_nowrite = deepcopy(skzcam_clusters)
     skzcam_clusters_nowrite.convert_slab_to_atoms()
     skzcam_clusters_nowrite.run_chemshell(
-        filepath= tmp_path / "ChemShell_Cluster.pun",
+        filepath=tmp_path / "ChemShell_Cluster.pun",
         chemsh_radius_active=5.0,
         chemsh_radius_cluster=10.0,
         write_xyz_file=False,
@@ -1206,7 +1205,7 @@ def test_CreateSKZCAMClusters_run_chemshell(skzcam_clusters, tmp_path):
 
     skzcam_clusters.convert_slab_to_atoms()
     skzcam_clusters.run_chemshell(
-        filepath= tmp_path / "ChemShell_Cluster.pun",
+        filepath=tmp_path / "ChemShell_Cluster.pun",
         chemsh_radius_active=5.0,
         chemsh_radius_cluster=10.0,
         write_xyz_file=True,
