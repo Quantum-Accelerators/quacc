@@ -69,7 +69,7 @@ if TYPE_CHECKING:
 class Runner(BaseRunner):
     """
     Run various types of calculations in a scratch directory and copy the results back
-    to the original directory.
+    to the original directory. Note: This function does not modify the atoms object in-place.
     """
 
     def __init__(
@@ -102,8 +102,7 @@ class Runner(BaseRunner):
         self, geom_file: str | None = None, properties: list[str] | None = None
     ) -> Atoms:
         """
-        This is a wrapper around `atoms.calc.calculate()`. Note: This function
-        does not modify the atoms object in-place.
+        This is a wrapper around `atoms.calc.calculate()`.
 
         Parameters
         ----------
@@ -173,8 +172,7 @@ class Runner(BaseRunner):
         run_kwargs: dict[str, Any] | None = None,
     ) -> Optimizer:
         """
-        This is a wrapper around the optimizers in ASE. Note: This function does not
-        modify the atoms object in-place.
+        This is a wrapper around the optimizers in ASE.
 
         Parameters
         ----------
@@ -276,8 +274,7 @@ class Runner(BaseRunner):
         to the original directory. This can be useful if file I/O is slow in the working
         directory, so long as file transfer speeds are reasonable.
 
-        This is a wrapper around the vibrations module in ASE. Note: This function
-        does not modify the atoms object in-place.
+        This is a wrapper around the vibrations module in ASE.
 
         Parameters
         ----------
