@@ -56,6 +56,8 @@ def run_and_summarize(
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
     calc = Dftb(**calc_flags)
-    final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc(geom_file=GEOM_FILE)
+    final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc(
+        geom_file=GEOM_FILE
+    )
 
     return summarize_run(final_atoms, atoms, additional_fields=additional_fields)
