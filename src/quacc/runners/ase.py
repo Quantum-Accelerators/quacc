@@ -267,9 +267,9 @@ class Runner:
             terminate(self.tmpdir, exception)
 
         # Perform cleanup operations
+        self._cleanup()
         traj.filename = zpath(self.job_results_dir / traj_filename)
         dyn.trajectory = traj
-        self._cleanup()
 
         return dyn
 
