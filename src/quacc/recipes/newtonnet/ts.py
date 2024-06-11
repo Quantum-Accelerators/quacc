@@ -3,13 +3,8 @@
 from __future__ import annotations
 
 from importlib.util import find_spec
-from pathlib import Path
 from typing import TYPE_CHECKING
 
-from ase.atoms import Atoms
-from ase.io import read, write
-from ase.mep.neb import NEBOptimizer
-from ase.neb import NEB
 from monty.dev import requires
 
 from quacc import SETTINGS, change_settings, job, strip_decorator
@@ -27,14 +22,12 @@ if has_sella:
 if has_newtonnet:
     from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
 if has_geodesic_interpolate:
-    from geodesic_interpolate.fileio import write_xyz
-    from geodesic_interpolate.geodesic import Geodesic
-    from geodesic_interpolate.interpolation import redistribute
+    pass
 
 if TYPE_CHECKING:
     from typing import Any, Literal
 
-    from ase.optimize.optimize import Optimizer
+    from ase.atoms import Atoms
     from numpy.typing import NDArray
 
     from quacc.recipes.newtonnet.core import FreqSchema
