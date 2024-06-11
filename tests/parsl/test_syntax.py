@@ -143,29 +143,38 @@ def test_change_settings_wf(tmp_path_factory):
         with open(Path(f"{SETTINGS.RESULTS_DIR}/{name}.txt"), "w") as f:
             f.write("test file")
 
-    @flow
-    def write_file2():
-        with open(Path(f"{SETTINGS.RESULTS_DIR}/flow.txt"), "w") as f:
-            f.write("test file")
-
     @subflow
-    def write_file3():
-        return [write_file(name="subflow")]
+    def write_file_subflow(name="subflow"):
+        write_file(name="subflow_test")
+        return [write_file(name=name)]
+    
+    @flow
+    def write_file_flow(name="flow_job"):
+        write_file_subflow(name="flow_test")
+        return write_file(name=name)
+
+    @flow
+    def write_file_flow_2(name="flow_subflow"):
+        return write_file_subflow(name=name)
 
     tmp_dir = tmp_path_factory.mktemp("dir1")
     tmp_dir2 = tmp_path_factory.mktemp("dir2")
     tmp_dir3 = tmp_path_factory.mktemp("dir3")
+    tmp_dir4 = tmp_path_factory.mktemp("dir4")
 
     write_file_new = change_settings_wf(write_file, {"RESULTS_DIR": tmp_dir}, job)
-    write_file2_new = change_settings_wf(write_file2, {"RESULTS_DIR": tmp_dir2}, flow)
-    write_file3_new = change_settings_wf(
-        write_file3, {"RESULTS_DIR": tmp_dir3}, subflow
-    )
+    write_file_subflow_new = change_settings_wf(write_file_subflow, {"RESULTS_DIR": tmp_dir2}, subflow)
+    write_file_flow_new = change_settings_wf(write_file_flow, {"RESULTS_DIR": tmp_dir3}, flow)
+    write_file_flow_2_new = change_settings_wf(write_file_flow_2, {"RESULTS_DIR": tmp_dir4}, flow)
 
     write_file_new().result()
-    write_file2_new()
-    write_file3_new().result()
+    write_file_subflow_new().result()
+    write_file_flow_new().result()
+    write_file_flow_2_new().result()
 
     assert Path(tmp_dir / "job.txt").exists()
-    assert Path(tmp_dir2 / "flow.txt").exists()
-    assert Path(tmp_dir3 / "subflow.txt").exists()
+    assert Path(tmp_dir2 / "subflow.txt").exists()
+    assert Path(tmp_dir2 / "subflow_test.txt").exists()
+    assert Path(tmp_dir3 / "flow_job.txt").exists()
+    assert Path(tmp_dir3 / "flow_test.txt").exists()
+    assert Path(tmp_dir4 / "flow_subflow.txt").exists()
