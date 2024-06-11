@@ -19,7 +19,7 @@ if TYPE_CHECKING:
         from phonopy import Phonopy
 
 
-class PhonopyRunner(Runner):
+class PhonopyRunner():
     def __init__(self, *args, **kwargs):
         super().__init__(None, None, *args, **kwargs)
 
