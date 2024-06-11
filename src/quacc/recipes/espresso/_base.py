@@ -88,8 +88,8 @@ def run_and_summarize(
 
     updated_copy_files = prepare_copy(
         copy_files=copy_files,
-        calc_params=atoms.calc.user_calc_params,
-        binary=atoms.calc.template.binary,
+        calc_params=calc.user_calc_params,
+        binary=calc.template.binary,
     )
 
     geom_file = template.outputname if template.binary == "pw" else None
@@ -167,8 +167,8 @@ def run_and_summarize_opt(
 
     updated_copy_files = prepare_copy(
         copy_files=copy_files,
-        calc_params=atoms.calc.user_calc_params,
-        binary=atoms.calc.template.binary,
+        calc_params=calc.user_calc_params,
+        binary=calc.template.binary,
     )
 
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
