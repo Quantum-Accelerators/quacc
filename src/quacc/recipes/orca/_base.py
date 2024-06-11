@@ -71,7 +71,7 @@ def run_and_summarize(
     cclibSchema
         Dictionary of results
     """
-    atoms.calc = prep_calculator(
+    calc = prep_calculator(
         charge=charge,
         spin_multiplicity=spin_multiplicity,
         default_inputs=default_inputs,
@@ -81,7 +81,7 @@ def run_and_summarize(
         **calc_kwargs,
     )
 
-    atoms = Runner(atoms, copy_files=copy_files).run_calc(geom_file=GEOM_FILE)
+    atoms = Runner(atoms, calc, copy_files=copy_files).run_calc(geom_file=GEOM_FILE)
 
     return cclib_summarize_run(atoms, LOG_FILE, additional_fields=additional_fields)
 
@@ -137,7 +137,7 @@ def run_and_summarize_opt(
     cclibASEOptSchema
         Dictionary of results
     """
-    atoms.calc = prep_calculator(
+    calc = prep_calculator(
         charge=charge,
         spin_multiplicity=spin_multiplicity,
         default_inputs=default_inputs,
@@ -148,7 +148,7 @@ def run_and_summarize_opt(
     )
 
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
-    dyn = Runner(atoms, copy_files=copy_files).run_opt(**opt_flags)
+    dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_flags)
     return summarize_cclib_opt_run(dyn, LOG_FILE, additional_fields=additional_fields)
 
 

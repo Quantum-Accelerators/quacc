@@ -29,6 +29,7 @@ if TYPE_CHECKING:
     from typing import Any, TypedDict
 
     from ase.atoms import Atoms
+    from ase.calculators.calculator import Calculator
     from ase.optimize.optimize import Optimizer
 
     from quacc.utils.files import Filenames, SourceDirectory
@@ -73,16 +74,18 @@ class Runner:
     def __init__(
         self,
         atoms: Atoms | None,
+        calculator: Calculator,
         copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     ) -> None:
         """
         Initialize the Runner object.
 
-            Files to copy (and decompress) from source to the runtime directory.
         Parameters
         ----------
         atoms
             The Atoms object to run calculations on.
+        calculator
+            The instantiated ASE calculator object to attach to the Atoms object.
         copy_files
             Files to copy (and decompress) from source to the runtime directory.
 
@@ -91,6 +94,7 @@ class Runner:
         None
         """
         self.atoms = copy_atoms(atoms) if atoms else atoms
+        self.atoms.calc = calculator
         self.copy_files = copy_files
         self.tmpdir, self.job_results_dir = calc_setup(
             self.atoms, copy_files=self.copy_files

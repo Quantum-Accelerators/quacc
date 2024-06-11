@@ -94,14 +94,14 @@ def run_and_summarize(
 
     if SETTINGS.GULP_LIB:
         os.environ["GULP_LIB"] = str(SETTINGS.GULP_LIB)
-    atoms.calc = GULP(
+    calc = GULP(
         command=GULP_CMD,
         keywords=gulp_keywords,
         options=gulp_options,
         library=library,
         **calc_kwargs,
     )
-    final_atoms = Runner(atoms, copy_files=copy_files).run_calc(
+    final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc(
         geom_file=GEOM_FILE_PBC if atoms.pbc.any() else GEOM_FILE_NOPBC
     )
 

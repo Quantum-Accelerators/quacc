@@ -57,10 +57,10 @@ def run_and_summarize(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
-    atoms.calc = QChem(
+    calc = QChem(
         atoms, charge=charge, spin_multiplicity=spin_multiplicity, **calc_flags
     )
-    final_atoms = Runner(atoms, copy_files=copy_files).run_calc()
+    final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
 
     return summarize_run(
         final_atoms,
@@ -113,10 +113,10 @@ def run_and_summarize_opt(
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
-    atoms.calc = QChem(
+    calc = QChem(
         atoms, charge=charge, spin_multiplicity=spin_multiplicity, **calc_flags
     )
-    dyn = Runner(atoms, copy_files=copy_files).run_opt(**opt_flags)
+    dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_flags)
 
     return summarize_opt_run(
         dyn,

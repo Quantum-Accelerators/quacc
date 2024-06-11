@@ -51,8 +51,8 @@ def run_and_summarize(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    atoms.calc = prep_calculator(calc_defaults=calc_defaults, calc_swaps=calc_swaps)
-    final_atoms = Runner(atoms, copy_files=copy_files).run_calc()
+    calc = prep_calculator(calc_defaults=calc_defaults, calc_swaps=calc_swaps)
+    final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
 
     return summarize_run(final_atoms, atoms, additional_fields=additional_fields)
 
@@ -97,9 +97,9 @@ def run_and_summarize_opt(
     """
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
-    atoms.calc = prep_calculator(calc_defaults=calc_defaults, calc_swaps=calc_swaps)
+    calc = prep_calculator(calc_defaults=calc_defaults, calc_swaps=calc_swaps)
 
-    dyn = Runner(atoms, copy_files=copy_files).run_opt(**opt_flags)
+    dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_flags)
 
     return summarize_opt_run(dyn, additional_fields=additional_fields)
 

@@ -67,8 +67,8 @@ def static_job(
     }
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
 
-    atoms.calc = NewtonNet(**calc_flags)
-    final_atoms = Runner(atoms, copy_files=copy_files).run_calc()
+    calc = NewtonNet(**calc_flags)
+    final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
 
     return summarize_run(
         final_atoms, atoms, additional_fields={"name": "NewtonNet Static"}
@@ -117,8 +117,8 @@ def relax_job(
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
-    atoms.calc = NewtonNet(**calc_flags)
-    dyn = Runner(atoms, copy_files=copy_files).run_opt(**opt_flags)
+    calc = NewtonNet(**calc_flags)
+    dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_flags)
 
     return _add_stdev_and_hess(
         summarize_opt_run(dyn, additional_fields={"name": "NewtonNet Relax"})
@@ -166,8 +166,8 @@ def freq_job(
     }
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
 
-    atoms.calc = NewtonNet(**calc_flags)
-    final_atoms = Runner(atoms, copy_files=copy_files).run_calc()
+    calc = NewtonNet(**calc_flags)
+    final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
 
     summary = summarize_run(
         final_atoms, atoms, additional_fields={"name": "NewtonNet Hessian"}
@@ -209,11 +209,11 @@ def _add_stdev_and_hess(summary: dict[str, Any]) -> dict[str, Any]:
         Hessian values.
     """
     for i, atoms in enumerate(summary["trajectory"]):
-        atoms.calc = NewtonNet(
+        calc = NewtonNet(
             model_path=SETTINGS.NEWTONNET_MODEL_PATH,
             settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
         )
-        results = Runner(atoms).run_calc().calc.results
+        results = Runner(atoms, calc).run_calc().calc.results
         summary["trajectory_results"][i]["hessian"] = results["hessian"]
         summary["trajectory_results"][i]["energy_std"] = results["energy_disagreement"]
         summary["trajectory_results"][i]["forces_std"] = results["forces_disagreement"]

@@ -57,8 +57,8 @@ def run_and_summarize(
     """
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
-    atoms.calc = Vasp(atoms, preset=preset, **calc_flags)
-    final_atoms = Runner(atoms, copy_files=copy_files).run_calc()
+    calc = Vasp(atoms, preset=preset, **calc_flags)
+    final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
 
     return vasp_summarize_run(
         final_atoms,
@@ -112,8 +112,8 @@ def run_and_summarize_opt(
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
-    atoms.calc = Vasp(atoms, preset=preset, **calc_flags)
-    dyn = Runner(atoms, copy_files=copy_files).run_opt(**opt_flags)
+    calc = Vasp(atoms, preset=preset, **calc_flags)
+    dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_flags)
 
     return summarize_vasp_opt_run(
         dyn,

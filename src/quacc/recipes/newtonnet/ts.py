@@ -102,10 +102,10 @@ def ts_job(
     if use_custom_hessian:
         opt_flags["optimizer_kwargs"]["hessian_function"] = _get_hessian
 
-    atoms.calc = NewtonNet(**calc_flags)
+    calc = NewtonNet(**calc_flags)
 
     # Run the TS optimization
-    dyn = Runner(atoms).run_opt(**opt_flags)
+    dyn = Runner(atoms, calc).run_opt(**opt_flags)
     opt_ts_summary = _add_stdev_and_hess(
         summarize_opt_run(dyn, additional_fields={"name": "NewtonNet TS"})
     )
@@ -177,11 +177,11 @@ def irc_job(
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
     # Define calculator
-    atoms.calc = NewtonNet(**calc_flags)
+    calc = NewtonNet(**calc_flags)
 
     # Run IRC
     with change_settings({"CHECK_CONVERGENCE": False}):
-        dyn = Runner(atoms).run_opt(**opt_flags)
+        dyn = Runner(atoms, calc).run_opt(**opt_flags)
         opt_irc_summary = _add_stdev_and_hess(
             summarize_opt_run(
                 dyn, additional_fields={"name": f"NewtonNet IRC: {direction}"}

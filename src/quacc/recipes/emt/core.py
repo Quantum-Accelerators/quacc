@@ -48,8 +48,8 @@ def static_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    atoms.calc = EMT(**calc_kwargs)
-    final_atoms = Runner(atoms, copy_files=copy_files).run_calc()
+    calc = EMT(**calc_kwargs)
+    final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
 
     return summarize_run(final_atoms, atoms, additional_fields={"name": "EMT Static"})
 
@@ -89,8 +89,8 @@ def relax_job(
     """
     opt_params = opt_params or {}
 
-    atoms.calc = EMT(**calc_kwargs)
-    dyn = Runner(atoms, copy_files=copy_files).run_opt(
+    calc = EMT(**calc_kwargs)
+    dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(
         relax_cell=relax_cell, **opt_params
     )
 

@@ -55,9 +55,9 @@ def static_job(
     """
     calc_defaults = {"method": method}
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
-    atoms.calc = TBLite(**calc_flags)
+    calc = TBLite(**calc_flags)
 
-    final_atoms = Runner(atoms).run_calc()
+    final_atoms = Runner(atoms, calc).run_calc()
     return summarize_run(
         final_atoms, atoms, additional_fields={"name": "TBLite Static"}
     )
@@ -100,8 +100,8 @@ def relax_job(
     opt_params = opt_params or {}
     calc_defaults = {"method": method}
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
-    atoms.calc = TBLite(**calc_flags)
-    dyn = Runner(atoms).run_opt(relax_cell=relax_cell, **opt_params)
+    calc = TBLite(**calc_flags)
+    dyn = Runner(atoms, calc).run_opt(relax_cell=relax_cell, **opt_params)
 
     return summarize_opt_run(dyn, additional_fields={"name": "TBLite Relax"})
 
@@ -149,9 +149,9 @@ def freq_job(
 
     calc_defaults = {"method": method}
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
-    atoms.calc = TBLite(**calc_flags)
+    calc = TBLite(**calc_flags)
 
-    vibrations = Runner(atoms).run_vib(vib_kwargs=vib_kwargs)
+    vibrations = Runner(atoms, calc).run_vib(vib_kwargs=vib_kwargs)
     igt = ThermoRunner(
         atoms, vibrations.get_frequencies(), energy=energy
     ).run_ideal_gas()

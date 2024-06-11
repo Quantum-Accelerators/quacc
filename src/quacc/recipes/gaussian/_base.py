@@ -57,7 +57,7 @@ def run_and_summarize(
     """
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
-    atoms.calc = Gaussian(command=GAUSSIAN_CMD, label=_LABEL, **calc_flags)
-    atoms = Runner(atoms, copy_files=copy_files).run_calc(geom_file=LOG_FILE)
+    calc = Gaussian(command=GAUSSIAN_CMD, label=_LABEL, **calc_flags)
+    atoms = Runner(atoms, calc, copy_files=copy_files).run_calc(geom_file=LOG_FILE)
 
     return cclib_summarize_run(atoms, LOG_FILE, additional_fields=additional_fields)

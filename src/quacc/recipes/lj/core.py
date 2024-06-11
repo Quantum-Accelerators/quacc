@@ -49,8 +49,8 @@ def static_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    atoms.calc = LennardJones(**calc_kwargs)
-    final_atoms = Runner(atoms, copy_files=copy_files).run_calc()
+    calc = LennardJones(**calc_kwargs)
+    final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
 
     return summarize_run(final_atoms, atoms, additional_fields={"name": "LJ Static"})
 
@@ -87,8 +87,8 @@ def relax_job(
     """
     opt_params = opt_params or {}
 
-    atoms.calc = LennardJones(**calc_kwargs)
-    dyn = Runner(atoms, copy_files=copy_files).run_opt(**opt_params)
+    calc = LennardJones(**calc_kwargs)
+    dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_params)
 
     return summarize_opt_run(dyn, additional_fields={"name": "LJ Relax"})
 
@@ -133,8 +133,8 @@ def freq_job(
     """
     vib_kwargs = vib_kwargs or {}
 
-    atoms.calc = LennardJones(**calc_kwargs)
-    vibrations = Runner(atoms, copy_files=copy_files).run_vib(vib_kwargs=vib_kwargs)
+    calc = LennardJones(**calc_kwargs)
+    vibrations = Runner(atoms, calc, copy_files=copy_files).run_vib(vib_kwargs=vib_kwargs)
     igt = ThermoRunner(
         atoms, vibrations.get_frequencies(), energy=energy
     ).run_ideal_gas()
