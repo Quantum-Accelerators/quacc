@@ -215,6 +215,7 @@ class Runner(BaseRunner):
             optimizer_kwargs,
         )
         run_kwargs = run_kwargs or {}
+        traj_filename = "opt.traj"
 
         # Check if trajectory kwarg is specified
         if "trajectory" in optimizer_kwargs:
@@ -230,7 +231,7 @@ class Runner(BaseRunner):
             optimizer_kwargs.pop("restart", None)
 
         # Define the Trajectory object
-        traj_file = self.tmpdir / "opt.traj"
+        traj_file = self.tmpdir / traj_filename
         traj = Trajectory(traj_file, "w", atoms=self.atoms)
         optimizer_kwargs["trajectory"] = traj
 
@@ -264,6 +265,8 @@ class Runner(BaseRunner):
 
         # Perform cleanup operations
         self.cleanup()
+        traj.filename = zpath(self.job_results_dir / traj_filename)
+        dyn.trajectory = traj
 
         return dyn
 

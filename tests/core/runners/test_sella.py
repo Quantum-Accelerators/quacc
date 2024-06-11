@@ -6,6 +6,7 @@ sella = pytest.importorskip("sella")
 from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
+from ase.io import read
 from sella import Sella
 
 from quacc.runners.ase import Runner
@@ -19,7 +20,7 @@ def test_sella(tmp_path, monkeypatch):
     dyn = Runner(atoms, EMT()).run_opt(
         optimizer=Sella, optimizer_kwargs={"restart": None}
     )
-    traj = dyn.traj_atoms
+    traj = read(dyn.trajectory.filename, index=":")
     assert traj[-1].calc.results is not None
     assert dyn.user_internal is False
 
@@ -27,7 +28,7 @@ def test_sella(tmp_path, monkeypatch):
     dyn = Runner(atoms, LennardJones()).run_opt(
         optimizer=Sella, optimizer_kwargs={"restart": None}
     )
-    traj = dyn.traj_atoms
+    traj = read(dyn.trajectory.filename, index=":")
     assert traj[-1].calc.results is not None
     assert dyn.user_internal is True
 
@@ -37,7 +38,7 @@ def test_dof(tmp_path, monkeypatch):
 
     atoms = molecule("C2H6")
     dyn = Runner(atoms, LennardJones()).run_opt(optimizer=Sella, fmax=1.0)
-    traj = dyn.traj_atoms
+    traj = read(dyn.trajectory.filename, index=":")
     assert traj[-1].calc.results is not None
     assert dyn.internal.ndof == 24
     assert dyn.internal.nbonds == 0
@@ -46,6 +47,6 @@ def test_dof(tmp_path, monkeypatch):
 
     atoms = bulk("Cu")
     dyn = Runner(atoms, EMT()).run_opt(optimizer=Sella, fmax=1.0)
-    traj = dyn.traj_atoms
+    traj = read(dyn.trajectory.filename, index=":")
     assert traj[-1].calc.results is not None
     assert dyn.internal is None
