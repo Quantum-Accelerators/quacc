@@ -1481,7 +1481,7 @@ def test_CreateSKZCAMClusters_get_ecp_region(
     # Find the ECP region for the first cluster
     ecp_region_idx = skzcam_clusters._get_ecp_region(
         slab_embedded_cluster=slab_embedded_cluster,
-        quantum_cluster_indices=[[0, 1, 2, 3, 4, 5]],
+        quantum_cluster_indices_set=[[0, 1, 2, 3, 4, 5]],
         dist_matrix=distance_matrix,
         ecp_dist=3,
     )
@@ -1500,8 +1500,8 @@ def test_CreateSKZCAMClusters_create_adsorbate_slab_embedded_cluster(
     skzcam_clusters.adsorbate_vector_from_slab = [0.0, 0.0, 2.0]
 
     skzcam_clusters._create_adsorbate_slab_embedded_cluster(
-        quantum_cluster_indices=[[0, 1, 3, 4], [5, 6, 7, 8]],
-        ecp_region_indices=[[0, 1, 3, 4], [5, 6, 7, 8]],
+        quantum_cluster_indices_set=[[0, 1, 3, 4], [5, 6, 7, 8]],
+        ecp_region_indices_set=[[0, 1, 3, 4], [5, 6, 7, 8]],
     )
 
     # Check that the positions of the first 10 atoms of the embedded cluster matches the reference positions, oxi_states and atom_type
@@ -1553,10 +1553,10 @@ def test_CreateSKZCAMClusters_create_adsorbate_slab_embedded_cluster(
 
     # Check that the quantum_idx and ecp_idx match the reference
     assert_equal(
-        skzcam_clusters.quantum_cluster_indices,
+        skzcam_clusters.quantum_cluster_indices_set,
         [[0, 1, 2, 3, 5, 6], [0, 1, 7, 8, 9, 10]],
     )
-    assert_equal(skzcam_clusters.ecp_region_indices, [[2, 3, 5, 6], [7, 8, 9, 10]])
+    assert_equal(skzcam_clusters.ecp_region_indices_set, [[2, 3, 5, 6], [7, 8, 9, 10]])
 
 
 def test_CreateSKZCAMClusters_run_skzcam(skzcam_clusters, tmp_path):
@@ -1580,7 +1580,7 @@ def test_CreateSKZCAMClusters_run_skzcam(skzcam_clusters, tmp_path):
 
     # Check quantum cluster indices match with reference
     assert_equal(
-        skzcam_clusters.quantum_cluster_indices[1],
+        skzcam_clusters.quantum_cluster_indices_set[1],
         [
             0,
             1,
@@ -1611,7 +1611,7 @@ def test_CreateSKZCAMClusters_run_skzcam(skzcam_clusters, tmp_path):
 
     # Check ECP region indices match with reference
     assert_equal(
-        skzcam_clusters.ecp_region_indices[1],
+        skzcam_clusters.ecp_region_indices_set[1],
         [
             12,
             13,
