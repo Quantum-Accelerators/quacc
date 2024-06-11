@@ -54,7 +54,9 @@ def test_run_calc(tmp_path, monkeypatch):
         atoms = bulk("Cu") * (2, 1, 1)
         atoms[0].position += 0.1
 
-        new_atoms = Runner(atoms, EMT(), copy_files={Path(): "test_file.txt"}).run_calc()
+        new_atoms = Runner(
+            atoms, EMT(), copy_files={Path(): "test_file.txt"}
+        ).run_calc()
         results_dir = _find_results_dir()
 
         assert atoms.calc.results is not None
@@ -73,7 +75,9 @@ def test_run_calc_no_gzip(tmp_path, monkeypatch):
         atoms = bulk("Cu") * (2, 1, 1)
         atoms[0].position += 0.1
 
-        new_atoms = Runner(atoms, EMT(), copy_files={Path(): "test_file.txt"}).run_calc()
+        new_atoms = Runner(
+            atoms, EMT(), copy_files={Path(): "test_file.txt"}
+        ).run_calc()
         results_dir = _find_results_dir()
 
         assert atoms.calc.results is not None
@@ -109,13 +113,13 @@ def test_run_opt2(tmp_path, monkeypatch):
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
 
-    dyn = Runner(atoms,EMT(), copy_files={Path(): "test_file.txt"}).run_opt(
+    dyn = Runner(atoms, EMT(), copy_files={Path(): "test_file.txt"}).run_opt(
         optimizer=BFGS, optimizer_kwargs={"restart": None}
     )
     traj = dyn.traj_atoms
     assert traj[-1].calc.results is not None
 
-    dyn = Runner(traj[-1],EMT(), copy_files={Path(): "test_file.txt"}).run_opt(
+    dyn = Runner(traj[-1], EMT(), copy_files={Path(): "test_file.txt"}).run_opt(
         optimizer=BFGSLineSearch, optimizer_kwargs={"restart": None}
     )
     traj = dyn.traj_atoms
@@ -127,7 +131,7 @@ def test_run_scipy_opt(tmp_path, monkeypatch):
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
 
-    dyn = Runner(atoms,EMT()).run_opt(optimizer=SciPyFminBFGS)
+    dyn = Runner(atoms, EMT()).run_opt(optimizer=SciPyFminBFGS)
     traj = dyn.traj_atoms
     assert traj[-1].calc.results is not None
     assert dyn.todict().get("restart") is None
@@ -138,7 +142,7 @@ def test_run_vib(tmp_path, monkeypatch):
     prep_files()
 
     o2 = molecule("O2")
-    vib = Runner(o2, LennardJones(),copy_files={Path(): "test_file.txt"}).run_vib()
+    vib = Runner(o2, LennardJones(), copy_files={Path(): "test_file.txt"}).run_vib()
     results_dir = _find_results_dir()
 
     assert np.real(vib.get_frequencies()[-1]) == pytest.approx(255.6863883406967)
@@ -154,12 +158,12 @@ def test_bad_runs(tmp_path, monkeypatch, caplog):
 
     # No file
     with caplog.at_level(logging.WARNING):
-        Runner(atoms,EMT(), copy_files={Path(): "test_file.txt"}).run_calc()
+        Runner(atoms, EMT(), copy_files={Path(): "test_file.txt"}).run_calc()
     assert "Cannot find file" in caplog.text
 
     # No file again
     with caplog.at_level(logging.WARNING):
-        Runner(atoms,EMT(), copy_files={Path(): "test_file.txt"}).run_opt()
+        Runner(atoms, EMT(), copy_files={Path(): "test_file.txt"}).run_opt()
     assert "Cannot find file" in caplog.text
 
     # No trajectory kwarg
@@ -178,7 +182,7 @@ def test_unique_workdir(tmp_path, monkeypatch):
         atoms = bulk("Cu") * (2, 1, 1)
         atoms[0].position += 0.1
 
-        Runner(atoms,EMT(), copy_files={Path(): "test_file.txt"}).run_calc()
+        Runner(atoms, EMT(), copy_files={Path(): "test_file.txt"}).run_calc()
         results_dir = _find_results_dir()
         assert atoms.calc.results is not None
         assert not os.path.exists(os.path.join(results_dir, "test_file.txt"))

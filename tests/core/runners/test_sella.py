@@ -16,13 +16,17 @@ def test_sella(tmp_path, monkeypatch):
 
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
-    dyn = Runner(atoms, EMT()).run_opt(optimizer=Sella, optimizer_kwargs={"restart": None})
+    dyn = Runner(atoms, EMT()).run_opt(
+        optimizer=Sella, optimizer_kwargs={"restart": None}
+    )
     traj = dyn.traj_atoms
     assert traj[-1].calc.results is not None
     assert dyn.user_internal is False
 
     atoms = molecule("H2O")
-    dyn = Runner(atoms, LennardJones()).run_opt(optimizer=Sella, optimizer_kwargs={"restart": None})
+    dyn = Runner(atoms, LennardJones()).run_opt(
+        optimizer=Sella, optimizer_kwargs={"restart": None}
+    )
     traj = dyn.traj_atoms
     assert traj[-1].calc.results is not None
     assert dyn.user_internal is True
