@@ -19,7 +19,7 @@ from ase.optimize.sciopt import SciPyFminBFGS
 # from sella import Sella
 
 from quacc import SETTINGS, change_settings, strip_decorator
-from quacc.recipes.newtonnet.ts import relax_job
+from quacc.recipes.emt.core import relax_job
 from quacc.runners.ase import (
     _geodesic_interpolate_wrapper,
     run_calc,
