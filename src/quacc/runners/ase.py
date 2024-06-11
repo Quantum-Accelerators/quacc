@@ -74,7 +74,7 @@ class Runner:
     def __init__(
         self,
         atoms: Atoms | None,
-        calculator: Calculator,
+        calculator: Calculator | None,
         copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     ) -> None:
         """
@@ -94,7 +94,8 @@ class Runner:
         None
         """
         self.atoms = copy_atoms(atoms) if atoms else atoms
-        self.atoms.calc = calculator
+        if calculator:
+            self.atoms.calc = calculator
         self.copy_files = copy_files
         self.tmpdir, self.job_results_dir = calc_setup(
             self.atoms, copy_files=self.copy_files
