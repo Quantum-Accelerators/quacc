@@ -9,7 +9,7 @@ import pytest
 FILE_DIR = Path(__file__).parent
 
 
-def mock_run_chemshell(*args, filepath=".", write_xyz_file = False, **kwargs):
+def mock_run_chemshell(*args, filepath=".", write_xyz_file=False, **kwargs):
     if write_xyz_file:
         with (
             gzip.open(
