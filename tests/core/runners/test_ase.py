@@ -59,6 +59,7 @@ def test_run_calc(tmp_path, monkeypatch):
         ).run_calc()
         results_dir = _find_results_dir()
 
+        assert not hasattr(atoms, "calc")
         assert new_atoms.calc.results is not None
         assert not os.path.exists(os.path.join(results_dir, "test_file.txt"))
         assert os.path.exists(os.path.join(results_dir, "test_file.txt.gz"))
@@ -79,6 +80,7 @@ def test_run_calc_no_gzip(tmp_path, monkeypatch):
         ).run_calc()
         results_dir = _find_results_dir()
 
+        assert not hasattr(atoms, "calc")
         assert new_atoms.calc.results is not None
         assert os.path.exists(os.path.join(results_dir, "test_file.txt"))
         assert not os.path.exists(os.path.join(results_dir, "test_file.txt.gz"))
@@ -98,6 +100,7 @@ def test_run_opt1(tmp_path, monkeypatch):
         traj = dyn.traj_atoms
         results_dir = _find_results_dir()
 
+        assert not hasattr(atoms, "calc")
         assert traj[-1].calc.results is not None
         assert not os.path.exists(os.path.join(results_dir, "test_file.txt"))
         assert os.path.exists(os.path.join(results_dir, "test_file.txt.gz"))
@@ -139,10 +142,11 @@ def test_run_vib(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     prep_files()
 
-    o2 = molecule("O2")
-    vib = Runner(o2, LennardJones(), copy_files={Path(): "test_file.txt"}).run_vib()
+    atoms = molecule("O2")
+    vib = Runner(atoms, LennardJones(), copy_files={Path(): "test_file.txt"}).run_vib()
     results_dir = _find_results_dir()
 
+    assert not hasattr(atoms, "calc")
     assert np.real(vib.get_frequencies()[-1]) == pytest.approx(255.6863883406967)
     assert np.array_equal(vib.atoms.get_positions(), o2.get_positions()) is True
     assert not os.path.exists(os.path.join(results_dir, "test_file.txt"))
