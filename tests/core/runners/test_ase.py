@@ -11,6 +11,7 @@ import pytest
 from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
+from ase.io import read
 from ase.optimize import BFGS, BFGSLineSearch
 from ase.optimize.sciopt import SciPyFminBFGS
 
@@ -97,7 +98,7 @@ def test_run_opt1(tmp_path, monkeypatch):
         atoms[0].position += 0.1
 
         dyn = Runner(atoms, EMT(), copy_files={Path(): "test_file.txt"}).run_opt()
-        traj = dyn.traj_atoms
+        traj = read(dyn.trajectory.filename, index=":")
         results_dir = _find_results_dir()
 
         assert atoms.calc is None
@@ -117,13 +118,13 @@ def test_run_opt2(tmp_path, monkeypatch):
     dyn = Runner(atoms, EMT(), copy_files={Path(): "test_file.txt"}).run_opt(
         optimizer=BFGS, optimizer_kwargs={"restart": None}
     )
-    traj = dyn.traj_atoms
+    traj = read(dyn.trajectory.filename, index=":")
     assert traj[-1].calc.results is not None
 
     dyn = Runner(traj[-1], EMT(), copy_files={Path(): "test_file.txt"}).run_opt(
         optimizer=BFGSLineSearch, optimizer_kwargs={"restart": None}
     )
-    traj = dyn.traj_atoms
+    traj = read(dyn.trajectory.filename, index=":")
     assert traj[-1].calc.results is not None
 
 
@@ -133,7 +134,7 @@ def test_run_scipy_opt(tmp_path, monkeypatch):
     atoms[0].position += 0.1
 
     dyn = Runner(atoms, EMT()).run_opt(optimizer=SciPyFminBFGS)
-    traj = dyn.traj_atoms
+    traj = read(dyn.trajectory.filename, index=":")
     assert traj[-1].calc.results is not None
     assert dyn.todict().get("restart") is None
 
