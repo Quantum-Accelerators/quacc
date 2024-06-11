@@ -6,7 +6,7 @@ from importlib.util import find_spec
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from ase import Atoms
+from ase.atoms import Atoms
 from ase.io import read, write
 from ase.mep.neb import NEBOptimizer
 from ase.neb import NEB
