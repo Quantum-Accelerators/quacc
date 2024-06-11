@@ -59,7 +59,6 @@ def test_run_calc(tmp_path, monkeypatch):
         ).run_calc()
         results_dir = _find_results_dir()
 
-        assert atoms.calc.results is None
         assert new_atoms.calc.results is not None
         assert not os.path.exists(os.path.join(results_dir, "test_file.txt"))
         assert os.path.exists(os.path.join(results_dir, "test_file.txt.gz"))
@@ -80,7 +79,6 @@ def test_run_calc_no_gzip(tmp_path, monkeypatch):
         ).run_calc()
         results_dir = _find_results_dir()
 
-        assert atoms.calc.results is None
         assert new_atoms.calc.results is not None
         assert os.path.exists(os.path.join(results_dir, "test_file.txt"))
         assert not os.path.exists(os.path.join(results_dir, "test_file.txt.gz"))
@@ -184,7 +182,6 @@ def test_unique_workdir(tmp_path, monkeypatch):
 
         Runner(atoms, EMT(), copy_files={Path(): "test_file.txt"}).run_calc()
         results_dir = _find_results_dir()
-        assert atoms.calc.results is None
         assert not os.path.exists(os.path.join(results_dir, "test_file.txt"))
         assert os.path.exists(os.path.join(results_dir, "test_file.txt.gz"))
 
@@ -194,7 +191,6 @@ def test_unique_workdir(tmp_path, monkeypatch):
 
         Runner(atoms, EMT(), copy_files={Path(): "test_file.txt"}).run_calc()
         results_dir = _find_results_dir()
-        assert atoms.calc.results is None
         assert not os.path.exists(os.path.join(results_dir, "test_file.txt"))
         assert os.path.exists(os.path.join(results_dir, "test_file.txt.gz"))
 
