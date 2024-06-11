@@ -249,30 +249,34 @@ class MRCCInputGenerator:
             )
 
         # Create the adsorbate-slab complex quantum cluster and ECP region cluster
-        self.adsorbate_slab_cluster : Atoms = self.adsorbate_slab_embedded_cluster[
+        self.adsorbate_slab_cluster: Atoms = self.adsorbate_slab_embedded_cluster[
             self.quantum_cluster_indices
         ]
-        self.ecp_region : Atoms = self.adsorbate_slab_embedded_cluster[self.ecp_region_indices]
+        self.ecp_region: Atoms = self.adsorbate_slab_embedded_cluster[
+            self.ecp_region_indices
+        ]
 
         # Get the indices of the adsorbates from the quantum cluster
-        self.adsorbate_indices : list[int] = [
+        self.adsorbate_indices: list[int] = [
             i
             for i in range(len(self.adsorbate_slab_cluster))
             if self.adsorbate_slab_cluster.get_array("atom_type")[i] == "adsorbate"
         ]
         # Get the indices of the slab from the quantum cluster
-        self.slab_indices : list[int] = [
+        self.slab_indices: list[int] = [
             i
             for i in range(len(self.adsorbate_slab_cluster))
             if self.adsorbate_slab_cluster.get_array("atom_type")[i] != "adsorbate"
         ]
 
         # Create the adsorbate and slab quantum clusters
-        self.adsorbate_cluster : Atoms = self.adsorbate_slab_cluster[self.adsorbate_indices]
-        self.slab_cluster : Atoms = self.adsorbate_slab_cluster[self.slab_indices]
+        self.adsorbate_cluster: Atoms = self.adsorbate_slab_cluster[
+            self.adsorbate_indices
+        ]
+        self.slab_cluster: Atoms = self.adsorbate_slab_cluster[self.slab_indices]
 
         # Initialize the mrccblocks input strings for the adsorbate-slab complex, adsorbate, and slab
-        self.mrccblocks : BlockInfo = {"adsorbate_slab": "", "adsorbate": "", "slab": ""}
+        self.mrccblocks: BlockInfo = {"adsorbate_slab": "", "adsorbate": "", "slab": ""}
 
     def generate_input(self) -> BlockInfo:
         """
@@ -623,30 +627,34 @@ class ORCAInputGenerator:
             )
 
         # Create the adsorbate-slab complex quantum cluster and ECP region cluster
-        self.adsorbate_slab_cluster : Atoms = self.adsorbate_slab_embedded_cluster[
+        self.adsorbate_slab_cluster: Atoms = self.adsorbate_slab_embedded_cluster[
             self.quantum_cluster_indices
         ]
-        self.ecp_region : Atoms = self.adsorbate_slab_embedded_cluster[self.ecp_region_indices]
+        self.ecp_region: Atoms = self.adsorbate_slab_embedded_cluster[
+            self.ecp_region_indices
+        ]
 
         # Get the indices of the adsorbates from the quantum cluster
-        self.adsorbate_indices : list[int] = [
+        self.adsorbate_indices: list[int] = [
             i
             for i in range(len(self.adsorbate_slab_cluster))
             if self.adsorbate_slab_cluster.get_array("atom_type")[i] == "adsorbate"
         ]
         # Get the indices of the slab from the quantum cluster
-        self.slab_indices : list[int] = [
+        self.slab_indices: list[int] = [
             i
             for i in range(len(self.adsorbate_slab_cluster))
             if self.adsorbate_slab_cluster.get_array("atom_type")[i] != "adsorbate"
         ]
 
         # Create the adsorbate and slab quantum clusters
-        self.adsorbate_cluster : Atoms = self.adsorbate_slab_cluster[self.adsorbate_indices]
-        self.slab_cluster : Atoms = self.adsorbate_slab_cluster[self.slab_indices]
+        self.adsorbate_cluster: Atoms = self.adsorbate_slab_cluster[
+            self.adsorbate_indices
+        ]
+        self.slab_cluster: Atoms = self.adsorbate_slab_cluster[self.slab_indices]
 
         # Initialize the orcablocks input strings for the adsorbate-slab complex, adsorbate, and slab
-        self.orcablocks : BlockInfo = {"adsorbate_slab": "", "adsorbate": "", "slab": ""}
+        self.orcablocks: BlockInfo = {"adsorbate_slab": "", "adsorbate": "", "slab": ""}
 
     def generate_input(self) -> BlockInfo:
         """
@@ -1002,17 +1010,17 @@ class CreateSKZCAMClusters:
             )
 
         # Initialize the adsorbate, slab and adsorbate_slab Atoms object which contains the adsorbate, slab and adsorbate-slab complex respectively
-        self.adsorbate : Atoms | None
-        self.slab : Atoms | None
-        self.adsorbate_slab : Atoms | None
+        self.adsorbate: Atoms | None
+        self.slab: Atoms | None
+        self.adsorbate_slab: Atoms | None
 
         # Initialize the embedded_adsorbate_slab_cluster, and embedded_slab_cluster Atoms object which are the embedded cluster for the adsorbate-slab complex and slab respectively
-        self.adsorbate_slab_embedded_cluster : Atoms | None = None
-        self.slab_embedded_cluster : Atoms | None = None
+        self.adsorbate_slab_embedded_cluster: Atoms | None = None
+        self.slab_embedded_cluster: Atoms | None = None
 
         # Initialize the quantum cluster indices and ECP region indices
-        self.quantum_cluster_indices_set : list[list[int]] | None = None
-        self.ecp_region_indices_set : list[list[int]] | None = None
+        self.quantum_cluster_indices_set: list[list[int]] | None = None
+        self.ecp_region_indices_set: list[list[int]] | None = None
 
     def convert_slab_to_atoms(self) -> None:
         """
@@ -1231,9 +1239,11 @@ class CreateSKZCAMClusters:
                     cluster_atoms,
                 )
 
-        return {'adsorbate_slab_embedded_cluster': self.adsorbate_slab_embedded_cluster,
-                'quantum_cluster_indices_set': self.quantum_cluster_indices_set,
-                'ecp_region_indices_set': self.ecp_region_indices_set}
+        return {
+            "adsorbate_slab_embedded_cluster": self.adsorbate_slab_embedded_cluster,
+            "quantum_cluster_indices_set": self.quantum_cluster_indices_set,
+            "ecp_region_indices_set": self.ecp_region_indices_set,
+        }
 
     def _convert_pun_to_atoms(self, pun_file: str | Path) -> Atoms:
         """
@@ -1488,7 +1498,7 @@ class CreateSKZCAMClusters:
         slab_embedded_cluster
             The ASE Atoms object containing the atomic coordinates AND the atom types (i.e. cation or anion).
         quantum_cluster_indices_set
-            A list of lists containing the indices of the atoms in each quantum cluster.                
+            A list of lists containing the indices of the atoms in each quantum cluster.
         dist_matrix
             A matrix containing the distances between each pair of atoms in the embedded cluster.
         ecp_dist
