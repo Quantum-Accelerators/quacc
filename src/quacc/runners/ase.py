@@ -105,7 +105,7 @@ class Runner:
         self, geom_file: str | None = None, properties: list[str] | None = None
     ) -> Atoms:
         """
-        This is a wrapper around `atoms.get_potential_energy()`. Note: This function
+        This is a wrapper around `atoms.calc.calculate()`. Note: This function
         does not modify the atoms object in-place.
 
         Parameters
@@ -113,8 +113,7 @@ class Runner:
         geom_file
             The filename of the log file that contains the output geometry, used to
             update the atoms object's positions and cell after a job. It is better
-            to specify this rather than relying on ASE's
-            `atoms.get_potential_energy()` function to update the positions, as the
+            to specify this rather than relying on ASE to update the positions, as the
             latter behavior varies between codes.
         properties
             List of properties to calculate. Defaults to ["energy"] if `None`.
