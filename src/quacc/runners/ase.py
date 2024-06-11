@@ -19,7 +19,7 @@ from monty.os.path import zpath
 from quacc import SETTINGS
 from quacc.atoms.core import copy_atoms
 from quacc.runners._base import BaseRunner
-from quacc.runners.prep import calc_setup, terminate
+from quacc.runners.prep import terminate
 from quacc.utils.dicts import recursive_dict_merge
 
 has_sella = bool(find_spec("sella"))
@@ -305,7 +305,6 @@ class Runner(BaseRunner):
         self.cleanup()
 
         return vib
-
 
     def _copy_intermediate_files(
         self, step_number: int, files_to_ignore: list[Path] | None = None
