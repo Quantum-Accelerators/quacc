@@ -18,7 +18,8 @@ from monty.os.path import zpath
 
 from quacc import SETTINGS
 from quacc.atoms.core import copy_atoms
-from quacc.runners.prep import calc_cleanup, calc_setup, terminate
+from quacc.runners._base import BaseRunner
+from quacc.runners.prep import terminate
 from quacc.utils.dicts import recursive_dict_merge
 
 has_sella = bool(find_spec("sella"))
@@ -65,7 +66,7 @@ if TYPE_CHECKING:
         nfree: int  # default = 2
 
 
-class Runner:
+class Runner(BaseRunner):
     """
     Run various types of calculations in a scratch directory and copy the results back
     to the original directory.
@@ -73,8 +74,8 @@ class Runner:
 
     def __init__(
         self,
-        atoms: Atoms | None,
-        calculator: Calculator | None,
+        atoms: Atoms,
+        calculator: Calculator,
         copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     ) -> None:
         """
@@ -93,13 +94,9 @@ class Runner:
         -------
         None
         """
-        self.atoms = copy_atoms(atoms) if atoms else atoms
-        if calculator:
-            self.atoms.calc = calculator
-        self.copy_files = copy_files
-        self.tmpdir, self.job_results_dir = calc_setup(
-            self.atoms, copy_files=self.copy_files
-        )
+        atoms = copy_atoms(atoms)
+        atoms.calc = calculator
+        super().__init__(atoms, copy_files=copy_files)
 
     def run_calc(
         self, geom_file: str | None = None, properties: list[str] | None = None
@@ -160,7 +157,7 @@ class Runner:
             self.atoms.cell = atoms_new.cell
 
         # Perform cleanup operations
-        self._cleanup()
+        self.cleanup()
 
         return self.atoms
 
@@ -267,7 +264,7 @@ class Runner:
             terminate(self.tmpdir, exception)
 
         # Perform cleanup operations
-        self._cleanup()
+        self.cleanup()
         traj.filename = zpath(self.job_results_dir / traj_filename)
         dyn.trajectory = traj
 
@@ -308,19 +305,9 @@ class Runner:
         )
 
         # Perform cleanup operations
-        self._cleanup()
+        self.cleanup()
 
         return vib
-
-    def _cleanup(self) -> None:
-        """
-        Perform cleanup operations on the scratch directory.
-
-        Returns
-        -------
-        None
-        """
-        calc_cleanup(self.atoms, self.tmpdir, self.job_results_dir)
 
     def _copy_intermediate_files(
         self, step_number: int, files_to_ignore: list[Path] | None = None

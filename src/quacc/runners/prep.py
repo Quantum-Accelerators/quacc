@@ -34,7 +34,7 @@ def calc_setup(
     ----------
     atoms
         The Atoms object to run the calculation on. Must have a calculator
-        attached.
+        attached. If None, no modifications to the calculator's directory will be made.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
 
@@ -94,7 +94,7 @@ def calc_cleanup(
     ----------
     atoms
         The Atoms object after the calculation. Must have a calculator
-        attached.
+        attached. If None, no modifications to the calculator's directory will be made.
     tmpdir
         The path to the tmpdir, where the calculation will be run. It will be
         deleted after the calculation is complete.
