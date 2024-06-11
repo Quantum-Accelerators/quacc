@@ -268,7 +268,8 @@ class Runner:
 
         # Perform cleanup operations
         self._cleanup()
-        dyn.trajectory.filename = zpath(self.job_results_dir / traj_filename)
+        traj.filename = zpath(self.job_results_dir / traj_filename)
+        dyn.trajectory = traj
 
         return dyn
 
