@@ -3,7 +3,6 @@ from __future__ import annotations
 import glob
 import logging
 import os
-from importlib.util import find_spec
 from pathlib import Path
 from shutil import rmtree
 
@@ -16,8 +15,8 @@ from ase.calculators.lj import LennardJones
 from ase.mep.neb import NEBOptimizer
 from ase.optimize import BFGS, BFGSLineSearch
 from ase.optimize.sciopt import SciPyFminBFGS
-# from sella import Sella
 
+# from sella import Sella
 from quacc import SETTINGS, change_settings, strip_decorator
 from quacc.recipes.emt.core import relax_job
 from quacc.runners.ase import (
@@ -174,7 +173,7 @@ def test_run_neb_method(
 
     for i in [reactant, product]:
         i.calc = EMT()
-    #opt_defaults = {"optimizer": Sella, "optimizer_kwargs": ({"order": 0})}
+    # opt_defaults = {"optimizer": Sella, "optimizer_kwargs": ({"order": 0})}
     opt_defaults = {"optimizer": BFGS}
     relax_job_kwargs = {"opt_kwargs": opt_defaults}
     optimized_r = strip_decorator(relax_job)(reactant, **relax_job_kwargs)["atoms"]
@@ -212,8 +211,7 @@ def test_run_neb_method(
     neb_summary = summarize_path_opt_run(dyn)
 
     assert neb_summary["trajectory_results"][1]["energy"] == pytest.approx(
-       1.09889737,
-       abs=0.1,
+        1.09889737, abs=0.1
     )
     # assert neb_summary["trajectory_results"][1]["energy"] == pytest.approx(
     #     -24.650358983, abs=1
