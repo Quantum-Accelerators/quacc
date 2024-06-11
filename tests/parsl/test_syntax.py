@@ -147,7 +147,7 @@ def test_change_settings_wf(tmp_path_factory):
     def write_file_subflow(name="subflow"):
         write_file(name="subflow_test")
         return [write_file(name=name)]
-    
+
     @flow
     def write_file_flow(name="flow_job"):
         write_file_subflow(name="flow_test")
@@ -163,9 +163,15 @@ def test_change_settings_wf(tmp_path_factory):
     tmp_dir4 = tmp_path_factory.mktemp("dir4")
 
     write_file_new = change_settings_wf(write_file, {"RESULTS_DIR": tmp_dir}, job)
-    write_file_subflow_new = change_settings_wf(write_file_subflow, {"RESULTS_DIR": tmp_dir2}, subflow)
-    write_file_flow_new = change_settings_wf(write_file_flow, {"RESULTS_DIR": tmp_dir3}, flow)
-    write_file_flow_2_new = change_settings_wf(write_file_flow_2, {"RESULTS_DIR": tmp_dir4}, flow)
+    write_file_subflow_new = change_settings_wf(
+        write_file_subflow, {"RESULTS_DIR": tmp_dir2}, subflow
+    )
+    write_file_flow_new = change_settings_wf(
+        write_file_flow, {"RESULTS_DIR": tmp_dir3}, flow
+    )
+    write_file_flow_2_new = change_settings_wf(
+        write_file_flow_2, {"RESULTS_DIR": tmp_dir4}, flow
+    )
 
     write_file_new().result()
     write_file_subflow_new().result()
