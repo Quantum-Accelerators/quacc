@@ -175,6 +175,23 @@ class QuaccSettings(BaseSettings):
         },
         description="Name for each espresso binary.",
     )
+    ESPRESSO_PARALLEL_CMD: Union[str, tuple[str, str]] = Field(
+        "",
+        description=(
+            """
+            Parallelization flags to run Espresso. The 0th index of the tuple
+            contains any commands that come before the binary, and the 1st index
+            contains any commands that come after the binary.
+
+            For example: ["mpirun -np 4", "-nk 2"] would be the same as running
+            Espresso via `"mpirun -np 4 {binary} -nk 2"` where {binary} is the
+            binary that is automatically determined based on the job type,
+            `ESPRESSO_BIN_DIR` and `ESPRESSO_BINARIES`.
+
+            If only a `str` is provided, no post-binary commands will be used.
+            """
+        ),
+    )
     ESPRESSO_PSEUDO: Optional[Path] = Field(
         None, description=("Path to a pseudopotential library for espresso.")
     )
@@ -191,18 +208,11 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # ONETEP Settings
     # ---------------------------
-    ONETEP_CMD: Optional[str] = Field(
-        "onetep.arch", description=("Path to the ONETEP executable.")
+    ONETEP_CMD: str = Field(
+        "onetep.arch",
+        description=("Full ONETEP command, including parallelization flags."),
     )
-    ONETEP_PARALLEL_CMD: Optional[dict] = Field(
-        None,
-        description=(
-            "Parallelization commands to run ONETEP that are prepended to the executable."
-        ),
-    )
-    ONETEP_PP_PATH: Optional[Path] = Field(
-        None, description=("Path to pseudopotentials.")
-    )
+    ONETEP_PP_PATH: Path = Field(Path(), description=("Path to pseudopotentials."))
 
     # ---------------------------
     # GULP Settings
@@ -449,6 +459,21 @@ class QuaccSettings(BaseSettings):
             return store(**v[store_name])
         else:
             return v
+
+    @field_validator("ESPRESSO_PARALLEL_CMD")
+    @classmethod
+    def validate_espresso_parallel_cmd(
+        cls, v: Union[str, tuple[str, str]]
+    ) -> tuple[str, str]:
+        """Clean up Espresso parallel command."""
+        parsl_mpi_prefix = os.environ.get("PARSL_MPI_PREFIX")
+
+        if isinstance(v, str):
+            v = (v, "")
+        if parsl_mpi_prefix:
+            v = (parsl_mpi_prefix, v[1])
+
+        return v
 
     @model_validator(mode="before")
     @classmethod

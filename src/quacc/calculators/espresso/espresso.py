@@ -363,7 +363,6 @@ class Espresso(GenericFileIOCalculator):
         self,
         input_atoms: Atoms | None = None,
         preset: str | None = None,
-        parallel_info: dict[str, Any] | None = None,
         template: EspressoTemplate | None = None,
         **kwargs,
     ) -> None:
@@ -380,10 +379,6 @@ class Espresso(GenericFileIOCalculator):
             `ESPRESSO_PRESET_DIR` (default: quacc/calculators/espresso/presets),
             The .yaml extension is not necessary. Any user-supplied calculator
             **kwargs will override any corresponding preset values.
-        parallel_info
-            parallel_info is a dictionary passed to the ASE Espresso calculator
-            profile. It is used to specify prefixes for the command line arguments.
-            See the ASE documentation for more details.
         template
             ASE calculator templace which can be used to specify which espresso
             binary will be used in the calculation. This is taken care of by recipe
@@ -401,7 +396,6 @@ class Espresso(GenericFileIOCalculator):
         """
         self.input_atoms = input_atoms or Atoms()
         self.preset = preset
-        self.parallel_info = parallel_info
         self.kwargs = kwargs
         self.user_calc_params = {}
 
@@ -431,7 +425,8 @@ class Espresso(GenericFileIOCalculator):
         )
 
         profile = EspressoProfile(
-            self._bin_path, self._pseudo_path, parallel_info=parallel_info
+            f"{SETTINGS.ESPRESSO_PARALLEL_CMD[0]} {self._bin_path} {SETTINGS.ESPRESSO_PARALLEL_CMD[1]}",
+            self._pseudo_path,
         )
 
         super().__init__(
