@@ -172,6 +172,9 @@ def summarize_opt_run(
             if hasattr(dyn, "traj_atoms")
             else read(dyn.trajectory.filename, index=":")
         )
+    trajectory_results = [atoms.calc.results for atoms in trajectory]
+    for traj_atoms in trajectory:
+        traj_atoms.calc = None
 
     initial_atoms = trajectory[0]
     final_atoms = get_final_atoms_from_dynamics(dyn)
@@ -201,7 +204,7 @@ def summarize_opt_run(
         "parameters_opt": parameters_opt,
         "converged": is_converged,
         "trajectory": trajectory,
-        "trajectory_results": [atoms.calc.results for atoms in trajectory],
+        "trajectory_results": trajectory_results,
     }
 
     # Create a dictionary of the inputs/outputs
