@@ -96,8 +96,8 @@ def setup_test_environment(tmp_path):
         "max_steps",
         "fmax",
         "expected_logfile",
-        "first_image_positions",
-        "first_image_pot_energy",
+        "r_positions",
+        "p_energy",
         "first_image_forces",
         "second_images_positions",
         "index_ts",
@@ -119,10 +119,10 @@ def setup_test_environment(tmp_path):
             3,
             1e-3,
             "some_logdir",
-            0.78503956131,
-            -24.9895786292,
-            -0.0017252843,
-            0.78017739462,
+            -0.854,
+            1.082,
+            -0.005,
+            -0.8161139,
             9,
             -19.946616164,
             -0.19927549,
@@ -141,8 +141,8 @@ def test_run_neb_method(
     max_steps,
     fmax,
     expected_logfile,
-    first_image_positions,
-    first_image_pot_energy,
+    r_positions,
+    p_energy,
     first_image_forces,
     second_images_positions,
     index_ts,
@@ -163,59 +163,16 @@ def test_run_neb_method(
     )
     for image in images:
         image.calc = EMT()
-    assert 1 == 1
-    # assert optimized_p.positions[0][1] == pytest.approx(
-    # assert images[0].positions[0][1] == pytest.approx(first_image_positions, abs=1e-2)
-
-    # assert optimized_p.get_potential_energy() == pytest.approx(first_image_pot_energy, abs=1e-2), "reactant pot. energy"
-
-    # assert optimized_p.get_forces()[0, 1] == pytest.approx(first_image_forces, abs=1e-3), "reactant forces"
-
-    # assert images[0].positions[0][1] == pytest.approx(
-    #     last_images_positions,
-    #     abs=1e-2,
-    # )
+    assert optimized_p.positions[0][1] == pytest.approx(-0.192, abs=1e-2)
+    assert optimized_r.positions[0][1] == pytest.approx(r_positions, abs=1e-2)
+    assert optimized_p.get_potential_energy() == pytest.approx(p_energy, abs=1e-2), "pdt pot. energy"
+    assert optimized_p.get_forces()[0, 1] == pytest.approx(first_image_forces, abs=1e-3), "pdt forces"
 
     neb_kwargs = {"method": "aseneb", "precon": None}
-
     dyn = run_path_opt(images, optimizer=NEBOptimizer, neb_kwargs=neb_kwargs)
-
     neb_summary = summarize_path_opt_run(dyn)
 
-    assert neb_summary["trajectory_results"][1]["energy"] == pytest.approx(
-        1.09889737, abs=0.1
-    )
-    # assert neb_summary["trajectory_results"][1]["energy"] == pytest.approx(
-    #     -24.650358983, abs=1
-    # )
-    # assert images[1].positions[0][1] == pytest.approx(second_images_positions, abs=1e-1)
-
-    # assert np.argmax(
-    #    [image.get_potential_energy() for image in images]
-    # ) == pytest.approx(index_ts), "Index of the transition state"
-
-    # assert np.max([image.get_potential_energy() for image in images]) == pytest.approx(
-    #    pot_energy_ts, abs=1), "Potential energy of the transition state"
-
-    # assert images[
-    #    np.argmax([image.get_potential_energy() for image in images])
-    # ].get_forces()[0, 1] == pytest.approx(
-    #    forces_ts, abs=1), "Force component in the transition state"
-
-    # # Ensure the log file is correctly handled
-    # if expected_logfile is None:
-    #     assert logdir is None
-    # else:
-    #     assert logdir is not None
-    #     log_filename = f"neb_band_{method}_{optimizer.__name__}_{precon}.txt"
-    #     logfile_path = Path(logdir) / log_filename
-    #     assert logfile_path.exists()
-    #     # 'Could not find the optimization output file for NEB'
-    #
-    #     assert os.path.exists(
-    #         f"{logdir}/optimized_path_{method}_{optimizer.__name__}_{precon}.xyz"
-    #     ), "Could not find the xyz file for converged NEB calculation."
-    # assert neb_summary[0] == 1
+    assert neb_summary["trajectory_results"][1]["energy"] == pytest.approx(1.098, abs=0.01)
 
 
 def test_run_calc(tmp_path, monkeypatch):
