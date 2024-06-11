@@ -6,8 +6,6 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
-from quacc.runners.ase import Runner
-
 has_phonopy = bool(find_spec("phonopy"))
 has_seekpath = bool(find_spec("seekpath"))
 
@@ -19,7 +17,7 @@ if TYPE_CHECKING:
         from phonopy import Phonopy
 
 
-class PhonopyRunner():
+class PhonopyRunner:
     def __init__(self, *args, **kwargs):
         super().__init__(None, None, *args, **kwargs)
 
