@@ -10,17 +10,16 @@ from monty.os.path import zpath
 from pymatgen.io.vasp import Vasprun
 
 from quacc import flow, job
-from quacc.recipes.vasp._base import run_and_summarize, run_and_summarize_opt
+from quacc.recipes.vasp._base import run_and_summarize, run_and_summarize_opt, run_and_summarize_vib_and_thermo
 
 if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
-
-    from quacc.runners.ase import OptParams
+    from quacc.runners.ase import OptParams, VibKwargs
     from quacc.schemas._aliases.vasp import VaspASEOptSchema, VaspSchema
     from quacc.utils.files import Filenames, SourceDirectory
-
+    from quacc.schemas._aliases.ase import VibThermoSchema
 
 @job
 def static_job(
@@ -315,4 +314,69 @@ def non_scf_job(
         calc_swaps=calc_kwargs,
         additional_fields={"name": "VASP Non-SCF"},
         copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
+    )
+
+@job
+def freq_job(
+    atoms: Atoms,
+    preset: str | None = "BulkSet",
+    energy: float = 0.0,
+    temperature: float = 298.15,
+    pressure: float = 1.0,
+    vib_kwargs: VibKwargs | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    **calc_kwargs,
+) -> VibThermoSchema:
+    """
+    Run a frequency job and calculate thermochemistry.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+    preset 
+        Preset to use from `quacc.calculators.vasp.presets`.
+    energy
+        Potential energy in eV. If 0, then the output is just the correction.
+    temperature
+        Temperature in Kelvins.
+    pressure
+        Pressure in bar.
+    vib_kwargs
+        Dictionary of kwargs for the [ase.vibrations.Vibrations][] class.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
+    **calc_kwargs
+        Custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to [quacc.calculators.vasp.vasp.Vasp][].
+
+    Returns
+    -------
+    VibThermoSchema
+        Dictionary of results, specified in [quacc.schemas.ase.summarize_vib_and_thermo][].
+        See the type-hint for the data structure.
+    """
+    calc_defaults = {
+        "ediff": 1e-8,
+        "ibrion": -1,
+        "isym": 0,
+        "algo": "all",
+        "lcharg": False,
+        "lwave": True,
+        "nsw": 0,
+    }
+    vib_kwargs = vib_kwargs or {}
+
+    return run_and_summarize_vib_and_thermo(
+        atoms,
+        energy=energy,
+        temperature=temperature,
+        pressure=pressure,
+        preset=preset,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        vib_kwargs=vib_kwargs,
+        copy_files=copy_files,
+        additional_fields={"name": "VASP Frequency and Thermo"},
     )

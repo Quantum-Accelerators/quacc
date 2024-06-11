@@ -5,9 +5,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc.calculators.vasp import Vasp
-from quacc.runners.ase import run_calc, run_opt
+from quacc.runners.ase import run_calc, run_opt, run_vib
 from quacc.schemas.vasp import summarize_vasp_opt_run, vasp_summarize_run
+from quacc.schemas.ase import summarize_vib_and_thermo
 from quacc.utils.dicts import recursive_dict_merge
+from quacc.runners.thermo import run_ideal_gas
 
 if TYPE_CHECKING:
     from typing import Any
@@ -17,6 +19,7 @@ if TYPE_CHECKING:
     from quacc.runners.ase import OptParams
     from quacc.schemas._aliases.vasp import VaspASEOptSchema, VaspSchema
     from quacc.utils.files import Filenames, SourceDirectory
+    from quacc.schemas._aliases.ase import VibThermoSchema
 
 
 def run_and_summarize(
@@ -119,4 +122,35 @@ def run_and_summarize_opt(
         dyn,
         report_mp_corrections=report_mp_corrections,
         additional_fields=additional_fields,
+    )
+
+def run_and_summarize_vib_and_thermo(
+    atoms: Atoms,
+    energy: float = 0.0,
+    temperature: float = 298.15,
+    pressure: float = 1.0,
+    preset: str | None = None,
+    calc_defaults: dict[str, Any] | None = None,
+    calc_swaps: dict[str, Any] | None = None,
+    vib_kwargs: dict[str, Any] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+) -> VibThermoSchema:
+    """
+    Base job function for VASP recipes with ASE vibrational analysis.
+)
+    """
+
+    # Set defaults    
+    calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
+
+    atoms.calc = Vasp(atoms, preset=preset, **calc_flags)
+    vibrations = run_vib(atoms, vib_kwargs=vib_kwargs, copy_files=copy_files)
+    igt = run_ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)
+
+    return summarize_vib_and_thermo(
+        vibrations,
+        igt,
+        temperature=temperature,
+        pressure=pressure,
+        additional_fields={"name": "VASP Frequency and Thermo"},
     )
