@@ -8,8 +8,8 @@ from typing import TYPE_CHECKING
 from monty.dev import requires
 
 from quacc import job
-from quacc.runners.ase import run_calc, run_opt, run_vib
-from quacc.runners.thermo import run_ideal_gas
+from quacc.runners.ase import Runner
+from quacc.runners.thermo import ThermoRunner
 from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
 from quacc.utils.dicts import recursive_dict_merge
 
@@ -55,9 +55,9 @@ def static_job(
     """
     calc_defaults = {"method": method}
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
-    atoms.calc = TBLite(**calc_flags)
+    calc = TBLite(**calc_flags)
 
-    final_atoms = run_calc(atoms)
+    final_atoms = Runner(atoms, calc).run_calc()
     return summarize_run(
         final_atoms, atoms, additional_fields={"name": "TBLite Static"}
     )
@@ -85,7 +85,7 @@ def relax_job(
         Whether to relax the cell.
     opt_params
         Dictionary of custom kwargs for the optimization process. For a list
-        of available keys, refer to [quacc.runners.ase.run_opt][].
+        of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
     **calc_kwargs
         Custom kwargs for the tblite calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -100,8 +100,8 @@ def relax_job(
     opt_params = opt_params or {}
     calc_defaults = {"method": method}
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
-    atoms.calc = TBLite(**calc_flags)
-    dyn = run_opt(atoms, relax_cell=relax_cell, **opt_params)
+    calc = TBLite(**calc_flags)
+    dyn = Runner(atoms, calc).run_opt(relax_cell=relax_cell, **opt_params)
 
     return summarize_opt_run(dyn, additional_fields={"name": "TBLite Relax"})
 
@@ -133,7 +133,7 @@ def freq_job(
     pressure
         Pressure in bar.
     vib_kwargs
-        Dictionary of kwargs for [quacc.runners.ase.run_vib][].
+        Dictionary of kwargs for [quacc.runners.ase.Runner.run_vib][].
     **calc_kwargs
         Custom kwargs for the tblite calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -149,10 +149,12 @@ def freq_job(
 
     calc_defaults = {"method": method}
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
-    atoms.calc = TBLite(**calc_flags)
+    calc = TBLite(**calc_flags)
 
-    vibrations = run_vib(atoms, vib_kwargs=vib_kwargs)
-    igt = run_ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)
+    vibrations = Runner(atoms, calc).run_vib(vib_kwargs=vib_kwargs)
+    igt = ThermoRunner(
+        atoms, vibrations.get_frequencies(), energy=energy
+    ).run_ideal_gas()
 
     return summarize_vib_and_thermo(
         vibrations,

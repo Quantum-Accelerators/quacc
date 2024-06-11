@@ -11,8 +11,8 @@ from typing import TYPE_CHECKING
 from ase.calculators.lj import LennardJones
 
 from quacc import job
-from quacc.runners.ase import run_calc, run_opt, run_vib
-from quacc.runners.thermo import run_ideal_gas
+from quacc.runners.ase import Runner
+from quacc.runners.thermo import ThermoRunner
 from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
 
 if TYPE_CHECKING:
@@ -49,8 +49,8 @@ def static_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    atoms.calc = LennardJones(**calc_kwargs)
-    final_atoms = run_calc(atoms, copy_files=copy_files)
+    calc = LennardJones(**calc_kwargs)
+    final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
 
     return summarize_run(final_atoms, atoms, additional_fields={"name": "LJ Static"})
 
@@ -71,7 +71,7 @@ def relax_job(
         Atoms object
     opt_params
         Dictionary of custom kwargs for the optimization process. For a list
-        of available keys, refer to [quacc.runners.ase.run_opt][].
+        of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
@@ -87,8 +87,8 @@ def relax_job(
     """
     opt_params = opt_params or {}
 
-    atoms.calc = LennardJones(**calc_kwargs)
-    dyn = run_opt(atoms, copy_files=copy_files, **opt_params)
+    calc = LennardJones(**calc_kwargs)
+    dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_params)
 
     return summarize_opt_run(dyn, additional_fields={"name": "LJ Relax"})
 
@@ -133,9 +133,13 @@ def freq_job(
     """
     vib_kwargs = vib_kwargs or {}
 
-    atoms.calc = LennardJones(**calc_kwargs)
-    vibrations = run_vib(atoms, vib_kwargs=vib_kwargs, copy_files=copy_files)
-    igt = run_ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)
+    calc = LennardJones(**calc_kwargs)
+    vibrations = Runner(atoms, calc, copy_files=copy_files).run_vib(
+        vib_kwargs=vib_kwargs
+    )
+    igt = ThermoRunner(
+        atoms, vibrations.get_frequencies(), energy=energy
+    ).run_ideal_gas()
 
     return summarize_vib_and_thermo(
         vibrations,
