@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
-from quacc.runners.ase import Runner
+from quacc.runners.ase import BaseRunner
 
 has_phonopy = bool(find_spec("phonopy"))
 has_seekpath = bool(find_spec("seekpath"))
@@ -19,9 +19,9 @@ if TYPE_CHECKING:
         from phonopy import Phonopy
 
 
-class PhonopyRunner(Runner):
-    def __init__(self, *args, **kwargs):
-        super().__init__(None, None, *args, **kwargs)
+class PhonopyRunner(BaseRunner):
+    def __init__(self):
+        super().__init__(atoms=None)
 
     @requires(has_phonopy, "Phonopy is not installed.")
     @requires(has_seekpath, "Seekpath is not installed")
@@ -72,6 +72,6 @@ class PhonopyRunner(Runner):
         phonon.directory = self.job_results_dir
 
         # Perform cleanup operations
-        self._cleanup()
+        self.cleanup()
 
         return phonon
