@@ -148,7 +148,7 @@ def test_run_vib(tmp_path, monkeypatch):
 
     assert not hasattr(atoms, "calc")
     assert np.real(vib.get_frequencies()[-1]) == pytest.approx(255.6863883406967)
-    assert np.array_equal(vib.atoms.get_positions(), o2.get_positions()) is True
+    assert np.array_equal(vib.atoms.get_positions(), atoms.get_positions()) is True
     assert not os.path.exists(os.path.join(results_dir, "test_file.txt"))
     assert os.path.exists(os.path.join(results_dir, "test_file.txt.gz"))
 
