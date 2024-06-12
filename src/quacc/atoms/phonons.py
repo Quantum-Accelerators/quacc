@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from monty.dev import requires
-from pymatgen.io.ase import AseAtomsAdaptor
+from pymatgen.core import Structure
 from pymatgen.io.phonopy import get_phonopy_structure, get_pmg_structure
 
 has_phonopy = bool(find_spec("phonopy"))
@@ -68,7 +68,7 @@ def get_phonopy(
     structure = AseAtomsAdaptor.get_structure(atoms)
 
     phonon = Phonopy(
-        get_phonopy_structure(structure),
+        get_phonopy_structure(Structure.from_ase_atoms(atoms)),
         symprec=symprec,
         supercell_matrix=supercell_matrix,
         **phonopy_kwargs,

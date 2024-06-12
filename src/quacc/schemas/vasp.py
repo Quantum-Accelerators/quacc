@@ -193,7 +193,7 @@ def summarize_vasp_opt_run(
         The ASE optimizer object
     trajectory
         ASE Trajectory object or list[Atoms] from reading a trajectory file. If
-        None, the trajectory must be found in dyn.traj_atoms.
+        None, the trajectory must be found in dyn.trajectory.filename.
     directory
         Path to VASP outputs. A value of None specifies the calculator directory.
     move_magmoms

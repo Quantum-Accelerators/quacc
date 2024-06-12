@@ -26,16 +26,6 @@ The following are typical guidelines for jobs:
 
 - When given the choice between using an ASE optimizer and the electronic structure package's built-in optimizer, you should typically use the latter.
 
-## Runners
-
-Three of the most common runners are summarized below:
-
-1. [quacc.runners.ase.run_calc][]: Runs a calculation using an ASE calculator. This is the most common runner.
-
-2. [quacc.runners.ase.run_opt][]: Runs a geometry optimization using an ASE optimizer.
-
-3. [quacc.runners.ase.run_vib][]: Runs a vibrational analysis using ASE's `Vibrations` module.
-
 ## Schemas
 
 A schema is a dictionary containing tabulated input and output properties from a calculation.

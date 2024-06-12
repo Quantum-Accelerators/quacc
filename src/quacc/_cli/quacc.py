@@ -4,12 +4,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
-import typer
 from rich import print as rich_print
+from typer import Exit, Option, Typer
 
 from quacc.settings import QuaccSettings, _type_handler
 
-app = typer.Typer()
+app = Typer()
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -33,12 +33,12 @@ def callback(value: bool) -> None:
 
     if value:
         rich_print(f"quacc v{__version__}")
-        raise typer.Exit
+        raise Exit
 
 
 @app.callback()
 def main(
-    version: Optional[bool] = typer.Option(  # noqa: ARG001, UP007
+    version: Optional[bool] = Option(  # noqa: ARG001, UP007
         None,
         "--version",
         "-v",
