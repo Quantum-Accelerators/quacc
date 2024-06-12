@@ -14,10 +14,18 @@ if TYPE_CHECKING:
 
     from quacc.utils.files import Filenames, SourceDirectory
 
+
 @dataclass
 class BaseRunner:
     """
     A base class for runners that sets up the calculation and cleans up the scratch directory.
+
+    Attributes
+    ----------
+    atoms
+        Atoms object with calculator attached (or no Atoms object at all).
+    copy_files
+        Files to copy to runtime directory.
     """
     atoms: Atoms | None = None
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None
@@ -28,6 +36,7 @@ class BaseRunner:
 
         Returns
         -------
+        None
         """
         self.tmpdir, self.job_results_dir = calc_setup(
             self.atoms, copy_files=self.copy_files

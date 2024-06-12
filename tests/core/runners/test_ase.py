@@ -46,6 +46,7 @@ def teardown_function():
         if os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, f)):
             os.remove(os.path.join(SETTINGS.RESULTS_DIR, f))
 
+
 def test_base_runner(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
