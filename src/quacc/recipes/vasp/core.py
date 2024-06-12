@@ -10,16 +10,25 @@ from monty.os.path import zpath
 from pymatgen.io.vasp import Vasprun
 
 from quacc import flow, job
-from quacc.recipes.vasp._base import run_and_summarize, run_and_summarize_opt, run_and_summarize_vib_and_thermo
+from quacc.recipes.vasp._base import (
+    run_and_summarize,
+    run_and_summarize_opt,
+    run_and_summarize_vib_and_thermo,
+)
 
 if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
+
     from quacc.runners.ase import OptParams, VibKwargs
-    from quacc.schemas._aliases.vasp import VaspASEOptSchema, VaspSchema
-    from quacc.utils.files import Filenames, SourceDirectory
     from quacc.schemas._aliases.ase import VibThermoSchema
+    from quacc.schemas._aliases.vasp import (
+        DoubleRelaxSchema,
+        VaspASEOptSchema,
+        VaspSchema,
+    )
+    from quacc.utils.files import Filenames, SourceDirectory
 
 @job
 def static_job(
@@ -129,7 +138,7 @@ def double_relax_flow(
     relax_cell: bool = True,
     relax1_kwargs: dict[str, Any] | None = None,
     relax2_kwargs: dict[str, Any] | None = None,
-) -> dict[Literal["relax1"], VaspSchema, Literal["relax2"], VaspSchema]:
+) -> DoubleRelaxSchema:
     """
     Double-relax a structure. This is particularly useful for a few reasons:
 
@@ -157,7 +166,7 @@ def double_relax_flow(
 
     Returns
     -------
-    dict[Literal["relax1"], VaspSchema, Literal["relax2"], VaspSchema]
+    DoubleRelaxSchema
         Dictionary of results from each step.
     """
     relax1_kwargs = relax1_kwargs or {}
@@ -201,7 +210,7 @@ def ase_relax_job(
         should be updated.
     opt_params
         Dictionary of custom kwargs for the optimization process. For a list
-        of available keys, refer to [quacc.runners.ase.run_opt][].
+        of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs

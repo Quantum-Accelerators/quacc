@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc.calculators.qchem import QChem
-from quacc.runners.ase import run_calc, run_opt
+from quacc.runners.ase import Runner
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import recursive_dict_merge
 
@@ -57,10 +57,10 @@ def run_and_summarize(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
-    atoms.calc = QChem(
+    calc = QChem(
         atoms, charge=charge, spin_multiplicity=spin_multiplicity, **calc_flags
     )
-    final_atoms = run_calc(atoms, copy_files=copy_files)
+    final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
 
     return summarize_run(
         final_atoms,
@@ -101,7 +101,7 @@ def run_and_summarize_opt(
     opt_defaults
         Default arguments for the ASE optimizer.
     opt_params
-        Dictionary of custom kwargs for [quacc.runners.ase.run_opt][]
+        Dictionary of custom kwargs for [quacc.runners.ase.Runner.run_opt][]
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
 
@@ -113,10 +113,10 @@ def run_and_summarize_opt(
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
-    atoms.calc = QChem(
+    calc = QChem(
         atoms, charge=charge, spin_multiplicity=spin_multiplicity, **calc_flags
     )
-    dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
+    dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_flags)
 
     return summarize_opt_run(
         dyn,
