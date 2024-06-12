@@ -23,6 +23,10 @@ class PhonopyRunner(BaseRunner):
     def __init__(self) -> None:
         """
         Initialize the PhonopyRunner.
+
+        Returns
+        -------
+        None
         """
         self.setup()
 
