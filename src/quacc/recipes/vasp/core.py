@@ -368,13 +368,7 @@ def freq_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_vib_and_thermo][].
         See the type-hint for the data structure.
     """
-    calc_defaults = {
-        "ediff": 1e-8,
-        "isym": 0,
-        "lcharg": False,
-        "lwave": True,
-        "nsw": 0,
-    }
+    calc_defaults = {"ediff": 1e-8, "isym": 0, "lcharg": False, "lwave": True, "nsw": 0}
     vib_kwargs = vib_kwargs or {}
 
     return run_and_summarize_vib_and_thermo(
