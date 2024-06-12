@@ -20,9 +20,9 @@ from ase.optimize.sciopt import SciPyFminBFGS
 # from sella import Sella
 from quacc import SETTINGS, change_settings, strip_decorator
 from quacc.recipes.emt.core import relax_job
+from quacc.runners._base import BaseRunner
 from quacc.runners.ase import Runner, _geodesic_interpolate_wrapper, run_neb
 from quacc.schemas.ase import summarize_path_opt_run
-from quacc.runners._base import BaseRunner
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.propagate = True
@@ -175,6 +175,7 @@ def test_run_neb(
     assert neb_summary["trajectory_results"][1]["energy"] == pytest.approx(
         1.098, abs=0.01
     )
+
 
 def test_base_runner(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
