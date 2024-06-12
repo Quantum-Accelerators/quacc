@@ -37,6 +37,7 @@ class BaseRunner:
 
         Returns
         -------
+        None
         """
         self.tmpdir, self.job_results_dir = calc_setup(
             self.atoms, copy_files=self.copy_files
