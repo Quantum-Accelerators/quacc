@@ -33,7 +33,7 @@ class PhonopyRunner(BaseRunner):
         t_step: float = 10,
         t_min: float = 0,
         t_max: float = 1000,
-    ):
+    ) -> Phonopy:
         """
         Run a phonopy calculation in a temporary directory and
         copy the results to the job results directory.
