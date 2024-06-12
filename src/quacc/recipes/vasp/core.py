@@ -30,6 +30,7 @@ if TYPE_CHECKING:
     )
     from quacc.utils.files import Filenames, SourceDirectory
 
+
 @job
 def static_job(
     atoms: Atoms,
@@ -325,6 +326,7 @@ def non_scf_job(
         copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
     )
 
+
 @job
 def freq_job(
     atoms: Atoms,
@@ -343,7 +345,7 @@ def freq_job(
     ----------
     atoms
         Atoms object
-    preset 
+    preset
         Preset to use from `quacc.calculators.vasp.presets`.
     energy
         Potential energy in eV. If 0, then the output is just the correction.
@@ -376,7 +378,7 @@ def freq_job(
         "lwave": True,
         "nsw": 0,
         "ismear": 0,
-        "sigma": 0.05
+        "sigma": 0.05,
     }
     vib_kwargs = vib_kwargs or {}
 
