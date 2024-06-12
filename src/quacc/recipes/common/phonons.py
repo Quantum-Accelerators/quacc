@@ -26,9 +26,6 @@ if TYPE_CHECKING:
     from quacc import Job
     from quacc.schemas._aliases.phonons import PhononSchema
 
-    if has_phonopy:
-        pass
-
 
 @subflow
 @requires(has_phonopy, "Phonopy must be installed. Run `pip install quacc[phonons]`")
