@@ -23,7 +23,7 @@ from quacc.runners.ase import (
     _geodesic_interpolate_wrapper,
     run_calc,
     run_opt,
-    run_path_opt,
+    run_neb,
     run_vib,
 )
 from quacc.schemas.ase import summarize_path_opt_run
@@ -130,7 +130,7 @@ def setup_test_environment(tmp_path):
         )
     ],
 )
-def test_run_neb_method(
+def test_run_neb(
     setup_test_environment,
     tmp_path,
     method,
@@ -173,7 +173,7 @@ def test_run_neb_method(
     ), "pdt forces"
 
     neb_kwargs = {"method": "aseneb", "precon": None}
-    dyn = run_path_opt(images, optimizer=NEBOptimizer, neb_kwargs=neb_kwargs)
+    dyn = run_neb(images, optimizer=NEBOptimizer, neb_kwargs=neb_kwargs)
     neb_summary = summarize_path_opt_run(dyn)
 
     assert neb_summary["trajectory_results"][1]["energy"] == pytest.approx(
