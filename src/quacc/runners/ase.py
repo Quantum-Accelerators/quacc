@@ -94,9 +94,10 @@ class Runner(BaseRunner):
         -------
         None
         """
-        atoms = copy_atoms(atoms)
-        atoms.calc = calculator
-        super().__init__(atoms, copy_files=copy_files)
+        self.atoms = copy_atoms(atoms)
+        self.atoms.calc = calculator
+        self.copy_files = copy_files
+        self.setup()
 
     def run_calc(
         self, geom_file: str | None = None, properties: list[str] | None = None
