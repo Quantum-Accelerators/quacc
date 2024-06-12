@@ -7,9 +7,8 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from monty.dev import requires
-from pymatgen.io.ase import AseAtomsAdaptor
+from pymatgen.core import Structure
 from pymatgen.io.phonopy import get_phonopy_structure, get_pmg_structure
-from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 
 has_phonopy = bool(find_spec("phonopy"))
 
@@ -60,22 +59,19 @@ def get_phonopy(
     """
     phonopy_kwargs = phonopy_kwargs or {}
 
-    symmetrized_structure = SpacegroupAnalyzer(
-        AseAtomsAdaptor().get_structure(atoms), symprec=symprec
-    ).get_symmetrized_structure()
-
     if supercell_matrix is None and min_lengths is not None:
         supercell_matrix = np.diag(
-            np.round(np.ceil(min_lengths / np.array(symmetrized_structure.lattice.abc)))
+            np.round(np.ceil(min_lengths / atoms.cell.lengths()))
         )
 
     phonon = Phonopy(
-        get_phonopy_structure(symmetrized_structure),
+        get_phonopy_structure(Structure.from_ase_atoms(atoms)),
         symprec=symprec,
         supercell_matrix=supercell_matrix,
         **phonopy_kwargs,
     )
     phonon.generate_displacements(distance=displacement)
+
     return phonon
 
 
