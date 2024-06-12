@@ -16,6 +16,8 @@ repos:
     hooks:
       - id: end-of-file-fixer
       - id: trailing-whitespace
+      - id: check-added-large-files
+        args: ["--maxkb=2000"]
 
   - repo: https://github.com/adamchainz/blacken-docs
     rev: 1.16.0
