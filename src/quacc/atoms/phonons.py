@@ -118,7 +118,7 @@ def get_atoms_supercell_by_phonopy(
 
     return phonopy_atoms_to_ase_atoms(
         get_supercell(
-            get_phonopy_structure(AseAtomsAdaptor.get_structure(atoms)),
+            get_phonopy_structure(Structure.from_ase_atoms(atoms)),
             supercell_matrix,
         )
     )
