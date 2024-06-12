@@ -370,15 +370,10 @@ def freq_job(
     """
     calc_defaults = {
         "ediff": 1e-8,
-        "ibrion": -1,
         "isym": 0,
-        "istart": 1,
-        "algo": "all",
         "lcharg": False,
         "lwave": True,
         "nsw": 0,
-        "ismear": 0,
-        "sigma": 0.05,
     }
     vib_kwargs = vib_kwargs or {}
 
