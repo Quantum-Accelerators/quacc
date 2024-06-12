@@ -158,7 +158,7 @@ def run_and_summarize_vib_and_thermo(
         `None` to remove a pre-existing key entirely. For a list of available
         keys, refer to [quacc.calculators.vasp.vasp.Vasp][].
     vib_kwargs
-        Dictionary of custom kwargs for [quacc.runners.ase.run_vib][]
+        Dictionary of custom kwargs for [quacc.runners.ase.Runner.run_vib][]
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
 
