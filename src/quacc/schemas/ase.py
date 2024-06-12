@@ -288,25 +288,12 @@ def summarize_path_opt_run(dyn: Optimizer) -> OptSchema:
     parameters_opt.pop("logfile", None)
     parameters_opt.pop("restart", None)
 
-    return {
+    summary = {
         "parameters_opt": parameters_opt,
         "trajectory": trajectory,
         "trajectory_results": [atoms.calc.results for atoms in trajectory],
     }
-
-    # Create a dictionary of the inputs/outputs
-
-    # neb_dict = {
-    #     "images": [image.get_positions() for image in traj],
-    #     "fmax": neb.fmax,
-    #     "residuals": neb.residuals,
-    #     "k": neb.k,
-    #     "neb_method": neb.neb_method,
-    #     "nimages": neb.nimages,
-    #     "precon": neb.precon,
-    #     "optimizer": qn,
-    # }
-    # return neb_dict
+    return summary
 
 
 def _summarize_vib_run(
