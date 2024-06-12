@@ -65,7 +65,7 @@ def get_phonopy(
             np.round(np.ceil(min_lengths / atoms.cell.lengths()))
         )
 
-    structure = AseAtomsAdaptor.get_structure(atoms)
+    AseAtomsAdaptor.get_structure(atoms)
 
     phonon = Phonopy(
         get_phonopy_structure(Structure.from_ase_atoms(atoms)),

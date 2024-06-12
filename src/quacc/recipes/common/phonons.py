@@ -9,7 +9,11 @@ from ase.atoms import Atoms
 from monty.dev import requires
 
 from quacc import job, subflow
-from quacc.atoms.phonons import get_phonopy, phonopy_atoms_to_ase_atoms, get_atoms_supercell_by_phonopy
+from quacc.atoms.phonons import (
+    get_atoms_supercell_by_phonopy,
+    get_phonopy,
+    phonopy_atoms_to_ase_atoms,
+)
 from quacc.runners.phonons import PhonopyRunner
 from quacc.schemas.phonons import summarize_phonopy
 
@@ -128,9 +132,17 @@ def phonon_subflow(
         additional_fields,
     ) -> PhononSchema:
         parameters = force_job_results[-1].get("parameters")
-        forces = [output["results"]["forces"][:len(phonopy.supercell)] for output in force_job_results]
+        forces = [
+            output["results"]["forces"][: len(phonopy.supercell)]
+            for output in force_job_results
+        ]
         phonopy_results = PhonopyRunner().run_phonopy(
-            phonopy, forces, symmetrize=bool(non_displaced_atoms), t_step=t_step, t_min=t_min, t_max=t_max
+            phonopy,
+            forces,
+            symmetrize=bool(non_displaced_atoms),
+            t_step=t_step,
+            t_min=t_min,
+            t_max=t_max,
         )
 
         return summarize_phonopy(
