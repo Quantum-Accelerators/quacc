@@ -16,7 +16,6 @@ repos:
     hooks:
       - id: end-of-file-fixer
       - id: trailing-whitespace
-      - id: name-tests-test
       - id: check-added-large-files
         args: ["--maxkb=2000"]
 
