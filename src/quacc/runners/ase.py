@@ -408,7 +408,7 @@ def _geodesic_interpolate_wrapper(
     distance_cutoff: float = 3.0,
 ) -> tuple[list[str], list[list[float]]]:
     """
-    Interpolates between two geometries and optimizes the path.
+    Interpolates between two geometries and optimizes the path with the geodesic method.
 
     Parameters
     ----------
