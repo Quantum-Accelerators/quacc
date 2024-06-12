@@ -4,18 +4,16 @@ import pytest
 
 pytest.importorskip("sella")
 pytest.importorskip("newtonnet")
-import os
 from pathlib import Path
 
 import numpy as np
 from ase import Atoms
 from ase.build import molecule
-from ase.io import write
 from ase.mep.neb import NEBOptimizer
 
-from quacc import SETTINGS, strip_decorator
+from quacc import SETTINGS
 from quacc.recipes.newtonnet.core import freq_job, relax_job, static_job
-from quacc.recipes.newtonnet.ts import irc_job, quasi_irc_job, ts_job, neb_job
+from quacc.recipes.newtonnet.ts import irc_job, neb_job, quasi_irc_job, ts_job
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 
@@ -290,7 +288,6 @@ def test_quasi_irc_job_with_custom_irc_swaps(tmp_path, monkeypatch):
 
 @pytest.fixture()
 def setup_test_environment(tmp_path):
-
     reactant = Atoms(
         symbols="CCHHCHH",
         positions=[
@@ -387,16 +384,13 @@ def test_run_neb(
     reactant, product = setup_test_environment
 
     neb_summary = neb_job(reactant, product)
-    assert neb_summary['relax_reactant']['atoms'].positions[0, 0] == pytest.approx(
-        0.8815,
-        abs=1e-3,
+    assert neb_summary["relax_reactant"]["atoms"].positions[0, 0] == pytest.approx(
+        0.8815, abs=1e-3
     )
-    assert neb_summary['relax_product']['atoms'].positions[0, 0] == pytest.approx(
-        1.117689,
-        abs=1e-3,
+    assert neb_summary["relax_product"]["atoms"].positions[0, 0] == pytest.approx(
+        1.117689, abs=1e-3
     )
 
-    assert neb_summary["neb_results"]["trajectory_results"][1]["energy"] == pytest.approx(
-        -24.827799,
-        abs=0.01,
-    )
+    assert neb_summary["neb_results"]["trajectory_results"][1][
+        "energy"
+    ] == pytest.approx(-24.827799, abs=0.01)
