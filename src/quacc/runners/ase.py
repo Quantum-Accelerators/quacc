@@ -383,12 +383,33 @@ def run_neb(
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> list[Atoms]:
     """
-    Run NEB
+    Run NEB optimization.
 
+    Parameters
+    ----------
+    images : list of Atoms
+        List of images representing the initial path.
+    relax_cell : bool, optional
+        Whether to relax the unit cell shape and volume.
+    fmax : float, optional
+        Tolerance for the force convergence (in eV/A).
+    max_steps : int or None, optional
+        Maximum number of steps to take.
+    optimizer : Optimizer or BFGS, optional
+        Optimizer class to use.
+    optimizer_kwargs : dict or None, optional
+        Dictionary of kwargs for the optimizer.
+    run_kwargs : dict or None, optional
+        Dictionary of kwargs for the run() method of the optimizer.
+    neb_kwargs : dict or None, optional
+        Dictionary of kwargs for the NEB.
+    copy_files : str or dict or None, optional
+        Files to copy before running the calculation.
 
     Returns
     -------
-    optimizer object
+    Optimizer
+        The ASE Optimizer object used in the NEB run.
     """
     # Copy atoms so we don't modify it in-place
     images = copy_atoms(images)
