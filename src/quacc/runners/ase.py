@@ -347,7 +347,8 @@ class Runner(BaseRunner):
 
         # Set defaults
         dynamics_kwargs = recursive_dict_merge(
-            {"logfile": "-" if SETTINGS.DEBUG else self.tmpdir / "dyn.log"}, dynamics_kwargs
+            {"logfile": "-" if SETTINGS.DEBUG else self.tmpdir / "dyn.log"},
+            dynamics_kwargs,
         )
 
         dynamics_kwargs["timestep"] = timestep
@@ -476,7 +477,9 @@ class Runner(BaseRunner):
                 "In quacc `compressibility` and `compressibility_au` are equivalent"
                 " and will be interpreted in 1/GPa."
             )
-            dynamics_kwargs["compressibility_au"] = dynamics_kwargs.pop("compressibility")
+            dynamics_kwargs["compressibility_au"] = dynamics_kwargs.pop(
+                "compressibility"
+            )
 
         if "compressibility_au" in dynamics_kwargs:
             LOGGER.warning(
