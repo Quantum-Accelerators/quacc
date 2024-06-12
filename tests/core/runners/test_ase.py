@@ -83,6 +83,64 @@ def setup_test_environment(tmp_path):
 
 @pytest.mark.parametrize(
     (
+        "nimages",
+        "convergence_tolerance",
+        "max_iterations",
+        "max_micro_iterations",
+        "morse_scaling",
+        "geometry_friction",
+        "distance_cutoff",
+        "save_raw_path",
+        "expected_length",
+    ),
+    [
+        (20, 2e-3, 15, 20, 1.7, 1e-2, 3.0, None, 20),  # Default parameters
+        (10, 2e-3, 15, 20, 1.7, 1e-2, 3.0, None, 10),  # Different number of images
+        (20, 1e-4, 10, 10, 1.5, 0.01, 2.5, "raw_path.xyz", 20),  # Different interpolation parameters and save_raw
+    ],
+)
+def test_geodesic_interpolate_wrapper(
+    setup_test_environment,
+    nimages,
+    convergence_tolerance,
+    max_iterations,
+    max_micro_iterations,
+    morse_scaling,
+    geometry_friction,
+    distance_cutoff,
+    save_raw_path,
+    expected_length,
+):
+    reactant, product = setup_test_environment
+    # Execute the geodesic_interpolate_wrapper function
+    smoother_path = _geodesic_interpolate_wrapper(
+        reactant,
+        product,
+        nimages=nimages,
+        convergence_tolerance=convergence_tolerance,
+        max_iterations=max_iterations,
+        max_micro_iterations=max_micro_iterations,
+        morse_scaling=morse_scaling,
+        geometry_friction=geometry_friction,
+        distance_cutoff=distance_cutoff,
+    )
+    assert smoother_path[1].positions[0][0] == pytest.approx(1.36055556030, abs=1e-1)
+
+
+def test_geodesic_interpolate_wrapper_large_system(setup_test_environment):
+    rng = np.random.default_rng()  # Create a random number generator instance
+    large_atoms = Atoms("H" * 40, positions=rng.random((40, 3)))
+
+    # Test with large system to trigger sweeping updates
+    smoother_path = _geodesic_interpolate_wrapper(
+        large_atoms,
+        large_atoms
+    )
+    assert len(smoother_path) == 20
+
+
+@pytest.mark.parametrize(
+    (
         "method",
         "optimizer_class",
         "precon",
