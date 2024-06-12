@@ -124,6 +124,7 @@ def run_and_summarize_opt(
         additional_fields=additional_fields,
     )
 
+
 def run_and_summarize_vib_and_thermo(
     atoms: Atoms,
     energy: float = 0.0,
@@ -149,7 +150,7 @@ def run_and_summarize_vib_and_thermo(
         Temperature of the system
     pressure
         Pressure of the system
-    preset  
+    preset
         Preset to use from `quacc.calculators.vasp.presets`.
     calc_defaults
         Default parameters for the recipe.
@@ -173,8 +174,12 @@ def run_and_summarize_vib_and_thermo(
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
     calc = Vasp(atoms, preset=preset, **calc_flags)
-    vibrations = Runner(atoms, calc, copy_files=copy_files).run_vib(vib_kwargs=vib_kwargs)
-    igt = ThermoRunner(atoms, vibrations.get_frequencies(), energy=energy).run_ideal_gas()
+    vibrations = Runner(atoms, calc, copy_files=copy_files).run_vib(
+        vib_kwargs=vib_kwargs
+    )
+    igt = ThermoRunner(
+        atoms, vibrations.get_frequencies(), energy=energy
+    ).run_ideal_gas()
 
     return summarize_vib_and_thermo(
         vibrations,
