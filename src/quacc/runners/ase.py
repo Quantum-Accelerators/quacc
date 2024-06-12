@@ -424,6 +424,7 @@ class Runner(BaseRunner):
         if not self.atoms.pbc.any() and "internal" not in optimizer_kwargs:
             optimizer_kwargs["internal"] = True
 
+    @staticmethod
     def _md_params_handler(dynamics_kwargs: dict[str, Any]) -> None:
         """
         Helper function to handle deprecated MD parameters.
