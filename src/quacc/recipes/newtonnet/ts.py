@@ -9,8 +9,8 @@ from monty.dev import requires
 
 from quacc import SETTINGS, change_settings, job, strip_decorator
 from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
-from quacc.runners.ase import Runner
-from quacc.schemas.ase import summarize_opt_run
+from quacc.runners.ase import Runner, run_neb
+from quacc.schemas.ase import summarize_opt_run, summarize_neb_run
 from quacc.utils.dicts import recursive_dict_merge
 
 has_geodesic_interpolate = bool(find_spec("geodesic_interpolate"))
@@ -22,7 +22,7 @@ if has_sella:
 if has_newtonnet:
     from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
 if has_geodesic_interpolate:
-    pass
+    from quacc.runners.ase import _geodesic_interpolate_wrapper
 
 if TYPE_CHECKING:
     from typing import Any, Literal
@@ -32,6 +32,8 @@ if TYPE_CHECKING:
 
     from quacc.recipes.newtonnet.core import FreqSchema
     from quacc.runners.ase import OptParams
+
+
     from quacc.schemas._aliases.ase import OptSchema
 
     class TSSchema(OptSchema):
@@ -264,6 +266,88 @@ def quasi_irc_job(
     relax_summary["irc_job"] = irc_summary
 
     return relax_summary
+
+
+@job
+@requires(
+    has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation."
+)
+@requires(
+    has_geodesic_interpolate, "geodesic-interpolate must be installed. Refer to the quacc documentation."
+)
+def neb_job(
+    reactant_atoms: Atoms,
+    product_atoms: Atoms,
+    relax_job_kwargs: dict[str, Any] | None = None,
+    calc_kwargs: dict[str, Any] | None = None,
+    geodesic_interpolate_kwargs: dict[str, Any] | None = None,
+    neb_kwargs: dict[str, Any] | None = None,
+) -> QuasiIRCSchema:
+    """
+    Perform a quasi-IRC job using the given atoms object. The initial IRC job by default
+    is run with `max_steps: 5`.
+
+    Parameters
+    ----------
+    atoms
+        The atoms object representing the system
+    direction
+        The direction of the IRC calculation
+    relax_job_kwargs
+        Keyword arguments to use for the [quacc.recipes.newtonnet.core.relax_job][]
+
+    Returns
+    -------
+    nebSchema
+        A dictionary containing the neb optimization summary.
+        See the type-hint for the data structure.
+    """
+    relax_job_kwargs = relax_job_kwargs or {}
+    neb_kwargs = neb_kwargs or {}
+    geodesic_interpolate_kwargs = geodesic_interpolate_kwargs or {}
+
+    calc_defaults = {
+        "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+        "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+    }
+
+    geodesic_defaults = {
+        'nimages': 20,
+    }
+
+    neb_defaults = {
+        "method": "aseneb",
+        "precon": None
+    }
+    calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
+    geodesic_interpolate_flags = recursive_dict_merge(geodesic_defaults, geodesic_interpolate_kwargs)
+    neb_flags = recursive_dict_merge(neb_defaults, neb_kwargs)
+
+    # Define calculator
+    reactant_atoms.calc = NewtonNet(**calc_flags)
+    product_atoms.calc = NewtonNet(**calc_flags)
+
+    # Run IRC
+    relax_summary_r = strip_decorator(relax_job)(reactant_atoms, **relax_job_kwargs)
+    relax_summary_p = strip_decorator(relax_job)(product_atoms, **relax_job_kwargs)
+
+    images = _geodesic_interpolate_wrapper(
+        relax_summary_r["atoms"].copy(),
+        relax_summary_p["atoms"].copy(),
+        **geodesic_interpolate_flags,
+    )
+
+    for image in images:
+        image.calc = NewtonNet(**calc_flags)
+
+    dyn = run_neb(images, neb_kwargs=neb_flags)
+
+    return {
+        "relax_reactant": relax_summary_r,
+        "relax_product": relax_summary_p,
+        'geodesic_results': images,
+        'neb_results': summarize_neb_run(dyn),
+    }
 
 
 def _get_hessian(atoms: Atoms) -> NDArray:
