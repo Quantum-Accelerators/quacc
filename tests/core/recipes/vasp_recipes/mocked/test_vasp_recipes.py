@@ -23,6 +23,7 @@ from quacc.recipes.vasp.core import (
     non_scf_job,
     relax_job,
     static_job,
+    freq_job
 )
 from quacc.recipes.vasp.mp import (
     mp_gga_relax_flow,
@@ -848,3 +849,14 @@ def test_mp_relax_flow_custom(tmp_path, patch_nonmetallic_taskdoc):
             job_params={"mp_metagga_relax_job": {"nsw": 0}},
         )
         assert output["relax2"]["parameters"]["nsw"] == 0
+
+
+def test_freq_job():
+    atoms = molecule("H2")
+    atoms.pbc = True
+    atoms.set_cell([3,3,3])
+    output = freq_job(atoms, kpts = (1,1,1))
+    assert output["parameters"]["ediff"] == 1e-08
+    assert output["parameters"]["sigma"] == 0.05
+    assert output["parameters"]["ismear"] == 0
+    assert len(output["results"]["vib_freqs_raw"]) == 3 * len(atoms)

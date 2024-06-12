@@ -134,10 +134,39 @@ def run_and_summarize_vib_and_thermo(
     calc_swaps: dict[str, Any] | None = None,
     vib_kwargs: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
 ) -> VibThermoSchema:
     """
     Base job function for VASP recipes with ASE vibrational analysis.
-)
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+    energy
+        Energy of the system
+    temperature
+        Temperature of the system
+    pressure
+        Pressure of the system
+    preset  
+        Preset to use from `quacc.calculators.vasp.presets`.
+    calc_defaults
+        Default parameters for the recipe.
+    calc_swaps
+        Dictionary of custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to [quacc.calculators.vasp.vasp.Vasp][].
+    vib_kwargs
+        Dictionary of custom kwargs for [quacc.runners.ase.run_vib][]
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
+
+    Returns
+    -------
+    VibThermoSchema
+        Dictionary of results, specified in [quacc.schemas.ase.summarize_vib_and_thermo][].
+        See the type-hint for the data structure.
     """
 
     # Set defaults    
@@ -152,5 +181,5 @@ def run_and_summarize_vib_and_thermo(
         igt,
         temperature=temperature,
         pressure=pressure,
-        additional_fields={"name": "VASP Frequency and Thermo"},
+        additional_fields=additional_fields,
     )
