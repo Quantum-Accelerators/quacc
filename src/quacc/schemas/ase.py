@@ -271,7 +271,7 @@ def summarize_vib_and_thermo(
     )
 
 
-def summarize_path_opt_run(dyn: Optimizer) -> OptSchema:
+def summarize_neb_run(dyn: Optimizer) -> OptSchema:
     # Get trajectory
     trajectory = (
         dyn.traj_atoms
