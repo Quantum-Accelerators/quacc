@@ -22,7 +22,7 @@ from quacc import SETTINGS, change_settings, strip_decorator
 from quacc.recipes.emt.core import relax_job
 from quacc.runners._base import BaseRunner
 from quacc.runners.ase import Runner, _geodesic_interpolate_wrapper, run_neb
-from quacc.schemas.ase import summarize_path_opt_run
+from quacc.schemas.ase import summarize_neb_run
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.propagate = True
@@ -235,7 +235,7 @@ def test_run_neb(
 
     neb_kwargs = {"method": "aseneb", "precon": None}
     dyn = run_neb(images, optimizer=NEBOptimizer, neb_kwargs=neb_kwargs)
-    neb_summary = summarize_path_opt_run(dyn)
+    neb_summary = summarize_neb_run(dyn)
 
     assert neb_summary["trajectory_results"][1]["energy"] == pytest.approx(
         1.098, abs=0.01
