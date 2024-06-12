@@ -326,7 +326,7 @@ def run_vib(
     return vib
 
 
-def run_path_opt(
+def run_neb(
     images,
     relax_cell: bool = False,
     fmax: float = 0.01,
