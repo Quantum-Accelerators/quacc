@@ -281,7 +281,7 @@ def neb_job(
     calc_kwargs: dict[str, Any] | None = None,
     geodesic_interpolate_kwargs: dict[str, Any] | None = None,
     neb_kwargs: dict[str, Any] | None = None,
-) -> QuasiIRCSchema:
+) -> dict:
     """
     Perform a quasi-IRC job using the given atoms object. The initial IRC job by default
     is run with `max_steps: 5`.
@@ -297,9 +297,8 @@ def neb_job(
 
     Returns
     -------
-    nebSchema
-        A dictionary containing the neb optimization summary.
-        See the type-hint for the data structure.
+    A dictionary containing the neb optimization summary.
+            See the type-hint for the data structure.
     """
     relax_job_kwargs = relax_job_kwargs or {}
     neb_kwargs = neb_kwargs or {}
