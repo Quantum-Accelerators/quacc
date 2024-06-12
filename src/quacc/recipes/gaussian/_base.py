@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from ase.calculators.gaussian import Gaussian
 
 from quacc import SETTINGS
-from quacc.runners.ase import run_calc
+from quacc.runners.ase import Runner
 from quacc.schemas.cclib import cclib_summarize_run
 from quacc.utils.dicts import recursive_dict_merge
 
@@ -57,7 +57,7 @@ def run_and_summarize(
     """
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
-    atoms.calc = Gaussian(command=GAUSSIAN_CMD, label=_LABEL, **calc_flags)
-    atoms = run_calc(atoms, geom_file=LOG_FILE, copy_files=copy_files)
+    calc = Gaussian(command=GAUSSIAN_CMD, label=_LABEL, **calc_flags)
+    atoms = Runner(atoms, calc, copy_files=copy_files).run_calc(geom_file=LOG_FILE)
 
     return cclib_summarize_run(atoms, LOG_FILE, additional_fields=additional_fields)

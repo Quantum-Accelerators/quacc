@@ -14,7 +14,7 @@ from ase.md.velocitydistribution import (
 )
 
 from quacc import job
-from quacc.runners.ase import run_md
+from quacc.runners.ase import Runner
 from quacc.schemas.ase import summarize_md_run
 from quacc.utils.dicts import recursive_dict_merge
 
@@ -117,7 +117,7 @@ def md_job(
         if fix_rot:
             ZeroRotation(atoms)
 
-    atoms.calc = EMT(**calc_kwargs)
-    dyn = run_md(atoms, **md_params)
+    calc = EMT(**calc_kwargs)
+    dyn = Runner(atoms, calc).run_md(**md_params)
 
     return summarize_md_run(dyn, additional_fields={"name": "EMT MD"})
