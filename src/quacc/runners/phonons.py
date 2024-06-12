@@ -20,7 +20,6 @@ if TYPE_CHECKING:
 
 
 class PhonopyRunner(BaseRunner):
-
     def __init__(self) -> None:
         """
         Initialize the PhonopyRunner.
