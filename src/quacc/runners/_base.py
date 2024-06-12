@@ -19,6 +19,13 @@ if TYPE_CHECKING:
 class BaseRunner:
     """
     A base class for runners that sets up the calculation and cleans up the scratch directory.
+
+    Attributes
+    ----------
+    atoms
+        Atoms object with calculator attached (or no Atoms object at all).
+    copy_files
+        Files to copy to runtime directory.
     """
 
     atoms: Atoms | None
