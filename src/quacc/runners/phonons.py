@@ -21,6 +21,12 @@ if TYPE_CHECKING:
 
 class PhonopyRunner(BaseRunner):
 
+    def __init__(self) -> None:
+        """
+        Initialize the PhonopyRunner.
+        """
+        self.setup()
+
     @requires(has_phonopy, "Phonopy is not installed.")
     @requires(has_seekpath, "Seekpath is not installed")
     def run_phonopy(
