@@ -350,24 +350,19 @@ class Runner(BaseRunner):
             {"logfile": "-" if SETTINGS.DEBUG else self.tmpdir / "dyn.log"},
             dynamics_kwargs,
         )
-
         dynamics_kwargs["timestep"] = timestep
-
         dynamics_kwargs = self._md_params_handler(dynamics_kwargs)
         dynamics_kwargs = convert_md_units(dynamics_kwargs)
-
         timestep = dynamics_kwargs.pop("timestep", timestep)
 
-        traj_filename = self.tmpdir / "opt.traj"
-        traj = Trajectory(traj_filename, "w", atoms=self.atoms)
+        traj_filename = "opt.traj"
+        traj_file = self.tmpdir / traj_filename
+        traj = Trajectory(traj_file, "w", atoms=self.atoms)
         dynamics_kwargs["trajectory"] = traj
 
         # Run calculation
         with traj, dynamics(self.atoms, timestep=timestep, **dynamics_kwargs) as dyn:
             dyn.run(steps=steps)
-
-        # Store the trajectory atoms
-        dyn.traj_atoms = read(traj_filename, index=":")
 
         # Perform cleanup operations
         self.cleanup()
