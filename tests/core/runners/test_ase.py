@@ -65,6 +65,20 @@ def test_base_runner(tmp_path, monkeypatch):
     assert Path(br.atoms.calc.directory) == br.job_results_dir
 
 
+def test_base_runner2(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    br = BaseRunner()
+
+    br.setup()
+    assert "tmp" in str(br.tmpdir)
+    assert br.tmpdir.exists()
+    assert "tmp" not in str(br.job_results_dir)
+    assert not br.job_results_dir.exists()
+
+    br.cleanup()
+    assert not br.tmpdir.exists()
+    assert br.job_results_dir.exists()
+
 def test_run_calc(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 

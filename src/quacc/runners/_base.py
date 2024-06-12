@@ -19,7 +19,7 @@ class BaseRunner:
     """
     A base class for runners that sets up the calculation and cleans up the scratch directory.
     """
-    atoms: Atoms | None
+    atoms: Atoms | None = None
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None
 
     def setup(self) -> None:

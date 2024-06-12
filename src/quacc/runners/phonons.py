@@ -20,8 +20,6 @@ if TYPE_CHECKING:
 
 
 class PhonopyRunner(BaseRunner):
-    def __init__(self):
-        super().__init__(atoms=None)
 
     @requires(has_phonopy, "Phonopy is not installed.")
     @requires(has_seekpath, "Seekpath is not installed")
