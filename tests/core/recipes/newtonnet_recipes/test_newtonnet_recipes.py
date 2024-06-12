@@ -11,10 +11,11 @@ import numpy as np
 from ase import Atoms
 from ase.build import molecule
 from ase.io import write
+from ase.mep.neb import NEBOptimizer
 
-from quacc import SETTINGS
+from quacc import SETTINGS, strip_decorator
 from quacc.recipes.newtonnet.core import freq_job, relax_job, static_job
-from quacc.recipes.newtonnet.ts import irc_job, quasi_irc_job, ts_job
+from quacc.recipes.newtonnet.ts import irc_job, quasi_irc_job, ts_job, neb_job
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 
@@ -289,12 +290,6 @@ def test_quasi_irc_job_with_custom_irc_swaps(tmp_path, monkeypatch):
 
 @pytest.fixture()
 def setup_test_environment(tmp_path):
-    # Create temporary directory
-    logdir = tmp_path / "log"
-    os.makedirs(logdir, exist_ok=True)
-
-    # Create a mock XYZ file with reactant and product structures
-    xyz_r_p = tmp_path / "r_p.xyz"
 
     reactant = Atoms(
         symbols="CCHHCHH",
@@ -322,6 +317,86 @@ def setup_test_environment(tmp_path):
         ],
     )
 
-    write(xyz_r_p, [reactant, product])
+    return reactant, product
 
-    return logdir, xyz_r_p
+
+@pytest.mark.parametrize(
+    (
+        "method",
+        "optimizer_class",
+        "precon",
+        "n_intermediate",
+        "k",
+        "max_steps",
+        "fmax",
+        "expected_logfile",
+        "r_positions",
+        "p_energy",
+        "first_image_forces",
+        "second_images_positions",
+        "index_ts",
+        "pot_energy_ts",
+        "forces_ts",
+        "last_images_positions",
+    ),
+    [
+        # ("aseneb", NEBOptimizer, None, 10, 0.1, 3, 1e-3, None),
+        # ("aseneb", SciPyFminBFGS, None, 1000, 0.1, 3, 1e-3, "some_logdir",
+        #   0.78503956131, -24.9895786292, -0.0017252843, 0.78017739462, 9, -19.946616164,
+        #   -0.19927549, 0.51475535802),
+        (
+            "aseneb",
+            NEBOptimizer,
+            None,
+            10,
+            0.1,
+            3,
+            1e-3,
+            "some_logdir",
+            -0.854,
+            1.082,
+            -0.005,
+            -0.8161139,
+            9,
+            -19.946616164,
+            -0.19927549,
+            0.51475535802,
+        )
+    ],
+)
+def test_run_neb(
+    setup_test_environment,
+    tmp_path,
+    method,
+    optimizer_class,
+    precon,
+    n_intermediate,
+    k,
+    max_steps,
+    fmax,
+    expected_logfile,
+    r_positions,
+    p_energy,
+    first_image_forces,
+    second_images_positions,
+    index_ts,
+    pot_energy_ts,
+    forces_ts,
+    last_images_positions,
+):
+    reactant, product = setup_test_environment
+
+    neb_summary = neb_job(reactant, product)
+    assert neb_summary['relax_reactant']['atoms'].positions[0, 0] == pytest.approx(
+        0.8815,
+        abs=1e-3,
+    )
+    assert neb_summary['relax_product']['atoms'].positions[0, 0] == pytest.approx(
+        1.117689,
+        abs=1e-3,
+    )
+
+    assert neb_summary["neb_results"]["trajectory_results"][1]["energy"] == pytest.approx(
+        -24.827799,
+        abs=0.01,
+    )
