@@ -10,16 +10,11 @@ from pathlib import Path
 import numpy as np
 from ase import Atoms
 from ase.build import molecule
-from ase.io import read, write
-from ase.mep.neb import NEBOptimizer
+from ase.io import write
 
 from quacc import SETTINGS
 from quacc.recipes.newtonnet.core import freq_job, relax_job, static_job
-from quacc.recipes.newtonnet.ts import (
-    irc_job,
-    quasi_irc_job,
-    ts_job,
-)
+from quacc.recipes.newtonnet.ts import irc_job, quasi_irc_job, ts_job
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 

@@ -97,7 +97,17 @@ def setup_test_environment(tmp_path):
     [
         (20, 2e-3, 15, 20, 1.7, 1e-2, 3.0, None, 20),  # Default parameters
         (10, 2e-3, 15, 20, 1.7, 1e-2, 3.0, None, 10),  # Different number of images
-        (20, 1e-4, 10, 10, 1.5, 0.01, 2.5, "raw_path.xyz", 20),  # Different interpolation parameters and save_raw
+        (
+            20,
+            1e-4,
+            10,
+            10,
+            1.5,
+            0.01,
+            2.5,
+            "raw_path.xyz",
+            20,
+        ),  # Different interpolation parameters and save_raw
     ],
 )
 def test_geodesic_interpolate_wrapper(
@@ -133,10 +143,7 @@ def test_geodesic_interpolate_wrapper_large_system(setup_test_environment):
     large_atoms = Atoms("H" * 40, positions=rng.random((40, 3)))
 
     # Test with large system to trigger sweeping updates
-    smoother_path = _geodesic_interpolate_wrapper(
-        large_atoms,
-        large_atoms
-    )
+    smoother_path = _geodesic_interpolate_wrapper(large_atoms, large_atoms)
     assert len(smoother_path) == 20
 
 
