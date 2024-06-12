@@ -8,6 +8,7 @@ from shutil import copy, copytree
 from typing import TYPE_CHECKING, Callable
 
 import numpy as np
+from ase.calculators import calculator
 from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read
 from ase.optimize import BFGS
@@ -16,8 +17,9 @@ from monty.dev import requires
 from monty.os.path import zpath
 
 from quacc import SETTINGS
-from quacc.atoms.core import copy_atoms, get_final_atoms_from_dynamics
-from quacc.runners.prep import calc_cleanup, calc_setup, terminate
+from quacc.atoms.core import copy_atoms
+from quacc.runners._base import BaseRunner
+from quacc.runners.prep import terminate
 from quacc.utils.dicts import recursive_dict_merge
 
 has_sella = bool(find_spec("sella"))
@@ -28,6 +30,7 @@ if TYPE_CHECKING:
     from typing import Any, TypedDict
 
     from ase.atoms import Atoms
+    from ase.calculators.calculator import Calculator
     from ase.optimize.optimize import Optimizer
 
     from quacc.utils.files import Filenames, SourceDirectory
@@ -47,7 +50,7 @@ if TYPE_CHECKING:
 
     class OptimizerKwargs(TypedDict, total=False):
         """
-        Type hint for `optimizer_kwargs` in [quacc.runners.ase.run_opt][].
+        Type hint for `optimizer_kwargs` in [quacc.runners.ase.Runner.run_opt][].
         """
 
         restart: Path | str | None  # default = None
@@ -55,7 +58,7 @@ if TYPE_CHECKING:
 
     class VibKwargs(TypedDict, total=False):
         """
-        Type hint for `vib_kwargs` in [quacc.runners.ase.run_vib][].
+        Type hint for `vib_kwargs` in [quacc.runners.ase.Runner.run_vib][].
         """
 
         indices: list[int] | None  # default = None
@@ -63,319 +66,298 @@ if TYPE_CHECKING:
         nfree: int  # default = 2
 
 
-def run_calc(
-    atoms: Atoms,
-    geom_file: str | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-    get_forces: bool = False,
-) -> Atoms:
+class Runner(BaseRunner):
     """
-    Run a calculation in a scratch directory and copy the results back to the original
-    directory. This can be useful if file I/O is slow in the working directory, so long
-    as file transfer speeds are reasonable.
-
-    This is a wrapper around atoms.get_potential_energy(). Note: This function
-    does not modify the atoms object in-place.
-
-    Parameters
-    ----------
-    atoms
-        The Atoms object to run the calculation on.
-    geom_file
-        The filename of the log file that contains the output geometry, used to
-        update the atoms object's positions and cell after a job. It is better
-        to specify this rather than relying on ASE's
-        atoms.get_potential_energy() function to update the positions, as this
-        varies between codes.
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
-    get_forces
-        Whether to use `atoms.get_forces()` instead of `atoms.get_potential_energy()`.
-
-    Returns
-    -------
-    Atoms
-        The updated Atoms object.
+    Run various types of calculations in a scratch directory and copy the results back
+    to the original directory. Note: This function does not modify the atoms object in-place.
     """
-    # Copy atoms so we don't modify it in-place
-    atoms = copy_atoms(atoms)
 
-    # Perform staging operations
-    tmpdir, job_results_dir = calc_setup(atoms, copy_files=copy_files)
+    def __init__(
+        self,
+        atoms: Atoms,
+        calculator: Calculator,
+        copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    ) -> None:
+        """
+        Initialize the Runner object.
 
-    # Run calculation
-    try:
-        if get_forces:
-            atoms.get_forces()
-        else:
-            atoms.get_potential_energy()
-    except Exception as exception:
-        terminate(tmpdir, exception)
+        Parameters
+        ----------
+        atoms
+            The Atoms object to run calculations on.
+        calculator
+            The instantiated ASE calculator object to attach to the Atoms object.
+        copy_files
+            Files to copy (and decompress) from source to the runtime directory.
 
-    # Most ASE calculators do not update the atoms object in-place with a call
-    # to .get_potential_energy(), which is important if an internal optimizer is
-    # used. This section is done to ensure that the atoms object is updated to
-    # the final geometry if `geom_file` is provided.
-    # Note: We have to be careful to make sure we don't lose the calculator
-    # object, as this contains important information such as the parameters
-    # and output properties (e.g. final magnetic moments).
-    if geom_file:
-        atoms_new = read(zpath(tmpdir / geom_file))
-        if isinstance(atoms_new, list):
-            atoms_new = atoms_new[-1]
+        Returns
+        -------
+        None
+        """
+        atoms = copy_atoms(atoms)
+        atoms.calc = calculator
+        super().__init__(atoms, copy_files=copy_files)
 
-        # Make sure the atom indices didn't get updated somehow (sanity check).
-        # If this happens, there is a serious problem.
-        if (
-            np.array_equal(atoms_new.get_atomic_numbers(), atoms.get_atomic_numbers())
-            is False
-        ):
-            raise ValueError("Atomic numbers do not match between atoms and geom_file.")
+    def run_calc(
+        self, geom_file: str | None = None, properties: list[str] | None = None
+    ) -> Atoms:
+        """
+        This is a wrapper around `atoms.calc.calculate()`.
 
-        atoms.positions = atoms_new.positions
-        atoms.cell = atoms_new.cell
+        Parameters
+        ----------
+        geom_file
+            The filename of the log file that contains the output geometry, used to
+            update the atoms object's positions and cell after a job. It is better
+            to specify this rather than relying on ASE to update the positions, as the
+            latter behavior varies between codes.
+        properties
+            List of properties to calculate. Defaults to ["energy"] if `None`.
 
-    # Perform cleanup operations
-    calc_cleanup(atoms, tmpdir, job_results_dir)
+        Returns
+        -------
+        Atoms
+            The updated Atoms object.
+        """
+        if properties is None:
+            properties = ["energy"]
 
-    return atoms
+        # Run calculation
+        try:
+            self.atoms.calc.calculate(self.atoms, properties, calculator.all_changes)
+        except Exception as exception:
+            terminate(self.tmpdir, exception)
 
+        # Most ASE calculators do not update the atoms object in-place with a call
+        # to .get_potential_energy(), which is important if an internal optimizer is
+        # used. This section is done to ensure that the atoms object is updated to
+        # the final geometry if `geom_file` is provided.
+        # Note: We have to be careful to make sure we don't lose the calculator
+        # object, as this contains important information such as the parameters
+        # and output properties (e.g. final magnetic moments).
+        if geom_file:
+            atoms_new = read(zpath(self.tmpdir / geom_file))
+            if isinstance(atoms_new, list):
+                atoms_new = atoms_new[-1]
 
-def run_opt(
-    atoms: Atoms,
-    relax_cell: bool = False,
-    fmax: float = 0.01,
-    max_steps: int = 1000,
-    optimizer: Optimizer = BFGS,
-    optimizer_kwargs: OptimizerKwargs | None = None,
-    store_intermediate_results: bool = False,
-    fn_hook: Callable | None = None,
-    run_kwargs: dict[str, Any] | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-) -> Optimizer:
-    """
-    Run an ASE-based optimization in a scratch directory and copy the results back to
-    the original directory. This can be useful if file I/O is slow in the working
-    directory, so long as file transfer speeds are reasonable.
+            # Make sure the atom indices didn't get updated somehow (sanity check).
+            # If this happens, there is a serious problem.
+            if (
+                np.array_equal(
+                    atoms_new.get_atomic_numbers(), self.atoms.get_atomic_numbers()
+                )
+                is False
+            ):
+                raise ValueError(
+                    "Atomic numbers do not match between atoms and geom_file."
+                )
 
-    This is a wrapper around the optimizers in ASE. Note: This function does not
-    modify the atoms object in-place.
+            self.atoms.positions = atoms_new.positions
+            self.atoms.cell = atoms_new.cell
 
-    Parameters
-    ----------
-    atoms
-        The Atoms object to run the calculation on.
-    relax_cell
-        Whether to relax the unit cell shape and volume.
-    fmax
-        Tolerance for the force convergence (in eV/A).
-    max_steps
-        Maximum number of steps to take.
-    optimizer
-        Optimizer class to use.
-    optimizer_kwargs
-        Dictionary of kwargs for the optimizer. Takes all valid kwargs for ASE
-        Optimizer classes. Refer to `_set_sella_kwargs` for Sella-related
-        kwargs and how they are set.
-    store_intermediate_results
-        Whether to store the files generated at each intermediate step in the
-        optimization. If enabled, they will be stored in a directory named
-        `stepN` where `N` is the step number, starting at 0.
-    fn_hook
-        A custom function to call after each step of the optimization.
-        The function must take the instantiated dynamics class as
-        its only argument.
-    run_kwargs
-        Dictionary of kwargs for the run() method of the optimizer.
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+        # Perform cleanup operations
+        self.cleanup()
 
-    Returns
-    -------
-    Optimizer
-        The ASE Optimizer object.
-    """
-    # Copy atoms so we don't modify it in-place
-    atoms = copy_atoms(atoms)
+        return self.atoms
 
-    # Perform staging operations
-    tmpdir, job_results_dir = calc_setup(atoms, copy_files=copy_files)
+    def run_opt(
+        self,
+        relax_cell: bool = False,
+        fmax: float = 0.01,
+        max_steps: int = 1000,
+        optimizer: Optimizer = BFGS,
+        optimizer_kwargs: OptimizerKwargs | None = None,
+        store_intermediate_results: bool = False,
+        fn_hook: Callable | None = None,
+        run_kwargs: dict[str, Any] | None = None,
+    ) -> Optimizer:
+        """
+        This is a wrapper around the optimizers in ASE.
 
-    # Set defaults
-    optimizer_kwargs = recursive_dict_merge(
-        {
-            "logfile": "-" if SETTINGS.DEBUG else tmpdir / "opt.log",
-            "restart": tmpdir / "opt.json",
-        },
-        optimizer_kwargs,
-    )
-    run_kwargs = run_kwargs or {}
+        Parameters
+        ----------
+        relax_cell
+            Whether to relax the unit cell shape and volume.
+        fmax
+            Tolerance for the force convergence (in eV/A).
+        max_steps
+            Maximum number of steps to take.
+        optimizer
+            Optimizer class to use.
+        optimizer_kwargs
+            Dictionary of kwargs for the optimizer. Takes all valid kwargs for ASE
+            Optimizer classes. Refer to `_set_sella_kwargs` for Sella-related
+            kwargs and how they are set.
+        store_intermediate_results
+            Whether to store the files generated at each intermediate step in the
+            optimization. If enabled, they will be stored in a directory named
+            `stepN` where `N` is the step number, starting at 0.
+        fn_hook
+            A custom function to call after each step of the optimization.
+            The function must take the instantiated dynamics class as
+            its only argument.
+        run_kwargs
+            Dictionary of kwargs for the `run()` method of the optimizer.
 
-    # Check if trajectory kwarg is specified
-    if "trajectory" in optimizer_kwargs:
-        msg = "Quacc does not support setting the `trajectory` kwarg."
-        raise ValueError(msg)
+        Returns
+        -------
+        Optimizer
+            The ASE Optimizer object.
+        """
+        # Set defaults
+        optimizer_kwargs = recursive_dict_merge(
+            {
+                "logfile": "-" if SETTINGS.DEBUG else self.tmpdir / "opt.log",
+                "restart": self.tmpdir / "opt.json",
+            },
+            optimizer_kwargs,
+        )
+        run_kwargs = run_kwargs or {}
+        traj_filename = "opt.traj"
 
-    # Handle optimizer kwargs
-    if optimizer.__name__.startswith("SciPy"):
-        optimizer_kwargs.pop("restart", None)
-    elif optimizer.__name__ == "Sella":
-        _set_sella_kwargs(atoms, optimizer_kwargs)
-    elif optimizer.__name__ == "IRC":
-        optimizer_kwargs.pop("restart", None)
+        # Check if trajectory kwarg is specified
+        if "trajectory" in optimizer_kwargs:
+            msg = "Quacc does not support setting the `trajectory` kwarg."
+            raise ValueError(msg)
 
-    # Define the Trajectory object
-    traj_file = tmpdir / "opt.traj"
-    traj = Trajectory(traj_file, "w", atoms=atoms)
-    optimizer_kwargs["trajectory"] = traj
+        # Handle optimizer kwargs
+        if optimizer.__name__.startswith("SciPy"):
+            optimizer_kwargs.pop("restart", None)
+        elif optimizer.__name__ == "Sella":
+            self._set_sella_kwargs(optimizer_kwargs)
+        elif optimizer.__name__ == "IRC":
+            optimizer_kwargs.pop("restart", None)
 
-    # Set volume relaxation constraints, if relevant
-    if relax_cell and atoms.pbc.any():
-        atoms = FrechetCellFilter(atoms)
+        # Define the Trajectory object
+        traj_file = self.tmpdir / traj_filename
+        traj = Trajectory(traj_file, "w", atoms=self.atoms)
+        optimizer_kwargs["trajectory"] = traj
 
-    # Run optimization
-    try:
-        with traj, optimizer(atoms, **optimizer_kwargs) as dyn:
-            if optimizer.__name__.startswith("SciPy"):
-                # https://gitlab.com/ase/ase/-/issues/1475
-                dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
-            else:
-                for i, _ in enumerate(
-                    dyn.irun(fmax=fmax, steps=max_steps, **run_kwargs)
-                ):
-                    if store_intermediate_results:
-                        _copy_intermediate_files(
-                            tmpdir,
-                            i,
-                            files_to_ignore=[
-                                traj_file,
-                                optimizer_kwargs["restart"],
-                                optimizer_kwargs["logfile"],
-                            ],
-                        )
-                    if fn_hook:
-                        fn_hook(dyn)
-    except Exception as exception:
-        terminate(tmpdir, exception)
+        # Set volume relaxation constraints, if relevant
+        if relax_cell and self.atoms.pbc.any():
+            self.atoms = FrechetCellFilter(self.atoms)
 
-    # Store the trajectory atoms
-    dyn.traj_atoms = read(traj_file, index=":")
+        # Run optimization
+        try:
+            with traj, optimizer(self.atoms, **optimizer_kwargs) as dyn:
+                if optimizer.__name__.startswith("SciPy"):
+                    # https://gitlab.coms/ase/ase/-/issues/1475
+                    dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
+                else:
+                    for i, _ in enumerate(
+                        dyn.irun(fmax=fmax, steps=max_steps, **run_kwargs)
+                    ):
+                        if store_intermediate_results:
+                            self._copy_intermediate_files(
+                                i,
+                                files_to_ignore=[
+                                    traj_file,
+                                    optimizer_kwargs["restart"],
+                                    optimizer_kwargs["logfile"],
+                                ],
+                            )
+                        if fn_hook:
+                            fn_hook(dyn)
+        except Exception as exception:
+            terminate(self.tmpdir, exception)
 
-    # Perform cleanup operations
-    calc_cleanup(get_final_atoms_from_dynamics(dyn), tmpdir, job_results_dir)
+        # Perform cleanup operations
+        self.cleanup()
+        traj.filename = zpath(self.job_results_dir / traj_filename)
+        dyn.trajectory = traj
 
-    return dyn
+        return dyn
 
+    def run_vib(self, vib_kwargs: VibKwargs | None = None) -> Vibrations:
+        """
+        Run an ASE-based vibration analysis in a scratch directory and copy the results back
+        to the original directory. This can be useful if file I/O is slow in the working
+        directory, so long as file transfer speeds are reasonable.
 
-def run_vib(
-    atoms: Atoms,
-    vib_kwargs: VibKwargs | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-) -> Vibrations:
-    """
-    Run an ASE-based vibration analysis in a scratch directory and copy the results back
-    to the original directory. This can be useful if file I/O is slow in the working
-    directory, so long as file transfer speeds are reasonable.
+        This is a wrapper around the vibrations module in ASE.
 
-    This is a wrapper around the vibrations module in ASE. Note: This function
-    does not modify the atoms object in-place.
+        Parameters
+        ----------
+        vib_kwargs
+            Dictionary of kwargs for the [ase.vibrations.Vibrations][] class.
 
-    Parameters
-    ----------
-    atoms
-        The Atoms object to run the calculation on.
-    vib_kwargs
-        Dictionary of kwargs for the [ase.vibrations.Vibrations][] class.
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+        Returns
+        -------
+        Vibrations
+            The updated Vibrations module
+        """
+        # Set defaults
+        vib_kwargs = vib_kwargs or {}
 
-    Returns
-    -------
-    Vibrations
-        The updated Vibrations module
-    """
-    # Copy atoms so we don't modify it in-place
-    atoms = copy_atoms(atoms)
+        # Run calculation
+        vib = Vibrations(self.atoms, name=str(self.tmpdir / "vib"), **vib_kwargs)
+        try:
+            vib.run()
+        except Exception as exception:
+            terminate(self.tmpdir, exception)
 
-    # Set defaults
-    vib_kwargs = vib_kwargs or {}
+        # Summarize run
+        vib.summary(
+            log=sys.stdout if SETTINGS.DEBUG else str(self.tmpdir / "vib_summary.log")
+        )
 
-    # Perform staging operations
-    tmpdir, job_results_dir = calc_setup(atoms, copy_files=copy_files)
+        # Perform cleanup operations
+        self.cleanup()
 
-    # Run calculation
-    vib = Vibrations(atoms, name=str(tmpdir / "vib"), **vib_kwargs)
-    try:
-        vib.run()
-    except Exception as exception:
-        terminate(tmpdir, exception)
+        return vib
 
-    # Summarize run
-    vib.summary(log=sys.stdout if SETTINGS.DEBUG else str(tmpdir / "vib_summary.log"))
+    def _copy_intermediate_files(
+        self, step_number: int, files_to_ignore: list[Path] | None = None
+    ) -> None:
+        """
+        Copy all files in the working directory to a subdirectory named `stepN` where `N`
+        is the step number. This is useful for storing intermediate files generated during
+        an ASE relaaxation.
 
-    # Perform cleanup operations
-    calc_cleanup(vib.atoms, tmpdir, job_results_dir)
+        Parameters
+        ----------
+        step_number
+            The step number.
+        files_to_ignore
+            A list of files to ignore when copying files to the subdirectory.
 
-    return vib
+        Returns
+        -------
+        None
+        """
+        files_to_ignore = files_to_ignore or []
+        store_path = self.tmpdir / f"step{step_number}"
+        store_path.mkdir()
+        for item in self.tmpdir.iterdir():
+            if not item.name.startswith("step") and item not in files_to_ignore:
+                if item.is_file():
+                    copy(item, store_path)
+                elif item.is_dir():
+                    copytree(item, store_path / item.name)
 
+    @requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
+    def _set_sella_kwargs(self, optimizer_kwargs: dict[str, Any]) -> None:
+        """
+        Modifies the `optimizer_kwargs` in-place to address various Sella-related
+        parameters. This function does the following for the specified key/value pairs in
+        `optimizer_kwargs`:
 
-@requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
-def _set_sella_kwargs(atoms: Atoms, optimizer_kwargs: dict[str, Any]) -> None:
-    """
-    Modifies the `optimizer_kwargs` in-place to address various Sella-related
-    parameters. This function does the following for the specified key/value pairs in
-    `optimizer_kwargs`:
+        1. Sets `order = 0` if not specified (i.e. minimization rather than TS
+        by default).
 
-    1. Sets `order = 0` if not specified (i.e. minimization rather than TS
-    by default).
+        2. If `internal` is not defined and not `atoms.pbc.any()`, set it to `True`.
 
-    2. If `internal` is not defined and not `atoms.pbc.any()`, set it to `True`.
+        Parameters
+        ----------
+        optimizer_kwargs
+            The kwargs for the Sella optimizer.
 
-    Parameters
-    ----------
-    atoms
-        The Atoms object.
-    optimizer_kwargs
-        The kwargs for the Sella optimizer.
+        Returns
+        -------
+        None
+        """
+        if "order" not in optimizer_kwargs:
+            optimizer_kwargs["order"] = 0
 
-    Returns
-    -------
-    None
-    """
-    if "order" not in optimizer_kwargs:
-        optimizer_kwargs["order"] = 0
-
-    if not atoms.pbc.any() and "internal" not in optimizer_kwargs:
-        optimizer_kwargs["internal"] = True
-
-
-def _copy_intermediate_files(
-    tmpdir: Path, step_number: int, files_to_ignore: list[Path] | None = None
-) -> None:
-    """
-    Copy all files in the working directory to a subdirectory named `stepN` where `N`
-    is the step number. This is useful for storing intermediate files generated during
-    an ASE relaaxation.
-
-    Parameters
-    ----------
-    tmpdir
-        The working directory.
-    step_number
-        The step number.
-    files_to_ignore
-        A list of files to ignore when copying files to the subdirectory.
-
-    Returns
-    -------
-    None
-    """
-    files_to_ignore = files_to_ignore or []
-    store_path = tmpdir / f"step{step_number}"
-    store_path.mkdir()
-    for item in tmpdir.iterdir():
-        if not item.name.startswith("step") and item not in files_to_ignore:
-            if item.is_file():
-                copy(item, store_path)
-            elif item.is_dir():
-                copytree(item, store_path / item.name)
+        if not self.atoms.pbc.any() and "internal" not in optimizer_kwargs:
+            optimizer_kwargs["internal"] = True
