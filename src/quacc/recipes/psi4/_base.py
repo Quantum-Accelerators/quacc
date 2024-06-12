@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from ase.calculators.psi4 import Psi4
 
-from quacc.runners.ase import run_calc
+from quacc.runners.ase import Runner
 from quacc.schemas.ase import summarize_run
 from quacc.utils.dicts import recursive_dict_merge
 
@@ -57,8 +57,8 @@ def run_and_summarize(
     """
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
-    atoms.calc = Psi4(**calc_flags)
-    final_atoms = run_calc(atoms, copy_files=copy_files)
+    calc = Psi4(**calc_flags)
+    final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
 
     return summarize_run(
         final_atoms,

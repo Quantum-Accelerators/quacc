@@ -206,7 +206,7 @@ def ase_relax_job(
         Whether to relax the cell or not.
     opt_params
         Dictionary of custom kwargs for the optimization process. For a list
-        of available keys, refer to [quacc.runners.ase.run_opt][].
+        of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
     copy_files
         Source directory or directories to copy files from. If a `SourceDirectory` or a
         list of `SourceDirectory` is provided, this interface will automatically guess
