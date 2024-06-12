@@ -12,24 +12,16 @@ from ase import Atoms
 from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
-from ase.mep.neb import NEBOptimizer
 from ase.io import read
+from ase.mep.neb import NEBOptimizer
 from ase.optimize import BFGS, BFGSLineSearch
 from ase.optimize.sciopt import SciPyFminBFGS
 
 # from sella import Sella
 from quacc import SETTINGS, change_settings, strip_decorator
 from quacc.recipes.emt.core import relax_job
-from quacc.runners.ase import (
-    _geodesic_interpolate_wrapper,
-    run_calc,
-    run_opt,
-    run_neb,
-    run_vib,
-)
+from quacc.runners.ase import Runner, _geodesic_interpolate_wrapper, run_neb
 from quacc.schemas.ase import summarize_path_opt_run
-from quacc import SETTINGS, change_settings
-from quacc.runners.ase import Runner
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.propagate = True

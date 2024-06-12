@@ -284,12 +284,11 @@ def summarize_path_opt_run(dyn: Optimizer) -> OptSchema:
     parameters_opt.pop("logfile", None)
     parameters_opt.pop("restart", None)
 
-    summary = {
+    return {
         "parameters_opt": parameters_opt,
         "trajectory": trajectory,
         "trajectory_results": [atoms.calc.results for atoms in trajectory],
     }
-    return summary
 
 
 def _summarize_vib_run(

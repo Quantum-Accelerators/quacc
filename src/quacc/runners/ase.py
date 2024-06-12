@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Any, Callable
 
 import numpy as np
 from ase import Atoms
+from ase.atoms import Atoms
 from ase.calculators import calculator
 from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read
@@ -36,7 +37,6 @@ if TYPE_CHECKING:
     from pathlib import Path
     from typing import Any, TypedDict
 
-    from ase.atoms import Atoms
     from ase.calculators.calculator import Calculator
     from ase.optimize.optimize import Optimizer
 
