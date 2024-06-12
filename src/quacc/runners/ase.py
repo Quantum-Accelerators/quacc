@@ -410,8 +410,8 @@ def _geodesic_interpolate_wrapper(
     """
     Interpolates between two geometries and optimizes the path.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     reactant_product_atoms : List[Atoms]
         List of ASE Atoms objects containing initial and final geometries.
     nimages : int, optional
