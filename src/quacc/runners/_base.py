@@ -27,6 +27,7 @@ class BaseRunner:
     copy_files
         Files to copy to runtime directory.
     """
+
     atoms: Atoms | None = None
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None
 

@@ -80,6 +80,7 @@ def test_base_runner2(tmp_path, monkeypatch):
     assert not br.tmpdir.exists()
     assert br.job_results_dir.exists()
 
+
 def test_run_calc(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 

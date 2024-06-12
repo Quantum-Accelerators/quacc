@@ -20,7 +20,6 @@ if TYPE_CHECKING:
 
 
 class PhonopyRunner(BaseRunner):
-
     @requires(has_phonopy, "Phonopy is not installed.")
     @requires(has_seekpath, "Seekpath is not installed")
     def run_phonopy(
