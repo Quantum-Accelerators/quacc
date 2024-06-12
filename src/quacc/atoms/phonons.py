@@ -7,10 +7,8 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from monty.dev import requires
-from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.core import Structure
 from pymatgen.io.phonopy import get_phonopy_structure, get_pmg_structure
-from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 
 has_phonopy = bool(find_spec("phonopy"))
 
