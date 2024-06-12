@@ -272,6 +272,20 @@ def summarize_vib_and_thermo(
 
 
 def summarize_neb_run(dyn: Optimizer) -> OptSchema:
+    """
+    Summarizes the NEB run results into an OptSchema.
+
+    Parameters
+    ----------
+    dyn : Optimizer
+        The ASE Optimizer object used in the NEB run.
+
+    Returns
+    -------
+    OptSchema
+        A dictionary containing the optimization summary, including parameters,
+        trajectory, and trajectory results.
+    """
     # Get trajectory
     trajectory = (
         dyn.traj_atoms
