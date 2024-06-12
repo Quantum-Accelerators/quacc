@@ -10,7 +10,7 @@ from monty.dev import requires
 from quacc import SETTINGS, change_settings, job, strip_decorator
 from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
 from quacc.runners.ase import Runner, run_neb
-from quacc.schemas.ase import summarize_opt_run, summarize_neb_run
+from quacc.schemas.ase import summarize_neb_run, summarize_opt_run
 from quacc.utils.dicts import recursive_dict_merge
 
 has_geodesic_interpolate = bool(find_spec("geodesic_interpolate"))
@@ -32,8 +32,6 @@ if TYPE_CHECKING:
 
     from quacc.recipes.newtonnet.core import FreqSchema
     from quacc.runners.ase import OptParams
-
-
     from quacc.schemas._aliases.ase import OptSchema
 
     class TSSchema(OptSchema):
@@ -273,7 +271,8 @@ def quasi_irc_job(
     has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation."
 )
 @requires(
-    has_geodesic_interpolate, "geodesic-interpolate must be installed. Refer to the quacc documentation."
+    has_geodesic_interpolate,
+    "geodesic-interpolate must be installed. Refer to the quacc documentation.",
 )
 def neb_job(
     reactant_atoms: Atoms,
@@ -311,16 +310,13 @@ def neb_job(
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
     }
 
-    geodesic_defaults = {
-        'nimages': 20,
-    }
+    geodesic_defaults = {"nimages": 20}
 
-    neb_defaults = {
-        "method": "aseneb",
-        "precon": None
-    }
+    neb_defaults = {"method": "aseneb", "precon": None}
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
-    geodesic_interpolate_flags = recursive_dict_merge(geodesic_defaults, geodesic_interpolate_kwargs)
+    geodesic_interpolate_flags = recursive_dict_merge(
+        geodesic_defaults, geodesic_interpolate_kwargs
+    )
     neb_flags = recursive_dict_merge(neb_defaults, neb_kwargs)
 
     # Define calculator
@@ -345,8 +341,8 @@ def neb_job(
     return {
         "relax_reactant": relax_summary_r,
         "relax_product": relax_summary_p,
-        'geodesic_results': images,
-        'neb_results': summarize_neb_run(dyn),
+        "geodesic_results": images,
+        "neb_results": summarize_neb_run(dyn),
     }
 
 
