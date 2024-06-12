@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from ase.calculators.onetep import Onetep, OnetepProfile
 
 from quacc import SETTINGS
-from quacc.runners.ase import run_calc, run_opt
+from quacc.runners.ase import Runner
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import recursive_dict_merge
 
@@ -51,8 +51,8 @@ def run_and_summarize(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    atoms.calc = prep_calculator(calc_defaults=calc_defaults, calc_swaps=calc_swaps)
-    final_atoms = run_calc(atoms, copy_files=copy_files)
+    calc = prep_calculator(calc_defaults=calc_defaults, calc_swaps=calc_swaps)
+    final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
 
     return summarize_run(final_atoms, atoms, additional_fields=additional_fields)
 
@@ -97,9 +97,9 @@ def run_and_summarize_opt(
     """
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
-    atoms.calc = prep_calculator(calc_defaults=calc_defaults, calc_swaps=calc_swaps)
+    calc = prep_calculator(calc_defaults=calc_defaults, calc_swaps=calc_swaps)
 
-    dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
+    dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_flags)
 
     return summarize_opt_run(dyn, additional_fields=additional_fields)
 

@@ -18,12 +18,14 @@ from quacc.calculators.espresso.utils import (
     prepare_copy_files,
     remove_conflicting_kpts_kspacing,
 )
-from quacc.runners.ase import run_calc, run_opt
+from quacc.runners.ase import Runner
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
     from typing import Any
+
+    from ase.calculators.genericfileio import GenericFileIOCalculator
 
     from quacc.runners.ase import OptParams
     from quacc.schemas._aliases.ase import RunSchema
@@ -74,8 +76,9 @@ def run_and_summarize(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    atoms = prepare_atoms(
-        atoms=atoms,
+    atoms = Atoms() if atoms is None else atoms
+    calc = prepare_calc(
+        atoms,
         preset=preset,
         template=template,
         profile=profile,
@@ -85,13 +88,15 @@ def run_and_summarize(
 
     updated_copy_files = prepare_copy(
         copy_files=copy_files,
-        calc_params=atoms.calc.user_calc_params,
-        binary=atoms.calc.template.binary,
+        calc_params=calc.user_calc_params,
+        binary=calc.template.binary,
     )
 
     geom_file = template.outputname if template.binary == "pw" else None
 
-    final_atoms = run_calc(atoms, geom_file=geom_file, copy_files=updated_copy_files)
+    final_atoms = Runner(atoms, calc, copy_files=updated_copy_files).run_calc(
+        geom_file=geom_file
+    )
 
     return summarize_run(
         final_atoms, atoms, move_magmoms=True, additional_fields=additional_fields
@@ -150,8 +155,9 @@ def run_and_summarize_opt(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    atoms = prepare_atoms(
-        atoms=atoms,
+    atoms = Atoms() if atoms is None else atoms
+    calc = prepare_calc(
+        atoms,
         preset=preset,
         template=template,
         profile=profile,
@@ -161,30 +167,30 @@ def run_and_summarize_opt(
 
     updated_copy_files = prepare_copy(
         copy_files=copy_files,
-        calc_params=atoms.calc.user_calc_params,
-        binary=atoms.calc.template.binary,
+        calc_params=calc.user_calc_params,
+        binary=calc.template.binary,
     )
 
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
-    dyn = run_opt(atoms, copy_files=updated_copy_files, **opt_flags)
+    dyn = Runner(atoms, calc, copy_files=updated_copy_files).run_opt(**opt_flags)
 
     return summarize_opt_run(
         dyn, move_magmoms=True, additional_fields=additional_fields
     )
 
 
-def prepare_atoms(
-    atoms: Atoms | None = None,
+def prepare_calc(
+    atoms: Atoms,
     preset: str | None = None,
     template: EspressoTemplate | None = None,
     profile: EspressoProfile | None = None,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
-) -> Atoms:
+) -> GenericFileIOCalculator:
     """
     Commonly used preparation function to merge parameters
-    and attach an Espresso calculator accordingly.
+    and create an Espresso calculator accordingly.
 
     Parameters
     ----------
@@ -205,10 +211,9 @@ def prepare_atoms(
 
     Returns
     -------
-    Atoms
-        Atoms object with attached Espresso calculator.
+    GenericFileIOCalculator
+        The Espresso calculator.
     """
-    atoms = Atoms() if atoms is None else atoms
     calc_defaults = calc_defaults or {}
     calc_swaps = calc_swaps or {}
 
@@ -222,18 +227,15 @@ def prepare_atoms(
         calc_swaps["input_data"].to_nested(binary=binary, **calc_swaps)
 
     calc_defaults = remove_conflicting_kpts_kspacing(calc_defaults, calc_swaps)
-
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
-    atoms.calc = Espresso(
+    return Espresso(
         input_atoms=atoms,
         preset=preset,
         template=template,
         profile=profile,
         **calc_flags,
     )
-
-    return atoms
 
 
 def prepare_copy(

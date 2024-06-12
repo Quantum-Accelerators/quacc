@@ -137,7 +137,7 @@ def summarize_opt_run(
         ASE Optimizer object.
     trajectory
         ASE Trajectory object or list[Atoms] from reading a trajectory file. If
-        None, the trajectory must be found in dyn.traj_atoms.
+        None, the trajectory must be found in `dyn.trajectory.filename`.
     check_convergence
         Whether to check the convergence of the calculation. Defaults to True in
         settings.
@@ -167,11 +167,7 @@ def summarize_opt_run(
 
     # Get trajectory
     if not trajectory:
-        trajectory = (
-            dyn.traj_atoms
-            if hasattr(dyn, "traj_atoms")
-            else read(dyn.trajectory.filename, index=":")
-        )
+        trajectory = read(dyn.trajectory.filename, index=":")
     trajectory_results = [atoms.calc.results for atoms in trajectory]
     for traj_atoms in trajectory:
         traj_atoms.calc = None

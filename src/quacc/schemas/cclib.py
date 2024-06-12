@@ -157,7 +157,7 @@ def cclib_summarize_run(
 
 
 def summarize_cclib_opt_run(
-    optimizer: Optimizer,
+    dyn: Optimizer,
     logfile_extensions: str | list[str],
     trajectory: Trajectory | list[Atoms] | None = None,
     directory: Path | str | None = None,
@@ -186,7 +186,7 @@ def summarize_cclib_opt_run(
 
     Parameters
     ----------
-    optimizer
+    dyn
         The ASE optimizer object
     logfile_extensions
         Possible extensions of the log file (e.g. ".log", ".out", ".txt",
@@ -196,7 +196,7 @@ def summarize_cclib_opt_run(
         used. For an exact match only, put in the full file name.
     trajectory
         ASE Trajectory object or list[Atoms] from reading a trajectory file. If
-        None, the trajectory must be found in dyn.traj_atoms.
+        None, the trajectory must be found in `dyn.trajectory.filename`.
     directory
         The path to the folder containing the calculation outputs. A value of
         None specifies the calculator directory.
@@ -220,7 +220,7 @@ def summarize_cclib_opt_run(
     """
     store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
 
-    final_atoms = get_final_atoms_from_dynamics(optimizer)
+    final_atoms = get_final_atoms_from_dynamics(dyn)
     directory = Path(directory or final_atoms.calc.directory)
     cclib_summary = cclib_summarize_run(
         final_atoms,
@@ -232,7 +232,7 @@ def summarize_cclib_opt_run(
         store=None,
     )
     opt_run_summary = summarize_opt_run(
-        optimizer,
+        dyn,
         trajectory=trajectory,
         check_convergence=check_convergence,
         charge_and_multiplicity=(

@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from quacc import job
 from quacc.recipes.mlp._base import pick_calculator
-from quacc.runners.ase import run_calc, run_opt
+from quacc.runners.ase import Runner
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import recursive_dict_merge
 
@@ -49,10 +49,10 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    atoms.calc = pick_calculator(method, **calc_kwargs)
+    calc = pick_calculator(method, **calc_kwargs)
     if properties is None:
         properties = ["energy", "forces"]
-    final_atoms = run_calc(atoms, properties=properties)
+    final_atoms = Runner(atoms, calc).run_calc(properties=properties)
     return summarize_run(
         final_atoms, atoms, additional_fields={"name": f"{method} Static"}
     )
@@ -79,7 +79,7 @@ def relax_job(
         Whether to relax the cell.
     opt_params
         Dictionary of custom kwargs for the optimization process. For a list
-        of available keys, refer to [quacc.runners.ase.run_opt][].
+        of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
     **calc_kwargs
         Custom kwargs for the underlying calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -95,8 +95,8 @@ def relax_job(
     opt_defaults = {"fmax": 0.05}
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
-    atoms.calc = pick_calculator(method, **calc_kwargs)
+    calc = pick_calculator(method, **calc_kwargs)
 
-    dyn = run_opt(atoms, relax_cell=relax_cell, **opt_flags)
+    dyn = Runner(atoms, calc).run_opt(relax_cell=relax_cell, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields={"name": f"{method} Relax"})

@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.3]
+
+### Changed
+
+- Update the default `shear_strain` value in `quacc.atoms.defects.make_deformations_from_bulk` to match that of Pymatgen
+- Internal refactoring of the runners to be class-based
+
+### Fixed
+
+- Fixed an issue where the `Atoms` object in the output schema could get a stray calculator attached to it when passed between `@job`s
+
 ## [0.9.2]
 
 ### Added
