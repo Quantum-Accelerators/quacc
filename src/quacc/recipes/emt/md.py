@@ -84,7 +84,7 @@ def md_job(
     md_params
         Dictionary of custom kwargs for the optimization process. Set a value
         to `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [quacc.runners.ase.run_md][].
+        keys, refer to [quacc.runners.ase.Runners.run_md][].
     **calc_kwargs
         Custom kwargs for the EMT calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available

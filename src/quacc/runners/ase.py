@@ -324,9 +324,6 @@ class Runner(BaseRunner):
         the original directory. This can be useful if file I/O is slow in the working
         directory, so long as file transfer speeds are reasonable.
 
-        This is a wrapper around the dynamical object in ASE. Note: This function does not
-        modify the atoms object in-place.
-
         Parameters
         ----------
         timestep
