@@ -208,4 +208,8 @@ def test_state_patch():
 
         return 2
 
+    # Note: No need for `.result()` here because we are returning data, not a PrefectFuture
+    # Doing `my_flow(return_state=True)` would force the need for a `.result()`. In general,
+    # Prefect flows return the object as-is unless `return_state=True` is set. It's just
+    # that in general throughout quacc, we are often returning an unresolved `PrefectFuture`
     assert my_flow() == 2
