@@ -237,7 +237,7 @@ def get_param_swaps(
         )
     )
     if changed_parameters := {
-        k: v for k, v in new_parameters.items() if user_calc_params.get(k) != v
+        k: new_parameters[k] for k in set(new_parameters) - set(user_calc_params)
     }:
         logger.info(f"The following parameters were changed: {changed_parameters}")
 
