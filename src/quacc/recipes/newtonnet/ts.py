@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
+import numpy as np
 from quacc import SETTINGS, change_settings, job, strip_decorator
 from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
 from quacc.runners.ase import Runner, run_neb
@@ -343,6 +344,87 @@ def neb_job(
         "geodesic_results": images,
         "neb_results": summarize_neb_run(dyn),
     }
+
+
+@job
+@requires(
+    has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation."
+)
+@requires(
+    has_geodesic_interpolate,
+    "geodesic-interpolate must be installed. Refer to the quacc documentation.",
+)
+def neb_ts_job(
+    reactant_atoms: Atoms,
+    product_atoms: Atoms,
+    relax_job_kwargs: dict[str, Any] | None = None,
+    calc_kwargs: dict[str, Any] | None = None,
+    geodesic_interpolate_kwargs: dict[str, Any] | None = None,
+    neb_kwargs: dict[str, Any] | None = None,
+) -> dict:
+    """
+    Perform a quasi-IRC job using the given atoms object. The initial IRC job by default
+    is run with `max_steps: 5`.
+
+    Parameters
+    ----------
+    atoms
+        The atoms object representing the system
+    direction
+        The direction of the IRC calculation
+    relax_job_kwargs
+        Keyword arguments to use for the [quacc.recipes.newtonnet.core.relax_job][]
+
+    Returns
+    -------
+    A dictionary containing the neb optimization summary.
+            See the type-hint for the data structure.
+    """
+    relax_job_kwargs = relax_job_kwargs or {}
+    neb_kwargs = neb_kwargs or {}
+    geodesic_interpolate_kwargs = geodesic_interpolate_kwargs or {}
+    calc_kwargs = calc_kwargs or {}
+
+    calc_defaults = {
+        "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+        "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+    }
+
+    geodesic_defaults = {
+        "nimages": 20,
+    }
+
+    neb_defaults = {
+        "method": "aseneb",
+        "precon": None
+    }
+    calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
+    geodesic_interpolate_flags = recursive_dict_merge(
+        geodesic_defaults,
+        geodesic_interpolate_kwargs,
+    )
+    neb_flags = recursive_dict_merge(neb_defaults, neb_kwargs)
+
+    neb_results = strip_decorator(neb_job)(
+        reactant_atoms,
+        product_atoms,
+        calc_kwargs=calc_flags,
+        geodesic_interpolate_kwargs=geodesic_interpolate_flags,
+        neb_kwargs=neb_flags,
+        relax_job_kwargs=relax_job_kwargs,
+    )
+
+    traj = neb_results["neb_results"]["trajectory"]
+    traj_results = neb_results["neb_results"]["trajectory_results"]
+    n_images = len(neb_results["geodesic_results"])
+
+    ts_index = np.argmax([i['energy'] for i in traj_results[-(n_images-1):-1]]) + 1
+    ts_atoms = traj[-(n_images) + ts_index]
+
+    output = ts_job(ts_atoms)
+    neb_results['ts_results'] = output
+
+    return neb_results
 
 
 def _get_hessian(atoms: Atoms) -> NDArray:
