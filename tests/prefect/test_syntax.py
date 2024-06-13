@@ -209,4 +209,3 @@ def test_state_patch():
         return 2
 
     assert my_flow() == 2
-
