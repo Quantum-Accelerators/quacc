@@ -5,9 +5,9 @@ from __future__ import annotations
 from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
+import numpy as np
 from monty.dev import requires
 
-import numpy as np
 from quacc import SETTINGS, change_settings, job, strip_decorator
 from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
 from quacc.runners.ase import Runner, run_neb
@@ -390,18 +390,12 @@ def neb_ts_job(
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
     }
 
-    geodesic_defaults = {
-        "nimages": 20,
-    }
+    geodesic_defaults = {"nimages": 20}
 
-    neb_defaults = {
-        "method": "aseneb",
-        "precon": None
-    }
+    neb_defaults = {"method": "aseneb", "precon": None}
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
     geodesic_interpolate_flags = recursive_dict_merge(
-        geodesic_defaults,
-        geodesic_interpolate_kwargs,
+        geodesic_defaults, geodesic_interpolate_kwargs
     )
     neb_flags = recursive_dict_merge(neb_defaults, neb_kwargs)
 
@@ -418,11 +412,11 @@ def neb_ts_job(
     traj_results = neb_results["neb_results"]["trajectory_results"]
     n_images = len(neb_results["geodesic_results"])
 
-    ts_index = np.argmax([i['energy'] for i in traj_results[-(n_images-1):-1]]) + 1
+    ts_index = np.argmax([i["energy"] for i in traj_results[-(n_images - 1) : -1]]) + 1
     ts_atoms = traj[-(n_images) + ts_index]
 
     output = ts_job(ts_atoms)
-    neb_results['ts_results'] = output
+    neb_results["ts_results"] = output
 
     return neb_results
 
