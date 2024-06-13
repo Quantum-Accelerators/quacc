@@ -94,8 +94,8 @@ def test_prefect_decorators(tmp_path, monkeypatch):
     def add_flow(a, b):
         return add(a, b)
 
-    assert add_flow(1, 2).is_completed()
-    assert workflow(1, 2, 3).is_completed()
+    assert add_flow(1, 2).result() == 3
+    assert workflow(1, 2, 3).result() == 9
     assert [r.result() for r in dynamic_workflow(1, 2, 3)] == [6, 6, 6]
     assert [r.result() for r in dynamic_workflow2(1, 2, 3)] == [6, 6, 6]
     assert dynamic_workflow3(1, 2, 3).result() == 12
@@ -184,3 +184,28 @@ def test_strip_decorators():
 
     stripped_add3 = strip_decorator(add3)
     assert stripped_add3(1, 2) == 3
+
+
+def test_state_patch():
+    @job
+    def testjob(n):
+        return {"result": n + 5}
+
+    @flow
+    def subflow(n):
+        return testjob(n + 1)
+
+    @flow
+    def my_flow():
+        # Try running a job
+        job_result = testjob(1)  # return State
+
+        # Try using the job as an input to a flow
+        flow_result = subflow(job_result["result"])
+
+        # Try using the outputs of a flow as the input to a job
+        testjob(flow_result["result"])
+
+        return 2
+
+    assert my_flow() == 2
