@@ -86,18 +86,14 @@ def get_param_swaps(
     if calc.string_params["metagga"] and (
         not calc.string_params["algo"] or calc.string_params["algo"].lower() != "all"
     ):
-        logger.info(
-            "Recommending ALGO = All because you have a meta-GGA calculation."
-        )
+        logger.info("Recommending ALGO = All because you have a meta-GGA calculation.")
         calc.set(algo="all")
 
     if calc.bool_params["lhfcalc"] and (
         not calc.string_params["algo"]
         or calc.string_params["algo"].lower() not in ["all", "damped", "normal"]
     ):
-        logger.info(
-            "Recommending ALGO = Normal because you have a hybrid calculation."
-        )
+        logger.info("Recommending ALGO = Normal because you have a hybrid calculation.")
         calc.set(algo="normal")
 
     if (
@@ -118,9 +114,7 @@ def get_param_swaps(
             or (calc.float_params["kspacing"] and calc.float_params["kspacing"] <= 0.5)
         )
     ):
-        logger.info(
-            "Recommending ISMEAR = -5 because you have a static calculation."
-        )
+        logger.info("Recommending ISMEAR = -5 because you have a static calculation.")
         calc.set(ismear=-5)
 
     if (
@@ -242,14 +236,10 @@ def get_param_swaps(
             else user_calc_params
         )
     )
-    if changed_parameters:= {
-        k: v
-        for k, v in new_parameters.items()
-        if user_calc_params.get(k) != v
+    if changed_parameters := {
+        k: v for k, v in new_parameters.items() if user_calc_params.get(k) != v
     }:
-        logger.info(
-            f"The following parameters were changed: {changed_parameters}"
-        )
+        logger.info(f"The following parameters were changed: {changed_parameters}")
 
     return new_parameters
 
