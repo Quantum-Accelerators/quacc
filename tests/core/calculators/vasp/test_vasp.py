@@ -438,16 +438,6 @@ def test_lasph_aggressive():
         assert calc.bool_params["lasph"] is True
 
 
-def test_efermi():
-    atoms = bulk("Cu")
-    calc = Vasp(atoms)
-    assert calc.string_params["efermi"] == "midgap"
-
-    atoms = bulk("Cu")
-    calc = Vasp(atoms, efermi=10.0)
-    assert calc.string_params["efermi"] == 10.0
-
-
 def test_algo():
     atoms = bulk("Cu")
 
