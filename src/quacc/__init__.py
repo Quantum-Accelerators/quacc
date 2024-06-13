@@ -43,7 +43,7 @@ logging.basicConfig(level=logging.DEBUG if SETTINGS.DEBUG else logging.INFO)
 # Monkeypatching for Prefect
 if SETTINGS.WORKFLOW_ENGINE == "prefect":
     from prefect.futures import PrefectFuture
-    from prefect.states import State
+    from prefect.client.schemas import State
 
     def _patched_getitem(self, index):
         @job
