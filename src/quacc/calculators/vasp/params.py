@@ -240,7 +240,9 @@ def get_param_swaps(
     if changed_parameters := {
         k: new_parameters[k] for k in set(new_parameters) - set(user_calc_params)
     }:
-        logger.info(f"The following parameters were changed: {sort_dict(changed_parameters)}")
+        logger.info(
+            f"The following parameters were changed: {sort_dict(changed_parameters)}"
+        )
 
     return new_parameters
 
