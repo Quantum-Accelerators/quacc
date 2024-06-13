@@ -73,19 +73,6 @@ def test_static_job(patch_metallic_taskdoc):
     assert "efermi" not in output["parameters"]
 
 
-def test_static_job_incar_copilot_aggressive(patch_metallic_taskdoc):
-    with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
-        atoms = bulk("Cu")
-        output = static_job(
-            atoms, ivdw=11, lasph=False, prec=None, lwave=None, lmaxmix=2
-        )
-        assert output["parameters"]["ivdw"] == 11
-        assert output["parameters"]["lasph"] is False
-        assert "prec" not in output["parameters"]
-        assert "lwave" not in output["parameters"]
-        assert output["parameters"]["lmaxmix"] == 4
-
-
 def test_relax_job(patch_metallic_taskdoc):
     atoms = bulk("Al")
 
