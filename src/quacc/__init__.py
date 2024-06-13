@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-import os
 from importlib.metadata import version
 
 from ase.atoms import Atoms
