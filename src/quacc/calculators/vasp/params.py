@@ -12,6 +12,7 @@ from monty.dev import requires
 from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc.atoms.core import check_is_metal
+from quacc.utils.dicts import sort_dict
 from quacc.utils.kpts import convert_pmg_kpts
 
 has_atomate2 = bool(find_spec("atomate2"))
@@ -239,7 +240,7 @@ def get_param_swaps(
     if changed_parameters := {
         k: new_parameters[k] for k in set(new_parameters) - set(user_calc_params)
     }:
-        logger.info(f"The following parameters were changed: {changed_parameters}")
+        logger.info(f"The following parameters were changed: {sort_dict(changed_parameters)}")
 
     return new_parameters
 

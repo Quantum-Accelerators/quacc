@@ -816,7 +816,7 @@ def test_logging(caplog):
     assert "Recommending LMAXMIX = 4" in caplog.text
     assert "Recommending ISMEAR = -5" in caplog.text
     assert (
-        "The following parameters were changed: {'lmaxmix': 4, 'ismear': -5}"
+        "The following parameters were changed: {'ismear': -5, 'lmaxmix': 4}"
         in caplog.text
     )
 
