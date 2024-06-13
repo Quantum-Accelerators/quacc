@@ -243,7 +243,9 @@ def get_param_swaps(
         )
     )
     changed_parameters = {
-        k: v for k, v in new_parameters.items() if k not in user_calc_params or user_calc_params[k] != v
+        k: v
+        for k, v in new_parameters.items()
+        if k not in user_calc_params or user_calc_params[k] != v
     }
     if changed_parameters:
         logger.info(
