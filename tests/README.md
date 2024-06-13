@@ -21,3 +21,7 @@ pytest tests/parsl # or `pytest .` from within `tests/parsl`
 ## Troubleshooting Tests
 
 If you ever need to inspect files from a failed test run, you can find them in the `_quacc_scratch` and `_quacc_results` directories that are created in the current working directory.
+
+## Requirements
+
+The `requirements.txt` files in this directory are those used on GitHub Actions and corresponding to the optional dependency groups listed in `pyproject.toml`.
