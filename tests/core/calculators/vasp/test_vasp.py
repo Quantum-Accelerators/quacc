@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import os
 from copy import deepcopy
 from pathlib import Path
@@ -21,6 +22,8 @@ from quacc.schemas.prep import prep_next_run
 
 FILE_DIR = Path(__file__).parent
 PSEUDO_DIR = FILE_DIR / "fake_pseudos"
+LOGGER = logging.getLogger(__name__)
+LOGGER.propagate = True
 
 
 @pytest.fixture()
@@ -804,6 +807,24 @@ def test_preset_override():
 
     calc = Vasp(atoms, preset="BulkSet", efermi=None)
     assert calc.parameters.get("efermi") is None
+
+
+def test_logging(caplog):
+    atoms = bulk("Cu")
+    with caplog.at_level(logging.INFO):
+        Vasp(atoms, nsw=0, kpts=(3, 3, 3))
+    assert "Recommending LMAXMIX = 4" in caplog.text
+    assert "Recommending ISMEAR = -5" in caplog.text
+    assert (
+        "The following parameters were changed: {'ismear': -5, 'lmaxmix': 4}"
+        in caplog.text
+    )
+
+    with caplog.at_level(logging.INFO):
+        Vasp(atoms, nsw=0, kpts=(2, 2, 1), ismear=0)
+    assert "Recommending LMAXMIX = 4" in caplog.text
+    assert "Recommending ISMEAR = -5" in caplog.text
+    assert "The following parameters were changed: {'lmaxmix': 4}" in caplog.text
 
 
 def test_bad_pmg_converter():
