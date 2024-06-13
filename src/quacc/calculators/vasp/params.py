@@ -233,7 +233,7 @@ def get_param_swaps(
         )
         calc.set(npar=1, ncore=None)
 
-    return (
+    new_parameters = (
         calc.parameters
         if incar_copilot == "aggressive"
         else (
@@ -242,6 +242,17 @@ def get_param_swaps(
             else user_calc_params
         )
     )
+    changed_parameters = {
+        k: v
+        for k, v in new_parameters.items()
+        if user_calc_params.get(k) != v
+    }
+    if changed_parameters:
+        logger.info(
+            f"Copilot: The following parameters were changed: {changed_parameters}"
+        )
+
+    return new_parameters
 
 
 def remove_unused_flags(user_calc_params: dict[str, Any]) -> dict[str, Any]:
