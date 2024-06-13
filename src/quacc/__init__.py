@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-import os
 from importlib.metadata import version
 
 from ase.atoms import Atoms
@@ -39,16 +38,13 @@ Atoms.from_dict = MSONAtoms.from_dict
 # Load the settings
 SETTINGS = QuaccSettings()
 
-# Ignore ASE config file
-os.environ["ASE_CONFIG_PATH"] = ""
-
 # Set logging info
 logging.basicConfig(level=logging.DEBUG if SETTINGS.DEBUG else logging.INFO)
 
 # Monkeypatching for Prefect
 if SETTINGS.WORKFLOW_ENGINE == "prefect":
+    from prefect.client.schemas import State
     from prefect.futures import PrefectFuture
-    from prefect.states import State
 
     def _patched_getitem(self, index):
         @job

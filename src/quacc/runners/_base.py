@@ -4,6 +4,7 @@ Base class for runners.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from quacc.runners.prep import calc_cleanup, calc_setup
@@ -14,39 +15,37 @@ if TYPE_CHECKING:
     from quacc.utils.files import Filenames, SourceDirectory
 
 
+@dataclass
 class BaseRunner:
     """
     A base class for runners that sets up the calculation and cleans up the scratch directory.
+
+    Attributes
+    ----------
+    atoms
+        Atoms object with calculator attached (or no Atoms object at all).
+    copy_files
+        Files to copy to runtime directory.
     """
 
-    def __init__(
-        self,
-        atoms: Atoms | None,
-        copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-    ) -> None:
-        """
-        Initialize the BaseRunner.
+    atoms: Atoms | None = None
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None
 
-        Parameters
-        ----------
-        atoms
-            The atoms object
-        copy_files
-            The files to copy to the scratch directory
+    def setup(self) -> None:
+        """
+        Perform setup operations on the runtime directory.
 
         Returns
         -------
         None
         """
-        self.atoms = atoms
-        self.copy_files = copy_files
         self.tmpdir, self.job_results_dir = calc_setup(
             self.atoms, copy_files=self.copy_files
         )
 
     def cleanup(self) -> None:
         """
-        Perform cleanup operations on the scratch directory.
+        Perform cleanup operations on the runtime directory.
 
         Returns
         -------
