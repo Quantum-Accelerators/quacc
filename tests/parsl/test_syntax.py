@@ -6,13 +6,9 @@ parsl = pytest.importorskip("parsl")
 
 
 from pathlib import Path
-from typing import TYPE_CHECKING
 
-from quacc import flow, job, redecorate, strip_decorator, subflow
+from quacc import SETTINGS, flow, job, redecorate, strip_decorator, subflow
 from quacc.wflow_tools.customizers import customize_funcs
-
-if TYPE_CHECKING:
-    from typing import Callable
 
 
 def test_parsl_decorators(tmp_path, monkeypatch):
@@ -144,33 +140,29 @@ def test_special_params(tmpdir, monkeypatch):
 
 
 def test_change_settings_redecorate(tmp_path_factory):
+    tmp_dir1 = tmp_path_factory.mktemp("dir1")
+    tmp_dir2 = tmp_path_factory.mktemp("dir2")
+
     @job
     def write_file_job(name="job"):
-        from quacc import SETTINGS
-
-        with open(Path(f"{SETTINGS.RESULTS_DIR}/{name}.txt"), "w") as f:
+        with open(Path(SETTINGS.RESULTS_DIR, f"{name}.txt"), "w") as f:
             f.write("test file")
 
     @flow
-    def write_file_flow(
-        name="flow", job_decorators: dict[str, Callable | None] | None = None
-    ):
+    def write_file_flow(name="flow", job_decorators=None):
         write_file_job_ = customize_funcs(
             ["write_file_job"], [write_file_job], decorators=job_decorators
         )
         return write_file_job_(name=name)
-
-    tmp_dir1 = tmp_path_factory.mktemp("dir1")
-    tmp_dir2 = tmp_path_factory.mktemp("dir2")
 
     write_file_job = redecorate(
         write_file_job, job(settings_swap={"RESULTS_DIR": tmp_dir1})
     )
 
     write_file_job().result()
+    assert Path(tmp_dir1 / "job.txt").exists()
+
     write_file_flow(
         job_decorators={"write_file_job": job(settings_swap={"RESULTS_DIR": tmp_dir2})}
     ).result()
-
-    assert Path(tmp_dir1 / "job.txt").exists()
     assert Path(tmp_dir2 / "flow.txt").exists()
