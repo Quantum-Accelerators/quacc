@@ -14,10 +14,10 @@ from ase.mep.neb import NEBOptimizer
 from quacc import SETTINGS
 from quacc.recipes.newtonnet.core import freq_job, relax_job, static_job
 from quacc.recipes.newtonnet.ts import (
+    geodesic_ts_job,
     irc_job,
     neb_job,
     neb_ts_job,
-    geodesic_ts_job,
     quasi_irc_job,
     ts_job,
 )
@@ -472,10 +472,8 @@ def test_neb_ts_job(
     neb_ts_results = neb_ts_job(reactant, product)
 
     assert neb_ts_results["ts_results"]["results"]["energy"] == pytest.approx(
-        -23.7,
-        abs=2,
+        -23.7, abs=2
     )
-
 
 
 @pytest.mark.parametrize(
@@ -547,6 +545,5 @@ def test_geodesic_ts_job(
     geodesic_ts_summary = geodesic_ts_job(reactant, product)
 
     assert geodesic_ts_summary["ts_results"]["results"]["energy"] == pytest.approx(
-        -23.9783,
-        abs=5e-1,
+        -23.9783, abs=5e-1
     )
