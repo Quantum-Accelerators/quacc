@@ -572,10 +572,12 @@ def change_settings(changes: dict[str, Any]):
             setattr(SETTINGS, attr, original_value)
 
 
-def change_settings_wrap(func: Callable, changes: dict[str, Any]|None = None):
+def change_settings_wrap(func: Callable, changes: dict[str, Any] | None = None):
     from quacc import change_settings
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         with change_settings(changes):
             return func(*args, **kwargs)
+
     return wrapper
