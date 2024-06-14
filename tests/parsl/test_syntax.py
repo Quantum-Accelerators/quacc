@@ -5,7 +5,9 @@ import pytest
 parsl = pytest.importorskip("parsl")
 
 
-from quacc import flow, job, strip_decorator, subflow
+from quacc import flow, job, strip_decorator, subflow, redecorate
+from quacc.wflow_tools.customizers import customize_funcs
+from pathlib import Path
 
 
 def test_parsl_decorators(tmp_path, monkeypatch):
@@ -136,52 +138,27 @@ def test_special_params(tmpdir, monkeypatch):
     assert add2(1, 2).result() == [4, 6, 8, 10, 12, 14]
 
 
-"""
-def test_change_settings_wf(tmp_path_factory):
+def test_change_settings_redecorate(tmp_path_factory):
     @job
-    def write_file(name="job"):
+    def write_file_job(name="job"):
+        from quacc import SETTINGS
         with open(Path(f"{SETTINGS.RESULTS_DIR}/{name}.txt"), "w") as f:
             f.write("test file")
 
-    @subflow
-    def write_file_subflow(name="subflow"):
-        write_file(name="subflow_test")
-        return [write_file(name=name)]
-
     @flow
-    def write_file_flow(name="flow_job"):
-        write_file_subflow(name="flow_test")
-        return write_file(name=name)
+    def write_file_flow(name="flow", job_decorators: dict[str, Callable | None] | None = None):
+        write_file_job_ = customize_funcs(
+            ["write_file_job"],
+            [write_file_job],
+            decorators=job_decorators,
+        )
+        return write_file_job_(name=name)
 
-    @flow
-    def write_file_flow_2(name="flow_subflow"):
-        return write_file_subflow(name=name)
+    tmp_dir1 = tmp_path_factory.mktemp("dir1")
 
-    tmp_dir = tmp_path_factory.mktemp("dir1")
-    tmp_dir2 = tmp_path_factory.mktemp("dir2")
-    tmp_dir3 = tmp_path_factory.mktemp("dir3")
-    tmp_dir4 = tmp_path_factory.mktemp("dir4")
+    write_file_job().result()
+    write_file_flow(
+        job_decorators={"write_file_job": job(settings_swap={"RESULTS_DIR": tmp_dir1})}
+    ).result()
 
-    write_file_new = change_settings_wf(write_file, {"RESULTS_DIR": tmp_dir}, job)
-    write_file_subflow_new = change_settings_wf(
-        write_file_subflow, {"RESULTS_DIR": tmp_dir2}, subflow
-    )
-    write_file_flow_new = change_settings_wf(
-        write_file_flow, {"RESULTS_DIR": tmp_dir3}, flow
-    )
-    write_file_flow_2_new = change_settings_wf(
-        write_file_flow_2, {"RESULTS_DIR": tmp_dir4}, flow
-    )
-
-    write_file_new().result()
-    write_file_subflow_new().result()
-    write_file_flow_new().result()
-    write_file_flow_2_new().result()
-
-    assert Path(tmp_dir / "job.txt").exists()
-    assert Path(tmp_dir2 / "subflow.txt").exists()
-    assert Path(tmp_dir2 / "subflow_test.txt").exists()
-    assert Path(tmp_dir3 / "flow_job.txt").exists()
-    assert Path(tmp_dir3 / "flow_test.txt").exists()
-    assert Path(tmp_dir4 / "flow_subflow.txt").exists()
-"""
+    assert Path(tmp_dir1 / "flow.txt").exists()
