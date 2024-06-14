@@ -144,12 +144,12 @@ def test_change_settings_redecorate(tmp_path_factory):
     tmp_dir2 = tmp_path_factory.mktemp("dir2")
 
     @job
-    def write_file_job(name="job"):
-        with open(Path(SETTINGS.RESULTS_DIR, f"{name}.txt"), "w") as f:
+    def write_file_job(name="job.txt"):
+        with open(Path(SETTINGS.RESULTS_DIR, name), "w") as f:
             f.write("test file")
 
     @flow
-    def write_file_flow(name="flow", job_decorators=None):
+    def write_file_flow(name="flow.txt", job_decorators=None):
         write_file_job_ = customize_funcs(
             ["write_file_job"], [write_file_job], decorators=job_decorators
         )
