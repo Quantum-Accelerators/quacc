@@ -5,10 +5,14 @@ import pytest
 parsl = pytest.importorskip("parsl")
 
 
+from typing import TYPE_CHECKING
+
 from quacc import flow, job, strip_decorator, subflow, redecorate
 from quacc.wflow_tools.customizers import customize_funcs
 from pathlib import Path
 
+if TYPE_CHECKING:
+    from typing import Any, Callable
 
 def test_parsl_decorators(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
