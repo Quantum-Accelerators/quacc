@@ -576,12 +576,17 @@ def change_settings_wrap(func: Callable, changes: dict[str, Any]) -> Callable:
     """
     Wraps a function with the change_settings context manager if not already wrapped.
 
-    Parameters:
-    func (Callable): The function to wrap.
-    changes (dict[str, Any]): The settings to apply within the context manager.
+    Parameters
+    ----------
+    func
+        The function to wrap.
+    changes
+        The settings to apply within the context manager.
 
-    Returns:
-    Callable: The wrapped function.
+    Returns
+    -------
+    Callable
+        The wrapped function.
     """
     from quacc import change_settings
 
