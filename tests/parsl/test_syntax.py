@@ -146,15 +146,16 @@ def test_change_settings_redecorate(tmp_path_factory):
     @job
     def write_file_job(name="job"):
         from quacc import SETTINGS
+
         with open(Path(f"{SETTINGS.RESULTS_DIR}/{name}.txt"), "w") as f:
             f.write("test file")
 
     @flow
-    def write_file_flow(name="flow", job_decorators: dict[str, Callable | None] | None = None):
+    def write_file_flow(
+        name="flow", job_decorators: dict[str, Callable | None] | None = None
+    ):
         write_file_job_ = customize_funcs(
-            ["write_file_job"],
-            [write_file_job],
-            decorators=job_decorators,
+            ["write_file_job"], [write_file_job], decorators=job_decorators
         )
         return write_file_job_(name=name)
 
