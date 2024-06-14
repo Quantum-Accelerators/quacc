@@ -8,7 +8,7 @@ parsl = pytest.importorskip("parsl")
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from quacc import flow, job, strip_decorator, subflow
+from quacc import flow, job, strip_decorator, subflow, redecorate
 from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:
@@ -161,10 +161,14 @@ def test_change_settings_redecorate(tmp_path_factory):
         return write_file_job_(name=name)
 
     tmp_dir1 = tmp_path_factory.mktemp("dir1")
+    tmp_dir2 = tmp_path_factory.mktemp("dir2")
+
+    write_file_job = redecorate(write_file_job, job(settings_swap={"RESULTS_DIR": tmp_dir1}))
 
     write_file_job().result()
     write_file_flow(
-        job_decorators={"write_file_job": job(settings_swap={"RESULTS_DIR": tmp_dir1})}
+        job_decorators={"write_file_job": job(settings_swap={"RESULTS_DIR": tmp_dir2})}
     ).result()
 
-    assert Path(tmp_dir1 / "flow.txt").exists()
+    assert Path(tmp_dir1 / "job.txt").exists()
+    assert Path(tmp_dir2 / "flow.txt").exists()
