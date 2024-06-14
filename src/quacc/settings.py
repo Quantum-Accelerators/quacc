@@ -572,12 +572,29 @@ def change_settings(changes: dict[str, Any]):
             setattr(SETTINGS, attr, original_value)
 
 
-def change_settings_wrap(func: Callable, changes: dict[str, Any] | None = None):
+def change_settings_wrap(func: Callable, changes: dict[str, Any]) -> Callable:
+    """
+    Wraps a function with the change_settings context manager if not already wrapped.
+
+    Parameters:
+    func (Callable): The function to wrap.
+    changes (dict[str, Any]): The settings to apply within the context manager.
+
+    Returns:
+    Callable: The wrapped function.
+    """
     from quacc import change_settings
 
-    @wraps(func)
+    if hasattr(func, "__changed__") and func.__changed__:
+        original_func = func.original_func
+    else:
+        original_func = func
+
+    @wraps(original_func)
     def wrapper(*args, **kwargs):
         with change_settings(changes):
-            return func(*args, **kwargs)
+            return original_func(*args, **kwargs)
 
+    wrapper.__changed__ = True
+    wrapper.original_func = original_func
     return wrapper
