@@ -13,7 +13,14 @@ from ase.mep.neb import NEBOptimizer
 
 from quacc import SETTINGS
 from quacc.recipes.newtonnet.core import freq_job, relax_job, static_job
-from quacc.recipes.newtonnet.ts import irc_job, neb_job, neb_ts_job, geodesic_ts_job, quasi_irc_job, ts_job
+from quacc.recipes.newtonnet.ts import (
+    irc_job,
+    neb_job,
+    neb_ts_job,
+    geodesic_ts_job,
+    quasi_irc_job,
+    ts_job,
+)
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 
