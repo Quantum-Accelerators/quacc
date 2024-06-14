@@ -13,7 +13,7 @@ from ase.mep.neb import NEBOptimizer
 
 from quacc import SETTINGS
 from quacc.recipes.newtonnet.core import freq_job, relax_job, static_job
-from quacc.recipes.newtonnet.ts import irc_job, neb_job, neb_ts_job, quasi_irc_job, ts_job
+from quacc.recipes.newtonnet.ts import irc_job, neb_job, neb_ts_job, geodesic_ts_job, quasi_irc_job, ts_job
 
 DEFAULT_SETTINGS = SETTINGS.model_copy()
 
@@ -467,4 +467,79 @@ def test_neb_ts_job(
     assert neb_ts_results["ts_results"]["results"]["energy"] == pytest.approx(
         -23.7,
         abs=2,
+    )
+
+
+
+@pytest.mark.parametrize(
+    (
+        "method",
+        "optimizer_class",
+        "precon",
+        "n_intermediate",
+        "k",
+        "max_steps",
+        "fmax",
+        "expected_logfile",
+        "r_positions",
+        "p_energy",
+        "first_image_forces",
+        "second_images_positions",
+        "index_ts",
+        "pot_energy_ts",
+        "forces_ts",
+        "last_images_positions",
+    ),
+    [
+        # ("aseneb", NEBOptimizer, None, 10, 0.1, 3, 1e-3, None),
+        # ("aseneb", SciPyFminBFGS, None, 1000, 0.1, 3, 1e-3, "some_logdir",
+        #   0.78503956131, -24.9895786292, -0.0017252843, 0.78017739462, 9, -19.946616164,
+        #   -0.19927549, 0.51475535802),
+        (
+            "aseneb",
+            NEBOptimizer,
+            None,
+            10,
+            0.1,
+            3,
+            1e-3,
+            "some_logdir",
+            -0.854,
+            1.082,
+            -0.005,
+            -0.8161139,
+            9,
+            -19.946616164,
+            -0.19927549,
+            0.51475535802,
+        )
+    ],
+)
+def test_geodesic_ts_job(
+    setup_test_environment,
+    tmp_path,
+    method,
+    optimizer_class,
+    precon,
+    n_intermediate,
+    k,
+    max_steps,
+    fmax,
+    expected_logfile,
+    r_positions,
+    p_energy,
+    first_image_forces,
+    second_images_positions,
+    index_ts,
+    pot_energy_ts,
+    forces_ts,
+    last_images_positions,
+):
+    reactant, product = setup_test_environment
+
+    geodesic_ts_summary = geodesic_ts_job(reactant, product)
+
+    assert geodesic_ts_summary["ts_results"]["results"]["energy"] == pytest.approx(
+        -23.9783,
+        abs=5e-1,
     )
