@@ -427,6 +427,92 @@ def neb_ts_job(
     return neb_results
 
 
+@job
+@requires(
+    has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation."
+)
+@requires(
+    has_geodesic_interpolate,
+    "geodesic-interpolate must be installed. Refer to the quacc documentation.",
+)
+def geodesic_ts_job(
+    reactant_atoms: Atoms,
+    product_atoms: Atoms,
+    relax_job_kwargs: dict[str, Any] | None = None,
+    calc_kwargs: dict[str, Any] | None = None,
+    geodesic_interpolate_kwargs: dict[str, Any] | None = None,
+) -> dict:
+    """
+    Perform a transition state search using geodesic interpolation between reactant and product states.
+
+    Parameters
+    ----------
+    reactant_atoms : Atoms
+        The atoms object representing the reactant state.
+    product_atoms : Atoms
+        The atoms object representing the product state.
+    relax_job_kwargs : dict[str, Any], optional
+        Keyword arguments to use for the relaxation job.
+    calc_kwargs : dict[str, Any], optional
+        Keyword arguments to configure the NewtonNet calculator.
+    geodesic_interpolate_kwargs : dict[str, Any], optional
+        Keyword arguments to configure the geodesic interpolation.
+
+    Returns
+    -------
+    dict
+        A dictionary containing the NEB optimization summary, including:
+        - 'relax_reactant': Summary of the relaxation job for the reactant.
+        - 'relax_product': Summary of the relaxation job for the product.
+        - 'geodesic_results': The interpolated images between reactant and product.
+        - 'ts_results': The transition state optimization results.
+    """
+    relax_job_kwargs = relax_job_kwargs or {}
+    geodesic_interpolate_kwargs = geodesic_interpolate_kwargs or {}
+
+    calc_defaults = {
+        "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+        "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+    }
+
+    geodesic_defaults = {"nimages": 20}
+
+    calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
+    geodesic_interpolate_flags = recursive_dict_merge(
+        geodesic_defaults, geodesic_interpolate_kwargs
+    )
+
+    # Define calculator
+    reactant_atoms.calc = NewtonNet(**calc_flags)
+    product_atoms.calc = NewtonNet(**calc_flags)
+
+    # Run IRC
+    relax_summary_r = strip_decorator(relax_job)(reactant_atoms, **relax_job_kwargs)
+    relax_summary_p = strip_decorator(relax_job)(product_atoms, **relax_job_kwargs)
+
+    images = _geodesic_interpolate_wrapper(
+        relax_summary_r["atoms"].copy(),
+        relax_summary_p["atoms"].copy(),
+        **geodesic_interpolate_flags,
+    )
+
+    potential_energies = []
+    for image in images:
+        image.calc = NewtonNet(**calc_flags)
+        potential_energies.append(image.get_potential_energy())
+
+    ts_index = np.argmax(potential_energies)
+    ts_atoms = images[ts_index]
+
+    output = ts_job(ts_atoms)
+    return {
+        "relax_reactant": relax_summary_r,
+        "relax_product": relax_summary_p,
+        "geodesic_results": images,
+        "ts_results": output,
+    }
+
+
 def _get_hessian(atoms: Atoms) -> NDArray:
     """
     Calculate and retrieve the Hessian matrix for the given molecular configuration.
