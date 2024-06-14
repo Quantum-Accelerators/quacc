@@ -155,13 +155,14 @@ def test_change_settings_redecorate(tmp_path_factory):
         )
         return write_file_job_(name=name)
 
+    # Test with redecorating a job
     write_file_job = redecorate(
         write_file_job, job(settings_swap={"RESULTS_DIR": tmp_dir1})
     )
-
     write_file_job().result()
     assert Path(tmp_dir1 / "job.txt").exists()
 
+    # Test with redecorating a job in a flow
     write_file_flow(
         job_decorators={"write_file_job": job(settings_swap={"RESULTS_DIR": tmp_dir2})}
     ).result()
