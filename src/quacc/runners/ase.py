@@ -42,7 +42,7 @@ if TYPE_CHECKING:
 
         fmax: float
         max_steps: int
-        optimizer: Optimizer = BFGS
+        optimizer: Optimizer  # default = BFGS
         optimizer_kwargs: OptimizerKwargs | None
         store_intermediate_results: bool
         fn_hook: Callable | None
