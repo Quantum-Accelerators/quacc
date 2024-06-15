@@ -32,6 +32,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
     from ase.calculators.calculator import Calculator
+    from ase.optimize.optimize import Optimizer
 
     from quacc.utils.files import Filenames, SourceDirectory
 
