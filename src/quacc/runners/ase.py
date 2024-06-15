@@ -224,6 +224,7 @@ class Runner(BaseRunner):
 
         # Handle optimizer kwargs
         if issubclass(optimizer, SciPyOptimizer) or optimizer.__name__ == "IRC":
+            # https://gitlab.com/ase/ase/-/issues/1476
             optimizer_kwargs.pop("restart", None)
         if optimizer.__name__ == "Sella":
             self._set_sella_kwargs(optimizer_kwargs)
