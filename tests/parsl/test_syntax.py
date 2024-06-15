@@ -139,8 +139,21 @@ def test_special_params(tmpdir, monkeypatch):
     assert add2(1, 2).result() == [4, 6, 8, 10, 12, 14]
 
 
-def test_change_settings_redecorate(tmp_path_factory):
+def test_change_settings_redecorate_job(tmp_path_factory):
     tmp_dir1 = tmp_path_factory.mktemp("dir1")
+
+    @job
+    def write_file_job(name="job.txt"):
+        with open(Path(SETTINGS.RESULTS_DIR, name), "w") as f:
+            f.write("test file")
+
+    write_file_job = redecorate(
+        write_file_job, job(settings_swap={"RESULTS_DIR": tmp_dir1})
+    )
+    write_file_job().result()
+    assert Path(tmp_dir1 / "job.txt").exists()
+
+def test_change_settings_redecorate_flow(tmp_path_factory):
     tmp_dir2 = tmp_path_factory.mktemp("dir2")
 
     @job
@@ -154,13 +167,6 @@ def test_change_settings_redecorate(tmp_path_factory):
             ["write_file_job"], [write_file_job], decorators=job_decorators
         )
         return write_file_job_(name=name)
-
-    # Test with redecorating a job
-    write_file_job = redecorate(
-        write_file_job, job(settings_swap={"RESULTS_DIR": tmp_dir1})
-    )
-    write_file_job().result()
-    assert Path(tmp_dir1 / "job.txt").exists()
 
     # Test with redecorating a job in a flow
     write_file_flow(
