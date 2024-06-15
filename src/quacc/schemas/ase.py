@@ -274,16 +274,16 @@ def summarize_md_run(
         )
         trajectory_results.append(atoms.calc.results)
 
-    md_fields = {
-        "parameters_md": parameters_md,
-        "trajectory_log": trajectory_log,
-    }
+    md_fields = {"parameters_md": parameters_md, "trajectory_log": trajectory_log}
 
     # Create a dictionary of the inputs/outputs
     unsorted_task_doc = base_task_doc | md_fields | additional_fields
 
     return finalize_dict(
-        unsorted_task_doc, base_task_doc["dir_name"], gzip_file=SETTINGS.GZIP_FILES, store=store
+        unsorted_task_doc,
+        base_task_doc["dir_name"],
+        gzip_file=SETTINGS.GZIP_FILES,
+        store=store,
     )
 
 
