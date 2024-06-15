@@ -23,7 +23,7 @@ graph LR
   A[Input] --> B(EMT Relax) --> C[Output]
 ```
 
-Let's start with a simple example. Here, we will use a cheap calculator based on effective medium theory (EMT) to run a structure relaxation on a bulk structure of copper. We are interested in doing a structure relaxation, so we will use the [quacc.recipes.emt.core.relax_job][] recipe, as demonstrated below. Most recipes in quacc take an `Atoms` object as the input and will return a dictionary that summarizes the output.
+Let's start with a simple example. Here, we will use a cheap calculator based on effective medium theory (EMT) to run a structure relaxation on a bulk structure of copper. We are interested in doing a structure relaxation, so we will use the [quacc.recipes.emt.core.relax_job][] recipe, as demonstrated below. Most recipes in quacc take an `Atoms` object as the first positional argument and will return a dictionary that summarizes the output.
 
 ```python
 from ase.build import bulk
