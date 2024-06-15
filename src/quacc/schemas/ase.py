@@ -264,7 +264,6 @@ def summarize_md_run(
     parameters_md = convert_md_units(parameters_md, inverse=True)
 
     trajectory_log = []
-    trajectory_results = []
     for t, atoms in enumerate(base_task_doc["trajectory"]):
         trajectory_log.append(
             {
@@ -273,7 +272,6 @@ def summarize_md_run(
                 "time": t * parameters_md["timestep"] / 1000,
             }
         )
-        trajectory_results.append(atoms.calc.results)
 
     md_fields = {"parameters_md": parameters_md, "trajectory_log": trajectory_log}
 
