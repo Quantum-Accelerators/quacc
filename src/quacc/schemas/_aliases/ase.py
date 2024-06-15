@@ -19,10 +19,6 @@ class Parameters(TypedDict):
     """Dictionary of parameters from atoms.calc.parameters"""
 
 
-class ParametersOpt(TypedDict):
-    """Dictionary of parameters from Optimizer.todict()"""
-
-
 class ParametersDyn(TypedDict):
     """Dictionary of parameters from Dynamics.todict()"""
 
@@ -50,7 +46,7 @@ class OptSchema(RunSchema):
     """Schema for [quacc.schemas.ase.summarize_opt_run][]"""
 
     fmax: float | None
-    parameters_opt: ParametersOpt  # from dyn.todict()
+    parameters_opt: ParametersDyn
     converged: bool
     trajectory: list[Atoms]
     trajectory_results: list[Results]
@@ -61,7 +57,7 @@ class DynSchema(OptSchema, total=False):
 
     # Removed: fmax, converged, parameters_opt
 
-    parameters_md: ParametersDyn  #  from dyn.todict()
+    parameters_md: ParametersDyn
     trajectory_log: TrajectoryLog
 
 
