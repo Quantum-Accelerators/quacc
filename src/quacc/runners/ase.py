@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Callable
 import numpy as np
 from ase.calculators import calculator
 from ase.filters import FrechetCellFilter
+from ase.optimize.sciopt import SciPyOptimizer
 from ase.io import Trajectory, read
 from ase.optimize import BFGS
 from ase.vibrations import Vibrations
@@ -31,7 +32,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
     from ase.calculators.calculator import Calculator
-    from ase.optimize.optimize import Optimizer
+    from ase.optimize.optimize import OptimDizer
 
     from quacc.utils.files import Filenames, SourceDirectory
 
@@ -164,7 +165,7 @@ class Runner(BaseRunner):
     def run_opt(
         self,
         relax_cell: bool = False,
-        fmax: float = 0.01,
+        fmax: float | None = 0.01,
         max_steps: int = 1000,
         optimizer: Optimizer = BFGS,
         optimizer_kwargs: OptimizerKwargs | None = None,
@@ -222,12 +223,10 @@ class Runner(BaseRunner):
             raise ValueError(msg)
 
         # Handle optimizer kwargs
-        if optimizer.__name__.startswith("SciPy"):
+        if issubclass(optimizer, SciPyOptimizer) or optimizer.__name__ == "IRC":
             optimizer_kwargs.pop("restart", None)
-        elif optimizer.__name__ == "Sella":
+        if optimizer.__name__ == "Sella":
             self._set_sella_kwargs(optimizer_kwargs)
-        elif optimizer.__name__ == "IRC":
-            optimizer_kwargs.pop("restart", None)
 
         # Define the Trajectory object
         traj_file = self.tmpdir / traj_filename
@@ -241,7 +240,7 @@ class Runner(BaseRunner):
         # Run optimization
         try:
             with traj, optimizer(self.atoms, **optimizer_kwargs) as dyn:
-                if optimizer.__name__.startswith("SciPy"):
+                if issubclass(optimizer, SciPyOptimizer):
                     # https://gitlab.coms/ase/ase/-/issues/1475
                     dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
                 else:
@@ -253,8 +252,8 @@ class Runner(BaseRunner):
                                 i,
                                 files_to_ignore=[
                                     traj_file,
-                                    optimizer_kwargs["restart"],
-                                    optimizer_kwargs["logfile"],
+                                    optimizer_kwargs.get("restart"),
+                                    optimizer_kwargs.get("logfile"),
                                 ],
                             )
                         if fn_hook:
