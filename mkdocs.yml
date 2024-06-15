@@ -142,8 +142,8 @@ plugins:
             signature_crossrefs: true
             show_if_no_docstring: true
             filters:
-              - "logger"
-              - "LOGGER"
+              - "!logger"
+              - "!LOGGER"
 
   - gen-files:
       scripts:
