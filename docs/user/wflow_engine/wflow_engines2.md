@@ -538,7 +538,7 @@ graph LR
         )
         ```
 
-        As a shorthand, all of the decorators can be modified at once using the "all" keyword:
+        As a shorthand, all of the decorators can be modified at once using the "all" key:
 
         ```python
         ct.dispatch(bulk_to_slabs_flow)(
@@ -624,7 +624,7 @@ graph LR
         )
         ```
 
-        As a shorthand, all of the decorators can be modified at once using the "all" keyword:
+        As a shorthand, all of the decorators can be modified at once using the "all" key:
 
         ```python
         bulk_to_slabs_flow(atoms, job_decorators={"all": job(executors=["MyFavoriteExecutor"])})
@@ -667,7 +667,7 @@ graph LR
         bulk_to_slabs_flow(atoms, job_decorators={"static_job": job(retries=2)})
         ```
 
-        As a shorthand, all of the decorators can be modified at once using the "all" keyword:
+        As a shorthand, all of the decorators can be modified at once using the "all" key:
 
         ```python
         bulk_to_slabs_flow(atoms, job_decorators={"all": job(retries=2)})

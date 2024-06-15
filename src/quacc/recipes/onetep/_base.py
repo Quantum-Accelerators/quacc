@@ -96,9 +96,7 @@ def run_and_summarize_opt(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
-
     calc = prep_calculator(calc_defaults=calc_defaults, calc_swaps=calc_swaps)
-
     dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_flags)
 
     return summarize_opt_run(dyn, additional_fields=additional_fields)
