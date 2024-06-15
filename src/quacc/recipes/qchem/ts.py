@@ -18,7 +18,7 @@ if has_sella:
     from sella import IRC, Sella
 
 if TYPE_CHECKING:
-    from typing import Any, Literal, TypedDict
+    from typing import Any, Literal
 
     from ase.atoms import Atoms
     from numpy.typing import NDArray
