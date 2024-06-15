@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import logging
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -10,8 +9,6 @@ from ase.units import GPa, fs
 
 if TYPE_CHECKING:
     from typing import Any
-
-LOGGER = logging.getLogger(__name__)
 
 QUACC_BASE_UNITS = {
     "ttime": fs,
