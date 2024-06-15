@@ -64,7 +64,7 @@ Here, we describe how to set up quacc with a database of your choosing.
 
 === "Prefect"
 
-    To use a database with Prefect, read the [Database](https://docs.prefect.io/2.10.2/concepts/database/) section of the Prefect documentation as well as how to [persist results](https://docs.prefect.io/latest/concepts/results/#persisting-results).
+    To use a database with Prefect, read the [Database](https://docs.prefect.io/latest/concepts/database/) section of the Prefect documentation as well as how to [persist results](https://docs.prefect.io/latest/concepts/results/#persisting-results).
 
 === "Jobflow"
 
