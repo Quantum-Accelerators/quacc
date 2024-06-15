@@ -59,7 +59,9 @@ class OptSchema(RunSchema):
 class DynSchema(OptSchema, total=False):
     """Schema for [quacc.schemas.ase.summarize_md_run][]"""
 
-    parameters_md: ParametersDyn  # from Dynamics.todict()
+    # Removed: fmax, converged, parameters_opt
+
+    parameters_md: ParametersDyn  #  from dyn.todict()
     trajectory_log: TrajectoryLog
 
 
