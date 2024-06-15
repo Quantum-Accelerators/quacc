@@ -172,8 +172,6 @@ def summarize_opt_run(
     if not trajectory:
         trajectory = read(dyn.trajectory.filename, index=":")
     trajectory_results = [atoms.calc.results for atoms in trajectory]
-    for traj_atoms in trajectory:
-        traj_atoms.calc = None
 
     initial_atoms = trajectory[0]
     final_atoms = get_final_atoms_from_dynamics(dyn)
@@ -216,7 +214,7 @@ def summarize_opt_run(
 
 def summarize_md_run(
     dyn: MolecularDynamics,
-    trajectory: Trajectory | list[Atoms] = None,
+    trajectory: Trajectory | list[Atoms] | None = None,
     charge_and_multiplicity: tuple[int, int] | None = None,
     move_magmoms: bool = True,
     additional_fields: dict[str, Any] | None = None,
@@ -250,41 +248,23 @@ def summarize_md_run(
     DynSchema
         Dictionary representation of the task document
     """
-
-    additional_fields = additional_fields or {}
-    store = SETTINGS.STORE if store is None else store
-
-    # Get trajectory
-    if not trajectory:
-        trajectory = (
-            dyn.traj_atoms
-            if hasattr(dyn, "traj_atoms")
-            else read(dyn.trajectory.filename, index=":")
-        )
-
-    initial_atoms = trajectory[0]
-    final_atoms = get_final_atoms_from_dynamics(dyn)
-    directory = final_atoms.calc.directory
-
-    # Base task doc
-    base_task_doc = summarize_run(
-        final_atoms,
-        initial_atoms,
+    base_task_doc = summarize_opt_run(
+        dyn,
+        trajectory=trajectory,
+        check_convergence=False,
         charge_and_multiplicity=charge_and_multiplicity,
         move_magmoms=move_magmoms,
-        store=False,
+        store=None,
     )
 
     # Clean up the opt parameters
-    parameters_md = dyn.todict()
+    parameters_md = base_task_doc.pop("parameters_opt")
     parameters_md.pop("logfile", None)
-
     parameters_md = convert_md_units(parameters_md, inverse=True)
 
     trajectory_log = []
     trajectory_results = []
-
-    for t, atoms in enumerate(trajectory):
+    for t, atoms in enumerate(base_task_doc["trajectory"]):
         trajectory_log.append(
             {
                 "kinetic_energy": atoms.get_kinetic_energy(),
@@ -294,19 +274,16 @@ def summarize_md_run(
         )
         trajectory_results.append(atoms.calc.results)
 
-    opt_fields = {
+    md_fields = {
         "parameters_md": parameters_md,
-        "nsteps": dyn.get_number_of_steps(),
-        "trajectory": trajectory,
         "trajectory_log": trajectory_log,
-        "trajectory_results": trajectory_results,
     }
 
     # Create a dictionary of the inputs/outputs
-    unsorted_task_doc = base_task_doc | opt_fields | additional_fields
+    unsorted_task_doc = base_task_doc | md_fields | additional_fields
 
     return finalize_dict(
-        unsorted_task_doc, directory, gzip_file=SETTINGS.GZIP_FILES, store=store
+        unsorted_task_doc, base_task_doc["dir_name"], gzip_file=SETTINGS.GZIP_FILES, store=store
     )
 
 
