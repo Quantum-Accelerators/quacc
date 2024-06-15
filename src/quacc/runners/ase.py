@@ -353,8 +353,8 @@ class Runner(BaseRunner):
         dynamics_kwargs = dynamics_kwargs or {}
         dynamics_kwargs["timestep"] = timestep
         dynamics_kwargs["logfile"] = "-" if SETTINGS.DEBUG else self.tmpdir / "md.log"
-        dynamics_kwargs = self._md_params_handler(dynamics_kwargs)
         dynamics_kwargs = convert_md_units(dynamics_kwargs)
+        dynamics_kwargs = self._fix_deprecated_md_params(dynamics_kwargs)
 
         return self.run_opt(
             fmax=None,
@@ -420,7 +420,7 @@ class Runner(BaseRunner):
             optimizer_kwargs["internal"] = True
 
     @staticmethod
-    def _md_params_handler(dynamics_kwargs: dict[str, Any]) -> None:
+    def _fix_deprecated_md_params(dynamics_kwargs: dict[str, Any]) -> None:
         """
         Helper function to handle deprecated MD parameters.
 
