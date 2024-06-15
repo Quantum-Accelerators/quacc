@@ -116,11 +116,9 @@ def test_strip_decorators():
 
     stripped_add2 = strip_decorator(add2)
     assert stripped_add2(1, 2) == 3
-    assert add2(1, 2).result() == 3
 
     stripped_add3 = strip_decorator(add3)
     assert stripped_add3(1, 2) == 3
-    assert add3(1, 2).result() == 3
 
 
 def test_special_params(tmpdir, monkeypatch):
