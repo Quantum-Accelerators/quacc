@@ -153,6 +153,7 @@ def test_change_settings_redecorate_job(tmp_path_factory):
     write_file_job().result()
     assert Path(tmp_dir1 / "job.txt").exists()
 
+
 def test_change_settings_redecorate_flow(tmp_path_factory):
     tmp_dir2 = tmp_path_factory.mktemp("dir2")
 
