@@ -12,8 +12,10 @@ import numpy as np
 from ase.calculators import calculator
 from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read
+from ase.md.md import MolecularDynamics
 from ase.md.verlet import VelocityVerlet
 from ase.optimize import BFGS
+from ase.optimize.sciopt import SciPyOptimizer
 from ase.vibrations import Vibrations
 from monty.dev import requires
 from monty.os.path import zpath
@@ -36,8 +38,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
     from ase.calculators.calculator import Calculator
-    from ase.md.md import MolecularDynamics
-    from ase.optimize.optimize import Optimizer
+    from ase.optimize.optimize import Dynamics
 
     from quacc.utils.files import Filenames, SourceDirectory
 
@@ -48,7 +49,7 @@ if TYPE_CHECKING:
 
         fmax: float
         max_steps: int
-        optimizer: Optimizer = BFGS
+        optimizer: Dynamics = BFGS
         optimizer_kwargs: OptimizerKwargs | None
         store_intermediate_results: bool
         fn_hook: Callable | None
@@ -169,14 +170,14 @@ class Runner(BaseRunner):
     def run_opt(
         self,
         relax_cell: bool = False,
-        fmax: float = 0.01,
+        fmax: float | None = 0.01,
         max_steps: int = 1000,
-        optimizer: Optimizer = BFGS,
+        optimizer: Dynamics = BFGS,
         optimizer_kwargs: OptimizerKwargs | None = None,
         store_intermediate_results: bool = False,
         fn_hook: Callable | None = None,
         run_kwargs: dict[str, Any] | None = None,
-    ) -> Optimizer:
+    ) -> Dynamics:
         """
         This is a wrapper around the optimizers in ASE.
 
@@ -227,12 +228,13 @@ class Runner(BaseRunner):
             raise ValueError(msg)
 
         # Handle optimizer kwargs
-        if optimizer.__name__.startswith("SciPy"):
+        if (
+            issubclass(optimizer, (SciPyOptimizer, MolecularDynamics))
+            or optimizer.__name__ == "IRC"
+        ):
             optimizer_kwargs.pop("restart", None)
-        elif optimizer.__name__ == "Sella":
+        if optimizer.__name__ == "Sella":
             self._set_sella_kwargs(optimizer_kwargs)
-        elif optimizer.__name__ == "IRC":
-            optimizer_kwargs.pop("restart", None)
 
         # Define the Trajectory object
         traj_file = self.tmpdir / traj_filename
@@ -244,22 +246,24 @@ class Runner(BaseRunner):
             self.atoms = FrechetCellFilter(self.atoms)
 
         # Run optimization
+        full_run_kwargs = {"fmax": fmax, "steps": max_steps, **run_kwargs}
+        if issubclass(optimizer, MolecularDynamics):
+            full_run_kwargs.pop("fmax")
         try:
             with traj, optimizer(self.atoms, **optimizer_kwargs) as dyn:
-                if optimizer.__name__.startswith("SciPy"):
+                if issubclass(optimizer, (SciPyOptimizer, MolecularDynamics)):
                     # https://gitlab.coms/ase/ase/-/issues/1475
-                    dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
+                    # https://gitlab.com/ase/ase/-/issues/1497
+                    dyn.run(**full_run_kwargs)
                 else:
-                    for i, _ in enumerate(
-                        dyn.irun(fmax=fmax, steps=max_steps, **run_kwargs)
-                    ):
+                    for i, _ in enumerate(dyn.irun(**full_run_kwargs)):
                         if store_intermediate_results:
                             self._copy_intermediate_files(
                                 i,
                                 files_to_ignore=[
                                     traj_file,
-                                    optimizer_kwargs["restart"],
-                                    optimizer_kwargs["logfile"],
+                                    optimizer_kwargs.get("restart"),
+                                    optimizer_kwargs.get("logfile"),
                                 ],
                             )
                         if fn_hook:
@@ -343,30 +347,18 @@ class Runner(BaseRunner):
         """
 
         # Set defaults
-        dynamics_kwargs = recursive_dict_merge(
-            {"logfile": "-" if SETTINGS.DEBUG else self.tmpdir / "dyn.log"},
-            dynamics_kwargs,
-        )
+        dynamics_kwargs = dynamics_kwargs or {}
         dynamics_kwargs["timestep"] = timestep
+        dynamics_kwargs["logfile"] = "-" if SETTINGS.DEBUG else self.tmpdir / "md.log"
         dynamics_kwargs = self._md_params_handler(dynamics_kwargs)
         dynamics_kwargs = convert_md_units(dynamics_kwargs)
-        timestep = dynamics_kwargs.pop("timestep", timestep)
 
-        traj_filename = "opt.traj"
-        traj_file = self.tmpdir / traj_filename
-        traj = Trajectory(traj_file, "w", atoms=self.atoms)
-        dynamics_kwargs["trajectory"] = traj
-
-        # Run calculation
-        with traj, dynamics(self.atoms, timestep=timestep, **dynamics_kwargs) as dyn:
-            dyn.run(steps=steps)
-
-        # Perform cleanup operations
-        self.cleanup()
-        traj.filename = zpath(self.job_results_dir / traj_filename)
-        dyn.trajectory = traj
-
-        return dyn
+        return self.run_opt(
+            fmax=None,
+            max_steps=steps,
+            optimizer=dynamics,
+            optimizer_kwargs=dynamics_kwargs,
+        )
 
     def _copy_intermediate_files(
         self, step_number: int, files_to_ignore: list[Path] | None = None
