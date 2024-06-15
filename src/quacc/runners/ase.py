@@ -233,6 +233,8 @@ class Runner(BaseRunner):
             issubclass(optimizer, (SciPyOptimizer, MolecularDynamics))
             or optimizer.__name__ == "IRC"
         ):
+            # https://gitlab.com/ase/ase/-/issues/1476
+            # https://gitlab.com/ase/ase/-/merge_requests/3310
             optimizer_kwargs.pop("restart", None)
         if optimizer.__name__ == "Sella":
             self._set_sella_kwargs(optimizer_kwargs)
