@@ -14,6 +14,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - VASP: Removed EFERMI="midgap" co-pilot swap since it does not influence the results and prevents VASP 5.x compatability
 
+### Fixed
+
+- Fixed MD5-based `Atoms` hashing to work on FIPS-encrypted OSs
+
 ## [0.9.3]
 
 ### Changed
