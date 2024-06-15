@@ -33,7 +33,7 @@ print(result)
 
 !!! Tip "Modifying the Parameters for Jobs in a Pre-Made Flow"
 
-    To modify the default parameters of a subset of jobs in a pre-made workflow, you can pass a dictionary of parameters to the `job_params` keyword argument of the workflow function. For example, to tighten the force tolerance of the `relax_job` step in the aforementioned recipe, you can do the following:
+    To modify the default parameters of a subset of jobs in a pre-made workflow, you can pass a dictionary of parameters to the `job_params` keyword argument of the workflow function. For example, to tighten the force tolerance of the `relax_job` step in the aforementioned recipe, you can do the following (note: the name and `@job` definition for each step in the pre-made workflow is specified in the flow's docstring):
 
     ```python
     bulk_to_slabs_flow(atoms, job_params={"relax_job": {"opt_params": {"fmax": 1e-4}}})
