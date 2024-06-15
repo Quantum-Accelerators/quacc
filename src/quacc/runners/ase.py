@@ -49,7 +49,7 @@ if TYPE_CHECKING:
 
         fmax: float
         max_steps: int
-        optimizer: Dynamics = BFGS
+        optimizer: Dynamics = BFGS  # default = BFGS
         optimizer_kwargs: OptimizerKwargs | None
         store_intermediate_results: bool
         fn_hook: Callable | None
@@ -101,9 +101,10 @@ class Runner(BaseRunner):
         -------
         None
         """
-        atoms = copy_atoms(atoms)
-        atoms.calc = calculator
-        super().__init__(atoms, copy_files=copy_files)
+        self.atoms = copy_atoms(atoms)
+        self.atoms.calc = calculator
+        self.copy_files = copy_files
+        self.setup()
 
     def run_calc(
         self, geom_file: str | None = None, properties: list[str] | None = None
