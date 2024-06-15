@@ -10,9 +10,9 @@ from typing import TYPE_CHECKING, Callable
 import numpy as np
 from ase.calculators import calculator
 from ase.filters import FrechetCellFilter
-from ase.optimize.sciopt import SciPyOptimizer
 from ase.io import Trajectory, read
 from ase.optimize import BFGS
+from ase.optimize.sciopt import SciPyOptimizer
 from ase.vibrations import Vibrations
 from monty.dev import requires
 from monty.os.path import zpath
@@ -32,7 +32,6 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
     from ase.calculators.calculator import Calculator
-    from ase.optimize.optimize import OptimDizer
 
     from quacc.utils.files import Filenames, SourceDirectory
 
