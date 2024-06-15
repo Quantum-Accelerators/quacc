@@ -50,21 +50,17 @@ class OptSchema(RunSchema):
     """Schema for [quacc.schemas.ase.summarize_opt_run][]"""
 
     fmax: float | None
-    parameters_opt: ParametersOpt
+    parameters_opt: ParametersOpt  # from dyn.todict()
     converged: bool
-    nsteps: int
     trajectory: list[Atoms]
     trajectory_results: list[Results]
 
 
-class DynSchema(RunSchema):
+class DynSchema(OptSchema, total=False):
     """Schema for [quacc.schemas.ase.summarize_md_run][]"""
 
     parameters_md: ParametersDyn  # from Dynamics.todict()
-    nsteps: int
-    trajectory: list[Atoms]
     trajectory_log: TrajectoryLog
-    trajectory_results: list[Results]
 
 
 class ParametersVib(TypedDict):

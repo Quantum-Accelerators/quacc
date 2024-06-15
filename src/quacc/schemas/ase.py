@@ -256,6 +256,8 @@ def summarize_md_run(
         move_magmoms=move_magmoms,
         store=None,
     )
+    del base_task_doc["fmax"]
+    del base_task_doc["converged"]
 
     # Clean up the opt parameters
     parameters_md = base_task_doc.pop("parameters_opt")
