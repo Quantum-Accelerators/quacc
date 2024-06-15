@@ -18,7 +18,7 @@ if has_sella:
     from sella import IRC, Sella
 
 if TYPE_CHECKING:
-    from typing import Any, Literal
+    from typing import Any, Literal, TypedDict
 
     from ase.atoms import Atoms
     from numpy.typing import NDArray
@@ -26,6 +26,9 @@ if TYPE_CHECKING:
     from quacc.runners.ase import OptParams
     from quacc.schemas._aliases.ase import OptSchema
     from quacc.utils.files import Filenames, SourceDirectory
+
+    class QuasiIRCSchema(OptSchema):
+        initial_irc: OptSchema
 
 
 @job
@@ -175,7 +178,7 @@ def quasi_irc_job(
     irc_job_kwargs: dict[str, Any] | None = None,
     relax_job_kwargs: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-) -> OptSchema:
+) -> QuasiIRCSchema:
     """
     Quasi-IRC optimize a molecular structure. Runs `irc_job` for 10 steps (default)
     followed by `relax_job`.
