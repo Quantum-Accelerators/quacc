@@ -83,7 +83,7 @@ with change_settings({"GZIP_FILES": False}):
     1. This is the same as doing
 
          ```python
-        from quacc import job
+        from quacc import change_settings, job
 
 
         @job
