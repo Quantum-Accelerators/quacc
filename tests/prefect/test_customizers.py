@@ -6,7 +6,7 @@ prefect = pytest.importorskip("prefect")
 
 from pathlib import Path
 
-from quacc import SETTINGS, flow, job, redecorate, strip_decorator, subflow
+from quacc import flow, job, redecorate, strip_decorator, subflow
 from quacc.wflow_tools.customizers import customize_funcs
 
 
@@ -38,6 +38,7 @@ def test_change_settings_redecorate_job(tmp_path_factory):
 
     @job
     def write_file_job(name="job.txt"):
+        from quacc import SETTINGS
         with open(Path(SETTINGS.RESULTS_DIR, name), "w") as f:
             f.write("test file")
 
@@ -58,6 +59,7 @@ def test_change_settings_redecorate_flow(tmp_path_factory):
 
     @job
     def write_file_job(name="job.txt"):
+        from quacc import SETTINGS
         with open(Path(SETTINGS.RESULTS_DIR, name), "w") as f:
             f.write("test file")
 
