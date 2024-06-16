@@ -62,8 +62,19 @@ graph LR
         ```python
         from quacc import redecorate
 
-        relax_job_ = redecorate(relax_job, job(executor="local"))
+        relax_job_ = redecorate(relax_job, job(executor="local"))  # (1)!
         ```
+
+        1. This is the same as simply re-decorating it directly and using this new function instead:
+
+            ```python
+            from quacc import job
+
+
+            @job(executor="local")
+            def relax_job_(*args, **kwargs):
+                return relax_job(*args, **kwargs)
+            ```
 
 === "Dask"
 
@@ -115,8 +126,19 @@ graph LR
         ```python
         from quacc import redecorate
 
-        relax_job_ = redecorate(relax_job, job(name="my_custom_name"))
+        relax_job_ = redecorate(relax_job, job(name="my_custom_name"))  # (1)!
         ```
+
+        1. This is the same as simply re-decorating it directly and using this new function instead:
+
+            ```python
+            from quacc import job
+
+
+            @job(name="my_custom_name")
+            def relax_job_(*args, **kwargs):
+                return relax_job(*args, **kwargs)
+            ```
 
 === "Parsl"
 
@@ -170,8 +192,19 @@ graph LR
         ```python
         from quacc import redecorate
 
-        relax_job_ = redecorate(relax_job, job(executors=["all"]))
+        relax_job_ = redecorate(relax_job, job(executors=["all"]))  # (1)!
         ```
+
+        1. This is the same as simply re-decorating it directly and using this new function instead:
+
+            ```python
+            from quacc import job
+
+
+            @job(executors=["all"])
+            def relax_job_(*args, **kwargs):
+                return relax_job(*args, **kwargs)
+            ```
 
 === "Prefect"
 
@@ -216,8 +249,19 @@ graph LR
         ```python
         from quacc import redecorate
 
-        relax_job_ = redecorate(relax_job, job(retries=2))
+        relax_job_ = redecorate(relax_job, job(retries=2))  # (1)!
         ```
+
+        1. This is the same as simply re-decorating it directly and using this new function instead:
+
+            ```python
+            from quacc import job
+
+
+            @job(retries=2)
+            def relax_job_(*args, **kwargs):
+                return relax_job(*args, **kwargs)
+            ```
 
 === "Redun"
 
@@ -269,8 +313,19 @@ graph LR
         ```python
         from quacc import redecorate
 
-        relax_job_ = redecorate(relax_job, job(name="my_custom_name"))
+        relax_job_ = redecorate(relax_job, job(name="my_custom_name"))  # (1)!
         ```
+
+        1. This is the same as simply re-decorating it directly and using this new function instead:
+
+            ```python
+            from quacc import job
+
+
+            @job(name="my_custom_name")
+            def relax_job_(*args, **kwargs):
+                return relax_job(*args, **kwargs)
+            ```
 
 === "Jobflow"
 
