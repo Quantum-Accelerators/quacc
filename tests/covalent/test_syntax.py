@@ -5,7 +5,7 @@ import pytest
 ct = pytest.importorskip("covalent")
 
 
-from quacc import flow, job, strip_decorator, subflow
+from quacc import flow, job, subflow
 
 
 def test_covalent_decorators(tmp_path, monkeypatch):
@@ -113,4 +113,3 @@ def test_covalent_decorators_args(tmp_path, monkeypatch):
         6,
         6,
     ]
-

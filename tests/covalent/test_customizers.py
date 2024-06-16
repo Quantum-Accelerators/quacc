@@ -43,6 +43,7 @@ def test_strip_decorators():
     assert not hasattr(stripped_add3, "electron_object")
     assert not isinstance(stripped_add3, Lattice)
 
+
 def test_customize_jobs():
     @job
     def add(a, b):
@@ -126,6 +127,7 @@ def test_change_settings_redecorate_job(tmp_path_factory):
     @job
     def write_file_job(name="job.txt"):
         from quacc import SETTINGS
+
         with open(Path(SETTINGS.RESULTS_DIR, name), "w") as f:
             f.write("test file")
 
@@ -147,6 +149,7 @@ def test_change_settings_redecorate_flow(tmp_path_factory):
     @job
     def write_file_job(name="job.txt"):
         from quacc import SETTINGS
+
         with open(Path(SETTINGS.RESULTS_DIR, name), "w") as f:
             f.write("test file")
 
@@ -158,7 +161,12 @@ def test_change_settings_redecorate_flow(tmp_path_factory):
         return write_file_job_(name=name)
 
     # Test with redecorating a job in a flow
-    ct.get_result(ct.dispatch(write_file_flow)(
-        job_decorators={"write_file_job": job(settings_swap={"RESULTS_DIR": tmp_dir2})}
-    ), wait=True)
+    ct.get_result(
+        ct.dispatch(write_file_flow)(
+            job_decorators={
+                "write_file_job": job(settings_swap={"RESULTS_DIR": tmp_dir2})
+            }
+        ),
+        wait=True,
+    )
     assert Path(tmp_dir2 / "flow.txt").exists()
