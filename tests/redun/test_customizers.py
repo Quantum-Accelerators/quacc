@@ -64,7 +64,11 @@ def test_change_settings_redecorate_flow(tmp_path_factory, scheduler):
         return write_file_job_(name=name)
 
     # Test with redecorating a job in a flow
-    scheduler.run(write_file_flow(
-        job_decorators={"write_file_job": job(settings_swap={"RESULTS_DIR": tmp_dir2})}
-    ))
+    scheduler.run(
+        write_file_flow(
+            job_decorators={
+                "write_file_job": job(settings_swap={"RESULTS_DIR": tmp_dir2})
+            }
+        )
+    )
     assert Path(tmp_dir2 / "flow.txt").exists()
