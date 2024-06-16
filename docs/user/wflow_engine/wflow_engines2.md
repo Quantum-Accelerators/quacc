@@ -120,6 +120,16 @@ graph LR
     print(result)
     ```
 
+    !!! Tip "Modifying the Decorator of a Pre-Made Job"
+
+        If you want to modify the decorator of a pre-made job for any reason, you can use the [quacc.wflow_tools.customizers.redecorate][] function:
+
+        ```python
+        from quacc import redecorate
+
+        relax_job = redecorate(relax_job, job(name="my_custom_name"))
+        ```
+
 === "Parsl"
 
     !!! Important
@@ -262,6 +272,17 @@ graph LR
     ```
 
     1. The `#!Python @flow` decorator defines the workflow that will be executed. It is the same as the `#!Python @task` decorator in Redun.
+
+
+    !!! Tip "Modifying the Decorator of a Pre-Made Job"
+
+        If you want to modify the decorator of a pre-made job for any reason, you can use the [quacc.wflow_tools.customizers.redecorate][] function:
+
+        ```python
+        from quacc import redecorate
+
+        relax_job = redecorate(relax_job, job(name="my_custom_name"))
+        ```
 
 === "Jobflow"
 
