@@ -111,4 +111,3 @@ def test_special_params(tmpdir, monkeypatch):
 
     assert add(1, 2).result() == 3
     assert add2(1, 2).result() == [4, 6, 8, 10, 12, 14]
-
