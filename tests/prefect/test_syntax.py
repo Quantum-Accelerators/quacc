@@ -163,7 +163,6 @@ def test_prefect_decorators_local(tmp_path, monkeypatch):
         assert dynamic_workflow3(1, 2, 3) == 12
 
 
-
 def test_state_patch():
     @job
     def testjob(n):
@@ -191,4 +190,3 @@ def test_state_patch():
     # Prefect flows return the object as-is unless `return_state=True` is set. It's just
     # that in general throughout quacc, we are often returning an unresolved `PrefectFuture`
     assert my_flow() == 2
-
