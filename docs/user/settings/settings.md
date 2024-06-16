@@ -65,9 +65,37 @@ with change_settings({"GZIP_FILES": False}):
     pass  # Your calculation here
 ```
 
-!!! Warning
+!!! Tip "Active Workflow Engine"
 
-    Note that when deploying calculations via a workflow engine, changes to in-memory global variables on the local machine will not be reflected on the remote machine. To modify global settings in a script, ensure the setting re-assignment takes place in the decorated function itself. [Issue #2147](https://github.com/Quantum-Accelerators/quacc/issues/2147) seeks to improve the user experience in this regard.
+    When deploying calculations via a workflow engine, changes to in-memory global variables on the local machine will not be reflected on the remote machine. Therefore, a separate approach must be taken wherein we make these changes within the function definition itself. This can be done via a custom `settings_swap` keyword argument that is supported by the `@job` decorator.
+
+    Essentially, the following two blocks of code are functionally the same:
+
+    ```python
+    from quacc import job
+
+    @job(settings_swap={"GZIP_FILES"})
+    def add(a, b):
+        return a + b
+    ```
+
+    ```python
+    from quacc import job
+
+    @job
+    def add(a, b):
+        with change_settings({"GZIP_FILES": False}):
+            return a + b
+    ```
+
+    If using a pre-made `@job`, you can simply redecorate it so that it supports your custom settings:
+
+    ```python
+    from quacc.recipes.emt.core import static_job
+    from quacc import redecorate
+
+    static_job_ = redecorate(static_job, settings_swap={"GZIP_FILES": False})
+    ```
 
 ??? Tip "When is This Method Ideal?"
 
