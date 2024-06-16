@@ -74,13 +74,13 @@ def test_customize_funcs(monkeypatch, tmp_path):
     assert client.compute(test_dynamic_workflow(1, 2)).result() == [7, 7, 7]
 
 
-
 def test_change_settings_redecorate_job(tmp_path_factory):
     tmp_dir1 = tmp_path_factory.mktemp("dir1")
 
     @job
     def write_file_job(name="job.txt"):
         from quacc import SETTINGS
+
         with open(Path(SETTINGS.RESULTS_DIR, name), "w") as f:
             f.write("test file")
 
@@ -97,6 +97,7 @@ def test_change_settings_redecorate_flow(tmp_path_factory):
     @job
     def write_file_job(name="job.txt"):
         from quacc import SETTINGS
+
         with open(Path(SETTINGS.RESULTS_DIR, name), "w") as f:
             f.write("test file")
 
@@ -108,7 +109,11 @@ def test_change_settings_redecorate_flow(tmp_path_factory):
         return write_file_job_(name=name)
 
     # Test with redecorating a job in a flow
-    client.compute(write_file_flow(
-        job_decorators={"write_file_job": job(settings_swap={"RESULTS_DIR": tmp_dir2})}
-    )).result()
+    client.compute(
+        write_file_flow(
+            job_decorators={
+                "write_file_job": job(settings_swap={"RESULTS_DIR": tmp_dir2})
+            }
+        )
+    ).result()
     assert Path(tmp_dir2 / "flow.txt").exists()
