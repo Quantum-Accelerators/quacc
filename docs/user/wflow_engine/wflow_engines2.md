@@ -62,19 +62,7 @@ graph LR
         ```python
         from quacc import redecorate
 
-        relax_job = redecorate(relax_job, job(executor="local"))
-        result1 = relax_job(atoms)
-        ```
-
-        This is the same as simply re-decorating it directly and using this new function instead:
-
-        ```python
-        from quacc import job
-
-
-        @job(executor="local")
-        def relax_job_(*args, **kwargs):
-            return relax_job(*args, **kwargs)
+        relax_job_ = redecorate(relax_job, job(executor="local"))
         ```
 
 === "Dask"
@@ -127,7 +115,7 @@ graph LR
         ```python
         from quacc import redecorate
 
-        relax_job = redecorate(relax_job, job(name="my_custom_name"))
+        relax_job_ = redecorate(relax_job, job(name="my_custom_name"))
         ```
 
 === "Parsl"
@@ -182,7 +170,7 @@ graph LR
         ```python
         from quacc import redecorate
 
-        relax_job = redecorate(relax_job, job(executors=["all"]))
+        relax_job_ = redecorate(relax_job, job(executors=["all"]))
         ```
 
 === "Prefect"
@@ -228,7 +216,7 @@ graph LR
         ```python
         from quacc import redecorate
 
-        relax_job = redecorate(relax_job, job(retries=2))
+        relax_job_ = redecorate(relax_job, job(retries=2))
         ```
 
 === "Redun"
@@ -281,7 +269,7 @@ graph LR
         ```python
         from quacc import redecorate
 
-        relax_job = redecorate(relax_job, job(name="my_custom_name"))
+        relax_job_ = redecorate(relax_job, job(name="my_custom_name"))
         ```
 
 === "Jobflow"
