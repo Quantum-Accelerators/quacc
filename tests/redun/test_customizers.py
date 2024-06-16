@@ -15,7 +15,6 @@ def scheduler():
     return redun.Scheduler()
 
 
-
 def test_strip_decorators():
     @job
     def add(a, b):
