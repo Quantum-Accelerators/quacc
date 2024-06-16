@@ -80,12 +80,12 @@ with change_settings({"GZIP_FILES": False}):
         return a + b
     ```
 
-    1. This is the same as doing 
+    1. This is the same as doing
 
          ```python
         from quacc import job
-    
-    
+
+
         @job
         def add(a, b):
             with change_settings({"GZIP_FILES": False}):
