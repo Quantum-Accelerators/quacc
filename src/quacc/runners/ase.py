@@ -12,6 +12,7 @@ from ase.calculators import calculator
 from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read
 from ase.optimize import BFGS
+from ase.optimize.sciopt import SciPyOptimizer
 from ase.vibrations import Vibrations
 from monty.dev import requires
 from monty.os.path import zpath
@@ -42,7 +43,7 @@ if TYPE_CHECKING:
 
         fmax: float
         max_steps: int
-        optimizer: Optimizer = BFGS
+        optimizer: Optimizer  # default = BFGS
         optimizer_kwargs: OptimizerKwargs | None
         store_intermediate_results: bool
         fn_hook: Callable | None
@@ -164,7 +165,7 @@ class Runner(BaseRunner):
     def run_opt(
         self,
         relax_cell: bool = False,
-        fmax: float = 0.01,
+        fmax: float | None = 0.01,
         max_steps: int = 1000,
         optimizer: Optimizer = BFGS,
         optimizer_kwargs: OptimizerKwargs | None = None,
@@ -222,12 +223,11 @@ class Runner(BaseRunner):
             raise ValueError(msg)
 
         # Handle optimizer kwargs
-        if optimizer.__name__.startswith("SciPy"):
+        if issubclass(optimizer, SciPyOptimizer) or optimizer.__name__ == "IRC":
+            # https://gitlab.com/ase/ase/-/issues/1476
             optimizer_kwargs.pop("restart", None)
-        elif optimizer.__name__ == "Sella":
+        if optimizer.__name__ == "Sella":
             self._set_sella_kwargs(optimizer_kwargs)
-        elif optimizer.__name__ == "IRC":
-            optimizer_kwargs.pop("restart", None)
 
         # Define the Trajectory object
         traj_file = self.tmpdir / traj_filename
@@ -241,7 +241,7 @@ class Runner(BaseRunner):
         # Run optimization
         try:
             with traj, optimizer(self.atoms, **optimizer_kwargs) as dyn:
-                if optimizer.__name__.startswith("SciPy"):
+                if issubclass(optimizer, SciPyOptimizer):
                     # https://gitlab.coms/ase/ase/-/issues/1475
                     dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
                 else:
@@ -253,8 +253,8 @@ class Runner(BaseRunner):
                                 i,
                                 files_to_ignore=[
                                     traj_file,
-                                    optimizer_kwargs["restart"],
-                                    optimizer_kwargs["logfile"],
+                                    optimizer_kwargs.get("restart"),
+                                    optimizer_kwargs.get("logfile"),
                                 ],
                             )
                         if fn_hook:

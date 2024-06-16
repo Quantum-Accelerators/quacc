@@ -388,8 +388,6 @@ def _summarize_ideal_gas_thermo(
     charge_and_multiplicity
         Charge and spin multiplicity of the Atoms object, only used for Molecule
         metadata.
-    additional_fields
-        Additional fields to add to the task document.
 
     Returns
     -------

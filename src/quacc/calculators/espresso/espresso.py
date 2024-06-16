@@ -441,10 +441,6 @@ class Espresso(GenericFileIOCalculator):
         Function that handles the kwargs. It will merge the user-supplied kwargs with
         the preset values, using the former as priority.
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         None
