@@ -75,20 +75,22 @@ with change_settings({"GZIP_FILES": False}):
     from quacc import job
 
 
-    @job(settings_swap={"GZIP_FILES"})
+    @job(settings_swap={"GZIP_FILES"})  # (1)!
     def add(a, b):
         return a + b
     ```
 
-    ```python
-    from quacc import job
+    1. This is the same as doing 
 
-
-    @job
-    def add(a, b):
-        with change_settings({"GZIP_FILES": False}):
-            return a + b
-    ```
+         ```python
+        from quacc import job
+    
+    
+        @job
+        def add(a, b):
+            with change_settings({"GZIP_FILES": False}):
+                return a + b
+        ```
 
     If using a pre-made `@job`, you can simply redecorate it so that it supports your custom settings:
 
