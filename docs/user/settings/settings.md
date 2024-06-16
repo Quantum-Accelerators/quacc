@@ -93,8 +93,8 @@ with change_settings({"GZIP_FILES": False}):
     If using a pre-made `@job`, you can simply redecorate it so that it supports your custom settings:
 
     ```python
-    from quacc.recipes.emt.core import static_job
     from quacc import redecorate
+    from quacc.recipes.emt.core import static_job
 
     static_job_ = redecorate(static_job, settings_swap={"GZIP_FILES": False})
     ```
