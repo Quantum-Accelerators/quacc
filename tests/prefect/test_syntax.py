@@ -4,7 +4,18 @@ import pytest
 
 prefect = pytest.importorskip("prefect")
 
-from quacc import change_settings, flow, job, strip_decorator, subflow
+from pathlib import Path
+
+from quacc import (
+    SETTINGS,
+    change_settings,
+    flow,
+    job,
+    redecorate,
+    strip_decorator,
+    subflow,
+)
+from quacc.wflow_tools.customizers import customize_funcs
 
 
 def test_patch():
@@ -213,3 +224,45 @@ def test_state_patch():
     # Prefect flows return the object as-is unless `return_state=True` is set. It's just
     # that in general throughout quacc, we are often returning an unresolved `PrefectFuture`
     assert my_flow() == 2
+
+
+def test_change_settings_redecorate_job(tmp_path_factory):
+    tmp_dir1 = tmp_path_factory.mktemp("dir1")
+
+    @job
+    def write_file_job(name="job.txt"):
+        with open(Path(SETTINGS.RESULTS_DIR, name), "w") as f:
+            f.write("test file")
+
+    write_file_job = redecorate(
+        write_file_job, job(settings_swap={"RESULTS_DIR": tmp_dir1})
+    )
+
+    @flow
+    def my_flow():
+        return write_file_job()
+
+    my_flow().result()
+    assert Path(tmp_dir1 / "job.txt").exists()
+
+
+def test_change_settings_redecorate_flow(tmp_path_factory):
+    tmp_dir2 = tmp_path_factory.mktemp("dir2")
+
+    @job
+    def write_file_job(name="job.txt"):
+        with open(Path(SETTINGS.RESULTS_DIR, name), "w") as f:
+            f.write("test file")
+
+    @flow
+    def write_file_flow(name="flow.txt", job_decorators=None):
+        write_file_job_ = customize_funcs(
+            ["write_file_job"], [write_file_job], decorators=job_decorators
+        )
+        return write_file_job_(name=name)
+
+    # Test with redecorating a job in a flow
+    write_file_flow(
+        job_decorators={"write_file_job": job(settings_swap={"RESULTS_DIR": tmp_dir2})}
+    ).result()
+    assert Path(tmp_dir2 / "flow.txt").exists()
