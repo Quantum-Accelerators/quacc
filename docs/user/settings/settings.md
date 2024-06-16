@@ -74,6 +74,7 @@ with change_settings({"GZIP_FILES": False}):
     ```python
     from quacc import job
 
+
     @job(settings_swap={"GZIP_FILES"})
     def add(a, b):
         return a + b
@@ -81,6 +82,7 @@ with change_settings({"GZIP_FILES": False}):
 
     ```python
     from quacc import job
+
 
     @job
     def add(a, b):
