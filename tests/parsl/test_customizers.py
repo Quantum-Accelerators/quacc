@@ -26,6 +26,7 @@ def test_strip_decorators():
 
     stripped_add = strip_decorator(add)
     assert stripped_add(1, 2) == 3
+    assert add(1, 2).result() == 3
 
     stripped_add2 = strip_decorator(add2)
     assert stripped_add2(1, 2) == 3
