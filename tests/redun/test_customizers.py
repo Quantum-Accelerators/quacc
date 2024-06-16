@@ -10,6 +10,12 @@ from quacc import SETTINGS, flow, job, redecorate, strip_decorator, subflow
 from quacc.wflow_tools.customizers import customize_funcs
 
 
+@pytest.fixture()
+def scheduler():
+    return redun.Scheduler()
+
+
+
 def test_strip_decorators():
     @job
     def add(a, b):
