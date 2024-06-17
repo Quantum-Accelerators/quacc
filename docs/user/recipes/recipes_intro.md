@@ -264,7 +264,7 @@ result = relax_job(
 print(result)
 ```
 
-    1. All recipes in quacc allow you to pass in a custom set of keyword arguments corresponding to the ASE calculator.
+1. All recipes in quacc allow you to pass in a custom set of keyword arguments corresponding to the ASE calculator.
 
 ??? Info "Printed Output"
 
