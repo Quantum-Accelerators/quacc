@@ -38,9 +38,8 @@ class OptSchema(RunSchema):
     """Schema for [quacc.schemas.ase.summarize_opt_run][]"""
 
     fmax: float | None
-    parameters_opt: ParametersOpt
+    parameters_opt: ParametersOpt  # from dyn.todict()
     converged: bool
-    nsteps: int
     trajectory: list[Atoms]
     trajectory_results: list[Results]
 

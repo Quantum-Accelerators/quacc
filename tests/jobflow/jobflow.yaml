@@ -1,0 +1,3 @@
+JOB_STORE:
+  docs_store:
+    type: MemoryStore
