@@ -8,6 +8,6 @@ numpy==2.0.0
 psutil==5.9.8
 pydantic==2.7.4
 pydantic-settings==2.3.3
-pymatgen==2024.6.10
+git+https://github.com/materialsproject/pymatgen.git
 ruamel.yaml==0.18.6
 typer==0.12.3
