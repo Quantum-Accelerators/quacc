@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 
     from quacc.recipes.newtonnet.core import FreqSchema
     from quacc.runners.ase import OptParams
-    from quacc.schemas._aliases.ase import NebSchema, OptSchema
+    from quacc.schemas._aliases.ase import OptSchema
 
     class TSSchema(OptSchema):
         freq_job: FreqSchema | None
