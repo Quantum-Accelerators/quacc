@@ -46,7 +46,10 @@ if TYPE_CHECKING:
         freq_job: FreqSchema | None
 
     class NebSchema(TypedDict):
-        neb_job: NebSchema | None
+        relax_reactant: OptSchema
+        relax_product: OptSchema
+        geodesic_results: list[Atoms]
+        neb_results: dict
 
 
 @job
