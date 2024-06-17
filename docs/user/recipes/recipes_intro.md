@@ -360,7 +360,7 @@ atoms = bulk("Cu")
 # Run a structure relaxation on the Atoms object
 result = relax_job(
     atoms,
-    asap_cutoff=True,
+    asap_cutoff=True
 )
 print(result)
 ```
@@ -459,7 +459,7 @@ atoms = bulk("Cu")
 # Run a structure relaxation on the Atoms object
 result = relax_job(
     atoms,
-    opt_params={"fmax": 1e-3, "optimizer": LBFGS},
+    opt_params={"fmax": 1e-3, "optimizer": LBFGS}
 )
 print(result)
 ```
