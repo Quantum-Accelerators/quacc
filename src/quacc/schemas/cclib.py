@@ -132,8 +132,9 @@ def cclib_summarize_run(
     if nsteps := len([f for f in os.listdir(directory) if f.startswith("step")]):
         intermediate_cclib_task_docs = {
             "steps": {
-                n: _make_cclib_schema(Path(directory, f"step{n}"), logfile_extensions)
+                n: _make_cclib_schema(directory / f"step{n}", logfile_extensions)
                 for n in range(nsteps)
+                if (directory / f"step{n}").is_dir()
             }
         }
     else:
