@@ -97,3 +97,10 @@ class ThermoSchema(AtomsSchema):
 
 class VibThermoSchema(VibSchema, ThermoSchema):
     """Schema for [quacc.schemas.ase.summarize_vib_and_thermo][]"""
+
+
+class NebSchema(TypedDict):
+    relax_reactant: OptSchema
+    relax_product: OptSchema
+    geodesic_results: list[Atoms]
+    neb_results: dict
