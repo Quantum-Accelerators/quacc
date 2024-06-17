@@ -26,14 +26,14 @@ if has_geodesic_interpolate:
     from quacc.runners.ase import _geodesic_interpolate_wrapper
 
 if TYPE_CHECKING:
-    from typing import Any, Literal
+    from typing import Any, Literal, TypedDict
 
     from ase.atoms import Atoms
     from numpy.typing import NDArray
 
     from quacc.recipes.newtonnet.core import FreqSchema
     from quacc.runners.ase import OptParams
-    from quacc.schemas._aliases.ase import OptSchema
+    from quacc.schemas._aliases.ase import OptSchema, NebSchema
 
     class TSSchema(OptSchema):
         freq_job: FreqSchema | None
@@ -44,6 +44,9 @@ if TYPE_CHECKING:
     class QuasiIRCSchema(OptSchema):
         irc_job: IRCSchema
         freq_job: FreqSchema | None
+
+    class NebSchema(TypedDict):
+        neb_job: NebSchema | None
 
 
 @job
@@ -282,7 +285,7 @@ def neb_job(
     calc_kwargs: dict[str, Any] | None = None,
     geodesic_interpolate_kwargs: dict[str, Any] | None = None,
     neb_kwargs: dict[str, Any] | None = None,
-) -> dict:
+) -> NebSchema:
     """
     Perform a quasi-IRC job using the given reactant and product atoms objects.
 
@@ -337,8 +340,8 @@ def neb_job(
     relax_summary_p = strip_decorator(relax_job)(product_atoms, **relax_job_kwargs)
 
     images = _geodesic_interpolate_wrapper(
-        relax_summary_r["atoms"].copy(),
-        relax_summary_p["atoms"].copy(),
+        relax_summary_r["atoms"],
+        relax_summary_p["atoms"],
         **geodesic_interpolate_flags,
     )
 
@@ -397,10 +400,6 @@ def neb_ts_job(
             - 'relax_product': Summary of the relaxed product structure.
             - 'geodesic_results': The interpolated images between reactant and product.
             - 'neb_results': Summary of the NEB optimization.
-
-    Notes
-    -----
-    The initial IRC job is run with `max_steps: 5` by default.
     """
     relax_job_kwargs = relax_job_kwargs or {}
     neb_kwargs = neb_kwargs or {}
