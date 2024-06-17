@@ -239,6 +239,101 @@ print(result2)
 
 As demonstrated in the previous example, each recipe accepts optional keyword arguments to modify the default parameters. To identify the possible parameters a function takes, you'll want to check out the function signature and corresponding documentation, like that for [quacc.recipes.emt.core.relax_job][]. Go ahead; click it! Once you do, you'll see from the docstring that there is one required positional argument for the recipe (the `Atoms` object) and several optional keyword arguments.
 
+All recipes in quacc allow you to pass in a custom set of keyword arguments to the underlying ASE calculator so that you have full control over the parameters (as specified via `**calc_kwargs` in the function signature). For instance, ASE's [`EMT` calculator](https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html#ase.calculators.emt.EMT) can take an optional parameter `asap_cutoff`. We show how to pass this parameter to the `relax_job` recipe in the example below.
+
+```python
+from ase.build import bulk
+from quacc.recipes.emt.core import relax_job
+
+# Make an Atoms object of a bulk Cu structure
+atoms = bulk("Cu")
+
+# Run a structure relaxation on the Atoms object
+result = relax_job(atoms, asap_cutoff=True)
+print(result)
+```
+
+??? Info "Printed Output"
+
+    ```
+    {'atoms': Atoms(symbols='Cu', pbc=True, cell=[[0.0, 1.805, 1.805], [1.805, 0.0, 1.805], [1.805, 1.805, 0.0]]),
+    'builder_meta': {'build_date': datetime.datetime(2024, 6, 17, 18, 20, 40, 231408),
+                    'emmet_version': '0.82.0',
+                    'pymatgen_version': '2024.6.10'},
+    'chemsys': 'Cu',
+    'composition': Composition('Cu1'),
+    'composition_reduced': Composition('Cu1'),
+    'converged': True,
+    'density': 8.971719800606017,
+    'density_atomic': 11.761470249999999,
+    'dir_name': '/mnt/c/Users/asros/Desktop/quacc-2024-06-17-18-20-40-132724-86476',
+    'elements': [Element Cu],
+    'formula_anonymous': 'A',
+    'formula_pretty': 'Cu',
+    'input_atoms': {'atoms': Atoms(symbols='Cu', pbc=True, cell=[[0.0, 1.805, 1.805], [1.805, 0.0, 1.805], [1.805, 1.805, 0.0]]),
+                    'builder_meta': {'build_date': datetime.datetime(2024, 6, 17, 18, 20, 40, 229796),
+                                    'emmet_version': '0.82.0',
+                                    'pymatgen_version': '2024.6.10'},
+                    'chemsys': 'Cu',
+                    'composition': Composition('Cu1'),
+                    'composition_reduced': Composition('Cu1'),
+                    'density': 8.971719800606017,
+                    'density_atomic': 11.761470249999999,
+                    'elements': [Element Cu],
+                    'formula_anonymous': 'A',
+                    'formula_pretty': 'Cu',
+                    'nelements': 1,
+                    'nsites': 1,
+                    'symmetry': {'crystal_system': <CrystalSystem.cubic: 'Cubic'>,
+                                'number': 225,
+                                'point_group': 'm-3m',
+                                'symbol': 'Fm-3m',
+                                'symprec': 0.1,
+                                'version': '2.4.0'},
+                    'volume': 11.761470249999999},
+    'name': 'EMT Relax',
+    'nelements': 1,
+    'nid': 'rosen.',
+    'nsites': 1,
+    'parameters': {'asap_cutoff': True},
+    'parameters_opt': {'alpha': 70.0,
+                        'max_steps': 1000,
+                        'maxstep': 0.2,
+                        'optimizer': 'BFGS',
+                        'type': 'optimization'},
+    'quacc_version': '0.8.1',
+    'results': {'energies': array([-0.00060116]),
+                'energy': -0.0006011628239370737,
+                'forces': array([[1.18655086e-15, 1.15706056e-15, 3.16066617e-15]]),
+                'free_energy': -0.0006011628239370737,
+                'stress': array([0.01169831, 0.01169831, 0.01169831, 0.        , 0.        ,
+        0.        ])},
+    'structure': Structure Summary
+    Lattice
+        abc : 2.5526554800834367 2.5526554800834367 2.5526554800834367
+    angles : 60.00000000000001 60.00000000000001 60.00000000000001
+    volume : 11.761470249999999
+        A : 0.0 1.805 1.805
+        B : 1.805 0.0 1.805
+        C : 1.805 1.805 0.0
+        pbc : True True True
+    PeriodicSite: Cu (0.0, 0.0, 0.0) [0.0, 0.0, 0.0],
+    'symmetry': {'crystal_system': <CrystalSystem.cubic: 'Cubic'>,
+                'number': 225,
+                'point_group': 'm-3m',
+                'symbol': 'Fm-3m',
+                'symprec': 0.1,
+                'version': '2.4.0'},
+    'trajectory': [Atoms(symbols='Cu', pbc=True, cell=[[0.0, 1.805, 1.805], [1.805, 0.0, 1.805], [1.805, 1.805, 0.0]])],
+    'trajectory_results': [{'energies': array([-0.00060116]),
+                            'energy': -0.0006011628239370737,
+                            'forces': array([[1.18655086e-15, 1.15706056e-15, 3.16066617e-15]]),
+                            'free_energy': -0.0006011628239370737,
+                            'stress': array([0.01169831, 0.01169831, 0.01169831, 0.        , 0.        ,
+        0.        ])}],
+    'volume': 11.761470249999999}
+    ```
+
 One of these optional keyword arguments for [quacc.recipes.emt.core.relax_job][] is `relax_cell`, which sets whether the cell should be relaxed. By default, this parameter is set to `False`. We will go ahead and set it to `True` in the example below.
 
 ```python
@@ -346,101 +441,6 @@ print(result)
                             'stress': array([-1.58924696e-04, -1.58924696e-04, -1.58924696e-04,  2.30432437e-16,
             7.68108123e-17,  1.89824193e-17])}],
     'volume': 11.563195249785407}
-    ```
-
-All recipes in quacc allow you to pass in a custom set of keyword arguments to the underlying ASE calculator so that you have full control over the parameters (as specified via `**calc_kwargs` in the function signature). For instance, ASE's [`EMT` calculator](https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html#ase.calculators.emt.EMT) can take an optional parameter `asap_cutoff`. We show how to pass this parameter to the `relax_job` recipe in the example below.
-
-```python
-from ase.build import bulk
-from quacc.recipes.emt.core import relax_job
-
-# Make an Atoms object of a bulk Cu structure
-atoms = bulk("Cu")
-
-# Run a structure relaxation on the Atoms object
-result = relax_job(atoms, asap_cutoff=True)
-print(result)
-```
-
-??? Info "Printed Output"
-
-    ```
-    {'atoms': Atoms(symbols='Cu', pbc=True, cell=[[0.0, 1.805, 1.805], [1.805, 0.0, 1.805], [1.805, 1.805, 0.0]]),
-    'builder_meta': {'build_date': datetime.datetime(2024, 6, 17, 18, 20, 40, 231408),
-                    'emmet_version': '0.82.0',
-                    'pymatgen_version': '2024.6.10'},
-    'chemsys': 'Cu',
-    'composition': Composition('Cu1'),
-    'composition_reduced': Composition('Cu1'),
-    'converged': True,
-    'density': 8.971719800606017,
-    'density_atomic': 11.761470249999999,
-    'dir_name': '/mnt/c/Users/asros/Desktop/quacc-2024-06-17-18-20-40-132724-86476',
-    'elements': [Element Cu],
-    'formula_anonymous': 'A',
-    'formula_pretty': 'Cu',
-    'input_atoms': {'atoms': Atoms(symbols='Cu', pbc=True, cell=[[0.0, 1.805, 1.805], [1.805, 0.0, 1.805], [1.805, 1.805, 0.0]]),
-                    'builder_meta': {'build_date': datetime.datetime(2024, 6, 17, 18, 20, 40, 229796),
-                                    'emmet_version': '0.82.0',
-                                    'pymatgen_version': '2024.6.10'},
-                    'chemsys': 'Cu',
-                    'composition': Composition('Cu1'),
-                    'composition_reduced': Composition('Cu1'),
-                    'density': 8.971719800606017,
-                    'density_atomic': 11.761470249999999,
-                    'elements': [Element Cu],
-                    'formula_anonymous': 'A',
-                    'formula_pretty': 'Cu',
-                    'nelements': 1,
-                    'nsites': 1,
-                    'symmetry': {'crystal_system': <CrystalSystem.cubic: 'Cubic'>,
-                                'number': 225,
-                                'point_group': 'm-3m',
-                                'symbol': 'Fm-3m',
-                                'symprec': 0.1,
-                                'version': '2.4.0'},
-                    'volume': 11.761470249999999},
-    'name': 'EMT Relax',
-    'nelements': 1,
-    'nid': 'rosen.',
-    'nsites': 1,
-    'parameters': {'asap_cutoff': True},
-    'parameters_opt': {'alpha': 70.0,
-                        'max_steps': 1000,
-                        'maxstep': 0.2,
-                        'optimizer': 'BFGS',
-                        'type': 'optimization'},
-    'quacc_version': '0.8.1',
-    'results': {'energies': array([-0.00060116]),
-                'energy': -0.0006011628239370737,
-                'forces': array([[1.18655086e-15, 1.15706056e-15, 3.16066617e-15]]),
-                'free_energy': -0.0006011628239370737,
-                'stress': array([0.01169831, 0.01169831, 0.01169831, 0.        , 0.        ,
-        0.        ])},
-    'structure': Structure Summary
-    Lattice
-        abc : 2.5526554800834367 2.5526554800834367 2.5526554800834367
-    angles : 60.00000000000001 60.00000000000001 60.00000000000001
-    volume : 11.761470249999999
-        A : 0.0 1.805 1.805
-        B : 1.805 0.0 1.805
-        C : 1.805 1.805 0.0
-        pbc : True True True
-    PeriodicSite: Cu (0.0, 0.0, 0.0) [0.0, 0.0, 0.0],
-    'symmetry': {'crystal_system': <CrystalSystem.cubic: 'Cubic'>,
-                'number': 225,
-                'point_group': 'm-3m',
-                'symbol': 'Fm-3m',
-                'symprec': 0.1,
-                'version': '2.4.0'},
-    'trajectory': [Atoms(symbols='Cu', pbc=True, cell=[[0.0, 1.805, 1.805], [1.805, 0.0, 1.805], [1.805, 1.805, 0.0]])],
-    'trajectory_results': [{'energies': array([-0.00060116]),
-                            'energy': -0.0006011628239370737,
-                            'forces': array([[1.18655086e-15, 1.15706056e-15, 3.16066617e-15]]),
-                            'free_energy': -0.0006011628239370737,
-                            'stress': array([0.01169831, 0.01169831, 0.01169831, 0.        , 0.        ,
-        0.        ])}],
-    'volume': 11.761470249999999}
     ```
 
 Finally, you will see that [quacc.recipes.emt.core.relax_job][] takes an `opt_params` keyword argument that allows you to pass in a dictionary of parameters to the optimizer. That may look something like the following.
