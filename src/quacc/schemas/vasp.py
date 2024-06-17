@@ -130,13 +130,7 @@ def vasp_summarize_run(
         final_atoms, initial_atoms, move_magmoms=move_magmoms, store=None
     )
 
-<<<<<<< HEAD
     if nsteps := len([f for f in os.listdir(directory) if f.startswith("step")]):
-=======
-    if nsteps := len(
-        [f for f in Path.iterdir(directory) if f.is_dir() and f.name.startswith("step")]
-    ):
->>>>>>> e10b1fdf307fc957f38e62623f1ecb08e0e9ab34
         intermediate_vasp_task_docs = {
             "steps": {
                 n: TaskDoc.from_directory(directory / f"step{n}").model_dump()
