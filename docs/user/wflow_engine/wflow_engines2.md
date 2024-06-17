@@ -651,6 +651,22 @@ graph LR
     print(result)
     ```
 
+    !!! Tip "Selectively Modifying Job Decorators in a Pre-Made Flow"
+
+        If you want to modify the decorators of select jobs in a pre-made workflow, such as to modify the allowed executors of a given function, you can use the `job_decorators` keyword argument:
+
+        ```python
+        bulk_to_slabs_flow(
+            atoms, job_decorators={"static_job": job(name="my_custom_name")}
+        )
+        ```
+
+        As a shorthand, all of the decorators can be modified at once using the "all" key:
+
+        ```python
+        bulk_to_slabs_flow(atoms, job_decorators={"all": job(name="my_custom_name")})
+        ```
+
 === "Parsl"
 
     ```python
@@ -765,6 +781,22 @@ graph LR
     result = scheduler.run(workflow(atoms))
     print(result)
     ```
+
+    !!! Tip "Selectively Modifying Job Decorators in a Pre-Made Flow"
+
+        If you want to modify the decorators of select jobs in a pre-made workflow, such as to modify the allowed executors of a given function, you can use the `job_decorators` keyword argument:
+
+        ```python
+        bulk_to_slabs_flow(
+            atoms, job_decorators={"static_job": job(name="my_custom_name")}
+        )
+        ```
+
+        As a shorthand, all of the decorators can be modified at once using the "all" key:
+
+        ```python
+        bulk_to_slabs_flow(atoms, job_decorators={"all": job(name="my_custom_name")})
+        ```
 
 === "Jobflow"
 
