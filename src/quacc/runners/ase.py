@@ -502,6 +502,9 @@ def _geodesic_interpolate_wrapper(
     Tuple[List[str], List[List[float]]]
         A tuple containing the list of symbols and the smoothed path.
     """
+    reactant = copy_atoms(reactant)
+    product = copy_atoms(product)
+
     # Read the initial geometries.
     chemical_symbols = reactant.get_chemical_symbols()
 
