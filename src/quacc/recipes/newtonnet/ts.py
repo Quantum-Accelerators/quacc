@@ -58,6 +58,7 @@ if TYPE_CHECKING:
         neb_results: dict
         ts_results: TSSchema
 
+
 @job
 @requires(
     has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation."
