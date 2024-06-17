@@ -8,7 +8,6 @@ from shutil import copy, copytree
 from typing import TYPE_CHECKING, Any, Callable
 
 import numpy as np
-from ase import Atoms
 from ase.atoms import Atoms
 from ase.calculators import calculator
 from ase.filters import FrechetCellFilter
