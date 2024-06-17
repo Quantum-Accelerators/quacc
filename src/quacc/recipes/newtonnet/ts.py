@@ -363,22 +363,35 @@ def neb_ts_job(
     neb_kwargs: dict[str, Any] | None = None,
 ) -> dict:
     """
-    Perform a quasi-IRC job using the given atoms object. The initial IRC job by default
-    is run with `max_steps: 5`.
+    Perform a quasi-IRC job using the given reactant and product atoms objects.
 
     Parameters
     ----------
-    atoms
-        The atoms object representing the system
-    direction
-        The direction of the IRC calculation
-    relax_job_kwargs
-        Keyword arguments to use for the [quacc.recipes.newtonnet.core.relax_job][]
+    reactant_atoms : Atoms
+        The Atoms object representing the reactant structure.
+    product_atoms : Atoms
+        The Atoms object representing the product structure.
+    relax_job_kwargs : dict[str, Any], optional
+        Keyword arguments to use for the relax_job function, by default None.
+    calc_kwargs : dict[str, Any], optional
+        Keyword arguments for the NewtonNet calculator, by default None.
+    geodesic_interpolate_kwargs : dict[str, Any], optional
+        Keyword arguments for the geodesic_interpolate function, by default None.
+    neb_kwargs : dict[str, Any], optional
+        Keyword arguments for the NEB calculation, by default None.
 
     Returns
     -------
-    A dictionary containing the neb optimization summary.
-            See the type-hint for the data structure.
+    dict
+        A dictionary containing the following keys:
+            - 'relax_reactant': Summary of the relaxed reactant structure.
+            - 'relax_product': Summary of the relaxed product structure.
+            - 'geodesic_results': The interpolated images between reactant and product.
+            - 'neb_results': Summary of the NEB optimization.
+
+    Notes
+    -----
+    The initial IRC job is run with `max_steps: 5` by default.
     """
     relax_job_kwargs = relax_job_kwargs or {}
     neb_kwargs = neb_kwargs or {}
