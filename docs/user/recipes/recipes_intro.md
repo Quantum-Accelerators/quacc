@@ -239,6 +239,8 @@ print(result2)
 
 As demonstrated in the previous example, each recipe accepts optional keyword arguments to modify the default parameters. To identify the possible parameters a function takes, you'll want to check out the function signature and corresponding documentation, like that for [quacc.recipes.emt.core.relax_job][]. Go ahead; click it! Once you do, you'll see from the docstring that there is one required positional argument for the recipe (the `Atoms` object) and several optional keyword arguments.
 
+#### Setting Custom ASE Calculator Parameters
+
 All recipes in quacc allow you to pass in a custom set of keyword arguments to the underlying ASE calculator so that you have full control over the parameters (as specified via `**calc_kwargs` in the function signature). For instance, ASE's [`EMT` calculator](https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html#ase.calculators.emt.EMT) can take an optional parameter `asap_cutoff`. We show how to pass this parameter to the `relax_job` recipe in the example below.
 
 ```python
@@ -248,7 +250,7 @@ from quacc.recipes.emt.core import relax_job
 # Make an Atoms object of a bulk Cu structure
 atoms = bulk("Cu")
 
-# Run a structure relaxation on the Atoms object
+# Run a structure relaxation with modified EMT calculator parameters
 result = relax_job(atoms, asap_cutoff=True)
 print(result)
 ```
@@ -334,6 +336,8 @@ print(result)
     'volume': 11.761470249999999}
     ```
 
+#### Specifying Keyword Arguments to the Job
+
 One of these optional keyword arguments for [quacc.recipes.emt.core.relax_job][] is `relax_cell`, which sets whether the cell should be relaxed. By default, this parameter is set to `False`. We will go ahead and set it to `True` in the example below.
 
 ```python
@@ -343,7 +347,7 @@ from quacc.recipes.emt.core import relax_job
 # Make an Atoms object of a bulk Cu structure
 atoms = bulk("Cu")
 
-# Run a structure relaxation on the Atoms object
+# Run a structure relaxation, including cell relaxation
 result = relax_job(atoms, relax_cell=True)
 print(result)
 ```
@@ -443,7 +447,7 @@ print(result)
     'volume': 11.563195249785407}
     ```
 
-Finally, you will see that [quacc.recipes.emt.core.relax_job][] takes an `opt_params` keyword argument that allows you to pass in a dictionary of parameters to the optimizer. That may look something like the following.
+You will also see that [quacc.recipes.emt.core.relax_job][] takes an `opt_params` keyword argument that allows you to pass in a dictionary of parameters to the optimizer. That may look something like the following.
 
 ```python
 from ase.build import bulk
@@ -453,7 +457,7 @@ from quacc.recipes.emt.core import relax_job
 # Make an Atoms object of a bulk Cu structure
 atoms = bulk("Cu")
 
-# Run a structure relaxation on the Atoms object
+# Run a structure relaxation with modified optimizer parameters
 result = relax_job(atoms, opt_params={"fmax": 1e-3, "optimizer": LBFGS})
 print(result)
 ```
