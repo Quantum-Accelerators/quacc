@@ -51,6 +51,12 @@ if TYPE_CHECKING:
         geodesic_results: list[Atoms]
         neb_results: dict
 
+    class NebTsSchema(TypedDict):
+        relax_reactant: OptSchema
+        relax_product: OptSchema
+        geodesic_results: list[Atoms]
+        neb_results: dict
+        ts_results: TSSchema
 
 @job
 @requires(
@@ -309,7 +315,7 @@ def neb_job(
 
     Returns
     -------
-    dict
+    NebSchema
         A dictionary containing the following keys:
             - 'relax_reactant': Summary of the relaxed reactant structure.
             - 'relax_product': Summary of the relaxed product structure.
@@ -374,7 +380,7 @@ def neb_ts_job(
     calc_kwargs: dict[str, Any] | None = None,
     geodesic_interpolate_kwargs: dict[str, Any] | None = None,
     neb_kwargs: dict[str, Any] | None = None,
-) -> dict:
+) -> NebTsSchema:
     """
     Perform a quasi-IRC job using the given reactant and product atoms objects.
 
@@ -395,7 +401,7 @@ def neb_ts_job(
 
     Returns
     -------
-    dict
+    NebTsSchema
         A dictionary containing the following keys:
             - 'relax_reactant': Summary of the relaxed reactant structure.
             - 'relax_product': Summary of the relaxed product structure.
