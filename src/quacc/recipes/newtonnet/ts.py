@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 
     from quacc.recipes.newtonnet.core import FreqSchema
     from quacc.runners.ase import OptParams
-    from quacc.schemas._aliases.ase import OptSchema, NebSchema
+    from quacc.schemas._aliases.ase import NebSchema, OptSchema
 
     class TSSchema(OptSchema):
         freq_job: FreqSchema | None
@@ -340,9 +340,7 @@ def neb_job(
     relax_summary_p = strip_decorator(relax_job)(product_atoms, **relax_job_kwargs)
 
     images = _geodesic_interpolate_wrapper(
-        relax_summary_r["atoms"],
-        relax_summary_p["atoms"],
-        **geodesic_interpolate_flags,
+        relax_summary_r["atoms"], relax_summary_p["atoms"], **geodesic_interpolate_flags
     )
 
     for image in images:
