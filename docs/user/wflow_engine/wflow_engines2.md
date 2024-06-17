@@ -656,9 +656,7 @@ graph LR
         If you want to modify the decorators of select jobs in a pre-made workflow, such as to modify the allowed executors of a given function, you can use the `job_decorators` keyword argument:
 
         ```python
-        bulk_to_slabs_flow(
-            atoms, job_decorators={"static_job": job(name="my_custom_name")}
-        )
+        bulk_to_slabs_flow(atoms, job_decorators={"static_job": job(name="my_custom_name")})
         ```
 
         As a shorthand, all of the decorators can be modified at once using the "all" key:
@@ -787,9 +785,7 @@ graph LR
         If you want to modify the decorators of select jobs in a pre-made workflow, such as to modify the allowed executors of a given function, you can use the `job_decorators` keyword argument:
 
         ```python
-        bulk_to_slabs_flow(
-            atoms, job_decorators={"static_job": job(name="my_custom_name")}
-        )
+        bulk_to_slabs_flow(atoms, job_decorators={"static_job": job(name="my_custom_name")})
         ```
 
         As a shorthand, all of the decorators can be modified at once using the "all" key:
