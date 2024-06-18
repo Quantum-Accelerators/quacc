@@ -133,8 +133,9 @@ def vasp_summarize_run(
     if nsteps := len([f for f in os.listdir(directory) if f.startswith("step")]):
         intermediate_vasp_task_docs = {
             "steps": {
-                n: TaskDoc.from_directory(Path(directory, f"step{n}")).model_dump()
+                n: TaskDoc.from_directory(directory / f"step{n}").model_dump()
                 for n in range(nsteps)
+                if (directory / f"step{n}").is_dir()
             }
         }
     else:
