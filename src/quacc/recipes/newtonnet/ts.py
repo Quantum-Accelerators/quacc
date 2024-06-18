@@ -344,7 +344,7 @@ def neb_job(
     reactant_atoms.calc = NewtonNet(**calc_flags)
     product_atoms.calc = NewtonNet(**calc_flags)
 
-    # Run IRC
+    # Run relax job
     relax_summary_r = strip_decorator(relax_job)(reactant_atoms, **relax_job_kwargs)
     relax_summary_p = strip_decorator(relax_job)(product_atoms, **relax_job_kwargs)
 
