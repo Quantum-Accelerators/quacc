@@ -11,7 +11,7 @@ from ase.io import read
 from ase.optimize import FIRE
 from pymatgen.io.qchem.inputs import QCInput
 
-from quacc import change_settings
+from quacc import _internally_set_settings, change_settings
 from quacc.atoms.core import check_charge_and_spin
 from quacc.calculators.qchem import QChem
 from quacc.recipes.qchem.core import freq_job, relax_job, static_job
@@ -107,6 +107,11 @@ def mock_read(self, **kwargs):
     if self.results is None:
         raise RuntimeError("Results should not be None here.")
 
+def setup_module():
+    _internally_set_settings({"CHECK_CONVERGENCE": False})
+
+def teardown_module():
+    _internally_set_settings(reset=True)
 
 def test_static_job_v1(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
@@ -212,14 +217,13 @@ def test_relax_job_v1(monkeypatch, tmp_path, test_atoms):
 
     monkeypatch.setattr(QChem, "execute", mock_execute1)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
-    with change_settings({"CHECK_CONVERGENCE": False}):
-        output = relax_job(
-            test_atoms,
-            charge=charge,
-            spin_multiplicity=spin_multiplicity,
-            basis="def2-tzvpd",
-            opt_params={"max_steps": 1},
-        )
+    output = relax_job(
+        test_atoms,
+        charge=charge,
+        spin_multiplicity=spin_multiplicity,
+        basis="def2-tzvpd",
+        opt_params={"max_steps": 1},
+    )
 
     assert output["atoms"] != test_atoms
     assert output["charge"] == 0
@@ -243,15 +247,14 @@ def test_relax_job_v2(monkeypatch, tmp_path, test_atoms):
     monkeypatch.setattr(QChem, "execute", mock_execute2)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms, charge=-1)
 
-    with change_settings({"CHECK_CONVERGENCE": False}):
-        output = relax_job(
-            test_atoms,
-            charge=charge,
-            spin_multiplicity=spin_multiplicity,
-            method="b97mv",
-            qchem_dict_set_params={"pcm_dielectric": "3.0"},
-            opt_params={"max_steps": 1},
-        )
+    output = relax_job(
+        test_atoms,
+        charge=charge,
+        spin_multiplicity=spin_multiplicity,
+        method="b97mv",
+        qchem_dict_set_params={"pcm_dielectric": "3.0"},
+        opt_params={"max_steps": 1},
+    )
 
     assert output["atoms"] != test_atoms
     assert output["charge"] == -1
@@ -276,15 +279,14 @@ def test_relax_job_v3(monkeypatch, tmp_path, test_atoms):
     monkeypatch.setattr(QChem, "execute", mock_execute3)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
 
-    with change_settings({"CHECK_CONVERGENCE": False}):
-        output = relax_job(
-            test_atoms,
-            charge=charge,
-            spin_multiplicity=spin_multiplicity,
-            rem={"scf_algorithm": "gdm", "mem_total": 170000},
-            basis="def2-tzvpd",
-            opt_params={"max_steps": 1},
-        )
+    output = relax_job(
+        test_atoms,
+        charge=charge,
+        spin_multiplicity=spin_multiplicity,
+        rem={"scf_algorithm": "gdm", "mem_total": 170000},
+        basis="def2-tzvpd",
+        opt_params={"max_steps": 1},
+    )
 
     assert output["atoms"] != test_atoms
     assert output["charge"] == 0
@@ -341,14 +343,13 @@ def test_ts_job_v1(monkeypatch, tmp_path, test_atoms):
     monkeypatch.setattr(QChem, "execute", mock_execute1)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
 
-    with change_settings({"CHECK_CONVERGENCE": False}):
-        output = ts_job(
-            test_atoms,
-            charge=charge,
-            spin_multiplicity=spin_multiplicity,
-            basis="def2-tzvpd",
-            opt_params={"max_steps": 1},
-        )
+    output = ts_job(
+        test_atoms,
+        charge=charge,
+        spin_multiplicity=spin_multiplicity,
+        basis="def2-tzvpd",
+        opt_params={"max_steps": 1},
+    )
 
     assert output["atoms"] != test_atoms
     assert output["charge"] == 0
@@ -371,15 +372,14 @@ def test_ts_job_v2(monkeypatch, tmp_path, test_atoms):
     monkeypatch.setattr(QChem, "execute", mock_execute2)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms, charge=-1)
 
-    with change_settings({"CHECK_CONVERGENCE": False}):
-        output = ts_job(
-            test_atoms,
-            charge=charge,
-            spin_multiplicity=spin_multiplicity,
-            method="b97mv",
-            qchem_dict_set_params={"pcm_dielectric": "3.0"},
-            opt_params={"max_steps": 1},
-        )
+    output = ts_job(
+        test_atoms,
+        charge=charge,
+        spin_multiplicity=spin_multiplicity,
+        method="b97mv",
+        qchem_dict_set_params={"pcm_dielectric": "3.0"},
+        opt_params={"max_steps": 1},
+    )
 
     assert output["atoms"] != test_atoms
     assert output["charge"] == -1
@@ -404,15 +404,14 @@ def test_ts_job_v3(monkeypatch, tmp_path, test_atoms):
     monkeypatch.setattr(QChem, "execute", mock_execute3)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
 
-    with change_settings({"CHECK_CONVERGENCE": False}):
-        output = ts_job(
-            test_atoms,
-            charge=charge,
-            spin_multiplicity=spin_multiplicity,
-            rem={"scf_algorithm": "gdm", "mem_total": 170000},
-            basis="def2-tzvpd",
-            opt_params={"max_steps": 1},
-        )
+    output = ts_job(
+        test_atoms,
+        charge=charge,
+        spin_multiplicity=spin_multiplicity,
+        rem={"scf_algorithm": "gdm", "mem_total": 170000},
+        basis="def2-tzvpd",
+        opt_params={"max_steps": 1},
+    )
 
     assert output["atoms"] != test_atoms
     assert output["charge"] == 0
@@ -455,15 +454,14 @@ def test_irc_job_v1(monkeypatch, tmp_path, test_atoms):
 
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
 
-    with change_settings({"CHECK_CONVERGENCE": False}):
-        output = irc_job(
-            test_atoms,
-            charge=charge,
-            spin_multiplicity=spin_multiplicity,
-            direction="forward",
-            basis="def2-tzvpd",
-            opt_params={"max_steps": 1},
-        )
+    output = irc_job(
+        test_atoms,
+        charge=charge,
+        spin_multiplicity=spin_multiplicity,
+        direction="forward",
+        basis="def2-tzvpd",
+        opt_params={"max_steps": 1},
+    )
 
     assert output["atoms"] != test_atoms
     assert output["charge"] == 0
@@ -481,15 +479,14 @@ def test_irc_job_v1(monkeypatch, tmp_path, test_atoms):
 
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
 
-    with change_settings({"CHECK_CONVERGENCE": False}):
-        output = irc_job(
-            test_atoms,
-            charge=charge,
-            spin_multiplicity=spin_multiplicity,
-            direction="reverse",
-            basis="def2-tzvpd",
-            opt_params={"max_steps": 1},
-        )
+    output = irc_job(
+        test_atoms,
+        charge=charge,
+        spin_multiplicity=spin_multiplicity,
+        direction="reverse",
+        basis="def2-tzvpd",
+        opt_params={"max_steps": 1},
+    )
 
     qcin = QCInput.from_file(str(Path(output["dir_name"], "mol.qin.gz")))
     ref_qcin = QCInput.from_file(
@@ -497,16 +494,15 @@ def test_irc_job_v1(monkeypatch, tmp_path, test_atoms):
     )
     qcinput_nearly_equal(qcin, ref_qcin)
 
-    with change_settings({"CHECK_CONVERGENCE": False}):
-        output = irc_job(
-            test_atoms,
-            charge=charge,
-            spin_multiplicity=spin_multiplicity,
-            direction="reverse",
-            rem={"scf_algorithm": "gdm", "mem_total": 170000},
-            basis="def2-tzvpd",
-            opt_params={"max_steps": 1},
-        )
+    output = irc_job(
+        test_atoms,
+        charge=charge,
+        spin_multiplicity=spin_multiplicity,
+        direction="reverse",
+        rem={"scf_algorithm": "gdm", "mem_total": 170000},
+        basis="def2-tzvpd",
+        opt_params={"max_steps": 1},
+    )
 
     assert output["atoms"] != test_atoms
     assert output["charge"] == 0
@@ -552,15 +548,14 @@ def test_quasi_irc_job(monkeypatch, tmp_path, test_atoms):
 
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
 
-    with change_settings({"CHECK_CONVERGENCE": False}):
-        output = quasi_irc_job(
-            test_atoms,
-            charge=charge,
-            spin_multiplicity=spin_multiplicity,
-            direction="forward",
-            basis="def2-tzvpd",
-            relax_job_kwargs={"opt_params": {"max_steps": 5}},
-        )
+    output = quasi_irc_job(
+        test_atoms,
+        charge=charge,
+        spin_multiplicity=spin_multiplicity,
+        direction="forward",
+        basis="def2-tzvpd",
+        relax_job_kwargs={"opt_params": {"max_steps": 5}},
+    )
 
     assert output["atoms"] != test_atoms
     assert output["charge"] == 0
@@ -574,22 +569,21 @@ def test_quasi_irc_job(monkeypatch, tmp_path, test_atoms):
     ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.basic.quasi_irc_forward"))
     qcinput_nearly_equal(qcin, ref_qcin)
 
-    with change_settings({"CHECK_CONVERGENCE": False}):
-        output = quasi_irc_job(
-            test_atoms,
-            charge=-1,
-            spin_multiplicity=2,
-            direction="reverse",
-            basis="def2-svpd",
-            irc_job_kwargs={
-                "rem": {"scf_algorithm": "gdm"},
-                "opt_params": {"max_steps": 6},
-            },
-            relax_job_kwargs={
-                "rem": {"scf_algorithm": "gdm"},
-                "opt_params": {"max_steps": 6},
-            },
-        )
+    output = quasi_irc_job(
+        test_atoms,
+        charge=-1,
+        spin_multiplicity=2,
+        direction="reverse",
+        basis="def2-svpd",
+        irc_job_kwargs={
+            "rem": {"scf_algorithm": "gdm"},
+            "opt_params": {"max_steps": 6},
+        },
+        relax_job_kwargs={
+            "rem": {"scf_algorithm": "gdm"},
+            "opt_params": {"max_steps": 6},
+        },
+    )
 
     assert output["atoms"] != test_atoms
     assert output["charge"] == -1
@@ -633,17 +627,16 @@ def test_quasi_irc_perturb_job(monkeypatch, tmp_path, test_qirc_atoms):
 
     charge, spin_multiplicity = check_charge_and_spin(test_qirc_atoms)
 
-    with change_settings({"CHECK_CONVERGENCE": False}):
-        output = quasi_irc_perturb_job(
-            test_qirc_atoms,
-            mode,
-            charge=charge,
-            spin_multiplicity=spin_multiplicity,
-            direction="forward",
-            method="wb97mv",
-            opt_params={"max_steps": 5},
-            basis="def2-svpd",
-        )
+    output = quasi_irc_perturb_job(
+        test_qirc_atoms,
+        mode,
+        charge=charge,
+        spin_multiplicity=spin_multiplicity,
+        direction="forward",
+        method="wb97mv",
+        opt_params={"max_steps": 5},
+        basis="def2-svpd",
+    )
 
     assert output["atoms"] != test_qirc_atoms
     assert output["charge"] == 0
@@ -657,18 +650,17 @@ def test_quasi_irc_perturb_job(monkeypatch, tmp_path, test_qirc_atoms):
     ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.qirc_forward"))
     qcinput_nearly_equal(qcin, ref_qcin)
 
-    with change_settings({"CHECK_CONVERGENCE": False}):
-        output = quasi_irc_perturb_job(
-            test_qirc_atoms,
-            mode,
-            charge=-1,
-            spin_multiplicity=2,
-            perturb_magnitude=1.0,
-            direction="reverse",
-            basis="def2-tzvpd",
-            opt_params={"max_steps": 6},
-            rem={"scf_algorithm": "gdm"},
-        )
+    output = quasi_irc_perturb_job(
+        test_qirc_atoms,
+        mode,
+        charge=-1,
+        spin_multiplicity=2,
+        perturb_magnitude=1.0,
+        direction="reverse",
+        basis="def2-tzvpd",
+        opt_params={"max_steps": 6},
+        rem={"scf_algorithm": "gdm"},
+    )
 
     assert output["atoms"] != test_qirc_atoms
     assert output["charge"] == -1

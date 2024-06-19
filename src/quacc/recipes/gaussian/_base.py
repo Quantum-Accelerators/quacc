@@ -55,9 +55,10 @@ def run_and_summarize(
         [quacc.schemas.cclib.cclib_summarize_run][]
     """
     settings = get_settings()
+    gaussian_cmd = f"{settings.GAUSSIAN_CMD} < {_LABEL}.com > {LOG_FILE}"
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
-    calc = Gaussian(command=settings.GAUSSIAN_CMD, label=_LABEL, **calc_flags)
+    calc = Gaussian(command=gaussian_cmd, label=_LABEL, **calc_flags)
     atoms = Runner(atoms, calc, copy_files=copy_files).run_calc(geom_file=LOG_FILE)
 
     return cclib_summarize_run(atoms, LOG_FILE, additional_fields=additional_fields)
