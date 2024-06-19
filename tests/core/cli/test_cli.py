@@ -13,27 +13,27 @@ from quacc._cli.quacc import app
 FILE_PATH = Path(__file__).parent
 TEST_YAML = FILE_PATH / "test_quacc.yaml"
 
+
 @pytest.fixture()
 def runner():
     return CliRunner()
+
 
 def teardown_module():
     if TEST_YAML.exists():
         os.remove(TEST_YAML)
 
-with change_settings({"CONFIG_FILE": TEST_YAML}):
 
+with change_settings({"CONFIG_FILE": TEST_YAML}):
 
     def test_version(runner):
         response = runner.invoke(app, ["--version"])
         assert response.exit_code == 0
         assert __version__ in response.stdout
 
-
     def test_help(runner):
         response = runner.invoke(app, ["--help"])
         assert response.exit_code == 0
-
 
     def test_set(runner):
         response = runner.invoke(app, ["set", "WORKFLOW_ENGINE", "None"])
@@ -79,7 +79,6 @@ with change_settings({"CONFIG_FILE": TEST_YAML}):
                     val = line.split(":")[-1].strip()
         assert val == "true"
 
-
     def test_unset(runner):
         response = runner.invoke(app, ["unset", "WORKFLOW_ENGINE"])
         assert response.exit_code == 0
@@ -90,13 +89,11 @@ with change_settings({"CONFIG_FILE": TEST_YAML}):
                 lines += ""
         assert "WORKFLOW_ENGINE" not in lines
 
-
     def test_info(runner):
         response = runner.invoke(app, ["info"])
         assert response.exit_code == 0
         assert __version__ in response.stdout
         assert platform.python_version() in response.stdout
-
 
     def test_bad(runner):
         response = runner.invoke(app, ["set", "CONFIG_FILE", "here"])
