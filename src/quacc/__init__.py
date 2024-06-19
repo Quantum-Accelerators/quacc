@@ -44,7 +44,9 @@ Atoms.from_dict = MSONAtoms.from_dict
 _thread_local = threading.local()
 
 
-def _internally_set_settings(changes: dict[str, Any] | None = None, reset: bool = False) -> None:
+def _internally_set_settings(
+    changes: dict[str, Any] | None = None, reset: bool = False
+) -> None:
     """
     Set the SETTINGS attribute for the current thread. This is not meant to be
     called by users. If you want to change the settings, use `from quacc import change_settings`
