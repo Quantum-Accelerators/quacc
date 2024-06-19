@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Literal, Optional, Union
 
 import psutil
 from maggma.core import Store
+from monty.serialization import loadfn
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -507,8 +508,6 @@ def _use_custom_config_settings(settings: dict[str, Any]) -> dict[str, Any]:
     dict
         Updated settings based on the custom YAML.
     """
-    from monty.serialization import loadfn
-
     config_file_path = (
         Path(settings.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH))
         .expanduser()
@@ -557,11 +556,14 @@ def change_settings(changes: dict[str, Any] | None):
     changes
         Dictionary of changes to make formatted as attribute: value.
     """
-    from quacc import _internally_set_settings
+    from quacc import _internally_set_settings, get_settings
+
+    settings = get_settings()
+    original_values = {attr: getattr(settings, attr) for attr in changes}
 
     _internally_set_settings(changes=changes)
 
     try:
         yield
     finally:
-        _internally_set_settings(reset=True)
+        _internally_set_settings(changes=original_values)
