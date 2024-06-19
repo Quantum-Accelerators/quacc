@@ -140,10 +140,10 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     if _func is None:
         return partial(job, **kwargs)
 
-    elif changes := kwargs.pop("settings_swap", {}):
+    if changes := kwargs.pop("settings_swap", {}):
         return job(change_settings_wrap(_func, changes), **kwargs)
 
-    elif SETTINGS.WORKFLOW_ENGINE == "covalent":
+    if SETTINGS.WORKFLOW_ENGINE == "covalent":
         import covalent as ct
 
         return ct.electron(_func, **kwargs)
