@@ -82,7 +82,7 @@ For recipes that involve a calculation that cannot be easily run in the test sui
 
 !!! Warning
 
-    Never put a `quacc` import in the global scope of a `conftest.py` file. This causes havoc with patching the quacc `SETTINGS` variable.
+    Never put a `quacc` import in the global scope of a `conftest.py` file.
 
 ### Running a PR on an HPC Machine
 

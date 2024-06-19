@@ -26,9 +26,10 @@ def strip_decorator(func: Callable) -> Callable:
     Callable
         The function with all decorators removed.
     """
-    from quacc import SETTINGS
+    from quacc import get_settings
+    settings = get_settings()
 
-    if SETTINGS.WORKFLOW_ENGINE == "covalent":
+    if settings.WORKFLOW_ENGINE == "covalent":
         from covalent._workflow.lattice import Lattice
 
         if hasattr(func, "electron_object"):
@@ -37,7 +38,7 @@ def strip_decorator(func: Callable) -> Callable:
         if isinstance(func, Lattice):
             func = func.workflow_function.get_deserialized()
 
-    elif SETTINGS.WORKFLOW_ENGINE == "dask":
+    elif settings.WORKFLOW_ENGINE == "dask":
         from dask.delayed import Delayed
 
         from quacc.wflow_tools.decorators import Delayed_
@@ -50,17 +51,17 @@ def strip_decorator(func: Callable) -> Callable:
                 # Needed for custom `@subflow` decorator
                 func = func.__wrapped__
 
-    elif SETTINGS.WORKFLOW_ENGINE == "jobflow":
+    elif settings.WORKFLOW_ENGINE == "jobflow":
         if hasattr(func, "original"):
             func = func.original
 
-    elif SETTINGS.WORKFLOW_ENGINE == "parsl":
+    elif settings.WORKFLOW_ENGINE == "parsl":
         from parsl.app.python import PythonApp
 
         if isinstance(func, PythonApp):
             func = func.func
 
-    elif SETTINGS.WORKFLOW_ENGINE == "prefect":
+    elif settings.WORKFLOW_ENGINE == "prefect":
         from prefect import Flow as PrefectFlow
         from prefect import Task
 
@@ -69,7 +70,7 @@ def strip_decorator(func: Callable) -> Callable:
         elif hasattr(func, "__wrapped__"):
             func = func.__wrapped__
 
-    elif SETTINGS.WORKFLOW_ENGINE == "redun":
+    elif settings.WORKFLOW_ENGINE == "redun":
         from redun import Task
 
         if isinstance(func, Task):
@@ -121,9 +122,10 @@ def update_parameters(
     Callable
         The updated function.
     """
-    from quacc import SETTINGS, flow, job, subflow
+    from quacc import flow, get_settings, job, subflow
+    settings = get_settings()
 
-    if decorator and SETTINGS.WORKFLOW_ENGINE == "dask":
+    if decorator and settings.WORKFLOW_ENGINE == "dask":
         if decorator == "job":
             decorator = job
         elif decorator == "flow":

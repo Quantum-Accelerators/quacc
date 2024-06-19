@@ -548,7 +548,7 @@ def _type_handler(settings: dict[str, Any]) -> dict[str, Any]:
 
 
 @contextmanager
-def change_settings(changes: dict[str, Any]):
+def change_settings(changes: dict[str, Any] | None):
     """
     Temporarily change an attribute of an object.
 
@@ -557,15 +557,11 @@ def change_settings(changes: dict[str, Any]):
     changes
         Dictionary of changes to make formatted as attribute: value.
     """
-    from quacc import SETTINGS
+    from quacc import set_settings
 
-    original_values = {attr: getattr(SETTINGS, attr) for attr in changes}
-
-    for attr, new_value in changes.items():
-        setattr(SETTINGS, attr, new_value)
+    set_settings(changes=changes)
 
     try:
         yield
     finally:
-        for attr, original_value in original_values.items():
-            setattr(SETTINGS, attr, original_value)
+        set_settings(reset=True)

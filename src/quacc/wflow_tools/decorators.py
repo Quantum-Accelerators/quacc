@@ -135,16 +135,17 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     Job
         The @job-decorated function.
     """
-    from quacc import SETTINGS
+    from quacc import get_settings
+    settings = get_settings()
 
     if _func is None:
         return partial(job, **kwargs)
 
-    elif SETTINGS.WORKFLOW_ENGINE == "covalent":
+    elif settings.WORKFLOW_ENGINE == "covalent":
         import covalent as ct
 
         return ct.electron(_func, **kwargs)
-    elif SETTINGS.WORKFLOW_ENGINE == "dask":
+    elif settings.WORKFLOW_ENGINE == "dask":
         from dask import delayed
 
         # See https://github.com/dask/dask/issues/10733
@@ -155,24 +156,24 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
 
         return Delayed_(delayed(wrapper, **kwargs))
 
-    elif SETTINGS.WORKFLOW_ENGINE == "jobflow":
+    elif settings.WORKFLOW_ENGINE == "jobflow":
         from jobflow import job as jf_job
 
         return jf_job(_func, **kwargs)
-    elif SETTINGS.WORKFLOW_ENGINE == "parsl":
+    elif settings.WORKFLOW_ENGINE == "parsl":
         from parsl import python_app
 
         wrapped_fn = _get_parsl_wrapped_func(_func, kwargs)
 
         return python_app(wrapped_fn, **kwargs)
-    elif SETTINGS.WORKFLOW_ENGINE == "redun":
+    elif settings.WORKFLOW_ENGINE == "redun":
         from redun import task
 
         return task(_func, namespace=_func.__module__, **kwargs)
-    elif SETTINGS.WORKFLOW_ENGINE == "prefect":
+    elif settings.WORKFLOW_ENGINE == "prefect":
         from prefect import task
 
-        if SETTINGS.PREFECT_AUTO_SUBMIT:
+        if settings.PREFECT_AUTO_SUBMIT:
 
             @wraps(_func)
             def wrapper(*f_args, **f_kwargs):
@@ -328,20 +329,21 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
     Flow
         The `#!Python @flow`-decorated function.
     """
-    from quacc import SETTINGS
+    from quacc import get_settings
+    settings = get_settings()
 
     if _func is None:
         return partial(flow, **kwargs)
 
-    elif SETTINGS.WORKFLOW_ENGINE == "covalent":
+    elif settings.WORKFLOW_ENGINE == "covalent":
         import covalent as ct
 
         return ct.lattice(_func, **kwargs)
-    elif SETTINGS.WORKFLOW_ENGINE == "redun":
+    elif settings.WORKFLOW_ENGINE == "redun":
         from redun import task
 
         return task(_func, namespace=_func.__module__, **kwargs)
-    elif SETTINGS.WORKFLOW_ENGINE == "prefect":
+    elif settings.WORKFLOW_ENGINE == "prefect":
         from prefect import flow as prefect_flow
 
         return prefect_flow(_func, validate_parameters=False, **kwargs)
@@ -542,16 +544,17 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
     callable
         The decorated function.
     """
-    from quacc import SETTINGS
+    from quacc import get_settings
+    settings = get_settings()
 
     if _func is None:
         return partial(subflow, **kwargs)
 
-    elif SETTINGS.WORKFLOW_ENGINE == "covalent":
+    elif settings.WORKFLOW_ENGINE == "covalent":
         import covalent as ct
 
         return ct.electron(ct.lattice(_func), **kwargs)
-    elif SETTINGS.WORKFLOW_ENGINE == "dask":
+    elif settings.WORKFLOW_ENGINE == "dask":
         from dask import delayed
         from dask.distributed import worker_client
 
@@ -564,17 +567,17 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
                 return client.gather(futures)
 
         return delayed(wrapper, **kwargs)
-    elif SETTINGS.WORKFLOW_ENGINE == "parsl":
+    elif settings.WORKFLOW_ENGINE == "parsl":
         from parsl import join_app
 
         wrapped_fn = _get_parsl_wrapped_func(_func, kwargs)
 
         return join_app(wrapped_fn, **kwargs)
-    elif SETTINGS.WORKFLOW_ENGINE == "prefect":
+    elif settings.WORKFLOW_ENGINE == "prefect":
         from prefect import flow as prefect_flow
 
         return prefect_flow(_func, validate_parameters=False, **kwargs)
-    elif SETTINGS.WORKFLOW_ENGINE == "redun":
+    elif settings.WORKFLOW_ENGINE == "redun":
         from redun import task
 
         return task(_func, namespace=_func.__module__, **kwargs)

@@ -11,7 +11,7 @@ from ase.io import read
 from ase.optimize import FIRE
 from pymatgen.io.qchem.inputs import QCInput
 
-from quacc import SETTINGS
+from quacc import set_settings
 from quacc.atoms.core import check_charge_and_spin
 from quacc.calculators.qchem import QChem
 from quacc.recipes.qchem.core import freq_job, relax_job, static_job
@@ -22,8 +22,6 @@ has_sella = bool(find_spec("sella"))
 
 FILE_DIR = Path(__file__).parent
 QCHEM_DIR = FILE_DIR / "qchem_examples"
-
-DEFAULT_SETTINGS = SETTINGS.model_copy()
 
 
 @pytest.fixture()
@@ -42,11 +40,11 @@ def os_atoms():
 
 
 def setup_module():
-    SETTINGS.CHECK_CONVERGENCE = False
+    set_settings({"CHECK_CONVERGENCE": False})
 
 
 def teardown_module():
-    SETTINGS.CHECK_CONVERGENCE = DEFAULT_SETTINGS.CHECK_CONVERGENCE
+    set_settings(reset=True)
 
 
 def qcinput_nearly_equal(qcinput1, qcinput2):
