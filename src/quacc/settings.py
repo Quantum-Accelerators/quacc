@@ -557,11 +557,11 @@ def change_settings(changes: dict[str, Any] | None):
     changes
         Dictionary of changes to make formatted as attribute: value.
     """
-    from quacc import set_settings
+    from quacc import _internally_set_settings
 
-    set_settings(changes=changes)
+    _internally_set_settings(changes=changes)
 
     try:
         yield
     finally:
-        set_settings(reset=True)
+        _internally_set_settings(reset=True)
