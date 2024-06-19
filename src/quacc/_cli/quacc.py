@@ -86,8 +86,7 @@ def set_(parameter: str, new_value: str) -> None:
     config_file = settings.CONFIG_FILE or _DEFAULT_CONFIG_FILE_PATH
     parameter = parameter.upper()
 
-    settings = _type_handler({parameter: new_value})
-    new_value = settings[parameter]
+    new_value = _type_handler({parameter: new_value})[parameter]
     _parameter_handler(parameter, settings.model_dump(), value=new_value)
 
     rich_print(f"Setting `{parameter}` to `{new_value}` in {config_file}")
