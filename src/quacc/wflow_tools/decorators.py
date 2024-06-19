@@ -136,6 +136,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
         The @job-decorated function.
     """
     from quacc import get_settings
+
     settings = get_settings()
 
     if _func is None:
@@ -330,6 +331,7 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
         The `#!Python @flow`-decorated function.
     """
     from quacc import get_settings
+
     settings = get_settings()
 
     if _func is None:
@@ -545,6 +547,7 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
         The decorated function.
     """
     from quacc import get_settings
+
     settings = get_settings()
 
     if _func is None:

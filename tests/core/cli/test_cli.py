@@ -13,16 +13,15 @@ from quacc._cli.quacc import app
 FILE_PATH = Path(__file__).parent
 TEST_YAML = FILE_PATH / "test_quacc.yaml"
 
-
+@pytest.fixture()
+def runner():
+    return CliRunner()
 
 def teardown_module():
     if TEST_YAML.exists():
         os.remove(TEST_YAML)
 
 with change_settings({"CONFIG_FILE": TEST_YAML}):
-    @pytest.fixture()
-    def runner():
-        return CliRunner()
 
 
     def test_version(runner):

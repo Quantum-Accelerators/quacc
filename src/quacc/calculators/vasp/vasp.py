@@ -131,7 +131,9 @@ class Vasp(Vasp_):
             else preset_mag_default
         )
         mag_cutoff = (
-            self._settings.VASP_MAG_CUTOFF if mag_cutoff == _DEFAULT_SETTING else mag_cutoff
+            self._settings.VASP_MAG_CUTOFF
+            if mag_cutoff == _DEFAULT_SETTING
+            else mag_cutoff
         )
 
         # Assign variables to self
@@ -212,9 +214,9 @@ class Vasp(Vasp_):
 
         # Get user-defined preset parameters for the calculator
         if self.preset:
-            calc_preset = load_vasp_yaml_calc(self._settings.VASP_PRESET_DIR / self.preset)[
-                "inputs"
-            ]
+            calc_preset = load_vasp_yaml_calc(
+                self._settings.VASP_PRESET_DIR / self.preset
+            )["inputs"]
         else:
             calc_preset = {}
 

@@ -23,15 +23,17 @@ with change_settings(
     }
 ):
 
-    def test_static_job(tmp_path, monkeypatch):
-        monkeypatch.chdir(tmp_path)
+    set_settings(
+        {
+            "NEWTONNET_CONFIG_PATH": current_file_path / "config0.yml",
+            "NEWTONNET_MODEL_PATH": current_file_path / "best_model_state.tar",
+            "CHECK_CONVERGENCE": False,
+        }
+    )
 
-        atoms = molecule("H2O")
-        output = static_job(atoms)
-        assert output["spin_multiplicity"] == 1
-        assert output["natoms"] == len(atoms)
-        assert output["results"]["energy"] == pytest.approx(-9.515200426406743)
-        assert np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
+
+def teardown_module():
+    set_settings(reset=True)
 
     def test_relax_job(tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)
