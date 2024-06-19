@@ -31,19 +31,45 @@ result = bulk_to_slabs_flow(atoms)
 print(result)
 ```
 
-!!! Tip "Modifying the Parameters for Jobs in a Pre-Made Flow"
+## Modifying Jobs in a Pre-Made Flow
 
-    To modify the default parameters of a subset of jobs in a pre-made workflow, you can pass a dictionary of parameters to the `job_params` keyword argument of the workflow function. For example, to tighten the force tolerance of the `relax_job` step in the aforementioned recipe, you can do the following (note: the name and `@job` definition for each step in the pre-made workflow is specified in the flow's docstring):
+### Modifying a Subset of Jobs
 
-    ```python
-    bulk_to_slabs_flow(atoms, job_params={"relax_job": {"opt_params": {"fmax": 1e-4}}})
-    ```
+To modify the default parameters of a subset of jobs in a pre-made workflow, you can pass a dictionary of parameters to the `job_params` keyword argument of the workflow function (note: the name and `@job` definition for each step in the pre-made workflow is specified in the flow's docstring). The example below modifies sets `opt_params={"fmax": 1e-4}` for the `relax_job` called within `bulk_to_slabs_flow`:
 
-    To modify the default parameters of all the jobs in a pre-made workflow, such as the EMT calculator's `asap_cutoff` paramter, you can use the "all" keyword as a shorthand:
+```python
+from ase.build import bulk
+from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
-    ```python
-    bulk_to_slabs_flow(atoms, job_params={"all": {"asap_cutoff": True}})
-    ```
+# Define the Atoms object
+atoms = bulk("Cu")
+
+# Define the workflow with modified parameters for the `relax_job` step
+result = bulk_to_slabs_flow(
+    atoms, job_params={"relax_job": {"opt_params": {"fmax": 1e-4}}}
+)
+
+# Print the result
+print(result)
+```
+
+### Modifying All Jobs
+
+To modify the default parameters of all the jobs in a pre-made workflow, you can use the "all" keyword as a shorthand. The example below modifies the EMT calculator's `asap_cutoff` parameter for all jobs in the `bulk_to_slabs_flow`:
+
+```python
+from ase.build import bulk
+from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+# Define the Atoms object
+atoms = bulk("Cu")
+
+# Define the workflow with modified parameters for all jobs in the flow
+result = bulk_to_slabs_flow(atoms, job_params={"all": {"asap_cutoff": True}})
+
+# Print the result
+print(result)
+```
 
 ## Concluding Comments
 
