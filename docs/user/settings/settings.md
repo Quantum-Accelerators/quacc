@@ -26,7 +26,7 @@ WORKFLOW_ENGINE: None # (3)!
 
 3. In YAML, a blank value or `null` is interpreted as `None` in Python. We also support "None" for convenience.
 
-??? Tip "When is This Method Ideal?"
+!!! Tip "When is This Method Ideal?"
 
     This approach is ideal when you want to change a setting that applies to most or all of your calculations.
 
@@ -42,9 +42,7 @@ export QUACC_CREATE_UNIQUE_DIR=False
 export QUACC_WORKFLOW_ENGINE=None
 ```
 
-This is generally the recommended approach for on-the-fly changes when running a calculation with a job scheduler since you can specify the environment variable in the submission script without modifying other jobs.
-
-??? Tip "When is This Method Ideal?"
+!!! Tip "When is This Method Ideal?"
 
     This approach is ideal when you want to dynamically modify the quacc settings for a given set of calculations, as the environment variable can be modified on-the-fly (e.g. in the job's submission script) without modifying the YAML file that is read by all other calculations.
 
@@ -71,6 +69,6 @@ with change_settings({"GZIP_FILES": False}):
 
     Note that when deploying calculations via a workflow engine, changes to in-memory global variables on the local machine will not be reflected on the remote machine. [Issue #2147](https://github.com/Quantum-Accelerators/quacc/issues/2147) seeks to improve the user experience in this regard.
 
-??? Tip "When is This Method Ideal?"
+!!! Tip "When is This Method Ideal?"
 
     This approach is ideal for fine-tuned modifications to settings within your workflow and for debugging scenarios (e.g. in a Jupyter Notebook).
