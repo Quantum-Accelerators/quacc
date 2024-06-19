@@ -74,8 +74,8 @@ def test_calc_setup_v2(tmp_path, monkeypatch, copy_files):
         assert tmpdir.is_dir()
         assert "tmp" in str(tmpdir)
         assert results_dir.name == tmpdir.name.split("tmp-")[-1]
-        assert str(settings) in str(results_dir)
-        assert not Path(settings, f"symlink-{tmpdir.name}").exists()
+        assert str(settings.RESULTS_DIR) in str(results_dir)
+        assert not Path(settings.RESULTS_DIR, f"symlink-{tmpdir.name}").exists()
         assert "file1.txt" in os.listdir(tmpdir)
         assert "file2.txt" not in os.listdir(tmpdir)
 

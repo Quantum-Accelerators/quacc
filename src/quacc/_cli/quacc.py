@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Optional
 from rich import print as rich_print
 from typer import Exit, Option, Typer
 
+from quacc import get_settings
 from quacc.settings import QuaccSettings, _type_handler
 
 app = Typer()
@@ -78,7 +79,6 @@ def set_(parameter: str, new_value: str) -> None:
     -------
     None
     """
-    from quacc import get_settings
     from quacc.settings import _DEFAULT_CONFIG_FILE_PATH
 
     settings = get_settings()
@@ -109,7 +109,6 @@ def unset(parameter: str) -> None:
     -------
     None
     """
-    from quacc import get_settings
     from quacc.settings import _DEFAULT_CONFIG_FILE_PATH
 
     settings = get_settings() 
@@ -136,7 +135,7 @@ def info() -> None:
     """
     import platform
 
-    from quacc import __version__, get_settings
+    from quacc import __version__
 
     settings = get_settings().model_dump()
     rich_print(
@@ -167,6 +166,7 @@ def _parameter_handler(
 
     Returns
     -------
+    None
     """
     if parameter not in settings_dict:
         msg = f"{parameter} is not a supported quacc configuration variable."
