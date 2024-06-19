@@ -135,7 +135,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     Job
         The @job-decorated function.
     """
-    from quacc import get_settings, change_settings_wrap
+    from quacc import get_settings
 
     settings = get_settings()
 
