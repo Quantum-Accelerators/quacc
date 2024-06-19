@@ -135,12 +135,15 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     Job
         The @job-decorated function.
     """
-    from quacc import get_settings
+    from quacc import change_settings_wrap, get_settings
 
     settings = get_settings()
 
     if _func is None:
         return partial(job, **kwargs)
+
+    if changes := kwargs.pop("settings_swap", {}):
+        return job(change_settings_wrap(_func, changes), **kwargs)
 
     elif settings.WORKFLOW_ENGINE == "covalent":
         import covalent as ct
