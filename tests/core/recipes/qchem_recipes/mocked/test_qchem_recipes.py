@@ -107,12 +107,16 @@ def mock_read(self, **kwargs):
     if self.results is None:
         raise RuntimeError("Results should not be None here.")
 
+
 with change_settings({"CHECK_CONVERGENCE": False}):
+
     def test_static_job_v1(monkeypatch, tmp_path, test_atoms):
         monkeypatch.chdir(tmp_path)
         monkeypatch.setattr(QChem, "execute", mock_execute1)
         charge, spin_multiplicity = check_charge_and_spin(test_atoms)
-        output = static_job(test_atoms, charge=charge, spin_multiplicity=spin_multiplicity)
+        output = static_job(
+            test_atoms, charge=charge, spin_multiplicity=spin_multiplicity
+        )
         assert output["atoms"] == test_atoms
         assert output["charge"] == 0
         assert output["spin_multiplicity"] == 1
@@ -120,14 +124,15 @@ with change_settings({"CHECK_CONVERGENCE": False}):
         assert output["nelectrons"] == 76
         assert output["parameters"]["charge"] == 0
         assert output["parameters"]["spin_multiplicity"] == 1
-        assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
+        assert output["results"]["energy"] == pytest.approx(
+            -606.1616819641 * units.Hartree
+        )
         assert output["results"]["forces"][0][0] == pytest.approx(-1.3826330655069403)
 
         qcin = QCInput.from_file(str(Path(output["dir_name"], "mol.qin.gz")))
         ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.basic"))
         qcinput_nearly_equal(qcin, ref_qcin)
         assert output["results"]["taskdoc"]
-
 
     def test_static_job_v2(monkeypatch, tmp_path, test_atoms):
         monkeypatch.chdir(tmp_path)
@@ -150,14 +155,15 @@ with change_settings({"CHECK_CONVERGENCE": False}):
         assert output["formula_alphabetical"] == "C4 H4 O6"
         assert output["parameters"]["charge"] == -1
         assert output["parameters"]["spin_multiplicity"] == 2
-        assert output["results"]["energy"] == pytest.approx(-605.6859554025 * units.Hartree)
+        assert output["results"]["energy"] == pytest.approx(
+            -605.6859554025 * units.Hartree
+        )
         assert output["results"]["forces"][0][0] == pytest.approx(-0.6955571014353796)
 
         qcin = QCInput.from_file(str(Path(output["dir_name"], "mol.qin.gz")))
         ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.intermediate"))
         qcinput_nearly_equal(qcin, ref_qcin)
         assert output["results"]["taskdoc"]
-
 
     def test_static_job_v3(monkeypatch, tmp_path, test_atoms):
         monkeypatch.chdir(tmp_path)
@@ -177,7 +183,9 @@ with change_settings({"CHECK_CONVERGENCE": False}):
         assert output["nelectrons"] == 76
         assert output["parameters"]["charge"] == 0
         assert output["parameters"]["spin_multiplicity"] == 1
-        assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
+        assert output["results"]["energy"] == pytest.approx(
+            -606.1616819641 * units.Hartree
+        )
         assert output["results"]["forces"][0][0] == pytest.approx(-1.3826311086011256)
 
         qcin = QCInput.from_file(str(Path(output["dir_name"], "mol.qin.gz")))
@@ -185,14 +193,12 @@ with change_settings({"CHECK_CONVERGENCE": False}):
         qcinput_nearly_equal(qcin, ref_qcin)
         assert output["results"]["taskdoc"]
 
-
     def test_static_job_v4(monkeypatch, tmp_path, os_atoms):
         monkeypatch.chdir(tmp_path)
         monkeypatch.setattr(QChem, "read_results", mock_read)
         monkeypatch.setattr(QChem, "execute", mock_execute4)
         charge, spin_multiplicity = check_charge_and_spin(os_atoms)
         assert static_job(os_atoms, charge=charge, spin_multiplicity=spin_multiplicity)
-
 
     def test_static_job_v5(tmp_path, monkeypatch, test_atoms):
         monkeypatch.chdir(tmp_path)
@@ -204,7 +210,6 @@ with change_settings({"CHECK_CONVERGENCE": False}):
                 spin_multiplicity=1,
                 qchem_dict_set_params={"pcm_dielectric": "3.0", "smd_solvent": "water"},
             )
-
 
     @pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
     def test_relax_job_v1(monkeypatch, tmp_path, test_atoms):
@@ -227,14 +232,15 @@ with change_settings({"CHECK_CONVERGENCE": False}):
         assert output["nelectrons"] == 76
         assert output["parameters"]["charge"] == 0
         assert output["parameters"]["spin_multiplicity"] == 1
-        assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
+        assert output["results"]["energy"] == pytest.approx(
+            -606.1616819641 * units.Hartree
+        )
         assert output["results"]["forces"][0][0] == pytest.approx(-1.3826330655069403)
 
         qcin = QCInput.from_file(str(Path(output["dir_name"], "mol.qin.gz")))
         ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.basic.sella_opt_iter1"))
         qcinput_nearly_equal(qcin, ref_qcin)
         assert len(output["results"]["taskdoc"]["input"]) > 1
-
 
     @pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
     def test_relax_job_v2(monkeypatch, tmp_path, test_atoms):
@@ -257,7 +263,9 @@ with change_settings({"CHECK_CONVERGENCE": False}):
         assert output["formula_alphabetical"] == "C4 H4 O6"
         assert output["parameters"]["charge"] == -1
         assert output["parameters"]["spin_multiplicity"] == 2
-        assert output["results"]["energy"] == pytest.approx(-605.6859554025 * units.Hartree)
+        assert output["results"]["energy"] == pytest.approx(
+            -605.6859554025 * units.Hartree
+        )
         assert output["results"]["forces"][0][0] == pytest.approx(-0.6955571014353796)
 
         qcin = QCInput.from_file(str(Path(output["dir_name"], "mol.qin.gz")))
@@ -265,7 +273,6 @@ with change_settings({"CHECK_CONVERGENCE": False}):
             str(QCHEM_DIR / "mol.qin.intermediate.sella_opt_iter1")
         )
         qcinput_nearly_equal(qcin, ref_qcin)
-
 
     @pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
     def test_relax_job_v3(monkeypatch, tmp_path, test_atoms):
@@ -288,9 +295,10 @@ with change_settings({"CHECK_CONVERGENCE": False}):
         assert output["nelectrons"] == 76
         assert output["parameters"]["charge"] == 0
         assert output["parameters"]["spin_multiplicity"] == 1
-        assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
+        assert output["results"]["energy"] == pytest.approx(
+            -606.1616819641 * units.Hartree
+        )
         assert output["results"]["forces"][0][0] == pytest.approx(-1.3826311086011256)
-
 
     @pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
     def test_relax_job_v4(tmp_path, monkeypatch, test_atoms):
@@ -302,7 +310,6 @@ with change_settings({"CHECK_CONVERGENCE": False}):
                 spin_multiplicity=1,
                 qchem_dict_set_params={"pcm_dielectric": "3.0", "smd_solvent": "water"},
             )
-
 
     def test_freq_job_v1(monkeypatch, tmp_path, test_atoms):
         monkeypatch.chdir(tmp_path)
@@ -324,10 +331,11 @@ with change_settings({"CHECK_CONVERGENCE": False}):
         assert output["nelectrons"] == 77
         assert output["parameters"]["charge"] == -1
         assert output["parameters"]["spin_multiplicity"] == 2
-        assert output["results"]["energy"] == pytest.approx(-605.6859554019 * units.Hartree)
+        assert output["results"]["energy"] == pytest.approx(
+            -605.6859554019 * units.Hartree
+        )
         assert output["results"].get("hessian") is not None
         assert output["results"]["taskdoc"]["output"]["enthalpy"] is not None
-
 
     @pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
     def test_ts_job_v1(monkeypatch, tmp_path, test_atoms):
@@ -350,13 +358,14 @@ with change_settings({"CHECK_CONVERGENCE": False}):
         assert output["nelectrons"] == 76
         assert output["parameters"]["charge"] == 0
         assert output["parameters"]["spin_multiplicity"] == 1
-        assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
+        assert output["results"]["energy"] == pytest.approx(
+            -606.1616819641 * units.Hartree
+        )
         assert output["results"]["forces"][0][0] == pytest.approx(-1.3826330655069403)
 
         qcin = QCInput.from_file(str(Path(output["dir_name"], "mol.qin.gz")))
         ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.basic.sella_TSopt_iter1"))
         qcinput_nearly_equal(qcin, ref_qcin)
-
 
     @pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
     def test_ts_job_v2(monkeypatch, tmp_path, test_atoms):
@@ -379,7 +388,9 @@ with change_settings({"CHECK_CONVERGENCE": False}):
         assert output["formula_alphabetical"] == "C4 H4 O6"
         assert output["parameters"]["charge"] == -1
         assert output["parameters"]["spin_multiplicity"] == 2
-        assert output["results"]["energy"] == pytest.approx(-605.6859554025 * units.Hartree)
+        assert output["results"]["energy"] == pytest.approx(
+            -605.6859554025 * units.Hartree
+        )
         assert output["results"]["forces"][0][0] == pytest.approx(-0.6955571014353796)
 
         qcin = QCInput.from_file(str(Path(output["dir_name"], "mol.qin.gz")))
@@ -387,7 +398,6 @@ with change_settings({"CHECK_CONVERGENCE": False}):
             str(QCHEM_DIR / "mol.qin.intermediate.sella_TSopt_iter1")
         )
         qcinput_nearly_equal(qcin, ref_qcin)
-
 
     @pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
     def test_ts_job_v3(monkeypatch, tmp_path, test_atoms):
@@ -410,9 +420,10 @@ with change_settings({"CHECK_CONVERGENCE": False}):
         assert output["nelectrons"] == 76
         assert output["parameters"]["charge"] == 0
         assert output["parameters"]["spin_multiplicity"] == 1
-        assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
+        assert output["results"]["energy"] == pytest.approx(
+            -606.1616819641 * units.Hartree
+        )
         assert output["results"]["forces"][0][0] == pytest.approx(-1.3826311086011256)
-
 
     @pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
     def test_ts_job_v4(tmp_path, monkeypatch, test_atoms):
@@ -433,7 +444,6 @@ with change_settings({"CHECK_CONVERGENCE": False}):
                 qchem_dict_set_params={"pcm_dielectric": "3.0", "smd_solvent": "water"},
                 opt_params={"optimizer": FIRE},
             )
-
 
     @pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
     def test_irc_job_v1(monkeypatch, tmp_path, test_atoms):
@@ -500,7 +510,6 @@ with change_settings({"CHECK_CONVERGENCE": False}):
         assert output["parameters"]["charge"] == 0
         assert output["parameters"]["spin_multiplicity"] == 1
 
-
     @pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
     def test_irc_job_v2(tmp_path, monkeypatch, test_atoms):
         monkeypatch.chdir(tmp_path)
@@ -525,7 +534,6 @@ with change_settings({"CHECK_CONVERGENCE": False}):
                 qchem_dict_set_params={"pcm_dielectric": "3.0", "smd_solvent": "water"},
                 opt_params={"optimizer": FIRE},
             )
-
 
     @pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
     def test_quasi_irc_job(monkeypatch, tmp_path, test_atoms):
@@ -583,7 +591,6 @@ with change_settings({"CHECK_CONVERGENCE": False}):
         qcin = QCInput.from_file(str(Path(output["dir_name"], "mol.qin.gz")))
         ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.quasi_irc_reverse"))
         qcinput_nearly_equal(qcin, ref_qcin)
-
 
     @pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
     def test_quasi_irc_perturb_job(monkeypatch, tmp_path, test_qirc_atoms):
