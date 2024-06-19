@@ -11,7 +11,7 @@ from ase.io import read
 from ase.optimize import FIRE
 from pymatgen.io.qchem.inputs import QCInput
 
-from quacc import _internally_set_settings, change_settings
+from quacc import _internally_set_settings
 from quacc.atoms.core import check_charge_and_spin
 from quacc.calculators.qchem import QChem
 from quacc.recipes.qchem.core import freq_job, relax_job, static_job
@@ -107,11 +107,14 @@ def mock_read(self, **kwargs):
     if self.results is None:
         raise RuntimeError("Results should not be None here.")
 
+
 def setup_module():
     _internally_set_settings({"CHECK_CONVERGENCE": False})
 
+
 def teardown_module():
     _internally_set_settings(reset=True)
+
 
 def test_static_job_v1(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
