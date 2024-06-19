@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 from contextlib import contextmanager
+from functools import wraps
 from pathlib import Path
 from shutil import which
 from typing import TYPE_CHECKING, Literal, Optional, Union
@@ -15,7 +16,7 @@ from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 if TYPE_CHECKING:
-    from typing import Any
+    from typing import Any, Callable
 
 _DEFAULT_CONFIG_FILE_PATH = Path("~", ".quacc.yaml").expanduser().resolve()
 
@@ -567,3 +568,33 @@ def change_settings(changes: dict[str, Any] | None):
         yield
     finally:
         _internally_set_settings(changes=original_values)
+
+
+def change_settings_wrap(func: Callable, changes: dict[str, Any]) -> Callable:
+    """
+    Wraps a function with the change_settings context manager if not already wrapped.
+
+    Parameters
+    ----------
+    func
+        The function to wrap.
+    changes
+        The settings to apply within the context manager.
+
+    Returns
+    -------
+    Callable
+        The wrapped function.
+    """
+    from quacc import change_settings
+
+    original_func = func._original_func if getattr(func, "__changed__", False) else func
+
+    @wraps(original_func)
+    def wrapper(*args, **kwargs):
+        with change_settings(changes):
+            return original_func(*args, **kwargs)
+
+    wrapper.__changed__ = True
+    wrapper._original_func = original_func
+    return wrapper
