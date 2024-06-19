@@ -21,9 +21,10 @@ def setup_module():
         {
             "NEWTONNET_CONFIG_PATH": current_file_path / "config0.yml",
             "NEWTONNET_MODEL_PATH": current_file_path / "best_model_state.tar",
-            "CHECK_CONVERGENCE": False
+            "CHECK_CONVERGENCE": False,
         }
     )
+
 
 def teardown_module():
     set_settings(reset=True)

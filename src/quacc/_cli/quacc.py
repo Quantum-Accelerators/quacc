@@ -111,7 +111,7 @@ def unset(parameter: str) -> None:
     """
     from quacc.settings import _DEFAULT_CONFIG_FILE_PATH
 
-    settings = get_settings() 
+    settings = get_settings()
     CONFIG_FILE = settings.CONFIG_FILE or _DEFAULT_CONFIG_FILE_PATH
     parameter = parameter.upper()
 

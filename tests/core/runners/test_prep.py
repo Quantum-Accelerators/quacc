@@ -32,7 +32,6 @@ def make_files3():
 
 
 def test_calc_setup(tmp_path, monkeypatch):
-
     monkeypatch.chdir(tmp_path)
     make_files()
 
@@ -60,7 +59,6 @@ def test_calc_setup(tmp_path, monkeypatch):
     "copy_files", [{Path(): ["file1.txt"]}, {Path(): "file1.txt"}, {Path(): "file1*"}]
 )
 def test_calc_setup_v2(tmp_path, monkeypatch, copy_files):
-
     monkeypatch.chdir(tmp_path)
     make_files()
 
@@ -91,7 +89,6 @@ def test_calc_setup_v2(tmp_path, monkeypatch, copy_files):
     ],
 )
 def test_calc_setup_v3(tmp_path, monkeypatch, copy_files):
-
     monkeypatch.chdir(tmp_path)
     make_files3()
 
@@ -114,7 +111,6 @@ def test_calc_setup_v3(tmp_path, monkeypatch, copy_files):
 
 @pytest.mark.parametrize("copy_files", ["saved", Path("saved")])
 def test_calc_setup_v3_2(tmp_path, monkeypatch, copy_files):
-
     monkeypatch.chdir(tmp_path)
     make_files3()
 
@@ -137,7 +133,6 @@ def test_calc_setup_v3_2(tmp_path, monkeypatch, copy_files):
 
 @pytest.mark.parametrize("copy_files", [{"saved": "*"}])
 def test_calc_setup_v4(tmp_path, monkeypatch, copy_files):
-
     monkeypatch.chdir(tmp_path)
     make_files3()
 
@@ -159,7 +154,6 @@ def test_calc_setup_v4(tmp_path, monkeypatch, copy_files):
 
 
 def test_calc_cleanup(tmp_path, monkeypatch):
-
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
     atoms.calc = EMT()

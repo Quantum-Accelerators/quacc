@@ -24,6 +24,7 @@ def teardown_module():
 
     set_settings(reset=True)
 
+
 @pytest.fixture()
 def runner():
     return CliRunner()

@@ -27,6 +27,7 @@ def strip_decorator(func: Callable) -> Callable:
         The function with all decorators removed.
     """
     from quacc import get_settings
+
     settings = get_settings()
 
     if settings.WORKFLOW_ENGINE == "covalent":
@@ -123,6 +124,7 @@ def update_parameters(
         The updated function.
     """
     from quacc import flow, get_settings, job, subflow
+
     settings = get_settings()
 
     if decorator and settings.WORKFLOW_ENGINE == "dask":

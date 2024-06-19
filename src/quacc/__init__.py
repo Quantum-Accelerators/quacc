@@ -43,7 +43,8 @@ Atoms.from_dict = MSONAtoms.from_dict
 # Load the settings
 _thread_local = threading.local()
 
-def set_settings(changes: dict[str,Any] | None = None, reset: bool = False) -> None:
+
+def set_settings(changes: dict[str, Any] | None = None, reset: bool = False) -> None:
     """
     Set the SETTINGS attribute for the current thread.
 
@@ -64,6 +65,7 @@ def set_settings(changes: dict[str,Any] | None = None, reset: bool = False) -> N
     for key, value in changes.items():
         setattr(_thread_local.SETTINGS, key, value)
 
+
 def get_settings() -> QuaccSettings:
     """
     Get the SETTINGS attribute for the current thread.
@@ -75,6 +77,7 @@ def get_settings() -> QuaccSettings:
     if not hasattr(_thread_local, "SETTINGS"):
         set_settings(reset=True)
     return _thread_local.SETTINGS
+
 
 _settings = get_settings()
 
