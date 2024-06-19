@@ -48,7 +48,7 @@ def test_calc_setup(tmp_path, monkeypatch):
         assert results_dir.name == tmpdir.name.split("tmp-")[-1]
         assert str(settings.RESULTS_DIR) in str(results_dir)
         if os.name != "nt":
-            assert Path(settings, f"symlink-{tmpdir.name}").is_symlink()
+            assert Path(settings.RESULTS_DIR, f"symlink-{tmpdir.name}").is_symlink()
         else:
             assert not Path(settings, f"symlink-{tmpdir.name}").exists()
         assert "file1.txt" not in os.listdir(tmpdir)

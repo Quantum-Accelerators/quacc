@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
-from quacc import __version__, change_settings
+from quacc import __version__, set_settings
 from quacc._cli.quacc import app
 
 FILE_PATH = Path(__file__).parent
@@ -15,15 +15,14 @@ TEST_YAML = FILE_PATH / "test_quacc.yaml"
 
 
 def setup_module():
-    change_settings({"CONFIG_FILE": TEST_YAML})
+    set_settings({"CONFIG_FILE": TEST_YAML})
 
 
 def teardown_module():
     if TEST_YAML.exists():
         os.remove(TEST_YAML)
 
-    change_settings(reset=True)
-
+    set_settings(reset=True)
 
 @pytest.fixture()
 def runner():
