@@ -32,7 +32,9 @@ WORKFLOW_ENGINE: None # (3)!
 
 ## Using Environment Variables
 
-If you want to define quacc settings without writing them to a YAML file, you can instead modify the desired settings by defining individual environment variables with `QUACC` as the prefix. The environment variable takes precedence over any value specified in the YAML file. Most simple field types (e.g. `int`, `bool`, `float`, `str`) will be automatically inferred from the environment variable. To achieve the same results as the aforementioned YAML file, you would define the following environment variables:
+If you want to define quacc settings without writing them to a YAML file, you can instead modify the desired settings by defining individual environment variables with `QUACC` as the prefix. The environment variable takes precedence over any value specified in the YAML file. Most simple field types (e.g. `int`, `bool`, `float`, `str`) will be automatically inferred from the environment variable. For more complex types, such as lists or dictionaries, refer to the corresponding section in the [pydantic-settings](https://docs.pydantic.dev/latest/concepts/pydantic_settings/#parsing-environment-variable-values) documentation. We use `__` as the delimiter for nested settings.
+
+To achieve the same results as the aforementioned YAML file, you would define the following environment variables:
 
 ```bash
 export QUACC_SCRATCH_DIR=/path/to/my/scratch/dir
@@ -40,7 +42,7 @@ export QUACC_CREATE_UNIQUE_DIR=False
 export QUACC_WORKFLOW_ENGINE=None
 ```
 
-For more complex types, such as lists or dictionaries, refer to the corresponding section in the [pydantic-settings](https://docs.pydantic.dev/latest/concepts/pydantic_settings/#parsing-environment-variable-values) documentation. We use `__` as the delimiter for nested settings.
+This is generally the recommended approach for on-the-fly changes when running a calculation with a job scheduler since you can specify the environment variable in the submission script without modifying other jobs.
 
 ??? Tip "When is This Method Ideal?"
 
@@ -67,7 +69,7 @@ with change_settings({"GZIP_FILES": False}):
 
 !!! Warning
 
-    Note that when deploying calculations via a workflow engine, changes to in-memory global variables on the local machine will not be reflected on the remote machine. To modify global settings in a script, ensure the setting re-assignment takes place in the decorated function itself. [Issue #2147](https://github.com/Quantum-Accelerators/quacc/issues/2147) seeks to improve the user experience in this regard.
+    Note that when deploying calculations via a workflow engine, changes to in-memory global variables on the local machine will not be reflected on the remote machine. [Issue #2147](https://github.com/Quantum-Accelerators/quacc/issues/2147) seeks to improve the user experience in this regard.
 
 ??? Tip "When is This Method Ideal?"
 
