@@ -22,17 +22,6 @@ with change_settings(
         "CHECK_CONVERGENCE": False,
     }
 ):
-    set_settings(
-        {
-            "NEWTONNET_CONFIG_PATH": current_file_path / "config0.yml",
-            "NEWTONNET_MODEL_PATH": current_file_path / "best_model_state.tar",
-            "CHECK_CONVERGENCE": False,
-        }
-    )
-
-
-def teardown_module():
-    set_settings(reset=True)
 
     def test_relax_job(tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)
