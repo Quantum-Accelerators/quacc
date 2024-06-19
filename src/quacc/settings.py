@@ -588,8 +588,6 @@ def change_settings_wrap(func: Callable, changes: dict[str, Any]) -> Callable:
     Callable
         The wrapped function.
     """
-    from quacc import change_settings
-
     original_func = func._original_func if getattr(func, "__changed__", False) else func
 
     @wraps(original_func)
