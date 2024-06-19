@@ -297,22 +297,22 @@ def neb_job(
     neb_kwargs: dict[str, Any] | None = None,
 ) -> NebSchema:
     """
-    Perform a quasi-IRC job using the given reactant and product atoms objects.
+    Perform a nudged elastic band (NEB) calculation to find the minimum energy path (MEP) between the given reactant and product structures.
 
     Parameters
     ----------
-    reactant_atoms : Atoms
+    reactant_atoms
         The Atoms object representing the reactant structure.
-    product_atoms : Atoms
+    product_atoms
         The Atoms object representing the product structure.
-    relax_job_kwargs : dict[str, Any] or None, optional
-        Keyword arguments to use for the relax_job function, by default None.
-    calc_kwargs : dict[str, Any] or None, optional
-        Keyword arguments for the NewtonNet calculator, by default None.
-    geodesic_interpolate_kwargs : dict[str, Any] or None, optional
-        Keyword arguments for the geodesic_interpolate function, by default None.
-    neb_kwargs : dict[str, Any] or None, optional
-        Keyword arguments for the NEB calculation, by default None.
+    relax_job_kwargs
+        Keyword arguments to use for the [quacc.recipes.newtonnet.ts.relax_job][] function, which relaxes the reactant and product structures before the NEB calculation.
+    calc_kwargs
+        Custom kwargs for the NewtonNet calculator. Set a value to `quacc.Remove` to remove a pre-existing key entirely. For a list of available keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
+    geodesic_interpolate_kwargs
+        Keyword arguments for the [quacc.utils.ase_utils.geodesic_interpolate][] function, which generates the initial images along the MEP between the reactant and product structures.
+    neb_kwargs
+        Keyword arguments for the NEB calculation. For a list of available keys, refer to [quacc.runners.ase.Runner.run_neb][].
 
     Returns
     -------
@@ -387,17 +387,17 @@ def neb_ts_job(
 
     Parameters
     ----------
-    reactant_atoms : Atoms
+    reactant_atoms
         The Atoms object representing the reactant structure.
-    product_atoms : Atoms
+    product_atoms
         The Atoms object representing the product structure.
-    relax_job_kwargs : dict[str, Any], optional
+    relax_job_kwargs
         Keyword arguments to use for the relax_job function, by default None.
-    calc_kwargs : dict[str, Any], optional
+    calc_kwargs
         Keyword arguments for the NewtonNet calculator, by default None.
-    geodesic_interpolate_kwargs : dict[str, Any], optional
+    geodesic_interpolate_kwargs
         Keyword arguments for the geodesic_interpolate function, by default None.
-    neb_kwargs : dict[str, Any], optional
+    neb_kwargs
         Keyword arguments for the NEB calculation, by default None.
 
     Returns
@@ -408,6 +408,7 @@ def neb_ts_job(
             - 'relax_product': Summary of the relaxed product structure.
             - 'geodesic_results': The interpolated images between reactant and product.
             - 'neb_results': Summary of the NEB optimization.
+            - 'ts_results': Summary of the transition state optimization.
     """
     relax_job_kwargs = relax_job_kwargs or {}
     neb_kwargs = neb_kwargs or {}
@@ -466,29 +467,32 @@ def geodesic_ts_job(
     geodesic_interpolate_kwargs: dict[str, Any] | None = None,
 ) -> dict:
     """
-    Perform a transition state search using geodesic interpolation between reactant and product states.
+    Perform a quasi-IRC job using the given reactant and product atoms objects.
 
     Parameters
     ----------
-    reactant_atoms : Atoms
-        The atoms object representing the reactant state.
-    product_atoms : Atoms
-        The atoms object representing the product state.
-    relax_job_kwargs : dict[str, Any], optional
-        Keyword arguments to use for the relaxation job.
-    calc_kwargs : dict[str, Any], optional
-        Keyword arguments to configure the NewtonNet calculator.
-    geodesic_interpolate_kwargs : dict[str, Any], optional
-        Keyword arguments to configure the geodesic interpolation.
+    reactant_atoms
+        The Atoms object representing the reactant structure.
+    product_atoms
+        The Atoms object representing the product structure.
+    relax_job_kwargs
+        Keyword arguments to use for the relax_job function, by default None.
+    calc_kwargs
+        Keyword arguments for the NewtonNet calculator, by default None.
+    geodesic_interpolate_kwargs
+        Keyword arguments for the geodesic_interpolate function, by default None.
+    neb_kwargs
+        Keyword arguments for the NEB calculation, by default None.
 
     Returns
     -------
-    dict
-        A dictionary containing the NEB optimization summary, including:
-        - 'relax_reactant': Summary of the relaxation job for the reactant.
-        - 'relax_product': Summary of the relaxation job for the product.
-        - 'geodesic_results': The interpolated images between reactant and product.
-        - 'ts_results': The transition state optimization results.
+    NebTsSchema
+        A dictionary containing the following keys:
+            - 'relax_reactant': Summary of the relaxed reactant structure.
+            - 'relax_product': Summary of the relaxed product structure.
+            - 'geodesic_results': The interpolated images between reactant and product.
+            - 'neb_results': Summary of the NEB optimization.
+            - 'ts_results': Summary of the transition state optimization.
     """
     relax_job_kwargs = relax_job_kwargs or {}
     geodesic_interpolate_kwargs = geodesic_interpolate_kwargs or {}
