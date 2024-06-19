@@ -46,7 +46,7 @@ _thread_local = threading.local()
 
 def _internally_set_settings(changes: dict[str, Any] | None = None, reset: bool = False) -> None:
     """
-    Set the SETTINGS attribute for the current thread. This is not meant to be
+    Set the `.settings` attribute for the current thread. This is not meant to be
     called by users. If you want to change the settings, use `from quacc import change_settings`
 
     Parameters
@@ -61,23 +61,23 @@ def _internally_set_settings(changes: dict[str, Any] | None = None, reset: bool 
     None
     """
     changes = changes or {}
-    if not hasattr(_thread_local, "SETTINGS") or reset:
-        _thread_local.SETTINGS = QuaccSettings()
+    if not hasattr(_thread_local, "settings") or reset:
+        _thread_local.settings = QuaccSettings()
     for key, value in changes.items():
-        setattr(_thread_local.SETTINGS, key, value)
+        setattr(_thread_local.settings, key, value)
 
 
 def get_settings() -> QuaccSettings:
     """
-    Get the SETTINGS attribute for the current thread.
+    Get the `.settings` attribute for the current thread.
 
     Returns
     -------
     QuaccSettings
     """
-    if not hasattr(_thread_local, "SETTINGS"):
+    if not hasattr(_thread_local, "settings"):
         _internally_set_settings(reset=True)
-    return _thread_local.SETTINGS
+    return _thread_local.settings
 
 
 _settings = get_settings()
