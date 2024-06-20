@@ -57,7 +57,7 @@ with change_settings({"GZIP_FILES": False}):
     pass  # Your calculation here
 ```
 
-!!! Tip "Active Workflow Engine"
+!!! Important "Active Workflow Engine"
 
     When deploying calculations via a workflow engine, changes to in-memory global variables on the local machine will not be reflected on the remote machine. Instead, this should be done via a custom `settings_swap` keyword argument that is supported by the `@job` decorator.
 
@@ -71,6 +71,18 @@ with change_settings({"GZIP_FILES": False}):
     def add(a, b):
         return a + b
     ```
+
+    1. This is the same as doing 
+
+         ```python
+        from quacc import change_settings, job
+
+
+        @job
+        def add(a, b):
+            with change_settings({"GZIP_FILES": False}):
+                return a + b
+        ```
 
     If using a pre-made `@job`, you can simply redecorate it so that it supports your custom settings:
 
