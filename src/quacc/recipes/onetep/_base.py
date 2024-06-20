@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from ase.calculators.onetep import Onetep, OnetepProfile
 
-from quacc import SETTINGS
+from quacc import get_settings
 from quacc.runners.ase import Runner
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import recursive_dict_merge
@@ -96,9 +96,7 @@ def run_and_summarize_opt(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
-
     calc = prep_calculator(calc_defaults=calc_defaults, calc_swaps=calc_swaps)
-
     dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_flags)
 
     return summarize_opt_run(dyn, additional_fields=additional_fields)
@@ -126,9 +124,10 @@ def prep_calculator(
         The Onetep calculator.
     """
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
+    settings = get_settings()
 
     return Onetep(
-        profile=OnetepProfile(command=f"{SETTINGS.ONETEP_CMD}"),
-        pseudo_path=str(SETTINGS.ONETEP_PP_PATH),
+        profile=OnetepProfile(command=f"{settings.ONETEP_CMD}"),
+        pseudo_path=str(settings.ONETEP_PP_PATH),
         **calc_flags,
     )
