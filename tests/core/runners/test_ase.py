@@ -3,8 +3,8 @@ from __future__ import annotations
 import glob
 import logging
 import os
-from pathlib import Path
 from importlib.util import find_spec
+from pathlib import Path
 from shutil import rmtree
 
 import numpy as np
@@ -86,10 +86,11 @@ def setup_test_environment(tmp_path):
     return reactant, product
 
 
-@pytest.mark.skipif(not has_geodesic_interpolate, reason="geodesic_interpolate function is not available")
-def test_geodesic_interpolate_wrapper(
-    setup_test_environment,
-):
+@pytest.mark.skipif(
+    not has_geodesic_interpolate,
+    reason="geodesic_interpolate function is not available",
+)
+def test_geodesic_interpolate_wrapper(setup_test_environment):
     n_images = 20
     convergence_tolerance = 1e-4
     max_iterations = 10
@@ -115,7 +116,10 @@ def test_geodesic_interpolate_wrapper(
     assert smoother_path[1].positions[0][0] == pytest.approx(1.36055556030, abs=1e-1)
 
 
-@pytest.mark.skipif(not has_geodesic_interpolate, reason="geodesic_interpolate function is not available")
+@pytest.mark.skipif(
+    not has_geodesic_interpolate,
+    reason="geodesic_interpolate function is not available",
+)
 def test_geodesic_interpolate_wrapper_large_system(setup_test_environment):
     rng = np.random.default_rng()  # Create a random number generator instance
     large_atoms = Atoms("H" * 40, positions=rng.random((40, 3)))
@@ -125,11 +129,11 @@ def test_geodesic_interpolate_wrapper_large_system(setup_test_environment):
     assert len(smoother_path) == 20
 
 
-@pytest.mark.skipif(not has_geodesic_interpolate, reason="geodesic_interpolate function is not available")
-def test_run_neb(
-    setup_test_environment,
-    tmp_path,
-):
+@pytest.mark.skipif(
+    not has_geodesic_interpolate,
+    reason="geodesic_interpolate function is not available",
+)
+def test_run_neb(setup_test_environment, tmp_path):
     optimizer_class = NEBOptimizer
     n_intermediate = 10
     r_positions = -0.854
