@@ -210,10 +210,10 @@ def test_summarize_vib_run(tmp_path, monkeypatch):
     assert "dir_name" in results
     assert "pymatgen_version" in results["builder_meta"]
     assert len(results["results"]["vib_freqs_raw"]) == 6
-    assert results["results"]["vib_freqs_raw"][0] == pytest.approx(0, abs=1e-5)
+    assert results["results"]["vib_freqs_raw"][0] == pytest.approx(0, rel=1e-5)
     assert results["results"]["vib_freqs_raw"][-1] == pytest.approx(928.1447554058556)
     assert len(results["results"]["vib_energies_raw"]) == 6
-    assert results["results"]["vib_energies_raw"][0] == pytest.approx(0, abs=1e-5)
+    assert results["results"]["vib_energies_raw"][0] == pytest.approx(0, rel=1e-5)
     assert results["results"]["vib_energies_raw"][-1] == pytest.approx(
         0.11507528256667966
     )
