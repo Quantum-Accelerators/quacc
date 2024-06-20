@@ -84,7 +84,11 @@ export QUACC_ORCA_CMD="/path/to/orca/orca"
 
 ## Psi4
 
-If you plan to use Psi4 with quacc, you will need to install it prior to use. This can be done as described in the [Psi4 installation guide](https://psicode.org/installs/latest/).
+If you plan to use Psi4 with quacc, you will need to install it prior to use. This can be done as follows:
+
+```bash
+conda install -c conda-forge psi4
+```
 
 ## Q-Chem
 
