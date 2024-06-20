@@ -113,3 +113,23 @@ def test_change_settings_redecorate_flow(tmp_path_factory):
         )
     ).result()
     assert Path(tmp_dir2 / "flow.txt").exists()
+
+
+def test_double_change_settings_redecorate_job(tmp_path_factory):
+    tmp_dir1 = tmp_path_factory.mktemp("dir1")
+    tmp_dir2 = tmp_path_factory.mktemp("dir2")
+
+    @job
+    def write_file_job(name="job.txt"):
+        with open(Path(get_settings().RESULTS_DIR, name), "w") as f:
+            f.write("test file")
+
+    write_file_job = redecorate(
+        write_file_job, job(settings_swap={"RESULTS_DIR": tmp_dir1})
+    )
+    write_file_job = redecorate(
+        write_file_job, job(settings_swap={"RESULTS_DIR": tmp_dir2})
+    )
+    client.compute(write_file_job()).result()
+    assert not Path(tmp_dir1 / "job.txt").exists()
+    assert Path(tmp_dir2 / "job.txt").exists()
