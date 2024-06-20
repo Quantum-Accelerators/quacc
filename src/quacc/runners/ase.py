@@ -414,6 +414,8 @@ def run_neb(
     """
     # Copy atoms so we don't modify it in-place
     images = copy_atoms(images)
+    settings = get_settings()
+
     neb = NEB(images, **neb_kwargs)
 
     dir_lists = []
@@ -426,7 +428,7 @@ def run_neb(
     # Set defaults
     optimizer_kwargs = recursive_dict_merge(
         {
-            "logfile": "-" if SETTINGS.DEBUG else dir_lists[0][0] / "opt.log",
+            "logfile": "-" if settings.DEBUG else dir_lists[0][0] / "opt.log",
             "restart": dir_lists[0][0] / "opt.json",
         },
         optimizer_kwargs,

@@ -328,10 +328,11 @@ def neb_job(
     relax_job_kwargs = relax_job_kwargs or {}
     neb_kwargs = neb_kwargs or {}
     geodesic_interpolate_kwargs = geodesic_interpolate_kwargs or {}
+    settings = get_settings()
 
     calc_defaults = {
-        "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-        "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        "model_path": settings.NEWTONNET_MODEL_PATH,
+        "settings_path": settings.NEWTONNET_CONFIG_PATH,
     }
 
     geodesic_defaults = {"nimages": 20}
@@ -416,10 +417,11 @@ def neb_ts_job(
     neb_kwargs = neb_kwargs or {}
     geodesic_interpolate_kwargs = geodesic_interpolate_kwargs or {}
     calc_kwargs = calc_kwargs or {}
+    settings = get_settings()
 
     calc_defaults = {
-        "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-        "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        "model_path": settings.NEWTONNET_MODEL_PATH,
+        "settings_path": settings.NEWTONNET_CONFIG_PATH,
     }
 
     geodesic_defaults = {"nimages": 20}
@@ -498,10 +500,11 @@ def geodesic_ts_job(
     """
     relax_job_kwargs = relax_job_kwargs or {}
     geodesic_interpolate_kwargs = geodesic_interpolate_kwargs or {}
+    settings = get_settings()
 
     calc_defaults = {
-        "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-        "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        "model_path": settings.NEWTONNET_MODEL_PATH,
+        "settings_path": settings.NEWTONNET_CONFIG_PATH,
     }
 
     geodesic_defaults = {"nimages": 20}
