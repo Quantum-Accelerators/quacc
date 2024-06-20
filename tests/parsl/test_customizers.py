@@ -53,7 +53,7 @@ def test_change_settings_concurrent():
 
     futures = [test() for _ in range(25)]
     results = [f.result() for f in futures]
-    assert False not in results
+    assert all(results)
 
 
 def test_change_settings_redecorate_job(tmp_path_factory):
