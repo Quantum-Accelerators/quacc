@@ -27,6 +27,7 @@ Additional contributions were made by the individuals listed [here](https://gith
 - [@zulissimeta](https://github.com/zulissimeta): Dask support
 - [@yw-fang](https://github.com/yw-fang): VASP Non-SCF recipe
 - [@espottesmith](http://github.com/espottesmith): Some ORCA and Q-Chem workflows, mostly re: IRC
+- [@honghuikim](https://github.com/honghuikim): Dynamic changing of quacc settings with workflow engines
 
 ## Inspiration
 
