@@ -384,35 +384,35 @@ def run_neb(
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> Optimizer:
     """
-     Run NEB optimization.
+    Run NEB optimization.
 
-     Parameters
-     ----------
-     images
-         List of images representing the initial path.
-     relax_cell
-         Whether to relax the unit cell shape and volume.
-     fmax
-         Tolerance for the force convergence (in eV/A).
-     max_steps
-         Maximum number of steps to take.
-     optimizer
-         Optimizer class to use. All Optimizers except BFGSLineSearch
-     optimizer_kwargs
-         Dictionary of kwargs for the optimizer.
-     run_kwargs
-         Dictionary of kwargs for the run() method of the optimizer.
-     neb_kwargs
-         Dictionary of kwargs for the NEB.
-     copy_files
-         Files to copy before running the calculation.
+    Parameters
+    ----------
+    images
+        List of images representing the initial path.
+    relax_cell
+        Whether to relax the unit cell shape and volume.
+    fmax
+        Tolerance for the force convergence (in eV/A).
+    max_steps
+        Maximum number of steps to take.
+    optimizer
+        Optimizer class to use. All Optimizers except BFGSLineSearch
+    optimizer_kwargs
+        Dictionary of kwargs for the optimizer.
+    run_kwargs
+        Dictionary of kwargs for the run() method of the optimizer.
+    neb_kwargs
+        Dictionary of kwargs for the NEB.
+    copy_files
+        Files to copy before running the calculation.
 
-     Returns
-     -------
-     Optimizer
-         The ASE Optimizer object.
-     """
-    if optimizer.__name__ == 'BFGSLineSearch':
+    Returns
+    -------
+    Optimizer
+        The ASE Optimizer object.
+    """
+    if optimizer.__name__ == "BFGSLineSearch":
         raise ValueError("BFGSLineSearch is not allowed as optimizer with NEB.")
 
     # Copy atoms so we don't modify it in-place
@@ -465,6 +465,7 @@ def run_neb(
         calc_cleanup(image, dir_lists[i][0], dir_lists[i][1])
 
     return dyn
+
 
 @requires(
     has_geodesic_interpolate,
