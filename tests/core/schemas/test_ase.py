@@ -161,12 +161,12 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
     atoms = bulk("Cu") * (2, 2, 1)
     atoms[0].position += [0.1, 0.1, 0.1]
     atoms.calc = EMT()
-    dyn = BFGS(atoms, trajectory="test1.traj")
-    dyn.run(steps=1, fmax=0.01)
-    traj = read("test1.traj", index=":")
+    dyn = BFGS(atoms, trajectory="test.traj")
+    dyn.run(steps=5)
+    traj = read("test.traj", index=":")
 
     with pytest.raises(RuntimeError, match="Optimization did not converge"):
-        summarize_opt_run(dyn, check_convergence=True)
+        summarize_opt_run(dyn)
 
     # Make sure info tags are handled appropriately
     atoms = bulk("Cu") * (2, 2, 1)
