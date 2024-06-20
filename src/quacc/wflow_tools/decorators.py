@@ -141,13 +141,12 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
 
     settings = get_settings()
 
-    if _func is None:
-        return partial(job, **kwargs)
-
     if changes := kwargs.pop("settings_swap", {}):
         return job(change_settings_wrap(_func, changes), **kwargs)
 
-    if settings.WORKFLOW_ENGINE == "covalent":
+    if _func is None:
+        return partial(job, **kwargs)
+    elif settings.WORKFLOW_ENGINE == "covalent":
         import covalent as ct
 
         return ct.electron(_func, **kwargs)
@@ -340,7 +339,6 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
 
     if _func is None:
         return partial(flow, **kwargs)
-
     elif settings.WORKFLOW_ENGINE == "covalent":
         import covalent as ct
 
@@ -556,7 +554,6 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
 
     if _func is None:
         return partial(subflow, **kwargs)
-
     elif settings.WORKFLOW_ENGINE == "covalent":
         import covalent as ct
 
