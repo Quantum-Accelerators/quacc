@@ -586,13 +586,13 @@ def change_settings_wrap(func: Callable, changes: dict[str, Any]) -> Callable:
     Callable
         The wrapped function.
     """
-    original_func = func._original_func if getattr(func, "__changed__", False) else func
+    original_func = func._original_func if getattr(func, "_changed", False) else func
 
     @wraps(original_func)
     def wrapper(*args, **kwargs):
         with change_settings(changes):
             return original_func(*args, **kwargs)
 
-    wrapper.__changed__ = True
+    wrapper._changed = True
     wrapper._original_func = original_func
     return wrapper
