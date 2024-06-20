@@ -61,20 +61,18 @@ with change_settings({"GZIP_FILES": False}):
 
     When deploying calculations via a workflow engine, changes to in-memory global variables on the local machine will not be reflected on the remote machine. Instead, this should be done via a custom `settings_swap` keyword argument that is supported by the `@job` decorator.
 
-    Essentially, the following two blocks of code are functionally the same:
-
     ```python
     from quacc import job
 
 
-    @job(settings_swap={"GZIP_FILES"})  # (1)!
+    @job(settings_swap={"GZIP_FILES": False})  # (1)!
     def add(a, b):
         return a + b
     ```
 
     1. This is the same as doing
 
-         ```python
+        ```python
         from quacc import change_settings, job
 
 
@@ -95,4 +93,4 @@ with change_settings({"GZIP_FILES": False}):
 
 !!! Tip "When is This Method Ideal?"
 
-    This approach is ideal for fine-tuned modifications to settings within your workflow and for debugging scenarios (e.g. in a Jupyter Notebook).
+    This approach is ideal for fine-tuned modifications to settings within your workflow.
