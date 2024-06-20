@@ -482,7 +482,7 @@ class QuaccSettings(BaseSettings):
 
         Parameters
         ----------
-        settings : dict
+        settings
             Initial settings.
 
         Returns
