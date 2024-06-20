@@ -5,7 +5,7 @@ import pytest
 jf = pytest.importorskip("jobflow")
 from pathlib import Path
 
-from quacc import job, redecorate, strip_decorator
+from quacc import get_settings, job, redecorate, strip_decorator
 
 
 def test_strip_decorators():
@@ -22,9 +22,7 @@ def test_change_settings_redecorate_job(tmp_path_factory):
 
     @job
     def write_file_job(name="job.txt"):
-        from quacc import SETTINGS
-
-        with open(Path(SETTINGS.RESULTS_DIR, name), "w") as f:
+        with open(Path(get_settings().RESULTS_DIR, name), "w") as f:
             f.write("test file")
 
     write_file_job = redecorate(

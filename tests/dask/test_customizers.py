@@ -9,7 +9,7 @@ from pathlib import Path
 
 from dask.distributed import get_client
 
-from quacc import flow, job, redecorate, strip_decorator, subflow
+from quacc import flow, get_settings, job, redecorate, strip_decorator, subflow
 from quacc.wflow_tools.customizers import customize_funcs, update_parameters
 
 client = get_client()
@@ -79,9 +79,7 @@ def test_change_settings_redecorate_job(tmp_path_factory):
 
     @job
     def write_file_job(name="job.txt"):
-        from quacc import SETTINGS
-
-        with open(Path(SETTINGS.RESULTS_DIR, name), "w") as f:
+        with open(Path(get_settings().RESULTS_DIR, name), "w") as f:
             f.write("test file")
 
     write_file_job = redecorate(
@@ -96,9 +94,7 @@ def test_change_settings_redecorate_flow(tmp_path_factory):
 
     @job
     def write_file_job(name="job.txt"):
-        from quacc import SETTINGS
-
-        with open(Path(SETTINGS.RESULTS_DIR, name), "w") as f:
+        with open(Path(get_settings().RESULTS_DIR, name), "w") as f:
             f.write("test file")
 
     @flow

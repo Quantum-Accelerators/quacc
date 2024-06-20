@@ -7,7 +7,15 @@ parsl = pytest.importorskip("parsl")
 
 from pathlib import Path
 
-from quacc import flow, job, redecorate, strip_decorator, subflow
+from quacc import (
+    change_settings,
+    flow,
+    get_settings,
+    job,
+    redecorate,
+    strip_decorator,
+    subflow,
+)
 from quacc.wflow_tools.customizers import customize_funcs
 
 
@@ -34,15 +42,25 @@ def test_strip_decorators():
     stripped_add3 = strip_decorator(add3)
     assert stripped_add3(1, 2) == 3
 
+def test_change_settings_concurrent():
+
+    @job
+    def test():
+        orig_setting = get_settings().GZIP_FILES
+        with change_settings({"GZIP_FILES": False}):
+            pass
+        return orig_setting
+
+    futures = [test() for _ in range(0, 25)]
+    results = [f.result() for f in futures]
+    assert False not in results
 
 def test_change_settings_redecorate_job(tmp_path_factory):
     tmp_dir1 = tmp_path_factory.mktemp("dir1")
 
     @job
     def write_file_job(name="job.txt"):
-        from quacc import SETTINGS
-
-        with open(Path(SETTINGS.RESULTS_DIR, name), "w") as f:
+        with open(Path(get_settings().RESULTS_DIR, name), "w") as f:
             f.write("test file")
 
     write_file_job = redecorate(
@@ -57,9 +75,7 @@ def test_change_settings_redecorate_flow(tmp_path_factory):
 
     @job
     def write_file_job(name="job.txt"):
-        from quacc import SETTINGS
-
-        with open(Path(SETTINGS.RESULTS_DIR, name), "w") as f:
+        with open(Path(get_settings().RESULTS_DIR, name), "w") as f:
             f.write("test file")
 
     @flow
@@ -82,9 +98,7 @@ def test_double_change_settings_redecorate_job(tmp_path_factory):
 
     @job
     def write_file_job(name="job.txt"):
-        from quacc import SETTINGS
-
-        with open(Path(SETTINGS.RESULTS_DIR, name), "w") as f:
+        with open(Path(get_settings().RESULTS_DIR, name), "w") as f:
             f.write("test file")
 
     write_file_job = redecorate(
