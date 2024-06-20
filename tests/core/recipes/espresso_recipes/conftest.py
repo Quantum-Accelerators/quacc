@@ -9,9 +9,9 @@ def ESPRESSO_PARALLEL_CMD():
 
     import psutil
 
-    from quacc import SETTINGS
+    from quacc import change_settings
 
     if which("mpirun") and psutil.cpu_count(logical=False) >= 2:
-        SETTINGS.ESPRESSO_PARALLEL_CMD = "mpirun -np 2"
+        change_settings({"ESPRESSO_PARALLEL_CMD": "mpirun -np 2"})
     else:
-        SETTINGS.ESPRESSO_PARALLEL_CMD = ""
+        change_settings({"ESPRESSO_PARALLEL_CMD": ""})

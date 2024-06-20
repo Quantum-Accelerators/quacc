@@ -20,7 +20,7 @@ from ase.vibrations import Vibrations
 from monty.dev import requires
 from monty.os.path import zpath
 
-from quacc import SETTINGS
+from quacc import get_settings
 from quacc.atoms.core import copy_atoms
 from quacc.runners._base import BaseRunner
 from quacc.runners.prep import terminate
@@ -213,9 +213,10 @@ class Runner(BaseRunner):
             The ASE Optimizer object.
         """
         # Set defaults
+        settings = get_settings()
         optimizer_kwargs = recursive_dict_merge(
             {
-                "logfile": "-" if SETTINGS.DEBUG else self.tmpdir / "opt.log",
+                "logfile": "-" if settings.DEBUG else self.tmpdir / "opt.log",
                 "restart": self.tmpdir / "opt.json",
             },
             optimizer_kwargs,
@@ -301,6 +302,7 @@ class Runner(BaseRunner):
         """
         # Set defaults
         vib_kwargs = vib_kwargs or {}
+        settings = get_settings()
 
         # Run calculation
         vib = Vibrations(self.atoms, name=str(self.tmpdir / "vib"), **vib_kwargs)
@@ -311,7 +313,7 @@ class Runner(BaseRunner):
 
         # Summarize run
         vib.summary(
-            log=sys.stdout if SETTINGS.DEBUG else str(self.tmpdir / "vib_summary.log")
+            log=sys.stdout if settings.DEBUG else str(self.tmpdir / "vib_summary.log")
         )
 
         # Perform cleanup operations
