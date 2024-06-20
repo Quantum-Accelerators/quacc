@@ -2,7 +2,7 @@ ase==3.23.0
 cclib==1.8.1
 custodian==2024.4.18
 emmet-core==0.83.6
-maggma==0.68.4
+maggma==0.68.5
 monty==2024.5.24
 numpy==2.0.0
 psutil==5.9.8
