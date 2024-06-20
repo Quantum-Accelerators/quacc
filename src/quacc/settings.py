@@ -4,17 +4,19 @@ from __future__ import annotations
 
 import os
 from contextlib import contextmanager
+from functools import wraps
 from pathlib import Path
 from shutil import which
 from typing import TYPE_CHECKING, Literal, Optional, Union
 
 import psutil
 from maggma.core import Store
+from monty.serialization import loadfn
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 if TYPE_CHECKING:
-    from typing import Any
+    from typing import Any, Callable
 
 _DEFAULT_CONFIG_FILE_PATH = Path("~", ".quacc.yaml").expanduser().resolve()
 
@@ -507,8 +509,6 @@ def _use_custom_config_settings(settings: dict[str, Any]) -> dict[str, Any]:
     dict
         Updated settings based on the custom YAML.
     """
-    from monty.serialization import loadfn
-
     config_file_path = (
         Path(settings.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH))
         .expanduser()
@@ -548,7 +548,7 @@ def _type_handler(settings: dict[str, Any]) -> dict[str, Any]:
 
 
 @contextmanager
-def change_settings(changes: dict[str, Any]):
+def change_settings(changes: dict[str, Any] | None) -> None:
     """
     Temporarily change an attribute of an object.
 
@@ -556,16 +556,47 @@ def change_settings(changes: dict[str, Any]):
     ----------
     changes
         Dictionary of changes to make formatted as attribute: value.
+
+    Returns
+    -------
+    None
     """
-    from quacc import SETTINGS
+    from quacc import _internally_set_settings, get_settings
 
-    original_values = {attr: getattr(SETTINGS, attr) for attr in changes}
+    settings = get_settings()
+    original_values = {attr: getattr(settings, attr) for attr in changes}
 
-    for attr, new_value in changes.items():
-        setattr(SETTINGS, attr, new_value)
+    _internally_set_settings(changes=changes)
 
     try:
         yield
     finally:
-        for attr, original_value in original_values.items():
-            setattr(SETTINGS, attr, original_value)
+        _internally_set_settings(changes=original_values)
+
+
+def change_settings_wrap(func: Callable, changes: dict[str, Any]) -> Callable:
+    """
+    Wraps a function with the change_settings context manager if not already wrapped.
+
+    Parameters
+    ----------
+    func
+        The function to wrap.
+    changes
+        The settings to apply within the context manager.
+
+    Returns
+    -------
+    Callable
+        The wrapped function.
+    """
+    original_func = func._original_func if getattr(func, "__changed__", False) else func
+
+    @wraps(original_func)
+    def wrapper(*args, **kwargs):
+        with change_settings(changes):
+            return original_func(*args, **kwargs)
+
+    wrapper.__changed__ = True
+    wrapper._original_func = original_func
+    return wrapper

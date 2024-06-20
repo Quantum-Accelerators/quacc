@@ -15,7 +15,8 @@ from ase.io import read
 from ase.optimize import BFGS, BFGSLineSearch
 from ase.optimize.sciopt import SciPyFminBFGS
 
-from quacc import SETTINGS, change_settings
+from quacc import change_settings, get_settings
+from quacc.runners._base import BaseRunner
 from quacc.runners.ase import Runner
 
 LOGGER = logging.getLogger(__name__)
@@ -23,7 +24,7 @@ LOGGER.propagate = True
 
 
 def _find_results_dir():
-    search_dir = SETTINGS.RESULTS_DIR
+    search_dir = get_settings().RESULTS_DIR
     pattern = str(Path(search_dir, "quacc-*"))
     matching_dirs = glob.glob(pattern)
     most_recent_directory = max(matching_dirs, key=os.path.getmtime, default=None)
@@ -39,11 +40,46 @@ def prep_files():
 
 
 def teardown_function():
-    if os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, "test_calc")):
-        rmtree(os.path.join(SETTINGS.RESULTS_DIR, "test_calc"), ignore_errors=True)
+    results_dir = get_settings().RESULTS_DIR
+    if os.path.exists(os.path.join(results_dir, "test_calc")):
+        rmtree(os.path.join(results_dir, "test_calc"), ignore_errors=True)
     for f in ["test_file.txt", "test_file.txt.gz"]:
-        if os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, f)):
-            os.remove(os.path.join(SETTINGS.RESULTS_DIR, f))
+        if os.path.exists(os.path.join(results_dir, f)):
+            os.remove(os.path.join(results_dir, f))
+
+
+def test_base_runner(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    atoms = bulk("Cu")
+    atoms.calc = EMT()
+    br = BaseRunner(atoms)
+
+    br.setup()
+    assert "tmp" in str(br.tmpdir)
+    assert br.tmpdir.exists()
+    assert "tmp" not in str(br.job_results_dir)
+    assert not br.job_results_dir.exists()
+    assert Path(br.atoms.calc.directory) == br.tmpdir
+
+    br.cleanup()
+    assert not br.tmpdir.exists()
+    assert br.job_results_dir.exists()
+    assert Path(br.atoms.calc.directory) == br.job_results_dir
+
+
+def test_base_runner2(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    br = BaseRunner()
+
+    br.setup()
+    assert "tmp" in str(br.tmpdir)
+    assert br.tmpdir.exists()
+    assert "tmp" not in str(br.job_results_dir)
+    assert not br.job_results_dir.exists()
+
+    br.cleanup()
+    assert not br.tmpdir.exists()
+    assert br.job_results_dir.exists()
 
 
 def test_run_calc(tmp_path, monkeypatch):

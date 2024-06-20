@@ -17,7 +17,7 @@ from pymatgen.entries.compatibility import (
     MaterialsProject2020Compatibility,
 )
 
-from quacc import SETTINGS
+from quacc import get_settings
 from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import finalize_dict, recursive_dict_merge
@@ -81,24 +81,25 @@ def vasp_summarize_run(
     additional_fields
         Additional fields to add to the task document.
     store
-        Maggma Store object to store the results in. Defaults to `SETTINGS.STORE`,
+        Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`,
 
     Returns
     -------
     VaspSchema
         Dictionary representation of the task document
     """
-    run_bader = SETTINGS.VASP_BADER if run_bader == _DEFAULT_SETTING else run_bader
+    settings = get_settings()
+    run_bader = settings.VASP_BADER if run_bader == _DEFAULT_SETTING else run_bader
     run_chargemol = (
-        SETTINGS.VASP_CHARGEMOL if run_chargemol == _DEFAULT_SETTING else run_chargemol
+        settings.VASP_CHARGEMOL if run_chargemol == _DEFAULT_SETTING else run_chargemol
     )
     check_convergence = (
-        SETTINGS.CHECK_CONVERGENCE
+        settings.CHECK_CONVERGENCE
         if check_convergence == _DEFAULT_SETTING
         else check_convergence
     )
     directory = Path(directory or final_atoms.calc.directory)
-    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store == _DEFAULT_SETTING else store
     additional_fields = additional_fields or {}
 
     # Fetch all tabulated results from VASP outputs files. Fortunately, emmet
@@ -133,8 +134,9 @@ def vasp_summarize_run(
     if nsteps := len([f for f in os.listdir(directory) if f.startswith("step")]):
         intermediate_vasp_task_docs = {
             "steps": {
-                n: TaskDoc.from_directory(Path(directory, f"step{n}")).model_dump()
+                n: TaskDoc.from_directory(directory / f"step{n}").model_dump()
                 for n in range(nsteps)
+                if (directory / f"step{n}").is_dir()
             }
         }
     else:
@@ -167,7 +169,7 @@ def vasp_summarize_run(
         intermediate_vasp_task_docs | vasp_task_doc | base_task_doc | additional_fields
     )
     return finalize_dict(
-        unsorted_task_doc, directory, gzip_file=SETTINGS.GZIP_FILES, store=store
+        unsorted_task_doc, directory, gzip_file=settings.GZIP_FILES, store=store
     )
 
 
@@ -215,9 +217,10 @@ def summarize_vasp_opt_run(
     additional_fields
         Additional fields to add to the task document.
     store
-        Maggma Store object to store the results in. Defaults to `SETTINGS.STORE`,
+        Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`,
     """
-    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
+    settings = get_settings()
+    store = settings.STORE if store == _DEFAULT_SETTING else store
 
     final_atoms = get_final_atoms_from_dynamics(optimizer)
     directory = Path(directory or final_atoms.calc.directory)
@@ -242,7 +245,7 @@ def summarize_vasp_opt_run(
     )
     unsorted_task_doc = recursive_dict_merge(vasp_summary, opt_run_summary)
     return finalize_dict(
-        unsorted_task_doc, directory, gzip_file=SETTINGS.GZIP_FILES, store=store
+        unsorted_task_doc, directory, gzip_file=settings.GZIP_FILES, store=store
     )
 
 
@@ -259,8 +262,6 @@ def _bader_runner(path: Path | str) -> BaderSchema:
         The path where the VASP output files are located. Must include CHGCAR,
         AECCAR0, AECCAR2, and POTCAR files. These files can be gzip'd or not --
         it doesn't matter. If None, the current working directory is used.
-    structure
-        The structure object to attach the Bader charges and spins to.
 
     Returns
     -------
