@@ -335,7 +335,7 @@ def neb_job(
         "settings_path": settings.NEWTONNET_CONFIG_PATH,
     }
 
-    geodesic_defaults = {"nimages": 20}
+    geodesic_defaults = {"n_images": 20}
 
     neb_defaults = {"method": "aseneb", "precon": None}
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
@@ -424,7 +424,7 @@ def neb_ts_job(
         "settings_path": settings.NEWTONNET_CONFIG_PATH,
     }
 
-    geodesic_defaults = {"nimages": 20}
+    geodesic_defaults = {"n_images": 20}
 
     neb_defaults = {"method": "aseneb", "precon": None}
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
@@ -505,7 +505,7 @@ def geodesic_ts_job(
         "settings_path": settings.NEWTONNET_CONFIG_PATH,
     }
 
-    geodesic_defaults = {"nimages": 20}
+    geodesic_defaults = {"n_images": 20}
 
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
     geodesic_interpolate_flags = recursive_dict_merge(
