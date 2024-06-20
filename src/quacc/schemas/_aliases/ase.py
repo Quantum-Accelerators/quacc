@@ -45,7 +45,7 @@ class RunSchema(AtomsSchema):
 class OptSchema(RunSchema):
     """Schema for [quacc.schemas.ase.summarize_opt_run][]"""
 
-    parameters_opt: ParametersOpt  # from dyn.todict()
+    parameters_opt: ParametersDyn
     converged: bool
     trajectory: list[Atoms]
     trajectory_results: list[Results]
