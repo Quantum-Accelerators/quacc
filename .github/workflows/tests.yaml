@@ -38,7 +38,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install --system -r tests/requirements.txt -r tests/requirements-mp.txt "quacc[dev] @ ."
+          uv pip install --system -r tests/requirements.txt "quacc[dev] @ ."
 
       - name: Run tests with pytest (w/ coverage)
         if: matrix.python-version != '3.12'
@@ -326,6 +326,41 @@ jobs:
           path: "coverage.xml"
           retention-days: 1
 
+  tests-mp:
+    strategy:
+      fail-fast: true
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: tests/requirements**.txt
+
+      - name: Install pip packages
+        run: |
+          pip install uv
+          uv pip install --system -r tests/requirements.txt -r tests/requirements-mp.txt "quacc[dev] @ ."
+
+      - name: Run tests with pytest
+        run: pytest -k 'mp_' --durations=10 --cov=quacc --cov-report=xml
+
+      - name: Upload code coverage report to Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.job }} coverage report
+          path: "coverage.xml"
+          retention-days: 1
+
   codecov:
     needs:
       - tests-core
@@ -335,6 +370,7 @@ jobs:
       - tests-tblite-dftbplus
       - tests-qchem-sella
       - tests-mlps
+      - tests-mp
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
