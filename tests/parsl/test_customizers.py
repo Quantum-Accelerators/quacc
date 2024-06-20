@@ -42,8 +42,8 @@ def test_strip_decorators():
     stripped_add3 = strip_decorator(add3)
     assert stripped_add3(1, 2) == 3
 
-def test_change_settings_concurrent():
 
+def test_change_settings_concurrent():
     @job
     def test():
         orig_setting = get_settings().GZIP_FILES
@@ -51,9 +51,10 @@ def test_change_settings_concurrent():
             pass
         return orig_setting
 
-    futures = [test() for _ in range(0, 25)]
+    futures = [test() for _ in range(25)]
     results = [f.result() for f in futures]
     assert False not in results
+
 
 def test_change_settings_redecorate_job(tmp_path_factory):
     tmp_dir1 = tmp_path_factory.mktemp("dir1")
