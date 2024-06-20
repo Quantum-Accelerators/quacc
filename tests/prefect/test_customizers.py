@@ -94,6 +94,7 @@ def test_double_change_settings_redecorate_job(tmp_path_factory):
     @flow
     def my_flow():
         return write_file_job()
+
     my_flow().result()
     assert not Path(tmp_dir1 / "job.txt").exists()
     assert Path(tmp_dir2 / "job.txt").exists()
