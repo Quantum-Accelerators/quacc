@@ -24,6 +24,14 @@ FILE_DIR = Path(__file__).parent
 QCHEM_DIR = FILE_DIR / "qchem_examples"
 
 
+def setup_module():
+    _internally_set_settings({"CHECK_CONVERGENCE": False})
+
+
+def teardown_module():
+    _internally_set_settings(reset=True)
+
+
 @pytest.fixture()
 def test_atoms():
     return read(FILE_DIR / "xyz" / "test.xyz")
@@ -106,14 +114,6 @@ def mock_execute5(self, **kwargs):
 def mock_read(self, **kwargs):
     if self.results is None:
         raise RuntimeError("Results should not be None here.")
-
-
-def setup_module():
-    _internally_set_settings({"CHECK_CONVERGENCE": False})
-
-
-def teardown_module():
-    _internally_set_settings(reset=True)
 
 
 def test_static_job_v1(monkeypatch, tmp_path, test_atoms):
