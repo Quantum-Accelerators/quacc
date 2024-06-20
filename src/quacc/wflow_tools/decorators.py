@@ -156,7 +156,6 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
             return _func(*f_args, **f_kwargs)
 
         return Delayed_(delayed(wrapper, **kwargs))
-
     elif settings.WORKFLOW_ENGINE == "jobflow":
         from jobflow import job as jf_job
 
