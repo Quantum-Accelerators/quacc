@@ -10,7 +10,7 @@ import numpy as np
 from ase.build import molecule
 
 from quacc import _internally_set_settings
-from quacc.recipes.newtonnet.core import freq_job, relax_job
+from quacc.recipes.newtonnet.core import freq_job, relax_job, static_job
 from quacc.recipes.newtonnet.ts import irc_job, quasi_irc_job, ts_job
 
 current_file_path = Path(__file__).parent
