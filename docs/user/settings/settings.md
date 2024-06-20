@@ -65,7 +65,7 @@ with change_settings({"GZIP_FILES": False}):
     from quacc import job
 
 
-    @job(settings_swap={"GZIP_FILES"})  # (1)!
+    @job(settings_swap={"GZIP_FILES": False})  # (1)!
     def add(a, b):
         return a + b
     ```
