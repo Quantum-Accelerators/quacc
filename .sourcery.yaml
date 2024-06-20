@@ -1,5 +1,0 @@
-github:
-  ignore_labels:
-    - sourcery-ignore
-rule_settings:
-  python_version: "3.9"
