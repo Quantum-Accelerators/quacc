@@ -14,7 +14,7 @@ from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
 from ase.io import read
 from ase.mep.neb import NEBOptimizer
-from ase.optimize import BFGS, BFGSLineSearch
+from ase.optimize import BFGS, BFGSLineSearch, GPMin
 from ase.optimize.sciopt import SciPyFminBFGS
 
 # from sella import Sella
@@ -85,7 +85,7 @@ def setup_test_environment(tmp_path):
 
 @pytest.mark.parametrize(
     (
-        "nimages",
+        "n_images",
         "convergence_tolerance",
         "max_iterations",
         "max_micro_iterations",
@@ -98,22 +98,12 @@ def setup_test_environment(tmp_path):
     [
         (20, 2e-3, 15, 20, 1.7, 1e-2, 3.0, None, 20),  # Default parameters
         (10, 2e-3, 15, 20, 1.7, 1e-2, 3.0, None, 10),  # Different number of images
-        (
-            20,
-            1e-4,
-            10,
-            10,
-            1.5,
-            0.01,
-            2.5,
-            "raw_path.xyz",
-            20,
-        ),  # Different interpolation parameters and save_raw
+        (20, 1e-4, 10, 10, 1.5, 1e-2, 2.5, "raw_path.xyz", 20,),  # Different interpolation parameters and save_raw
     ],
 )
 def test_geodesic_interpolate_wrapper(
     setup_test_environment,
-    nimages,
+    n_images,
     convergence_tolerance,
     max_iterations,
     max_micro_iterations,
@@ -128,7 +118,7 @@ def test_geodesic_interpolate_wrapper(
     smoother_path = _geodesic_interpolate_wrapper(
         reactant,
         product,
-        nimages=nimages,
+        n_images=n_images,
         convergence_tolerance=convergence_tolerance,
         max_iterations=max_iterations,
         max_micro_iterations=max_micro_iterations,
@@ -168,27 +158,21 @@ def test_geodesic_interpolate_wrapper_large_system(setup_test_environment):
         "last_images_positions",
     ),
     [
-        # ("aseneb", NEBOptimizer, None, 10, 0.1, 3, 1e-3, None),
-        # ("aseneb", SciPyFminBFGS, None, 1000, 0.1, 3, 1e-3, "some_logdir",
-        #   0.78503956131, -24.9895786292, -0.0017252843, 0.78017739462, 9, -19.946616164,
-        #   -0.19927549, 0.51475535802),
         (
-            "aseneb",
-            NEBOptimizer,
-            None,
-            10,
-            0.1,
-            3,
-            1e-3,
-            "some_logdir",
-            -0.854,
-            1.082,
-            -0.005,
-            -0.8161139,
-            9,
-            -19.946616164,
-            -0.19927549,
-            0.51475535802,
+                "aseneb", GPMin, None, 10, 0.1, 3, 1e-3, "some_logdir",
+                -0.854, 1.082, -0.005, -0.8161139, 9, -19.946616164, -0.19927549, 0.51475535802,
+        ),
+        (
+                "aseneb", BFGS, None, 10, 0.1, 3, 1e-3, "some_logdir",
+                -0.854, 1.082, -0.005, -0.8161139, 9, -19.946616164, -0.19927549, 0.51475535802,
+        ),
+        (
+            "aseneb", BFGSLineSearch, None, 10, 0.1, 3, 1e-3, "some_logdir",
+            -0.854, 1.082, -0.005, -0.8161139, 9, -19.946616164, -0.19927549, 0.51475535802,
+        ),
+        (
+            "aseneb", NEBOptimizer, None, 10, 0.1, 3, 1e-3, "some_logdir",
+            -0.854, 1.082, -0.005, -0.8161139, 9, -19.946616164, -0.19927549, 0.51475535802,
         )
     ],
 )
@@ -221,7 +205,7 @@ def test_run_neb(
     optimized_p.calc = EMT()
 
     images = _geodesic_interpolate_wrapper(
-        optimized_r.copy(), optimized_p.copy(), nimages=n_intermediate
+        optimized_r.copy(), optimized_p.copy(), n_images=n_intermediate
     )
     for image in images:
         image.calc = EMT()
@@ -235,12 +219,19 @@ def test_run_neb(
     ), "pdt forces"
 
     neb_kwargs = {"method": "aseneb", "precon": None}
-    dyn = run_neb(images, optimizer=NEBOptimizer, neb_kwargs=neb_kwargs)
-    neb_summary = summarize_neb_run(dyn)
+    if optimizer_class == BFGSLineSearch:
+        with pytest.raises(ValueError, match="BFGSLineSearch is not allowed as optimizer with NEB."):
+            run_neb(images, optimizer=optimizer_class, neb_kwargs=neb_kwargs)
+    elif optimizer_class == GPMin:
+        with pytest.raises(RuntimeError, match="A descent model could not be built"):
+            run_neb(images, optimizer=optimizer_class, neb_kwargs=neb_kwargs)
+    else:
+        dyn = run_neb(images, optimizer=optimizer_class, neb_kwargs=neb_kwargs)
+        neb_summary = summarize_neb_run(dyn)
 
-    assert neb_summary["trajectory_results"][1]["energy"] == pytest.approx(
-        1.098, abs=0.01
-    )
+        assert neb_summary["trajectory_results"][1]["energy"] == pytest.approx(
+            1.098, abs=0.01
+        )
 
 
 def test_base_runner(tmp_path, monkeypatch):
