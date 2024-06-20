@@ -98,7 +98,17 @@ def setup_test_environment(tmp_path):
     [
         (20, 2e-3, 15, 20, 1.7, 1e-2, 3.0, None, 20),  # Default parameters
         (10, 2e-3, 15, 20, 1.7, 1e-2, 3.0, None, 10),  # Different number of images
-        (20, 1e-4, 10, 10, 1.5, 1e-2, 2.5, "raw_path.xyz", 20,),  # Different interpolation parameters and save_raw
+        (
+            20,
+            1e-4,
+            10,
+            10,
+            1.5,
+            1e-2,
+            2.5,
+            "raw_path.xyz",
+            20,
+        ),  # Different interpolation parameters and save_raw
     ],
 )
 def test_geodesic_interpolate_wrapper(
@@ -159,21 +169,77 @@ def test_geodesic_interpolate_wrapper_large_system(setup_test_environment):
     ),
     [
         (
-                "aseneb", GPMin, None, 10, 0.1, 3, 1e-3, "some_logdir",
-                -0.854, 1.082, -0.005, -0.8161139, 9, -19.946616164, -0.19927549, 0.51475535802,
+            "aseneb",
+            GPMin,
+            None,
+            10,
+            0.1,
+            3,
+            1e-3,
+            "some_logdir",
+            -0.854,
+            1.082,
+            -0.005,
+            -0.8161139,
+            9,
+            -19.946616164,
+            -0.19927549,
+            0.51475535802,
         ),
         (
-                "aseneb", BFGS, None, 10, 0.1, 3, 1e-3, "some_logdir",
-                -0.854, 1.082, -0.005, -0.8161139, 9, -19.946616164, -0.19927549, 0.51475535802,
+            "aseneb",
+            BFGS,
+            None,
+            10,
+            0.1,
+            3,
+            1e-3,
+            "some_logdir",
+            -0.854,
+            1.082,
+            -0.005,
+            -0.8161139,
+            9,
+            -19.946616164,
+            -0.19927549,
+            0.51475535802,
         ),
         (
-            "aseneb", BFGSLineSearch, None, 10, 0.1, 3, 1e-3, "some_logdir",
-            -0.854, 1.082, -0.005, -0.8161139, 9, -19.946616164, -0.19927549, 0.51475535802,
+            "aseneb",
+            BFGSLineSearch,
+            None,
+            10,
+            0.1,
+            3,
+            1e-3,
+            "some_logdir",
+            -0.854,
+            1.082,
+            -0.005,
+            -0.8161139,
+            9,
+            -19.946616164,
+            -0.19927549,
+            0.51475535802,
         ),
         (
-            "aseneb", NEBOptimizer, None, 10, 0.1, 3, 1e-3, "some_logdir",
-            -0.854, 1.082, -0.005, -0.8161139, 9, -19.946616164, -0.19927549, 0.51475535802,
-        )
+            "aseneb",
+            NEBOptimizer,
+            None,
+            10,
+            0.1,
+            3,
+            1e-3,
+            "some_logdir",
+            -0.854,
+            1.082,
+            -0.005,
+            -0.8161139,
+            9,
+            -19.946616164,
+            -0.19927549,
+            0.51475535802,
+        ),
     ],
 )
 def test_run_neb(
@@ -220,7 +286,9 @@ def test_run_neb(
 
     neb_kwargs = {"method": "aseneb", "precon": None}
     if optimizer_class == BFGSLineSearch:
-        with pytest.raises(ValueError, match="BFGSLineSearch is not allowed as optimizer with NEB."):
+        with pytest.raises(
+            ValueError, match="BFGSLineSearch is not allowed as optimizer with NEB."
+        ):
             run_neb(images, optimizer=optimizer_class, neb_kwargs=neb_kwargs)
     elif optimizer_class == GPMin:
         with pytest.raises(RuntimeError, match="A descent model could not be built"):
