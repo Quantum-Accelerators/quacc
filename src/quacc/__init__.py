@@ -77,6 +77,7 @@ def get_settings() -> QuaccSettings:
     Returns
     -------
     QuaccSettings
+        The Pydantic settings model.
     """
     if not hasattr(_thread_local, "settings"):
         _internally_set_settings(reset=True)
