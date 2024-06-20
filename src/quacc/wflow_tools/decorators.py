@@ -5,6 +5,8 @@ from __future__ import annotations
 from functools import partial, wraps
 from typing import TYPE_CHECKING, TypeVar
 
+from quacc.settings import change_settings_wrap
+
 Job = TypeVar("Job")
 Flow = TypeVar("Flow")
 Subflow = TypeVar("Subflow")
@@ -142,7 +144,10 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     if _func is None:
         return partial(job, **kwargs)
 
-    elif settings.WORKFLOW_ENGINE == "covalent":
+    if changes := kwargs.pop("settings_swap", {}):
+        return job(change_settings_wrap(_func, changes), **kwargs)
+
+    if settings.WORKFLOW_ENGINE == "covalent":
         import covalent as ct
 
         return ct.electron(_func, **kwargs)
@@ -621,6 +626,9 @@ def _get_parsl_wrapped_func(
     ):
         return func(*f_args, **f_kwargs)
 
+    if getattr(func, "__changed__", False):
+        wrapper.__changed__ = func.__changed__
+        wrapper._original_func = func._original_func
     wrapper.__name__ = func.__name__
     return wrapper
 
