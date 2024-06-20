@@ -115,7 +115,7 @@ def test_change_settings_redecorate_flow(tmp_path_factory):
     assert Path(tmp_dir2 / "flow.txt").exists()
 
 
-def test_double_change_settings_redecorate_job(tmp_path_factory, scheduler):
+def test_double_change_settings_redecorate_job(tmp_path_factory):
     tmp_dir1 = tmp_path_factory.mktemp("dir1")
     tmp_dir2 = tmp_path_factory.mktemp("dir2")
 
