@@ -15,7 +15,7 @@ from ase.constraints import FixAtoms, FixBondLength
 from ase.io import read
 from pymatgen.io.vasp.sets import MPRelaxSet, MPScanRelaxSet
 
-from quacc import SETTINGS, change_settings
+from quacc import change_settings, get_settings
 from quacc.calculators.vasp import Vasp, presets
 from quacc.calculators.vasp.params import MPtoASEConverter
 from quacc.schemas.prep import prep_next_run
@@ -897,7 +897,7 @@ def test_pmg_input_set2():
     }
 
 
-@pytest.mark.skipif(which(SETTINGS.VASP_CMD), reason="VASP is installed")
+@pytest.mark.skipif(which(get_settings().VASP_CMD), reason="VASP is installed")
 def test_run(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
 
