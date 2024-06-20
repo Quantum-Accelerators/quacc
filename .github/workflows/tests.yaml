@@ -329,7 +329,6 @@ jobs:
   codecov:
     needs:
       - tests-core
-      - tests-engines-covalent
       - tests-engines
       - tests-psi4
       - tests-defects-phonons-espresso
