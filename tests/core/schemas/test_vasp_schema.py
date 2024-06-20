@@ -16,7 +16,6 @@ from quacc.schemas.vasp import vasp_summarize_run
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.propagate = True
-has_atomate2 = util.find_spec("atomate2") is not None
 has_pmg_validation = util.find_spec("pymatgen.io.validation") is not None
 
 
@@ -208,7 +207,6 @@ def test_summarize_bader_and_chargemol_run(monkeypatch, run1, tmp_path):
     assert results["bader"]["spin_moments"] == [0.0] * len(atoms)
 
 
-@pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
 @pytest.mark.skipif(
     not has_pmg_validation, reason="pymatgen-io-validation not installed"
 )
