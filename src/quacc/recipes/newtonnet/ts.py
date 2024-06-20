@@ -469,7 +469,7 @@ def geodesic_ts_job(
     relax_job_kwargs: dict[str, Any] | None = None,
     calc_kwargs: dict[str, Any] | None = None,
     geodesic_interpolate_kwargs: dict[str, Any] | None = None,
-) -> dict:
+) -> NebTsSchema:
     """
     Perform a quasi-IRC job using the given reactant and product atoms objects.
 
@@ -485,8 +485,6 @@ def geodesic_ts_job(
         Keyword arguments for the NewtonNet calculator, by default None.
     geodesic_interpolate_kwargs
         Keyword arguments for the geodesic_interpolate function, by default None.
-    neb_kwargs
-        Keyword arguments for the NEB calculation, by default None.
 
     Returns
     -------
