@@ -8,8 +8,8 @@ from typing import TYPE_CHECKING
 
 from ase.calculators.gulp import GULP
 
-from quacc import SETTINGS
-from quacc.runners.ase import run_calc
+from quacc import get_settings
+from quacc.runners.ase import Runner
 from quacc.schemas.ase import summarize_run
 from quacc.utils.lists import merge_list_params
 
@@ -24,7 +24,6 @@ logger = logging.getLogger(__name__)
 
 GEOM_FILE_PBC = "gulp.cif"
 GEOM_FILE_NOPBC = "gulp.xyz"
-GULP_CMD = f"{SETTINGS.GULP_CMD} < gulp.gin > gulp.got"
 
 
 def run_and_summarize(
@@ -72,6 +71,8 @@ def run_and_summarize(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
     keyword_defaults = keyword_defaults or []
+    settings = get_settings()
+    gulp_cmd = f"{settings.GULP_CMD} < gulp.gin > gulp.got"
 
     if not atoms.pbc.any():
         if "opti" in keyword_defaults and "conv" not in keyword_defaults:
@@ -92,23 +93,21 @@ def run_and_summarize(
     gulp_keywords = " ".join(keywords)
     gulp_options = list(options)
 
-    if SETTINGS.GULP_LIB:
-        os.environ["GULP_LIB"] = str(SETTINGS.GULP_LIB)
-    atoms.calc = GULP(
-        command=GULP_CMD,
+    if settings.GULP_LIB:
+        os.environ["GULP_LIB"] = str(settings.GULP_LIB)
+    calc = GULP(
+        command=gulp_cmd,
         keywords=gulp_keywords,
         options=gulp_options,
         library=library,
         **calc_kwargs,
     )
-    final_atoms = run_calc(
-        atoms,
-        geom_file=GEOM_FILE_PBC if atoms.pbc.any() else GEOM_FILE_NOPBC,
-        copy_files=copy_files,
+    final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc(
+        geom_file=GEOM_FILE_PBC if atoms.pbc.any() else GEOM_FILE_NOPBC
     )
 
     if (
-        SETTINGS.CHECK_CONVERGENCE
+        settings.CHECK_CONVERGENCE
         and "opti" in gulp_keywords
         and not final_atoms.calc.get_opt_state()
     ):

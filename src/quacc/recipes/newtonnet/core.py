@@ -8,9 +8,9 @@ from typing import TYPE_CHECKING
 from ase.vibrations.data import VibrationsData
 from monty.dev import requires
 
-from quacc import SETTINGS, job
-from quacc.runners.ase import run_calc, run_opt
-from quacc.runners.thermo import run_ideal_gas
+from quacc import get_settings, job
+from quacc.runners.ase import Runner
+from quacc.runners.thermo import ThermoRunner
 from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
 from quacc.utils.dicts import recursive_dict_merge
 
@@ -61,14 +61,15 @@ def static_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
+    settings = get_settings()
     calc_defaults = {
-        "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-        "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        "model_path": settings.NEWTONNET_MODEL_PATH,
+        "settings_path": settings.NEWTONNET_CONFIG_PATH,
     }
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
 
-    atoms.calc = NewtonNet(**calc_flags)
-    final_atoms = run_calc(atoms, copy_files=copy_files)
+    calc = NewtonNet(**calc_flags)
+    final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
 
     return summarize_run(
         final_atoms, atoms, additional_fields={"name": "NewtonNet Static"}
@@ -94,7 +95,7 @@ def relax_job(
         Atoms object
     opt_params
         Dictionary of custom kwargs for the optimization process. For a list
-        of available keys, refer to [quacc.runners.ase.run_opt][].
+        of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
@@ -108,17 +109,18 @@ def relax_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_opt_run][].
         See the type-hint for the data structure.
     """
+    settings = get_settings()
     calc_defaults = {
-        "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-        "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        "model_path": settings.NEWTONNET_MODEL_PATH,
+        "settings_path": settings.NEWTONNET_CONFIG_PATH,
     }
     opt_defaults = {"optimizer": Sella} if has_sella else {}
 
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
-    atoms.calc = NewtonNet(**calc_flags)
-    dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
+    calc = NewtonNet(**calc_flags)
+    dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_flags)
 
     return _add_stdev_and_hess(
         summarize_opt_run(dyn, additional_fields={"name": "NewtonNet Relax"})
@@ -159,24 +161,25 @@ def freq_job(
     VibThermoSchema
         Dictionary of results. See the type-hint for the data structure.
     """
+    settings = get_settings()
     calc_defaults = {
-        "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-        "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        "model_path": settings.NEWTONNET_MODEL_PATH,
+        "settings_path": settings.NEWTONNET_CONFIG_PATH,
         "hess_method": "autograd",
     }
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
 
-    atoms.calc = NewtonNet(**calc_flags)
-    final_atoms = run_calc(atoms, copy_files=copy_files)
+    calc = NewtonNet(**calc_flags)
+    final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
 
     summary = summarize_run(
         final_atoms, atoms, additional_fields={"name": "NewtonNet Hessian"}
     )
 
     vib = VibrationsData(final_atoms, summary["results"]["hessian"])
-    igt = run_ideal_gas(
+    igt = ThermoRunner(
         final_atoms, vib.get_frequencies(), energy=summary["results"]["energy"]
-    )
+    ).run_ideal_gas()
 
     return summarize_vib_and_thermo(
         vib,
@@ -208,12 +211,13 @@ def _add_stdev_and_hess(summary: dict[str, Any]) -> dict[str, Any]:
         The modified summary dictionary with added standard deviation and
         Hessian values.
     """
+    settings = get_settings()
     for i, atoms in enumerate(summary["trajectory"]):
-        atoms.calc = NewtonNet(
-            model_path=SETTINGS.NEWTONNET_MODEL_PATH,
-            settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
+        calc = NewtonNet(
+            model_path=settings.NEWTONNET_MODEL_PATH,
+            settings_path=settings.NEWTONNET_CONFIG_PATH,
         )
-        results = run_calc(atoms).calc.results
+        results = Runner(atoms, calc).run_calc().calc.results
         summary["trajectory_results"][i]["hessian"] = results["hessian"]
         summary["trajectory_results"][i]["energy_std"] = results["energy_disagreement"]
         summary["trajectory_results"][i]["forces_std"] = results["forces_disagreement"]

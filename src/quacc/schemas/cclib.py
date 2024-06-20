@@ -12,7 +12,7 @@ import cclib
 from ase.atoms import Atoms
 from cclib.io import ccread
 
-from quacc import SETTINGS
+from quacc import get_settings
 from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import finalize_dict, recursive_dict_merge
@@ -89,20 +89,21 @@ def cclib_summarize_run(
     additional_fields
         Additional fields to add to the task document.
     store
-        Maggma Store object to store the results in. Defaults to `SETTINGS.STORE`
+        Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`
 
     Returns
     -------
     cclibSchema
         Dictionary representation of the task document
     """
+    settings = get_settings()
     directory = Path(directory or final_atoms.calc.directory)
     check_convergence = (
-        SETTINGS.CHECK_CONVERGENCE
+        settings.CHECK_CONVERGENCE
         if check_convergence == _DEFAULT_SETTING
         else check_convergence
     )
-    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store == _DEFAULT_SETTING else store
     additional_fields = additional_fields or {}
 
     # Get the cclib base task document
@@ -132,8 +133,9 @@ def cclib_summarize_run(
     if nsteps := len([f for f in os.listdir(directory) if f.startswith("step")]):
         intermediate_cclib_task_docs = {
             "steps": {
-                n: _make_cclib_schema(Path(directory, f"step{n}"), logfile_extensions)
+                n: _make_cclib_schema(directory / f"step{n}", logfile_extensions)
                 for n in range(nsteps)
+                if (directory / f"step{n}").is_dir()
             }
         }
     else:
@@ -152,12 +154,12 @@ def cclib_summarize_run(
         run_task_doc | intermediate_cclib_task_docs | cclib_task_doc | additional_fields
     )
     return finalize_dict(
-        unsorted_task_doc, directory, gzip_file=SETTINGS.GZIP_FILES, store=store
+        unsorted_task_doc, directory, gzip_file=settings.GZIP_FILES, store=store
     )
 
 
 def summarize_cclib_opt_run(
-    optimizer: Optimizer,
+    dyn: Optimizer,
     logfile_extensions: str | list[str],
     trajectory: Trajectory | list[Atoms] | None = None,
     directory: Path | str | None = None,
@@ -186,7 +188,7 @@ def summarize_cclib_opt_run(
 
     Parameters
     ----------
-    optimizer
+    dyn
         The ASE optimizer object
     logfile_extensions
         Possible extensions of the log file (e.g. ".log", ".out", ".txt",
@@ -196,7 +198,7 @@ def summarize_cclib_opt_run(
         used. For an exact match only, put in the full file name.
     trajectory
         ASE Trajectory object or list[Atoms] from reading a trajectory file. If
-        None, the trajectory must be found in dyn.traj_atoms.
+        None, the trajectory must be found in `dyn.trajectory.filename`.
     directory
         The path to the folder containing the calculation outputs. A value of
         None specifies the calculator directory.
@@ -211,16 +213,17 @@ def summarize_cclib_opt_run(
     additional_fields
         Additional fields to add to the task document.
     store
-        Maggma Store object to store the results in. Defaults to `SETTINGS.STORE`
+        Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`
 
     Returns
     -------
     cclibASEOptSchema
         Dictionary representation of the task document
     """
-    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
+    settings = get_settings()
+    store = settings.STORE if store == _DEFAULT_SETTING else store
 
-    final_atoms = get_final_atoms_from_dynamics(optimizer)
+    final_atoms = get_final_atoms_from_dynamics(dyn)
     directory = Path(directory or final_atoms.calc.directory)
     cclib_summary = cclib_summarize_run(
         final_atoms,
@@ -232,7 +235,7 @@ def summarize_cclib_opt_run(
         store=None,
     )
     opt_run_summary = summarize_opt_run(
-        optimizer,
+        dyn,
         trajectory=trajectory,
         check_convergence=check_convergence,
         charge_and_multiplicity=(
@@ -244,7 +247,7 @@ def summarize_cclib_opt_run(
     )
     unsorted_task_doc = recursive_dict_merge(cclib_summary, opt_run_summary)
     return finalize_dict(
-        unsorted_task_doc, directory, gzip_file=SETTINGS.GZIP_FILES, store=store
+        unsorted_task_doc, directory, gzip_file=settings.GZIP_FILES, store=store
     )
 
 

@@ -27,6 +27,9 @@ if TYPE_CHECKING:
     from quacc.schemas._aliases.ase import OptSchema
     from quacc.utils.files import Filenames, SourceDirectory
 
+    class QuasiIRCSchema(OptSchema):
+        initial_irc: OptSchema
+
 
 @job
 @requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
@@ -58,7 +61,7 @@ def ts_job(
         Basis set.
     opt_params
         Dictionary of custom kwargs for the optimization process. For a list
-        of available keys, refer to [quacc.runners.ase.run_opt][].
+        of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
@@ -126,7 +129,7 @@ def irc_job(
         Basis set.
     opt_params
         Dictionary of custom kwargs for the optimization process. For a list
-        of available keys, refer to [quacc.runners.ase.run_opt][].
+        of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
@@ -175,7 +178,7 @@ def quasi_irc_job(
     irc_job_kwargs: dict[str, Any] | None = None,
     relax_job_kwargs: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-) -> OptSchema:
+) -> QuasiIRCSchema:
     """
     Quasi-IRC optimize a molecular structure. Runs `irc_job` for 10 steps (default)
     followed by `relax_job`.
@@ -272,7 +275,7 @@ def quasi_irc_perturb_job(
         Basis set.
     opt_params
         Dictionary of custom kwargs for the optimization process. For a list
-        of available keys, refer to [quacc.runners.ase.run_opt][].
+        of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs

@@ -12,6 +12,7 @@ from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.vasp import setups as ase_setups
 from ase.constraints import FixAtoms
 
+from quacc import get_settings
 from quacc.calculators.vasp.io import load_vasp_yaml_calc
 from quacc.calculators.vasp.params import (
     get_param_swaps,
@@ -106,31 +107,33 @@ class Vasp(Vasp_):
         -------
         None
         """
-        from quacc import SETTINGS
+        self._settings = get_settings()
 
         # Set defaults
         use_custodian = (
-            SETTINGS.VASP_USE_CUSTODIAN
+            self._settings.VASP_USE_CUSTODIAN
             if use_custodian == _DEFAULT_SETTING
             else use_custodian
         )
         incar_copilot = (
-            SETTINGS.VASP_INCAR_COPILOT
+            self._settings.VASP_INCAR_COPILOT
             if incar_copilot == _DEFAULT_SETTING
             else incar_copilot
         )
         copy_magmoms = (
-            SETTINGS.VASP_COPY_MAGMOMS
+            self._settings.VASP_COPY_MAGMOMS
             if copy_magmoms == _DEFAULT_SETTING
             else copy_magmoms
         )
         preset_mag_default = (
-            SETTINGS.VASP_PRESET_MAG_DEFAULT
+            self._settings.VASP_PRESET_MAG_DEFAULT
             if preset_mag_default == _DEFAULT_SETTING
             else preset_mag_default
         )
         mag_cutoff = (
-            SETTINGS.VASP_MAG_CUTOFF if mag_cutoff == _DEFAULT_SETTING else mag_cutoff
+            self._settings.VASP_MAG_CUTOFF
+            if mag_cutoff == _DEFAULT_SETTING
+            else mag_cutoff
         )
 
         # Assign variables to self
@@ -170,27 +173,26 @@ class Vasp(Vasp_):
         str
             The command flag to pass to the Vasp calculator.
         """
-        from quacc import SETTINGS
 
         # Set the VASP pseudopotential directory
-        if SETTINGS.VASP_PP_PATH:
-            os.environ["VASP_PP_PATH"] = str(SETTINGS.VASP_PP_PATH)
+        if self._settings.VASP_PP_PATH:
+            os.environ["VASP_PP_PATH"] = str(self._settings.VASP_PP_PATH)
 
         # Set the ASE_VASP_VDW environmentvariable
-        if SETTINGS.VASP_VDW:
-            os.environ["ASE_VASP_VDW"] = str(SETTINGS.VASP_VDW)
+        if self._settings.VASP_VDW:
+            os.environ["ASE_VASP_VDW"] = str(self._settings.VASP_VDW)
 
         # Return vanilla ASE command
         vasp_cmd = (
-            SETTINGS.VASP_GAMMA_CMD
+            self._settings.VASP_GAMMA_CMD
             if (
                 np.prod(self.user_calc_params.get("kpts", [1, 1, 1])) == 1
                 and not self.user_calc_params.get("kspacing", None)
             )
-            else SETTINGS.VASP_CMD
+            else self._settings.VASP_CMD
         )
 
-        return f"{SETTINGS.VASP_PARALLEL_CMD} {vasp_cmd}"
+        return f"{self._settings.VASP_PARALLEL_CMD} {vasp_cmd}"
 
     def _cleanup_params(self) -> None:
         """
@@ -200,7 +202,6 @@ class Vasp(Vasp_):
         -------
         None
         """
-        from quacc import SETTINGS
 
         # Check constraints
         if (
@@ -213,9 +214,9 @@ class Vasp(Vasp_):
 
         # Get user-defined preset parameters for the calculator
         if self.preset:
-            calc_preset = load_vasp_yaml_calc(SETTINGS.VASP_PRESET_DIR / self.preset)[
-                "inputs"
-            ]
+            calc_preset = load_vasp_yaml_calc(
+                self._settings.VASP_PRESET_DIR / self.preset
+            )["inputs"]
         else:
             calc_preset = {}
 
@@ -230,7 +231,7 @@ class Vasp(Vasp_):
             and self.user_calc_params["setups"] not in ase_setups.setups_defaults
         ):
             self.user_calc_params["setups"] = load_vasp_yaml_calc(
-                SETTINGS.VASP_PRESET_DIR / self.user_calc_params["setups"]
+                self._settings.VASP_PRESET_DIR / self.user_calc_params["setups"]
             )["inputs"]["setups"]
 
         # Handle special arguments in the user calc parameters that ASE does not

@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING
 
 from ase.calculators.orca import ORCA, OrcaProfile, OrcaTemplate
 
-from quacc import SETTINGS
-from quacc.runners.ase import run_calc, run_opt
+from quacc import get_settings
+from quacc.runners.ase import Runner
 from quacc.schemas.cclib import cclib_summarize_run, summarize_cclib_opt_run
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.utils.lists import merge_list_params
@@ -71,7 +71,7 @@ def run_and_summarize(
     cclibSchema
         Dictionary of results
     """
-    atoms.calc = prep_calculator(
+    calc = prep_calculator(
         charge=charge,
         spin_multiplicity=spin_multiplicity,
         default_inputs=default_inputs,
@@ -81,7 +81,7 @@ def run_and_summarize(
         **calc_kwargs,
     )
 
-    atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
+    atoms = Runner(atoms, calc, copy_files=copy_files).run_calc(geom_file=GEOM_FILE)
 
     return cclib_summarize_run(atoms, LOG_FILE, additional_fields=additional_fields)
 
@@ -124,7 +124,7 @@ def run_and_summarize_opt(
     opt_defaults
         Default arguments for the ASE optimizer.
     opt_params
-        Dictionary of custom kwargs for [quacc.runners.ase.run_opt][]
+        Dictionary of custom kwargs for [quacc.runners.ase.Runner.run_opt][]
     additional_fields
         Any additional fields to supply to the summarizer.
     copy_files
@@ -137,7 +137,7 @@ def run_and_summarize_opt(
     cclibASEOptSchema
         Dictionary of results
     """
-    atoms.calc = prep_calculator(
+    calc = prep_calculator(
         charge=charge,
         spin_multiplicity=spin_multiplicity,
         default_inputs=default_inputs,
@@ -148,7 +148,7 @@ def run_and_summarize_opt(
     )
 
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
-    dyn = run_opt(atoms, copy_files=copy_files, **opt_flags)
+    dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_flags)
     return summarize_cclib_opt_run(dyn, LOG_FILE, additional_fields=additional_fields)
 
 
@@ -194,9 +194,10 @@ def prep_calculator(
         inputs.append("xyzfile")
     orcasimpleinput = " ".join(inputs)
     orcablocks = "\n".join(blocks)
+    settings = get_settings()
 
     return ORCA(
-        profile=OrcaProfile(command=SETTINGS.ORCA_CMD),
+        profile=OrcaProfile(command=settings.ORCA_CMD),
         charge=charge,
         mult=spin_multiplicity,
         orcasimpleinput=orcasimpleinput,

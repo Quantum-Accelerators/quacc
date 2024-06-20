@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import os
 from copy import deepcopy
 from pathlib import Path
@@ -14,13 +15,15 @@ from ase.constraints import FixAtoms, FixBondLength
 from ase.io import read
 from pymatgen.io.vasp.sets import MPRelaxSet, MPScanRelaxSet
 
-from quacc import SETTINGS, change_settings
+from quacc import change_settings, get_settings
 from quacc.calculators.vasp import Vasp, presets
 from quacc.calculators.vasp.params import MPtoASEConverter
 from quacc.schemas.prep import prep_next_run
 
 FILE_DIR = Path(__file__).parent
 PSEUDO_DIR = FILE_DIR / "fake_pseudos"
+LOGGER = logging.getLogger(__name__)
+LOGGER.propagate = True
 
 
 @pytest.fixture()
@@ -438,16 +441,6 @@ def test_lasph_aggressive():
         assert calc.bool_params["lasph"] is True
 
 
-def test_efermi():
-    atoms = bulk("Cu")
-    calc = Vasp(atoms)
-    assert calc.string_params["efermi"] == "midgap"
-
-    atoms = bulk("Cu")
-    calc = Vasp(atoms, efermi=10.0)
-    assert calc.string_params["efermi"] == 10.0
-
-
 def test_algo():
     atoms = bulk("Cu")
 
@@ -816,6 +809,24 @@ def test_preset_override():
     assert calc.parameters.get("efermi") is None
 
 
+def test_logging(caplog):
+    atoms = bulk("Cu")
+    with caplog.at_level(logging.INFO):
+        Vasp(atoms, nsw=0, kpts=(3, 3, 3))
+    assert "Recommending LMAXMIX = 4" in caplog.text
+    assert "Recommending ISMEAR = -5" in caplog.text
+    assert (
+        "The following parameters were changed: {'ismear': -5, 'lmaxmix': 4}"
+        in caplog.text
+    )
+
+    with caplog.at_level(logging.INFO):
+        Vasp(atoms, nsw=0, kpts=(2, 2, 1), ismear=0)
+    assert "Recommending LMAXMIX = 4" in caplog.text
+    assert "Recommending ISMEAR = -5" in caplog.text
+    assert "The following parameters were changed: {'lmaxmix': 4}" in caplog.text
+
+
 def test_bad_pmg_converter():
     with pytest.raises(ValueError, match="Either atoms or prev_dir must be provided"):
         MPtoASEConverter()
@@ -886,7 +897,7 @@ def test_pmg_input_set2():
     }
 
 
-@pytest.mark.skipif(which(SETTINGS.VASP_CMD), reason="VASP is installed")
+@pytest.mark.skipif(which(get_settings().VASP_CMD), reason="VASP is installed")
 def test_run(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
 

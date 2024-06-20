@@ -4,6 +4,61 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.0]
+
+### Added
+
+- Added a mechanism to update the settings on-the-fly via a special `settings_swap` keyword argument that can be passed to the decorators.
+
+### Changed
+
+- The global `SETTINGS` variable is gone! Modifying a global variable can cause havoc in multithreaded environments and was never compatible with workflow engines. Refer to the [Modifying Settings](https://quantum-accelerators.github.io/quacc/user/settings/settings.html) page for the recommended approach. For most users without an active workflow engine, this will be the `with change_settings()` context manager.
+
+### Fixed
+
+- Fixed an edge-case that can occur in multithreading environments where in-memory changes to the `QuaccSettings` could carry over to a concurrent thread
+
+## [0.9.5]
+
+### Changed
+
+- Pinned numpy version to < 2.0 (for now...)
+
+## [0.9.4]
+
+### Added
+
+- VASP: Added a new logging statement to specifically highlight which parameters were swapped, not just which recommendations were made
+
+### Changed
+
+- VASP: Removed EFERMI="midgap" co-pilot swap since it does not influence the results and prevents VASP 5.x compatability
+
+### Fixed
+
+- Fixed MD5-based `Atoms` hashing to work on FIPS-encrypted OSs
+
+## [0.9.3]
+
+### Changed
+
+- Update the default `shear_strain` value in `quacc.atoms.defects.make_deformations_from_bulk` to match that of Pymatgen
+- Internal refactoring of the runners to be class-based
+
+### Fixed
+
+- Fixed an issue where the `Atoms` object in the output schema could get a stray calculator attached to it when passed between `@job`s
+
+## [0.9.2]
+
+### Added
+
+- Added support for controlling which properties to calculate with MLP static jobs
+
+### Changed
+
+- Bumped minimum version of pymatgen
+
 ## [0.9.1]
 
 ### Changed
@@ -11,7 +66,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - No longer need to install `master` branch of ASE
 - Modified Espresso and ONETEP settings to support new ASE profile features
 - Removed `nsteps` from the `OptSchema`
-
 
 ## [0.9.0]
 

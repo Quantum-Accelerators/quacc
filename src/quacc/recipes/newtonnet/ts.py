@@ -7,9 +7,9 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
-from quacc import SETTINGS, change_settings, job, strip_decorator
+from quacc import change_settings, get_settings, job, strip_decorator
 from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
-from quacc.runners.ase import run_opt
+from quacc.runners.ase import Runner
 from quacc.schemas.ase import summarize_opt_run
 from quacc.utils.dicts import recursive_dict_merge
 
@@ -71,7 +71,7 @@ def ts_job(
         Keyword arguments to use for the [quacc.recipes.newtonnet.ts.freq_job][]
     opt_params
         Dictionary of custom kwargs for the optimization process. For a list
-        of available keys, refer to [quacc.runners.ase.run_opt][].
+        of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
     **calc_kwargs
         Dictionary of custom kwargs for the NewtonNet calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -83,10 +83,11 @@ def ts_job(
         Dictionary of results. See the type-hint for the data structure.
     """
     freq_job_kwargs = freq_job_kwargs or {}
+    settings = get_settings()
 
     calc_defaults = {
-        "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-        "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        "model_path": settings.NEWTONNET_MODEL_PATH,
+        "settings_path": settings.NEWTONNET_CONFIG_PATH,
         "hess_method": "autograd",
     }
     opt_defaults = {
@@ -102,10 +103,10 @@ def ts_job(
     if use_custom_hessian:
         opt_flags["optimizer_kwargs"]["hessian_function"] = _get_hessian
 
-    atoms.calc = NewtonNet(**calc_flags)
+    calc = NewtonNet(**calc_flags)
 
     # Run the TS optimization
-    dyn = run_opt(atoms, **opt_flags)
+    dyn = Runner(atoms, calc).run_opt(**opt_flags)
     opt_ts_summary = _add_stdev_and_hess(
         summarize_opt_run(dyn, additional_fields={"name": "NewtonNet TS"})
     )
@@ -149,7 +150,7 @@ def irc_job(
         Keyword arguments to use for the [quacc.recipes.newtonnet.ts.freq_job][]
     opt_params
         Dictionary of custom kwargs for the optimization process. For a list
-        of available keys, refer to [quacc.runners.ase.run_opt][].
+        of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
     **calc_kwargs
         Custom kwargs for the NewtonNet calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -162,10 +163,11 @@ def irc_job(
         See the type-hint for the data structure.
     """
     freq_job_kwargs = freq_job_kwargs or {}
+    settings = get_settings()
 
     calc_defaults = {
-        "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-        "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        "model_path": settings.NEWTONNET_MODEL_PATH,
+        "settings_path": settings.NEWTONNET_CONFIG_PATH,
     }
     opt_defaults = {
         "optimizer": IRC,
@@ -177,11 +179,11 @@ def irc_job(
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
     # Define calculator
-    atoms.calc = NewtonNet(**calc_flags)
+    calc = NewtonNet(**calc_flags)
 
     # Run IRC
     with change_settings({"CHECK_CONVERGENCE": False}):
-        dyn = run_opt(atoms, **opt_flags)
+        dyn = Runner(atoms, calc).run_opt(**opt_flags)
         opt_irc_summary = _add_stdev_and_hess(
             summarize_opt_run(
                 dyn, additional_fields={"name": f"NewtonNet IRC: {direction}"}
@@ -283,9 +285,10 @@ def _get_hessian(atoms: Atoms) -> NDArray:
     NDArray
         The calculated Hessian matrix, reshaped into a 2D array.
     """
+    settings = get_settings()
     ml_calculator = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
+        model_path=settings.NEWTONNET_MODEL_PATH,
+        settings_path=settings.NEWTONNET_CONFIG_PATH,
     )
     ml_calculator.calculate(atoms)
 
