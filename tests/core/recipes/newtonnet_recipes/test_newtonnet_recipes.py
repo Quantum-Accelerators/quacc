@@ -324,69 +324,9 @@ def setup_test_environment(tmp_path):
     return reactant, product
 
 
-@pytest.mark.parametrize(
-    (
-        "method",
-        "optimizer_class",
-        "precon",
-        "n_intermediate",
-        "k",
-        "max_steps",
-        "fmax",
-        "expected_logfile",
-        "r_positions",
-        "p_energy",
-        "first_image_forces",
-        "second_images_positions",
-        "index_ts",
-        "pot_energy_ts",
-        "forces_ts",
-        "last_images_positions",
-    ),
-    [
-        # ("aseneb", NEBOptimizer, None, 10, 0.1, 3, 1e-3, None),
-        # ("aseneb", SciPyFminBFGS, None, 1000, 0.1, 3, 1e-3, "some_logdir",
-        #   0.78503956131, -24.9895786292, -0.0017252843, 0.78017739462, 9, -19.946616164,
-        #   -0.19927549, 0.51475535802),
-        (
-            "aseneb",
-            NEBOptimizer,
-            None,
-            10,
-            0.1,
-            3,
-            1e-3,
-            "some_logdir",
-            -0.854,
-            1.082,
-            -0.005,
-            -0.8161139,
-            9,
-            -19.946616164,
-            -0.19927549,
-            0.51475535802,
-        )
-    ],
-)
 def test_neb_job(
     setup_test_environment,
     tmp_path,
-    method,
-    optimizer_class,
-    precon,
-    n_intermediate,
-    k,
-    max_steps,
-    fmax,
-    expected_logfile,
-    r_positions,
-    p_energy,
-    first_image_forces,
-    second_images_positions,
-    index_ts,
-    pot_energy_ts,
-    forces_ts,
-    last_images_positions,
 ):
     reactant, product = setup_test_environment
 
@@ -403,69 +343,9 @@ def test_neb_job(
     ] == pytest.approx(-24.827799, abs=0.01)
 
 
-@pytest.mark.parametrize(
-    (
-        "method",
-        "optimizer_class",
-        "precon",
-        "n_intermediate",
-        "k",
-        "max_steps",
-        "fmax",
-        "expected_logfile",
-        "r_positions",
-        "p_energy",
-        "first_image_forces",
-        "second_images_positions",
-        "index_ts",
-        "pot_energy_ts",
-        "forces_ts",
-        "last_images_positions",
-    ),
-    [
-        # ("aseneb", NEBOptimizer, None, 10, 0.1, 3, 1e-3, None),
-        # ("aseneb", SciPyFminBFGS, None, 1000, 0.1, 3, 1e-3, "some_logdir",
-        #   0.78503956131, -24.9895786292, -0.0017252843, 0.78017739462, 9, -19.946616164,
-        #   -0.19927549, 0.51475535802),
-        (
-            "aseneb",
-            NEBOptimizer,
-            None,
-            30,
-            0.1,
-            3,
-            1e-3,
-            "some_logdir",
-            -0.854,
-            1.082,
-            -0.005,
-            -0.8161139,
-            9,
-            -19.946616164,
-            -0.19927549,
-            0.51475535802,
-        )
-    ],
-)
 def test_neb_ts_job(
     setup_test_environment,
     tmp_path,
-    method,
-    optimizer_class,
-    precon,
-    n_intermediate,
-    k,
-    max_steps,
-    fmax,
-    expected_logfile,
-    r_positions,
-    p_energy,
-    first_image_forces,
-    second_images_positions,
-    index_ts,
-    pot_energy_ts,
-    forces_ts,
-    last_images_positions,
 ):
     reactant, product = setup_test_environment
 
@@ -476,69 +356,9 @@ def test_neb_ts_job(
     )
 
 
-@pytest.mark.parametrize(
-    (
-        "method",
-        "optimizer_class",
-        "precon",
-        "n_intermediate",
-        "k",
-        "max_steps",
-        "fmax",
-        "expected_logfile",
-        "r_positions",
-        "p_energy",
-        "first_image_forces",
-        "second_images_positions",
-        "index_ts",
-        "pot_energy_ts",
-        "forces_ts",
-        "last_images_positions",
-    ),
-    [
-        # ("aseneb", NEBOptimizer, None, 10, 0.1, 3, 1e-3, None),
-        # ("aseneb", SciPyFminBFGS, None, 1000, 0.1, 3, 1e-3, "some_logdir",
-        #   0.78503956131, -24.9895786292, -0.0017252843, 0.78017739462, 9, -19.946616164,
-        #   -0.19927549, 0.51475535802),
-        (
-            "aseneb",
-            NEBOptimizer,
-            None,
-            10,
-            0.1,
-            3,
-            1e-3,
-            "some_logdir",
-            -0.854,
-            1.082,
-            -0.005,
-            -0.8161139,
-            9,
-            -19.946616164,
-            -0.19927549,
-            0.51475535802,
-        )
-    ],
-)
 def test_geodesic_ts_job(
     setup_test_environment,
     tmp_path,
-    method,
-    optimizer_class,
-    precon,
-    n_intermediate,
-    k,
-    max_steps,
-    fmax,
-    expected_logfile,
-    r_positions,
-    p_energy,
-    first_image_forces,
-    second_images_positions,
-    index_ts,
-    pot_energy_ts,
-    forces_ts,
-    last_images_positions,
 ):
     reactant, product = setup_test_environment
 
