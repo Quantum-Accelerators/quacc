@@ -48,15 +48,7 @@ export QUACC_WORKFLOW_ENGINE=None
 
 ## Modifying the Global Settings in a Script
 
-If you want to define quacc settings on-the-fly without writing them to a YAML file or using environment variables, you can do so within your script by modifying the global `SETTINGS` object.
-
-```python
-from quacc import SETTINGS
-
-SETTINGS.GZIP_FILES = False
-```
-
-If you only want to temporarily modify the settings for a specific calculation, you can use the context handler function [quacc.settings.change_settings][] as follows:
+If you want to define quacc settings on-the-fly without writing them to a YAML file or using environment variables, you can do so using the context handler function [quacc.settings.change_settings][] as follows:
 
 ```python
 from quacc import change_settings

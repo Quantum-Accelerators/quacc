@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Literal, Optional, Union
 
 import psutil
 from maggma.core import Store
+from monty.serialization import loadfn
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -507,8 +508,6 @@ def _use_custom_config_settings(settings: dict[str, Any]) -> dict[str, Any]:
     dict
         Updated settings based on the custom YAML.
     """
-    from monty.serialization import loadfn
-
     config_file_path = (
         Path(settings.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH))
         .expanduser()
@@ -548,7 +547,7 @@ def _type_handler(settings: dict[str, Any]) -> dict[str, Any]:
 
 
 @contextmanager
-def change_settings(changes: dict[str, Any]):
+def change_settings(changes: dict[str, Any] | None) -> None:
     """
     Temporarily change an attribute of an object.
 
@@ -556,16 +555,19 @@ def change_settings(changes: dict[str, Any]):
     ----------
     changes
         Dictionary of changes to make formatted as attribute: value.
+
+    Returns
+    -------
+    None
     """
-    from quacc import SETTINGS
+    from quacc import _internally_set_settings, get_settings
 
-    original_values = {attr: getattr(SETTINGS, attr) for attr in changes}
+    settings = get_settings()
+    original_values = {attr: getattr(settings, attr) for attr in changes}
 
-    for attr, new_value in changes.items():
-        setattr(SETTINGS, attr, new_value)
+    _internally_set_settings(changes=changes)
 
     try:
         yield
     finally:
-        for attr, original_value in original_values.items():
-            setattr(SETTINGS, attr, original_value)
+        _internally_set_settings(changes=original_values)
