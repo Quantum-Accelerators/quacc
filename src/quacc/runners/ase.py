@@ -371,45 +371,48 @@ class Runner(BaseRunner):
 
 
 def run_neb(
-    images,
+    images: list[Atoms],
     relax_cell: bool = False,
     fmax: float = 0.01,
     max_steps: int | None = 1000,
-    optimizer: NEBOptimizer | BFGS = NEBOptimizer,
+    optimizer: NEBOptimizer | Optimizer = NEBOptimizer,
     optimizer_kwargs: OptimizerKwargs | None = None,
     run_kwargs: dict[str, Any] | None = None,
     neb_kwargs: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-) -> list[Atoms]:
+) -> Optimizer:
     """
-    Run NEB optimization.
+     Run NEB optimization.
 
-    Parameters
-    ----------
-    images : list of Atoms
-        List of images representing the initial path.
-    relax_cell : bool, optional
-        Whether to relax the unit cell shape and volume.
-    fmax : float, optional
-        Tolerance for the force convergence (in eV/A).
-    max_steps : int or None, optional
-        Maximum number of steps to take.
-    optimizer : Optimizer or BFGS, optional
-        Optimizer class to use.
-    optimizer_kwargs : dict or None, optional
-        Dictionary of kwargs for the optimizer.
-    run_kwargs : dict or None, optional
-        Dictionary of kwargs for the run() method of the optimizer.
-    neb_kwargs : dict or None, optional
-        Dictionary of kwargs for the NEB.
-    copy_files : str or dict or None, optional
-        Files to copy before running the calculation.
+     Parameters
+     ----------
+     images
+         List of images representing the initial path.
+     relax_cell
+         Whether to relax the unit cell shape and volume.
+     fmax
+         Tolerance for the force convergence (in eV/A).
+     max_steps
+         Maximum number of steps to take.
+     optimizer
+         Optimizer class to use. All Optimizers except BFGSLineSearch
+     optimizer_kwargs
+         Dictionary of kwargs for the optimizer.
+     run_kwargs
+         Dictionary of kwargs for the run() method of the optimizer.
+     neb_kwargs
+         Dictionary of kwargs for the NEB.
+     copy_files
+         Files to copy before running the calculation.
 
-    Returns
-    -------
-    Optimizer
-        The ASE Optimizer object used in the NEB run.
-    """
+     Returns
+     -------
+     Optimizer
+         The ASE Optimizer object.
+     """
+    if optimizer.__name__ == 'BFGSLineSearch':
+        raise ValueError("BFGSLineSearch is not allowed as optimizer with NEB.")
+
     # Copy atoms so we don't modify it in-place
     images = copy_atoms(images)
     neb = NEB(images, **neb_kwargs)
@@ -454,16 +457,19 @@ def run_neb(
     dyn.traj_atoms = read(traj_file, index=":")
 
     # Perform cleanup operations
-    for ii, image in enumerate(images):
-        calc_cleanup(image, dir_lists[ii][0], dir_lists[ii][1])
+    for i, image in enumerate(images):
+        calc_cleanup(image, dir_lists[i][0], dir_lists[i][1])
 
     return dyn
 
-
+@requires(
+    has_geodesic_interpolate,
+    "geodesic-interpolate must be installed. Refer to the quacc documentation.",
+)
 def _geodesic_interpolate_wrapper(
     reactant: Atoms,
     product: Atoms,
-    nimages: int = 20,
+    n_images: int = 20,
     perform_sweep: bool | None = None,
     convergence_tolerance: float = 2e-3,
     max_iterations: int = 15,
@@ -471,36 +477,38 @@ def _geodesic_interpolate_wrapper(
     morse_scaling: float = 1.7,
     geometry_friction: float = 1e-2,
     distance_cutoff: float = 3.0,
-) -> tuple[list[str], list[list[float]]]:
+) -> list[Atoms]:
     """
     Interpolates between two geometries and optimizes the path with the geodesic method.
 
     Parameters
     ----------
-    reactant_product_atoms : List[Atoms]
-        List of ASE Atoms objects containing initial and final geometries.
-    nimages : int, optional
+    reactant
+        The ASE Atoms object representing the initial geometry.
+    product
+        The ASE Atoms object representing the final geometry.
+    n_images
         Number of images for interpolation. Default is 20.
-    perform_sweep : Optional[bool], optional
+    perform_sweep
         Whether to sweep across the path optimizing one image at a time.
         Default is to perform sweeping updates if there are more than 35 atoms.
-    convergence_tolerance : float, optional
+    convergence_tolerance
         Convergence tolerance. Default is 2e-3.
-    max_iterations : int, optional
+    max_iterations
         Maximum number of minimization iterations. Default is 15.
-    max_micro_iterations : int, optional
+    max_micro_iterations
         Maximum number of micro iterations for the sweeping algorithm. Default is 20.
-    morse_scaling : float, optional
+    morse_scaling
         Exponential parameter for the Morse potential. Default is 1.7.
-    geometry_friction : float, optional
+    geometry_friction
         Size of friction term used to prevent very large changes in geometry. Default is 1e-2.
-    distance_cutoff : float, optional
+    distance_cutoff
         Cut-off value for the distance between a pair of atoms to be included in the coordinate system. Default is 3.0.
 
-    Returns:
-    --------
-    Tuple[List[str], List[List[float]]]
-        A tuple containing the list of symbols and the smoothed path.
+    Returns
+    -------
+    list[Atoms]
+        A list of ASE Atoms objects representing the smoothed path between the reactant and product geometries.
     """
     reactant = copy_atoms(reactant)
     product = copy_atoms(product)
@@ -512,7 +520,7 @@ def _geodesic_interpolate_wrapper(
     raw_interpolated_positions = redistribute(
         chemical_symbols,
         [reactant.positions, product.positions],
-        nimages,
+        n_images,
         tol=convergence_tolerance * 5,
     )
 
