@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-import os
 import threading
 from importlib.metadata import version
 from typing import TYPE_CHECKING
@@ -85,9 +84,6 @@ def get_settings() -> QuaccSettings:
 
 
 _settings = get_settings()
-
-# Ignore ASE config file
-os.environ["ASE_CONFIG_PATH"] = ""
 
 # Set logging info
 logging.basicConfig(level=logging.DEBUG if _settings.DEBUG else logging.INFO)
