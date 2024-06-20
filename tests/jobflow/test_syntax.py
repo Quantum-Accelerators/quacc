@@ -4,8 +4,7 @@ import pytest
 
 jf = pytest.importorskip("jobflow")
 
-
-from quacc import flow, job, strip_decorator, subflow
+from quacc import flow, job, subflow
 
 
 def test_jobflow_decorators(tmp_path, monkeypatch):
@@ -64,12 +63,3 @@ def test_jobflow_decorators_args(tmp_path, monkeypatch):
     assert isinstance(mult(1, 2), jf.Job)
     assert isinstance(workflow(1, 2, 3), jf.Job)
     assert isinstance(add_distributed([1, 2, 3], 4)[0], jf.Job)
-
-
-def test_strip_decorators():
-    @job
-    def add(a, b):
-        return a + b
-
-    stripped_add = strip_decorator(add)
-    assert stripped_add(1, 2) == 3

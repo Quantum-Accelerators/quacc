@@ -10,7 +10,7 @@ from ase.io import read
 from ase.vibrations import Vibrations
 from ase.vibrations.data import VibrationsData
 
-from quacc import SETTINGS, __version__
+from quacc import __version__, get_settings
 from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.schemas.prep import prep_next_run
@@ -64,7 +64,7 @@ def summarize_run(
     additional_fields
         Additional fields to add to the task document.
     store
-        Maggma Store object to store the results in. Defaults to `SETTINGS.STORE`
+        Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`
 
     Returns
     -------
@@ -72,7 +72,8 @@ def summarize_run(
         Dictionary representation of the task document
     """
     additional_fields = additional_fields or {}
-    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
+    settings = get_settings()
+    store = settings.STORE if store == _DEFAULT_SETTING else store
 
     if not final_atoms.calc:
         msg = "ASE Atoms object has no attached calculator."
@@ -114,7 +115,7 @@ def summarize_run(
     unsorted_task_doc = final_atoms_metadata | inputs | results | additional_fields
 
     return finalize_dict(
-        unsorted_task_doc, directory, gzip_file=SETTINGS.GZIP_FILES, store=store
+        unsorted_task_doc, directory, gzip_file=settings.GZIP_FILES, store=store
     )
 
 
@@ -150,19 +151,20 @@ def summarize_opt_run(
     additional_fields
         Additional fields to add to the task document.
     store
-        Maggma Store object to store the results in. Defaults to `SETTINGS.STORE`.
+        Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`.
 
     Returns
     -------
     OptSchema
         Dictionary representation of the task document
     """
+    settings = get_settings()
     check_convergence = (
-        SETTINGS.CHECK_CONVERGENCE
+        settings.CHECK_CONVERGENCE
         if check_convergence == _DEFAULT_SETTING
         else check_convergence
     )
-    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store == _DEFAULT_SETTING else store
     additional_fields = additional_fields or {}
 
     # Get trajectory
@@ -207,7 +209,7 @@ def summarize_opt_run(
     unsorted_task_doc = base_task_doc | opt_fields | additional_fields
 
     return finalize_dict(
-        unsorted_task_doc, directory, gzip_file=SETTINGS.GZIP_FILES, store=store
+        unsorted_task_doc, directory, gzip_file=settings.GZIP_FILES, store=store
     )
 
 
@@ -240,14 +242,15 @@ def summarize_vib_and_thermo(
     additional_fields
         Additional fields to add to the task document.
     store
-        Maggma Store object to store the results in. Defaults to  `SETTINGS.STORE`.
+        Maggma Store object to store the results in. Defaults to  `QuaccSettings.STORE`.
 
     Returns
     -------
     VibThermoSchema
         A dictionary that merges the `VibSchema` and `ThermoSchema`.
     """
-    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
+    settings = get_settings()
+    store = settings.STORE if store == _DEFAULT_SETTING else store
 
     vib_task_doc = _summarize_vib_run(
         vib, charge_and_multiplicity=charge_and_multiplicity
@@ -266,7 +269,7 @@ def summarize_vib_and_thermo(
     return finalize_dict(
         unsorted_task_doc,
         vib.atoms.calc.directory if isinstance(vib, Vibrations) else None,
-        gzip_file=SETTINGS.GZIP_FILES,
+        gzip_file=settings.GZIP_FILES,
         store=store,
     )
 
@@ -429,6 +432,7 @@ def _summarize_ideal_gas_thermo(
         Dictionary representation of the task document
     """
     spin_multiplicity = round(2 * igt.spin + 1)
+    settings = get_settings()
 
     inputs = {
         "parameters_thermo": {
@@ -445,12 +449,12 @@ def _summarize_ideal_gas_thermo(
     results = {
         "results": {
             "energy": igt.potentialenergy,
-            "enthalpy": igt.get_enthalpy(temperature, verbose=SETTINGS.DEBUG),
+            "enthalpy": igt.get_enthalpy(temperature, verbose=settings.DEBUG),
             "entropy": igt.get_entropy(
-                temperature, pressure * 10**5, verbose=SETTINGS.DEBUG
+                temperature, pressure * 10**5, verbose=settings.DEBUG
             ),
             "gibbs_energy": igt.get_gibbs_energy(
-                temperature, pressure * 10**5, verbose=SETTINGS.DEBUG
+                temperature, pressure * 10**5, verbose=settings.DEBUG
             ),
             "zpe": igt.get_ZPE_correction(),
         }
