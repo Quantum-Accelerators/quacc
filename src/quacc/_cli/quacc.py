@@ -164,6 +164,7 @@ def _parameter_handler(
 
     Returns
     -------
+    None
     """
     if parameter not in settings_dict:
         msg = f"{parameter} is not a supported quacc configuration variable."

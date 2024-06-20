@@ -62,20 +62,19 @@ graph LR
         ```python
         from quacc import redecorate
 
-        relax_job = redecorate(relax_job, job(executor="local"))
-        result1 = relax_job(atoms)
+        relax_job_ = redecorate(relax_job, job(executor="local"))  # (1)!
         ```
 
-        This is the same as simply re-decorating it directly and using this new function instead:
+        1. This is the same as simply re-decorating it directly and using this new function instead:
 
-        ```python
-        from quacc import job
+            ```python
+            from quacc import job
 
 
-        @job(executor="local")
-        def relax_job_(*args, **kwargs):
-            return relax_job(*args, **kwargs)
-        ```
+            @job(executor="local")
+            def relax_job_(*args, **kwargs):
+                return relax_job(*args, **kwargs)
+            ```
 
 === "Dask"
 
@@ -119,6 +118,27 @@ graph LR
     result = client.compute(delayed).result()
     print(result)
     ```
+
+    !!! Tip "Modifying the Decorator of a Pre-Made Job"
+
+        If you want to modify the decorator of a pre-made job for any reason, you can use the [quacc.wflow_tools.customizers.redecorate][] function:
+
+        ```python
+        from quacc import redecorate
+
+        relax_job_ = redecorate(relax_job, job(name="my_custom_name"))  # (1)!
+        ```
+
+        1. This is the same as simply re-decorating it directly and using this new function instead:
+
+            ```python
+            from quacc import job
+
+
+            @job(name="my_custom_name")
+            def relax_job_(*args, **kwargs):
+                return relax_job(*args, **kwargs)
+            ```
 
 === "Parsl"
 
@@ -172,8 +192,19 @@ graph LR
         ```python
         from quacc import redecorate
 
-        relax_job = redecorate(relax_job, job(executors=["all"]))
+        relax_job_ = redecorate(relax_job, job(executors=["all"]))  # (1)!
         ```
+
+        1. This is the same as simply re-decorating it directly and using this new function instead:
+
+            ```python
+            from quacc import job
+
+
+            @job(executors=["all"])
+            def relax_job_(*args, **kwargs):
+                return relax_job(*args, **kwargs)
+            ```
 
 === "Prefect"
 
@@ -218,8 +249,19 @@ graph LR
         ```python
         from quacc import redecorate
 
-        relax_job = redecorate(relax_job, job(retries=2))
+        relax_job_ = redecorate(relax_job, job(retries=2))  # (1)!
         ```
+
+        1. This is the same as simply re-decorating it directly and using this new function instead:
+
+            ```python
+            from quacc import job
+
+
+            @job(retries=2)
+            def relax_job_(*args, **kwargs):
+                return relax_job(*args, **kwargs)
+            ```
 
 === "Redun"
 
@@ -262,6 +304,28 @@ graph LR
     ```
 
     1. The `#!Python @flow` decorator defines the workflow that will be executed. It is the same as the `#!Python @task` decorator in Redun.
+
+
+    !!! Tip "Modifying the Decorator of a Pre-Made Job"
+
+        If you want to modify the decorator of a pre-made job for any reason, you can use the [quacc.wflow_tools.customizers.redecorate][] function:
+
+        ```python
+        from quacc import redecorate
+
+        relax_job_ = redecorate(relax_job, job(name="my_custom_name"))  # (1)!
+        ```
+
+        1. This is the same as simply re-decorating it directly and using this new function instead:
+
+            ```python
+            from quacc import job
+
+
+            @job(name="my_custom_name")
+            def relax_job_(*args, **kwargs):
+                return relax_job(*args, **kwargs)
+            ```
 
 === "Jobflow"
 
@@ -587,6 +651,20 @@ graph LR
     print(result)
     ```
 
+    !!! Tip "Selectively Modifying Job Decorators in a Pre-Made Flow"
+
+        If you want to modify the decorators of select jobs in a pre-made workflow, such as to modify the allowed executors of a given function, you can use the `job_decorators` keyword argument:
+
+        ```python
+        bulk_to_slabs_flow(atoms, job_decorators={"static_job": job(name="my_custom_name")})
+        ```
+
+        As a shorthand, all of the decorators can be modified at once using the "all" key:
+
+        ```python
+        bulk_to_slabs_flow(atoms, job_decorators={"all": job(name="my_custom_name")})
+        ```
+
 === "Parsl"
 
     ```python
@@ -701,6 +779,20 @@ graph LR
     result = scheduler.run(workflow(atoms))
     print(result)
     ```
+
+    !!! Tip "Selectively Modifying Job Decorators in a Pre-Made Flow"
+
+        If you want to modify the decorators of select jobs in a pre-made workflow, such as to modify the allowed executors of a given function, you can use the `job_decorators` keyword argument:
+
+        ```python
+        bulk_to_slabs_flow(atoms, job_decorators={"static_job": job(name="my_custom_name")})
+        ```
+
+        As a shorthand, all of the decorators can be modified at once using the "all" key:
+
+        ```python
+        bulk_to_slabs_flow(atoms, job_decorators={"all": job(name="my_custom_name")})
+        ```
 
 === "Jobflow"
 

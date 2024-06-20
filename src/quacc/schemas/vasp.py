@@ -131,8 +131,9 @@ def vasp_summarize_run(
     if nsteps := len([f for f in os.listdir(directory) if f.startswith("step")]):
         intermediate_vasp_task_docs = {
             "steps": {
-                n: TaskDoc.from_directory(Path(directory, f"step{n}")).model_dump()
+                n: TaskDoc.from_directory(directory / f"step{n}").model_dump()
                 for n in range(nsteps)
+                if (directory / f"step{n}").is_dir()
             }
         }
     else:
@@ -262,8 +263,6 @@ def _bader_runner(path: Path | str) -> BaderSchema:
         The path where the VASP output files are located. Must include CHGCAR,
         AECCAR0, AECCAR2, and POTCAR files. These files can be gzip'd or not --
         it doesn't matter. If None, the current working directory is used.
-    structure
-        The structure object to attach the Bader charges and spins to.
 
     Returns
     -------
