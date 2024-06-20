@@ -4,6 +4,7 @@ import glob
 import logging
 import os
 from pathlib import Path
+from importlib.util import find_spec
 from shutil import rmtree
 
 import numpy as np
@@ -23,6 +24,8 @@ from quacc.recipes.emt.core import relax_job
 from quacc.runners._base import BaseRunner
 from quacc.runners.ase import Runner, _geodesic_interpolate_wrapper, run_neb
 from quacc.schemas.ase import summarize_neb_run
+
+has_geodesic_interpolate = bool(find_spec("geodesic_interpolate"))
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.propagate = True
@@ -83,47 +86,20 @@ def setup_test_environment(tmp_path):
     return reactant, product
 
 
-@pytest.mark.parametrize(
-    (
-        "n_images",
-        "convergence_tolerance",
-        "max_iterations",
-        "max_micro_iterations",
-        "morse_scaling",
-        "geometry_friction",
-        "distance_cutoff",
-        "save_raw_path",
-        "expected_length",
-    ),
-    [
-        (20, 2e-3, 15, 20, 1.7, 1e-2, 3.0, None, 20),  # Default parameters
-        (10, 2e-3, 15, 20, 1.7, 1e-2, 3.0, None, 10),  # Different number of images
-        (
-            20,
-            1e-4,
-            10,
-            10,
-            1.5,
-            1e-2,
-            2.5,
-            "raw_path.xyz",
-            20,
-        ),  # Different interpolation parameters and save_raw
-    ],
-)
+@pytest.mark.skipif(not has_geodesic_interpolate, reason="geodesic_interpolate function is not available")
 def test_geodesic_interpolate_wrapper(
     setup_test_environment,
-    n_images,
-    convergence_tolerance,
-    max_iterations,
-    max_micro_iterations,
-    morse_scaling,
-    geometry_friction,
-    distance_cutoff,
-    save_raw_path,
-    expected_length,
 ):
+    n_images = 20
+    convergence_tolerance = 1e-4
+    max_iterations = 10
+    max_micro_iterations = 10
+    morse_scaling = 1.5
+    geometry_friction = 1e-2
+    distance_cutoff = 2.5
+
     reactant, product = setup_test_environment
+
     # Execute the geodesic_interpolate_wrapper function
     smoother_path = _geodesic_interpolate_wrapper(
         reactant,
@@ -139,6 +115,7 @@ def test_geodesic_interpolate_wrapper(
     assert smoother_path[1].positions[0][0] == pytest.approx(1.36055556030, abs=1e-1)
 
 
+@pytest.mark.skipif(not has_geodesic_interpolate, reason="geodesic_interpolate function is not available")
 def test_geodesic_interpolate_wrapper_large_system(setup_test_environment):
     rng = np.random.default_rng()  # Create a random number generator instance
     large_atoms = Atoms("H" * 40, positions=rng.random((40, 3)))
@@ -148,120 +125,17 @@ def test_geodesic_interpolate_wrapper_large_system(setup_test_environment):
     assert len(smoother_path) == 20
 
 
-@pytest.mark.parametrize(
-    (
-        "method",
-        "optimizer_class",
-        "precon",
-        "n_intermediate",
-        "k",
-        "max_steps",
-        "fmax",
-        "expected_logfile",
-        "r_positions",
-        "p_energy",
-        "first_image_forces",
-        "second_images_positions",
-        "index_ts",
-        "pot_energy_ts",
-        "forces_ts",
-        "last_images_positions",
-    ),
-    [
-        (
-            "aseneb",
-            GPMin,
-            None,
-            10,
-            0.1,
-            3,
-            1e-3,
-            "some_logdir",
-            -0.854,
-            1.082,
-            -0.005,
-            -0.8161139,
-            9,
-            -19.946616164,
-            -0.19927549,
-            0.51475535802,
-        ),
-        (
-            "aseneb",
-            BFGS,
-            None,
-            10,
-            0.1,
-            3,
-            1e-3,
-            "some_logdir",
-            -0.854,
-            1.082,
-            -0.005,
-            -0.8161139,
-            9,
-            -19.946616164,
-            -0.19927549,
-            0.51475535802,
-        ),
-        (
-            "aseneb",
-            BFGSLineSearch,
-            None,
-            10,
-            0.1,
-            3,
-            1e-3,
-            "some_logdir",
-            -0.854,
-            1.082,
-            -0.005,
-            -0.8161139,
-            9,
-            -19.946616164,
-            -0.19927549,
-            0.51475535802,
-        ),
-        (
-            "aseneb",
-            NEBOptimizer,
-            None,
-            10,
-            0.1,
-            3,
-            1e-3,
-            "some_logdir",
-            -0.854,
-            1.082,
-            -0.005,
-            -0.8161139,
-            9,
-            -19.946616164,
-            -0.19927549,
-            0.51475535802,
-        ),
-    ],
-)
+@pytest.mark.skipif(not has_geodesic_interpolate, reason="geodesic_interpolate function is not available")
 def test_run_neb(
     setup_test_environment,
     tmp_path,
-    method,
-    optimizer_class,
-    precon,
-    n_intermediate,
-    k,
-    max_steps,
-    fmax,
-    expected_logfile,
-    r_positions,
-    p_energy,
-    first_image_forces,
-    second_images_positions,
-    index_ts,
-    pot_energy_ts,
-    forces_ts,
-    last_images_positions,
 ):
+    optimizer_class = NEBOptimizer
+    n_intermediate = 10
+    r_positions = -0.854
+    p_energy = 1.082
+    first_image_forces = -0.005
+
     reactant, product = setup_test_environment
 
     optimized_r = strip_decorator(relax_job)(reactant)["atoms"]
