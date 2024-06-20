@@ -9,7 +9,6 @@ from pathlib import Path
 import numpy as np
 from ase import Atoms
 from ase.build import molecule
-from ase.mep.neb import NEBOptimizer
 
 from quacc import _internally_set_settings
 from quacc.recipes.newtonnet.core import freq_job, relax_job, static_job
@@ -324,10 +323,7 @@ def setup_test_environment(tmp_path):
     return reactant, product
 
 
-def test_neb_job(
-    setup_test_environment,
-    tmp_path,
-):
+def test_neb_job(setup_test_environment, tmp_path):
     reactant, product = setup_test_environment
 
     neb_summary = neb_job(reactant, product)
@@ -343,10 +339,7 @@ def test_neb_job(
     ] == pytest.approx(-24.827799, abs=0.01)
 
 
-def test_neb_ts_job(
-    setup_test_environment,
-    tmp_path,
-):
+def test_neb_ts_job(setup_test_environment, tmp_path):
     reactant, product = setup_test_environment
 
     neb_ts_results = neb_ts_job(reactant, product)
@@ -356,10 +349,7 @@ def test_neb_ts_job(
     )
 
 
-def test_geodesic_ts_job(
-    setup_test_environment,
-    tmp_path,
-):
+def test_geodesic_ts_job(setup_test_environment, tmp_path):
     reactant, product = setup_test_environment
 
     geodesic_ts_summary = geodesic_ts_job(reactant, product)
