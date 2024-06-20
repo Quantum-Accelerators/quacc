@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.10.0]
 
+### Added
+
+- Added a mechanism to update the settings on-the-fly via a special `settings_swap` keyword argument that can be passed to the decorators.
+
 ### Changed
 
 - The global `SETTINGS` variable is gone! Modifying a global variable can cause havoc in multithreaded environments and was never compatible with workflow engines. Refer to the [Modifying Settings](https://quantum-accelerators.github.io/quacc/user/settings/settings.html) page for the recommended approach. For most users without an active workflow engine, this will be the `with change_settings()` context manager.

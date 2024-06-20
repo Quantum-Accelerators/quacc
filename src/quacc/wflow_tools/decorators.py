@@ -5,6 +5,8 @@ from __future__ import annotations
 from functools import partial, wraps
 from typing import TYPE_CHECKING, TypeVar
 
+from quacc.settings import change_settings_wrap
+
 Job = TypeVar("Job")
 Flow = TypeVar("Flow")
 Subflow = TypeVar("Subflow")
@@ -135,7 +137,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     Job
         The @job-decorated function.
     """
-    from quacc import change_settings_wrap, get_settings
+    from quacc import get_settings
 
     settings = get_settings()
 
