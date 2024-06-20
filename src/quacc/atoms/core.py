@@ -48,7 +48,7 @@ def get_atoms_id(atoms: Atoms) -> str:
         .replace("float32", "float")
     )
 
-    return hashlib.md5(encoded_atoms.encode("utf-8")).hexdigest()
+    return hashlib.md5(encoded_atoms.encode("utf-8"), usedforsecurity=False).hexdigest()
 
 
 def check_is_metal(atoms: Atoms) -> bool:

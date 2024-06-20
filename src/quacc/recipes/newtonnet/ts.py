@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
-from quacc import SETTINGS, change_settings, job, strip_decorator
+from quacc import change_settings, get_settings, job, strip_decorator
 from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
 from quacc.runners.ase import Runner
 from quacc.schemas.ase import summarize_opt_run
@@ -83,10 +83,11 @@ def ts_job(
         Dictionary of results. See the type-hint for the data structure.
     """
     freq_job_kwargs = freq_job_kwargs or {}
+    settings = get_settings()
 
     calc_defaults = {
-        "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-        "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        "model_path": settings.NEWTONNET_MODEL_PATH,
+        "settings_path": settings.NEWTONNET_CONFIG_PATH,
         "hess_method": "autograd",
     }
     opt_defaults = {
@@ -162,10 +163,11 @@ def irc_job(
         See the type-hint for the data structure.
     """
     freq_job_kwargs = freq_job_kwargs or {}
+    settings = get_settings()
 
     calc_defaults = {
-        "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-        "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        "model_path": settings.NEWTONNET_MODEL_PATH,
+        "settings_path": settings.NEWTONNET_CONFIG_PATH,
     }
     opt_defaults = {
         "optimizer": IRC,
@@ -283,9 +285,10 @@ def _get_hessian(atoms: Atoms) -> NDArray:
     NDArray
         The calculated Hessian matrix, reshaped into a 2D array.
     """
+    settings = get_settings()
     ml_calculator = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
+        model_path=settings.NEWTONNET_MODEL_PATH,
+        settings_path=settings.NEWTONNET_CONFIG_PATH,
     )
     ml_calculator.calculate(atoms)
 
