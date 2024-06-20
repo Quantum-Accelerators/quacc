@@ -87,7 +87,8 @@ export QUACC_ORCA_CMD="/path/to/orca/orca"
 If you plan to use Psi4 with quacc, you will need to install it prior to use. This can be done as follows:
 
 ```bash
-conda install -c conda-forge psi4
+conda install -n base conda-libmamba-solver
+conda install psi4 -c conda-forge --solver libmamba
 ```
 
 ## Q-Chem
