@@ -547,7 +547,7 @@ def _type_handler(settings: dict[str, Any]) -> dict[str, Any]:
 
 
 @contextmanager
-def change_settings(changes: dict[str, Any] | None):
+def change_settings(changes: dict[str, Any] | None) -> None:
     """
     Temporarily change an attribute of an object.
 
@@ -555,6 +555,10 @@ def change_settings(changes: dict[str, Any] | None):
     ----------
     changes
         Dictionary of changes to make formatted as attribute: value.
+
+    Returns
+    -------
+    None
     """
     from quacc import _internally_set_settings, get_settings
 
