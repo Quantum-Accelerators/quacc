@@ -476,6 +476,33 @@ class QuaccSettings(BaseSettings):
 
         return v
 
+    @staticmethod
+    def _use_custom_config_settings(settings: dict[str, Any]) -> dict[str, Any]:
+        """Parse user settings from a custom YAML.
+
+        Parameters
+        ----------
+        settings : dict
+            Initial settings.
+
+        Returns
+        -------
+        dict
+            Updated settings based on the custom YAML.
+        """
+        config_file_path = (
+            Path(settings.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH))
+            .expanduser()
+            .resolve()
+        )
+
+        new_settings = {}  # type: dict
+        if config_file_path.exists() and config_file_path.stat().st_size > 0:
+            new_settings |= loadfn(config_file_path)
+
+        new_settings.update(settings)
+        return new_settings
+
     @model_validator(mode="before")
     @classmethod
     def load_user_settings(cls, settings: dict[str, Any]) -> dict[str, Any]:
@@ -493,34 +520,7 @@ class QuaccSettings(BaseSettings):
         dict
             Loaded settings.
         """
-        return _type_handler(_use_custom_config_settings(settings))
-
-
-def _use_custom_config_settings(settings: dict[str, Any]) -> dict[str, Any]:
-    """Parse user settings from a custom YAML.
-
-    Parameters
-    ----------
-    settings : dict
-        Initial settings.
-
-    Returns
-    -------
-    dict
-        Updated settings based on the custom YAML.
-    """
-    config_file_path = (
-        Path(settings.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH))
-        .expanduser()
-        .resolve()
-    )
-
-    new_settings = {}  # type: dict
-    if config_file_path.exists() and config_file_path.stat().st_size > 0:
-        new_settings |= loadfn(config_file_path)
-
-    new_settings.update(settings)
-    return new_settings
+        return _type_handler(cls._use_custom_config_settings(settings))
 
 
 def _type_handler(settings: dict[str, Any]) -> dict[str, Any]:
