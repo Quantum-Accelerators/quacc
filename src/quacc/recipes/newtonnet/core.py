@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 from ase.vibrations.data import VibrationsData
 from monty.dev import requires
 
-from quacc import SETTINGS, job
+from quacc import get_settings, job
 from quacc.runners.ase import Runner
 from quacc.runners.thermo import ThermoRunner
 from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
@@ -61,9 +61,10 @@ def static_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
+    settings = get_settings()
     calc_defaults = {
-        "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-        "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        "model_path": settings.NEWTONNET_MODEL_PATH,
+        "settings_path": settings.NEWTONNET_CONFIG_PATH,
     }
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
 
@@ -108,9 +109,10 @@ def relax_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_opt_run][].
         See the type-hint for the data structure.
     """
+    settings = get_settings()
     calc_defaults = {
-        "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-        "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        "model_path": settings.NEWTONNET_MODEL_PATH,
+        "settings_path": settings.NEWTONNET_CONFIG_PATH,
     }
     opt_defaults = {"optimizer": Sella} if has_sella else {}
 
@@ -159,9 +161,10 @@ def freq_job(
     VibThermoSchema
         Dictionary of results. See the type-hint for the data structure.
     """
+    settings = get_settings()
     calc_defaults = {
-        "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-        "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        "model_path": settings.NEWTONNET_MODEL_PATH,
+        "settings_path": settings.NEWTONNET_CONFIG_PATH,
         "hess_method": "autograd",
     }
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
@@ -208,10 +211,11 @@ def _add_stdev_and_hess(summary: dict[str, Any]) -> dict[str, Any]:
         The modified summary dictionary with added standard deviation and
         Hessian values.
     """
+    settings = get_settings()
     for i, atoms in enumerate(summary["trajectory"]):
         calc = NewtonNet(
-            model_path=SETTINGS.NEWTONNET_MODEL_PATH,
-            settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
+            model_path=settings.NEWTONNET_MODEL_PATH,
+            settings_path=settings.NEWTONNET_CONFIG_PATH,
         )
         results = Runner(atoms, calc).run_calc().calc.results
         summary["trajectory_results"][i]["hessian"] = results["hessian"]

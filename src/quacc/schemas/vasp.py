@@ -13,7 +13,7 @@ from monty.os.path import zpath
 from pymatgen.command_line.bader_caller import bader_analysis_from_path
 from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
 
-from quacc import SETTINGS
+from quacc import get_settings
 from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import finalize_dict, recursive_dict_merge
@@ -84,24 +84,25 @@ def vasp_summarize_run(
     additional_fields
         Additional fields to add to the task document.
     store
-        Maggma Store object to store the results in. Defaults to `SETTINGS.STORE`,
+        Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`,
 
     Returns
     -------
     VaspSchema
         Dictionary representation of the task document
     """
-    run_bader = SETTINGS.VASP_BADER if run_bader == _DEFAULT_SETTING else run_bader
+    settings = get_settings()
+    run_bader = settings.VASP_BADER if run_bader == _DEFAULT_SETTING else run_bader
     run_chargemol = (
-        SETTINGS.VASP_CHARGEMOL if run_chargemol == _DEFAULT_SETTING else run_chargemol
+        settings.VASP_CHARGEMOL if run_chargemol == _DEFAULT_SETTING else run_chargemol
     )
     check_convergence = (
-        SETTINGS.CHECK_CONVERGENCE
+        settings.CHECK_CONVERGENCE
         if check_convergence == _DEFAULT_SETTING
         else check_convergence
     )
     directory = Path(directory or final_atoms.calc.directory)
-    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store == _DEFAULT_SETTING else store
     additional_fields = additional_fields or {}
 
     # Fetch all tabulated results from VASP outputs files. Fortunately, emmet
@@ -170,7 +171,7 @@ def vasp_summarize_run(
         | additional_fields
     )
     return finalize_dict(
-        unsorted_task_doc, directory, gzip_file=SETTINGS.GZIP_FILES, store=store
+        unsorted_task_doc, directory, gzip_file=settings.GZIP_FILES, store=store
     )
 
 
@@ -219,9 +220,10 @@ def summarize_vasp_opt_run(
     additional_fields
         Additional fields to add to the task document.
     store
-        Maggma Store object to store the results in. Defaults to `SETTINGS.STORE`,
+        Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`,
     """
-    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
+    settings = get_settings()
+    store = settings.STORE if store == _DEFAULT_SETTING else store
 
     final_atoms = get_final_atoms_from_dynamics(optimizer)
     directory = Path(directory or final_atoms.calc.directory)
@@ -246,7 +248,7 @@ def summarize_vasp_opt_run(
     )
     unsorted_task_doc = recursive_dict_merge(vasp_summary, opt_run_summary)
     return finalize_dict(
-        unsorted_task_doc, directory, gzip_file=SETTINGS.GZIP_FILES, store=store
+        unsorted_task_doc, directory, gzip_file=settings.GZIP_FILES, store=store
     )
 
 

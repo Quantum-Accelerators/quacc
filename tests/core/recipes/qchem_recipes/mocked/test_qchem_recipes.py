@@ -11,7 +11,7 @@ from ase.io import read
 from ase.optimize import FIRE
 from pymatgen.io.qchem.inputs import QCInput
 
-from quacc import SETTINGS
+from quacc import _internally_set_settings
 from quacc.atoms.core import check_charge_and_spin
 from quacc.calculators.qchem import QChem
 from quacc.recipes.qchem.core import freq_job, relax_job, static_job
@@ -23,7 +23,13 @@ has_sella = bool(find_spec("sella"))
 FILE_DIR = Path(__file__).parent
 QCHEM_DIR = FILE_DIR / "qchem_examples"
 
-DEFAULT_SETTINGS = SETTINGS.model_copy()
+
+def setup_module():
+    _internally_set_settings({"CHECK_CONVERGENCE": False})
+
+
+def teardown_module():
+    _internally_set_settings(reset=True)
 
 
 @pytest.fixture()
@@ -39,14 +45,6 @@ def test_qirc_atoms():
 @pytest.fixture()
 def os_atoms():
     return read(FILE_DIR / "xyz" / "OS_test.xyz")
-
-
-def setup_module():
-    SETTINGS.CHECK_CONVERGENCE = False
-
-
-def teardown_module():
-    SETTINGS.CHECK_CONVERGENCE = DEFAULT_SETTINGS.CHECK_CONVERGENCE
 
 
 def qcinput_nearly_equal(qcinput1, qcinput2):
@@ -251,6 +249,7 @@ def test_relax_job_v2(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(QChem, "execute", mock_execute2)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms, charge=-1)
+
     output = relax_job(
         test_atoms,
         charge=charge,
@@ -282,6 +281,7 @@ def test_relax_job_v3(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(QChem, "execute", mock_execute3)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
+
     output = relax_job(
         test_atoms,
         charge=charge,
@@ -345,6 +345,7 @@ def test_ts_job_v1(monkeypatch, tmp_path, test_atoms):
 
     monkeypatch.setattr(QChem, "execute", mock_execute1)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
+
     output = ts_job(
         test_atoms,
         charge=charge,
@@ -373,6 +374,7 @@ def test_ts_job_v2(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(QChem, "execute", mock_execute2)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms, charge=-1)
+
     output = ts_job(
         test_atoms,
         charge=charge,
@@ -404,6 +406,7 @@ def test_ts_job_v3(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(QChem, "execute", mock_execute3)
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
+
     output = ts_job(
         test_atoms,
         charge=charge,
@@ -453,6 +456,7 @@ def test_irc_job_v1(monkeypatch, tmp_path, test_atoms):
     monkeypatch.setattr(QChem, "execute", mock_execute4)
 
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
+
     output = irc_job(
         test_atoms,
         charge=charge,
@@ -477,6 +481,7 @@ def test_irc_job_v1(monkeypatch, tmp_path, test_atoms):
     qcinput_nearly_equal(qcin, ref_qcin)
 
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
+
     output = irc_job(
         test_atoms,
         charge=charge,
@@ -545,6 +550,7 @@ def test_quasi_irc_job(monkeypatch, tmp_path, test_atoms):
     monkeypatch.setattr(QChem, "execute", mock_execute4)
 
     charge, spin_multiplicity = check_charge_and_spin(test_atoms)
+
     output = quasi_irc_job(
         test_atoms,
         charge=charge,
@@ -623,6 +629,7 @@ def test_quasi_irc_perturb_job(monkeypatch, tmp_path, test_qirc_atoms):
     ]
 
     charge, spin_multiplicity = check_charge_and_spin(test_qirc_atoms)
+
     output = quasi_irc_perturb_job(
         test_qirc_atoms,
         mode,
