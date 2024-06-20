@@ -49,7 +49,7 @@ if TYPE_CHECKING:
 
         fmax: float
         max_steps: int
-        optimizer: Dynamics = BFGS  # default = BFGS
+        optimizer: Dynamics  # default = BFGS
         optimizer_kwargs: OptimizerKwargs | None
         store_intermediate_results: bool
         fn_hook: Callable | None
