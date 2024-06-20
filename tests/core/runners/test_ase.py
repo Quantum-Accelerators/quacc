@@ -18,7 +18,7 @@ from ase.optimize import BFGS, BFGSLineSearch
 from ase.optimize.sciopt import SciPyFminBFGS
 
 # from sella import Sella
-from quacc import get_settings, change_settings, strip_decorator
+from quacc import change_settings, get_settings, strip_decorator
 from quacc.recipes.emt.core import relax_job
 from quacc.runners._base import BaseRunner
 from quacc.runners.ase import Runner, _geodesic_interpolate_wrapper, run_neb
