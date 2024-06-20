@@ -353,8 +353,9 @@ class Runner(BaseRunner):
 
         # Set defaults
         dynamics_kwargs = dynamics_kwargs or {}
+        settings = get_settings()
         dynamics_kwargs["timestep"] = timestep
-        dynamics_kwargs["logfile"] = "-" if SETTINGS.DEBUG else self.tmpdir / "md.log"
+        dynamics_kwargs["logfile"] = "-" if settings.DEBUG else self.tmpdir / "md.log"
         dynamics_kwargs = self._fix_deprecated_md_params(dynamics_kwargs)
         dynamics_kwargs = convert_md_units(dynamics_kwargs)
 

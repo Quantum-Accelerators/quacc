@@ -243,13 +243,14 @@ def summarize_md_run(
         Additional fields to add to the task document.
     store
         Maggma Store object to store the results in. If None,
-        `SETTINGS.STORE` will be used.
+        `QuaccSettings.STORE` will be used.
 
     Returns
     -------
     DynSchema
         Dictionary representation of the task document
     """
+    settings = get_settings()
     base_task_doc = summarize_opt_run(
         dyn,
         trajectory=trajectory,
@@ -283,7 +284,7 @@ def summarize_md_run(
     return finalize_dict(
         unsorted_task_doc,
         base_task_doc["dir_name"],
-        gzip_file=SETTINGS.GZIP_FILES,
+        gzip_file=settings.GZIP_FILES,
         store=store,
     )
 
