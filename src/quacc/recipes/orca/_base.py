@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from ase.calculators.orca import ORCA, OrcaProfile, OrcaTemplate
 
-from quacc import SETTINGS
+from quacc import get_settings
 from quacc.runners.ase import Runner
 from quacc.schemas.cclib import cclib_summarize_run, summarize_cclib_opt_run
 from quacc.utils.dicts import recursive_dict_merge
@@ -194,9 +194,10 @@ def prep_calculator(
         inputs.append("xyzfile")
     orcasimpleinput = " ".join(inputs)
     orcablocks = "\n".join(blocks)
+    settings = get_settings()
 
     return ORCA(
-        profile=OrcaProfile(command=SETTINGS.ORCA_CMD),
+        profile=OrcaProfile(command=settings.ORCA_CMD),
         charge=charge,
         mult=spin_multiplicity,
         orcasimpleinput=orcasimpleinput,

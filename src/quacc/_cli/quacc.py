@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Optional
 from rich import print as rich_print
 from typer import Exit, Option, Typer
 
+from quacc import get_settings
 from quacc.settings import QuaccSettings, _type_handler
 
 app = Typer()
@@ -78,15 +79,15 @@ def set_(parameter: str, new_value: str) -> None:
     -------
     None
     """
-    from quacc import SETTINGS
     from quacc.settings import _DEFAULT_CONFIG_FILE_PATH
 
-    config_file = SETTINGS.CONFIG_FILE or _DEFAULT_CONFIG_FILE_PATH
+    settings = get_settings()
+
+    config_file = settings.CONFIG_FILE or _DEFAULT_CONFIG_FILE_PATH
     parameter = parameter.upper()
 
-    settings = _type_handler({parameter: new_value})
-    new_value = settings[parameter]
-    _parameter_handler(parameter, SETTINGS.model_dump(), value=new_value)
+    new_value = _type_handler({parameter: new_value})[parameter]
+    _parameter_handler(parameter, settings.model_dump(), value=new_value)
 
     rich_print(f"Setting `{parameter}` to `{new_value}` in {config_file}")
     _update_setting(parameter, new_value, config_file)
@@ -107,13 +108,13 @@ def unset(parameter: str) -> None:
     -------
     None
     """
-    from quacc import SETTINGS
     from quacc.settings import _DEFAULT_CONFIG_FILE_PATH
 
-    CONFIG_FILE = SETTINGS.CONFIG_FILE or _DEFAULT_CONFIG_FILE_PATH
+    settings = get_settings()
+    CONFIG_FILE = settings.CONFIG_FILE or _DEFAULT_CONFIG_FILE_PATH
     parameter = parameter.upper()
 
-    _parameter_handler(parameter, SETTINGS.model_dump())
+    _parameter_handler(parameter, settings.model_dump())
     rich_print(f"Unsetting `{parameter}` in {CONFIG_FILE}")
     _delete_setting(parameter, CONFIG_FILE)
 
@@ -133,9 +134,9 @@ def info() -> None:
     """
     import platform
 
-    from quacc import SETTINGS, __version__
+    from quacc import __version__
 
-    settings = SETTINGS.model_dump()
+    settings = get_settings().model_dump()
     rich_print(
         f"""
 quacc version: {__version__}
@@ -164,6 +165,7 @@ def _parameter_handler(
 
     Returns
     -------
+    None
     """
     if parameter not in settings_dict:
         msg = f"{parameter} is not a supported quacc configuration variable."

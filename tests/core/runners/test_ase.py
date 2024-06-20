@@ -18,7 +18,7 @@ from ase.optimize import BFGS, BFGSLineSearch
 from ase.optimize.sciopt import SciPyFminBFGS
 
 # from sella import Sella
-from quacc import SETTINGS, change_settings, strip_decorator
+from quacc import change_settings, get_settings, strip_decorator
 from quacc.recipes.emt.core import relax_job
 from quacc.runners._base import BaseRunner
 from quacc.runners.ase import Runner, _geodesic_interpolate_wrapper, run_neb
@@ -29,7 +29,7 @@ LOGGER.propagate = True
 
 
 def _find_results_dir():
-    search_dir = SETTINGS.RESULTS_DIR
+    search_dir = get_settings().RESULTS_DIR
     pattern = str(Path(search_dir, "quacc-*"))
     matching_dirs = glob.glob(pattern)
     most_recent_directory = max(matching_dirs, key=os.path.getmtime, default=None)
@@ -45,11 +45,12 @@ def prep_files():
 
 
 def teardown_function():
-    if os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, "test_calc")):
-        rmtree(os.path.join(SETTINGS.RESULTS_DIR, "test_calc"), ignore_errors=True)
+    results_dir = get_settings().RESULTS_DIR
+    if os.path.exists(os.path.join(results_dir, "test_calc")):
+        rmtree(os.path.join(results_dir, "test_calc"), ignore_errors=True)
     for f in ["test_file.txt", "test_file.txt.gz"]:
-        if os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, f)):
-            os.remove(os.path.join(SETTINGS.RESULTS_DIR, f))
+        if os.path.exists(os.path.join(results_dir, f)):
+            os.remove(os.path.join(results_dir, f))
 
 
 @pytest.fixture()

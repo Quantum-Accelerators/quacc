@@ -4,6 +4,8 @@ import pytest
 
 parsl = pytest.importorskip("parsl")
 
+import os
+
 from ase.build import bulk
 
 from quacc import flow, job
@@ -37,6 +39,46 @@ def test_copy_files(tmp_path, monkeypatch):
         return relax_job(result1["atoms"], copy_files={result1["dir_name"]: "opt.*"})
 
     assert "atoms" in myflow(atoms).result()
+
+
+def test_settings_swap(tmp_path_factory):
+    tmp_dir1 = tmp_path_factory.mktemp("dir1")
+    atoms = bulk("Cu")
+
+    future1 = bulk_to_slabs_flow(
+        atoms,
+        job_decorators={"relax_job": job(settings_swap={"RESULTS_DIR": tmp_dir1})},
+    )
+    future2 = bulk_to_slabs_flow(
+        atoms,
+        job_decorators={"relax_job": job(settings_swap={"RESULTS_DIR": tmp_dir1})},
+    )
+    future3 = bulk_to_slabs_flow(
+        atoms,
+        job_decorators={"relax_job": job(settings_swap={"RESULTS_DIR": tmp_dir1})},
+    )
+    future1.result(), future2.result(), future3.result()
+
+    assert len(os.listdir(tmp_dir1)) == 12
+
+
+def test_settings_swap_all(tmp_path_factory):
+    tmp_dir1 = tmp_path_factory.mktemp("dir1")
+
+    atoms = bulk("Cu")
+
+    future1 = bulk_to_slabs_flow(
+        atoms, job_decorators={"all": job(settings_swap={"RESULTS_DIR": tmp_dir1})}
+    )
+    future2 = bulk_to_slabs_flow(
+        atoms, job_decorators={"all": job(settings_swap={"RESULTS_DIR": tmp_dir1})}
+    )
+    future3 = bulk_to_slabs_flow(
+        atoms, job_decorators={"all": job(settings_swap={"RESULTS_DIR": tmp_dir1})}
+    )
+    future1.result(), future2.result(), future3.result()
+
+    assert len(os.listdir(tmp_dir1)) == 24
 
 
 def test_phonon_flow(tmp_path, monkeypatch):

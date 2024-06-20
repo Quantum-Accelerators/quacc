@@ -10,11 +10,12 @@ from shutil import which
 
 from dask.distributed import default_client
 
-from quacc import SETTINGS
+from quacc import get_settings
 
+settings = get_settings()
 pytestmark = pytest.mark.skipif(
-    which(str(SETTINGS.ESPRESSO_BIN_DIR / SETTINGS.ESPRESSO_BINARIES["pw"])) is None
-    or which(str(SETTINGS.ESPRESSO_BIN_DIR / SETTINGS.ESPRESSO_BINARIES["ph"])) is None,
+    which(str(settings.ESPRESSO_BIN_DIR / settings.ESPRESSO_BINARIES["pw"])) is None
+    or which(str(settings.ESPRESSO_BIN_DIR / settings.ESPRESSO_BINARIES["ph"])) is None,
     reason="QE not installed",
 )
 

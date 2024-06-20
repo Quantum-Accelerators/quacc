@@ -22,7 +22,7 @@ from ase.io.espresso import (
 )
 from ase.io.espresso_namelist.keys import ALL_KEYS
 
-from quacc import SETTINGS
+from quacc import get_settings
 from quacc.calculators.espresso.utils import (
     espresso_prepare_dir,
     get_pseudopotential_info,
@@ -77,16 +77,11 @@ class EspressoTemplate(EspressoTemplate_):
         self.inputname = f"{binary}.in"
         self.outputname = f"{binary}.out"
         self.errorname = f"{binary}.err"
-
         self.binary = binary
-
         self._ase_known_binary = self.binary in ALL_KEYS
-
         self.test_run = test_run
-
         self.nruns = 0
         self.autorestart = autorestart
-
         self.outdir = outdir
 
     def write_input(
@@ -398,13 +393,12 @@ class Espresso(GenericFileIOCalculator):
         self.preset = preset
         self.kwargs = kwargs
         self.user_calc_params = {}
-
+        self._settings = get_settings()
         template = template or EspressoTemplate("pw")
-
         self._binary = template.binary
-
         full_path = Path(
-            SETTINGS.ESPRESSO_BIN_DIR, SETTINGS.ESPRESSO_BINARIES[self._binary]
+            self._settings.ESPRESSO_BIN_DIR,
+            self._settings.ESPRESSO_BINARIES[self._binary],
         )
         self._bin_path = str(full_path)
 
@@ -421,11 +415,11 @@ class Espresso(GenericFileIOCalculator):
         self._pseudo_path = (
             self.user_calc_params.get("input_data", {})
             .get("control", {})
-            .get("pseudo_dir", str(SETTINGS.ESPRESSO_PSEUDO))
+            .get("pseudo_dir", str(self._settings.ESPRESSO_PSEUDO))
         )
 
         profile = EspressoProfile(
-            f"{SETTINGS.ESPRESSO_PARALLEL_CMD[0]} {self._bin_path} {SETTINGS.ESPRESSO_PARALLEL_CMD[1]}",
+            f"{self._settings.ESPRESSO_PARALLEL_CMD[0]} {self._bin_path} {self._settings.ESPRESSO_PARALLEL_CMD[1]}",
             self._pseudo_path,
         )
 
@@ -453,7 +447,7 @@ class Espresso(GenericFileIOCalculator):
 
         if self.preset:
             calc_preset = load_yaml_calc(
-                SETTINGS.ESPRESSO_PRESET_DIR / f"{self.preset}"
+                self._settings.ESPRESSO_PRESET_DIR / f"{self.preset}"
             )
             calc_preset["input_data"] = Namelist(calc_preset.get("input_data"))
             calc_preset["input_data"].to_nested(binary=self._binary, **calc_preset)

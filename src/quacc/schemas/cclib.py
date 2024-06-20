@@ -12,7 +12,7 @@ import cclib
 from ase.atoms import Atoms
 from cclib.io import ccread
 
-from quacc import SETTINGS
+from quacc import get_settings
 from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import finalize_dict, recursive_dict_merge
@@ -89,20 +89,21 @@ def cclib_summarize_run(
     additional_fields
         Additional fields to add to the task document.
     store
-        Maggma Store object to store the results in. Defaults to `SETTINGS.STORE`
+        Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`
 
     Returns
     -------
     cclibSchema
         Dictionary representation of the task document
     """
+    settings = get_settings()
     directory = Path(directory or final_atoms.calc.directory)
     check_convergence = (
-        SETTINGS.CHECK_CONVERGENCE
+        settings.CHECK_CONVERGENCE
         if check_convergence == _DEFAULT_SETTING
         else check_convergence
     )
-    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store == _DEFAULT_SETTING else store
     additional_fields = additional_fields or {}
 
     # Get the cclib base task document
@@ -153,7 +154,7 @@ def cclib_summarize_run(
         run_task_doc | intermediate_cclib_task_docs | cclib_task_doc | additional_fields
     )
     return finalize_dict(
-        unsorted_task_doc, directory, gzip_file=SETTINGS.GZIP_FILES, store=store
+        unsorted_task_doc, directory, gzip_file=settings.GZIP_FILES, store=store
     )
 
 
@@ -212,14 +213,15 @@ def summarize_cclib_opt_run(
     additional_fields
         Additional fields to add to the task document.
     store
-        Maggma Store object to store the results in. Defaults to `SETTINGS.STORE`
+        Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`
 
     Returns
     -------
     cclibASEOptSchema
         Dictionary representation of the task document
     """
-    store = SETTINGS.STORE if store == _DEFAULT_SETTING else store
+    settings = get_settings()
+    store = settings.STORE if store == _DEFAULT_SETTING else store
 
     final_atoms = get_final_atoms_from_dynamics(dyn)
     directory = Path(directory or final_atoms.calc.directory)
@@ -245,7 +247,7 @@ def summarize_cclib_opt_run(
     )
     unsorted_task_doc = recursive_dict_merge(cclib_summary, opt_run_summary)
     return finalize_dict(
-        unsorted_task_doc, directory, gzip_file=SETTINGS.GZIP_FILES, store=store
+        unsorted_task_doc, directory, gzip_file=settings.GZIP_FILES, store=store
     )
 
 

@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
-from quacc import SETTINGS
+from quacc import get_settings
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -61,28 +61,30 @@ def run_custodian(
     from custodian.qchem.handlers import QChemErrorHandler
     from custodian.qchem.jobs import QCJob
 
+    settings = get_settings()
+
     # Set defaults
     qchem_cores = (
-        SETTINGS.QCHEM_NUM_CORES if qchem_cores == _DEFAULT_SETTING else qchem_cores
+        settings.QCHEM_NUM_CORES if qchem_cores == _DEFAULT_SETTING else qchem_cores
     )
-    qchem_cmd = SETTINGS.QCHEM_CMD if qchem_cmd == _DEFAULT_SETTING else qchem_cmd
+    qchem_cmd = settings.QCHEM_CMD if qchem_cmd == _DEFAULT_SETTING else qchem_cmd
     qchem_local_scratch = (
-        SETTINGS.QCHEM_LOCAL_SCRATCH
+        settings.QCHEM_LOCAL_SCRATCH
         if qchem_local_scratch == _DEFAULT_SETTING
         else qchem_local_scratch
     )
     qchem_use_error_handlers = (
-        SETTINGS.QCHEM_USE_ERROR_HANDLERS
+        settings.QCHEM_USE_ERROR_HANDLERS
         if qchem_use_error_handlers == _DEFAULT_SETTING
         else qchem_use_error_handlers
     )
     qchem_custodian_max_errors = (
-        SETTINGS.QCHEM_CUSTODIAN_MAX_ERRORS
+        settings.QCHEM_CUSTODIAN_MAX_ERRORS
         if qchem_custodian_max_errors == _DEFAULT_SETTING
         else qchem_custodian_max_errors
     )
     qchem_nbo_exe = (
-        SETTINGS.QCHEM_NBO_EXE if qchem_nbo_exe == _DEFAULT_SETTING else qchem_nbo_exe
+        settings.QCHEM_NBO_EXE if qchem_nbo_exe == _DEFAULT_SETTING else qchem_nbo_exe
     )
 
     # Error handlers for Q-Chem

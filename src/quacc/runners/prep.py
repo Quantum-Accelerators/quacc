@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 
 from monty.shutil import gzip_dir
 
-from quacc import SETTINGS
+from quacc import get_settings
 from quacc.utils.files import copy_decompress_files, make_unique_dir
 
 if TYPE_CHECKING:
@@ -43,17 +43,18 @@ def calc_setup(
     Path
         The path to the unique tmpdir, where the calculation will be run. It will be
         deleted after the calculation is complete. By default, this will be
-        located within the `SETTINGS.SCRATCH_DIR`, but if that is not set, it will
-        be located within the `SETTINGS.RESULTS_DIR`. For conenience, a symlink
-        to this directory will be made in the `SETTINGS.RESULTS_DIR`.
+        located within `QuaccSettings.SCRATCH_DIR`, but if that is not set, it will
+        be located within the `QuaccSettings.RESULTS_DIR`. For conenience, a symlink
+        to this directory will be made in the `QuaccSettings.RESULTS_DIR`.
     Path
         The path to the results_dir, where the files will ultimately be stored.
-        By defualt, this will be the `SETTINGS.RESULTS_DIR`, but if
-        `SETTINGS.CREATE_UNIQUE_DIR` is set, it will be a unique directory
-        within the `SETTINGS.RESULTS_DIR`.
+        By defualt, this will be the `QuaccSettings.RESULTS_DIR`, but if
+        `QuaccSettings.CREATE_UNIQUE_DIR` is set, it will be a unique directory
+        within the `QuaccSettings.RESULTS_DIR`.
     """
     # Create a tmpdir for the calculation
-    tmpdir_base = SETTINGS.SCRATCH_DIR or SETTINGS.RESULTS_DIR
+    settings = get_settings()
+    tmpdir_base = settings.SCRATCH_DIR or settings.RESULTS_DIR
     tmpdir = make_unique_dir(base_path=tmpdir_base, prefix="tmp-quacc-")
     logger.info(f"Calculation will run at {tmpdir}")
 
@@ -62,13 +63,13 @@ def calc_setup(
         atoms.calc.directory = tmpdir
 
     # Define the results directory
-    job_results_dir = SETTINGS.RESULTS_DIR
-    if SETTINGS.CREATE_UNIQUE_DIR:
+    job_results_dir = settings.RESULTS_DIR
+    if settings.CREATE_UNIQUE_DIR:
         job_results_dir /= f"{tmpdir.name.split('tmp-')[-1]}"
 
     # Create a symlink to the tmpdir
-    if os.name != "nt" and SETTINGS.SCRATCH_DIR:
-        symlink_path = SETTINGS.RESULTS_DIR / f"symlink-{tmpdir.name}"
+    if os.name != "nt" and settings.SCRATCH_DIR:
+        symlink_path = settings.RESULTS_DIR / f"symlink-{tmpdir.name}"
         symlink_path.symlink_to(tmpdir, target_is_directory=True)
 
     # Copy files to tmpdir and decompress them if needed
@@ -107,6 +108,7 @@ def calc_cleanup(
     None
     """
     job_results_dir, tmpdir = Path(job_results_dir), Path(tmpdir)
+    settings = get_settings()
 
     # Safety check
     if "tmp-" not in str(tmpdir):
@@ -118,11 +120,11 @@ def calc_cleanup(
         atoms.calc.directory = job_results_dir
 
     # Gzip files in tmpdir
-    if SETTINGS.GZIP_FILES:
+    if settings.GZIP_FILES:
         gzip_dir(tmpdir)
 
     # Move files from tmpdir to job_results_dir
-    if SETTINGS.CREATE_UNIQUE_DIR:
+    if settings.CREATE_UNIQUE_DIR:
         move(tmpdir, job_results_dir)
     else:
         for file_name in os.listdir(tmpdir):
@@ -131,8 +133,8 @@ def calc_cleanup(
     logger.info(f"Calculation results stored at {job_results_dir}")
 
     # Remove symlink to tmpdir
-    if os.name != "nt" and SETTINGS.SCRATCH_DIR:
-        symlink_path = SETTINGS.RESULTS_DIR / f"symlink-{tmpdir.name}"
+    if os.name != "nt" and settings.SCRATCH_DIR:
+        symlink_path = settings.RESULTS_DIR / f"symlink-{tmpdir.name}"
         symlink_path.unlink(missing_ok=True)
 
 
@@ -152,15 +154,16 @@ def terminate(tmpdir: Path | str, exception: Exception) -> Exception:
     Exception
         The exception that caused the calculation to fail.
     """
+    settings = get_settings()
     job_failed_dir = tmpdir.with_name(tmpdir.name.replace("tmp-", "failed-"))
     tmpdir.rename(job_failed_dir)
 
     msg = f"Calculation failed! Files stored at {job_failed_dir}"
     logging.info(msg)
 
-    if os.name != "nt" and SETTINGS.SCRATCH_DIR:
-        old_symlink_path = SETTINGS.RESULTS_DIR / f"symlink-{tmpdir.name}"
-        symlink_path = SETTINGS.RESULTS_DIR / f"symlink-{job_failed_dir.name}"
+    if os.name != "nt" and settings.SCRATCH_DIR:
+        old_symlink_path = settings.RESULTS_DIR / f"symlink-{tmpdir.name}"
+        symlink_path = settings.RESULTS_DIR / f"symlink-{job_failed_dir.name}"
         old_symlink_path.unlink(missing_ok=True)
         symlink_path.symlink_to(job_failed_dir, target_is_directory=True)
 

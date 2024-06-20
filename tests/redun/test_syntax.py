@@ -4,8 +4,7 @@ import pytest
 
 redun = pytest.importorskip("redun")
 
-
-from quacc import flow, job, strip_decorator, subflow
+from quacc import flow, job, subflow
 
 
 @pytest.fixture()
@@ -66,26 +65,3 @@ def test_redun_decorators(tmp_path, monkeypatch, scheduler):
     assert scheduler.run(dynamic_workflow(1, 2, 3)) == [6, 6, 6]
     assert scheduler.run(dynamic_workflow2(1, 2, 3)) == [6, 6, 6]
     assert scheduler.run(dynamic_workflow3(1, 2, 3)) == 12
-
-
-def test_strip_decorators():
-    @job
-    def add(a, b):
-        return a + b
-
-    @flow
-    def add2(a, b):
-        return a + b
-
-    @subflow
-    def add3(a, b):
-        return a + b
-
-    stripped_add = strip_decorator(add)
-    assert stripped_add(1, 2) == 3
-
-    stripped_add2 = strip_decorator(add2)
-    assert stripped_add2(1, 2) == 3
-
-    stripped_add3 = strip_decorator(add3)
-    assert stripped_add3(1, 2) == 3

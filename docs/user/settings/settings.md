@@ -26,13 +26,15 @@ WORKFLOW_ENGINE: None # (3)!
 
 3. In YAML, a blank value or `null` is interpreted as `None` in Python. We also support "None" for convenience.
 
-??? Tip "When is This Method Ideal?"
+!!! Tip "When is This Method Ideal?"
 
     This approach is ideal when you want to change a setting that applies to most or all of your calculations.
 
 ## Using Environment Variables
 
-If you want to define quacc settings without writing them to a YAML file, you can instead modify the desired settings by defining individual environment variables with `QUACC` as the prefix. The environment variable takes precedence over any value specified in the YAML file. Most simple field types (e.g. `int`, `bool`, `float`, `str`) will be automatically inferred from the environment variable. To achieve the same results as the aforementioned YAML file, you would define the following environment variables:
+If you want to define quacc settings without writing them to a YAML file, you can instead modify the desired settings by defining individual environment variables with `QUACC` as the prefix. The environment variable takes precedence over any value specified in the YAML file. Most simple field types (e.g. `int`, `bool`, `float`, `str`) will be automatically inferred from the environment variable. For more complex types, such as lists or dictionaries, refer to the corresponding section in the [pydantic-settings](https://docs.pydantic.dev/latest/concepts/pydantic_settings/#parsing-environment-variable-values) documentation. We use `__` as the delimiter for nested settings.
+
+To achieve the same results as the aforementioned YAML file, you would define the following environment variables:
 
 ```bash
 export QUACC_SCRATCH_DIR=/path/to/my/scratch/dir
@@ -40,23 +42,13 @@ export QUACC_CREATE_UNIQUE_DIR=False
 export QUACC_WORKFLOW_ENGINE=None
 ```
 
-For more complex types, such as lists or dictionaries, refer to the corresponding section in the [pydantic-settings](https://docs.pydantic.dev/latest/concepts/pydantic_settings/#parsing-environment-variable-values) documentation. We use `__` as the delimiter for nested settings.
-
-??? Tip "When is This Method Ideal?"
+!!! Tip "When is This Method Ideal?"
 
     This approach is ideal when you want to dynamically modify the quacc settings for a given set of calculations, as the environment variable can be modified on-the-fly (e.g. in the job's submission script) without modifying the YAML file that is read by all other calculations.
 
 ## Modifying the Global Settings in a Script
 
-If you want to define quacc settings on-the-fly without writing them to a YAML file or using environment variables, you can do so within your script by modifying the global `SETTINGS` object.
-
-```python
-from quacc import SETTINGS
-
-SETTINGS.GZIP_FILES = False
-```
-
-If you only want to temporarily modify the settings for a specific calculation, you can use the context handler function [quacc.settings.change_settings][] as follows:
+If you want to define quacc settings on-the-fly without writing them to a YAML file or using environment variables, you can do so using the context handler function [quacc.settings.change_settings][] as follows:
 
 ```python
 from quacc import change_settings
@@ -65,10 +57,42 @@ with change_settings({"GZIP_FILES": False}):
     pass  # Your calculation here
 ```
 
-!!! Warning
+!!! Important "Active Workflow Engine"
 
-    Note that when deploying calculations via a workflow engine, changes to in-memory global variables on the local machine will not be reflected on the remote machine. To modify global settings in a script, ensure the setting re-assignment takes place in the decorated function itself. [Issue #2147](https://github.com/Quantum-Accelerators/quacc/issues/2147) seeks to improve the user experience in this regard.
+    When deploying calculations via a workflow engine, changes to in-memory global variables on the local machine will not be reflected on the remote machine. Instead, this should be done via a custom `settings_swap` keyword argument that is supported by the `@job` decorator.
 
-??? Tip "When is This Method Ideal?"
+    Essentially, the following two blocks of code are functionally the same:
+
+    ```python
+    from quacc import job
+
+
+    @job(settings_swap={"GZIP_FILES"})  # (1)!
+    def add(a, b):
+        return a + b
+    ```
+
+    1. This is the same as doing
+
+         ```python
+        from quacc import change_settings, job
+
+
+        @job
+        def add(a, b):
+            with change_settings({"GZIP_FILES": False}):
+                return a + b
+        ```
+
+    If using a pre-made `@job`, you can simply redecorate it so that it supports your custom settings:
+
+    ```python
+    from quacc import redecorate
+    from quacc.recipes.emt.core import static_job
+
+    static_job_ = redecorate(static_job, settings_swap={"GZIP_FILES": False})
+    ```
+
+!!! Tip "When is This Method Ideal?"
 
     This approach is ideal for fine-tuned modifications to settings within your workflow and for debugging scenarios (e.g. in a Jupyter Notebook).

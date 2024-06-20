@@ -20,7 +20,7 @@ from ase.vibrations import Vibrations
 from monty.dev import requires
 from monty.os.path import zpath
 
-from quacc import SETTINGS
+from quacc import get_settings
 from quacc.atoms.core import copy_atoms
 from quacc.runners._base import BaseRunner
 from quacc.runners.prep import calc_cleanup, calc_setup, terminate
@@ -213,9 +213,10 @@ class Runner(BaseRunner):
             The ASE Optimizer object.
         """
         # Set defaults
+        settings = get_settings()
         optimizer_kwargs = recursive_dict_merge(
             {
-                "logfile": "-" if SETTINGS.DEBUG else self.tmpdir / "opt.log",
+                "logfile": "-" if settings.DEBUG else self.tmpdir / "opt.log",
                 "restart": self.tmpdir / "opt.json",
             },
             optimizer_kwargs,
@@ -295,6 +296,7 @@ class Runner(BaseRunner):
         """
         # Set defaults
         vib_kwargs = vib_kwargs or {}
+        settings = get_settings()
 
         # Run calculation
         vib = Vibrations(self.atoms, name=str(self.tmpdir / "vib"), **vib_kwargs)
@@ -305,7 +307,7 @@ class Runner(BaseRunner):
 
         # Summarize run
         vib.summary(
-            log=sys.stdout if SETTINGS.DEBUG else str(self.tmpdir / "vib_summary.log")
+            log=sys.stdout if settings.DEBUG else str(self.tmpdir / "vib_summary.log")
         )
 
         # Perform cleanup operations
@@ -415,6 +417,8 @@ def run_neb(
 
     # Copy atoms so we don't modify it in-place
     images = copy_atoms(images)
+    settings = get_settings()
+
     neb = NEB(images, **neb_kwargs)
 
     dir_lists = []
@@ -427,7 +431,7 @@ def run_neb(
     # Set defaults
     optimizer_kwargs = recursive_dict_merge(
         {
-            "logfile": "-" if SETTINGS.DEBUG else dir_lists[0][0] / "opt.log",
+            "logfile": "-" if settings.DEBUG else dir_lists[0][0] / "opt.log",
             "restart": dir_lists[0][0] / "opt.json",
         },
         optimizer_kwargs,

@@ -11,7 +11,7 @@ from ase import Atoms
 from ase.build import molecule
 from ase.mep.neb import NEBOptimizer
 
-from quacc import SETTINGS
+from quacc import _internally_set_settings
 from quacc.recipes.newtonnet.core import freq_job, relax_job, static_job
 from quacc.recipes.newtonnet.ts import (
     geodesic_ts_job,
@@ -22,21 +22,21 @@ from quacc.recipes.newtonnet.ts import (
     ts_job,
 )
 
-DEFAULT_SETTINGS = SETTINGS.model_copy()
+current_file_path = Path(__file__).parent
 
 
 def setup_module():
-    current_file_path = Path(__file__).parent
-
-    SETTINGS.NEWTONNET_CONFIG_PATH = current_file_path / "config0.yml"
-    SETTINGS.NEWTONNET_MODEL_PATH = current_file_path / "best_model_state.tar"
-    SETTINGS.CHECK_CONVERGENCE = False
+    _internally_set_settings(
+        {
+            "NEWTONNET_CONFIG_PATH": current_file_path / "config0.yml",
+            "NEWTONNET_MODEL_PATH": current_file_path / "best_model_state.tar",
+            "CHECK_CONVERGENCE": False,
+        }
+    )
 
 
 def teardown_module():
-    SETTINGS.NEWTONNET_CONFIG_PATH = DEFAULT_SETTINGS.NEWTONNET_CONFIG_PATH
-    SETTINGS.NEWTONNET_MODEL_PATH = DEFAULT_SETTINGS.NEWTONNET_MODEL_PATH
-    SETTINGS.CHECK_CONVERGENCE = DEFAULT_SETTINGS.CHECK_CONVERGENCE
+    _internally_set_settings(reset=True)
 
 
 def test_static_job(tmp_path, monkeypatch):
