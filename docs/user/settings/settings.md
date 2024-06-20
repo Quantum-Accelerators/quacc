@@ -95,4 +95,4 @@ with change_settings({"GZIP_FILES": False}):
 
 !!! Tip "When is This Method Ideal?"
 
-    This approach is ideal for fine-tuned modifications to settings within your workflow and for debugging scenarios (e.g. in a Jupyter Notebook).
+    This approach is ideal for fine-tuned modifications to settings within your workflow.
