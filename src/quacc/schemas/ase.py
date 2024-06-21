@@ -330,7 +330,6 @@ def summarize_neb_run(
     base_task_doc = summarize_run_neb2(
         initial_atoms,
         charge_and_multiplicity=charge_and_multiplicity,
-        move_magmoms=move_magmoms,
         store=None,
     )
 
