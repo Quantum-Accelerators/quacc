@@ -308,7 +308,6 @@ def summarize_neb_run(
     dyn: Optimizer,
     trajectory: Trajectory | list[Atoms] | None = None,
     charge_and_multiplicity: tuple[int, int] | None = None,
-    move_magmoms: bool = False,
     additional_fields: dict[str, Any] | None = None,
     store: Store | None = _DEFAULT_SETTING,
 ) -> OptSchema:
