@@ -178,7 +178,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     elif settings.WORKFLOW_ENGINE == "prefect":
         from prefect import task
 
-        if settings.PREFECT_AUTO_SUBMIT:
+        if settings.PREFECT_AUTO_SUBMIT and settings.NESTED_RESULTS_DIR:
 
             @wraps(_func)
             def wrapper(*f_args, **f_kwargs):
@@ -187,7 +187,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
                 return decorated.submit(*f_args, **f_kwargs)
 
             return wrapper
-        else:
+        elif (not settings.PREFECT_AUTO_SUBMIT) and settings.NESTED_RESULTS_DIR:
 
             @wraps(_func)
             def wrapper(*f_args, **f_kwargs):
@@ -195,6 +195,17 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
                 return task(adjusted_results_func, **kwargs)(*f_args, **f_kwargs)
 
             return wrapper
+        elif settings.PREFECT_AUTO_SUBMIT and (not settings.NESTED_RESULTS_DIR):
+
+            @wraps(_func)
+            def wrapper(*f_args, **f_kwargs):
+                decorated = task(_func, **kwargs)
+                return decorated.submit(*f_args, **f_kwargs)
+
+            return wrapper
+        else:
+            return task(_func, **kwargs)
+
     else:
         return _func
 
@@ -345,9 +356,6 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
 
     settings = get_settings()
 
-    if settings.NESTED_RESULTS_DIR:
-        _func = nest_results_dir_wrap(_func)
-
     if _func is None:
         return partial(flow, **kwargs)
 
@@ -374,8 +382,6 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
             return wrapper
         else:
             return prefect_flow(_func, validate_parameters=False, **kwargs)
-
-        # return prefect_flow(_func, validate_parameters=False, **kwargs)
     else:
         return _func
 
@@ -576,9 +582,6 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
     from quacc import get_settings
 
     settings = get_settings()
-
-    # if settings.NESTED_RESULTS_DIR:
-    #     _func = nest_results_dir_wrap(_func)
 
     if _func is None:
         return partial(subflow, **kwargs)
