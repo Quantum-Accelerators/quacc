@@ -15,7 +15,7 @@ from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
 from ase.io import read
 from ase.mep.neb import NEBOptimizer
-from ase.optimize import BFGS, BFGSLineSearch, GPMin
+from ase.optimize import BFGS, BFGSLineSearch
 from ase.optimize.sciopt import SciPyFminBFGS
 
 # from sella import Sella
@@ -228,8 +228,7 @@ def test_run_neb2(setup_test_environment, tmp_path):
         with pytest.raises(
             ValueError, match="BFGSLineSearch is not allowed as optimizer with NEB."
         ):
-            neb_kwargs = {"method": "aseneb", "precon": None}
-
+            pass
 
 
 def test_base_runner(tmp_path, monkeypatch):
