@@ -15,7 +15,7 @@ from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
 from ase.io import read
 from ase.mep.neb import NEBOptimizer
-from ase.optimize import BFGS, BFGSLineSearch, GPMin
+from ase.optimize import BFGS, BFGSLineSearch
 from ase.optimize.sciopt import SciPyFminBFGS
 
 # from sella import Sella
