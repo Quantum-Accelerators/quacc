@@ -236,6 +236,7 @@ def test_run_neb2(setup_test_environment, tmp_path):
     neb_kwargs = {"method": "aseneb", "precon": None}
     run_neb(images, optimizer=optimizer_class, neb_kwargs=neb_kwargs)
 
+
 def test_base_runner(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
