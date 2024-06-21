@@ -149,9 +149,6 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     if changes := kwargs.pop("settings_swap", {}):
         return job(change_settings_wrap(_func, changes), **kwargs)
 
-    # if settings.NESTED_RESULTS_DIR:
-    #     _func = nest_results_dir_wrap(_func)
-
     if settings.WORKFLOW_ENGINE == "covalent":
         import covalent as ct
 
