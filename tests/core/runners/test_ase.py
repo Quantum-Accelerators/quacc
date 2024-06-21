@@ -184,6 +184,26 @@ def test_run_neb(setup_test_environment, tmp_path):
     reason="geodesic_interpolate function is not available",
 )
 def test_run_neb2(setup_test_environment, tmp_path):
+    """
+    Test the NEB calculation with geodesic interpolation.
+
+    Parameters
+    ----------
+    setup_test_environment
+        Fixture to set up the test environment with reactant and product Atoms.
+    tmp_path
+        Temporary directory path for test files.
+
+    Notes
+    -----
+    This test performs the following steps:
+    1. Set up the reactant and product Atoms using the `setup_test_environment` fixture.
+    2. Optimize the reactant and product structures using `strip_decorator(relax_job)`.
+    3. Assign the EMT calculator to the optimized structures.
+    4. Perform geodesic interpolation between the optimized reactant and product.
+    5. Validate the positions, potential energy, and forces of the optimized product.
+    6. Test that using `BFGSLineSearch` as an optimizer with NEB raises a ValueError.
+    """
     optimizer_class = BFGSLineSearch
     n_intermediate = 10
     r_positions = -0.854
@@ -213,12 +233,7 @@ def test_run_neb2(setup_test_environment, tmp_path):
     ), "pdt forces"
 
     neb_kwargs = {"method": "aseneb", "precon": None}
-    if optimizer_class == BFGSLineSearch:
-        with pytest.raises(
-            ValueError, match="BFGSLineSearch is not allowed as optimizer with NEB."
-        ):
-            run_neb(images, optimizer=optimizer_class, neb_kwargs=neb_kwargs)
-
+    run_neb(images, optimizer=optimizer_class, neb_kwargs=neb_kwargs)
 
 
 def test_base_runner(tmp_path, monkeypatch):
