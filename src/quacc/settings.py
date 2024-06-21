@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
+import inspect
 import os
+import uuid
 from contextlib import contextmanager
 from functools import wraps
 from pathlib import Path
 from shutil import which
 from typing import TYPE_CHECKING, Literal, Optional, Union
-import inspect
-import uuid
 
 import psutil
 from maggma.core import Store
@@ -633,7 +633,6 @@ def nest_results_dir_wrap(func: Callable) -> Callable:
 
     @wraps(original_func)
     def wrapper(*args, **kwargs):
-
         # Set the settings within the new function's context to be a subdirectory
         # of the parent's folder
         with change_settings(
