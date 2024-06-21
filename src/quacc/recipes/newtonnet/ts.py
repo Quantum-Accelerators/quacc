@@ -308,13 +308,13 @@ def neb_job(
     product_atoms
         The Atoms object representing the product structure.
     relax_job_kwargs
-        Keyword arguments to use for the [quacc.recipes.newtonnet.ts.relax_job][] function, which relaxes the reactant and product structures before the NEB calculation.
+        Keyword arguments to use relax_job.
     calc_kwargs
-        Custom kwargs for the NewtonNet calculator. Set a value to `quacc.Remove` to remove a pre-existing key entirely. For a list of available keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
+        Custom kwargs for the NewtonNet calculator.
     geodesic_interpolate_kwargs
-        Keyword arguments for the [quacc.utils.ase_utils.geodesic_interpolate][] function, which generates the initial images along the MEP between the reactant and product structures.
+        Keyword arguments for the geodesic function.
     neb_kwargs
-        Keyword arguments for the NEB calculation. For a list of available keys, refer to [quacc.runners.ase.Runner.run_neb][].
+        Keyword arguments for the NEB calculation.
 
     Returns
     -------
