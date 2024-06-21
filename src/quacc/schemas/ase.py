@@ -324,7 +324,7 @@ def summarize_neb_run(
         traj_atoms.calc = None
 
     initial_atoms = trajectory[0]
-    final_atoms = get_final_atoms_from_dynamics(dyn)
+    get_final_atoms_from_dynamics(dyn)
 
     # Base task doc
     base_task_doc = summarize_run_neb2(
