@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from quacc.wflow_tools.decorators import job
 from quacc.wflow_tools.customizers import strip_decorator
+from quacc.wflow_tools.decorators import job
 
 if TYPE_CHECKING:
     from typing import Any
@@ -148,9 +148,7 @@ def kwarg_map(func: callable, unmapped_kwargs: None = None, **mapped_kwargs):
 
     all_lens = [len(v) for v in mapped_kwargs.values()]
     n_elements = all_lens[0]
-    assert all(n_elements == le for le in all_lens), "Inconsistent lengths: %s" % (
-        all_lens,
-    )
+    assert all(n_elements == le for le in all_lens), f"Inconsistent lengths: {all_lens}"
     return [
         func(**{k: v[i] for k, v in iter(mapped_kwargs.items())}, **unmapped_kwargs)
         for i in range(n_elements)

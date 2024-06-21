@@ -1,19 +1,18 @@
 from __future__ import annotations
 
+import numpy as np
 import pytest
 
 from quacc import job
 from quacc.wflow_tools.job_patterns import (
-    partition,
     kwarg_map,
     map_partition,
     map_partitioned_lists,
+    partition,
 )
-import numpy as np
 
 
 def test_partition():
-
     @job
     def simple_list():
         return list(range(10))
@@ -26,7 +25,6 @@ def test_partition():
 
 
 def test_kwarg_map():
-
     def test_fun(a, b):
         return {"a": a, "b": b}
 
@@ -44,7 +42,6 @@ def test_kwarg_map():
 
 
 def test_map_partitioned_lists():
-
     @job
     def simple_list():
         return list(range(10))
@@ -80,7 +77,6 @@ def test_map_partitioned_lists():
 
 
 def test_map_partition():
-
     def test_fun(a, b):
         return {"a": a, "b": b}
 
