@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import inspect
 import os
-import uuid
+from datetime import datetime, timezone
+from random import randint
 from contextlib import contextmanager
 from functools import wraps
 from pathlib import Path
@@ -628,10 +629,9 @@ def nest_results_dir_wrap(func: Callable) -> Callable:
     # Get the settings from the calling function's context
     results_parent_dir = get_settings().RESULTS_DIR
 
-    return change_settings_wrap(
-        func,
-        {
-            "RESULTS_DIR": results_parent_dir
-            / f"{inspect.getmodule(func).__name__}.{func.__name__}-{uuid.uuid4()}"
-        },
+    time_now = datetime.now(timezone.utc).strftime("%Y-%m-%d-%H-%M-%S-%f")
+
+    nested_results_dir = results_parent_dir / Path(
+        f"{inspect.getmodule(func).__name__}.{func.__name__}-{time_now}-{randint(10000, 99999)}"
     )
+    return change_settings_wrap(func, {"RESULTS_DIR": nested_results_dir})
