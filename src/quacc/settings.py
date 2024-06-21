@@ -8,6 +8,8 @@ from functools import wraps
 from pathlib import Path
 from shutil import which
 from typing import TYPE_CHECKING, Literal, Optional, Union
+import inspect
+import uuid
 
 import psutil
 from maggma.core import Store
@@ -94,6 +96,14 @@ class QuaccSettings(BaseSettings):
             Whether to have a unique directory in RESULTS_DIR for each job.
             Some workflow engines have an option to do this for you already,
             in which case you should set this to False.
+            """
+        ),
+    )
+    NESTED_RESULTS_DIR: bool = Field(
+        True,
+        description=(
+            """
+            Whether to nest the results dir by the calling flow/subflow/etc
             """
         ),
     )
@@ -591,6 +601,47 @@ def change_settings_wrap(func: Callable, changes: dict[str, Any]) -> Callable:
     @wraps(original_func)
     def wrapper(*args, **kwargs):
         with change_settings(changes):
+            return original_func(*args, **kwargs)
+
+    wrapper._changed = True
+    wrapper._original_func = original_func
+    return wrapper
+
+
+def nest_results_dir_wrap(func: Callable) -> Callable:
+    """
+    Wraps a function with the change_settings context manager if not already wrapped.
+
+    Parameters
+    ----------
+    func
+        The function to wrap.
+    changes
+        The settings to apply within the context manager.
+
+    Returns
+    -------
+    Callable
+        The wrapped function.
+    """
+    original_func = func._original_func if getattr(func, "_changed", False) else func
+
+    from quacc import get_settings
+
+    # Get the settings from the calling function's context
+    results_parent_dir = get_settings().RESULTS_DIR
+
+    @wraps(original_func)
+    def wrapper(*args, **kwargs):
+
+        # Set the settings within the new function's context to be a subdirectory
+        # of the parent's folder
+        with change_settings(
+            {
+                "RESULTS_DIR": results_parent_dir
+                / f"{inspect.getmodule(func).__name__}.{func.__name__}-{uuid.uuid4()}"
+            }
+        ):
             return original_func(*args, **kwargs)
 
     wrapper._changed = True

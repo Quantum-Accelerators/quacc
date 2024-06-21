@@ -4,8 +4,10 @@ from __future__ import annotations
 
 from functools import partial, wraps
 from typing import TYPE_CHECKING, TypeVar
+import inspect
+import uuid
 
-from quacc.settings import change_settings_wrap
+from quacc.settings import change_settings_wrap, nest_results_dir_wrap
 
 Job = TypeVar("Job")
 Flow = TypeVar("Flow")
@@ -147,6 +149,9 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     if changes := kwargs.pop("settings_swap", {}):
         return job(change_settings_wrap(_func, changes), **kwargs)
 
+    # if settings.NESTED_RESULTS_DIR:
+    #     _func = nest_results_dir_wrap(_func)
+
     if settings.WORKFLOW_ENGINE == "covalent":
         import covalent as ct
 
@@ -182,12 +187,19 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
 
             @wraps(_func)
             def wrapper(*f_args, **f_kwargs):
-                decorated = task(_func, **kwargs)
+                adjusted_results_func = nest_results_dir_wrap(_func)
+                decorated = task(adjusted_results_func, **kwargs)
                 return decorated.submit(*f_args, **f_kwargs)
 
             return wrapper
         else:
-            return task(_func, **kwargs)
+
+            @wraps(_func)
+            def wrapper(*f_args, **f_kwargs):
+                adjusted_results_func = nest_results_dir_wrap(_func)
+                return task(adjusted_results_func, **kwargs)(*f_args, **f_kwargs)
+
+            return wrapper
     else:
         return _func
 
@@ -338,6 +350,9 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
 
     settings = get_settings()
 
+    if settings.NESTED_RESULTS_DIR:
+        _func = nest_results_dir_wrap(_func)
+
     if _func is None:
         return partial(flow, **kwargs)
 
@@ -352,7 +367,20 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
     elif settings.WORKFLOW_ENGINE == "prefect":
         from prefect import flow as prefect_flow
 
-        return prefect_flow(_func, validate_parameters=False, **kwargs)
+        if settings.NESTED_RESULTS_DIR:
+
+            @wraps(_func)
+            def wrapper(*f_args, **f_kwargs):
+                adjusted_results_func = nest_results_dir_wrap(_func)
+                return prefect_flow(
+                    adjusted_results_func, validate_parameters=False, **kwargs
+                )(*f_args, **f_kwargs)
+
+            return wrapper
+        else:
+            return prefect_flow(_func, validate_parameters=False, **kwargs)
+
+        # return prefect_flow(_func, validate_parameters=False, **kwargs)
     else:
         return _func
 
@@ -554,6 +582,9 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
 
     settings = get_settings()
 
+    # if settings.NESTED_RESULTS_DIR:
+    #     _func = nest_results_dir_wrap(_func)
+
     if _func is None:
         return partial(subflow, **kwargs)
 
@@ -583,7 +614,18 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
     elif settings.WORKFLOW_ENGINE == "prefect":
         from prefect import flow as prefect_flow
 
-        return prefect_flow(_func, validate_parameters=False, **kwargs)
+        if settings.NESTED_RESULTS_DIR:
+
+            @wraps(_func)
+            def wrapper(*f_args, **f_kwargs):
+                adjusted_results_func = nest_results_dir_wrap(_func)
+                return prefect_flow(
+                    adjusted_results_func, validate_parameters=False, **kwargs
+                )(*f_args, **f_kwargs)
+
+            return wrapper
+        else:
+            return prefect_flow(_func, validate_parameters=False, **kwargs)
     elif settings.WORKFLOW_ENGINE == "redun":
         from redun import task
 
