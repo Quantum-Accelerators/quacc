@@ -437,16 +437,15 @@ def run_neb(
         optimizer_kwargs,
     )
     run_kwargs = run_kwargs or {}
-
+    traj_filename = "opt.traj"
     # Check if trajectory kwarg is specified
     if "trajectory" in optimizer_kwargs:
         msg = "Quacc does not support setting the `trajectory` kwarg."
         raise ValueError(msg)
 
     # Define the Trajectory object
-    traj_file = dir_lists[0][0] / "neb.traj"
+    traj_file = dir_lists[0][0] / traj_filename
     traj = Trajectory(traj_file, "w", atoms=neb)
-    optimizer_kwargs["trajectory"] = traj
 
     # Set volume relaxation constraints, if relevant
     for i in range(len(images)):
@@ -454,14 +453,18 @@ def run_neb(
             images[i] = FrechetCellFilter(images[i])
 
     # Run optimization
-    with traj, optimizer(neb, **optimizer_kwargs) as dyn:
-        dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
+    dyn = optimizer(neb, **optimizer_kwargs)
+    dyn.attach(traj.write)
+    dyn.run()
+    traj.close()
 
-    # Store the trajectory atoms
-    dyn.traj_atoms = read(traj_file, index=":")
+    traj.filename = traj_file
+    dyn.trajectory = traj
 
-    # Perform cleanup operations
-    for i, image in enumerate(images):
+    # Perform cleanup operations skipping the first images's directory
+    # because that is where the trajectory is stored. It will get deleted
+    # eventually.
+    for i, image in enumerate(images[1:], start=1):
         calc_cleanup(image, dir_lists[i][0], dir_lists[i][1])
 
     return dyn
