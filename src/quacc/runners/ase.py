@@ -455,7 +455,7 @@ def run_neb(
     # Run optimization
     dyn = optimizer(neb, **optimizer_kwargs)
     dyn.attach(traj.write)
-    dyn.run()
+    dyn.run(fmax, max_steps)
     traj.close()
 
     traj.filename = traj_file
