@@ -120,10 +120,8 @@ def summarize_run(
 
 
 def summarize_run_neb2(
-    final_atoms: Atoms,
     input_atoms: Atoms,
     charge_and_multiplicity: tuple[int, int] | None = None,
-    move_magmoms: bool = False,
     additional_fields: dict[str, Any] | None = None,
     store: Store | None = _DEFAULT_SETTING,
 ) -> RunSchema:
@@ -312,7 +310,6 @@ def summarize_vib_and_thermo(
 def summarize_neb_run(
     dyn: Optimizer,
     trajectory: Trajectory | list[Atoms] | None = None,
-    check_convergence: bool = _DEFAULT_SETTING,
     charge_and_multiplicity: tuple[int, int] | None = None,
     move_magmoms: bool = False,
     additional_fields: dict[str, Any] | None = None,
