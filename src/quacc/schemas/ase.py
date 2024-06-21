@@ -138,17 +138,14 @@ def summarize_run_neb2(
     else:
         input_atoms_metadata = {}
 
-    inputs = {
-        "input_atoms": input_atoms_metadata,
-        "quacc_version": __version__,
-    }
+    inputs = {"input_atoms": input_atoms_metadata, "quacc_version": __version__}
     results = {}
     final_atoms_metadata = {}
 
     unsorted_task_doc = final_atoms_metadata | inputs | results | additional_fields
 
     return finalize_dict(
-        unsorted_task_doc, '', gzip_file=settings.GZIP_FILES, store=store
+        unsorted_task_doc, "", gzip_file=settings.GZIP_FILES, store=store
     )
 
 
@@ -315,7 +312,6 @@ def summarize_neb_run(
     additional_fields: dict[str, Any] | None = None,
     store: Store | None = _DEFAULT_SETTING,
 ) -> OptSchema:
-
     settings = get_settings()
     store = settings.STORE if store == _DEFAULT_SETTING else store
     additional_fields = additional_fields or {}
@@ -354,7 +350,7 @@ def summarize_neb_run(
     unsorted_task_doc = base_task_doc | opt_fields | additional_fields
 
     return finalize_dict(
-        unsorted_task_doc, '', gzip_file=settings.GZIP_FILES, store=store
+        unsorted_task_doc, "", gzip_file=settings.GZIP_FILES, store=store
     )
 
 
