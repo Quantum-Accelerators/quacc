@@ -610,40 +610,28 @@ def change_settings_wrap(func: Callable, changes: dict[str, Any]) -> Callable:
 
 def nest_results_dir_wrap(func: Callable) -> Callable:
     """
-    Wraps a function with the change_settings context manager if not already wrapped.
+    Wraps a function with the change_settings context manager using a nested RESULTS_DIR
+
 
     Parameters
     ----------
     func
         The function to wrap.
-    changes
-        The settings to apply within the context manager.
 
     Returns
     -------
     Callable
         The wrapped function.
     """
-    original_func = func._original_func if getattr(func, "_changed", False) else func
-
     from quacc import get_settings
 
     # Get the settings from the calling function's context
     results_parent_dir = get_settings().RESULTS_DIR
 
-    @wraps(original_func)
-    def wrapper(*args, **kwargs):
-
-        # Set the settings within the new function's context to be a subdirectory
-        # of the parent's folder
-        with change_settings(
-            {
-                "RESULTS_DIR": results_parent_dir
-                / f"{inspect.getmodule(func).__name__}.{func.__name__}-{uuid.uuid4()}"
-            }
-        ):
-            return original_func(*args, **kwargs)
-
-    wrapper._changed = True
-    wrapper._original_func = original_func
-    return wrapper
+    return change_settings_wrap(
+        func,
+        {
+            "RESULTS_DIR": results_parent_dir
+            / f"{inspect.getmodule(func).__name__}.{func.__name__}-{uuid.uuid4()}"
+        },
+    )
