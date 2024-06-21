@@ -119,6 +119,41 @@ def summarize_run(
     )
 
 
+def summarize_run_neb2(
+    final_atoms: Atoms,
+    input_atoms: Atoms,
+    charge_and_multiplicity: tuple[int, int] | None = None,
+    move_magmoms: bool = False,
+    additional_fields: dict[str, Any] | None = None,
+    store: Store | None = _DEFAULT_SETTING,
+) -> RunSchema:
+    additional_fields = additional_fields or {}
+    settings = get_settings()
+    store = settings.STORE if store == _DEFAULT_SETTING else store
+
+    if input_atoms:
+        input_atoms_metadata = atoms_to_metadata(
+            input_atoms,
+            charge_and_multiplicity=charge_and_multiplicity,
+            store_pmg=False,
+        )
+    else:
+        input_atoms_metadata = {}
+
+    inputs = {
+        "input_atoms": input_atoms_metadata,
+        "quacc_version": __version__,
+    }
+    results = {}
+    final_atoms_metadata = {}
+
+    unsorted_task_doc = final_atoms_metadata | inputs | results | additional_fields
+
+    return finalize_dict(
+        unsorted_task_doc, '', gzip_file=settings.GZIP_FILES, store=store
+    )
+
+
 def summarize_opt_run(
     dyn: Optimizer,
     trajectory: Trajectory | list[Atoms] | None = None,
@@ -274,26 +309,37 @@ def summarize_vib_and_thermo(
     )
 
 
-def summarize_neb_run(dyn: Optimizer) -> OptSchema:
-    """
-    Summarizes the NEB run results into an OptSchema.
+def summarize_neb_run(
+    dyn: Optimizer,
+    trajectory: Trajectory | list[Atoms] | None = None,
+    check_convergence: bool = _DEFAULT_SETTING,
+    charge_and_multiplicity: tuple[int, int] | None = None,
+    move_magmoms: bool = False,
+    additional_fields: dict[str, Any] | None = None,
+    store: Store | None = _DEFAULT_SETTING,
+) -> OptSchema:
 
-    Parameters
-    ----------
-    dyn : Optimizer
-        The ASE Optimizer object used in the NEB run.
+    settings = get_settings()
+    store = settings.STORE if store == _DEFAULT_SETTING else store
+    additional_fields = additional_fields or {}
 
-    Returns
-    -------
-    OptSchema
-        A dictionary containing the optimization summary, including parameters,
-        trajectory, and trajectory results.
-    """
     # Get trajectory
-    trajectory = (
-        dyn.traj_atoms
-        if hasattr(dyn, "traj_atoms")
-        else read(dyn.trajectory.filename, index=":")
+    if not trajectory:
+        trajectory = read(dyn.trajectory.filename, index=":")
+    trajectory_results = [atoms.calc.results for atoms in trajectory]
+    for traj_atoms in trajectory:
+        traj_atoms.calc = None
+
+    initial_atoms = trajectory[0]
+    final_atoms = get_final_atoms_from_dynamics(dyn)
+
+    # Base task doc
+    base_task_doc = summarize_run_neb2(
+        final_atoms,
+        initial_atoms,
+        charge_and_multiplicity=charge_and_multiplicity,
+        move_magmoms=move_magmoms,
+        store=None,
     )
 
     # Clean up the opt parameters
@@ -301,11 +347,18 @@ def summarize_neb_run(dyn: Optimizer) -> OptSchema:
     parameters_opt.pop("logfile", None)
     parameters_opt.pop("restart", None)
 
-    return {
+    opt_fields = {
         "parameters_opt": parameters_opt,
         "trajectory": trajectory,
-        "trajectory_results": [atoms.calc.results for atoms in trajectory],
+        "trajectory_results": trajectory_results,
     }
+
+    # Create a dictionary of the inputs/outputs
+    unsorted_task_doc = base_task_doc | opt_fields | additional_fields
+
+    return finalize_dict(
+        unsorted_task_doc, '', gzip_file=settings.GZIP_FILES, store=store
+    )
 
 
 def _summarize_vib_run(
