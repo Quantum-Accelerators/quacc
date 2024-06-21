@@ -179,6 +179,7 @@ def test_run_neb(setup_test_environment, tmp_path):
             1.098, abs=0.01
         )
 
+
 @pytest.mark.skipif(
     not has_geodesic_interpolate,
     reason="geodesic_interpolate function is not available",
@@ -218,7 +219,6 @@ def test_run_neb2(setup_test_environment, tmp_path):
             ValueError, match="BFGSLineSearch is not allowed as optimizer with NEB."
         ):
             run_neb(images, optimizer=optimizer_class, neb_kwargs=neb_kwargs)
-
 
 
 def test_base_runner(tmp_path, monkeypatch):
