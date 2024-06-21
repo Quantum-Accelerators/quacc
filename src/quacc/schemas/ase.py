@@ -125,6 +125,25 @@ def summarize_run_neb2(
     additional_fields: dict[str, Any] | None = None,
     store: Store | None = _DEFAULT_SETTING,
 ) -> RunSchema:
+    """
+    Summarize the NEB run results and store them in a database-friendly format.
+
+    Parameters
+    ----------
+    input_atoms
+        The input Atoms object used for the NEB run.
+    charge_and_multiplicity
+        Charge and spin multiplicity of the Atoms object.
+    additional_fields
+        Additional fields to add to the task document.
+    store
+        Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`.
+
+    Returns
+    -------
+    RunSchema
+        A dictionary containing the summarized NEB run results.
+    """
     additional_fields = additional_fields or {}
     settings = get_settings()
     store = settings.STORE if store == _DEFAULT_SETTING else store
@@ -311,6 +330,27 @@ def summarize_neb_run(
     additional_fields: dict[str, Any] | None = None,
     store: Store | None = _DEFAULT_SETTING,
 ) -> OptSchema:
+    """
+    Summarize the NEB run results and store them in a database-friendly format.
+
+    Parameters
+    ----------
+    dyn
+        ASE Optimizer object used for the NEB run.
+    trajectory
+        Trajectory of the NEB run, either as a Trajectory object or a list of Atoms objects.
+    charge_and_multiplicity
+        Charge and spin multiplicity of the Atoms object.
+    additional_fields
+        Additional fields to add to the task document.
+    store
+        Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`.
+
+    Returns
+    -------
+    OptSchema
+        A dictionary containing the summarized NEB run results.
+    """
     settings = get_settings()
     store = settings.STORE if store == _DEFAULT_SETTING else store
     additional_fields = additional_fields or {}
