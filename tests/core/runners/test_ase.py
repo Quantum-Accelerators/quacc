@@ -233,8 +233,12 @@ def test_run_neb2(setup_test_environment, tmp_path):
         first_image_forces, abs=1e-3
     ), "pdt forces"
 
-    neb_kwargs = {"method": "aseneb", "precon": None}
-    run_neb(images, optimizer=optimizer_class, neb_kwargs=neb_kwargs)
+    if optimizer_class == BFGSLineSearch:
+        with pytest.raises(
+            ValueError, match="BFGSLineSearch is not allowed as optimizer with NEB."
+        ):
+            neb_kwargs = {"method": "aseneb", "precon": None}
+
 
 def test_base_runner(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
