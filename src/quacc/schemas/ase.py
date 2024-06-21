@@ -327,9 +327,7 @@ def summarize_neb_run(
 
     # Base task doc
     base_task_doc = summarize_run_neb2(
-        initial_atoms,
-        charge_and_multiplicity=charge_and_multiplicity,
-        store=None,
+        initial_atoms, charge_and_multiplicity=charge_and_multiplicity, store=None
     )
 
     # Clean up the opt parameters
