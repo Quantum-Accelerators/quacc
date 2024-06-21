@@ -229,7 +229,7 @@ def test_run_neb2(setup_test_environment, tmp_path):
         with pytest.raises(
             ValueError, match="BFGSLineSearch is not allowed as optimizer with NEB."
         ):
-            dyn = run_neb(images, optimizer=optimizer_class, neb_kwargs=neb_kwargs)
+            run_neb(images, optimizer=optimizer_class, neb_kwargs=neb_kwargs)
 
 
 def test_base_runner(tmp_path, monkeypatch):
