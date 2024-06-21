@@ -179,6 +179,47 @@ def test_run_neb(setup_test_environment, tmp_path):
             1.098, abs=0.01
         )
 
+@pytest.mark.skipif(
+    not has_geodesic_interpolate,
+    reason="geodesic_interpolate function is not available",
+)
+def test_run_neb2(setup_test_environment, tmp_path):
+    optimizer_class = BFGSLineSearch
+    n_intermediate = 10
+    r_positions = -0.854
+    p_energy = 1.082
+    first_image_forces = -0.005
+
+    reactant, product = setup_test_environment
+
+    optimized_r = strip_decorator(relax_job)(reactant)["atoms"]
+    optimized_p = strip_decorator(relax_job)(product)["atoms"]
+
+    optimized_r.calc = EMT()
+    optimized_p.calc = EMT()
+
+    images = _geodesic_interpolate_wrapper(
+        optimized_r.copy(), optimized_p.copy(), n_images=n_intermediate
+    )
+    for image in images:
+        image.calc = EMT()
+    assert optimized_p.positions[0][1] == pytest.approx(-0.192, abs=1e-2)
+    assert optimized_r.positions[0][1] == pytest.approx(r_positions, abs=1e-2)
+    assert optimized_p.get_potential_energy() == pytest.approx(
+        p_energy, abs=1e-2
+    ), "pdt pot. energy"
+    assert optimized_p.get_forces()[0, 1] == pytest.approx(
+        first_image_forces, abs=1e-3
+    ), "pdt forces"
+
+    neb_kwargs = {"method": "aseneb", "precon": None}
+    if optimizer_class == BFGSLineSearch:
+        with pytest.raises(
+            ValueError, match="BFGSLineSearch is not allowed as optimizer with NEB."
+        ):
+            run_neb(images, optimizer=optimizer_class, neb_kwargs=neb_kwargs)
+
+
 
 def test_base_runner(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
