@@ -54,8 +54,6 @@ class OptSchema(RunSchema):
 class DynSchema(RunSchema):
     """Schema for [quacc.schemas.ase.summarize_md_run][]"""
 
-    # Removed: converged, parameters_opt
-
     parameters_md: ParametersDyn
     trajectory: list[Atoms]
     trajectory_log: TrajectoryLog
