@@ -7,7 +7,6 @@ import numpy as np
 import pytest
 from ase.build import bulk, molecule
 from ase.constraints import FixAtoms
-from ase.md.andersen import Andersen
 from ase.md.langevin import Langevin
 from ase.md.npt import NPT
 from ase.md.nptberendsen import NPTBerendsen
