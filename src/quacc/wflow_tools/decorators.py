@@ -176,36 +176,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
 
         return task(_func, namespace=_func.__module__, **kwargs)
     elif settings.WORKFLOW_ENGINE == "prefect":
-        from prefect import task
-
-        if settings.PREFECT_AUTO_SUBMIT and settings.NESTED_RESULTS_DIR:
-
-            @wraps(_func)
-            def wrapper(*f_args, **f_kwargs):
-                adjusted_results_func = nest_results_dir_wrap(_func)
-                decorated = task(adjusted_results_func, **kwargs)
-                return decorated.submit(*f_args, **f_kwargs)
-
-            return wrapper
-        elif (not settings.PREFECT_AUTO_SUBMIT) and settings.NESTED_RESULTS_DIR:
-
-            @wraps(_func)
-            def wrapper(*f_args, **f_kwargs):
-                adjusted_results_func = nest_results_dir_wrap(_func)
-                return task(adjusted_results_func, **kwargs)(*f_args, **f_kwargs)
-
-            return wrapper
-        elif settings.PREFECT_AUTO_SUBMIT and (not settings.NESTED_RESULTS_DIR):
-
-            @wraps(_func)
-            def wrapper(*f_args, **f_kwargs):
-                decorated = task(_func, **kwargs)
-                return decorated.submit(*f_args, **f_kwargs)
-
-            return wrapper
-        else:
-            return task(_func, **kwargs)
-
+        return _decorate_prefect_job(_func, kwargs, settings)
     else:
         return _func
 
@@ -368,20 +339,9 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
 
         return task(_func, namespace=_func.__module__, **kwargs)
     elif settings.WORKFLOW_ENGINE == "prefect":
-        from prefect import flow as prefect_flow
 
-        if settings.NESTED_RESULTS_DIR:
+        return _decorate_prefect_flow_subflow(_func, kwargs, settings)
 
-            @wraps(_func)
-            def wrapper(*f_args, **f_kwargs):
-                adjusted_results_func = nest_results_dir_wrap(_func)
-                return prefect_flow(
-                    adjusted_results_func, validate_parameters=False, **kwargs
-                )(*f_args, **f_kwargs)
-
-            return wrapper
-        else:
-            return prefect_flow(_func, validate_parameters=False, **kwargs)
     else:
         return _func
 
@@ -610,26 +570,64 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
 
         return join_app(wrapped_fn, **kwargs)
     elif settings.WORKFLOW_ENGINE == "prefect":
-        from prefect import flow as prefect_flow
 
-        if settings.NESTED_RESULTS_DIR:
+        return _decorate_prefect_flow_subflow(_func, kwargs, settings)
 
-            @wraps(_func)
-            def wrapper(*f_args, **f_kwargs):
-                adjusted_results_func = nest_results_dir_wrap(_func)
-                return prefect_flow(
-                    adjusted_results_func, validate_parameters=False, **kwargs
-                )(*f_args, **f_kwargs)
-
-            return wrapper
-        else:
-            return prefect_flow(_func, validate_parameters=False, **kwargs)
     elif settings.WORKFLOW_ENGINE == "redun":
         from redun import task
 
         return task(_func, namespace=_func.__module__, **kwargs)
     else:
         return _func
+
+
+def _decorate_prefect_job(_func, kwargs, settings):
+    from prefect import task
+
+    if settings.PREFECT_AUTO_SUBMIT and settings.NESTED_RESULTS_DIR:
+
+        @wraps(_func)
+        def wrapper(*f_args, **f_kwargs):
+            adjusted_results_func = nest_results_dir_wrap(_func)
+            decorated = task(adjusted_results_func, **kwargs)
+            return decorated.submit(*f_args, **f_kwargs)
+
+        return wrapper
+    elif (not settings.PREFECT_AUTO_SUBMIT) and settings.NESTED_RESULTS_DIR:
+
+        @wraps(_func)
+        def wrapper(*f_args, **f_kwargs):
+            adjusted_results_func = nest_results_dir_wrap(_func)
+            return task(adjusted_results_func, **kwargs)(*f_args, **f_kwargs)
+
+        return wrapper
+    elif settings.PREFECT_AUTO_SUBMIT and (not settings.NESTED_RESULTS_DIR):
+
+        @wraps(_func)
+        def wrapper(*f_args, **f_kwargs):
+            decorated = task(_func, **kwargs)
+            return decorated.submit(*f_args, **f_kwargs)
+
+        return wrapper
+    else:
+        return task(_func, **kwargs)
+
+
+def _decorate_prefect_flow_subflow(_func, kwargs, settings):
+    from prefect import flow as prefect_flow
+
+    if settings.NESTED_RESULTS_DIR:
+
+        @wraps(_func)
+        def wrapper(*f_args, **f_kwargs):
+            adjusted_results_func = nest_results_dir_wrap(_func)
+            return prefect_flow(
+                adjusted_results_func, validate_parameters=False, **kwargs
+            )(*f_args, **f_kwargs)
+
+        return wrapper
+    else:
+        return prefect_flow(_func, validate_parameters=False, **kwargs)
 
 
 def _get_parsl_wrapped_func(
