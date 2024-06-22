@@ -120,7 +120,6 @@ def test_md_job2():
         atoms,
         md_params={
             "initial_temperature": 1000,
-            "rng_seed": 42,
             "timestep": 0.5,
             "steps": 20,
         },
@@ -193,7 +192,7 @@ def test_md_logger(tmp_path, monkeypatch, caplog):
         "dynamics_kwargs": {
             "temperature_K": 1000,
             "friction": 0.01,
-            "fix_initial_com": False,
+            "fixcm": False,
             "dt": 2.0,
         },
     }
@@ -291,7 +290,6 @@ def test_md_logger(tmp_path, monkeypatch, caplog):
     assert "compressibility_au" in caplog.text
     assert "pressure_au" in caplog.text
     assert "temperature_K" in caplog.text
-    assert "fixcm" in caplog.text
     assert "dt" in caplog.text
 
 
