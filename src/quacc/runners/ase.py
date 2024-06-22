@@ -185,7 +185,7 @@ class Runner(BaseRunner):
         fmax: float | None = 0.01,
         max_steps: int = 1000,
         optimizer: Dynamics = BFGS,
-        optimizer_kwargs: dict[str,Any] | None = None,
+        optimizer_kwargs: dict[str, Any] | None = None,
         store_intermediate_results: bool = False,
         fn_hook: Callable | None = None,
         run_kwargs: dict[str, Any] | None = None,

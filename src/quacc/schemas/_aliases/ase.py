@@ -51,13 +51,13 @@ class OptSchema(RunSchema):
     trajectory_results: list[Results]
 
 
-class DynSchema(OptSchema, total=False):
+class DynSchema(RunSchema):
     """Schema for [quacc.schemas.ase.summarize_md_run][]"""
 
-    # Removed: fmax, converged, parameters_opt
-
     parameters_md: ParametersDyn
+    trajectory: list[Atoms]
     trajectory_log: TrajectoryLog
+    trajectory_results: list[Results]
 
 
 class ParametersVib(TypedDict):
