@@ -232,7 +232,7 @@ def summarize_md_run(
         ASE MolecularDynamics object.
     trajectory
         ASE Trajectory object or list[Atoms] from reading a trajectory file. If
-        None, the trajectory must be found in dyn.traj_atoms.
+        None, the trajectory must be found in `dyn.trajectory.filename`.
     charge_and_multiplicity
         Charge and spin multiplicity of the Atoms object, only used for Molecule
         metadata.
