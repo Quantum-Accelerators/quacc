@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from quacc import job, flow
+from quacc import flow, job
 from quacc.wflow_tools.job_patterns import (
     kwarg_map,
     map_partition,
