@@ -101,7 +101,6 @@ def test_double_change_settings_redecorate_job(tmp_path_factory):
 
 
 def test_nested_output_directory(tmp_path_factory):
-
     @job
     def write_file_job(name="job.txt"):
         results_file_path = Path(get_settings().RESULTS_DIR, name)
