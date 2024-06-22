@@ -119,9 +119,9 @@ def test_md_job2():
         atoms,
         md_params={
             "initial_temperature": 1000,
+            "rng_seed": 42,
             "timestep": 0.5,
             "steps": 20,
-            "rng_seed": 42,
         },
     )
     assert output["parameters"]["asap_cutoff"] is False
