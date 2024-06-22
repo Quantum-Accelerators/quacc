@@ -9,6 +9,10 @@ from shutil import rmtree
 
 import numpy as np
 import pytest
+@pytest.fixture(scope='session', autouse=True)
+def set_seed():
+    np.random.seed(42)
+
 from ase import Atoms
 from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
@@ -113,7 +117,8 @@ def test_geodesic_interpolate_wrapper(setup_test_environment):
         geometry_friction=geometry_friction,
         distance_cutoff=distance_cutoff,
     )
-    assert smoother_path[1].positions[0][0] == pytest.approx(1.36055556030, abs=1e-1)
+    assert smoother_path[1].positions[0][0] == pytest.approx(1.378384900, abs=1e-5)
+    assert smoother_path[5].positions[0][2] == pytest.approx(-0.512075394, abs=1e-5)
 
 
 @pytest.mark.skipif(
