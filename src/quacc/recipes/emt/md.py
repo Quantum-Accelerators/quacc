@@ -13,10 +13,9 @@ from quacc.runners.ase import Runner
 from quacc.schemas.ase import summarize_md_run
 
 if TYPE_CHECKING:
-    from typing import Any
-
     from ase.atoms import Atoms
 
+    from quacc.runners.ase import MDParams
     from quacc.schemas._aliases.ase import DynSchema
     from quacc.utils.files import Filenames, SourceDirectory
 
@@ -24,7 +23,7 @@ if TYPE_CHECKING:
 @job
 def md_job(
     atoms: Atoms,
-    md_params: dict[str, Any] | None = None,
+    md_params: MDParams | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
 ) -> DynSchema:

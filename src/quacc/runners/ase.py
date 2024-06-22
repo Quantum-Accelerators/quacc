@@ -52,30 +52,36 @@ if TYPE_CHECKING:
         Type hint for `opt_params` used throughout quacc.
         """
 
-        fmax: float
+        fmax: float | None
         max_steps: int
-        optimizer: Dynamics  # default = BFGS
-        optimizer_kwargs: OptimizerKwargs | None
+        optimizer: Dynamics
+        optimizer_kwargs: dict[str, Any] | None
         store_intermediate_results: bool
         fn_hook: Callable | None
         run_kwargs: dict[str, Any] | None
 
-    class OptimizerKwargs(TypedDict, total=False):
+    class MDParams(TypedDict, total=False):
         """
-        Type hint for `optimizer_kwargs` in [quacc.runners.ase.Runner.run_opt][].
+        Type hint for `md_params` used throughout quacc.
         """
 
-        restart: Path | str | None  # default = None
-        append_trajectory: bool  # default = False
+        timestep: float
+        steps: int
+        dynamics: MolecularDynamics
+        dynamics_kwargs: dict[str, Any] | None
+        initial_temperature: float | None
+        fix_com: bool
+        fix_rot: bool
+        rng_seed: int | None
 
     class VibKwargs(TypedDict, total=False):
         """
         Type hint for `vib_kwargs` in [quacc.runners.ase.Runner.run_vib][].
         """
 
-        indices: list[int] | None  # default = None
-        delta: float  # default = 0.01
-        nfree: int  # default = 2
+        indices: list[int] | None
+        delta: float
+        nfree: int
 
 
 class Runner(BaseRunner):
@@ -179,7 +185,7 @@ class Runner(BaseRunner):
         fmax: float | None = 0.01,
         max_steps: int = 1000,
         optimizer: Dynamics = BFGS,
-        optimizer_kwargs: OptimizerKwargs | None = None,
+        optimizer_kwargs: dict[str,Any] | None = None,
         store_intermediate_results: bool = False,
         fn_hook: Callable | None = None,
         run_kwargs: dict[str, Any] | None = None,
