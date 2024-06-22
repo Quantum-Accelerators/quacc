@@ -13,6 +13,11 @@ from ase.calculators import calculator
 from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read
 from ase.md.md import MolecularDynamics
+from ase.md.velocitydistribution import (
+    MaxwellBoltzmannDistribution,
+    Stationary,
+    ZeroRotation,
+)
 from ase.md.verlet import VelocityVerlet
 from ase.optimize import BFGS
 from ase.optimize.sciopt import SciPyOptimizer
@@ -324,9 +329,13 @@ class Runner(BaseRunner):
     def run_md(
         self,
         timestep: float = 1.0,
-        steps: int = 500,
+        steps: int = 1000,
         dynamics: MolecularDynamics = VelocityVerlet,
         dynamics_kwargs: dict[str, Any] | None = None,
+        initial_temperature: float | None = None,
+        fix_com: bool = True,
+        fix_rot: bool = True,
+        rng_seed: int | None = None,
     ) -> MolecularDynamics:
         """
         Run an ASE-based MD in a scratch directory and copy the results back to
@@ -344,6 +353,15 @@ class Runner(BaseRunner):
         dynamics_kwargs
             Dictionary of kwargs for the dynamics. Takes all valid kwargs for ASE
             MolecularDynamics classes.
+        initial_temperature
+            If specified, a MaxwellBoltzmannDistribution will be applied to the atoms
+            with this temperature (in Kelvins).
+        fix_com
+            Whether to fix the center of mass.
+        fix_rot
+            Whether to fix the rotation from the initial velocity distribution.
+        rng_seed
+            Seed for any random number generators.
 
         Returns
         -------
@@ -358,6 +376,17 @@ class Runner(BaseRunner):
         dynamics_kwargs["logfile"] = "-" if settings.DEBUG else self.tmpdir / "md.log"
         dynamics_kwargs = self._fix_deprecated_md_params(dynamics_kwargs)
         dynamics_kwargs = convert_md_units(dynamics_kwargs)
+
+        if initial_temperature is not None:
+            MaxwellBoltzmannDistribution(
+                self.atoms,
+                temperature_K=initial_temperature,
+                rng=np.random.default_rng(seed=rng_seed) if rng_seed else None,
+            )
+        if fix_com:
+            Stationary(self.atoms)
+        if fix_rot:
+            ZeroRotation(self.atoms)
 
         return self.run_opt(
             fmax=None,
