@@ -122,7 +122,7 @@ def test_geodesic_interpolate_wrapper(setup_test_environment):
 )
 def test_geodesic_interpolate_wrapper_large_system(setup_test_environment):
     # Test with large system to trigger sweeping updates
-    smoother_path = _geodesic_interpolate_wrapper(molecule('C60'), molecule('C60'))
+    smoother_path = _geodesic_interpolate_wrapper(molecule("C60"), molecule("C60"))
     assert len(smoother_path) == 20
 
 
