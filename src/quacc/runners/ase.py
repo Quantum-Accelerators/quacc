@@ -356,9 +356,11 @@ class Runner(BaseRunner):
             If specified, a MaxwellBoltzmannDistribution will be applied to the atoms
             with this temperature (in Kelvins).
         fix_com
-            Whether to fix the center of mass.
+            Whether to fix the center of mass. Only relevant if `initial_temperature`
+            is specified.
         fix_rot
-            Whether to fix the rotation from the initial velocity distribution.
+            Whether to fix the rotation from the initial velocity distribution. Only
+            relevant if `initial_temperature` is specified.
         rng_seed
             Seed for any random number generators.
 
@@ -376,16 +378,19 @@ class Runner(BaseRunner):
         dynamics_kwargs = self._fix_deprecated_md_params(dynamics_kwargs)
         dynamics_kwargs = convert_md_units(dynamics_kwargs)
 
+        if (fix_com or fix_rot) and initial_temperature is None:
+            raise ValueError("Cannot fix COM or rotation without an initial temperature.")
+
         if initial_temperature is not None:
             MaxwellBoltzmannDistribution(
                 self.atoms,
                 temperature_K=initial_temperature,
                 rng=np.random.default_rng(seed=rng_seed) if rng_seed else None,
             )
-        if fix_com:
-            Stationary(self.atoms)
-        if fix_rot:
-            ZeroRotation(self.atoms)
+            if fix_com:
+                Stationary(self.atoms)
+            if fix_rot:
+                ZeroRotation(self.atoms)
 
         return self.run_opt(
             fmax=None,
