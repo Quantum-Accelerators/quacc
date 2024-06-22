@@ -19,9 +19,7 @@ def test_partition():
 
     partitioned_list = partition(simple_list(), 3)
     assert len(partitioned_list) == 3
-    assert np.allclose(partitioned_list[0], [0, 1, 2, 3])
-
-    return
+    np.testing.assert_allclose(partitioned_list[0], [0, 1, 2, 3])
 
 
 def test_kwarg_map():
@@ -38,7 +36,6 @@ def test_kwarg_map():
     ]
     with pytest.raises(AssertionError):
         kwarg_map(test_fun, a=[1, 2, 3], b=[1, 2])
-    return
 
 
 def test_map_partitioned_lists():
@@ -73,7 +70,6 @@ def test_map_partitioned_lists():
         a=partition(simple_list(), num_partitions),
         num_partitions=num_partitions,
     )[1] == [15, 18, 21, 24, 27]
-    return
 
 
 def test_map_partition():
@@ -90,4 +86,3 @@ def test_map_partition():
     ]
     with pytest.raises(AssertionError):
         kwarg_map(test_fun, a=[1, 2, 3], b=[1, 2])
-    return

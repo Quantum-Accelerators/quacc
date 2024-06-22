@@ -6,19 +6,19 @@ from quacc.wflow_tools.customizers import strip_decorator
 from quacc.wflow_tools.decorators import job
 
 if TYPE_CHECKING:
-    from typing import Any
+    from typing import Any, Callable
 
 
 @job
-def partition(a, n) -> list[Any]:
+def partition(list_to_partition: list, num_partitions: int) -> list[Any]:
     """
     Given a list, partition it into n roughly equal lists
 
     Parameters
     ----------
-    a
+    list_to_partition
         the list to partition
-    n
+    num_partitions
         the number of partitions to output
 
     Returns
@@ -26,16 +26,19 @@ def partition(a, n) -> list[Any]:
     list[Any]
         n lists constructed from a
     """
-    k, m = divmod(len(a), n)
-    return [a[i * k + min(i, m) : (i + 1) * k + min(i + 1, m)] for i in range(n)]
+    k, m = divmod(len(list_to_partition), num_partitions)
+    return [
+        list_to_partition[i * k + min(i, m) : (i + 1) * k + min(i + 1, m)]
+        for i in range(num_partitions)
+    ]
 
 
 def map_partitioned_lists(
-    func: callable,
+    func: Callable,
     num_partitions: int,
     unmapped_kwargs: dict[str, Any] | None = None,
     **mapped_kwargs: dict[str, list[list[Any]]],
-):
+) -> list[Any]:
     """
     Given list-of-lists parameters (say a list of batches that we want to map over),
     apply func to each element of each list
@@ -50,7 +53,7 @@ def map_partitioned_lists(
         num_partitions = 2
         result = map_partitioned_lists(
             testjob,
-            num_partitions=num_partitions,
+            num_partitions,
             test_arg_1=partition([1,2,3,4,5], num_partitions),
             test_arg_2=partition(["a", "b", "c","d","e"], num_partitions),
         )
@@ -80,7 +83,7 @@ def map_partitioned_lists(
 
     Returns
     -------
-    list[results]
+    list[Any]
         list of results from calling func(**mapped_kwargs, **unmapped_kwargs) for each
         kwargs in mapped_kwargs
     """
@@ -97,10 +100,10 @@ def map_partitioned_lists(
 
 @job
 def map_partition(
-    func: callable, unmapped_kwargs: dict[str, Any] | None = None, **mapped_kwargs
+    func: Callable, unmapped_kwargs: dict[str, Any] | None = None, **mapped_kwargs
 ) -> list[Any]:
     """
-    Wrap a function to handle special Parsl arguments.
+    Job to apply a function to each set of elements in mapped_kwargs.
 
     Parameters
     ----------
@@ -113,14 +116,16 @@ def map_partition(
 
     Returns
     -------
-    list[results]
+    list[Any]
         list of results from calling func(**mapped_kwargs, **unmapped_kwargs) for each
         kwargs in mapped_kwargs
     """
     return kwarg_map(func, unmapped_kwargs=unmapped_kwargs, **mapped_kwargs)
 
 
-def kwarg_map(func: callable, unmapped_kwargs: None = None, **mapped_kwargs):
+def kwarg_map(
+    func: Callable, unmapped_kwargs: dict[str, Any] | None = None, **mapped_kwargs
+) -> list[Any]:
     """
     A helper function for when you want to construct a chain of objects with individual arguments for each one.  Can
     be easier to read than a list expansion.
@@ -136,7 +141,7 @@ def kwarg_map(func: callable, unmapped_kwargs: None = None, **mapped_kwargs):
 
     Returns
     -------
-    list[results]
+    list[Any]
         list of results from calling func(**mapped_kwargs, **unmapped_kwargs) for each
         kwargs in mapped_kwargs
 
