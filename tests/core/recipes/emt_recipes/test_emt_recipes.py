@@ -116,12 +116,7 @@ def test_md_job2():
     old_positions = atoms.positions.copy()
 
     output = md_job(
-        atoms,
-        md_params={
-            "initial_temperature": 1000,
-            "timestep": 0.5,
-            "steps": 20,
-        },
+        atoms, md_params={"initial_temperature": 1000, "timestep": 0.5, "steps": 20}
     )
     assert output["parameters"]["asap_cutoff"] is False
     assert len(output["trajectory"]) == 21
