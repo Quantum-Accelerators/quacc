@@ -339,7 +339,6 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
 
         return task(_func, namespace=_func.__module__, **kwargs)
     elif settings.WORKFLOW_ENGINE == "prefect":
-
         return _decorate_prefect_flow_subflow(_func, kwargs, settings)
 
     else:
@@ -570,7 +569,6 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
 
         return join_app(wrapped_fn, **kwargs)
     elif settings.WORKFLOW_ENGINE == "prefect":
-
         return _decorate_prefect_flow_subflow(_func, kwargs, settings)
 
     elif settings.WORKFLOW_ENGINE == "redun":
