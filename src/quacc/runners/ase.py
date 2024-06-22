@@ -330,8 +330,7 @@ class Runner(BaseRunner):
     ) -> MolecularDynamics:
         """
         Run an ASE-based MD in a scratch directory and copy the results back to
-        the original directory. This can be useful if file I/O is slow in the working
-        directory, so long as file transfer speeds are reasonable.
+        the original directory.
 
         Parameters
         ----------
@@ -347,7 +346,7 @@ class Runner(BaseRunner):
 
         Returns
         -------
-        Dymamics
+        MolecularDymamics
             The ASE MolecularDynamics object.
         """
 
