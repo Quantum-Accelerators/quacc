@@ -9,9 +9,12 @@ from shutil import rmtree
 
 import numpy as np
 import pytest
-@pytest.fixture(scope='session', autouse=True)
+
+
+@pytest.fixture(scope="session", autouse=True)
 def set_seed():
     np.random.seed(42)
+
 
 from ase import Atoms
 from ase.build import bulk, molecule
