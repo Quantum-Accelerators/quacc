@@ -4,11 +4,11 @@ from __future__ import annotations
 
 import inspect
 import os
-from datetime import datetime, timezone
-from random import randint
 from contextlib import contextmanager
+from datetime import datetime, timezone
 from functools import wraps
 from pathlib import Path
+from random import randint
 from shutil import which
 from typing import TYPE_CHECKING, Literal, Optional, Union
 
@@ -627,10 +627,7 @@ def nest_results_dir_wrap(func: Callable) -> Callable:
     """
     from quacc import get_settings
 
-    if getattr(func, "_changed", False):
-        changes = func._changes
-    else:
-        changes = []
+    changes = func._changes if getattr(func, "_changed", False) else []
 
     # Get the settings from the calling function's context
     results_parent_dir = get_settings().RESULTS_DIR
