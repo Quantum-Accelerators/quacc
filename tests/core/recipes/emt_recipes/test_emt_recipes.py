@@ -121,6 +121,7 @@ def test_md_job2():
             "initial_temperature": 1000,
             "timestep": 0.5,
             "steps": 20,
+            "rng_seed": 42,
         },
     )
     assert output["parameters"]["asap_cutoff"] is False
