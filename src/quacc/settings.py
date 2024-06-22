@@ -605,6 +605,7 @@ def change_settings_wrap(func: Callable, changes: dict[str, Any]) -> Callable:
             return original_func(*args, **kwargs)
 
     wrapper._changed = True
+    wrapper._changes = changes
     wrapper._original_func = original_func
     return wrapper
 
@@ -626,12 +627,22 @@ def nest_results_dir_wrap(func: Callable) -> Callable:
     """
     from quacc import get_settings
 
+    if getattr(func, "_changed", False):
+        changes = func._changes
+    else:
+        changes = []
+
     # Get the settings from the calling function's context
     results_parent_dir = get_settings().RESULTS_DIR
-
     time_now = datetime.now(timezone.utc).strftime("%Y-%m-%d-%H-%M-%S-%f")
-
     nested_results_dir = results_parent_dir / Path(
         f"{inspect.getmodule(func).__name__}.{func.__name__}-{time_now}-{randint(10000, 99999)}"
     )
-    return change_settings_wrap(func, {"RESULTS_DIR": nested_results_dir})
+
+    # If someone explcitly set RESULTS_DIR in change_settings already
+    # they probably know what they're doing and really want a specific
+    # folder!
+    if "RESULTS_DIR" not in changes:
+        changes["RESULTS_DIR"] = nested_results_dir
+
+    return change_settings_wrap(func, changes)

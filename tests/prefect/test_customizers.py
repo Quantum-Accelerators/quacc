@@ -98,3 +98,30 @@ def test_double_change_settings_redecorate_job(tmp_path_factory):
     my_flow().result()
     assert not Path(tmp_dir1 / "job.txt").exists()
     assert Path(tmp_dir2 / "job.txt").exists()
+
+
+def test_nested_output_directory(tmp_path_factory):
+
+    @job
+    def write_file_job(name="job.txt"):
+        results_file_path = Path(get_settings().RESULTS_DIR, name)
+        with open(results_file_path, "w") as f:
+            f.write("test job file")
+
+        return results_file_path
+
+    @flow
+    def write_file_flow(name="flow.txt", job_decorators=None):
+        job_results_file_path = write_file_job()
+
+        flow_results_file_path = Path(get_settings().RESULTS_DIR, name)
+        with open(flow_results_file_path, "w") as f:
+            f.write("test flow file")
+
+        return job_results_file_path, flow_results_file_path
+
+    # Test with redecorating a job in a flow
+    job_results_file_path, flow_results_file_path = write_file_flow().result()
+    assert Path(job_results_file_path).exists()
+    assert Path(flow_results_file_path).exists()
+    assert Path(job_results_file_path).parent == Path(flow_results_file_path)
