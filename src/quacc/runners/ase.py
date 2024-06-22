@@ -472,11 +472,6 @@ class Runner(BaseRunner):
         -------
         None
         """
-
-        if "trajectory" in dynamics_kwargs:
-            msg = "Quacc does not support setting the `trajectory` kwarg."
-            raise ValueError(msg)
-
         if "temperature" in dynamics_kwargs or "temp" in dynamics_kwargs:
             LOGGER.warning(
                 "In quacc `temperature`, `temp` and `temperature_K` are"
