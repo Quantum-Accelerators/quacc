@@ -384,11 +384,6 @@ class Runner(BaseRunner):
         dynamics_kwargs = self._fix_deprecated_md_params(dynamics_kwargs)
         dynamics_kwargs = convert_md_units(dynamics_kwargs)
 
-        if (fix_com or fix_rot) and initial_temperature is None:
-            raise ValueError(
-                "Cannot fix COM or rotation without an initial temperature."
-            )
-
         if initial_temperature is not None:
             MaxwellBoltzmannDistribution(
                 self.atoms,
