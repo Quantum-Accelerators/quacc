@@ -516,10 +516,4 @@ class Runner(BaseRunner):
             )
             dynamics_kwargs["timestep"] = dynamics_kwargs.pop("dt")
 
-        if "fixrot" in dynamics_kwargs:
-            LOGGER.warning("`fixrot` is interpreted as `fix_rot` in Quacc.")
-
-        if "fix_rot" in dynamics_kwargs:
-            dynamics_kwargs["fixrot"] = dynamics_kwargs.pop("fix_rot")
-
         return dynamics_kwargs
