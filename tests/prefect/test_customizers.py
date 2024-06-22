@@ -121,7 +121,12 @@ def test_nested_output_directory(tmp_path_factory):
         return job_results_file_path, flow_results_file_path
 
     # Test with redecorating a job in a flow
-    job_results_file_path, flow_results_file_path = write_file_flow().result()
+    job_results_file_path, flow_results_file_path = write_file_flow()
+    job_results_file_path = job_results_file_path.result()
     assert Path(job_results_file_path).exists()
     assert Path(flow_results_file_path).exists()
-    assert Path(job_results_file_path).parent == Path(flow_results_file_path)
+
+    # Check the job output is in a subfolder of the flow folder
+    assert (
+        Path(job_results_file_path).parent.parent == Path(flow_results_file_path).parent
+    )
