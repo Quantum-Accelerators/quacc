@@ -70,8 +70,8 @@ if TYPE_CHECKING:
         dynamics: MolecularDynamics
         dynamics_kwargs: dict[str, Any] | None
         initial_temperature: float | None
-        fix_com: bool
-        fix_rot: bool
+        fix_initial_com: bool
+        fix_initial_rot: bool
         rng_seed: int | None
 
     class VibKwargs(TypedDict, total=False):
@@ -339,8 +339,8 @@ class Runner(BaseRunner):
         dynamics: MolecularDynamics = VelocityVerlet,
         dynamics_kwargs: dict[str, Any] | None = None,
         initial_temperature: float | None = None,
-        fix_com: bool = True,
-        fix_rot: bool = True,
+        fix_initial_com: bool = True,
+        fix_initial_rot: bool = True,
         rng_seed: int | None = None,
     ) -> MolecularDynamics:
         """
@@ -361,10 +361,10 @@ class Runner(BaseRunner):
         initial_temperature
             If specified, a MaxwellBoltzmannDistribution will be applied to the atoms
             with this temperature (in Kelvins).
-        fix_com
+        fix_initial_com
             Whether to fix the center of mass. Only relevant if `initial_temperature`
             is specified.
-        fix_rot
+        fix_initial_rot
             Whether to fix the rotation from the initial velocity distribution. Only
             relevant if `initial_temperature` is specified.
         rng_seed
@@ -390,9 +390,9 @@ class Runner(BaseRunner):
                 temperature_K=initial_temperature,
                 rng=np.random.default_rng(seed=rng_seed) if rng_seed else None,
             )
-            if fix_com:
+            if fix_initial_com:
                 Stationary(self.atoms)
-            if fix_rot:
+            if fix_initial_rot:
                 ZeroRotation(self.atoms)
 
         return self.run_opt(
@@ -521,14 +521,8 @@ class Runner(BaseRunner):
             )
             dynamics_kwargs["timestep"] = dynamics_kwargs.pop("dt")
 
-        if "fixcm" in dynamics_kwargs:
-            LOGGER.warning("`fixcm` is interpreted as `fix_com` in Quacc.")
-
         if "fixrot" in dynamics_kwargs:
             LOGGER.warning("`fixrot` is interpreted as `fix_rot` in Quacc.")
-
-        if "fix_com" in dynamics_kwargs:
-            dynamics_kwargs["fixcm"] = dynamics_kwargs.pop("fix_com")
 
         if "fix_rot" in dynamics_kwargs:
             dynamics_kwargs["fixrot"] = dynamics_kwargs.pop("fix_rot")

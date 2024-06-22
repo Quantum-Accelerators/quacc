@@ -193,7 +193,7 @@ def test_md_logger(tmp_path, monkeypatch, caplog):
         "dynamics_kwargs": {
             "temperature_K": 1000,
             "friction": 0.01,
-            "fix_com": False,
+            "fix_initial_com": False,
             "dt": 2.0,
         },
     }
@@ -205,24 +205,6 @@ def test_md_logger(tmp_path, monkeypatch, caplog):
 
     assert output_langevin["parameters_md"]["md-type"] == "Langevin"
     assert output_langevin["parameters_md"]["timestep"] == pytest.approx(2.0)
-
-    md_params = {
-        "timestep": 1.0,
-        "steps": 10,
-        "dynamics": Andersen,
-        "dynamics_kwargs": {
-            "temperature": 1000,
-            "andersen_prob": 0.001,
-            "fixcm": False,
-        },
-    }
-
-    with caplog.at_level(logging.WARNING):
-        output_andersen = md_job(atoms, md_params=md_params)
-
-        assert "`fixcm` is interpreted as `fix_com` in Quacc." in caplog.text
-
-    assert output_andersen["parameters_md"]["md-type"] == "Andersen"
 
     md_params = {
         "timestep": 1.0,
