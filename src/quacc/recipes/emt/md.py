@@ -15,8 +15,6 @@ from quacc.schemas.ase import summarize_md_run
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
-    from typing import Any
-
     from ase.atoms import Atoms
     from ase.md.md import MolecularDynamics
 
@@ -84,7 +82,7 @@ def md_job(
         See the type-hint for the data structure.
     """
     md_defaults = {
-        "steps":steps,
+        "steps": steps,
         "dynamics_kwargs": {
             "timestep": timestep,
             "temperature": temperature if temperature else Remove,
