@@ -52,7 +52,7 @@ if TYPE_CHECKING:
         Type hint for `opt_params` used throughout quacc.
         """
 
-        relax_cell: bool = (False,)
+        relax_cell: bool
         fmax: float | None
         max_steps: int
         optimizer: Dynamics
