@@ -70,7 +70,7 @@ if TYPE_CHECKING:
         steps: int
         dynamics: MolecularDynamics
         dynamics_kwargs: dict[str, Any] | None
-        mb_distribution_kwargs: MaxwellBoltzmanDistributionKwargs | None
+        maxwell_boltzmann_kwargs: MaxwellBoltzmanDistributionKwargs | None
         fix_initial_com: bool
         fix_initial_rot: bool
 
