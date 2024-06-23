@@ -85,8 +85,8 @@ def md_job(
         "steps": steps,
         "dynamics_kwargs": {
             "timestep": timestep,
-            "temperature": temperature if temperature else Remove,
-            "pressure": pressure if pressure else Remove,
+            "temperature_K": temperature if temperature else Remove,
+            "pressure_au": pressure if pressure else Remove,
         },
         "maxwell_boltzmann_kwargs": {"temperature_K": initial_temperature}
         if initial_temperature
