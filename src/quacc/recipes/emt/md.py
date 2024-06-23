@@ -82,13 +82,12 @@ def md_job(
         See the type-hint for the data structure.
     """
     md_defaults = {
-        "dynamics": dynamics,
+        "steps": steps,
         "dynamics_kwargs": {
             "timestep": timestep,
             "temperature": temperature if temperature else Remove,
             "pressure": pressure if pressure else Remove,
         },
-        "steps": steps,
         "maxwell_boltzmann_kwargs": {"temperature_K": initial_temperature}
         if initial_temperature
         else None,
@@ -98,6 +97,6 @@ def md_job(
     md_params = recursive_dict_merge(md_defaults, md_params)
 
     calc = EMT(**calc_kwargs)
-    dyn = Runner(atoms, calc, copy_files=copy_files).run_md(**md_params)
+    dyn = Runner(atoms, calc, copy_files=copy_files).run_md(dynamics, **md_params)
 
     return summarize_md_run(dyn, additional_fields={"name": "EMT MD"})
