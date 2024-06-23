@@ -117,9 +117,9 @@ def test_md_job2():
 
     output = md_job(
         atoms,
+        initial_temperature=1000,
         md_params={
-            "initial_temperature": 1000,
-            "rng_seed": 42,
+            "maxwell_boltzmann_kwargs": {"rng": np.random.default_rng(seed=42)},
             "timestep": 0.5,
             "steps": 20,
         },

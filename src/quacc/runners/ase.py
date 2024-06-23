@@ -44,6 +44,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from ase.calculators.calculator import Calculator
     from ase.optimize.optimize import Dynamics
+    from np.random import Generator
 
     from quacc.utils.files import Filenames, SourceDirectory
 
@@ -69,10 +70,9 @@ if TYPE_CHECKING:
         steps: int
         dynamics: MolecularDynamics
         dynamics_kwargs: dict[str, Any] | None
-        initial_temperature: float | None
+        mb_distribution_kwargs: MaxwellBoltzmanDistributionKwargs | None
         fix_initial_com: bool
         fix_initial_rot: bool
-        rng_seed: int | None
 
     class VibKwargs(TypedDict, total=False):
         """
@@ -83,6 +83,14 @@ if TYPE_CHECKING:
         delta: float
         nfree: int
 
+    class MaxwellBoltzmanDistributionKwargs(TypedDict, total=False):
+        """
+        Type hint for `mb_distribution_kwargs` in [quacc.runners.ase.Runner.run_md][].
+        """
+
+        temperature_K: float
+        force_temp: bool
+        rng: Generator | None
 
 class Runner(BaseRunner):
     """
@@ -338,10 +346,9 @@ class Runner(BaseRunner):
         steps: int = 1000,
         dynamics: MolecularDynamics = VelocityVerlet,
         dynamics_kwargs: dict[str, Any] | None = None,
-        initial_temperature: float | None = None,
+        maxwell_boltzmann_kwargs: MaxwellBoltzmanDistributionKwargs | None = None,
         fix_initial_com: bool = True,
         fix_initial_rot: bool = True,
-        rng_seed: int | None = None,
     ) -> MolecularDynamics:
         """
         Run an ASE-based MD in a scratch directory and copy the results back to
@@ -358,17 +365,16 @@ class Runner(BaseRunner):
         dynamics_kwargs
             Dictionary of kwargs for the dynamics. Takes all valid kwargs for ASE
             MolecularDynamics classes.
-        initial_temperature
-            If specified, a MaxwellBoltzmannDistribution will be applied to the atoms
-            with this temperature (in Kelvins).
+        maxwell_boltzmann_kwargs
+            If specified, a `MaxwellBoltzmannDistribution` will be applied to the atoms
+            based on `ase.md.velocitydistribution.MaxwellBoltzmannDistribution` with the
+            specified keyword arguments.
         fix_initial_com
-            Whether to fix the center of mass. Only relevant if `initial_temperature`
-            is specified.
+            Whether to set the center-of-mass momentum to zero. This would be applied after
+            any `MaxwellBoltzmannDistribution` is set.
         fix_initial_rot
-            Whether to fix the rotation from the initial velocity distribution. Only
-            relevant if `initial_temperature` is specified.
-        rng_seed
-            Seed for any random number generators.
+            Whether to set the total angular momentum to zero. This would be applied after
+            any `MaxwellBoltzmannDistribution` is set.
 
         Returns
         -------
@@ -378,22 +384,19 @@ class Runner(BaseRunner):
 
         # Set defaults
         dynamics_kwargs = dynamics_kwargs or {}
+        maxwell_boltzmann_kwargs = maxwell_boltzmann_kwargs or {}
         settings = get_settings()
         dynamics_kwargs["timestep"] = timestep
         dynamics_kwargs["logfile"] = "-" if settings.DEBUG else self.tmpdir / "md.log"
         dynamics_kwargs = self._fix_deprecated_md_params(dynamics_kwargs)
         dynamics_kwargs = convert_md_units(dynamics_kwargs)
 
-        if initial_temperature is not None:
-            MaxwellBoltzmannDistribution(
-                self.atoms,
-                temperature_K=initial_temperature,
-                rng=np.random.default_rng(seed=rng_seed) if rng_seed else None,
-            )
-            if fix_initial_com:
-                Stationary(self.atoms)
-            if fix_initial_rot:
-                ZeroRotation(self.atoms)
+        if maxwell_boltzmann_kwargs:
+            MaxwellBoltzmannDistribution(self.atoms, **maxwell_boltzmann_kwargs)
+        if self.atoms.arrays.get("momenta") is not None and fix_initial_com:
+            Stationary(self.atoms)
+        if self.atoms.arrays.get("momenta") is not None and fix_initial_rot:
+            ZeroRotation(self.atoms)
 
         return self.run_opt(
             fmax=None,
