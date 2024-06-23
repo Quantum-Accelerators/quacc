@@ -71,8 +71,8 @@ if TYPE_CHECKING:
         dynamics: MolecularDynamics
         dynamics_kwargs: dict[str, Any] | None
         maxwell_boltzmann_kwargs: MaxwellBoltzmanDistributionKwargs | None
-        fix_initial_com: bool
-        fix_initial_rot: bool
+        set_stationary: bool
+        set_zero_rotation: bool
 
     class VibKwargs(TypedDict, total=False):
         """
@@ -348,8 +348,8 @@ class Runner(BaseRunner):
         dynamics: MolecularDynamics = VelocityVerlet,
         dynamics_kwargs: dict[str, Any] | None = None,
         maxwell_boltzmann_kwargs: MaxwellBoltzmanDistributionKwargs | None = None,
-        fix_initial_com: bool = True,
-        fix_initial_rot: bool = True,
+        set_stationary: bool = False,
+        set_zero_rotation: bool = False,
     ) -> MolecularDynamics:
         """
         Run an ASE-based MD in a scratch directory and copy the results back to
@@ -370,10 +370,10 @@ class Runner(BaseRunner):
             If specified, a `MaxwellBoltzmannDistribution` will be applied to the atoms
             based on `ase.md.velocitydistribution.MaxwellBoltzmannDistribution` with the
             specified keyword arguments.
-        fix_initial_com
+        set_stationary
             Whether to set the center-of-mass momentum to zero. This would be applied after
             any `MaxwellBoltzmannDistribution` is set.
-        fix_initial_rot
+        set_zero_rotation
             Whether to set the total angular momentum to zero. This would be applied after
             any `MaxwellBoltzmannDistribution` is set.
 
@@ -394,9 +394,9 @@ class Runner(BaseRunner):
 
         if maxwell_boltzmann_kwargs:
             MaxwellBoltzmannDistribution(self.atoms, **maxwell_boltzmann_kwargs)
-        if self.atoms.arrays.get("momenta") is not None and fix_initial_com:
+        if set_stationary:
             Stationary(self.atoms)
-        if self.atoms.arrays.get("momenta") is not None and fix_initial_rot:
+        if set_zero_rotation:
             ZeroRotation(self.atoms)
 
         return self.run_opt(

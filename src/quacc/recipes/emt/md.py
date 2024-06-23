@@ -74,13 +74,16 @@ def md_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_md_run][].
         See the type-hint for the data structure.
     """
-    md_defaults = {
-        "dynamics": dynamics,
-        "dynamics_kwargs": dynamics_kwargs,
-        "maxwell_boltzmann_kwargs": {"temperature_K": initial_temperature}
+    md_defaults = (
+        {"dynamics": dynamics, "dynamics_kwargs": dynamics_kwargs}
+        | {
+            "maxwell_boltzmann_kwargs": {"temperature_K": initial_temperature},
+            "set_stationary": True,
+            "set_zero_rotation": True,
+        }
         if initial_temperature
-        else None,
-    }
+        else {}
+    )
     md_params = recursive_dict_merge(md_defaults, md_params)
 
     calc = EMT(**calc_kwargs)
