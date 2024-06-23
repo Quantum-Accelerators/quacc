@@ -85,7 +85,7 @@ if TYPE_CHECKING:
 
     class MaxwellBoltzmanDistributionKwargs(TypedDict, total=False):
         """
-        Type hint for `mb_distribution_kwargs` in [quacc.runners.ase.Runner.run_md][].
+        Type hint for `maxwell_boltzmann_kwargs` in [quacc.runners.ase.Runner.run_md][].
         """
 
         temperature_K: float
