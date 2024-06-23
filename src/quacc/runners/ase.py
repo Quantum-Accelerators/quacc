@@ -18,7 +18,6 @@ from ase.md.velocitydistribution import (
     Stationary,
     ZeroRotation,
 )
-from ase.md.verlet import VelocityVerlet
 from ase.optimize import BFGS
 from ase.optimize.sciopt import SciPyOptimizer
 from ase.vibrations import Vibrations
@@ -53,6 +52,7 @@ if TYPE_CHECKING:
         Type hint for `opt_params` used throughout quacc.
         """
 
+        relax_cell: bool = False,
         fmax: float | None
         max_steps: int
         optimizer: Dynamics
@@ -66,10 +66,9 @@ if TYPE_CHECKING:
         Type hint for `md_params` used throughout quacc.
         """
 
-        timestep: float
-        steps: int
         dynamics: MolecularDynamics
         dynamics_kwargs: dict[str, Any] | None
+        steps: int
         maxwell_boltzmann_kwargs: MaxwellBoltzmanDistributionKwargs | None
         set_stationary: bool
         set_zero_rotation: bool
@@ -343,10 +342,9 @@ class Runner(BaseRunner):
 
     def run_md(
         self,
-        timestep: float = 1.0,
-        steps: int = 1000,
-        dynamics: MolecularDynamics = VelocityVerlet,
+        dynamics: MolecularDynamics,
         dynamics_kwargs: dict[str, Any] | None = None,
+        steps: int = 1000,
         maxwell_boltzmann_kwargs: MaxwellBoltzmanDistributionKwargs | None = None,
         set_stationary: bool = False,
         set_zero_rotation: bool = False,
@@ -357,15 +355,13 @@ class Runner(BaseRunner):
 
         Parameters
         ----------
-        timestep
-            The time step in femtoseconds.
-        steps
-            Maximum number of steps to run
         dynamics
             MolecularDynamics class to use, from `ase.md.md.MolecularDynamics`.
         dynamics_kwargs
             Dictionary of kwargs for the dynamics. Takes all valid kwargs for ASE
             MolecularDynamics classes.
+        steps
+            Maximum number of steps to run
         maxwell_boltzmann_kwargs
             If specified, a `MaxwellBoltzmannDistribution` will be applied to the atoms
             based on `ase.md.velocitydistribution.MaxwellBoltzmannDistribution` with the
@@ -387,7 +383,6 @@ class Runner(BaseRunner):
         dynamics_kwargs = dynamics_kwargs or {}
         maxwell_boltzmann_kwargs = maxwell_boltzmann_kwargs or {}
         settings = get_settings()
-        dynamics_kwargs["timestep"] = timestep
         dynamics_kwargs["logfile"] = "-" if settings.DEBUG else self.tmpdir / "md.log"
         dynamics_kwargs = self._fix_deprecated_md_params(dynamics_kwargs)
         dynamics_kwargs = convert_md_units(dynamics_kwargs)

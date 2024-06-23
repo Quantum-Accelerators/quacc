@@ -99,7 +99,7 @@ def test_relax_job(tmp_path, monkeypatch):
 def test_md_job1():
     atoms = molecule("H2O")
     old_positions = atoms.positions.copy()
-    output = md_job(atoms, md_params={"steps": 500})
+    output = md_job(atoms, steps=500)
     assert output["parameters"]["asap_cutoff"] is False
     assert len(output["trajectory"]) == 501
     assert output["name"] == "EMT MD"
@@ -117,12 +117,10 @@ def test_md_job2():
 
     output = md_job(
         atoms,
+        timestep=0.5,
         initial_temperature=1000,
-        md_params={
-            "maxwell_boltzmann_kwargs": {"rng": np.random.default_rng(seed=42)},
-            "timestep": 0.5,
-            "steps": 20,
-        },
+        steps=20,
+        md_params={"maxwell_boltzmann_kwargs": {"rng": np.random.default_rng(seed=42)}},
     )
     assert output["parameters"]["asap_cutoff"] is False
     assert len(output["trajectory"]) == 21
@@ -139,12 +137,11 @@ def test_md_job3():
     atoms = molecule("H2O", vacuum=10.0)
     output = md_job(
         atoms,
-        md_params={
-            "timestep": 1.0,
-            "dynamics": NPT,
-            "dynamics_kwargs": {"temperature": 1000, "ttime": 50},
-            "steps": 500,
-        },
+        dynamics=NPT,
+        timestep=1.0,
+        temperature=1000,
+        steps=500,
+        md_params={"dynamics_kwargs": {"ttime": 50}},
     )
     assert output["parameters"]["asap_cutoff"] is False
     assert len(output["trajectory"]) == 500
@@ -165,19 +162,16 @@ def test_md_logger(tmp_path, monkeypatch, caplog):
     atoms = molecule("H2O", vacuum=10.0)
 
     md_params = {
-        "timestep": 1.0,
-        "steps": 10,
-        "dynamics": NPT,
         "dynamics_kwargs": {
             "temperature": 1000,
             "ttime": 50,
             "externalstress": 1,
             "pfactor": 40,
-        },
+        }
     }
 
     with caplog.at_level(logging.WARNING):
-        output_npt = md_job(atoms, md_params=md_params)
+        output_npt = md_job(atoms, dynamics=NPT, steps=10, md_params=md_params)
 
         assert (
             "In quacc `temperature`, `temp` and `temperature_K` are"
@@ -187,33 +181,28 @@ def test_md_logger(tmp_path, monkeypatch, caplog):
     assert output_npt["parameters_md"]["md-type"] == "NPT"
 
     md_params = {
-        "steps": 10,
-        "dynamics": Langevin,
         "dynamics_kwargs": {
             "temperature_K": 1000,
             "friction": 0.01,
             "fixcm": False,
             "dt": 2.0,
-        },
+        }
     }
 
     with caplog.at_level(logging.WARNING):
-        output_langevin = md_job(atoms, md_params=md_params)
+        output_langevin = md_job(
+            atoms, dynamics=Langevin, steps=10, md_params=md_params
+        )
 
         assert "be interpreted as `timestep` in Quacc." in caplog.text
 
     assert output_langevin["parameters_md"]["md-type"] == "Langevin"
     assert output_langevin["parameters_md"]["timestep"] == pytest.approx(2.0)
 
-    md_params = {
-        "timestep": 1.0,
-        "steps": 10,
-        "dynamics": NVTBerendsen,
-        "dynamics_kwargs": {"temperature": 1000, "taut": 10},
-    }
+    md_params = {"dynamics_kwargs": {"temperature": 1000, "taut": 10}}
 
     with caplog.at_level(logging.WARNING):
-        output_nvt = md_job(atoms, md_params=md_params)
+        output_nvt = md_job(atoms, dynamics=NVTBerendsen, steps=10, md_params=md_params)
 
         assert (
             "In quacc `temperature`, `temp` and `temperature_K` are"
@@ -223,20 +212,19 @@ def test_md_logger(tmp_path, monkeypatch, caplog):
     assert output_nvt["parameters_md"]["md-type"] == "NVTBerendsen"
 
     md_params = {
-        "timestep": 1.0,
-        "steps": 10,
-        "dynamics": NPTBerendsen,
         "dynamics_kwargs": {
             "temperature": 1000,
             "pressure_au": 0.001,
             "taut": 500,
             "taup": 1000,
             "compressibility_au": 5e-4,
-        },
+        }
     }
 
     with caplog.at_level(logging.WARNING):
-        output_npt_berendsen = md_job(atoms, md_params=md_params)
+        output_npt_berendsen = md_job(
+            atoms, dynamics=NPTBerendsen, steps=10, md_params=md_params
+        )
 
         assert (
             "In quacc `temperature`, `temp` and `temperature_K` are"
@@ -251,20 +239,19 @@ def test_md_logger(tmp_path, monkeypatch, caplog):
     assert output_npt_berendsen["parameters_md"]["md-type"] == "NPTBerendsen"
 
     md_params = {
-        "timestep": 1.0,
-        "steps": 10,
-        "dynamics": NPTBerendsen,
         "dynamics_kwargs": {
             "temperature": 1000,
             "pressure": 0.001,
             "taut": 500,
             "taup": 1000,
             "compressibility": 5e-4,
-        },
+        }
     }
 
     with caplog.at_level(logging.WARNING):
-        output_npt_berendsen_bis = md_job(atoms, md_params=md_params)
+        output_npt_berendsen_bis = md_job(
+            atoms, dynamics=NPTBerendsen, steps=10, md_params=md_params
+        )
 
         assert (
             "In quacc `temperature`, `temp` and `temperature_K` are"

@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 from ase.calculators.emt import EMT
 from ase.md.verlet import VelocityVerlet
 
-from quacc import job
+from quacc import Remove, job
 from quacc.runners.ase import Runner
 from quacc.schemas.ase import summarize_md_run
 from quacc.utils.dicts import recursive_dict_merge
@@ -29,7 +29,10 @@ if TYPE_CHECKING:
 def md_job(
     atoms: Atoms,
     dynamics: MolecularDynamics = VelocityVerlet,
-    dynamics_kwargs: dict[str, Any] | None = None,
+    steps: int = 1000,
+    timestep: float = 1.0,
+    temperature: float | None = None,
+    pressure: float | None = None,
     initial_temperature: float | None = None,
     md_params: MDParams | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
@@ -45,7 +48,7 @@ def md_job(
 
         - Time: femtoseconds (fs)
         - Pressure: GPa
-        - Temperature: Kelvin (K)
+        - Temperature: Kelvins (K)
         - Compressibility: 1/GPa
 
     Parameters
@@ -54,8 +57,14 @@ def md_job(
         Atoms object
     dynamics
         ASE `MolecularDynamics` class to use, from `ase.md.md.MolecularDynamics`.
-    dynamics_kwargs
-        Dictionary of custom keyword arguments for the chosen dynamics class.
+    steps
+        Number of MD steps to run.
+    timestep
+        Time step in fs.
+    temperature
+        Temperature in K, if applicable for the given ensemble.
+    pressure
+        Pressure in GPa, if applicable for the given ensemble.
     initial_temperature
         Initial temperature (in K) to specify via a Maxwell-Boltzmann distribution.
     md_params
@@ -74,19 +83,22 @@ def md_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_md_run][].
         See the type-hint for the data structure.
     """
-    md_defaults = (
-        {"dynamics": dynamics, "dynamics_kwargs": dynamics_kwargs}
-        | {
-            "maxwell_boltzmann_kwargs": {"temperature_K": initial_temperature},
-            "set_stationary": True,
-            "set_zero_rotation": True,
-        }
+    md_defaults = {
+        "steps":steps,
+        "dynamics_kwargs": {
+            "timestep": timestep,
+            "temperature": temperature if temperature else Remove,
+            "pressure": pressure if pressure else Remove,
+        },
+        "maxwell_boltzmann_kwargs": {"temperature_K": initial_temperature}
         if initial_temperature
-        else {}
-    )
+        else None,
+        "set_stationary": bool(initial_temperature),
+        "set_zero_rotation": bool(initial_temperature),
+    }
     md_params = recursive_dict_merge(md_defaults, md_params)
 
     calc = EMT(**calc_kwargs)
-    dyn = Runner(atoms, calc, copy_files=copy_files).run_md(**md_params)
+    dyn = Runner(atoms, calc, copy_files=copy_files).run_md(dynamics, **md_params)
 
     return summarize_md_run(dyn, additional_fields={"name": "EMT MD"})
