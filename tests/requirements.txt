@@ -1,6 +1,6 @@
 ase==3.23.0
 cclib==1.8.1
-custodian==2024.4.18
+custodian==2024.6.24
 emmet-core==0.83.6
 maggma==0.68.6
 monty==2024.5.24
