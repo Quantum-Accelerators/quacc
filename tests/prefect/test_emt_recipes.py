@@ -49,3 +49,16 @@ def test_phonon_flow(tmp_path, monkeypatch):
     assert output.result()["results"]["thermal_properties"]["temperatures"].shape == (
         101,
     )
+
+
+def test_phonon_flow_multistep(tmp_path, monkeypatch):
+    pytest.importorskip("phonopy")
+    from quacc.recipes.emt.phonons import phonon_flow
+
+    monkeypatch.chdir(tmp_path)
+    atoms = bulk("Cu")
+    relaxed = relax_job(atoms)
+    output = phonon_flow(relaxed["atoms"])
+    assert output.result()["results"]["thermal_properties"]["temperatures"].shape == (
+        101,
+    )
