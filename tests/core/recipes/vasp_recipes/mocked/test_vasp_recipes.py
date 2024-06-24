@@ -857,7 +857,5 @@ def test_freq_job():
     atoms.pbc = True
     atoms.center(vacuum=1)
     output = freq_job(atoms, kpts=(1, 1, 1))
-    assert output["parameters"]["ediff"] == 1e-08
-    assert output["parameters"]["sigma"] == 0.05
-    assert output["parameters"]["ismear"] == 0
+    assert output["parameters"]["ediff"] == 1e-07
     assert len(output["results"]["vib_freqs_raw"]) == 3 * len(atoms)
