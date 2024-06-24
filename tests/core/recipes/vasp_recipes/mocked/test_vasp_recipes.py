@@ -855,7 +855,7 @@ def test_mp_relax_flow_custom(tmp_path, patch_nonmetallic_taskdoc):
 def test_freq_job():
     atoms = molecule("H2")
     atoms.pbc = True
-    atoms.set_cell([3, 3, 3])
+    atoms.center(vacuum=1)
     output = freq_job(atoms, kpts=(1, 1, 1))
     assert output["parameters"]["ediff"] == 1e-08
     assert output["parameters"]["sigma"] == 0.05

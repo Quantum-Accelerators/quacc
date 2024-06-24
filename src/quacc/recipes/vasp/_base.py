@@ -12,7 +12,7 @@ from quacc.schemas.vasp import summarize_vasp_opt_run, vasp_summarize_run
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
-    from typing import Any
+    from typing import Any, Literal
 
     from ase.atoms import Atoms
 
@@ -130,6 +130,7 @@ def run_and_summarize_vib_and_thermo(
     energy: float = 0.0,
     temperature: float = 298.15,
     pressure: float = 1.0,
+    thermo_method: Literal["ideal_gas", "harmonic"] = "ideal_gas",
     preset: str | None = None,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
@@ -177,13 +178,19 @@ def run_and_summarize_vib_and_thermo(
     vibrations = Runner(atoms, calc, copy_files=copy_files).run_vib(
         vib_kwargs=vib_kwargs
     )
-    igt = ThermoRunner(
-        atoms, vibrations.get_frequencies(), energy=energy
-    ).run_ideal_gas()
+    if thermo_method == "harmonic":
+        thermo_analysis = ThermoRunner(
+            atoms, vibrations.get_frequencies(), energy=energy
+        ).run_harmonic()
+    elif thermo_method == "ideal_gas":
+        thermo_analysis = ThermoRunner(
+            atoms, vibrations.get_frequencies(), energy=energy
+        ).run_ideal_gas()
+
 
     return summarize_vib_and_thermo(
         vibrations,
-        igt,
+        thermo_analysis,
         temperature=temperature,
         pressure=pressure,
         additional_fields=additional_fields,

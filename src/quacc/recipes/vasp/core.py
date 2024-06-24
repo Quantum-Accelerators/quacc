@@ -334,6 +334,7 @@ def freq_job(
     energy: float = 0.0,
     temperature: float = 298.15,
     pressure: float = 1.0,
+    thermo_method: Literal["harmonic","ideal_gas"] = "ideal_gas",
     vib_kwargs: VibKwargs | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
@@ -368,7 +369,7 @@ def freq_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_vib_and_thermo][].
         See the type-hint for the data structure.
     """
-    calc_defaults = {"ediff": 1e-8, "isym": 0, "lcharg": False, "lwave": True, "nsw": 0}
+    calc_defaults = {"ediff": 1e-7, "isym": 0, "lcharg": False, "lwave": True, "nsw": 0}
     vib_kwargs = vib_kwargs or {}
 
     return run_and_summarize_vib_and_thermo(
@@ -376,6 +377,7 @@ def freq_job(
         energy=energy,
         temperature=temperature,
         pressure=pressure,
+        thermo_method=thermo_method,
         preset=preset,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
