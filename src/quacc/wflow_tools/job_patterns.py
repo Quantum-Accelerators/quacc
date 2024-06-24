@@ -50,15 +50,17 @@ def map_partitioned_lists(
     def testjob(**kwargs):
         print(kwargs)
 
+
     @flow
     def testflow():
         num_partitions = 2
         result = map_partitioned_lists(
             testjob,
             num_partitions,
-            test_arg_1=partition([1,2,3,4,5], num_partitions),
-            test_arg_2=partition(["a", "b", "c","d","e"], num_partitions),
+            test_arg_1=partition([1, 2, 3, 4, 5], num_partitions),
+            test_arg_2=partition(["a", "b", "c", "d", "e"], num_partitions),
         )
+
 
     testflow()
     ```
@@ -66,11 +68,11 @@ def map_partitioned_lists(
     should yield:
 
     ```python
-    {'test_arg_1': 1, 'test_arg_2': 'a'}
-    {'test_arg_1': 2, 'test_arg_2': 'b'}
-    {'test_arg_1': 3, 'test_arg_2': 'c'}
-    {'test_arg_1': 4, 'test_arg_2': 'd'}
-    {'test_arg_1': 5, 'test_arg_2': 'e'}
+    {"test_arg_1": 1, "test_arg_2": "a"}
+    {"test_arg_1": 2, "test_arg_2": "b"}
+    {"test_arg_1": 3, "test_arg_2": "c"}
+    {"test_arg_1": 4, "test_arg_2": "d"}
+    {"test_arg_1": 5, "test_arg_2": "e"}
     ```
 
     regardless of the number of partitions.
