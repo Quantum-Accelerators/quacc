@@ -5,22 +5,21 @@ from copy import deepcopy
 from pathlib import Path
 
 import pytest
-
-from numpy.testing import assert_allclose as assert_close
 from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.io import read
 from ase.optimize import BFGS
-from ase.thermochemistry import IdealGasThermo, HarmonicThermo
+from ase.thermochemistry import HarmonicThermo, IdealGasThermo
 from ase.units import invcm
 from ase.vibrations import Vibrations
 from maggma.stores import MemoryStore
 from monty.json import MontyDecoder, jsanitize
 from monty.serialization import loadfn
+from numpy.testing import assert_allclose as assert_close
 
 from quacc.schemas.ase import (
-    _summarize_ideal_gas_thermo,
     _summarize_harmonic_thermo,
+    _summarize_ideal_gas_thermo,
     _summarize_vib_run,
     summarize_opt_run,
     summarize_run,
@@ -357,17 +356,14 @@ def test_summarize_harmonic_thermo(tmp_path, monkeypatch):
     assert results["parameters_thermo"]["vib_energies"] == [0.34]
     assert results["parameters_thermo"]["vib_freqs"] == [0.34 / invcm]
     assert results["results"]["energy"] == 0
-    assert_close(results["results"]["helmholtz_energy"], 0.16999995401497991,rtol=1e-5)
-    assert_close(results["results"]["internal_energy"], 0.1700006085385999,rtol=1e-5)
-    assert_close(results["results"]["entropy"], 2.1952829783392438e-09,rtol=1e-5)
-    assert_close(results["results"]["zpe"], 0.17,rtol=1e-5)
-
+    assert_close(results["results"]["helmholtz_energy"], 0.16999995401497991, rtol=1e-5)
+    assert_close(results["results"]["internal_energy"], 0.1700006085385999, rtol=1e-5)
+    assert_close(results["results"]["entropy"], 2.1952829783392438e-09, rtol=1e-5)
+    assert_close(results["results"]["zpe"], 0.17, rtol=1e-5)
 
     # test document can be jsanitized and decoded
     d = jsanitize(results, strict=True, enum_values=True)
     MontyDecoder().process_decoded(d)
-
-
 
 
 def test_errors(tmp_path, monkeypatch):

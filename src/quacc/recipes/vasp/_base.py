@@ -187,7 +187,6 @@ def run_and_summarize_vib_and_thermo(
             atoms, vibrations.get_frequencies(), energy=energy
         ).run_ideal_gas()
 
-
     return summarize_vib_and_thermo(
         vibrations,
         thermo_analysis,

@@ -334,7 +334,7 @@ def freq_job(
     energy: float = 0.0,
     temperature: float = 298.15,
     pressure: float = 1.0,
-    thermo_method: Literal["harmonic","ideal_gas"] = "ideal_gas",
+    thermo_method: Literal["harmonic", "ideal_gas"] = "ideal_gas",
     vib_kwargs: VibKwargs | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,

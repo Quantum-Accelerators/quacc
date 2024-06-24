@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from ase import units
-from ase.thermochemistry import IdealGasThermo, HarmonicThermo
+from ase.thermochemistry import HarmonicThermo, IdealGasThermo
 from emmet.core.symmetry import PointGroupData
 from pymatgen.io.ase import AseAtomsAdaptor
 
@@ -103,7 +103,7 @@ class ThermoRunner:
             spin=spin,
             ignore_imag_modes=True,
         )
-    
+
     def run_harmonic_thermo(self) -> HarmonicThermo:
         """
         Create a HarmonicThermo object for a molecule from a given vibrational analysis.
@@ -122,4 +122,8 @@ class ThermoRunner:
         # Convert vibrational frequencies to energies
         vib_energies = [f * units.invcm for f in self.vib_freqs]
 
-        return HarmonicThermo(vib_energies=vib_energies, potentialenergy=self.energy, ignore_imag_modes=True)
+        return HarmonicThermo(
+            vib_energies=vib_energies,
+            potentialenergy=self.energy,
+            ignore_imag_modes=True,
+        )
