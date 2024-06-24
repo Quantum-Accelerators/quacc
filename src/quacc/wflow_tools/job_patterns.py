@@ -156,8 +156,7 @@ def kwarg_map(
     Adapted from https://stackoverflow.com/a/36575917 (CC-by-SA 3.0)
 
     """
-    if unmapped_kwargs is None:
-        unmapped_kwargs = {}
+    unmapped_kwargs = unmapped_kwargs or {}
 
     all_lens = [len(v) for v in mapped_kwargs.values()]
     n_elements = all_lens[0]
