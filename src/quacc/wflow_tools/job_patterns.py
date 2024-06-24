@@ -65,7 +65,7 @@ def map_partitioned_lists(
     testflow()
     ```
 
-    should yield:
+    should yield
 
     ```python
     {"test_arg_1": 1, "test_arg_2": "a"}
@@ -92,7 +92,7 @@ def map_partitioned_lists(
     Returns
     -------
     list[Any]
-        list of results from calling func(**mapped_kwargs, **unmapped_kwargs) for each
+        list of results from calling func(**(mapped_kwargs | unmapped_kwargs)) for each
         kwargs in mapped_kwargs
     """
 
@@ -159,7 +159,8 @@ def kwarg_map(
 
     all_lens = [len(v) for v in mapped_kwargs.values()]
     n_elements = all_lens[0]
-    assert all(n_elements == le for le in all_lens), f"Inconsistent lengths: {all_lens}"
+    if not all(n_elements == le for le in all_lens):
+        raise AssertionError(f"Inconsistent lengths: {all_lens}")
     return [
         func(**{k: v[i] for k, v in iter(mapped_kwargs.items())}, **unmapped_kwargs)
         for i in range(n_elements)
