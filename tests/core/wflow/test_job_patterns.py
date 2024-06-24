@@ -34,7 +34,7 @@ def test_kwarg_map():
         {"a": 1, "b": 1},
         {"a": 2, "b": 1},
     ]
-    with pytest.raises(AssertionError):
+    with pytest.raises(AssertionError, match="Inconsistent lengths"):
         kwarg_map(test_fun, a=[1, 2, 3], b=[1, 2])
 
 
