@@ -120,7 +120,7 @@ def map_partition(
     unmapped_kwargs
         Dictionary of kwargs to pass to func that shouldn't be mapped
     mapped_kwargs
-        kwargs of the form key=list[] that should be mapped over
+        kwargs of the form key=list[...] that should be mapped over
 
     Returns
     -------
@@ -138,6 +138,8 @@ def kwarg_map(
     A helper function for when you want to construct a chain of objects with individual arguments for each one.  Can
     be easier to read than a list expansion.
 
+    Adapted from https://stackoverflow.com/a/36575917 (CC-by-SA 3.0)
+
     Parameters
     ----------
     func
@@ -145,16 +147,13 @@ def kwarg_map(
     unmapped_kwargs
         Dictionary of kwargs to pass to func that shouldn't be mapped
     mapped_kwargs
-        kwargs of the form key=list[] that should be mapped over
+        kwargs of the form key=list[...] that should be mapped over
 
     Returns
     -------
     list[Any]
-        list of results from calling func(**mapped_kwargs, **unmapped_kwargs) for each
+        List of results from calling func(**mapped_kwargs, **unmapped_kwargs) for each
         kwargs in mapped_kwargs
-
-    Adapted from https://stackoverflow.com/a/36575917 (CC-by-SA 3.0)
-
     """
     unmapped_kwargs = unmapped_kwargs or {}
 
