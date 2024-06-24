@@ -44,6 +44,8 @@ def map_partitioned_lists(
     apply func to each element of each list
 
     For example:
+
+    ```python
     @job
     def testjob(**kwargs):
         print(kwargs)
@@ -59,15 +61,19 @@ def map_partitioned_lists(
         )
 
     testflow()
+    ```
 
     should yield:
+
+    ```python
     {'test_arg_1': 1, 'test_arg_2': 'a'}
     {'test_arg_1': 2, 'test_arg_2': 'b'}
     {'test_arg_1': 3, 'test_arg_2': 'c'}
     {'test_arg_1': 4, 'test_arg_2': 'd'}
     {'test_arg_1': 5, 'test_arg_2': 'e'}
+    ```
 
-    regardless of the number of partitions
+    regardless of the number of partitions.
 
 
     Parameters
@@ -79,7 +85,7 @@ def map_partitioned_lists(
     unmapped_kwargs
         Dictionary of kwargs to pass to func that shouldn't be mapped
     mapped_kwargs
-        kwargs of the form key=list[] that should be mapped over
+        kwargs of the form key=list[...] that should be mapped over
 
     Returns
     -------
