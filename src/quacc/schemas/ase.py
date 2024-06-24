@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from ase import units
 from ase.io import read
+from ase.thermochemistry import HarmonicThermo, IdealGasThermo
 from ase.vibrations import Vibrations
 from ase.vibrations.data import VibrationsData
 
@@ -23,7 +24,6 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from ase.io import Trajectory
     from ase.optimize.optimize import Optimizer
-    from ase.thermochemistry import IdealGasThermo, HarmonicThermo
     from maggma.core import Store
 
     from quacc.schemas._aliases.ase import (
@@ -258,9 +258,7 @@ def summarize_vib_and_thermo(
 
     if isinstance(thermo_analysis, HarmonicThermo):
         thermo_task_doc = _summarize_harmonic_thermo(
-            ht=thermo_analysis,
-            temperature=temperature,
-            pressure=pressure,
+            ht=thermo_analysis, temperature=temperature, pressure=pressure
         )
     elif isinstance(thermo_analysis, IdealGasThermo):
         thermo_task_doc = _summarize_ideal_gas_thermo(
@@ -446,10 +444,9 @@ def _summarize_ideal_gas_thermo(
 
     return atoms_metadata | inputs | results
 
+
 def _summarize_harmonic_thermo(
-    ht: HarmonicThermo,
-    temperature: float = 298.15,
-    pressure: float = 1.0,
+    ht: HarmonicThermo, temperature: float = 298.15, pressure: float = 1.0
 ) -> ThermoSchema:
     """
     Get tabulated results from an ASE HarmonicThermo object and store them in a
@@ -484,11 +481,13 @@ def _summarize_harmonic_thermo(
     results = {
         "results": {
             "energy": ht.potentialenergy,
-            "helmholtz_energy": ht.get_helmholtz_energy(temperature, verbose=settings.DEBUG),
-            "internal_energy": ht.get_internal_energy(temperature, verbose=settings.DEBUG),
-            "entropy": ht.get_entropy(
+            "helmholtz_energy": ht.get_helmholtz_energy(
                 temperature, verbose=settings.DEBUG
             ),
+            "internal_energy": ht.get_internal_energy(
+                temperature, verbose=settings.DEBUG
+            ),
+            "entropy": ht.get_entropy(temperature, verbose=settings.DEBUG),
             "zpe": ht.get_ZPE_correction(),
         }
     }
