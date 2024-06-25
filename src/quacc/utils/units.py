@@ -51,7 +51,6 @@ def convert_md_units(
     """
     converted_kwargs = dynamics_kwargs.copy()
 
-    # Time units
     for key in converted_kwargs:
         if key in QUACC_BASE_UNITS:
             if inverse:
