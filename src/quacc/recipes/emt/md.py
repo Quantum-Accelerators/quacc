@@ -91,7 +91,7 @@ def md_job(
         "maxwell_boltzmann_kwargs": {"temperature_K": initial_temperature}
         if initial_temperature
         else None,
-        "set_stationary": bool(initial_temperature),
+        "set_com_stationary": bool(initial_temperature),
         "set_zero_rotation": bool(initial_temperature),
     }
     md_params = recursive_dict_merge(md_defaults, md_params)

@@ -70,7 +70,7 @@ if TYPE_CHECKING:
         dynamics_kwargs: dict[str, Any] | None
         steps: int
         maxwell_boltzmann_kwargs: MaxwellBoltzmanDistributionKwargs | None
-        set_stationary: bool
+        set_com_stationary: bool
         set_zero_rotation: bool
 
     class VibKwargs(TypedDict, total=False):
@@ -346,7 +346,7 @@ class Runner(BaseRunner):
         dynamics_kwargs: dict[str, Any] | None = None,
         steps: int = 1000,
         maxwell_boltzmann_kwargs: MaxwellBoltzmanDistributionKwargs | None = None,
-        set_stationary: bool = False,
+        set_com_stationary: bool = False,
         set_zero_rotation: bool = False,
     ) -> MolecularDynamics:
         """
@@ -366,7 +366,7 @@ class Runner(BaseRunner):
             If specified, a `MaxwellBoltzmannDistribution` will be applied to the atoms
             based on `ase.md.velocitydistribution.MaxwellBoltzmannDistribution` with the
             specified keyword arguments.
-        set_stationary
+        set_com_stationary
             Whether to set the center-of-mass momentum to zero. This would be applied after
             any `MaxwellBoltzmannDistribution` is set.
         set_zero_rotation
@@ -389,7 +389,7 @@ class Runner(BaseRunner):
 
         if maxwell_boltzmann_kwargs:
             MaxwellBoltzmannDistribution(self.atoms, **maxwell_boltzmann_kwargs)
-        if set_stationary:
+        if set_com_stationary:
             Stationary(self.atoms)
         if set_zero_rotation:
             ZeroRotation(self.atoms)
