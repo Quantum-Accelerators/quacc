@@ -13,14 +13,14 @@ from ase.atoms import Atoms
 from ase.calculators import calculator
 from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read
-from ase.mep import NEB
-from ase.mep.neb import NEBOptimizer
 from ase.md.md import MolecularDynamics
 from ase.md.velocitydistribution import (
     MaxwellBoltzmannDistribution,
     Stationary,
     ZeroRotation,
 )
+from ase.mep import NEB
+from ase.mep.neb import NEBOptimizer
 from ase.optimize import BFGS
 from ase.optimize.sciopt import SciPyOptimizer
 from ase.vibrations import Vibrations
