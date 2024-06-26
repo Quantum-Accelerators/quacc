@@ -9,7 +9,7 @@ from ase.build import bulk, molecule
 from ase.constraints import FixAtoms
 from ase.md.npt import NPT
 from ase.optimize import FIRE
-from ase.units import bar, fs
+from ase.units import fs
 
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.md import md_job
