@@ -29,7 +29,6 @@ from quacc.atoms.core import copy_atoms
 from quacc.runners._base import BaseRunner
 from quacc.runners.prep import terminate
 from quacc.utils.dicts import recursive_dict_merge
-from quacc.utils.units import convert_md_units
 
 LOGGER = logging.getLogger(__name__)
 
@@ -384,8 +383,6 @@ class Runner(BaseRunner):
         maxwell_boltzmann_kwargs = maxwell_boltzmann_kwargs or {}
         settings = get_settings()
         dynamics_kwargs["logfile"] = "-" if settings.DEBUG else self.tmpdir / "md.log"
-        dynamics_kwargs = self._fix_deprecated_md_params(dynamics_kwargs)
-        dynamics_kwargs = convert_md_units(dynamics_kwargs)
 
         if maxwell_boltzmann_kwargs:
             MaxwellBoltzmannDistribution(self.atoms, **maxwell_boltzmann_kwargs)
