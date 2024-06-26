@@ -23,6 +23,7 @@ from ase.mep import NEB
 from ase.mep.neb import NEBOptimizer
 from ase.optimize import BFGS
 from ase.optimize.sciopt import SciPyOptimizer
+from ase.optimize.optimize import Optimizer
 from ase.vibrations import Vibrations
 from monty.dev import requires
 from monty.os.path import zpath
@@ -467,7 +468,7 @@ def run_neb(
     fmax: float = 0.01,
     max_steps: int | None = 1000,
     optimizer: NEBOptimizer | Optimizer = NEBOptimizer,
-    optimizer_kwargs: OptimizerKwargs | None = None,
+    optimizer_kwargs: dict[str, Any] | None = None,
     run_kwargs: dict[str, Any] | None = None,
     neb_kwargs: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
