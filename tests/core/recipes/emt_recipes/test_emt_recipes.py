@@ -105,7 +105,7 @@ def test_md_job1():
     assert output["trajectory_log"][-1]["temperature"] == pytest.approx(1575.886)
     assert output["trajectory_log"][0]["temperature"] == pytest.approx(0.0)
     assert output["trajectory_log"][1]["temperature"] == pytest.approx(759.680)
-    assert output["trajectory_log"][10]["time"] == pytest.approx(0.01 * fs)
+    assert output["trajectory_log"][10]["time"] == pytest.approx(10 * fs)
     assert atoms.positions == pytest.approx(old_positions)
 
 
@@ -127,7 +127,7 @@ def test_md_job2():
     assert output["trajectory_log"][-1]["temperature"] == pytest.approx(1023.384)
     assert output["trajectory_log"][0]["temperature"] == pytest.approx(915.678)
     assert output["trajectory_log"][1]["temperature"] == pytest.approx(1060.650)
-    assert output["trajectory_log"][10]["time"] == pytest.approx(0.005 * fs)
+    assert output["trajectory_log"][10]["time"] == pytest.approx(10 * 0.5 * fs)
     assert atoms.positions == pytest.approx(old_positions)
 
 

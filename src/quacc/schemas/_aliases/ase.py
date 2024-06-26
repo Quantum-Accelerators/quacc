@@ -26,6 +26,7 @@ class ParametersDyn(TypedDict):
 class TrajectoryLog(TypedDict):
     """Dictionary of parameters related to the MD trajectory"""
 
+    # ASE units
     kinetic_energy: float
     temperature: float
     time: float
@@ -90,6 +91,7 @@ class PhononSchema(RunSchema):
 
 
 class ParametersThermo(TypedDict):
+    # ASE units
     temperature: float
     pressure: float
     sigma: int
@@ -100,6 +102,7 @@ class ParametersThermo(TypedDict):
 
 
 class ThermoResults(TypedDict):
+    # ASE units
     energy: float
     enthalpy: float
     entropy: float

@@ -270,7 +270,7 @@ def summarize_md_run(
             {
                 "kinetic_energy": atoms.get_kinetic_energy(),
                 "temperature": atoms.get_temperature(),
-                "time": t * parameters_md["timestep"] / 1000,
+                "time": t * parameters_md["timestep"],
             }
         )
 
