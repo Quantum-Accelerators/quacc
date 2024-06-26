@@ -345,8 +345,6 @@ def neb_job(
     neb_flags = recursive_dict_merge(neb_defaults, neb_kwargs)
 
     # Debug prints to trace the values
-    print(f"Using model path: {calc_flags['model_path']}")
-    print(f"Using settings path: {calc_flags['settings_path']}")
 
     # Define calculator
     reactant_atoms.calc = NewtonNet(**calc_flags)
