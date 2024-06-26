@@ -23,7 +23,6 @@ from ase.mep import NEB
 from ase.mep.neb import NEBOptimizer
 from ase.optimize import BFGS
 from ase.optimize.sciopt import SciPyOptimizer
-from ase.optimize.optimize import Optimizer
 from ase.vibrations import Vibrations
 from monty.dev import requires
 from monty.os.path import zpath
@@ -48,7 +47,7 @@ if TYPE_CHECKING:
     from typing import Any, TypedDict
 
     from ase.calculators.calculator import Calculator
-    from ase.optimize.optimize import Dynamics
+    from ase.optimize.optimize import Dynamics, Optimizer
     from np.random import Generator
 
     from quacc.utils.files import Filenames, SourceDirectory
