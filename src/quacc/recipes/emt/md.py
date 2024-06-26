@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 
 from ase.calculators.emt import EMT
 from ase.md.verlet import VelocityVerlet
+from ase.units import bar, fs
 
 from quacc import Remove, job
 from quacc.runners.ase import Runner
@@ -28,9 +29,9 @@ def md_job(
     atoms: Atoms,
     dynamics: MolecularDynamics = VelocityVerlet,
     steps: int = 1000,
-    timestep: float = 1.0,
-    temperature: float | None = None,
-    pressure: float | None = None,
+    timestep_fs: float = 1.0,
+    temperature_K: float | None = None,
+    pressure_bar: float | None = None,
     initial_temperature: float | None = None,
     md_params: MDParams | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
@@ -38,16 +39,6 @@ def md_job(
 ) -> DynSchema:
     """
     Carry out a Molecular Dynamics calculation.
-
-    !!! Important "Units"
-
-        Quacc does not follow ASE standards for Molecular Dynamics units and instead
-        uses the following units:
-
-        - Time: femtoseconds (fs)
-        - Pressure: GPa
-        - Temperature: Kelvins (K)
-        - Compressibility: 1/GPa
 
     Parameters
     ----------
@@ -57,12 +48,12 @@ def md_job(
         ASE `MolecularDynamics` class to use, from `ase.md.md.MolecularDynamics`.
     steps
         Number of MD steps to run.
-    timestep
+    timestep_fs
         Time step in fs.
-    temperature
+    temperature_K
         Temperature in K, if applicable for the given ensemble.
-    pressure
-        Pressure in GPa, if applicable for the given ensemble.
+    pressure_bar
+        Pressure in bar, if applicable for the given ensemble.
     initial_temperature
         Initial temperature (in K) to specify via a Maxwell-Boltzmann distribution.
     md_params
@@ -84,9 +75,9 @@ def md_job(
     md_defaults = {
         "steps": steps,
         "dynamics_kwargs": {
-            "timestep": timestep,
-            "temperature_K": temperature if temperature else Remove,
-            "pressure_au": pressure if pressure else Remove,
+            "timestep": timestep_fs * fs,
+            "temperature_K": temperature_K if temperature_K else Remove,
+            "pressure_au": pressure_bar * bar if pressure_bar else Remove,
         },
         "maxwell_boltzmann_kwargs": {"temperature_K": initial_temperature}
         if initial_temperature
