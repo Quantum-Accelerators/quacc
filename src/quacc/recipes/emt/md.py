@@ -32,7 +32,6 @@ def md_job(
     timestep_fs: float = 1.0,
     temperature_K: float | None = None,
     pressure_bar: float | None = None,
-    initial_temperature_K: float | None = None,
     md_params: MDParams | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
@@ -54,8 +53,6 @@ def md_job(
         Temperature in K, if applicable for the given ensemble.
     pressure_bar
         Pressure in bar, if applicable for the given ensemble.
-    initial_temperature_K
-        Initial temperature (in K) to specify via a Maxwell-Boltzmann distribution.
     md_params
         Dictionary of custom kwargs for the MD run. For a list of available
         keys, refer to [quacc.runners.ase.Runner.run_md][].
@@ -79,11 +76,6 @@ def md_job(
             "temperature_K": temperature_K if temperature_K else Remove,
             "pressure_au": pressure_bar * bar if pressure_bar else Remove,
         },
-        "maxwell_boltzmann_kwargs": {"temperature_K": initial_temperature_K}
-        if initial_temperature_K
-        else None,
-        "set_com_stationary": bool(initial_temperature_K),
-        "set_zero_rotation": bool(initial_temperature_K),
     }
     md_params = recursive_dict_merge(md_defaults, md_params)
 

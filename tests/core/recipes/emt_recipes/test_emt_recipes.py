@@ -116,9 +116,15 @@ def test_md_job2():
     output = md_job(
         atoms,
         timestep_fs=0.5,
-        initial_temperature_K=1000,
         steps=20,
-        md_params={"maxwell_boltzmann_kwargs": {"rng": np.random.default_rng(seed=42)}},
+        md_params={
+            "maxwell_boltzmann_kwargs": {
+                "temperature_K": 1000,
+                "rng": np.random.default_rng(seed=42),
+            },
+            "set_com_stationary": True,
+            "set_zero_rotation": True,
+        },
     )
     assert output["parameters"]["asap_cutoff"] is False
     assert len(output["trajectory"]) == 21
