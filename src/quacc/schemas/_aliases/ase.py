@@ -19,8 +19,17 @@ class Parameters(TypedDict):
     """Dictionary of parameters from atoms.calc.parameters"""
 
 
-class ParametersOpt(TypedDict):
-    """Dictionary of parameters from Optimizer.todict()"""
+class ParametersDyn(TypedDict):
+    """Dictionary of parameters from Dynamics.todict()"""
+
+
+class TrajectoryLog(TypedDict):
+    """Dictionary of parameters related to the MD trajectory"""
+
+    # ASE units
+    kinetic_energy: float
+    temperature: float
+    time: float
 
 
 class RunSchema(AtomsSchema):
@@ -37,9 +46,18 @@ class RunSchema(AtomsSchema):
 class OptSchema(RunSchema):
     """Schema for [quacc.schemas.ase.summarize_opt_run][]"""
 
-    parameters_opt: ParametersOpt  # from dyn.todict()
+    parameters_opt: ParametersDyn
     converged: bool
     trajectory: list[Atoms]
+    trajectory_results: list[Results]
+
+
+class DynSchema(RunSchema):
+    """Schema for [quacc.schemas.ase.summarize_md_run][]"""
+
+    parameters_md: ParametersDyn
+    trajectory: list[Atoms]
+    trajectory_log: TrajectoryLog
     trajectory_results: list[Results]
 
 
@@ -73,6 +91,7 @@ class PhononSchema(RunSchema):
 
 
 class ParametersThermo(TypedDict):
+    # ASE units
     temperature: float
     pressure: float
     sigma: int
@@ -83,6 +102,7 @@ class ParametersThermo(TypedDict):
 
 
 class ThermoResults(TypedDict):
+    # ASE units
     energy: float
     enthalpy: float
     entropy: float

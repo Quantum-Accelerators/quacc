@@ -22,11 +22,13 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
     from ase.io import Trajectory
+    from ase.md.md import MolecularDynamics
     from ase.optimize.optimize import Optimizer
     from ase.thermochemistry import IdealGasThermo
     from maggma.core import Store
 
     from quacc.schemas._aliases.ase import (
+        DynSchema,
         OptSchema,
         RunSchema,
         ThermoSchema,
@@ -220,8 +222,6 @@ def summarize_opt_run(
     if not trajectory:
         trajectory = read(dyn.trajectory.filename, index=":")
     trajectory_results = [atoms.calc.results for atoms in trajectory]
-    for traj_atoms in trajectory:
-        traj_atoms.calc = None
 
     initial_atoms = trajectory[0]
     final_atoms = get_final_atoms_from_dynamics(dyn)
@@ -259,6 +259,80 @@ def summarize_opt_run(
 
     return finalize_dict(
         unsorted_task_doc, directory, gzip_file=settings.GZIP_FILES, store=store
+    )
+
+
+def summarize_md_run(
+    dyn: MolecularDynamics,
+    trajectory: Trajectory | list[Atoms] | None = None,
+    charge_and_multiplicity: tuple[int, int] | None = None,
+    move_magmoms: bool = True,
+    additional_fields: dict[str, Any] | None = None,
+    store: Store | bool | None = None,
+) -> DynSchema:
+    """
+    Get tabulated results from an ASE Atoms trajectory and store them in a database-
+    friendly format. This is meant to be compatible with all calculator types.
+
+    Parameters
+    ----------
+    dyn
+        ASE MolecularDynamics object.
+    trajectory
+        ASE Trajectory object or list[Atoms] from reading a trajectory file. If
+        None, the trajectory must be found in `dyn.trajectory.filename`.
+    charge_and_multiplicity
+        Charge and spin multiplicity of the Atoms object, only used for Molecule
+        metadata.
+    move_magmoms
+        Whether to move the final magmoms of the original Atoms object to the
+        initial magmoms of the returned Atoms object.
+    additional_fields
+        Additional fields to add to the task document.
+    store
+        Maggma Store object to store the results in. If None,
+        `QuaccSettings.STORE` will be used.
+
+    Returns
+    -------
+    DynSchema
+        Dictionary representation of the task document
+    """
+    settings = get_settings()
+    base_task_doc = summarize_opt_run(
+        dyn,
+        trajectory=trajectory,
+        check_convergence=False,
+        charge_and_multiplicity=charge_and_multiplicity,
+        move_magmoms=move_magmoms,
+        store=None,
+    )
+    del base_task_doc["converged"]
+
+    # Clean up the opt parameters
+    parameters_md = base_task_doc.pop("parameters_opt")
+    parameters_md.pop("logfile", None)
+
+    trajectory_log = []
+    for t, atoms in enumerate(base_task_doc["trajectory"]):
+        trajectory_log.append(
+            {
+                "kinetic_energy": atoms.get_kinetic_energy(),
+                "temperature": atoms.get_temperature(),
+                "time": t * parameters_md["timestep"],
+            }
+        )
+
+    md_fields = {"parameters_md": parameters_md, "trajectory_log": trajectory_log}
+
+    # Create a dictionary of the inputs/outputs
+    unsorted_task_doc = base_task_doc | md_fields | additional_fields
+
+    return finalize_dict(
+        unsorted_task_doc,
+        base_task_doc["dir_name"],
+        gzip_file=settings.GZIP_FILES,
+        store=store,
     )
 
 

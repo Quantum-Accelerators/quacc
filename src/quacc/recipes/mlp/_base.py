@@ -5,7 +5,6 @@ from __future__ import annotations
 import logging
 from functools import lru_cache
 from typing import TYPE_CHECKING
-from warnings import warn
 
 if TYPE_CHECKING:
     from typing import Literal
@@ -21,11 +20,6 @@ def pick_calculator(
 ) -> Calculator:
     """
     Adapted from `matcalc.util.get_universal_calculator`.
-
-    .. deprecated:: 0.7.6
-            method `mace` will be removed in a later version, it is replaced by 'mace-mp-0'
-            which more accurately reflects the nature of the model and allows for versioning
-            in the future.
 
     Parameters
     ----------
@@ -62,16 +56,9 @@ def pick_calculator(
 
         calc = CHGNetCalculator(**kwargs)
 
-    elif method.lower() in ["mace-mp-0", "mace"]:
+    elif method.lower() == "mace-mp-0":
         from mace import __version__
         from mace.calculators import mace_mp
-
-        if method.lower() == "mace":
-            warn(
-                "'mace' is deprecated and support will be removed. Use 'mace-mp-0' instead!",
-                DeprecationWarning,
-                stacklevel=3,
-            )
 
         if "default_dtype" not in kwargs:
             kwargs["default_dtype"] = "float64"

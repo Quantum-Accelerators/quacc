@@ -1,15 +1,22 @@
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 import numpy as np
 import pytest
 from ase.build import bulk, molecule
 from ase.constraints import FixAtoms
+from ase.md.npt import NPT
 from ase.optimize import FIRE
+from ase.units import fs
 
 from quacc.recipes.emt.core import relax_job, static_job
+from quacc.recipes.emt.md import md_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+LOGGER = logging.getLogger(__name__)
+LOGGER.propagate = True
 
 
 def test_static_job(tmp_path, monkeypatch):
@@ -85,6 +92,72 @@ def test_relax_job(tmp_path, monkeypatch):
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] is True
     assert output["results"]["energy"] == pytest.approx(0.04996032884581858)
+
+
+def test_md_job1():
+    atoms = molecule("H2O")
+    old_positions = atoms.positions.copy()
+    output = md_job(atoms, steps=500)
+    assert output["parameters"]["asap_cutoff"] is False
+    assert len(output["trajectory"]) == 501
+    assert output["name"] == "EMT MD"
+    assert output["parameters_md"]["timestep"] == pytest.approx(1.0 * fs)
+    assert output["trajectory_log"][-1]["temperature"] == pytest.approx(1575.886)
+    assert output["trajectory_log"][0]["temperature"] == pytest.approx(0.0)
+    assert output["trajectory_log"][1]["temperature"] == pytest.approx(759.680)
+    assert output["trajectory_log"][10]["time"] == pytest.approx(10 * fs)
+    assert atoms.positions == pytest.approx(old_positions)
+
+
+def test_md_job2():
+    atoms = molecule("H2O")
+    old_positions = atoms.positions.copy()
+
+    output = md_job(
+        atoms,
+        timestep_fs=0.5,
+        steps=20,
+        md_params={
+            "maxwell_boltzmann_kwargs": {
+                "temperature_K": 1000,
+                "rng": np.random.default_rng(seed=42),
+            },
+            "set_com_stationary": True,
+            "set_zero_rotation": True,
+        },
+    )
+    assert output["parameters"]["asap_cutoff"] is False
+    assert len(output["trajectory"]) == 21
+    assert output["name"] == "EMT MD"
+    assert output["parameters_md"]["timestep"] == pytest.approx(0.5 * fs)
+    assert output["trajectory_log"][-1]["temperature"] == pytest.approx(1023.384)
+    assert output["trajectory_log"][0]["temperature"] == pytest.approx(915.678)
+    assert output["trajectory_log"][1]["temperature"] == pytest.approx(1060.650)
+    assert output["trajectory_log"][10]["time"] == pytest.approx(10 * 0.5 * fs)
+    assert atoms.positions == pytest.approx(old_positions)
+
+
+def test_md_job3():
+    atoms = molecule("H2O", vacuum=10.0)
+    output = md_job(
+        atoms,
+        dynamics=NPT,
+        timestep_fs=1.0,
+        temperature_K=1000,
+        steps=500,
+        md_params={"dynamics_kwargs": {"ttime": 50 * fs}},
+    )
+    assert output["parameters"]["asap_cutoff"] is False
+    assert len(output["trajectory"]) == 500
+    assert output["name"] == "EMT MD"
+    assert output["trajectory_log"][0]["temperature"] == pytest.approx(759.8829)
+    assert output["trajectory_results"][-1]["energy"] == pytest.approx(2.0363759)
+
+
+def test_md_job_error():
+    atoms = molecule("H2O")
+    with pytest.raises(ValueError, match="Quacc does not support"):
+        md_job(atoms, md_params={"dynamics_kwargs": {"trajectory": "md.traj"}})
 
 
 def test_slab_dynamic_jobs(tmp_path, monkeypatch):
