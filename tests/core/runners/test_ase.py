@@ -141,7 +141,7 @@ def test_geodesic_interpolate_wrapper_large_system(setup_test_environment):
 def test_run_neb(setup_test_environment, tmp_path):
     optimizer_class = NEBOptimizer
     n_intermediate = 10
-    r_positions = -0.8496072471044277
+    r_positions = -0.849607247104427
     p_energy = 1.0824716056541726
     first_image_forces = -0.0052292931195385695
 
