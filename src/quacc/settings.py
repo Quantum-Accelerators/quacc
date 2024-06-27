@@ -614,7 +614,6 @@ def nest_results_dir_wrap(func: Callable) -> Callable:
     """
     Wraps a function with the change_settings context manager using a nested RESULTS_DIR
 
-
     Parameters
     ----------
     func
