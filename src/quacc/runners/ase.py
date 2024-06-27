@@ -233,8 +233,8 @@ class Runner(BaseRunner):
 
         Returns
         -------
-        Optimizer
-            The ASE Optimizer object.
+        Dynamics
+            The ASE Dynamics object following an optimization.
         """
         # Set defaults
         settings = get_settings()
