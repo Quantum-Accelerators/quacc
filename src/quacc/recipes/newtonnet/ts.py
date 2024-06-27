@@ -333,6 +333,7 @@ def neb_job(
     calc_defaults = {
         "model_path": settings.NEWTONNET_MODEL_PATH,
         "settings_path": settings.NEWTONNET_CONFIG_PATH,
+        "hess_method": None,
     }
 
     geodesic_defaults = {"n_images": 20}
@@ -424,12 +425,14 @@ def neb_ts_job(
     calc_defaults = {
         "model_path": settings.NEWTONNET_MODEL_PATH,
         "settings_path": settings.NEWTONNET_CONFIG_PATH,
+        "hess_method": None,
     }
 
     geodesic_defaults = {"n_images": 20}
 
     neb_defaults = {"method": "aseneb", "precon": None}
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
+    calc_flags["hess_method"] = None
     geodesic_interpolate_flags = recursive_dict_merge(
         geodesic_defaults, geodesic_interpolate_kwargs
     )
@@ -451,7 +454,8 @@ def neb_ts_job(
     ts_index = np.argmax([i["energy"] for i in traj_results[-(n_images - 1) : -1]]) + 1
     ts_atoms = traj[-(n_images) + ts_index]
 
-    output = strip_decorator(ts_job)(ts_atoms)
+    calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
+    output = strip_decorator(ts_job)(ts_atoms, calc_kwargs=calc_flags)
     neb_results["ts_results"] = output
 
     return neb_results
@@ -505,11 +509,13 @@ def geodesic_ts_job(
     calc_defaults = {
         "model_path": settings.NEWTONNET_MODEL_PATH,
         "settings_path": settings.NEWTONNET_CONFIG_PATH,
+        "hess_method": None,
     }
 
     geodesic_defaults = {"n_images": 20}
 
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
+    calc_flags["hess_method"] = None
     geodesic_interpolate_flags = recursive_dict_merge(
         geodesic_defaults, geodesic_interpolate_kwargs
     )
@@ -536,7 +542,8 @@ def geodesic_ts_job(
     ts_index = np.argmax(potential_energies)
     ts_atoms = images[ts_index]
 
-    output = strip_decorator(ts_job)(ts_atoms)
+    calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
+    output = strip_decorator(ts_job)(ts_atoms, calc_kwargs=calc_flags)
     return {
         "relax_reactant": relax_summary_r,
         "relax_product": relax_summary_p,
