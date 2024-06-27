@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
     from quacc.settings import QuaccSettings
 
-    if find_spec("prefect"):
+    if bool(find_spec("prefect")):
         from prefect import Flow as PrefectFlow
         from prefect import Task
 
@@ -596,7 +596,7 @@ def _decorate_prefect_job(
         @wraps(_func)
         def wrapper(*f_args, **f_kwargs):
             if settings.NESTED_RESULTS_DIR:
-                decorated = task(nest_results_dir_wrap(_func),**kwargs)
+                decorated = task(nest_results_dir_wrap(_func), **kwargs)
             else:
                 decorated = task(_func, **kwargs)
             if settings.PREFECT_AUTO_SUBMIT:
@@ -618,10 +618,10 @@ def _decorate_prefect_flow_subflow(
 
         @wraps(_func)
         def wrapper(*f_args, **f_kwargs):
-            adjusted_results_func = nest_results_dir_wrap(_func)
-            return prefect_flow(
-                adjusted_results_func, validate_parameters=False, **kwargs
-            )(*f_args, **f_kwargs)
+            decorated = prefect_flow(
+                nest_results_dir_wrap(_func), validate_parameters=False, **kwargs
+            )
+            return decorated(*f_args, **f_kwargs)
 
         return wrapper
     else:
