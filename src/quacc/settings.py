@@ -104,7 +104,7 @@ class QuaccSettings(BaseSettings):
         True,
         description=(
             """
-            Whether to nest the results dir by the calling flow/subflow/etc
+            Whether to automatically nest the results directories by the calling flow, subflow, etc.
             """
         ),
     )
@@ -627,7 +627,7 @@ def nest_results_dir_wrap(func: Callable) -> Callable:
     """
     from quacc import get_settings
 
-    changes = func._changes if getattr(func, "_changed", False) else {}
+    changes = getattr(func, "_changes", {})
 
     # Get the settings from the calling function's context
     results_parent_dir = get_settings().RESULTS_DIR

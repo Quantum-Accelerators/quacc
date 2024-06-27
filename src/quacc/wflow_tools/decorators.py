@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from functools import partial, wraps
+from importlib.util import find_spec
 from typing import TYPE_CHECKING, TypeVar
 
 from quacc.settings import change_settings_wrap, nest_results_dir_wrap
@@ -13,6 +14,12 @@ Subflow = TypeVar("Subflow")
 
 if TYPE_CHECKING:
     from typing import Any, Callable
+
+    from quacc.settings import QuaccSettings
+
+    if find_spec("prefect"):
+        from prefect import Flow as PrefectFlow
+        from prefect import Task
 
 
 def job(_func: Callable | None = None, **kwargs) -> Job:
@@ -579,39 +586,32 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
         return _func
 
 
-def _decorate_prefect_job(_func, kwargs, settings):
+def _decorate_prefect_job(
+    _func: Callable, kwargs: dict[str, Any], settings: QuaccSettings
+) -> Task:
     from prefect import task
 
-    if settings.PREFECT_AUTO_SUBMIT and settings.NESTED_RESULTS_DIR:
+    if settings.PREFECT_AUTO_SUBMIT or settings.NESTED_RESULTS_DIR:
 
         @wraps(_func)
         def wrapper(*f_args, **f_kwargs):
-            adjusted_results_func = nest_results_dir_wrap(_func)
-            decorated = task(adjusted_results_func, **kwargs)
-            return decorated.submit(*f_args, **f_kwargs)
-
-        return wrapper
-    elif (not settings.PREFECT_AUTO_SUBMIT) and settings.NESTED_RESULTS_DIR:
-
-        @wraps(_func)
-        def wrapper(*f_args, **f_kwargs):
-            adjusted_results_func = nest_results_dir_wrap(_func)
-            return task(adjusted_results_func, **kwargs)(*f_args, **f_kwargs)
-
-        return wrapper
-    elif settings.PREFECT_AUTO_SUBMIT and (not settings.NESTED_RESULTS_DIR):
-
-        @wraps(_func)
-        def wrapper(*f_args, **f_kwargs):
-            decorated = task(_func, **kwargs)
-            return decorated.submit(*f_args, **f_kwargs)
+            if settings.NESTED_RESULTS_DIR:
+                decorated = task(nest_results_dir_wrap(_func),**kwargs)
+            else:
+                decorated = task(_func, **kwargs)
+            if settings.PREFECT_AUTO_SUBMIT:
+                return decorated.submit(*f_args, **f_kwargs)
+            else:
+                return decorated(*f_args, **f_kwargs)
 
         return wrapper
     else:
         return task(_func, **kwargs)
 
 
-def _decorate_prefect_flow_subflow(_func, kwargs, settings):
+def _decorate_prefect_flow_subflow(
+    _func: Callable, kwargs: dict[str, Any], settings: QuaccSettings
+) -> PrefectFlow:
     from prefect import flow as prefect_flow
 
     if settings.NESTED_RESULTS_DIR:

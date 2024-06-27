@@ -100,7 +100,9 @@ def test_double_change_settings_redecorate_job(tmp_path_factory):
     assert Path(tmp_dir2 / "job.txt").exists()
 
 
-def test_nested_output_directory(tmp_path_factory):
+def test_nested_output_directory(tmp_path,monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
     @job
     def write_file_job(name="job.txt"):
         results_file_path = Path(get_settings().RESULTS_DIR, name)
@@ -110,7 +112,7 @@ def test_nested_output_directory(tmp_path_factory):
         return results_file_path
 
     @flow
-    def write_file_flow(name="flow.txt", job_decorators=None):
+    def write_file_flow(name="flow.txt"):
         job_results_file_path = write_file_job()
 
         flow_results_file_path = Path(get_settings().RESULTS_DIR, name)
