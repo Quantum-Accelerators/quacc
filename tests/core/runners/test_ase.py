@@ -160,20 +160,14 @@ def test_run_neb(setup_test_environment, tmp_path):
         image.calc = EMT()
     assert optimized_p.positions[0][1] == pytest.approx(-0.19275398865159504, abs=1e-6)
     assert optimized_r.positions[0][1] == pytest.approx(r_positions, abs=1e-6)
-    assert optimized_p.get_potential_energy() == pytest.approx(
-        p_energy, abs=1e-6
-    ), "pdt pot. energy"
-    assert optimized_p.get_forces()[0, 1] == pytest.approx(
-        first_image_forces, abs=1e-6
-    ), "pdt forces"
+    assert optimized_p.get_potential_energy() == pytest.approx(p_energy, abs=1e-6), "pdt pot. energy"
+    assert optimized_p.get_forces()[0, 1] == pytest.approx(first_image_forces, abs=1e-6), "pdt forces"
 
     neb_kwargs = {"method": "aseneb", "precon": None}
     dyn = run_neb(images, optimizer=optimizer_class, neb_kwargs=neb_kwargs)
     neb_summary = summarize_neb_run(dyn)
 
-    assert neb_summary["trajectory_results"][1]["energy"] == pytest.approx(
-        1.09895294161361, abs=1e-6
-    )
+    assert neb_summary["trajectory_results"][1]["energy"] == pytest.approx(1.09895294161361, abs=1e-6)
 
 
 @pytest.mark.skipif(
