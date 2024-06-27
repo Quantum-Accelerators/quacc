@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from functools import partial, wraps
-from importlib.util import find_spec
 from typing import TYPE_CHECKING, TypeVar
 
 from quacc.settings import change_settings_wrap, nest_results_dir_wrap
@@ -13,6 +12,7 @@ Flow = TypeVar("Flow")
 Subflow = TypeVar("Subflow")
 
 if TYPE_CHECKING:
+    from importlib.util import find_spec
     from typing import Any, Callable
 
     from quacc.settings import QuaccSettings
