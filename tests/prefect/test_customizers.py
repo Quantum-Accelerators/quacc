@@ -100,7 +100,7 @@ def test_double_change_settings_redecorate_job(tmp_path_factory):
     assert Path(tmp_dir2 / "job.txt").exists()
 
 
-def test_nested_output_directory(tmp_path,monkeypatch):
+def test_nested_output_directory(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     @job
