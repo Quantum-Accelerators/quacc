@@ -451,7 +451,7 @@ def neb_ts_job(
     ts_index = np.argmax([i["energy"] for i in traj_results[-(n_images - 1) : -1]]) + 1
     ts_atoms = traj[-(n_images) + ts_index]
 
-    output = ts_job(ts_atoms)
+    output = strip_decorator(ts_job)(ts_atoms)
     neb_results["ts_results"] = output
 
     return neb_results
@@ -536,7 +536,7 @@ def geodesic_ts_job(
     ts_index = np.argmax(potential_energies)
     ts_atoms = images[ts_index]
 
-    output = ts_job(ts_atoms)
+    output = strip_decorator(ts_job)(ts_atoms)
     return {
         "relax_reactant": relax_summary_r,
         "relax_product": relax_summary_p,
