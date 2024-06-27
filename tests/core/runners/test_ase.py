@@ -13,7 +13,7 @@ import pytest
 
 @pytest.fixture(scope="session", autouse=True)
 def set_seed():
-    np.random.seed(42)
+    np.random.seed(42)  # noqa: NPY002
 
 
 from ase import Atoms
@@ -141,9 +141,9 @@ def test_geodesic_interpolate_wrapper_large_system(setup_test_environment):
 def test_run_neb(setup_test_environment, tmp_path):
     optimizer_class = NEBOptimizer
     n_intermediate = 10
-    r_positions = -0.854
-    p_energy = 1.082
-    first_image_forces = -0.005
+    r_positions = -0.8496072471044277
+    p_energy = 1.0824716056541726
+    first_image_forces = -0.0052292931195385695
 
     reactant, product = setup_test_environment
 
@@ -158,13 +158,13 @@ def test_run_neb(setup_test_environment, tmp_path):
     )
     for image in images:
         image.calc = EMT()
-    assert optimized_p.positions[0][1] == pytest.approx(-0.192, abs=1e-2)
-    assert optimized_r.positions[0][1] == pytest.approx(r_positions, abs=1e-2)
+    assert optimized_p.positions[0][1] == pytest.approx(-0.19275398865159504, abs=1e-6)
+    assert optimized_r.positions[0][1] == pytest.approx(r_positions, abs=1e-6)
     assert optimized_p.get_potential_energy() == pytest.approx(
-        p_energy, abs=1e-2
+        p_energy, abs=1e-6
     ), "pdt pot. energy"
     assert optimized_p.get_forces()[0, 1] == pytest.approx(
-        first_image_forces, abs=1e-3
+        first_image_forces, abs=1e-6
     ), "pdt forces"
 
     neb_kwargs = {"method": "aseneb", "precon": None}
@@ -172,7 +172,7 @@ def test_run_neb(setup_test_environment, tmp_path):
     neb_summary = summarize_neb_run(dyn)
 
     assert neb_summary["trajectory_results"][1]["energy"] == pytest.approx(
-        1.098, abs=0.01
+        1.09895294161361, abs=1e-6
     )
 
 
@@ -203,9 +203,9 @@ def test_run_neb2(setup_test_environment, tmp_path):
     """
     optimizer_class = BFGSLineSearch
     n_intermediate = 10
-    r_positions = -0.854
-    p_energy = 1.082
-    first_image_forces = -0.005
+    r_positions = -0.8496072471044277
+    p_energy = 1.0824716056541726
+    first_image_forces = -0.0052292931195385695
 
     reactant, product = setup_test_environment
 
@@ -220,13 +220,13 @@ def test_run_neb2(setup_test_environment, tmp_path):
     )
     for image in images:
         image.calc = EMT()
-    assert optimized_p.positions[0][1] == pytest.approx(-0.192, abs=1e-2)
-    assert optimized_r.positions[0][1] == pytest.approx(r_positions, abs=1e-2)
+    assert optimized_p.positions[0][1] == pytest.approx(-0.19275398865159504, abs=1e-6)
+    assert optimized_r.positions[0][1] == pytest.approx(r_positions, abs=1e-6)
     assert optimized_p.get_potential_energy() == pytest.approx(
-        p_energy, abs=1e-2
+        p_energy, abs=1e-6
     ), "pdt pot. energy"
     assert optimized_p.get_forces()[0, 1] == pytest.approx(
-        first_image_forces, abs=1e-3
+        first_image_forces, abs=1e-6
     ), "pdt forces"
 
     neb_kwargs = {"method": "aseneb", "precon": None}
