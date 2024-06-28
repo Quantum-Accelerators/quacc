@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import sys
 from importlib.util import find_spec
 from shutil import copy, copytree
@@ -11,6 +12,12 @@ import numpy as np
 from ase.calculators import calculator
 from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read
+from ase.md.md import MolecularDynamics
+from ase.md.velocitydistribution import (
+    MaxwellBoltzmannDistribution,
+    Stationary,
+    ZeroRotation,
+)
 from ase.optimize import BFGS
 from ase.optimize.sciopt import SciPyOptimizer
 from ase.vibrations import Vibrations
@@ -23,6 +30,8 @@ from quacc.runners._base import BaseRunner
 from quacc.runners.prep import terminate
 from quacc.utils.dicts import recursive_dict_merge
 
+LOGGER = logging.getLogger(__name__)
+
 has_sella = bool(find_spec("sella"))
 
 
@@ -32,7 +41,8 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
     from ase.calculators.calculator import Calculator
-    from ase.optimize.optimize import Optimizer
+    from ase.optimize.optimize import Dynamics
+    from np.random import Generator
 
     from quacc.utils.files import Filenames, SourceDirectory
 
@@ -41,30 +51,44 @@ if TYPE_CHECKING:
         Type hint for `opt_params` used throughout quacc.
         """
 
-        fmax: float
+        relax_cell: bool
+        fmax: float | None
         max_steps: int
-        optimizer: Optimizer  # default = BFGS
-        optimizer_kwargs: OptimizerKwargs | None
+        optimizer: Dynamics
+        optimizer_kwargs: dict[str, Any] | None
         store_intermediate_results: bool
         fn_hook: Callable | None
         run_kwargs: dict[str, Any] | None
 
-    class OptimizerKwargs(TypedDict, total=False):
+    class MDParams(TypedDict, total=False):
         """
-        Type hint for `optimizer_kwargs` in [quacc.runners.ase.Runner.run_opt][].
+        Type hint for `md_params` used throughout quacc.
         """
 
-        restart: Path | str | None  # default = None
-        append_trajectory: bool  # default = False
+        dynamics: MolecularDynamics
+        dynamics_kwargs: dict[str, Any] | None
+        steps: int
+        maxwell_boltzmann_kwargs: MaxwellBoltzmanDistributionKwargs | None
+        set_com_stationary: bool
+        set_zero_rotation: bool
 
     class VibKwargs(TypedDict, total=False):
         """
         Type hint for `vib_kwargs` in [quacc.runners.ase.Runner.run_vib][].
         """
 
-        indices: list[int] | None  # default = None
-        delta: float  # default = 0.01
-        nfree: int  # default = 2
+        indices: list[int] | None
+        delta: float
+        nfree: int
+
+    class MaxwellBoltzmanDistributionKwargs(TypedDict, total=False):
+        """
+        Type hint for `maxwell_boltzmann_kwargs` in [quacc.runners.ase.Runner.run_md][].
+        """
+
+        temperature_K: float
+        force_temp: bool
+        rng: Generator | None
 
 
 class Runner(BaseRunner):
@@ -167,12 +191,12 @@ class Runner(BaseRunner):
         relax_cell: bool = False,
         fmax: float | None = 0.01,
         max_steps: int = 1000,
-        optimizer: Optimizer = BFGS,
-        optimizer_kwargs: OptimizerKwargs | None = None,
+        optimizer: Dynamics = BFGS,
+        optimizer_kwargs: dict[str, Any] | None = None,
         store_intermediate_results: bool = False,
         fn_hook: Callable | None = None,
         run_kwargs: dict[str, Any] | None = None,
-    ) -> Optimizer:
+    ) -> Dynamics:
         """
         This is a wrapper around the optimizers in ASE.
 
@@ -203,8 +227,8 @@ class Runner(BaseRunner):
 
         Returns
         -------
-        Optimizer
-            The ASE Optimizer object.
+        Dynamics
+            The ASE Dynamics object following an optimization.
         """
         # Set defaults
         settings = get_settings()
@@ -224,8 +248,12 @@ class Runner(BaseRunner):
             raise ValueError(msg)
 
         # Handle optimizer kwargs
-        if issubclass(optimizer, SciPyOptimizer) or optimizer.__name__ == "IRC":
+        if (
+            issubclass(optimizer, (SciPyOptimizer, MolecularDynamics))
+            or optimizer.__name__ == "IRC"
+        ):
             # https://gitlab.com/ase/ase/-/issues/1476
+            # https://gitlab.com/ase/ase/-/merge_requests/3310
             optimizer_kwargs.pop("restart", None)
         if optimizer.__name__ == "Sella":
             self._set_sella_kwargs(optimizer_kwargs)
@@ -240,15 +268,17 @@ class Runner(BaseRunner):
             self.atoms = FrechetCellFilter(self.atoms)
 
         # Run optimization
+        full_run_kwargs = {"fmax": fmax, "steps": max_steps, **run_kwargs}
+        if issubclass(optimizer, MolecularDynamics):
+            full_run_kwargs.pop("fmax")
         try:
             with traj, optimizer(self.atoms, **optimizer_kwargs) as dyn:
-                if issubclass(optimizer, SciPyOptimizer):
+                if issubclass(optimizer, (SciPyOptimizer, MolecularDynamics)):
                     # https://gitlab.coms/ase/ase/-/issues/1475
-                    dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
+                    # https://gitlab.com/ase/ase/-/issues/1497
+                    dyn.run(**full_run_kwargs)
                 else:
-                    for i, _ in enumerate(
-                        dyn.irun(fmax=fmax, steps=max_steps, **run_kwargs)
-                    ):
+                    for i, _ in enumerate(dyn.irun(**full_run_kwargs)):
                         if store_intermediate_results:
                             self._copy_intermediate_files(
                                 i,
@@ -308,6 +338,65 @@ class Runner(BaseRunner):
         self.cleanup()
 
         return vib
+
+    def run_md(
+        self,
+        dynamics: MolecularDynamics,
+        dynamics_kwargs: dict[str, Any] | None = None,
+        steps: int = 1000,
+        maxwell_boltzmann_kwargs: MaxwellBoltzmanDistributionKwargs | None = None,
+        set_com_stationary: bool = False,
+        set_zero_rotation: bool = False,
+    ) -> MolecularDynamics:
+        """
+        Run an ASE-based MD in a scratch directory and copy the results back to
+        the original directory.
+
+        Parameters
+        ----------
+        dynamics
+            MolecularDynamics class to use, from `ase.md.md.MolecularDynamics`.
+        dynamics_kwargs
+            Dictionary of kwargs for the dynamics. Takes all valid kwargs for ASE
+            MolecularDynamics classes.
+        steps
+            Maximum number of steps to run
+        maxwell_boltzmann_kwargs
+            If specified, a `MaxwellBoltzmannDistribution` will be applied to the atoms
+            based on `ase.md.velocitydistribution.MaxwellBoltzmannDistribution` with the
+            specified keyword arguments.
+        set_com_stationary
+            Whether to set the center-of-mass momentum to zero. This would be applied after
+            any `MaxwellBoltzmannDistribution` is set.
+        set_zero_rotation
+            Whether to set the total angular momentum to zero. This would be applied after
+            any `MaxwellBoltzmannDistribution` is set.
+
+        Returns
+        -------
+        MolecularDymamics
+            The ASE MolecularDynamics object.
+        """
+
+        # Set defaults
+        dynamics_kwargs = dynamics_kwargs or {}
+        maxwell_boltzmann_kwargs = maxwell_boltzmann_kwargs or {}
+        settings = get_settings()
+        dynamics_kwargs["logfile"] = "-" if settings.DEBUG else self.tmpdir / "md.log"
+
+        if maxwell_boltzmann_kwargs:
+            MaxwellBoltzmannDistribution(self.atoms, **maxwell_boltzmann_kwargs)
+        if set_com_stationary:
+            Stationary(self.atoms)
+        if set_zero_rotation:
+            ZeroRotation(self.atoms)
+
+        return self.run_opt(
+            fmax=None,
+            max_steps=steps,
+            optimizer=dynamics,
+            optimizer_kwargs=dynamics_kwargs,
+        )
 
     def _copy_intermediate_files(
         self, step_number: int, files_to_ignore: list[Path] | None = None
