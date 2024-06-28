@@ -523,8 +523,7 @@ def _summarize_ideal_gas_thermo(
 
 
 def _summarize_harmonic_thermo(
-    atoms: Atoms,
-    ht: HarmonicThermo, temperature: float = 298.15, pressure: float = 1.0
+    atoms: Atoms, ht: HarmonicThermo, temperature: float = 298.15, pressure: float = 1.0
 ) -> ThermoSchema:
     """
     Get tabulated results from an ASE HarmonicThermo object and store them in a
@@ -572,7 +571,5 @@ def _summarize_harmonic_thermo(
         }
     }
 
-    atoms_metadata = atoms_to_metadata(
-        atoms
-    )
+    atoms_metadata = atoms_to_metadata(atoms)
     return atoms_metadata | inputs | results

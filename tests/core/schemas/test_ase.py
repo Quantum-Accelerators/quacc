@@ -23,7 +23,7 @@ from quacc.schemas.ase import (
     _summarize_vib_run,
     summarize_opt_run,
     summarize_run,
-    summarize_vib_and_thermo
+    summarize_vib_and_thermo,
 )
 
 FILE_DIR = Path(__file__).parent
@@ -354,7 +354,7 @@ def test_summarize_harmonic_thermo(tmp_path, monkeypatch):
 
     # Make sure metadata is made
     ht = HarmonicThermo([0.34])
-    results = _summarize_harmonic_thermo(atoms=atoms, ht = ht)
+    results = _summarize_harmonic_thermo(atoms=atoms, ht=ht)
     assert results["parameters_thermo"]["vib_energies"] == [0.34]
     assert results["parameters_thermo"]["vib_freqs"] == [0.34 / invcm]
     assert results["results"]["energy"] == 0
@@ -367,7 +367,8 @@ def test_summarize_harmonic_thermo(tmp_path, monkeypatch):
     d = jsanitize(results, strict=True, enum_values=True)
     MontyDecoder().process_decoded(d)
 
-def test_summarize_vib_and_thermo(tmp_path,monkeypatch):
+
+def test_summarize_vib_and_thermo(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     # Test harmonic thermo for the thermo_analysis procedure
@@ -377,7 +378,7 @@ def test_summarize_vib_and_thermo(tmp_path,monkeypatch):
     ht = HarmonicThermo([0.34])
     vib = Vibrations(atoms)
     vib.run()
-    results = summarize_vib_and_thermo(vib=vib,thermo_analysis=ht,atoms=atoms)
+    results = summarize_vib_and_thermo(vib=vib, thermo_analysis=ht, atoms=atoms)
 
     assert results["parameters_thermo"]["vib_energies"] == [0.34]
     assert results["parameters_thermo"]["vib_freqs"] == [0.34 / invcm]
@@ -391,7 +392,7 @@ def test_summarize_vib_and_thermo(tmp_path,monkeypatch):
     atoms = molecule("N2")
     atoms.calc = EMT()
     igt = IdealGasThermo([0.34], "linear", atoms=atoms, spin=0, symmetrynumber=2)
-    results = summarize_vib_and_thermo(vib=None,thermo_analysis=igt,atoms=atoms)
+    results = summarize_vib_and_thermo(vib=None, thermo_analysis=igt, atoms=atoms)
 
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
@@ -399,8 +400,6 @@ def test_summarize_vib_and_thermo(tmp_path,monkeypatch):
     assert results["parameters_thermo"]["vib_freqs"] == [0.34 / invcm]
     assert results["results"]["energy"] == 0
     assert "pymatgen_version" in results["builder_meta"]
-
-    
 
 
 def test_errors(tmp_path, monkeypatch):

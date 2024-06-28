@@ -136,7 +136,7 @@ def run_and_summarize_vib_and_thermo(
     calc_swaps: dict[str, Any] | None = None,
     vib_kwargs: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> VibThermoSchema:
     """
     Base job function for VASP recipes with ASE vibrational analysis.
@@ -192,9 +192,9 @@ def run_and_summarize_vib_and_thermo(
         ).run_ideal_gas()
 
     return summarize_vib_and_thermo(
-        vib = vibrations,
-        thermo_analysis = thermo_analysis,
-        atoms = atoms,
+        vib=vibrations,
+        thermo_analysis=thermo_analysis,
+        atoms=atoms,
         temperature=temperature,
         pressure=pressure,
         additional_fields=additional_fields,
