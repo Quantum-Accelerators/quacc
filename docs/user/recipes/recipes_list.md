@@ -29,6 +29,7 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 | ------------------------ | ---------------- | ------------------------------------------------------- | ---------------- |
 | EMT Static               | `#!Python @job`  | [quacc.recipes.emt.core.static_job][]                   |                  |
 | EMT Relax                | `#!Python @job`  | [quacc.recipes.emt.core.relax_job][]                    |                  |
+| EMT MD                   | `#!Python @job`  | [quacc.recipes.emt.md.md_job][]                         |                  |
 | EMT Bulk to Defects      | `#!Python @flow` | [quacc.recipes.emt.defects.bulk_to_defects_flow][]      | `quacc[defects]` |
 | EMT Bulk to Slabs        | `#!Python @flow` | [quacc.recipes.emt.slabs.bulk_to_slabs_flow][]          |                  |
 | EMT Phonons              | `#!Python @flow` | [quacc.recipes.emt.phonons.phonon_flow][]               | `quacc[phonons]` |
@@ -147,7 +148,6 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 | ORCA Freq                  | `#!Python @job` | [quacc.recipes.orca.core.freq_job][]                  |              |
 | ORCA ASE Relax             | `#!Python @job` | [quacc.recipes.orca.core.ase_relax_job][]             |              |
 | ORCA ASE Quasi-IRC Perturb | `#!Python @job` | [quacc.recipes.orca.core.ase_quasi_irc_perturb_job][] |              |
-
 
 </center>
 
