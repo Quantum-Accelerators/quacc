@@ -459,7 +459,9 @@ def neb_ts_job(
     ts_atoms = traj[-(n_images) + ts_index]
 
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
-    output = strip_decorator(ts_job)(ts_atoms, calc_kwargs=calc_flags, opt_kwargs=opt_kwargs)
+    output = strip_decorator(ts_job)(
+        ts_atoms, calc_kwargs=calc_flags, opt_kwargs=opt_kwargs
+    )
     neb_results["ts_results"] = output
 
     return neb_results
@@ -550,7 +552,9 @@ def geodesic_ts_job(
     ts_atoms = images[ts_index]
 
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
-    output = strip_decorator(ts_job)(ts_atoms, calc_kwargs=calc_flags, opt_kwargs=opt_kwargs)
+    output = strip_decorator(ts_job)(
+        ts_atoms, calc_kwargs=calc_flags, opt_kwargs=opt_kwargs
+    )
     return {
         "relax_reactant": relax_summary_r,
         "relax_product": relax_summary_p,
