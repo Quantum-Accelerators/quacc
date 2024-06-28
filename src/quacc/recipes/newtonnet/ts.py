@@ -123,8 +123,7 @@ def ts_job(
     # Run the TS optimization
     dyn = Runner(atoms, calc).run_opt(**opt_flags)
     opt_ts_summary = _add_stdev_and_hess(
-        summarize_opt_run(dyn, additional_fields={"name": "NewtonNet TS"}),
-        **calc_flags,
+        summarize_opt_run(dyn, additional_fields={"name": "NewtonNet TS"}), **calc_flags
     )
 
     # Run a frequency calculation
@@ -583,7 +582,7 @@ def _get_hessian(atoms: Atoms) -> NDArray:
     ml_calculator = NewtonNet(
         model_path=settings.NEWTONNET_MODEL_PATH,
         settings_path=settings.NEWTONNET_CONFIG_PATH,
-        hess_method='autograd',
+        hess_method="autograd",
     )
     ml_calculator.calculate(atoms)
 
