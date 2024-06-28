@@ -551,7 +551,7 @@ def geodesic_ts_job(
     ts_atoms = images[ts_index]
 
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
-    output = strip_decorator(ts_job)(ts_atoms, calc_kwargs=calc_flags, opt_kwargs=opt_kwargs)
+    output = strip_decorator(ts_job)(ts_atoms, **opt_kwargs, **calc_flags)
     return {
         "relax_reactant": relax_summary_r,
         "relax_product": relax_summary_p,
