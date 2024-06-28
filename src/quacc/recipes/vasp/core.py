@@ -354,6 +354,8 @@ def freq_job(
         Temperature in Kelvins.
     pressure
         Pressure in bar.
+    thermo_method
+        Method to use for thermochemistry. Options are "harmonic" or "ideal_gas".
     vib_kwargs
         Dictionary of kwargs for the [ase.vibrations.Vibrations][] class.
     copy_files

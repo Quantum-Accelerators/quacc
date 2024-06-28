@@ -112,6 +112,7 @@ class ThermoRunner:
         Returns
         -------
         HarmonicThermo object
+            The ASE `HarmonicThermo` object.
         """
 
         # Ensure all negative modes are made complex

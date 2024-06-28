@@ -135,8 +135,8 @@ def run_and_summarize_vib_and_thermo(
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     vib_kwargs: dict[str, Any] | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     additional_fields: dict[str, Any] | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None
 ) -> VibThermoSchema:
     """
     Base job function for VASP recipes with ASE vibrational analysis.
@@ -151,6 +151,8 @@ def run_and_summarize_vib_and_thermo(
         Temperature of the system
     pressure
         Pressure of the system
+    thermo_method
+        Method to use for thermochemistry. Options are "harmonic" or "ideal_gas".
     preset
         Preset to use from `quacc.calculators.vasp.presets`.
     calc_defaults
@@ -161,6 +163,8 @@ def run_and_summarize_vib_and_thermo(
         keys, refer to [quacc.calculators.vasp.vasp.Vasp][].
     vib_kwargs
         Dictionary of custom kwargs for [quacc.runners.ase.Runner.run_vib][]
+    additional_fields
+        Additional fields to supply to the summarizer.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
 
@@ -181,15 +185,16 @@ def run_and_summarize_vib_and_thermo(
     if thermo_method == "harmonic":
         thermo_analysis = ThermoRunner(
             atoms, vibrations.get_frequencies(), energy=energy
-        ).run_harmonic()
+        ).run_harmonic_thermo()
     elif thermo_method == "ideal_gas":
         thermo_analysis = ThermoRunner(
             atoms, vibrations.get_frequencies(), energy=energy
         ).run_ideal_gas()
 
     return summarize_vib_and_thermo(
-        vibrations,
-        thermo_analysis,
+        vib = vibrations,
+        thermo_analysis = thermo_analysis,
+        atoms = atoms,
         temperature=temperature,
         pressure=pressure,
         additional_fields=additional_fields,

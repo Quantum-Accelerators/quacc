@@ -216,6 +216,7 @@ def summarize_opt_run(
 def summarize_vib_and_thermo(
     vib: Vibrations,
     thermo_analysis: IdealGasThermo | HarmonicThermo,
+    atoms: Atoms | None = None,
     temperature: float = 298.15,
     pressure: float = 1.0,
     charge_and_multiplicity: tuple[int, int] | None = None,
@@ -232,6 +233,8 @@ def summarize_vib_and_thermo(
         ASE Vibrations object.
     thermo_analysis
         ASE IdealGasThermo or HarmonicThermo object.
+    atoms
+        ASE Atoms object following a calculation.
     temperature
         Temperature in Kelvins.
     pressure
@@ -258,7 +261,7 @@ def summarize_vib_and_thermo(
 
     if isinstance(thermo_analysis, HarmonicThermo):
         thermo_task_doc = _summarize_harmonic_thermo(
-            ht=thermo_analysis, temperature=temperature, pressure=pressure
+            atoms=atoms, ht=thermo_analysis, temperature=temperature, pressure=pressure
         )
     elif isinstance(thermo_analysis, IdealGasThermo):
         thermo_task_doc = _summarize_ideal_gas_thermo(
@@ -446,6 +449,7 @@ def _summarize_ideal_gas_thermo(
 
 
 def _summarize_harmonic_thermo(
+    atoms: Atoms,
     ht: HarmonicThermo, temperature: float = 298.15, pressure: float = 1.0
 ) -> ThermoSchema:
     """
@@ -454,6 +458,8 @@ def _summarize_harmonic_thermo(
 
     Parameters
     ----------
+    atoms
+        ASE Atoms object used for the vibrational frequency calculation.
     ht
         ASE HarmonicThermo object.
     temperature
@@ -492,6 +498,7 @@ def _summarize_harmonic_thermo(
         }
     }
 
-    atoms_metadata = {}
-
+    atoms_metadata = atoms_to_metadata(
+        atoms
+    )
     return atoms_metadata | inputs | results

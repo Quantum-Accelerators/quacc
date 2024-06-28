@@ -856,6 +856,21 @@ def test_freq_job():
     atoms = molecule("H2")
     atoms.pbc = True
     atoms.center(vacuum=1)
+    output = freq_job(atoms, kpts=(1, 1, 1), thermo_method='harmonic')
+    assert output["parameters"]["ediff"] == 1e-07
+    # Check that "sigma" (only used in ideal_gas) isn't a key in parameters_thermo
+    assert "sigma" not in output["parameters_thermo"]
+    assert len(output["results"]["vib_freqs_raw"]) == 3 * len(atoms)
+
+
+    atoms = molecule("H2")
+    atoms.pbc = True
+    atoms.center(vacuum=1)
     output = freq_job(atoms, kpts=(1, 1, 1))
     assert output["parameters"]["ediff"] == 1e-07
+    # Check that parmeters_thermo contains
+    assert output["parameters_thermo"]["sigma"] == 2.0
     assert len(output["results"]["vib_freqs_raw"]) == 3 * len(atoms)
+    assert len(output["results"]["vib_freqs"]) == 3 * len(atoms) - 5
+
+
