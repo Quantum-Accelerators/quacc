@@ -347,11 +347,12 @@ def test_neb_job(setup_test_environment, tmp_path):
 
 def test_neb_ts_job_no_hess(setup_test_environment, tmp_path):
     reactant, product = setup_test_environment
-    opt_kwargs = {}
+    opt_kwargs = {"use_custom_hessian": False}
     calc_kwargs = {}
     neb_ts_results = neb_ts_job(
         reactant, product, calc_kwargs=calc_kwargs, opt_kwargs=opt_kwargs
     )
+    print('\n\n\n', neb_ts_results["ts_results"]["trajectory_results"])
     assert neb_ts_results["ts_results"]["results"]["energy"] == pytest.approx(
         -23.97834587097168, abs=1e-6
     )
@@ -377,6 +378,8 @@ def test_geodesic_ts_job_no_hess(setup_test_environment, tmp_path):
     geodesic_ts_summary = geodesic_ts_job(
         reactant, product, opt_kwargs=opt_kwargs, calc_kwargs=calc_kwargs
     )
+    print(len(geodesic_ts_summary['ts_results']['trajectory_results']))
+    assert 1==2
     assert geodesic_ts_summary["ts_results"]["results"]["energy"] == pytest.approx(
         -23.803544998168945, abs=1e-6
     )
