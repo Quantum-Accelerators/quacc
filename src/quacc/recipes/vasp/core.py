@@ -295,7 +295,7 @@ def non_scf_job(
     vasprun = Vasprun(vasprun_path)
 
     prior_nbands = vasprun.parameters["NBANDS"]
-    calc_defaults = {
+    calc_defaults: dict[str, Any] = {
         "icharg": 11,
         "kspacing": None,
         "lcharg": False,
