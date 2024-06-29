@@ -12,7 +12,7 @@ from ase.vibrations import Vibrations
 from ase.vibrations.data import VibrationsData
 
 from quacc import __version__, get_settings
-from quacc.atoms.core import get_final_atoms_from_dynamics
+from quacc.atoms.core import copy_atoms, get_final_atoms_from_dynamics
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.schemas.prep import prep_next_run
 from quacc.utils.dicts import finalize_dict, recursive_dict_merge
@@ -515,8 +515,10 @@ def _summarize_ideal_gas_thermo(
         )
         raise ValueError(msg)
 
+    atoms_no_pbcs = copy_atoms(igt.atoms)
+    atoms_no_pbcs.pbc = False
     atoms_metadata = atoms_to_metadata(
-        igt.atoms, charge_and_multiplicity=charge_and_multiplicity
+        atoms_no_pbcs, charge_and_multiplicity=charge_and_multiplicity
     )
 
     return atoms_metadata | inputs | results
