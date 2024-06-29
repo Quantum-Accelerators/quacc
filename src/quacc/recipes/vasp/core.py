@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal
-from warnings import warn
 
 import numpy as np
 from monty.os.path import zpath
@@ -108,12 +107,6 @@ def relax_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
         See the type-hint for the data structure.
     """
-    if relax_cell:
-        warn(
-            "The `relax_cell` parameter will default to `False` by default in a future version for internal consistency throughout quacc. Please set `relax_cell=True` directly.",
-            DeprecationWarning,
-            stacklevel=3,
-        )
     calc_defaults = {
         "ediffg": -0.02,
         "isif": 3 if relax_cell else 2,
@@ -226,12 +219,6 @@ def ase_relax_job(
     VaspASEOptSchema
         Dictionary of results. See the type-hint for the data structure.
     """
-    if relax_cell:
-        warn(
-            "The `relax_cell` parameter will default to `False` by default in a future version for internal consistency throughout quacc. Please set `relax_cell=True` directly.",
-            DeprecationWarning,
-            stacklevel=3,
-        )
     calc_defaults = {"lcharg": False, "lwave": False, "nsw": 0}
     opt_defaults = {"relax_cell": relax_cell}
     return run_and_summarize_opt(

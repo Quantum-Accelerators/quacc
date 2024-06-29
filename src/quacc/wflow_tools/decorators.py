@@ -626,8 +626,8 @@ def _get_parsl_wrapped_func(
     ):
         return func(*f_args, **f_kwargs)
 
-    if getattr(func, "_changed", False):
-        wrapper._changed = func._changed
+    if getattr(func, "__changed__", False):
+        wrapper.__changed__ = func.__changed__
         wrapper._original_func = func._original_func
     wrapper.__name__ = func.__name__
     return wrapper

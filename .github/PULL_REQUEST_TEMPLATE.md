@@ -4,9 +4,9 @@
 
 ### Requirements
 
-- [ ] My PR is focused on a [single feature addition or bugfix](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/getting-started/best-practices-for-pull-requests#write-small-prs).
-- [ ] My PR has relevant, comprehensive [unit tests](https://quantum-accelerators.github.io/quacc/dev/contributing.html#unit-tests).
-- [ ] My PR is on a [custom branch](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-and-deleting-branches-within-your-repository) (i.e. is _not_ named `main`).
+- Your PR should be focused on a [single feature addition or bugfix](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/getting-started/best-practices-for-pull-requests#write-small-prs).
+- Your PR should have relevant, comprehensive [unit tests](https://quantum-accelerators.github.io/quacc/dev/contributing.html#unit-tests).
+- Your PR should be on a custom branch and _not_ be named `main`.
 
 ### Notes
 

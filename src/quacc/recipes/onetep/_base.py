@@ -82,8 +82,9 @@ def run_and_summarize_opt(
     opt_defaults
         The default optimization parameters.
     opt_params
-        Dictionary of custom kwargs for the optimization process. For a list
-        of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
+        Dictionary of parameters to pass to the optimizer. pass "optimizer"
+        to change the optimizer being used. "fmax" and "max_steps" are commonly
+        used keywords. See the ASE documentation for more information.
     additional_fields
         Any additional fields to supply to the summarizer.
     copy_files

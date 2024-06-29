@@ -51,32 +51,30 @@ export QUACC_WORKFLOW_ENGINE=None
 If you want to define quacc settings on-the-fly without writing them to a YAML file or using environment variables, you can do so using the context handler function [quacc.settings.change_settings][] as follows:
 
 ```python
-from ase.build import bulk
 from quacc import change_settings
-from quacc.recipes.emt.core import relax_job
-
-atoms = bulk("Cu")
 
 with change_settings({"GZIP_FILES": False}):
-    result = relax_job(atoms)
+    pass  # Your calculation here
 ```
 
 !!! Important "Active Workflow Engine"
 
     When deploying calculations via a workflow engine, changes to in-memory global variables on the local machine will not be reflected on the remote machine. Instead, this should be done via a custom `settings_swap` keyword argument that is supported by the `@job` decorator.
 
+    Essentially, the following two blocks of code are functionally the same:
+
     ```python
     from quacc import job
 
 
-    @job(settings_swap={"GZIP_FILES": False})  # (1)!
+    @job(settings_swap={"GZIP_FILES"})  # (1)!
     def add(a, b):
         return a + b
     ```
 
     1. This is the same as doing
 
-        ```python
+         ```python
         from quacc import change_settings, job
 
 
@@ -89,15 +87,12 @@ with change_settings({"GZIP_FILES": False}):
     If using a pre-made `@job`, you can simply redecorate it so that it supports your custom settings:
 
     ```python
-    from ase.build import bulk
-    from quacc import redecorate, job
-    from quacc.recipes.emt.core import relax_job
+    from quacc import redecorate
+    from quacc.recipes.emt.core import static_job
 
-    atoms = bulk("Cu")
-    relax_job_ = redecorate(relax_job, job(settings_swap={"GZIP_FILES": False}))
-    results = relax_job_(atoms)
+    static_job_ = redecorate(static_job, settings_swap={"GZIP_FILES": False})
     ```
 
 !!! Tip "When is This Method Ideal?"
 
-    This approach is ideal for fine-tuned modifications to settings within your workflow.
+    This approach is ideal for fine-tuned modifications to settings within your workflow and for debugging scenarios (e.g. in a Jupyter Notebook).
