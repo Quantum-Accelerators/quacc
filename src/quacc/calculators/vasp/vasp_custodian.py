@@ -156,7 +156,6 @@ def run_custodian(
     )
 
     # Handlers for VASP
-    handlers = []
     handlers_dict = {
         "VaspErrorHandler": VaspErrorHandler(vtst_fixes=vtst_fixes),
         "FrozenJobErrorHandler": FrozenJobErrorHandler(),
