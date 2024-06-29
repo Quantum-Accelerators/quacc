@@ -138,7 +138,7 @@ def calc_cleanup(
         symlink_path.unlink(missing_ok=True)
 
 
-def terminate(tmpdir: Path, exception: Exception) -> Exception:
+def terminate(tmpdir: Path, exception: Exception) -> None:
     """
     Terminate a calculation and move files to a failed directory.
 
