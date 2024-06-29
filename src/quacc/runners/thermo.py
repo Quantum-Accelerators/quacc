@@ -11,8 +11,6 @@ from ase.thermochemistry import HarmonicThermo, IdealGasThermo
 from emmet.core.symmetry import PointGroupData
 from pymatgen.io.ase import AseAtomsAdaptor
 
-from quacc.atoms.core import copy_atoms
-
 if TYPE_CHECKING:
     from ase.atoms import Atoms
 
@@ -85,9 +83,7 @@ class ThermoRunner:
             spin = 0
 
         # Get symmetry for later use
-        atoms_no_pbc = copy_atoms(self.atoms)
-        atoms_no_pbc.set_pbc(False)
-        mol = AseAtomsAdaptor().get_molecule(atoms_no_pbc, charge_spin_check=False)
+        mol = AseAtomsAdaptor().get_molecule(self.atoms, charge_spin_check=False)
         point_group_data = PointGroupData().from_molecule(mol)
 
         # Get the geometry
