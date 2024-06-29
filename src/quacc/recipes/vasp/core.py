@@ -110,7 +110,7 @@ def relax_job(
     """
     if relax_cell:
         warn(
-            "The `relax_cell` parameter will default to `False` by default in a future version for internal consistency throughout quacc.",
+            "The `relax_cell` parameter will default to `False` by default in a future version for internal consistency throughout quacc. Please set `relax_cell=True` directly.",
             DeprecationWarning,
             stacklevel=3,
         )
@@ -228,7 +228,7 @@ def ase_relax_job(
     """
     if relax_cell:
         warn(
-            "The `relax_cell` parameter will default to `False` by default in a future version for internal consistency throughout quacc.",
+            "The `relax_cell` parameter will default to `False` by default in a future version for internal consistency throughout quacc. Please set `relax_cell=True` directly.",
             DeprecationWarning,
             stacklevel=3,
         )
