@@ -352,7 +352,6 @@ def test_neb_ts_job_no_hess(setup_test_environment, tmp_path):
     neb_ts_results = neb_ts_job(
         reactant, product, calc_kwargs=calc_kwargs, ts_job_kwargs=ts_job_kwargs
     )
-    print('\n\n\n', neb_ts_results["ts_results"]["trajectory_results"])
     assert neb_ts_results["ts_results"]["results"]["energy"] == pytest.approx(
         -23.97834587097168, abs=1e-6
     )
