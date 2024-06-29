@@ -55,8 +55,6 @@ class ThermoRunner:
         -------
         IdealGasThermo object
         """
-        atoms_no_pbc = copy_atoms(self.atoms)
-        atoms_no_pbc.set_pbc(False)
 
         # Ensure all negative modes are made complex
         for i, f in enumerate(self.vib_freqs):
@@ -87,11 +85,13 @@ class ThermoRunner:
             spin = 0
 
         # Get symmetry for later use
-        natoms = len(self.atoms)
+        atoms_no_pbc = copy_atoms(self.atoms)
+        atoms_no_pbc.set_pbc(False)
         mol = AseAtomsAdaptor().get_molecule(atoms_no_pbc, charge_spin_check=False)
         point_group_data = PointGroupData().from_molecule(mol)
 
         # Get the geometry
+        natoms = len(self.atoms)
         if natoms == 1:
             geometry = "monatomic"
         elif point_group_data.linear:
