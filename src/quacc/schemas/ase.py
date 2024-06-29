@@ -335,11 +335,11 @@ def summarize_vib_and_thermo(
 
     if isinstance(thermo_analysis, HarmonicThermo):
         thermo_task_doc = _summarize_harmonic_thermo(
-            atoms=atoms, ht=thermo_analysis, temperature=temperature, pressure=pressure
+            atoms, thermo_analysis, temperature=temperature, pressure=pressure
         )
     elif isinstance(thermo_analysis, IdealGasThermo):
         thermo_task_doc = _summarize_ideal_gas_thermo(
-            igt=thermo_analysis,
+            thermo_analysis,
             temperature=temperature,
             pressure=pressure,
             charge_and_multiplicity=charge_and_multiplicity,
@@ -523,7 +523,7 @@ def _summarize_ideal_gas_thermo(
 
 
 def _summarize_harmonic_thermo(
-    atoms: Atoms, ht: HarmonicThermo, temperature: float = 298.15, pressure: float = 1.0
+    atoms: Atoms, harmonic_thermo: HarmonicThermo, temperature: float = 298.15, pressure: float = 1.0
 ) -> ThermoSchema:
     """
     Get tabulated results from an ASE HarmonicThermo object and store them in a
@@ -533,7 +533,7 @@ def _summarize_harmonic_thermo(
     ----------
     atoms
         ASE Atoms object used for the vibrational frequency calculation.
-    ht
+    harmonic_thermo
         ASE HarmonicThermo object.
     temperature
         Temperature in Kelvins.
@@ -551,23 +551,23 @@ def _summarize_harmonic_thermo(
         "parameters_thermo": {
             "temperature": temperature,
             "pressure": pressure,
-            "vib_freqs": [e / units.invcm for e in ht.vib_energies],
-            "vib_energies": ht.vib_energies.tolist(),
-            "n_imag": ht.n_imag,
+            "vib_freqs": [e / units.invcm for e in harmonic_thermo.vib_energies],
+            "vib_energies": harmonic_thermo.vib_energies.tolist(),
+            "n_imag": harmonic_thermo.n_imag,
         }
     }
 
     results = {
         "results": {
-            "energy": ht.potentialenergy,
-            "helmholtz_energy": ht.get_helmholtz_energy(
+            "energy": harmonic_thermo.potentialenergy,
+            "helmholtz_energy": harmonic_thermo.get_helmholtz_energy(
                 temperature, verbose=settings.DEBUG
             ),
-            "internal_energy": ht.get_internal_energy(
+            "internal_energy": harmonic_thermo.get_internal_energy(
                 temperature, verbose=settings.DEBUG
             ),
-            "entropy": ht.get_entropy(temperature, verbose=settings.DEBUG),
-            "zpe": ht.get_ZPE_correction(),
+            "entropy": harmonic_thermo.get_entropy(temperature, verbose=settings.DEBUG),
+            "zpe": harmonic_thermo.get_ZPE_correction(),
         }
     }
 
