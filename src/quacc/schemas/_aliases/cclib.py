@@ -89,8 +89,8 @@ class Attributes(TypedDict, total=False):
     natom: int
     nbasis: int
     nmo: int
-    nmrtensors: dict[int, dict[NDArray]]
-    nmrcouplingtensors: dict[int, dict[NDArray]]
+    nmrtensors: dict[int, dict[str, NDArray]]
+    nmrcouplingtensors: dict[int, dict[str, NDArray]]
     nocoeffs: NDArray
     nooccnos: NDArray
     nsocoeffs: list[NDArray]
