@@ -354,7 +354,7 @@ def test_summarize_harmonic_thermo(tmp_path, monkeypatch):
 
     # Make sure metadata is made
     ht = HarmonicThermo([0.34])
-    results = _summarize_harmonic_thermo(atoms=atoms, ht=ht)
+    results = _summarize_harmonic_thermo(atoms, ht)
     assert results["parameters_thermo"]["vib_energies"] == [0.34]
     assert results["parameters_thermo"]["vib_freqs"] == [0.34 / invcm]
     assert results["results"]["energy"] == 0
