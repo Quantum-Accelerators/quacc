@@ -386,7 +386,7 @@ def neb_ts_job(
     calc_kwargs: dict[str, Any] | None = None,
     geodesic_interpolate_kwargs: dict[str, Any] | None = None,
     neb_kwargs: dict[str, Any] | None = None,
-    opt_kwargs: dict[str, Any] | None = None,
+    ts_job_kwargs: dict[str, Any] | None = None,
 ) -> NebTsSchema:
     """
     Perform a quasi-IRC job using the given reactant and product atoms objects.
@@ -405,7 +405,7 @@ def neb_ts_job(
         Keyword arguments for the geodesic_interpolate function, by default None.
     neb_kwargs
         Keyword arguments for the NEB calculation, by default None.
-    opt_kwargs
+    ts_job_kwargs
         Keyword arguments for the TS optimizer, by default None.
 
     Returns
@@ -422,7 +422,7 @@ def neb_ts_job(
     neb_kwargs = neb_kwargs or {}
     geodesic_interpolate_kwargs = geodesic_interpolate_kwargs or {}
     calc_kwargs = calc_kwargs or {}
-    opt_kwargs = opt_kwargs or {}
+    ts_job_kwargs = ts_job_kwargs or {}
     settings = get_settings()
 
     calc_defaults = {
@@ -459,7 +459,7 @@ def neb_ts_job(
 
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
 
-    output = strip_decorator(ts_job)(ts_atoms, **opt_kwargs, **calc_flags)
+    output = strip_decorator(ts_job)(ts_atoms, **ts_job_kwargs, **calc_flags)
     neb_results["ts_results"] = output
 
     return neb_results
@@ -479,7 +479,7 @@ def geodesic_ts_job(
     relax_job_kwargs: dict[str, Any] | None = None,
     calc_kwargs: dict[str, Any] | None = None,
     geodesic_interpolate_kwargs: dict[str, Any] | None = None,
-    opt_kwargs: dict[str, Any] | None = None,
+    ts_job_kwargs: dict[str, Any] | None = None,
 ) -> NebTsSchema:
     """
     Perform a quasi-IRC job using the given reactant and product atoms objects.
@@ -496,7 +496,7 @@ def geodesic_ts_job(
         Keyword arguments for the NewtonNet calculator, by default None.
     geodesic_interpolate_kwargs
         Keyword arguments for the geodesic_interpolate function, by default None.
-    opt_kwargs
+    ts_job_kwargs
         Keyword arguments for ts optimizer, by default None.
 
     Returns
@@ -510,6 +510,7 @@ def geodesic_ts_job(
             - 'ts_results': Summary of the transition state optimization.
     """
     relax_job_kwargs = relax_job_kwargs or {}
+    ts_job_kwargs = ts_job_kwargs or {}
     geodesic_interpolate_kwargs = geodesic_interpolate_kwargs or {}
     settings = get_settings()
 
@@ -550,7 +551,7 @@ def geodesic_ts_job(
     ts_atoms = images[ts_index]
 
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
-    output = strip_decorator(ts_job)(ts_atoms, **opt_kwargs, **calc_flags)
+    output = strip_decorator(ts_job)(ts_atoms, **ts_job_kwargs, **calc_flags)
     return {
         "relax_reactant": relax_summary_r,
         "relax_product": relax_summary_p,
