@@ -488,6 +488,33 @@ class QuaccSettings(BaseSettings):
 
         return v
 
+    @staticmethod
+    def _use_custom_config_settings(settings: dict[str, Any]) -> dict[str, Any]:
+        """Parse user settings from a custom YAML.
+
+        Parameters
+        ----------
+        settings
+            Initial settings.
+
+        Returns
+        -------
+        dict
+            Updated settings based on the custom YAML.
+        """
+        config_file_path = (
+            Path(settings.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH))
+            .expanduser()
+            .resolve()
+        )
+
+        new_settings = {}  # type: dict
+        if config_file_path.exists() and config_file_path.stat().st_size > 0:
+            new_settings |= loadfn(config_file_path)
+
+        new_settings.update(settings)
+        return new_settings
+
     @model_validator(mode="before")
     @classmethod
     def load_user_settings(cls, settings: dict[str, Any]) -> dict[str, Any]:
@@ -505,34 +532,7 @@ class QuaccSettings(BaseSettings):
         dict
             Loaded settings.
         """
-        return _type_handler(_use_custom_config_settings(settings))
-
-
-def _use_custom_config_settings(settings: dict[str, Any]) -> dict[str, Any]:
-    """Parse user settings from a custom YAML.
-
-    Parameters
-    ----------
-    settings : dict
-        Initial settings.
-
-    Returns
-    -------
-    dict
-        Updated settings based on the custom YAML.
-    """
-    config_file_path = (
-        Path(settings.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH))
-        .expanduser()
-        .resolve()
-    )
-
-    new_settings = {}  # type: dict
-    if config_file_path.exists() and config_file_path.stat().st_size > 0:
-        new_settings |= loadfn(config_file_path)
-
-    new_settings.update(settings)
-    return new_settings
+        return _type_handler(cls._use_custom_config_settings(settings))
 
 
 def _type_handler(settings: dict[str, Any]) -> dict[str, Any]:
@@ -560,7 +560,7 @@ def _type_handler(settings: dict[str, Any]) -> dict[str, Any]:
 
 
 @contextmanager
-def change_settings(changes: dict[str, Any] | None) -> None:
+def change_settings(changes: dict[str, Any] | None):
     """
     Temporarily change an attribute of an object.
 
@@ -568,10 +568,6 @@ def change_settings(changes: dict[str, Any] | None) -> None:
     ----------
     changes
         Dictionary of changes to make formatted as attribute: value.
-
-    Returns
-    -------
-    None
     """
     from quacc import _internally_set_settings, get_settings
 
@@ -602,13 +598,13 @@ def change_settings_wrap(func: Callable, changes: dict[str, Any]) -> Callable:
     Callable
         The wrapped function.
     """
-    original_func = func._original_func if getattr(func, "__changed__", False) else func
+    original_func = func._original_func if getattr(func, "_changed", False) else func
 
     @wraps(original_func)
     def wrapper(*args, **kwargs):
         with change_settings(changes):
             return original_func(*args, **kwargs)
 
-    wrapper.__changed__ = True
+    wrapper._changed = True
     wrapper._original_func = original_func
     return wrapper
