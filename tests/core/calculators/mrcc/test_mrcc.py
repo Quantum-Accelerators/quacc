@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 from ase.atoms import Atoms
 
-from quacc import SETTINGS
+from quacc import get_settings
 from quacc.calculators.mrcc.mrcc import MRCC, MrccProfile, _get_version_from_mrcc_header
 
 
@@ -20,7 +20,7 @@ def test_mrcc_version_from_string():
 
 def test_mrcc_singlepoint(tmp_path):
     calc = MRCC(
-        profile=MrccProfile(command=SETTINGS.MRCC_CMD),
+        profile=MrccProfile(command=get_settings().MRCC_CMD),
         mrccinput={"calc": "PBE", "basis": "STO-3G"},
         mrccblocks="symm=off",
         directory=tmp_path,
