@@ -523,7 +523,10 @@ def _summarize_ideal_gas_thermo(
 
 
 def _summarize_harmonic_thermo(
-    atoms: Atoms, harmonic_thermo: HarmonicThermo, temperature: float = 298.15, pressure: float = 1.0
+    atoms: Atoms,
+    harmonic_thermo: HarmonicThermo,
+    temperature: float = 298.15,
+    pressure: float = 1.0,
 ) -> ThermoSchema:
     """
     Get tabulated results from an ASE HarmonicThermo object and store them in a
