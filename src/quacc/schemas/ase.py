@@ -78,7 +78,7 @@ def summarize_run(
     """
     additional_fields = additional_fields or {}
     settings = get_settings()
-    store = settings.STORE if store ==_DEFAULT_SETTING else store
+    store = settings.STORE if store == _DEFAULT_SETTING else store
 
     if not final_atoms.calc:
         msg = "ASE Atoms object has no attached calculator."
@@ -127,11 +127,11 @@ def summarize_run(
 def summarize_opt_run(
     dyn: Optimizer,
     trajectory: Trajectory | list[Atoms] | None = None,
-    check_convergence: bool |_DefaultSettingType= _DEFAULT_SETTING,
+    check_convergence: bool | _DefaultSettingType = _DEFAULT_SETTING,
     charge_and_multiplicity: tuple[int, int] | None = None,
     move_magmoms: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None |_DefaultSettingType= _DEFAULT_SETTING,
+    store: Store | None | _DefaultSettingType = _DEFAULT_SETTING,
 ) -> OptSchema:
     """
     Get tabulated results from an ASE Atoms trajectory and store them in a database-
@@ -165,9 +165,11 @@ def summarize_opt_run(
     """
     settings = get_settings()
     check_convergence = (
-        settings.CHECK_CONVERGENCE if check_convergence ==_DEFAULT_SETTING else check_convergence
+        settings.CHECK_CONVERGENCE
+        if check_convergence == _DEFAULT_SETTING
+        else check_convergence
     )
-    store = settings.STORE if store ==_DEFAULT_SETTING else store
+    store = settings.STORE if store == _DEFAULT_SETTING else store
     additional_fields = additional_fields or {}
 
     # Get trajectory

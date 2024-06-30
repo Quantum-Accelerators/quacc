@@ -116,24 +116,28 @@ class Vasp(Vasp_):
         # Set defaults
         use_custodian = (
             self._settings.VASP_USE_CUSTODIAN
-            if use_custodian ==_DEFAULT_SETTING
+            if use_custodian == _DEFAULT_SETTING
             else use_custodian
         )
         incar_copilot = (
             self._settings.VASP_INCAR_COPILOT
-            if incar_copilot ==_DEFAULT_SETTING
+            if incar_copilot == _DEFAULT_SETTING
             else incar_copilot
         )
         copy_magmoms = (
-            self._settings.VASP_COPY_MAGMOMS if copy_magmoms ==_DEFAULT_SETTING else copy_magmoms
+            self._settings.VASP_COPY_MAGMOMS
+            if copy_magmoms == _DEFAULT_SETTING
+            else copy_magmoms
         )
         preset_mag_default = (
             self._settings.VASP_PRESET_MAG_DEFAULT
-            if preset_mag_default ==_DEFAULT_SETTING
+            if preset_mag_default == _DEFAULT_SETTING
             else preset_mag_default
         )
         mag_cutoff = (
-            self._settings.VASP_MAG_CUTOFF if mag_cutoff ==_DEFAULT_SETTING else mag_cutoff
+            self._settings.VASP_MAG_CUTOFF
+            if mag_cutoff == _DEFAULT_SETTING
+            else mag_cutoff
         )
 
         # Assign variables to self
