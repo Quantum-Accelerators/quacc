@@ -12,11 +12,12 @@ from quacc import get_settings
 if TYPE_CHECKING:
     from pathlib import Path
 
-    class _DefaultSettingType:
-        pass
 
-    _DEFAULT_SETTING = _DefaultSettingType()
+class _DefaultSettingType:
+    pass
 
+
+_DEFAULT_SETTING = _DefaultSettingType()
 has_ob = bool(find_spec("openbabel"))
 
 
