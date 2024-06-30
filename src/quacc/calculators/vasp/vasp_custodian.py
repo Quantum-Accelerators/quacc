@@ -150,7 +150,7 @@ def run_custodian(
     )
     vasp_custodian_handlers = (
         settings.VASP_CUSTODIAN_HANDLERS
-        if vasp_custodian_handlers is None
+        if vasp_custodian_handlers == _DEFAULT_SETTING
         else vasp_custodian_handlers
     )
     vasp_custodian_validators = (

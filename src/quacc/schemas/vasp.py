@@ -182,12 +182,12 @@ def summarize_vasp_opt_run(
     trajectory: Trajectory | list[Atoms] | None = None,
     directory: str | Path | None = None,
     move_magmoms: bool = True,
-    run_bader: bool = _DEFAULT_SETTING,
-    run_chargemol: bool = _DEFAULT_SETTING,
-    check_convergence: bool = _DEFAULT_SETTING,
+    run_bader: bool | _DefaultSettingType = _DEFAULT_SETTING,
+    run_chargemol: bool | _DefaultSettingType = _DEFAULT_SETTING,
+    check_convergence: bool | _DefaultSettingType = _DEFAULT_SETTING,
     report_mp_corrections: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None = _DEFAULT_SETTING,
+    store: Store | None | _DefaultSettingType = _DEFAULT_SETTING,
 ) -> VaspASEOptSchema:
     """
     Merges the `vasp_summarize_run` with an `summarize_opt_run`, meant to
@@ -224,7 +224,7 @@ def summarize_vasp_opt_run(
         Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`,
     """
     settings = get_settings()
-    store = settings.STORE if store is None else store
+    store = settings.STORE if store == _DEFAULT_SETTING else store
 
     final_atoms = get_final_atoms_from_dynamics(optimizer)
     directory = Path(directory or final_atoms.calc.directory)

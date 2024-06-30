@@ -103,9 +103,11 @@ def cclib_summarize_run(
     settings = get_settings()
     directory = Path(directory or final_atoms.calc.directory)
     check_convergence = (
-        settings.CHECK_CONVERGENCE if check_convergence ==_DEFAULT_SETTING else check_convergence
+        settings.CHECK_CONVERGENCE
+        if check_convergence == _DEFAULT_SETTING
+        else check_convergence
     )
-    store = settings.STORE if store ==_DEFAULT_SETTING else store
+    store = settings.STORE if store == _DEFAULT_SETTING else store
     additional_fields = additional_fields or {}
 
     # Get the cclib base task document
@@ -181,9 +183,9 @@ def summarize_cclib_opt_run(
         ]
         | None
     ) = None,
-    check_convergence: bool = _DEFAULT_SETTING,
+    check_convergence: bool | _DefaultSettingType = _DEFAULT_SETTING,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None = _DEFAULT_SETTING,
+    store: Store | None | _DefaultSettingType = _DEFAULT_SETTING,
 ) -> cclibASEOptSchema:
     """
     Merges the results of a cclib run with the results of an ASE optimizer run.
@@ -223,7 +225,7 @@ def summarize_cclib_opt_run(
         Dictionary representation of the task document
     """
     settings = get_settings()
-    store = settings.STORE if store is None else store
+    store = settings.STORE if store == _DEFAULT_SETTING else store
 
     final_atoms = get_final_atoms_from_dynamics(dyn)
     directory = Path(directory or final_atoms.calc.directory)
