@@ -79,6 +79,9 @@ def run_and_summarize(
             keyword_defaults += ["conv"]
         keyword_defaults = [k for k in keyword_defaults if k not in ["gwolf", "conp"]]
 
+    if option_defaults is None:
+        option_defaults = []
+
     option_defaults += [
         (
             f"output cif {GEOM_FILE_PBC}"

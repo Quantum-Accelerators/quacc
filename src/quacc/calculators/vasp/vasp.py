@@ -281,7 +281,7 @@ class Vasp(Vasp_):
 
     def _run(
         self,
-        command: list[str] | None = None,
+        command: str | None = None,
         out: Path | str | None = None,
         directory: Path | str | None = None,
     ) -> int:

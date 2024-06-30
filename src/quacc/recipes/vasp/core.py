@@ -291,11 +291,12 @@ def non_scf_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
         See the type-hint for the data structure.
     """
-    vasprun_path = zpath(Path(prev_dir, "vasprun.xml"))
+
+    vasprun_path = zpath(str(Path(prev_dir, "vasprun.xml")))
     vasprun = Vasprun(vasprun_path)
 
     prior_nbands = vasprun.parameters["NBANDS"]
-    calc_defaults = {
+    calc_defaults: dict[str, Any] = {
         "icharg": 11,
         "kspacing": None,
         "lcharg": False,
