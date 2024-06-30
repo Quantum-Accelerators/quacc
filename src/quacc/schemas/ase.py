@@ -36,10 +36,12 @@ if TYPE_CHECKING:
         VibThermoSchema,
     )
 
-    class _DefaultSettingType:
-        pass
 
-    _DEFAULT_SETTING = _DefaultSettingType()
+class _DefaultSettingType:
+    pass
+
+
+_DEFAULT_SETTING = _DefaultSettingType()
 
 
 def summarize_run(

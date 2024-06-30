@@ -37,10 +37,12 @@ if TYPE_CHECKING:
         VaspSchema,
     )
 
-    class _DefaultSettingType:
-        pass
 
-    _DEFAULT_SETTING = _DefaultSettingType()
+class _DefaultSettingType:
+    pass
+
+
+_DEFAULT_SETTING = _DefaultSettingType()
 
 
 logger = logging.getLogger(__name__)

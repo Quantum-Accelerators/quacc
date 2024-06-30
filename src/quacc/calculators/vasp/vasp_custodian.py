@@ -60,10 +60,12 @@ if TYPE_CHECKING:
         terminate_func: Callable | None  # default = None
         terminate_on_nonzero_returncode: bool  # default = False
 
-    class _DefaultSettingType:
-        pass
 
-    _DEFAULT_SETTING = _DefaultSettingType()
+class _DefaultSettingType:
+    pass
+
+
+_DEFAULT_SETTING = _DefaultSettingType()
 
 
 def run_custodian(

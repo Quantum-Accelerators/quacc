@@ -32,10 +32,12 @@ if TYPE_CHECKING:
         cclibSchema,
     )
 
-    class _DefaultSettingType:
-        pass
 
-    _DEFAULT_SETTING = _DefaultSettingType()
+class _DefaultSettingType:
+    pass
+
+
+_DEFAULT_SETTING = _DefaultSettingType()
 
 
 LOGGER = logging.getLogger(__name__)

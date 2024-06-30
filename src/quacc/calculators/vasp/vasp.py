@@ -30,10 +30,12 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    class _DefaultSettingType:
-        pass
 
-    _DEFAULT_SETTING = _DefaultSettingType()
+class _DefaultSettingType:
+    pass
+
+
+_DEFAULT_SETTING = _DefaultSettingType()
 
 
 class Vasp(Vasp_):

@@ -23,13 +23,15 @@ if TYPE_CHECKING:
 
     from quacc.schemas._aliases.phonons import PhononSchema
 
-    class _DefaultSettingType:
-        pass
-
-    _DEFAULT_SETTING = _DefaultSettingType()
-
     if has_phonopy:
         from phonopy import Phonopy
+
+
+class _DefaultSettingType:
+    pass
+
+
+_DEFAULT_SETTING = _DefaultSettingType()
 
 
 @requires(has_phonopy, "This schema relies on phonopy")
