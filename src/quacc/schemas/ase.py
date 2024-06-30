@@ -36,7 +36,10 @@ if TYPE_CHECKING:
         VibThermoSchema,
     )
 
-_DEFAULT_SETTING = ()
+    class _DefaultSettingType:
+        pass
+
+    _DEFAULT_SETTING = _DefaultSettingType()
 
 
 def summarize_run(
@@ -45,7 +48,7 @@ def summarize_run(
     charge_and_multiplicity: tuple[int, int] | None = None,
     move_magmoms: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None = _DEFAULT_SETTING,
+    store: Store | None | _DefaultSettingType = _DEFAULT_SETTING,
 ) -> RunSchema:
     """
     Get tabulated results from an Atoms object and calculator and store them in a
@@ -75,7 +78,7 @@ def summarize_run(
     """
     additional_fields = additional_fields or {}
     settings = get_settings()
-    store = settings.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store is None else store
 
     if not final_atoms.calc:
         msg = "ASE Atoms object has no attached calculator."
@@ -162,11 +165,9 @@ def summarize_opt_run(
     """
     settings = get_settings()
     check_convergence = (
-        settings.CHECK_CONVERGENCE
-        if check_convergence == _DEFAULT_SETTING
-        else check_convergence
+        settings.CHECK_CONVERGENCE if check_convergence is None else check_convergence
     )
-    store = settings.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store is None else store
     additional_fields = additional_fields or {}
 
     # Get trajectory
@@ -324,7 +325,7 @@ def summarize_vib_and_thermo(
         A dictionary that merges the `VibSchema` and `ThermoSchema`.
     """
     settings = get_settings()
-    store = settings.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store is None else store
 
     vib_task_doc = _summarize_vib_run(
         vib, charge_and_multiplicity=charge_and_multiplicity

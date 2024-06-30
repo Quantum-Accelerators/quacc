@@ -30,7 +30,10 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-_DEFAULT_SETTING = ()
+    class _DefaultSettingType:
+        pass
+
+    _DEFAULT_SETTING = _DefaultSettingType()
 
 
 class Vasp(Vasp_):
@@ -43,11 +46,12 @@ class Vasp(Vasp_):
         self,
         input_atoms: Atoms,
         preset: None | str = None,
-        use_custodian: bool = _DEFAULT_SETTING,
-        incar_copilot: Literal["off", "on", "aggressive"] = _DEFAULT_SETTING,
-        copy_magmoms: bool = _DEFAULT_SETTING,
-        preset_mag_default: float = _DEFAULT_SETTING,
-        mag_cutoff: float = _DEFAULT_SETTING,
+        use_custodian: bool | _DefaultSettingType = _DEFAULT_SETTING,
+        incar_copilot: Literal["off", "on", "aggressive"]
+        | _DefaultSettingType = _DEFAULT_SETTING,
+        copy_magmoms: bool | _DefaultSettingType = _DEFAULT_SETTING,
+        preset_mag_default: float | _DefaultSettingType = _DEFAULT_SETTING,
+        mag_cutoff: float | _DefaultSettingType = _DEFAULT_SETTING,
         elemental_magmoms: dict[str, float] | None = None,
         pmg_kpts: (
             dict[Literal["line_density", "kppvol", "kppa"], float]
@@ -112,28 +116,24 @@ class Vasp(Vasp_):
         # Set defaults
         use_custodian = (
             self._settings.VASP_USE_CUSTODIAN
-            if use_custodian == _DEFAULT_SETTING
+            if use_custodian is None
             else use_custodian
         )
         incar_copilot = (
             self._settings.VASP_INCAR_COPILOT
-            if incar_copilot == _DEFAULT_SETTING
+            if incar_copilot is None
             else incar_copilot
         )
         copy_magmoms = (
-            self._settings.VASP_COPY_MAGMOMS
-            if copy_magmoms == _DEFAULT_SETTING
-            else copy_magmoms
+            self._settings.VASP_COPY_MAGMOMS if copy_magmoms is None else copy_magmoms
         )
         preset_mag_default = (
             self._settings.VASP_PRESET_MAG_DEFAULT
-            if preset_mag_default == _DEFAULT_SETTING
+            if preset_mag_default is None
             else preset_mag_default
         )
         mag_cutoff = (
-            self._settings.VASP_MAG_CUTOFF
-            if mag_cutoff == _DEFAULT_SETTING
-            else mag_cutoff
+            self._settings.VASP_MAG_CUTOFF if mag_cutoff is None else mag_cutoff
         )
 
         # Assign variables to self

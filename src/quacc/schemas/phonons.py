@@ -23,10 +23,13 @@ if TYPE_CHECKING:
 
     from quacc.schemas._aliases.phonons import PhononSchema
 
+    class _DefaultSettingType:
+        pass
+
+    _DEFAULT_SETTING = _DefaultSettingType()
+
     if has_phonopy:
         from phonopy import Phonopy
-
-_DEFAULT_SETTING = ()
 
 
 @requires(has_phonopy, "This schema relies on phonopy")
@@ -36,7 +39,7 @@ def summarize_phonopy(
     directory: str | Path,
     parameters: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None = _DEFAULT_SETTING,
+    store: Store | None | _DefaultSettingType = _DEFAULT_SETTING,
 ) -> PhononSchema:
     """
     Summarize a Phonopy object.
@@ -63,7 +66,7 @@ def summarize_phonopy(
     """
     additional_fields = additional_fields or {}
     settings = get_settings()
-    store = settings.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store is None else store
 
     uri = get_uri(directory)
     directory = ":".join(uri.split(":")[1:])

@@ -32,9 +32,13 @@ if TYPE_CHECKING:
         cclibSchema,
     )
 
-LOGGER = logging.getLogger(__name__)
+    class _DefaultSettingType:
+        pass
 
-_DEFAULT_SETTING = ()
+    _DEFAULT_SETTING = _DefaultSettingType()
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 def cclib_summarize_run(
@@ -57,9 +61,9 @@ def cclib_summarize_run(
         ]
         | None
     ) = None,
-    check_convergence: bool = _DEFAULT_SETTING,
+    check_convergence: bool | _DefaultSettingType = _DEFAULT_SETTING,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None = _DEFAULT_SETTING,
+    store: Store | None | _DefaultSettingType = _DEFAULT_SETTING,
 ) -> cclibSchema:
     """
     Get tabulated results from a molecular DFT run and store them in a database-friendly
@@ -99,11 +103,9 @@ def cclib_summarize_run(
     settings = get_settings()
     directory = Path(directory or final_atoms.calc.directory)
     check_convergence = (
-        settings.CHECK_CONVERGENCE
-        if check_convergence == _DEFAULT_SETTING
-        else check_convergence
+        settings.CHECK_CONVERGENCE if check_convergence is None else check_convergence
     )
-    store = settings.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store is None else store
     additional_fields = additional_fields or {}
 
     # Get the cclib base task document
@@ -221,7 +223,7 @@ def summarize_cclib_opt_run(
         Dictionary representation of the task document
     """
     settings = get_settings()
-    store = settings.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store is None else store
 
     final_atoms = get_final_atoms_from_dynamics(dyn)
     directory = Path(directory or final_atoms.calc.directory)

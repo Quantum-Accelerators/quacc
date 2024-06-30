@@ -37,21 +37,25 @@ if TYPE_CHECKING:
         VaspSchema,
     )
 
-logger = logging.getLogger(__name__)
+    class _DefaultSettingType:
+        pass
 
-_DEFAULT_SETTING = ()
+    _DEFAULT_SETTING = _DefaultSettingType()
+
+
+logger = logging.getLogger(__name__)
 
 
 def vasp_summarize_run(
     final_atoms: Atoms,
     directory: str | Path | None = None,
     move_magmoms: bool = True,
-    run_bader: bool = _DEFAULT_SETTING,
-    run_chargemol: bool = _DEFAULT_SETTING,
-    check_convergence: bool = _DEFAULT_SETTING,
+    run_bader: bool | _DefaultSettingType = _DEFAULT_SETTING,
+    run_chargemol: bool | _DefaultSettingType = _DEFAULT_SETTING,
+    check_convergence: bool | _DefaultSettingType = _DEFAULT_SETTING,
     report_mp_corrections: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None = _DEFAULT_SETTING,
+    store: Store | None | _DefaultSettingType = _DEFAULT_SETTING,
 ) -> VaspSchema:
     """
     Get tabulated results from a VASP run and store them in a database-friendly format.
@@ -89,17 +93,13 @@ def vasp_summarize_run(
         Dictionary representation of the task document
     """
     settings = get_settings()
-    run_bader = settings.VASP_BADER if run_bader == _DEFAULT_SETTING else run_bader
-    run_chargemol = (
-        settings.VASP_CHARGEMOL if run_chargemol == _DEFAULT_SETTING else run_chargemol
-    )
+    run_bader = settings.VASP_BADER if run_bader is None else run_bader
+    run_chargemol = settings.VASP_CHARGEMOL if run_chargemol is None else run_chargemol
     check_convergence = (
-        settings.CHECK_CONVERGENCE
-        if check_convergence == _DEFAULT_SETTING
-        else check_convergence
+        settings.CHECK_CONVERGENCE if check_convergence is None else check_convergence
     )
     directory = Path(directory or final_atoms.calc.directory)
-    store = settings.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store is None else store
     additional_fields = additional_fields or {}
 
     # Fetch all tabulated results from VASP outputs files. Fortunately, emmet
@@ -220,7 +220,7 @@ def summarize_vasp_opt_run(
         Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`,
     """
     settings = get_settings()
-    store = settings.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store is None else store
 
     final_atoms = get_final_atoms_from_dynamics(optimizer)
     directory = Path(directory or final_atoms.calc.directory)

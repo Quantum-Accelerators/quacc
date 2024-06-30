@@ -61,18 +61,24 @@ if TYPE_CHECKING:
         terminate_on_nonzero_returncode: bool  # default = False
 
 
-_DEFAULT_SETTING = ()
+    class _DefaultSettingType:
+        pass
+
+
+    _DEFAULT_SETTING = _DefaultSettingType()
 
 
 def run_custodian(
-    vasp_parallel_cmd: str = _DEFAULT_SETTING,
-    vasp_cmd: str = _DEFAULT_SETTING,
-    vasp_gamma_cmd: str = _DEFAULT_SETTING,
-    vasp_custodian_max_errors: int = _DEFAULT_SETTING,
-    vasp_custodian_wall_time: float = _DEFAULT_SETTING,
-    vtst_fixes: bool = _DEFAULT_SETTING,
-    vasp_custodian_handlers: list[str] | None = _DEFAULT_SETTING,
-    vasp_custodian_validators: list[str] | None = _DEFAULT_SETTING,
+    vasp_parallel_cmd: str | _DefaultSettingType = _DEFAULT_SETTING,
+    vasp_cmd: str | _DefaultSettingType = _DEFAULT_SETTING,
+    vasp_gamma_cmd: str | _DefaultSettingType = _DEFAULT_SETTING,
+    vasp_custodian_max_errors: int | _DefaultSettingType = _DEFAULT_SETTING,
+    vasp_custodian_wall_time: float | _DefaultSettingType = _DEFAULT_SETTING,
+    vtst_fixes: bool | _DefaultSettingType = _DEFAULT_SETTING,
+    vasp_custodian_handlers: list[str] | None | _DefaultSettingType = _DEFAULT_SETTING,
+    vasp_custodian_validators: list[str]
+    | None
+    | _DefaultSettingType = _DEFAULT_SETTING,
     scratch_dir: str | None = None,
     directory: str | Path | None = None,
     vasp_job_kwargs: VaspJobKwargs | None = None,
@@ -121,37 +127,31 @@ def run_custodian(
 
     # Set defaults
     vasp_parallel_cmd = os.path.expandvars(
-        settings.VASP_PARALLEL_CMD
-        if vasp_parallel_cmd == _DEFAULT_SETTING
-        else vasp_parallel_cmd
+        settings.VASP_PARALLEL_CMD if vasp_parallel_cmd is None else vasp_parallel_cmd
     )
-    vasp_cmd = settings.VASP_CMD if vasp_cmd == _DEFAULT_SETTING else vasp_cmd
+    vasp_cmd = settings.VASP_CMD if vasp_cmd is None else vasp_cmd
     vasp_gamma_cmd = (
-        settings.VASP_GAMMA_CMD
-        if vasp_gamma_cmd == _DEFAULT_SETTING
-        else vasp_gamma_cmd
+        settings.VASP_GAMMA_CMD if vasp_gamma_cmd is None else vasp_gamma_cmd
     )
     vasp_custodian_max_errors = (
         settings.VASP_CUSTODIAN_MAX_ERRORS
-        if vasp_custodian_max_errors == _DEFAULT_SETTING
+        if vasp_custodian_max_errors is None
         else vasp_custodian_max_errors
     )
     vasp_custodian_wall_time = (
         settings.VASP_CUSTODIAN_WALL_TIME
-        if vasp_custodian_wall_time == _DEFAULT_SETTING
+        if vasp_custodian_wall_time is None
         else vasp_custodian_wall_time
     )
-    vtst_fixes = (
-        settings.VASP_CUSTODIAN_VTST if vtst_fixes == _DEFAULT_SETTING else vtst_fixes
-    )
+    vtst_fixes = settings.VASP_CUSTODIAN_VTST if vtst_fixes is None else vtst_fixes
     vasp_custodian_handlers = (
         settings.VASP_CUSTODIAN_HANDLERS
-        if vasp_custodian_handlers == _DEFAULT_SETTING
+        if vasp_custodian_handlers is None
         else vasp_custodian_handlers
     )
     vasp_custodian_validators = (
         settings.VASP_CUSTODIAN_VALIDATORS
-        if vasp_custodian_validators == _DEFAULT_SETTING
+        if vasp_custodian_validators is None
         else vasp_custodian_validators
     )
 

@@ -12,21 +12,24 @@ from quacc import get_settings
 if TYPE_CHECKING:
     from pathlib import Path
 
-has_ob = bool(find_spec("openbabel"))
+    class _DefaultSettingType:
+        pass
 
-_DEFAULT_SETTING = ()
+    _DEFAULT_SETTING = _DefaultSettingType()
+
+has_ob = bool(find_spec("openbabel"))
 
 
 @requires(
     has_ob, "Openbabel must be installed. Try conda install -c conda-forge openbabel"
 )
 def run_custodian(
-    qchem_cmd: str = _DEFAULT_SETTING,
-    qchem_cores: int = _DEFAULT_SETTING,
-    qchem_local_scratch: str | Path = _DEFAULT_SETTING,
-    qchem_use_error_handlers: bool = _DEFAULT_SETTING,
-    qchem_custodian_max_errors: int = _DEFAULT_SETTING,
-    qchem_nbo_exe: str | Path = _DEFAULT_SETTING,
+    qchem_cmd: str | _DefaultSettingType = _DEFAULT_SETTING,
+    qchem_cores: int | _DefaultSettingType = _DEFAULT_SETTING,
+    qchem_local_scratch: str | Path | _DefaultSettingType = _DEFAULT_SETTING,
+    qchem_use_error_handlers: bool | _DefaultSettingType = _DEFAULT_SETTING,
+    qchem_custodian_max_errors: int | _DefaultSettingType = _DEFAULT_SETTING,
+    qchem_nbo_exe: str | Path | _DefaultSettingType = _DEFAULT_SETTING,
     directory: str | Path | None = None,
 ) -> list[list[dict]]:
     """
