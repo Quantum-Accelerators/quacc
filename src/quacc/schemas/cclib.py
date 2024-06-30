@@ -38,8 +38,6 @@ class _DefaultSettingType:
 
 
 _DEFAULT_SETTING = _DefaultSettingType()
-
-
 LOGGER = logging.getLogger(__name__)
 
 
