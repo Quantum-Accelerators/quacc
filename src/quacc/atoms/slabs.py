@@ -271,9 +271,6 @@ def make_adsorbate_structures(
     if modes is None:
         modes = ["ontop", "bridge", "hollow"]
 
-    if modes not in ["ontop", "bridge", "hollow", "subsurface"]:
-        raise ValueError("Invalid mode. Must be ontop, bridge, hollow, or subsurface.")
-
     ads_site_finder_kwargs = ads_site_finder_kwargs or {}
     find_ads_sites_kwargs = find_ads_sites_kwargs or {}
 
