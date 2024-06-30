@@ -149,6 +149,10 @@ def terminate(tmpdir: Path, exception: Exception) -> None:
     exception
         The exception that caused the calculation to fail.
 
+    Returns
+    -------
+    None
+
     Raises
     -------
     Exception
