@@ -201,7 +201,7 @@ def make_slabs_from_bulk(
         # Add slab to list
         slabs_with_props.append(slab)
 
-    final_slabs = []
+    final_slabs: list[Atoms] = []
     if not slabs_with_props:
         return final_slabs
 
@@ -224,7 +224,7 @@ def make_adsorbate_structures(
     atoms: Atoms,
     adsorbate: Atoms,
     min_distance: float = 2.0,
-    modes: list[str] | None = None,
+    modes: list[Literal["ontop", "bridge", "hollow", "subsurface"]] | None = None,
     allowed_surface_symbols: list[str] | None = None,
     allowed_surface_indices: list[int] | None = None,
     ads_site_finder_kwargs: AdsSiteFinderKwargs | None = None,
@@ -282,7 +282,7 @@ def make_adsorbate_structures(
         msg = "Cannot specify both modes and find_ads_sites_kwargs['positions']"
         raise ValueError(msg)
     find_ads_sites_kwargs["distance"] = min_distance
-    find_ads_sites_kwargs["positions"] = [mode.lower() for mode in modes]
+    find_ads_sites_kwargs["positions"] = modes
 
     # Check the provided surface indices are reasonable
     atom_indices = [atom.index for atom in atoms]
