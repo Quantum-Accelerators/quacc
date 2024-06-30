@@ -125,23 +125,29 @@ def run_custodian(
 
     # Set defaults
     vasp_parallel_cmd = os.path.expandvars(
-        settings.VASP_PARALLEL_CMD if vasp_parallel_cmd is None else vasp_parallel_cmd
+        settings.VASP_PARALLEL_CMD
+        if vasp_parallel_cmd == _DEFAULT_SETTING
+        else vasp_parallel_cmd
     )
-    vasp_cmd = settings.VASP_CMD if vasp_cmd is None else vasp_cmd
+    vasp_cmd = settings.VASP_CMD if vasp_cmd == _DEFAULT_SETTING else vasp_cmd
     vasp_gamma_cmd = (
-        settings.VASP_GAMMA_CMD if vasp_gamma_cmd is None else vasp_gamma_cmd
+        settings.VASP_GAMMA_CMD
+        if vasp_gamma_cmd == _DEFAULT_SETTING
+        else vasp_gamma_cmd
     )
     vasp_custodian_max_errors = (
         settings.VASP_CUSTODIAN_MAX_ERRORS
-        if vasp_custodian_max_errors is None
+        if vasp_custodian_max_errors == _DEFAULT_SETTING
         else vasp_custodian_max_errors
     )
     vasp_custodian_wall_time = (
         settings.VASP_CUSTODIAN_WALL_TIME
-        if vasp_custodian_wall_time is None
+        if vasp_custodian_wall_time == _DEFAULT_SETTING
         else vasp_custodian_wall_time
     )
-    vtst_fixes = settings.VASP_CUSTODIAN_VTST if vtst_fixes is None else vtst_fixes
+    vtst_fixes = (
+        settings.VASP_CUSTODIAN_VTST if vtst_fixes == _DEFAULT_SETTING else vtst_fixes
+    )
     vasp_custodian_handlers = (
         settings.VASP_CUSTODIAN_HANDLERS
         if vasp_custodian_handlers is None
@@ -149,7 +155,7 @@ def run_custodian(
     )
     vasp_custodian_validators = (
         settings.VASP_CUSTODIAN_VALIDATORS
-        if vasp_custodian_validators is None
+        if vasp_custodian_validators == _DEFAULT_SETTING
         else vasp_custodian_validators
     )
 

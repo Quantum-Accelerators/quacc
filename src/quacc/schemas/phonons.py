@@ -66,7 +66,7 @@ def summarize_phonopy(
     """
     additional_fields = additional_fields or {}
     settings = get_settings()
-    store = settings.STORE if store is None else store
+    store = settings.STORE if store ==_DEFAULT_SETTING else store
 
     uri = get_uri(directory)
     directory = ":".join(uri.split(":")[1:])
