@@ -131,8 +131,8 @@ def vasp_summarize_run(
         raise RuntimeError(
             f"VASP calculation did not converge. Will not store task data. Refer to {directory}"
         )
-
-    initial_atoms = read(zpath(directory / "POSCAR"))
+    poscar_path = directory / "POSCAR"
+    initial_atoms = read(zpath(str(poscar_path)))
     base_task_doc = summarize_run(
         final_atoms, initial_atoms, move_magmoms=move_magmoms, store=None
     )

@@ -138,7 +138,7 @@ def calc_cleanup(
         symlink_path.unlink(missing_ok=True)
 
 
-def terminate(tmpdir: Path | str, exception: Exception) -> Exception:
+def terminate(tmpdir: Path | str, exception: Exception) -> None:
     """
     Terminate a calculation and move files to a failed directory.
 
@@ -149,11 +149,16 @@ def terminate(tmpdir: Path | str, exception: Exception) -> Exception:
     exception
         The exception that caused the calculation to fail.
 
+    Returns
+    -------
+    None
+
     Raises
     -------
     Exception
         The exception that caused the calculation to fail.
     """
+    tmpdir = Path(tmpdir)
     settings = get_settings()
     job_failed_dir = tmpdir.with_name(tmpdir.name.replace("tmp-", "failed-"))
     tmpdir.rename(job_failed_dir)
