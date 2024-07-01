@@ -533,11 +533,6 @@ if TYPE_CHECKING:
         parameters_vib: ParametersVib | None
         results: VibResults
 
-    class PhononSchema(RunSchema):
-        """Schema for [quacc.schemas.phonons.summarize_phonopy][]"""
-
-        force_constant: NDArray
-
     class ParametersThermo(TypedDict):
         # ASE units
         temperature: float
