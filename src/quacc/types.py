@@ -6,6 +6,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+
+class DefaultSetting:
+    """
+    Type hint for when a default setting will be applied
+    """
+
 if TYPE_CHECKING:
     from datetime import datetime
     from pathlib import Path
@@ -32,11 +38,6 @@ if TYPE_CHECKING:
     Filenames = Union[str, Path, list[Union[str, Path]]]
     SourceDirectory = Union[str, Path]
 
-
-    class DefaultSetting:
-        """
-        Type hint for when a default setting will be applied
-        """
 
 
     class PmgKpts(TypedDict, total=False):
