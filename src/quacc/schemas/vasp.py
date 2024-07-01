@@ -17,7 +17,7 @@ from pymatgen.entries.compatibility import (
     MaterialsProject2020Compatibility,
 )
 
-from quacc import get_settings
+from quacc import QuaccDefault, get_settings
 from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import finalize_dict, recursive_dict_merge
@@ -36,13 +36,8 @@ if TYPE_CHECKING:
         VaspASEOptSchema,
         VaspSchema,
     )
+    from quacc.types import DefaultSetting
 
-
-class _DefaultSettingType:
-    pass
-
-
-_DEFAULT_SETTING = _DefaultSettingType()
 
 
 logger = logging.getLogger(__name__)
@@ -52,12 +47,12 @@ def vasp_summarize_run(
     final_atoms: Atoms,
     directory: str | Path | None = None,
     move_magmoms: bool = True,
-    run_bader: bool | _DefaultSettingType = _DEFAULT_SETTING,
-    run_chargemol: bool | _DefaultSettingType = _DEFAULT_SETTING,
-    check_convergence: bool | _DefaultSettingType = _DEFAULT_SETTING,
+    run_bader: bool | DefaultSetting = QuaccDefault,
+    run_chargemol: bool | DefaultSetting = QuaccDefault,
+    check_convergence: bool | DefaultSetting = QuaccDefault,
     report_mp_corrections: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None | _DefaultSettingType = _DEFAULT_SETTING,
+    store: Store | None | DefaultSetting = QuaccDefault,
 ) -> VaspSchema:
     """
     Get tabulated results from a VASP run and store them in a database-friendly format.
@@ -95,17 +90,17 @@ def vasp_summarize_run(
         Dictionary representation of the task document
     """
     settings = get_settings()
-    run_bader = settings.VASP_BADER if run_bader == _DEFAULT_SETTING else run_bader
+    run_bader = settings.VASP_BADER if run_bader == QuaccDefault else run_bader
     run_chargemol = (
-        settings.VASP_CHARGEMOL if run_chargemol == _DEFAULT_SETTING else run_chargemol
+        settings.VASP_CHARGEMOL if run_chargemol == QuaccDefault else run_chargemol
     )
     check_convergence = (
         settings.CHECK_CONVERGENCE
-        if check_convergence == _DEFAULT_SETTING
+        if check_convergence == QuaccDefault
         else check_convergence
     )
     directory = Path(directory or final_atoms.calc.directory)
-    store = settings.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store == QuaccDefault else store
     additional_fields = additional_fields or {}
 
     # Fetch all tabulated results from VASP outputs files. Fortunately, emmet
@@ -184,12 +179,12 @@ def summarize_vasp_opt_run(
     trajectory: Trajectory | list[Atoms] | None = None,
     directory: str | Path | None = None,
     move_magmoms: bool = True,
-    run_bader: bool | _DefaultSettingType = _DEFAULT_SETTING,
-    run_chargemol: bool | _DefaultSettingType = _DEFAULT_SETTING,
-    check_convergence: bool | _DefaultSettingType = _DEFAULT_SETTING,
+    run_bader: bool | DefaultSetting = QuaccDefault,
+    run_chargemol: bool | DefaultSetting = QuaccDefault,
+    check_convergence: bool | DefaultSetting = QuaccDefault,
     report_mp_corrections: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None | _DefaultSettingType = _DEFAULT_SETTING,
+    store: Store | None | DefaultSetting = QuaccDefault,
 ) -> VaspASEOptSchema:
     """
     Merges the `vasp_summarize_run` with an `summarize_opt_run`, meant to
@@ -226,7 +221,7 @@ def summarize_vasp_opt_run(
         Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`,
     """
     settings = get_settings()
-    store = settings.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store == QuaccDefault else store
 
     final_atoms = get_final_atoms_from_dynamics(optimizer)
     directory = Path(directory or final_atoms.calc.directory)
