@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
     from quacc.runners.ase import OptParams
     from quacc.schemas._aliases.ase import OptSchema, RunSchema
-    from quacc.utils.files import Filenames, SourceDirectory
+    from quacc.types import Filenames, SourceDirectory
 
 _BASE_SET = {
     "rem": {

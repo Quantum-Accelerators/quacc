@@ -15,33 +15,11 @@ from pymatgen.io.ase import AseAtomsAdaptor
 from quacc.atoms.core import copy_atoms
 
 if TYPE_CHECKING:
-    from typing import Literal, TypedDict
+    from typing import Literal
 
     from ase.atoms import Atoms
-    from numpy.typing import ArrayLike
 
-    class AdsSiteFinderKwargs(TypedDict, total=False):
-        """
-        Type hint for `ads_site_finder_kwargs` in [quacc.atoms.slabs.make_adsorbate_structures][].
-        """
-
-        selective_dynamics: bool  # default = False
-        height: float  # default = 0.9
-        mi_vec: ArrayLike | None  # default = None
-
-    class FindAdsSitesKwargs(TypedDict, total=False):
-        """
-        Type hint for `find_ads_sites_kwargs` in [quacc.atoms.slabs.make_adsorbate_structures][].
-        """
-
-        distance: float  # default = 2.0
-        put_inside: bool  # default = True
-        symm_reduce: float  # default = 1e-2
-        near_reduce: float  # default = 1e-2
-        positions: list[
-            Literal["ontop", "bridge", "hollow", "subsurface"]
-        ]  # default: ["ontop", "bridge", "hollow"]
-        no_obtuse_hollow: bool  # default = True
+    from quacc.types import AdsSiteFinderKwargs, FindAdsSitesKwargs
 
 
 logger = logging.getLogger(__name__)

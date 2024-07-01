@@ -16,7 +16,7 @@ from quacc.utils.files import copy_decompress_files, make_unique_dir
 if TYPE_CHECKING:
     from ase.atoms import Atoms
 
-    from quacc.utils.files import Filenames, SourceDirectory
+    from quacc.types import Filenames, SourceDirectory
 
 logger = logging.getLogger(__name__)
 

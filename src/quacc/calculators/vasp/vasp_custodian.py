@@ -28,39 +28,8 @@ from quacc import QuaccDefault, get_settings
 
 if TYPE_CHECKING:
     from pathlib import Path
-    from typing import Callable, TypedDict
 
-    from quacc.types import DefaultSetting
-
-    class VaspJobKwargs(TypedDict, total=False):
-        """
-        Type hint for `vasp_job_kwargs` in in [quacc.calculators.vasp.vasp_custodian.run_custodian][].
-        """
-
-        output_file: str  # default = "vasp.out"
-        stderr_file: str  # default = "std_err.txt"
-        suffix: str  # default = ""
-        final: bool  # default = True
-        backup: bool  # default = True
-        auto_npar: bool  # default = False
-        auto_gamma: bool  # default = True
-        settings_override: dict | None  # default = None
-        copy_magmom: bool  # default = False
-        auto_continue: bool  # default = False
-
-    class CustodianKwargs(TypedDict, total=False):
-        """
-        Type hint for `custodian_kwargs` in [quacc.calculators.vasp.vasp_custodian.run_custodian][].
-        """
-
-        max_errors_per_job: int | None  # default = None
-        polling_time_step: int  # default = 10
-        monitor_freq: int  # default = 10
-        skip_over_errors: bool  # default = False
-        gzipped_output: bool  # default = False
-        checkpoint: bool  # default = False
-        terminate_func: Callable | None  # default = None
-        terminate_on_nonzero_returncode: bool  # default = False
+    from quacc.types import DefaultSetting, VaspCustodianKwargs, VaspJobKwargs
 
 
 def run_custodian(
@@ -75,7 +44,7 @@ def run_custodian(
     scratch_dir: str | None = None,
     directory: str | Path | None = None,
     vasp_job_kwargs: VaspJobKwargs | None = None,
-    custodian_kwargs: CustodianKwargs | None = None,
+    custodian_kwargs: VaspCustodianKwargs | None = None,
 ) -> list[list[dict]]:
     """
     Function to run VASP Custodian.

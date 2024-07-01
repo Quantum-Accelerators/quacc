@@ -11,21 +11,11 @@ from quacc.calculators.qchem.params import cleanup_attrs, make_qc_input
 from quacc.calculators.qchem.qchem_custodian import run_custodian
 
 if TYPE_CHECKING:
-    from typing import Any, ClassVar, Literal, TypedDict
+    from typing import Any, ClassVar, Literal
 
     from ase.atoms import Atoms
-    from numpy.typing import NDArray
 
-    class Results(TypedDict, total=False):
-        """
-        Type hint for the `results` attribute in [quacc.calculators.qchem.qchem.QChem][].
-        """
-
-        energy: float  # electronic energy in eV
-        forces: NDArray  # forces in eV/A
-        hessian: NDArray  # Hessian in eV/A^2/amu
-        taskdoc: dict[str, Any]  # Output from `emmet.core.qc_tasks.TaskDoc`
-
+    from quacc.types import QchemResults
 
 class QChem(FileIOCalculator):
     """Custom Q-Chem calculator built on Pymatgen and Custodian."""
@@ -36,7 +26,7 @@ class QChem(FileIOCalculator):
         "hessian",
         "taskdoc",
     ]
-    results: ClassVar[Results] = {}
+    results: ClassVar[QchemResults] = {}
 
     def __init__(
         self,

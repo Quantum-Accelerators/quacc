@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
     from quacc.runners.ase import OptParams
     from quacc.schemas._aliases.cclib import cclibASEOptSchema, cclibSchema
-    from quacc.utils.files import Filenames, SourceDirectory
+    from quacc.types import Filenames, SourceDirectory
 
 _LABEL = OrcaTemplate()._label  # skipcq: PYL-W0212
 LOG_FILE = f"{_LABEL}.out"
