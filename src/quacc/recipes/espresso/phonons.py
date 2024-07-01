@@ -23,6 +23,7 @@ from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:
+    from collections import UserDict
     from typing import Any, Callable
 
     from ase.atoms import Atoms
@@ -370,7 +371,7 @@ def grid_phonon_flow(
 
     @subflow
     def _grid_phonon_subflow(
-        ph_input_data: dict | None,
+        ph_input_data: UserDict | None,
         ph_init_job_results: RunSchema,
         ph_job: Job,
         nblocks: int = 1,
@@ -420,6 +421,7 @@ def grid_phonon_flow(
 
         return grid_results
 
+    job_params = job_params or {}
     default_job_params = {
         "relax_job": {
             "input_data": {
