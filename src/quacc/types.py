@@ -248,6 +248,11 @@ if TYPE_CHECKING:
 
     # ----------- Atoms (skzcam) handling type hints -----------
 
+    class SKZCAMOutput(TypedDict):
+        adsorbate_slab_embedded_cluster: Atoms
+        quantum_cluster_indices_set: list[list[int]]
+        ecp_region_indices_set: list[list[int]]
+
     class ElementInfo(TypedDict):
         core: int
         basis: str

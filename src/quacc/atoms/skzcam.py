@@ -16,14 +16,14 @@ from monty.os.path import zpath
 if TYPE_CHECKING:
     from ase.atom import Atom
     from numpy.typing import NDArray
-    from typing import TypedDict
 
-    class SKZCAMOutput(TypedDict):
-        adsorbate_slab_embedded_cluster: Atoms
-        quantum_cluster_indices_set: list[list[int]]
-        ecp_region_indices_set: list[list[int]]
-
-    from quacc.types import BlockInfo, ElementInfo, ElementStr, MultiplicityDict
+    from quacc.types import (
+        BlockInfo,
+        ElementInfo,
+        ElementStr,
+        MultiplicityDict,
+        SKZCAMOutput,
+    )
 
 
 has_chemshell = find_spec("chemsh") is not None
