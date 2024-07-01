@@ -810,6 +810,7 @@ class OptParams(TypedDict, total=False):
     fn_hook: Callable | None
     run_kwargs: dict[str, Any] | None
 
+
 class MDParams(TypedDict, total=False):
     """
     Type hint for `md_params` used throughout quacc.
@@ -822,6 +823,7 @@ class MDParams(TypedDict, total=False):
     set_com_stationary: bool
     set_zero_rotation: bool
 
+
 class VibKwargs(TypedDict, total=False):
     """
     Type hint for `vib_kwargs` in [quacc.runners.ase.Runner.run_vib][].
@@ -830,6 +832,7 @@ class VibKwargs(TypedDict, total=False):
     indices: list[int] | None
     delta: float
     nfree: int
+
 
 class MaxwellBoltzmanDistributionKwargs(TypedDict, total=False):
     """
