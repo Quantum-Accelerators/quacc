@@ -10,7 +10,7 @@ from ase.io import read
 from ase.vibrations import Vibrations
 from ase.vibrations.data import VibrationsData
 
-from quacc import __version__, get_settings
+from quacc import QuaccDefault, __version__, get_settings
 from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.schemas.prep import prep_next_run
@@ -22,19 +22,20 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
     from ase.io import Trajectory
+    from ase.md.md import MolecularDynamics
     from ase.optimize.optimize import Optimizer
     from ase.thermochemistry import IdealGasThermo
     from maggma.core import Store
 
-    from quacc.schemas._aliases.ase import (
+    from quacc.types import (
+        DefaultSetting,
+        DynSchema,
         OptSchema,
         RunSchema,
         ThermoSchema,
         VibSchema,
         VibThermoSchema,
     )
-
-_DEFAULT_SETTING = ()
 
 
 def summarize_run(
@@ -43,7 +44,7 @@ def summarize_run(
     charge_and_multiplicity: tuple[int, int] | None = None,
     move_magmoms: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None = _DEFAULT_SETTING,
+    store: Store | None | DefaultSetting = QuaccDefault,
 ) -> RunSchema:
     """
     Get tabulated results from an Atoms object and calculator and store them in a
@@ -73,7 +74,7 @@ def summarize_run(
     """
     additional_fields = additional_fields or {}
     settings = get_settings()
-    store = settings.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store == QuaccDefault else store
 
     if not final_atoms.calc:
         msg = "ASE Atoms object has no attached calculator."
@@ -122,11 +123,11 @@ def summarize_run(
 def summarize_opt_run(
     dyn: Optimizer,
     trajectory: Trajectory | list[Atoms] | None = None,
-    check_convergence: bool = _DEFAULT_SETTING,
+    check_convergence: bool | DefaultSetting = QuaccDefault,
     charge_and_multiplicity: tuple[int, int] | None = None,
     move_magmoms: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None = _DEFAULT_SETTING,
+    store: Store | None | DefaultSetting = QuaccDefault,
 ) -> OptSchema:
     """
     Get tabulated results from an ASE Atoms trajectory and store them in a database-
@@ -161,18 +162,16 @@ def summarize_opt_run(
     settings = get_settings()
     check_convergence = (
         settings.CHECK_CONVERGENCE
-        if check_convergence == _DEFAULT_SETTING
+        if check_convergence == QuaccDefault
         else check_convergence
     )
-    store = settings.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store == QuaccDefault else store
     additional_fields = additional_fields or {}
 
     # Get trajectory
     if not trajectory:
         trajectory = read(dyn.trajectory.filename, index=":")
     trajectory_results = [atoms.calc.results for atoms in trajectory]
-    for traj_atoms in trajectory:
-        traj_atoms.calc = None
 
     initial_atoms = trajectory[0]
     final_atoms = get_final_atoms_from_dynamics(dyn)
@@ -213,6 +212,80 @@ def summarize_opt_run(
     )
 
 
+def summarize_md_run(
+    dyn: MolecularDynamics,
+    trajectory: Trajectory | list[Atoms] | None = None,
+    charge_and_multiplicity: tuple[int, int] | None = None,
+    move_magmoms: bool = True,
+    additional_fields: dict[str, Any] | None = None,
+    store: Store | bool | None = None,
+) -> DynSchema:
+    """
+    Get tabulated results from an ASE Atoms trajectory and store them in a database-
+    friendly format. This is meant to be compatible with all calculator types.
+
+    Parameters
+    ----------
+    dyn
+        ASE MolecularDynamics object.
+    trajectory
+        ASE Trajectory object or list[Atoms] from reading a trajectory file. If
+        None, the trajectory must be found in `dyn.trajectory.filename`.
+    charge_and_multiplicity
+        Charge and spin multiplicity of the Atoms object, only used for Molecule
+        metadata.
+    move_magmoms
+        Whether to move the final magmoms of the original Atoms object to the
+        initial magmoms of the returned Atoms object.
+    additional_fields
+        Additional fields to add to the task document.
+    store
+        Maggma Store object to store the results in. If None,
+        `QuaccSettings.STORE` will be used.
+
+    Returns
+    -------
+    DynSchema
+        Dictionary representation of the task document
+    """
+    settings = get_settings()
+    base_task_doc = summarize_opt_run(
+        dyn,
+        trajectory=trajectory,
+        check_convergence=False,
+        charge_and_multiplicity=charge_and_multiplicity,
+        move_magmoms=move_magmoms,
+        store=None,
+    )
+    del base_task_doc["converged"]
+
+    # Clean up the opt parameters
+    parameters_md = base_task_doc.pop("parameters_opt")
+    parameters_md.pop("logfile", None)
+
+    trajectory_log = []
+    for t, atoms in enumerate(base_task_doc["trajectory"]):
+        trajectory_log.append(
+            {
+                "kinetic_energy": atoms.get_kinetic_energy(),
+                "temperature": atoms.get_temperature(),
+                "time": t * parameters_md["timestep"],
+            }
+        )
+
+    md_fields = {"parameters_md": parameters_md, "trajectory_log": trajectory_log}
+
+    # Create a dictionary of the inputs/outputs
+    unsorted_task_doc = base_task_doc | md_fields | additional_fields
+
+    return finalize_dict(
+        unsorted_task_doc,
+        base_task_doc["dir_name"],
+        gzip_file=settings.GZIP_FILES,
+        store=store,
+    )
+
+
 def summarize_vib_and_thermo(
     vib: Vibrations,
     igt: IdealGasThermo,
@@ -220,7 +293,7 @@ def summarize_vib_and_thermo(
     pressure: float = 1.0,
     charge_and_multiplicity: tuple[int, int] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None = _DEFAULT_SETTING,
+    store: Store | None = QuaccDefault,
 ) -> VibThermoSchema:
     """
     Get tabulated results from an ASE Vibrations run and ASE IdealGasThermo object and
@@ -250,7 +323,7 @@ def summarize_vib_and_thermo(
         A dictionary that merges the `VibSchema` and `ThermoSchema`.
     """
     settings = get_settings()
-    store = settings.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store == QuaccDefault else store
 
     vib_task_doc = _summarize_vib_run(
         vib, charge_and_multiplicity=charge_and_multiplicity

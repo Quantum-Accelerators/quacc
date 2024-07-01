@@ -12,8 +12,7 @@ from quacc.recipes.gaussian._base import run_and_summarize
 if TYPE_CHECKING:
     from ase.atoms import Atoms
 
-    from quacc.schemas._aliases.cclib import cclibSchema
-    from quacc.utils.files import Filenames, SourceDirectory
+    from quacc.types import Filenames, SourceDirectory, cclibSchema
 
 
 @job

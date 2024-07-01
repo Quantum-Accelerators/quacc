@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from typing import Any
 
     from quacc import Job
-    from quacc.schemas._aliases.phonons import PhononSchema
+    from quacc.types import PhononSchema
 
 
 @subflow
