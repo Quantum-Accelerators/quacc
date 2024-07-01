@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.utils.files import Filenames, SourceDirectory
+    from quacc.types import Filenames, SourceDirectory
 
 LOGGER = logging.getLogger(__name__)
 

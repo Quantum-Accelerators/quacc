@@ -10,19 +10,9 @@ from pymatgen.io.vasp.inputs import Kpoints
 from pymatgen.symmetry.bandstructure import HighSymmKpath
 
 if TYPE_CHECKING:
-    from typing import TypedDict
-
     from ase.atoms import Atoms
 
-    class PmgKpts(TypedDict, total=False):
-        """
-        Type hint for `pmg_kpts` in [quacc.utils.kpts.convert_pmg_kpts][].
-        """
-
-        line_density: float
-        kppvol: float
-        kppa: float
-        length_densities: tuple[float, float, float]
+    from quacc.types import PmgKpts
 
 
 def convert_pmg_kpts(

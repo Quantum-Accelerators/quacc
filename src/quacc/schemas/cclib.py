@@ -12,7 +12,7 @@ import cclib
 from ase.atoms import Atoms
 from cclib.io import ccread
 
-from quacc import get_settings
+from quacc import QuaccDefault, get_settings
 from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import finalize_dict, recursive_dict_merge
@@ -25,16 +25,16 @@ if TYPE_CHECKING:
     from ase.optimize.optimize import Optimizer
     from maggma.core import Store
 
-    from quacc.schemas._aliases.cclib import (
+    from quacc.types import (
+        DefaultSetting,
         PopAnalysisAttributes,
         cclibASEOptSchema,
         cclibBaseSchema,
         cclibSchema,
     )
 
-LOGGER = logging.getLogger(__name__)
 
-_DEFAULT_SETTING = ()
+LOGGER = logging.getLogger(__name__)
 
 
 def cclib_summarize_run(
@@ -57,9 +57,9 @@ def cclib_summarize_run(
         ]
         | None
     ) = None,
-    check_convergence: bool = _DEFAULT_SETTING,
+    check_convergence: bool | DefaultSetting = QuaccDefault,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None = _DEFAULT_SETTING,
+    store: Store | None | DefaultSetting = QuaccDefault,
 ) -> cclibSchema:
     """
     Get tabulated results from a molecular DFT run and store them in a database-friendly
@@ -100,10 +100,10 @@ def cclib_summarize_run(
     directory = Path(directory or final_atoms.calc.directory)
     check_convergence = (
         settings.CHECK_CONVERGENCE
-        if check_convergence == _DEFAULT_SETTING
+        if check_convergence == QuaccDefault
         else check_convergence
     )
-    store = settings.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store == QuaccDefault else store
     additional_fields = additional_fields or {}
 
     # Get the cclib base task document
@@ -179,9 +179,9 @@ def summarize_cclib_opt_run(
         ]
         | None
     ) = None,
-    check_convergence: bool = _DEFAULT_SETTING,
+    check_convergence: bool | DefaultSetting = QuaccDefault,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None = _DEFAULT_SETTING,
+    store: Store | None | DefaultSetting = QuaccDefault,
 ) -> cclibASEOptSchema:
     """
     Merges the results of a cclib run with the results of an ASE optimizer run.
@@ -221,7 +221,7 @@ def summarize_cclib_opt_run(
         Dictionary representation of the task document
     """
     settings = get_settings()
-    store = settings.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store == QuaccDefault else store
 
     final_atoms = get_final_atoms_from_dynamics(dyn)
     directory = Path(directory or final_atoms.calc.directory)

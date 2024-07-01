@@ -57,8 +57,12 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.schemas._aliases.vasp import MPRelaxFlowSchema, VaspSchema
-    from quacc.utils.files import SourceDirectory
+    from quacc.types import (
+        MPGGARelaxFlowSchema,
+        MPMetaGGARelaxFlowSchema,
+        SourceDirectory,
+        VaspSchema,
+    )
 
 _MP_SETTINGS = {"VASP_INCAR_COPILOT": "off", "VASP_USE_CUSTODIAN": True}
 

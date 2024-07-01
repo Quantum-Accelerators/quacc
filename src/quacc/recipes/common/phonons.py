@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc import Job
-    from quacc.schemas._aliases.phonons import PhononSchema
+    from quacc.types import PhononSchema
 
     if has_phonopy:
         from phonopy import Phonopy
