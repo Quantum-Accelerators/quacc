@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
     from quacc.runners.ase import MDParams
     from quacc.schemas._aliases.ase import DynSchema
-    from quacc.utils.files import Filenames, SourceDirectory
+    from quacc.types import Filenames, SourceDirectory
 
 
 @job

@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
     from quacc.schemas._aliases.ase import OptSchema
     from quacc.schemas._aliases.vasp import QMOFRelaxSchema, VaspSchema
-    from quacc.utils.files import Filenames, SourceDirectory
+    from quacc.types import Filenames, SourceDirectory
 
 LOGGER = logging.getLogger(__name__)
 

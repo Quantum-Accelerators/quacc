@@ -24,7 +24,7 @@ if TYPE_CHECKING:
         VaspASEOptSchema,
         VaspSchema,
     )
-    from quacc.utils.files import Filenames, SourceDirectory
+    from quacc.types import Filenames, SourceDirectory
 
 
 @job

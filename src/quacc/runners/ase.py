@@ -42,9 +42,9 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from ase.calculators.calculator import Calculator
     from ase.optimize.optimize import Dynamics
-    from np.random import Generator
+    from numpy.random import Generator
 
-    from quacc.utils.files import Filenames, SourceDirectory
+    from quacc.types import Filenames, SourceDirectory
 
     class OptParams(TypedDict, total=False):
         """

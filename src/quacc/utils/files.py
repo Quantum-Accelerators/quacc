@@ -21,8 +21,7 @@ from ruamel.yaml import YAML
 if TYPE_CHECKING:
     from typing import Any
 
-    Filenames = str | Path | list[str | Path]
-    SourceDirectory = str | Path
+    from quacc.types import Filenames, SourceDirectory
 
 
 logger = logging.getLogger(__name__)
