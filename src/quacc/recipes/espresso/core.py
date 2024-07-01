@@ -17,7 +17,6 @@ if TYPE_CHECKING:
 
     from quacc.types import Filenames, OptParams, RunSchema, SourceDirectory
 
-
 BASE_SET_METAL: BaseSet = {
     "input_data": {
         "system": {"occupations": "smearing", "smearing": "cold", "degauss": 0.01},
@@ -88,7 +87,6 @@ def static_job(
     is_metal = check_is_metal(atoms)
 
     calc_defaults = BASE_SET_METAL if is_metal else BASE_SET_NON_METAL
-
     calc_defaults["input_data"]["control"] = {"calculation": "scf"}
 
     return run_and_summarize(
