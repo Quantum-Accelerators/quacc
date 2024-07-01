@@ -101,7 +101,6 @@ if TYPE_CHECKING:
 
     # ----------- Atoms handling type hints -----------
 
-
     ElementStr = Literal[
         "H",
         "He",
