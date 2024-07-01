@@ -22,14 +22,14 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.runners.ase import OptParams, VibKwargs
-    from quacc.schemas._aliases.ase import VibThermoSchema
-    from quacc.schemas._aliases.vasp import (
+    from quacc.types import (
         DoubleRelaxSchema,
+        Filenames,
+        OptParams,
+        SourceDirectory,
         VaspASEOptSchema,
-        VaspSchema,
+        VaspSchema,VibThermoSchema,VibKwargs
     )
-    from quacc.utils.files import Filenames, SourceDirectory
 
 
 @job
@@ -115,7 +115,7 @@ def relax_job(
     """
     if relax_cell:
         warn(
-            "The `relax_cell` parameter will default to `False` by default in a future version for internal consistency throughout quacc.",
+            "The `relax_cell` parameter will default to `False` by default in a future version for internal consistency throughout quacc. Please set `relax_cell=True` directly.",
             DeprecationWarning,
             stacklevel=3,
         )
@@ -233,7 +233,7 @@ def ase_relax_job(
     """
     if relax_cell:
         warn(
-            "The `relax_cell` parameter will default to `False` by default in a future version for internal consistency throughout quacc.",
+            "The `relax_cell` parameter will default to `False` by default in a future version for internal consistency throughout quacc. Please set `relax_cell=True` directly.",
             DeprecationWarning,
             stacklevel=3,
         )
@@ -296,11 +296,12 @@ def non_scf_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
         See the type-hint for the data structure.
     """
-    vasprun_path = zpath(Path(prev_dir, "vasprun.xml"))
+
+    vasprun_path = zpath(str(Path(prev_dir, "vasprun.xml")))
     vasprun = Vasprun(vasprun_path)
 
     prior_nbands = vasprun.parameters["NBANDS"]
-    calc_defaults = {
+    calc_defaults: dict[str, Any] = {
         "icharg": 11,
         "kspacing": None,
         "lcharg": False,

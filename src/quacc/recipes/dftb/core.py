@@ -12,8 +12,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.schemas._aliases.ase import RunSchema
-    from quacc.utils.files import Filenames, SourceDirectory
+    from quacc.types import Filenames, RunSchema, SourceDirectory
 
 
 @job

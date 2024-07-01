@@ -16,10 +16,13 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.runners.ase import OptParams
-    from quacc.schemas._aliases.ase import VibThermoSchema
-    from quacc.schemas._aliases.vasp import VaspASEOptSchema, VaspSchema
-    from quacc.utils.files import Filenames, SourceDirectory
+    from quacc.types import (
+        Filenames,
+        OptParams,
+        SourceDirectory,
+        VaspASEOptSchema,
+        VaspSchema,VibThermoSchema,
+    )
 
 
 def run_and_summarize(

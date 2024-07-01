@@ -27,9 +27,7 @@ if TYPE_CHECKING:
 
     from ase.calculators.genericfileio import GenericFileIOCalculator
 
-    from quacc.runners.ase import OptParams
-    from quacc.schemas._aliases.ase import RunSchema
-    from quacc.utils.files import Filenames, SourceDirectory
+    from quacc.types import Filenames, OptParams, RunSchema, SourceDirectory
 
 
 def run_and_summarize(

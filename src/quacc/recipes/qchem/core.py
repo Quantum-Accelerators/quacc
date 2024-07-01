@@ -17,9 +17,7 @@ if has_sella:
 if TYPE_CHECKING:
     from ase.atoms import Atoms
 
-    from quacc.runners.ase import OptParams
-    from quacc.schemas._aliases.ase import OptSchema, RunSchema
-    from quacc.utils.files import Filenames, SourceDirectory
+    from quacc.types import Filenames, OptParams, OptSchema, RunSchema, SourceDirectory
 
 _BASE_SET = {
     "rem": {

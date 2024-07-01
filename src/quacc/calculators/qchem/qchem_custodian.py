@@ -7,26 +7,27 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
-from quacc import get_settings
+from quacc import QuaccDefault, get_settings
 
 if TYPE_CHECKING:
     from pathlib import Path
 
-has_ob = bool(find_spec("openbabel"))
+    from quacc.types import DefaultSetting
 
-_DEFAULT_SETTING = ()
+
+has_ob = bool(find_spec("openbabel"))
 
 
 @requires(
     has_ob, "Openbabel must be installed. Try conda install -c conda-forge openbabel"
 )
 def run_custodian(
-    qchem_cmd: str = _DEFAULT_SETTING,
-    qchem_cores: int = _DEFAULT_SETTING,
-    qchem_local_scratch: str | Path = _DEFAULT_SETTING,
-    qchem_use_error_handlers: bool = _DEFAULT_SETTING,
-    qchem_custodian_max_errors: int = _DEFAULT_SETTING,
-    qchem_nbo_exe: str | Path = _DEFAULT_SETTING,
+    qchem_cmd: str | DefaultSetting = QuaccDefault,
+    qchem_cores: int | DefaultSetting = QuaccDefault,
+    qchem_local_scratch: str | Path | DefaultSetting = QuaccDefault,
+    qchem_use_error_handlers: bool | DefaultSetting = QuaccDefault,
+    qchem_custodian_max_errors: int | DefaultSetting = QuaccDefault,
+    qchem_nbo_exe: str | Path | DefaultSetting = QuaccDefault,
     directory: str | Path | None = None,
 ) -> list[list[dict]]:
     """
@@ -65,26 +66,26 @@ def run_custodian(
 
     # Set defaults
     qchem_cores = (
-        settings.QCHEM_NUM_CORES if qchem_cores == _DEFAULT_SETTING else qchem_cores
+        settings.QCHEM_NUM_CORES if qchem_cores == QuaccDefault else qchem_cores
     )
-    qchem_cmd = settings.QCHEM_CMD if qchem_cmd == _DEFAULT_SETTING else qchem_cmd
+    qchem_cmd = settings.QCHEM_CMD if qchem_cmd == QuaccDefault else qchem_cmd
     qchem_local_scratch = (
         settings.QCHEM_LOCAL_SCRATCH
-        if qchem_local_scratch == _DEFAULT_SETTING
+        if qchem_local_scratch == QuaccDefault
         else qchem_local_scratch
     )
     qchem_use_error_handlers = (
         settings.QCHEM_USE_ERROR_HANDLERS
-        if qchem_use_error_handlers == _DEFAULT_SETTING
+        if qchem_use_error_handlers == QuaccDefault
         else qchem_use_error_handlers
     )
     qchem_custodian_max_errors = (
         settings.QCHEM_CUSTODIAN_MAX_ERRORS
-        if qchem_custodian_max_errors == _DEFAULT_SETTING
+        if qchem_custodian_max_errors == QuaccDefault
         else qchem_custodian_max_errors
     )
     qchem_nbo_exe = (
-        settings.QCHEM_NBO_EXE if qchem_nbo_exe == _DEFAULT_SETTING else qchem_nbo_exe
+        settings.QCHEM_NBO_EXE if qchem_nbo_exe == QuaccDefault else qchem_nbo_exe
     )
 
     # Error handlers for Q-Chem
