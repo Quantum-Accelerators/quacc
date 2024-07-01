@@ -4,7 +4,7 @@ Custom types used throughout quacc.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, NotRequired, TypedDict
+from typing import TYPE_CHECKING
 
 
 class DefaultSetting:
@@ -35,6 +35,7 @@ if TYPE_CHECKING:
     from pymatgen.core.structure import Molecule, Structure
     from pymatgen.entries.computed_entries import ComputedEntry
     from pymatgen.io.vasp.inputs import Incar, Kpoints, Poscar, Potcar
+    from typing_extensions import NotRequired, TypedDict
 
     # ----------- File handling -----------
 
