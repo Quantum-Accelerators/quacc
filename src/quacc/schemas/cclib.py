@@ -25,13 +25,13 @@ if TYPE_CHECKING:
     from ase.optimize.optimize import Optimizer
     from maggma.core import Store
 
-    from quacc.schemas._aliases.cclib import (
+    from quacc.types import (
+        DefaultSetting,
         PopAnalysisAttributes,
         cclibASEOptSchema,
         cclibBaseSchema,
         cclibSchema,
     )
-    from quacc.types import DefaultSetting
 
 
 LOGGER = logging.getLogger(__name__)

@@ -27,9 +27,14 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.runners.ase import OptParams
-    from quacc.schemas._aliases.ase import OptSchema, RunSchema, VibThermoSchema
-    from quacc.types import Filenames, SourceDirectory
+    from quacc.types import (
+        Filenames,
+        OptParams,
+        OptSchema,
+        RunSchema,
+        SourceDirectory,
+        VibThermoSchema,
+    )
 
 
 @job

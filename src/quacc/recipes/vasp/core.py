@@ -18,13 +18,14 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.runners.ase import OptParams
-    from quacc.schemas._aliases.vasp import (
+    from quacc.types import (
         DoubleRelaxSchema,
+        Filenames,
+        OptParams,
+        SourceDirectory,
         VaspASEOptSchema,
         VaspSchema,
     )
-    from quacc.types import Filenames, SourceDirectory
 
 
 @job

@@ -21,8 +21,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from maggma.core import Store
 
-    from quacc.schemas._aliases.phonons import PhononSchema
-    from quacc.types import DefaultSetting
+    from quacc.types import DefaultSetting, PhononSchema
 
     if has_phonopy:
         from phonopy import Phonopy

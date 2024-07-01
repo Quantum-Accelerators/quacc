@@ -30,6 +30,6 @@ The following are typical guidelines for jobs:
 
 A schema is a dictionary containing tabulated input and output properties from a calculation.
 
-All available schemas are stored in `quacc.schemas`, and type-hints associated with the outputs are stored in `quacc.schemas._aliases`.
+All available schemas are stored in `quacc.schemas`, and type-hints associated with the outputs are stored in `quacc.types`.
 
 All schemas create quacc-compatible dictionaries from a given calculation and also will automatically store results in the user's database, if one is specified in the global settings.

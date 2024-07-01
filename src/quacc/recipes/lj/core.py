@@ -18,9 +18,15 @@ from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_an
 if TYPE_CHECKING:
     from ase.atoms import Atoms
 
-    from quacc.runners.ase import OptParams, VibKwargs
-    from quacc.schemas._aliases.ase import OptSchema, RunSchema, VibThermoSchema
-    from quacc.types import Filenames, SourceDirectory
+    from quacc.types import (
+        Filenames,
+        OptParams,
+        OptSchema,
+        RunSchema,
+        SourceDirectory,
+        VibKwargs,
+        VibThermoSchema,
+    )
 
 
 @job

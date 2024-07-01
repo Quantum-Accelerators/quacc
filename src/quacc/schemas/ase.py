@@ -27,7 +27,8 @@ if TYPE_CHECKING:
     from ase.thermochemistry import IdealGasThermo
     from maggma.core import Store
 
-    from quacc.schemas._aliases.ase import (
+    from quacc.types import (
+        DefaultSetting,
         DynSchema,
         OptSchema,
         RunSchema,
@@ -35,7 +36,6 @@ if TYPE_CHECKING:
         VibSchema,
         VibThermoSchema,
     )
-    from quacc.types import DefaultSetting
 
 
 def summarize_run(
