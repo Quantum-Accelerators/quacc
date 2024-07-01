@@ -11,12 +11,14 @@ from ase.atoms import Atoms
 from pymatgen.io.ase import MSONAtoms
 
 from quacc.settings import QuaccSettings, change_settings
+from quacc.types import DefaultSetting
 from quacc.utils.dicts import Remove
 from quacc.wflow_tools.customizers import redecorate, strip_decorator
 from quacc.wflow_tools.decorators import Flow, Job, Subflow, flow, job, subflow
 
 if TYPE_CHECKING:
     from typing import Any
+
 
 __all__ = [
     "flow",
@@ -30,6 +32,7 @@ __all__ = [
     "strip_decorator",
     "Remove",
     "get_settings",
+    "QuaccDefault",
 ]
 
 
@@ -84,6 +87,9 @@ def get_settings() -> QuaccSettings:
 
 
 _settings = get_settings()
+
+# Dummy value for when a default setting will be applied
+QuaccDefault = DefaultSetting()
 
 # Set logging info
 logging.basicConfig(level=logging.DEBUG if _settings.DEBUG else logging.INFO)

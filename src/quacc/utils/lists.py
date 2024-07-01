@@ -25,8 +25,8 @@ def merge_list_params(
         Merged list
     """
     merged_list = []
-    lists = [list_ for list_ in lists if list_]
-    for list_ in lists:
+    lists_ = [list_ for list_ in lists if list_]
+    for list_ in lists_:
         for item in list_:
             item_ = item
             if case_insensitive:

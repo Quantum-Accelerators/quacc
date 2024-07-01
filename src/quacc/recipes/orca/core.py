@@ -16,9 +16,13 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from numpy.typing import NDArray
 
-    from quacc.runners.ase import OptParams
-    from quacc.schemas._aliases.cclib import cclibASEOptSchema, cclibSchema
-    from quacc.utils.files import Filenames, SourceDirectory
+    from quacc.types import (
+        Filenames,
+        OptParams,
+        SourceDirectory,
+        cclibASEOptSchema,
+        cclibSchema,
+    )
 
 
 @job
