@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from pymatgen.io.vasp.sets import DictSet
 
-    from quacc.utils.files import SourceDirectory
+    from quacc.types import SourceDirectory
     from quacc.utils.kpts import PmgKpts
 
     if has_atomate2:

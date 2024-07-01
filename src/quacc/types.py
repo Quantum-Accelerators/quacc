@@ -11,6 +11,8 @@ if TYPE_CHECKING:
     from datetime import datetime
 
     from ase.atoms import Atoms
+    from ase.md.md import MolecularDynamics
+    from ase.optimize.optimize import Dynamics
     from emmet.core.math import ListMatrix3D, Matrix3D, Vector3D
     from emmet.core.structure import MoleculeMetadata, StructureMetadata
     from emmet.core.symmetry import CrystalSystem
@@ -18,6 +20,7 @@ if TYPE_CHECKING:
     from emmet.core.vasp.calc_types.enums import RunType, TaskType
     from emmet.core.vasp.calculation import VaspObject
     from emmet.core.vasp.task_valid import TaskState
+    from numpy.random import Generator
     from numpy.typing import ArrayLike, NDArray
     from pymatgen.core.composition import Composition
     from pymatgen.core.lattice import Lattice
@@ -785,3 +788,48 @@ class NewtonNetQuasiIRCSchema(OptSchema):
 
 class QchemQuasiIRCSchema(OptSchema):
     initial_irc: OptSchema
+
+
+class OptParams(TypedDict, total=False):
+    """
+    Type hint for `opt_params` used throughout quacc.
+    """
+
+    relax_cell: bool
+    fmax: float | None
+    max_steps: int
+    optimizer: Dynamics
+    optimizer_kwargs: dict[str, Any] | None
+    store_intermediate_results: bool
+    fn_hook: Callable | None
+    run_kwargs: dict[str, Any] | None
+
+class MDParams(TypedDict, total=False):
+    """
+    Type hint for `md_params` used throughout quacc.
+    """
+
+    dynamics: MolecularDynamics
+    dynamics_kwargs: dict[str, Any] | None
+    steps: int
+    maxwell_boltzmann_kwargs: MaxwellBoltzmanDistributionKwargs | None
+    set_com_stationary: bool
+    set_zero_rotation: bool
+
+class VibKwargs(TypedDict, total=False):
+    """
+    Type hint for `vib_kwargs` in [quacc.runners.ase.Runner.run_vib][].
+    """
+
+    indices: list[int] | None
+    delta: float
+    nfree: int
+
+class MaxwellBoltzmanDistributionKwargs(TypedDict, total=False):
+    """
+    Type hint for `maxwell_boltzmann_kwargs` in [quacc.runners.ase.Runner.run_md][].
+    """
+
+    temperature_K: float
+    force_temp: bool
+    rng: Generator | None

@@ -28,11 +28,11 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from numpy.typing import NDArray
 
-    from quacc.runners.ase import OptParams
     from quacc.types import (
         NewtonNetIRCSchema,
         NewtonNetQuasiIRCSchema,
         NewtonNetTSSchema,
+        OptParams,
     )
 
 

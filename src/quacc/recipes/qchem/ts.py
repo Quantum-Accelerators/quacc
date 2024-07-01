@@ -23,9 +23,13 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from numpy.typing import NDArray
 
-    from quacc.runners.ase import OptParams
-    from quacc.schemas._aliases.ase import OptSchema
-    from quacc.types import Filenames, QchemQuasiIRCSchema, SourceDirectory
+    from quacc.types import (
+        Filenames,
+        OptParams,
+        OptSchema,
+        QchemQuasiIRCSchema,
+        SourceDirectory,
+    )
 
 
 @job

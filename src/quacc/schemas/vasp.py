@@ -30,13 +30,13 @@ if TYPE_CHECKING:
     from ase.optimize.optimize import Optimizer
     from maggma.core import Store
 
-    from quacc.schemas._aliases.vasp import (
+    from quacc.types import (
         BaderSchema,
         ChargemolSchema,
+        DefaultSetting,
         VaspASEOptSchema,
         VaspSchema,
     )
-    from quacc.types import DefaultSetting
 
 
 logger = logging.getLogger(__name__)
