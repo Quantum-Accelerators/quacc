@@ -25,10 +25,7 @@ if TYPE_CHECKING:
 
     from quacc.runners.ase import OptParams
     from quacc.schemas._aliases.ase import OptSchema
-    from quacc.types import Filenames, SourceDirectory
-
-    class QuasiIRCSchema(OptSchema):
-        initial_irc: OptSchema
+    from quacc.types import Filenames, QchemQuasiIRCSchema, SourceDirectory
 
 
 @job
@@ -178,7 +175,7 @@ def quasi_irc_job(
     irc_job_kwargs: dict[str, Any] | None = None,
     relax_job_kwargs: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-) -> QuasiIRCSchema:
+) -> QchemQuasiIRCSchema:
     """
     Quasi-IRC optimize a molecular structure. Runs `irc_job` for 10 steps (default)
     followed by `relax_job`.

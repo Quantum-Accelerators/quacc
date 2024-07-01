@@ -12,22 +12,17 @@ from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:
-    from typing import Any, Callable, TypedDict
+    from typing import Any, Callable
 
     from ase.atoms import Atoms
 
-    from quacc.schemas._aliases.ase import RunSchema
-    from quacc.types import Filenames, SourceDirectory
-
-    class DosSchema(TypedDict):
-        static_job: RunSchema
-        non_scf_job: RunSchema
-        dos_job: RunSchema
-
-    class ProjwfcSchema(TypedDict):
-        static_job: RunSchema
-        non_scf_job: RunSchema
-
+    from quacc.types import (
+        EspressoDosSchema,
+        EspressoProjwfcSchema,
+        Filenames,
+        RunSchema,
+        SourceDirectory,
+    )
 
 @job
 def dos_job(
@@ -134,7 +129,7 @@ def dos_flow(
     atoms: Atoms,
     job_decorators: dict[str, Callable | None] | None = None,
     job_params: dict[str, Any] | None = None,
-) -> DosSchema:
+) -> EspressoDosSchema:
     """
     This function performs a total density of states calculations.
 
@@ -210,7 +205,7 @@ def projwfc_flow(
     atoms: Atoms,
     job_decorators: dict[str, Callable | None] | None = None,
     job_params: dict[str, Any] | None = None,
-) -> ProjwfcSchema:
+) -> EspressoProjwfcSchema:
     """
     This function performs a projwfc calculation.
 

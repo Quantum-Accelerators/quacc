@@ -18,17 +18,11 @@ from quacc.utils.kpts import convert_pmg_kpts
 from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:
-    from typing import Any, Callable, TypedDict
+    from typing import Any, Callable
 
     from ase.atoms import Atoms
 
-    from quacc.schemas._aliases.ase import RunSchema
-    from quacc.types import Filenames, SourceDirectory
-
-    class BandsSchema(TypedDict, total=False):
-        bands_pw: RunSchema
-        bands_pp: RunSchema
-        fermi_surface: RunSchema
+    from quacc.types import EspressoBandsSchema, Filenames, RunSchema, SourceDirectory
 
 
 @job
@@ -233,7 +227,7 @@ def bands_flow(
     force_gamma: bool = True,
     job_params: dict[str, Any] | None = None,
     job_decorators: dict[str, Callable | None] | None = None,
-) -> BandsSchema:
+) -> EspressoBandsSchema:
     """
     Function to compute bands structure and fermi surface using pw.x, bands.x and fs.x.
 
