@@ -38,8 +38,6 @@ if TYPE_CHECKING:
     from quacc.types import DefaultSetting
 
 
-
-
 def summarize_run(
     final_atoms: Atoms,
     input_atoms: Atoms,

@@ -39,7 +39,6 @@ if TYPE_CHECKING:
     from quacc.types import DefaultSetting
 
 
-
 logger = logging.getLogger(__name__)
 
 

@@ -132,9 +132,7 @@ class Vasp(Vasp_):
             else preset_mag_default
         )
         mag_cutoff = (
-            self._settings.VASP_MAG_CUTOFF
-            if mag_cutoff == QuaccDefault
-            else mag_cutoff
+            self._settings.VASP_MAG_CUTOFF if mag_cutoff == QuaccDefault else mag_cutoff
         )
 
         # Assign variables to self

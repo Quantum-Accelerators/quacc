@@ -71,9 +71,7 @@ def run_custodian(
     vasp_custodian_wall_time: float | DefaultSetting = QuaccDefault,
     vtst_fixes: bool | DefaultSetting = QuaccDefault,
     vasp_custodian_handlers: list[str] | None | DefaultSetting = QuaccDefault,
-    vasp_custodian_validators: list[str]
-    | None
-    | DefaultSetting = QuaccDefault,
+    vasp_custodian_validators: list[str] | None | DefaultSetting = QuaccDefault,
     scratch_dir: str | None = None,
     directory: str | Path | None = None,
     vasp_job_kwargs: VaspJobKwargs | None = None,
@@ -128,9 +126,7 @@ def run_custodian(
     )
     vasp_cmd = settings.VASP_CMD if vasp_cmd == QuaccDefault else vasp_cmd
     vasp_gamma_cmd = (
-        settings.VASP_GAMMA_CMD
-        if vasp_gamma_cmd == QuaccDefault
-        else vasp_gamma_cmd
+        settings.VASP_GAMMA_CMD if vasp_gamma_cmd == QuaccDefault else vasp_gamma_cmd
     )
     vasp_custodian_max_errors = (
         settings.VASP_CUSTODIAN_MAX_ERRORS

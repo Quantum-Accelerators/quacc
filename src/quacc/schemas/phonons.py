@@ -28,7 +28,6 @@ if TYPE_CHECKING:
         from phonopy import Phonopy
 
 
-
 @requires(has_phonopy, "This schema relies on phonopy")
 def summarize_phonopy(
     phonon: Phonopy,
