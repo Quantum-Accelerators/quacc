@@ -4,7 +4,7 @@ Custom types used throughout quacc.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING, NotRequired, TypedDict
 
 
 class DefaultSetting:
@@ -759,6 +759,24 @@ if TYPE_CHECKING:
         """Type hint associated with VASP relaxations run via ASE"""
 
     # ----------- Recipe (Espresso) type hints -----------
+    class SystemData(TypedDict):
+        occupations: str
+        smearing: str
+        degauss: float
+
+    class ElectronsData(TypedDict):
+        conv_thr: float
+        mixing_mode: str
+        mixing_beta: float
+
+    class InputData(TypedDict):
+        system: SystemData
+        electrons: ElectronsData
+        control: NotRequired[dict[str, Any]]
+
+    class BaseSet(TypedDict):
+        input_data: InputData
+        kspacing: float
 
     class EspressoBandsSchema(TypedDict, total=False):
         bands_pw: RunSchema

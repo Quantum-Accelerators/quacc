@@ -13,18 +13,21 @@ from quacc.recipes.espresso._base import run_and_summarize, run_and_summarize_op
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
+    from src.quacc.types import BaseSet
 
     from quacc.types import Filenames, OptParams, RunSchema, SourceDirectory
 
-BASE_SET_METAL = {
+
+BASE_SET_METAL: BaseSet = {
     "input_data": {
         "system": {"occupations": "smearing", "smearing": "cold", "degauss": 0.01},
         "electrons": {"conv_thr": 1e-8, "mixing_mode": "local-TF", "mixing_beta": 0.35},
+        "control": {},
     },
     "kspacing": 0.033,
 }
 
-BASE_SET_NON_METAL = {
+BASE_SET_NON_METAL: BaseSet = {
     "input_data": {
         "system": {"occupations": "smearing", "smearing": "gaussian", "degauss": 0.005},
         "electrons": {"conv_thr": 1e-8, "mixing_mode": "local-TF", "mixing_beta": 0.35},
@@ -85,6 +88,7 @@ def static_job(
     is_metal = check_is_metal(atoms)
 
     calc_defaults = BASE_SET_METAL if is_metal else BASE_SET_NON_METAL
+
     calc_defaults["input_data"]["control"] = {"calculation": "scf"}
 
     return run_and_summarize(
