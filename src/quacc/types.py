@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Any, Callable, Literal, TypedDict, Union
 if TYPE_CHECKING:
     from numpy.typing import ArrayLike, NDArray
 
-Filenames = Union[str, Path, list[str | Path]]
+Filenames = Union[str, Path, list[Union[str, Path]]]
 SourceDirectory = Union[str | Path]
 
 
