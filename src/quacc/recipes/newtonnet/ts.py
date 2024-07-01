@@ -31,19 +31,12 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from numpy.typing import NDArray
 
-    from quacc.recipes.newtonnet.core import FreqSchema
-    from quacc.runners.ase import OptParams
-    from quacc.schemas._aliases.ase import OptSchema
-
-    class TSSchema(OptSchema):
-        freq_job: FreqSchema | None
-
-    class IRCSchema(OptSchema):
-        freq_job: FreqSchema | None
-
-    class QuasiIRCSchema(OptSchema):
-        irc_job: IRCSchema
-        freq_job: FreqSchema | None
+    from quacc.types import (
+        NewtonNetIRCSchema,
+        NewtonNetQuasiIRCSchema,
+        NewtonNetTSSchema,
+        OptParams,
+    )
 
     class NebSchema(TypedDict):
         relax_reactant: OptSchema
@@ -71,7 +64,7 @@ def ts_job(
     freq_job_kwargs: dict[str, Any] | None = None,
     opt_params: OptParams | None = None,
     **calc_kwargs,
-) -> TSSchema:
+) -> NewtonNetTSSchema:
     """
     Perform a transition state (TS) job using the given atoms object.
 
@@ -149,7 +142,7 @@ def irc_job(
     freq_job_kwargs: dict[str, Any] | None = None,
     opt_params: OptParams | None = None,
     **calc_kwargs,
-) -> IRCSchema:
+) -> NewtonNetIRCSchema:
     """
     Perform an intrinsic reaction coordinate (IRC) job using the given atoms object.
 
@@ -228,7 +221,7 @@ def quasi_irc_job(
     irc_job_kwargs: dict[str, Any] | None = None,
     relax_job_kwargs: dict[str, Any] | None = None,
     freq_job_kwargs: dict[str, Any] | None = None,
-) -> QuasiIRCSchema:
+) -> NewtonNetQuasiIRCSchema:
     """
     Perform a quasi-IRC job using the given atoms object. The initial IRC job by default
     is run with `max_steps: 5`.

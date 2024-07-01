@@ -12,7 +12,7 @@ from quacc.runners.prep import calc_cleanup, calc_setup
 if TYPE_CHECKING:
     from ase.atoms import Atoms
 
-    from quacc.utils.files import Filenames, SourceDirectory
+    from quacc.types import Filenames, SourceDirectory
 
 
 @dataclass

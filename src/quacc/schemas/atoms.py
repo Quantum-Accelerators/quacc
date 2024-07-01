@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.schemas._aliases.atoms import AtomsSchema
+    from quacc.types import AtomsSchema
 
 
 def atoms_to_metadata(

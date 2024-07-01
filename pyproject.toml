@@ -107,9 +107,6 @@ skip_gitignore = true
 
 [tool.coverage.run]
 source = ["src"]
-omit = [
-  "*/_aliases/*"
-]
 
 [tool.coverage.report]
 exclude_also = [
