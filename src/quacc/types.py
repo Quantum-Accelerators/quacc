@@ -36,8 +36,12 @@ if TYPE_CHECKING:
     from pymatgen.entries.computed_entries import ComputedEntry
     from pymatgen.io.vasp.inputs import Incar, Kpoints, Poscar, Potcar
 
+    # ----------- File handling -----------
+
     Filenames = Union[str, Path, list[Union[str, Path]]]
     SourceDirectory = Union[str, Path]
+
+    # ----------- k-point handling -----------
 
     class PmgKpts(TypedDict, total=False):
         """
@@ -48,6 +52,56 @@ if TYPE_CHECKING:
         kppvol: float
         kppa: float
         length_densities: tuple[float, float, float]
+
+    # ----------- Runner parameter type hints -----------
+
+    class OptParams(TypedDict, total=False):
+        """
+        Type hint for `opt_params` used throughout quacc.
+        """
+
+        relax_cell: bool
+        fmax: float | None
+        max_steps: int
+        optimizer: Dynamics
+        optimizer_kwargs: dict[str, Any] | None
+        store_intermediate_results: bool
+        fn_hook: Callable | None
+        run_kwargs: dict[str, Any] | None
+
+
+    class MDParams(TypedDict, total=False):
+        """
+        Type hint for `md_params` used throughout quacc.
+        """
+
+        dynamics: MolecularDynamics
+        dynamics_kwargs: dict[str, Any] | None
+        steps: int
+        maxwell_boltzmann_kwargs: MaxwellBoltzmanDistributionKwargs | None
+        set_com_stationary: bool
+        set_zero_rotation: bool
+
+
+    class VibKwargs(TypedDict, total=False):
+        """
+        Type hint for `vib_kwargs` in [quacc.runners.ase.Runner.run_vib][].
+        """
+
+        indices: list[int] | None
+        delta: float
+        nfree: int
+
+    class MaxwellBoltzmanDistributionKwargs(TypedDict, total=False):
+        """
+        Type hint for `maxwell_boltzmann_kwargs` in [quacc.runners.ase.Runner.run_md][].
+        """
+
+        temperature_K: float
+        force_temp: bool
+        rng: Generator | None
+
+    # ----------- Atoms handling type hints -----------
 
     class AdsSiteFinderKwargs(TypedDict, total=False):
         """
@@ -71,6 +125,8 @@ if TYPE_CHECKING:
             Literal["ontop", "bridge", "hollow", "subsurface"]
         ]  # default: ["ontop", "bridge", "hollow"]
         no_obtuse_hollow: bool  # default = True
+
+    # ----------- Custom calculator type hints -----------
 
     class QchemResults(TypedDict, total=False):
         """
@@ -112,14 +168,19 @@ if TYPE_CHECKING:
         terminate_func: Callable | None  # default = None
         terminate_on_nonzero_returncode: bool  # default = False
 
+    # ----------- ASE calculator type hints -----------
+
     class Results(TypedDict):
         """Dictionary of results from atoms.calc.results"""
 
     class Parameters(TypedDict):
         """Dictionary of parameters from atoms.calc.parameters"""
 
+    # ----------- ASE dynamics type hints -----------
+
     class ParametersDyn(TypedDict):
         """Dictionary of parameters from Dynamics.todict()"""
+
 
     class TrajectoryLog(TypedDict):
         """Dictionary of parameters related to the MD trajectory"""
@@ -128,6 +189,8 @@ if TYPE_CHECKING:
         kinetic_energy: float
         temperature: float
         time: float
+
+    # ----------- Emmet type hints -----------
 
     class SymmetryData(TypedDict):
         """Type hint associated with [emmet.core.symmetry.SymmetryData][]"""
@@ -190,123 +253,6 @@ if TYPE_CHECKING:
         formula_anonymous: str
         chemsys: str
         symmetry: PointGroupData
-
-    class AtomsSchema(StructureMetadata, MoleculeMetadata):
-        """Type hint associated with [quacc.schemas.atoms.atoms_to_metadata][]"""
-
-        atoms: Atoms
-        structure: Structure  # if atoms.pbc.any()
-        molecule: Molecule  # if not atoms.pbc.any()
-
-    class AdditionalAttributes(TypedDict, total=False):
-        """
-        Additional type hints we custom-made based on cclib attributes.
-
-        Uses cclib units.
-        """
-
-        final_scf_energy: float
-        homo_energies: list[float] | None
-        lumo_energies: list[float] | None
-        homo_lumo_gaps: list[float] | None
-        min_homo_lumo_gap: float | None
-
-    class PopAnalysisAttributes(TypedDict, total=False):
-        """Type hints associated with cclib population analysis attribubtes."""
-
-        aoresults: Any
-        fragresults: Any
-        fragcharges: Any
-        density: Any
-        donations: Any
-        bdonations: Any
-        repulsions: Any
-        matches: Any
-        refcharges: Any
-
-    class Attributes(TypedDict, total=False):
-        """
-        Type hints associated with cclib attribubtes.
-
-        Refer to https://cclib.github.io/data.html
-        """
-
-        aonames: list[str]
-        aooverlaps: NDArray
-        atombasis: list[list[int]]
-        atomcharges: dict[str, NDArray]
-        atomcoords: NDArray
-        atommasses: NDArray
-        atomnos: NDArray
-        atomspins: dict[str, NDArray]
-        ccenergies: NDArray
-        charge: int
-        coreelectrons: NDArray
-        dispersionenergies: NDArray
-        enthalpy: float
-        entropy: float
-        etenergies: NDArray
-        etoscs: NDArray
-        etdips: NDArray
-        etveldips: NDArray
-        etmagdips: NDArray
-        etrotats: NDArray
-        etsecs: list[list]
-        etsyms: list[str]
-        freenergy: float
-        fonames: list[str]
-        fooverlaps: NDArray
-        fragnames: list[str]
-        frags: list[list[int]]
-        gbasis: Any
-        geotargets: NDArray
-        geovalues: NDArray
-        grads: NDArray
-        hessian: NDArray
-        homos: NDArray
-        metadata: dict[str, Any]
-        mocoeffs: list[NDArray]
-        moenergies: list[NDArray]
-        moments: list[NDArray]
-        mosyms: list[list]
-        mpenergies: NDArray
-        mult: int
-        natom: int
-        nbasis: int
-        nmo: int
-        nmrtensors: dict[int, dict[str, NDArray]]
-        nmrcouplingtensors: dict[int, dict[str, NDArray]]
-        nocoeffs: NDArray
-        nooccnos: NDArray
-        nsocoeffs: list[NDArray]
-        nsooccnos: list[NDArray]
-        optdone: bool
-        optstatus: NDArray
-        polarizabilities: list[NDArray]
-        pressure: float
-        rotconsts: NDArray
-        scancoords: NDArray
-        scanenergies: list[float]
-        scannames: list[str]
-        scanparm: list[tuple]
-        scfenergies: NDArray
-        scftargets: NDArray
-        scfvalues: list[NDArray]
-        temperature: float
-        time: NDArray
-        transprop: Any
-        vibanharms: NDArray
-        vibdisps: NDArray
-        vibfreqs: NDArray
-        vibfconsts: NDArray
-        vibirs: NDArray
-        vibramans: NDArray
-        vibrmasses: NDArray
-        vibsyms: list[str]
-        zpve: float
-
-    class AllAttributes(Attributes, AdditionalAttributes):
-        """Type hint of all cclib attributes."""
 
     class PotcarSpec(TypedDict):
         """Type hint associated with emmet.core.vasp.calculation.PotcarSpec."""
@@ -487,6 +433,18 @@ if TYPE_CHECKING:
         analysis: AnalysisDoc
         last_updated: datetime
 
+    # ----------- Schema (Atoms) type hints -----------
+
+    class AtomsSchema(StructureMetadata, MoleculeMetadata):
+        """Type hint associated with [quacc.schemas.atoms.atoms_to_metadata][]"""
+
+        atoms: Atoms
+        structure: Structure  # if atoms.pbc.any()
+        molecule: Molecule  # if not atoms.pbc.any()
+
+
+    # ----------- Schema (ASE) type hints -----------
+
     class RunSchema(AtomsSchema):
         """Schema for [quacc.schemas.ase.summarize_run][]"""
 
@@ -558,6 +516,8 @@ if TYPE_CHECKING:
     class VibThermoSchema(VibSchema, ThermoSchema):
         """Schema for [quacc.schemas.ase.summarize_vib_and_thermo][]"""
 
+    # ----------- Schema (phonons) type hints -----------
+
     class ThermalProperties(TypedDict):
         """Type hint associated with PhononSchema."""
 
@@ -602,6 +562,8 @@ if TYPE_CHECKING:
         results: PhononResults
         quacc_version: str
 
+    # ----------- Schema (VASP) type hints -----------
+
     class BaderSchema(TypedDict, total=False):
         """Type hint associated with quacc.schemas.vasp._bader_runner."""
 
@@ -641,6 +603,137 @@ if TYPE_CHECKING:
         chargemol: ChargemolSchema
         steps: dict[int, TaskDoc]  # when store_intermediate_results=True
 
+
+    # ----------- Schema (cclib) type hints -----------
+
+    class Attributes(TypedDict, total=False):
+        """
+        Type hints associated with cclib attribubtes.
+
+        Refer to https://cclib.github.io/data.html
+        """
+
+        aonames: list[str]
+        aooverlaps: NDArray
+        atombasis: list[list[int]]
+        atomcharges: dict[str, NDArray]
+        atomcoords: NDArray
+        atommasses: NDArray
+        atomnos: NDArray
+        atomspins: dict[str, NDArray]
+        ccenergies: NDArray
+        charge: int
+        coreelectrons: NDArray
+        dispersionenergies: NDArray
+        enthalpy: float
+        entropy: float
+        etenergies: NDArray
+        etoscs: NDArray
+        etdips: NDArray
+        etveldips: NDArray
+        etmagdips: NDArray
+        etrotats: NDArray
+        etsecs: list[list]
+        etsyms: list[str]
+        freenergy: float
+        fonames: list[str]
+        fooverlaps: NDArray
+        fragnames: list[str]
+        frags: list[list[int]]
+        gbasis: Any
+        geotargets: NDArray
+        geovalues: NDArray
+        grads: NDArray
+        hessian: NDArray
+        homos: NDArray
+        metadata: dict[str, Any]
+        mocoeffs: list[NDArray]
+        moenergies: list[NDArray]
+        moments: list[NDArray]
+        mosyms: list[list]
+        mpenergies: NDArray
+        mult: int
+        natom: int
+        nbasis: int
+        nmo: int
+        nmrtensors: dict[int, dict[str, NDArray]]
+        nmrcouplingtensors: dict[int, dict[str, NDArray]]
+        nocoeffs: NDArray
+        nooccnos: NDArray
+        nsocoeffs: list[NDArray]
+        nsooccnos: list[NDArray]
+        optdone: bool
+        optstatus: NDArray
+        polarizabilities: list[NDArray]
+        pressure: float
+        rotconsts: NDArray
+        scancoords: NDArray
+        scanenergies: list[float]
+        scannames: list[str]
+        scanparm: list[tuple]
+        scfenergies: NDArray
+        scftargets: NDArray
+        scfvalues: list[NDArray]
+        temperature: float
+        time: NDArray
+        transprop: Any
+        vibanharms: NDArray
+        vibdisps: NDArray
+        vibfreqs: NDArray
+        vibfconsts: NDArray
+        vibirs: NDArray
+        vibramans: NDArray
+        vibrmasses: NDArray
+        vibsyms: list[str]
+        zpve: float
+
+    class AdditionalAttributes(TypedDict, total=False):
+        """
+        Additional type hints we custom-made based on cclib attributes.
+
+        Uses cclib units.
+        """
+
+        final_scf_energy: float
+        homo_energies: list[float] | None
+        lumo_energies: list[float] | None
+        homo_lumo_gaps: list[float] | None
+        min_homo_lumo_gap: float | None
+
+    class PopAnalysisAttributes(TypedDict, total=False):
+        """Type hints associated with cclib population analysis attribubtes."""
+
+        aoresults: Any
+        fragresults: Any
+        fragcharges: Any
+        density: Any
+        donations: Any
+        bdonations: Any
+        repulsions: Any
+        matches: Any
+        refcharges: Any
+
+    class AllAttributes(Attributes, AdditionalAttributes):
+        """Type hint of all cclib attributes."""
+
+    class cclibBaseSchema(TypedDict):
+        """Type hint associated with `quacc.schemas.cclib._make_cclib_schema`"""
+
+        logfile: str
+        attributes: AllAttributes
+        pop_analysis: PopAnalysisAttributes | None
+        trajectory: list[Atoms]
+
+    class cclibSchema(cclibBaseSchema, RunSchema):
+        """Type hint associated with [quacc.schemas.cclib.cclib_summarize_run][]."""
+
+        steps: dict[int, cclibBaseSchema]  # when store_intermediate_results=True
+
+    class cclibASEOptSchema(cclibSchema, OptSchema):
+        """Type hint used when merging cclibSchema with OptSchema."""
+
+    # ----------- Recipe (VASP) type hints -----------
+
     class DoubleRelaxSchema(TypedDict):
         """Type hint associated with the double relaxation jobs."""
 
@@ -670,21 +763,7 @@ if TYPE_CHECKING:
     class VaspASEOptSchema(VaspSchema, OptSchema):
         """Type hint associated with VASP relaxations run via ASE"""
 
-    class cclibBaseSchema(TypedDict):
-        """Type hint associated with `quacc.schemas.cclib._make_cclib_schema`"""
-
-        logfile: str
-        attributes: AllAttributes
-        pop_analysis: PopAnalysisAttributes | None
-        trajectory: list[Atoms]
-
-    class cclibSchema(cclibBaseSchema, RunSchema):
-        """Type hint associated with [quacc.schemas.cclib.cclib_summarize_run][]."""
-
-        steps: dict[int, cclibBaseSchema]  # when store_intermediate_results=True
-
-    class cclibASEOptSchema(cclibSchema, OptSchema):
-        """Type hint used when merging cclibSchema with OptSchema."""
+    # ----------- Recipe (Espresso) type hints -----------
 
     class EspressoBandsSchema(TypedDict, total=False):
         bands_pw: RunSchema
@@ -706,6 +785,8 @@ if TYPE_CHECKING:
         q2r_job: RunSchema
         matdyn_job: RunSchema
 
+    # ----------- Recipe (NewtonNet) type hints -----------
+
     class NewtonNetTSSchema(OptSchema):
         freq_job: VibThermoSchema | None
 
@@ -716,52 +797,7 @@ if TYPE_CHECKING:
         irc_job: NewtonNetIRCSchema
         freq_job: VibThermoSchema | None
 
+    # ----------- Recipe (Q-Chem) type hints -----------
+
     class QchemQuasiIRCSchema(OptSchema):
         initial_irc: OptSchema
-
-    class OptParams(TypedDict, total=False):
-        """
-        Type hint for `opt_params` used throughout quacc.
-        """
-
-        relax_cell: bool
-        fmax: float | None
-        max_steps: int
-        optimizer: Dynamics
-        optimizer_kwargs: dict[str, Any] | None
-        store_intermediate_results: bool
-        fn_hook: Callable | None
-        run_kwargs: dict[str, Any] | None
-
-
-class MDParams(TypedDict, total=False):
-    """
-    Type hint for `md_params` used throughout quacc.
-    """
-
-    dynamics: MolecularDynamics
-    dynamics_kwargs: dict[str, Any] | None
-    steps: int
-    maxwell_boltzmann_kwargs: MaxwellBoltzmanDistributionKwargs | None
-    set_com_stationary: bool
-    set_zero_rotation: bool
-
-
-class VibKwargs(TypedDict, total=False):
-    """
-    Type hint for `vib_kwargs` in [quacc.runners.ase.Runner.run_vib][].
-    """
-
-    indices: list[int] | None
-    delta: float
-    nfree: int
-
-
-class MaxwellBoltzmanDistributionKwargs(TypedDict, total=False):
-    """
-    Type hint for `maxwell_boltzmann_kwargs` in [quacc.runners.ase.Runner.run_md][].
-    """
-
-    temperature_K: float
-    force_temp: bool
-    rng: Generator | None
