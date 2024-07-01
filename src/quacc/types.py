@@ -144,7 +144,6 @@ class AtomsSchema(StructureMetadata, MoleculeMetadata):
     molecule: Molecule  # if not atoms.pbc.any()
 
 
-
 class AdditionalAttributes(TypedDict, total=False):
     """
     Additional type hints we custom-made based on cclib attributes.
@@ -257,7 +256,6 @@ class Attributes(TypedDict, total=False):
 
 class AllAttributes(Attributes, AdditionalAttributes):
     """Type hint of all cclib attributes."""
-
 
 
 class SymmetryData(TypedDict):
@@ -519,6 +517,7 @@ class TaskDoc(StructureMetadata):
     analysis: AnalysisDoc
     last_updated: datetime
 
+
 class RunSchema(AtomsSchema):
     """Schema for [quacc.schemas.ase.summarize_run][]"""
 
@@ -605,6 +604,7 @@ class ThermoSchema(AtomsSchema):
 class VibThermoSchema(VibSchema, ThermoSchema):
     """Schema for [quacc.schemas.ase.summarize_vib_and_thermo][]"""
 
+
 class ThermalProperties(TypedDict):
     """Type hint associated with PhononSchema."""
 
@@ -653,6 +653,7 @@ class PhononSchema(AtomsSchema):
     phonopy_metadata: PhonopyMetadata
     results: PhononResults
     quacc_version: str
+
 
 class BaderSchema(TypedDict, total=False):
     """Type hint associated with quacc.schemas.vasp._bader_runner."""
@@ -731,6 +732,7 @@ class QMOFRelaxSchema(VaspSchema):
 class VaspASEOptSchema(VaspSchema, OptSchema):
     """Type hint associated with VASP relaxations run via ASE"""
 
+
 class cclibBaseSchema(TypedDict):
     """Type hint associated with `quacc.schemas.cclib._make_cclib_schema`"""
 
@@ -761,9 +763,11 @@ class EspressoDosSchema(TypedDict):
     non_scf_job: RunSchema
     dos_job: RunSchema
 
+
 class EspressoProjwfcSchema(TypedDict):
     static_job: RunSchema
     non_scf_job: RunSchema
+
 
 class EspressoPhononDosSchema(TypedDict):
     relax_job: RunSchema
@@ -775,8 +779,10 @@ class EspressoPhononDosSchema(TypedDict):
 class NewtonNetTSSchema(OptSchema):
     freq_job: VibThermoSchema | None
 
+
 class NewtonNetIRCSchema(OptSchema):
     freq_job: VibThermoSchema | None
+
 
 class NewtonNetQuasiIRCSchema(OptSchema):
     irc_job: NewtonNetIRCSchema

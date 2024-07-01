@@ -31,7 +31,6 @@ if TYPE_CHECKING:
     from quacc.types import EspressoPhononDosSchema, Filenames, SourceDirectory
 
 
-
 @job
 def phonon_job(
     copy_files: (
