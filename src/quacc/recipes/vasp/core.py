@@ -28,7 +28,9 @@ if TYPE_CHECKING:
         OptParams,
         SourceDirectory,
         VaspASEOptSchema,
-        VaspSchema,VibThermoSchema,VibKwargs
+        VaspSchema,
+        VibKwargs,
+        VibThermoSchema,
     )
 
 
