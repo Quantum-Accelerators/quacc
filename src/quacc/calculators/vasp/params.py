@@ -23,8 +23,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from pymatgen.io.vasp.sets import DictSet
 
-    from quacc.types import SourceDirectory
-    from quacc.utils.kpts import PmgKpts
+    from quacc.types import PmgKpts, SourceDirectory
 
     if has_atomate2:
         from atomate2.vasp.jobs.base import BaseVaspMaker
