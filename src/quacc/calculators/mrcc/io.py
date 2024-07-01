@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from io import StringIO
 from pathlib import Path
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING
 
 from ase.io import read
 from ase.units import Hartree
@@ -10,18 +10,7 @@ from ase.units import Hartree
 if TYPE_CHECKING:
     from ase.atoms import Atoms
 
-    class ParamsInfo(TypedDict):
-        mrccinput: dict[str, str]
-        mrccblocks: str
-        charge: int
-        mult: int
-
-    class EnergyInfo(TypedDict):
-        energy: float | None
-        scf_energy: float | None
-        mp2_corr_energy: float | None
-        ccsd_corr_energy: float | None
-        ccsdt_corr_energy: float | None
+    from quacc.types import MRCCEnergyInfo, MRCCParamsInfo
 
 
 def read_geom_mrccinp(file_path: Path | str) -> Atoms:
@@ -65,7 +54,7 @@ def read_geom_mrccinp(file_path: Path | str) -> Atoms:
     return atoms
 
 
-def write_mrcc(file_path: Path | str, atoms: Atoms, parameters: ParamsInfo) -> None:
+def write_mrcc(file_path: Path | str, atoms: Atoms, parameters: MRCCParamsInfo) -> None:
     """
     Write MRCC input file given the Atoms object and the parameters.
 
@@ -75,7 +64,7 @@ def write_mrcc(file_path: Path | str, atoms: Atoms, parameters: ParamsInfo) -> N
         File path to write the MRCC input file.
     atoms : Atoms
         Atoms object with the geometry.
-    parameters : ParamsInfo
+    parameters : MRCCParamsInfo
         Dictionary with the parameters to be written in the MRCC input file. The keys are the following:
         - mrccinput : dict[str, str] <-- This is a dictionary with the MRCC input parameters are keys and their values as values.
         - mrccblocks : str <-- This is a string with the MRCC blocks to be written.
@@ -112,7 +101,7 @@ def write_mrcc(file_path: Path | str, atoms: Atoms, parameters: ParamsInfo) -> N
                 file_path.write(",".join([str(atom_idx) for atom_idx in ghost_list]))
 
 
-def read_energy(lines: list[str]) -> EnergyInfo:
+def read_energy(lines: list[str]) -> MRCCEnergyInfo:
     """
     Reads the energy components (SCF energy, MP2 correlation energy, CCSD correlation energy, CCSD(T) correlation energy) from the MRCC output file where available.
 
@@ -123,7 +112,7 @@ def read_energy(lines: list[str]) -> EnergyInfo:
 
     Returns
     -------
-    EnergyInfo
+    MRCCEnergyInfo
         Dictionary with the energy components. The keys are the following:
         - energy : float <-- Total energy which will not be computed in this function.
         - scf_energy : float <-- SCF energy.
@@ -153,7 +142,7 @@ def read_energy(lines: list[str]) -> EnergyInfo:
     return energy_dict
 
 
-def read_mrcc_outputs(output_file_path: Path | str) -> EnergyInfo:
+def read_mrcc_outputs(output_file_path: Path | str) -> MRCCEnergyInfo:
     """
     Reads the energy components (SCF energy, MP2 correlation energy, CCSD correlation energy, CCSD(T) correlation energy) from the MRCC output file where available and calculates the total energy (based on the highest level of theory)
 
@@ -164,7 +153,7 @@ def read_mrcc_outputs(output_file_path: Path | str) -> EnergyInfo:
 
     Returns
     -------
-    EnergyInfo
+    MRCCEnergyInfo
         Dictionary with the energy components. The keys are the following:
         - energy : float | None <-- Total energy of highest available level.
         - scf_energy : float | None <-- SCF energy.
