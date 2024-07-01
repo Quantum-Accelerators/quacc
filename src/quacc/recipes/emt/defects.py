@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.schemas._aliases.ase import OptSchema, RunSchema
+    from quacc.types import OptSchema, RunSchema
 
     if has_pmg_defects:
         from pymatgen.analysis.defects.generators import (

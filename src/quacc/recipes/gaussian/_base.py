@@ -16,8 +16,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.schemas._aliases.cclib import cclibSchema
-    from quacc.utils.files import Filenames, SourceDirectory
+    from quacc.types import Filenames, SourceDirectory, cclibSchema
 
 _LABEL = "Gaussian"
 LOG_FILE = f"{_LABEL}.log"

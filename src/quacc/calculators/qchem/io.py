@@ -18,7 +18,7 @@ from pymatgen.io.qchem.outputs import (
 if TYPE_CHECKING:
     from pymatgen.io.qchem.inputs import QCInput
 
-    from quacc.calculators.qchem.qchem import Results
+    from quacc.types import QchemResults
 
 
 def write_qchem(
@@ -53,7 +53,7 @@ def write_qchem(
     qc_input.write_file(directory / "mol.qin")
 
 
-def read_qchem(directory: Path | str) -> tuple[Results, list[float]]:
+def read_qchem(directory: Path | str) -> tuple[QchemResults, list[float]]:
     """
     Read Q-Chem log files.
 
@@ -74,7 +74,7 @@ def read_qchem(directory: Path | str) -> tuple[Results, list[float]]:
         warnings.simplefilter("ignore", category=UserWarning)
         task_doc = TaskDoc.from_directory(directory, validate_lot=False).model_dump()
 
-    results: Results = {
+    results: QchemResults = {
         "energy": task_doc["output"]["final_energy"] * units.Hartree,
         "taskdoc": task_doc,
     }
