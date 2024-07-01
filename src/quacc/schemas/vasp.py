@@ -12,15 +12,16 @@ from emmet.core.tasks import TaskDoc
 from monty.os.path import zpath
 from pymatgen.command_line.bader_caller import bader_analysis_from_path
 from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
-from pymatgen.entries.compatibility import (
-    CompatibilityError,
-    MaterialsProject2020Compatibility,
-)
 
 from quacc import QuaccDefault, get_settings
 from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import finalize_dict, recursive_dict_merge
+
+try:
+    from pymatgen.io.validation import ValidationDoc
+except ImportError:
+    ValidationDoc = None
 
 if TYPE_CHECKING:
     from typing import Any
@@ -28,6 +29,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from ase.io import Trajectory
     from ase.optimize.optimize import Optimizer
+    from emmet.core.base import EmmetBaseModel
     from maggma.core import Store
 
     from quacc.types import (
@@ -38,8 +40,7 @@ if TYPE_CHECKING:
         VaspSchema,
     )
 
-
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 def vasp_summarize_run(
@@ -49,7 +50,7 @@ def vasp_summarize_run(
     run_bader: bool | DefaultSetting = QuaccDefault,
     run_chargemol: bool | DefaultSetting = QuaccDefault,
     check_convergence: bool | DefaultSetting = QuaccDefault,
-    report_mp_corrections: bool = False,
+    check_mp_compatibility: bool = False,
     additional_fields: dict[str, Any] | None = None,
     store: Store | None | DefaultSetting = QuaccDefault,
 ) -> VaspSchema:
@@ -76,8 +77,9 @@ def vasp_summarize_run(
     check_convergence
         Whether to throw an error if convergence is not reached. Defaults to True in
         settings.
-    report_mp_corrections
-        Whether to apply the MP corrections to the task document. Defaults to False.
+    check_mp_compatibility
+        Whether to check compatibility with the current version of MP.
+        Requires `pymatgen-io-validation` to do the check.
     additional_fields
         Additional fields to add to the task document.
     store
@@ -104,21 +106,16 @@ def vasp_summarize_run(
 
     # Fetch all tabulated results from VASP outputs files. Fortunately, emmet
     # already has a handy function for this
-    vasp_task_model = TaskDoc.from_directory(directory)
+    vasp_task_doc = TaskDoc.from_directory(directory).model_dump()
 
-    # Get MP corrections
-    if report_mp_corrections:
-        mp_compat = MaterialsProject2020Compatibility()
-        try:
-            corrected_entry = mp_compat.process_entry(
-                vasp_task_model.structure_entry, on_error="raise"
-            )
-            vasp_task_model.entry = corrected_entry
-        except CompatibilityError as err:
-            logger.warning(err)
-
-    # Convert the VASP task model to a dictionary
-    vasp_task_doc = vasp_task_model.model_dump()
+    # Get MP validation doc
+    if check_mp_compatibility:
+        mp_compat_model = _validate_mp_compatability(directory)
+    mp_compat_doc = (
+        {"validation": mp_compat_model.model_dump()}
+        if check_mp_compatibility and mp_compat_model
+        else {}
+    )
 
     # Check for calculation convergence
     if check_convergence and vasp_task_doc["state"] != "successful":
@@ -166,7 +163,11 @@ def vasp_summarize_run(
 
     # Make task document
     unsorted_task_doc = (
-        intermediate_vasp_task_docs | vasp_task_doc | base_task_doc | additional_fields
+        intermediate_vasp_task_docs
+        | vasp_task_doc
+        | base_task_doc
+        | mp_compat_doc
+        | additional_fields
     )
     return finalize_dict(
         unsorted_task_doc, directory, gzip_file=settings.GZIP_FILES, store=store
@@ -181,7 +182,7 @@ def summarize_vasp_opt_run(
     run_bader: bool | DefaultSetting = QuaccDefault,
     run_chargemol: bool | DefaultSetting = QuaccDefault,
     check_convergence: bool | DefaultSetting = QuaccDefault,
-    report_mp_corrections: bool = False,
+    check_mp_compatibility: bool = False,
     additional_fields: dict[str, Any] | None = None,
     store: Store | None | DefaultSetting = QuaccDefault,
 ) -> VaspASEOptSchema:
@@ -212,8 +213,9 @@ def summarize_vasp_opt_run(
     check_convergence
         Whether to throw an error if convergence is not reached. Defaults to True in
         settings.
-    report_mp_corrections
-        Whether to apply the MP corrections to the task document. Defaults to False.
+    check_mp_compatibility
+        Whether to check compatibility with the current version of MP.
+        Requires `pymatgen-io-validation` to do the check.
     additional_fields
         Additional fields to add to the task document.
     store
@@ -239,7 +241,7 @@ def summarize_vasp_opt_run(
         run_bader=run_bader,
         run_chargemol=run_chargemol,
         check_convergence=check_convergence,
-        report_mp_corrections=report_mp_corrections,
+        check_mp_compatibility=check_mp_compatibility,
         additional_fields=additional_fields,
         store=None,
     )
@@ -334,3 +336,34 @@ def _chargemol_runner(
 
     # Run Chargemol analysis
     return ChargemolAnalysis(path=path, atomic_densities_path=atomic_densities_path)
+
+
+def _validate_mp_compatability(directory: Path | str) -> EmmetBaseModel | None:
+    """
+    Validate the output of a VASP calculation for Materials Project compatibility.
+
+    Parameters
+    ----------
+    directory
+        Path to the directory containing the VASP calculation.
+
+    Returns
+    -------
+    EmmetBaseModel | None
+        The validation document.
+    """
+    if ValidationDoc is None:
+        LOGGER.debug(
+            "pymatgen-io-validation is not installed. Skipping MP compatability check."
+        )
+        return None
+    validation_doc = ValidationDoc.from_directory(dir_name=directory)
+    if not validation_doc.valid:
+        LOGGER.warning(
+            f"Calculation in {directory} is not MP-compatible for the following reasons: {validation_doc.reasons}"
+        )
+    if validation_doc.warnings:
+        LOGGER.warning(
+            f"Calculation in {directory} has the following MP-related warnings: {validation_doc.warnings}"
+        )
+    return validation_doc

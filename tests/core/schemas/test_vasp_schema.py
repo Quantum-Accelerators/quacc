@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import os
+from importlib import util
 from pathlib import Path
 from shutil import copytree, move
 
@@ -15,6 +16,7 @@ from quacc.schemas.vasp import vasp_summarize_run
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.propagate = True
+has_pmg_validation = util.find_spec("pymatgen.io.validation") is not None
 
 
 @pytest.fixture()
@@ -205,23 +207,21 @@ def test_summarize_bader_and_chargemol_run(monkeypatch, run1, tmp_path):
     assert results["bader"]["spin_moments"] == [0.0] * len(atoms)
 
 
-def test_summarize_mp(monkeypatch, mp_run1, tmp_path):
+@pytest.mark.skipif(
+    not has_pmg_validation, reason="pymatgen-io-validation not installed"
+)
+def test_validate_mp(monkeypatch, mp_run1, tmp_path, caplog):
     monkeypatch.chdir(tmp_path)
-    p = tmp_path / "vasp_run"
+    p = tmp_path / "vasp_mp_run"
     copytree(mp_run1, p)
     atoms = read(p / "OUTCAR.gz")
-    results = vasp_summarize_run(atoms, directory=p, report_mp_corrections=True)
-    assert results["entry"].correction == pytest.approx(-3.2279999999999998)
-
-
-def test_summarize_mp_bad(monkeypatch, run1, tmp_path, caplog):
-    monkeypatch.chdir(tmp_path)
-    p = tmp_path / "vasp_run"
-    copytree(run1, p)
-    atoms = read(p / "OUTCAR.gz")
     with caplog.at_level(logging.WARNING):
-        vasp_summarize_run(atoms, directory=p, report_mp_corrections=True)
-    assert "invalid run type" in caplog.text
+        results = vasp_summarize_run(atoms, directory=p, check_mp_compatibility=True)
+    assert "Incorrect POTCAR files were used" in caplog.text
+    assert "Incorrect POTCAR files were used" in " ".join(
+        results["validation"]["reasons"]
+    )
+    assert results["validation"]["valid"] is False
 
 
 def test_no_bader(tmp_path, monkeypatch, run1, caplog):
