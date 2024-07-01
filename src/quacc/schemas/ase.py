@@ -10,7 +10,7 @@ from ase.io import read
 from ase.vibrations import Vibrations
 from ase.vibrations.data import VibrationsData
 
-from quacc import __version__, get_settings
+from quacc import QuaccDefault, __version__, get_settings
 from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.schemas.prep import prep_next_run
@@ -35,8 +35,7 @@ if TYPE_CHECKING:
         VibSchema,
         VibThermoSchema,
     )
-
-_DEFAULT_SETTING = ()
+    from quacc.types import DefaultSetting
 
 
 def summarize_run(
@@ -45,7 +44,7 @@ def summarize_run(
     charge_and_multiplicity: tuple[int, int] | None = None,
     move_magmoms: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None = _DEFAULT_SETTING,
+    store: Store | None | DefaultSetting = QuaccDefault,
 ) -> RunSchema:
     """
     Get tabulated results from an Atoms object and calculator and store them in a
@@ -75,7 +74,7 @@ def summarize_run(
     """
     additional_fields = additional_fields or {}
     settings = get_settings()
-    store = settings.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store == QuaccDefault else store
 
     if not final_atoms.calc:
         msg = "ASE Atoms object has no attached calculator."
@@ -124,11 +123,11 @@ def summarize_run(
 def summarize_opt_run(
     dyn: Optimizer,
     trajectory: Trajectory | list[Atoms] | None = None,
-    check_convergence: bool = _DEFAULT_SETTING,
+    check_convergence: bool | DefaultSetting = QuaccDefault,
     charge_and_multiplicity: tuple[int, int] | None = None,
     move_magmoms: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None = _DEFAULT_SETTING,
+    store: Store | None | DefaultSetting = QuaccDefault,
 ) -> OptSchema:
     """
     Get tabulated results from an ASE Atoms trajectory and store them in a database-
@@ -163,10 +162,10 @@ def summarize_opt_run(
     settings = get_settings()
     check_convergence = (
         settings.CHECK_CONVERGENCE
-        if check_convergence == _DEFAULT_SETTING
+        if check_convergence == QuaccDefault
         else check_convergence
     )
-    store = settings.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store == QuaccDefault else store
     additional_fields = additional_fields or {}
 
     # Get trajectory
@@ -294,7 +293,7 @@ def summarize_vib_and_thermo(
     pressure: float = 1.0,
     charge_and_multiplicity: tuple[int, int] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None = _DEFAULT_SETTING,
+    store: Store | None = QuaccDefault,
 ) -> VibThermoSchema:
     """
     Get tabulated results from an ASE Vibrations run and ASE IdealGasThermo object and
@@ -324,7 +323,7 @@ def summarize_vib_and_thermo(
         A dictionary that merges the `VibSchema` and `ThermoSchema`.
     """
     settings = get_settings()
-    store = settings.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store == QuaccDefault else store
 
     vib_task_doc = _summarize_vib_run(
         vib, charge_and_multiplicity=charge_and_multiplicity

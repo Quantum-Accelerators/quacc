@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
-from quacc import __version__, get_settings
+from quacc import QuaccDefault, __version__, get_settings
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.utils.dicts import finalize_dict
 from quacc.utils.files import get_uri
@@ -22,11 +22,10 @@ if TYPE_CHECKING:
     from maggma.core import Store
 
     from quacc.schemas._aliases.phonons import PhononSchema
+    from quacc.types import DefaultSetting
 
     if has_phonopy:
         from phonopy import Phonopy
-
-_DEFAULT_SETTING = ()
 
 
 @requires(has_phonopy, "This schema relies on phonopy")
@@ -36,7 +35,7 @@ def summarize_phonopy(
     directory: str | Path,
     parameters: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None = _DEFAULT_SETTING,
+    store: Store | None | DefaultSetting = QuaccDefault,
 ) -> PhononSchema:
     """
     Summarize a Phonopy object.
@@ -63,7 +62,7 @@ def summarize_phonopy(
     """
     additional_fields = additional_fields or {}
     settings = get_settings()
-    store = settings.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store == QuaccDefault else store
 
     uri = get_uri(directory)
     directory = ":".join(uri.split(":")[1:])

@@ -12,7 +12,7 @@ from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.vasp import setups as ase_setups
 from ase.constraints import FixAtoms
 
-from quacc import get_settings
+from quacc import QuaccDefault, get_settings
 from quacc.calculators.vasp.io import load_vasp_yaml_calc
 from quacc.calculators.vasp.params import (
     get_param_swaps,
@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-_DEFAULT_SETTING = ()
+    from quacc.types import DefaultSetting
 
 
 class Vasp(Vasp_):
@@ -43,11 +43,12 @@ class Vasp(Vasp_):
         self,
         input_atoms: Atoms,
         preset: None | str = None,
-        use_custodian: bool = _DEFAULT_SETTING,
-        incar_copilot: Literal["off", "on", "aggressive"] = _DEFAULT_SETTING,
-        copy_magmoms: bool = _DEFAULT_SETTING,
-        preset_mag_default: float = _DEFAULT_SETTING,
-        mag_cutoff: float = _DEFAULT_SETTING,
+        use_custodian: bool | DefaultSetting = QuaccDefault,
+        incar_copilot: Literal["off", "on", "aggressive"]
+        | DefaultSetting = QuaccDefault,
+        copy_magmoms: bool | DefaultSetting = QuaccDefault,
+        preset_mag_default: float | DefaultSetting = QuaccDefault,
+        mag_cutoff: float | DefaultSetting = QuaccDefault,
         elemental_magmoms: dict[str, float] | None = None,
         pmg_kpts: (
             dict[Literal["line_density", "kppvol", "kppa"], float]
@@ -112,28 +113,26 @@ class Vasp(Vasp_):
         # Set defaults
         use_custodian = (
             self._settings.VASP_USE_CUSTODIAN
-            if use_custodian == _DEFAULT_SETTING
+            if use_custodian == QuaccDefault
             else use_custodian
         )
         incar_copilot = (
             self._settings.VASP_INCAR_COPILOT
-            if incar_copilot == _DEFAULT_SETTING
+            if incar_copilot == QuaccDefault
             else incar_copilot
         )
         copy_magmoms = (
             self._settings.VASP_COPY_MAGMOMS
-            if copy_magmoms == _DEFAULT_SETTING
+            if copy_magmoms == QuaccDefault
             else copy_magmoms
         )
         preset_mag_default = (
             self._settings.VASP_PRESET_MAG_DEFAULT
-            if preset_mag_default == _DEFAULT_SETTING
+            if preset_mag_default == QuaccDefault
             else preset_mag_default
         )
         mag_cutoff = (
-            self._settings.VASP_MAG_CUTOFF
-            if mag_cutoff == _DEFAULT_SETTING
-            else mag_cutoff
+            self._settings.VASP_MAG_CUTOFF if mag_cutoff == QuaccDefault else mag_cutoff
         )
 
         # Assign variables to self
