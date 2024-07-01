@@ -19,9 +19,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from ase.md.md import MolecularDynamics
 
-    from quacc.runners.ase import MDParams
-    from quacc.schemas._aliases.ase import DynSchema
-    from quacc.utils.files import Filenames, SourceDirectory
+    from quacc.types import DynSchema, Filenames, MDParams, SourceDirectory
 
 
 @job
