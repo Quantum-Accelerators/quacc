@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from numpy.typing import ArrayLike, NDArray
 
 Filenames = Union[str, Path, list[Union[str, Path]]]
-SourceDirectory = Union[str | Path]
+SourceDirectory = Union[str, Path]
 
 
 class DefaultSetting:
