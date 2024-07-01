@@ -17,6 +17,7 @@ if TYPE_CHECKING:
 
     from quacc.types import QchemResults
 
+
 class QChem(FileIOCalculator):
     """Custom Q-Chem calculator built on Pymatgen and Custodian."""
 

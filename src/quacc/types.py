@@ -5,9 +5,10 @@ Custom types used throughout quacc.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Callable, Literal, TypedDict
+from typing import TYPE_CHECKING, Any, Callable, Literal, TypedDict
 
-from numpy.typing import ArrayLike, NDArray
+if TYPE_CHECKING:
+    from numpy.typing import ArrayLike, NDArray
 
 Filenames = str | Path | list[str | Path]
 SourceDirectory = str | Path
@@ -17,6 +18,7 @@ class DefaultSetting:
     """
     Type hint for when a default setting will be applied
     """
+
 
 class PmgKpts(TypedDict, total=False):
     """
