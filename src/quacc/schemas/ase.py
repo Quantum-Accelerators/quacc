@@ -76,7 +76,7 @@ def summarize_run(
     """
     additional_fields = additional_fields or {}
     settings = get_settings()
-    store = settings.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store == QuaccDefault else store
 
     if not final_atoms.calc:
         msg = "ASE Atoms object has no attached calculator."
