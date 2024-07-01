@@ -816,12 +816,12 @@ class MDParams(TypedDict, total=False):
     Type hint for `md_params` used throughout quacc.
     """
 
-        dynamics: MolecularDynamics
-        dynamics_kwargs: dict[str, Any] | None
-        steps: int
-        maxwell_boltzmann_kwargs: MaxwellBoltzmanDistributionKwargs | None
-        set_com_stationary: bool
-        set_zero_rotation: bool
+    dynamics: MolecularDynamics
+    dynamics_kwargs: dict[str, Any] | None
+    steps: int
+    maxwell_boltzmann_kwargs: MaxwellBoltzmanDistributionKwargs | None
+    set_com_stationary: bool
+    set_zero_rotation: bool
 
 
 class VibKwargs(TypedDict, total=False):
@@ -829,9 +829,9 @@ class VibKwargs(TypedDict, total=False):
     Type hint for `vib_kwargs` in [quacc.runners.ase.Runner.run_vib][].
     """
 
-        indices: list[int] | None
-        delta: float
-        nfree: int
+    indices: list[int] | None
+    delta: float
+    nfree: int
 
 
 class MaxwellBoltzmanDistributionKwargs(TypedDict, total=False):
@@ -839,6 +839,6 @@ class MaxwellBoltzmanDistributionKwargs(TypedDict, total=False):
     Type hint for `maxwell_boltzmann_kwargs` in [quacc.runners.ase.Runner.run_md][].
     """
 
-        temperature_K: float
-        force_temp: bool
-        rng: Generator | None
+    temperature_K: float
+    force_temp: bool
+    rng: Generator | None
