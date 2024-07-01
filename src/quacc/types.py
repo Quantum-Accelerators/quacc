@@ -775,7 +775,7 @@ if TYPE_CHECKING:
         electrons: ElectronsData
         control: NotRequired[dict[str, Any]]
 
-    class BaseSet(TypedDict):
+    class EspressoBaseSet(TypedDict):
         input_data: InputData
         kspacing: float
 
