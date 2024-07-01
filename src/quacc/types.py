@@ -69,7 +69,6 @@ if TYPE_CHECKING:
         fn_hook: Callable | None
         run_kwargs: dict[str, Any] | None
 
-
     class MDParams(TypedDict, total=False):
         """
         Type hint for `md_params` used throughout quacc.
@@ -81,7 +80,6 @@ if TYPE_CHECKING:
         maxwell_boltzmann_kwargs: MaxwellBoltzmanDistributionKwargs | None
         set_com_stationary: bool
         set_zero_rotation: bool
-
 
     class VibKwargs(TypedDict, total=False):
         """
@@ -180,7 +178,6 @@ if TYPE_CHECKING:
 
     class ParametersDyn(TypedDict):
         """Dictionary of parameters from Dynamics.todict()"""
-
 
     class TrajectoryLog(TypedDict):
         """Dictionary of parameters related to the MD trajectory"""
@@ -442,7 +439,6 @@ if TYPE_CHECKING:
         structure: Structure  # if atoms.pbc.any()
         molecule: Molecule  # if not atoms.pbc.any()
 
-
     # ----------- Schema (ASE) type hints -----------
 
     class RunSchema(AtomsSchema):
@@ -602,7 +598,6 @@ if TYPE_CHECKING:
         bader: BaderSchema
         chargemol: ChargemolSchema
         steps: dict[int, TaskDoc]  # when store_intermediate_results=True
-
 
     # ----------- Schema (cclib) type hints -----------
 
