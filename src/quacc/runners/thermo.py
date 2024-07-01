@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from ase import units
-from ase.thermochemistry import IdealGasThermo
+from ase.thermochemistry import HarmonicThermo, IdealGasThermo
 from emmet.core.symmetry import PointGroupData
 from pymatgen.io.ase import AseAtomsAdaptor
 
@@ -53,6 +53,7 @@ class ThermoRunner:
         -------
         IdealGasThermo object
         """
+
         # Ensure all negative modes are made complex
         for i, f in enumerate(self.vib_freqs):
             if not isinstance(f, complex) and f < 0:
@@ -82,11 +83,11 @@ class ThermoRunner:
             spin = 0
 
         # Get symmetry for later use
-        natoms = len(self.atoms)
         mol = AseAtomsAdaptor().get_molecule(self.atoms, charge_spin_check=False)
         point_group_data = PointGroupData().from_molecule(mol)
 
         # Get the geometry
+        natoms = len(self.atoms)
         if natoms == 1:
             geometry = "monatomic"
         elif point_group_data.linear:
@@ -101,5 +102,30 @@ class ThermoRunner:
             atoms=self.atoms,
             symmetrynumber=point_group_data.rotation_number,
             spin=spin,
+            ignore_imag_modes=True,
+        )
+
+    def run_harmonic_thermo(self) -> HarmonicThermo:
+        """
+        Create a HarmonicThermo object for a molecule from a given vibrational analysis.
+        This works for free gases, solids and adsorbates.
+
+        Returns
+        -------
+        HarmonicThermo object
+            The ASE `HarmonicThermo` object.
+        """
+
+        # Ensure all negative modes are made complex
+        for i, f in enumerate(self.vib_freqs):
+            if not isinstance(f, complex) and f < 0:
+                self.vib_freqs[i] = complex(0 - f * 1j)
+
+        # Convert vibrational frequencies to energies
+        vib_energies = [f * units.invcm for f in self.vib_freqs]
+
+        return HarmonicThermo(
+            vib_energies=vib_energies,
+            potentialenergy=self.energy,
             ignore_imag_modes=True,
         )

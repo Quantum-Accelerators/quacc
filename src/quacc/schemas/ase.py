@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from ase import units
 from ase.io import read
+from ase.thermochemistry import HarmonicThermo, IdealGasThermo
 from ase.vibrations import Vibrations
 from ase.vibrations.data import VibrationsData
 
@@ -24,7 +25,6 @@ if TYPE_CHECKING:
     from ase.io import Trajectory
     from ase.md.md import MolecularDynamics
     from ase.optimize.optimize import Optimizer
-    from ase.thermochemistry import IdealGasThermo
     from maggma.core import Store
 
     from quacc.types import (
@@ -288,7 +288,8 @@ def summarize_md_run(
 
 def summarize_vib_and_thermo(
     vib: Vibrations,
-    igt: IdealGasThermo,
+    thermo_analysis: IdealGasThermo | HarmonicThermo,
+    atoms: Atoms | None = None,
     temperature: float = 298.15,
     pressure: float = 1.0,
     charge_and_multiplicity: tuple[int, int] | None = None,
@@ -303,8 +304,10 @@ def summarize_vib_and_thermo(
     ----------
     vib
         ASE Vibrations object.
-    igt
-        ASE IdealGasThermo object.
+    thermo_analysis
+        ASE IdealGasThermo or HarmonicThermo object.
+    atoms
+        ASE Atoms object following a calculation.
     temperature
         Temperature in Kelvins.
     pressure
@@ -328,12 +331,18 @@ def summarize_vib_and_thermo(
     vib_task_doc = _summarize_vib_run(
         vib, charge_and_multiplicity=charge_and_multiplicity
     )
-    thermo_task_doc = _summarize_ideal_gas_thermo(
-        igt,
-        temperature=temperature,
-        pressure=pressure,
-        charge_and_multiplicity=charge_and_multiplicity,
-    )
+
+    if isinstance(thermo_analysis, HarmonicThermo):
+        thermo_task_doc = _summarize_harmonic_thermo(
+            atoms, thermo_analysis, temperature=temperature, pressure=pressure
+        )
+    elif isinstance(thermo_analysis, IdealGasThermo):
+        thermo_task_doc = _summarize_ideal_gas_thermo(
+            thermo_analysis,
+            temperature=temperature,
+            pressure=pressure,
+            charge_and_multiplicity=charge_and_multiplicity,
+        )
 
     unsorted_task_doc = recursive_dict_merge(
         vib_task_doc, thermo_task_doc, additional_fields
@@ -509,4 +518,60 @@ def _summarize_ideal_gas_thermo(
         igt.atoms, charge_and_multiplicity=charge_and_multiplicity
     )
 
+    return atoms_metadata | inputs | results
+
+
+def _summarize_harmonic_thermo(
+    atoms: Atoms,
+    harmonic_thermo: HarmonicThermo,
+    temperature: float = 298.15,
+    pressure: float = 1.0,
+) -> ThermoSchema:
+    """
+    Get tabulated results from an ASE HarmonicThermo object and store them in a
+    database-friendly format.
+
+    Parameters
+    ----------
+    atoms
+        ASE Atoms object used for the vibrational frequency calculation.
+    harmonic_thermo
+        ASE HarmonicThermo object.
+    temperature
+        Temperature in Kelvins.
+    pressure
+        Pressure in bar.
+
+    Returns
+    -------
+    ThermoSchema
+        Dictionary representation of the task document
+    """
+    settings = get_settings()
+
+    inputs = {
+        "parameters_thermo": {
+            "temperature": temperature,
+            "pressure": pressure,
+            "vib_freqs": [e / units.invcm for e in harmonic_thermo.vib_energies],
+            "vib_energies": harmonic_thermo.vib_energies.tolist(),
+            "n_imag": harmonic_thermo.n_imag,
+        }
+    }
+
+    results = {
+        "results": {
+            "energy": harmonic_thermo.potentialenergy,
+            "helmholtz_energy": harmonic_thermo.get_helmholtz_energy(
+                temperature, verbose=settings.DEBUG
+            ),
+            "internal_energy": harmonic_thermo.get_internal_energy(
+                temperature, verbose=settings.DEBUG
+            ),
+            "entropy": harmonic_thermo.get_entropy(temperature, verbose=settings.DEBUG),
+            "zpe": harmonic_thermo.get_ZPE_correction(),
+        }
+    }
+
+    atoms_metadata = atoms_to_metadata(atoms)
     return atoms_metadata | inputs | results

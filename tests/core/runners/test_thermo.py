@@ -26,3 +26,13 @@ def test_run_ideal_gas():
     co2.calc.results["magmom"] = 1.0
     igt = ThermoRunner(co2, [-12, 526, 526, 1480, 2565]).run_ideal_gas()
     assert igt.get_ZPE_correction() == pytest.approx(2548.5 * invcm)
+
+
+def test_run_harmonic_thermo():
+    co2 = molecule("CO2")
+    ht = ThermoRunner(co2, [526, 526, 1480, 2565]).run_harmonic_thermo()
+    assert ht.get_ZPE_correction() == pytest.approx(2548.5 * invcm)
+
+    co2 = molecule("CO2")
+    ht = ThermoRunner(co2, [-12, 526, 526, 1480, 2565]).run_harmonic_thermo()
+    assert ht.get_ZPE_correction() == pytest.approx(2548.5 * invcm)
