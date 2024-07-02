@@ -473,6 +473,94 @@ def neb_ts_job(
     has_geodesic_interpolate,
     "geodesic-interpolate must be installed. Refer to the quacc documentation.",
 )
+def geodesic_job(
+    reactant_atoms: Atoms,
+    product_atoms: Atoms,
+    relax_job_kwargs: dict[str, Any] | None = None,
+    calc_kwargs: dict[str, Any] | None = None,
+    geodesic_interpolate_kwargs: dict[str, Any] | None = None,
+) -> dict:
+    """
+    Perform a quasi-IRC job using the given reactant and product atoms objects.
+
+    Parameters
+    ----------
+    reactant_atoms
+        The Atoms object representing the reactant structure.
+    product_atoms
+        The Atoms object representing the product structure.
+    relax_job_kwargs
+        Keyword arguments to use for the relax_job function, by default None.
+    calc_kwargs
+        Keyword arguments for the NewtonNet calculator, by default None.
+    geodesic_interpolate_kwargs
+        Keyword arguments for the geodesic_interpolate function, by default None.
+
+    Returns
+    -------
+    dict
+        A dictionary containing the following keys:
+            - 'relax_reactant': Summary of the relaxed reactant structure.
+            - 'relax_product': Summary of the relaxed product structure.
+            - 'geodesic_results': The interpolated images between reactant and product.
+            - 'highest_e_atoms': ASE atoms object for the highest energy structure for the geodesic path
+    """
+    relax_job_kwargs = relax_job_kwargs or {}
+    geodesic_interpolate_kwargs = geodesic_interpolate_kwargs or {}
+    settings = get_settings()
+
+    calc_defaults = {
+        "model_path": settings.NEWTONNET_MODEL_PATH,
+        "settings_path": settings.NEWTONNET_CONFIG_PATH,
+        "hess_method": None,
+    }
+
+    geodesic_defaults = {"n_images": 20}
+
+    calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
+    calc_flags["hess_method"] = None
+    geodesic_interpolate_flags = recursive_dict_merge(
+        geodesic_defaults, geodesic_interpolate_kwargs
+    )
+
+    # Define calculator
+    reactant_atoms.calc = NewtonNet(**calc_flags)
+    product_atoms.calc = NewtonNet(**calc_flags)
+
+    # Run IRC
+    relax_summary_r = strip_decorator(relax_job)(reactant_atoms, **relax_job_kwargs)
+    relax_summary_p = strip_decorator(relax_job)(product_atoms, **relax_job_kwargs)
+
+    images = _geodesic_interpolate_wrapper(
+        relax_summary_r["atoms"].copy(),
+        relax_summary_p["atoms"].copy(),
+        **geodesic_interpolate_flags,
+    )
+
+    potential_energies = []
+    for image in images:
+        image.calc = NewtonNet(**calc_flags)
+        potential_energies.append(image.get_potential_energy())
+
+    ts_index = np.argmax(potential_energies)
+    highest_e_atoms = images[ts_index]
+
+    return {
+        "relax_reactant": relax_summary_r,
+        "relax_product": relax_summary_p,
+        "geodesic_results": images,
+        "highest_e_atoms": highest_e_atoms,
+    }
+
+
+@job
+@requires(
+    has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation."
+)
+@requires(
+    has_geodesic_interpolate,
+    "geodesic-interpolate must be installed. Refer to the quacc documentation.",
+)
 def geodesic_ts_job(
     reactant_atoms: Atoms,
     product_atoms: Atoms,
