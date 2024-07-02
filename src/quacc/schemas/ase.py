@@ -124,7 +124,8 @@ def summarize_run_neb2(
     input_atoms: Atoms,
     charge_and_multiplicity: tuple[int, int] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None = _DEFAULT_SETTING,
+    store: Store | None | DefaultSetting = QuaccDefault,
+
 ) -> RunSchema:
     """
     Summarize the NEB run results and store them in a database-friendly format.
@@ -147,7 +148,7 @@ def summarize_run_neb2(
     """
     additional_fields = additional_fields or {}
     settings = get_settings()
-    store = settings.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store == QuaccDefault else store
 
     if input_atoms:
         input_atoms_metadata = atoms_to_metadata(
@@ -401,7 +402,7 @@ def summarize_neb_run(
     trajectory: Trajectory | list[Atoms] | None = None,
     charge_and_multiplicity: tuple[int, int] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None = _DEFAULT_SETTING,
+    store: Store | None | DefaultSetting = QuaccDefault,
 ) -> OptSchema:
     """
     Summarize the NEB run results and store them in a database-friendly format.
@@ -425,13 +426,21 @@ def summarize_neb_run(
         A dictionary containing the summarized NEB run results.
     """
     settings = get_settings()
-    store = settings.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store == QuaccDefault else store
     additional_fields = additional_fields or {}
 
     # Get trajectory
     if not trajectory:
         trajectory = read(dyn.trajectory.filename, index=":")
+
+    n_images = additional_fields['geodesic_interpolate_flags']['n_images']
     trajectory_results = [atoms.calc.results for atoms in trajectory]
+    print(trajectory_results)
+    print(trajectory_results[-(n_images):])
+    trajectory = trajectory[-(n_images):]
+    ts_index = np.argmax([i["energy"] for i in trajectory_results[-(n_images):][1:-1]]) + 1
+    ts_atoms = trajectory[ts_index]
+
     for traj_atoms in trajectory:
         traj_atoms.calc = None
 
@@ -449,6 +458,7 @@ def summarize_neb_run(
     parameters_opt.pop("restart", None)
 
     opt_fields = {
+        "highest_e_atoms": ts_atoms,
         "parameters_opt": parameters_opt,
         "trajectory": trajectory,
         "trajectory_results": trajectory_results,
