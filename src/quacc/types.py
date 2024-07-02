@@ -40,6 +40,18 @@ if TYPE_CHECKING:
     from pymatgen.io.vasp.inputs import Incar, Kpoints, Poscar, Potcar
     from typing_extensions import NotRequired, TypedDict
 
+    CclibAnalysis = Literal[
+        "cpsa",
+        "mpa",
+        "lpa",
+        "bickelhaupt",
+        "density",
+        "mbo",
+        "bader",
+        "ddec6",
+        "hirshfeld",
+    ]
+
     # ----------- File handling -----------
 
     Filenames = Union[str, Path, list[Union[str, Path]]]

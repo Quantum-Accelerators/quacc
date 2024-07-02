@@ -21,7 +21,6 @@ if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
-    from ase.io import Trajectory
     from ase.md.md import MolecularDynamics
     from ase.optimize.optimize import Optimizer
     from ase.thermochemistry import IdealGasThermo
@@ -170,10 +169,12 @@ def summarize_opt_run(
 
     # Get trajectory
     if not trajectory:
-        trajectory = read(dyn.trajectory.filename, index=":")
-    trajectory_results = [atoms.calc.results for atoms in trajectory]
+        atoms_trajectory = read(dyn.trajectory.filename, index=":")
+    else:
+        atoms_trajectory = trajectory
+    trajectory_results = [atoms.calc.results for atoms in atoms_trajectory]
 
-    initial_atoms = trajectory[0]
+    initial_atoms = atoms_trajectory[0]
     final_atoms = get_final_atoms_from_dynamics(dyn)
     directory = final_atoms.calc.directory
 
@@ -200,7 +201,7 @@ def summarize_opt_run(
     opt_fields = {
         "parameters_opt": parameters_opt,
         "converged": is_converged,
-        "trajectory": trajectory,
+        "trajectory": atoms_trajectory,
         "trajectory_results": trajectory_results,
     }
 
@@ -214,7 +215,7 @@ def summarize_opt_run(
 
 def summarize_md_run(
     dyn: MolecularDynamics,
-    trajectory: Trajectory | list[Atoms] | None = None,
+    trajectory: list[Atoms] | None = None,
     charge_and_multiplicity: tuple[int, int] | None = None,
     move_magmoms: bool = True,
     additional_fields: dict[str, Any] | None = None,

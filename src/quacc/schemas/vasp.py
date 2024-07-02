@@ -26,7 +26,6 @@ if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
-    from ase.io import Trajectory
     from ase.optimize.optimize import Optimizer
     from maggma.core import Store
 
@@ -175,7 +174,7 @@ def vasp_summarize_run(
 
 def summarize_vasp_opt_run(
     optimizer: Optimizer,
-    trajectory: Trajectory | list[Atoms] | None = None,
+    trajectory: list[Atoms] | None = None,
     directory: str | Path | None = None,
     move_magmoms: bool = True,
     run_bader: bool | DefaultSetting = QuaccDefault,
@@ -293,7 +292,7 @@ def _bader_runner(path: Path | str) -> BaderSchema:
 
 
 def _chargemol_runner(
-    path: str, atomic_densities_path: str | None = None
+    path: Path | str, atomic_densities_path: str | None = None
 ) -> ChargemolSchema:
     """
     Runs a Chargemol (i.e. DDEC6 + CM5) analysis using the VASP output files in
