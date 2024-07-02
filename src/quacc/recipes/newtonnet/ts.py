@@ -360,7 +360,13 @@ def neb_job(
         "relax_reactant": relax_summary_r,
         "relax_product": relax_summary_p,
         "geodesic_results": images,
-        "neb_results": summarize_neb_run(dyn),
+        "neb_results": summarize_neb_run(
+            dyn,
+            additional_fields={
+                "neb_flags": neb_flags,
+                "calc_flags": calc_flags,
+                "geodesic_interpolate_flags": geodesic_interpolate_flags
+            }),
     }
 
 
