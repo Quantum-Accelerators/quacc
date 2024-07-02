@@ -3,21 +3,36 @@ from __future__ import annotations
 import glob
 import logging
 import os
+from importlib.util import find_spec
 from pathlib import Path
 from shutil import rmtree
 
 import numpy as np
 import pytest
+
+
+@pytest.fixture(scope="session", autouse=True)
+def set_seed():
+    np.random.seed(42)  # noqa: NPY002
+
+
+from ase import Atoms
 from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
 from ase.io import read
+from ase.mep.neb import NEBOptimizer
 from ase.optimize import BFGS, BFGSLineSearch
 from ase.optimize.sciopt import SciPyFminBFGS
 
-from quacc import change_settings, get_settings
+# from sella import Sella
+from quacc import change_settings, get_settings, strip_decorator
+from quacc.recipes.emt.core import relax_job
 from quacc.runners._base import BaseRunner
-from quacc.runners.ase import Runner
+from quacc.runners.ase import Runner, _geodesic_interpolate_wrapper, run_neb
+from quacc.schemas.ase import summarize_neb_run
+
+has_geodesic_interpolate = bool(find_spec("geodesic_interpolate"))
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.propagate = True
@@ -46,6 +61,180 @@ def teardown_function():
     for f in ["test_file.txt", "test_file.txt.gz"]:
         if os.path.exists(os.path.join(results_dir, f)):
             os.remove(os.path.join(results_dir, f))
+
+
+@pytest.fixture()
+def setup_test_environment(tmp_path):
+    reactant = Atoms(
+        symbols="CCHHCHH",
+        positions=[
+            [1.4835950817281542, -1.0145410211301968, -0.13209027203235943],
+            [0.8409564131524673, 0.018549610257914483, -0.07338809662321308],
+            [-0.6399757891931867, 0.01763740851518944, 0.0581573443268891],
+            [-1.0005576455546672, 1.0430257532387608, 0.22197240310602892],
+            [1.402180736662139, 0.944112416574632, -0.12179540364365492],
+            [-1.1216961389434357, -0.3883639833876232, -0.8769102842015071],
+            [-0.9645026578514683, -0.6204201840686793, 0.9240543090678239],
+        ],
+    )
+
+    product = Atoms(
+        symbols="CCHHCHH",
+        positions=[
+            [1.348003553501624, 0.4819311116778978, 0.2752537177143993],
+            [0.2386618286631742, -0.3433222966734429, 0.37705518940917926],
+            [-0.9741307940518336, 0.07686022294949588, 0.08710778043683955],
+            [-1.8314843503320921, -0.5547344604780035, 0.1639037492534953],
+            [0.3801391040059668, -1.3793340533058087, 0.71035902765307],
+            [1.9296265384257907, 0.622088341468767, 1.0901733942191298],
+            [-1.090815880212625, 1.0965111343610956, -0.23791518420660265],
+        ],
+    )
+    return reactant, product
+
+
+@pytest.mark.skipif(
+    not has_geodesic_interpolate,
+    reason="geodesic_interpolate function is not available",
+)
+def test_geodesic_interpolate_wrapper(setup_test_environment):
+    n_images = 20
+    convergence_tolerance = 1e-4
+    max_iterations = 10
+    max_micro_iterations = 10
+    morse_scaling = 1.5
+    geometry_friction = 1e-2
+    distance_cutoff = 2.5
+
+    reactant, product = setup_test_environment
+
+    # Execute the geodesic_interpolate_wrapper function
+    smoother_path = _geodesic_interpolate_wrapper(
+        reactant,
+        product,
+        n_images=n_images,
+        convergence_tolerance=convergence_tolerance,
+        max_iterations=max_iterations,
+        max_micro_iterations=max_micro_iterations,
+        morse_scaling=morse_scaling,
+        geometry_friction=geometry_friction,
+        distance_cutoff=distance_cutoff,
+    )
+    assert smoother_path[1].positions[0][0] == pytest.approx(1.378384900, abs=1e-5)
+    assert smoother_path[5].positions[0][2] == pytest.approx(-0.512075394, abs=1e-5)
+
+
+@pytest.mark.skipif(
+    not has_geodesic_interpolate,
+    reason="geodesic_interpolate function is not available",
+)
+def test_geodesic_interpolate_wrapper_large_system(setup_test_environment):
+    # Test with large system to trigger sweeping updates
+    smoother_path = _geodesic_interpolate_wrapper(molecule("C60"), molecule("C60"))
+    assert len(smoother_path) == 20
+
+
+@pytest.mark.skipif(
+    not has_geodesic_interpolate,
+    reason="geodesic_interpolate function is not available",
+)
+def test_run_neb(setup_test_environment, tmp_path):
+    optimizer_class = NEBOptimizer
+    n_intermediate = 10
+    r_positions = -0.849607247104427
+    p_energy = 1.0824716056541726
+    first_image_forces = -0.0052292931195385695
+
+    reactant, product = setup_test_environment
+
+    optimized_r = strip_decorator(relax_job)(reactant)["atoms"]
+    optimized_p = strip_decorator(relax_job)(product)["atoms"]
+
+    optimized_r.calc = EMT()
+    optimized_p.calc = EMT()
+
+    images = _geodesic_interpolate_wrapper(
+        optimized_r.copy(), optimized_p.copy(), n_images=n_intermediate
+    )
+    for image in images:
+        image.calc = EMT()
+    assert optimized_p.positions[0][1] == pytest.approx(-0.19275398865159504, abs=1e-6)
+    assert optimized_r.positions[0][1] == pytest.approx(r_positions, abs=1e-6)
+    assert optimized_p.get_potential_energy() == pytest.approx(
+        p_energy, abs=1e-6
+    ), "pdt pot. energy"
+    assert optimized_p.get_forces()[0, 1] == pytest.approx(
+        first_image_forces, abs=1e-6
+    ), "pdt forces"
+
+    neb_kwargs = {"method": "aseneb", "precon": None}
+    dyn = run_neb(images, optimizer=optimizer_class, neb_kwargs=neb_kwargs)
+    neb_summary = summarize_neb_run(dyn)
+
+    assert neb_summary["trajectory_results"][1]["energy"] == pytest.approx(
+        1.09895294161361, abs=1e-6
+    )
+
+
+@pytest.mark.skipif(
+    not has_geodesic_interpolate,
+    reason="geodesic_interpolate function is not available",
+)
+def test_run_neb2(setup_test_environment, tmp_path):
+    """
+    Test the NEB calculation with geodesic interpolation.
+
+    Parameters
+    ----------
+    setup_test_environment
+        Fixture to set up the test environment with reactant and product Atoms.
+    tmp_path
+        Temporary directory path for test files.
+
+    Notes
+    -----
+    This test performs the following steps:
+    1. Set up the reactant and product Atoms using the `setup_test_environment` fixture.
+    2. Optimize the reactant and product structures using `strip_decorator(relax_job)`.
+    3. Assign the EMT calculator to the optimized structures.
+    4. Perform geodesic interpolation between the optimized reactant and product.
+    5. Validate the positions, potential energy, and forces of the optimized product.
+    6. Test that using `BFGSLineSearch` as an optimizer with NEB raises a ValueError.
+    """
+    optimizer_class = BFGSLineSearch
+    n_intermediate = 10
+    r_positions = -0.8496072471044277
+    p_energy = 1.0824716056541726
+    first_image_forces = -0.0052292931195385695
+
+    reactant, product = setup_test_environment
+
+    optimized_r = strip_decorator(relax_job)(reactant)["atoms"]
+    optimized_p = strip_decorator(relax_job)(product)["atoms"]
+
+    optimized_r.calc = EMT()
+    optimized_p.calc = EMT()
+
+    images = _geodesic_interpolate_wrapper(
+        optimized_r.copy(), optimized_p.copy(), n_images=n_intermediate
+    )
+    for image in images:
+        image.calc = EMT()
+    assert optimized_p.positions[0][1] == pytest.approx(-0.19275398865159504, abs=1e-6)
+    assert optimized_r.positions[0][1] == pytest.approx(r_positions, abs=1e-6)
+    assert optimized_p.get_potential_energy() == pytest.approx(
+        p_energy, abs=1e-6
+    ), "pdt pot. energy"
+    assert optimized_p.get_forces()[0, 1] == pytest.approx(
+        first_image_forces, abs=1e-6
+    ), "pdt forces"
+
+    neb_kwargs = {"method": "aseneb", "precon": None}
+    if optimizer_class == BFGSLineSearch:
+        with pytest.raises(
+            ValueError, match="BFGSLineSearch is not allowed as optimizer with NEB."
+        ):
+            run_neb(images, optimizer=optimizer_class, neb_kwargs=neb_kwargs)
 
 
 def test_base_runner(tmp_path, monkeypatch):

@@ -2,16 +2,31 @@ from __future__ import annotations
 
 import pytest
 
+
+@pytest.fixture(scope="session", autouse=True)
+def set_seed():
+    np.random.seed(42)  # noqa: NPY002
+
+
 pytest.importorskip("sella")
 pytest.importorskip("newtonnet")
 from pathlib import Path
 
 import numpy as np
+from ase import Atoms
 from ase.build import molecule
 
 from quacc import _internally_set_settings
 from quacc.recipes.newtonnet.core import freq_job, relax_job, static_job
-from quacc.recipes.newtonnet.ts import irc_job, quasi_irc_job, ts_job
+from quacc.recipes.newtonnet.ts import (
+    geodesic_job,
+    geodesic_ts_job,
+    irc_job,
+    neb_job,
+    neb_ts_job,
+    quasi_irc_job,
+    ts_job,
+)
 
 current_file_path = Path(__file__).parent
 
@@ -106,7 +121,7 @@ def test_ts_job_with_default_args(tmp_path, monkeypatch):
     assert "freq_job" in output
     assert output["results"]["energy"] == pytest.approx(-6.796914263061945)
     assert output["freq_job"]["results"]["imag_vib_freqs"][0] == pytest.approx(
-        -2426.7398321816004
+        -2426.739832181613, abs=1e-6
     )
 
 
@@ -282,3 +297,116 @@ def test_quasi_irc_job_with_custom_irc_swaps(tmp_path, monkeypatch):
     assert output["irc_job"]["results"]["energy"] == pytest.approx(-9.517354965639784)
     assert output["results"]["energy"] == pytest.approx(-9.517354965639784)
     assert output["freq_job"]["results"]["energy"] == pytest.approx(-9.517354965639784)
+
+
+@pytest.fixture()
+def setup_test_environment(tmp_path):
+    reactant = Atoms(
+        symbols="CCHHCHH",
+        positions=[
+            [1.4835950817281542, -1.0145410211301968, -0.13209027203235943],
+            [0.8409564131524673, 0.018549610257914483, -0.07338809662321308],
+            [-0.6399757891931867, 0.01763740851518944, 0.0581573443268891],
+            [-1.0005576455546672, 1.0430257532387608, 0.22197240310602892],
+            [1.402180736662139, 0.944112416574632, -0.12179540364365492],
+            [-1.1216961389434357, -0.3883639833876232, -0.8769102842015071],
+            [-0.9645026578514683, -0.6204201840686793, 0.9240543090678239],
+        ],
+    )
+
+    product = Atoms(
+        symbols="CCHHCHH",
+        positions=[
+            [1.348003553501624, 0.4819311116778978, 0.2752537177143993],
+            [0.2386618286631742, -0.3433222966734429, 0.37705518940917926],
+            [-0.9741307940518336, 0.07686022294949588, 0.08710778043683955],
+            [-1.8314843503320921, -0.5547344604780035, 0.1639037492534953],
+            [0.3801391040059668, -1.3793340533058087, 0.71035902765307],
+            [1.9296265384257907, 0.622088341468767, 1.0901733942191298],
+            [-1.090815880212625, 1.0965111343610956, -0.23791518420660265],
+        ],
+    )
+
+    return reactant, product
+
+
+def test_neb_job(setup_test_environment, tmp_path):
+    reactant, product = setup_test_environment
+
+    neb_summary = neb_job(reactant, product)
+
+    assert len(neb_summary["neb_results"]["trajectory_results"]) == 20
+    assert neb_summary["relax_reactant"]["atoms"].positions[0, 0] == pytest.approx(
+        0.8815, abs=1e-3
+    )
+    assert neb_summary["relax_product"]["atoms"].positions[0, 0] == pytest.approx(
+        1.117689, abs=1e-3
+    )
+
+    assert neb_summary["neb_results"]["trajectory_results"][1][
+        "energy"
+    ] == pytest.approx(-24.827799, abs=0.01)
+
+
+def test_neb_ts_job_no_hess(setup_test_environment, tmp_path):
+    reactant, product = setup_test_environment
+    ts_job_kwargs = {"use_custom_hessian": False}
+    calc_kwargs = {}
+    neb_ts_results = neb_ts_job(
+        reactant, product, calc_kwargs=calc_kwargs, ts_job_kwargs=ts_job_kwargs
+    )
+    # print('\n\n\n\n', neb_ts_results.keys())
+    # print('\n\n\n\n', neb_ts_results["ts_results"]["atoms"])
+    assert neb_ts_results["ts_results"]["results"]["energy"] == pytest.approx(
+        -24.936558106705697, abs=1e-6
+    )
+
+
+# def test_neb_ts_job_hess(setup_test_environment, tmp_path):
+#     reactant, product = setup_test_environment
+#     ts_job_kwargs = {"use_custom_hessian": True}
+#     calc_kwargs = {"hess_method": "autograd"}
+#     neb_ts_results = neb_ts_job(
+#         reactant, product, calc_kwargs=calc_kwargs, ts_job_kwargs=ts_job_kwargs
+#     )
+#     assert neb_ts_results["ts_results"]["results"]["energy"] == pytest.approx(
+#         -23.978347778320312, abs=1e-6
+#     )
+
+
+def test_geodesic_job(setup_test_environment, tmp_path):
+    reactant, product = setup_test_environment
+    calc_kwargs = {}
+
+    geodesic_summary = geodesic_job(reactant, product, calc_kwargs=calc_kwargs)
+    assert geodesic_summary["highest_e_atoms"].get_potential_energy() == pytest.approx(
+        -22.574275970458984, abs=1e-6
+    )
+
+
+def test_geodesic_ts_job_no_hess(setup_test_environment, tmp_path):
+    reactant, product = setup_test_environment
+    ts_job_kwargs = {}
+    calc_kwargs = {}
+
+    geodesic_ts_summary = geodesic_ts_job(
+        reactant, product, ts_job_kwargs=ts_job_kwargs, calc_kwargs=calc_kwargs
+    )
+    # print(len(geodesic_ts_summary['ts_results']['trajectory_results']))
+    assert geodesic_ts_summary["ts_results"]["results"]["energy"] == pytest.approx(
+        -23.803498330552344, abs=1e-6
+    )
+
+
+#
+# def test_geodesic_ts_job_hess(setup_test_environment, tmp_path):
+#     reactant, product = setup_test_environment
+#     ts_job_kwargs = {"use_custom_hessian": True}
+#     calc_kwargs = {"hess_method": "autograd"}
+#
+#     geodesic_ts_summary = geodesic_ts_job(
+#         reactant, product, ts_job_kwargs=ts_job_kwargs, calc_kwargs=calc_kwargs
+#     )
+#     assert geodesic_ts_summary["ts_results"]["results"]["energy"] == pytest.approx(
+#         -23.803544998168945, abs=1e-6
+#     )

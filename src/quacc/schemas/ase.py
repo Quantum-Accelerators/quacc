@@ -120,6 +120,55 @@ def summarize_run(
     )
 
 
+def summarize_run_neb2(
+    input_atoms: Atoms,
+    charge_and_multiplicity: tuple[int, int] | None = None,
+    additional_fields: dict[str, Any] | None = None,
+    store: Store | None | DefaultSetting = QuaccDefault,
+) -> RunSchema:
+    """
+    Summarize the NEB run results and store them in a database-friendly format.
+
+    Parameters
+    ----------
+    input_atoms
+        The input Atoms object used for the NEB run.
+    charge_and_multiplicity
+        Charge and spin multiplicity of the Atoms object.
+    additional_fields
+        Additional fields to add to the task document.
+    store
+        Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`.
+
+    Returns
+    -------
+    RunSchema
+        A dictionary containing the summarized NEB run results.
+    """
+    additional_fields = additional_fields or {}
+    settings = get_settings()
+    store = settings.STORE if store == QuaccDefault else store
+
+    if input_atoms:
+        input_atoms_metadata = atoms_to_metadata(
+            input_atoms,
+            charge_and_multiplicity=charge_and_multiplicity,
+            store_pmg=False,
+        )
+    else:
+        input_atoms_metadata = {}
+
+    inputs = {"input_atoms": input_atoms_metadata, "quacc_version": __version__}
+    results = {}
+    final_atoms_metadata = {}
+
+    unsorted_task_doc = final_atoms_metadata | inputs | results | additional_fields
+
+    return finalize_dict(
+        unsorted_task_doc, "", gzip_file=settings.GZIP_FILES, store=store
+    )
+
+
 def summarize_opt_run(
     dyn: Optimizer,
     trajectory: Trajectory | list[Atoms] | None = None,
@@ -344,6 +393,80 @@ def summarize_vib_and_thermo(
         vib.atoms.calc.directory if isinstance(vib, Vibrations) else None,
         gzip_file=settings.GZIP_FILES,
         store=store,
+    )
+
+
+def summarize_neb_run(
+    dyn: Optimizer,
+    trajectory: Trajectory | list[Atoms] | None = None,
+    charge_and_multiplicity: tuple[int, int] | None = None,
+    additional_fields: dict[str, Any] | None = None,
+    store: Store | None | DefaultSetting = QuaccDefault,
+) -> OptSchema:
+    """
+    Summarize the NEB run results and store them in a database-friendly format.
+
+    Parameters
+    ----------
+    dyn
+        ASE Optimizer object used for the NEB run.
+    trajectory
+        Trajectory of the NEB run, either as a Trajectory object or a list of Atoms objects.
+    charge_and_multiplicity
+        Charge and spin multiplicity of the Atoms object.
+    additional_fields
+        Additional fields to add to the task document.
+    store
+        Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`.
+
+    Returns
+    -------
+    OptSchema
+        A dictionary containing the summarized NEB run results.
+    """
+    settings = get_settings()
+    store = settings.STORE if store == QuaccDefault else store
+    additional_fields = additional_fields or {}
+
+    # Get trajectory
+    if not trajectory:
+        trajectory = read(dyn.trajectory.filename, index=":")
+
+    n_images = additional_fields["geodesic_interpolate_flags"]["n_images"]
+    trajectory_results = [atoms.calc.results for atoms in trajectory]
+    trajectory = trajectory[-(n_images):]
+    trajectory_results = trajectory_results[-(n_images):]
+    ts_index = np.argmax([i["energy"] for i in trajectory_results[1:-1]]) + 1
+    ts_atoms = trajectory[ts_index]
+
+    for traj_atoms in trajectory:
+        traj_atoms.calc = None
+
+    initial_atoms = trajectory[0]
+    get_final_atoms_from_dynamics(dyn)
+
+    # Base task doc
+    base_task_doc = summarize_run_neb2(
+        initial_atoms, charge_and_multiplicity=charge_and_multiplicity, store=None
+    )
+
+    # Clean up the opt parameters
+    parameters_opt = dyn.todict()
+    parameters_opt.pop("logfile", None)
+    parameters_opt.pop("restart", None)
+
+    opt_fields = {
+        "highest_e_atoms": ts_atoms,
+        "parameters_opt": parameters_opt,
+        "trajectory": trajectory,
+        "trajectory_results": trajectory_results,
+    }
+
+    # Create a dictionary of the inputs/outputs
+    unsorted_task_doc = base_task_doc | opt_fields | additional_fields
+
+    return finalize_dict(
+        unsorted_task_doc, "", gzip_file=settings.GZIP_FILES, store=store
     )
 
 
