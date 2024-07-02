@@ -21,8 +21,7 @@ from ruamel.yaml import YAML
 if TYPE_CHECKING:
     from typing import Any
 
-    Filenames = str | Path | list[str | Path]
-    SourceDirectory = str | Path
+    from quacc.types import Filenames, SourceDirectory
 
 
 logger = logging.getLogger(__name__)
@@ -46,7 +45,8 @@ def check_logfile(logfile: str | Path, check_str: str) -> bool:
     bool
         True if the string is found in the logfile, False otherwise.
     """
-    zlog = Path(zpath(Path(logfile).expanduser()))
+    logfile_path = Path(logfile).expanduser()
+    zlog = Path(zpath(str(logfile_path)))
     with zopen(zlog, "r") as f:
         for line in f:
             clean_line = line if isinstance(line, str) else line.decode("utf-8")

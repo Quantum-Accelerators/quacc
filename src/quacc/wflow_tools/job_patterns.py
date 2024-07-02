@@ -37,7 +37,7 @@ def map_partitioned_lists(
     func: Callable,
     num_partitions: int,
     unmapped_kwargs: dict[str, Any] | None = None,
-    **mapped_kwargs: dict[str, list[list[Any]]],
+    **mapped_kwargs: list[list[Any]],
 ) -> list[Any]:
     """
     Given list-of-lists parameters (say a list of batches that we want to map over),

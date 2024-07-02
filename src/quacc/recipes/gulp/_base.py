@@ -18,8 +18,8 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.schemas._aliases.ase import RunSchema
-    from quacc.utils.files import Filenames, SourceDirectory
+    from quacc.types import Filenames, RunSchema, SourceDirectory
+
 logger = logging.getLogger(__name__)
 
 GEOM_FILE_PBC = "gulp.cif"
@@ -78,6 +78,9 @@ def run_and_summarize(
         if "opti" in keyword_defaults and "conv" not in keyword_defaults:
             keyword_defaults += ["conv"]
         keyword_defaults = [k for k in keyword_defaults if k not in ["gwolf", "conp"]]
+
+    if option_defaults is None:
+        option_defaults = []
 
     option_defaults += [
         (

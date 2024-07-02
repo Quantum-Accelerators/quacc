@@ -10,7 +10,7 @@ from ase.io import read
 from ase.vibrations import Vibrations
 from ase.vibrations.data import VibrationsData
 
-from quacc import __version__, get_settings
+from quacc import QuaccDefault, __version__, get_settings
 from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.schemas.prep import prep_next_run
@@ -27,7 +27,8 @@ if TYPE_CHECKING:
     from ase.thermochemistry import IdealGasThermo
     from maggma.core import Store
 
-    from quacc.schemas._aliases.ase import (
+    from quacc.types import (
+        DefaultSetting,
         DynSchema,
         OptSchema,
         RunSchema,
@@ -36,8 +37,6 @@ if TYPE_CHECKING:
         VibThermoSchema,
     )
 
-_DEFAULT_SETTING = ()
-
 
 def summarize_run(
     final_atoms: Atoms,
@@ -45,7 +44,7 @@ def summarize_run(
     charge_and_multiplicity: tuple[int, int] | None = None,
     move_magmoms: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None = _DEFAULT_SETTING,
+    store: Store | None | DefaultSetting = QuaccDefault,
 ) -> RunSchema:
     """
     Get tabulated results from an Atoms object and calculator and store them in a
@@ -75,7 +74,7 @@ def summarize_run(
     """
     additional_fields = additional_fields or {}
     settings = get_settings()
-    store = settings.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store == QuaccDefault else store
 
     if not final_atoms.calc:
         msg = "ASE Atoms object has no attached calculator."
@@ -125,7 +124,7 @@ def summarize_run_neb2(
     input_atoms: Atoms,
     charge_and_multiplicity: tuple[int, int] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None = _DEFAULT_SETTING,
+    store: Store | None | DefaultSetting = QuaccDefault,
 ) -> RunSchema:
     """
     Summarize the NEB run results and store them in a database-friendly format.
@@ -148,7 +147,7 @@ def summarize_run_neb2(
     """
     additional_fields = additional_fields or {}
     settings = get_settings()
-    store = settings.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store == QuaccDefault else store
 
     if input_atoms:
         input_atoms_metadata = atoms_to_metadata(
@@ -173,11 +172,11 @@ def summarize_run_neb2(
 def summarize_opt_run(
     dyn: Optimizer,
     trajectory: Trajectory | list[Atoms] | None = None,
-    check_convergence: bool = _DEFAULT_SETTING,
+    check_convergence: bool | DefaultSetting = QuaccDefault,
     charge_and_multiplicity: tuple[int, int] | None = None,
     move_magmoms: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None = _DEFAULT_SETTING,
+    store: Store | None | DefaultSetting = QuaccDefault,
 ) -> OptSchema:
     """
     Get tabulated results from an ASE Atoms trajectory and store them in a database-
@@ -212,10 +211,10 @@ def summarize_opt_run(
     settings = get_settings()
     check_convergence = (
         settings.CHECK_CONVERGENCE
-        if check_convergence == _DEFAULT_SETTING
+        if check_convergence == QuaccDefault
         else check_convergence
     )
-    store = settings.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store == QuaccDefault else store
     additional_fields = additional_fields or {}
 
     # Get trajectory
@@ -343,7 +342,7 @@ def summarize_vib_and_thermo(
     pressure: float = 1.0,
     charge_and_multiplicity: tuple[int, int] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None = _DEFAULT_SETTING,
+    store: Store | None = QuaccDefault,
 ) -> VibThermoSchema:
     """
     Get tabulated results from an ASE Vibrations run and ASE IdealGasThermo object and
@@ -373,7 +372,7 @@ def summarize_vib_and_thermo(
         A dictionary that merges the `VibSchema` and `ThermoSchema`.
     """
     settings = get_settings()
-    store = settings.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store == QuaccDefault else store
 
     vib_task_doc = _summarize_vib_run(
         vib, charge_and_multiplicity=charge_and_multiplicity
@@ -402,7 +401,7 @@ def summarize_neb_run(
     trajectory: Trajectory | list[Atoms] | None = None,
     charge_and_multiplicity: tuple[int, int] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    store: Store | None = _DEFAULT_SETTING,
+    store: Store | None | DefaultSetting = QuaccDefault,
 ) -> OptSchema:
     """
     Summarize the NEB run results and store them in a database-friendly format.
@@ -426,13 +425,21 @@ def summarize_neb_run(
         A dictionary containing the summarized NEB run results.
     """
     settings = get_settings()
-    store = settings.STORE if store == _DEFAULT_SETTING else store
+    store = settings.STORE if store == QuaccDefault else store
     additional_fields = additional_fields or {}
 
     # Get trajectory
     if not trajectory:
         trajectory = read(dyn.trajectory.filename, index=":")
+
+    n_images = additional_fields["geodesic_interpolate_flags"]["n_images"]
     trajectory_results = [atoms.calc.results for atoms in trajectory]
+    trajectory = trajectory[-(n_images):]
+    ts_index = (
+        np.argmax([i["energy"] for i in trajectory_results[-(n_images):][1:-1]]) + 1
+    )
+    ts_atoms = trajectory[ts_index]
+
     for traj_atoms in trajectory:
         traj_atoms.calc = None
 
@@ -450,6 +457,7 @@ def summarize_neb_run(
     parameters_opt.pop("restart", None)
 
     opt_fields = {
+        "highest_e_atoms": ts_atoms,
         "parameters_opt": parameters_opt,
         "trajectory": trajectory,
         "trajectory_results": trajectory_results,

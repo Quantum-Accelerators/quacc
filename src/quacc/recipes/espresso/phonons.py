@@ -23,18 +23,17 @@ from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:
-    from typing import Any, Callable, TypedDict
+    from collections import UserDict
+    from typing import Any, Callable
 
     from ase.atoms import Atoms
 
-    from quacc.schemas._aliases.ase import RunSchema
-    from quacc.utils.files import Filenames, SourceDirectory
-
-    class PhononDosSchema(TypedDict):
-        relax_job: RunSchema
-        phonon_job: RunSchema
-        q2r_job: RunSchema
-        matdyn_job: RunSchema
+    from quacc.types import (
+        EspressoPhononDosSchema,
+        Filenames,
+        RunSchema,
+        SourceDirectory,
+    )
 
 
 @job
@@ -204,7 +203,7 @@ def phonon_dos_flow(
     atoms: Atoms,
     job_params: dict[str, Any] | None = None,
     job_decorators: dict[str, Callable | None] | None = None,
-) -> PhononDosSchema:
+) -> EspressoPhononDosSchema:
     """
     Function to carry out a phonon DOS calculation. The phonon calculation is carried
     out on a coarse q-grid, the force constants are calculated and extrapolated to a
@@ -372,7 +371,7 @@ def grid_phonon_flow(
 
     @subflow
     def _grid_phonon_subflow(
-        ph_input_data: dict | None,
+        ph_input_data: UserDict | None,
         ph_init_job_results: RunSchema,
         ph_job: Job,
         nblocks: int = 1,
@@ -422,6 +421,7 @@ def grid_phonon_flow(
 
         return grid_results
 
+    job_params = job_params or {}
     default_job_params = {
         "relax_job": {
             "input_data": {

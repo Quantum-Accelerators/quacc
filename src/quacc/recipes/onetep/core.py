@@ -13,9 +13,7 @@ from quacc.utils.dicts import recursive_dict_merge
 if TYPE_CHECKING:
     from ase.atoms import Atoms
 
-    from quacc.runners.ase import OptParams
-    from quacc.schemas._aliases.ase import RunSchema
-    from quacc.utils.files import Filenames, SourceDirectory
+    from quacc.types import Filenames, OptParams, RunSchema, SourceDirectory
 
 BASE_SET = {
     "keywords": {
