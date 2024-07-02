@@ -378,9 +378,7 @@ def test_geodesic_job(setup_test_environment, tmp_path):
     reactant, product = setup_test_environment
     calc_kwargs = {}
 
-    geodesic_summary = geodesic_job(
-        reactant, product, calc_kwargs=calc_kwargs
-    )
+    geodesic_summary = geodesic_job(reactant, product, calc_kwargs=calc_kwargs)
     assert geodesic_summary["highest_e_atoms"].get_potential_energy() == pytest.approx(
         -22.574275970458984, abs=1e-6
     )
