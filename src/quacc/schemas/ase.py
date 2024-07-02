@@ -122,7 +122,7 @@ def summarize_run(
 
 def summarize_opt_run(
     dyn: Optimizer,
-    trajectory: Trajectory | list[Atoms] | None = None,
+    trajectory: list[Atoms] | None = None,
     check_convergence: bool | DefaultSetting = QuaccDefault,
     charge_and_multiplicity: tuple[int, int] | None = None,
     move_magmoms: bool = False,
