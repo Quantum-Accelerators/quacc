@@ -27,7 +27,9 @@ def get_phonopy(
     atoms: Atoms,
     min_lengths: float | tuple[float, float, float] | None = None,
     supercell_matrix: (
-        tuple[tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]] | None
+        np.ndarray
+        | tuple[tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]]
+        | None
     ) = None,
     symprec: float = 1e-5,
     displacement: float = 0.01,
