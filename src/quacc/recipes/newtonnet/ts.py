@@ -365,8 +365,9 @@ def neb_job(
             additional_fields={
                 "neb_flags": neb_flags,
                 "calc_flags": calc_flags,
-                "geodesic_interpolate_flags": geodesic_interpolate_flags
-            }),
+                "geodesic_interpolate_flags": geodesic_interpolate_flags,
+            },
+        ),
     }
 
 

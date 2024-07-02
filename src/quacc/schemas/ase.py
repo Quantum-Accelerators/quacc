@@ -125,7 +125,6 @@ def summarize_run_neb2(
     charge_and_multiplicity: tuple[int, int] | None = None,
     additional_fields: dict[str, Any] | None = None,
     store: Store | None | DefaultSetting = QuaccDefault,
-
 ) -> RunSchema:
     """
     Summarize the NEB run results and store them in a database-friendly format.
@@ -433,12 +432,12 @@ def summarize_neb_run(
     if not trajectory:
         trajectory = read(dyn.trajectory.filename, index=":")
 
-    n_images = additional_fields['geodesic_interpolate_flags']['n_images']
+    n_images = additional_fields["geodesic_interpolate_flags"]["n_images"]
     trajectory_results = [atoms.calc.results for atoms in trajectory]
-    print(trajectory_results)
-    print(trajectory_results[-(n_images):])
     trajectory = trajectory[-(n_images):]
-    ts_index = np.argmax([i["energy"] for i in trajectory_results[-(n_images):][1:-1]]) + 1
+    ts_index = (
+        np.argmax([i["energy"] for i in trajectory_results[-(n_images):][1:-1]]) + 1
+    )
     ts_atoms = trajectory[ts_index]
 
     for traj_atoms in trajectory:
