@@ -19,6 +19,7 @@ from ase.build import molecule
 from quacc import _internally_set_settings
 from quacc.recipes.newtonnet.core import freq_job, relax_job, static_job
 from quacc.recipes.newtonnet.ts import (
+    geodesic_job,
     geodesic_ts_job,
     irc_job,
     neb_job,
@@ -370,6 +371,18 @@ def test_neb_ts_job_no_hess(setup_test_environment, tmp_path):
 #     assert neb_ts_results["ts_results"]["results"]["energy"] == pytest.approx(
 #         -23.978347778320312, abs=1e-6
 #     )
+
+
+def test_geodesic_job(setup_test_environment, tmp_path):
+    reactant, product = setup_test_environment
+    calc_kwargs = {}
+
+    geodesic_summary = geodesic_job(
+        reactant, product, calc_kwargs=calc_kwargs
+    )
+    assert geodesic_summary["highest_e_atoms"].get_potential_energy() == pytest.approx(
+        -22.574275970458984, abs=1e-6
+    )
 
 
 def test_geodesic_ts_job_no_hess(setup_test_environment, tmp_path):
