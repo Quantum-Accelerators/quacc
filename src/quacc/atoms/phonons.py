@@ -17,6 +17,7 @@ if has_phonopy:
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
+    from numpy._typing import NDArray
 
     if has_phonopy:
         from phonopy.structure.atoms import PhonopyAtoms
@@ -27,7 +28,7 @@ def get_phonopy(
     atoms: Atoms,
     min_lengths: float | tuple[float, float, float] | None = None,
     supercell_matrix: (
-        np.ndarray
+        NDArray
         | tuple[tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]]
         | None
     ) = None,
