@@ -3,16 +3,14 @@
 from __future__ import annotations
 
 from functools import partial, wraps
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING
 
 from quacc.settings import change_settings_wrap
 
-Job = TypeVar("Job")
-Flow = TypeVar("Flow")
-Subflow = TypeVar("Subflow")
-
 if TYPE_CHECKING:
     from typing import Any, Callable
+
+    from quacc.types import Flow, Job, Subflow
 
 
 def job(_func: Callable | None = None, **kwargs) -> Job:
