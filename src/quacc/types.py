@@ -40,15 +40,6 @@ if TYPE_CHECKING:
     from pymatgen.io.vasp.inputs import Incar, Kpoints, Poscar, Potcar
     from typing_extensions import NotRequired, TypedDict
 
-    class Job:
-        pass
-
-    class Flow:
-        pass
-
-    class Subflow:
-        pass
-
     CclibAnalysis = Literal[
         "cpsa",
         "mpa",
