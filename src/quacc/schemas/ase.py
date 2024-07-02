@@ -435,8 +435,9 @@ def summarize_neb_run(
     n_images = additional_fields["geodesic_interpolate_flags"]["n_images"]
     trajectory_results = [atoms.calc.results for atoms in trajectory]
     trajectory = trajectory[-(n_images):]
+    trajectory_results = trajectory_results[-(n_images):]
     ts_index = (
-        np.argmax([i["energy"] for i in trajectory_results[-(n_images):][1:-1]]) + 1
+        np.argmax([i["energy"] for i in trajectory_results[1:-1]]) + 1
     )
     ts_atoms = trajectory[ts_index]
 
