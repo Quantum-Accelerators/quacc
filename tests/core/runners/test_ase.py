@@ -169,9 +169,10 @@ def test_run_neb(setup_test_environment, tmp_path):
 
     neb_kwargs = {"method": "aseneb", "precon": None}
     dyn = run_neb(images, optimizer=optimizer_class, neb_kwargs=neb_kwargs)
-    neb_summary = summarize_neb_run(dyn, additional_fields={
-        "geodesic_interpolate_flags": {"n_images": n_intermediate},
-    })
+    neb_summary = summarize_neb_run(
+        dyn,
+        additional_fields={"geodesic_interpolate_flags": {"n_images": n_intermediate}},
+    )
 
     assert neb_summary["trajectory_results"][1]["energy"] == pytest.approx(
         1.09895294161361, abs=1e-6
