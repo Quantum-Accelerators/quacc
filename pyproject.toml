@@ -33,7 +33,7 @@ dependencies = [
     "emmet-core>=0.80.0", # for pre-made schemas
     "maggma>=0.64.0", # for database handling
     "monty>=2024.5.15", # miscellaneous Python utilities
-    "numpy<2.0", # for array handling
+    "numpy>=1.25.0", # for array handling
     "psutil", # for getting compute architecture details
     "pydantic>=2.0.1", # for settings management
     "pydantic-settings>=2.2.0", # for settings management
