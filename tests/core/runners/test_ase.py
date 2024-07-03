@@ -11,7 +11,7 @@ import numpy as np
 import pytest
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="module", autouse=True)
 def set_seed():
     np.random.seed(42)  # noqa: NPY002
 
