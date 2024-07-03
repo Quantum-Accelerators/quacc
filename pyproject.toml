@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "quacc"
 description="A platform to enable high-throughput, database-driven quantum chemistry and computational materials science"
-version = "0.10.0"
+version = "0.10.1"
 readme = "README.md"
 license = { text = "BSD-3" }
 authors = [{ name = "Andrew S. Rosen", email = "asrosen@princeton.edu" }]
@@ -33,7 +33,7 @@ dependencies = [
     "emmet-core>=0.80.0", # for pre-made schemas
     "maggma>=0.64.0", # for database handling
     "monty>=2024.5.15", # miscellaneous Python utilities
-    "numpy<2.0", # for array handling
+    "numpy>=1.25.0", # for array handling
     "psutil", # for getting compute architecture details
     "pydantic>=2.0.1", # for settings management
     "pydantic-settings>=2.2.0", # for settings management
