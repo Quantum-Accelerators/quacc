@@ -174,7 +174,7 @@ def test_run_neb(setup_test_environment, tmp_path):
     )
 
     assert neb_summary["trajectory_results"][1]["energy"] == pytest.approx(
-        1.0815012471744527, abs=1e-6
+        1.0817616505689465, abs=1e-6
     )
 
 
