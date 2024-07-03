@@ -90,7 +90,9 @@ def test_chargemol_erorr(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     prep_files()
 
-    with pytest.raises(OSError):
+    with pytest.raises(
+        OSError, match="DDEC6_ATOMIC_DENSITIES_DIR environment variable not defined"
+    ):
         _chargemol_runner(tmp_path)
 
     os.remove("CHGCAR")
