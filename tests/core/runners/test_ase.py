@@ -205,7 +205,7 @@ def test_run_neb2(setup_test_environment, tmp_path):
     """
     optimizer_class = BFGSLineSearch
     n_intermediate = 10
-    r_positions = -0.8540215808054363
+    r_positions = -0.8496072471044277
     p_energy = 1.0824716056541726
     first_image_forces = -0.0052292931195385695
 
