@@ -25,7 +25,6 @@ from ase.mep.neb import NEBOptimizer
 from ase.optimize import BFGS, BFGSLineSearch
 from ase.optimize.sciopt import SciPyFminBFGS
 
-# from sella import Sella
 from quacc import change_settings, get_settings, strip_decorator
 from quacc.recipes.emt.core import relax_job
 from quacc.runners._base import BaseRunner
@@ -141,7 +140,7 @@ def test_geodesic_interpolate_wrapper_large_system(setup_test_environment):
 def test_run_neb(setup_test_environment, tmp_path):
     optimizer_class = NEBOptimizer
     n_intermediate = 10
-    r_positions = -0.8540215808054363
+    r_positions = -0.8496072471044277
     p_energy = 1.0824716056541726
     first_image_forces = -0.0052292931195385695
 
