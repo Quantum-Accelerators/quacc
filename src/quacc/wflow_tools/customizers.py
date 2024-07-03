@@ -115,8 +115,8 @@ def update_parameters(
         The function to update.
     params
         The parameters and associated values to update.
-    decorator
-        The decorator associated with `func`.
+    decorator_name
+        The decorator_name associated with `func`.
 
     Returns
     -------
