@@ -2,7 +2,6 @@
 Custom types used throughout quacc.
 """
 
-# mypy: disable-error-code=misc
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
