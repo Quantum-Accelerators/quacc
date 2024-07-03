@@ -11,7 +11,7 @@ from monty.dev import requires
 from quacc import change_settings, get_settings, job, strip_decorator
 from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
 from quacc.runners.ase import Runner, run_neb
-from quacc.schemas.ase import OptSchema, summarize_neb_run, summarize_opt_run
+from quacc.schemas.ase import summarize_neb_run, summarize_opt_run
 from quacc.utils.dicts import recursive_dict_merge
 
 has_geodesic_interpolate = bool(find_spec("geodesic_interpolate"))
@@ -36,6 +36,7 @@ if TYPE_CHECKING:
         NewtonNetQuasiIRCSchema,
         NewtonNetTSSchema,
         OptParams,
+        OptSchema,
     )
 
     class NebSchema(TypedDict):
