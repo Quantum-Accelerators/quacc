@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 - Fixed an edge-case that can occur in multithreading environments where in-memory changes to the `QuaccSettings` could carry over to a concurrent thread
+- Made the detection of intermediate step directories more robust
 
 ### Removed
 
