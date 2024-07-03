@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Added a function `from quacc import get_settings` to fetch the current settings on a thread
 - Added a mechanism to update the settings on-the-fly via a special `settings_swap` keyword argument that can be passed to the decorators when a workflow engine is used.
+- Support for MD workflows
 
 ### Fixed
 
