@@ -341,7 +341,10 @@ def test_summarize_ideal_gas_thermo(tmp_path, monkeypatch):
     d = jsanitize(results, strict=True, enum_values=True)
     MontyDecoder().process_decoded(d)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError,
+        match="The IdealGasThermo spin multiplicity does not match the user-specified multiplicity.",
+    ):
         _summarize_ideal_gas_thermo(igt, charge_and_multiplicity=[0, 1])
 
 
