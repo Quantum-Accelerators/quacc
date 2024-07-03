@@ -12,7 +12,7 @@ Flow = TypeVar("Flow", bound=Callable[..., Any])
 Subflow = TypeVar("Subflow", bound=Callable[..., Any])
 
 
-def job(_func: Job | None = None, **kwargs) -> Job:
+def job(_func: Job | None = None, **kwargs) -> Job | Callable:
     """
     Decorator for individual compute jobs. This is a `#!Python @job` decorator. Think of
     each `#!Python @job`-decorated function as an individual SLURM job, if that helps.
@@ -189,7 +189,7 @@ def job(_func: Job | None = None, **kwargs) -> Job:
         return _func
 
 
-def flow(_func: Flow | None = None, **kwargs) -> Flow:
+def flow(_func: Flow | None = None, **kwargs) -> Flow | Callable:
     """
     Decorator for workflows, which consist of at least one compute job. This is a
     `#!Python @flow` decorator.
@@ -354,7 +354,7 @@ def flow(_func: Flow | None = None, **kwargs) -> Flow:
         return _func
 
 
-def subflow(_func: Subflow | None = None, **kwargs) -> Subflow:
+def subflow(_func: Subflow | None = None, **kwargs) -> Subflow | Callable:
     """
     Decorator for (dynamic) sub-workflows. This is a `#!Python @subflow` decorator.
 

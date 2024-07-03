@@ -169,7 +169,7 @@ def summarize_opt_run(
 
     # Get trajectory
     if not trajectory:
-        atoms_trajectory = read(dyn.trajectory.filename, index=":")
+        atoms_trajectory = read(dyn.trajectory.filename, index=":")  # type: ignore[union-attr]
     else:
         atoms_trajectory = trajectory
     trajectory_results = [atoms.calc.results for atoms in atoms_trajectory]

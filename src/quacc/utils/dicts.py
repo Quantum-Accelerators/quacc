@@ -64,10 +64,12 @@ def recursive_dict_merge(
         Merged dictionary
     """
     old_dict = dicts[0]
+    merged = {}
     for i in range(len(dicts) - 1):
-        merged = _recursive_dict_pair_merge(old_dict, dicts[i + 1], verbose=verbose)
+        merged = dict(
+            _recursive_dict_pair_merge(old_dict, dicts[i + 1], verbose=verbose)
+        )
         old_dict = safe_dict_copy(merged)
-
     return remove_dict_entries(merged, remove_trigger=remove_trigger)
 
 
@@ -95,7 +97,7 @@ def _recursive_dict_pair_merge(
     """
     dict1 = dict1 or ({} if dict1 is None else dict1.__class__())
     dict2 = dict2 or ({} if dict2 is None else dict2.__class__())
-    merged = safe_dict_copy(dict1)
+    merged = safe_dict_copy(dict(dict1))
 
     for key, value in dict2.items():
         if key in merged:
@@ -181,7 +183,7 @@ def sort_dict(start_dict: dict[str, Any]) -> dict[str, Any]:
         Sorted dictionary
     """
     return {
-        k: sort_dict(v) if isinstance(v, MutableMapping) else v
+        k: sort_dict(dict(v)) if isinstance(v, MutableMapping) else v
         for k, v in sorted(start_dict.items())
     }
 

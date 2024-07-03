@@ -199,6 +199,8 @@ class Runner(BaseRunner):
             },
             optimizer_kwargs,
         )
+        if optimizer_kwargs is None:
+            optimizer_kwargs = {}
         run_kwargs = run_kwargs or {}
         traj_filename = "opt.traj"
 
