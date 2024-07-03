@@ -104,7 +104,7 @@ def redecorate(func: Callable, decorator: Callable | None) -> Callable:
 def update_parameters(
     func: Callable,
     params: dict[str, Any],
-    decorator_name: Literal["job", "flow", "subflow"] | None = "job",
+    decorator: Literal["job", "flow", "subflow"] | None = "job",
 ) -> Callable:
     """
     Update the parameters of a (potentially decorated) function.
@@ -115,8 +115,8 @@ def update_parameters(
         The function to update.
     params
         The parameters and associated values to update.
-    decorator_name
-        The decorator_name associated with `func`.
+    decorator
+        The decorator associated with `func`.
 
     Returns
     -------
@@ -127,19 +127,19 @@ def update_parameters(
 
     settings = get_settings()
 
-    if decorator_name and settings.WORKFLOW_ENGINE == "dask":
-        if decorator_name == "job":
-            decorator = job
-        elif decorator_name == "flow":
-            decorator = flow
-        elif decorator_name == "subflow":
-            decorator = subflow
+    if decorator and settings.WORKFLOW_ENGINE == "dask":
+        if decorator == "job":
+            decorator_func = job
+        elif decorator == "flow":
+            decorator_func = flow
+        elif decorator == "subflow":
+            decorator_func = subflow
         else:
             raise ValueError(
-                f"Invalid decorator name: {decorator_name}. Valid names are: 'job', 'flow', 'subflow'"
+                f"Invalid decorator name: {decorator}. Valid names are: 'job', 'flow', 'subflow'"
             )
         func = strip_decorator(func)
-        return decorator(partial(func, **params))
+        return decorator_func(partial(func, **params))
 
     return partial(func, **params)
 
