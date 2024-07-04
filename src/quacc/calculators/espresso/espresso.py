@@ -195,7 +195,7 @@ class EspressoTemplate(EspressoTemplate_):
 
         Path(directory, f"{prefix}.EXIT").touch()
 
-    def read_results(self, directory: os.PathLike | str) -> dict[str, Any]:
+    def read_results(self, directory: os.PathLike) -> dict[str, Any]:
         """
         The function that should be used instead of the one in ASE EspressoTemplate to
         read the output file. It calls a customly defined read function. It also adds
