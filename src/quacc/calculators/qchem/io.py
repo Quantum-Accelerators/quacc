@@ -16,7 +16,7 @@ from pymatgen.io.qchem.outputs import (
 )
 
 if TYPE_CHECKING:
-    from numpy._typing import NDArray
+    from numpy.typing import NDArray
     from pymatgen.io.qchem.inputs import QCInput
 
     from quacc.types import QchemResults

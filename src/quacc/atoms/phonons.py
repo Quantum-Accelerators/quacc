@@ -17,7 +17,7 @@ if has_phonopy:
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
-    from numpy._typing import NDArray
+    from numpy.typing import NDArray
 
     if has_phonopy:
         from phonopy.structure.atoms import PhonopyAtoms
