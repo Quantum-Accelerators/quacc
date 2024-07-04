@@ -312,5 +312,8 @@ class Vasp(Vasp_):
             run_custodian(directory=directory)
             return 0
 
-        stdout = Path.open(Path(out), "w") if out else None
-        return subprocess.call(command, shell=True, stdout=stdout, cwd=directory)
+        if out:
+            with Path(out).open("w") as file:
+                return subprocess.call(command, shell=True, stdout=file, cwd=directory)
+        else:
+            return subprocess.call(command, shell=True, stdout=None, cwd=directory)
