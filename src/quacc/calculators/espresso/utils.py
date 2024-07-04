@@ -216,8 +216,8 @@ def prepare_copy_files(parameters: dict[str, Any], binary: str = "pw") -> list[P
 
     Returns
     -------
-    dict[SourceDirectory, Filenames]
-        The modified dictionary
+    list[Path]
+        Paths to copy for the espresso calculation
     """
     to_copy = []
 
