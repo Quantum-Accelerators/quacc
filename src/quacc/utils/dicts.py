@@ -138,8 +138,8 @@ def safe_dict_copy(d: dict) -> dict:
 
 
 def remove_dict_entries(
-    start_dict: dict[str, Any], remove_trigger: Any
-) -> dict[str, Any]:
+    start_dict: MutableMapping[str, Any], remove_trigger: Any
+) -> MutableMapping[str, Any]:
     """
     For a given dictionary, recursively remove all items that are the `remove_trigger`.
 
@@ -168,7 +168,7 @@ def remove_dict_entries(
     )
 
 
-def sort_dict(start_dict: dict[str, Any]) -> dict[str, Any]:
+def sort_dict(start_dict: MutableMapping[str, Any]) -> MutableMapping[str, Any]:
     """
     For a given dictionary, recursively sort all entries alphabetically by key.
 
@@ -188,7 +188,7 @@ def sort_dict(start_dict: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def clean_dict(start_dict: dict[str, Any]) -> dict[str, Any]:
+def clean_dict(start_dict: MutableMapping[str, Any]) -> MutableMapping[str, Any]:
     """
     Clean up a task document dictionary by removing all entries that are None and
     sorting the dictionary alphabetically by key.
@@ -211,7 +211,7 @@ def finalize_dict(
     directory: str | Path | None,
     gzip_file: bool = True,
     store: Store | None = None,
-) -> dict:
+) -> MutableMapping[str, Any]:
     """
     Finalize a schema by cleaning it and storing it in a database and/or file.
 
