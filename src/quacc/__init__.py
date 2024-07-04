@@ -40,8 +40,8 @@ __all__ = [
 __version__ = version("quacc")
 
 # Make Atoms MSONable
-Atoms.as_dict = MSONAtoms.as_dict
-Atoms.from_dict = MSONAtoms.from_dict
+Atoms.as_dict = MSONAtoms.as_dict  # type: ignore[attr-defined]
+Atoms.from_dict = MSONAtoms.from_dict  # type: ignore[attr-defined]
 
 # Load the settings
 _thread_local = threading.local()
