@@ -189,7 +189,7 @@ def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
         return _func
 
 
-def flow(_func: Flow | None = None, **kwargs) -> Flow | Callable:
+def flow(_func: Callable[..., Any] | None = None, **kwargs) -> Flow:
     """
     Decorator for workflows, which consist of at least one compute job. This is a
     `#!Python @flow` decorator.
@@ -354,7 +354,7 @@ def flow(_func: Flow | None = None, **kwargs) -> Flow | Callable:
         return _func
 
 
-def subflow(_func: Subflow | None = None, **kwargs) -> Subflow | Callable:
+def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
     """
     Decorator for (dynamic) sub-workflows. This is a `#!Python @subflow` decorator.
 
