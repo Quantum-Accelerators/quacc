@@ -113,6 +113,6 @@ def _set_charge_and_spin(
         spin_multiplicity = get_spin_multiplicity_attribute(atoms)
 
     if charge is not None:
-        atoms.charge = charge
+        atoms.charge = charge  # type: ignore[attr-defined]
     if spin_multiplicity is not None:
-        atoms.spin_multiplicity = spin_multiplicity
+        atoms.spin_multiplicity = spin_multiplicity  # type: ignore[attr-defined]

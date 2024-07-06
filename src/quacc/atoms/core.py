@@ -114,7 +114,7 @@ def get_charge_attribute(atoms: Atoms) -> int | None:
         Charge of the Atoms object
     """
     return (
-        atoms.charge
+        atoms.charge  # type: ignore[attr-defined]
         if getattr(atoms, "charge", None)
         else (
             round(atoms.get_initial_charges().sum())
@@ -139,7 +139,7 @@ def get_spin_multiplicity_attribute(atoms: Atoms) -> int | None:
         Spin multiplicity of the Atoms object
     """
     return (
-        atoms.spin_multiplicity
+        atoms.spin_multiplicity  # type: ignore[attr-defined]
         if getattr(atoms, "spin_multiplicity", None)
         else (
             round(np.abs(atoms.get_initial_magnetic_moments().sum()) + 1)
@@ -239,7 +239,7 @@ def check_charge_and_spin(
     return mol.charge, mol.spin_multiplicity
 
 
-def get_final_atoms_from_dynamics(dynamics: Dynamics) -> Atoms:
+def get_final_atoms_from_dynamics(dynamics: Dynamics | Filter) -> Atoms:
     """
     Get the final atoms object from a dynamics run.
 

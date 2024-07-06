@@ -21,11 +21,11 @@ from quacc.utils.files import find_recent_logfile
 if TYPE_CHECKING:
     from typing import Any, Literal
 
-    from ase.io import Trajectory
     from ase.optimize.optimize import Optimizer
     from maggma.core import Store
 
     from quacc.types import (
+        CclibAnalysis,
         DefaultSetting,
         PopAnalysisAttributes,
         cclibASEOptSchema,
@@ -41,22 +41,7 @@ def cclib_summarize_run(
     final_atoms: Atoms,
     logfile_extensions: str | list[str],
     directory: Path | str | None = None,
-    pop_analyses: (
-        list[
-            Literal[
-                "cpsa",
-                "mpa",
-                "lpa",
-                "bickelhaupt",
-                "density",
-                "mbo",
-                "bader",
-                "ddec6",
-                "hirshfeld",
-            ]
-        ]
-        | None
-    ) = None,
+    pop_analyses: list[CclibAnalysis] | None = None,
     check_convergence: bool | DefaultSetting = QuaccDefault,
     additional_fields: dict[str, Any] | None = None,
     store: Store | None | DefaultSetting = QuaccDefault,
@@ -161,7 +146,7 @@ def cclib_summarize_run(
 def summarize_cclib_opt_run(
     dyn: Optimizer,
     logfile_extensions: str | list[str],
-    trajectory: Trajectory | list[Atoms] | None = None,
+    trajectory: list[Atoms] | None = None,
     directory: Path | str | None = None,
     pop_analyses: (
         list[
@@ -254,7 +239,7 @@ def summarize_cclib_opt_run(
 def _make_cclib_schema(
     directory: str | Path,
     logfile_extensions: str | list[str],
-    analysis: str | list[str] | None = None,
+    analysis: str | list[CclibAnalysis] | None = None,
     proatom_dir: Path | str | None = None,
 ) -> cclibBaseSchema:
     """
