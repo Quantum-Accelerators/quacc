@@ -25,7 +25,7 @@ if has_chgnet := find_spec("chgnet"):
 @pytest.mark.skipif(has_chgnet is None, reason="chgnet not installed")
 def test_bad_method():
     atoms = bulk("Cu")
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Unrecognized method='bad_method'"):
         static_job(atoms, method="bad_method")
 
 

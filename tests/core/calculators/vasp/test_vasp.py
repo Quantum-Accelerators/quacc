@@ -795,7 +795,7 @@ def test_envvars():
 def test_bad():
     atoms = bulk("Cu")
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Unsupported k-point generation scheme"):
         Vasp(atoms, pmg_kpts={"test": [100]})
 
     with pytest.raises(FileNotFoundError):

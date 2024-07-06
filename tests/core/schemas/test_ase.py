@@ -182,9 +182,9 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
     # test document can be jsanitized and decoded
     d = jsanitize(results, strict=True, enum_values=True)
     MontyDecoder().process_decoded(d)
+    dyn.trajectory.filename = "not_a_file.traj"
 
     with pytest.raises(FileNotFoundError):
-        dyn.trajectory.filename = "not_a_file.traj"
         summarize_opt_run(dyn)
 
 
@@ -341,7 +341,10 @@ def test_summarize_ideal_gas_thermo(tmp_path, monkeypatch):
     d = jsanitize(results, strict=True, enum_values=True)
     MontyDecoder().process_decoded(d)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError,
+        match="The IdealGasThermo spin multiplicity does not match the user-specified multiplicity.",
+    ):
         _summarize_ideal_gas_thermo(igt, charge_and_multiplicity=[0, 1])
 
 
@@ -349,11 +352,15 @@ def test_errors(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Cu")
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match="ASE Atoms object has no attached calculator."
+    ):
         summarize_run(atoms, atoms)
 
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     atoms.calc.results = {}
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match="ASE Atoms object's calculator has no results."
+    ):
         summarize_run(atoms, initial_atoms)

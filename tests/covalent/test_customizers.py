@@ -117,7 +117,10 @@ def test_bad_customizers():
     def add(a, b):
         return a + b
 
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError,
+        match=r"Invalid decorator keys: \['bad'\]. Valid keys are: \['add'\]",
+    ):
         customize_funcs("add", add, decorators={"bad": job(executor="local")})
 
 
