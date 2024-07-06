@@ -182,9 +182,9 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
     # test document can be jsanitized and decoded
     d = jsanitize(results, strict=True, enum_values=True)
     MontyDecoder().process_decoded(d)
+    dyn.trajectory.filename = "not_a_file.traj"
 
     with pytest.raises(FileNotFoundError):
-        dyn.trajectory.filename = "not_a_file.traj"
         summarize_opt_run(dyn)
 
 
