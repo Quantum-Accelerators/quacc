@@ -360,5 +360,7 @@ def test_errors(tmp_path, monkeypatch):
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     atoms.calc.results = {}
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match="ASE Atoms object's calculator has no results."
+    ):
         summarize_run(atoms, initial_atoms)
