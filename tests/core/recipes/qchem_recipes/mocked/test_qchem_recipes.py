@@ -448,8 +448,7 @@ def test_ts_job_v4(tmp_path, monkeypatch, test_atoms):
         )
 
     with pytest.raises(
-        ValueError,
-        match="Only one of PCM, ISOSVP, SMD, and CMIRSmay be used for solvation",
+        ValueError, match="Only Sella should be used for TS optimization"
     ):
         ts_job(
             test_atoms,
