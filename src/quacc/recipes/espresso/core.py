@@ -362,7 +362,10 @@ def non_scf_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    calc_defaults = {"input_data": {"control": {"calculation": "nscf"}}, "kspacing": 0.033}
+    calc_defaults = {
+        "input_data": {"control": {"calculation": "nscf"}},
+        "kspacing": 0.033,
+    }
 
     return run_and_summarize(
         atoms,
