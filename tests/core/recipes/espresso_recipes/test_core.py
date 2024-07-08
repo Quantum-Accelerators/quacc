@@ -394,6 +394,7 @@ def test_non_scf_job(tmp_path, monkeypatch):
     new_input_data = results["parameters"]["input_data"]
     assert new_input_data["system"]["ecutwfc"] == 30.0
     assert new_input_data["system"]["ecutrho"] == 240.0
+    assert results["parameters"].get("kspacing") == 0.033
     assert results["parameters"].get("kpts") is None
 
 
