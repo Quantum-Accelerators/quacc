@@ -13,7 +13,7 @@ from quacc.recipes.espresso._base import run_and_summarize, run_and_summarize_op
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
-    from quacc.types import EspressoBaseSet
+    from src.quacc.types import EspressoBaseSet
 
     from quacc.types import Filenames, OptParams, RunSchema, SourceDirectory
 
@@ -362,10 +362,7 @@ def non_scf_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    is_metal = check_is_metal(atoms)
-
-    calc_defaults = BASE_SET_METAL if is_metal else BASE_SET_NON_METAL
-    calc_defaults["input_data"]["control"] = {"calculation": "nscf"}
+    calc_defaults = {"input_data": {"control": {"calculation": "nscf"}}, "kspacing": 0.033}
 
     return run_and_summarize(
         atoms,
