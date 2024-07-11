@@ -21,7 +21,6 @@ if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
-    from ase.io import Trajectory
     from ase.md.md import MolecularDynamics
     from ase.optimize.optimize import Optimizer
     from ase.thermochemistry import IdealGasThermo
@@ -171,7 +170,7 @@ def summarize_run_neb2(
 
 def summarize_opt_run(
     dyn: Optimizer,
-    trajectory: Trajectory | list[Atoms] | None = None,
+    trajectory: list[Atoms] | None = None,
     check_convergence: bool | DefaultSetting = QuaccDefault,
     charge_and_multiplicity: tuple[int, int] | None = None,
     move_magmoms: bool = False,
@@ -218,11 +217,14 @@ def summarize_opt_run(
     additional_fields = additional_fields or {}
 
     # Get trajectory
-    if not trajectory:
-        trajectory = read(dyn.trajectory.filename, index=":")
-    trajectory_results = [atoms.calc.results for atoms in trajectory]
+    if trajectory:
+        atoms_trajectory = trajectory
+    else:
+        atoms_trajectory = read(dyn.trajectory.filename, index=":")  # type: ignore[union-attr]
 
-    initial_atoms = trajectory[0]
+    trajectory_results = [atoms.calc.results for atoms in atoms_trajectory]
+
+    initial_atoms = atoms_trajectory[0]
     final_atoms = get_final_atoms_from_dynamics(dyn)
     directory = final_atoms.calc.directory
 
@@ -249,7 +251,7 @@ def summarize_opt_run(
     opt_fields = {
         "parameters_opt": parameters_opt,
         "converged": is_converged,
-        "trajectory": trajectory,
+        "trajectory": atoms_trajectory,
         "trajectory_results": trajectory_results,
     }
 
@@ -263,7 +265,7 @@ def summarize_opt_run(
 
 def summarize_md_run(
     dyn: MolecularDynamics,
-    trajectory: Trajectory | list[Atoms] | None = None,
+    trajectory: list[Atoms] | None = None,
     charge_and_multiplicity: tuple[int, int] | None = None,
     move_magmoms: bool = True,
     additional_fields: dict[str, Any] | None = None,

@@ -67,7 +67,6 @@ def recursive_dict_merge(
     for i in range(len(dicts) - 1):
         merged = _recursive_dict_pair_merge(old_dict, dicts[i + 1], verbose=verbose)
         old_dict = safe_dict_copy(merged)
-
     return remove_dict_entries(merged, remove_trigger=remove_trigger)
 
 
@@ -115,7 +114,7 @@ def _recursive_dict_pair_merge(
     return merged
 
 
-def safe_dict_copy(d: dict) -> dict:
+def safe_dict_copy(d: MutableMapping[str, Any] | dict[str, Any]) -> dict:
     """
     Safely copy a dictionary to account for deepcopy errors.
 
@@ -129,15 +128,16 @@ def safe_dict_copy(d: dict) -> dict:
     dict
         Copied dictionary
     """
+
     try:
-        return deepcopy(d)
+        return deepcopy(dict(d))
     except Exception:
-        return d.copy()
+        return dict(d).copy()
 
 
 def remove_dict_entries(
-    start_dict: dict[str, Any], remove_trigger: Any
-) -> dict[str, Any]:
+    start_dict: MutableMapping[str, Any], remove_trigger: Any
+) -> MutableMapping[str, Any]:
     """
     For a given dictionary, recursively remove all items that are the `remove_trigger`.
 
@@ -166,7 +166,7 @@ def remove_dict_entries(
     )
 
 
-def sort_dict(start_dict: dict[str, Any]) -> dict[str, Any]:
+def sort_dict(start_dict: MutableMapping[str, Any]) -> MutableMapping[str, Any]:
     """
     For a given dictionary, recursively sort all entries alphabetically by key.
 
@@ -181,12 +181,12 @@ def sort_dict(start_dict: dict[str, Any]) -> dict[str, Any]:
         Sorted dictionary
     """
     return {
-        k: sort_dict(v) if isinstance(v, MutableMapping) else v
+        k: sort_dict(dict(v)) if isinstance(v, MutableMapping) else v
         for k, v in sorted(start_dict.items())
     }
 
 
-def clean_dict(start_dict: dict[str, Any]) -> dict[str, Any]:
+def clean_dict(start_dict: MutableMapping[str, Any]) -> MutableMapping[str, Any]:
     """
     Clean up a task document dictionary by removing all entries that are None and
     sorting the dictionary alphabetically by key.
@@ -209,7 +209,7 @@ def finalize_dict(
     directory: str | Path | None,
     gzip_file: bool = True,
     store: Store | None = None,
-) -> dict:
+) -> MutableMapping[str, Any]:
     """
     Finalize a schema by cleaning it and storing it in a database and/or file.
 

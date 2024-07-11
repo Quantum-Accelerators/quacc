@@ -205,7 +205,10 @@ def test_static_job_v4(monkeypatch, tmp_path, os_atoms):
 def test_static_job_v5(tmp_path, monkeypatch, test_atoms):
     monkeypatch.chdir(tmp_path)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError,
+        match="Only one of PCM, ISOSVP, SMD, and CMIRSmay be used for solvation",
+    ):
         static_job(
             test_atoms,
             charge=0,
@@ -305,7 +308,10 @@ def test_relax_job_v3(monkeypatch, tmp_path, test_atoms):
 @pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
 def test_relax_job_v4(tmp_path, monkeypatch, test_atoms):
     monkeypatch.chdir(tmp_path)
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError,
+        match="Only one of PCM, ISOSVP, SMD, and CMIRSmay be used for solvation",
+    ):
         relax_job(
             test_atoms,
             charge=0,
@@ -430,7 +436,10 @@ def test_ts_job_v3(monkeypatch, tmp_path, test_atoms):
 @pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
 def test_ts_job_v4(tmp_path, monkeypatch, test_atoms):
     monkeypatch.chdir(tmp_path)
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError,
+        match="Only one of PCM, ISOSVP, SMD, and CMIRSmay be used for solvation",
+    ):
         ts_job(
             test_atoms,
             charge=0,
@@ -438,7 +447,9 @@ def test_ts_job_v4(tmp_path, monkeypatch, test_atoms):
             qchem_dict_set_params={"pcm_dielectric": "3.0", "smd_solvent": "water"},
         )
 
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match="Only Sella should be used for TS optimization"
+    ):
         ts_job(
             test_atoms,
             charge=0,
@@ -519,10 +530,15 @@ def test_irc_job_v1(monkeypatch, tmp_path, test_atoms):
 @pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
 def test_irc_job_v2(tmp_path, monkeypatch, test_atoms):
     monkeypatch.chdir(tmp_path)
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match='direction must be one of "forward" or "reverse"!'
+    ):
         irc_job(test_atoms, charge=0, spin_multiplicity=1, direction="straight")
 
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError,
+        match="Only one of PCM, ISOSVP, SMD, and CMIRSmay be used for solvation",
+    ):
         irc_job(
             test_atoms,
             charge=0,
@@ -531,7 +547,9 @@ def test_irc_job_v2(tmp_path, monkeypatch, test_atoms):
             qchem_dict_set_params={"pcm_dielectric": "3.0", "smd_solvent": "water"},
         )
 
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match="Only Sella's IRC should be used for IRC optimization"
+    ):
         irc_job(
             test_atoms,
             charge=0,

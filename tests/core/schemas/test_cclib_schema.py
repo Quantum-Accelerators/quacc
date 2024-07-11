@@ -133,12 +133,14 @@ def test_cclib_summarize_run(tmp_path, monkeypatch):
 
 def test_errors():
     atoms = bulk("Cu")
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="ASE Atoms object has no attached calculator"):
         cclib_summarize_run(atoms, ".log", directory=run1)
 
     calc = Vasp(atoms)
     atoms.calc = calc
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match="ASE Atoms object's calculator has no results."
+    ):
         cclib_summarize_run(atoms, ".log", directory=run1)
 
 
@@ -151,7 +153,7 @@ def test_cclib_taskdoc(tmp_path, monkeypatch):
     # it fails because the newest log file (.txt) is not valid
     with open(p / "test.txt", "w") as f:
         f.write("I am a dummy log file")
-    with pytest.raises(Exception) as e:
+    with pytest.raises(Exception, match="Could not parse") as e:
         doc = _make_cclib_schema(p, [".log", ".txt"])
     os.remove(p / "test.txt")
     assert "Could not parse" in str(e.value)
@@ -185,10 +187,12 @@ def test_cclib_taskdoc(tmp_path, monkeypatch):
 def test_cclib_calculate(tmp_path, monkeypatch, cclib_obj):
     monkeypatch.chdir(tmp_path)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match="fakemethod is not a valid cclib population analysis method"
+    ):
         _cclib_calculate(cclib_obj, method="fakemethod")
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="A cube file must be provided for bader."):
         _cclib_calculate(cclib_obj, method="bader")
 
     with pytest.raises(FileNotFoundError):
@@ -202,7 +206,10 @@ def test_cclib_calculate(tmp_path, monkeypatch, cclib_obj):
             proatom_dir="does_not_exists",
         )
 
-    with pytest.raises(OSError):
+    with pytest.raises(
+        OSError,
+        match="PROATOM_DIR environment variable or proatom_dir kwarg needs to be set",
+    ):
         _cclib_calculate(
             cclib_obj,
             method="ddec6",

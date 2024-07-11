@@ -26,7 +26,7 @@ from quacc.schemas.prep import set_magmoms
 from quacc.utils.dicts import sort_dict
 
 if TYPE_CHECKING:
-    from typing import Literal
+    from typing import Any, Literal
 
     from ase.atoms import Atoms
 
@@ -149,7 +149,7 @@ class Vasp(Vasp_):
         self.kwargs = kwargs
 
         # Initialize for later
-        self.user_calc_params = {}
+        self.user_calc_params: dict[str, Any] = {}
 
         # Cleanup parameters
         self._cleanup_params()
@@ -312,4 +312,8 @@ class Vasp(Vasp_):
             run_custodian(directory=directory)
             return 0
 
-        return subprocess.call(command, shell=True, stdout=out, cwd=directory)
+        if out:
+            with Path(out).open("w") as file:
+                return subprocess.call(command, shell=True, stdout=file, cwd=directory)
+        else:
+            return subprocess.call(command, shell=True, stdout=None, cwd=directory)

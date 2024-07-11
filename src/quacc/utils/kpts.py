@@ -69,10 +69,10 @@ def convert_pmg_kpts(
             line_density=pmg_kpts["line_density"], coords_are_cartesian=True
         )
         kpts = np.stack(kpts)
-        gamma = None
+        gamma = False
 
     else:
-        max_pmg_kpts = None
+        max_pmg_kpts: PmgKpts = None
         for k, v in pmg_kpts.items():
             if k == "kppvol":
                 pmg_kpts = Kpoints.automatic_density_by_vol(

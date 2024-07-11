@@ -6,8 +6,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from pydantic_settings import BaseSettings
 
-class DefaultSetting:
+
+class DefaultSetting(BaseSettings):
     """
     Type hint for when a default setting will be applied
     """
@@ -36,6 +38,18 @@ if TYPE_CHECKING:
     from pymatgen.entries.computed_entries import ComputedEntry
     from pymatgen.io.vasp.inputs import Incar, Kpoints, Poscar, Potcar
     from typing_extensions import NotRequired, TypedDict
+
+    CclibAnalysis = Literal[
+        "cpsa",
+        "mpa",
+        "lpa",
+        "bickelhaupt",
+        "density",
+        "mbo",
+        "bader",
+        "ddec6",
+        "hirshfeld",
+    ]
 
     # ----------- File handling -----------
 
@@ -133,9 +147,9 @@ if TYPE_CHECKING:
         """
 
         energy: float  # electronic energy in eV
-        forces: NDArray  # forces in eV/A
-        hessian: NDArray  # Hessian in eV/A^2/amu
         taskdoc: dict[str, Any]  # Output from `emmet.core.qc_tasks.TaskDoc`
+        hessian: NotRequired[NDArray]  # Hessian in eV/A^2/amu
+        forces: NotRequired[NDArray]  # forces in eV/A
 
     class VaspJobKwargs(TypedDict, total=False):
         """
