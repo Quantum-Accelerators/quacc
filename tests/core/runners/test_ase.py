@@ -141,7 +141,7 @@ def test_run_neb(tmp_path):
     optimizer_class = NEBOptimizer
     n_intermediate = 10
 
-    images = read('geodesic_path.xyz', index=':')
+    images = read("geodesic_path.xyz", index=":")
     for image in images:
         image.calc = EMT()
 
