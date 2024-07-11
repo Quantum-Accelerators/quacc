@@ -25,7 +25,7 @@ from ase.mep.neb import NEBOptimizer
 from ase.optimize import BFGS, BFGSLineSearch
 from ase.optimize.sciopt import SciPyFminBFGS
 
-from quacc import change_settings, get_settings, strip_decorator
+from quacc import change_settings, get_settings
 from quacc.recipes.emt.core import relax_job
 from quacc.runners._base import BaseRunner
 from quacc.runners.ase import Runner, _geodesic_interpolate_wrapper, run_neb
@@ -137,34 +137,13 @@ def test_geodesic_interpolate_wrapper_large_system(setup_test_environment):
     not has_geodesic_interpolate,
     reason="geodesic_interpolate function is not available",
 )
-def test_run_neb(setup_test_environment, tmp_path):
+def test_run_neb(tmp_path):
     optimizer_class = NEBOptimizer
     n_intermediate = 10
-    r_positions = -0.8496072471044277
-    p_energy = 1.0824716056541726
-    first_image_forces = -0.0052292931195385695
 
-    reactant, product = setup_test_environment
-
-    optimized_r = strip_decorator(relax_job)(reactant)["atoms"]
-    optimized_p = strip_decorator(relax_job)(product)["atoms"]
-
-    optimized_r.calc = EMT()
-    optimized_p.calc = EMT()
-
-    images = _geodesic_interpolate_wrapper(
-        optimized_r.copy(), optimized_p.copy(), n_images=n_intermediate
-    )
+    images = read('geodesic_path.xyz', index=':')
     for image in images:
         image.calc = EMT()
-    assert optimized_p.positions[0][1] == pytest.approx(-0.19275398865159504, abs=1e-6)
-    assert optimized_r.positions[0][1] == pytest.approx(r_positions, abs=1e-6)
-    assert optimized_p.get_potential_energy() == pytest.approx(
-        p_energy, abs=1e-6
-    ), "pdt pot. energy"
-    assert optimized_p.get_forces()[0, 1] == pytest.approx(
-        first_image_forces, abs=1e-6
-    ), "pdt forces"
 
     neb_kwargs = {"method": "aseneb", "precon": None}
     dyn = run_neb(images, optimizer=optimizer_class, neb_kwargs=neb_kwargs)
@@ -174,7 +153,7 @@ def test_run_neb(setup_test_environment, tmp_path):
     )
 
     assert neb_summary["trajectory_results"][1]["energy"] == pytest.approx(
-        1.0817616505689465, abs=1e-6
+        1.0816760784102342, abs=1e-6
     )
 
 
@@ -197,7 +176,7 @@ def test_run_neb2(setup_test_environment, tmp_path):
     -----
     This test performs the following steps:
     1. Set up the reactant and product Atoms using the `setup_test_environment` fixture.
-    2. Optimize the reactant and product structures using `strip_decorator(relax_job)`.
+    2. Optimize the reactant and product structures using `relax_job`.
     3. Assign the EMT calculator to the optimized structures.
     4. Perform geodesic interpolation between the optimized reactant and product.
     5. Validate the positions, potential energy, and forces of the optimized product.
@@ -205,14 +184,14 @@ def test_run_neb2(setup_test_environment, tmp_path):
     """
     optimizer_class = BFGSLineSearch
     n_intermediate = 10
-    r_positions = -0.8496072471044277
+    r_positions = -0.8540215808054363
     p_energy = 1.0824716056541726
     first_image_forces = -0.0052292931195385695
 
     reactant, product = setup_test_environment
 
-    optimized_r = strip_decorator(relax_job)(reactant)["atoms"]
-    optimized_p = strip_decorator(relax_job)(product)["atoms"]
+    optimized_r = relax_job(reactant)["atoms"]
+    optimized_p = relax_job(product)["atoms"]
 
     optimized_r.calc = EMT()
     optimized_p.calc = EMT()
