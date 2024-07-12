@@ -285,9 +285,9 @@ def neb_job(
     product_atoms: Atoms,
     interpolation_method: Literal["linear", "idpp", "geodesic"] = "linear",
     relax_job_kwargs: dict[str, Any] | None = None,
-    calc_kwargs: dict[str, Any] | None = None,
     interpolate_kwargs: dict[str, Any] | None = None,
     neb_kwargs: dict[str, Any] | None = None,
+    **calc_kwargs,
 ) -> NebSchema:
     """
     Perform a nudged elastic band (NEB) calculation to find the minimum energy path (MEP) between the given reactant and product structures.
@@ -303,12 +303,14 @@ def neb_job(
         Defaults to linear.
     relax_job_kwargs
         Keyword arguments to use for the [quacc.recipes.newtonnet.core.relax_job][] function.
-    calc_kwargs
-        Custom kwargs for the NewtonNet calculator.
     interpolate_kwargs
         Keyword arguments for the interpolate functions (geodesic, linear or idpp).
     neb_kwargs
         Keyword arguments for the NEB calculation.
+    **calc_kwargs
+        Dictionary of custom kwargs for the NewtonNet calculator. Set a value to
+        `quacc.Remove` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
 
     Returns
     -------
@@ -394,10 +396,10 @@ def neb_ts_job(
     reactant_atoms: Atoms,
     product_atoms: Atoms,
     relax_job_kwargs: dict[str, Any] | None = None,
-    calc_kwargs: dict[str, Any] | None = None,
     interpolate_kwargs: dict[str, Any] | None = None,
     neb_kwargs: dict[str, Any] | None = None,
     ts_job_kwargs: dict[str, Any] | None = None,
+    **calc_kwargs,
 ) -> NebTsSchema:
     """
     Perform a NEB job using the given reactant and product ASE atoms objects
@@ -411,14 +413,16 @@ def neb_ts_job(
         The Atoms object representing the product structure.
     relax_job_kwargs
         Keyword arguments to use for the [quacc.recipes.newtonnet.core.relax_job][] function.
-    calc_kwargs
-        Custom kwargs for the NewtonNet calculator.
     interpolate_kwargs
         Keyword arguments for the interpolate functions (geodesic, linear, or idpp).
     neb_kwargs
         Keyword arguments for the NEB calculation.
     ts_job_kwargs
         Keyword arguments to use for the [quacc.recipes.newtonnet.ts.ts_job][]
+    **calc_kwargs
+        Dictionary of custom kwargs for the NewtonNet calculator. Set a value to
+        `quacc.Remove` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
 
     Returns
     -------
@@ -455,10 +459,10 @@ def neb_ts_job(
         reactant_atoms,
         product_atoms,
         interpolation_method="geodesic",
-        calc_kwargs=calc_flags,
         interpolate_kwargs=interpolate_flags,
         neb_kwargs=neb_flags,
         relax_job_kwargs=relax_job_kwargs,
+        **calc_flags,
     )
 
     traj = neb_results["neb_results"]["trajectory"]
@@ -488,8 +492,8 @@ def geodesic_job(
     reactant_atoms: Atoms,
     product_atoms: Atoms,
     relax_job_kwargs: dict[str, Any] | None = None,
-    calc_kwargs: dict[str, Any] | None = None,
     geodesic_interpolate_kwargs: dict[str, Any] | None = None,
+    **calc_kwargs,
 ) -> dict:
     """
     Perform a quasi-IRC job using the given reactant and product atoms objects.
@@ -502,10 +506,12 @@ def geodesic_job(
         The Atoms object representing the product structure.
     relax_job_kwargs
         Keyword arguments to use for [quacc.recipes.newtonnet.core.relax_job][] function.
-    calc_kwargs
-        Keyword arguments for the NewtonNet calculator, by default None.
     geodesic_interpolate_kwargs
         Keyword arguments for geodesic_interpolate, by default None.
+    **calc_kwargs
+        Dictionary of custom kwargs for the NewtonNet calculator. Set a value to
+        `quacc.Remove` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
 
     Returns
     -------
@@ -576,9 +582,9 @@ def geodesic_ts_job(
     reactant_atoms: Atoms,
     product_atoms: Atoms,
     relax_job_kwargs: dict[str, Any] | None = None,
-    calc_kwargs: dict[str, Any] | None = None,
     geodesic_interpolate_kwargs: dict[str, Any] | None = None,
     ts_job_kwargs: dict[str, Any] | None = None,
+    **calc_kwargs,
 ) -> NebTsSchema:
     """
     Perform a quasi-IRC job using the given reactant and product atoms objects.
@@ -591,12 +597,14 @@ def geodesic_ts_job(
         The Atoms object representing the product structure.
     relax_job_kwargs
         Keyword arguments to use for the relax_job function, by default None.
-    calc_kwargs
-        Keyword arguments for the NewtonNet calculator, by default None.
     geodesic_interpolate_kwargs
         Keyword arguments for the geodesic_interpolate function, by default None.
     ts_job_kwargs
         Keyword arguments for ts optimizer, by default None.
+    **calc_kwargs
+        Dictionary of custom kwargs for the NewtonNet calculator. Set a value to
+        `quacc.Remove` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
 
     Returns
     -------
