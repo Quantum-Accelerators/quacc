@@ -6,8 +6,8 @@ from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
 import numpy as np
-from monty.dev import requires
 from ase.mep import NEB
+from monty.dev import requires
 
 from quacc import change_settings, get_settings, job, strip_decorator
 from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
@@ -334,9 +334,7 @@ def neb_job(
 
     neb_defaults = {"method": "aseneb", "precon": None}
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
-    interpolate_flags = recursive_dict_merge(
-        interpolate_defaults, interpolate_kwargs
-    )
+    interpolate_flags = recursive_dict_merge(interpolate_defaults, interpolate_kwargs)
     neb_flags = recursive_dict_merge(neb_defaults, neb_kwargs)
 
     # Define calculator
@@ -347,14 +345,16 @@ def neb_job(
     relax_summary_r = strip_decorator(relax_job)(reactant_atoms, **relax_job_kwargs)
     relax_summary_p = strip_decorator(relax_job)(product_atoms, **relax_job_kwargs)
 
-    if interpolation_method == 'geodesic':
+    if interpolation_method == "geodesic":
         images = _geodesic_interpolate_wrapper(
             relax_summary_r["atoms"], relax_summary_p["atoms"], **interpolate_flags
         )
     else:
         # Make a band consisting of 5 images:
         images = [reactant_atoms]
-        images += [reactant_atoms.copy() for i in range(interpolate_flags['n_images']-2)]
+        images += [
+            reactant_atoms.copy() for i in range(interpolate_flags["n_images"] - 2)
+        ]
         images += [product_atoms]
         neb = NEB(images)
         # Interpolate linearly the positions of the middle images:
