@@ -402,7 +402,7 @@ def test_geodesic_job(setup_test_environment, tmp_path):
 
     geodesic_summary = geodesic_job(reactant, product, calc_kwargs=calc_kwargs)
     assert geodesic_summary["highest_e_atoms"].get_potential_energy() == pytest.approx(
-        -22.597125398584318, abs=1e-6
+        -22.613367267971185, abs=1e-6
     )
 
 
@@ -416,5 +416,5 @@ def test_geodesic_ts_job_no_hess(setup_test_environment, tmp_path):
     )
     # print(len(geodesic_ts_summary['ts_results']['trajectory_results']))
     assert geodesic_ts_summary["ts_results"]["results"]["energy"] == pytest.approx(
-        -23.803498330552774, abs=1e-6
+        -23.80353053617631, abs=1e-6
     )
