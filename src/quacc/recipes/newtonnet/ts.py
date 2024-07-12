@@ -306,7 +306,7 @@ def neb_job(
     calc_kwargs
         Custom kwargs for the NewtonNet calculator.
     interpolate_kwargs
-        Keyword arguments for the interpolate functions ([quacc.runners.ase._geodesic_interpolate_wrapper][] or linear).
+        Keyword arguments for the interpolate functions (geodesic, linear or idpp).
     neb_kwargs
         Keyword arguments for the NEB calculation.
 
@@ -414,7 +414,7 @@ def neb_ts_job(
     calc_kwargs
         Custom kwargs for the NewtonNet calculator.
     interpolate_kwargs
-        Keyword arguments for the interpolate functions ([quacc.runners.ase._geodesic_interpolate_wrapper][] or linear).
+        Keyword arguments for the interpolate functions (geodesic, linear, or idpp).
     neb_kwargs
         Keyword arguments for the NEB calculation.
     ts_job_kwargs
@@ -505,7 +505,7 @@ def geodesic_job(
     calc_kwargs
         Keyword arguments for the NewtonNet calculator, by default None.
     geodesic_interpolate_kwargs
-        Keyword arguments for [quacc.runners.ase._geodesic_interpolate_wrapper][], by default None.
+        Keyword arguments for geodesic_interpolate, by default None.
 
     Returns
     -------
