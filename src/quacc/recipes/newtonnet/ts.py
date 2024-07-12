@@ -280,10 +280,6 @@ def quasi_irc_job(
 @requires(
     has_newtonnet, "NewtonNet must be installed. Refer to the quacc documentation."
 )
-@requires(
-    has_geodesic_interpolate,
-    "geodesic-interpolate must be installed. Refer to the quacc documentation.",
-)
 def neb_job(
     reactant_atoms: Atoms,
     product_atoms: Atoms,
