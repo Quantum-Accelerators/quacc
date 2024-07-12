@@ -392,13 +392,12 @@ def summarize_neb_run(
         trajectory = trajectory[-(n_images):]
     else:
         trajectory = _get_nth_iteration(
-            trajectory,
-            int(len(trajectory)/n_images),
-            n_images,
-            n,
+            trajectory, int(len(trajectory) / n_images), n_images, n
         )
     trajectory_results = [atoms.calc.results for atoms in trajectory]
-    ts_index = np.argmax([i["energy"] for i in trajectory_results[-(n_images-1):-1]]) + 1
+    ts_index = (
+        np.argmax([i["energy"] for i in trajectory_results[-(n_images - 1) : -1]]) + 1
+    )
     ts_atoms = trajectory[ts_index]
 
     for traj_atoms in trajectory:
@@ -407,8 +406,7 @@ def summarize_neb_run(
     initial_atoms = trajectory[0]
 
     base_task_doc = atoms_to_metadata(
-        initial_atoms,
-        charge_and_multiplicity=charge_and_multiplicity,
+        initial_atoms, charge_and_multiplicity=charge_and_multiplicity
     )
 
     # Clean up the opt parameters
@@ -446,14 +444,14 @@ def _get_nth_iteration(neb_trajectory, n_iter, n_images, n):
     """
     result = []
     if n > n_iter:
-        print('n_iter_return should not be more than the total number of iterations.')
+        pass
     start_idx, end_idx = 0, 0
     for i in range(0, n_iter, n):
         start_idx = i * n_images
         end_idx = start_idx + n_images
 
         result.extend(neb_trajectory[start_idx:end_idx])
-    if end_idx < len(neb_trajectory)-1:
+    if end_idx < len(neb_trajectory) - 1:
         result.extend(neb_trajectory[-(n_images):])
     return result
 
