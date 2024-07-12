@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import glob
 import logging
 import sys
 from importlib.util import find_spec
@@ -44,7 +45,7 @@ if has_geodesic_interpolate:
 
 if TYPE_CHECKING:
     from pathlib import Path
-    from typing import Any
+    from typing import Any, Literal
 
     from ase.calculators.calculator import Calculator
     from ase.optimize.optimize import Dynamics, Optimizer
@@ -160,7 +161,7 @@ class Runner(BaseRunner):
         optimizer: Dynamics = BFGS,
         optimizer_kwargs: dict[str, Any] | None = None,
         store_intermediate_results: bool = False,
-        fn_hook: Callable | None = None,
+        fn_hook: callable | None = None,
         run_kwargs: dict[str, Any] | None = None,
     ) -> Dynamics:
         """
@@ -504,21 +505,17 @@ def run_neb(
             if images[i].pbc.any():
                 images[i] = FrechetCellFilter(images[i])
 
-    # Run optimization
     dyn = optimizer(neb, **optimizer_kwargs)
     dyn.attach(traj.write)
     dyn.run(fmax, max_steps)
     traj.close()
 
-    traj.filename = traj_file
-    dyn.trajectory = traj
-
-    # Perform cleanup operations skipping the first images's directory
-    # because that is where the trajectory is stored. It will get deleted
-    # eventually.
-    for i, image in enumerate(images[1:], start=1):
+    # Perform cleanup operations first images's results directory contains traj file.
+    for i, image in enumerate(images):
         calc_cleanup(image, dir_lists[i][0], dir_lists[i][1])
 
+    traj.filename = zpath(dir_lists[0][1] / traj_filename)
+    dyn.trajectory = traj
     return dyn
 
 
@@ -530,8 +527,9 @@ def _geodesic_interpolate_wrapper(
     reactant: Atoms,
     product: Atoms,
     n_images: int = 20,
-    perform_sweep: bool | None = None,
-    convergence_tolerance: float = 2e-3,
+    perform_sweep: bool | Literal["auto"] = "auto",
+    convergence_tolerance1: float = 1e-2,
+    convergence_tolerance2: float = 2e-3,
     max_iterations: int = 15,
     max_micro_iterations: int = 20,
     morse_scaling: float = 1.7,
@@ -552,8 +550,12 @@ def _geodesic_interpolate_wrapper(
     perform_sweep
         Whether to sweep across the path optimizing one image at a time.
         Default is to perform sweeping updates if there are more than 35 atoms.
-    convergence_tolerance
-        Convergence tolerance. Default is 2e-3.
+    convergence_tolerance1
+        the value passed to the tol keyword argument of
+         geodesic_interpolate.interpolation.redistribute. Default is 1e-2.
+    convergence_tolerance2
+        the value passed to the tol keyword argument of geodesic_smoother.smooth
+        or geodesic_smoother.sweep. Default is 2e-3.
     max_iterations
         Maximum number of minimization iterations. Default is 15.
     max_micro_iterations
@@ -581,7 +583,7 @@ def _geodesic_interpolate_wrapper(
         chemical_symbols,
         [reactant.positions, product.positions],
         n_images,
-        tol=convergence_tolerance * 5,
+        tol=convergence_tolerance1,
     )
 
     # Perform smoothing by minimizing distance in Cartesian coordinates with redundant internal metric
@@ -597,12 +599,12 @@ def _geodesic_interpolate_wrapper(
         perform_sweep = len(chemical_symbols) > 35
     if perform_sweep:
         geodesic_smoother.sweep(
-            tol=convergence_tolerance,
+            tol=convergence_tolerance2,
             max_iter=max_iterations,
             micro_iter=max_micro_iterations,
         )
     else:
-        geodesic_smoother.smooth(tol=convergence_tolerance, max_iter=max_iterations)
+        geodesic_smoother.smooth(tol=convergence_tolerance2, max_iter=max_iterations)
     return [
         Atoms(symbols=chemical_symbols, positions=geom)
         for geom in geodesic_smoother.path
