@@ -395,7 +395,7 @@ def neb_ts_job(
     product_atoms: Atoms,
     relax_job_kwargs: dict[str, Any] | None = None,
     calc_kwargs: dict[str, Any] | None = None,
-    geodesic_interpolate_kwargs: dict[str, Any] | None = None,
+    interpolate_kwargs: dict[str, Any] | None = None,
     neb_kwargs: dict[str, Any] | None = None,
     ts_job_kwargs: dict[str, Any] | None = None,
 ) -> NebTsSchema:
@@ -413,8 +413,9 @@ def neb_ts_job(
         Keyword arguments to use for the relax_job function, by default None.
     calc_kwargs
         Keyword arguments for the NewtonNet calculator, by default None.
-    geodesic_interpolate_kwargs
-        Keyword arguments for the geodesic_interpolate function, by default None.
+    interpolate_kwargs
+        The method to initialize the NEB optimization. There are three choices here, "linear", "idpp" and "geodesic".
+        Defaults to linear.
     neb_kwargs
         Keyword arguments for the NEB calculation, by default None.
     ts_job_kwargs
@@ -432,7 +433,7 @@ def neb_ts_job(
     """
     relax_job_kwargs = relax_job_kwargs or {}
     neb_kwargs = neb_kwargs or {}
-    geodesic_interpolate_kwargs = geodesic_interpolate_kwargs or {}
+    interpolate_kwargs = interpolate_kwargs or {}
     calc_kwargs = calc_kwargs or {}
     ts_job_kwargs = ts_job_kwargs or {}
     settings = get_settings()
@@ -443,21 +444,22 @@ def neb_ts_job(
         "hess_method": None,
     }
 
-    geodesic_defaults = {"n_images": 20}
+    interpolate_defaults = {"n_images": 20}
 
     neb_defaults = {"method": "aseneb", "precon": None}
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
     calc_flags["hess_method"] = None
-    geodesic_interpolate_flags = recursive_dict_merge(
-        geodesic_defaults, geodesic_interpolate_kwargs
+    interpolate_flags = recursive_dict_merge(
+        interpolate_defaults, interpolate_kwargs
     )
     neb_flags = recursive_dict_merge(neb_defaults, neb_kwargs)
 
     neb_results = strip_decorator(neb_job)(
         reactant_atoms,
         product_atoms,
+        interpolation_method='geodesic',
         calc_kwargs=calc_flags,
-        geodesic_interpolate_kwargs=geodesic_interpolate_flags,
+        interpolate_kwargs=interpolate_flags,
         neb_kwargs=neb_flags,
         relax_job_kwargs=relax_job_kwargs,
     )
