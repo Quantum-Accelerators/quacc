@@ -330,10 +330,46 @@ def setup_test_environment(tmp_path):
     return reactant, product
 
 
-def test_neb_job(setup_test_environment, tmp_path):
+def test_neb_job_linear(setup_test_environment, tmp_path):
     reactant, product = setup_test_environment
 
-    neb_summary = neb_job(reactant, product)
+    neb_summary = neb_job(reactant, product, interpolation_method='linear')
+
+    assert len(neb_summary["neb_results"]["trajectory_results"]) == 20
+    assert neb_summary["relax_reactant"]["atoms"].positions[0, 0] == pytest.approx(
+        0.8815, abs=1e-3
+    )
+    assert neb_summary["relax_product"]["atoms"].positions[0, 0] == pytest.approx(
+        1.117689, abs=1e-3
+    )
+
+    assert neb_summary["neb_results"]["trajectory_results"][1][
+               "energy"
+           ] == pytest.approx(-24.09438133239746, abs=1e-5)
+
+
+def test_neb_job_idpp(setup_test_environment, tmp_path):
+    reactant, product = setup_test_environment
+
+    neb_summary = neb_job(reactant, product, interpolation_method='idpp')
+
+    assert len(neb_summary["neb_results"]["trajectory_results"]) == 20
+    assert neb_summary["relax_reactant"]["atoms"].positions[0, 0] == pytest.approx(
+        0.8815, abs=1e-3
+    )
+    assert neb_summary["relax_product"]["atoms"].positions[0, 0] == pytest.approx(
+        1.117689, abs=1e-3
+    )
+
+    assert neb_summary["neb_results"]["trajectory_results"][1][
+               "energy"
+           ] == pytest.approx(-26.821992874145508, abs=1e-5)
+
+
+def test_neb_job_geodesic(setup_test_environment, tmp_path):
+    reactant, product = setup_test_environment
+
+    neb_summary = neb_job(reactant, product, interpolation_method='geodesic')
 
     assert len(neb_summary["neb_results"]["trajectory_results"]) == 20
     assert neb_summary["relax_reactant"]["atoms"].positions[0, 0] == pytest.approx(
