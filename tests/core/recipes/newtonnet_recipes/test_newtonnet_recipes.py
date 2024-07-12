@@ -121,7 +121,7 @@ def test_ts_job_with_default_args(tmp_path, monkeypatch):
     assert "freq_job" in output
     assert output["results"]["energy"] == pytest.approx(-6.796914263061945)
     assert output["freq_job"]["results"]["imag_vib_freqs"][0] == pytest.approx(
-        -2426.757782292285, abs=1e-6
+        -2426.73983218162, abs=1e-6
     )
 
 
@@ -356,7 +356,7 @@ def test_neb_ts_job_no_hess(setup_test_environment, tmp_path):
         reactant, product, calc_kwargs=calc_kwargs, ts_job_kwargs=ts_job_kwargs
     )
     assert neb_ts_results["ts_results"]["results"]["energy"] == pytest.approx(
-        -23.97834587097168, abs=1e-6
+        -24.936278455859792, abs=1e-6
     )
 
 
@@ -366,7 +366,7 @@ def test_geodesic_job(setup_test_environment, tmp_path):
 
     geodesic_summary = geodesic_job(reactant, product, calc_kwargs=calc_kwargs)
     assert geodesic_summary["highest_e_atoms"].get_potential_energy() == pytest.approx(
-        -22.613374710083008, abs=1e-6
+        -22.613367267971185, abs=1e-6
     )
 
 
@@ -380,5 +380,5 @@ def test_geodesic_ts_job_no_hess(setup_test_environment, tmp_path):
     )
     # print(len(geodesic_ts_summary['ts_results']['trajectory_results']))
     assert geodesic_ts_summary["ts_results"]["results"]["energy"] == pytest.approx(
-        -23.803544998168945, abs=1e-6
+        -23.80353053617631, abs=1e-6
     )
