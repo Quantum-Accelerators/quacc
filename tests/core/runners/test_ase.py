@@ -97,7 +97,8 @@ def setup_test_environment(tmp_path):
 )
 def test_geodesic_interpolate_wrapper(setup_test_environment):
     n_images = 20
-    convergence_tolerance = 1e-4
+    convergence_tolerance1 = 5e-4
+    convergence_tolerance2 = 1e-4
     max_iterations = 10
     max_micro_iterations = 10
     morse_scaling = 1.5
@@ -111,7 +112,8 @@ def test_geodesic_interpolate_wrapper(setup_test_environment):
         reactant,
         product,
         n_images=n_images,
-        convergence_tolerance=convergence_tolerance,
+        convergence_tolerance1=convergence_tolerance1,
+        convergence_tolerance2=convergence_tolerance2,
         max_iterations=max_iterations,
         max_micro_iterations=max_micro_iterations,
         morse_scaling=morse_scaling,
