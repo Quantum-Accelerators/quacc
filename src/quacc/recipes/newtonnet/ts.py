@@ -308,7 +308,7 @@ def neb_job(
     interpolate_kwargs
         Keyword arguments for the interpolate functions ([quacc.runners.ase._geodesic_interpolate_wrapper][] or linear).
     neb_kwargs
-        Keyword arguments for the NEB calculation ([ase.mep.NEB][]).
+        Keyword arguments for the NEB calculation.
 
     Returns
     -------
@@ -416,7 +416,7 @@ def neb_ts_job(
     interpolate_kwargs
         Keyword arguments for the interpolate functions ([quacc.runners.ase._geodesic_interpolate_wrapper][] or linear).
     neb_kwargs
-        Keyword arguments for the NEB calculation ([ase.mep.NEB][]).
+        Keyword arguments for the NEB calculation.
     ts_job_kwargs
         Keyword arguments to use for the [quacc.recipes.newtonnet.ts.ts_job][]
 
