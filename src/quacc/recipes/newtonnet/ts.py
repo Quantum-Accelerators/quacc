@@ -364,6 +364,7 @@ def neb_job(
         "neb_results": summarize_neb_run(
             dyn,
             additional_fields={
+                "n_iter_return": -1,
                 "neb_flags": neb_flags,
                 "calc_flags": calc_flags,
                 "geodesic_interpolate_flags": geodesic_interpolate_flags,
