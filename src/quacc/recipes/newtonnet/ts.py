@@ -338,8 +338,6 @@ def neb_job(
     )
     neb_flags = recursive_dict_merge(neb_defaults, neb_kwargs)
 
-    # Debug prints to trace the values
-
     # Define calculator
     reactant_atoms.calc = NewtonNet(**calc_flags)
     product_atoms.calc = NewtonNet(**calc_flags)
