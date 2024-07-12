@@ -26,7 +26,6 @@ from ase.optimize import BFGS, BFGSLineSearch
 from ase.optimize.sciopt import SciPyFminBFGS
 
 from quacc import change_settings, get_settings
-from quacc.recipes.emt.core import relax_job
 from quacc.runners._base import BaseRunner
 from quacc.runners.ase import Runner, _geodesic_interpolate_wrapper, run_neb
 from quacc.schemas.ase import summarize_neb_run
@@ -138,8 +137,7 @@ def test_run_neb(tmp_path):
     n_intermediate = 10
 
     geodesic_path = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        "geodesic_path.xyz"
+        os.path.dirname(os.path.abspath(__file__)), "geodesic_path.xyz"
     )
     images = read(geodesic_path, index=":")
     for image in images:
@@ -167,8 +165,7 @@ def test_run_neb2(setup_test_environment, tmp_path):
     optimizer_class = BFGSLineSearch
 
     geodesic_path = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        "geodesic_path.xyz"
+        os.path.dirname(os.path.abspath(__file__)), "geodesic_path.xyz"
     )
 
     images = read(geodesic_path, index=":")
