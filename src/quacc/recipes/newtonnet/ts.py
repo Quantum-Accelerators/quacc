@@ -302,22 +302,22 @@ def neb_job(
         The method to initialize the NEB optimization. There are three choices here, "linear", "idpp" and "geodesic".
         Defaults to linear.
     relax_job_kwargs
-        Keyword arguments to use relax_job.
+        Keyword arguments to use for the [quacc.recipes.newtonnet.core.relax_job][] function.
     calc_kwargs
         Custom kwargs for the NewtonNet calculator.
     interpolate_kwargs
-        Keyword arguments for the interpolate functions (geodesic or linear).
+        Keyword arguments for the interpolate functions ([quacc.runners.ase._geodesic_interpolate_wrapper][] or linear).
     neb_kwargs
-        Keyword arguments for the NEB calculation.
+        Keyword arguments for the NEB calculation ([ase.mep.NEB][]).
 
     Returns
     -------
     NebSchema
         A dictionary containing the following keys:
-            - 'relax_reactant': Summary of the relaxed reactant structure.
-            - 'relax_product': Summary of the relaxed product structure.
+            - 'relax_reactant': Summary of the relaxed reactant structure ([quacc.schemas.ase.summarize_opt_run][]).
+            - 'relax_product': Summary of the relaxed product structure ([quacc.schemas.ase.summarize_opt_run][]).
             - 'geodesic_results': The interpolated images between reactant and product.
-            - 'neb_results': Summary of the NEB optimization.
+            - 'neb_results': Summary of the NEB optimization ([quacc.schemas.ase.summarize_neb_run][]).
     """
     relax_job_kwargs = relax_job_kwargs or {}
     neb_kwargs = neb_kwargs or {}
@@ -410,26 +410,25 @@ def neb_ts_job(
     product_atoms
         The Atoms object representing the product structure.
     relax_job_kwargs
-        Keyword arguments to use for the relax_job function, by default None.
+        Keyword arguments to use for the [quacc.recipes.newtonnet.core.relax_job][] function.
     calc_kwargs
-        Keyword arguments for the NewtonNet calculator, by default None.
+        Custom kwargs for the NewtonNet calculator.
     interpolate_kwargs
-        The method to initialize the NEB optimization. There are three choices here, "linear", "idpp" and "geodesic".
-        Defaults to linear.
+        Keyword arguments for the interpolate functions ([quacc.runners.ase._geodesic_interpolate_wrapper][] or linear).
     neb_kwargs
-        Keyword arguments for the NEB calculation, by default None.
+        Keyword arguments for the NEB calculation ([ase.mep.NEB][]).
     ts_job_kwargs
-        Keyword arguments for the TS optimizer, by default None.
+        Keyword arguments to use for the [quacc.recipes.newtonnet.ts.ts_job][]
 
     Returns
     -------
     NebTsSchema
         A dictionary containing the following keys:
-            - 'relax_reactant': Summary of the relaxed reactant structure.
-            - 'relax_product': Summary of the relaxed product structure.
+            - 'relax_reactant': Summary of the relaxed reactant structure ([quacc.schemas.ase.summarize_opt_run][]).
+            - 'relax_product': Summary of the relaxed product structure ([quacc.schemas.ase.summarize_opt_run][]).
             - 'geodesic_results': The interpolated images between reactant and product.
-            - 'neb_results': Summary of the NEB optimization.
-            - 'ts_results': Summary of the transition state optimization.
+            - 'neb_results': Summary of the NEB optimization ([quacc.schemas.ase.summarize_neb_run][]).
+            - 'ts_results': Summary of the transition state optimization ([quacc.types.NewtonNetTSSchema]).
     """
     relax_job_kwargs = relax_job_kwargs or {}
     neb_kwargs = neb_kwargs or {}
@@ -502,11 +501,11 @@ def geodesic_job(
     product_atoms
         The Atoms object representing the product structure.
     relax_job_kwargs
-        Keyword arguments to use for the relax_job function, by default None.
+        Keyword arguments to use for [quacc.recipes.newtonnet.core.relax_job][] function.
     calc_kwargs
         Keyword arguments for the NewtonNet calculator, by default None.
     geodesic_interpolate_kwargs
-        Keyword arguments for the geodesic_interpolate function, by default None.
+        Keyword arguments for [quacc.runners.ase._geodesic_interpolate_wrapper][], by default None.
 
     Returns
     -------
