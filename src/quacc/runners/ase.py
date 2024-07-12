@@ -499,9 +499,10 @@ def run_neb(
     traj = Trajectory(traj_file, "w", atoms=neb)
 
     # Set volume relaxation constraints, if relevant
-    for i in range(len(images)):
-        if relax_cell and images[i].pbc.any():
-            images[i] = FrechetCellFilter(images[i])
+    if relax_cell:
+        for i in range(len(images)):
+            if images[i].pbc.any():
+                images[i] = FrechetCellFilter(images[i])
 
     # Run optimization
     dyn = optimizer(neb, **optimizer_kwargs)
