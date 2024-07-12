@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
-import glob
 import logging
 import sys
 from importlib.util import find_spec
 from shutil import copy, copytree
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from ase.atoms import Atoms
