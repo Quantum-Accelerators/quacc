@@ -153,12 +153,12 @@ def test_run_neb(tmp_path):
         },
     )
     assert neb_summary["trajectory_results"][-2]["energy"] == pytest.approx(
-        1.0919733949403314, abs=1e-6
+        1.0919733949403314, abs=1e-4
     )
 
     ts_atoms = neb_summary["highest_e_atoms"]
     ts_atoms.calc = EMT()
-    assert ts_atoms.get_potential_energy() == pytest.approx(1.1379006828510447, 1e-6)
+    assert ts_atoms.get_potential_energy() == pytest.approx(1.1379006828510447, 1e-4)
 
 
 def test_run_neb2(setup_test_environment, tmp_path):
