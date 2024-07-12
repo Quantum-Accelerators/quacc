@@ -96,29 +96,20 @@ def setup_test_environment(tmp_path):
     reason="geodesic_interpolate function is not available",
 )
 def test_geodesic_interpolate_wrapper(setup_test_environment):
-    n_images = 20
-    convergence_tolerance1 = 5e-4
-    convergence_tolerance2 = 1e-4
-    max_iterations = 10
-    max_micro_iterations = 10
-    morse_scaling = 1.5
-    geometry_friction = 1e-2
-    distance_cutoff = 2.5
-
     reactant, product = setup_test_environment
 
     # Execute the geodesic_interpolate_wrapper function
     smoother_path = _geodesic_interpolate_wrapper(
         reactant,
         product,
-        n_images=n_images,
-        convergence_tolerance1=convergence_tolerance1,
-        convergence_tolerance2=convergence_tolerance2,
-        max_iterations=max_iterations,
-        max_micro_iterations=max_micro_iterations,
-        morse_scaling=morse_scaling,
-        geometry_friction=geometry_friction,
-        distance_cutoff=distance_cutoff,
+        n_images=20,
+        convergence_tolerance1=5e-4,
+        convergence_tolerance2=1e-4,
+        max_iterations=10,
+        max_micro_iterations=10,
+        morse_scaling=1.5,
+        geometry_friction=1e-2,
+        distance_cutoff=2.5,
     )
     assert smoother_path[1].positions[0][0] == pytest.approx(1.378384900, abs=1e-5)
     assert smoother_path[5].positions[0][2] == pytest.approx(-0.512075394, abs=1e-5)
@@ -135,9 +126,6 @@ def test_geodesic_interpolate_wrapper_large_system(setup_test_environment):
 
 
 def test_run_neb(tmp_path):
-    optimizer_class = NEBOptimizer
-    n_intermediate = 10
-
     geodesic_path = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "geodesic_path.xyz"
     )
@@ -146,11 +134,11 @@ def test_run_neb(tmp_path):
         image.calc = EMT()
 
     neb_kwargs = {"method": "aseneb", "precon": None}
-    dyn = run_neb(images, optimizer=optimizer_class, neb_kwargs=neb_kwargs)
+    dyn = run_neb(images, optimizer=NEBOptimizer, neb_kwargs=neb_kwargs)
     neb_summary = summarize_neb_run(
         dyn,
         additional_fields={
-            "geodesic_interpolate_flags": {"n_images": n_intermediate},
+            "geodesic_interpolate_flags": {"n_images": 10},
             "n_iter_return": 10,
         },
     )
