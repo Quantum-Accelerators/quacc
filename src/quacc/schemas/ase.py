@@ -386,7 +386,7 @@ def summarize_neb_run(
     if not trajectory:
         trajectory = read(dyn.trajectory.filename, index=":")
 
-    n_images = additional_fields["geodesic_interpolate_flags"]["n_images"]
+    n_images = additional_fields["interpolate_flags"]["n_images"]
 
     n = additional_fields.get("n_iter_return", -1)
     if n == -1:
