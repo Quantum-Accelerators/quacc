@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from monty.dev import requires
+from ase.mep import NEB
 
 from quacc import change_settings, get_settings, job, strip_decorator
 from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
@@ -286,9 +287,10 @@ def quasi_irc_job(
 def neb_job(
     reactant_atoms: Atoms,
     product_atoms: Atoms,
+    interpolation_method: Literal["linear", "idpp", "geodesic"] = "linear",
     relax_job_kwargs: dict[str, Any] | None = None,
     calc_kwargs: dict[str, Any] | None = None,
-    geodesic_interpolate_kwargs: dict[str, Any] | None = None,
+    interpolate_kwargs: dict[str, Any] | None = None,
     neb_kwargs: dict[str, Any] | None = None,
 ) -> NebSchema:
     """
@@ -300,12 +302,15 @@ def neb_job(
         The Atoms object representing the reactant structure.
     product_atoms
         The Atoms object representing the product structure.
+    interpolation_method
+        The method to initialize the NEB optimization. There are three choices here, "linear", "idpp" and "geodesic".
+        Defaults to linear.
     relax_job_kwargs
         Keyword arguments to use relax_job.
     calc_kwargs
         Custom kwargs for the NewtonNet calculator.
-    geodesic_interpolate_kwargs
-        Keyword arguments for the geodesic function.
+    interpolate_kwargs
+        Keyword arguments for the interpolate functions (geodesic or linear).
     neb_kwargs
         Keyword arguments for the NEB calculation.
 
@@ -320,7 +325,7 @@ def neb_job(
     """
     relax_job_kwargs = relax_job_kwargs or {}
     neb_kwargs = neb_kwargs or {}
-    geodesic_interpolate_kwargs = geodesic_interpolate_kwargs or {}
+    interpolate_kwargs = interpolate_kwargs or {}
     settings = get_settings()
 
     calc_defaults = {
@@ -329,12 +334,12 @@ def neb_job(
         "hess_method": None,
     }
 
-    geodesic_defaults = {"n_images": 20}
+    interpolate_defaults = {"n_images": 20}
 
     neb_defaults = {"method": "aseneb", "precon": None}
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
-    geodesic_interpolate_flags = recursive_dict_merge(
-        geodesic_defaults, geodesic_interpolate_kwargs
+    interpolate_flags = recursive_dict_merge(
+        interpolate_defaults, interpolate_kwargs
     )
     neb_flags = recursive_dict_merge(neb_defaults, neb_kwargs)
 
@@ -346,9 +351,19 @@ def neb_job(
     relax_summary_r = strip_decorator(relax_job)(reactant_atoms, **relax_job_kwargs)
     relax_summary_p = strip_decorator(relax_job)(product_atoms, **relax_job_kwargs)
 
-    images = _geodesic_interpolate_wrapper(
-        relax_summary_r["atoms"], relax_summary_p["atoms"], **geodesic_interpolate_flags
-    )
+    if interpolation_method == 'geodesic':
+        images = _geodesic_interpolate_wrapper(
+            relax_summary_r["atoms"], relax_summary_p["atoms"], **interpolate_flags
+        )
+    else:
+        # Make a band consisting of 5 images:
+        images = [reactant_atoms]
+        images += [reactant_atoms.copy() for i in range(interpolate_flags['n_images']-2)]
+        images += [product_atoms]
+        neb = NEB(images)
+        # Interpolate linearly the positions of the middle images:
+        neb.interpolate(method=interpolation_method)
+        images = neb.images
 
     for image in images:
         image.calc = NewtonNet(**calc_flags)
@@ -365,7 +380,7 @@ def neb_job(
                 "n_iter_return": -1,
                 "neb_flags": neb_flags,
                 "calc_flags": calc_flags,
-                "geodesic_interpolate_flags": geodesic_interpolate_flags,
+                "interpolate_flags": interpolate_flags,
             },
         ),
     }
