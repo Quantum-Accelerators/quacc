@@ -534,6 +534,7 @@ def _geodesic_interpolate_wrapper(
     morse_scaling: float = 1.7,
     geometry_friction: float = 1e-2,
     distance_cutoff: float = 3.0,
+    sweep_cutoff_size: int = 35,
 ) -> list[Atoms]:
     """
     Interpolates between two geometries and optimizes the path with the geodesic method.
@@ -565,6 +566,9 @@ def _geodesic_interpolate_wrapper(
         Size of friction term used to prevent very large changes in geometry. Default is 1e-2.
     distance_cutoff
         Cut-off value for the distance between a pair of atoms to be included in the coordinate system. Default is 3.0.
+    sweep_cutoff_size
+        Cut off system size that above which sweep function will be called instead of smooth
+        in Geodesic.
 
     Returns
     -------
@@ -594,8 +598,8 @@ def _geodesic_interpolate_wrapper(
         threshold=distance_cutoff,
         friction=geometry_friction,
     )
-    if perform_sweep is None:
-        perform_sweep = len(chemical_symbols) > 35
+    if perform_sweep == "auto":
+        perform_sweep = len(chemical_symbols) > sweep_cutoff_size
     if perform_sweep:
         geodesic_smoother.sweep(
             tol=convergence_tolerance2,
