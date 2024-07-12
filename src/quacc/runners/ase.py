@@ -430,8 +430,8 @@ def run_neb(
     max_steps: int | None = 1000,
     optimizer: NEBOptimizer | Optimizer = NEBOptimizer,
     optimizer_kwargs: dict[str, Any] | None = None,
-    run_kwargs: dict[str, Any] | None = None,
     neb_kwargs: dict[str, Any] | None = None,
+    run_kwargs: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> Optimizer:
     """
