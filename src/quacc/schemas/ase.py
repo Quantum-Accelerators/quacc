@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from ase import units
 from ase.io import read
+from ase.io.trajectory import Trajectory
 from ase.vibrations import Vibrations
 from ase.vibrations.data import VibrationsData
 
