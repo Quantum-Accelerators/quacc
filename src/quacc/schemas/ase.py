@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 import numpy as np
 from ase import units
 from ase.io import read
-from ase.io.trajectory import Trajectory
 from ase.vibrations import Vibrations
 from ase.vibrations.data import VibrationsData
 
@@ -22,6 +21,7 @@ if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
+    from ase.io.trajectory import Trajectory
     from ase.md.md import MolecularDynamics
     from ase.optimize.optimize import Optimizer
     from ase.thermochemistry import IdealGasThermo
