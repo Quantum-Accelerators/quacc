@@ -433,7 +433,7 @@ def run_neb(
     neb_kwargs: dict[str, Any] | None = None,
     run_kwargs: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-) -> Optimizer:
+) -> Dynamics:
     """
     Run NEB optimization.
 
@@ -460,8 +460,8 @@ def run_neb(
 
     Returns
     -------
-    Optimizer
-        The ASE Optimizer object.
+    Dynamics
+        The ASE Dynamics object following an optimization.
     """
     if optimizer.__name__ == "BFGSLineSearch":
         raise ValueError("BFGSLineSearch is not allowed as optimizer with NEB.")
