@@ -138,7 +138,7 @@ def test_run_neb(tmp_path):
     neb_summary = summarize_neb_run(
         dyn,
         additional_fields={
-            "geodesic_interpolate_flags": {"n_images": 10},
+            "interpolate_flags": {"n_images": len(images)},
             "n_iter_return": 10,
         },
     )
