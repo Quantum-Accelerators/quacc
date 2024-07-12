@@ -389,7 +389,8 @@ def neb_ts_job(
     ts_job_kwargs: dict[str, Any] | None = None,
 ) -> NebTsSchema:
     """
-    Perform a quasi-IRC job using the given reactant and product atoms objects.
+    Perform a NEB job using the given reactant and product ASE atoms objects
+    followed by a TS optimization from the top of the converged NEB trajectory.
 
     Parameters
     ----------
