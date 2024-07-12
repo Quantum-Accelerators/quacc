@@ -449,15 +449,13 @@ def neb_ts_job(
     neb_defaults = {"method": "aseneb", "precon": None}
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
     calc_flags["hess_method"] = None
-    interpolate_flags = recursive_dict_merge(
-        interpolate_defaults, interpolate_kwargs
-    )
+    interpolate_flags = recursive_dict_merge(interpolate_defaults, interpolate_kwargs)
     neb_flags = recursive_dict_merge(neb_defaults, neb_kwargs)
 
     neb_results = strip_decorator(neb_job)(
         reactant_atoms,
         product_atoms,
-        interpolation_method='geodesic',
+        interpolation_method="geodesic",
         calc_kwargs=calc_flags,
         interpolate_kwargs=interpolate_flags,
         neb_kwargs=neb_flags,
