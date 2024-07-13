@@ -122,7 +122,7 @@ class Runner(BaseRunner):
         # object, as this contains important information such as the parameters
         # and output properties (e.g. final magnetic moments).
         if geom_file:
-            atoms_new = read(zpath(self.tmpdir / geom_file))
+            atoms_new = read(zpath(str(self.tmpdir / geom_file)))
             if isinstance(atoms_new, list):
                 atoms_new = atoms_new[-1]
 
@@ -257,7 +257,7 @@ class Runner(BaseRunner):
 
         # Perform cleanup operations
         self.cleanup()
-        traj.filename = zpath(self.job_results_dir / traj_filename)
+        traj.filename = zpath(str(self.job_results_dir / traj_filename))
         dyn.trajectory = traj
 
         return dyn
