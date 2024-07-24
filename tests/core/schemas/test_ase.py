@@ -392,7 +392,9 @@ def test_summarize_vib_and_thermo(tmp_path, monkeypatch):
     atoms = molecule("N2")
     atoms.calc = EMT()
     igt = IdealGasThermo([0.34], "linear", atoms=atoms, spin=0, symmetrynumber=2)
-    results = summarize_vib_and_thermo(vib=None, thermo_analysis=igt, atoms=atoms)
+    vib = Vibrations(atoms)
+    vib.run()
+    results = summarize_vib_and_thermo(vib=vib, thermo_analysis=igt, atoms=atoms)
 
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
