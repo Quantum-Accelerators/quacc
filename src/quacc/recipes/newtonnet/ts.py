@@ -667,10 +667,7 @@ def geodesic_ts_job(
     }
 
 
-def _get_hessian(
-        atoms: Atoms,
-        **calc_kwargs,
-) -> NDArray:
+def _get_hessian(atoms: Atoms, **calc_kwargs) -> NDArray:
     """
     Calculate and retrieve the Hessian matrix for the given molecular configuration.
 
@@ -695,9 +692,9 @@ def _get_hessian(
     """
     settings = get_settings()
     calc_defaults = {
-        'model_path': settings.NEWTONNET_MODEL_PATH,
-        'settings_path': settings.NEWTONNET_CONFIG_PATH,
-        'hess_method': "autograd",
+        "model_path": settings.NEWTONNET_MODEL_PATH,
+        "settings_path": settings.NEWTONNET_CONFIG_PATH,
+        "hess_method": "autograd",
     }
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
     calc = NewtonNet(**calc_flags)
