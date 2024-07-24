@@ -233,6 +233,7 @@ def summarize_vasp_opt_run(
         store=None,
     )
     vasp_summary = vasp_summarize_run(
+        final_atoms,
         directory=directory,
         move_magmoms=move_magmoms,
         run_bader=run_bader,
