@@ -482,8 +482,8 @@ def run_neb(
     # Set defaults
     optimizer_kwargs = recursive_dict_merge(
         {
-            "logfile": "-" if settings.DEBUG else dir_lists[0][0] / "opt.log",
-            "restart": dir_lists[0][0] / "opt.json",
+            "logfile": "-" if settings.DEBUG else dir_lists[0][1] / "opt.log",
+            "restart": dir_lists[0][1] / "opt.json",
         },
         optimizer_kwargs,
     )
