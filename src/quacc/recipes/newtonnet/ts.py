@@ -667,7 +667,10 @@ def geodesic_ts_job(
     }
 
 
-def _get_hessian(atoms: Atoms) -> NDArray:
+def _get_hessian(
+        atoms: Atoms,
+        **calc_kwargs,
+) -> NDArray:
     """
     Calculate and retrieve the Hessian matrix for the given molecular configuration.
 
@@ -680,6 +683,10 @@ def _get_hessian(atoms: Atoms) -> NDArray:
     ----------
     atoms
         The ASE Atoms object representing the molecular configuration.
+    **calc_kwargs
+        Dictionary of custom kwargs for the NewtonNet calculator. Set a value to
+        `quacc.Remove` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the `newtonnet.utils.ase_interface.MLAseCalculator` calculator.
 
     Returns
     -------
@@ -687,11 +694,12 @@ def _get_hessian(atoms: Atoms) -> NDArray:
         The calculated Hessian matrix, reshaped into a 2D array.
     """
     settings = get_settings()
-    ml_calculator = NewtonNet(
-        model_path=settings.NEWTONNET_MODEL_PATH,
-        settings_path=settings.NEWTONNET_CONFIG_PATH,
-        hess_method="autograd",
-    )
-    ml_calculator.calculate(atoms)
-
-    return ml_calculator.results["hessian"].reshape((-1, 3 * len(atoms)))
+    calc_defaults = {
+        'model_path': settings.NEWTONNET_MODEL_PATH,
+        'settings_path': settings.NEWTONNET_CONFIG_PATH,
+        'hess_method': "autograd",
+    }
+    calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
+    calc = NewtonNet(**calc_flags)
+    calc.calculate(atoms)
+    return calc.results["hessian"].reshape((-1, 3 * len(atoms)))
