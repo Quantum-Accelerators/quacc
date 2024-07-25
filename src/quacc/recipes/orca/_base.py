@@ -8,7 +8,7 @@ from ase.calculators.orca import ORCA, OrcaProfile, OrcaTemplate
 
 from quacc import get_settings
 from quacc.runners.ase import Runner
-from quacc.schemas.ase import summarize_run, summarize_opt_run
+from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.utils.lists import merge_list_params
 
