@@ -21,8 +21,8 @@ if TYPE_CHECKING:
         Filenames,
         OptParams,
         SourceDirectory,
-        cclibASEOptSchema,
-        cclibSchema,
+        OptSchema,
+        RunSchema,
     )
 
 
@@ -37,7 +37,7 @@ def run_and_summarize(
     additional_fields: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
-) -> cclibSchema:
+) -> RunSchema:
     """
     Base job function for ORCA recipes.
 
@@ -68,7 +68,7 @@ def run_and_summarize(
 
     Returns
     -------
-    cclibSchema
+    RunSchema
         Dictionary of results
     """
     calc = prep_calculator(
@@ -106,7 +106,7 @@ def run_and_summarize_opt(
     additional_fields: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
-) -> cclibASEOptSchema:
+) -> OptSchema:
     """
     Base job function for ORCA recipes with ASE optimizer.
 
@@ -141,7 +141,7 @@ def run_and_summarize_opt(
 
     Returns
     -------
-    cclibASEOptSchema
+    OptSchema
         Dictionary of results
     """
     calc = prep_calculator(
