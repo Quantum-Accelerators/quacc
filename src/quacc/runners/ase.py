@@ -513,7 +513,7 @@ def run_neb(
     for i, image in enumerate(images):
         calc_cleanup(image, dir_lists[i][0], dir_lists[i][1])
 
-    traj.filename = str(zpath(dir_lists[0][1] / traj_filename))
+    traj.filename = zpath(str(dir_lists[0][1] / traj_filename))
     dyn.trajectory = traj
     return dyn
 
