@@ -16,13 +16,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from numpy.typing import NDArray
 
-    from quacc.types import (
-        Filenames,
-        OptParams,
-        SourceDirectory,
-        OptSchema,
-        RunSchema,
-    )
+    from quacc.types import Filenames, OptParams, OptSchema, RunSchema, SourceDirectory
 
 
 @job
