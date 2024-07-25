@@ -837,6 +837,7 @@ if TYPE_CHECKING:
         geodesic_results: list[Atoms]
         neb_results: dict
         ts_results: OptSchema
+
     # ----------- Recipe (Q-Chem) type hints -----------
 
     class QchemQuasiIRCSchema(OptSchema):
