@@ -37,21 +37,9 @@ if TYPE_CHECKING:
         NewtonNetQuasiIRCSchema,
         NewtonNetTSSchema,
         OptParams,
-        OptSchema,
+        NebSchema,
+        NebTsSchema,
     )
-
-    class NebSchema(TypedDict):
-        relax_reactant: OptSchema
-        relax_product: OptSchema
-        geodesic_results: list[Atoms]
-        neb_results: dict
-
-    class NebTsSchema(TypedDict):
-        relax_reactant: OptSchema
-        relax_product: OptSchema
-        geodesic_results: list[Atoms]
-        neb_results: dict
-        ts_results: OptSchema
 
 
 @job
