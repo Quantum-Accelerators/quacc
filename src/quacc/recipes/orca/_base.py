@@ -22,6 +22,7 @@ if TYPE_CHECKING:
 _LABEL = OrcaTemplate()._label  # skipcq: PYL-W0212
 GEOM_FILE = f"{_LABEL}.xyz"
 
+
 def run_and_summarize(
     atoms: Atoms,
     charge: int = 0,
