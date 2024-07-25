@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ase.calculators.orca import ORCA, OrcaProfile, OrcaTemplate
+from ase.calculators.orca import ORCA, OrcaProfile
 
 from quacc import get_settings
 from quacc.runners.ase import Runner
@@ -24,10 +24,6 @@ if TYPE_CHECKING:
         cclibASEOptSchema,
         cclibSchema,
     )
-
-_LABEL = OrcaTemplate()._label  # skipcq: PYL-W0212
-LOG_FILE = f"{_LABEL}.out"
-GEOM_FILE = f"{_LABEL}.xyz"
 
 
 def run_and_summarize(
@@ -85,10 +81,14 @@ def run_and_summarize(
         **calc_kwargs,
     )
 
-    atoms = Runner(atoms, calc, copy_files=copy_files).run_calc(geom_file=GEOM_FILE)
+    final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc(geom_file=GEOM_FILE)
 
-    return summarize_run(atoms, LOG_FILE, additional_fields=additional_fields)
-
+    return summarize_run(
+        final_atoms,
+        atoms,
+        charge_and_multiplicity=(charge, spin_multiplicity),
+        additional_fields=additional_fields,
+    )
 
 def run_and_summarize_opt(
     atoms: Atoms,
@@ -153,7 +153,7 @@ def run_and_summarize_opt(
 
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
     dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_flags)
-    return summarize_opt_run(dyn, LOG_FILE, additional_fields=additional_fields)
+    return summarize_opt_run(dyn, charge_and_multiplicity=(charge, spin_multiplicity), additional_fields=additional_fields)
 
 
 def prep_calculator(
