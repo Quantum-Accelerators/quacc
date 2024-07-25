@@ -19,6 +19,8 @@ if TYPE_CHECKING:
 
     from quacc.types import Filenames, OptParams, OptSchema, RunSchema, SourceDirectory
 
+_LABEL = OrcaTemplate()._label  # skipcq: PYL-W0212
+GEOM_FILE = f"{_LABEL}.xyz"
 
 def run_and_summarize(
     atoms: Atoms,
