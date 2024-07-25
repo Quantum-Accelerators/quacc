@@ -165,6 +165,7 @@ def dos_flow(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
+    job_params = job_params or {}
     default_job_params = {
         "static_job": {
             "kspacing": 0.2,
@@ -241,6 +242,7 @@ def projwfc_flow(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
+    job_params = job_params or {}
     default_job_params = {
         "static_job": {
             "kspacing": 0.2,

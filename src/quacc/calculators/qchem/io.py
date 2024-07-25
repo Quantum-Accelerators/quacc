@@ -16,6 +16,7 @@ from pymatgen.io.qchem.outputs import (
 )
 
 if TYPE_CHECKING:
+    from numpy.typing import NDArray
     from pymatgen.io.qchem.inputs import QCInput
 
     from quacc.types import QchemResults
@@ -53,7 +54,7 @@ def write_qchem(
     qc_input.write_file(directory / "mol.qin")
 
 
-def read_qchem(directory: Path | str) -> tuple[QchemResults, list[float]]:
+def read_qchem(directory: Path | str) -> tuple[QchemResults, NDArray | None]:
     """
     Read Q-Chem log files.
 
@@ -64,7 +65,7 @@ def read_qchem(directory: Path | str) -> tuple[QchemResults, list[float]]:
 
     Returns
     -------
-    tuple[Results, list[float]]
+    tuple[Results, NDArray | None]
         The results of the calculation and the orbital coefficients from a previous
         calculation.
     """

@@ -203,9 +203,7 @@ def espresso_prepare_dir(outdir: str | Path, binary: str = "pw") -> dict[str, An
     return outkeys.get(binary, {})
 
 
-def prepare_copy_files(
-    parameters: dict[str, Any], binary: str = "pw"
-) -> dict[SourceDirectory, Filenames]:
+def prepare_copy_files(parameters: dict[str, Any], binary: str = "pw") -> list[Path]:
     """
     Function that prepares the copy files for the espresso calculation.
 
@@ -218,8 +216,8 @@ def prepare_copy_files(
 
     Returns
     -------
-    dict[SourceDirectory, Filenames]
-        The modified dictionary
+    list[Path]
+        Paths to copy for the espresso calculation
     """
     to_copy = []
 

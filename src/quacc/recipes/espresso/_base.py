@@ -25,8 +25,6 @@ from quacc.utils.dicts import recursive_dict_merge
 if TYPE_CHECKING:
     from typing import Any
 
-    from ase.calculators.genericfileio import GenericFileIOCalculator
-
     from quacc.types import Filenames, OptParams, RunSchema, SourceDirectory
 
 
@@ -90,7 +88,7 @@ def run_and_summarize(
         binary=calc.template.binary,
     )
 
-    geom_file = template.outputname if template.binary == "pw" else None
+    geom_file = template.outputname if template and template.binary == "pw" else None
 
     final_atoms = Runner(atoms, calc, copy_files=updated_copy_files).run_calc(
         geom_file=geom_file
@@ -184,7 +182,7 @@ def prepare_calc(
     profile: EspressoProfile | None = None,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
-) -> GenericFileIOCalculator:
+) -> Espresso:
     """
     Commonly used preparation function to merge parameters
     and create an Espresso calculator accordingly.
@@ -208,7 +206,7 @@ def prepare_calc(
 
     Returns
     -------
-    GenericFileIOCalculator
+    Espresso
         The Espresso calculator.
     """
     calc_defaults = calc_defaults or {}

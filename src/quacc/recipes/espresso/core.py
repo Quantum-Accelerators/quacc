@@ -13,18 +13,20 @@ from quacc.recipes.espresso._base import run_and_summarize, run_and_summarize_op
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
+    from src.quacc.types import EspressoBaseSet
 
     from quacc.types import Filenames, OptParams, RunSchema, SourceDirectory
 
-BASE_SET_METAL = {
+BASE_SET_METAL: EspressoBaseSet = {
     "input_data": {
         "system": {"occupations": "smearing", "smearing": "cold", "degauss": 0.01},
         "electrons": {"conv_thr": 1e-8, "mixing_mode": "local-TF", "mixing_beta": 0.35},
+        "control": {},
     },
     "kspacing": 0.033,
 }
 
-BASE_SET_NON_METAL = {
+BASE_SET_NON_METAL: EspressoBaseSet = {
     "input_data": {
         "system": {"occupations": "smearing", "smearing": "gaussian", "degauss": 0.005},
         "electrons": {"conv_thr": 1e-8, "mixing_mode": "local-TF", "mixing_beta": 0.35},
@@ -360,7 +362,10 @@ def non_scf_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][].
         See the type-hint for the data structure.
     """
-    calc_defaults = {"input_data": {"control": {"calculation": "nscf"}}}
+    calc_defaults = {
+        "input_data": {"control": {"calculation": "nscf"}},
+        "kspacing": 0.033,
+    }
 
     return run_and_summarize(
         atoms,

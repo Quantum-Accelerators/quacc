@@ -122,7 +122,7 @@ class Runner(BaseRunner):
         # object, as this contains important information such as the parameters
         # and output properties (e.g. final magnetic moments).
         if geom_file:
-            atoms_new = read(zpath(self.tmpdir / geom_file))
+            atoms_new = read(zpath(str(self.tmpdir / geom_file)))
             if isinstance(atoms_new, list):
                 atoms_new = atoms_new[-1]
 
@@ -192,18 +192,20 @@ class Runner(BaseRunner):
         """
         # Set defaults
         settings = get_settings()
-        optimizer_kwargs = recursive_dict_merge(
+        merged_optimizer_kwargs = recursive_dict_merge(
             {
                 "logfile": "-" if settings.DEBUG else self.tmpdir / "opt.log",
                 "restart": self.tmpdir / "opt.json",
             },
             optimizer_kwargs,
         )
+        if merged_optimizer_kwargs is None:
+            merged_optimizer_kwargs = {}
         run_kwargs = run_kwargs or {}
         traj_filename = "opt.traj"
 
         # Check if trajectory kwarg is specified
-        if "trajectory" in optimizer_kwargs:
+        if "trajectory" in merged_optimizer_kwargs:
             msg = "Quacc does not support setting the `trajectory` kwarg."
             raise ValueError(msg)
 
@@ -214,14 +216,14 @@ class Runner(BaseRunner):
         ):
             # https://gitlab.com/ase/ase/-/issues/1476
             # https://gitlab.com/ase/ase/-/merge_requests/3310
-            optimizer_kwargs.pop("restart", None)
+            merged_optimizer_kwargs.pop("restart", None)
         if optimizer.__name__ == "Sella":
-            self._set_sella_kwargs(optimizer_kwargs)
+            self._set_sella_kwargs(merged_optimizer_kwargs)
 
         # Define the Trajectory object
         traj_file = self.tmpdir / traj_filename
         traj = Trajectory(traj_file, "w", atoms=self.atoms)
-        optimizer_kwargs["trajectory"] = traj
+        merged_optimizer_kwargs["trajectory"] = traj
 
         # Set volume relaxation constraints, if relevant
         if relax_cell and self.atoms.pbc.any():
@@ -232,7 +234,7 @@ class Runner(BaseRunner):
         if issubclass(optimizer, MolecularDynamics):
             full_run_kwargs.pop("fmax")
         try:
-            with traj, optimizer(self.atoms, **optimizer_kwargs) as dyn:
+            with traj, optimizer(self.atoms, **merged_optimizer_kwargs) as dyn:
                 if issubclass(optimizer, (SciPyOptimizer, MolecularDynamics)):
                     # https://gitlab.coms/ase/ase/-/issues/1475
                     # https://gitlab.com/ase/ase/-/issues/1497
@@ -244,8 +246,8 @@ class Runner(BaseRunner):
                                 i,
                                 files_to_ignore=[
                                     traj_file,
-                                    optimizer_kwargs.get("restart"),
-                                    optimizer_kwargs.get("logfile"),
+                                    merged_optimizer_kwargs.get("restart"),
+                                    merged_optimizer_kwargs.get("logfile"),
                                 ],
                             )
                         if fn_hook:
@@ -255,7 +257,7 @@ class Runner(BaseRunner):
 
         # Perform cleanup operations
         self.cleanup()
-        traj.filename = zpath(self.job_results_dir / traj_filename)
+        traj.filename = zpath(str(self.job_results_dir / traj_filename))
         dyn.trajectory = traj
 
         return dyn

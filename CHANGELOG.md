@@ -2,7 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.10.1]
+
+### Changed
+
+- Overhauled type hinting system
+- Added kspacing default to Espresso non_scf_job
+
+### Fixed
+
+- Fixed breaking change from monty 07.12.2024
+- Fixed a variety of incompatible type hints
 
 ## [0.10.0]
 
@@ -10,10 +22,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Added a function `from quacc import get_settings` to fetch the current settings on a thread
 - Added a mechanism to update the settings on-the-fly via a special `settings_swap` keyword argument that can be passed to the decorators when a workflow engine is used.
+- Support for MD workflows
 
 ### Fixed
 
 - Fixed an edge-case that can occur in multithreading environments where in-memory changes to the `QuaccSettings` could carry over to a concurrent thread
+- Made the detection of intermediate step directories more robust
 
 ### Removed
 
