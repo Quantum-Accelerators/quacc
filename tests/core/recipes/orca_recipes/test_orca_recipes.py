@@ -170,6 +170,7 @@ def test_freq_job(tmp_path, monkeypatch):
     assert output["parameters"]["mult"] == 1
     assert output["parameters"]["orcasimpleinput"] == "def2-svp freq hf xyzfile"
 
+
 @pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
 def test_ase_quasi_irc_perturb_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
