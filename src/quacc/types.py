@@ -101,7 +101,6 @@ if TYPE_CHECKING:
 
     # ----------- Atoms handling type hints -----------
 
-
     ElementStr = Literal[
         "H",
         "He",
@@ -247,6 +246,11 @@ if TYPE_CHECKING:
         no_obtuse_hollow: bool  # default = True
 
     # ----------- Atoms (skzcam) handling type hints -----------
+
+    class SKZCAMOutput(TypedDict):
+        adsorbate_slab_embedded_cluster: Atoms
+        quantum_cluster_indices_set: list[list[int]]
+        ecp_region_indices_set: list[list[int]]
 
     class ElementInfo(TypedDict):
         core: int
