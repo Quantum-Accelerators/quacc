@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ase.calculators.orca import ORCA, ORCAProfile, OrcaTemplate
+from ase.calculators.orca import ORCA, OrcaTemplate
 
 from quacc import get_settings
 from quacc.runners.ase import Runner
