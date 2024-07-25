@@ -126,8 +126,8 @@ def test_geodesic_interpolate_wrapper_large_system(setup_test_environment):
 
 
 def test_run_neb(tmp_path):
-    geodesic_path = os.path.join(
-        os.path.dirname(str(os.path.abspath(__file__))), "geodesic_path.xyz"
+    geodesic_path = str(
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "geodesic_path.xyz")
     )
     images = read(geodesic_path, index=":")
     for image in images:
