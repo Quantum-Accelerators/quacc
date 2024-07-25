@@ -157,7 +157,6 @@ def run_and_summarize_opt(
         dyn,
         charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields=additional_fields,
-        **opt_flags,
     )
 
 
