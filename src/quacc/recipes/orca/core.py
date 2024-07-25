@@ -20,8 +20,8 @@ if TYPE_CHECKING:
         Filenames,
         OptParams,
         SourceDirectory,
-        cclibASEOptSchema,
-        cclibSchema,
+        OptSchema,
+        RunSchema,
     )
 
 
@@ -36,7 +36,7 @@ def static_job(
     orcablocks: list[str] | None = None,
     nprocs: int | Literal["max"] = "max",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-) -> cclibSchema:
+) -> RunSchema:
     """
     Carry out a single-point calculation.
 
@@ -67,7 +67,7 @@ def static_job(
 
     Returns
     -------
-    cclibSchema
+    RunSchema
         Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][].
         See the type-hint for the data structure.
     """
@@ -100,7 +100,7 @@ def relax_job(
     orcablocks: list[str] | None = None,
     nprocs: int | Literal["max"] = "max",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-) -> cclibSchema:
+) -> OptSchema:
     """
     Carry out a geometry optimization.
 
@@ -133,7 +133,7 @@ def relax_job(
 
     Returns
     -------
-    cclibSchema
+    OptSchema
         Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][].
         See the type-hint for the data structure.
     """
@@ -170,7 +170,7 @@ def freq_job(
     orcablocks: list[str] | None = None,
     nprocs: int | Literal["max"] = "max",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-) -> cclibSchema:
+) -> RunSchema:
     """
     Carry out a vibrational frequency analysis calculation.
 
@@ -203,7 +203,7 @@ def freq_job(
 
     Returns
     -------
-    cclibSchema
+    RunSchema
         Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][].
         See the type-hint for the data structure.
     """
@@ -238,7 +238,7 @@ def ase_relax_job(
     opt_params: OptParams | None = None,
     nprocs: int | Literal["max"] = "max",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-) -> cclibASEOptSchema:
+) -> OptSchema:
     """
     Carry out a geometry optimization.
 
@@ -269,7 +269,7 @@ def ase_relax_job(
 
     Returns
     -------
-    cclibASEOptSchema
+    OptSchema
         Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][] merged with
         the results from [quacc.schemas.ase.summarize_opt_run][].
         See the type-hint for the data structure.
@@ -307,7 +307,7 @@ def ase_quasi_irc_perturb_job(
     opt_params: OptParams | None = None,
     nprocs: int | Literal["max"] = "max",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-) -> cclibASEOptSchema:
+) -> OptSchema:
     """
     Quasi-IRC to optimize a reaction endpoint from a transition-state with known vibrational frequency modes.
     Perturbs the structure of `atoms` by a finite amount (0.6 * the normalized mode magnitude) along the specified
@@ -348,7 +348,7 @@ def ase_quasi_irc_perturb_job(
 
     Returns
     -------
-    cclibASEOptSchema
+    OptSchema
         Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][] merged with
         the results from [quacc.schemas.ase.summarize_opt_run][].
         See the type-hint for the data structure.
