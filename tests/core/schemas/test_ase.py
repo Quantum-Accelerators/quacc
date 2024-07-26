@@ -16,7 +16,8 @@ from maggma.stores import MemoryStore
 from monty.json import MontyDecoder, jsanitize
 from monty.serialization import loadfn
 
-from quacc.schemas.ase import Summarize, _summarize_ideal_gas_thermo, _summarize_vib_run
+from quacc.schemas.ase import Summarize
+from quacc.schemas.thermo import _summarize_ideal_gas_thermo, _summarize_vib_run
 
 FILE_DIR = Path(__file__).parent
 
