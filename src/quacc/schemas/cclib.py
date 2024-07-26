@@ -169,7 +169,7 @@ class CclibSummarize:
             store=store,
         )
 
-    def summarize_cclib_opt_run(
+    def opt(
         self,
         dyn: Optimizer,
         trajectory: list[Atoms] | None = None,
