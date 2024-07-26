@@ -140,7 +140,7 @@ class CclibSummarize:
         if nsteps := len([f for f in os.listdir(directory) if f.startswith("step")]):
             intermediate_cclib_task_docs = {
                 "steps": {
-                    n: self.make_cclib_schema(
+                    n: make_base_cclib_schema(
                         directory / f"step{n}", self.logfile_extensions
                     )
                     for n in range(nsteps)
