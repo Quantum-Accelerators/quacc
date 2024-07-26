@@ -378,7 +378,7 @@ def test_summarize_vib_and_thermo(tmp_path, monkeypatch):
     ht = HarmonicThermo([0.34])
     vib = Vibrations(atoms)
     vib.run()
-    results = summarize_vib_and_thermo(vib=vib, thermo_analysis=ht, atoms=atoms)
+    results = summarize_vib_and_thermo(vib, ht, atoms=atoms)
 
     assert results["parameters_thermo"]["vib_energies"] == [0.34]
     assert results["parameters_thermo"]["vib_freqs"] == [0.34 / invcm]
@@ -394,7 +394,7 @@ def test_summarize_vib_and_thermo(tmp_path, monkeypatch):
     igt = IdealGasThermo([0.34], "linear", atoms=atoms, spin=0, symmetrynumber=2)
     vib = Vibrations(atoms)
     vib.run()
-    results = summarize_vib_and_thermo(vib=vib, thermo_analysis=igt, atoms=atoms)
+    results = summarize_vib_and_thermo(vib, igt, atoms=atoms)
 
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
