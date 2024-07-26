@@ -37,6 +37,7 @@ def _set_dtype(size, type_="float"):
 
 @pytest.mark.parametrize("method", methods)
 def test_static_job(tmp_path, monkeypatch, method):
+
     monkeypatch.chdir(tmp_path)
 
     if method == "mace-mp-0":
@@ -79,6 +80,7 @@ def test_relax_job(tmp_path, monkeypatch, method):
     assert output["atoms"].get_volume() == pytest.approx(atoms.get_volume())
 
 
+@pytest.mark.skipif(has_mace is None)
 def test_relax_job_dispersion(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
