@@ -271,7 +271,7 @@ def ase_relax_job(
     -------
     cclibASEOptSchema
         Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][] merged with
-        the results from [quacc.schemas.ase.summarize_opt_run][].
+        the results from [quacc.schemas.ase.Summarize.opt][].
         See the type-hint for the data structure.
     """
     nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
@@ -350,7 +350,7 @@ def ase_quasi_irc_perturb_job(
     -------
     cclibASEOptSchema
         Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][] merged with
-        the results from [quacc.schemas.ase.summarize_opt_run][].
+        the results from [quacc.schemas.ase.Summarize.opt][].
         See the type-hint for the data structure.
     """
     nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs

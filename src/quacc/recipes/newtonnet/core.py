@@ -112,7 +112,7 @@ def relax_job(
     Returns
     -------
     OptSchema
-        Dictionary of results, specified in [quacc.schemas.ase.summarize_opt_run][].
+        Dictionary of results, specified in [quacc.schemas.ase.Summarize.opt][].
         See the type-hint for the data structure.
     """
     settings = get_settings()

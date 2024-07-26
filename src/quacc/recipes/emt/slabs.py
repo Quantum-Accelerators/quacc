@@ -57,7 +57,7 @@ def bulk_to_slabs_flow(
     -------
     list[RunSchema | OptSchema]
         [RunSchema][quacc.schemas.ase.summarize_run] or
-        [OptSchema][quacc.schemas.ase.summarize_opt_run] for each slab.
+        [OptSchema][quacc.schemas.ase.Summarize.opt] for each slab.
         See the return type-hint for the data structure.
     """
     relax_job_, static_job_ = customize_funcs(

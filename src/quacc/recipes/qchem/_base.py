@@ -104,7 +104,7 @@ def run_and_summarize_opt(
     Returns
     -------
     OptSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
+        Dictionary of results from [quacc.schemas.ase.Summarize.opt][]
     """
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)

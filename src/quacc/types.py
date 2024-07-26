@@ -467,7 +467,7 @@ if TYPE_CHECKING:
         quacc_version: str
 
     class OptSchema(RunSchema):
-        """Schema for [quacc.schemas.ase.summarize_opt_run][]"""
+        """Schema for [quacc.schemas.ase.Summarize.opt][]"""
 
         parameters_opt: ParametersDyn
         converged: bool
@@ -475,7 +475,7 @@ if TYPE_CHECKING:
         trajectory_results: list[Results]
 
     class DynSchema(RunSchema):
-        """Schema for [quacc.schemas.ase.summarize_md_run][]"""
+        """Schema for [quacc.schemas.ase.Summarize.md][]"""
 
         parameters_md: ParametersDyn
         trajectory: list[Atoms]

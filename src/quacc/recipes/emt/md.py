@@ -64,7 +64,7 @@ def md_job(
     Returns
     -------
     DynSchema
-        Dictionary of results, specified in [quacc.schemas.ase.summarize_md_run][].
+        Dictionary of results, specified in [quacc.schemas.ase.Summarize.md][].
         See the type-hint for the data structure.
     """
     md_defaults = {
