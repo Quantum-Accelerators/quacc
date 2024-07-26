@@ -12,7 +12,7 @@ from ase.units import bar, fs
 
 from quacc import Remove, job
 from quacc.runners.ase import Runner
-from quacc.schemas.ase import summarize_md_run
+from quacc.schemas.ase import Summarize
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
@@ -80,4 +80,4 @@ def md_job(
     calc = EMT(**calc_kwargs)
     dyn = Runner(atoms, calc, copy_files=copy_files).run_md(dynamics, **md_params)
 
-    return summarize_md_run(dyn, additional_fields={"name": "EMT MD"})
+    return Summarize(additional_fields={"name": "EMT MD"}).md(dyn)
