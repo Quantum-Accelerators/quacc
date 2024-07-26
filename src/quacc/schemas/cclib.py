@@ -335,6 +335,7 @@ def make_base_cclib_schema(
         "trajectory": trajectory,
     }
 
+
 def cclib_calculate(
     cclib_obj,
     method: CclibAnalysis,
