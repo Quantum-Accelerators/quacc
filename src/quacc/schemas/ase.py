@@ -179,11 +179,7 @@ class Summarize:
             raise RuntimeError(msg)
 
         # Base task doc
-        base_task_doc = self.run(
-            final_atoms,
-            initial_atoms,
-            store=None,
-        )
+        base_task_doc = self.run(final_atoms, initial_atoms, store=None)
 
         # Clean up the opt parameters
         parameters_opt = dyn.todict()
@@ -234,10 +230,7 @@ class Summarize:
         """
         store = self._settings.STORE if store == QuaccDefault else store
         base_task_doc = self.opt(
-            dyn,
-            trajectory=trajectory,
-            check_convergence=False,
-            store=None,
+            dyn, trajectory=trajectory, check_convergence=False, store=None
         )
         del base_task_doc["converged"]
 
