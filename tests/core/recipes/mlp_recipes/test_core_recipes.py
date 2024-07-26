@@ -81,7 +81,7 @@ def test_relax_job(tmp_path, monkeypatch, method):
 
 
 @pytest.mark.skipif(has_mace is None, reason="Needs MACE")
-@pytest.mark.importorskip("torch_dftd", reason="Needs torch-dftd")
+@pytest.mark.skipif(find_spec("torch_dftd") is None, reason="Needs torch-dftd")
 def test_relax_job_dispersion(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
