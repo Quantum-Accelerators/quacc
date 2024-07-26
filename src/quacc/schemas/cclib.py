@@ -332,7 +332,7 @@ def make_base_cclib_schema(
         "trajectory": trajectory,
     }
 
-def cclib_calculate(
+def _cclib_calculate(
     cclib_obj,
     method: CclibAnalysis,
     cube_file: Path | str | None = None,
@@ -377,9 +377,7 @@ def cclib_calculate(
                 raise OSError(msg)
             proatom_dir = os.path.expandvars(os.environ["PROATOM_DIR"])
         if not Path(proatom_dir).exists():
-            msg = (
-                f"Protatom directory {proatom_dir} does not exist. Returning None."
-            )
+            msg = f"Protatom directory {proatom_dir} does not exist. Returning None."
             raise FileNotFoundError(msg)
     cclib_methods = getmembers(cclib.method, isclass)
     method_class = next(
