@@ -358,8 +358,12 @@ def test_summarize_harmonic_thermo(tmp_path, monkeypatch):
     assert results["parameters_thermo"]["vib_energies"] == [0.34]
     assert results["parameters_thermo"]["vib_freqs"] == [0.34 / invcm]
     assert results["results"]["energy"] == 0
-    assert_allclose(results["results"]["helmholtz_energy"], 0.16999995401497991, rtol=1e-5)
-    assert_allclose(results["results"]["internal_energy"], 0.1700006085385999, rtol=1e-5)
+    assert_allclose(
+        results["results"]["helmholtz_energy"], 0.16999995401497991, rtol=1e-5
+    )
+    assert_allclose(
+        results["results"]["internal_energy"], 0.1700006085385999, rtol=1e-5
+    )
     assert_allclose(results["results"]["entropy"], 2.1952829783392438e-09, rtol=1e-5)
     assert_allclose(results["results"]["zpe"], 0.17, rtol=1e-5)
 
@@ -383,8 +387,12 @@ def test_summarize_vib_and_thermo(tmp_path, monkeypatch):
     assert results["parameters_thermo"]["vib_energies"] == [0.34]
     assert results["parameters_thermo"]["vib_freqs"] == [0.34 / invcm]
     assert results["results"]["energy"] == 0
-    assert_allclose(results["results"]["helmholtz_energy"], 0.16999995401497991, rtol=1e-5)
-    assert_allclose(results["results"]["internal_energy"], 0.1700006085385999, rtol=1e-5)
+    assert_allclose(
+        results["results"]["helmholtz_energy"], 0.16999995401497991, rtol=1e-5
+    )
+    assert_allclose(
+        results["results"]["internal_energy"], 0.1700006085385999, rtol=1e-5
+    )
     assert_allclose(results["results"]["entropy"], 2.1952829783392438e-09, rtol=1e-5)
     assert_allclose(results["results"]["zpe"], 0.17, rtol=1e-5)
 
