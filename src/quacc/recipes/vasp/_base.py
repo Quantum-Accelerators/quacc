@@ -188,13 +188,13 @@ def run_and_summarize_vib_and_thermo(
     )
     thermo_runner = ThermoRunner(atoms, vibrations.get_frequencies(), energy=energy)
     if thermo_method == "harmonic":
-        thermo_analysis = thermo_runner.run_harmonic_thermo()
+        thermo_object = thermo_runner.run_harmonic_thermo()
     elif thermo_method == "ideal_gas":
-        thermo_analysis = thermo_runner.run_ideal_gas()
+        thermo_object = thermo_runner.run_ideal_gas()
 
     return summarize_vib_and_thermo(
         vib=vibrations,
-        thermo_analysis=thermo_analysis,
+        thermo_object,
         atoms=atoms,
         temperature=temperature,
         pressure=pressure,
