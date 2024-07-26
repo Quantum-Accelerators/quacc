@@ -12,7 +12,7 @@ from ase.calculators.emt import EMT
 
 from quacc import job
 from quacc.runners.ase import Runner
-from quacc.schemas.ase import summarize_opt_run, summarize_run
+from quacc.schemas.ase import Summarize
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
@@ -43,13 +43,13 @@ def static_job(
     Returns
     -------
     RunSchema
-        Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
+        Dictionary of results, specified in [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     calc = EMT(**calc_kwargs)
     final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
 
-    return summarize_run(final_atoms, atoms, additional_fields={"name": "EMT Static"})
+    return Summarize(additional_fields={"name": "EMT Static"}).run(final_atoms, atoms)
 
 
 @job
@@ -92,4 +92,4 @@ def relax_job(
         relax_cell=relax_cell, **opt_params
     )
 
-    return summarize_opt_run(dyn, additional_fields={"name": "EMT Relax"})
+    return Summarize(additional_fields={"name": "EMT Relax"}).opt(dyn)

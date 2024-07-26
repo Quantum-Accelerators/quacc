@@ -69,7 +69,7 @@ def static_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     calc_defaults = recursive_dict_merge(
@@ -183,7 +183,7 @@ def freq_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][]
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][]
     """
     calc_defaults = recursive_dict_merge(
         _BASE_SET, {"rem": {"job_type": "freq", "method": method, "basis": basis}}

@@ -63,7 +63,7 @@ def dos_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     return run_and_summarize(
@@ -113,7 +113,7 @@ def projwfc_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     return run_and_summarize(
@@ -162,7 +162,7 @@ def dos_flow(
     Returns
     -------
     DosSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     job_params = job_params or {}
@@ -239,7 +239,7 @@ def projwfc_flow(
     Returns
     -------
     ProjwfcSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     job_params = job_params or {}

@@ -10,7 +10,8 @@ from monty.dev import requires
 from quacc import job
 from quacc.runners.ase import Runner
 from quacc.runners.thermo import ThermoRunner
-from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
+from quacc.schemas.ase import Summarize
+from quacc.schemas.thermo import summarize_vib_and_thermo
 from quacc.utils.dicts import recursive_dict_merge
 
 has_tblite = bool(find_spec("tblite"))
@@ -49,7 +50,7 @@ def static_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     calc_defaults = {"method": method}
@@ -57,8 +58,8 @@ def static_job(
     calc = TBLite(**calc_flags)
 
     final_atoms = Runner(atoms, calc).run_calc()
-    return summarize_run(
-        final_atoms, atoms, additional_fields={"name": "TBLite Static"}
+    return Summarize(additional_fields={"name": "TBLite Static"}).run(
+        final_atoms, atoms
     )
 
 
@@ -102,7 +103,7 @@ def relax_job(
     calc = TBLite(**calc_flags)
     dyn = Runner(atoms, calc).run_opt(relax_cell=relax_cell, **opt_params)
 
-    return summarize_opt_run(dyn, additional_fields={"name": "TBLite Relax"})
+    return Summarize(additional_fields={"name": "TBLite Relax"}).opt(dyn)
 
 
 @job
@@ -141,7 +142,7 @@ def freq_job(
     Returns
     -------
     VibThermoSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_vib_and_thermo][].
+        Dictionary of results from [quacc.schemas.thermo.summarize_vib_and_thermo][].
         See the type-hint for the data structure.
     """
     vib_kwargs = vib_kwargs or {}

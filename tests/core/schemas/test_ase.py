@@ -16,12 +16,7 @@ from maggma.stores import MemoryStore
 from monty.json import MontyDecoder, jsanitize
 from monty.serialization import loadfn
 
-from quacc.schemas.ase import (
-    _summarize_ideal_gas_thermo,
-    _summarize_vib_run,
-    summarize_opt_run,
-    summarize_run,
-)
+from quacc.schemas.ase import Summarize, _summarize_ideal_gas_thermo, _summarize_vib_run
 
 FILE_DIR = Path(__file__).parent
 
@@ -33,7 +28,7 @@ def test_summarize_run(tmpdir, monkeypatch):
     # Make sure metadata is made
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
-    results = summarize_run(atoms, initial_atoms)
+    results = Summarize.run(atoms, initial_atoms)
     assert results["nsites"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["results"]["energy"] == atoms.get_potential_energy()
@@ -55,7 +50,7 @@ def test_summarize_run2(tmp_path, monkeypatch):
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     store = MemoryStore()
-    summarize_run(atoms, initial_atoms, store=store)
+    Summarize.run(atoms, initial_atoms, store=store)
     assert store.count() == 1
 
 
@@ -66,7 +61,7 @@ def test_summarize_run3(tmp_path, monkeypatch):
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
-    results = summarize_run(atoms, initial_atoms)
+    results = Summarize.run(atoms, initial_atoms)
     assert atoms.info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
@@ -78,7 +73,7 @@ def test_summarize_run4(tmp_path, monkeypatch):
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
     atoms.calc.results["magmoms"] = [2.0] * len(atoms)
-    results = summarize_run(atoms, initial_atoms, move_magmoms=True)
+    results = Summarize(move_magmoms=True).run(atoms, initial_atoms)
 
     assert atoms.calc is not None
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
@@ -95,8 +90,8 @@ def test_summarize_run5(tmp_path, monkeypatch):
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
-    results = summarize_run(
-        atoms, initial_atoms, move_magmoms=False, additional_fields={"test": "hi"}
+    results = Summarize(move_magmoms=False, additional_fields={"test": "hi"}).run(
+        atoms, initial_atoms
     )
 
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
@@ -121,7 +116,7 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
     dyn.run(steps=100)
     traj = read("test.traj", index=":")
 
-    results = summarize_opt_run(dyn)
+    results = Summarize.opt(dyn)
     assert results["nsites"] == len(atoms)
     assert results["atoms"] == traj[-1]
     assert results["results"]["energy"] == atoms.get_potential_energy()
@@ -154,7 +149,7 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
     traj = read("test.traj", index=":")
 
     store = MemoryStore()
-    summarize_opt_run(dyn, store=store, check_convergence=False)
+    Summarize(store=store, check_convergence=False).opt(dyn)
     assert store.count() == 1
 
     # Test no convergence
@@ -166,7 +161,7 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
     traj = read("test.traj", index=":")
 
     with pytest.raises(RuntimeError, match="Optimization did not converge"):
-        summarize_opt_run(dyn)
+        Summarize.opt(dyn)
 
     # Make sure info tags are handled appropriately
     atoms = bulk("Cu") * (2, 2, 1)
@@ -176,7 +171,7 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
     dyn = BFGS(atoms, trajectory="test.traj")
     dyn.run()
 
-    results = summarize_opt_run(dyn)
+    results = Summarize.opt(dyn)
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
     # test document can be jsanitized and decoded
@@ -185,7 +180,7 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
     dyn.trajectory.filename = "not_a_file.traj"
 
     with pytest.raises(FileNotFoundError):
-        summarize_opt_run(dyn)
+        Summarize.opt(dyn)
 
 
 def test_summarize_vib_run(tmp_path, monkeypatch):
@@ -355,7 +350,7 @@ def test_errors(tmp_path, monkeypatch):
     with pytest.raises(
         ValueError, match="ASE Atoms object has no attached calculator."
     ):
-        summarize_run(atoms, atoms)
+        Summarize.run(atoms, atoms)
 
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
@@ -363,4 +358,4 @@ def test_errors(tmp_path, monkeypatch):
     with pytest.raises(
         ValueError, match="ASE Atoms object's calculator has no results."
     ):
-        summarize_run(atoms, initial_atoms)
+        Summarize.run(atoms, initial_atoms)

@@ -11,7 +11,8 @@ from monty.dev import requires
 from quacc import get_settings, job
 from quacc.runners.ase import Runner
 from quacc.runners.thermo import ThermoRunner
-from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
+from quacc.schemas.ase import Summarize
+from quacc.schemas.thermo import summarize_vib_and_thermo
 from quacc.utils.dicts import recursive_dict_merge
 
 has_sella = bool(find_spec("sella"))
@@ -63,7 +64,7 @@ def static_job(
     Returns
     -------
     RunSchema
-        Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
+        Dictionary of results, specified in [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     settings = get_settings()
@@ -76,8 +77,8 @@ def static_job(
     calc = NewtonNet(**calc_flags)
     final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
 
-    return summarize_run(
-        final_atoms, atoms, additional_fields={"name": "NewtonNet Static"}
+    return Summarize(additional_fields={"name": "NewtonNet Static"}).run(
+        final_atoms, atoms
     )
 
 
@@ -128,7 +129,7 @@ def relax_job(
     dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_flags)
 
     return _add_stdev_and_hess(
-        summarize_opt_run(dyn, additional_fields={"name": "NewtonNet Relax"})
+        Summarize(additional_fields={"name": "NewtonNet Relax"}).opt(dyn)
     )
 
 
@@ -177,8 +178,8 @@ def freq_job(
     calc = NewtonNet(**calc_flags)
     final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
 
-    summary = summarize_run(
-        final_atoms, atoms, additional_fields={"name": "NewtonNet Hessian"}
+    summary = Summarize(additional_fields={"name": "NewtonNet Hessian"}).run(
+        final_atoms, atoms
     )
 
     vib = VibrationsData(final_atoms, summary["results"]["hessian"])

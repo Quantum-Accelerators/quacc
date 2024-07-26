@@ -68,7 +68,7 @@ def run_and_summarize(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][]
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][]
     """
     keyword_defaults = keyword_defaults or []
     settings = get_settings()

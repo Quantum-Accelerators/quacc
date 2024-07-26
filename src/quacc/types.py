@@ -457,7 +457,7 @@ if TYPE_CHECKING:
     # ----------- Schema (ASE) type hints -----------
 
     class RunSchema(AtomsSchema):
-        """Schema for [quacc.schemas.ase.summarize_run][]"""
+        """Schema for [quacc.schemas.ase.Summarize.run][]"""
 
         input_atoms: AtomsSchema | None
         nid: str
@@ -525,7 +525,7 @@ if TYPE_CHECKING:
         results: ThermoResults
 
     class VibThermoSchema(VibSchema, ThermoSchema):
-        """Schema for [quacc.schemas.ase.summarize_vib_and_thermo][]"""
+        """Schema for [quacc.schemas.thermo.summarize_vib_and_thermo][]"""
 
     # ----------- Schema (phonons) type hints -----------
 

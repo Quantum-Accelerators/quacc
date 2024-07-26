@@ -84,7 +84,7 @@ def bands_pw_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     calc_defaults = {
@@ -151,7 +151,7 @@ def bands_pp_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     return run_and_summarize(
@@ -202,7 +202,7 @@ def fermi_surface_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     return run_and_summarize(
@@ -279,7 +279,7 @@ def bands_flow(
     Returns
     -------
     BandsSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     (bands_pw_job_, bands_pp_job_, fermi_surface_job_) = customize_funcs(
