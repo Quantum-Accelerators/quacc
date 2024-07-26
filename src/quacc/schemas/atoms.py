@@ -94,4 +94,3 @@ def atoms_to_metadata(
     results["atoms"] = atoms
 
     return metadata | results | additional_fields
-
