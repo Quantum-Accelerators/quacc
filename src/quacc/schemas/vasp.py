@@ -41,215 +41,219 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-def vasp_summarize_run(
-    final_atoms: Atoms,
-    directory: str | Path | None = None,
-    move_magmoms: bool = True,
-    run_bader: bool | DefaultSetting = QuaccDefault,
-    run_chargemol: bool | DefaultSetting = QuaccDefault,
-    check_convergence: bool | DefaultSetting = QuaccDefault,
-    report_mp_corrections: bool = False,
-    additional_fields: dict[str, Any] | None = None,
-    store: Store | None | DefaultSetting = QuaccDefault,
-) -> VaspSchema:
+class VaspSummarize:
     """
     Get tabulated results from a VASP run and store them in a database-friendly format.
-
-    Parameters
-    ----------
-    final_atoms
-        ASE Atoms object following a calculation.
-    directory
-        Path to VASP outputs. A value of None specifies the calculator directory.
-    move_magmoms
-        Whether to move the final magmoms of the original Atoms object to the
-        initial magmoms of the returned Atoms object.
-    run_bader
-        Whether a Bader analysis should be performed. Will not run if bader
-        executable is not in PATH even if bader is set to True. Defaults to
-        VASP_BADER in settings.
-    run_chargemol
-        Whether a Chargemol analysis should be performed. Will not run if chargemol
-        executable is not in PATH even if chargmeol is set to True. Defaults to
-        VASP_CHARGEMOL in settings.
-    check_convergence
-        Whether to throw an error if convergence is not reached. Defaults to True in
-        settings.
-    report_mp_corrections
-        Whether to apply the MP corrections to the task document. Defaults to False.
-    additional_fields
-        Additional fields to add to the task document.
-    store
-        Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`,
-
-    Returns
-    -------
-    VaspSchema
-        Dictionary representation of the task document
     """
-    settings = get_settings()
-    run_bader = settings.VASP_BADER if run_bader == QuaccDefault else run_bader
-    run_chargemol = (
-        settings.VASP_CHARGEMOL if run_chargemol == QuaccDefault else run_chargemol
-    )
-    check_convergence = (
-        settings.CHECK_CONVERGENCE
-        if check_convergence == QuaccDefault
-        else check_convergence
-    )
-    directory = Path(directory or final_atoms.calc.directory)
-    store = settings.STORE if store == QuaccDefault else store
-    additional_fields = additional_fields or {}
 
-    # Fetch all tabulated results from VASP outputs files. Fortunately, emmet
-    # already has a handy function for this
-    vasp_task_model = TaskDoc.from_directory(directory)
+    def __init__(
+        self,
+        directory: str | Path | None = None,
+        move_magmoms: bool = True,
+        run_bader: bool | DefaultSetting = QuaccDefault,
+        run_chargemol: bool | DefaultSetting = QuaccDefault,
+        check_convergence: bool | DefaultSetting = QuaccDefault,
+        report_mp_corrections: bool = False,
+        additional_fields: dict[str, Any] | None = None,
+    ) -> None:
+        """
+        Initialize the VASP summarizer.
 
-    # Get MP corrections
-    if report_mp_corrections:
-        mp_compat = MaterialsProject2020Compatibility()
-        try:
-            corrected_entry = mp_compat.process_entry(
-                vasp_task_model.structure_entry, on_error="raise"
-            )
-            vasp_task_model.entry = corrected_entry
-        except CompatibilityError as err:
-            logger.warning(err)
+        Parameters
+        ----------
+        final_atoms
+            ASE Atoms object following a calculation.
+        directory
+            Path to VASP outputs. A value of None specifies the calculator directory.
+        move_magmoms
+            Whether to move the final magmoms of the original Atoms object to the
+            initial magmoms of the returned Atoms object.
+        run_bader
+            Whether a Bader analysis should be performed. Will not run if bader
+            executable is not in PATH even if bader is set to True. Defaults to
+            VASP_BADER in settings.
+        run_chargemol
+            Whether a Chargemol analysis should be performed. Will not run if chargemol
+            executable is not in PATH even if chargmeol is set to True. Defaults to
+            VASP_CHARGEMOL in settings.
+        check_convergence
+            Whether to throw an error if convergence is not reached. Defaults to True in
+            settings.
+        report_mp_corrections
+            Whether to apply the MP corrections to the task document. Defaults to False.
+        additional_fields
+            Additional fields to add to the task document.
+        store
+            Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`,
 
-    # Convert the VASP task model to a dictionary
-    vasp_task_doc = vasp_task_model.model_dump()
+        Returns
+        -------
+        None
+        """
+        self.directory = directory
+        self.move_magmoms = move_magmoms
+        self.run_bader = run_bader
+        self.run_chargemol = run_chargemol
+        self.check_convergence = check_convergence
+        self.report_mp_corrections = report_mp_corrections
+        self.additional_fields = additional_fields or {}
+        self._settings = get_settings()
 
-    # Check for calculation convergence
-    if check_convergence and vasp_task_doc["state"] != "successful":
-        raise RuntimeError(
-            f"VASP calculation did not converge. Will not store task data. Refer to {directory}"
+    def run(
+        self, final_atoms: Atoms, store: Store | None | DefaultSetting = QuaccDefault
+    ) -> VaspSchema:
+        """
+        Get tabulated results from a VASP run and store them in a database-friendly format.
+
+        Parameters
+        ----------
+        final_atoms
+            ASE Atoms object following a calculation.
+        store
+            Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`,
+
+        Returns
+        -------
+        VaspSchema
+            Dictionary representation of the task document
+        """
+        run_bader = (
+            self._settings.VASP_BADER
+            if self.run_bader == QuaccDefault
+            else self.run_bader
         )
-    poscar_path = directory / "POSCAR"
-    initial_atoms = read(zpath(str(poscar_path)))
-    base_task_doc = Summarize(move_magmoms=move_magmoms).run(
-        final_atoms, initial_atoms, store=None
-    )
+        run_chargemol = (
+            self._settings.VASP_CHARGEMOL
+            if self.run_chargemol == QuaccDefault
+            else self.run_chargemol
+        )
+        check_convergence = (
+            self._settings.CHECK_CONVERGENCE
+            if self.check_convergence == QuaccDefault
+            else self.check_convergence
+        )
+        directory = Path(self.directory or final_atoms.calc.directory)
+        store = self._settings.STORE if store == QuaccDefault else store
+        additional_fields = self.additional_fields or {}
 
-    if nsteps := len([f for f in os.listdir(directory) if f.startswith("step")]):
-        intermediate_vasp_task_docs = {
-            "steps": {
-                n: TaskDoc.from_directory(directory / f"step{n}").model_dump()
-                for n in range(nsteps)
-                if (directory / f"step{n}").is_dir()
+        # Fetch all tabulated results from VASP outputs files. Fortunately, emmet
+        # already has a handy function for this
+        vasp_task_model = TaskDoc.from_directory(directory)
+
+        # Get MP corrections
+        if self.report_mp_corrections:
+            mp_compat = MaterialsProject2020Compatibility()
+            try:
+                corrected_entry = mp_compat.process_entry(
+                    vasp_task_model.structure_entry, on_error="raise"
+                )
+                vasp_task_model.entry = corrected_entry
+            except CompatibilityError as err:
+                logger.warning(err)
+
+        # Convert the VASP task model to a dictionary
+        vasp_task_doc = vasp_task_model.model_dump()
+
+        # Check for calculation convergence
+        if check_convergence and vasp_task_doc["state"] != "successful":
+            raise RuntimeError(
+                f"VASP calculation did not converge. Will not store task data. Refer to {directory}"
+            )
+        poscar_path = directory / "POSCAR"
+        initial_atoms = read(zpath(str(poscar_path)))
+        base_task_doc = Summarize(move_magmoms=self.move_magmoms).run(
+            final_atoms, initial_atoms, store=None
+        )
+
+        if nsteps := len([f for f in os.listdir(directory) if f.startswith("step")]):
+            intermediate_vasp_task_docs = {
+                "steps": {
+                    n: TaskDoc.from_directory(directory / f"step{n}").model_dump()
+                    for n in range(nsteps)
+                    if (directory / f"step{n}").is_dir()
+                }
             }
-        }
-    else:
-        intermediate_vasp_task_docs = {}
+        else:
+            intermediate_vasp_task_docs = {}
 
-    # Get Bader analysis
-    if run_bader:
-        try:
-            bader_results = _bader_runner(directory)
-        except Exception:
-            bader_results = None
-            logging.warning("Bader analysis could not be performed.", exc_info=True)
+        # Get Bader analysis
+        if run_bader:
+            try:
+                bader_results = bader_runner(directory)
+            except Exception:
+                bader_results = None
+                logging.warning("Bader analysis could not be performed.", exc_info=True)
 
-        if bader_results:
-            vasp_task_doc["bader"] = bader_results
+            if bader_results:
+                vasp_task_doc["bader"] = bader_results
 
-    # Get the Chargemol analysis
-    if run_chargemol:
-        try:
-            chargemol_results = _chargemol_runner(directory)
-        except Exception:
-            chargemol_results = None
-            logging.warning("Chargemol analysis could not be performed.", exc_info=True)
+        # Get the Chargemol analysis
+        if run_chargemol:
+            try:
+                chargemol_results = chargemol_runner(directory)
+            except Exception:
+                chargemol_results = None
+                logging.warning(
+                    "Chargemol analysis could not be performed.", exc_info=True
+                )
 
-        if chargemol_results:
-            vasp_task_doc["chargemol"] = chargemol_results
+            if chargemol_results:
+                vasp_task_doc["chargemol"] = chargemol_results
 
-    # Make task document
-    unsorted_task_doc = (
-        intermediate_vasp_task_docs | vasp_task_doc | base_task_doc | additional_fields
-    )
-    return finalize_dict(
-        unsorted_task_doc, directory, gzip_file=settings.GZIP_FILES, store=store
-    )
+        # Make task document
+        unsorted_task_doc = (
+            intermediate_vasp_task_docs
+            | vasp_task_doc
+            | base_task_doc
+            | additional_fields
+        )
+        return finalize_dict(
+            unsorted_task_doc,
+            directory,
+            gzip_file=self._settings.GZIP_FILES,
+            store=store,
+        )
 
+    def summarize_vasp_opt_run(
+        self,
+        optimizer: Optimizer,
+        trajectory: list[Atoms] | None = None,
+        store: Store | None | DefaultSetting = QuaccDefault,
+    ) -> VaspASEOptSchema:
+        """
+        Summarize an ASE-based VASP optimization.
 
-def summarize_vasp_opt_run(
-    optimizer: Optimizer,
-    trajectory: list[Atoms] | None = None,
-    directory: str | Path | None = None,
-    move_magmoms: bool = True,
-    run_bader: bool | DefaultSetting = QuaccDefault,
-    run_chargemol: bool | DefaultSetting = QuaccDefault,
-    check_convergence: bool | DefaultSetting = QuaccDefault,
-    report_mp_corrections: bool = False,
-    additional_fields: dict[str, Any] | None = None,
-    store: Store | None | DefaultSetting = QuaccDefault,
-) -> VaspASEOptSchema:
-    """
-    Merges the `vasp_summarize_run` with an `summarize_opt_run`, meant to
-    be used for an ASE-based VASP relaxation.
+        Parameters
+        ----------
+        optimizer
+            The ASE optimizer object
+        trajectory
+            ASE Trajectory object or list[Atoms] from reading a trajectory file. If
+            None, the trajectory must be found in dyn.trajectory.filename.
+        store
+            Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`,
+        """
+        store = self._settings.STORE if store == QuaccDefault else store
 
-    Parameters
-    ----------
-    optimizer
-        The ASE optimizer object
-    trajectory
-        ASE Trajectory object or list[Atoms] from reading a trajectory file. If
-        None, the trajectory must be found in dyn.trajectory.filename.
-    directory
-        Path to VASP outputs. A value of None specifies the calculator directory.
-    move_magmoms
-        Whether to move the final magmoms of the original Atoms object to the
-        initial magmoms of the returned Atoms object.
-    run_bader
-        Whether a Bader analysis should be performed. Will not run if bader
-        executable is not in PATH even if bader is set to True. Defaults to
-        VASP_BADER in settings.
-    run_chargemol
-        Whether a Chargemol analysis should be performed. Will not run if chargemol
-        executable is not in PATH even if chargmeol is set to True. Defaults to
-        VASP_CHARGEMOL in settings.
-    check_convergence
-        Whether to throw an error if convergence is not reached. Defaults to True in
-        settings.
-    report_mp_corrections
-        Whether to apply the MP corrections to the task document. Defaults to False.
-    additional_fields
-        Additional fields to add to the task document.
-    store
-        Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`,
-    """
-    settings = get_settings()
-    store = settings.STORE if store == QuaccDefault else store
+        final_atoms = get_final_atoms_from_dynamics(optimizer)
+        directory = Path(self.directory or final_atoms.calc.directory)
+        opt_run_summary = Summarize(
+            move_magmoms=self.move_magmoms, additional_fields=self.additional_fields
+        ).opt(
+            optimizer,
+            trajectory=trajectory,
+            check_convergence=self.check_convergence,
+            store=None,
+        )
 
-    final_atoms = get_final_atoms_from_dynamics(optimizer)
-    directory = Path(directory or final_atoms.calc.directory)
-    opt_run_summary = Summarize(
-        move_magmoms=move_magmoms, additional_fields=additional_fields
-    ).opt(
-        optimizer,
-        trajectory=trajectory,
-        check_convergence=check_convergence,
-        store=None,
-    )
-
-    vasp_summary = vasp_summarize_run(
-        final_atoms,
-        directory=directory,
-        move_magmoms=move_magmoms,
-        run_bader=run_bader,
-        run_chargemol=run_chargemol,
-        check_convergence=check_convergence,
-        report_mp_corrections=report_mp_corrections,
-        additional_fields=additional_fields,
-        store=None,
-    )
-    unsorted_task_doc = recursive_dict_merge(vasp_summary, opt_run_summary)
-    return finalize_dict(
-        unsorted_task_doc, directory, gzip_file=settings.GZIP_FILES, store=store
-    )
+        vasp_summary = self.run(final_atoms, store=None)
+        unsorted_task_doc = recursive_dict_merge(vasp_summary, opt_run_summary)
+        return finalize_dict(
+            unsorted_task_doc, directory, gzip_file=self._settings.GZIP_FILES, store=store
+        )
 
 
-def _bader_runner(path: Path | str) -> BaderSchema:
+def bader_runner(path: Path | str) -> BaderSchema:
     """
     Runs a Bader partial charge and spin moment analysis using the VASP output
     files in the given path. This function requires that `bader` is located in
@@ -292,7 +296,7 @@ def _bader_runner(path: Path | str) -> BaderSchema:
     return bader_stats
 
 
-def _chargemol_runner(
+def chargemol_runner(
     path: Path | str, atomic_densities_path: str | None = None
 ) -> ChargemolSchema:
     """

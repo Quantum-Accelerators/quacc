@@ -114,7 +114,7 @@ class CclibSummarize:
         store = self._settings.STORE if store == QuaccDefault else store
 
         # Get the cclib base task document
-        cclib_task_doc = self._make_cclib_schema(
+        cclib_task_doc = make_base_cclib_schema(
             directory, self.logfile_extensions, analysis=self.pop_analyses
         )
         attributes = cclib_task_doc["attributes"]
@@ -193,12 +193,11 @@ class CclibSummarize:
         cclibASEOptSchema
             Dictionary representation of the task document
         """
-        settings = get_settings()
-        store = settings.STORE if store == QuaccDefault else store
+        store = self._settings.STORE if store == QuaccDefault else store
 
         final_atoms = get_final_atoms_from_dynamics(dyn)
         directory = Path(self.directory or final_atoms.calc.directory)
-        cclib_summary = self.cclib_summarize_run(final_atoms, store=None)
+        cclib_summary = self.run(final_atoms, store=None)
         opt_run_summary = Summarize(
             charge_and_multiplicity=(
                 cclib_summary["charge"],
@@ -213,10 +212,10 @@ class CclibSummarize:
         )
         unsorted_task_doc = recursive_dict_merge(cclib_summary, opt_run_summary)
         return finalize_dict(
-            unsorted_task_doc, directory, gzip_file=settings.GZIP_FILES, store=store
+            unsorted_task_doc, directory, gzip_file=self._settings.GZIP_FILES, store=store
         )
 
-def _make_cclib_schema(
+def make_base_cclib_schema(
     self,
     directory: str | Path,
     logfile_extensions: CclibAnalysis | list[CclibAnalysis],
@@ -292,7 +291,7 @@ def _make_cclib_schema(
 
     # Store the HOMO/LUMO energies for convenience
     if cclib_obj.moenergies is not None and cclib_obj.homos is not None:
-        homo_energies, lumo_energies, gaps = _get_homos_lumos(
+        homo_energies, lumo_energies, gaps = get_homos_lumos(
             cclib_obj.moenergies, cclib_obj.homos
         )
         min_gap = min(gaps) if gaps else None
@@ -319,7 +318,7 @@ def _make_cclib_schema(
         cubefile_path = find_recent_logfile(directory, [".cube", ".cub"])
 
         for analysis_name in analysis:
-            if calc_attributes := self._cclib_calculate(
+            if calc_attributes := cclib_calculate(
                 cclib_obj, analysis_name, cubefile_path, proatom_dir
             ):
                 popanalysis_attributes[analysis_name] = calc_attributes
@@ -333,7 +332,7 @@ def _make_cclib_schema(
         "trajectory": trajectory,
     }
 
-def _cclib_calculate(
+def cclib_calculate(
     cclib_obj,
     method: CclibAnalysis,
     cube_file: Path | str | None = None,
@@ -432,7 +431,7 @@ def _cclib_calculate(
     }
 
 
-def _get_homos_lumos(
+def get_homos_lumos(
     moenergies: list[list[float]], homo_indices: list[int]
 ) -> tuple[list[float], list[float], list[float]] | tuple[list[float], None, None]:
     """

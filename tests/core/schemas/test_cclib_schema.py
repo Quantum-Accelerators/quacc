@@ -15,7 +15,7 @@ from maggma.stores import MemoryStore
 from monty.json import MontyDecoder, jsanitize
 
 from quacc.calculators.vasp import Vasp
-from quacc.schemas.cclib import CclibSummarize, _cclib_calculate, _make_cclib_schema
+from quacc.schemas.cclib import CclibSummarize, cclib_calculate, make_base_cclib_schema
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.propagate = True
@@ -50,7 +50,7 @@ def teardown_module():
         os.remove(p / "psi_test.cube")
 
 
-def bad_mock_cclib_calculate(*args, **kwargs):
+def bad_mockcclib_calculate(*args, **kwargs):
     msg = "This is a bad run."
     raise ValueError(msg)
 
@@ -150,28 +150,28 @@ def test_cclib_taskdoc(tmp_path, monkeypatch):
     with open(p / "test.txt", "w") as f:
         f.write("I am a dummy log file")
     with pytest.raises(Exception, match="Could not parse") as e:
-        doc = _make_cclib_schema(p, [".log", ".txt"])
+        doc = make_base_cclib_schema(p, [".log", ".txt"])
     os.remove(p / "test.txt")
     assert "Could not parse" in str(e.value)
 
     # Test a population analysis
-    doc = _make_cclib_schema(p, "psi_test.out", analysis="MBO")
+    doc = make_base_cclib_schema(p, "psi_test.out", analysis="MBO")
     assert doc["pop_analysis"]["mbo"] is not None
 
     # Let's try with two analysis (also check case-insensitivity)
-    doc = _make_cclib_schema(p, "psi_test.out", analysis=["mbo", "density"])
+    doc = make_base_cclib_schema(p, "psi_test.out", analysis=["mbo", "density"])
     assert doc["pop_analysis"]["mbo"] is not None
     assert doc["pop_analysis"]["density"] is not None
 
     # Test a population analysis that will fail
-    doc = _make_cclib_schema(p, ".log", analysis="MBO")
+    doc = make_base_cclib_schema(p, ".log", analysis="MBO")
     assert doc["pop_analysis"]["mbo"] is None
 
-    doc = _make_cclib_schema(p, "psi_test.out", analysis=["Bader"])
+    doc = make_base_cclib_schema(p, "psi_test.out", analysis=["Bader"])
     assert doc["pop_analysis"]["bader"] is not None
 
     with pytest.raises(FileNotFoundError):
-        _make_cclib_schema(p, "does_not_exists.txt")
+        make_base_cclib_schema(p, "does_not_exists.txt")
 
     # test document can be jsanitized
     d = jsanitize(doc, enum_values=True)
@@ -180,22 +180,22 @@ def test_cclib_taskdoc(tmp_path, monkeypatch):
     MontyDecoder().process_decoded(d)
 
 
-def test_cclib_calculate(tmp_path, monkeypatch, cclib_obj):
+def testcclib_calculate(tmp_path, monkeypatch, cclib_obj):
     monkeypatch.chdir(tmp_path)
 
     with pytest.raises(
         ValueError, match="fakemethod is not a valid cclib population analysis method"
     ):
-        _cclib_calculate(cclib_obj, method="fakemethod")
+        cclib_calculate(cclib_obj, method="fakemethod")
 
     with pytest.raises(ValueError, match="A cube file must be provided for bader."):
-        _cclib_calculate(cclib_obj, method="bader")
+        cclib_calculate(cclib_obj, method="bader")
 
     with pytest.raises(FileNotFoundError):
-        _cclib_calculate(cclib_obj, method="bader", cube_file="does_not_exists.txt")
+        cclib_calculate(cclib_obj, method="bader", cube_file="does_not_exists.txt")
 
     with pytest.raises(FileNotFoundError):
-        _cclib_calculate(
+        cclib_calculate(
             cclib_obj,
             method="ddec6",
             cube_file=FILE_DIR / "test_files" / "cclib_data" / "psi_test.cube",
@@ -206,14 +206,14 @@ def test_cclib_calculate(tmp_path, monkeypatch, cclib_obj):
         OSError,
         match="PROATOM_DIR environment variable or proatom_dir kwarg needs to be set",
     ):
-        _cclib_calculate(
+        cclib_calculate(
             cclib_obj,
             method="ddec6",
             cube_file=FILE_DIR / "test_files" / "cclib_data" / "psi_test.cube",
         )
 
     with pytest.raises(AssertionError):
-        _cclib_calculate(
+        cclib_calculate(
             cclib_obj,
             method="ddec6",
             cube_file=FILE_DIR / "test_files" / "cclib_data" / "psi_test.cube",
@@ -227,16 +227,16 @@ def test_monkeypatches(tmp_path, monkeypatch, cclib_obj, caplog):
         "PROATOM_DIR", str(FILE_DIR / "test_files" / "cclib_data" / "proatomdata")
     )
     with pytest.raises(FileNotFoundError):
-        _cclib_calculate(
+        cclib_calculate(
             cclib_obj,
             method="ddec6",
             cube_file=FILE_DIR / "test_files" / "cclib_data" / "psi_test.cube",
         )
 
-    monkeypatch.setattr("cclib.method.Bader.calculate", bad_mock_cclib_calculate)
+    monkeypatch.setattr("cclib.method.Bader.calculate", bad_mockcclib_calculate)
     with caplog.at_level(logging.WARNING):
         assert (
-            _cclib_calculate(
+            cclib_calculate(
                 cclib_obj,
                 method="bader",
                 cube_file=FILE_DIR / "test_files" / "cclib_data" / "psi_test.cube",
