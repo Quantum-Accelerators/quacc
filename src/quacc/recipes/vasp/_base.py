@@ -193,7 +193,7 @@ def run_and_summarize_vib_and_thermo(
         thermo_object = thermo_runner.run_ideal_gas()
 
     return summarize_vib_and_thermo(
-        vib=vibrations,
+        vibrations,
         thermo_object,
         atoms=atoms,
         temperature=temperature,
