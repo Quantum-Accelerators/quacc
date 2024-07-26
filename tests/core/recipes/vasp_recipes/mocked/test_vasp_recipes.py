@@ -865,7 +865,6 @@ def test_freq_job():
 
     output = freq_job(atoms, kpts=(1, 1, 1))
     assert output["parameters"]["ediff"] == 1e-07
-    # Check that parmeters_thermo contains
     assert output["parameters_thermo"]["sigma"] == 2.0
     assert len(output["results"]["vib_freqs_raw"]) == 3 * len(atoms)
     assert len(output["results"]["vib_freqs"]) == 3 * len(atoms) - 5
