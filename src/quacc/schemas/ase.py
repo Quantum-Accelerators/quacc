@@ -288,7 +288,7 @@ def summarize_md_run(
 
 def summarize_vib_and_thermo(
     vib: Vibrations,
-    thermo_analysis: IdealGasThermo | HarmonicThermo,
+    thermo_object: IdealGasThermo | HarmonicThermo,
     atoms: Atoms | None = None,
     temperature: float = 298.15,
     pressure: float = 1.0,
@@ -304,7 +304,7 @@ def summarize_vib_and_thermo(
     ----------
     vib
         ASE Vibrations object.
-    thermo_analysis
+    thermo_object
         ASE IdealGasThermo or HarmonicThermo object.
     atoms
         ASE Atoms object following a calculation.
@@ -332,13 +332,13 @@ def summarize_vib_and_thermo(
         vib, charge_and_multiplicity=charge_and_multiplicity
     )
 
-    if isinstance(thermo_analysis, HarmonicThermo):
+    if isinstance(thermo_object, HarmonicThermo):
         thermo_task_doc = _summarize_harmonic_thermo(
-            atoms, thermo_analysis, temperature=temperature, pressure=pressure
+            atoms, thermo_object, temperature=temperature, pressure=pressure
         )
-    elif isinstance(thermo_analysis, IdealGasThermo):
+    elif isinstance(thermo_object, IdealGasThermo):
         thermo_task_doc = _summarize_ideal_gas_thermo(
-            thermo_analysis,
+            thermo_object,
             temperature=temperature,
             pressure=pressure,
             charge_and_multiplicity=charge_and_multiplicity,
