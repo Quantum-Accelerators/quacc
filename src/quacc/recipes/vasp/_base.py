@@ -65,8 +65,7 @@ def run_and_summarize(
     final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
 
     return VaspSummarize(
-        report_mp_corrections=report_mp_corrections,
-        additional_fields=additional_fields,
+        report_mp_corrections=report_mp_corrections, additional_fields=additional_fields
     ).run(final_atoms)
 
 
@@ -119,6 +118,5 @@ def run_and_summarize_opt(
     dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_flags)
 
     return VaspSummarize(
-        report_mp_corrections=report_mp_corrections,
-        additional_fields=additional_fields,
+        report_mp_corrections=report_mp_corrections, additional_fields=additional_fields
     ).ase_opt(dyn)
