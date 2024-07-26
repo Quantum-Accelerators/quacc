@@ -80,7 +80,8 @@ def test_relax_job(tmp_path, monkeypatch, method):
     assert output["atoms"].get_volume() == pytest.approx(atoms.get_volume())
 
 
-@pytest.mark.skipif(has_mace is None)
+@pytest.mark.skipif(has_mace is None, reason="Needs MACE")
+@pytest.mark.importorskip("torch_dftd", reason="Needs torch-dftd")
 def test_relax_job_dispersion(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
