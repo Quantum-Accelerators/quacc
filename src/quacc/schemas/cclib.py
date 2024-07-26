@@ -216,6 +216,7 @@ class CclibSummarize:
             unsorted_task_doc, directory, gzip_file=settings.GZIP_FILES, store=store
         )
 
+
 def _make_cclib_schema(
     self,
     directory: str | Path,
@@ -333,6 +334,7 @@ def _make_cclib_schema(
         "trajectory": trajectory,
     }
 
+
 def _cclib_calculate(
     cclib_obj,
     method: CclibAnalysis,
@@ -378,9 +380,7 @@ def _cclib_calculate(
                 raise OSError(msg)
             proatom_dir = os.path.expandvars(os.environ["PROATOM_DIR"])
         if not Path(proatom_dir).exists():
-            msg = (
-                f"Protatom directory {proatom_dir} does not exist. Returning None."
-            )
+            msg = f"Protatom directory {proatom_dir} does not exist. Returning None."
             raise FileNotFoundError(msg)
     cclib_methods = getmembers(cclib.method, isclass)
     method_class = next(
