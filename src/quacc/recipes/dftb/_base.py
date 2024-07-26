@@ -59,6 +59,4 @@ def run_and_summarize(
         geom_file=GEOM_FILE
     )
 
-    return Summarize(additional_fields=additional_fields).run(
-        final_atoms, atoms
-    )
+    return Summarize(additional_fields=additional_fields).run(final_atoms, atoms)
