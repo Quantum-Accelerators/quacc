@@ -212,8 +212,12 @@ class CclibSummarize:
         )
         unsorted_task_doc = recursive_dict_merge(cclib_summary, opt_run_summary)
         return finalize_dict(
-            unsorted_task_doc, directory, gzip_file=self._settings.GZIP_FILES, store=store
+            unsorted_task_doc,
+            directory,
+            gzip_file=self._settings.GZIP_FILES,
+            store=store,
         )
+
 
 def make_base_cclib_schema(
     self,
@@ -331,6 +335,7 @@ def make_base_cclib_schema(
         "pop_analysis": popanalysis_attributes or None,
         "trajectory": trajectory,
     }
+
 
 def _cclib_calculate(
     cclib_obj,
