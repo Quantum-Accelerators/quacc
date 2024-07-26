@@ -727,7 +727,7 @@ if TYPE_CHECKING:
         """Type hint of all cclib attributes."""
 
     class cclibBaseSchema(TypedDict):
-        """Type hint associated with `quacc.schemas.cclib._make_cclib_schema`"""
+        """Type hint associated with `quacc.schemas.cclib.make_base_cclib_schema`"""
 
         logfile: str
         attributes: AllAttributes
