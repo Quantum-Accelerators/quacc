@@ -14,7 +14,7 @@ from cclib.io import ccread
 
 from quacc import QuaccDefault, get_settings
 from quacc.atoms.core import get_final_atoms_from_dynamics
-from quacc.schemas.ase import summarize_opt_run, summarize_run
+from quacc.schemas.ase import Summarize
 from quacc.utils.dicts import finalize_dict, recursive_dict_merge
 from quacc.utils.files import find_recent_logfile
 
@@ -127,12 +127,9 @@ def cclib_summarize_run(
         intermediate_cclib_task_docs = {}
 
     # Get the base task document for the ASE run
-    run_task_doc = summarize_run(
-        final_atoms,
-        input_atoms,
-        charge_and_multiplicity=(attributes["charge"], attributes["mult"]),
-        store=None,
-    )
+    run_task_doc = Summarize(
+        charge_and_multiplicity=(attributes["charge"], attributes["mult"])
+    ).run(final_atoms, input_atoms, store=None)
 
     # Create a dictionary of the inputs/outputs
     unsorted_task_doc = (
@@ -219,17 +216,13 @@ def summarize_cclib_opt_run(
         additional_fields=additional_fields,
         store=None,
     )
-    opt_run_summary = summarize_opt_run(
-        dyn,
-        trajectory=trajectory,
-        check_convergence=check_convergence,
+    opt_run_summary = Summarize(
         charge_and_multiplicity=(
             cclib_summary["charge"],
             cclib_summary["spin_multiplicity"],
         ),
         additional_fields=additional_fields,
-        store=None,
-    )
+    ).opt(dyn, trajectory=trajectory, check_convergence=check_convergence, store=None)
     unsorted_task_doc = recursive_dict_merge(cclib_summary, opt_run_summary)
     return finalize_dict(
         unsorted_task_doc, directory, gzip_file=settings.GZIP_FILES, store=store

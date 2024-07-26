@@ -19,7 +19,7 @@ from pymatgen.entries.compatibility import (
 
 from quacc import QuaccDefault, get_settings
 from quacc.atoms.core import get_final_atoms_from_dynamics
-from quacc.schemas.ase import summarize_opt_run, summarize_run
+from quacc.schemas.ase import Summarize
 from quacc.utils.dicts import finalize_dict, recursive_dict_merge
 
 if TYPE_CHECKING:
@@ -126,8 +126,8 @@ def vasp_summarize_run(
         )
     poscar_path = directory / "POSCAR"
     initial_atoms = read(zpath(str(poscar_path)))
-    base_task_doc = summarize_run(
-        final_atoms, initial_atoms, move_magmoms=move_magmoms, store=None
+    base_task_doc = Summarize(move_magmoms=move_magmoms).run(
+        final_atoms, initial_atoms, store=None
     )
 
     if nsteps := len([f for f in os.listdir(directory) if f.startswith("step")]):
@@ -223,14 +223,12 @@ def summarize_vasp_opt_run(
 
     final_atoms = get_final_atoms_from_dynamics(optimizer)
     directory = Path(directory or final_atoms.calc.directory)
-    opt_run_summary = summarize_opt_run(
-        optimizer,
-        trajectory=trajectory,
+    opt_run_summary = Summarize(
         check_convergence=check_convergence,
         move_magmoms=move_magmoms,
         additional_fields=additional_fields,
-        store=None,
-    )
+    ).opt(optimizer, trajectory=trajectory, store=None)
+
     vasp_summary = vasp_summarize_run(
         final_atoms,
         directory=directory,
