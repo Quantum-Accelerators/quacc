@@ -150,7 +150,7 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
     traj = read("test.traj", index=":")
 
     store = MemoryStore()
-    Summarize(check_convergence=False).opt(dyn,store=store)
+    Summarize().opt(dyn, check_convergence=False, store=store)
     assert store.count() == 1
 
     # Test no convergence

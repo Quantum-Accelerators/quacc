@@ -25,6 +25,11 @@ if TYPE_CHECKING:
 
 
 class Summarize:
+    """
+    Get tabulated results from an Atoms object and calculator and store them in a
+    database-friendly format. This is meant to be compatible with all calculator types.
+    """
+
     def __init__(
         self,
         charge_and_multiplicity: tuple[int, int] | None = None,
@@ -32,8 +37,7 @@ class Summarize:
         additional_fields: dict[str, Any] | None = None,
     ) -> None:
         """
-        Get tabulated results from an Atoms object and calculator and store them in a
-        database-friendly format. This is meant to be compatible with all calculator types.
+        Initialize the Summarize object.
 
         Parameters
         ----------
@@ -45,6 +49,10 @@ class Summarize:
             initial magmoms of the returned Atoms object.
         additional_fields
             Additional fields to add to the task document.
+
+        Returns
+        -------
+        None
         """
         self.charge_and_multiplicity = charge_and_multiplicity
         self.move_magmoms = move_magmoms
@@ -58,8 +66,7 @@ class Summarize:
         store: Store | None | DefaultSetting = QuaccDefault,
     ) -> RunSchema:
         """
-        Get tabulated results from an Atoms object and calculator and store them in a
-        database-friendly format. This is meant to be compatible with all calculator types.
+        Get tabulated results from a standard ASE run.
 
         Parameters
         ----------
@@ -132,8 +139,7 @@ class Summarize:
         store: Store | None | DefaultSetting = QuaccDefault,
     ) -> OptSchema:
         """
-        Get tabulated results from an ASE Atoms trajectory and store them in a database-
-        friendly format. This is meant to be compatible with all calculator types.
+        Get tabulated results from an ASE optimization.
 
         Parameters
         ----------
@@ -210,8 +216,7 @@ class Summarize:
         store: Store | None | DefaultSetting = QuaccDefault,
     ) -> DynSchema:
         """
-        Get tabulated results from an ASE Atoms trajectory and store them in a database-
-        friendly format. This is meant to be compatible with all calculator types.
+        Get tabulated results from an ASE MD run.
 
         Parameters
         ----------
