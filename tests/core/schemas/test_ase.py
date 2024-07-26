@@ -371,7 +371,7 @@ def test_summarize_harmonic_thermo(tmp_path, monkeypatch):
 def test_summarize_vib_and_thermo(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    # Test harmonic thermo for the thermo_analysis procedure
+    # Test harmonic thermo
     atoms = molecule("H2")
     atoms.calc = EMT()
 
@@ -388,7 +388,7 @@ def test_summarize_vib_and_thermo(tmp_path, monkeypatch):
     assert_close(results["results"]["entropy"], 2.1952829783392438e-09, rtol=1e-5)
     assert_close(results["results"]["zpe"], 0.17, rtol=1e-5)
 
-    # Test ideal gas thermo for the thermo_analysis procedure
+    # Test ideal gas thermo
     atoms = molecule("N2")
     atoms.calc = EMT()
     igt = IdealGasThermo([0.34], "linear", atoms=atoms, spin=0, symmetrynumber=2)
