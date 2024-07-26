@@ -51,7 +51,7 @@ def run_and_summarize(
     -------
     cclibSchema
         Dictionary of results, as specified in
-        [quacc.schemas.cclib.cclib_summarize_run][]
+        [quacc.schemas.cclib.CclibSummarize.run][]
     """
     settings = get_settings()
     gaussian_cmd = f"{settings.GAUSSIAN_CMD} < {_LABEL}.com > {LOG_FILE}"

@@ -61,8 +61,6 @@ class VaspSummarize:
 
         Parameters
         ----------
-        final_atoms
-            ASE Atoms object following a calculation.
         directory
             Path to VASP outputs. A value of None specifies the calculator directory.
         move_magmoms
@@ -83,8 +81,6 @@ class VaspSummarize:
             Whether to apply the MP corrections to the task document. Defaults to False.
         additional_fields
             Additional fields to add to the task document.
-        store
-            Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`,
 
         Returns
         -------

@@ -68,7 +68,7 @@ def static_job(
     Returns
     -------
     cclibSchema
-        Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][].
+        Dictionary of results from [quacc.schemas.cclib.CclibSummarize.run][].
         See the type-hint for the data structure.
     """
     nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
@@ -134,7 +134,7 @@ def relax_job(
     Returns
     -------
     cclibSchema
-        Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][].
+        Dictionary of results from [quacc.schemas.cclib.CclibSummarize.run][].
         See the type-hint for the data structure.
     """
     nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
@@ -204,7 +204,7 @@ def freq_job(
     Returns
     -------
     cclibSchema
-        Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][].
+        Dictionary of results from [quacc.schemas.cclib.CclibSummarize.run][].
         See the type-hint for the data structure.
     """
     nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
@@ -270,7 +270,7 @@ def ase_relax_job(
     Returns
     -------
     cclibASEOptSchema
-        Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][] merged with
+        Dictionary of results from [quacc.schemas.cclib.CclibSummarize.run][] merged with
         the results from [quacc.schemas.ase.Summarize.opt][].
         See the type-hint for the data structure.
     """
@@ -349,7 +349,7 @@ def ase_quasi_irc_perturb_job(
     Returns
     -------
     cclibASEOptSchema
-        Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][] merged with
+        Dictionary of results from [quacc.schemas.cclib.CclibSummarize.run][] merged with
         the results from [quacc.schemas.ase.Summarize.opt][].
         See the type-hint for the data structure.
     """

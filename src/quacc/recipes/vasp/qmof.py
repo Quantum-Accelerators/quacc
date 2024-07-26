@@ -179,7 +179,7 @@ def _loose_relax_positions(
     Returns
     -------
     VaspSchema
-        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
+        Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
         See the type-hint for the data structure.
     """
     calc_defaults = {
@@ -225,7 +225,7 @@ def _loose_relax_cell(
     Returns
     -------
     VaspSchema
-        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
+        Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
         See the type-hint for the data structure.
     """
     calc_defaults = {
@@ -272,7 +272,7 @@ def _double_relax(
     Returns
     -------
     list[VaspSchema]
-        List of dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
+        List of dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][]
         See the type-hint for the data structure.
     """
     # Run first relaxation
@@ -336,7 +336,7 @@ def _static(
     Returns
     -------
     VaspSchema
-        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
+        Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
         See the type-hint for the data structure.
     """
     calc_defaults = {

@@ -608,7 +608,7 @@ if TYPE_CHECKING:
         cm5: CM5Schema
 
     class VaspSchema(RunSchema, TaskDoc):
-        """Type hint associated with [quacc.schemas.vasp.vasp_summarize_run][]"""
+        """Type hint associated with [quacc.schemas.vasp.VaspSummarize.run][]"""
 
         bader: BaderSchema
         chargemol: ChargemolSchema
@@ -735,7 +735,7 @@ if TYPE_CHECKING:
         trajectory: list[Atoms]
 
     class cclibSchema(cclibBaseSchema, RunSchema):
-        """Type hint associated with [quacc.schemas.cclib.cclib_summarize_run][]."""
+        """Type hint associated with [quacc.schemas.cclib.CclibSummarize.run][]."""
 
         steps: dict[int, cclibBaseSchema]  # when store_intermediate_results=True
 
