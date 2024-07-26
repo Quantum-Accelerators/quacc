@@ -216,7 +216,6 @@ class CclibSummarize:
         )
 
 def make_base_cclib_schema(
-    self,
     directory: str | Path,
     logfile_extensions: CclibAnalysis | list[CclibAnalysis],
     analysis: CclibAnalysis | list[CclibAnalysis] | None = None,
@@ -259,7 +258,7 @@ def make_base_cclib_schema(
     # specified directory.
     logfile = find_recent_logfile(directory, logfile_extensions)
     if not logfile:
-        msg = f"Could not find file with extension {self.logfile_extensions} in {directory}"
+        msg = f"Could not find file with extension {logfile_extensions} in {directory}"
         raise FileNotFoundError(msg)
 
     # Let's parse the log file with cclib
@@ -332,7 +331,7 @@ def make_base_cclib_schema(
         "trajectory": trajectory,
     }
 
-def _cclib_calculate(
+def cclib_calculate(
     cclib_obj,
     method: CclibAnalysis,
     cube_file: Path | str | None = None,

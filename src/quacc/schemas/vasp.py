@@ -214,7 +214,7 @@ class VaspSummarize:
             store=store,
         )
 
-    def summarize_vasp_opt_run(
+    def ase_opt(
         self,
         optimizer: Optimizer,
         trajectory: list[Atoms] | None = None,

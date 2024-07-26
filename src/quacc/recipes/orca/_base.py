@@ -87,7 +87,7 @@ def run_and_summarize(
 
     atoms = Runner(atoms, calc, copy_files=copy_files).run_calc(geom_file=GEOM_FILE)
 
-    return CclibSummarize(LOG_FILE, additional_fields=additional_fields).run()
+    return CclibSummarize(LOG_FILE, additional_fields=additional_fields).run(atoms)
 
 
 def run_and_summarize_opt(
