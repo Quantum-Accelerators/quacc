@@ -37,7 +37,6 @@ def _set_dtype(size, type_="float"):
 
 @pytest.mark.parametrize("method", methods)
 def test_static_job(tmp_path, monkeypatch, method):
-
     monkeypatch.chdir(tmp_path)
 
     if method == "mace-mp-0":

@@ -224,10 +224,13 @@ def summarize_vasp_opt_run(
     final_atoms = get_final_atoms_from_dynamics(optimizer)
     directory = Path(directory or final_atoms.calc.directory)
     opt_run_summary = Summarize(
-        move_magmoms=move_magmoms,
-        additional_fields=additional_fields,
-    ).opt(optimizer, trajectory=trajectory,        check_convergence=check_convergence,
- store=None)
+        move_magmoms=move_magmoms, additional_fields=additional_fields
+    ).opt(
+        optimizer,
+        trajectory=trajectory,
+        check_convergence=check_convergence,
+        store=None,
+    )
 
     vasp_summary = vasp_summarize_run(
         final_atoms,
