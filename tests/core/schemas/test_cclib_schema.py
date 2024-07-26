@@ -15,11 +15,7 @@ from maggma.stores import MemoryStore
 from monty.json import MontyDecoder, jsanitize
 
 from quacc.calculators.vasp import Vasp
-from quacc.schemas.cclib import (
-    _cclib_calculate,
-    _make_cclib_schema,
-    cclib_summarize_run,
-)
+from quacc.schemas.cclib import CclibSummarize, _cclib_calculate, _make_cclib_schema
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.propagate = True
@@ -66,9 +62,9 @@ def test_cclib_summarize_run(tmp_path, monkeypatch):
 
     # Make sure metadata is made
     atoms = read(log1)
-    results = cclib_summarize_run(
-        atoms, ".log", directory=tmp_path / "test1", additional_fields={"test": "hi"}
-    )
+    results = CclibSummarize(
+        ".log", directory=tmp_path / "test1", additional_fields={"test": "hi"}
+    ).run(atoms)
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["spin_multiplicity"] == 1
@@ -79,9 +75,9 @@ def test_cclib_summarize_run(tmp_path, monkeypatch):
 
     # Make sure metadata is made
     atoms = read(log2)
-    results = cclib_summarize_run(
-        atoms, ".log", directory=tmp_path / "test2", additional_fields={"test": "hi"}
-    )
+    results = CclibSummarize(
+        ".log", directory=tmp_path / "test2", additional_fields={"test": "hi"}
+    ).run(atoms)
     assert results["attributes"]["final_scf_energy"] == pytest.approx(-4091.763)
     assert results["natoms"] == 2
     assert results["charge"] == 0
@@ -115,18 +111,18 @@ def test_cclib_summarize_run(tmp_path, monkeypatch):
 
     # Make sure default dir works
     monkeypatch.chdir(tmp_path / "test1")
-    cclib_summarize_run(atoms, ".log")
+    CclibSummarize(".log").run(atoms)
 
     # Test DB
     atoms = read(log1)
     store = MemoryStore()
-    cclib_summarize_run(atoms, ".log", directory=tmp_path / "test1", store=store)
+    CclibSummarize(".log", directory=tmp_path / "test1").run(atoms, store=store)
     assert store.count() == 1
 
     # Make sure info tags are handled appropriately
     atoms = read(log1)
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
-    results = cclib_summarize_run(atoms, ".log", directory=tmp_path / "test1")
+    results = CclibSummarize(".log", directory=tmp_path / "test1").run(atoms)
     assert atoms.info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
@@ -134,14 +130,14 @@ def test_cclib_summarize_run(tmp_path, monkeypatch):
 def test_errors():
     atoms = bulk("Cu")
     with pytest.raises(ValueError, match="ASE Atoms object has no attached calculator"):
-        cclib_summarize_run(atoms, ".log", directory=run1)
+        CclibSummarize(".log", directory=run1).run(atoms)
 
     calc = Vasp(atoms)
     atoms.calc = calc
     with pytest.raises(
         ValueError, match="ASE Atoms object's calculator has no results."
     ):
-        cclib_summarize_run(atoms, ".log", directory=run1)
+        CclibSummarize(".log", directory=run1).run(atoms)
 
 
 def test_cclib_taskdoc(tmp_path, monkeypatch):

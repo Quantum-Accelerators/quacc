@@ -8,7 +8,7 @@ from ase.calculators.gaussian import Gaussian
 
 from quacc import get_settings
 from quacc.runners.ase import Runner
-from quacc.schemas.cclib import cclib_summarize_run
+from quacc.schemas.cclib import CclibSummarize
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
@@ -60,4 +60,4 @@ def run_and_summarize(
     calc = Gaussian(command=gaussian_cmd, label=_LABEL, **calc_flags)
     atoms = Runner(atoms, calc, copy_files=copy_files).run_calc(geom_file=LOG_FILE)
 
-    return cclib_summarize_run(atoms, LOG_FILE, additional_fields=additional_fields)
+    return CclibSummarize(LOG_FILE, additional_fields=additional_fields).run(atoms)
