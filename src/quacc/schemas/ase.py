@@ -200,7 +200,7 @@ class Summarize:
             unsorted_task_doc,
             directory,
             gzip_file=self._settings.GZIP_FILES,
-            store=self.store,
+            store=store,
         )
 
     def md(

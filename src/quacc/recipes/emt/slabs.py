@@ -56,7 +56,7 @@ def bulk_to_slabs_flow(
     Returns
     -------
     list[RunSchema | OptSchema]
-        [RunSchema][quacc.schemas.ase.summarize_run] or
+        [RunSchema][quacc.schemas.ase.Summarize.run] or
         [OptSchema][quacc.schemas.ase.Summarize.opt] for each slab.
         See the return type-hint for the data structure.
     """

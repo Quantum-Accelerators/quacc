@@ -29,7 +29,7 @@ def test_summarize_run(tmpdir, monkeypatch):
     # Make sure metadata is made
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
-    results = Summarize.run(atoms, initial_atoms)
+    results = Summarize().run(atoms, initial_atoms)
     assert results["nsites"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["results"]["energy"] == atoms.get_potential_energy()
@@ -51,7 +51,7 @@ def test_summarize_run2(tmp_path, monkeypatch):
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     store = MemoryStore()
-    Summarize.run(atoms, initial_atoms, store=store)
+    Summarize().run(atoms, initial_atoms, store=store)
     assert store.count() == 1
 
 
@@ -62,7 +62,7 @@ def test_summarize_run3(tmp_path, monkeypatch):
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
-    results = Summarize.run(atoms, initial_atoms)
+    results = Summarize().run(atoms, initial_atoms)
     assert atoms.info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
@@ -117,7 +117,7 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
     dyn.run(steps=100)
     traj = read("test.traj", index=":")
 
-    results = Summarize.opt(dyn)
+    results = Summarize().opt(dyn)
     assert results["nsites"] == len(atoms)
     assert results["atoms"] == traj[-1]
     assert results["results"]["energy"] == atoms.get_potential_energy()
@@ -150,7 +150,7 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
     traj = read("test.traj", index=":")
 
     store = MemoryStore()
-    Summarize(store=store, check_convergence=False).opt(dyn)
+    Summarize(check_convergence=False).opt(dyn,store=store)
     assert store.count() == 1
 
     # Test no convergence
@@ -162,7 +162,7 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
     traj = read("test.traj", index=":")
 
     with pytest.raises(RuntimeError, match="Optimization did not converge"):
-        Summarize.opt(dyn)
+        Summarize().opt(dyn)
 
     # Make sure info tags are handled appropriately
     atoms = bulk("Cu") * (2, 2, 1)
@@ -172,7 +172,7 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
     dyn = BFGS(atoms, trajectory="test.traj")
     dyn.run()
 
-    results = Summarize.opt(dyn)
+    results = Summarize().opt(dyn)
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
     # test document can be jsanitized and decoded
@@ -181,7 +181,7 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
     dyn.trajectory.filename = "not_a_file.traj"
 
     with pytest.raises(FileNotFoundError):
-        Summarize.opt(dyn)
+        Summarize().opt(dyn)
 
 
 def test_summarize_vib_run(tmp_path, monkeypatch):
@@ -351,7 +351,7 @@ def test_errors(tmp_path, monkeypatch):
     with pytest.raises(
         ValueError, match="ASE Atoms object has no attached calculator."
     ):
-        Summarize.run(atoms, atoms)
+        Summarize().run(atoms, atoms)
 
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
@@ -359,4 +359,4 @@ def test_errors(tmp_path, monkeypatch):
     with pytest.raises(
         ValueError, match="ASE Atoms object's calculator has no results."
     ):
-        Summarize.run(atoms, initial_atoms)
+        Summarize().run(atoms, initial_atoms)
