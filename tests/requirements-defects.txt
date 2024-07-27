@@ -1,2 +1,2 @@
-pymatgen-analysis-defects==2024.5.11
+pymatgen-analysis-defects==2024.7.19
 shakenbreak==3.3.5
