@@ -27,7 +27,7 @@ from ase.optimize.sciopt import SciPyFminBFGS
 
 from quacc import change_settings, get_settings
 from quacc.runners._base import BaseRunner
-from quacc.runners.ase import Runner, geodesic_interpolate_wrapper, run_neb
+from quacc.runners.ase import Runner, run_neb
 from quacc.schemas.ase import summarize_neb_run
 
 has_geodesic_interpolate = bool(find_spec("geodesic_interpolate"))
@@ -89,40 +89,6 @@ def setup_test_environment(tmp_path):
         ],
     )
     return reactant, product
-
-
-@pytest.mark.skipif(
-    not has_geodesic_interpolate,
-    reason="geodesic_interpolate function is not available",
-)
-def test_geodesic_interpolate_wrapper(setup_test_environment):
-    reactant, product = setup_test_environment
-
-    # Execute the geodesic_interpolate_wrapper function
-    smoother_path = geodesic_interpolate_wrapper(
-        reactant,
-        product,
-        n_images=20,
-        redistribute_tol=5e-4,
-        smoother_tol=1e-4,
-        max_iterations=10,
-        max_micro_iterations=10,
-        morse_scaling=1.5,
-        geometry_friction=1e-2,
-        distance_cutoff=2.5,
-    )
-    assert smoother_path[1].positions[0][0] == pytest.approx(1.378384900, abs=1e-5)
-    assert smoother_path[5].positions[0][2] == pytest.approx(-0.512075394, abs=1e-5)
-
-
-@pytest.mark.skipif(
-    not has_geodesic_interpolate,
-    reason="geodesic_interpolate function is not available",
-)
-def test_geodesic_interpolate_wrapper_large_system(setup_test_environment):
-    # Test with large system to trigger sweeping updates
-    smoother_path = geodesic_interpolate_wrapper(molecule("C60"), molecule("C60"))
-    assert len(smoother_path) == 10
 
 
 def test_run_neb(tmp_path):
