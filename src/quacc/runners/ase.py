@@ -6,7 +6,7 @@ import logging
 import sys
 from importlib.util import find_spec
 from shutil import copy, copytree
-from typing import TYPE_CHECKING, Callable, Any
+from typing import TYPE_CHECKING, Any, Callable
 
 import numpy as np
 from ase.atoms import Atoms
