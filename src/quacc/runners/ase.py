@@ -604,9 +604,7 @@ def geodesic_interpolate_wrapper(
         perform_sweep = len(chemical_symbols) > sweep_cutoff_size
     if perform_sweep:
         geodesic_smoother.sweep(
-            tol=smoother_tol,
-            max_iter=max_iterations,
-            micro_iter=max_micro_iterations,
+            tol=smoother_tol, max_iter=max_iterations, micro_iter=max_micro_iterations
         )
     else:
         geodesic_smoother.smooth(tol=smoother_tol, max_iter=max_iterations)
