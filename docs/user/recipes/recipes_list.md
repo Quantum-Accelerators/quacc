@@ -107,14 +107,16 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 
 <center>
 
-| Name                | Decorator       | Documentation                                | Req'd Extras   |
-| ------------------- | --------------- | -------------------------------------------- | -------------- |
-| NewtonNet Static    | `#!Python @job` | [quacc.recipes.newtonnet.core.static_job][]  |                |
-| NewtonNet Relax     | `#!Python @job` | [quacc.recipes.newtonnet.core.relax_job][]   |                |
-| NewtonNet Frequency | `#!Python @job` | [quacc.recipes.newtonnet.core.freq_job][]    |                |
-| NewtonNet TS        | `#!Python @job` | [quacc.recipes.newtonnet.ts.ts_job][]        | `quacc[sella]` |
-| NewtonNet IRC       | `#!Python @job` | [quacc.recipes.newtonnet.ts.irc_job][]       | `quacc[sella]` |
-| NewtonNet Quasi IRC | `#!Python @job` | [quacc.recipes.newtonnet.ts.quasi_irc_job][] | `quacc[sella]` |
+| Name                | Decorator       | Documentation                                | Req'd Extras      |
+| ------------------- | --------------- | -------------------------------------------- | --------------    |
+| NewtonNet Static    | `#!Python @job` | [quacc.recipes.newtonnet.core.static_job][]  |                   |
+| NewtonNet Relax     | `#!Python @job` | [quacc.recipes.newtonnet.core.relax_job][]   |                   |
+| NewtonNet Frequency | `#!Python @job` | [quacc.recipes.newtonnet.core.freq_job][]    |                   |
+| NewtonNet TS        | `#!Python @job` | [quacc.recipes.newtonnet.ts.ts_job][]        |  `quacc[sella]`   |
+| NewtonNet IRC       | `#!Python @job` | [quacc.recipes.newtonnet.ts.irc_job][]       |  `quacc[sella]`   |
+| NewtonNet Quasi IRC | `#!Python @job` | [quacc.recipes.newtonnet.ts.quasi_irc_job][] |  `quacc[sella]`   |
+| NewtonNet neb       | `#!Python @job` | [quacc.recipes.newtonnet.ts.neb_job][]       |                   |
+| NewtonNet geodesic  | `#!Python @job` | [quacc.recipes.newtonnet.ts.geodesic_job][]  | `quacc[geodesic]` |
 
 </center>
 
