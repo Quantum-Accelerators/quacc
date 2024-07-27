@@ -38,6 +38,8 @@ if TYPE_CHECKING:
         NewtonNetIRCSchema,
         NewtonNetQuasiIRCSchema,
         NewtonNetTSSchema,
+        GeodesicSchema,
+        GeodesicTsSchema,
         OptParams,
     )
 
@@ -481,7 +483,7 @@ def geodesic_job(
     relax_job_kwargs: dict[str, Any] | None = None,
     geodesic_interpolate_kwargs: dict[str, Any] | None = None,
     **calc_kwargs,
-) -> dict:
+) -> GeodesicSchema:
     """
     Perform a quasi-IRC job using the given reactant and product atoms objects.
 
@@ -502,7 +504,7 @@ def geodesic_job(
 
     Returns
     -------
-    dict
+    GeodesicSchema
         A dictionary containing the following keys:
             - 'relax_reactant': Summary of the relaxed reactant structure.
             - 'relax_product': Summary of the relaxed product structure.
@@ -572,7 +574,7 @@ def geodesic_ts_job(
     geodesic_interpolate_kwargs: dict[str, Any] | None = None,
     ts_job_kwargs: dict[str, Any] | None = None,
     **calc_kwargs,
-) -> NebTsSchema:
+) -> GeodesicTsSchema:
     """
     Perform a quasi-IRC job using the given reactant and product atoms objects.
 
@@ -595,7 +597,7 @@ def geodesic_ts_job(
 
     Returns
     -------
-    NebTsSchema
+    GeodesicTsSchema
         A dictionary containing the following keys:
             - 'relax_reactant': Summary of the relaxed reactant structure.
             - 'relax_product': Summary of the relaxed product structure.
