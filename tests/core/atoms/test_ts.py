@@ -1,3 +1,4 @@
+from __future__ import annotations
 
 import numpy as np
 import pytest
@@ -8,9 +9,11 @@ def set_seed():
     np.random.seed(42)  # noqa: NPY002
 
 
-from ase.atoms import Atoms
 from importlib.util import find_spec
-from ase.build import bulk, molecule
+
+from ase.atoms import Atoms
+from ase.build import molecule
+
 from quacc.atoms.ts import geodesic_interpolate_wrapper
 
 has_geodesic_interpolate = bool(find_spec("geodesic_interpolate"))

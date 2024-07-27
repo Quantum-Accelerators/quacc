@@ -9,7 +9,6 @@ from shutil import copy, copytree
 from typing import TYPE_CHECKING, Any, Callable
 
 import numpy as np
-from ase.atoms import Atoms
 from ase.calculators import calculator
 from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read
@@ -39,13 +38,13 @@ has_sella = bool(find_spec("sella"))
 has_geodesic_interpolate = bool(find_spec("geodesic_interpolate"))
 
 if has_geodesic_interpolate:
-    from geodesic_interpolate.geodesic import Geodesic
-    from geodesic_interpolate.interpolation import redistribute
+    pass
 
 if TYPE_CHECKING:
     from pathlib import Path
-    from typing import Any, Literal
+    from typing import Any
 
+    from ase.atoms import Atoms
     from ase.calculators.calculator import Calculator
     from ase.optimize.optimize import Dynamics, Optimizer
 
