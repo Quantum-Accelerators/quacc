@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 from functools import partial, wraps
-from typing import TYPE_CHECKING, TypeVar
+from typing import Any, Callable
 
 from quacc.settings import change_settings_wrap, nest_results_dir_wrap
 
-Job = TypeVar("Job")
-Flow = TypeVar("Flow")
-Subflow = TypeVar("Subflow")
+Job = Callable[..., Any]
+Flow = Callable[..., Any]
+Subflow = Callable[..., Any]
 
 if TYPE_CHECKING:
     from importlib.util import find_spec
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
         from prefect import Task
 
 
-def job(_func: Callable | None = None, **kwargs) -> Job:
+def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
     """
     Decorator for individual compute jobs. This is a `#!Python @job` decorator. Think of
     each `#!Python @job`-decorated function as an individual SLURM job, if that helps.
@@ -188,7 +188,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
         return _func
 
 
-def flow(_func: Callable | None = None, **kwargs) -> Flow:
+def flow(_func: Callable[..., Any] | None = None, **kwargs) -> Flow:
     """
     Decorator for workflows, which consist of at least one compute job. This is a
     `#!Python @flow` decorator.
@@ -352,7 +352,7 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
         return _func
 
 
-def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
+def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
     """
     Decorator for (dynamic) sub-workflows. This is a `#!Python @subflow` decorator.
 
@@ -663,8 +663,8 @@ def _get_parsl_wrapped_func(
         return func(*f_args, **f_kwargs)
 
     if getattr(func, "_changed", False):
-        wrapper._changed = func._changed
-        wrapper._original_func = func._original_func
+        wrapper._changed = func._changed  # type: ignore[attr-defined]
+        wrapper._original_func = func._original_func  # type: ignore[attr-defined]
     wrapper.__name__ = func.__name__
     return wrapper
 

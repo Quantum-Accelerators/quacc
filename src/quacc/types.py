@@ -4,10 +4,12 @@ Custom types used throughout quacc.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING
+
+from pydantic_settings import BaseSettings
 
 
-class DefaultSetting:
+class DefaultSetting(BaseSettings):
     """
     Type hint for when a default setting will be applied
     """
@@ -35,6 +37,19 @@ if TYPE_CHECKING:
     from pymatgen.core.structure import Molecule, Structure
     from pymatgen.entries.computed_entries import ComputedEntry
     from pymatgen.io.vasp.inputs import Incar, Kpoints, Poscar, Potcar
+    from typing_extensions import NotRequired, TypedDict
+
+    CclibAnalysis = Literal[
+        "cpsa",
+        "mpa",
+        "lpa",
+        "bickelhaupt",
+        "density",
+        "mbo",
+        "bader",
+        "ddec6",
+        "hirshfeld",
+    ]
 
     # ----------- File handling -----------
 
@@ -132,9 +147,9 @@ if TYPE_CHECKING:
         """
 
         energy: float  # electronic energy in eV
-        forces: NDArray  # forces in eV/A
-        hessian: NDArray  # Hessian in eV/A^2/amu
         taskdoc: dict[str, Any]  # Output from `emmet.core.qc_tasks.TaskDoc`
+        hessian: NotRequired[NDArray]  # Hessian in eV/A^2/amu
+        forces: NotRequired[NDArray]  # forces in eV/A
 
     class VaspJobKwargs(TypedDict, total=False):
         """
@@ -442,7 +457,7 @@ if TYPE_CHECKING:
     # ----------- Schema (ASE) type hints -----------
 
     class RunSchema(AtomsSchema):
-        """Schema for [quacc.schemas.ase.summarize_run][]"""
+        """Schema for [quacc.schemas.ase.Summarize.run][]"""
 
         input_atoms: AtomsSchema | None
         nid: str
@@ -452,7 +467,7 @@ if TYPE_CHECKING:
         quacc_version: str
 
     class OptSchema(RunSchema):
-        """Schema for [quacc.schemas.ase.summarize_opt_run][]"""
+        """Schema for [quacc.schemas.ase.Summarize.opt][]"""
 
         parameters_opt: ParametersDyn
         converged: bool
@@ -460,7 +475,7 @@ if TYPE_CHECKING:
         trajectory_results: list[Results]
 
     class DynSchema(RunSchema):
-        """Schema for [quacc.schemas.ase.summarize_md_run][]"""
+        """Schema for [quacc.schemas.ase.Summarize.md][]"""
 
         parameters_md: ParametersDyn
         trajectory: list[Atoms]
@@ -510,7 +525,7 @@ if TYPE_CHECKING:
         results: ThermoResults
 
     class VibThermoSchema(VibSchema, ThermoSchema):
-        """Schema for [quacc.schemas.ase.summarize_vib_and_thermo][]"""
+        """Combined Vibrations and Thermo schema"""
 
     # ----------- Schema (phonons) type hints -----------
 
@@ -593,7 +608,7 @@ if TYPE_CHECKING:
         cm5: CM5Schema
 
     class VaspSchema(RunSchema, TaskDoc):
-        """Type hint associated with [quacc.schemas.vasp.vasp_summarize_run][]"""
+        """Type hint associated with [quacc.schemas.vasp.VaspSummarize.run][]"""
 
         bader: BaderSchema
         chargemol: ChargemolSchema
@@ -712,7 +727,7 @@ if TYPE_CHECKING:
         """Type hint of all cclib attributes."""
 
     class cclibBaseSchema(TypedDict):
-        """Type hint associated with `quacc.schemas.cclib._make_cclib_schema`"""
+        """Type hint associated with `quacc.schemas.cclib.make_base_cclib_schema`"""
 
         logfile: str
         attributes: AllAttributes
@@ -720,7 +735,7 @@ if TYPE_CHECKING:
         trajectory: list[Atoms]
 
     class cclibSchema(cclibBaseSchema, RunSchema):
-        """Type hint associated with [quacc.schemas.cclib.cclib_summarize_run][]."""
+        """Type hint associated with [quacc.schemas.cclib.CclibSummarize.run][]."""
 
         steps: dict[int, cclibBaseSchema]  # when store_intermediate_results=True
 
@@ -759,6 +774,24 @@ if TYPE_CHECKING:
         """Type hint associated with VASP relaxations run via ASE"""
 
     # ----------- Recipe (Espresso) type hints -----------
+    class SystemData(TypedDict):
+        occupations: str
+        smearing: str
+        degauss: float
+
+    class ElectronsData(TypedDict):
+        conv_thr: float
+        mixing_mode: str
+        mixing_beta: float
+
+    class InputData(TypedDict):
+        system: SystemData
+        electrons: ElectronsData
+        control: NotRequired[dict[str, Any]]
+
+    class EspressoBaseSet(TypedDict):
+        input_data: InputData
+        kspacing: float
 
     class EspressoBandsSchema(TypedDict, total=False):
         bands_pw: RunSchema

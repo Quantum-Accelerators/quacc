@@ -25,7 +25,7 @@ if has_chgnet := find_spec("chgnet"):
 @pytest.mark.skipif(has_chgnet is None, reason="chgnet not installed")
 def test_bad_method():
     atoms = bulk("Cu")
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Unrecognized method='bad_method'"):
         static_job(atoms, method="bad_method")
 
 
@@ -79,6 +79,8 @@ def test_relax_job(tmp_path, monkeypatch, method):
     assert output["atoms"].get_volume() == pytest.approx(atoms.get_volume())
 
 
+@pytest.mark.skipif(has_mace is None, reason="Needs MACE")
+@pytest.mark.skipif(find_spec("torch_dftd") is None, reason="Needs torch-dftd")
 def test_relax_job_dispersion(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 

@@ -23,6 +23,7 @@ from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:
+    from collections import UserDict
     from typing import Any, Callable
 
     from ase.atoms import Atoms
@@ -83,7 +84,7 @@ def phonon_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     calc_defaults = {
@@ -138,7 +139,7 @@ def q2r_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     return run_and_summarize(
@@ -185,7 +186,7 @@ def matdyn_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     return run_and_summarize(
@@ -235,7 +236,7 @@ def phonon_dos_flow(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     default_job_params = {
@@ -351,7 +352,7 @@ def grid_phonon_flow(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
 
@@ -370,7 +371,7 @@ def grid_phonon_flow(
 
     @subflow
     def _grid_phonon_subflow(
-        ph_input_data: dict | None,
+        ph_input_data: UserDict | None,
         ph_init_job_results: RunSchema,
         ph_job: Job,
         nblocks: int = 1,
@@ -420,6 +421,7 @@ def grid_phonon_flow(
 
         return grid_results
 
+    job_params = job_params or {}
     default_job_params = {
         "relax_job": {
             "input_data": {
@@ -522,7 +524,7 @@ def dvscf_q2r_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     return run_and_summarize(
@@ -581,7 +583,7 @@ def postahc_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     return run_and_summarize(

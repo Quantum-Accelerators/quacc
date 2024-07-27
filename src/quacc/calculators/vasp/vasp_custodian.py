@@ -29,6 +29,8 @@ from quacc import QuaccDefault, get_settings
 if TYPE_CHECKING:
     from pathlib import Path
 
+    from src.quacc.settings import QuaccSettings
+
     from quacc.types import DefaultSetting, VaspCustodianKwargs, VaspJobKwargs
 
 
@@ -85,7 +87,7 @@ def run_custodian(
         List of errors from each Custodian job.
     """
     # Adapted from atomate2.vasp.run.run_vasp
-    settings = get_settings()
+    settings: QuaccSettings = get_settings()
 
     # Set defaults
     vasp_parallel_cmd = os.path.expandvars(
@@ -115,6 +117,7 @@ def run_custodian(
         if vasp_custodian_handlers == QuaccDefault
         else vasp_custodian_handlers
     )
+
     vasp_custodian_validators = (
         settings.VASP_CUSTODIAN_VALIDATORS
         if vasp_custodian_validators == QuaccDefault
@@ -142,6 +145,9 @@ def run_custodian(
     }
 
     handlers = []
+    if vasp_custodian_handlers is None:
+        vasp_custodian_handlers = []
+
     for handler_flag in vasp_custodian_handlers:
         if handler_flag not in handlers_dict:
             msg = f"Unknown VASP error handler: {handler_flag}"
@@ -149,6 +155,8 @@ def run_custodian(
         handlers.append(handlers_dict[handler_flag])
 
     validators = []
+    if vasp_custodian_validators is None:
+        vasp_custodian_validators = []
     for validator_flag in vasp_custodian_validators:
         if validator_flag not in validators_dict:
             msg = f"Unknown VASP validator: {validator_flag}"

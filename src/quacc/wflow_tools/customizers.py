@@ -129,14 +129,17 @@ def update_parameters(
 
     if decorator and settings.WORKFLOW_ENGINE == "dask":
         if decorator == "job":
-            decorator = job
+            decorator_func = job
         elif decorator == "flow":
-            decorator = flow
+            decorator_func = flow
         elif decorator == "subflow":
-            decorator = subflow
-
+            decorator_func = subflow
+        else:
+            raise ValueError(
+                f"Invalid decorator name: {decorator}. Valid names are: 'job', 'flow', 'subflow'"
+            )
         func = strip_decorator(func)
-        return decorator(partial(func, **params))
+        return decorator_func(partial(func, **params))
 
     return partial(func, **params)
 
