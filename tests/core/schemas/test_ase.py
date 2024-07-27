@@ -197,7 +197,7 @@ def test_summarize_vib_run(tmp_path, monkeypatch):
     vib = Vibrations(atoms)
     vib.run()
 
-    results = Summarize().vib(vib)
+    results = Summarize().vib_and_thermo(vib)
     assert results["atoms"] == input_atoms
     assert results["natoms"] == len(atoms)
     assert results["parameters_vib"]["delta"] == vib.delta
@@ -237,7 +237,7 @@ def test_summarize_vib_run(tmp_path, monkeypatch):
     vib = Vibrations(atoms)
     vib.run()
 
-    results = Summarize().vib(vib)
+    results = Summarize().vib_and_thermo(vib)
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
     # test document can be jsanitized and decoded
@@ -251,7 +251,7 @@ def test_summarize_vib_run(tmp_path, monkeypatch):
     vib = Vibrations(atoms)
     vib.run()
 
-    results = Summarize().vib(vib)
+    results = Summarize().vib_and_thermo(vib)
     assert results["atoms"] == input_atoms
     assert results["nsites"] == len(atoms)
     assert results["parameters_vib"]["delta"] == vib.delta
@@ -270,7 +270,7 @@ def test_summarize_vib_and_thermo(tmp_path, monkeypatch):
 
     vib = Vibrations(atoms)
     vib.run()
-    results = Summarize().vib(vib, thermo_method="harmonic")
+    results = Summarize().vib_and_thermo(vib, thermo_method="harmonic")
 
     assert len(results["parameters_thermo"]["vib_energies"]) > 1
     assert results["parameters_thermo"]["vib_energies"][-1] == pytest.approx(
@@ -289,7 +289,7 @@ def test_summarize_vib_and_thermo(tmp_path, monkeypatch):
     atoms.calc = EMT()
     vib = Vibrations(atoms)
     vib.run()
-    results = Summarize().vib(vib, thermo_method="ideal_gas")
+    results = Summarize().vib_and_thermo(vib, thermo_method="ideal_gas")
 
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
@@ -328,5 +328,5 @@ def test_errors(tmp_path, monkeypatch):
     atoms.calc = EMT()
     vib = Vibrations(atoms)
     vib.run()
-    with pytest.raises(ValueError, match="Invalid thermo_method"):
-        Summarize(directory=tmp_path).vib(vib, thermo_method="bad")
+    with pytest.raises(ValueError, match="Unsupported thermo_method"):
+        Summarize(directory=tmp_path).vib_and_thermo(vib, thermo_method="bad")

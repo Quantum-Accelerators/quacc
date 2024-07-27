@@ -140,7 +140,9 @@ def freq_job(
     calc = LennardJones(**calc_kwargs)
     vib = Runner(atoms, calc, copy_files=copy_files).run_vib(vib_kwargs=vib_kwargs)
 
-    return Summarize(additional_fields={"name": "LJ Frequency and Thermo"}).vib(
+    return Summarize(
+        additional_fields={"name": "LJ Frequency and Thermo"}
+    ).vib_and_thermo(
         vib,
         thermo_method="ideal_gas",
         energy=energy,

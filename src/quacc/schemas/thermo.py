@@ -69,6 +69,7 @@ class ThermoSummarize:
         """
         self.atoms = atoms
         # Make sure vibrational freqs are imaginary, not negative
+        vib_freqs = vib_freqs.copy()
         for i, f in enumerate(vib_freqs):
             if not isinstance(f, complex) and f < 0:
                 vib_freqs[i] = complex(0 - f * 1j)

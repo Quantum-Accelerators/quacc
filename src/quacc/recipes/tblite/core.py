@@ -149,7 +149,9 @@ def freq_job(
     calc = TBLite(**calc_flags)
 
     vib = Runner(atoms, calc).run_vib(vib_kwargs=vib_kwargs)
-    return Summarize(additional_fields={"name": "TBLite Frequency and Thermo"}).vib(
+    return Summarize(
+        additional_fields={"name": "TBLite Frequency and Thermo"}
+    ).vib_and_thermo(
         vib,
         thermo_method="ideal_gas",
         energy=energy,

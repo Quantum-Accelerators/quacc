@@ -286,12 +286,9 @@ class Summarize:
     def vib(
         self,
         vib_object: Vibrations | VibrationsData,
-        thermo_method: Literal["ideal_gas", "harmonic"] | None = None,
-        energy: float = 0.0,
-        temperature: float = 298.15,
-        pressure: float = 1.0,
+        is_molecule: bool = False,
         store: Store | None | DefaultSetting = QuaccDefault,
-    ) -> VibSchema | VibThermoSchema:
+    ) -> VibSchema:
         """
         Get tabulated results from an ASE Vibrations object and store them in a database-
         friendly format.
@@ -300,11 +297,10 @@ class Summarize:
         ----------
         vib_object
             Instantiated ASE Vibrations object.
-        thermo_method
-            Method to use for thermochemistry calculations. If None, no thermochemistry
-            calculations are performed.
-        energy
-            Potential energy in eV used as the reference point for thermochemistry calculations.
+        is_molecule
+            Whether the Atoms object is a molecule. If True, the vibrational modes are
+            sorted by their absolute value and the 3N-5 or 3N-6 modes are taken. If False,
+            all vibrational modes are taken.
         store
             Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`
 
@@ -338,30 +334,6 @@ class Summarize:
                 "dir_name": directory,
             }
 
-        # Generate thermo data
-        if thermo_method:
-            thermo_summary = ThermoSummarize(
-                atoms,
-                vib_freqs_raw,
-                directory=directory,
-                energy=energy,
-                charge_and_multiplicity=self.charge_and_multiplicity,
-            )
-            if thermo_method == "ideal_gas":
-                thermo_schema = thermo_summary.ideal_gas(
-                    temperature=temperature, pressure=pressure, store=None
-                )
-            elif thermo_method == "harmonic":
-                thermo_schema = thermo_summary.harmonic(
-                    temperature=temperature, pressure=pressure, store=None
-                )
-            else:
-                raise ValueError(
-                    "Invalid thermo_method. Must be 'ideal_gas' or 'harmonic'."
-                )
-        else:
-            thermo_schema = {}
-
         # Convert imaginary modes to negative values for DB storage
         for i, f in enumerate(vib_freqs_raw):
             if np.imag(f) > 0:
@@ -380,7 +352,7 @@ class Summarize:
         if natoms == 1:
             vib_freqs = []
             vib_energies = []
-        elif not atoms.pbc.any() or thermo_method == "ideal_gas":
+        elif is_molecule:
             is_linear = (
                 PointGroupData()
                 .from_molecule(AseAtomsAdaptor().get_molecule(atoms))
@@ -415,9 +387,82 @@ class Summarize:
                 "vib_freqs_raw": vib_freqs_raw,
             }
         }
-        vib_schema = atoms_metadata | inputs | vib_results | self.additional_fields
+        unsorted_task_doc = (
+            atoms_metadata | inputs | vib_results | self.additional_fields
+        )
 
+        return finalize_dict(
+            unsorted_task_doc,
+            directory=directory,
+            gzip_file=self._settings.GZIP_FILES,
+            store=store,
+        )
+
+    def vib_and_thermo(
+        self,
+        vib_object: Vibrations | VibrationsData,
+        thermo_method: Literal["ideal_gas", "harmonic"] = "ideal_gas",
+        energy: float = 0.0,
+        temperature: float = 298.15,
+        pressure: float = 1.0,
+        store: Store | None | DefaultSetting = QuaccDefault,
+    ) -> VibThermoSchema:
+        """
+        Get tabulated results from an ASE Vibrations object and thermochemistry.
+
+        Parameters
+        ----------
+        vib_object
+            Instantiated ASE Vibrations object.
+        thermo_method
+            Method to use for thermochemistry calculations. If None, no thermochemistry
+            calculations are performed.
+        energy
+            Potential energy in eV used as the reference point for thermochemistry calculations.
+        store
+            Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`
+
+        Returns
+        -------
+        VibThermoSchema
+            Dictionary representation of the task document
+        """
+        store = self._settings.STORE if store == QuaccDefault else store
+
+        atoms = (
+            vib_object._atoms
+            if isinstance(vib_object, VibrationsData)
+            else vib_object.atoms
+        )
+        is_molecule = bool(thermo_method == "ideal_gas" or not atoms.pbc.any())
+
+        # Generate vib data
+        vib_schema = self.vib(vib_object, is_molecule=is_molecule, store=None)
+        directory = vib_schema["dir_name"]
+
+        # Generate thermo data
+        thermo_summary = ThermoSummarize(
+            atoms,
+            vib_schema["results"]["vib_freqs_raw"],
+            energy=energy,
+            directory=directory,
+            charge_and_multiplicity=self.charge_and_multiplicity,
+            additional_fields=self.additional_fields,
+        )
+        if thermo_method == "ideal_gas":
+            thermo_schema = thermo_summary.ideal_gas(
+                temperature=temperature, pressure=pressure, store=None
+            )
+        elif thermo_method == "harmonic":
+            thermo_schema = thermo_summary.harmonic(
+                temperature=temperature, pressure=pressure, store=None
+            )
+        else:
+            raise ValueError(f"Unsupported thermo_method: {thermo_method}.")
+
+        # Merge the vib and thermo data
         unsorted_task_doc = recursive_dict_merge(vib_schema, thermo_schema)
+
         return finalize_dict(
             unsorted_task_doc,
             directory=directory,

@@ -178,7 +178,7 @@ def run_and_summarize_vib_and_thermo(
 
     calc = Vasp(atoms, preset=preset, **calc_flags)
     vib = Runner(atoms, calc, copy_files=copy_files).run_vib(vib_kwargs=vib_kwargs)
-    return Summarize(additional_fields=additional_fields).vib(
+    return Summarize(additional_fields=additional_fields).vib_and_thermo(
         vib,
         thermo_method=thermo_method,
         energy=energy,

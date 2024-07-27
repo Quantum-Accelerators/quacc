@@ -184,7 +184,7 @@ def freq_job(
     return Summarize(
         directory=summary["dir_name"],
         additional_fields={"name": "ASE Vibrations and Thermo Analysis"},
-    ).vib(
+    ).vib_and_thermo(
         vib,
         thermo_method="ideal_gas",
         energy=summary["results"]["energy"],
