@@ -170,6 +170,24 @@ def test_run_neb2(setup_test_environment, tmp_path):
         run_neb(images, optimizer=optimizer_class, neb_kwargs=neb_kwargs)
 
 
+def test_run_neb_raises_value_error_for_trajectory_kwarg():
+    images = [Atoms('H2', positions=[[0, 0, 0], [0, 0, 0.74]])]
+
+    for image in images:
+        image.calc = EMT()
+
+    optimizer_kwargs = {
+        'trajectory': 'some_traj.traj'
+    }
+
+    with pytest.raises(ValueError, match="Quacc does not support setting the `trajectory` kwarg."):
+        run_neb(
+            images=images,
+            optimizer=NEBOptimizer,
+            optimizer_kwargs=optimizer_kwargs
+        )
+
+
 def test_base_runner(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
