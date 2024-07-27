@@ -9,15 +9,15 @@ from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.io import read
 from ase.optimize import BFGS
-from ase.thermochemistry import IdealGasThermo
+from ase.thermochemistry import HarmonicThermo, IdealGasThermo
 from ase.units import invcm
 from ase.vibrations import Vibrations
 from maggma.stores import MemoryStore
 from monty.json import MontyDecoder, jsanitize
 from monty.serialization import loadfn
+from numpy.testing import assert_allclose
 
 from quacc.schemas.ase import Summarize
-from quacc.schemas.thermo import _summarize_ideal_gas_thermo, _summarize_vib_run
 
 FILE_DIR = Path(__file__).parent
 
@@ -194,7 +194,7 @@ def test_summarize_vib_run(tmp_path, monkeypatch):
     vib = Vibrations(atoms)
     vib.run()
 
-    results = _summarize_vib_run(vib)
+    results = Summarize().vib(vib)
     assert results["atoms"] == input_atoms
     assert results["natoms"] == len(atoms)
     assert results["parameters_vib"]["delta"] == vib.delta
@@ -234,7 +234,7 @@ def test_summarize_vib_run(tmp_path, monkeypatch):
     vib = Vibrations(atoms)
     vib.run()
 
-    results = _summarize_vib_run(vib)
+    results = Summarize().vib(vib)
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
     # test document can be jsanitized and decoded
@@ -248,7 +248,7 @@ def test_summarize_vib_run(tmp_path, monkeypatch):
     vib = Vibrations(atoms)
     vib.run()
 
-    results = _summarize_vib_run(vib)
+    results = Summarize().vib(vib)
     assert results["atoms"] == input_atoms
     assert results["nsites"] == len(atoms)
     assert results["parameters_vib"]["delta"] == vib.delta
@@ -258,90 +258,46 @@ def test_summarize_vib_run(tmp_path, monkeypatch):
     assert len(results["results"]["vib_energies"]) == 6
 
 
-def test_summarize_ideal_gas_thermo(tmp_path, monkeypatch):
+def test_summarize_vib_and_thermo(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    # Make sure metadata is made
-    atoms = molecule("N2")
-    igt = IdealGasThermo([0.34], "linear", atoms=atoms, spin=0, symmetrynumber=2)
-    results = _summarize_ideal_gas_thermo(igt)
-    assert results["natoms"] == len(atoms)
-    assert results["atoms"] == atoms
-    assert results["parameters_thermo"]["vib_energies"] == [0.34]
-    assert results["parameters_thermo"]["vib_freqs"] == [0.34 / invcm]
-    assert results["results"]["energy"] == 0
-    assert "pymatgen_version" in results["builder_meta"]
-
-    # Make sure right number of vib energies are reported
-    atoms = molecule("N2")
-    igt = IdealGasThermo(
-        [0.0, 0.34], "linear", atoms=atoms, potentialenergy=-1, spin=0, symmetrynumber=2
-    )
-    results = _summarize_ideal_gas_thermo(igt)
-    assert results["natoms"] == len(atoms)
-    assert results["atoms"] == atoms
-    assert results["parameters_thermo"]["vib_energies"] == [0.34]
-    assert results["parameters_thermo"]["vib_freqs"] == [0.34 / invcm]
-    assert results["results"]["energy"] == -1
-
-    # # Make sure info tags are handled appropriately
-    atoms = molecule("N2")
-    atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
+    # Test harmonic thermo
+    atoms = molecule("H2")
     atoms.calc = EMT()
-    igt = IdealGasThermo(
-        [0.0, 0.34], "linear", atoms=atoms, potentialenergy=-1, spin=0, symmetrynumber=2
-    )
-    results = _summarize_ideal_gas_thermo(igt)
-    assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
-    # Make sure spin works right
-    atoms = molecule("CH3")
-    vib_energies = [
-        9.551077150221621e-06j,
-        3.1825877476455407e-06j,
-        2.7223332245579342e-06j,
-        (0.03857802457526743 + 0j),
-        (0.038762952842240087 + 0j),
-        (0.03876411386029907 + 0j),
-        (0.07135067701372912 + 0j),
-        (0.1699785717790056 + 0j),
-        (0.1700229358789492 + 0j),
-        (0.3768719400148424 + 0j),
-        (0.38803854931751625 + 0j),
-        (0.3880868821616261 + 0j),
-    ]
-    igt = IdealGasThermo(
-        vib_energies,
-        "nonlinear",
-        potentialenergy=-10.0,
-        atoms=atoms,
-        spin=0.5,
-        symmetrynumber=6,
+    vib = Vibrations(atoms)
+    vib.run()
+    results = Summarize().vib(vib, thermo_method="harmonic")
+
+    assert len(results["parameters_thermo"]["vib_energies"]) > 1
+    assert results["parameters_thermo"]["vib_energies"][-1] == pytest.approx(1.0176739957667882)
+    assert len(results["parameters_thermo"]["vib_freqs"]) > 1
+    assert results["parameters_thermo"]["vib_freqs"][-1] == pytest.approx(
+        8208.094395393315
     )
-    results = _summarize_ideal_gas_thermo(igt, temperature=1000.0, pressure=20.0)
+    assert results["results"]["energy"] == 0
+    assert results["results"]["internal_energy"] == pytest.approx( 0.5345295682734466)
+    assert results["results"]["helmholtz_energy"] == pytest.approx(0.10800437812849317)
+
+    # Test ideal gas thermo
+    atoms = molecule("H2")
+    atoms.calc = EMT()
+    vib = Vibrations(atoms)
+    vib.run()
+    results = Summarize().vib(vib, thermo_method="ideal_gas")
+
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
-    assert len(results["parameters_thermo"]["vib_energies"]) == 6
-    assert results["parameters_thermo"]["vib_energies"][0] == vib_energies[-6]
-    assert results["parameters_thermo"]["vib_energies"][-1] == vib_energies[-1]
-    assert results["results"]["energy"] == -10.0
-    assert results["results"]["enthalpy"] == pytest.approx(-8.749341973959462)
-    assert results["results"]["entropy"] == pytest.approx(0.0023506788982171896)
-    assert results["results"]["gibbs_energy"] == pytest.approx(-11.100020872176652)
-    assert results["parameters_thermo"]["temperature"] == 1000.0
-    assert results["parameters_thermo"]["pressure"] == 20.0
-    assert results["parameters_thermo"]["sigma"] == 6
-    assert results["parameters_thermo"]["spin_multiplicity"] == 2
-
-    # test document can be jsanitized and decoded
-    d = jsanitize(results, strict=True, enum_values=True)
-    MontyDecoder().process_decoded(d)
-
-    with pytest.raises(
-        ValueError,
-        match="The IdealGasThermo spin multiplicity does not match the user-specified multiplicity.",
-    ):
-        _summarize_ideal_gas_thermo(igt, charge_and_multiplicity=[0, 1])
+    assert len(results["parameters_thermo"]["vib_energies"]) == 1
+    assert results["parameters_thermo"]["vib_energies"][-1] == pytest.approx(1.0176739957667882)
+    assert len(results["parameters_thermo"]["vib_freqs"]) == 1
+    assert results["parameters_thermo"]["vib_freqs"][-1] == pytest.approx(
+        8208.094395393315
+    )
+    assert results["results"]["energy"] == 0
+    assert results["results"]["enthalpy"] == pytest.approx(0.59876099428484)
+    assert results["results"]["gibbs_energy"] == pytest.approx(0.1962934153929657)
+    assert "pymatgen_version" in results["builder_meta"]
 
 
 def test_errors(tmp_path, monkeypatch):

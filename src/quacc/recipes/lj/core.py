@@ -12,9 +12,7 @@ from ase.calculators.lj import LennardJones
 
 from quacc import job
 from quacc.runners.ase import Runner
-from quacc.runners.thermo import ThermoRunner
 from quacc.schemas.ase import Summarize
-from quacc.schemas.thermo import summarize_vib_and_thermo
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
@@ -141,17 +139,12 @@ def freq_job(
     vib_kwargs = vib_kwargs or {}
 
     calc = LennardJones(**calc_kwargs)
-    vibrations = Runner(atoms, calc, copy_files=copy_files).run_vib(
-        vib_kwargs=vib_kwargs
-    )
-    igt = ThermoRunner(
-        atoms, vibrations.get_frequencies(), energy=energy
-    ).run_ideal_gas()
+    vib = Runner(atoms, calc, copy_files=copy_files).run_vib(vib_kwargs=vib_kwargs)
 
-    return summarize_vib_and_thermo(
-        vibrations,
-        igt,
+    return Summarize(additional_fields={"name": "LJ Frequency and Thermo"}).vib(
+        vib,
+        thermo_method="ideal_gas",
+        energy=energy,
         temperature=temperature,
         pressure=pressure,
-        additional_fields={"name": "LJ Frequency and Thermo"},
     )

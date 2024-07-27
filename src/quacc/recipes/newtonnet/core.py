@@ -10,7 +10,6 @@ from monty.dev import requires
 
 from quacc import get_settings, job
 from quacc.runners.ase import Runner
-from quacc.runners.thermo import ThermoRunner
 from quacc.schemas.ase import Summarize
 from quacc.schemas.thermo import summarize_vib_and_thermo
 from quacc.utils.dicts import recursive_dict_merge
@@ -183,16 +182,14 @@ def freq_job(
     )
 
     vib = VibrationsData(final_atoms, summary["results"]["hessian"])
-    igt = ThermoRunner(
-        final_atoms, vib.get_frequencies(), energy=summary["results"]["energy"]
-    ).run_ideal_gas()
-
-    return summarize_vib_and_thermo(
+    return Summarize(
+        additional_fields={"name": "ASE Vibrations and Thermo Analysis"}
+    ).vib(
         vib,
-        igt,
+        thermo_method="ideal_gas",
+        energy=summary["results"]["energy"],
         temperature=temperature,
         pressure=pressure,
-        additional_fields={"name": "ASE Vibrations and Thermo Analysis"},
     )
 
 

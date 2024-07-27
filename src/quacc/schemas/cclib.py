@@ -164,7 +164,7 @@ class CclibSummarize:
         )
         return finalize_dict(
             unsorted_task_doc,
-            directory,
+            directory=directory,
             gzip_file=self._settings.GZIP_FILES,
             store=store,
         )
@@ -213,7 +213,7 @@ class CclibSummarize:
         unsorted_task_doc = recursive_dict_merge(cclib_summary, opt_run_summary)
         return finalize_dict(
             unsorted_task_doc,
-            directory,
+            directory=directory,
             gzip_file=self._settings.GZIP_FILES,
             store=store,
         )

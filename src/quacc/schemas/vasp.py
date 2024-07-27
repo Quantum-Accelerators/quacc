@@ -205,7 +205,7 @@ class VaspSummarize:
         )
         return finalize_dict(
             unsorted_task_doc,
-            directory,
+            directory=directory,
             gzip_file=self._settings.GZIP_FILES,
             store=store,
         )
@@ -246,7 +246,7 @@ class VaspSummarize:
         unsorted_task_doc = recursive_dict_merge(vasp_summary, opt_run_summary)
         return finalize_dict(
             unsorted_task_doc,
-            directory,
+            directory=directory,
             gzip_file=self._settings.GZIP_FILES,
             store=store,
         )

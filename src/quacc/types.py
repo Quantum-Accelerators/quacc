@@ -525,7 +525,7 @@ if TYPE_CHECKING:
         results: ThermoResults
 
     class VibThermoSchema(VibSchema, ThermoSchema):
-        """Schema for [quacc.schemas.thermo.summarize_vib_and_thermo][]"""
+        """Combined Vibrations and Thermo schema"""
 
     # ----------- Schema (phonons) type hints -----------
 

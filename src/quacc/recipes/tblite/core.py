@@ -9,7 +9,6 @@ from monty.dev import requires
 
 from quacc import job
 from quacc.runners.ase import Runner
-from quacc.runners.thermo import ThermoRunner
 from quacc.schemas.ase import Summarize
 from quacc.schemas.thermo import summarize_vib_and_thermo
 from quacc.utils.dicts import recursive_dict_merge
@@ -151,15 +150,11 @@ def freq_job(
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
     calc = TBLite(**calc_flags)
 
-    vibrations = Runner(atoms, calc).run_vib(vib_kwargs=vib_kwargs)
-    igt = ThermoRunner(
-        atoms, vibrations.get_frequencies(), energy=energy
-    ).run_ideal_gas()
-
-    return summarize_vib_and_thermo(
-        vibrations,
-        igt,
+    vib = Runner(atoms, calc).run_vib(vib_kwargs=vib_kwargs)
+    return Summarize(additional_fields={"name": "TBLite Frequency and Thermo"}).vib(
+        vib,
+        thermo_method="ideal_gas",
+        energy=energy,
         temperature=temperature,
         pressure=pressure,
-        additional_fields={"name": "TBLite Frequency and Thermo"},
     )
