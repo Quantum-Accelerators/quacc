@@ -147,7 +147,7 @@ def mp_relax_job(
     Returns
     -------
     VaspSchema
-        Dictionary of results.
+        Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
     """
     if version == "legacy":
         vasp_maker = MPGGARelaxMaker if method.lower() == "gga" else MPMetaGGARelaxMaker
@@ -199,7 +199,8 @@ def mp_static_job(
     Returns
     -------
     VaspSchema
-        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
+        Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
+        See the type-hint for the data structure.
     """
     if version == "legacy":
         vasp_maker = (

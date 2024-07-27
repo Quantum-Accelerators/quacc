@@ -63,12 +63,9 @@ def summarize_phonopy(
     settings = get_settings()
     store = settings.STORE if store == QuaccDefault else store
 
-    uri = get_uri(directory)
-    directory = ":".join(uri.split(":")[1:])
-
     inputs = {
         "parameters": parameters,
-        "nid": uri.split(":")[0],
+        "nid": get_uri(directory).split(":")[0],
         "dir_name": directory,
         "phonopy_metadata": {"version": phonon.version},
         "quacc_version": __version__,
@@ -86,5 +83,8 @@ def summarize_phonopy(
     atoms_metadata = atoms_to_metadata(input_atoms)
     unsorted_task_doc = atoms_metadata | inputs | results | additional_fields
     return finalize_dict(
-        unsorted_task_doc, directory, gzip_file=settings.GZIP_FILES, store=store
+        unsorted_task_doc,
+        directory=directory,
+        gzip_file=settings.GZIP_FILES,
+        store=store,
     )

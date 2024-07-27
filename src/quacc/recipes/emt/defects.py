@@ -95,8 +95,8 @@ def bulk_to_defects_flow(
     Returns
     -------
     list[RunSchema | OptSchema]
-        List of dictionary of results from [quacc.schemas.ase.summarize_run][]
-        or [quacc.schemas.ase.summarize_opt_run][].
+        List of dictionary of results from [quacc.schemas.ase.Summarize.run][]
+        or [quacc.schemas.ase.Summarize.opt][].
         See the return type-hint for the data structure.
     """
     relax_job_, static_job_ = customize_funcs(
