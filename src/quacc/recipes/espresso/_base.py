@@ -19,7 +19,7 @@ from quacc.calculators.espresso.utils import (
     remove_conflicting_kpts_kspacing,
 )
 from quacc.runners.ase import Runner
-from quacc.schemas.ase import summarize_opt_run, summarize_run
+from quacc.schemas.ase import Summarize
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
@@ -70,7 +70,7 @@ def run_and_summarize(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][]
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][]
     """
     atoms = Atoms() if atoms is None else atoms
     calc = prepare_calc(
@@ -94,8 +94,8 @@ def run_and_summarize(
         geom_file=geom_file
     )
 
-    return summarize_run(
-        final_atoms, atoms, move_magmoms=True, additional_fields=additional_fields
+    return Summarize(move_magmoms=True, additional_fields=additional_fields).run(
+        final_atoms, atoms
     )
 
 
@@ -148,7 +148,7 @@ def run_and_summarize_opt(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][]
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][]
     """
     atoms = Atoms() if atoms is None else atoms
     calc = prepare_calc(
@@ -170,9 +170,7 @@ def run_and_summarize_opt(
 
     dyn = Runner(atoms, calc, copy_files=updated_copy_files).run_opt(**opt_flags)
 
-    return summarize_opt_run(
-        dyn, move_magmoms=True, additional_fields=additional_fields
-    )
+    return Summarize(move_magmoms=True, additional_fields=additional_fields).opt(dyn)
 
 
 def prepare_calc(

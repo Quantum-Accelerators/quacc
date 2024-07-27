@@ -138,15 +138,24 @@ def get_spin_multiplicity_attribute(atoms: Atoms) -> int | None:
     int | None
         Spin multiplicity of the Atoms object
     """
-    return (
-        atoms.spin_multiplicity  # type: ignore[attr-defined]
-        if getattr(atoms, "spin_multiplicity", None)
-        else (
-            round(np.abs(atoms.get_initial_magnetic_moments().sum()) + 1)
-            if atoms.has("initial_magmoms")
-            else None
-        )
-    )
+    if getattr(atoms, "spin_multiplicity", None):
+        return atoms.spin_multiplicity  # type: ignore[attr-defined]
+    elif (
+        getattr(atoms, "calc", None) is not None
+        and getattr(atoms.calc, "results", None) is not None
+        and atoms.calc.results.get("magmom", None) is not None
+    ):
+        return round(abs(atoms.calc.results["magmom"])) + 1
+    elif (
+        getattr(atoms, "calc", None) is not None
+        and getattr(atoms.calc, "results", None) is not None
+        and atoms.calc.results.get("magmoms", None) is not None
+    ):
+        return round(np.abs(atoms.calc.results["magmoms"].sum())) + 1
+    elif atoms.has("initial_magmoms"):
+        return round(np.abs(atoms.get_initial_magnetic_moments().sum())) + 1
+    else:
+        return None
 
 
 def check_charge_and_spin(
@@ -154,36 +163,8 @@ def check_charge_and_spin(
 ) -> tuple[int, int]:
     """
     Check the validity of a given `charge` and `multiplicity`. If they are `None`, then
-    set the charge and/or spin multiplicity of a molecule using the following routine,
+    set the charge and/or spin multiplicity of a molecule using the information available,
     raising a `ValueError` if there is an incompatibility.
-
-    Charges:
-
-    1. If `charge` is specified, that is the charge.
-
-    2. If `atoms.charge` is present, that is the charge.
-
-    3. If `atoms.has("initial_charges")`, then
-    `atoms.get_initial_charges.sum()` is the charge.
-
-    4. If `spin_multiplicity` is set, set the charge to the smallest physically
-    possible value.
-
-    5. Otherwise, set to 0.
-
-    Spin multiplicity:
-
-    1. If `spin_multiplicity` is specified, that is the spin multiplicity.
-
-    2. If `atoms.spin_multiplicity` is present, that is the spin multiplicity.
-
-    3. If `atoms.has("initial_magmoms")`, then
-    `np.abs(atoms.get_initial_magnetic_moments().sum())+1` is the spin
-    multiplicity.
-
-    4. If none of the above, use Pymatgen to identify the lowest physically
-    possible spin multiplicity given the number of electrons and the charge, if
-    set.
 
     Parameters
     ----------

@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from quacc import job
 from quacc.recipes.mlp._base import pick_calculator
 from quacc.runners.ase import Runner
-from quacc.schemas.ase import summarize_opt_run, summarize_run
+from quacc.schemas.ase import Summarize
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
@@ -45,15 +45,15 @@ def static_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     calc = pick_calculator(method, **calc_kwargs)
     if properties is None:
         properties = ["energy", "forces"]
     final_atoms = Runner(atoms, calc).run_calc(properties=properties)
-    return summarize_run(
-        final_atoms, atoms, additional_fields={"name": f"{method} Static"}
+    return Summarize(additional_fields={"name": f"{method} Static"}).run(
+        final_atoms, atoms
     )
 
 
@@ -88,7 +88,7 @@ def relax_job(
     Returns
     -------
     OptSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.opt][].
         See the type-hint for the data structure.
     """
     opt_defaults = {"fmax": 0.05}
@@ -98,4 +98,4 @@ def relax_job(
 
     dyn = Runner(atoms, calc).run_opt(relax_cell=relax_cell, **opt_flags)
 
-    return summarize_opt_run(dyn, additional_fields={"name": f"{method} Relax"})
+    return Summarize(additional_fields={"name": f"{method} Relax"}).opt(dyn)

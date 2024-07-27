@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from ase.calculators.psi4 import Psi4
 
 from quacc.runners.ase import Runner
-from quacc.schemas.ase import summarize_run
+from quacc.schemas.ase import Summarize
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
@@ -52,16 +52,14 @@ def run_and_summarize(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][]
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][]
     """
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
     calc = Psi4(**calc_flags)
     final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
 
-    return summarize_run(
-        final_atoms,
-        atoms,
+    return Summarize(
         charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields=additional_fields,
-    )
+    ).run(final_atoms, atoms)
