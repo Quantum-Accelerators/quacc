@@ -27,18 +27,18 @@ if has_geodesic_interpolate:
     from quacc.runners.ase import _geodesic_interpolate_wrapper
 
 if TYPE_CHECKING:
-    from typing import Any, Literal
+    from typing import Any, Literal, TypedDict
 
     from ase.atoms import Atoms
     from numpy.typing import NDArray
 
     from quacc.types import (
-        NebSchema,
-        NebTsSchema,
         NewtonNetIRCSchema,
         NewtonNetQuasiIRCSchema,
         NewtonNetTSSchema,
         OptParams,
+        NebSchema,
+        NebTsSchema,
     )
 
 
@@ -306,7 +306,7 @@ def neb_job(
         A dictionary containing the following keys:
             - 'relax_reactant': Summary of the relaxed reactant structure ([quacc.schemas.ase.summarize_opt_run][]).
             - 'relax_product': Summary of the relaxed product structure ([quacc.schemas.ase.summarize_opt_run][]).
-            - 'geodesic_results': The interpolated images between reactant and product.
+            - 'initial_images': The interpolated images between reactant and product.
             - 'neb_results': Summary of the NEB optimization ([quacc.schemas.ase.summarize_neb_run][]).
     """
     relax_job_kwargs = relax_job_kwargs or {}
@@ -358,7 +358,7 @@ def neb_job(
     return {
         "relax_reactant": relax_summary_r,
         "relax_product": relax_summary_p,
-        "geodesic_results": images,
+        "initial_images": images,
         "neb_results": summarize_neb_run(
             dyn,
             additional_fields={
@@ -417,7 +417,7 @@ def neb_ts_job(
         A dictionary containing the following keys:
             - 'relax_reactant': Summary of the relaxed reactant structure ([quacc.schemas.ase.summarize_opt_run][]).
             - 'relax_product': Summary of the relaxed product structure ([quacc.schemas.ase.summarize_opt_run][]).
-            - 'geodesic_results': The interpolated images between reactant and product.
+            - 'initial_images': The interpolated images between reactant and product.
             - 'neb_results': Summary of the NEB optimization ([quacc.schemas.ase.summarize_neb_run][]).
             - 'ts_results': Summary of the transition state optimization ([quacc.types.NewtonNetTSSchema]).
     """
@@ -454,7 +454,7 @@ def neb_ts_job(
 
     traj = neb_results["neb_results"]["trajectory"]
     traj_results = neb_results["neb_results"]["trajectory_results"]
-    n_images = len(neb_results["geodesic_results"])
+    n_images = len(neb_results["initial_images"])
 
     ts_index = np.argmax([i["energy"] for i in traj_results[-(n_images - 1) : -1]]) + 1
     ts_atoms = traj[-(n_images) + ts_index]
@@ -506,7 +506,7 @@ def geodesic_job(
         A dictionary containing the following keys:
             - 'relax_reactant': Summary of the relaxed reactant structure.
             - 'relax_product': Summary of the relaxed product structure.
-            - 'geodesic_results': The interpolated images between reactant and product.
+            - 'initial_images': The interpolated images between reactant and product.
             - 'highest_e_atoms': ASE atoms object for the highest energy structure for the geodesic path
     """
     relax_job_kwargs = relax_job_kwargs or {}
@@ -552,7 +552,7 @@ def geodesic_job(
     return {
         "relax_reactant": relax_summary_r,
         "relax_product": relax_summary_p,
-        "geodesic_results": images,
+        "initial_images": images,
         "highest_e_atoms": highest_e_atoms,
     }
 
@@ -599,7 +599,7 @@ def geodesic_ts_job(
         A dictionary containing the following keys:
             - 'relax_reactant': Summary of the relaxed reactant structure.
             - 'relax_product': Summary of the relaxed product structure.
-            - 'geodesic_results': The interpolated images between reactant and product.
+            - 'initial_images': The interpolated images between reactant and product.
             - 'neb_results': Summary of the NEB optimization.
             - 'ts_results': Summary of the transition state optimization.
     """
@@ -649,7 +649,7 @@ def geodesic_ts_job(
     return {
         "relax_reactant": relax_summary_r,
         "relax_product": relax_summary_p,
-        "geodesic_results": images,
+        "initial_images": images,
         "ts_results": output,
     }
 
