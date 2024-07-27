@@ -186,7 +186,7 @@ def freq_job(
         additional_fields={"name": "ASE Vibrations and Thermo Analysis"},
     ).vib_and_thermo(
         vib,
-        thermo_method="ideal_gas",
+        "ideal_gas",
         energy=summary["results"]["energy"],
         temperature=temperature,
         pressure=pressure,

@@ -152,9 +152,5 @@ def freq_job(
     return Summarize(
         additional_fields={"name": "TBLite Frequency and Thermo"}
     ).vib_and_thermo(
-        vib,
-        thermo_method="ideal_gas",
-        energy=energy,
-        temperature=temperature,
-        pressure=pressure,
+        vib, "ideal_gas", energy=energy, temperature=temperature, pressure=pressure
     )

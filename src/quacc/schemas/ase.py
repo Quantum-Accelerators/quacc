@@ -401,7 +401,7 @@ class Summarize:
     def vib_and_thermo(
         self,
         vib_object: Vibrations | VibrationsData,
-        thermo_method: Literal["ideal_gas", "harmonic"] = "ideal_gas",
+        thermo_method: Literal["ideal_gas", "harmonic"],
         energy: float = 0.0,
         temperature: float = 298.15,
         pressure: float = 1.0,
