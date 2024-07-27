@@ -33,13 +33,13 @@ if TYPE_CHECKING:
     from numpy.typing import NDArray
 
     from quacc.types import (
+        GeodesicSchema,
+        GeodesicTsSchema,
         NebSchema,
         NebTsSchema,
         NewtonNetIRCSchema,
         NewtonNetQuasiIRCSchema,
         NewtonNetTSSchema,
-        GeodesicSchema,
-        GeodesicTsSchema,
         OptParams,
     )
 
