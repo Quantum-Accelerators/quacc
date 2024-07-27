@@ -138,7 +138,6 @@ def run_and_summarize_vib_and_thermo(
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     vib_kwargs: dict[str, Any] | None = None,
-    check_mp_compatibility: bool = False,
     additional_fields: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> VibThermoSchema:
