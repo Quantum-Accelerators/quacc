@@ -527,7 +527,7 @@ def run_neb(
 def geodesic_interpolate_wrapper(
     reactant: Atoms,
     product: Atoms,
-    n_images: int = 20,
+    n_images: int = 10,
     perform_sweep: bool | Literal["auto"] = "auto",
     redestribute_tol: float = 1e-2,
     smoother_tol: float = 2e-3,
@@ -548,7 +548,7 @@ def geodesic_interpolate_wrapper(
     product
         The ASE Atoms object representing the final geometry.
     n_images
-        Number of images for interpolation. Default is 20.
+        Number of images for interpolation. Default is 10.
     perform_sweep
         Whether to sweep across the path optimizing one image at a time.
         Default is to perform sweeping updates if there are more than 35 atoms.
