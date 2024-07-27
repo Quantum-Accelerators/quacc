@@ -304,8 +304,8 @@ def neb_job(
     -------
     NebSchema
         A dictionary containing the following keys:
-            - 'relax_reactant': Summary of the relaxed reactant structure ([quacc.schemas.ase.summarize_opt_run][]).
-            - 'relax_product': Summary of the relaxed product structure ([quacc.schemas.ase.summarize_opt_run][]).
+            - 'relax_reactant': Summary of the relaxed reactant structure ([quacc.schemas.ase.Summarize.opt][]).
+            - 'relax_product': Summary of the relaxed product structure ([quacc.schemas.ase.Summarize.opt][]).
             - 'initial_images': The interpolated images between reactant and product.
             - 'neb_results': Summary of the NEB optimization ([quacc.schemas.ase.summarize_neb_run][]).
     """
