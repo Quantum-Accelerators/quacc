@@ -6,7 +6,7 @@ import logging
 import sys
 from importlib.util import find_spec
 from shutil import copy, copytree
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Callable, Any
 
 import numpy as np
 from ase.atoms import Atoms
@@ -160,7 +160,7 @@ class Runner(BaseRunner):
         optimizer: Dynamics = BFGS,
         optimizer_kwargs: dict[str, Any] | None = None,
         store_intermediate_results: bool = False,
-        fn_hook: callable | None = None,
+        fn_hook: Callable | None = None,
         run_kwargs: dict[str, Any] | None = None,
     ) -> Dynamics:
         """
