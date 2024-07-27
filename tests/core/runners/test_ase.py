@@ -27,7 +27,7 @@ from ase.optimize.sciopt import SciPyFminBFGS
 
 from quacc import change_settings, get_settings
 from quacc.runners._base import BaseRunner
-from quacc.runners.ase import Runner, _geodesic_interpolate_wrapper, run_neb
+from quacc.runners.ase import Runner, geodesic_interpolate_wrapper, run_neb
 from quacc.schemas.ase import summarize_neb_run
 
 has_geodesic_interpolate = bool(find_spec("geodesic_interpolate"))
@@ -99,7 +99,7 @@ def test_geodesic_interpolate_wrapper(setup_test_environment):
     reactant, product = setup_test_environment
 
     # Execute the geodesic_interpolate_wrapper function
-    smoother_path = _geodesic_interpolate_wrapper(
+    smoother_path = geodesic_interpolate_wrapper(
         reactant,
         product,
         n_images=20,
@@ -121,7 +121,7 @@ def test_geodesic_interpolate_wrapper(setup_test_environment):
 )
 def test_geodesic_interpolate_wrapper_large_system(setup_test_environment):
     # Test with large system to trigger sweeping updates
-    smoother_path = _geodesic_interpolate_wrapper(molecule("C60"), molecule("C60"))
+    smoother_path = geodesic_interpolate_wrapper(molecule("C60"), molecule("C60"))
     assert len(smoother_path) == 20
 
 
