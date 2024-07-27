@@ -456,7 +456,10 @@ def neb_ts_job(
     traj_results = neb_results["neb_results"]["trajectory_results"]
     n_images = len(neb_results["initial_images"])
 
-    ts_index = np.argmax([result["energy"] for result in traj_results[-(n_images - 1) : -1]]) + 1
+    ts_index = (
+        np.argmax([result["energy"] for result in traj_results[-(n_images - 1) : -1]])
+        + 1
+    )
     ts_atoms = traj[-(n_images) + ts_index]
 
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
