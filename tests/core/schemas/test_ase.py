@@ -251,7 +251,7 @@ def test_summarize_vib_run(tmp_path, monkeypatch):
     vib = Vibrations(atoms)
     vib.run()
 
-    results = Summarize().vib_and_thermo(vib)
+    results = Summarize().vib_and_thermo(vib, thermo_method="harmonic")
     assert results["atoms"] == input_atoms
     assert results["nsites"] == len(atoms)
     assert results["parameters_vib"]["delta"] == vib.delta

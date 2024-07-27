@@ -434,7 +434,7 @@ class Summarize:
             if isinstance(vib_object, VibrationsData)
             else vib_object.atoms
         )
-        is_molecule = bool(thermo_method == "ideal_gas" or not atoms.pbc.any())
+        is_molecule = bool(thermo_method == "ideal_gas")
 
         # Generate vib data
         vib_schema = self.vib(vib_object, is_molecule=is_molecule, store=None)
