@@ -352,6 +352,8 @@ def summarize_vib_and_thermo(
 
 def summarize_neb_run(
     dyn: Optimizer,
+    n_images: int,
+    n_iter_return: int = -1,
     trajectory: Trajectory | list[Atoms] | None = None,
     charge_and_multiplicity: tuple[int, int] | None = None,
     additional_fields: dict[str, Any] | None = None,
@@ -386,14 +388,11 @@ def summarize_neb_run(
     if not trajectory:
         trajectory = read(dyn.trajectory.filename, index=":")
 
-    n_images = additional_fields["interpolate_flags"]["n_images"]
-
-    n = additional_fields.get("n_iter_return", -1)
-    if n == -1:
+    if n_iter_return == -1:
         trajectory = trajectory[-(n_images):]
     else:
         trajectory = _get_nth_iteration(
-            trajectory, int(len(trajectory) / n_images), n_images, n
+            trajectory, int(len(trajectory) / n_images), n_images, n_iter_return
         )
     trajectory_results = [atoms.calc.results for atoms in trajectory]
     ts_index = (
