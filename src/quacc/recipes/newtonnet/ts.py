@@ -361,8 +361,8 @@ def neb_job(
         "initial_images": images,
         "neb_results": summarize_neb_run(
             dyn,
+            n_images=len(images),
             additional_fields={
-                "n_iter_return": -1,
                 "neb_flags": neb_flags,
                 "calc_flags": calc_flags,
                 "interpolate_flags": interpolate_flags,
