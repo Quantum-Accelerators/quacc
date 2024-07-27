@@ -170,8 +170,7 @@ def run_and_summarize_vib_and_thermo(
     Returns
     -------
     VibThermoSchema
-        Dictionary of results, specified in [quacc.schemas.ase.summarize_vib_and_thermo][].
-        See the type-hint for the data structure.
+        Dictionary of results
     """
 
     # Set defaults

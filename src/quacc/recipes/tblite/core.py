@@ -140,8 +140,7 @@ def freq_job(
     Returns
     -------
     VibThermoSchema
-        Dictionary of results from [quacc.schemas.thermo.summarize_vib_and_thermo][].
-        See the type-hint for the data structure.
+        Dictionary of results
     """
     vib_kwargs = vib_kwargs or {}
 
