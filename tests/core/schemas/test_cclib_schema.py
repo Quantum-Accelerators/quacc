@@ -15,7 +15,12 @@ from maggma.stores import MemoryStore
 from monty.json import MontyDecoder, jsanitize
 
 from quacc.calculators.vasp import Vasp
-from quacc.schemas.cclib import CclibSummarize, cclib_calculate, make_base_cclib_schema
+from quacc.schemas.cclib import (
+    CclibSummarize,
+    cclib_calculate,
+    get_homos_lumos,
+    make_base_cclib_schema,
+)
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.propagate = True
@@ -243,3 +248,6 @@ def test_monkeypatches(tmp_path, monkeypatch, cclib_obj, caplog):
             )
             is None
         )
+
+def test_get_homos_lumos():
+    assert get_homos_lumos([[1.0]],[0]) == ([1.0],None,None)

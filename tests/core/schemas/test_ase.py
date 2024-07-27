@@ -138,6 +138,9 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
         == results["trajectory_results"][-1]["energy"]
     )
 
+    # Test custom traj
+    assert Summarize().opt(dyn,trajectory=traj,check_convergence=False)["trajectory"] == traj
+
     # Test DB
     atoms = bulk("Cu") * (2, 2, 1)
     atoms[0].position += [0.1, 0.1, 0.1]
@@ -317,3 +320,7 @@ def test_errors(tmp_path, monkeypatch):
         ValueError, match="ASE Atoms object's calculator has no results."
     ):
         Summarize().run(atoms, initial_atoms)
+
+    vib = Vibrations(atoms)
+    with pytest.raises(ValueError,match="Invalid thermo_method"):
+        Summarize().vib(vib,thermo_method="bad")

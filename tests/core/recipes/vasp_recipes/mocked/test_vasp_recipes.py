@@ -44,8 +44,6 @@ has_atomate2 = util.find_spec("atomate2") is not None
 
 FILE_DIR = Path(__file__).parent
 MOCKED_DIR = FILE_DIR / "mocked_vasp_runs"
-LOGGER = logging.getLogger(__name__)
-LOGGER.propagate = True
 
 
 def test_static_job(patch_metallic_taskdoc):

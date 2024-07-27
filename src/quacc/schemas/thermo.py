@@ -82,7 +82,7 @@ class ThermoSummarize:
         else:
             spin_multiplicity = get_spin_multiplicity_attribute(self.atoms)
             LOGGER.info(
-                f"No charge and multiplicity provided. Automatically detecting a spin multiplicity of {spin_multiplicity} from the Atoms object."
+                f"No multiplicity provided. Automatically detecting a spin multiplicity of {spin_multiplicity} from the Atoms object."
             )
         igt = self._make_ideal_gas(spin_multiplicity=spin_multiplicity)
 

@@ -121,8 +121,7 @@ class CclibSummarize:
         metadata = attributes["metadata"]
 
         if self.check_convergence and attributes.get("optdone") is False:
-            msg = f"Optimization not complete. Refer to {directory}"
-            raise RuntimeError(msg)
+            RuntimeError(f"Optimization not complete. Refer to {directory}")
 
         # Now we construct the input Atoms object. Note that this is not necessarily
         # the same as the initial Atoms from the relaxation because the DFT
