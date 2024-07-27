@@ -6,8 +6,8 @@ import logging
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from ase import units
 from ase.thermochemistry import HarmonicThermo, IdealGasThermo
+from ase.units import invcm
 from emmet.core.symmetry import PointGroupData
 from pymatgen.io.ase import AseAtomsAdaptor
 
@@ -69,12 +69,12 @@ class ThermoSummarize:
         """
         self.atoms = atoms
         # Make sure vibrational freqs are imaginary, not negative
-        vib_freqs = vib_freqs.copy()
-        for i, f in enumerate(vib_freqs):
+        vib_freqs_ = vib_freqs.copy()
+        for i, f in enumerate(vib_freqs_):
             if not isinstance(f, complex) and f < 0:
-                vib_freqs[i] = complex(0 - f * 1j)
-        self.vib_freqs = vib_freqs
-        self.vib_energies = [f * units.invcm for f in self.vib_freqs]
+                vib_freqs_[i] = complex(0 - f * 1j)
+        self.vib_freqs = vib_freqs_
+        self.vib_energies = [f * invcm for f in self.vib_freqs]
         self.energy = energy
         self.directory = Path(directory or atoms.calc.directory)
         self.charge_and_multiplicity = charge_and_multiplicity
@@ -112,7 +112,9 @@ class ThermoSummarize:
             spin_multiplicity = self.charge_and_multiplicity[1]
         else:
             spin_multiplicity = get_spin_multiplicity_attribute(self.atoms)
-            LOGGER.info(f"Using a spin multiplicity of {spin_multiplicity}")
+            LOGGER.info(
+                f"Using a spin multiplicity of {spin_multiplicity} for IdealGasThermo."
+            )
 
         # Generate the ASE IdealGasThermo object
         igt = self._make_ideal_gas(spin_multiplicity=spin_multiplicity)
@@ -124,7 +126,7 @@ class ThermoSummarize:
                 "pressure": pressure,
                 "sigma": igt.sigma,
                 "spin_multiplicity": spin_multiplicity,
-                "vib_freqs": [e / units.invcm for e in igt.vib_energies],
+                "vib_freqs": [e / invcm for e in igt.vib_energies],
                 "vib_energies": igt.vib_energies.tolist(),
                 "n_imag": igt.n_imag,
                 "method": "ideal_gas",
@@ -194,7 +196,7 @@ class ThermoSummarize:
             "parameters_thermo": {
                 "temperature": temperature,
                 "pressure": pressure,
-                "vib_freqs": [e / units.invcm for e in harmonic_thermo.vib_energies],
+                "vib_freqs": [e / invcm for e in harmonic_thermo.vib_energies],
                 "vib_energies": harmonic_thermo.vib_energies.tolist(),
                 "n_imag": harmonic_thermo.n_imag,
                 "method": "harmonic",

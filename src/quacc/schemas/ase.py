@@ -100,16 +100,19 @@ class Summarize:
         RunSchema
             Dictionary representation of the task document
         """
+
+        # Check and set up variables
         if not final_atoms.calc:
             msg = "ASE Atoms object has no attached calculator."
             raise ValueError(msg)
         if not final_atoms.calc.results:
             msg = "ASE Atoms object's calculator has no results."
             raise ValueError(msg)
-        store = self._settings.STORE if store == QuaccDefault else store
 
+        store = self._settings.STORE if store == QuaccDefault else store
         directory = self.directory or final_atoms.calc.directory
 
+        # Generate input atoms metadata
         if input_atoms:
             input_atoms_metadata = atoms_to_metadata(
                 input_atoms,
@@ -119,6 +122,7 @@ class Summarize:
         else:
             input_atoms_metadata = {}
 
+        # Generate the base o fthe task document
         inputs = {
             "parameters": final_atoms.calc.parameters,
             "nid": get_uri(directory).split(":")[0],
@@ -128,8 +132,10 @@ class Summarize:
         }
         results = {"results": final_atoms.calc.results}
 
+        # Prepare atoms for the next run
         atoms_to_store = prep_next_run(final_atoms, move_magmoms=self.move_magmoms)
 
+        # Generate final atoms metadata
         if final_atoms:
             final_atoms_metadata = atoms_to_metadata(
                 atoms_to_store, charge_and_multiplicity=self.charge_and_multiplicity
@@ -137,6 +143,7 @@ class Summarize:
         else:
             final_atoms_metadata = {}
 
+        # Create a dictionary of the inputs/outputs
         unsorted_task_doc = (
             final_atoms_metadata | inputs | results | self.additional_fields
         )
@@ -176,6 +183,8 @@ class Summarize:
         OptSchema
             Dictionary representation of the task document
         """
+
+        # Check and set up variables
         check_convergence = (
             self._settings.CHECK_CONVERGENCE
             if check_convergence == QuaccDefault
@@ -250,6 +259,7 @@ class Summarize:
         DynSchema
             Dictionary representation of the task document
         """
+        # Check and set up variables
         store = self._settings.STORE if store == QuaccDefault else store
         base_task_doc = self.opt(
             dyn, trajectory=trajectory, check_convergence=False, store=None
@@ -343,11 +353,11 @@ class Summarize:
                 vib_freqs_raw[i] = np.abs(f)
                 vib_energies_raw[i] = np.abs(vib_energies_raw[i])
 
+        # Get the true vibrational modes
         atoms_metadata = atoms_to_metadata(
             atoms, charge_and_multiplicity=self.charge_and_multiplicity
         )
 
-        # Get the true vibrational modes
         natoms = len(atoms)
         if natoms == 1:
             vib_freqs = []

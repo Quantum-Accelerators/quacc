@@ -103,7 +103,7 @@ def test_summarize_run5(tmp_path, monkeypatch):
     MontyDecoder().process_decoded(d)
 
 
-def test_summarize_opt_run(tmp_path, monkeypatch):
+def test_summarize_opt_run1(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     # Make sure metadata is made
@@ -144,17 +144,24 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
         == traj
     )
 
+
+def test_summarize_opt_run2(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
     # Test DB
     atoms = bulk("Cu") * (2, 2, 1)
     atoms[0].position += [0.1, 0.1, 0.1]
     atoms.calc = EMT()
     dyn = BFGS(atoms, trajectory="test.traj")
     dyn.run(steps=5)
-    traj = read("test.traj", index=":")
 
     store = MemoryStore()
     Summarize().opt(dyn, check_convergence=False, store=store)
     assert store.count() == 1
+
+
+def test_summarize_opt_run3(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Test no convergence
     atoms = bulk("Cu") * (2, 2, 1)
@@ -162,10 +169,13 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
     atoms.calc = EMT()
     dyn = BFGS(atoms, trajectory="test.traj")
     dyn.run(steps=5)
-    traj = read("test.traj", index=":")
 
     with pytest.raises(RuntimeError, match="Optimization did not converge"):
         Summarize().opt(dyn)
+
+
+def test_summarize_opt_run4(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Make sure info tags are handled appropriately
     atoms = bulk("Cu") * (2, 2, 1)
@@ -187,7 +197,79 @@ def test_summarize_opt_run(tmp_path, monkeypatch):
         Summarize().opt(dyn)
 
 
-def test_summarize_vib_run(tmp_path, monkeypatch):
+def test_vib_run1(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
+
+    atoms = molecule("N2")
+    atoms.calc = EMT()
+    input_atoms = deepcopy(atoms)
+    vib = Vibrations(atoms)
+    vib.run()
+
+    results = Summarize().vib(vib, is_molecule=True)
+    assert results["atoms"] == input_atoms
+    assert results["natoms"] == len(atoms)
+    assert results["parameters_vib"]["delta"] == vib.delta
+    assert results["parameters_vib"]["direction"] == "central"
+    assert results["parameters_vib"]["method"] == "standard"
+    assert results["parameters_vib"]["ndof"] == 6
+    assert results["parameters_vib"]["nfree"] == 2
+    assert "nid" in results
+    assert "dir_name" in results
+    assert "pymatgen_version" in results["builder_meta"]
+    assert len(results["results"]["vib_freqs_raw"]) == 6
+    assert results["results"]["vib_freqs_raw"][0] == pytest.approx(0, rel=1e-5)
+    assert results["results"]["vib_freqs_raw"][-1] == pytest.approx(928.1447554058556)
+    assert len(results["results"]["vib_energies_raw"]) == 6
+    assert results["results"]["vib_energies_raw"][0] == pytest.approx(0, rel=1e-5)
+    assert results["results"]["vib_energies_raw"][-1] == pytest.approx(
+        0.11507528256667966
+    )
+    assert results["results"]["n_imag"] == 0
+    assert results["results"]["imag_vib_freqs"] == []
+    assert len(results["results"]["vib_freqs"]) == 1
+    assert results["results"]["vib_freqs"][0] == pytest.approx(928.1447554058556)
+    assert len(results["results"]["vib_energies"]) == 1
+    assert results["results"]["vib_energies"][0] == pytest.approx(0.11507528256667966)
+
+
+def test_vib_run2(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
+
+    atoms = molecule("N2")
+    atoms.calc = EMT()
+    input_atoms = deepcopy(atoms)
+    vib = Vibrations(atoms)
+    vib.run()
+
+    results = Summarize().vib(vib, is_molecule=False)
+    assert results["atoms"] == input_atoms
+    assert results["natoms"] == len(atoms)
+    assert results["parameters_vib"]["delta"] == vib.delta
+    assert results["parameters_vib"]["direction"] == "central"
+    assert results["parameters_vib"]["method"] == "standard"
+    assert results["parameters_vib"]["ndof"] == 6
+    assert results["parameters_vib"]["nfree"] == 2
+    assert "nid" in results
+    assert "dir_name" in results
+    assert "pymatgen_version" in results["builder_meta"]
+    assert len(results["results"]["vib_freqs_raw"]) == 6
+    assert results["results"]["vib_freqs_raw"][0] == pytest.approx(0, rel=1e-5)
+    assert results["results"]["vib_freqs_raw"][-1] == pytest.approx(928.1447554058556)
+    assert len(results["results"]["vib_energies_raw"]) == 6
+    assert results["results"]["vib_energies_raw"][0] == pytest.approx(0, rel=1e-5)
+    assert results["results"]["vib_energies_raw"][-1] == pytest.approx(
+        0.11507528256667966
+    )
+    assert results["results"]["n_imag"] == 0
+    assert results["results"]["imag_vib_freqs"] == []
+    assert len(results["results"]["vib_freqs"]) == 6
+    assert results["results"]["vib_freqs"][0] == pytest.approx(0.0)
+    assert len(results["results"]["vib_energies"]) == 6
+    assert results["results"]["vib_energies"][0] == pytest.approx(0.0)
+
+
+def test_summarize_vib_and_thermo_run1(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     # Make sure metadata is made
@@ -223,12 +305,9 @@ def test_summarize_vib_run(tmp_path, monkeypatch):
     assert len(results["results"]["vib_energies"]) == 1
     assert results["results"]["vib_energies"][0] == pytest.approx(0.11507528256667966)
 
-    # Test DB
-    atoms = molecule("N2")
-    atoms.calc = EMT()
-    input_atoms = deepcopy(atoms)
-    vib = Vibrations(atoms)
-    vib.run()
+
+def test_summarize_vib_and_thermo_run2(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Make sure info tags are handled appropriately
     atoms = molecule("N2")
@@ -243,6 +322,10 @@ def test_summarize_vib_run(tmp_path, monkeypatch):
     # test document can be jsanitized and decoded
     d = jsanitize(results, strict=True, enum_values=True)
     MontyDecoder().process_decoded(d)
+
+
+def test_summarize_vib_and_thermo_run3(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Test a solid
     atoms = bulk("Cu") * (2, 1, 1)
@@ -261,7 +344,7 @@ def test_summarize_vib_run(tmp_path, monkeypatch):
     assert len(results["results"]["vib_energies"]) == 6
 
 
-def test_summarize_vib_and_thermo(tmp_path, monkeypatch):
+def test_summarize_vib_and_thermo_run4(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     # Test harmonic thermo
@@ -283,6 +366,10 @@ def test_summarize_vib_and_thermo(tmp_path, monkeypatch):
     assert results["results"]["energy"] == 0
     assert results["results"]["internal_energy"] == pytest.approx(0.5345295682734466)
     assert results["results"]["helmholtz_energy"] == pytest.approx(0.10800437812849317)
+
+
+def test_summarize_vib_and_thermo_run5(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
 
     # Test ideal gas thermo
     atoms = molecule("H2")
