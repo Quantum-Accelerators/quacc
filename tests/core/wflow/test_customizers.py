@@ -48,8 +48,13 @@ def test_basic_customizers():
     assert add(1) == 4
     assert mult(1) == 4
 
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError,
+        match=r"Invalid parameter keys: \['bad'\]. Valid keys are: \['add', 'mult']",
+    ):
         customize_funcs(["add", "mult"], [add, mult], param_swaps={"bad": {"b": 2}})
 
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match="Invalid function name: 'all' is a reserved name."
+    ):
         customize_funcs("all", [add], param_swaps={"all": {"b": 2}})

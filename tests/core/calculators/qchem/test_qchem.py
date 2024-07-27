@@ -48,10 +48,9 @@ def test_qchem_write_input_basic(tmp_path, monkeypatch, test_atoms):
         NotImplementedError,
         match="Do not specify `molecule` in `qchem_dict_set_params`",
     ):
-        calc = QChem(
+        QChem(
             test_atoms, job_type="freq", qchem_dict_set_params={"molecule": "test"}
-        )
-        calc.write_input(test_atoms)
+        ).write_input(test_atoms)
 
 
 def test_qchem_write_input_intermediate(tmp_path, monkeypatch, test_atoms):

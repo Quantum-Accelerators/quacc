@@ -43,7 +43,7 @@ def static_job(
     Returns
     -------
     VaspSchema
-        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
+        Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
         See the type-hint for the data structure.
     """
     calc_defaults = {
@@ -93,7 +93,7 @@ def relax_job(
     Returns
     -------
     VaspSchema
-        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
+        Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
         See the type-hint for the data structure.
     """
     calc_defaults = {
@@ -156,7 +156,7 @@ def bulk_to_slabs_flow(
     Returns
     -------
     list[VaspSchema]
-        List of dictionary results from [quacc.schemas.vasp.vasp_summarize_run][].
+        List of dictionary results from [quacc.schemas.vasp.VaspSummarize.run][].
         See the type-hint for the data structure.
     """
     relax_job_, static_job_ = customize_funcs(
@@ -216,7 +216,7 @@ def slab_to_ads_flow(
     Returns
     -------
     list[VaspSchema]
-        List of dictionaries of results from [quacc.schemas.vasp.vasp_summarize_run][].
+        List of dictionaries of results from [quacc.schemas.vasp.VaspSummarize.run][].
         See the type-hint for the data structure.
     """
     relax_job_, static_job_ = customize_funcs(
