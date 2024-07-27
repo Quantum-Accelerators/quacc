@@ -29,7 +29,6 @@ def test_run_ideal_gas(tmp_path):
 
 
 def test_summarize_ideal_gas_thermo(tmp_path):
-
     # Make sure metadata is made
     atoms = molecule("N2")
     results = ThermoSummarize(atoms, [0.34 / invcm], directory=tmp_path).ideal_gas()
@@ -116,7 +115,7 @@ def test_summarize_harmonic_thermo(tmp_path):
     atoms = molecule("H2")
 
     # Make sure metadata is made
-    results = ThermoSummarize(atoms,[0.34/invcm],directory=tmp_path).harmonic()
+    results = ThermoSummarize(atoms, [0.34 / invcm], directory=tmp_path).harmonic()
     assert results["parameters_thermo"]["vib_energies"] == [0.34]
     assert results["parameters_thermo"]["vib_freqs"] == [0.34 / invcm]
     assert results["results"]["energy"] == 0

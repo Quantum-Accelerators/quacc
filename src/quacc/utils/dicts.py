@@ -206,7 +206,7 @@ def clean_dict(start_dict: MutableMapping[str, Any]) -> MutableMapping[str, Any]
 
 def finalize_dict(
     task_doc: dict,
-    directory: str | Path | None=None,
+    directory: str | Path | None = None,
     gzip_file: bool = True,
     store: Store | None = None,
 ) -> MutableMapping[str, Any]:

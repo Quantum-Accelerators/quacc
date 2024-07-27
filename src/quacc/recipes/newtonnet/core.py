@@ -11,7 +11,6 @@ from monty.dev import requires
 from quacc import get_settings, job
 from quacc.runners.ase import Runner
 from quacc.schemas.ase import Summarize
-from quacc.schemas.thermo import summarize_vib_and_thermo
 from quacc.utils.dicts import recursive_dict_merge
 
 has_sella = bool(find_spec("sella"))

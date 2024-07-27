@@ -10,7 +10,6 @@ from typing import TYPE_CHECKING
 import numpy as np
 from ase.filters import Filter
 from ase.io.jsonio import encode
-from emmet.core.symmetry import PointGroupData
 from pymatgen.io.ase import AseAtomsAdaptor
 
 if TYPE_CHECKING:

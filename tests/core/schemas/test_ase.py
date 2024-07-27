@@ -9,13 +9,10 @@ from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.io import read
 from ase.optimize import BFGS
-from ase.thermochemistry import HarmonicThermo, IdealGasThermo
-from ase.units import invcm
 from ase.vibrations import Vibrations
 from maggma.stores import MemoryStore
 from monty.json import MontyDecoder, jsanitize
 from monty.serialization import loadfn
-from numpy.testing import assert_allclose
 
 from quacc.schemas.ase import Summarize
 
@@ -270,13 +267,15 @@ def test_summarize_vib_and_thermo(tmp_path, monkeypatch):
     results = Summarize().vib(vib, thermo_method="harmonic")
 
     assert len(results["parameters_thermo"]["vib_energies"]) > 1
-    assert results["parameters_thermo"]["vib_energies"][-1] == pytest.approx(1.0176739957667882)
+    assert results["parameters_thermo"]["vib_energies"][-1] == pytest.approx(
+        1.0176739957667882
+    )
     assert len(results["parameters_thermo"]["vib_freqs"]) > 1
     assert results["parameters_thermo"]["vib_freqs"][-1] == pytest.approx(
         8208.094395393315
     )
     assert results["results"]["energy"] == 0
-    assert results["results"]["internal_energy"] == pytest.approx( 0.5345295682734466)
+    assert results["results"]["internal_energy"] == pytest.approx(0.5345295682734466)
     assert results["results"]["helmholtz_energy"] == pytest.approx(0.10800437812849317)
 
     # Test ideal gas thermo
@@ -289,7 +288,9 @@ def test_summarize_vib_and_thermo(tmp_path, monkeypatch):
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
     assert len(results["parameters_thermo"]["vib_energies"]) == 1
-    assert results["parameters_thermo"]["vib_energies"][-1] == pytest.approx(1.0176739957667882)
+    assert results["parameters_thermo"]["vib_energies"][-1] == pytest.approx(
+        1.0176739957667882
+    )
     assert len(results["parameters_thermo"]["vib_freqs"]) == 1
     assert results["parameters_thermo"]["vib_freqs"][-1] == pytest.approx(
         8208.094395393315
