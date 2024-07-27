@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 
 - Overhauled schemas throughout quacc to improve maintainability. They are now classes (mostly) instead of functions.
+- Changed the thermo runner to a schema
 
 ### Fixed
 
