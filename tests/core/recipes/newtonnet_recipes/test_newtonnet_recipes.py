@@ -300,7 +300,7 @@ def test_quasi_irc_job_with_custom_irc_swaps(tmp_path, monkeypatch):
 
 
 @pytest.fixture()
-def setup_test_environment(tmp_path):
+def setup_test_environment():
     reactant = Atoms(
         symbols="CCHHCHH",
         positions=[
@@ -330,7 +330,7 @@ def setup_test_environment(tmp_path):
     return reactant, product
 
 
-def test_neb_job_linear(setup_test_environment, tmp_path):
+def test_neb_job_linear(setup_test_environment):
     reactant, product = setup_test_environment
 
     neb_summary = neb_job(reactant, product, interpolation_method="linear")
@@ -348,7 +348,7 @@ def test_neb_job_linear(setup_test_environment, tmp_path):
     ] == pytest.approx(-24.094734474778278, abs=1e-5)
 
 
-def test_neb_job_idpp(setup_test_environment, tmp_path):
+def test_neb_job_idpp(setup_test_environment):
     reactant, product = setup_test_environment
 
     neb_summary = neb_job(reactant, product, interpolation_method="idpp")
@@ -366,7 +366,7 @@ def test_neb_job_idpp(setup_test_environment, tmp_path):
     ] == pytest.approx(-26.81855580696914, abs=1e-5)
 
 
-def test_neb_job_geodesic(setup_test_environment, tmp_path):
+def test_neb_job_geodesic(setup_test_environment):
     reactant, product = setup_test_environment
 
     neb_summary = neb_job(reactant, product, interpolation_method="geodesic")
@@ -384,37 +384,33 @@ def test_neb_job_geodesic(setup_test_environment, tmp_path):
     ] == pytest.approx(-24.895280838012695, abs=0.05)
 
 
-def test_neb_ts_job_no_hess(setup_test_environment, tmp_path):
+def test_neb_ts_job_no_hess(setup_test_environment):
     reactant, product = setup_test_environment
     ts_job_kwargs = {"use_custom_hessian": False}
-    calc_kwargs = {}
     neb_ts_results = neb_ts_job(
-        reactant, product, ts_job_kwargs=ts_job_kwargs, **calc_kwargs
+        reactant, product, ts_job_kwargs=ts_job_kwargs,
     )
     assert neb_ts_results["ts_results"]["results"]["energy"] == pytest.approx(
         -24.936278455859792, abs=1e-6
     )
 
 
-def test_geodesic_job(setup_test_environment, tmp_path):
+def test_geodesic_job(setup_test_environment):
     reactant, product = setup_test_environment
-    calc_kwargs = {}
 
-    geodesic_summary = geodesic_job(reactant, product, **calc_kwargs)
+    geodesic_summary = geodesic_job(reactant, product)
     assert geodesic_summary["highest_e_atoms"].get_potential_energy() == pytest.approx(
         -22.613367267971185, abs=1e-6
     )
 
 
-def test_geodesic_ts_job_no_hess(setup_test_environment, tmp_path):
+def test_geodesic_ts_job_no_hess(setup_test_environment):
     reactant, product = setup_test_environment
     ts_job_kwargs = {}
-    calc_kwargs = {}
 
     geodesic_ts_summary = geodesic_ts_job(
-        reactant, product, ts_job_kwargs=ts_job_kwargs, **calc_kwargs
+        reactant, product, ts_job_kwargs=ts_job_kwargs,
     )
-    # print(len(geodesic_ts_summary['ts_results']['trajectory_results']))
     assert geodesic_ts_summary["ts_results"]["results"]["energy"] == pytest.approx(
         -23.80353053617631, abs=1e-6
     )
