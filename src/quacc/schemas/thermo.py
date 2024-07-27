@@ -111,9 +111,7 @@ class ThermoSummarize:
             spin_multiplicity = self.charge_and_multiplicity[1]
         else:
             spin_multiplicity = get_spin_multiplicity_attribute(self.atoms)
-            LOGGER.info(
-                f"No multiplicity provided. Using a spin multiplicity of {spin_multiplicity} from the Atoms object for thermochemistry."
-            )
+            LOGGER.info(f"Using a spin multiplicity of {spin_multiplicity}")
 
         # Generate the ASE IdealGasThermo object
         igt = self._make_ideal_gas(spin_multiplicity=spin_multiplicity)
