@@ -127,7 +127,7 @@ def test_geodesic_interpolate_wrapper_large_system(setup_test_environment):
 
 def test_run_neb(tmp_path):
     geodesic_path = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "geodesic_path.xyz"
+        os.path.dirname(os.path.abspath(__file__)), "test_files/geodesic_path.xyz"
     )
     images = read(geodesic_path, index=":")
     for image in images:
@@ -155,7 +155,7 @@ def test_run_neb2(setup_test_environment, tmp_path):
     optimizer_class = BFGSLineSearch
 
     geodesic_path = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "geodesic_path.xyz"
+        os.path.dirname(os.path.abspath(__file__)), "test_files/geodesic_path.xyz"
     )
 
     images = read(geodesic_path, index=":")
