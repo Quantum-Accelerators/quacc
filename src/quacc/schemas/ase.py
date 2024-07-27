@@ -329,13 +329,10 @@ class Summarize:
 
         if isinstance(vib_object, VibrationsData):
             atoms = vib_object._atoms
-            inputs = {}
-            directory = self.directory or None
+            directory = self.directory
         else:
             atoms = vib_object.atoms
             directory = self.directory or atoms.calc.directory
-            uri = get_uri(directory)
-
             inputs = {
                 "parameters": atoms.calc.parameters,
                 "parameters_vib": {
@@ -345,10 +342,9 @@ class Summarize:
                     "ndof": vib_object.ndof,
                     "nfree": vib_object.nfree,
                 },
-                "nid": uri.split(":")[0],
-                "dir_name": directory,
             }
 
+        inputs |= {"nid": get_uri(directory).split(":")[0], "dir_name": directory}
         atoms_metadata = atoms_to_metadata(
             atoms, charge_and_multiplicity=self.charge_and_multiplicity
         )
@@ -399,6 +395,7 @@ class Summarize:
             thermo_summary = ThermoSummarize(
                 atoms,
                 vib_freqs_raw,
+                directory=directory,
                 energy=energy,
                 charge_and_multiplicity=self.charge_and_multiplicity,
             )
