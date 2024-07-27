@@ -218,7 +218,12 @@ class ThermoSummarize:
         }
 
         unsorted_task_doc = (
-            atoms_to_metadata(self.atoms) | inputs | results | self.additional_fields
+            atoms_to_metadata(
+                self.atoms, charge_and_multiplicity=self.charge_and_multiplicity
+            )
+            | inputs
+            | results
+            | self.additional_fields
         )
         return finalize_dict(
             unsorted_task_doc,
