@@ -324,6 +324,9 @@ def test_errors(tmp_path, monkeypatch):
     ):
         Summarize().run(atoms, initial_atoms)
 
+    atoms = molecule("H2")
+    atoms.calc = EMT()
     vib = Vibrations(atoms)
+    vib.run()
     with pytest.raises(ValueError, match="Invalid thermo_method"):
-        Summarize().vib(vib, thermo_method="bad")
+        Summarize(directory=tmp_path).vib(vib, thermo_method="bad")
