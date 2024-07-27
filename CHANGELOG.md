@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.0]
+
+### Added
+
+- Added support for HarmonicThermo as a thermochemistry method
+- Added a VASP frequency recipe
+
+### Changed
+
+- Overhauled schemas throughout quacc to improve maintainability. They are now classes (mostly) instead of functions.
+
+### Fixed
+
+- Fixed a crash when Espresso checked kpts and kspacing usage
+
 ## [0.10.1]
 
 ### Changed
