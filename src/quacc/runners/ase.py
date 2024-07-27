@@ -524,7 +524,7 @@ def run_neb(
     has_geodesic_interpolate,
     "geodesic-interpolate must be installed. Refer to the quacc documentation.",
 )
-def _geodesic_interpolate_wrapper(
+def geodesic_interpolate_wrapper(
     reactant: Atoms,
     product: Atoms,
     n_images: int = 20,
