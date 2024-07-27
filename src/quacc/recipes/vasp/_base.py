@@ -129,7 +129,7 @@ def run_and_summarize_vib_and_thermo(
     energy: float = 0.0,
     temperature: float = 298.15,
     pressure: float = 1.0,
-    thermo_method: Literal["ideal_gas", "harmonic"] = "ideal_gas",
+    thermo_method: Literal["ideal_gas", "harmonic"] = "harmonic",
     preset: str | None = None,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
