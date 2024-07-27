@@ -24,7 +24,7 @@ if has_sella:
 if has_newtonnet:
     from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
 if has_geodesic_interpolate:
-    from quacc.runners.ase import geodesic_interpolate_wrapper
+    from quacc.atoms.ts import geodesic_interpolate_wrapper
 
 if TYPE_CHECKING:
     from typing import Any, Literal
