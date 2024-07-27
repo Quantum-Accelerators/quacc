@@ -14,6 +14,7 @@ from quacc.schemas.thermo import ThermoSummarize
 LOGGER = logging.getLogger(__name__)
 LOGGER.propagate = True
 
+
 def test_run_ideal_gas(tmp_path):
     co2 = molecule("CO2")
     igt = ThermoSummarize(
@@ -40,7 +41,7 @@ def test_run_ideal_gas(tmp_path):
     assert igt.get_ZPE_correction() == pytest.approx(2548.5 * invcm)
 
 
-def test_summarize_ideal_gas_thermo(tmp_path,caplog):
+def test_summarize_ideal_gas_thermo(tmp_path, caplog):
     # Make sure metadata is made
     atoms = molecule("N2")
     results = ThermoSummarize(atoms, [0.34 / invcm], directory=tmp_path).ideal_gas()
@@ -91,7 +92,10 @@ def test_summarize_ideal_gas_thermo(tmp_path,caplog):
         results = ThermoSummarize(
             atoms, np.array(vib_energies) / invcm, energy=-10.0, directory=tmp_path
         ).ideal_gas(temperature=1000.0, pressure=20.0)
-    assert "No multiplicity provided. Automatically detecting a spin multiplicity of 2 from the Atoms object" in caplog.text
+    assert (
+        "No multiplicity provided. Automatically detecting a spin multiplicity of 2 from the Atoms object"
+        in caplog.text
+    )
 
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
@@ -108,15 +112,23 @@ def test_summarize_ideal_gas_thermo(tmp_path,caplog):
     assert results["parameters_thermo"]["spin_multiplicity"] == 2
 
     # Test custom spin
-    results =  ThermoSummarize(
-        atoms, np.array(vib_energies) / invcm, energy=-10.0, charge_and_multiplicity=(0,2),directory=tmp_path
+    results = ThermoSummarize(
+        atoms,
+        np.array(vib_energies) / invcm,
+        energy=-10.0,
+        charge_and_multiplicity=(0, 2),
+        directory=tmp_path,
     ).ideal_gas(temperature=1000.0, pressure=20.0)
     assert results["results"]["entropy"] == pytest.approx(0.0023506788982171896)
     assert results["parameters_thermo"]["spin_multiplicity"] == 2
 
     # Test custom spin
-    results =  ThermoSummarize(
-        atoms, np.array(vib_energies) / invcm, energy=-10.0, charge_and_multiplicity=(0,4),directory=tmp_path
+    results = ThermoSummarize(
+        atoms,
+        np.array(vib_energies) / invcm,
+        energy=-10.0,
+        charge_and_multiplicity=(0, 4),
+        directory=tmp_path,
     ).ideal_gas(temperature=1000.0, pressure=20.0)
     assert results["results"]["entropy"] == pytest.approx(0.0024104096804891486)
     assert results["parameters_thermo"]["spin_multiplicity"] == 4

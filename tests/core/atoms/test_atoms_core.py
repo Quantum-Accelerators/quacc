@@ -214,6 +214,7 @@ def test_perturb():
     )
     assert atoms == Atoms("H2", positions=[(0, 0, 0), (0, 0, 0.74)])
 
+
 def test_get_spin_mult():
     atoms = molecule("H2O")
     assert get_spin_multiplicity_attribute(atoms) is None
@@ -223,11 +224,11 @@ def test_get_spin_mult():
     assert get_spin_multiplicity_attribute(atoms) == 3
 
     atoms = molecule("H2O")
-    atoms.set_initial_magnetic_moments([0.0,0.0,0.0])
+    atoms.set_initial_magnetic_moments([0.0, 0.0, 0.0])
     assert get_spin_multiplicity_attribute(atoms) == 1
 
     atoms = molecule("H2O")
-    atoms.set_initial_magnetic_moments([0.0,0.0,0.0])
+    atoms.set_initial_magnetic_moments([0.0, 0.0, 0.0])
     atoms.calc = EMT()
     assert get_spin_multiplicity_attribute(atoms) == 1
 
@@ -240,5 +241,5 @@ def test_get_spin_mult():
     atoms = molecule("H2O")
     atoms.calc = EMT()
     atoms.get_potential_energy()
-    atoms.calc.results["magmoms"] = np.array([0.0,0.0,1.999])
+    atoms.calc.results["magmoms"] = np.array([0.0, 0.0, 1.999])
     assert get_spin_multiplicity_attribute(atoms) == 3

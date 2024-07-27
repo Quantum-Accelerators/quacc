@@ -249,5 +249,6 @@ def test_monkeypatches(tmp_path, monkeypatch, cclib_obj, caplog):
             is None
         )
 
+
 def test_get_homos_lumos():
-    assert get_homos_lumos([[1.0]],[0]) == ([1.0],None,None)
+    assert get_homos_lumos([[1.0]], [0]) == ([1.0], None, None)
