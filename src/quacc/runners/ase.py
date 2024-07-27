@@ -470,6 +470,8 @@ def run_neb(
     images = copy_atoms(images)
     settings = get_settings()
 
+    neb_kwargs = neb_kwargs or {}
+
     neb = NEB(images, **neb_kwargs)
 
     dir_lists = []
