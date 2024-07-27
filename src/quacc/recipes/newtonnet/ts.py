@@ -27,18 +27,18 @@ if has_geodesic_interpolate:
     from quacc.runners.ase import _geodesic_interpolate_wrapper
 
 if TYPE_CHECKING:
-    from typing import Any, Literal, TypedDict
+    from typing import Any, Literal
 
     from ase.atoms import Atoms
     from numpy.typing import NDArray
 
     from quacc.types import (
+        NebSchema,
+        NebTsSchema,
         NewtonNetIRCSchema,
         NewtonNetQuasiIRCSchema,
         NewtonNetTSSchema,
         OptParams,
-        NebSchema,
-        NebTsSchema,
     )
 
 
