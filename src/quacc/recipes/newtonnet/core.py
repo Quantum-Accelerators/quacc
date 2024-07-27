@@ -182,7 +182,7 @@ def freq_job(
 
     vib = VibrationsData(final_atoms, summary["results"]["hessian"])
     return Summarize(
-        directory=final_atoms.calc.directory,
+        directory=summary["dir_name"],
         additional_fields={"name": "ASE Vibrations and Thermo Analysis"},
     ).vib(
         vib,
