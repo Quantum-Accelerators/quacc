@@ -473,5 +473,5 @@ class Espresso(GenericFileIOCalculator):
         else:
             self.user_calc_params = self.kwargs
 
-        if self.user_calc_params.get("kpts") and self.user_calc_params.get("kspacing"):
+        if self.user_calc_params.get("kpts") is not None and self.user_calc_params.get("kspacing"):
             raise ValueError("Cannot specify both kpts and kspacing.")
