@@ -251,6 +251,7 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 | VASP Relax                      | `#!Python @job`  | [quacc.recipes.vasp.core.relax_job][]           |              |
 | VASP Double Relax               | `#!Python @flow` | [quacc.recipes.vasp.core.double_relax_flow][]   |              |
 | VASP Non-SCF                    | `#!Python @job`  | [quacc.recipes.vasp.core.non_scf_job][]         |              |
+| VASP Frequency                  | `#!Python @job`  | [quacc.recipes.vasp.core.freq_job][]            |              |
 | VASP Slab Static                | `#!Python @job`  | [quacc.recipes.vasp.slabs.static_job][]         |              |
 | VASP Slab Relax                 | `#!Python @job`  | [quacc.recipes.vasp.slabs.relax_job][]          |              |
 | VASP Bulk to Slabs              | `#!Python @flow` | [quacc.recipes.vasp.slabs.bulk_to_slabs_flow][] |              |

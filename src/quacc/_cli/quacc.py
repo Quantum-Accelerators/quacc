@@ -124,10 +124,6 @@ def info() -> None:
     """
     Print out some basic information about the quacc environment.
 
-    Parameters
-    ----------
-    None
-
     Returns
     -------
     None

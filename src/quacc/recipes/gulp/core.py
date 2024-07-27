@@ -47,7 +47,7 @@ def static_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     keyword_defaults = ["gfnff", "gwolf"] if use_gfnff else []
@@ -102,7 +102,7 @@ def relax_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     keyword_defaults = ["opti", "conp" if relax_cell else "conv"]
