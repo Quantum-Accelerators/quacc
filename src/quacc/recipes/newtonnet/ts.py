@@ -34,9 +34,7 @@ if TYPE_CHECKING:
 
     from quacc.types import (
         GeodesicSchema,
-        GeodesicTsSchema,
         NebSchema,
-        NebTsSchema,
         NewtonNetIRCSchema,
         NewtonNetQuasiIRCSchema,
         NewtonNetTSSchema,
