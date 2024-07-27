@@ -151,7 +151,8 @@ class CclibSummarize:
 
         # Get the base task document for the ASE run
         run_task_doc = Summarize(
-            charge_and_multiplicity=(attributes["charge"], attributes["mult"])
+            directory=directory,
+            charge_and_multiplicity=(attributes["charge"], attributes["mult"]),
         ).run(final_atoms, input_atoms, store=None)
 
         # Create a dictionary of the inputs/outputs
@@ -194,12 +195,14 @@ class CclibSummarize:
         """
         store = self._settings.STORE if store == QuaccDefault else store
         final_atoms = get_final_atoms_from_dynamics(dyn)
+        directory = Path(self.directory or final_atoms.calc.directory)
 
         # Get the cclib base task document
         cclib_summary = self.run(final_atoms, store=None)
 
         # Get the base task document for the ASE run
         opt_run_summary = Summarize(
+            directory=directory,
             charge_and_multiplicity=(
                 cclib_summary["charge"],
                 cclib_summary["spin_multiplicity"],
@@ -216,7 +219,7 @@ class CclibSummarize:
         unsorted_task_doc = recursive_dict_merge(cclib_summary, opt_run_summary)
         return finalize_dict(
             unsorted_task_doc,
-            directory=Path(self.directory or final_atoms.calc.directory),
+            directory=directory,
             gzip_file=self._settings.GZIP_FILES,
             store=store,
         )

@@ -157,9 +157,11 @@ class VaspSummarize:
             )
         poscar_path = directory / "POSCAR"
         initial_atoms = read(zpath(str(poscar_path)))
-        base_task_doc = Summarize(move_magmoms=self.move_magmoms).run(
-            final_atoms, initial_atoms, store=None
-        )
+        base_task_doc = Summarize(
+            directory=directory,
+            move_magmoms=self.move_magmoms,
+            additional_fields=self.additional_fields,
+        ).run(final_atoms, initial_atoms, store=None)
 
         if nsteps := len([f for f in os.listdir(directory) if f.startswith("step")]):
             intermediate_vasp_task_docs = {
@@ -232,8 +234,12 @@ class VaspSummarize:
         store = self._settings.STORE if store == QuaccDefault else store
 
         final_atoms = get_final_atoms_from_dynamics(optimizer)
+        directory = Path(self.directory or final_atoms.calc.directory)
+
         opt_run_summary = Summarize(
-            move_magmoms=self.move_magmoms, additional_fields=self.additional_fields
+            directory=directory,
+            move_magmoms=self.move_magmoms,
+            additional_fields=self.additional_fields,
         ).opt(
             optimizer,
             trajectory=trajectory,
@@ -245,7 +251,7 @@ class VaspSummarize:
         unsorted_task_doc = recursive_dict_merge(vasp_summary, opt_run_summary)
         return finalize_dict(
             unsorted_task_doc,
-            directory=Path(self.directory or final_atoms.calc.directory),
+            directory=directory,
             gzip_file=self._settings.GZIP_FILES,
             store=store,
         )
