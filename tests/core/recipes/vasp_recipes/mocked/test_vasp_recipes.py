@@ -857,13 +857,13 @@ def test_freq_job():
     atoms.pbc = True
     atoms.center(vacuum=1)
 
-    output = freq_job(atoms, kpts=(1, 1, 1), thermo_method="harmonic")
+    output = freq_job(atoms, kpts=(1, 1, 1))
     assert output["parameters"]["ediff"] == 1e-07
     # Check that "sigma" (only used in ideal_gas) isn't a key in parameters_thermo
     assert "sigma" not in output["parameters_thermo"]
     assert len(output["results"]["vib_freqs_raw"]) == 3 * len(atoms)
 
-    output = freq_job(atoms, kpts=(1, 1, 1))
+    output = freq_job(atoms, kpts=(1, 1, 1), thermo_method="ideal_gas")
     assert output["parameters"]["ediff"] == 1e-07
     assert output["parameters_thermo"]["sigma"] == 2.0
     assert len(output["results"]["vib_freqs_raw"]) == 3 * len(atoms)
