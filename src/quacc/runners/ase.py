@@ -21,7 +21,7 @@ from ase.md.velocitydistribution import (
 )
 from ase.mep import NEB
 from ase.mep.neb import NEBOptimizer
-from ase.optimize import BFGS
+from ase.optimize import BFGS, BFGSLineSearch
 from ase.optimize.sciopt import SciPyOptimizer
 from ase.vibrations import Vibrations
 from monty.dev import requires
@@ -463,7 +463,7 @@ def run_neb(
     Dynamics
         The ASE Dynamics object following an optimization.
     """
-    if optimizer.__name__ == "BFGSLineSearch":
+    if optimizer == BFGSLineSearch:
         raise ValueError("BFGSLineSearch is not allowed as optimizer with NEB.")
 
     # Copy atoms so we don't modify it in-place
