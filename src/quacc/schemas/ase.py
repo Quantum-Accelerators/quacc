@@ -314,9 +314,10 @@ class Summarize:
             Dictionary representation of the task document
         """
         store = self._settings.STORE if store == QuaccDefault else store
+
+        # Tabulate input parameters
         vib_freqs_raw = vib_object.get_frequencies().tolist()
         vib_energies_raw = vib_object.get_energies().tolist()
-
         if isinstance(vib_object, VibrationsData):
             atoms = vib_object._atoms
             directory = self.directory
@@ -337,6 +338,7 @@ class Summarize:
                 "dir_name": directory,
             }
 
+        # Generate thermo data
         if thermo_method:
             thermo_summary = ThermoSummarize(
                 atoms,
