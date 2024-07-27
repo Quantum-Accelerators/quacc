@@ -529,7 +529,7 @@ def geodesic_interpolate_wrapper(
     product: Atoms,
     n_images: int = 10,
     perform_sweep: bool | Literal["auto"] = "auto",
-    redestribute_tol: float = 1e-2,
+    redistribute_tol: float = 1e-2,
     smoother_tol: float = 2e-3,
     max_iterations: int = 15,
     max_micro_iterations: int = 20,
@@ -552,7 +552,7 @@ def geodesic_interpolate_wrapper(
     perform_sweep
         Whether to sweep across the path optimizing one image at a time.
         Default is to perform sweeping updates if there are more than 35 atoms.
-    redestribute_tol
+    redistribute_tol
         the value passed to the tol keyword argument of
          geodesic_interpolate.interpolation.redistribute. Default is 1e-2.
     smoother_tol
@@ -588,7 +588,7 @@ def geodesic_interpolate_wrapper(
         chemical_symbols,
         [reactant.positions, product.positions],
         n_images,
-        tol=redestribute_tol,
+        tol=redistribute_tol,
     )
 
     # Perform smoothing by minimizing distance in Cartesian coordinates with redundant internal metric
