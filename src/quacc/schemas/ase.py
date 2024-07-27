@@ -457,13 +457,15 @@ class VibSummarize:
 
         Parameters
         ----------
-        vib_object
-            Instantiated ASE Vibrations object.
         thermo_method
             Method to use for thermochemistry calculations. If None, no thermochemistry
             calculations are performed.
         energy
             Potential energy in eV used as the reference point for thermochemistry calculations.
+        temperature
+            Temperature in K for thermochemistry calculations.
+        pressure
+            Pressure in atm for thermochemistry calculations
         store
             Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`
 
