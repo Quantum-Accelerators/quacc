@@ -9,7 +9,6 @@ pytestmark = pytest.mark.skipif(
     reason="Skipping this test on Windows in GitHub Actions.",
 )  # this works locally on Windows, but no clue why it fails on GitHub Actions
 
-import logging
 from importlib import util
 from pathlib import Path
 
@@ -21,6 +20,7 @@ from quacc import change_settings
 from quacc.recipes.vasp.core import (
     ase_relax_job,
     double_relax_flow,
+    freq_job,
     non_scf_job,
     relax_job,
     static_job,
@@ -43,8 +43,6 @@ has_atomate2 = util.find_spec("atomate2") is not None
 
 FILE_DIR = Path(__file__).parent
 MOCKED_DIR = FILE_DIR / "mocked_vasp_runs"
-LOGGER = logging.getLogger(__name__)
-LOGGER.propagate = True
 
 
 def test_static_job(patch_metallic_taskdoc):
@@ -849,3 +847,21 @@ def test_mp_relax_flow_custom(tmp_path, patch_nonmetallic_taskdoc):
             job_params={"mp_metagga_relax_job": {"nsw": 0}},
         )
         assert output["relax2"]["parameters"]["nsw"] == 0
+
+
+def test_freq_job():
+    atoms = molecule("H2")
+    atoms.pbc = True
+    atoms.center(vacuum=1)
+
+    output = freq_job(atoms, kpts=(1, 1, 1))
+    assert output["parameters"]["ediff"] == 1e-07
+    # Check that "sigma" (only used in ideal_gas) isn't a key in parameters_thermo
+    assert "sigma" not in output["parameters_thermo"]
+    assert len(output["results"]["vib_freqs_raw"]) == 3 * len(atoms)
+
+    output = freq_job(atoms, kpts=(1, 1, 1), thermo_method="ideal_gas")
+    assert output["parameters"]["ediff"] == 1e-07
+    assert output["parameters_thermo"]["sigma"] == 2.0
+    assert len(output["results"]["vib_freqs_raw"]) == 3 * len(atoms)
+    assert len(output["results"]["vib_freqs"]) == 3 * len(atoms) - 5

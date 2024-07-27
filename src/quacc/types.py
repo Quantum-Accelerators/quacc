@@ -457,7 +457,7 @@ if TYPE_CHECKING:
     # ----------- Schema (ASE) type hints -----------
 
     class RunSchema(AtomsSchema):
-        """Schema for [quacc.schemas.ase.summarize_run][]"""
+        """Schema for [quacc.schemas.ase.Summarize.run][]"""
 
         input_atoms: AtomsSchema | None
         nid: str
@@ -467,7 +467,7 @@ if TYPE_CHECKING:
         quacc_version: str
 
     class OptSchema(RunSchema):
-        """Schema for [quacc.schemas.ase.summarize_opt_run][]"""
+        """Schema for [quacc.schemas.ase.Summarize.opt][]"""
 
         parameters_opt: ParametersDyn
         converged: bool
@@ -475,7 +475,7 @@ if TYPE_CHECKING:
         trajectory_results: list[Results]
 
     class DynSchema(RunSchema):
-        """Schema for [quacc.schemas.ase.summarize_md_run][]"""
+        """Schema for [quacc.schemas.ase.Summarize.md][]"""
 
         parameters_md: ParametersDyn
         trajectory: list[Atoms]
@@ -525,7 +525,7 @@ if TYPE_CHECKING:
         results: ThermoResults
 
     class VibThermoSchema(VibSchema, ThermoSchema):
-        """Schema for [quacc.schemas.ase.summarize_vib_and_thermo][]"""
+        """Combined Vibrations and Thermo schema"""
 
     # ----------- Schema (phonons) type hints -----------
 
@@ -608,7 +608,7 @@ if TYPE_CHECKING:
         cm5: CM5Schema
 
     class VaspSchema(RunSchema, TaskDoc):
-        """Type hint associated with [quacc.schemas.vasp.vasp_summarize_run][]"""
+        """Type hint associated with [quacc.schemas.vasp.VaspSummarize.run][]"""
 
         bader: BaderSchema
         chargemol: ChargemolSchema
@@ -727,7 +727,7 @@ if TYPE_CHECKING:
         """Type hint of all cclib attributes."""
 
     class cclibBaseSchema(TypedDict):
-        """Type hint associated with `quacc.schemas.cclib._make_cclib_schema`"""
+        """Type hint associated with `quacc.schemas.cclib.make_base_cclib_schema`"""
 
         logfile: str
         attributes: AllAttributes
@@ -735,7 +735,7 @@ if TYPE_CHECKING:
         trajectory: list[Atoms]
 
     class cclibSchema(cclibBaseSchema, RunSchema):
-        """Type hint associated with [quacc.schemas.cclib.cclib_summarize_run][]."""
+        """Type hint associated with [quacc.schemas.cclib.CclibSummarize.run][]."""
 
         steps: dict[int, cclibBaseSchema]  # when store_intermediate_results=True
 
