@@ -529,8 +529,8 @@ def geodesic_interpolate_wrapper(
     product: Atoms,
     n_images: int = 20,
     perform_sweep: bool | Literal["auto"] = "auto",
-    convergence_tolerance1: float = 1e-2,
-    convergence_tolerance2: float = 2e-3,
+    redestribute_tol: float = 1e-2,
+    smoother_tol: float = 2e-3,
     max_iterations: int = 15,
     max_micro_iterations: int = 20,
     morse_scaling: float = 1.7,
@@ -552,10 +552,10 @@ def geodesic_interpolate_wrapper(
     perform_sweep
         Whether to sweep across the path optimizing one image at a time.
         Default is to perform sweeping updates if there are more than 35 atoms.
-    convergence_tolerance1
+    redestribute_tol
         the value passed to the tol keyword argument of
          geodesic_interpolate.interpolation.redistribute. Default is 1e-2.
-    convergence_tolerance2
+    smoother_tol
         the value passed to the tol keyword argument of geodesic_smoother.smooth
         or geodesic_smoother.sweep. Default is 2e-3.
     max_iterations
@@ -588,7 +588,7 @@ def geodesic_interpolate_wrapper(
         chemical_symbols,
         [reactant.positions, product.positions],
         n_images,
-        tol=convergence_tolerance1,
+        tol=redestribute_tol,
     )
 
     # Perform smoothing by minimizing distance in Cartesian coordinates with redundant internal metric
@@ -604,12 +604,12 @@ def geodesic_interpolate_wrapper(
         perform_sweep = len(chemical_symbols) > sweep_cutoff_size
     if perform_sweep:
         geodesic_smoother.sweep(
-            tol=convergence_tolerance2,
+            tol=smoother_tol,
             max_iter=max_iterations,
             micro_iter=max_micro_iterations,
         )
     else:
-        geodesic_smoother.smooth(tol=convergence_tolerance2, max_iter=max_iterations)
+        geodesic_smoother.smooth(tol=smoother_tol, max_iter=max_iterations)
     return [
         Atoms(symbols=chemical_symbols, positions=geom)
         for geom in geodesic_smoother.path
