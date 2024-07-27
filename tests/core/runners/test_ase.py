@@ -103,10 +103,8 @@ def test_run_neb(tmp_path):
     dyn = run_neb(images, optimizer=NEBOptimizer, neb_kwargs=neb_kwargs)
     neb_summary = summarize_neb_run(
         dyn,
-        additional_fields={
-            "interpolate_flags": {"n_images": len(images)},
-            "n_iter_return": 10,
-        },
+        n_images=len(images),
+        n_iter_return=10,
     )
     assert neb_summary["trajectory_results"][-2]["energy"] == pytest.approx(
         1.0919733949403314, abs=1e-4
