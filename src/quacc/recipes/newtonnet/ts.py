@@ -24,7 +24,7 @@ if has_sella:
 if has_newtonnet:
     from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
 if has_geodesic_interpolate:
-    from quacc.runners.ase import _geodesic_interpolate_wrapper
+    from quacc.runners.ase import geodesic_interpolate_wrapper
 
 if TYPE_CHECKING:
     from typing import Any, Literal
@@ -336,7 +336,7 @@ def neb_job(
     relax_summary_p = strip_decorator(relax_job)(product_atoms, **relax_job_kwargs)
 
     if interpolation_method == "geodesic":
-        images = _geodesic_interpolate_wrapper(
+        images = geodesic_interpolate_wrapper(
             relax_summary_r["atoms"], relax_summary_p["atoms"], **interpolate_flags
         )
     else:
@@ -439,7 +439,7 @@ def geodesic_job(
     relax_summary_r = strip_decorator(relax_job)(reactant_atoms, **relax_job_kwargs)
     relax_summary_p = strip_decorator(relax_job)(product_atoms, **relax_job_kwargs)
 
-    images = _geodesic_interpolate_wrapper(
+    images = geodesic_interpolate_wrapper(
         relax_summary_r["atoms"].copy(),
         relax_summary_p["atoms"].copy(),
         **geodesic_interpolate_flags,
