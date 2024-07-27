@@ -57,13 +57,13 @@ class Summarize:
         Parameters
         ----------
         directory
-            Path to the directory where the calculation was run. A value of None specifies the calculator directory.
+            Path to the directory where the calculation was run and results will be stored.
         charge_and_multiplicity
             Charge and spin multiplicity of the Atoms object, only used for Molecule
             metadata.
         move_magmoms
             Whether to move the final magmoms of the original Atoms object to the
-            initial magmoms of the returned Atoms object.
+            initial magmoms of the returned Atoms object, if relevant.
         additional_fields
             Additional fields to add to the task document.
 
@@ -109,7 +109,6 @@ class Summarize:
         store = self._settings.STORE if store == QuaccDefault else store
 
         directory = self.directory or final_atoms.calc.directory
-        uri = get_uri(directory)
 
         if input_atoms:
             input_atoms_metadata = atoms_to_metadata(
@@ -122,7 +121,7 @@ class Summarize:
 
         inputs = {
             "parameters": final_atoms.calc.parameters,
-            "nid": uri.split(":")[0],
+            "nid": get_uri(directory).split(":")[0],
             "dir_name": directory,
             "input_atoms": input_atoms_metadata,
             "quacc_version": __version__,

@@ -44,6 +44,29 @@ class ThermoSummarize:
         charge_and_multiplicity: tuple[int, int] | None = None,
         additional_fields: dict[str, Any] | None = None,
     ) -> None:
+        """
+        Initialize the ThermoSummarize object.
+
+        Parameters
+        ----------
+        atoms
+            ASE Atoms object.
+        vib_freqs
+            Vibrational frequencies.
+        energy
+            Potential energy used for a reference in thermochemistry calculations.
+        directory
+            Directory to store the output files. Defaults to the directory of the
+            atoms object's calculator, if available.
+        charge_and_multiplicity
+            Charge and multiplicity of the atoms object.
+        additional_fields
+            Additional fields to store in the document.
+
+        Returns
+        -------
+        None
+        """
         self.atoms = atoms
         self.vib_freqs = vib_freqs
         self.energy = energy
@@ -189,6 +212,20 @@ class ThermoSummarize:
         )
 
     def _make_ideal_gas(self, spin_multiplicity: int | None = None) -> IdealGasThermo:
+        """
+        Make an ASE IdealGasThermo object.
+
+        Parameters
+        ----------
+        spin_multiplicity
+            Spin multiplicity of the system. A value of None will attempt to detect
+            the spin multiplicity from the Atoms object.
+
+        Returns
+        -------
+        IdealGasThermo
+            ASE IdealGasThermo object
+        """
         # Ensure all negative modes are made complex
         for i, f in enumerate(self.vib_freqs):
             if not isinstance(f, complex) and f < 0:
@@ -224,6 +261,14 @@ class ThermoSummarize:
         )
 
     def _make_harmonic_thermo(self) -> HarmonicThermo:
+        """
+        Make an ASE HarmonicThermo object.
+
+        Returns
+        -------
+        HarmonicThermo
+            ASE HarmonicThermo object
+        """
         # Ensure all negative modes are made complex
         for i, f in enumerate(self.vib_freqs):
             if not isinstance(f, complex) and f < 0:

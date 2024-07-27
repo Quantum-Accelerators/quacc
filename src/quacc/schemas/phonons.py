@@ -63,12 +63,9 @@ def summarize_phonopy(
     settings = get_settings()
     store = settings.STORE if store == QuaccDefault else store
 
-    uri = get_uri(directory)
-    directory = ":".join(uri.split(":")[1:])
-
     inputs = {
         "parameters": parameters,
-        "nid": uri.split(":")[0],
+        "nid": get_uri(directory).split(":")[0],
         "dir_name": directory,
         "phonopy_metadata": {"version": phonon.version},
         "quacc_version": __version__,
