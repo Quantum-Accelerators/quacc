@@ -340,7 +340,6 @@ def neb_job(
             relax_summary_r["atoms"], relax_summary_p["atoms"], **interpolate_flags
         )
     else:
-        # Make a band consisting of 5 images:
         images = [reactant_atoms]
         images += [
             reactant_atoms.copy() for i in range(interpolate_flags["n_images"] - 2)
