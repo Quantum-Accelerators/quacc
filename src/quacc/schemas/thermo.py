@@ -11,7 +11,7 @@ from ase.units import invcm
 from emmet.core.symmetry import PointGroupData
 from pymatgen.io.ase import AseAtomsAdaptor
 
-from quacc import QuaccDefault, get_settings
+from quacc import QuaccDefault, __version__, get_settings
 from quacc.atoms.core import get_spin_multiplicity_attribute
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.utils.dicts import finalize_dict
@@ -134,6 +134,7 @@ class ThermoSummarize:
             },
             "nid": get_uri(self.directory).split(":")[0],
             "dir_name": self.directory,
+            "quacc_version": __version__,
         }
 
         results = {
@@ -206,6 +207,7 @@ class ThermoSummarize:
             },
             "nid": get_uri(self.directory).split(":")[0],
             "dir_name": self.directory,
+            "quacc_version": __version__,
         }
 
         results = {

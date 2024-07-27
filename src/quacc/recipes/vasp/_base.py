@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from quacc.calculators.vasp import Vasp
 from quacc.runners.ase import Runner
-from quacc.schemas.ase import Summarize
+from quacc.schemas.ase import VibSummarize
 from quacc.schemas.vasp import VaspSummarize
 from quacc.utils.dicts import recursive_dict_merge
 
@@ -178,10 +178,6 @@ def run_and_summarize_vib_and_thermo(
 
     calc = Vasp(atoms, preset=preset, **calc_flags)
     vib = Runner(atoms, calc, copy_files=copy_files).run_vib(vib_kwargs=vib_kwargs)
-    return Summarize(additional_fields=additional_fields).vib_and_thermo(
-        vib,
-        thermo_method=thermo_method,
-        energy=energy,
-        temperature=temperature,
-        pressure=pressure,
+    return VibSummarize(vib, additional_fields=additional_fields).vib_and_thermo(
+        thermo_method, energy=energy, temperature=temperature, pressure=pressure
     )

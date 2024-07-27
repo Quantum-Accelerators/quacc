@@ -14,7 +14,7 @@ from maggma.stores import MemoryStore
 from monty.json import MontyDecoder, jsanitize
 from monty.serialization import loadfn
 
-from quacc.schemas.ase import Summarize
+from quacc.schemas.ase import Summarize, VibSummarize
 
 FILE_DIR = Path(__file__).parent
 
@@ -206,7 +206,7 @@ def test_vib_run1(monkeypatch, tmp_path):
     vib = Vibrations(atoms)
     vib.run()
 
-    results = Summarize().vib(vib, is_molecule=True)
+    results = VibSummarize(vib).vib(is_molecule=True)
     assert results["atoms"] == input_atoms
     assert results["natoms"] == len(atoms)
     assert results["parameters_vib"]["delta"] == vib.delta
@@ -245,7 +245,7 @@ def test_vib_run2(monkeypatch, tmp_path):
     vib = Vibrations(atoms)
     vib.run()
 
-    results = Summarize().vib(vib, is_molecule=False)
+    results = VibSummarize(vib).vib(is_molecule=False)
     assert results["atoms"] == input_atoms
     assert results["natoms"] == len(atoms)
     assert results["parameters_vib"]["delta"] == vib.delta
@@ -282,7 +282,7 @@ def test_summarize_vib_and_thermo_run1(tmp_path, monkeypatch):
     vib = Vibrations(atoms)
     vib.run()
 
-    results = Summarize().vib_and_thermo(vib, "ideal_gas")
+    results = VibSummarize(vib).vib_and_thermo("ideal_gas")
     assert results["atoms"] == input_atoms
     assert results["natoms"] == len(atoms)
     assert results["parameters_vib"]["delta"] == vib.delta
@@ -322,7 +322,7 @@ def test_summarize_vib_and_thermo_run2(tmp_path, monkeypatch):
     vib = Vibrations(atoms)
     vib.run()
 
-    results = Summarize().vib_and_thermo(vib, "ideal_gas")
+    results = VibSummarize(vib).vib_and_thermo("ideal_gas")
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
     json_results = loadfn(Path(results["dir_name"], "quacc_results.json.gz"))
@@ -343,7 +343,7 @@ def test_summarize_vib_and_thermo_run3(tmp_path, monkeypatch):
     vib = Vibrations(atoms)
     vib.run()
 
-    results = Summarize().vib_and_thermo(vib, "harmonic")
+    results = VibSummarize(vib).vib_and_thermo("harmonic")
     assert results["atoms"] == input_atoms
     assert results["nsites"] == len(atoms)
     assert results["parameters_vib"]["delta"] == vib.delta
@@ -365,7 +365,7 @@ def test_summarize_vib_and_thermo_run4(tmp_path, monkeypatch):
 
     vib = Vibrations(atoms)
     vib.run()
-    results = Summarize().vib_and_thermo(vib, "harmonic")
+    results = VibSummarize(vib).vib_and_thermo("harmonic")
 
     assert len(results["parameters_thermo"]["vib_energies"]) > 1
     assert results["parameters_thermo"]["vib_energies"][-1] == pytest.approx(
@@ -388,7 +388,7 @@ def test_summarize_vib_and_thermo_run5(tmp_path, monkeypatch):
     atoms.calc = EMT()
     vib = Vibrations(atoms)
     vib.run()
-    results = Summarize().vib_and_thermo(vib, "ideal_gas")
+    results = VibSummarize(vib).vib_and_thermo("ideal_gas")
 
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
@@ -428,4 +428,4 @@ def test_errors(tmp_path, monkeypatch):
     vib = Vibrations(atoms)
     vib.run()
     with pytest.raises(ValueError, match="Unsupported thermo_method"):
-        Summarize(directory=tmp_path).vib_and_thermo(vib, "bad")
+        VibSummarize(vib, directory=tmp_path).vib_and_thermo("bad")

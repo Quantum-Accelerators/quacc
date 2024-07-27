@@ -12,7 +12,7 @@ from ase.calculators.lj import LennardJones
 
 from quacc import job
 from quacc.runners.ase import Runner
-from quacc.schemas.ase import Summarize
+from quacc.schemas.ase import Summarize, VibSummarize
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
@@ -140,8 +140,8 @@ def freq_job(
     calc = LennardJones(**calc_kwargs)
     vib = Runner(atoms, calc, copy_files=copy_files).run_vib(vib_kwargs=vib_kwargs)
 
-    return Summarize(
-        additional_fields={"name": "LJ Frequency and Thermo"}
+    return VibSummarize(
+        vib, additional_fields={"name": "LJ Frequency and Thermo"}
     ).vib_and_thermo(
-        vib, "ideal_gas", energy=energy, temperature=temperature, pressure=pressure
+        "ideal_gas", energy=energy, temperature=temperature, pressure=pressure
     )

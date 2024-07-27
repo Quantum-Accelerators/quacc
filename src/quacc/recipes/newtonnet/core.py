@@ -10,7 +10,7 @@ from monty.dev import requires
 
 from quacc import get_settings, job
 from quacc.runners.ase import Runner
-from quacc.schemas.ase import Summarize
+from quacc.schemas.ase import Summarize, VibSummarize
 from quacc.utils.dicts import recursive_dict_merge
 
 has_sella = bool(find_spec("sella"))
@@ -181,11 +181,11 @@ def freq_job(
     )
 
     vib = VibrationsData(final_atoms, summary["results"]["hessian"])
-    return Summarize(
+    return VibSummarize(
+        vib,
         directory=summary["dir_name"],
         additional_fields={"name": "ASE Vibrations and Thermo Analysis"},
     ).vib_and_thermo(
-        vib,
         "ideal_gas",
         energy=summary["results"]["energy"],
         temperature=temperature,

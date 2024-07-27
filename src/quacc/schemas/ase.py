@@ -122,7 +122,7 @@ class Summarize:
         else:
             input_atoms_metadata = {}
 
-        # Generate the base o fthe task document
+        # Generate the base of the task document
         inputs = {
             "parameters": final_atoms.calc.parameters,
             "nid": get_uri(directory).split(":")[0],
@@ -293,9 +293,46 @@ class Summarize:
             store=store,
         )
 
-    def vib(
+
+class VibSummarize:
+    """
+    Summarize an ASE Vibratinos analysis.
+    """
+
+    def __init__(
         self,
         vib_object: Vibrations | VibrationsData,
+        directory: str | Path | None = None,
+        charge_and_multiplicity: tuple[int, int] | None = None,
+        additional_fields: dict[str, Any] | None = None,
+    ) -> None:
+        """
+        Initialize the Summarize object.
+
+        Parameters
+        ----------
+        vib_object
+            Instantiated ASE Vibrations object.
+        directory
+            Path to the directory where the results will be stored.
+        charge_and_multiplicity
+            Charge and spin multiplicity of the Atoms object, only used for Molecule
+            metadata.
+        additional_fields
+            Additional fields to add to the task document.
+
+        Returns
+        -------
+        None
+        """
+        self.vib_object = vib_object
+        self.directory = directory
+        self.charge_and_multiplicity = charge_and_multiplicity
+        self.additional_fields = additional_fields or {}
+        self._settings = get_settings()
+
+    def vib(
+        self,
         is_molecule: bool = False,
         store: Store | None | DefaultSetting = QuaccDefault,
     ) -> VibSchema:
@@ -305,8 +342,6 @@ class Summarize:
 
         Parameters
         ----------
-        vib_object
-            Instantiated ASE Vibrations object.
         is_molecule
             Whether the Atoms object is a molecule. If True, the vibrational modes are
             sorted by their absolute value and the 3N-5 or 3N-6 modes are taken. If False,
@@ -322,26 +357,27 @@ class Summarize:
         store = self._settings.STORE if store == QuaccDefault else store
 
         # Tabulate input parameters
-        vib_freqs_raw = vib_object.get_frequencies().tolist()
-        vib_energies_raw = vib_object.get_energies().tolist()
-        if isinstance(vib_object, VibrationsData):
-            atoms = vib_object._atoms
+        vib_freqs_raw = self.vib_object.get_frequencies().tolist()
+        vib_energies_raw = self.vib_object.get_energies().tolist()
+        if isinstance(self.vib_object, VibrationsData):
+            atoms = self.vib_object._atoms
             directory = self.directory
             inputs = {"nid": get_uri(directory).split(":")[0], "dir_name": directory}
         else:
-            atoms = vib_object.atoms
+            atoms = self.vib_object.atoms
             directory = self.directory or atoms.calc.directory
             inputs = {
                 "parameters": atoms.calc.parameters,
                 "parameters_vib": {
-                    "delta": vib_object.delta,
-                    "direction": vib_object.direction,
-                    "method": vib_object.method,
-                    "ndof": vib_object.ndof,
-                    "nfree": vib_object.nfree,
+                    "delta": self.vib_object.delta,
+                    "direction": self.vib_object.direction,
+                    "method": self.vib_object.method,
+                    "ndof": self.vib_object.ndof,
+                    "nfree": self.vib_object.nfree,
                 },
                 "nid": get_uri(directory).split(":")[0],
                 "dir_name": directory,
+                "quacc_version": __version__,
             }
 
         # Convert imaginary modes to negative values for DB storage
@@ -410,7 +446,6 @@ class Summarize:
 
     def vib_and_thermo(
         self,
-        vib_object: Vibrations | VibrationsData,
         thermo_method: Literal["ideal_gas", "harmonic"],
         energy: float = 0.0,
         temperature: float = 298.15,
@@ -440,14 +475,14 @@ class Summarize:
         store = self._settings.STORE if store == QuaccDefault else store
 
         atoms = (
-            vib_object._atoms
-            if isinstance(vib_object, VibrationsData)
-            else vib_object.atoms
+            self.vib_object._atoms
+            if isinstance(self.vib_object, VibrationsData)
+            else self.vib_object.atoms
         )
         is_molecule = bool(thermo_method == "ideal_gas")
 
         # Generate vib data
-        vib_schema = self.vib(vib_object, is_molecule=is_molecule, store=None)
+        vib_schema = self.vib(is_molecule=is_molecule, store=None)
         directory = vib_schema["dir_name"]
 
         # Generate thermo data
