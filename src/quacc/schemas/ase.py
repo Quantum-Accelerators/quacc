@@ -318,15 +318,6 @@ class Summarize:
         vib_freqs_raw = vib_object.get_frequencies().tolist()
         vib_energies_raw = vib_object.get_energies().tolist()
 
-        # Convert imaginary modes to negative values for DB storage
-        for i, f in enumerate(vib_freqs_raw):
-            if np.imag(f) > 0:
-                vib_freqs_raw[i] = -np.abs(f)
-                vib_energies_raw[i] = -np.abs(vib_energies_raw[i])
-            else:
-                vib_freqs_raw[i] = np.abs(f)
-                vib_energies_raw[i] = np.abs(vib_energies_raw[i])
-
         if isinstance(vib_object, VibrationsData):
             atoms = vib_object._atoms
             directory = self.directory
@@ -343,8 +334,40 @@ class Summarize:
                     "nfree": vib_object.nfree,
                 },
             }
-
         inputs |= {"nid": get_uri(directory).split(":")[0], "dir_name": directory}
+
+        if thermo_method:
+            thermo_summary = ThermoSummarize(
+                atoms,
+                vib_freqs_raw,
+                directory=directory,
+                energy=energy,
+                charge_and_multiplicity=self.charge_and_multiplicity,
+            )
+            if thermo_method == "ideal_gas":
+                thermo_schema = thermo_summary.ideal_gas(
+                    temperature=temperature, pressure=pressure, store=None
+                )
+            elif thermo_method == "harmonic":
+                thermo_schema = thermo_summary.harmonic(
+                    temperature=temperature, pressure=pressure, store=None
+                )
+            else:
+                raise ValueError(
+                    "Invalid thermo_method. Must be 'ideal_gas' or 'harmonic'."
+                )
+        else:
+            thermo_schema = {}
+
+        # Convert imaginary modes to negative values for DB storage
+        for i, f in enumerate(vib_freqs_raw):
+            if np.imag(f) > 0:
+                vib_freqs_raw[i] = -np.abs(f)
+                vib_energies_raw[i] = -np.abs(vib_energies_raw[i])
+            else:
+                vib_freqs_raw[i] = np.abs(f)
+                vib_energies_raw[i] = np.abs(vib_energies_raw[i])
+
         atoms_metadata = atoms_to_metadata(
             atoms, charge_and_multiplicity=self.charge_and_multiplicity
         )
@@ -379,7 +402,7 @@ class Summarize:
 
         imag_vib_freqs = [f for f in vib_freqs if f < 0]
 
-        results = {
+        vib_results = {
             "results": {
                 "imag_vib_freqs": imag_vib_freqs,
                 "n_imag": len(imag_vib_freqs),
@@ -389,30 +412,7 @@ class Summarize:
                 "vib_freqs_raw": vib_freqs_raw,
             }
         }
-        vib_schema = atoms_metadata | inputs | results | self.additional_fields
-
-        if thermo_method:
-            thermo_summary = ThermoSummarize(
-                atoms,
-                vib_freqs_raw,
-                directory=directory,
-                energy=energy,
-                charge_and_multiplicity=self.charge_and_multiplicity,
-            )
-            if thermo_method == "ideal_gas":
-                thermo_schema = thermo_summary.ideal_gas(
-                    temperature=temperature, pressure=pressure, store=None
-                )
-            elif thermo_method == "harmonic":
-                thermo_schema = thermo_summary.harmonic(
-                    temperature=temperature, pressure=pressure, store=None
-                )
-            else:
-                raise ValueError(
-                    "Invalid thermo_method. Must be 'ideal_gas' or 'harmonic'."
-                )
-        else:
-            thermo_schema = {}
+        vib_schema = atoms_metadata | inputs | vib_results | self.additional_fields
 
         unsorted_task_doc = recursive_dict_merge(vib_schema, thermo_schema)
         return finalize_dict(
