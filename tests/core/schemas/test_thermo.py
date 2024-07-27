@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -8,6 +9,7 @@ from ase.build import molecule
 from ase.calculators.emt import EMT
 from ase.units import invcm
 from monty.json import MontyDecoder, jsanitize
+from monty.serialization import loadfn
 
 from quacc.schemas.thermo import ThermoSummarize
 
@@ -41,7 +43,7 @@ def test_run_ideal_gas(tmp_path):
     assert igt.get_ZPE_correction() == pytest.approx(2548.5 * invcm)
 
 
-def test_summarize_ideal_gas_thermo(tmp_path, caplog):
+def test_summarize_ideal_gas_thermo1(tmp_path):
     # Make sure metadata is made
     atoms = molecule("N2")
     results = ThermoSummarize(atoms, [0.34 / invcm], directory=tmp_path).ideal_gas()
@@ -52,6 +54,8 @@ def test_summarize_ideal_gas_thermo(tmp_path, caplog):
     assert results["results"]["energy"] == 0
     assert "pymatgen_version" in results["builder_meta"]
 
+
+def test_summarize_ideal_gas_thermo2(tmp_path):
     # Make sure right number of vib energies are reported
     atoms = molecule("N2")
     results = ThermoSummarize(
@@ -63,6 +67,8 @@ def test_summarize_ideal_gas_thermo(tmp_path, caplog):
     assert results["parameters_thermo"]["vib_freqs"] == [0.34 / invcm]
     assert results["results"]["energy"] == -1
 
+
+def test_summarize_ideal_gas_thermo3(tmp_path):
     # # # Make sure info tags are handled appropriately
     atoms = molecule("N2")
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
@@ -72,6 +78,8 @@ def test_summarize_ideal_gas_thermo(tmp_path, caplog):
     ).ideal_gas()
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
+
+def test_summarize_ideal_gas_thermo4(tmp_path, caplog):
     # Make sure spin works right
     atoms = molecule("CH3")
     vib_energies = [
@@ -108,7 +116,24 @@ def test_summarize_ideal_gas_thermo(tmp_path, caplog):
     assert results["parameters_thermo"]["sigma"] == 6
     assert results["parameters_thermo"]["spin_multiplicity"] == 2
 
+
+def test_summarize_ideal_gas_thermo5(tmp_path):
     # Test custom spin
+    atoms = molecule("CH3")
+    vib_energies = [
+        9.551077150221621e-06j,
+        3.1825877476455407e-06j,
+        2.7223332245579342e-06j,
+        (0.03857802457526743 + 0j),
+        (0.038762952842240087 + 0j),
+        (0.03876411386029907 + 0j),
+        (0.07135067701372912 + 0j),
+        (0.1699785717790056 + 0j),
+        (0.1700229358789492 + 0j),
+        (0.3768719400148424 + 0j),
+        (0.38803854931751625 + 0j),
+        (0.3880868821616261 + 0j),
+    ]
     results = ThermoSummarize(
         atoms,
         np.array(vib_energies) / invcm,
@@ -119,7 +144,24 @@ def test_summarize_ideal_gas_thermo(tmp_path, caplog):
     assert results["results"]["entropy"] == pytest.approx(0.0023506788982171896)
     assert results["parameters_thermo"]["spin_multiplicity"] == 2
 
+
+def test_summarize_ideal_gas_thermo6(tmp_path):
     # Test custom spin
+    atoms = molecule("CH3")
+    vib_energies = [
+        9.551077150221621e-06j,
+        3.1825877476455407e-06j,
+        2.7223332245579342e-06j,
+        (0.03857802457526743 + 0j),
+        (0.038762952842240087 + 0j),
+        (0.03876411386029907 + 0j),
+        (0.07135067701372912 + 0j),
+        (0.1699785717790056 + 0j),
+        (0.1700229358789492 + 0j),
+        (0.3768719400148424 + 0j),
+        (0.38803854931751625 + 0j),
+        (0.3880868821616261 + 0j),
+    ]
     results = ThermoSummarize(
         atoms,
         np.array(vib_energies) / invcm,
@@ -129,6 +171,9 @@ def test_summarize_ideal_gas_thermo(tmp_path, caplog):
     ).ideal_gas(temperature=1000.0, pressure=20.0)
     assert results["results"]["entropy"] == pytest.approx(0.0024104096804891486)
     assert results["parameters_thermo"]["spin_multiplicity"] == 4
+
+    json_results = loadfn(Path(results["dir_name"], "quacc_results.json.gz"))
+    assert json_results.keys() == results.keys()
 
     # test document can be jsanitized and decoded
     d = jsanitize(results, strict=True, enum_values=True)
@@ -161,6 +206,9 @@ def test_summarize_harmonic_thermo(tmp_path):
     assert results["results"]["internal_energy"] == pytest.approx(0.1700006085385999)
     assert results["results"]["entropy"] == pytest.approx(2.1952829783392438e-09)
     assert results["results"]["zpe"] == pytest.approx(0.17)
+
+    json_results = loadfn(Path(results["dir_name"], "quacc_results.json.gz"))
+    assert json_results.keys() == results.keys()
 
     # test document can be jsanitized and decoded
     d = jsanitize(results, strict=True, enum_values=True)

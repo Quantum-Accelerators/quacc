@@ -15,6 +15,7 @@ from quacc import QuaccDefault, get_settings
 from quacc.atoms.core import get_spin_multiplicity_attribute
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.utils.dicts import finalize_dict
+from quacc.utils.files import get_uri
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
@@ -130,7 +131,9 @@ class ThermoSummarize:
                 "vib_energies": igt.vib_energies.tolist(),
                 "n_imag": igt.n_imag,
                 "method": "ideal_gas",
-            }
+            },
+            "nid": get_uri(self.directory).split(":")[0],
+            "dir_name": self.directory,
         }
 
         results = {
@@ -200,7 +203,9 @@ class ThermoSummarize:
                 "vib_energies": harmonic_thermo.vib_energies.tolist(),
                 "n_imag": harmonic_thermo.n_imag,
                 "method": "harmonic",
-            }
+            },
+            "nid": get_uri(self.directory).split(":")[0],
+            "dir_name": self.directory,
         }
 
         results = {
