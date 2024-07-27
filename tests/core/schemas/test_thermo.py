@@ -93,7 +93,7 @@ def test_summarize_ideal_gas_thermo(tmp_path, caplog):
             atoms, np.array(vib_energies) / invcm, energy=-10.0, directory=tmp_path
         ).ideal_gas(temperature=1000.0, pressure=20.0)
     assert (
-        "No multiplicity provided. Automatically detecting a spin multiplicity of 2 from the Atoms object"
+        "No multiplicity provided. Using a spin multiplicity of 2 from the Atoms object"
         in caplog.text
     )
 

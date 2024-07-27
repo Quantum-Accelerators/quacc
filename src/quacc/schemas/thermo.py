@@ -68,7 +68,12 @@ class ThermoSummarize:
         None
         """
         self.atoms = atoms
+        # Make sure vibrational freqs are imaginary, not negative
+        for i, f in enumerate(vib_freqs):
+            if not isinstance(f, complex) and f < 0:
+                vib_freqs[i] = complex(0 - f * 1j)
         self.vib_freqs = vib_freqs
+        self.vib_energies = [f * units.invcm for f in self.vib_freqs]
         self.energy = energy
         self.directory = Path(directory or atoms.calc.directory)
         self.charge_and_multiplicity = charge_and_multiplicity
@@ -100,15 +105,20 @@ class ThermoSummarize:
             Dictionary representation of the task document
         """
         store = self._settings.STORE if store == QuaccDefault else store
+
+        # Get the spin multiplicity
         if self.charge_and_multiplicity:
             spin_multiplicity = self.charge_and_multiplicity[1]
         else:
             spin_multiplicity = get_spin_multiplicity_attribute(self.atoms)
             LOGGER.info(
-                f"No multiplicity provided. Automatically detecting a spin multiplicity of {spin_multiplicity} from the Atoms object."
+                f"No multiplicity provided. Using a spin multiplicity of {spin_multiplicity} from the Atoms object for thermochemistry."
             )
+
+        # Generate the ASE IdealGasThermo object
         igt = self._make_ideal_gas(spin_multiplicity=spin_multiplicity)
 
+        # Tabulate inputs and outputs
         inputs = {
             "parameters_thermo": {
                 "temperature": temperature,
@@ -136,11 +146,14 @@ class ThermoSummarize:
             }
         }
 
-        atoms_metadata = atoms_to_metadata(
-            igt.atoms, charge_and_multiplicity=self.charge_and_multiplicity
+        unsorted_task_doc = (
+            atoms_to_metadata(
+                igt.atoms, charge_and_multiplicity=self.charge_and_multiplicity
+            )
+            | inputs
+            | results
+            | self.additional_fields
         )
-
-        unsorted_task_doc = atoms_metadata | inputs | results | self.additional_fields
         return finalize_dict(
             unsorted_task_doc,
             directory=self.directory,
@@ -173,8 +186,11 @@ class ThermoSummarize:
             Dictionary representation of the task document
         """
         store = self._settings.STORE if store == QuaccDefault else store
+
+        # Generate the ASE HarmonicThermo object
         harmonic_thermo = self._make_harmonic_thermo()
 
+        # Tabulate inputs and outputs
         inputs = {
             "parameters_thermo": {
                 "temperature": temperature,
@@ -202,8 +218,9 @@ class ThermoSummarize:
             }
         }
 
-        atoms_metadata = atoms_to_metadata(self.atoms)
-        unsorted_task_doc = atoms_metadata | inputs | results | self.additional_fields
+        unsorted_task_doc = (
+            atoms_to_metadata(self.atoms) | inputs | results | self.additional_fields
+        )
         return finalize_dict(
             unsorted_task_doc,
             directory=self.directory,
@@ -226,14 +243,6 @@ class ThermoSummarize:
         IdealGasThermo
             ASE IdealGasThermo object
         """
-        # Ensure all negative modes are made complex
-        for i, f in enumerate(self.vib_freqs):
-            if not isinstance(f, complex) and f < 0:
-                self.vib_freqs[i] = complex(0 - f * 1j)
-
-        # Convert vibrational frequencies to energies
-        vib_energies = [f * units.invcm for f in self.vib_freqs]
-
         # Get the spin from the Atoms object.
         spin = round((spin_multiplicity - 1) / 2, 1) if spin_multiplicity else 0
 
@@ -251,7 +260,7 @@ class ThermoSummarize:
             geometry = "nonlinear"
 
         return IdealGasThermo(
-            vib_energies,
+            self.vib_energies,
             geometry,
             potentialenergy=self.energy,
             atoms=self.atoms,
@@ -269,16 +278,8 @@ class ThermoSummarize:
         HarmonicThermo
             ASE HarmonicThermo object
         """
-        # Ensure all negative modes are made complex
-        for i, f in enumerate(self.vib_freqs):
-            if not isinstance(f, complex) and f < 0:
-                self.vib_freqs[i] = complex(0 - f * 1j)
-
-        # Convert vibrational frequencies to energies
-        vib_energies = [f * units.invcm for f in self.vib_freqs]
-
         return HarmonicThermo(
-            vib_energies=vib_energies,
+            vib_energies=self.vib_energies,
             potentialenergy=self.energy,
             ignore_imag_modes=True,
         )

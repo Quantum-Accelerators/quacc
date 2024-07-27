@@ -193,10 +193,12 @@ class CclibSummarize:
             Dictionary representation of the task document
         """
         store = self._settings.STORE if store == QuaccDefault else store
-
         final_atoms = get_final_atoms_from_dynamics(dyn)
-        directory = Path(self.directory or final_atoms.calc.directory)
+
+        # Get the cclib base task document
         cclib_summary = self.run(final_atoms, store=None)
+
+        # Get the base task document for the ASE run
         opt_run_summary = Summarize(
             charge_and_multiplicity=(
                 cclib_summary["charge"],
@@ -209,10 +211,12 @@ class CclibSummarize:
             check_convergence=self.check_convergence,
             store=None,
         )
+
+        # Merge the two dictionaries
         unsorted_task_doc = recursive_dict_merge(cclib_summary, opt_run_summary)
         return finalize_dict(
             unsorted_task_doc,
-            directory=directory,
+            directory=Path(self.directory or final_atoms.calc.directory),
             gzip_file=self._settings.GZIP_FILES,
             store=store,
         )
