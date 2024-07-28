@@ -350,6 +350,19 @@ def grid_phonon_flow(
         This will reduce the amount of data produced by a factor of nblocks.
         If nblocks = 0, each job will contain all the representations for a
         single q-point.
+    run_relax
+        If True, structure relaxation is performed using [quacc.recipes.espresso.core.relax_job][]
+        before running parallelized phonon jobs.
+    copy_files
+        Source directory or directories to copy files from. If a `SourceDirectory` or a
+        list of `SourceDirectory` is provided, this interface will automatically guess
+        which files have to be copied over by looking at the binary and `input_data`.
+        If a dict is provided, the mode is manual, keys are source directories and values
+        are relative path to files or directories to copy. Glob patterns are supported.
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     job_params
         Custom parameters to pass to each Job in the Flow. This is a dictionary where
         the keys are the names of the jobs and the values are dictionaries of parameters.
