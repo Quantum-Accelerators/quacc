@@ -56,8 +56,8 @@ def bulk_to_deformations_flow(
     Returns
     -------
     list[RunSchema | OptSchema]
-        [RunSchema][quacc.schemas.ase.summarize_run] or
-        [OptSchema][quacc.schemas.ase.summarize_opt_run] for each deformation.
+        [RunSchema][quacc.schemas.ase.Summarize.run] or
+        [OptSchema][quacc.schemas.ase.Summarize.opt] for each deformation.
         See the return type-hint for the data structure.
     """
     relax_job_, static_job_ = customize_funcs(

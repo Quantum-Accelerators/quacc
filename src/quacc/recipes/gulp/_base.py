@@ -10,7 +10,7 @@ from ase.calculators.gulp import GULP
 
 from quacc import get_settings
 from quacc.runners.ase import Runner
-from quacc.schemas.ase import summarize_run
+from quacc.schemas.ase import Summarize
 from quacc.utils.lists import merge_list_params
 
 if TYPE_CHECKING:
@@ -68,7 +68,7 @@ def run_and_summarize(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][]
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][]
     """
     keyword_defaults = keyword_defaults or []
     settings = get_settings()
@@ -117,4 +117,4 @@ def run_and_summarize(
         msg = "Optimization did not converge."
         raise RuntimeError(msg)
 
-    return summarize_run(final_atoms, atoms, additional_fields=additional_fields)
+    return Summarize(additional_fields=additional_fields).run(final_atoms, atoms)
