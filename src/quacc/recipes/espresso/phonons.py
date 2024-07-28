@@ -476,7 +476,7 @@ def grid_phonon_flow(
         pw_job_results = pw_job(atoms)
         prev_outdir = pw_job_results["dir_name"]
 
-    ph_init_job_results = ph_init_job(copy_files = copy_files, prev_outdir=prev_outdir)
+    ph_init_job_results = ph_init_job(copy_files=copy_files, prev_outdir=prev_outdir)
 
     grid_results = _grid_phonon_subflow(
         job_params["ph_job"]["input_data"], ph_init_job_results, ph_job, nblocks=nblocks
