@@ -451,7 +451,9 @@ def grid_phonon_flow(
         decorators=job_decorators,
     )
 
-    pw_job_results = pw_job(atoms)
+    if run_relax:
+        pw_job_results = pw_job(atoms)
+        prev_outdir = pw_job_results["dir_name"]
 
     ph_init_job_results = ph_init_job(prev_outdir=pw_job_results["dir_name"])
 
