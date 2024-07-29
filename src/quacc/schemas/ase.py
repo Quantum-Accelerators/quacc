@@ -346,7 +346,10 @@ def summarize_neb_run(
         )
     trajectory_results = [atoms.calc.results for atoms in atoms_trajectory]
     ts_index = (
-        np.argmax([result["energy"] for result in trajectory_results[-(n_images - 1) : -1]]) + 1
+        np.argmax(
+            [result["energy"] for result in trajectory_results[-(n_images - 1) : -1]]
+        )
+        + 1
     )
     ts_atoms = atoms_trajectory[ts_index]
 
@@ -377,10 +380,7 @@ def summarize_neb_run(
 
 
 def _get_nth_iteration(
-        neb_trajectory: list[Atoms],
-        n_iter: int,
-        n_images: int,
-        n: int,
+    neb_trajectory: list[Atoms], n_iter: int, n_images: int, n: int
 ) -> list[Atoms]:
     """
     Extract every nth iteration from the NEB trajectory.
