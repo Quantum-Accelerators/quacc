@@ -64,7 +64,7 @@ def test_phonon_grid_single(tmp_path, monkeypatch):
     }
 
     future = grid_phonon_flow(atoms, job_params=job_params)
-    grid_results = client.compute(future).result()
+    grid_results = client.compute(future).result()[-1]
     sections = [
         "atoms",
         "eqpoints",
@@ -116,7 +116,7 @@ def test_phonon_grid_single_gamma(tmp_path, monkeypatch):
     }
 
     future = grid_phonon_flow(atoms, job_params=job_params)
-    grid_results = client.compute(future).result()
+    grid_results = client.compute(future).result()[-1]
     sections = [
         "atoms",
         "eqpoints",
@@ -159,7 +159,7 @@ def test_phonon_grid_qplot(tmp_path, monkeypatch):
     }
 
     future = grid_phonon_flow(atoms, job_params=job_params)
-    grid_results = client.compute(future).result()
+    grid_results = client.compute(future).result()[-1]
 
     sections = [
         "atoms",
@@ -212,7 +212,7 @@ def test_phonon_grid_disp(tmp_path, monkeypatch):
     }
 
     future = grid_phonon_flow(atoms, job_params=job_params)
-    grid_results = client.compute(future).result()
+    grid_results = client.compute(future).result()[-1]
 
     sections = [
         "atoms",
@@ -254,7 +254,7 @@ def test_phonon_grid_v2(tmp_path, monkeypatch):
     }
 
     future = grid_phonon_flow(atoms, job_params=job_params, nblocks=3)
-    grid_results = client.compute(future).result()
+    grid_results = client.compute(future).result()[-1]
 
     sections = [
         "atoms",

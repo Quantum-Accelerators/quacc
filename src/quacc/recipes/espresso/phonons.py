@@ -29,6 +29,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.types import (
+        EspressoGridPhononSchema,
         EspressoPhononDosSchema,
         Filenames,
         RunSchema,
@@ -290,7 +291,7 @@ def grid_phonon_flow(
     nblocks: int = 1,
     job_params: dict[str, Any] | None = None,
     job_decorators: dict[str, Callable | None] | None = None,
-) -> RunSchema:
+) -> EspressoGridPhononSchema:
     """
     This function performs grid parallelization of a ph.x calculation. Each
     representation of each q-point is calculated in a separate job, allowing for
@@ -351,9 +352,8 @@ def grid_phonon_flow(
 
     Returns
     -------
-    RunSchema
-        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
-        See the type-hint for the data structure.
+    EspressoGridPhononSchema
+        Dictionary of results.
     """
 
     @subflow
@@ -459,7 +459,14 @@ def grid_phonon_flow(
         job_params["ph_job"]["input_data"], ph_init_job_results, ph_job, nblocks=nblocks
     )
 
-    return _ph_recover_subflow(grid_results)
+    ph_recover_subflow_results = _ph_recover_subflow(grid_results)
+
+    return {
+        "relax_job": pw_job_results,
+        "ph_init_job": ph_init_job_results,
+        "grid_phonon_subflow": grid_results,
+        "ph_recover_subflow": ph_recover_subflow_results,
+    }
 
 
 @job

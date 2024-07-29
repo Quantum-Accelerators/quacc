@@ -813,6 +813,12 @@ if TYPE_CHECKING:
         q2r_job: RunSchema
         matdyn_job: RunSchema
 
+    class EspressoGridPhononSchema(TypedDict):
+        relax_job: RunSchema
+        ph_init_job: RunSchema
+        grid_phonon_subflow: list[RunSchema]
+        ph_recover_subflow: RunSchema
+
     # ----------- Recipe (NewtonNet) type hints -----------
 
     class NewtonNetTSSchema(OptSchema):
