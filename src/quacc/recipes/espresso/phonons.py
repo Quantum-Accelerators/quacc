@@ -415,7 +415,8 @@ def grid_phonon_flow(
                 ph_input_data["inputph"]["start_irr"] = representation[0]
                 ph_input_data["inputph"]["last_irr"] = representation[-1]
                 ph_job_results = ph_job(
-                    copy_files=deepcopy(files_to_copy), input_data=deepcopy(ph_input_data)
+                    copy_files=deepcopy(files_to_copy),
+                    input_data=deepcopy(ph_input_data),
                 )
                 grid_results.append(ph_job_results)
 
