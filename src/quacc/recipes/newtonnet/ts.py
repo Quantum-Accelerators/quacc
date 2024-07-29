@@ -12,7 +12,7 @@ from monty.dev import requires
 from quacc import change_settings, get_settings, job, strip_decorator
 from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
 from quacc.runners.ase import Runner, run_neb
-from quacc.schemas.ase import summarize_neb_run, summarize_opt_run
+from quacc.schemas.ase import Summarize, summarize_neb_run
 from quacc.utils.dicts import recursive_dict_merge
 
 has_geodesic_interpolate = bool(find_spec("geodesic_interpolate"))
@@ -106,7 +106,7 @@ def ts_job(
     # Run the TS optimization
     dyn = Runner(atoms, calc).run_opt(**opt_flags)
     opt_ts_summary = _add_stdev_and_hess(
-        summarize_opt_run(dyn, additional_fields={"name": "NewtonNet TS"}), **calc_flags
+        Summarize(additional_fields={"name": "NewtonNet TS"}).opt(dyn), **calc_flags
     )
 
     # Run a frequency calculation
@@ -183,8 +183,8 @@ def irc_job(
     with change_settings({"CHECK_CONVERGENCE": False}):
         dyn = Runner(atoms, calc).run_opt(**opt_flags)
         opt_irc_summary = _add_stdev_and_hess(
-            summarize_opt_run(
-                dyn, additional_fields={"name": f"NewtonNet IRC: {direction}"}
+            Summarize(additional_fields={"name": f"NewtonNet IRC: {direction}"}).opt(
+                dyn
             )
         )
 
@@ -304,8 +304,8 @@ def neb_job(
     -------
     NebSchema
         A dictionary containing the following keys:
-            - 'relax_reactant': Summary of the relaxed reactant structure ([quacc.schemas.ase.summarize_opt_run][]).
-            - 'relax_product': Summary of the relaxed product structure ([quacc.schemas.ase.summarize_opt_run][]).
+            - 'relax_reactant': Summary of the relaxed reactant structure ([quacc.schemas.ase.Summarize.opt][]).
+            - 'relax_product': Summary of the relaxed product structure ([quacc.schemas.ase.Summarize.opt][]).
             - 'initial_images': The interpolated images between reactant and product.
             - 'neb_results': Summary of the NEB optimization ([quacc.schemas.ase.summarize_neb_run][]).
     """

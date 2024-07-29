@@ -73,7 +73,7 @@ def ts_job(
     Returns
     -------
     OptSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.opt][].
         See the type-hint for the data structure.
     """
     calc_defaults = recursive_dict_merge(
@@ -141,7 +141,7 @@ def irc_job(
     Returns
     -------
     OptSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
+        Dictionary of results from [quacc.schemas.ase.Summarize.opt][]
     """
     calc_defaults = recursive_dict_merge(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
@@ -204,7 +204,7 @@ def quasi_irc_job(
     Returns
     -------
     OptSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
+        Dictionary of results from [quacc.schemas.ase.Summarize.opt][]
     """
     irc_job_defaults = {
         "charge": charge,
@@ -288,7 +288,7 @@ def quasi_irc_perturb_job(
     Returns
     -------
     OptSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
+        Dictionary of results from [quacc.schemas.ase.Summarize.opt][]
     """
 
     calc_defaults = recursive_dict_merge(

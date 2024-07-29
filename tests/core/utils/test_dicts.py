@@ -86,4 +86,4 @@ def test_remove_instantiation():
 
 def test_finalize_dict():
     with pytest.raises(ValueError, match="The directory should not"):
-        finalize_dict({}, "tmp-quacc")
+        finalize_dict({}, directory="tmp-quacc")

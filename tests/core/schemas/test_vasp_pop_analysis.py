@@ -5,7 +5,7 @@ import os
 
 import pytest
 
-from quacc.schemas.vasp import _bader_runner, _chargemol_runner
+from quacc.schemas.vasp import bader_runner, chargemol_runner
 
 
 def mock_bader_analysis(*args, **kwargs):
@@ -58,7 +58,7 @@ def test_run_bader(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     prep_files()
 
-    bader_stats = _bader_runner(tmp_path)
+    bader_stats = bader_runner(tmp_path)
     assert bader_stats["min_dist"] == [1.0]
     assert bader_stats["partial_charges"] == [1.0]
     assert bader_stats["spin_moments"] == [0.0]
@@ -72,7 +72,7 @@ def test_bader_erorr(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     with pytest.raises(FileNotFoundError):
-        _bader_runner(tmp_path)
+        bader_runner(tmp_path)
     with open("CHGCAR", "w") as w:
         w.write("test")
 
@@ -81,7 +81,7 @@ def test_run_chargemol(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     prep_files()
 
-    chargemol_stats = _chargemol_runner(path=tmp_path, atomic_densities_path=tmp_path)
+    chargemol_stats = chargemol_runner(path=tmp_path, atomic_densities_path=tmp_path)
     assert chargemol_stats["ddec"]["partial_charges"] == [1.0]
     assert chargemol_stats["ddec"]["spin_moments"] == [0.0]
 
@@ -93,10 +93,10 @@ def test_chargemol_erorr(tmp_path, monkeypatch):
     with pytest.raises(
         OSError, match="DDEC6_ATOMIC_DENSITIES_DIR environment variable not defined"
     ):
-        _chargemol_runner(tmp_path)
+        chargemol_runner(tmp_path)
 
     os.remove("CHGCAR")
     with pytest.raises(FileNotFoundError):
-        _chargemol_runner(tmp_path, atomic_densities_path=tmp_path)
+        chargemol_runner(tmp_path, atomic_densities_path=tmp_path)
     with open("CHGCAR", "w") as w:
         w.write("test")
