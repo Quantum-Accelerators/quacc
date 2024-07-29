@@ -346,7 +346,10 @@ def summarize_neb_run(
         )
     trajectory_results = [atoms.calc.results for atoms in atoms_trajectory]
     ts_index = (
-        np.argmax([result["energy"] for result in trajectory_results[-(n_images - 1) : -1]]) + 1
+        np.argmax(
+            [result["energy"] for result in trajectory_results[-(n_images - 1) : -1]]
+        )
+        + 1
     )
     ts_atoms = atoms_trajectory[ts_index]
 
