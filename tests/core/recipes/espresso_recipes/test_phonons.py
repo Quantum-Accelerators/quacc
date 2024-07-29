@@ -316,7 +316,7 @@ def test_phonon_dos_flow(tmp_path, monkeypatch):
     with change_settings({"ESPRESSO_PSEUDO": tmp_path}):
         copy_decompress_files(DATA_DIR, ["Li.upf.gz"], tmp_path)
 
-        atoms = bulk("Li", "bcc", orthorhombic=True)
+        atoms = bulk("Li")
         input_data = {
             "control": {"calculation": "scf"},
             "system": {"occupations": "smearing", "smearing": "cold", "degauss": 0.02},
