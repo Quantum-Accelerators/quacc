@@ -7,10 +7,10 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
-from quacc import change_settings, job, strip_decorator
+from quacc import job
 from quacc.atoms.core import perturb
 from quacc.recipes.qchem._base import run_and_summarize_opt
-from quacc.recipes.qchem.core import _BASE_SET, relax_job
+from quacc.recipes.qchem.core import _BASE_SET
 from quacc.utils.dicts import recursive_dict_merge
 
 has_sella = bool(find_spec("sella"))
@@ -18,18 +18,12 @@ if has_sella:
     from sella import IRC, Sella
 
 if TYPE_CHECKING:
-    from typing import Any, Literal
+    from typing import Literal
 
     from ase.atoms import Atoms
     from numpy.typing import NDArray
 
-    from quacc.types import (
-        Filenames,
-        OptParams,
-        OptSchema,
-        QchemQuasiIRCSchema,
-        SourceDirectory,
-    )
+    from quacc.types import Filenames, OptParams, OptSchema, SourceDirectory
 
 
 @job
