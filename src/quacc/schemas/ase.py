@@ -385,22 +385,24 @@ def summarize_neb_run(
     additional_fields = additional_fields or {}
 
     # Get trajectory
-    if not trajectory:
-        trajectory = read(dyn.trajectory.filename, index=":")
+    if trajectory:
+        atoms_trajectory = trajectory
+    else:
+        atoms_trajectory = read(dyn.trajectory.filename, index=":")
 
     if n_iter_return == -1:
-        trajectory = trajectory[-(n_images):]
+        atoms_trajectory = atoms_trajectory[-(n_images):]
     else:
-        trajectory = _get_nth_iteration(
-            trajectory, int(len(trajectory) / n_images), n_images, n_iter_return
+        atoms_trajectory = _get_nth_iteration(
+            atoms_trajectory, int(len(atoms_trajectory) / n_images), n_images, n_iter_return
         )
-    trajectory_results = [atoms.calc.results for atoms in trajectory]
+    trajectory_results = [atoms.calc.results for atoms in atoms_trajectory]
     ts_index = (
         np.argmax([i["energy"] for i in trajectory_results[-(n_images - 1) : -1]]) + 1
     )
-    ts_atoms = trajectory[ts_index]
+    ts_atoms = atoms_trajectory[ts_index]
 
-    initial_atoms = trajectory[0]
+    initial_atoms = atoms_trajectory[0]
 
     base_task_doc = atoms_to_metadata(
         initial_atoms, charge_and_multiplicity=charge_and_multiplicity
@@ -414,7 +416,7 @@ def summarize_neb_run(
     opt_fields = {
         "highest_e_atoms": ts_atoms,
         "parameters_opt": parameters_opt,
-        "trajectory": trajectory,
+        "trajectory": atoms_trajectory,
         "trajectory_results": trajectory_results,
     }
 
