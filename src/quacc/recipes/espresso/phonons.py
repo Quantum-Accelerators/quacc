@@ -18,7 +18,6 @@ from quacc import Job, flow, job, subflow
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.calculators.espresso.utils import grid_copy_files, grid_prepare_repr
 from quacc.recipes.espresso._base import run_and_summarize
-from quacc.recipes.espresso.core import relax_job
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs
 
