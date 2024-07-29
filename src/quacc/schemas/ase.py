@@ -373,18 +373,30 @@ def summarize_neb_run(
     )
 
 
-def _get_nth_iteration(neb_trajectory, n_iter, n_images, n):
+def _get_nth_iteration(
+        neb_trajectory: list[Atoms],
+        n_iter: int,
+        n_images: int,
+        n: int,
+) -> list[Atoms]:
     """
     Extract every nth iteration from the NEB trajectory.
 
     Parameters:
-    - neb_trajectory: List of configurations (length: n_iter * n_images)
-    - n_iter: Total number of iterations
-    - n_images: Number of images per iteration
-    - n: Interval to get every nth iteration
+    ----------
+    neb_trajectory : list[Atoms]
+        List of configurations (length: n_iter * n_images).
+    n_iter : int
+        Total number of iterations.
+    n_images : int
+        Number of images per iteration.
+    n : int
+        Interval to get every nth iteration.
 
-    Returns:
-    - List of configurations from every nth iteration
+    Returns
+    -------
+    list[Atoms]
+        List of configurations from every nth iteration.
     """
     result = []
     if n > n_iter:
