@@ -95,7 +95,7 @@ def phonon_flow(
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][].
         See the type-hint for the data structure.
     """
-    relax_job_, static_job_ = customize_funcs(
+    static_job_ = customize_funcs(
         ["static_job"],
         [static_job],
         param_defaults=None,

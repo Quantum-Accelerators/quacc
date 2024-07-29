@@ -85,8 +85,6 @@ def phonon_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
-    if copy_files is None and prev_outdir is None:
-        raise ValueError("Either copy_files or prev_outdir must be provided.")
     calc_defaults = {
         "input_data": {
             "inputph": {"tr2_ph": 1e-12, "alpha_mix(1)": 0.1, "verbosity": "high"}
@@ -469,9 +467,9 @@ def grid_phonon_flow(
             job_params.get("ph_job"),
         ),
     }
-    pw_job, ph_init_job, ph_job, ph_recover_job = customize_funcs(
-        ["relax_job", "ph_init_job", "ph_job", "ph_recover_job"],
-        [relax_job, phonon_job, phonon_job, phonon_job],
+    ph_init_job, ph_job, ph_recover_job = customize_funcs(
+        ["ph_init_job", "ph_job", "ph_recover_job"],
+        [phonon_job, phonon_job, phonon_job],
         param_defaults=default_job_params,
         param_swaps=job_params,
         decorators=job_decorators,
@@ -550,8 +548,6 @@ def dvscf_q2r_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
-    if copy_files is None and prev_outdir is None:
-        raise ValueError("Either copy_files or prev_outdir must be provided.")
     return run_and_summarize(
         template=EspressoTemplate("dvscf_q2r", outdir=prev_outdir),
         calc_defaults={},
@@ -611,8 +607,6 @@ def postahc_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
-    if copy_files is None and prev_outdir is None:
-        raise ValueError("Either copy_files or prev_outdir must be provided.")
     return run_and_summarize(
         template=EspressoTemplate("postahc", outdir=prev_outdir),
         calc_defaults={},

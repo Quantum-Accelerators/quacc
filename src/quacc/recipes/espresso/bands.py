@@ -158,8 +158,6 @@ def bands_pp_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
-    if copy_files is None and prev_outdir is None:
-        raise ValueError("Either copy_files or prev_outdir must be provided.")
     return run_and_summarize(
         template=EspressoTemplate("bands", test_run=test_run, outdir=prev_outdir),
         calc_defaults={},
@@ -213,8 +211,6 @@ def fermi_surface_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
-    if copy_files is None and prev_outdir is None:
-        raise ValueError("Either copy_files or prev_outdir must be provided.")
     return run_and_summarize(
         template=EspressoTemplate("fs", test_run=test_run, outdir=prev_outdir),
         calc_defaults={},

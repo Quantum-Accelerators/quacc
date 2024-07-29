@@ -66,8 +66,6 @@ def dos_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
-    if copy_files is None and prev_outdir is None:
-        raise ValueError("Either copy_files or prev_outdir must be provided.")
     return run_and_summarize(
         template=EspressoTemplate("dos", test_run=test_run, outdir=prev_outdir),
         calc_defaults=None,
@@ -118,8 +116,6 @@ def projwfc_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
-    if copy_files is None and prev_outdir is None:
-        raise ValueError("Either copy_files or prev_outdir must be provided.")
     return run_and_summarize(
         template=EspressoTemplate("projwfc", test_run=test_run, outdir=prev_outdir),
         calc_defaults=None,

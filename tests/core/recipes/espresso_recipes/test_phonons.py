@@ -316,6 +316,7 @@ def test_phonon_dos_flow(tmp_path, monkeypatch):
     with change_settings({"ESPRESSO_PSEUDO": tmp_path}):
         copy_decompress_files(DATA_DIR, ["Li.upf.gz"], tmp_path)
 
+        atoms = bulk("Li", "bcc", orthorhombic=True)
         input_data = {
             "control": {"calculation": "scf"},
             "system": {"occupations": "smearing", "smearing": "cold", "degauss": 0.02},
@@ -324,15 +325,13 @@ def test_phonon_dos_flow(tmp_path, monkeypatch):
 
         pseudopotentials = {"Li": "Li.upf"}
 
-        job_params = {
-            "relax_job": {
-                "pseudopotentials": pseudopotentials,
-                "input_data": input_data,
-                "kspacing": 1.0,
-            }
-        }
-
-        assert phonon_dos_flow(job_params=job_params)
+        relax_output = relax_job(
+            atoms,
+            input_data=input_data,
+            pseudopotentials=pseudopotentials,
+            kspacing=1.0,
+        )
+        assert phonon_dos_flow(prev_outdir=relax_output["dir_name"])
 
 
 def test_phonon_calculation_spin_orbit_example_06(tmp_path, monkeypatch):
