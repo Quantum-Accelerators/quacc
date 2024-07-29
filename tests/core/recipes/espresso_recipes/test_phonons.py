@@ -314,8 +314,6 @@ def test_phonon_dos_flow(tmp_path, monkeypatch):
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
     with change_settings({"ESPRESSO_PSEUDO": tmp_path}):
-        atoms = bulk("Li")
-
         copy_decompress_files(DATA_DIR, ["Li.upf.gz"], tmp_path)
 
         input_data = {
@@ -334,7 +332,7 @@ def test_phonon_dos_flow(tmp_path, monkeypatch):
             }
         }
 
-        assert phonon_dos_flow(atoms, job_params=job_params)
+        assert phonon_dos_flow(job_params=job_params)
 
 
 def test_phonon_calculation_spin_orbit_example_06(tmp_path, monkeypatch):

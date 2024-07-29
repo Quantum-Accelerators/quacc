@@ -40,8 +40,6 @@ def test_phonon_grid_single(tmp_path, monkeypatch):
 
     copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
 
-    atoms = bulk("Si")
-
     input_data = {
         "electrons": {"conv_thr": 1.0e-5},
         "control": {"pseudo_dir": tmp_path},
@@ -63,7 +61,7 @@ def test_phonon_grid_single(tmp_path, monkeypatch):
         "ph_job": {"input_data": ph_loose, "qpts": [(0.1, 0, 0, 1)]},
     }
 
-    future = grid_phonon_flow(atoms, job_params=job_params)
+    future = grid_phonon_flow(job_params=job_params)
     grid_results = client.compute(future).result()
     sections = [
         "atoms",
@@ -93,8 +91,6 @@ def test_phonon_grid_single_gamma(tmp_path, monkeypatch):
 
     copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
 
-    atoms = bulk("Si")
-
     input_data = {
         "electrons": {"conv_thr": 1.0e-5},
         "control": {"pseudo_dir": tmp_path},
@@ -115,7 +111,7 @@ def test_phonon_grid_single_gamma(tmp_path, monkeypatch):
         "ph_job": {"input_data": ph_loose, "qpts": (0.0, 0, 0)},
     }
 
-    future = grid_phonon_flow(atoms, job_params=job_params)
+    future = grid_phonon_flow(job_params=job_params)
     grid_results = client.compute(future).result()
     sections = [
         "atoms",
@@ -135,8 +131,6 @@ def test_phonon_grid_qplot(tmp_path, monkeypatch):
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
     copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
-
-    atoms = bulk("Si")
 
     input_data = {
         "electrons": {"conv_thr": 1.0e-5},
@@ -158,7 +152,7 @@ def test_phonon_grid_qplot(tmp_path, monkeypatch):
         "ph_job": {"input_data": ph_loose, "qpts": [(0.1, 0, 0, 1), (0.2, 0, 0, 1)]},
     }
 
-    future = grid_phonon_flow(atoms, job_params=job_params)
+    future = grid_phonon_flow(job_params=job_params)
     grid_results = client.compute(future).result()
 
     sections = [
@@ -180,8 +174,6 @@ def test_phonon_grid_disp(tmp_path, monkeypatch):
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
     copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
-
-    atoms = bulk("Si")
 
     input_data = {
         "electrons": {"conv_thr": 1.0e-1},
@@ -211,7 +203,7 @@ def test_phonon_grid_disp(tmp_path, monkeypatch):
         "ph_job": {"input_data": ph_loose},
     }
 
-    future = grid_phonon_flow(atoms, job_params=job_params)
+    future = grid_phonon_flow(job_params=job_params)
     grid_results = client.compute(future).result()
 
     sections = [
@@ -233,8 +225,6 @@ def test_phonon_grid_v2(tmp_path, monkeypatch):
 
     copy_decompress_files(DATA_DIR, ["Li.upf.gz"], tmp_path)
 
-    atoms = bulk("Li", "bcc", orthorhombic=True)
-
     input_data = {
         "electrons": {"conv_thr": 1.0e-5},
         "control": {"pseudo_dir": tmp_path},
@@ -253,7 +243,7 @@ def test_phonon_grid_v2(tmp_path, monkeypatch):
         "ph_job": {"input_data": ph_loose, "qpts": (0.0, 0.0, 0.0)},
     }
 
-    future = grid_phonon_flow(atoms, job_params=job_params, nblocks=3)
+    future = grid_phonon_flow(job_params=job_params, nblocks=3)
     grid_results = client.compute(future).result()
 
     sections = [
