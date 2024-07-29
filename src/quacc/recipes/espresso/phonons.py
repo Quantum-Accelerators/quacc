@@ -26,8 +26,6 @@ if TYPE_CHECKING:
     from collections import UserDict
     from typing import Any, Callable
 
-    from ase.atoms import Atoms
-
     from quacc.types import (
         EspressoPhononDosSchema,
         Filenames,
@@ -230,9 +228,9 @@ def phonon_dos_flow(
 
         ```python
         "input_data": {
-                "control": {"forc_conv_thr": 5.0e-5},
-                "electrons": {"conv_thr": 1e-12},
-            }
+            "control": {"forc_conv_thr": 5.0e-5},
+            "electrons": {"conv_thr": 1e-12},
+        }
         ```
 
     Parameters
@@ -353,9 +351,9 @@ def grid_phonon_flow(
 
         ```python
         "input_data": {
-                "control": {"forc_conv_thr": 5.0e-5},
-                "electrons": {"conv_thr": 1e-12},
-            }
+            "control": {"forc_conv_thr": 5.0e-5},
+            "electrons": {"conv_thr": 1e-12},
+        }
         ```
 
     Parameters
