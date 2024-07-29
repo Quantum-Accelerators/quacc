@@ -281,8 +281,8 @@ def phonon_dos_flow(
     )
 
     ph_job_results = ph_job(copy_files=copy_files, prev_outdir=prev_outdir)
-    fc_job_results = fc_job(copy_files=ph_job_results["dir_name"])
-    dos_job_results = dos_job(copy_files=fc_job_results["dir_name"])
+    fc_job_results = fc_job(ph_job_results["dir_name"])
+    dos_job_results = dos_job(fc_job_results["dir_name"])
 
     return {
         "phonon_job": ph_job_results,

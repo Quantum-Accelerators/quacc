@@ -127,9 +127,10 @@ def bands_pp_job(
 ) -> RunSchema:
     """
     Function to re-order bands and computes bands-related properties with bands.x.
-    This allows to get the bands structure in a more readable way.
+    This allows one to get the bands structure in a more readable way.
 
     !!! Note
+
         This requires a previous [quacc.recipes.espresso.bands.bands_pw_job][] calculation.
 
     Parameters
@@ -183,6 +184,7 @@ def fermi_surface_job(
     Function to retrieve the fermi surface with fs.x
 
     !!! Note
+
         It requires a previous uniform unshifted k-point grid bands calculation.
 
     Parameters
