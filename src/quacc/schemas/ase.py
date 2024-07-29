@@ -339,7 +339,10 @@ def summarize_neb_run(
         atoms_trajectory = atoms_trajectory[-(n_images):]
     else:
         atoms_trajectory = _get_nth_iteration(
-            atoms_trajectory, int(len(atoms_trajectory) / n_images), n_images, n_iter_return
+            atoms_trajectory,
+            int(len(atoms_trajectory) / n_images),
+            n_images,
+            n_iter_return,
         )
     trajectory_results = [atoms.calc.results for atoms in atoms_trajectory]
     ts_index = (
