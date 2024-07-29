@@ -68,8 +68,6 @@ def phonon_flow(
         Min temperature (K).
     t_max
         Max temperature (K).
-    run_relax
-        Whether to run a relaxation beforehand.
     job_params
         Custom parameters to pass to each Job in the Flow. This is a dictionary where
         the keys are the names of the jobs and the values are dictionaries of parameters.
