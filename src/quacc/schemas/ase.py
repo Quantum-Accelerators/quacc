@@ -400,9 +400,6 @@ def summarize_neb_run(
     )
     ts_atoms = trajectory[ts_index]
 
-    for traj_atoms in trajectory:
-        traj_atoms.calc = None
-
     initial_atoms = trajectory[0]
 
     base_task_doc = atoms_to_metadata(
