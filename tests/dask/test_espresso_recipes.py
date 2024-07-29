@@ -40,22 +40,18 @@ def test_phonon_grid_single(tmp_path, monkeypatch):
 
     copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
 
-    input_data = {
-        "electrons": {"conv_thr": 1.0e-5},
-        "control": {"pseudo_dir": tmp_path},
-    }
-
     ph_loose = {
         "inputph": {"tr2_ph": 1e-6, "qplot": False, "ldisp": False, "lqdir": True}
     }
 
-    pseudopotentials = {"Si": "Si.upf"}
-
     relax_output = client.compute(
         relax_job(
             bulk("Si"),
-            input_data=input_data,
-            pseudopotentials=pseudopotentials,
+            input_data={
+                "electrons": {"conv_thr": 1.0e-5},
+                "control": {"pseudo_dir": tmp_path, "forc_conv_thr": 1.0e-12},
+            },
+            pseudopotentials={"Si": "Si.upf"},
             kspacing=0.5,
         )
     ).result()
@@ -98,22 +94,18 @@ def test_phonon_grid_single_gamma(tmp_path, monkeypatch):
 
     copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
 
-    input_data = {
-        "electrons": {"conv_thr": 1.0e-5},
-        "control": {"pseudo_dir": tmp_path},
-    }
-
     ph_loose = {
         "inputph": {"tr2_ph": 1e-6, "qplot": False, "ldisp": False, "lqdir": False}
     }
 
-    pseudopotentials = {"Si": "Si.upf"}
-
     relax_output = client.compute(
         relax_job(
             bulk("Si"),
-            input_data=input_data,
-            pseudopotentials=pseudopotentials,
+            input_data={
+                "electrons": {"conv_thr": 1.0e-5},
+                "control": {"pseudo_dir": tmp_path, "forc_conv_thr": 1.0e-12},
+            },
+            pseudopotentials={"Si": "Si.upf"},
             kspacing=0.5,
         )
     ).result()
@@ -142,22 +134,18 @@ def test_phonon_grid_qplot(tmp_path, monkeypatch):
 
     copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
 
-    input_data = {
-        "electrons": {"conv_thr": 1.0e-5},
-        "control": {"pseudo_dir": tmp_path},
-    }
-
     ph_loose = {
         "inputph": {"tr2_ph": 1e-6, "qplot": True, "ldisp": True, "lqdir": True}
     }
 
-    pseudopotentials = {"Si": "Si.upf"}
-
     relax_output = client.compute(
         relax_job(
             bulk("Si"),
-            input_data=input_data,
-            pseudopotentials=pseudopotentials,
+            input_data={
+                "electrons": {"conv_thr": 1.0e-5},
+                "control": {"pseudo_dir": tmp_path, "forc_conv_thr": 1.0e-12},
+            },
+            pseudopotentials={"Si": "Si.upf"},
             kspacing=0.5,
         )
     ).result()
@@ -190,11 +178,6 @@ def test_phonon_grid_disp(tmp_path, monkeypatch):
 
     copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
 
-    input_data = {
-        "electrons": {"conv_thr": 1.0e-1},
-        "control": {"pseudo_dir": tmp_path},
-    }
-
     ph_loose = {
         "inputph": {
             "tr2_ph": 1e-2,
@@ -207,13 +190,14 @@ def test_phonon_grid_disp(tmp_path, monkeypatch):
         }
     }
 
-    pseudopotentials = {"Si": "Si.upf"}
-
     relax_output = client.compute(
         relax_job(
             bulk("Si"),
-            input_data=input_data,
-            pseudopotentials=pseudopotentials,
+            input_data={
+                "electrons": {"conv_thr": 1.0e-1},
+                "control": {"pseudo_dir": tmp_path, "forc_conv_thr": 1.0e-12},
+            },
+            pseudopotentials={"Si": "Si.upf"},
             kspacing=0.5,
         )
     ).result()
@@ -243,20 +227,16 @@ def test_phonon_grid_v2(tmp_path, monkeypatch):
 
     copy_decompress_files(DATA_DIR, ["Li.upf.gz"], tmp_path)
 
-    input_data = {
-        "electrons": {"conv_thr": 1.0e-5},
-        "control": {"pseudo_dir": tmp_path},
-    }
-
     ph_loose = {"inputph": {"tr2_ph": 1e-6, "lqdir": True}}
-
-    pseudopotentials = {"Li": "Li.upf"}
 
     relax_output = client.compute(
         relax_job(
             bulk("Si"),
-            input_data=input_data,
-            pseudopotentials=pseudopotentials,
+            input_data={
+                "electrons": {"conv_thr": 1.0e-5},
+                "control": {"pseudo_dir": tmp_path, "forc_conv_thr": 1.0e-12},
+            },
+            pseudopotentials={"Si": "Si.upf"},
             kspacing=0.5,
         )
     ).result()
