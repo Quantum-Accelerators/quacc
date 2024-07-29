@@ -42,11 +42,13 @@ def bands_pw_job(
     **calc_kwargs,
 ) -> RunSchema:
     """
-    Function to carry out a basic bands structure calculation with pw.x.
+    Function to carry out a basic bandstructure calculation with pw.x.
 
-    First perform a normal SCF calculation [quacc.recipes.espresso.core.static_job][];
-    then use this job if you are interested in calculating only the Kohn-Sham states
-    for the given set of k-points
+    !!! Note
+
+        First perform a normal SCF calculation [quacc.recipes.espresso.core.static_job][];
+        then use this job if you are interested in calculating only the Kohn-Sham states
+        for the given set of k-points
 
     Parameters
     ----------
@@ -125,8 +127,10 @@ def bands_pp_job(
 ) -> RunSchema:
     """
     Function to re-order bands and computes bands-related properties with bands.x.
-    This allows to get the bands structure in a more readable way. This requires a
-    previous [quacc.recipes.espresso.bands.bands_pw_job][] calculation.
+    This allows to get the bands structure in a more readable way.
+
+    !!! Note
+        This requires a previous [quacc.recipes.espresso.bands.bands_pw_job][] calculation.
 
     Parameters
     ----------
@@ -154,6 +158,8 @@ def bands_pp_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
+    if copy_files is None and prev_outdir is None:
+        raise ValueError("Either copy_files or prev_outdir must be provided.")
     return run_and_summarize(
         template=EspressoTemplate("bands", test_run=test_run, outdir=prev_outdir),
         calc_defaults={},
@@ -177,7 +183,9 @@ def fermi_surface_job(
 ) -> RunSchema:
     """
     Function to retrieve the fermi surface with fs.x
-    It requires a previous uniform unshifted k-point grid bands calculation.
+
+    !!! Note
+        It requires a previous uniform unshifted k-point grid bands calculation.
 
     Parameters
     ----------
@@ -205,6 +213,8 @@ def fermi_surface_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
+    if copy_files is None and prev_outdir is None:
+        raise ValueError("Either copy_files or prev_outdir must be provided.")
     return run_and_summarize(
         template=EspressoTemplate("fs", test_run=test_run, outdir=prev_outdir),
         calc_defaults={},

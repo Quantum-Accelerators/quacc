@@ -808,7 +808,6 @@ if TYPE_CHECKING:
         non_scf_job: RunSchema
 
     class EspressoPhononDosSchema(TypedDict):
-        relax_job: RunSchema
         phonon_job: RunSchema
         q2r_job: RunSchema
         matdyn_job: RunSchema
