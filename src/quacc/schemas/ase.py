@@ -380,10 +380,7 @@ def summarize_neb_run(
 
 
 def _get_nth_iteration(
-        neb_trajectory: list[Atoms],
-        n_iter: int,
-        n_images: int,
-        interval: int,
+    neb_trajectory: list[Atoms], n_iter: int, n_images: int, interval: int
 ) -> list[Atoms]:
     """
     Extract every nth iteration from the NEB trajectory.
