@@ -48,7 +48,7 @@ def static_job(
     mrccinput
         Dictionary of `mrccinput` swaps for the calculator. To remove entries
         from the defaults, put a `#` in front of the name. Refer to the
-        [ase.calculators.mrcc.MRCC][] calculator for details on `mrccinput`.
+        [ase.calculators.mrcc.mrcc.MRCC][] calculator for details on `mrccinput`.
     mrccblocks
         String for the `mrccblocks` input.
     copy_files
@@ -57,8 +57,7 @@ def static_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][].
-        See the type-hint for the data structure.
+        Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
     default_inputs = {"calc": method, "basis": basis}
 
