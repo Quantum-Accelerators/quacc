@@ -348,7 +348,7 @@ def make_adsorbate_structures(
 
 def get_surface_energy(
     bulk: Atoms, slab: Atoms, bulk_energy: float, slab_energy: float
-) -> np.floating:
+) -> float:
     """
     Calculate the surface energy to form a given surface slab from a bulk structure. For
     asymmetric slabs, this is better thought of as the cleavage energy.
@@ -366,7 +366,7 @@ def get_surface_energy(
 
     Returns
     -------
-    np.floating
+    float
         The surface energy in eV/A^2.
     """
     alpha = len(slab) / len(bulk)
