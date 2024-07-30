@@ -231,12 +231,12 @@ def test_phonon_grid_v2(tmp_path, monkeypatch):
 
     relax_output = client.compute(
         relax_job(
-            bulk("Si"),
+            bulk("Li", "bcc", orthorhombic=True),
             input_data={
                 "electrons": {"conv_thr": 1.0e-5},
                 "control": {"pseudo_dir": tmp_path, "forc_conv_thr": 5.0e-5},
             },
-            pseudopotentials={"Si": "Si.upf"},
+            pseudopotentials={"Li": "Li.upf"},
             kspacing=0.5,
         )
     ).result()
