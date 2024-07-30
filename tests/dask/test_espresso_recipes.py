@@ -47,10 +47,7 @@ def test_phonon_grid_single(tmp_path, monkeypatch):
     relax_output = client.compute(
         relax_job(
             bulk("Si"),
-            input_data={
-                "electrons": {"conv_thr": 1.0e-5},
-                "control": {"pseudo_dir": tmp_path, "forc_conv_thr": 5.0e-5},
-            },
+            input_data={"control": {"pseudo_dir": tmp_path}},
             pseudopotentials={"Si": "Si.upf"},
             kspacing=0.5,
         )
@@ -97,10 +94,7 @@ def test_phonon_grid_single_gamma(tmp_path, monkeypatch):
     relax_output = client.compute(
         relax_job(
             bulk("Si"),
-            input_data={
-                "electrons": {"conv_thr": 1.0e-5},
-                "control": {"pseudo_dir": tmp_path, "forc_conv_thr": 5.0e-5},
-            },
+            input_data={"control": {"pseudo_dir": tmp_path}},
             pseudopotentials={"Si": "Si.upf"},
             kspacing=0.5,
         )
@@ -137,10 +131,7 @@ def test_phonon_grid_qplot(tmp_path, monkeypatch):
     relax_output = client.compute(
         relax_job(
             bulk("Si"),
-            input_data={
-                "electrons": {"conv_thr": 1.0e-5},
-                "control": {"pseudo_dir": tmp_path, "forc_conv_thr": 5.0e-5},
-            },
+            input_data={"control": {"pseudo_dir": tmp_path}},
             pseudopotentials={"Si": "Si.upf"},
             kspacing=0.5,
         )
@@ -191,7 +182,7 @@ def test_phonon_grid_disp(tmp_path, monkeypatch):
             bulk("Si"),
             input_data={
                 "electrons": {"conv_thr": 1.0e-1},
-                "control": {"pseudo_dir": tmp_path, "forc_conv_thr": 5.0e-5},
+                "control": {"pseudo_dir": tmp_path},
             },
             pseudopotentials={"Si": "Si.upf"},
             kspacing=0.5,
@@ -228,10 +219,7 @@ def test_phonon_grid_v2(tmp_path, monkeypatch):
     relax_output = client.compute(
         relax_job(
             bulk("Li", "bcc", orthorhombic=True),
-            input_data={
-                "electrons": {"conv_thr": 1.0e-5},
-                "control": {"pseudo_dir": tmp_path, "forc_conv_thr": 5.0e-5},
-            },
+            input_data={"control": {"pseudo_dir": tmp_path}},
             pseudopotentials={"Li": "Li.upf"},
             kspacing=0.5,
         )
