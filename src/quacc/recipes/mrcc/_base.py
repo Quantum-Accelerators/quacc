@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from quacc import get_settings
 from quacc.calculators.mrcc.mrcc import MRCC, MrccProfile
 from quacc.runners.ase import Runner
-from quacc.schemas.ase import summarize_run
+from quacc.schemas.ase import Summarize
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
@@ -70,12 +70,7 @@ def run_and_summarize(
 
     final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
 
-    return summarize_run(
-        final_atoms,
-        atoms,
-        charge_and_multiplicity=(charge, spin_multiplicity),
-        additional_fields=additional_fields,
-    )
+    return Summarize(charge_and_multiplicity=(charge, spin_multiplicity),additional_fields=additional_fields).run(final_atoms,atoms)
 
 
 def prep_calculator(
