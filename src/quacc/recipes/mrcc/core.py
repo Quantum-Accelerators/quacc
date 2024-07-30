@@ -1,4 +1,4 @@
-"""Core recipes for Q-Chem."""
+"""Core recipes for MRCC."""
 
 from __future__ import annotations
 
