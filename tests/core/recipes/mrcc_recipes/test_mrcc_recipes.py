@@ -7,22 +7,23 @@ from ase import Atoms
 
 from quacc.recipes.mrcc._base import prep_calculator, run_and_summarize
 from quacc.recipes.mrcc.core import static_job
+from quacc import change_settings
 
 FILE_DIR = Path(__file__).parent
 
 
 def test_static_job(tmp_path):
     atoms = Atoms("H2O", positions=[[1.0, 0.0, 0.0], [2.0, 0.0, 0.0], [3.0, 0.0, 0.0]])
-
-    output = static_job(
-        atoms,
-        charge=0,
-        spin_multiplicity=1,
-        method="SCAN",
-        basis="def2-SVP",
-        mrccinput={"calc": "PBE", "basis": "STO-3G"},
-        mrccblocks="symm=off",
-    )
+    with change_settings({"RESULTS_DIR": tmp_path}):
+        output = static_job(
+            atoms,
+            charge=0,
+            spin_multiplicity=1,
+            method="SCAN",
+            basis="def2-SVP",
+            mrccinput={"calc": "PBE", "basis": "STO-3G"},
+            mrccblocks="symm=off",
+        )
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["mrccinput"] == {"basis": "STO-3G", "calc": "PBE"}
     assert output["parameters"]["charge"] == 0
@@ -35,13 +36,14 @@ def test_static_job(tmp_path):
 def test_run_and_summarize(tmp_path):
     atoms = Atoms("H2O", positions=[[1.0, 0.0, 0.0], [2.0, 0.0, 0.0], [3.0, 0.0, 0.0]])
 
-    output = run_and_summarize(
-        atoms,
-        charge=0,
-        spin_multiplicity=1,
-        default_inputs={"calc": "PBE", "basis": "STO-3G"},
-        blocks="symm=off",
-    )
+    with change_settings({"RESULTS_DIR": tmp_path}):
+        output = run_and_summarize(
+            atoms,
+            charge=0,
+            spin_multiplicity=1,
+            default_inputs={"calc": "PBE", "basis": "STO-3G"},
+            blocks="symm=off",
+        )
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["mrccinput"] == {"basis": "STO-3G", "calc": "PBE"}
     assert output["parameters"]["charge"] == 0
