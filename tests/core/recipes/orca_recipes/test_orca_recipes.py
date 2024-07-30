@@ -7,7 +7,7 @@ import pytest
 from ase.build import molecule
 
 from quacc.recipes.orca.core import (
-    ase_quasi_irc_perturb_job,
+    ase_quasi_irc_job,
     ase_relax_job,
     freq_job,
     relax_job,
@@ -172,14 +172,14 @@ def test_freq_job(tmp_path, monkeypatch):
 
 
 @pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
-def test_ase_quasi_irc_perturb_job(tmp_path, monkeypatch):
+def test_ase_quasi_irc_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = molecule("H2")
 
     mode = [[0.0, 0.0, 0.1], [0.0, 0.1, 0.0]]
 
-    output = ase_quasi_irc_perturb_job(
+    output = ase_quasi_irc_job(
         atoms,
         mode,
         charge=0,
