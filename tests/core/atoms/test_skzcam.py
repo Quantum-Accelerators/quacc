@@ -1111,12 +1111,12 @@ def test_ORCAInputGenerator_generate_preamble_block(orca_input_generator):
     )
 
     # Check whether error raised if not all element_info is provided
+    element_info_error = {"C": element_info["C"]}
+    orca_input_generator_3.element_info = element_info_error
     with pytest.raises(
         ValueError,
         match="Not all element symbols are provided in the element_info dictionary.",
     ):
-        element_info_error = {"C": element_info["C"]}
-        orca_input_generator_3.element_info = element_info_error
         orca_input_generator_3._generate_preamble_block()
 
 
