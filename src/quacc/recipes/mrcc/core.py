@@ -17,20 +17,7 @@ if has_sella:
 if TYPE_CHECKING:
     from ase.atoms import Atoms
 
-    from quacc.types import Filenames, OptParams, OptSchema, RunSchema, SourceDirectory
-
-_BASE_SET = {
-    "rem": {
-        "gen_scfman": True,
-        "xc_grid": 3,
-        "thresh": 14,
-        "s2thresh": 16,
-        "scf_algorithm": "diis",
-        "resp_charges": True,
-        "symmetry": False,
-        "sym_ignore": True,
-    }
-}
+    from quacc.types import Filenames, RunSchema, SourceDirectory
 
 
 @job
@@ -38,10 +25,11 @@ def static_job(
     atoms: Atoms,
     charge: int = 0,
     spin_multiplicity: int = 1,
-    method: str | None = "wb97mv",
-    basis: str | None = "def2-tzvpd",
+    method: str = "pbe",
+    basis: str = "sto-3g",
+    mrccinput: dict[str, str] | None = None,
+    mrccblocks: str | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-    **calc_kwargs,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -51,37 +39,37 @@ def static_job(
     atoms
         Atoms object
     charge
-        Total charge of the system.
+        Charge of the system.
     spin_multiplicity
         Multiplicity of the system.
     method
-        DFT exchange-correlation functional or other electronic structure
-        method.
+        The method [e.g., PBE or CCSD(T)] to use, this is the value for the calc keyword.
     basis
-        Basis set.
+        Basis set
+    mrccinput
+        Dictionary of `mrccinput` swaps for the calculator. To remove entries
+        from the defaults, put a `#` in front of the name. Refer to the
+        [ase.calculators.mrcc.MRCC][] calculator for details on `mrccinput`.
+    mrccblocks
+        String for the `mrccblocks` input.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
-    **calc_kwargs
-        Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
-        a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
-        details.
 
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][].
         See the type-hint for the data structure.
     """
-    calc_defaults = recursive_dict_merge(
-        _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
-    )
+    default_inputs = {'calc': method, 'basis': basis}
 
     return run_and_summarize(
         atoms,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
-        calc_defaults=calc_defaults,
-        calc_swaps=calc_kwargs,
+        charge,
+        spin_multiplicity,
+        default_inputs=default_inputs,
+        blocks=mrccblocks,
+        input_swaps=mrccinput,
         additional_fields={"name": "MRCC Static"},
-        copy_files=copy_files,
+        copy_files=copy_files
     )
