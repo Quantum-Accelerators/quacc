@@ -57,7 +57,7 @@ def run_and_summarize(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][]
+        Dictionary of results from [quacc.schemas.ase.Summarize][]
     """
     calc = prep_calculator(
         charge=charge,
