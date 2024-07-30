@@ -54,6 +54,18 @@ def phonon_job(
     Functional Perturbation Theory (DFPT) framework. The dynamical matrix is used to calculate the phonon frequencies and eigenvectors. Various other properties can be
     calculated using other post-processing tools.
 
+    !!! Note
+
+        Phonon calculations rely on a structure that is tightly converged.
+        We suggest running a `relax_job` with the following settings:
+
+        ```python
+        inputs_data = {
+            "control": {"forc_conv_thr": 5.0e-5},
+            "electrons": {"conv_thr": 1e-12},
+        }
+        ```
+
     Parameters
     ----------
     copy_files
@@ -221,10 +233,10 @@ def phonon_dos_flow(
     !!! Note
 
         Phonon calculations rely on a structure that is tightly converged.
-        We suggest running a pre-relaxation with the following settings:
+        We suggest running a `relax_job` with the following settings:
 
         ```python
-        "input_data": {
+        input_data = {
             "control": {"forc_conv_thr": 5.0e-5},
             "electrons": {"conv_thr": 1e-12},
         }
@@ -344,10 +356,10 @@ def grid_phonon_flow(
     !!! Note
 
         Phonon calculations rely on a structure that is tightly converged.
-        We suggest running a pre-relaxation with the following settings:
+        We suggest running a `relax_job` with the following settings:
 
         ```python
-        "input_data": {
+        inputs_data = {
             "control": {"forc_conv_thr": 5.0e-5},
             "electrons": {"conv_thr": 1e-12},
         }
