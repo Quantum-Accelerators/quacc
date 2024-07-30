@@ -8,11 +8,6 @@ from typing import TYPE_CHECKING
 from quacc import job
 from quacc.recipes.mrcc._base import run_and_summarize
 
-has_sella = bool(find_spec("sella"))
-
-if has_sella:
-    pass
-
 if TYPE_CHECKING:
     from ase.atoms import Atoms
 
