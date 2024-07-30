@@ -8,7 +8,7 @@ from ase.calculators.orca import ORCA, OrcaProfile, OrcaTemplate
 
 from quacc import get_settings
 from quacc.runners.ase import Runner
-from quacc.schemas.cclib import cclib_summarize_run, summarize_cclib_opt_run
+from quacc.schemas.cclib import CclibSummarize
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.utils.lists import merge_list_params
 
@@ -87,7 +87,7 @@ def run_and_summarize(
 
     atoms = Runner(atoms, calc, copy_files=copy_files).run_calc(geom_file=GEOM_FILE)
 
-    return cclib_summarize_run(atoms, LOG_FILE, additional_fields=additional_fields)
+    return CclibSummarize(LOG_FILE, additional_fields=additional_fields).run(atoms)
 
 
 def run_and_summarize_opt(
@@ -153,7 +153,7 @@ def run_and_summarize_opt(
 
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
     dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_flags)
-    return summarize_cclib_opt_run(dyn, LOG_FILE, additional_fields=additional_fields)
+    return CclibSummarize(LOG_FILE, additional_fields=additional_fields).opt(dyn)
 
 
 def prep_calculator(

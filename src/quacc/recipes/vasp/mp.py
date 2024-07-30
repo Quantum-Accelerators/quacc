@@ -105,7 +105,7 @@ def mp_gga_static_job(
     Returns
     -------
     VaspSchema
-        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
+        Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
     """
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
         MPGGAStaticMaker
@@ -146,7 +146,7 @@ def mp_metagga_prerelax_job(
     Returns
     -------
     VaspSchema
-        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
+        Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
         See the type-hint for the data structure.
     """
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
@@ -227,7 +227,7 @@ def mp_metagga_static_job(
     Returns
     -------
     VaspSchema
-        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
+        Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
         See the type-hint for the data structure.
     """
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(

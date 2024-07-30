@@ -50,7 +50,7 @@ def static_job(
     Returns
     -------
     cclibSchema
-        Dictionary of results, as specified in [quacc.schemas.cclib.cclib_summarize_run][]
+        Dictionary of results, as specified in [quacc.schemas.cclib.CclibSummarize.run][]
         See the type-hint for the data structure.
     """
     calc_defaults = {
@@ -116,7 +116,7 @@ def relax_job(
     Returns
     -------
     cclibSchema
-        Dictionary of results, as specified in [quacc.schemas.cclib.cclib_summarize_run][]
+        Dictionary of results, as specified in [quacc.schemas.cclib.CclibSummarize.run][]
         See the type-hint for the data structure.
     """
     calc_defaults = {

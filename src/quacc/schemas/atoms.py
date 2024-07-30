@@ -58,7 +58,17 @@ def atoms_to_metadata(
 
     # Set any charge or multiplicity keys
     if not atoms.pbc.any():
-        _set_charge_and_spin(atoms, charge_and_multiplicity=charge_and_multiplicity)
+        if charge_and_multiplicity:
+            charge = charge_and_multiplicity[0]
+            spin_multiplicity = charge_and_multiplicity[1]
+        else:
+            charge = get_charge_attribute(atoms)
+            spin_multiplicity = get_spin_multiplicity_attribute(atoms)
+
+        if charge is not None:
+            atoms.charge = charge  # type: ignore[attr-defined]
+        if spin_multiplicity is not None:
+            atoms.spin_multiplicity = spin_multiplicity  # type: ignore[attr-defined]
 
     # Strip the dummy atoms, if present
     if "X" in atoms.get_chemical_symbols():
@@ -84,35 +94,3 @@ def atoms_to_metadata(
     results["atoms"] = atoms
 
     return metadata | results | additional_fields
-
-
-def _set_charge_and_spin(
-    atoms: Atoms, charge_and_multiplicity: tuple[int, int] | None = None
-) -> None:
-    """
-    Set the charge and spin multiplicity of an Atoms object.
-
-    Parameters
-    ----------
-    atoms
-        Atoms object
-    charge_and_multiplicity
-        Charge and spin multiplicity of the Atoms object, only used for Molecule
-        metadata.
-
-    Returns
-    -------
-    None
-        Modifies the Atoms object in place.
-    """
-    if charge_and_multiplicity:
-        charge = charge_and_multiplicity[0]
-        spin_multiplicity = charge_and_multiplicity[1]
-    else:
-        charge = get_charge_attribute(atoms)
-        spin_multiplicity = get_spin_multiplicity_attribute(atoms)
-
-    if charge is not None:
-        atoms.charge = charge  # type: ignore[attr-defined]
-    if spin_multiplicity is not None:
-        atoms.spin_multiplicity = spin_multiplicity  # type: ignore[attr-defined]
