@@ -15,7 +15,7 @@ from quacc import _internally_set_settings
 from quacc.atoms.core import check_charge_and_spin
 from quacc.calculators.qchem import QChem
 from quacc.recipes.qchem.core import freq_job, relax_job, static_job
-from quacc.recipes.qchem.ts import irc_job, quasi_irc_job, quasi_irc_perturb_job, ts_job
+from quacc.recipes.qchem.ts import irc_job, quasi_irc_job, ts_job
 
 has_sella = bool(find_spec("sella"))
 
@@ -561,66 +561,7 @@ def test_irc_job_v2(tmp_path, monkeypatch, test_atoms):
 
 
 @pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
-def test_quasi_irc_job(monkeypatch, tmp_path, test_atoms):
-    monkeypatch.chdir(tmp_path)
-
-    monkeypatch.setattr(QChem, "read_results", mock_read)
-    monkeypatch.setattr(QChem, "execute", mock_execute4)
-
-    charge, spin_multiplicity = check_charge_and_spin(test_atoms)
-
-    output = quasi_irc_job(
-        test_atoms,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
-        direction="forward",
-        basis="def2-tzvpd",
-        relax_job_kwargs={"opt_params": {"max_steps": 5}},
-    )
-
-    assert output["atoms"] != test_atoms
-    assert output["charge"] == 0
-    assert output["spin_multiplicity"] == 1
-    assert output["formula_alphabetical"] == "C4 H4 O6"
-    assert output["nelectrons"] == 76
-    assert output["parameters"]["charge"] == 0
-    assert output["parameters"]["spin_multiplicity"] == 1
-
-    qcin = QCInput.from_file(str(Path(output["dir_name"], "mol.qin.gz")))
-    ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.basic.quasi_irc_forward"))
-    qcinput_nearly_equal(qcin, ref_qcin)
-
-    output = quasi_irc_job(
-        test_atoms,
-        charge=-1,
-        spin_multiplicity=2,
-        direction="reverse",
-        basis="def2-svpd",
-        irc_job_kwargs={
-            "rem": {"scf_algorithm": "gdm"},
-            "opt_params": {"max_steps": 6},
-        },
-        relax_job_kwargs={
-            "rem": {"scf_algorithm": "gdm"},
-            "opt_params": {"max_steps": 6},
-        },
-    )
-
-    assert output["atoms"] != test_atoms
-    assert output["charge"] == -1
-    assert output["spin_multiplicity"] == 2
-    assert output["formula_alphabetical"] == "C4 H4 O6"
-    assert output["nelectrons"] == 77
-    assert output["parameters"]["charge"] == -1
-    assert output["parameters"]["spin_multiplicity"] == 2
-
-    qcin = QCInput.from_file(str(Path(output["dir_name"], "mol.qin.gz")))
-    ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.quasi_irc_reverse"))
-    qcinput_nearly_equal(qcin, ref_qcin)
-
-
-@pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
-def test_quasi_irc_perturb_job(monkeypatch, tmp_path, test_qirc_atoms):
+def test_quasi_irc_job(monkeypatch, tmp_path, test_qirc_atoms):
     monkeypatch.chdir(tmp_path)
 
     monkeypatch.setattr(QChem, "read_results", mock_read)
@@ -648,7 +589,7 @@ def test_quasi_irc_perturb_job(monkeypatch, tmp_path, test_qirc_atoms):
 
     charge, spin_multiplicity = check_charge_and_spin(test_qirc_atoms)
 
-    output = quasi_irc_perturb_job(
+    output = quasi_irc_job(
         test_qirc_atoms,
         mode,
         charge=charge,
@@ -671,7 +612,7 @@ def test_quasi_irc_perturb_job(monkeypatch, tmp_path, test_qirc_atoms):
     ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.qirc_forward"))
     qcinput_nearly_equal(qcin, ref_qcin)
 
-    output = quasi_irc_perturb_job(
+    output = quasi_irc_job(
         test_qirc_atoms,
         mode,
         charge=-1,

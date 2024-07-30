@@ -7,10 +7,10 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
-from quacc import change_settings, job, strip_decorator
+from quacc import job
 from quacc.atoms.core import perturb
 from quacc.recipes.qchem._base import run_and_summarize_opt
-from quacc.recipes.qchem.core import _BASE_SET, relax_job
+from quacc.recipes.qchem.core import _BASE_SET
 from quacc.utils.dicts import recursive_dict_merge
 
 has_sella = bool(find_spec("sella"))
@@ -18,18 +18,12 @@ if has_sella:
     from sella import IRC, Sella
 
 if TYPE_CHECKING:
-    from typing import Any, Literal
+    from typing import Literal
 
     from ase.atoms import Atoms
     from numpy.typing import NDArray
 
-    from quacc.types import (
-        Filenames,
-        OptParams,
-        OptSchema,
-        QchemQuasiIRCSchema,
-        SourceDirectory,
-    )
+    from quacc.types import Filenames, OptParams, OptSchema, SourceDirectory
 
 
 @job
@@ -170,72 +164,6 @@ def irc_job(
 @job
 @requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
 def quasi_irc_job(
-    atoms: Atoms,
-    charge: int = 0,
-    spin_multiplicity: int = 1,
-    direction: Literal["forward", "reverse"] = "forward",
-    method: str = "wb97mv",
-    basis: str = "def2-svpd",
-    irc_job_kwargs: dict[str, Any] | None = None,
-    relax_job_kwargs: dict[str, Any] | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-) -> QchemQuasiIRCSchema:
-    """
-    Quasi-IRC optimize a molecular structure. Runs `irc_job` for 10 steps (default)
-    followed by `relax_job`.
-
-    Parameters
-    ----------
-    atoms
-        Atoms object.
-    charge
-        Charge of the system.
-    spin_multiplicity
-        Multiplicity of the system.
-    direction
-        Direction of the IRC. Should be "forward" or "reverse".
-    irc_job_kwargs
-        Dictionary of kwargs for the `irc_job`.
-    relax_job_kwargs
-        Dictionary of kwargs for the `relax_job`.
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
-
-    Returns
-    -------
-    OptSchema
-        Dictionary of results from [quacc.schemas.ase.Summarize.opt][]
-    """
-    irc_job_defaults = {
-        "charge": charge,
-        "spin_multiplicity": spin_multiplicity,
-        "direction": direction,
-        "method": method,
-        "basis": basis,
-        "opt_params": {"max_steps": 10},
-        "copy_files": copy_files,
-    }
-    relax_job_defaults = {
-        "charge": charge,
-        "spin_multiplicity": spin_multiplicity,
-        "method": method,
-        "basis": basis,
-    }
-    irc_job_kwargs = recursive_dict_merge(irc_job_defaults, irc_job_kwargs)
-    relax_job_kwargs = recursive_dict_merge(relax_job_defaults, relax_job_kwargs)
-
-    with change_settings({"CHECK_CONVERGENCE": False}):
-        irc_summary = strip_decorator(irc_job)(atoms, **irc_job_kwargs)
-
-    relax_summary = strip_decorator(relax_job)(irc_summary["atoms"], **relax_job_kwargs)
-    relax_summary["initial_irc"] = irc_summary
-
-    return relax_summary
-
-
-@job
-@requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
-def quasi_irc_perturb_job(
     atoms: Atoms,
     mode: list[list[float]] | NDArray,
     perturb_magnitude: float = 0.6,

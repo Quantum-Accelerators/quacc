@@ -293,7 +293,7 @@ def ase_relax_job(
 
 
 @job
-def ase_quasi_irc_perturb_job(
+def ase_quasi_irc_job(
     atoms: Atoms,
     mode: list[list[float]] | NDArray,
     perturb_magnitude: float = 0.6,
@@ -368,6 +368,6 @@ def ase_quasi_irc_perturb_job(
         input_swaps=orcasimpleinput,
         block_swaps=orcablocks,
         opt_params=opt_params,
-        additional_fields={"name": "ORCA ASE Quasi-IRC perturbed optimization"},
+        additional_fields={"name": "ORCA ASE Quasi-IRC optimization"},
         copy_files=copy_files,
     )
