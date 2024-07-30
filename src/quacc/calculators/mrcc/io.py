@@ -82,9 +82,8 @@ def write_mrcc(file_path: Path | str, atoms: Atoms, parameters: MRCCParamsInfo) 
         # Write the MRCC blocks
         if parameters["mrccblocks"] is not None:
             file_path.write(f"{parameters['mrccblocks']} \n")
-
-        if "geom" in parameters["mrccinput"]:
-            write_geom = False
+            if "geom" in parameters["mrccblocks"]:
+                write_geom = False
 
         if write_geom:
             # If the geometry is not provided in the MRCC blocks, write it here.

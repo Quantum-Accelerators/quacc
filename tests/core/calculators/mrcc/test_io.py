@@ -131,6 +131,8 @@ O   3.0 0.0 0.0
         " \n",
     ]
 
+    assert generated_inputfile == reference_inputfile
+
     # Test when mrccblock is None
 
     params = {
@@ -175,8 +177,6 @@ O   3.0 0.0 0.0
         "ghost=serialno\n",
         "1,2",
     ]
-
-    assert generated_inputfile == reference_inputfile
 
     assert generated_inputfile == reference_inputfile
 
