@@ -51,7 +51,7 @@ def static_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][]
+        Dictionary of results from [quacc.schemas.ase.Summarize][]
     """
     default_inputs = {"calc": method, "basis": basis}
 
