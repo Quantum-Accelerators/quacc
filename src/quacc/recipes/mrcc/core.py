@@ -7,12 +7,11 @@ from typing import TYPE_CHECKING
 
 from quacc import job
 from quacc.recipes.mrcc._base import run_and_summarize
-from quacc.utils.dicts import recursive_dict_merge
 
 has_sella = bool(find_spec("sella"))
 
 if has_sella:
-    from sella import Sella
+    pass
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
@@ -61,7 +60,7 @@ def static_job(
         Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][].
         See the type-hint for the data structure.
     """
-    default_inputs = {'calc': method, 'basis': basis}
+    default_inputs = {"calc": method, "basis": basis}
 
     return run_and_summarize(
         atoms,
@@ -71,5 +70,5 @@ def static_job(
         blocks=mrccblocks,
         input_swaps=mrccinput,
         additional_fields={"name": "MRCC Static"},
-        copy_files=copy_files
+        copy_files=copy_files,
     )

@@ -80,12 +80,12 @@ def write_mrcc(file_path: Path | str, atoms: Atoms, parameters: MRCCParamsInfo) 
             file_path.write(f"{key}={value}\n")
 
         # Write the MRCC blocks
-        if parameters["mrccblocks"] != None:
+        if parameters["mrccblocks"] is not None:
             file_path.write(f"{parameters['mrccblocks']} \n")
-        
+
         if "geom" in parameters["mrccinput"]:
             write_geom = False
-        
+
         if write_geom:
             # If the geometry is not provided in the MRCC blocks, write it here.
             ghost_list = []  # List of indices of the ghost atoms.

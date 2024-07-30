@@ -4,12 +4,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from quacc import get_settings
 from quacc.calculators.mrcc.mrcc import MRCC, MrccProfile
 from quacc.runners.ase import Runner
 from quacc.schemas.ase import summarize_run
 from quacc.utils.dicts import recursive_dict_merge
-from quacc.utils.lists import merge_list_params
-from quacc import get_settings
 
 if TYPE_CHECKING:
     from typing import Any

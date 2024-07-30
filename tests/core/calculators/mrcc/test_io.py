@@ -178,7 +178,6 @@ O   3.0 0.0 0.0
 
     assert generated_inputfile == reference_inputfile
 
-
     assert generated_inputfile == reference_inputfile
 
 
