@@ -42,7 +42,7 @@ def static_job(
     mrccinput
         Dictionary of `mrccinput` swaps for the calculator. To remove entries
         from the defaults, put a `#` in front of the name. Refer to the
-        [ase.calculators.mrcc.mrcc.MRCC][] calculator for details on `mrccinput`.
+        [quacc.calculators.mrcc.mrcc.MRCC][] calculator for details on `mrccinput`.
     mrccblocks
         String for the `mrccblocks` input.
     copy_files
