@@ -5,9 +5,9 @@ from pathlib import Path
 import pytest
 from ase import Atoms
 
+from quacc import change_settings
 from quacc.recipes.mrcc._base import prep_calculator, run_and_summarize
 from quacc.recipes.mrcc.core import static_job
-from quacc import change_settings
 
 FILE_DIR = Path(__file__).parent
 
