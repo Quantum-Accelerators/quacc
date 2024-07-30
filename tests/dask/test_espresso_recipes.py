@@ -56,15 +56,9 @@ def test_phonon_grid_single(tmp_path, monkeypatch):
         )
     ).result()
     # Doing a mistake in qpts here for testing purposes
-    job_params = {
-        "ph_job": {
-            "prev_outdir": relax_output["dir_name"],
-            "input_data": ph_loose,
-            "qpts": [(0.1, 0, 0, 1)],
-        }
-    }
+    job_params = {"ph_job": {"input_data": ph_loose, "qpts": [(0.1, 0, 0, 1)]}}
 
-    future = grid_phonon_flow(job_params=job_params)
+    future = grid_phonon_flow(prev_dir=relax_output["dir_name"], job_params=job_params)
     grid_results = client.compute(future).result()
     sections = [
         "atoms",
