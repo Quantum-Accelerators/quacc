@@ -99,11 +99,13 @@ def prep_calculator(
     MRCC
         The MRCC calculator
     """
-    mrccinput = recursive_dict_merge(default_inputs, input_swaps, {"charge": charge, "mult": spin_multiplicity})
+    mrccinput = recursive_dict_merge(
+        default_inputs, input_swaps, {"charge": charge, "mult": spin_multiplicity}
+    )
 
     # If spin_multiplicity bigger than 1, check if scftype is in either mrccinput or blocks
     if spin_multiplicity > 1:
-        if "scftype" not in mrccinput.keys():
+        if "scftype" not in mrccinput:
             raise ValueError(
                 "For spin_multiplicity > 1, scftype keyword must be specified in mrccinput"
             )
@@ -114,7 +116,4 @@ def prep_calculator(
 
     settings = get_settings()
 
-    return MRCC(
-        profile=MrccProfile(command=settings.MRCC_CMD),
-        **mrccinput
-    )
+    return MRCC(profile=MrccProfile(command=settings.MRCC_CMD), **mrccinput)
