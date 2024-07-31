@@ -19,7 +19,7 @@ def static_job(
     charge: int = 0,
     spin_multiplicity: int = 1,
     method: str = "pbe",
-    basis: str = "sto-3g",
+    basis: str = "def2-tzvp",
     mrccinput: dict[str, str] | None = None,
     mrccblocks: str | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
@@ -53,7 +53,7 @@ def static_job(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.Summarize][]
     """
-    default_inputs = {"calc": method, "basis": basis}
+    default_inputs = {"calc": method, "basis": basis, "symm": "off"}
 
     return run_and_summarize(
         atoms,
