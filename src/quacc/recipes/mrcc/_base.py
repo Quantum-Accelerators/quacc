@@ -130,7 +130,7 @@ def prep_calculator(
             raise ValueError(
                 "For spin_multiplicity > 1, scftype keyword must be specified in mrccinput"
             )
-        elif mrccinput["scftype"].lower() not in [
+        if mrccinput["scftype"].lower() not in [
             "uhf",
             "uks",
             "rohf",
