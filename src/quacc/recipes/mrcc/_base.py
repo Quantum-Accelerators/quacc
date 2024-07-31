@@ -74,7 +74,6 @@ def prep_calculator(
     spin_multiplicity: int = 1,
     default_inputs: dict[str, str] | None = None,
     input_swaps: dict[str, str] | None = None,
-    **calc_kwargs,
 ) -> MRCC:
     """
     Prepare the MRCC calculator.
