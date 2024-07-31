@@ -42,11 +42,13 @@ def bands_pw_job(
     **calc_kwargs,
 ) -> RunSchema:
     """
-    Function to carry out a basic bands structure calculation with pw.x.
+    Function to carry out a basic bandstructure calculation with pw.x.
 
-    First perform a normal SCF calculation [quacc.recipes.espresso.core.static_job][];
-    then use this job if you are interested in calculating only the Kohn-Sham states
-    for the given set of k-points
+    !!! Note
+
+        First perform a normal SCF calculation [quacc.recipes.espresso.core.static_job][];
+        then use this job if you are interested in calculating only the Kohn-Sham states
+        for the given set of k-points
 
     Parameters
     ----------
@@ -125,8 +127,11 @@ def bands_pp_job(
 ) -> RunSchema:
     """
     Function to re-order bands and computes bands-related properties with bands.x.
-    This allows to get the bands structure in a more readable way. This requires a
-    previous [quacc.recipes.espresso.bands.bands_pw_job][] calculation.
+    This allows one to get the bands structure in a more readable way.
+
+    !!! Note
+
+        This requires a previous [quacc.recipes.espresso.bands.bands_pw_job][] calculation.
 
     Parameters
     ----------
@@ -177,7 +182,10 @@ def fermi_surface_job(
 ) -> RunSchema:
     """
     Function to retrieve the fermi surface with fs.x
-    It requires a previous uniform unshifted k-point grid bands calculation.
+
+    !!! Note
+
+        It requires a previous uniform unshifted k-point grid bands calculation.
 
     Parameters
     ----------
