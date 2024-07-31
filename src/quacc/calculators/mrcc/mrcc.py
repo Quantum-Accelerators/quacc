@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from ase.config import Config
 
-    from quacc.calculators.mrcc.io import MRCCEnergyInfo, MRCCParamsInfo
+    from quacc.calculators.mrcc.io import MRCCEnergyInfo
 
 
 def _get_version_from_mrcc_header(mrcc_header: str) -> str:
@@ -124,7 +124,7 @@ class MrccTemplate(CalculatorTemplate):
         profile: MrccProfile,  # noqa: ARG002
         directory: Path | str,
         atoms: Atoms,
-        parameters: MRCCParamsInfo,
+        parameters: dict[str,str],
         properties: dict[str, Any],  # noqa: ARG002
     ) -> None:
         """
@@ -152,8 +152,8 @@ class MrccTemplate(CalculatorTemplate):
         kw = {
             "charge": 0,
             "mult": 1,
-            "mrccinput": {"calc": "PBE", "basis": "def2-SVP"},
-            "mrccblocks": "",
+            "calc": "PBE", 
+            "basis": "def2-SVP"
         }
         kw.update(parameters)
 

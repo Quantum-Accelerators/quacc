@@ -10,7 +10,7 @@ from ase.units import Hartree
 if TYPE_CHECKING:
     from ase.atoms import Atoms
 
-    from quacc.types import MRCCEnergyInfo, MRCCParamsInfo
+    from quacc.types import MRCCEnergyInfo
 
 
 def read_geom_mrccinp(file_path: Path | str) -> Atoms:
@@ -54,7 +54,7 @@ def read_geom_mrccinp(file_path: Path | str) -> Atoms:
     return atoms
 
 
-def write_mrcc(file_path: Path | str, atoms: Atoms, parameters: MRCCParamsInfo) -> None:
+def write_mrcc(file_path: Path | str, atoms: Atoms, parameters: dict[str,str]) -> None:
     """
     Write MRCC input file given the Atoms object and the parameters.
 
@@ -64,32 +64,22 @@ def write_mrcc(file_path: Path | str, atoms: Atoms, parameters: MRCCParamsInfo) 
         File path to write the MRCC input file.
     atoms : Atoms
         Atoms object with the geometry.
-    parameters : MRCCParamsInfo
-        Dictionary with the parameters to be written in the MRCC input file. The keys are the following:
-        - mrccinput : dict[str, str] <-- This is a dictionary with the MRCC input parameters are keys and their values as values.
-        - mrccblocks : str <-- This is a string with the MRCC blocks to be written.
-        - charge : int <-- Charge of the system.
-        - mult : int <-- Multiplicity of the system.
+    parameters : dict[str,str]
+        Dictionary with the parameters to be written in the MRCC input file. The keys are the input keyword and the values are the input values.
     """
 
-    write_geom = True
 
     with Path.open(file_path, "w") as file_path:
         # Write the MRCC input file
-        for key, value in parameters["mrccinput"].items():
+        for key, value in parameters.items():
             file_path.write(f"{key}={value}\n")
 
-        # Write the MRCC blocks
-        if parameters["mrccblocks"] is not None:
-            file_path.write(f"{parameters['mrccblocks']} \n")
-            if "geom" in parameters["mrccblocks"]:
-                write_geom = False
 
-        if write_geom:
+        if "geom" not in parameters.keys():
             # If the geometry is not provided in the MRCC blocks, write it here.
             ghost_list = []  # List of indices of the ghost atoms.
             file_path.write(
-                f'charge={parameters["charge"]}\nmult={parameters["mult"]}\ngeom=xyz\n{len(atoms)}\n\n'
+                f'geom=xyz\n{len(atoms)}\n\n'
             )
             for atom_idx, atom in enumerate(atoms):
                 if atom.tag == 71:  # 71 is ascii G (Ghost)
@@ -101,7 +91,7 @@ def write_mrcc(file_path: Path | str, atoms: Atoms, parameters: MRCCParamsInfo) 
                     f"{symbol.ljust(3)} {position[0]:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f}\n"
                 )
 
-            if ghost_list:
+            if ghost_list and "ghost" not in parameters.keys():
                 file_path.write("\nghost=serialno\n")
                 file_path.write(",".join([str(atom_idx) for atom_idx in ghost_list]))
 
