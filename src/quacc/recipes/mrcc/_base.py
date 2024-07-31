@@ -48,8 +48,6 @@ def run_and_summarize(
         Any additional fields to supply to the summarizer.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
-    **calc_kwargs
-        Any other keyword arguments to pass to the `MRCC` calculator.
 
     Returns
     -------
@@ -61,7 +59,6 @@ def run_and_summarize(
         spin_multiplicity=spin_multiplicity,
         default_inputs=default_inputs,
         input_swaps=input_swaps,
-        **calc_kwargs,
     )
 
     final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
