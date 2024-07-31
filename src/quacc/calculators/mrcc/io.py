@@ -54,7 +54,7 @@ def read_geom_mrccinp(file_path: Path | str) -> Atoms:
     return atoms
 
 
-def write_mrcc(file_path: Path | str, atoms: Atoms, parameters: dict[str,str]) -> None:
+def write_mrcc(file_path: Path | str, atoms: Atoms, parameters: dict[str, str]) -> None:
     """
     Write MRCC input file given the Atoms object and the parameters.
 
@@ -68,19 +68,15 @@ def write_mrcc(file_path: Path | str, atoms: Atoms, parameters: dict[str,str]) -
         Dictionary with the parameters to be written in the MRCC input file. The keys are the input keyword and the values are the input values.
     """
 
-
     with Path.open(file_path, "w") as file_path:
         # Write the MRCC input file
         for key, value in parameters.items():
             file_path.write(f"{key}={value}\n")
 
-
-        if "geom" not in parameters.keys():
+        if "geom" not in parameters:
             # If the geometry is not provided in the MRCC blocks, write it here.
             ghost_list = []  # List of indices of the ghost atoms.
-            file_path.write(
-                f'geom=xyz\n{len(atoms)}\n\n'
-            )
+            file_path.write(f"geom=xyz\n{len(atoms)}\n\n")
             for atom_idx, atom in enumerate(atoms):
                 if atom.tag == 71:  # 71 is ascii G (Ghost)
                     ghost_list += [atom_idx + 1]
@@ -91,7 +87,7 @@ def write_mrcc(file_path: Path | str, atoms: Atoms, parameters: dict[str,str]) -
                     f"{symbol.ljust(3)} {position[0]:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f}\n"
                 )
 
-            if ghost_list and "ghost" not in parameters.keys():
+            if ghost_list and "ghost" not in parameters:
                 file_path.write("\nghost=serialno\n")
                 file_path.write(",".join([str(atom_idx) for atom_idx in ghost_list]))
 

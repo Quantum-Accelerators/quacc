@@ -124,7 +124,7 @@ class MrccTemplate(CalculatorTemplate):
         profile: MrccProfile,  # noqa: ARG002
         directory: Path | str,
         atoms: Atoms,
-        parameters: dict[str,str],
+        parameters: dict[str, str],
         properties: dict[str, Any],  # noqa: ARG002
     ) -> None:
         """
@@ -149,12 +149,7 @@ class MrccTemplate(CalculatorTemplate):
         """
         parameters = dict(parameters)
 
-        kw = {
-            "charge": 0,
-            "mult": 1,
-            "calc": "PBE", 
-            "basis": "def2-SVP"
-        }
+        kw = {"charge": 0, "mult": 1, "calc": "PBE", "basis": "def2-SVP"}
         kw.update(parameters)
 
         write_mrcc(directory / self.inputname, atoms, kw)
