@@ -26,7 +26,6 @@ def run_and_summarize(
     input_swaps: dict[str, str] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-    **calc_kwargs,
 ) -> RunSchema:
     """
     Base job function for MRCC recipes.
