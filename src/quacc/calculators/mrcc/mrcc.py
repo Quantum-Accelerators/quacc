@@ -199,6 +199,22 @@ class MRCC(GenericFileIOCalculator):
         **kwargs
             The parameters for the MRCC calculation.
 
+        Examples
+        ========
+        Use default values:
+
+        >>> from quacc.calculators.mrcc.mrcc import MRCC
+        >>> h = Atoms(
+        ...     'H',
+        ...     calculator=MRCC(
+        ...         charge=0,
+        ...         mult=1,
+        ...         directory='water',
+        ...         basis='def2-SVP',
+        ...         calc='B3LYP')
+
+        """
+
         Returns
         -------
         None

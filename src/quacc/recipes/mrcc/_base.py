@@ -23,7 +23,6 @@ def run_and_summarize(
     charge: int = 0,
     spin_multiplicity: int = 1,
     default_inputs: dict[str, str] | None = None,
-    blocks: str | None = None,
     input_swaps: dict[str, str] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
@@ -42,8 +41,6 @@ def run_and_summarize(
         Multiplicity of the system.
     default_inputs
         Default input parameters.
-    blocks
-        Block input parameters.
     input_swaps
         List of orcasimpleinput swaps for the calculator. To remove entries
         from the defaults, put a `#` in front of the name.
@@ -63,7 +60,6 @@ def run_and_summarize(
         charge=charge,
         spin_multiplicity=spin_multiplicity,
         default_inputs=default_inputs,
-        blocks=blocks,
         input_swaps=input_swaps,
         **calc_kwargs,
     )
@@ -80,7 +76,6 @@ def prep_calculator(
     charge: int = 0,
     spin_multiplicity: int = 1,
     default_inputs: dict[str, str] | None = None,
-    blocks: str | None = None,
     input_swaps: dict[str, str] | None = None,
     **calc_kwargs,
 ) -> MRCC:
@@ -95,38 +90,20 @@ def prep_calculator(
         Multiplicity of the system.
     default_inputs
         Default input parameters.
-    blocks
-        MRCC block input string.
     input_swaps
-        List of mrccinput swaps for the calculator. To remove entries
+        Dictionary of mrccinput swaps for the calculator. To remove entries
         from the defaults, put a `#` in front of the name.
-    **calc_kwargs
-        Any other keyword arguments to pass to the `ORCA` calculator.
 
     Returns
     -------
     MRCC
         The MRCC calculator
     """
-    mrccinput = recursive_dict_merge(default_inputs, input_swaps)
-
-    # Check that there is no duplication of keywords between mrccinput and blocks
-    if blocks is not None:
-        for line in blocks.split():
-            if "=" in line:
-                key = line.split("=")[0]
-                if key == "scftype":
-                    raise ValueError(
-                        "Keyword scftype must be specified in mrccinput only"
-                    )
-                if key in mrccinput:
-                    raise ValueError(
-                        f"Keyword {key} is duplicated in both mrccinput and blocks"
-                    )
+    mrccinput = recursive_dict_merge(default_inputs, input_swaps, {"charge": charge, "mult": spin_multiplicity})
 
     # If spin_multiplicity bigger than 1, check if scftype is in either mrccinput or blocks
     if spin_multiplicity > 1:
-        if "scftype" not in mrccinput:
+        if "scftype" not in mrccinput.keys():
             raise ValueError(
                 "For spin_multiplicity > 1, scftype keyword must be specified in mrccinput"
             )
@@ -139,9 +116,5 @@ def prep_calculator(
 
     return MRCC(
         profile=MrccProfile(command=settings.MRCC_CMD),
-        charge=charge,
-        mult=spin_multiplicity,
-        mrccinput=mrccinput,
-        mrccblocks=blocks,
-        **calc_kwargs,
+        **mrccinput
     )
