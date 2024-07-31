@@ -275,9 +275,15 @@ if TYPE_CHECKING:
         ri_cwft_basis: str
 
     class BlockInfo(TypedDict):
-        adsorbate_slab: str
-        adsorbate: str
-        slab: str
+        adsorbate_slab: str 
+        adsorbate: str 
+        slab: str 
+    
+    class MRCCInputDict(TypedDict):
+        adsorbate_slab: dict[str,str]
+        adsorbate: dict[str,str]
+        slab:  dict[str,str]        
+
 
     class MultiplicityDict(TypedDict):
         adsorbate_slab: int

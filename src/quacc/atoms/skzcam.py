@@ -19,6 +19,7 @@ if TYPE_CHECKING:
 
     from quacc.types import (
         BlockInfo,
+        MRCCInputDict,
         ElementInfo,
         ElementStr,
         MultiplicityDict,
@@ -60,8 +61,8 @@ class MRCCInputGenerator:
         The ASE Atoms object for the quantum cluster of the adsorbate.
     slab_cluster
         The ASE Atoms object for the quantum cluster of the slab.
-    mrccblocks
-        The MRCC input block (to be put in 'mrccblocks' parameter) as a string for the adsorbate-slab complex, the adsorbate, and the slab in a dictionary with the keys 'adsorbate_slab', 'adsorbate', and 'slab' respectively.
+    skzcam_input_str
+        The MRCC input block (to be put in 'skzcam_input_str' parameter) as a string for the adsorbate-slab complex, the adsorbate, and the slab in a dictionary with the keys 'adsorbate_slab', 'adsorbate', and 'slab' respectively.
     """
 
     def __init__(
@@ -140,18 +141,49 @@ class MRCCInputGenerator:
         ]
         self.slab_cluster: Atoms = self.adsorbate_slab_cluster[self.slab_indices]
 
-        # Initialize the mrccblocks input strings for the adsorbate-slab complex, adsorbate, and slab
-        self.mrccblocks: BlockInfo = {"adsorbate_slab": "", "adsorbate": "", "slab": ""}
+        # Initialize the SKZCAM MRCC input strings for the adsorbate-slab complex, adsorbate, and slab in the same fashion as for ORCAInputGenerator.orcablocks
+        self.skzcam_input_str: BlockInfo = {"adsorbate_slab": "", "adsorbate": "", "slab": ""}
 
-    def generate_input(self) -> BlockInfo:
+        # Initialize the dictionary with keyword and values pairs for MRCC input
+        self.skzcam_input_dict: MRCCInputDict = {"adsorbate_slab": {}, "adsorbate": {}, "slab": {}}
+
+    def generate_input(self) -> MRCCInputDict:
         """
-        Creates the mrccblocks input for the MRCC ASE calculator.
+        Creates the mrccinput input for the MRCC ASE calculator.
 
         Returns
         -------
-        BlockInfo
-            The MRCC input block (to be put in 'mrccblocks' parameter) as a string for the adsorbate-slab complex, the adsorbate, and the slab in a dictionary with the keys 'adsorbate_slab', 'adsorbate', and 'slab' respectively.
+        MRCCInputDict
+            A dictionary of key-value pairs (to be put in 'mrccinput' parameter) for the adsorbate-slab complex, the adsorbate, and the slab.
         """
+
+        def _convert_input_str_to_dict(input_str: str ) -> dict[str,str]:
+            """
+            Convert the SKZCAM input string to a dictionary.
+
+            Parameters
+            ----------
+            input_str
+                The SKZCAM input string containing all the input parameters for the SKZCAM protocol (i.e., basis, ecp, geometry, point charges)
+
+            Returns
+            -------
+            dict[str,str]
+                The SKZCAM input as a dictionary where each key is the input parameter and the value is the value of that parameter.
+            """
+
+            input_dict = {}
+
+            key = None
+
+            for line in input_str.split('\n'):
+                if "=" in line:
+                    key = line.split('=')[0]
+                    input_dict[key] = line.split('=')[1]
+                elif key is not None:
+                    input_dict[key] += '\n' + line
+
+            return input_dict
 
         # Create the blocks for the basis sets (basis, basis_sm, dfbasis_scf, dfbasis_cor, ecp)
         self._generate_basis_ecp_block()
@@ -161,11 +193,15 @@ class MRCCInputGenerator:
 
         # Create the point charge block and add it to the adsorbate-slab complex and slab blocks
         point_charge_block = self._generate_point_charge_block()
-        self.mrccblocks["adsorbate_slab"] += point_charge_block
-        self.mrccblocks["slab"] += point_charge_block
+        self.skzcam_input_str["adsorbate_slab"] += point_charge_block
+        self.skzcam_input_str["slab"] += point_charge_block
 
-        # Combine the blocks
-        return self.mrccblocks
+        # Convert the input string to a dictionary
+        self.skzcam_input_dict["adsorbate_slab"] = _convert_input_str_to_dict(self.skzcam_input_str["adsorbate_slab"])
+        self.skzcam_input_dict["adsorbate"] = _convert_input_str_to_dict(self.skzcam_input_str["adsorbate"])
+        self.skzcam_input_dict["slab"] = _convert_input_str_to_dict(self.skzcam_input_str["slab"])
+        
+        return self.skzcam_input_dict
 
     def _generate_basis_ecp_block(self) -> None:
         """
@@ -193,23 +229,23 @@ dfbasis_cor=atomtype
 """
 
         if self.include_cp:
-            self.mrccblocks["adsorbate_slab"] += _create_basis_block(
+            self.skzcam_input_str["adsorbate_slab"] += _create_basis_block(
                 quantum_region=self.adsorbate_slab_cluster, ecp_region=self.ecp_region
             )
-            self.mrccblocks["slab"] += _create_basis_block(
+            self.skzcam_input_str["slab"] += _create_basis_block(
                 quantum_region=self.adsorbate_slab_cluster, ecp_region=self.ecp_region
             )
-            self.mrccblocks["adsorbate"] += _create_basis_block(
+            self.skzcam_input_str["adsorbate"] += _create_basis_block(
                 quantum_region=self.adsorbate_slab_cluster, ecp_region=None
             )
         else:
-            self.mrccblocks["adsorbate_slab"] += _create_basis_block(
+            self.skzcam_input_str["adsorbate_slab"] += _create_basis_block(
                 quantum_region=self.adsorbate_slab_cluster, ecp_region=self.ecp_region
             )
-            self.mrccblocks["slab"] += _create_basis_block(
+            self.skzcam_input_str["slab"] += _create_basis_block(
                 quantum_region=self.slab_cluster, ecp_region=self.ecp_region
             )
-            self.mrccblocks["adsorbate"] += _create_basis_block(
+            self.skzcam_input_str["adsorbate"] += _create_basis_block(
                 quantum_region=self.adsorbate_cluster, ecp_region=None
             )
 
@@ -276,20 +312,20 @@ dfbasis_cor=atomtype
             ),
         }
 
-        # Add the charge and core electron information to mrccblocks
-        self.mrccblocks["adsorbate_slab"] += f"""charge={charge}
+        # Add the charge and core electron information to skzcam_input_str
+        self.skzcam_input_str["adsorbate_slab"] += f"""charge={charge}
 mult={self.multiplicities['adsorbate_slab']}
 core={int(core['adsorbate_slab']/2)}
 unit=angs
 geom=xyz
 """
-        self.mrccblocks["adsorbate"] += f"""charge=0
+        self.skzcam_input_str["adsorbate"] += f"""charge=0
 mult={self.multiplicities['adsorbate']}
 core={int(core['adsorbate']/2)}
 unit=angs
 geom=xyz
 """
-        self.mrccblocks["slab"] += f"""charge={charge}
+        self.skzcam_input_str["slab"] += f"""charge={charge}
 mult={self.multiplicities['slab']}
 core={int(core['slab']/2)}
 unit=angs
@@ -306,51 +342,51 @@ geom=xyz
 
         # Set the number of atoms for each system. This would be the number of atoms in the quantum cluster plus the number of atoms in the ECP region. If include_cp is True, then the number of atoms in the quantum cluster is the number of atoms in the adsorbate-slab complex for both the adsorbate and slab.
         if self.include_cp:
-            self.mrccblocks["adsorbate_slab"] += (
+            self.skzcam_input_str["adsorbate_slab"] += (
                 f"{len(self.adsorbate_slab_cluster) + len(self.ecp_region)}\n\n"
             )
-            self.mrccblocks["adsorbate_slab"] += (
+            self.skzcam_input_str["adsorbate_slab"] += (
                 adsorbate_slab_coords_block + ecp_region_block
             )
 
-            self.mrccblocks["adsorbate"] += f"{len(self.adsorbate_slab_cluster)}\n\n"
-            self.mrccblocks["adsorbate"] += adsorbate_slab_coords_block
+            self.skzcam_input_str["adsorbate"] += f"{len(self.adsorbate_slab_cluster)}\n\n"
+            self.skzcam_input_str["adsorbate"] += adsorbate_slab_coords_block
 
-            self.mrccblocks["slab"] += (
+            self.skzcam_input_str["slab"] += (
                 f"{len(self.adsorbate_slab_cluster) + len(self.ecp_region)}\n\n"
             )
-            self.mrccblocks["slab"] += adsorbate_slab_coords_block + ecp_region_block
+            self.skzcam_input_str["slab"] += adsorbate_slab_coords_block + ecp_region_block
 
             for system in ["adsorbate_slab", "adsorbate", "slab"]:
-                self.mrccblocks[system] += "\nghost=serialno\n"
+                self.skzcam_input_str[system] += "\nghost=serialno\n"
                 # Add the ghost atoms for the counterpoise correction in the adsorbate and slab
                 if system == "adsorbate":
-                    self.mrccblocks[system] += ",".join(
+                    self.skzcam_input_str[system] += ",".join(
                         [str(atom_idx + 1) for atom_idx in self.slab_indices]
                     )
                 elif system == "slab":
-                    self.mrccblocks[system] += ",".join(
+                    self.skzcam_input_str[system] += ",".join(
                         [str(atom_idx + 1) for atom_idx in self.adsorbate_indices]
                     )
-                self.mrccblocks[system] += "\n\n"
+                self.skzcam_input_str[system] += "\n\n"
         else:
-            self.mrccblocks["adsorbate_slab"] += (
+            self.skzcam_input_str["adsorbate_slab"] += (
                 f"{len(self.adsorbate_slab_cluster) + len(self.ecp_region)}\n\n"
             )
-            self.mrccblocks["adsorbate_slab"] += (
+            self.skzcam_input_str["adsorbate_slab"] += (
                 adsorbate_slab_coords_block + ecp_region_block
             )
 
-            self.mrccblocks["adsorbate"] += f"{len(self.adsorbate_cluster)}\n\n"
+            self.skzcam_input_str["adsorbate"] += f"{len(self.adsorbate_cluster)}\n\n"
             for atom in self.adsorbate_cluster:
-                self.mrccblocks["adsorbate"] += create_atom_coord_string(atom=atom)
+                self.skzcam_input_str["adsorbate"] += create_atom_coord_string(atom=atom)
 
-            self.mrccblocks["slab"] += (
+            self.skzcam_input_str["slab"] += (
                 f"{len(self.slab_cluster) + len(self.ecp_region)}\n\n"
             )
             for atom in self.slab_cluster:
-                self.mrccblocks["slab"] += create_atom_coord_string(atom=atom)
-            self.mrccblocks["slab"] += ecp_region_block
+                self.skzcam_input_str["slab"] += create_atom_coord_string(atom=atom)
+            self.skzcam_input_str["slab"] += ecp_region_block
 
     def _generate_point_charge_block(self) -> str:
         """
