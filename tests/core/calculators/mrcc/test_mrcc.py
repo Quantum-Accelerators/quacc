@@ -21,7 +21,9 @@ def test_mrcc_version_from_string():
 def test_mrcc_singlepoint(tmp_path):
     calc = MRCC(
         profile=MrccProfile(command=get_settings().MRCC_CMD),
-        calc = "PBE", basis = "STO-3G", symm = "off",
+        calc="PBE",
+        basis="STO-3G",
+        symm="off",
         directory=tmp_path,
     )
 

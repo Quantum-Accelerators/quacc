@@ -17,7 +17,7 @@ from quacc.atoms.skzcam import (
     MRCCInputGenerator,
     ORCAInputGenerator,
     _get_atom_distances,
-    create_atom_coord_string
+    create_atom_coord_string,
 )
 
 FILE_DIR = Path(__file__).parent
@@ -199,7 +199,11 @@ def test_MRCCInputGenerator_generate_input(mrcc_input_generator):
     input_dict = mrcc_input_generator_nocp.generate_input()
 
     # Check that the input_dictionary is correct
-    assert (input_dict['adsorbate']['geom'].split()[1],input_dict['slab']['geom'].split()[1],input_dict['adsorbate_slab']['geom'].split()[1]) == ('2','19','21')
+    assert (
+        input_dict["adsorbate"]["geom"].split()[1],
+        input_dict["slab"]["geom"].split()[1],
+        input_dict["adsorbate_slab"]["geom"].split()[1],
+    ) == ("2", "19", "21")
 
     mrcc_input_generator.generate_input()
 
@@ -535,6 +539,7 @@ def test_MRCCInputGenerator_generate_point_charge_block(mrcc_input_generator):
         rtol=1e-05,
         atol=1e-07,
     )
+
 
 def test_ORCAInputGenerator_init(adsorbate_slab_embedded_cluster, element_info):
     pal_nprocs_block = {"nprocs": 1, "maxcore": 5000}

@@ -19,9 +19,9 @@ if TYPE_CHECKING:
 
     from quacc.types import (
         BlockInfo,
-        MRCCInputDict,
         ElementInfo,
         ElementStr,
+        MRCCInputDict,
         MultiplicityDict,
         SKZCAMOutput,
     )
@@ -142,10 +142,18 @@ class MRCCInputGenerator:
         self.slab_cluster: Atoms = self.adsorbate_slab_cluster[self.slab_indices]
 
         # Initialize the SKZCAM MRCC input strings for the adsorbate-slab complex, adsorbate, and slab in the same fashion as for ORCAInputGenerator.orcablocks
-        self.skzcam_input_str: BlockInfo = {"adsorbate_slab": "", "adsorbate": "", "slab": ""}
+        self.skzcam_input_str: BlockInfo = {
+            "adsorbate_slab": "",
+            "adsorbate": "",
+            "slab": "",
+        }
 
         # Initialize the dictionary with keyword and values pairs for MRCC input
-        self.skzcam_input_dict: MRCCInputDict = {"adsorbate_slab": {}, "adsorbate": {}, "slab": {}}
+        self.skzcam_input_dict: MRCCInputDict = {
+            "adsorbate_slab": {},
+            "adsorbate": {},
+            "slab": {},
+        }
 
     def generate_input(self) -> MRCCInputDict:
         """
@@ -157,7 +165,7 @@ class MRCCInputGenerator:
             A dictionary of key-value pairs (to be put in 'mrccinput' parameter) for the adsorbate-slab complex, the adsorbate, and the slab.
         """
 
-        def _convert_input_str_to_dict(input_str: str ) -> dict[str,str]:
+        def _convert_input_str_to_dict(input_str: str) -> dict[str, str]:
             """
             Convert the SKZCAM input string to a dictionary.
 
@@ -176,12 +184,12 @@ class MRCCInputGenerator:
 
             key = None
 
-            for line in input_str.split('\n'):
+            for line in input_str.split("\n"):
                 if "=" in line:
-                    key = line.split('=')[0]
-                    input_dict[key] = line.split('=')[1]
+                    key = line.split("=")[0]
+                    input_dict[key] = line.split("=")[1]
                 elif key is not None:
-                    input_dict[key] += '\n' + line
+                    input_dict[key] += "\n" + line
 
             return input_dict
 
@@ -197,10 +205,16 @@ class MRCCInputGenerator:
         self.skzcam_input_str["slab"] += point_charge_block
 
         # Convert the input string to a dictionary
-        self.skzcam_input_dict["adsorbate_slab"] = _convert_input_str_to_dict(self.skzcam_input_str["adsorbate_slab"])
-        self.skzcam_input_dict["adsorbate"] = _convert_input_str_to_dict(self.skzcam_input_str["adsorbate"])
-        self.skzcam_input_dict["slab"] = _convert_input_str_to_dict(self.skzcam_input_str["slab"])
-        
+        self.skzcam_input_dict["adsorbate_slab"] = _convert_input_str_to_dict(
+            self.skzcam_input_str["adsorbate_slab"]
+        )
+        self.skzcam_input_dict["adsorbate"] = _convert_input_str_to_dict(
+            self.skzcam_input_str["adsorbate"]
+        )
+        self.skzcam_input_dict["slab"] = _convert_input_str_to_dict(
+            self.skzcam_input_str["slab"]
+        )
+
         return self.skzcam_input_dict
 
     def _generate_basis_ecp_block(self) -> None:
@@ -349,13 +363,17 @@ geom=xyz
                 adsorbate_slab_coords_block + ecp_region_block
             )
 
-            self.skzcam_input_str["adsorbate"] += f"{len(self.adsorbate_slab_cluster)}\n\n"
+            self.skzcam_input_str["adsorbate"] += (
+                f"{len(self.adsorbate_slab_cluster)}\n\n"
+            )
             self.skzcam_input_str["adsorbate"] += adsorbate_slab_coords_block
 
             self.skzcam_input_str["slab"] += (
                 f"{len(self.adsorbate_slab_cluster) + len(self.ecp_region)}\n\n"
             )
-            self.skzcam_input_str["slab"] += adsorbate_slab_coords_block + ecp_region_block
+            self.skzcam_input_str["slab"] += (
+                adsorbate_slab_coords_block + ecp_region_block
+            )
 
             for system in ["adsorbate_slab", "adsorbate", "slab"]:
                 self.skzcam_input_str[system] += "\nghost=serialno\n"
@@ -379,7 +397,9 @@ geom=xyz
 
             self.skzcam_input_str["adsorbate"] += f"{len(self.adsorbate_cluster)}\n\n"
             for atom in self.adsorbate_cluster:
-                self.skzcam_input_str["adsorbate"] += create_atom_coord_string(atom=atom)
+                self.skzcam_input_str["adsorbate"] += create_atom_coord_string(
+                    atom=atom
+                )
 
             self.skzcam_input_str["slab"] += (
                 f"{len(self.slab_cluster) + len(self.ecp_region)}\n\n"
