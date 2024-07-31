@@ -49,7 +49,7 @@ def run_and_summarize(
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
-        Any other keyword arguments to pass to the `ORCA` calculator.
+        Any other keyword arguments to pass to the `MRCC` calculator.
 
     Returns
     -------

@@ -213,8 +213,6 @@ class MRCC(GenericFileIOCalculator):
         ...         basis='def2-SVP',
         ...         calc='B3LYP')
 
-        """
-
         Returns
         -------
         None
