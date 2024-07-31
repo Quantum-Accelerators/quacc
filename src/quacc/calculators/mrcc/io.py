@@ -72,17 +72,22 @@ def write_mrcc(file_path: Path | str, atoms: Atoms, parameters: MRCCParamsInfo) 
         - mult : int <-- Multiplicity of the system.
     """
 
+    write_geom = True
+
     with Path.open(file_path, "w") as file_path:
         # Write the MRCC input file
         for key, value in parameters["mrccinput"].items():
             file_path.write(f"{key}={value}\n")
 
         # Write the MRCC blocks
-        file_path.write(f"{parameters['mrccblocks']} \n")
+        if parameters["mrccblocks"] is not None:
+            file_path.write(f"{parameters['mrccblocks']} \n")
+            if "geom" in parameters["mrccblocks"]:
+                write_geom = False
 
-        # If the geometry is not provided in the MRCC blocks, write it here.
-        ghost_list = []  # List of indices of the ghost atoms.
-        if "geom" not in parameters["mrccblocks"]:
+        if write_geom:
+            # If the geometry is not provided in the MRCC blocks, write it here.
+            ghost_list = []  # List of indices of the ghost atoms.
             file_path.write(
                 f'charge={parameters["charge"]}\nmult={parameters["mult"]}\ngeom=xyz\n{len(atoms)}\n\n'
             )

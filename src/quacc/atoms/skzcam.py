@@ -1135,7 +1135,7 @@ class CreateSKZCAMClusters:
         }
 
         # Load the pun file as a list of strings
-        with zopen(zpath(Path(pun_file))) as f:
+        with zopen(zpath(str(Path(pun_file)))) as f:
             raw_pun_file = [
                 line.rstrip().decode("utf-8")
                 if isinstance(line, bytes)

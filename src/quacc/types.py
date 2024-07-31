@@ -328,7 +328,7 @@ if TYPE_CHECKING:
 
     class MRCCParamsInfo(TypedDict):
         mrccinput: dict[str, str]
-        mrccblocks: str
+        mrccblocks: str | None
         charge: int
         mult: int
 

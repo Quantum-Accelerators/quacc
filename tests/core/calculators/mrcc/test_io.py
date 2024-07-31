@@ -133,6 +133,53 @@ O   3.0 0.0 0.0
 
     assert generated_inputfile == reference_inputfile
 
+    # Test when mrccblock is None
+
+    params = {
+        "charge": 0,
+        "mult": 1,
+        "mrccinput": {
+            "calc": "LNO-CCSD(T)",
+            "basis": "cc-pVDZ",
+            "symm": "off",
+            "localcc": "on",
+            "lcorthr": "normal",
+            "ccprog": "ccsd",
+            "ccsdalg": "dfdirect",
+            "dfbasis_cor": "cc-pVDZ-RI",
+        },
+        "mrccblocks": None,
+    }
+
+    write_mrcc(tmp_path / "MINP", atoms, params)
+
+    with open(tmp_path / "MINP") as fd:
+        generated_inputfile = fd.readlines()
+
+    reference_inputfile = [
+        "calc=LNO-CCSD(T)\n",
+        "basis=cc-pVDZ\n",
+        "symm=off\n",
+        "localcc=on\n",
+        "lcorthr=normal\n",
+        "ccprog=ccsd\n",
+        "ccsdalg=dfdirect\n",
+        "dfbasis_cor=cc-pVDZ-RI\n",
+        "charge=0\n",
+        "mult=1\n",
+        "geom=xyz\n",
+        "3\n",
+        "\n",
+        "H      1.00000000000    0.00000000000    0.00000000000\n",
+        "H      2.00000000000    0.00000000000    0.00000000000\n",
+        "O      3.00000000000    0.00000000000    0.00000000000\n",
+        "\n",
+        "ghost=serialno\n",
+        "1,2",
+    ]
+
+    assert generated_inputfile == reference_inputfile
+
 
 def test_read_mrcc_outputs(tmp_path):
     reference_dft_outputfile = """...............................................................................

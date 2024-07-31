@@ -1024,7 +1024,9 @@ def test_ORCAInputGenerator_generate_coords_block(orca_input_generator):
 
 
 def test_ORCAInputGenerator_format_ecp_info(orca_input_generator):
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match="ECP info does not contain 'NewECP' or 'end' keyword."
+    ):
         orca_input_generator._format_ecp_info(atom_ecp_info="dummy_info\nN_core0\nend")
 
     atom_ecp_info = """
@@ -1109,9 +1111,12 @@ def test_ORCAInputGenerator_generate_preamble_block(orca_input_generator):
     )
 
     # Check whether error raised if not all element_info is provided
-    with pytest.raises(ValueError):
-        element_info_error = {"C": element_info["C"]}
-        orca_input_generator_3.element_info = element_info_error
+    element_info_error = {"C": element_info["C"]}
+    orca_input_generator_3.element_info = element_info_error
+    with pytest.raises(
+        ValueError,
+        match="Not all element symbols are provided in the element_info dictionary.",
+    ):
         orca_input_generator_3._generate_preamble_block()
 
 
