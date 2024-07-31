@@ -125,17 +125,18 @@ def prep_calculator(
                     )
 
     # If spin_multiplicity bigger than 1, check if scftype is in either mrccinput or blocks
-    if spin_multiplicity > 1 and "scftype" not in mrccinput:
-        raise ValueError(
-            "For spin_multiplicity > 1, scftype keyword must be specified in mrccinput"
-        )
-    elif spin_multiplicity > 1 and mrccinput["scftype"].lower() not in [
-        "uhf",
-        "uks",
-        "rohf",
-        "roks",
-    ]:
-        raise ValueError(
+    if spin_multiplicity > 1:
+        if "scftype" not in mrccinput:
+            raise ValueError(
+                "For spin_multiplicity > 1, scftype keyword must be specified in mrccinput"
+            )
+        elif mrccinput["scftype"].lower() not in [
+            "uhf",
+            "uks",
+            "rohf",
+            "roks",
+        ]:
+            raise ValueError(
             "For spin_multiplicity > 1, scftype must not be set to RHF or RKS"
         )
 
