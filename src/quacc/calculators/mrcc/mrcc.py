@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from ase.config import Config
 
-    from quacc.calculators.mrcc.io import EnergyInfo, ParamsInfo
+    from quacc.calculators.mrcc.io import MRCCEnergyInfo, MRCCParamsInfo
 
 
 def _get_version_from_mrcc_header(mrcc_header: str) -> str:
@@ -124,7 +124,7 @@ class MrccTemplate(CalculatorTemplate):
         profile: MrccProfile,  # noqa: ARG002
         directory: Path | str,
         atoms: Atoms,
-        parameters: ParamsInfo,
+        parameters: MRCCParamsInfo,
         properties: dict[str, Any],  # noqa: ARG002
     ) -> None:
         """
@@ -159,7 +159,7 @@ class MrccTemplate(CalculatorTemplate):
 
         write_mrcc(directory / self.inputname, atoms, kw)
 
-    def read_results(self, directory: Path | str) -> EnergyInfo:
+    def read_results(self, directory: Path | str) -> MRCCEnergyInfo:
         """
         Reads the MRCC output files.
 
@@ -170,7 +170,7 @@ class MrccTemplate(CalculatorTemplate):
 
         Returns
         -------
-        EnergyInfo
+        MRCCEnergyInfo
             Dictionary with the energy components. The keys are the following:
             - energy : float <-- Total energy which will not be computed in this function.
             - scf_energy : float <-- SCF energy.
