@@ -25,7 +25,11 @@ def test_static_job(tmp_path):
             mrccblocks="",
         )
     assert output["natoms"] == len(atoms)
-    assert output["parameters"]["mrccinput"] == {"basis": "def2-tzvp", "calc": "PBE", "symm": "off"}
+    assert output["parameters"]["mrccinput"] == {
+        "basis": "def2-tzvp",
+        "calc": "PBE",
+        "symm": "off",
+    }
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
     assert output["spin_multiplicity"] == 1
@@ -33,16 +37,11 @@ def test_static_job(tmp_path):
     assert output["results"]["energy"] == pytest.approx(-2061.4010013440234)
 
     # Check if it runs without specifying anything besides atoms
-    atoms = Atoms(
-    "H2O",
-    positions=[[1.0, 0.0, 0.0], [2.0, 0.0, 0.0], [3.0, 0.0, 0.0]]
-)
+    atoms = Atoms("H2O", positions=[[1.0, 0.0, 0.0], [2.0, 0.0, 0.0], [3.0, 0.0, 0.0]])
     with change_settings({"RESULTS_DIR": tmp_path}):
         output = static_job(atoms)
 
     assert output["results"]["energy"] == pytest.approx(-2061.4010013440234)
-     
-    
 
 
 def test_run_and_summarize(tmp_path):
@@ -66,29 +65,43 @@ def test_run_and_summarize(tmp_path):
 
 
 def test_prep_calculator():
-
-    with pytest.raises(ValueError,match="Keyword symm is duplicated in both mrccinput and blocks"):
+    with pytest.raises(
+        ValueError, match="Keyword symm is duplicated in both mrccinput and blocks"
+    ):
         calc = prep_calculator(
             default_inputs={"calc": "PBE", "basis": "def2-tzvp", "symm": "off"},
-            blocks="symm=off"
+            blocks="symm=off",
         )
-    with pytest.raises(ValueError,match="Keyword scftype must be specified in mrccinput only"):
+    with pytest.raises(
+        ValueError, match="Keyword scftype must be specified in mrccinput only"
+    ):
         calc = prep_calculator(
             default_inputs={"calc": "PBE", "basis": "def2-tzvp", "symm": "off"},
-            blocks="scftype=RHF"
+            blocks="scftype=RHF",
         )
 
-    with pytest.raises(ValueError,match="For spin_multiplicity > 1, scftype keyword must be specified in mrccinput"):
+    with pytest.raises(
+        ValueError,
+        match="For spin_multiplicity > 1, scftype keyword must be specified in mrccinput",
+    ):
         calc = prep_calculator(
             spin_multiplicity=2,
-            default_inputs={"calc": "PBE", "basis": "def2-tzvp", "symm": "off"}
+            default_inputs={"calc": "PBE", "basis": "def2-tzvp", "symm": "off"},
         )
 
-    with pytest.raises(ValueError,match="For spin_multiplicity > 1, scftype must not be set to RHF or RKS"):
+    with pytest.raises(
+        ValueError,
+        match="For spin_multiplicity > 1, scftype must not be set to RHF or RKS",
+    ):
         calc = prep_calculator(
             spin_multiplicity=2,
-            default_inputs={"calc": "HF", "basis": "def2-tzvp", "symm": "off","scftype":"RHF"}
-        )    
+            default_inputs={
+                "calc": "HF",
+                "basis": "def2-tzvp",
+                "symm": "off",
+                "scftype": "RHF",
+            },
+        )
 
     calc = prep_calculator(
         charge=2,
@@ -97,7 +110,8 @@ def test_prep_calculator():
         input_swaps={"calc": "PBE", "basis": "def2-SVP"},
         blocks="""dfbasis_scf=atomtype
 H: def2-SVP
-O: def2-SVP""")    
+O: def2-SVP""",
+    )
 
     ref_parameters = {
         "charge": 2,
@@ -105,7 +119,7 @@ O: def2-SVP""")
         "mrccinput": {"calc": "PBE", "basis": "def2-SVP"},
         "mrccblocks": """dfbasis_scf=atomtype
 H: def2-SVP
-O: def2-SVP"""
+O: def2-SVP""",
     }
 
     assert calc.parameters == ref_parameters

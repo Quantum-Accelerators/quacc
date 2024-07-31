@@ -116,15 +116,28 @@ def prep_calculator(
             if "=" in line:
                 key = line.split("=")[0]
                 if key == "scftype":
-                    raise ValueError("Keyword scftype must be specified in mrccinput only")
+                    raise ValueError(
+                        "Keyword scftype must be specified in mrccinput only"
+                    )
                 if key in mrccinput:
-                    raise ValueError(f"Keyword {key} is duplicated in both mrccinput and blocks")
-    
+                    raise ValueError(
+                        f"Keyword {key} is duplicated in both mrccinput and blocks"
+                    )
+
     # If spin_multiplicity bigger than 1, check if scftype is in either mrccinput or blocks
     if spin_multiplicity > 1 and "scftype" not in mrccinput:
-        raise ValueError("For spin_multiplicity > 1, scftype keyword must be specified in mrccinput")
-    elif spin_multiplicity > 1 and mrccinput["scftype"].lower() not in ["uhf","uks","rohf","roks"]:
-        raise ValueError("For spin_multiplicity > 1, scftype must not be set to RHF or RKS")
+        raise ValueError(
+            "For spin_multiplicity > 1, scftype keyword must be specified in mrccinput"
+        )
+    elif spin_multiplicity > 1 and mrccinput["scftype"].lower() not in [
+        "uhf",
+        "uks",
+        "rohf",
+        "roks",
+    ]:
+        raise ValueError(
+            "For spin_multiplicity > 1, scftype must not be set to RHF or RKS"
+        )
 
     settings = get_settings()
 
