@@ -200,7 +200,7 @@ class MRCC(GenericFileIOCalculator):
             The parameters for the MRCC calculation.
 
         Examples
-        ----------
+        --------
         Use default values:
 
         >>> from quacc.calculators.mrcc.mrcc import MRCC
