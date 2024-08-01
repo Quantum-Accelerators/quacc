@@ -208,12 +208,13 @@ class MRCC(GenericFileIOCalculator):
         >>> from quacc import get_settings
 
         >>> calc = MRCC(
-        ...    profile=MrccProfile(command=get_settings().MRCC_CMD),
+        ...     profile=MrccProfile(command=get_settings().MRCC_CMD),
         ...     charge=0,
         ...     mult=1,
-        ...     basis='def2-SVP',
-        ...     calc='PBE')
-        >>> h = molecule('H2')
+        ...     basis="def2-SVP",
+        ...     calc="PBE",
+        ... )
+        >>> h = molecule("H2")
         >>> h.set_calculator(calc)
         >>> h.get_total_energy()
 
