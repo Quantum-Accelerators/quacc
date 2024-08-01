@@ -203,15 +203,19 @@ class MRCC(GenericFileIOCalculator):
         --------
         Use default values:
 
-        >>> from quacc.calculators.mrcc.mrcc import MRCC
-        >>> h = Atoms(
-        ...     'H',
-        ...     calculator=MRCC(
-        ...         charge=0,
-        ...         mult=1,
-        ...         directory='water',
-        ...         basis='def2-SVP',
-        ...         calc='B3LYP')
+        >>> from quacc.calculators.mrcc.mrcc import MRCC, MrccProfile
+        >>> from ase.build import molecule
+        >>> from quacc import get_settings
+
+        >>> calc = MRCC(
+        ...    profile=MrccProfile(command=get_settings().MRCC_CMD),
+        ...     charge=0,
+        ...     mult=1,
+        ...     basis='def2-SVP',
+        ...     calc='PBE')
+        >>> h = molecule('H2')
+        >>> h.set_calculator(calc)
+        >>> h.get_total_energy()
 
         Returns
         -------
