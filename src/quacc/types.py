@@ -279,6 +279,11 @@ if TYPE_CHECKING:
         adsorbate: str
         slab: str
 
+    class MRCCInputDict(TypedDict):
+        adsorbate_slab: dict[str, str]
+        adsorbate: dict[str, str]
+        slab: dict[str, str]
+
     class MultiplicityDict(TypedDict):
         adsorbate_slab: int
         slab: int

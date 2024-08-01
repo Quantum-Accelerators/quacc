@@ -42,26 +42,27 @@ def test_write_mrcc(tmp_path):
     params = {
         "charge": 0,
         "mult": 1,
-        "mrccinput": {
-            "calc": "LNO-CCSD(T)",
-            "basis": "cc-pVDZ",
-            "symm": "off",
-            "localcc": "on",
-            "lcorthr": "normal",
-            "ccprog": "ccsd",
-            "ccsdalg": "dfdirect",
-            "dfbasis_cor": "cc-pVDZ-RI",
-        },
-        "mrccblocks": """scfmaxit=1000
-usedisk=0""",
+        "calc": "LNO-CCSD(T)",
+        "basis": "cc-pVDZ",
+        "symm": "off",
+        "localcc": "on",
+        "lcorthr": "normal",
+        "ccprog": "ccsd",
+        "ccsdalg": "dfdirect",
+        "dfbasis_cor": "cc-pVDZ-RI",
+        "scfmaxit": 1000,
+        "usedisk": 0,
     }
 
     write_mrcc(tmp_path / "MINP", atoms, params)
 
     with open(tmp_path / "MINP") as fd:
         generated_inputfile = fd.readlines()
+        # print(generated_inputfile)
 
     reference_inputfile = [
+        "charge=0\n",
+        "mult=1\n",
         "calc=LNO-CCSD(T)\n",
         "basis=cc-pVDZ\n",
         "symm=off\n",
@@ -71,9 +72,7 @@ usedisk=0""",
         "ccsdalg=dfdirect\n",
         "dfbasis_cor=cc-pVDZ-RI\n",
         "scfmaxit=1000\n",
-        "usedisk=0 \n",
-        "charge=0\n",
-        "mult=1\n",
+        "usedisk=0\n",
         "geom=xyz\n",
         "3\n",
         "\n",
@@ -86,21 +85,20 @@ usedisk=0""",
     ]
 
     assert generated_inputfile == reference_inputfile
+
     # Test when geom line is present in mrccblocks
     params = {
         "charge": 0,
         "mult": 1,
-        "mrccinput": {
-            "calc": "LNO-CCSD(T)",
-            "basis": "cc-pVDZ",
-            "symm": "off",
-            "localcc": "on",
-            "lcorthr": "normal",
-            "ccprog": "ccsd",
-            "ccsdalg": "dfdirect",
-            "dfbasis_cor": "cc-pVDZ-RI",
-        },
-        "mrccblocks": """geom=xyz
+        "calc": "LNO-CCSD(T)",
+        "basis": "cc-pVDZ",
+        "symm": "off",
+        "localcc": "on",
+        "lcorthr": "normal",
+        "ccprog": "ccsd",
+        "ccsdalg": "dfdirect",
+        "dfbasis_cor": "cc-pVDZ-RI",
+        "geom": """xyz
 3
 
 H   2.0 0.0 0.0
@@ -114,6 +112,8 @@ O   3.0 0.0 0.0
         generated_inputfile = fd.readlines()
 
     reference_inputfile = [
+        "charge=0\n",
+        "mult=1\n",
         "calc=LNO-CCSD(T)\n",
         "basis=cc-pVDZ\n",
         "symm=off\n",
@@ -128,54 +128,7 @@ O   3.0 0.0 0.0
         "H   2.0 0.0 0.0\n",
         "H   2.0 0.0 0.0\n",
         "O   3.0 0.0 0.0\n",
-        " \n",
-    ]
-
-    assert generated_inputfile == reference_inputfile
-
-    # Test when mrccblock is None
-
-    params = {
-        "charge": 0,
-        "mult": 1,
-        "mrccinput": {
-            "calc": "LNO-CCSD(T)",
-            "basis": "cc-pVDZ",
-            "symm": "off",
-            "localcc": "on",
-            "lcorthr": "normal",
-            "ccprog": "ccsd",
-            "ccsdalg": "dfdirect",
-            "dfbasis_cor": "cc-pVDZ-RI",
-        },
-        "mrccblocks": None,
-    }
-
-    write_mrcc(tmp_path / "MINP", atoms, params)
-
-    with open(tmp_path / "MINP") as fd:
-        generated_inputfile = fd.readlines()
-
-    reference_inputfile = [
-        "calc=LNO-CCSD(T)\n",
-        "basis=cc-pVDZ\n",
-        "symm=off\n",
-        "localcc=on\n",
-        "lcorthr=normal\n",
-        "ccprog=ccsd\n",
-        "ccsdalg=dfdirect\n",
-        "dfbasis_cor=cc-pVDZ-RI\n",
-        "charge=0\n",
-        "mult=1\n",
-        "geom=xyz\n",
-        "3\n",
         "\n",
-        "H      1.00000000000    0.00000000000    0.00000000000\n",
-        "H      2.00000000000    0.00000000000    0.00000000000\n",
-        "O      3.00000000000    0.00000000000    0.00000000000\n",
-        "\n",
-        "ghost=serialno\n",
-        "1,2",
     ]
 
     assert generated_inputfile == reference_inputfile

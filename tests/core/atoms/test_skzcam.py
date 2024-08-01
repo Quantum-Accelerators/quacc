@@ -196,7 +196,14 @@ def test_MRCCInputGenerator_generate_input(mrcc_input_generator):
     mrcc_input_generator_nocp = deepcopy(mrcc_input_generator)
 
     mrcc_input_generator_nocp.include_cp = False
-    mrcc_input_generator_nocp.generate_input()
+    input_dict = mrcc_input_generator_nocp.generate_input()
+
+    # Check that the input_dictionary is correct
+    assert (
+        input_dict["adsorbate"]["geom"].split()[1],
+        input_dict["slab"]["geom"].split()[1],
+        input_dict["adsorbate_slab"]["geom"].split()[1],
+    ) == ("2", "19", "21")
 
     mrcc_input_generator.generate_input()
 
@@ -243,23 +250,23 @@ def test_MRCCInputGenerator_generate_input(mrcc_input_generator):
     for system in ["adsorbate_slab", "adsorbate", "slab"]:
         generated_block_collated[system]["float"] = [
             float(x)
-            for x in mrcc_input_generator.mrccblocks[system].split()
+            for x in mrcc_input_generator.skzcam_input_str[system].split()
             if x.replace(".", "", 1).replace("-", "", 1).isdigit()
         ][::300]
         generated_block_collated[system]["string"] = [
             x
-            for x in mrcc_input_generator.mrccblocks[system].split()
+            for x in mrcc_input_generator.skzcam_input_str[system].split()
             if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
         ][::50]
 
         generated_block_nocp_collated[system]["float"] = [
             float(x)
-            for x in mrcc_input_generator_nocp.mrccblocks[system].split()
+            for x in mrcc_input_generator_nocp.skzcam_input_str[system].split()
             if x.replace(".", "", 1).replace("-", "", 1).isdigit()
         ][::300]
         generated_block_nocp_collated[system]["string"] = [
             x
-            for x in mrcc_input_generator_nocp.mrccblocks[system].split()
+            for x in mrcc_input_generator_nocp.skzcam_input_str[system].split()
             if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
         ][::50]
 
@@ -352,11 +359,11 @@ def test_MRCCInputGenerator_generate_basis_ecp_block(mrcc_input_generator):
         system: [] for system in ["adsorbate_slab", "slab", "adsorbate"]
     }
     for system in ["adsorbate_slab", "adsorbate", "slab"]:
-        generated_mrcc_blocks_collated[system] = mrcc_input_generator.mrccblocks[
+        generated_mrcc_blocks_collated[system] = mrcc_input_generator.skzcam_input_str[
             system
         ].split()[::10]
         generated_mrcc_blocks_nocp_collated[system] = (
-            mrcc_input_generator_nocp.mrccblocks[system].split()[::10]
+            mrcc_input_generator_nocp.skzcam_input_str[system].split()[::10]
         )
 
         assert_equal(
@@ -464,23 +471,23 @@ def test_MRCCInputGenerator_generate_coords_block(mrcc_input_generator):
     for system in ["adsorbate_slab", "adsorbate", "slab"]:
         generated_block_collated[system]["float"] = [
             float(x)
-            for x in mrcc_input_generator.mrccblocks[system].split()
+            for x in mrcc_input_generator.skzcam_input_str[system].split()
             if x.replace(".", "", 1).replace("-", "", 1).isdigit()
         ][::10]
         generated_block_collated[system]["string"] = [
             x
-            for x in mrcc_input_generator.mrccblocks[system].split()
+            for x in mrcc_input_generator.skzcam_input_str[system].split()
             if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
         ][::5]
 
         generated_block_nocp_collated[system]["float"] = [
             float(x)
-            for x in mrcc_input_generator_nocp.mrccblocks[system].split()
+            for x in mrcc_input_generator_nocp.skzcam_input_str[system].split()
             if x.replace(".", "", 1).replace("-", "", 1).isdigit()
         ][::10]
         generated_block_nocp_collated[system]["string"] = [
             x
-            for x in mrcc_input_generator_nocp.mrccblocks[system].split()
+            for x in mrcc_input_generator_nocp.skzcam_input_str[system].split()
             if not x.replace(".", "", 1).replace("-", "", 1).isdigit()
         ][::5]
 

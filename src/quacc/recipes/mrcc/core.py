@@ -20,9 +20,8 @@ def static_job(
     spin_multiplicity: int = 1,
     method: str = "pbe",
     basis: str = "def2-tzvp",
-    mrccinput: dict[str, str] | None = None,
-    mrccblocks: str | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    **calc_kwargs,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -39,14 +38,11 @@ def static_job(
         The method [e.g., PBE or CCSD(T)] to use, this is the value for the calc keyword.
     basis
         Basis set
-    mrccinput
-        Dictionary of `mrccinput` swaps for the calculator. To remove entries
-        from the defaults, put a `#` in front of the name. Refer to the
-        [quacc.calculators.mrcc.mrcc.MRCC][] calculator for details on `mrccinput`.
-    mrccblocks
-        String for the `mrccblocks` input.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    **calc_kwargs
+        Custom kwargs for the Gaussian calculator. Set a value to
+        `quacc.Remove` to remove a pre-existing key entirely.
 
     Returns
     -------
@@ -60,8 +56,7 @@ def static_job(
         charge,
         spin_multiplicity,
         default_inputs=default_inputs,
-        blocks=mrccblocks,
-        input_swaps=mrccinput,
+        input_swaps=calc_kwargs,
         additional_fields={"name": "MRCC Static"},
         copy_files=copy_files,
     )

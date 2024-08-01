@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from ase.config import Config
 
-    from quacc.calculators.mrcc.io import MRCCEnergyInfo, MRCCParamsInfo
+    from quacc.calculators.mrcc.io import MRCCEnergyInfo
 
 
 def _get_version_from_mrcc_header(mrcc_header: str) -> str:
@@ -124,7 +124,7 @@ class MrccTemplate(CalculatorTemplate):
         profile: MrccProfile,  # noqa: ARG002
         directory: Path | str,
         atoms: Atoms,
-        parameters: MRCCParamsInfo,
+        parameters: dict[str, str],
         properties: dict[str, Any],  # noqa: ARG002
     ) -> None:
         """
@@ -149,12 +149,7 @@ class MrccTemplate(CalculatorTemplate):
         """
         parameters = dict(parameters)
 
-        kw = {
-            "charge": 0,
-            "mult": 1,
-            "mrccinput": {"calc": "PBE", "basis": "def2-SVP"},
-            "mrccblocks": "",
-        }
+        kw = {"charge": 0, "mult": 1, "calc": "PBE", "basis": "def2-SVP"}
         kw.update(parameters)
 
         write_mrcc(directory / self.inputname, atoms, kw)
@@ -203,6 +198,25 @@ class MRCC(GenericFileIOCalculator):
             The directory in which to run the calculation.
         **kwargs
             The parameters for the MRCC calculation.
+
+        Examples
+        --------
+        Use default values:
+
+        >>> from quacc.calculators.mrcc.mrcc import MRCC, MrccProfile
+        >>> from ase.build import molecule
+        >>> from quacc import get_settings
+
+        >>> calc = MRCC(
+        ...     profile=MrccProfile(command=get_settings().MRCC_CMD),
+        ...     charge=0,
+        ...     mult=1,
+        ...     basis="def2-SVP",
+        ...     calc="PBE",
+        ... )
+        >>> h = molecule("H2")
+        >>> h.set_calculator(calc)
+        >>> h.get_total_energy()
 
         Returns
         -------
