@@ -26,7 +26,6 @@ if TYPE_CHECKING:
     )
 
 _LABEL = OrcaTemplate()._label  # skipcq: PYL-W0212
-LOG_FILE = f"{_LABEL}.out"
 GEOM_FILE = f"{_LABEL}.xyz"
 
 
