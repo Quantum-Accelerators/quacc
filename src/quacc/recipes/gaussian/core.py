@@ -12,7 +12,7 @@ from quacc.recipes.gaussian._base import run_and_summarize
 if TYPE_CHECKING:
     from ase.atoms import Atoms
 
-    from quacc.types import Filenames, SourceDirectory, cclibSchema
+    from quacc.types import Filenames, RunSchema, SourceDirectory
 
 
 @job
@@ -24,7 +24,7 @@ def static_job(
     basis: str = "def2tzvp",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
-) -> cclibSchema:
+) -> RunSchema:
     """
     Carry out a single-point calculation.
 
@@ -49,9 +49,8 @@ def static_job(
 
     Returns
     -------
-    cclibSchema
-        Dictionary of results, as specified in [quacc.schemas.cclib.CclibSummarize.run][]
-        See the type-hint for the data structure.
+    RunSchema
+        Dictionary of results
     """
     calc_defaults = {
         "mem": "16GB",
@@ -71,6 +70,7 @@ def static_job(
     }
     return run_and_summarize(
         atoms,
+        charge_and_multiplicity=(charge, spin_multiplicity),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "Gaussian Static"},
@@ -88,7 +88,7 @@ def relax_job(
     freq: bool = False,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
-) -> cclibSchema:
+) -> RunSchema:
     """
     Carry out a geometry optimization.
 
@@ -115,9 +115,8 @@ def relax_job(
 
     Returns
     -------
-    cclibSchema
-        Dictionary of results, as specified in [quacc.schemas.cclib.CclibSummarize.run][]
-        See the type-hint for the data structure.
+    RunSchema
+        Dictionary of results
     """
     calc_defaults = {
         "mem": "16GB",
@@ -139,6 +138,7 @@ def relax_job(
 
     return run_and_summarize(
         atoms,
+        charge_and_multiplicity=(charge, spin_multiplicity),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "Gaussian Relax"},
