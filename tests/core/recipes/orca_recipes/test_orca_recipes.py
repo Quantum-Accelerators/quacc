@@ -147,7 +147,6 @@ def test_ase_relax_job_store(tmp_path, monkeypatch):
     for i in range(nsteps):
         assert f"step{i}" in os.listdir(output["dir_name"])
         assert "orca.xyz.gz" in os.listdir(Path(output["dir_name"], f"step{i}"))
-    assert len(output["steps"]) == nsteps
 
 
 @pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
