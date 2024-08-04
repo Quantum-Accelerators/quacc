@@ -29,7 +29,6 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install ase @ git+https://gitlab.com/ase/ase.git
           uv pip install --system "quacc[docs] @ ."
 
       - name: Build docs
