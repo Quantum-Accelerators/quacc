@@ -70,7 +70,8 @@ def static_job(
     }
     return run_and_summarize(
         atoms,
-        charge_and_multiplicity=(charge, spin_multiplicity),
+        charge=charge,
+        spin_multiplicity=spin_multiplicity,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "Gaussian Static"},
@@ -138,7 +139,8 @@ def relax_job(
 
     return run_and_summarize(
         atoms,
-        charge_and_multiplicity=(charge, spin_multiplicity),
+        charge=charge,
+        spin_multiplicity=spin_multiplicity,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "Gaussian Relax"},
