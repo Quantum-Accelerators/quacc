@@ -20,9 +20,6 @@ For the latest PyPI release:
 ```bash
 # Install quacc
 pip install quacc
-
-# Recommended
-pip install git+https://gitlab.com/ase/ase.git
 ```
 
 For the development version:
@@ -30,7 +27,4 @@ For the development version:
 ```bash
 # Install development version of quacc
 pip install git+https://github.com/quantum-accelerators/quacc.git
-
-# Recommended
-pip install git+https://gitlab.com/ase/ase.git
 ```
