@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.1]
+
+### Changed
+
+- Gaussian and ORCA schemas have been updated to reflect the removal of cclib
+
+### Fixed
+
+- Fixed support for ORCA 6.0.0
+
+### Removed
+
+- Removed cclib-based schemas due to fragility and replaced them with the standard ASE schemas
+
 ## [0.11.0]
 
 ### Added
