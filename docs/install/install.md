@@ -30,6 +30,5 @@ pip install git+https://github.com/quantum-accelerators/quacc.git
 For a version that is compatible with the development version of ASE:
 
 ```bash
-pip install git+https://gitlab.com/ase/ase.git
 pip install git+https://github.com/quantum-accelerators/quacc.git@asedev
 ```
