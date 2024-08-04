@@ -11,7 +11,7 @@ export QUACC_RESULTS_DIR=$SCRATCH/jenkins
 
 # GULP
 export GULP_LIB=$SOFTWARE/gulp/gulp-6.1.2/Libraries
-export PATH=$SOFTWARe/gulp/gulp-6.1.2/bin:$PATH
+export PATH=$SOFTWARE/gulp/gulp-6.1.2/bin:$PATH
 module purge
 pytest tests/core/recipes/gulp_recipes --noconftest
 
