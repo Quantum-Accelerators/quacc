@@ -28,7 +28,6 @@ classifiers = [
 requires-python = ">=3.9"
 dependencies = [
     "ase>=3.23.0", # for Atoms object and calculators
-    "cclib>=1.8", # for I/O parsing of molecular DFT codes
     "custodian>=2024.3.12", # for automated error corrections
     "emmet-core>=0.80.0", # for pre-made schemas
     "maggma>=0.64.0", # for database handling

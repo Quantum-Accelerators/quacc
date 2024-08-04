@@ -195,7 +195,7 @@ def freq_job(
 
     Returns
     -------
-    cclibSchema
+    RunSchema
         Dictionary of results
     """
     nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
