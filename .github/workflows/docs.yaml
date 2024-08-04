@@ -30,6 +30,7 @@ jobs:
         run: |
           pip install uv
           uv pip install --system "quacc[docs] @ ."
+          uv pip install ase @ git+https://gitlab.com/ase/ase.git
 
       - name: Build docs
         run: |
