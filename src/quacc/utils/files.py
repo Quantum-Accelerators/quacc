@@ -235,7 +235,9 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
     return config
 
 
-def find_recent_logfile(directory: Path | str, logfile_extensions: str | list[str]):
+def find_recent_logfile(
+    directory: Path | str, logfile_extensions: str | list[str]
+) -> Path:
     """
     Find the most recent logfile in a given directory.
 
