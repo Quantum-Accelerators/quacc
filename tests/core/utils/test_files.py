@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 
 import pytest
+from src.quacc.utils.files import find_recent_logfile
 
 from quacc.utils.files import check_logfile, copy_decompress_files, make_unique_dir
 
@@ -176,3 +177,41 @@ def test_check_logfile(tmp_path):
         gf.write(b"trigger")
     assert check_logfile(str(tmp_path / "logs2.out"), "trigger") is True
     assert check_logfile(str(tmp_path / "logs2.out"), "test") is False
+
+
+def test_find_recent_logfile_for_one_extension_retrieves_most_recent_log_of_that_extension(
+    tmp_path,
+):
+    with open(tmp_path / "first.out", "w"):
+        pass
+
+    with open(tmp_path / "second.out", "w"):
+        pass
+
+    actual = find_recent_logfile(tmp_path, logfile_extensions="out")
+    assert actual == "second.out"
+
+
+def test_find_recent_logfile_for_multiple_extensions_retrieves_most_recent_log_of_any_extension(
+    tmp_path,
+):
+    with open(tmp_path / "first.out", "w"):
+        pass
+
+    with open(tmp_path / "second.log", "w"):
+        pass
+
+    actual = find_recent_logfile(tmp_path, logfile_extensions=["out", "log"])
+    assert actual == "second.log"
+
+
+def test_find_recent_logfile_only_checks_files_matching_the_extension(tmp_path):
+    """
+    This test double checks that find_recent_logfile only matches file extensions and does not hit files if the desired
+    extension is somewhere else in the file name or path.
+    """
+    with open(tmp_path / "first_log.out", "w"):
+        pass
+
+    actual = find_recent_logfile(tmp_path, logfile_extensions=["log"])
+    assert actual is None
