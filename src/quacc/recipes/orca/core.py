@@ -16,13 +16,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from numpy.typing import NDArray
 
-    from quacc.types import (
-        Filenames,
-        OptParams,
-        SourceDirectory,
-        cclibASEOptSchema,
-        cclibSchema,
-    )
+    from quacc.types import Filenames, OptParams, OptSchema, RunSchema, SourceDirectory
 
 
 @job
@@ -36,7 +30,7 @@ def static_job(
     orcablocks: list[str] | None = None,
     nprocs: int | Literal["max"] = "max",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-) -> cclibSchema:
+) -> RunSchema:
     """
     Carry out a single-point calculation.
 
@@ -67,9 +61,8 @@ def static_job(
 
     Returns
     -------
-    cclibSchema
-        Dictionary of results from [quacc.schemas.cclib.CclibSummarize.run][].
-        See the type-hint for the data structure.
+    RunSchema
+        Dictionary of results
     """
     nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
     default_inputs = [xc, basis, "engrad", "normalprint"]
@@ -100,7 +93,7 @@ def relax_job(
     orcablocks: list[str] | None = None,
     nprocs: int | Literal["max"] = "max",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-) -> cclibSchema:
+) -> RunSchema:
     """
     Carry out a geometry optimization.
 
@@ -133,9 +126,8 @@ def relax_job(
 
     Returns
     -------
-    cclibSchema
-        Dictionary of results from [quacc.schemas.cclib.CclibSummarize.run][].
-        See the type-hint for the data structure.
+    RunSchema
+        Dictionary of results
     """
     nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
 
@@ -170,7 +162,7 @@ def freq_job(
     orcablocks: list[str] | None = None,
     nprocs: int | Literal["max"] = "max",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-) -> cclibSchema:
+) -> RunSchema:
     """
     Carry out a vibrational frequency analysis calculation.
 
@@ -203,9 +195,8 @@ def freq_job(
 
     Returns
     -------
-    cclibSchema
-        Dictionary of results from [quacc.schemas.cclib.CclibSummarize.run][].
-        See the type-hint for the data structure.
+    RunSchema
+        Dictionary of results
     """
     nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
 
@@ -238,7 +229,7 @@ def ase_relax_job(
     opt_params: OptParams | None = None,
     nprocs: int | Literal["max"] = "max",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-) -> cclibASEOptSchema:
+) -> OptSchema:
     """
     Carry out a geometry optimization.
 
@@ -269,10 +260,8 @@ def ase_relax_job(
 
     Returns
     -------
-    cclibASEOptSchema
-        Dictionary of results from [quacc.schemas.cclib.CclibSummarize.run][] merged with
-        the results from [quacc.schemas.ase.Summarize.opt][].
-        See the type-hint for the data structure.
+    OptSchema
+        Dictionary of results
     """
     nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
     default_inputs = [xc, basis, "engrad", "normalprint"]
@@ -293,7 +282,7 @@ def ase_relax_job(
 
 
 @job
-def ase_quasi_irc_perturb_job(
+def ase_quasi_irc_job(
     atoms: Atoms,
     mode: list[list[float]] | NDArray,
     perturb_magnitude: float = 0.6,
@@ -307,7 +296,7 @@ def ase_quasi_irc_perturb_job(
     opt_params: OptParams | None = None,
     nprocs: int | Literal["max"] = "max",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-) -> cclibASEOptSchema:
+) -> OptSchema:
     """
     Quasi-IRC to optimize a reaction endpoint from a transition-state with known vibrational frequency modes.
     Perturbs the structure of `atoms` by a finite amount (0.6 * the normalized mode magnitude) along the specified
@@ -348,10 +337,8 @@ def ase_quasi_irc_perturb_job(
 
     Returns
     -------
-    cclibASEOptSchema
-        Dictionary of results from [quacc.schemas.cclib.CclibSummarize.run][] merged with
-        the results from [quacc.schemas.ase.Summarize.opt][].
-        See the type-hint for the data structure.
+    OptSchema
+        Dictionary of results
     """
     nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
     default_inputs = [xc, basis, "engrad", "normalprint"]
@@ -368,6 +355,6 @@ def ase_quasi_irc_perturb_job(
         input_swaps=orcasimpleinput,
         block_swaps=orcablocks,
         opt_params=opt_params,
-        additional_fields={"name": "ORCA ASE Quasi-IRC perturbed optimization"},
+        additional_fields={"name": "ORCA ASE Quasi-IRC optimization"},
         copy_files=copy_files,
     )

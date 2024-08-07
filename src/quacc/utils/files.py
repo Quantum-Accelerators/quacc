@@ -235,7 +235,9 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
     return config
 
 
-def find_recent_logfile(directory: Path | str, logfile_extensions: str | list[str]):
+def find_recent_logfile(
+    directory: Path | str, logfile_extensions: str | list[str]
+) -> Path:
     """
     Find the most recent logfile in a given directory.
 
@@ -245,7 +247,11 @@ def find_recent_logfile(directory: Path | str, logfile_extensions: str | list[st
         The path to the directory to search
     logfile_extensions
         The extension (or list of possible extensions) of the logfile to search
-        for. For an exact match only, put in the full file name.
+        for. For an exact match only, put in the full file name. Note that it is
+        recommended that the extension starts with a period so that it is bound
+        by the start of the extension (e.g. for extensions `.log` versus
+        `.mylog`, you would expect `logfile_extensions=".log"` to match only
+        the former and `logfile_extensions="log"` to match both).
 
     Returns
     -------
@@ -259,7 +265,7 @@ def find_recent_logfile(directory: Path | str, logfile_extensions: str | list[st
     for f in Path(directory).expanduser().iterdir():
         f_path = Path(directory, f)
         for ext in logfile_extensions:
-            if ext in str(f) and f_path.stat().st_mtime > mod_time:
+            if ext in "".join(f.suffixes) and f_path.stat().st_mtime > mod_time:
                 mod_time = f_path.stat().st_mtime
                 logfile = f_path.resolve()
     return logfile
