@@ -184,7 +184,7 @@ def test_check_logfile(tmp_path):
     assert check_logfile(str(tmp_path / "logs2.out"), "test") is False
 
 
-def test_find_recent_logfile_for_one_extension_retrieves_most_recent_log_of_that_extension(
+def test_find_recent_logfile_for_one_extension_retrieves_most_recent_log_of_that_extension_when_only_that_extension_exists(
     tmp_path,
 ):
     with open(tmp_path / "first.out", "w"):
@@ -195,6 +195,19 @@ def test_find_recent_logfile_for_one_extension_retrieves_most_recent_log_of_that
 
     actual = find_recent_logfile(tmp_path, logfile_extensions=".out")
     assert actual.name == "second.out"
+
+
+def test_find_recent_logfile_for_one_extension_retrieves_most_recent_log_of_that_extension_when_more_extensions_exist(
+    tmp_path,
+):
+    with open(tmp_path / "first.out", "w"):
+        time.sleep(0.05)
+
+    with open(tmp_path / "second.log", "w"):
+        ...
+
+    actual = find_recent_logfile(tmp_path, logfile_extensions=".out")
+    assert actual.name == "first.out"
 
 
 def test_find_recent_logfile_for_multiple_extensions_retrieves_most_recent_log_of_any_extension(
