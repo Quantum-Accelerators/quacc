@@ -210,6 +210,19 @@ def test_find_recent_logfile_for_multiple_extensions_retrieves_most_recent_log_o
     assert actual.name == "second.log"
 
 
+def test_find_recent_logfile_can_handle_multiple_suffixes_in_logfile_extensions(
+    tmp_path,
+):
+    with open(tmp_path / "first.my.log", "w"):
+        time.sleep(0.05)
+
+    with open(tmp_path / "second.log", "w"):
+        ...
+
+    actual = find_recent_logfile(tmp_path, logfile_extensions=".my.log")
+    assert actual.name == "first.my.log"
+
+
 def test_find_recent_logfile_only_checks_files_matching_the_extension_when_file_has_one_suffix(
     tmp_path,
 ):
