@@ -1,4 +1,4 @@
-ase==3.23.0
+ase @ git+https://gitlab.com/ase/ase.git
 custodian==2024.6.24
 emmet-core==0.83.6
 maggma==0.69.1
