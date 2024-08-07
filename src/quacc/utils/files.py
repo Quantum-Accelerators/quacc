@@ -249,8 +249,9 @@ def find_recent_logfile(
         The extension (or list of possible extensions) of the logfile to search
         for. For an exact match only, put in the full file name. Note that it is
         recommended that the extension starts with a period so that it is bound
-        by the start of the extension (e.g. the behaviour of
-        `logfile_extensions=".log"` for extensions `.log` versus `.mylog`).
+        by the start of the extension (e.g. for extensions `.log` versus
+        `.mylog`, you would expect `logfile_extensions=".log"` to match only
+        the former and `logfile_extensions="log"` to match both).
 
     Returns
     -------
