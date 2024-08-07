@@ -188,7 +188,7 @@ def test_find_recent_logfile_for_one_extension_retrieves_most_recent_log_of_that
     tmp_path,
 ):
     with open(tmp_path / "first.out", "w"):
-        time.sleep(0.05)
+        time.sleep(0.01)
 
     with open(tmp_path / "second.out", "w"):
         ...
@@ -201,7 +201,7 @@ def test_find_recent_logfile_for_one_extension_retrieves_most_recent_log_of_that
     tmp_path,
 ):
     with open(tmp_path / "first.out", "w"):
-        time.sleep(0.05)
+        time.sleep(0.01)
 
     with open(tmp_path / "second.log", "w"):
         ...
@@ -214,7 +214,7 @@ def test_find_recent_logfile_for_multiple_extensions_retrieves_most_recent_log_o
     tmp_path,
 ):
     with open(tmp_path / "first.out", "w"):
-        time.sleep(0.05)
+        time.sleep(0.01)
 
     with open(tmp_path / "second.log", "w"):
         ...
@@ -227,7 +227,7 @@ def test_find_recent_logfile_can_handle_multiple_suffixes_in_logfile_extensions(
     tmp_path,
 ):
     with open(tmp_path / "first.my.log", "w"):
-        time.sleep(0.05)
+        time.sleep(0.01)
 
     with open(tmp_path / "second.log", "w"):
         ...
