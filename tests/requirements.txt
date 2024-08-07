@@ -2,7 +2,6 @@ ase==3.23.0
 custodian==2024.6.24
 emmet-core==0.83.6
 maggma==0.69.1
-matplotlib!=3.9.1
 monty==2024.7.30
 numpy==1.26.4
 psutil==5.9.8
