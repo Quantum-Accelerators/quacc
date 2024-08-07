@@ -193,7 +193,7 @@ def test_find_recent_logfile_for_one_extension_retrieves_most_recent_log_of_that
     with open(tmp_path / "second.out", "w"):
         ...
 
-    actual = find_recent_logfile(tmp_path, logfile_extensions="out")
+    actual = find_recent_logfile(tmp_path, logfile_extensions=".out")
     assert actual.name == "second.out"
 
 
@@ -206,20 +206,15 @@ def test_find_recent_logfile_for_multiple_extensions_retrieves_most_recent_log_o
     with open(tmp_path / "second.log", "w"):
         ...
 
-    actual = find_recent_logfile(tmp_path, logfile_extensions=["out", "log"])
+    actual = find_recent_logfile(tmp_path, logfile_extensions=[".out", ".log"])
     assert actual.name == "second.log"
 
 
-@pytest.mark.xfail(
-    reason="A check is done whether the path contains the extension, not if it ends with it"
-)
-def test_find_recent_logfile_only_checks_files_matching_the_extension(tmp_path):
-    """
-    This test double checks that find_recent_logfile only matches file extensions and does not hit files if the desired
-    extension is somewhere else in the file name or path.
-    """
+def test_find_recent_logfile_only_checks_files_matching_the_extension_when_file_has_one_suffix(
+    tmp_path,
+):
     with open(tmp_path / "first_log.out", "w"):
         ...
 
-    actual = find_recent_logfile(tmp_path, logfile_extensions=["log"])
+    actual = find_recent_logfile(tmp_path, logfile_extensions=".log")
     assert actual is None
