@@ -437,24 +437,21 @@ def test_ts_job_v3(monkeypatch, tmp_path, test_atoms):
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826311086011256)
 
 
-@pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
-def test_ts_job_v4(tmp_path, monkeypatch, test_atoms):
-    monkeypatch.chdir(tmp_path)
-    with pytest.raises(JobFailure, match="Calculation failed!") as err:
-        ts_job(test_atoms, charge=0, spin_multiplicity=1)
+def test_ts_job_v4(test_atoms):
     with pytest.raises(
         ValueError, match="Only Sella should be used for TS optimization"
     ):
-        raise err.value.parent_error
-
-    with pytest.raises(JobFailure, match="Calculation failed!") as err:
         ts_job(
             test_atoms, charge=0, spin_multiplicity=1, opt_params={"optimizer": FIRE}
         )
+
+
+@pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
+def test_ts_job_v5(test_atoms):
     with pytest.raises(
         ValueError, match="Only Sella should be used for TS optimization"
     ):
-        raise err.value.parent_error
+        ts_job(test_atoms, charge=0, spin_multiplicity=1)
 
 
 @pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
@@ -549,7 +546,9 @@ def test_irc_job_v2(tmp_path, monkeypatch, test_atoms):
     ):
         raise err.value.parent_error
 
-    with pytest.raises(JobFailure, match="Calculation failed!") as err:
+    with pytest.raises(
+        ValueError, match="Only Sella's IRC should be used for IRC optimization"
+    ):
         irc_job(
             test_atoms,
             charge=0,
@@ -557,10 +556,6 @@ def test_irc_job_v2(tmp_path, monkeypatch, test_atoms):
             direction="forward",
             opt_params={"optimizer": FIRE},
         )
-    with pytest.raises(
-        ValueError, match="Only Sella's IRC should be used for IRC optimization"
-    ):
-        raise err.value.parent_error
 
 
 @pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
