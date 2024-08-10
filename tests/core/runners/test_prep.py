@@ -179,8 +179,8 @@ def test_terminate(tmp_path):
     os.mkdir(p)
     with pytest.raises(JobFailure, match="Calculation failed!") as err:
         terminate(p, ValueError("moo"))
-    assert isinstance(err.value.parent_error, ValueError)
-    assert str(err.value.parent_error) == "moo"
+    with pytest.raises(ValueError, match="moo"):
+        raise err.value.parent_error
     assert err.value.directory == tmp_path / "failed-quacc-1234"
     assert not p.exists()
     assert Path(tmp_path, "failed-quacc-1234").exists()

@@ -106,6 +106,8 @@ class JobFailure(Exception):
     ----------
     directory
         The directory where the calculations can be found.
+    parent_error
+        The Exception that caused the job to fail.
     """
 
     def __init__(

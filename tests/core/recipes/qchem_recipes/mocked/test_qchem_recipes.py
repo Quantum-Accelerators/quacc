@@ -11,7 +11,7 @@ from ase.io import read
 from ase.optimize import FIRE
 from pymatgen.io.qchem.inputs import QCInput
 
-from quacc import _internally_set_settings
+from quacc import JobFailure, _internally_set_settings
 from quacc.atoms.core import check_charge_and_spin
 from quacc.calculators.qchem import QChem
 from quacc.recipes.qchem.core import freq_job, relax_job, static_job
@@ -205,16 +205,17 @@ def test_static_job_v4(monkeypatch, tmp_path, os_atoms):
 def test_static_job_v5(tmp_path, monkeypatch, test_atoms):
     monkeypatch.chdir(tmp_path)
 
-    with pytest.raises(
-        ValueError,
-        match="Only one of PCM, ISOSVP, SMD, and CMIRSmay be used for solvation",
-    ):
+    with pytest.raises(JobFailure, match="Calculation failed!") as err:
         static_job(
             test_atoms,
             charge=0,
             spin_multiplicity=1,
             qchem_dict_set_params={"pcm_dielectric": "3.0", "smd_solvent": "water"},
         )
+    with pytest.raises(
+        ValueError, match="Only Sella should be used for static optimization"
+    ):
+        raise err.value.parent_error
 
 
 @pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
@@ -308,16 +309,18 @@ def test_relax_job_v3(monkeypatch, tmp_path, test_atoms):
 @pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
 def test_relax_job_v4(tmp_path, monkeypatch, test_atoms):
     monkeypatch.chdir(tmp_path)
-    with pytest.raises(
-        ValueError,
-        match="Only one of PCM, ISOSVP, SMD, and CMIRSmay be used for solvation",
-    ):
+    with pytest.raises(JobFailure, match="Calculation failed!") as err:
         relax_job(
             test_atoms,
             charge=0,
             spin_multiplicity=1,
             qchem_dict_set_params={"pcm_dielectric": "3.0", "smd_solvent": "water"},
         )
+    with pytest.raises(
+        ValueError,
+        match="Only one of PCM, ISOSVP, SMD, and CMIRSmay be used for solvation",
+    ):
+        raise err.value.parent_error
 
 
 def test_freq_job_v1(monkeypatch, tmp_path, test_atoms):
@@ -436,20 +439,20 @@ def test_ts_job_v3(monkeypatch, tmp_path, test_atoms):
 @pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
 def test_ts_job_v4(tmp_path, monkeypatch, test_atoms):
     monkeypatch.chdir(tmp_path)
-    with pytest.raises(
-        ValueError,
-        match="Only one of PCM, ISOSVP, SMD, and CMIRSmay be used for solvation",
-    ):
+    with pytest.raises(JobFailure, match="Calculation failed!") as err:
         ts_job(
             test_atoms,
             charge=0,
             spin_multiplicity=1,
             qchem_dict_set_params={"pcm_dielectric": "3.0", "smd_solvent": "water"},
         )
-
     with pytest.raises(
-        ValueError, match="Only Sella should be used for TS optimization"
+        ValueError,
+        match="Only one of PCM, ISOSVP, SMD, and CMIRSmay be used for solvation",
     ):
+        raise err.value.parent_error
+
+    with pytest.raises(JobFailure, match="Calculation failed!") as err:
         ts_job(
             test_atoms,
             charge=0,
@@ -457,6 +460,10 @@ def test_ts_job_v4(tmp_path, monkeypatch, test_atoms):
             qchem_dict_set_params={"pcm_dielectric": "3.0", "smd_solvent": "water"},
             opt_params={"optimizer": FIRE},
         )
+    with pytest.raises(
+        ValueError, match="Only Sella should be used for TS optimization"
+    ):
+        raise err.value.parent_error
 
 
 @pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
