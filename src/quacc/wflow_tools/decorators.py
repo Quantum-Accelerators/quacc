@@ -12,7 +12,11 @@ Flow = Callable[..., Any]
 Subflow = Callable[..., Any]
 
 
-def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
+def job(
+    _func: Callable[..., Any] | None = None,
+    settings_swap: dict[str, Any] | None = None,
+    **kwargs,
+) -> Job:
     """
     Decorator for individual compute jobs. This is a `#!Python @job` decorator. Think of
     each `#!Python @job`-decorated function as an individual SLURM job, if that helps.
@@ -126,6 +130,8 @@ def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
     ----------
     _func
         The function to decorate. This is not meant to be supplied by the user.
+    settings_swap
+        A dictionary of keyword arguments to swap out in the underlying function.
     **kwargs
         Keyword arguments to pass to the workflow engine decorator.
 
@@ -141,8 +147,8 @@ def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
     if _func is None:
         return partial(job, **kwargs)
 
-    if changes := kwargs.pop("settings_swap", {}):
-        return job(change_settings_wrap(_func, changes), **kwargs)
+    if settings_swap:
+        return job(change_settings_wrap(_func, settings_swap), **kwargs)
 
     if settings.WORKFLOW_ENGINE == "covalent":
         import covalent as ct
