@@ -16,6 +16,8 @@ from quacc import change_settings, job
 from quacc.recipes.vasp._base import run_and_summarize, run_and_summarize_opt
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase.atoms import Atoms
 
     from quacc.types import (
@@ -35,6 +37,7 @@ def qmof_relax_job(
     relax_cell: bool = True,
     run_prerelax: bool = True,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> QMOFRelaxSchema:
     """

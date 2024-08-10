@@ -17,7 +17,7 @@ if has_tblite:
     from tblite.ase import TBLite
 
 if TYPE_CHECKING:
-    from typing import Literal
+    from typing import Any, Literal
 
     from ase.atoms import Atoms
 
@@ -29,6 +29,7 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -40,6 +41,8 @@ def static_job(
         Atoms object
     method
         xTB method to use
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the TBLite calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -56,9 +59,9 @@ def static_job(
     calc = TBLite(**calc_flags)
 
     final_atoms = Runner(atoms, calc).run_calc()
-    return Summarize(additional_fields={"name": "TBLite Static"}).run(
-        final_atoms, atoms
-    )
+    return Summarize(
+        additional_fields={"name": "TBLite Static"} | (additional_fields or {})
+    ).run(final_atoms, atoms)
 
 
 @job
@@ -68,6 +71,7 @@ def relax_job(
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
     relax_cell: bool = False,
     opt_params: OptParams | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
     """
@@ -84,6 +88,8 @@ def relax_job(
     opt_params
         Dictionary of custom kwargs for the optimization process. For a list
         of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the tblite calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -101,7 +107,9 @@ def relax_job(
     calc = TBLite(**calc_flags)
     dyn = Runner(atoms, calc).run_opt(relax_cell=relax_cell, **opt_params)
 
-    return Summarize(additional_fields={"name": "TBLite Relax"}).opt(dyn)
+    return Summarize(
+        additional_fields={"name": "TBLite Relax"} | (additional_fields or {})
+    ).opt(dyn)
 
 
 @job
@@ -113,6 +121,7 @@ def freq_job(
     temperature: float = 298.15,
     pressure: float = 1.0,
     vib_kwargs: VibKwargs | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VibThermoSchema:
     """
@@ -132,6 +141,8 @@ def freq_job(
         Pressure in bar.
     vib_kwargs
         Dictionary of kwargs for [quacc.runners.ase.Runner.run_vib][].
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the tblite calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -150,7 +161,9 @@ def freq_job(
 
     vib = Runner(atoms, calc).run_vib(vib_kwargs=vib_kwargs)
     return VibSummarize(
-        vib, additional_fields={"name": "TBLite Frequency and Thermo"}
+        vib,
+        additional_fields={"name": "TBLite Frequency and Thermo"}
+        | (additional_fields or {}),
     ).vib_and_thermo(
         "ideal_gas", energy=energy, temperature=temperature, pressure=pressure
     )

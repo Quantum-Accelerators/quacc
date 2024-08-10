@@ -39,6 +39,7 @@ def static_job(
     atoms: Atoms,
     preset: str | None = "BulkSet",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """
@@ -52,6 +53,8 @@ def static_job(
         Preset to use from `quacc.calculators.vasp.presets`.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -77,7 +80,7 @@ def static_job(
         preset=preset,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "VASP Static"},
+        additional_fields={"name": "VASP Static"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -88,6 +91,7 @@ def relax_job(
     preset: str | None = "BulkSet",
     relax_cell: bool = True,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """
@@ -104,6 +108,8 @@ def relax_job(
         only the positions (ISIF = 2) should be updated.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -136,7 +142,7 @@ def relax_job(
         preset=preset,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "VASP Relax"},
+        additional_fields={"name": "VASP Relax"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -204,6 +210,7 @@ def ase_relax_job(
     relax_cell: bool = True,
     opt_params: OptParams | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VaspASEOptSchema:
     """
@@ -223,6 +230,8 @@ def ase_relax_job(
         of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -248,7 +257,7 @@ def ase_relax_job(
         calc_swaps=calc_kwargs,
         opt_defaults=opt_defaults,
         opt_params=opt_params,
-        additional_fields={"name": "VASP ASE Relax"},
+        additional_fields={"name": "VASP ASE Relax"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -263,6 +272,7 @@ def non_scf_job(
     uniform_kppvol: float = 100,
     line_kpt_density: float = 20,
     calculate_optics: bool = False,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """
@@ -287,6 +297,8 @@ def non_scf_job(
         The k-point density for the line k-point mode.
     calculate_optics
         Whether to calculate optical properties.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -338,7 +350,7 @@ def non_scf_job(
         preset=preset,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "VASP Non-SCF"},
+        additional_fields={"name": "VASP Non-SCF"} | (additional_fields or {}),
         copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
     )
 
