@@ -18,6 +18,7 @@ from quacc.recipes.qchem.core import freq_job, relax_job, static_job
 from quacc.recipes.qchem.ts import irc_job, quasi_irc_job, ts_job
 
 has_sella = bool(find_spec("sella"))
+has_obabel = bool(find_spec("openbabel"))
 
 
 FILE_DIR = Path(__file__).parent
@@ -437,21 +438,16 @@ def test_ts_job_v3(monkeypatch, tmp_path, test_atoms):
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826311086011256)
 
 
-def test_ts_job_v4(test_atoms):
+@pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
+@pytest.mark.skipif(has_obabel is False, reason="Does not have openbabel")
+def test_ts_job_v4(monkeypatch, tmp_path, test_atoms):
+    monkeypatch.chdir(tmp_path)
     with pytest.raises(
         ValueError, match="Only Sella should be used for TS optimization"
     ):
         ts_job(
             test_atoms, charge=0, spin_multiplicity=1, opt_params={"optimizer": FIRE}
         )
-
-
-@pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
-def test_ts_job_v5(test_atoms):
-    with pytest.raises(
-        ValueError, match="Only Sella should be used for TS optimization"
-    ):
-        ts_job(test_atoms, charge=0, spin_multiplicity=1)
 
 
 @pytest.mark.skipif(has_sella is False, reason="Does not have Sella")
