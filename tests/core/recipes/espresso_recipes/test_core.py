@@ -228,7 +228,7 @@ def test_static_job_test_run(tmp_path, monkeypatch):
             input_data={"pseudo_dir": tmp_path},
             test_run=True,
         )
-    with pytest.raises(CalledProcessError) as err:
+    with pytest.raises(CalledProcessError):
         raise err.value.parent_error
 
 

@@ -213,7 +213,8 @@ def test_static_job_v5(tmp_path, monkeypatch, test_atoms):
             qchem_dict_set_params={"pcm_dielectric": "3.0", "smd_solvent": "water"},
         )
     with pytest.raises(
-        ValueError, match="Only Sella should be used for static optimization"
+        ValueError,
+        match="Only one of PCM, ISOSVP, SMD, and CMIRSmay be used for solvation",
     ):
         raise err.value.parent_error
 
