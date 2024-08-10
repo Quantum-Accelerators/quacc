@@ -247,5 +247,5 @@ def test_fn_hook(tmp_path, monkeypatch):
 
     with pytest.raises(JobFailure, match="Calculation failed!") as err:
         Runner(bulk("Cu"), EMT()).run_opt(fn_hook=fn_hook)
-    with pytest.raises(RuntimeError, match="Test error"):
+    with pytest.raises(ValueError, match="Test error"):
         raise err.value.parent_error
