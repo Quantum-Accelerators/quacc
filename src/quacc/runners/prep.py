@@ -173,4 +173,4 @@ def terminate(tmpdir: Path | str, exception: Exception) -> None:
         old_symlink_path.unlink(missing_ok=True)
         symlink_path.symlink_to(job_failed_dir, target_is_directory=True)
 
-    raise JobFailure(str(exception), job_failed_dir) from exception
+    raise JobFailure(job_failed_dir, message=msg, parent_error=exception) from exception

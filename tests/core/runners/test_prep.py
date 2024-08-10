@@ -177,8 +177,10 @@ def test_calc_cleanup(tmp_path, monkeypatch):
 def test_terminate(tmp_path):
     p = tmp_path / "tmp-quacc-1234"
     os.mkdir(p)
-    with pytest.raises(JobFailure, match="moo") as err:
+    with pytest.raises(JobFailure, match="Calculation failed!") as err:
         terminate(p, ValueError("moo"))
+    assert isinstance(err.value.parent_error, ValueError)
+    assert str(err.value.parent_error) == "moo"
     assert err.value.directory == tmp_path / "failed-quacc-1234"
     assert not p.exists()
     assert Path(tmp_path, "failed-quacc-1234").exists()

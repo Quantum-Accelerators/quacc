@@ -108,22 +108,30 @@ class JobFailure(Exception):
         The directory where the calculations can be found.
     """
 
-    def __init__(self, message: str, directory: Path | str) -> None:
+    def __init__(
+        self,
+        directory: Path | str,
+        parent_error: Exception | None = None,
+        message: str = "Calculation failed!",
+    ) -> None:
         """
         Initialize the JobFailure exception.
 
         Parameters
         ----------
-        message
-            The message to display when the exception is raised.
         directory
             The directory where the calculations can be found.
+        parent_error
+            The Exception that caused the job to fail.
+        message
+            The message to display when the exception is raised.
 
         Returns
         -------
         None
         """
         self.directory = Path(directory)
+        self.parent_error = parent_error
         super().__init__(message)
 
 
