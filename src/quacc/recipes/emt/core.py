@@ -15,6 +15,8 @@ from quacc.runners.ase import Runner
 from quacc.schemas.ase import Summarize
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase.atoms import Atoms
 
     from quacc.types import Filenames, OptParams, OptSchema, RunSchema, SourceDirectory
@@ -24,6 +26,7 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -35,6 +38,8 @@ def static_job(
         Atoms object
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the EMT calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -49,7 +54,9 @@ def static_job(
     calc = EMT(**calc_kwargs)
     final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
 
-    return Summarize(additional_fields={"name": "EMT Static"}).run(final_atoms, atoms)
+    return Summarize(
+        additional_fields={"name": "EMT Static"} | (additional_fields or {})
+    ).run(final_atoms, atoms)
 
 
 @job
@@ -58,6 +65,7 @@ def relax_job(
     relax_cell: bool = False,
     opt_params: OptParams | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
     """
@@ -74,6 +82,8 @@ def relax_job(
         of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the EMT calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -92,4 +102,6 @@ def relax_job(
         relax_cell=relax_cell, **opt_params
     )
 
-    return Summarize(additional_fields={"name": "EMT Relax"}).opt(dyn)
+    return Summarize(
+        additional_fields={"name": "EMT Relax"} | (additional_fields or {})
+    ).opt(dyn)
