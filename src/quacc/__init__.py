@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 import threading
 from importlib.metadata import version
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ase.atoms import Atoms
@@ -33,6 +34,7 @@ __all__ = [
     "Remove",
     "get_settings",
     "QuaccDefault",
+    "JobFailure",
 ]
 
 
@@ -93,6 +95,37 @@ QuaccDefault = DefaultSetting()
 
 # Set logging info
 logging.basicConfig(level=logging.DEBUG if _settings.DEBUG else logging.INFO)
+
+
+# Custom exceptions
+class JobFailure(Exception):
+    """
+    A custom exception for handling/catching job failures.
+
+    Attributes
+    ----------
+    directory
+        The directory where the calculations can be found.
+    """
+
+    def __init__(self, message: str, directory: Path | str) -> None:
+        """
+        Initialize the JobFailure exception.
+
+        Parameters
+        ----------
+        message
+            The message to display when the exception is raised.
+        directory
+            The directory where the calculations can be found.
+
+        Returns
+        -------
+        None
+        """
+        self.directory = Path(directory)
+        super().__init__(message)
+
 
 # Monkeypatching for Prefect
 if _settings.WORKFLOW_ENGINE == "prefect":

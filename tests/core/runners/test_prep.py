@@ -7,7 +7,7 @@ import pytest
 from ase.build import bulk
 from ase.calculators.emt import EMT
 
-from quacc import change_settings, get_settings
+from quacc import JobFailure, change_settings, get_settings
 from quacc.runners.prep import calc_cleanup, calc_setup, terminate
 
 
@@ -177,7 +177,8 @@ def test_calc_cleanup(tmp_path, monkeypatch):
 def test_terminate(tmp_path):
     p = tmp_path / "tmp-quacc-1234"
     os.mkdir(p)
-    with pytest.raises(ValueError, match="moo"):
+    with pytest.raises(JobFailure, match="moo") as err:
         terminate(p, ValueError("moo"))
+    assert err.value.directory == tmp_path / "failed-quacc-1234"
     assert not p.exists()
     assert Path(tmp_path, "failed-quacc-1234").exists()
