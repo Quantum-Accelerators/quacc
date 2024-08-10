@@ -1,3 +1,4 @@
 chgnet==0.3.8
 mace-torch==0.3.6
 torch-dftd==0.4.0
+torch==2.2.1
