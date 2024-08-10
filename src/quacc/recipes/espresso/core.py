@@ -12,6 +12,8 @@ from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.recipes.espresso._base import run_and_summarize, run_and_summarize_opt
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase.atoms import Atoms
     from src.quacc.types import EspressoBaseSet
 
@@ -47,6 +49,7 @@ def static_job(
         | None
     ) = None,
     prev_outdir: SourceDirectory | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -73,6 +76,8 @@ def static_job(
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
         to manually copy files. The directory will be ungzipped if necessary.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -84,9 +89,7 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
-    is_metal = check_is_metal(atoms)
-
-    calc_defaults = BASE_SET_METAL if is_metal else BASE_SET_NON_METAL
+    calc_defaults = BASE_SET_METAL if check_is_metal(atoms) else BASE_SET_NON_METAL
     calc_defaults["input_data"]["control"] = {"calculation": "scf"}
 
     return run_and_summarize(
@@ -95,7 +98,7 @@ def static_job(
         template=EspressoTemplate("pw", test_run=test_run, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "pw.x Static"},
+        additional_fields={"name": "pw.x Static"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -113,6 +116,7 @@ def relax_job(
         | None
     ) = None,
     prev_outdir: SourceDirectory | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -141,6 +145,8 @@ def relax_job(
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
         to manually copy files. The directory will be ungzipped if necessary.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -152,9 +158,7 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
-    is_metal = check_is_metal(atoms)
-
-    calc_defaults = BASE_SET_METAL if is_metal else BASE_SET_NON_METAL
+    calc_defaults = BASE_SET_METAL if check_is_metal(atoms) else BASE_SET_NON_METAL
     calc_defaults["input_data"]["control"] = {
         "calculation": "vc-relax" if relax_cell else "relax"
     }
@@ -165,7 +169,7 @@ def relax_job(
         template=EspressoTemplate("pw", test_run=test_run, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "pw.x Relax"},
+        additional_fields={"name": "pw.x Relax"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -184,6 +188,7 @@ def ase_relax_job(
         | None
     ) = None,
     prev_outdir: SourceDirectory | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -217,6 +222,8 @@ def ase_relax_job(
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
         to manually copy files. The directory will be ungzipped if necessary.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -228,9 +235,7 @@ def ase_relax_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
-    is_metal = check_is_metal(atoms)
-
-    calc_defaults = BASE_SET_METAL if is_metal else BASE_SET_NON_METAL
+    calc_defaults = BASE_SET_METAL if check_is_metal(atoms) else BASE_SET_NON_METAL
     calc_defaults["input_data"]["control"] = {
         "calculation": "scf",
         "tstress": relax_cell,
@@ -247,7 +252,7 @@ def ase_relax_job(
         calc_swaps=calc_kwargs,
         opt_defaults=opt_defaults,
         opt_params=opt_params,
-        additional_fields={"name": "pw.x ExternalRelax"},
+        additional_fields={"name": "pw.x ExternalRelax"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -262,6 +267,7 @@ def post_processing_job(
     ) = None,
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -282,6 +288,11 @@ def post_processing_job(
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
         to manually copy files. The directory will be ungzipped if necessary.
+    test_run
+        If True, a test run is performed to check that the calculation input_data is correct or
+        to generate some files/info if needed.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -308,7 +319,7 @@ def post_processing_job(
         template=EspressoTemplate("pp", test_run=test_run, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "pp.x post-processing"},
+        additional_fields={"name": "pp.x post-processing"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -325,6 +336,7 @@ def non_scf_job(
     prev_outdir: SourceDirectory | None = None,
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
     test_run: bool = False,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -351,6 +363,8 @@ def non_scf_job(
     test_run
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -373,6 +387,6 @@ def non_scf_job(
         template=EspressoTemplate("pw", test_run=test_run, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "pw.x Non SCF"},
+        additional_fields={"name": "pw.x Non SCF"} | (additional_fields or {}),
         copy_files=copy_files,
     )

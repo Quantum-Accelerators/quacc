@@ -15,6 +15,8 @@ if has_sella:
     from sella import Sella
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase.atoms import Atoms
 
     from quacc.types import Filenames, OptParams, OptSchema, RunSchema, SourceDirectory
@@ -41,6 +43,7 @@ def static_job(
     method: str | None = "wb97mv",
     basis: str | None = "def2-tzvpd",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -61,6 +64,8 @@ def static_job(
         Basis set.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
         a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
@@ -82,7 +87,7 @@ def static_job(
         spin_multiplicity=spin_multiplicity,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "Q-Chem Static"},
+        additional_fields={"name": "Q-Chem Static"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -96,6 +101,7 @@ def relax_job(
     basis: str = "def2-svpd",
     opt_params: OptParams | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
     """
@@ -119,6 +125,8 @@ def relax_job(
         of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
         a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
@@ -143,7 +151,7 @@ def relax_job(
         calc_swaps=calc_kwargs,
         opt_defaults=opt_defaults,
         opt_params=opt_params,
-        additional_fields={"name": "Q-Chem Optimization"},
+        additional_fields={"name": "Q-Chem Relax"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -156,6 +164,7 @@ def freq_job(
     method: str = "wb97mv",
     basis: str = "def2-svpd",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -179,6 +188,8 @@ def freq_job(
         Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
         a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
         details.
+    additional_fields
+        Additional fields to add to the results dictionary.
 
     Returns
     -------
@@ -196,5 +207,5 @@ def freq_job(
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         copy_files=copy_files,
-        additional_fields={"name": "Q-Chem Frequency"},
+        additional_fields={"name": "Q-Chem Frequency"} | (additional_fields or {}),
     )

@@ -11,7 +11,7 @@ from quacc.atoms.core import perturb
 from quacc.recipes.orca._base import run_and_summarize, run_and_summarize_opt
 
 if TYPE_CHECKING:
-    from typing import Literal
+    from typing import Any, Literal
 
     from ase.atoms import Atoms
     from numpy.typing import NDArray
@@ -30,6 +30,7 @@ def static_job(
     orcablocks: list[str] | None = None,
     nprocs: int | Literal["max"] = "max",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -58,12 +59,15 @@ def static_job(
         Number of processors to use. Defaults to the number of physical cores.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
 
     Returns
     -------
     RunSchema
         Dictionary of results
     """
+    additional_fields = {"name": "ORCA Static"} | (additional_fields or {})
     nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
     default_inputs = [xc, basis, "engrad", "normalprint"]
     default_blocks = [f"%pal nprocs {nprocs} end"]
@@ -76,7 +80,7 @@ def static_job(
         default_blocks=default_blocks,
         input_swaps=orcasimpleinput,
         block_swaps=orcablocks,
-        additional_fields={"name": "ORCA Static"},
+        additional_fields=additional_fields,
         copy_files=copy_files,
     )
 
@@ -93,6 +97,7 @@ def relax_job(
     orcablocks: list[str] | None = None,
     nprocs: int | Literal["max"] = "max",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
 ) -> RunSchema:
     """
     Carry out a geometry optimization.
@@ -123,12 +128,15 @@ def relax_job(
         Number of processors to use. Defaults to the number of physical cores.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
 
     Returns
     -------
     RunSchema
         Dictionary of results
     """
+    additional_fields = {"name": "ORCA Relax"} | (additional_fields or {})
     nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
 
     default_inputs = [xc, basis, "normalprint", "opt"]
@@ -145,7 +153,7 @@ def relax_job(
         default_blocks=default_blocks,
         input_swaps=orcasimpleinput,
         block_swaps=orcablocks,
-        additional_fields={"name": "ORCA Relax"},
+        additional_fields=additional_fields,
         copy_files=copy_files,
     )
 
@@ -162,6 +170,7 @@ def freq_job(
     orcablocks: list[str] | None = None,
     nprocs: int | Literal["max"] = "max",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
 ) -> RunSchema:
     """
     Carry out a vibrational frequency analysis calculation.
@@ -192,6 +201,8 @@ def freq_job(
         Number of processors to use. Defaults to the number of physical cores.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
 
     Returns
     -------
@@ -199,9 +210,7 @@ def freq_job(
         Dictionary of results
     """
     nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
-
     default_inputs = [xc, basis, "normalprint", "numfreq" if numerical else "freq"]
-
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
     return run_and_summarize(
@@ -212,7 +221,8 @@ def freq_job(
         default_blocks=default_blocks,
         input_swaps=orcasimpleinput,
         block_swaps=orcablocks,
-        additional_fields={"name": "ORCA vibrational frequency analysis"},
+        additional_fields={"name": "ORCA Vibrational Frequency Analysis"}
+        | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -229,6 +239,7 @@ def ase_relax_job(
     opt_params: OptParams | None = None,
     nprocs: int | Literal["max"] = "max",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
 ) -> OptSchema:
     """
     Carry out a geometry optimization.
@@ -253,10 +264,14 @@ def ase_relax_job(
         List of `orcablocks` swaps for the calculator. To remove entries
         from the defaults, put a `#` in front of the name. Refer to the
         [ase.calculators.orca.ORCA][] calculator for details on `orcablocks`.
+    opt_params
+        Dictionary of optimization parameters.
     nprocs
         Number of processors to use. Defaults to the number of physical cores.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
 
     Returns
     -------
@@ -276,7 +291,7 @@ def ase_relax_job(
         input_swaps=orcasimpleinput,
         block_swaps=orcablocks,
         opt_params=opt_params,
-        additional_fields={"name": "ORCA ASE Relax"},
+        additional_fields={"name": "ORCA ASE Relax"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -296,6 +311,7 @@ def ase_quasi_irc_job(
     opt_params: OptParams | None = None,
     nprocs: int | Literal["max"] = "max",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
 ) -> OptSchema:
     """
     Quasi-IRC to optimize a reaction endpoint from a transition-state with known vibrational frequency modes.
@@ -330,10 +346,14 @@ def ase_quasi_irc_job(
         List of `orcablocks` swaps for the calculator. To remove entries
         from the defaults, put a `#` in front of the name. Refer to the
         [ase.calculators.orca.ORCA][] calculator for details on `orcablocks`.
+    opt_params
+        Dictionary of optimization parameters.
     nprocs
         Number of processors to use. Defaults to the number of physical cores.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
 
     Returns
     -------
@@ -355,6 +375,6 @@ def ase_quasi_irc_job(
         input_swaps=orcasimpleinput,
         block_swaps=orcablocks,
         opt_params=opt_params,
-        additional_fields={"name": "ORCA ASE Quasi-IRC optimization"},
+        additional_fields={"name": "ORCA ASE Quasi-IRC"} | (additional_fields or {}),
         copy_files=copy_files,
     )
