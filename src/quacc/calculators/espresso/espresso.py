@@ -419,9 +419,13 @@ class Espresso(GenericFileIOCalculator):
             .get("pseudo_dir", str(self._settings.ESPRESSO_PSEUDO))
         )
 
+        cmd_prefix = os.environ.get(
+            "PARSL_MPI_PREFIX", self._settings.ESPRESSO_PARALLEL_CMD[0]
+        )
+        cmd_suffix = self._settings.ESPRESSO_PARALLEL_CMD[1]
+
         profile = EspressoProfile(
-            f"{self._settings.ESPRESSO_PARALLEL_CMD[0]} {self._bin_path} {self._settings.ESPRESSO_PARALLEL_CMD[1]}",
-            self._pseudo_path,
+            f"{cmd_prefix} {self._bin_path} {cmd_suffix}", self._pseudo_path
         )
 
         super().__init__(
