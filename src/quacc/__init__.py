@@ -96,6 +96,7 @@ logging.basicConfig(level=logging.DEBUG if _settings.DEBUG else logging.INFO)
 
 # Monkeypatching for Prefect
 if _settings.WORKFLOW_ENGINE == "prefect":
+    from prefect import __version__ as prefect_version
     from prefect.client.schemas import State
     from prefect.futures import PrefectFuture
 
@@ -105,6 +106,8 @@ if _settings.WORKFLOW_ENGINE == "prefect":
             return future[index_]
 
         future = _getitem(self, index)
+        if int(prefect_version[0]) < 3:
+            return future
         future.wait()
         return future.state
 
