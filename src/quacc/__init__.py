@@ -104,7 +104,9 @@ if _settings.WORKFLOW_ENGINE == "prefect":
         def _getitem(future, index_):
             return future[index_]
 
-        return _getitem(self, index)
+        future = _getitem(self, index)
+        future.wait()
+        return future.state
 
     PrefectFuture.__getitem__ = _patched_getitem
     State.__getitem__ = _patched_getitem
