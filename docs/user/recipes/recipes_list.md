@@ -141,13 +141,13 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 
 <center>
 
-| Name                       | Decorator       | Documentation                                         | Req'd Extras |
-| -------------------------- | --------------- | ----------------------------------------------------- | ------------ |
-| ORCA Static                | `#!Python @job` | [quacc.recipes.orca.core.static_job][]                |              |
-| ORCA Relax                 | `#!Python @job` | [quacc.recipes.orca.core.relax_job][]                 |              |
-| ORCA Freq                  | `#!Python @job` | [quacc.recipes.orca.core.freq_job][]                  |              |
-| ORCA ASE Relax             | `#!Python @job` | [quacc.recipes.orca.core.ase_relax_job][]             |              |
-| ORCA ASE Quasi-IRC Perturb | `#!Python @job` | [quacc.recipes.orca.core.ase_quasi_irc_perturb_job][] |              |
+| Name               | Decorator       | Documentation                                 | Req'd Extras |
+| ------------------ | --------------- | --------------------------------------------- | ------------ |
+| ORCA Static        | `#!Python @job` | [quacc.recipes.orca.core.static_job][]        |              |
+| ORCA Relax         | `#!Python @job` | [quacc.recipes.orca.core.relax_job][]         |              |
+| ORCA Freq          | `#!Python @job` | [quacc.recipes.orca.core.freq_job][]          |              |
+| ORCA ASE Relax     | `#!Python @job` | [quacc.recipes.orca.core.ase_relax_job][]     |              |
+| ORCA ASE Quasi-IRC | `#!Python @job` | [quacc.recipes.orca.core.ase_quasi_irc_job][] |              |
 
 </center>
 
@@ -173,15 +173,14 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 
 <center>
 
-| Name                     | Decorator       | Documentation                                    | Req'd Extras   |
-| ------------------------ | --------------- | ------------------------------------------------ | -------------- |
-| Q-Chem Static            | `#!Python @job` | [quacc.recipes.qchem.core.static_job][]          |                |
-| Q-Chem Relax             | `#!Python @job` | [quacc.recipes.qchem.core.relax_job][]           |                |
-| Q-Chem Frequency         | `#!Python @job` | [quacc.recipes.qchem.core.freq_job][]            |                |
-| Q-Chem TS                | `#!Python @job` | [quacc.recipes.qchem.ts.ts_job][]                | `quacc[sella]` |
-| Q-Chem IRC               | `#!Python @job` | [quacc.recipes.qchem.ts.irc_job][]               | `quacc[sella]` |
-| Q-Chem Quasi IRC         | `#!Python @job` | [quacc.recipes.qchem.ts.quasi_irc_job][]         | `quacc[sella]` |
-| Q-Chem Quasi IRC Perturb | `#!Python @job` | [quacc.recipes.qchem.ts.quasi_irc_perturb_job][] | `quacc[sella]` |
+| Name             | Decorator       | Documentation                            | Req'd Extras   |
+| ---------------- | --------------- | ---------------------------------------- | -------------- |
+| Q-Chem Static    | `#!Python @job` | [quacc.recipes.qchem.core.static_job][]  |                |
+| Q-Chem Relax     | `#!Python @job` | [quacc.recipes.qchem.core.relax_job][]   |                |
+| Q-Chem Frequency | `#!Python @job` | [quacc.recipes.qchem.core.freq_job][]    |                |
+| Q-Chem TS        | `#!Python @job` | [quacc.recipes.qchem.ts.ts_job][]        | `quacc[sella]` |
+| Q-Chem IRC       | `#!Python @job` | [quacc.recipes.qchem.ts.irc_job][]       | `quacc[sella]` |
+| Q-Chem Quasi IRC | `#!Python @job` | [quacc.recipes.qchem.ts.quasi_irc_job][] | `quacc[sella]` |
 
 </center>
 
@@ -249,6 +248,7 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 | VASP Relax                      | `#!Python @job`  | [quacc.recipes.vasp.core.relax_job][]           |              |
 | VASP Double Relax               | `#!Python @flow` | [quacc.recipes.vasp.core.double_relax_flow][]   |              |
 | VASP Non-SCF                    | `#!Python @job`  | [quacc.recipes.vasp.core.non_scf_job][]         |              |
+| VASP Frequency                  | `#!Python @job`  | [quacc.recipes.vasp.core.freq_job][]            |              |
 | VASP Slab Static                | `#!Python @job`  | [quacc.recipes.vasp.slabs.static_job][]         |              |
 | VASP Slab Relax                 | `#!Python @job`  | [quacc.recipes.vasp.slabs.relax_job][]          |              |
 | VASP Bulk to Slabs              | `#!Python @flow` | [quacc.recipes.vasp.slabs.bulk_to_slabs_flow][] |              |

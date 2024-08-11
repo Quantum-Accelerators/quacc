@@ -39,14 +39,17 @@ def bands_pw_job(
     line_density: float = 20,
     force_gamma: bool = True,
     test_run: bool = False,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
-    Function to carry out a basic bands structure calculation with pw.x.
+    Function to carry out a basic bandstructure calculation with pw.x.
 
-    First perform a normal SCF calculation [quacc.recipes.espresso.core.static_job][];
-    then use this job if you are interested in calculating only the Kohn-Sham states
-    for the given set of k-points
+    !!! Note
+
+        First perform a normal SCF calculation [quacc.recipes.espresso.core.static_job][];
+        then use this job if you are interested in calculating only the Kohn-Sham states
+        for the given set of k-points
 
     Parameters
     ----------
@@ -76,6 +79,8 @@ def bands_pw_job(
     test_run
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -84,7 +89,7 @@ def bands_pw_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     calc_defaults = {
@@ -106,7 +111,7 @@ def bands_pw_job(
         template=EspressoTemplate("pw", test_run=test_run, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "pw.x bands"},
+        additional_fields={"name": "pw.x bands"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -121,12 +126,16 @@ def bands_pp_job(
     ) = None,
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
     Function to re-order bands and computes bands-related properties with bands.x.
-    This allows to get the bands structure in a more readable way. This requires a
-    previous [quacc.recipes.espresso.bands.bands_pw_job][] calculation.
+    This allows one to get the bands structure in a more readable way.
+
+    !!! Note
+
+        This requires a previous [quacc.recipes.espresso.bands.bands_pw_job][] calculation.
 
     Parameters
     ----------
@@ -143,6 +152,8 @@ def bands_pp_job(
     test_run
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -151,14 +162,15 @@ def bands_pp_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     return run_and_summarize(
         template=EspressoTemplate("bands", test_run=test_run, outdir=prev_outdir),
         calc_defaults={},
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "bands.x post-processing"},
+        additional_fields={"name": "bands.x post-processing"}
+        | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -173,11 +185,15 @@ def fermi_surface_job(
     ) = None,
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
     Function to retrieve the fermi surface with fs.x
-    It requires a previous uniform unshifted k-point grid bands calculation.
+
+    !!! Note
+
+        It requires a previous uniform unshifted k-point grid bands calculation.
 
     Parameters
     ----------
@@ -194,6 +210,8 @@ def fermi_surface_job(
     test_run
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -202,14 +220,14 @@ def fermi_surface_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     return run_and_summarize(
         template=EspressoTemplate("fs", test_run=test_run, outdir=prev_outdir),
         calc_defaults={},
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "fs.x fermi_surface"},
+        additional_fields={"name": "fs.x fermi_surface"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -279,7 +297,7 @@ def bands_flow(
     Returns
     -------
     BandsSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     (bands_pw_job_, bands_pp_job_, fermi_surface_job_) = customize_funcs(

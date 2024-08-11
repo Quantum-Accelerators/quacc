@@ -13,6 +13,8 @@ from quacc.recipes.psi4._base import run_and_summarize
 has_psi4 = bool(find_spec("psi4"))
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase.atoms import Atoms
 
     from quacc.types import Filenames, RunSchema, SourceDirectory
@@ -27,6 +29,7 @@ def static_job(
     method: str = "wb97x-v",
     basis: str = "def2-tzvp",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -46,6 +49,8 @@ def static_job(
         Basis set
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the Psi4 calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -54,7 +59,7 @@ def static_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     calc_defaults = {
@@ -72,6 +77,6 @@ def static_job(
         spin_multiplicity=spin_multiplicity,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "Psi4 Static"},
+        additional_fields={"name": "Psi4 Static"} | (additional_fields or {}),
         copy_files=copy_files,
     )

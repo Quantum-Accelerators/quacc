@@ -7,11 +7,11 @@ from typing import TYPE_CHECKING
 from quacc import job
 from quacc.recipes.mlp._base import pick_calculator
 from quacc.runners.ase import Runner
-from quacc.schemas.ase import summarize_opt_run, summarize_run
+from quacc.schemas.ase import Summarize
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
-    from typing import Literal
+    from typing import Any, Literal
 
     from ase.atoms import Atoms
 
@@ -23,6 +23,7 @@ def static_job(
     atoms: Atoms,
     method: Literal["mace-mp-0", "m3gnet", "chgnet"],
     properties: list[str] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -36,6 +37,8 @@ def static_job(
         Universal ML interatomic potential method to use
     properties
         A list of properties to obtain. Defaults to ["energy", "forces"]
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the underlying calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -45,16 +48,16 @@ def static_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     calc = pick_calculator(method, **calc_kwargs)
     if properties is None:
         properties = ["energy", "forces"]
     final_atoms = Runner(atoms, calc).run_calc(properties=properties)
-    return summarize_run(
-        final_atoms, atoms, additional_fields={"name": f"{method} Static"}
-    )
+    return Summarize(
+        additional_fields={"name": f"{method} Static"} | (additional_fields or {})
+    ).run(final_atoms, atoms)
 
 
 @job
@@ -63,6 +66,7 @@ def relax_job(
     method: Literal["mace-mp-0", "m3gnet", "chgnet"],
     relax_cell: bool = False,
     opt_params: OptParams | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
     """
@@ -79,6 +83,8 @@ def relax_job(
     opt_params
         Dictionary of custom kwargs for the optimization process. For a list
         of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the underlying calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -88,7 +94,7 @@ def relax_job(
     Returns
     -------
     OptSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.opt][].
         See the type-hint for the data structure.
     """
     opt_defaults = {"fmax": 0.05}
@@ -98,4 +104,6 @@ def relax_job(
 
     dyn = Runner(atoms, calc).run_opt(relax_cell=relax_cell, **opt_flags)
 
-    return summarize_opt_run(dyn, additional_fields={"name": f"{method} Relax"})
+    return Summarize(
+        additional_fields={"name": f"{method} Relax"} | (additional_fields or {})
+    ).opt(dyn)

@@ -206,7 +206,9 @@ def test_bad_runs(tmp_path, monkeypatch, caplog):
     assert "Cannot find file" in caplog.text
 
     # No trajectory kwarg
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match="Quacc does not support setting the `trajectory` kwarg"
+    ):
         Runner(atoms, EMT()).run_opt(
             optimizer=BFGSLineSearch,
             optimizer_kwargs={"restart": None, "trajectory": "test.traj"},

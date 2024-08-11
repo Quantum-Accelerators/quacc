@@ -3,11 +3,17 @@ from __future__ import annotations
 import gzip
 import logging
 import os
+import time
 from pathlib import Path
 
 import pytest
 
-from quacc.utils.files import check_logfile, copy_decompress_files, make_unique_dir
+from quacc.utils.files import (
+    check_logfile,
+    copy_decompress_files,
+    find_recent_logfile,
+    make_unique_dir,
+)
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.propagate = True
@@ -176,3 +182,65 @@ def test_check_logfile(tmp_path):
         gf.write(b"trigger")
     assert check_logfile(str(tmp_path / "logs2.out"), "trigger") is True
     assert check_logfile(str(tmp_path / "logs2.out"), "test") is False
+
+
+def test_find_recent_logfile_for_one_extension_retrieves_most_recent_log_of_that_extension_when_only_that_extension_exists(
+    tmp_path,
+):
+    with open(tmp_path / "first.out", "w"):
+        time.sleep(0.01)
+
+    with open(tmp_path / "second.out", "w"):
+        ...
+
+    actual = find_recent_logfile(tmp_path, logfile_extensions=".out")
+    assert actual.name == "second.out"
+
+
+def test_find_recent_logfile_for_one_extension_retrieves_most_recent_log_of_that_extension_when_more_extensions_exist(
+    tmp_path,
+):
+    with open(tmp_path / "first.out", "w"):
+        time.sleep(0.01)
+
+    with open(tmp_path / "second.log", "w"):
+        ...
+
+    actual = find_recent_logfile(tmp_path, logfile_extensions=".out")
+    assert actual.name == "first.out"
+
+
+def test_find_recent_logfile_for_multiple_extensions_retrieves_most_recent_log_of_any_extension(
+    tmp_path,
+):
+    with open(tmp_path / "first.out", "w"):
+        time.sleep(0.01)
+
+    with open(tmp_path / "second.log", "w"):
+        ...
+
+    actual = find_recent_logfile(tmp_path, logfile_extensions=[".out", ".log"])
+    assert actual.name == "second.log"
+
+
+def test_find_recent_logfile_can_handle_multiple_suffixes_in_logfile_extensions(
+    tmp_path,
+):
+    with open(tmp_path / "first.my.log", "w"):
+        time.sleep(0.01)
+
+    with open(tmp_path / "second.log", "w"):
+        ...
+
+    actual = find_recent_logfile(tmp_path, logfile_extensions=".my.log")
+    assert actual.name == "first.my.log"
+
+
+def test_find_recent_logfile_only_checks_files_matching_the_extension_when_file_has_one_suffix(
+    tmp_path,
+):
+    with open(tmp_path / "first_log.out", "w"):
+        ...
+
+    actual = find_recent_logfile(tmp_path, logfile_extensions=".log")
+    assert actual is None

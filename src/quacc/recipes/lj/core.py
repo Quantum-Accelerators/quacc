@@ -12,10 +12,11 @@ from ase.calculators.lj import LennardJones
 
 from quacc import job
 from quacc.runners.ase import Runner
-from quacc.runners.thermo import ThermoRunner
-from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
+from quacc.schemas.ase import Summarize, VibSummarize
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase.atoms import Atoms
 
     from quacc.types import (
@@ -33,6 +34,7 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -52,13 +54,15 @@ def static_job(
     Returns
     -------
     RunSchema
-        Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
+        Dictionary of results, specified in [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     calc = LennardJones(**calc_kwargs)
     final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
 
-    return summarize_run(final_atoms, atoms, additional_fields={"name": "LJ Static"})
+    return Summarize(
+        additional_fields={"name": "LJ Static"} | (additional_fields or {})
+    ).run(final_atoms, atoms)
 
 
 @job
@@ -66,6 +70,7 @@ def relax_job(
     atoms: Atoms,
     opt_params: OptParams | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
     """
@@ -80,6 +85,8 @@ def relax_job(
         of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the LJ calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -88,7 +95,7 @@ def relax_job(
     Returns
     -------
     OptSchema
-        Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
+        Dictionary of results, specified in [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     opt_params = opt_params or {}
@@ -96,7 +103,9 @@ def relax_job(
     calc = LennardJones(**calc_kwargs)
     dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_params)
 
-    return summarize_opt_run(dyn, additional_fields={"name": "LJ Relax"})
+    return Summarize(
+        additional_fields={"name": "LJ Relax"} | (additional_fields or {})
+    ).opt(dyn)
 
 
 @job
@@ -107,6 +116,7 @@ def freq_job(
     pressure: float = 1.0,
     vib_kwargs: VibKwargs | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VibThermoSchema:
     """
@@ -126,6 +136,8 @@ def freq_job(
         Dictionary of kwargs for the [ase.vibrations.Vibrations][] class.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Dictionary of custom kwargs for the LJ calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -134,23 +146,17 @@ def freq_job(
     Returns
     -------
     VibThermoSchema
-        Dictionary of results, specified in [quacc.schemas.ase.summarize_vib_and_thermo][].
-        See the type-hint for the data structure.
+        Dictionary of results
     """
     vib_kwargs = vib_kwargs or {}
 
     calc = LennardJones(**calc_kwargs)
-    vibrations = Runner(atoms, calc, copy_files=copy_files).run_vib(
-        vib_kwargs=vib_kwargs
-    )
-    igt = ThermoRunner(
-        atoms, vibrations.get_frequencies(), energy=energy
-    ).run_ideal_gas()
+    vib = Runner(atoms, calc, copy_files=copy_files).run_vib(vib_kwargs=vib_kwargs)
 
-    return summarize_vib_and_thermo(
-        vibrations,
-        igt,
-        temperature=temperature,
-        pressure=pressure,
-        additional_fields={"name": "LJ Frequency and Thermo"},
+    return VibSummarize(
+        vib,
+        additional_fields={"name": "LJ Frequency and Thermo"}
+        | (additional_fields or {}),
+    ).vib_and_thermo(
+        "ideal_gas", energy=energy, temperature=temperature, pressure=pressure
     )

@@ -8,7 +8,7 @@ from quacc import job
 from quacc.recipes.dftb._base import run_and_summarize
 
 if TYPE_CHECKING:
-    from typing import Literal
+    from typing import Any, Literal
 
     from ase.atoms import Atoms
 
@@ -21,6 +21,7 @@ def static_job(
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     kpts: tuple | list[tuple] | dict | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -36,6 +37,8 @@ def static_job(
         k-point grid to use.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the calculator that would override the
         calculator defaults. Set a value to `quacc.Remove` to remove a pre-existing key
@@ -45,7 +48,7 @@ def static_job(
     Returns
     -------
     RunSchema
-        Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
+        Dictionary of results, specified in [quacc.schemas.ase.Summarize.run][].
         See the return type-hint for the data structure.
     """
     calc_defaults = {
@@ -60,7 +63,7 @@ def static_job(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "DFTB+ Static"},
+        additional_fields={"name": "DFTB+ Static"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -72,6 +75,7 @@ def relax_job(
     kpts: tuple | list[tuple] | dict | None = None,
     relax_cell: bool = False,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -90,6 +94,8 @@ def relax_job(
         positions.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the calculator that would override the
         calculator defaults. Set a value to `quacc.Remove` to remove a pre-existing key
@@ -99,7 +105,7 @@ def relax_job(
     Returns
     -------
     RunSchema
-        Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
+        Dictionary of results, specified in [quacc.schemas.ase.Summarize.run][].
         See the return type-hint for the data structure.
     """
     calc_defaults = {
@@ -118,6 +124,6 @@ def relax_job(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "DFTB+ Relax"},
+        additional_fields={"name": "DFTB+ Relax"} | (additional_fields or {}),
         copy_files=copy_files,
     )

@@ -10,8 +10,7 @@ from monty.dev import requires
 
 from quacc import get_settings, job
 from quacc.runners.ase import Runner
-from quacc.runners.thermo import ThermoRunner
-from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
+from quacc.schemas.ase import Summarize, VibSummarize
 from quacc.utils.dicts import recursive_dict_merge
 
 has_sella = bool(find_spec("sella"))
@@ -44,6 +43,7 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -55,6 +55,8 @@ def static_job(
         Atoms object
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the NewtonNet calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -63,7 +65,7 @@ def static_job(
     Returns
     -------
     RunSchema
-        Dictionary of results, specified in [quacc.schemas.ase.summarize_run][].
+        Dictionary of results, specified in [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     settings = get_settings()
@@ -76,9 +78,9 @@ def static_job(
     calc = NewtonNet(**calc_flags)
     final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
 
-    return summarize_run(
-        final_atoms, atoms, additional_fields={"name": "NewtonNet Static"}
-    )
+    return Summarize(
+        additional_fields={"name": "NewtonNet Static"} | (additional_fields or {})
+    ).run(final_atoms, atoms)
 
 
 @job
@@ -89,6 +91,7 @@ def relax_job(
     atoms: Atoms,
     opt_params: OptParams | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
     """
@@ -103,6 +106,8 @@ def relax_job(
         of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Dictionary of custom kwargs for the NewtonNet calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -111,7 +116,7 @@ def relax_job(
     Returns
     -------
     OptSchema
-        Dictionary of results, specified in [quacc.schemas.ase.summarize_opt_run][].
+        Dictionary of results, specified in [quacc.schemas.ase.Summarize.opt][].
         See the type-hint for the data structure.
     """
     settings = get_settings()
@@ -128,7 +133,9 @@ def relax_job(
     dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_flags)
 
     return _add_stdev_and_hess(
-        summarize_opt_run(dyn, additional_fields={"name": "NewtonNet Relax"})
+        Summarize(
+            additional_fields={"name": "NewtonNet Relax"} | (additional_fields or {})
+        ).opt(dyn)
     )
 
 
@@ -141,6 +148,7 @@ def freq_job(
     temperature: float = 298.15,
     pressure: float = 1.0,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VibThermoSchema:
     """
@@ -156,6 +164,8 @@ def freq_job(
         The pressure for the thermodynamic analysis.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the NewtonNet calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -177,21 +187,20 @@ def freq_job(
     calc = NewtonNet(**calc_flags)
     final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
 
-    summary = summarize_run(
-        final_atoms, atoms, additional_fields={"name": "NewtonNet Hessian"}
-    )
+    summary = Summarize(
+        additional_fields={"name": "NewtonNet Frequency"} | (additional_fields or {})
+    ).run(final_atoms, atoms)
 
     vib = VibrationsData(final_atoms, summary["results"]["hessian"])
-    igt = ThermoRunner(
-        final_atoms, vib.get_frequencies(), energy=summary["results"]["energy"]
-    ).run_ideal_gas()
-
-    return summarize_vib_and_thermo(
+    return VibSummarize(
         vib,
-        igt,
+        directory=summary["dir_name"],
+        additional_fields={"name": "ASE Vibrations and Thermo Analysis"},
+    ).vib_and_thermo(
+        "ideal_gas",
+        energy=summary["results"]["energy"],
         temperature=temperature,
         pressure=pressure,
-        additional_fields={"name": "ASE Vibrations and Thermo Analysis"},
     )
 
 

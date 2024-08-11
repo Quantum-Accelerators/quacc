@@ -195,7 +195,7 @@ class EspressoTemplate(EspressoTemplate_):
 
         Path(directory, f"{prefix}.EXIT").touch()
 
-    def read_results(self, directory: Path | str) -> dict[str, Any]:
+    def read_results(self, directory: os.PathLike) -> dict[str, Any]:
         """
         The function that should be used instead of the one in ASE EspressoTemplate to
         read the output file. It calls a customly defined read function. It also adds
@@ -222,7 +222,8 @@ class EspressoTemplate(EspressoTemplate_):
         elif self.binary == "dos":
             with Path(directory, "pwscf.dos").open() as fd:
                 lines = fd.readlines()
-                fermi = float(re.search(r"-?\d+\.?\d*", lines[0])[0])
+                match = re.search(r"-?\d+\.?\d*", lines[0])
+                fermi = float(match.group(0)) if match else None
                 dos = np.loadtxt(lines[1:])
             results = {"dos_results": {"dos": dos, "fermi": fermi}}
         elif self.binary == "projwfc":
@@ -279,7 +280,7 @@ class EspressoTemplate(EspressoTemplate_):
 
         return parameters
 
-    def _sanity_checks(self, parameters: dict[str, Any]) -> None:
+    def _sanity_checks(self, parameters: dict[str, Any]) -> dict[str, Any]:
         """
         Function that performs sanity checks on the input_data. It is meant
         to catch common mistakes that are not caught by the espresso binaries.
@@ -293,7 +294,7 @@ class EspressoTemplate(EspressoTemplate_):
         Returns
         -------
         dict
-            The modified parameters dictionary.
+            The modified dictionary parameters.
         """
         input_data = parameters.get("input_data", {})
 
@@ -472,5 +473,7 @@ class Espresso(GenericFileIOCalculator):
         else:
             self.user_calc_params = self.kwargs
 
-        if self.user_calc_params.get("kpts") and self.user_calc_params.get("kspacing"):
+        if self.user_calc_params.get("kpts") is not None and self.user_calc_params.get(
+            "kspacing"
+        ):
             raise ValueError("Cannot specify both kpts and kspacing.")

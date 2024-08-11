@@ -35,6 +35,7 @@ def dos_job(
     ) = None,
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -55,6 +56,11 @@ def dos_job(
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
         to manually copy files. The directory will be ungzipped if necessary.
+    test_run
+        If True, the calculation will be run in test mode. This is useful for quickly
+        checking if the calculation will run without errors.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -63,14 +69,15 @@ def dos_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     return run_and_summarize(
         template=EspressoTemplate("dos", test_run=test_run, outdir=prev_outdir),
         calc_defaults=None,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "dos.x Density-of-States"},
+        additional_fields={"name": "dos.x Density-of-States"}
+        | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -85,6 +92,7 @@ def projwfc_job(
     ) = None,
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -105,6 +113,11 @@ def projwfc_job(
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
         to manually copy files. The directory will be ungzipped if necessary.
+    test_run
+        If True, the calculation will be run in test mode. This is useful for quickly
+        checking if the calculation will run without errors.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -113,14 +126,15 @@ def projwfc_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     return run_and_summarize(
         template=EspressoTemplate("projwfc", test_run=test_run, outdir=prev_outdir),
         calc_defaults=None,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "projwfc.x Projects-wavefunctions"},
+        additional_fields={"name": "projwfc.x Projects-wavefunctions"}
+        | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -162,7 +176,7 @@ def dos_flow(
     Returns
     -------
     DosSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     job_params = job_params or {}
@@ -239,7 +253,7 @@ def projwfc_flow(
     Returns
     -------
     ProjwfcSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     job_params = job_params or {}

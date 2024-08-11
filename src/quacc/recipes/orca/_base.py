@@ -8,7 +8,7 @@ from ase.calculators.orca import ORCA, OrcaProfile, OrcaTemplate
 
 from quacc import get_settings
 from quacc.runners.ase import Runner
-from quacc.schemas.cclib import cclib_summarize_run, summarize_cclib_opt_run
+from quacc.schemas.ase import Summarize
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.utils.lists import merge_list_params
 
@@ -17,16 +17,9 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.types import (
-        Filenames,
-        OptParams,
-        SourceDirectory,
-        cclibASEOptSchema,
-        cclibSchema,
-    )
+    from quacc.types import Filenames, OptParams, OptSchema, RunSchema, SourceDirectory
 
 _LABEL = OrcaTemplate()._label  # skipcq: PYL-W0212
-LOG_FILE = f"{_LABEL}.out"
 GEOM_FILE = f"{_LABEL}.xyz"
 
 
@@ -41,7 +34,7 @@ def run_and_summarize(
     additional_fields: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
-) -> cclibSchema:
+) -> RunSchema:
     """
     Base job function for ORCA recipes.
 
@@ -72,7 +65,7 @@ def run_and_summarize(
 
     Returns
     -------
-    cclibSchema
+    RunSchema
         Dictionary of results
     """
     calc = prep_calculator(
@@ -85,9 +78,14 @@ def run_and_summarize(
         **calc_kwargs,
     )
 
-    atoms = Runner(atoms, calc, copy_files=copy_files).run_calc(geom_file=GEOM_FILE)
+    final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc(
+        geom_file=GEOM_FILE
+    )
 
-    return cclib_summarize_run(atoms, LOG_FILE, additional_fields=additional_fields)
+    return Summarize(
+        charge_and_multiplicity=(charge, spin_multiplicity),
+        additional_fields=additional_fields,
+    ).run(final_atoms, atoms)
 
 
 def run_and_summarize_opt(
@@ -103,7 +101,7 @@ def run_and_summarize_opt(
     additional_fields: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     **calc_kwargs,
-) -> cclibASEOptSchema:
+) -> OptSchema:
     """
     Base job function for ORCA recipes with ASE optimizer.
 
@@ -138,7 +136,7 @@ def run_and_summarize_opt(
 
     Returns
     -------
-    cclibASEOptSchema
+    OptSchema
         Dictionary of results
     """
     calc = prep_calculator(
@@ -153,7 +151,10 @@ def run_and_summarize_opt(
 
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
     dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_flags)
-    return summarize_cclib_opt_run(dyn, LOG_FILE, additional_fields=additional_fields)
+    return Summarize(
+        charge_and_multiplicity=(charge, spin_multiplicity),
+        additional_fields=additional_fields,
+    ).opt(dyn)
 
 
 def prep_calculator(

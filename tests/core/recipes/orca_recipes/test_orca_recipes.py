@@ -7,7 +7,7 @@ import pytest
 from ase.build import molecule
 
 from quacc.recipes.orca.core import (
-    ase_quasi_irc_perturb_job,
+    ase_quasi_irc_job,
     ase_relax_job,
     freq_job,
     relax_job,
@@ -32,7 +32,6 @@ def test_static_job(tmp_path, monkeypatch):
     assert output["parameters"]["mult"] == 1
     assert output["spin_multiplicity"] == 1
     assert output["charge"] == 0
-    assert output.get("attributes")
 
 
 @pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
@@ -57,7 +56,6 @@ def test_static_job_parallel(tmp_path, monkeypatch):
         == "def2-svp engrad normalprint wb97x-d3bj xyzfile"
     )
     assert "%scf maxiter 300 end" in output["parameters"]["orcablocks"]
-    assert output.get("attributes")
 
 
 @pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
@@ -74,7 +72,6 @@ def test_relax_job(tmp_path, monkeypatch):
         output["parameters"]["orcasimpleinput"]
         == "def2-tzvp normalprint opt wb97x-d3bj xyzfile"
     )
-    assert output["trajectory"][0] != output["trajectory"][-1]
 
     output = relax_job(
         atoms,
@@ -91,9 +88,6 @@ def test_relax_job(tmp_path, monkeypatch):
     assert (
         output["parameters"]["orcablocks"] == "%pal nprocs 2 end\n%scf maxiter 300 end"
     )
-    assert output.get("trajectory")
-    assert len(output["trajectory"]) > 1
-    assert output.get("attributes")
 
 
 @pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
@@ -116,7 +110,6 @@ def test_relax_freq_job(tmp_path, monkeypatch):
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
     assert output["parameters"]["orcasimpleinput"] == "def2-svp freq hf opt xyzfile"
-    assert output["trajectory"][0] != output["trajectory"][-1]
 
 
 @pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
@@ -136,7 +129,6 @@ def test_ase_relax_job(tmp_path, monkeypatch):
     assert output["parameters_opt"]["fmax"] == 0.1
     assert output.get("trajectory")
     assert output.get("trajectory_results")
-    assert output.get("attributes")
 
 
 @pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
@@ -151,8 +143,6 @@ def test_ase_relax_job_store(tmp_path, monkeypatch):
     for i in range(nsteps):
         assert f"step{i}" in os.listdir(output["dir_name"])
         assert "orca.xyz.gz" in os.listdir(Path(output["dir_name"], f"step{i}"))
-    assert len(output["steps"]) == nsteps
-    assert "attributes" in output["steps"][0]
 
 
 @pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
@@ -174,18 +164,17 @@ def test_freq_job(tmp_path, monkeypatch):
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
     assert output["parameters"]["orcasimpleinput"] == "def2-svp freq hf xyzfile"
-    assert output.get("attributes")
 
 
 @pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
-def test_ase_quasi_irc_perturb_job(tmp_path, monkeypatch):
+def test_ase_quasi_irc_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = molecule("H2")
 
     mode = [[0.0, 0.0, 0.1], [0.0, 0.1, 0.0]]
 
-    output = ase_quasi_irc_perturb_job(
+    output = ase_quasi_irc_job(
         atoms,
         mode,
         charge=0,
@@ -202,4 +191,3 @@ def test_ase_quasi_irc_perturb_job(tmp_path, monkeypatch):
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
     assert output["parameters"]["orcasimpleinput"] == "def2-svp engrad hf xyzfile"
-    assert output.get("attributes")

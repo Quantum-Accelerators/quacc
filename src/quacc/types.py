@@ -6,8 +6,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from pydantic_settings import BaseSettings
 
-class DefaultSetting:
+
+class DefaultSetting(BaseSettings):
     """
     Type hint for when a default setting will be applied
     """
@@ -133,9 +135,9 @@ if TYPE_CHECKING:
         """
 
         energy: float  # electronic energy in eV
-        forces: NDArray  # forces in eV/A
-        hessian: NDArray  # Hessian in eV/A^2/amu
         taskdoc: dict[str, Any]  # Output from `emmet.core.qc_tasks.TaskDoc`
+        hessian: NotRequired[NDArray]  # Hessian in eV/A^2/amu
+        forces: NotRequired[NDArray]  # forces in eV/A
 
     class VaspJobKwargs(TypedDict, total=False):
         """
@@ -443,7 +445,7 @@ if TYPE_CHECKING:
     # ----------- Schema (ASE) type hints -----------
 
     class RunSchema(AtomsSchema):
-        """Schema for [quacc.schemas.ase.summarize_run][]"""
+        """Schema for [quacc.schemas.ase.Summarize.run][]"""
 
         input_atoms: AtomsSchema | None
         nid: str
@@ -453,7 +455,7 @@ if TYPE_CHECKING:
         quacc_version: str
 
     class OptSchema(RunSchema):
-        """Schema for [quacc.schemas.ase.summarize_opt_run][]"""
+        """Schema for [quacc.schemas.ase.Summarize.opt][]"""
 
         parameters_opt: ParametersDyn
         converged: bool
@@ -461,7 +463,7 @@ if TYPE_CHECKING:
         trajectory_results: list[Results]
 
     class DynSchema(RunSchema):
-        """Schema for [quacc.schemas.ase.summarize_md_run][]"""
+        """Schema for [quacc.schemas.ase.Summarize.md][]"""
 
         parameters_md: ParametersDyn
         trajectory: list[Atoms]
@@ -511,7 +513,7 @@ if TYPE_CHECKING:
         results: ThermoResults
 
     class VibThermoSchema(VibSchema, ThermoSchema):
-        """Schema for [quacc.schemas.ase.summarize_vib_and_thermo][]"""
+        """Combined Vibrations and Thermo schema"""
 
     # ----------- Schema (phonons) type hints -----------
 
@@ -594,139 +596,11 @@ if TYPE_CHECKING:
         cm5: CM5Schema
 
     class VaspSchema(RunSchema, TaskDoc):
-        """Type hint associated with [quacc.schemas.vasp.vasp_summarize_run][]"""
+        """Type hint associated with [quacc.schemas.vasp.VaspSummarize.run][]"""
 
         bader: BaderSchema
         chargemol: ChargemolSchema
         steps: dict[int, TaskDoc]  # when store_intermediate_results=True
-
-    # ----------- Schema (cclib) type hints -----------
-
-    class Attributes(TypedDict, total=False):
-        """
-        Type hints associated with cclib attribubtes.
-
-        Refer to https://cclib.github.io/data.html
-        """
-
-        aonames: list[str]
-        aooverlaps: NDArray
-        atombasis: list[list[int]]
-        atomcharges: dict[str, NDArray]
-        atomcoords: NDArray
-        atommasses: NDArray
-        atomnos: NDArray
-        atomspins: dict[str, NDArray]
-        ccenergies: NDArray
-        charge: int
-        coreelectrons: NDArray
-        dispersionenergies: NDArray
-        enthalpy: float
-        entropy: float
-        etenergies: NDArray
-        etoscs: NDArray
-        etdips: NDArray
-        etveldips: NDArray
-        etmagdips: NDArray
-        etrotats: NDArray
-        etsecs: list[list]
-        etsyms: list[str]
-        freenergy: float
-        fonames: list[str]
-        fooverlaps: NDArray
-        fragnames: list[str]
-        frags: list[list[int]]
-        gbasis: Any
-        geotargets: NDArray
-        geovalues: NDArray
-        grads: NDArray
-        hessian: NDArray
-        homos: NDArray
-        metadata: dict[str, Any]
-        mocoeffs: list[NDArray]
-        moenergies: list[NDArray]
-        moments: list[NDArray]
-        mosyms: list[list]
-        mpenergies: NDArray
-        mult: int
-        natom: int
-        nbasis: int
-        nmo: int
-        nmrtensors: dict[int, dict[str, NDArray]]
-        nmrcouplingtensors: dict[int, dict[str, NDArray]]
-        nocoeffs: NDArray
-        nooccnos: NDArray
-        nsocoeffs: list[NDArray]
-        nsooccnos: list[NDArray]
-        optdone: bool
-        optstatus: NDArray
-        polarizabilities: list[NDArray]
-        pressure: float
-        rotconsts: NDArray
-        scancoords: NDArray
-        scanenergies: list[float]
-        scannames: list[str]
-        scanparm: list[tuple]
-        scfenergies: NDArray
-        scftargets: NDArray
-        scfvalues: list[NDArray]
-        temperature: float
-        time: NDArray
-        transprop: Any
-        vibanharms: NDArray
-        vibdisps: NDArray
-        vibfreqs: NDArray
-        vibfconsts: NDArray
-        vibirs: NDArray
-        vibramans: NDArray
-        vibrmasses: NDArray
-        vibsyms: list[str]
-        zpve: float
-
-    class AdditionalAttributes(TypedDict, total=False):
-        """
-        Additional type hints we custom-made based on cclib attributes.
-
-        Uses cclib units.
-        """
-
-        final_scf_energy: float
-        homo_energies: list[float] | None
-        lumo_energies: list[float] | None
-        homo_lumo_gaps: list[float] | None
-        min_homo_lumo_gap: float | None
-
-    class PopAnalysisAttributes(TypedDict, total=False):
-        """Type hints associated with cclib population analysis attribubtes."""
-
-        aoresults: Any
-        fragresults: Any
-        fragcharges: Any
-        density: Any
-        donations: Any
-        bdonations: Any
-        repulsions: Any
-        matches: Any
-        refcharges: Any
-
-    class AllAttributes(Attributes, AdditionalAttributes):
-        """Type hint of all cclib attributes."""
-
-    class cclibBaseSchema(TypedDict):
-        """Type hint associated with `quacc.schemas.cclib._make_cclib_schema`"""
-
-        logfile: str
-        attributes: AllAttributes
-        pop_analysis: PopAnalysisAttributes | None
-        trajectory: list[Atoms]
-
-    class cclibSchema(cclibBaseSchema, RunSchema):
-        """Type hint associated with [quacc.schemas.cclib.cclib_summarize_run][]."""
-
-        steps: dict[int, cclibBaseSchema]  # when store_intermediate_results=True
-
-    class cclibASEOptSchema(cclibSchema, OptSchema):
-        """Type hint used when merging cclibSchema with OptSchema."""
 
     # ----------- Recipe (VASP) type hints -----------
 
@@ -794,7 +668,6 @@ if TYPE_CHECKING:
         non_scf_job: RunSchema
 
     class EspressoPhononDosSchema(TypedDict):
-        relax_job: RunSchema
         phonon_job: RunSchema
         q2r_job: RunSchema
         matdyn_job: RunSchema

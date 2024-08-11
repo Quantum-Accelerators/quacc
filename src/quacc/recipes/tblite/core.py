@@ -9,8 +9,7 @@ from monty.dev import requires
 
 from quacc import job
 from quacc.runners.ase import Runner
-from quacc.runners.thermo import ThermoRunner
-from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
+from quacc.schemas.ase import Summarize, VibSummarize
 from quacc.utils.dicts import recursive_dict_merge
 
 has_tblite = bool(find_spec("tblite"))
@@ -18,7 +17,7 @@ if has_tblite:
     from tblite.ase import TBLite
 
 if TYPE_CHECKING:
-    from typing import Literal
+    from typing import Any, Literal
 
     from ase.atoms import Atoms
 
@@ -30,6 +29,7 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -41,6 +41,8 @@ def static_job(
         Atoms object
     method
         xTB method to use
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the TBLite calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -49,7 +51,7 @@ def static_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
     calc_defaults = {"method": method}
@@ -57,9 +59,9 @@ def static_job(
     calc = TBLite(**calc_flags)
 
     final_atoms = Runner(atoms, calc).run_calc()
-    return summarize_run(
-        final_atoms, atoms, additional_fields={"name": "TBLite Static"}
-    )
+    return Summarize(
+        additional_fields={"name": "TBLite Static"} | (additional_fields or {})
+    ).run(final_atoms, atoms)
 
 
 @job
@@ -69,6 +71,7 @@ def relax_job(
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
     relax_cell: bool = False,
     opt_params: OptParams | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
     """
@@ -85,6 +88,8 @@ def relax_job(
     opt_params
         Dictionary of custom kwargs for the optimization process. For a list
         of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the tblite calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -93,7 +98,7 @@ def relax_job(
     Returns
     -------
     OptSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][].
+        Dictionary of results from [quacc.schemas.ase.Summarize.opt][].
         See the type-hint for the data structure.
     """
     opt_params = opt_params or {}
@@ -102,7 +107,9 @@ def relax_job(
     calc = TBLite(**calc_flags)
     dyn = Runner(atoms, calc).run_opt(relax_cell=relax_cell, **opt_params)
 
-    return summarize_opt_run(dyn, additional_fields={"name": "TBLite Relax"})
+    return Summarize(
+        additional_fields={"name": "TBLite Relax"} | (additional_fields or {})
+    ).opt(dyn)
 
 
 @job
@@ -114,6 +121,7 @@ def freq_job(
     temperature: float = 298.15,
     pressure: float = 1.0,
     vib_kwargs: VibKwargs | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VibThermoSchema:
     """
@@ -133,6 +141,8 @@ def freq_job(
         Pressure in bar.
     vib_kwargs
         Dictionary of kwargs for [quacc.runners.ase.Runner.run_vib][].
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the tblite calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -141,8 +151,7 @@ def freq_job(
     Returns
     -------
     VibThermoSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_vib_and_thermo][].
-        See the type-hint for the data structure.
+        Dictionary of results
     """
     vib_kwargs = vib_kwargs or {}
 
@@ -150,15 +159,11 @@ def freq_job(
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
     calc = TBLite(**calc_flags)
 
-    vibrations = Runner(atoms, calc).run_vib(vib_kwargs=vib_kwargs)
-    igt = ThermoRunner(
-        atoms, vibrations.get_frequencies(), energy=energy
-    ).run_ideal_gas()
-
-    return summarize_vib_and_thermo(
-        vibrations,
-        igt,
-        temperature=temperature,
-        pressure=pressure,
-        additional_fields={"name": "TBLite Frequency and Thermo"},
+    vib = Runner(atoms, calc).run_vib(vib_kwargs=vib_kwargs)
+    return VibSummarize(
+        vib,
+        additional_fields={"name": "TBLite Frequency and Thermo"}
+        | (additional_fields or {}),
+    ).vib_and_thermo(
+        "ideal_gas", energy=energy, temperature=temperature, pressure=pressure
     )

@@ -412,7 +412,7 @@ If you haven't done so already:
                 ),
             )
         ],
-        initialize_logging=False,  # (14)!
+        initialize_logging=False,  # (15)!
     )
 
     parsl.load(config)
@@ -446,7 +446,7 @@ If you haven't done so already:
 
     14. The maximum time to wait (in seconds) for the job scheduler info to be retrieved/sent.
 
-    14. This will tidy up the Parsl logging to match the same log level as in quacc (`INFO` by default).
+    15. This will tidy up the Parsl logging to match the same log level as in quacc (`INFO` by default).
 
     Now we define the workflow, apply it to all molecules in the "g2" collection, and monitor the progress of our calculations.
 

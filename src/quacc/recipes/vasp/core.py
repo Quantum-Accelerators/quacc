@@ -11,7 +11,11 @@ from monty.os.path import zpath
 from pymatgen.io.vasp import Vasprun
 
 from quacc import flow, job
-from quacc.recipes.vasp._base import run_and_summarize, run_and_summarize_opt
+from quacc.recipes.vasp._base import (
+    run_and_summarize,
+    run_and_summarize_opt,
+    run_and_summarize_vib_and_thermo,
+)
 
 if TYPE_CHECKING:
     from typing import Any
@@ -25,6 +29,8 @@ if TYPE_CHECKING:
         SourceDirectory,
         VaspASEOptSchema,
         VaspSchema,
+        VibKwargs,
+        VibThermoSchema,
     )
 
 
@@ -33,6 +39,7 @@ def static_job(
     atoms: Atoms,
     preset: str | None = "BulkSet",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """
@@ -46,6 +53,8 @@ def static_job(
         Preset to use from `quacc.calculators.vasp.presets`.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -54,7 +63,7 @@ def static_job(
     Returns
     -------
     VaspSchema
-        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
+        Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
         See the type-hint for the data structure.
     """
     calc_defaults = {
@@ -71,7 +80,7 @@ def static_job(
         preset=preset,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "VASP Static"},
+        additional_fields={"name": "VASP Static"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -82,6 +91,7 @@ def relax_job(
     preset: str | None = "BulkSet",
     relax_cell: bool = True,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """
@@ -98,6 +108,8 @@ def relax_job(
         only the positions (ISIF = 2) should be updated.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -106,7 +118,7 @@ def relax_job(
     Returns
     -------
     VaspSchema
-        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
+        Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
         See the type-hint for the data structure.
     """
     if relax_cell:
@@ -130,7 +142,7 @@ def relax_job(
         preset=preset,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "VASP Relax"},
+        additional_fields={"name": "VASP Relax"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -198,6 +210,7 @@ def ase_relax_job(
     relax_cell: bool = True,
     opt_params: OptParams | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VaspASEOptSchema:
     """
@@ -217,6 +230,8 @@ def ase_relax_job(
         of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -242,7 +257,7 @@ def ase_relax_job(
         calc_swaps=calc_kwargs,
         opt_defaults=opt_defaults,
         opt_params=opt_params,
-        additional_fields={"name": "VASP ASE Relax"},
+        additional_fields={"name": "VASP ASE Relax"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -257,6 +272,7 @@ def non_scf_job(
     uniform_kppvol: float = 100,
     line_kpt_density: float = 20,
     calculate_optics: bool = False,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """
@@ -281,6 +297,8 @@ def non_scf_job(
         The k-point density for the line k-point mode.
     calculate_optics
         Whether to calculate optical properties.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -289,7 +307,7 @@ def non_scf_job(
     Returns
     -------
     VaspSchema
-        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][].
+        Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
         See the type-hint for the data structure.
     """
 
@@ -332,6 +350,67 @@ def non_scf_job(
         preset=preset,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "VASP Non-SCF"},
+        additional_fields={"name": "VASP Non-SCF"} | (additional_fields or {}),
         copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
+    )
+
+
+@job
+def freq_job(
+    atoms: Atoms,
+    preset: str | None = "BulkSet",
+    energy: float = 0.0,
+    temperature: float = 298.15,
+    pressure: float = 1.0,
+    thermo_method: Literal["harmonic", "ideal_gas"] = "harmonic",
+    vib_kwargs: VibKwargs | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    **calc_kwargs,
+) -> VibThermoSchema:
+    """
+    Run a frequency job and calculate thermochemistry.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+    preset
+        Preset to use from `quacc.calculators.vasp.presets`.
+    energy
+        Potential energy in eV. If 0, then the output is just the correction.
+    temperature
+        Temperature in Kelvins.
+    pressure
+        Pressure in bar.
+    thermo_method
+        Method to use for thermochemistry. Options are "harmonic" or "ideal_gas".
+    vib_kwargs
+        Dictionary of kwargs for the [ase.vibrations.Vibrations][] class.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
+    **calc_kwargs
+        Custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to [quacc.calculators.vasp.vasp.Vasp][].
+
+    Returns
+    -------
+    VibThermoSchema
+        Dictionary of results
+    """
+    calc_defaults = {"ediff": 1e-7, "isym": 0, "lcharg": False, "lwave": True, "nsw": 0}
+    vib_kwargs = vib_kwargs or {}
+
+    return run_and_summarize_vib_and_thermo(
+        atoms,
+        energy=energy,
+        temperature=temperature,
+        pressure=pressure,
+        thermo_method=thermo_method,
+        preset=preset,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        vib_kwargs=vib_kwargs,
+        copy_files=copy_files,
+        additional_fields={"name": "VASP Frequency and Thermo"},
     )

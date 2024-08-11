@@ -12,10 +12,12 @@ from ase.units import bar, fs
 
 from quacc import Remove, job
 from quacc.runners.ase import Runner
-from quacc.schemas.ase import summarize_md_run
+from quacc.schemas.ase import Summarize
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase.atoms import Atoms
     from ase.md.md import MolecularDynamics
 
@@ -32,6 +34,7 @@ def md_job(
     pressure_bar: float | None = None,
     md_params: MDParams | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> DynSchema:
     """
@@ -56,6 +59,8 @@ def md_job(
         keys, refer to [quacc.runners.ase.Runner.run_md][].
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the EMT calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -64,7 +69,7 @@ def md_job(
     Returns
     -------
     DynSchema
-        Dictionary of results, specified in [quacc.schemas.ase.summarize_md_run][].
+        Dictionary of results, specified in [quacc.schemas.ase.Summarize.md][].
         See the type-hint for the data structure.
     """
     md_defaults = {
@@ -80,4 +85,6 @@ def md_job(
     calc = EMT(**calc_kwargs)
     dyn = Runner(atoms, calc, copy_files=copy_files).run_md(dynamics, **md_params)
 
-    return summarize_md_run(dyn, additional_fields={"name": "EMT MD"})
+    return Summarize(
+        additional_fields={"name": "EMT MD"} | (additional_fields or {})
+    ).md(dyn)
