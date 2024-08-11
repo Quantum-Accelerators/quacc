@@ -4,7 +4,13 @@ import pytest
 
 prefect = pytest.importorskip("prefect")
 
+import time
+
+import psutil
+
 from quacc import change_settings, flow, job, subflow
+
+n_cpus = psutil.cpu_count()
 
 
 def test_patch():
@@ -190,3 +196,23 @@ def test_state_patch():
     # Prefect flows return the object as-is unless `return_state=True` is set. It's just
     # that in general throughout quacc, we are often returning an unresolved `PrefectFuture`
     assert my_flow() == 2
+
+
+@pytest.mark.skipif(n_cpus < 2, reason="Need at least 2 CPUs to test concurrency")
+def test_concurrency():
+    @job
+    def add(a, b):
+        time.sleep(5)
+        return {"val": a + b}
+
+    @flow
+    def myflow():
+        a = add(1, 2)["val"]
+        b = add(1, 2)["val"]
+        return a, b
+
+    t0 = time.time()
+    myflow()
+    t1 = time.time()
+    dt = t1 - t0
+    assert dt < 10
