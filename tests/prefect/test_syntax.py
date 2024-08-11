@@ -6,7 +6,11 @@ prefect = pytest.importorskip("prefect")
 
 import time
 
+import psutil
+
 from quacc import change_settings, flow, job, subflow
+
+n_cpus = psutil.cpu_count()
 
 
 def test_patch():
@@ -194,6 +198,7 @@ def test_state_patch():
     assert my_flow() == 2
 
 
+@pytest.mark.skipif(n_cpus < 2, reason="Need at least 2 CPUs to test concurrency")
 def test_concurrency():
     @job
     def add(a, b):
