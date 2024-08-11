@@ -96,16 +96,15 @@ logging.basicConfig(level=logging.DEBUG if _settings.DEBUG else logging.INFO)
 
 # Monkeypatching for Prefect
 if _settings.WORKFLOW_ENGINE == "prefect":
-    from prefect import task
     from prefect.client.schemas import State
     from prefect.futures import PrefectFuture
 
     def _patched_getitem(self, index):
-        @task
-        def _getitem(obj, index_):
-            return obj[index_]
+        @job
+        def _getitem(future, index_):
+            return future[index_]
 
-        return _getitem.submit(self, index)
+        return _getitem(self, index)
 
     PrefectFuture.__getitem__ = _patched_getitem
     State.__getitem__ = _patched_getitem
