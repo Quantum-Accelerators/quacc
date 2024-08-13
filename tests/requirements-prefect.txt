@@ -1,2 +1,2 @@
 dask-jobqueue==0.8.5
-prefect[dask]==2.20.1
+git+https://github.com/PrefectHQ/prefect.git
