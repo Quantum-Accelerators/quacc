@@ -215,17 +215,18 @@ class Vasp(Vasp_):
         # Get user-defined preset parameters for the calculator
         if self.preset:
             try:
-                load_yaml_calc(self.preset)
+                calc_preset = load_vasp_yaml_calc(self.preset)
             except FileNotFoundError:
                 calc_preset = load_vasp_yaml_calc(
                     self._settings.VASP_PRESET_DIR / self.preset
-                )["inputs"]
+                )
+            calc_preset_inputs = calc_preset["inputs"]
         else:
-            calc_preset = {}
+            calc_preset_inputs = {}
 
         # Collect all the calculator parameters and prioritize the kwargs in the
         # case of duplicates.
-        self.user_calc_params = calc_preset | self.kwargs
+        self.user_calc_params = calc_preset_inputs | self.kwargs
 
         # Allow the user to use setups='mysetups.yaml' to load in a custom
         # setups from a YAML file
