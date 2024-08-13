@@ -42,7 +42,7 @@ class Vasp(Vasp_):
     def __init__(
         self,
         input_atoms: Atoms,
-        preset: None | str = None,
+        preset: None | str | Path = None,
         use_custodian: bool | DefaultSetting = QuaccDefault,
         incar_copilot: Literal["off", "on", "aggressive"]
         | DefaultSetting = QuaccDefault,
@@ -66,11 +66,12 @@ class Vasp(Vasp_):
         input_atoms
             The input Atoms object to be used for the calculation.
         preset
-            The name of a YAML file containing a list of INCAR parameters to use as
-            a "preset" for the calculator. quacc will automatically look in the
-            `VASP_PRESET_DIR` (default: quacc/calculators/vasp/presets) for the
-            file, such that preset="BulkSet" is supported, for instance. The .yaml
-            extension is not necessary. Any user-supplied calculator **kwargs will
+            The name or path of a YAML file containing a list of INCAR parameters
+            to use as a "preset" for the calculator. If `preset` is a path to
+            a pre-existing file, that is what will be used. Otherwise, quacc will
+            automatically look in the `VASP_PRESET_DIR` (default: quacc/calculators/vasp/presets)
+            for the file, such that preset="BulkSet" is supported, for instance. The .yaml
+            extension is optional. Any user-supplied calculator **kwargs will
             override any corresponding preset values.
         use_custodian
             Whether to use Custodian to run VASP. Default is True in settings.
@@ -213,15 +214,19 @@ class Vasp(Vasp_):
 
         # Get user-defined preset parameters for the calculator
         if self.preset:
-            calc_preset = load_vasp_yaml_calc(
-                self._settings.VASP_PRESET_DIR / self.preset
-            )["inputs"]
+            try:
+                calc_preset = load_vasp_yaml_calc(self.preset)
+            except FileNotFoundError:
+                calc_preset = load_vasp_yaml_calc(
+                    self._settings.VASP_PRESET_DIR / self.preset
+                )
+            calc_preset_inputs = calc_preset["inputs"]
         else:
-            calc_preset = {}
+            calc_preset_inputs = {}
 
         # Collect all the calculator parameters and prioritize the kwargs in the
         # case of duplicates.
-        self.user_calc_params = calc_preset | self.kwargs
+        self.user_calc_params = calc_preset_inputs | self.kwargs
 
         # Allow the user to use setups='mysetups.yaml' to load in a custom
         # setups from a YAML file
