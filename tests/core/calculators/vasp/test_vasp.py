@@ -55,27 +55,40 @@ def test_vanilla_vasp():
     assert calc.asdict() == Vasp_().asdict()
 
 
-def test_presets():
-    default_calcs_dir = Path(presets.__file__).parent
-
+@pytest.mark.parametrize(
+    "preset",
+    [
+        "BulkSet",
+        "BulkSet.yaml",
+        Path(presets.__file__).parent / "BulkSet",
+        Path(presets.__file__).parent / "BulkSet.yaml",
+        str(Path(presets.__file__).parent / "BulkSet"),
+    ],
+)
+def test_presets_basic(preset):
     atoms = bulk("Co") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
 
-    calc = Vasp(atoms, preset=default_calcs_dir / "BulkSet")
-    atoms.calc = calc
-    calc = Vasp(atoms, preset="BulkSet")
+    calc = Vasp(atoms, preset=preset)
     atoms.calc = calc
     assert calc.xc.lower() == "pbe"
     assert calc.string_params["algo"] == "fast"
     assert calc.exp_params["ediff"] == 1e-5
     assert calc.float_params["encut"] == 520
 
+
+def test_presets2():
+    atoms = bulk("Co") * (2, 2, 1)
+    atoms[-1].symbol = "Fe"
     calc = Vasp(atoms, xc="rpbe", preset="SlabSet")
     assert calc.xc.lower() == "rpbe"
     assert calc.string_params["algo"] == "fast"
     assert calc.exp_params["ediff"] == 1e-5
     assert calc.float_params["encut"] == 450
 
+def test_presets_mp():
+    atoms = bulk("Co") * (2, 2, 1)
+    atoms[-1].symbol = "Fe"
     parameters = MPtoASEParams(atoms=atoms).convert_dict_set(MPScanRelaxSet)
     calc = Vasp(atoms, xc="scan", **parameters)
     assert calc.xc.lower() == "scan"

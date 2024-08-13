@@ -18,15 +18,12 @@ from quacc import Job, flow, job, subflow
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.calculators.espresso.utils import grid_copy_files, grid_prepare_repr
 from quacc.recipes.espresso._base import run_and_summarize
-from quacc.recipes.espresso.core import relax_job
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:
     from collections import UserDict
     from typing import Any, Callable
-
-    from ase.atoms import Atoms
 
     from quacc.types import (
         EspressoPhononDosSchema,
@@ -47,6 +44,7 @@ def phonon_job(
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
     use_phcg: bool = False,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -56,6 +54,18 @@ def phonon_job(
     `ph.x` calculates the dynamical matrix at a set of q-points within the Density
     Functional Perturbation Theory (DFPT) framework. The dynamical matrix is used to calculate the phonon frequencies and eigenvectors. Various other properties can be
     calculated using other post-processing tools.
+
+    !!! Note
+
+        Phonon calculations rely on a structure that is tightly converged.
+        We suggest running a `relax_job` with the following settings:
+
+        ```python
+        inputs_data = {
+            "control": {"forc_conv_thr": 5.0e-5},
+            "electrons": {"conv_thr": 1e-12},
+        }
+        ```
 
     Parameters
     ----------
@@ -76,6 +86,8 @@ def phonon_job(
         If True, the calculation is performed using the `phcg.x` code which uses a faster algorithm.
         It can be used only if you sample the Brillouin Zone at Gamma and you only need the phonon
         modes at Gamma (molecules typically). It cannot be used with spin-polarization, USPP and PAW.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -87,6 +99,7 @@ def phonon_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
+    binary = "phcg" if use_phcg else "ph"
     calc_defaults = {
         "input_data": {
             "inputph": {"tr2_ph": 1e-12, "alpha_mix(1)": 0.1, "verbosity": "high"}
@@ -94,13 +107,11 @@ def phonon_job(
         "qpts": (0, 0, 0),
     }
 
-    binary = "phcg" if use_phcg else "ph"
-
     return run_and_summarize(
         template=EspressoTemplate(binary, test_run=test_run, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": f"{binary}.x Phonon"},
+        additional_fields={"name": f"{binary}.x Phonon"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -108,11 +119,9 @@ def phonon_job(
 @job
 def q2r_job(
     copy_files: (
-        SourceDirectory
-        | list[SourceDirectory]
-        | dict[SourceDirectory, Filenames]
-        | None
-    ) = None,
+        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
+    ),
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -131,6 +140,8 @@ def q2r_job(
         which files have to be copied over by looking at the binary and `input_data`.
         If a dict is provided, the mode is manual, keys are source directories and values
         are relative path to files or directories to copy. Glob patterns are supported.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -146,7 +157,7 @@ def q2r_job(
         template=EspressoTemplate("q2r"),
         calc_defaults={},
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "q2r.x Phonon"},
+        additional_fields={"name": "q2r.x Phonon"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -154,11 +165,9 @@ def q2r_job(
 @job
 def matdyn_job(
     copy_files: (
-        SourceDirectory
-        | list[SourceDirectory]
-        | dict[SourceDirectory, Filenames]
-        | None
-    ) = None,
+        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
+    ),
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -178,6 +187,8 @@ def matdyn_job(
         which files have to be copied over by looking at the binary and `input_data`.
         If a dict is provided, the mode is manual, keys are source directories and values
         are relative path to files or directories to copy. Glob patterns are supported.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -193,14 +204,20 @@ def matdyn_job(
         template=EspressoTemplate("matdyn"),
         calc_defaults={},
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "matdyn Phonon"},
+        additional_fields={"name": "matdyn.x Phonon"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
 
 @flow
 def phonon_dos_flow(
-    atoms: Atoms,
+    copy_files: (
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
+    prev_outdir: SourceDirectory | None = None,
     job_params: dict[str, Any] | None = None,
     job_decorators: dict[str, Callable | None] | None = None,
 ) -> EspressoPhononDosSchema:
@@ -211,23 +228,40 @@ def phonon_dos_flow(
 
     Consists of following jobs that can be modified:
 
-    1. pw.x relaxation
-        - name: "relax_job"
-        - job: [quacc.recipes.espresso.core.relax_job][]
-    2. ph.x calculation
+    1. ph.x calculation
         - name: "phonon_job"
         - job: [quacc.recipes.espresso.phonons.phonon_job][]
-    3. q2r.x calculation
+    2. q2r.x calculation
         - name: "q2r_job"
         - job: [quacc.recipes.espresso.phonons.q2r_job][]
-    4. matdyn.x calculation
+    3. matdyn.x calculation
         - name: "matdyn_job"
         - job: [quacc.recipes.espresso.phonons.matdyn_job][]
 
+    !!! Note
+
+        Phonon calculations rely on a structure that is tightly converged.
+        We suggest running a `relax_job` with the following settings:
+
+        ```python
+        input_data = {
+            "control": {"forc_conv_thr": 5.0e-5},
+            "electrons": {"conv_thr": 1e-12},
+        }
+        ```
+
     Parameters
     ----------
-    atoms
-        Atoms object to calculate the phonon DOS.
+    copy_files
+        Source directory or directories to copy files from. If a `SourceDirectory` or a
+        list of `SourceDirectory` is provided, this interface will automatically guess
+        which files have to be copied over by looking at the binary and `input_data`.
+        If a dict is provided, the mode is manual, keys are source directories and values
+        are relative path to files or directories to copy. Glob patterns are supported.
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     job_params
         Custom parameters to pass to each Job in the Flow. This is a dictionary where the keys are the names of the jobs and the values are dictionaries of parameters.
     job_decorators
@@ -240,12 +274,6 @@ def phonon_dos_flow(
         See the type-hint for the data structure.
     """
     default_job_params = {
-        "relax_job": {
-            "input_data": {
-                "control": {"forc_conv_thr": 5.0e-5},
-                "electrons": {"conv_thr": 1e-12},
-            }
-        },
         "phonon_job": {
             "input_data": {
                 "inputph": {
@@ -263,21 +291,19 @@ def phonon_dos_flow(
             "input_data": {"input": {"dos": True, "nk1": 32, "nk2": 32, "nk3": 32}}
         },
     }
-    pw_job, ph_job, fc_job, dos_job = customize_funcs(
-        ["relax_job", "phonon_job", "q2r_job", "matdyn_job"],
-        [relax_job, phonon_job, q2r_job, matdyn_job],
+    ph_job, fc_job, dos_job = customize_funcs(
+        ["phonon_job", "q2r_job", "matdyn_job"],
+        [phonon_job, q2r_job, matdyn_job],
         param_defaults=default_job_params,
         param_swaps=job_params,
         decorators=job_decorators,
     )
 
-    pw_job_results = pw_job(atoms)
-    ph_job_results = ph_job(prev_outdir=pw_job_results["dir_name"])
-    fc_job_results = fc_job(copy_files=ph_job_results["dir_name"])
-    dos_job_results = dos_job(copy_files=fc_job_results["dir_name"])
+    ph_job_results = ph_job(copy_files=copy_files, prev_outdir=prev_outdir)
+    fc_job_results = fc_job(ph_job_results["dir_name"])
+    dos_job_results = dos_job(fc_job_results["dir_name"])
 
     return {
-        "relax_job": pw_job_results,
         "phonon_job": ph_job_results,
         "q2r_job": fc_job_results,
         "matdyn_job": dos_job_results,
@@ -286,7 +312,13 @@ def phonon_dos_flow(
 
 @flow
 def grid_phonon_flow(
-    atoms: Atoms,
+    copy_files: (
+        SourceDirectory
+        | list[SourceDirectory]
+        | dict[SourceDirectory, Filenames]
+        | None
+    ) = None,
+    prev_outdir: SourceDirectory | None = None,
     nblocks: int = 1,
     job_params: dict[str, Any] | None = None,
     job_decorators: dict[str, Callable | None] | None = None,
@@ -317,26 +349,42 @@ def grid_phonon_flow(
 
     Consists of following jobs that can be modified:
 
-    1. pw.x relaxation
-        - name: "relax_job"
-        - job: [quacc.recipes.espresso.core.relax_job][]
-
-    2. ph.x calculation test_run
+    1. ph.x calculation test_run
         - name: "ph_init_job"
         - job: [quacc.recipes.espresso.phonons.phonon_job][]
 
-    3. (n * m) / nblocks ph.x calculations
+    2. (n * m) / nblocks ph.x calculations
         - name: "ph_job"
         - job: [quacc.recipes.espresso.phonons.phonon_job][]
 
-    4. ph.x calculation to gather data and diagonalize each dynamical matrix
+    3. ph.x calculation to gather data and diagonalize each dynamical matrix
         - name: "ph_recover_job"
         - job: [quacc.recipes.espresso.phonons.phonon_job][]
 
+    !!! Note
+
+        Phonon calculations rely on a structure that is tightly converged.
+        We suggest running a `relax_job` with the following settings:
+
+        ```python
+        inputs_data = {
+            "control": {"forc_conv_thr": 5.0e-5},
+            "electrons": {"conv_thr": 1e-12},
+        }
+        ```
+
     Parameters
     ----------
-    atoms
-        Atoms object
+    copy_files
+        Source directory or directories to copy files from. If a `SourceDirectory` or a
+        list of `SourceDirectory` is provided, this interface will automatically guess
+        which files have to be copied over by looking at the binary and `input_data`.
+        If a dict is provided, the mode is manual, keys are source directories and values
+        are relative path to files or directories to copy. Glob patterns are supported.
+    prev_outdir
+        The output directory of a previous calculation. If provided, Quantum Espresso
+        will directly read the necessary files from this directory, eliminating the need
+        to manually copy files. The directory will be ungzipped if necessary.
     nblocks
         The number of representations to group together in a single job.
         This will reduce the amount of data produced by a factor of nblocks.
@@ -367,7 +415,7 @@ def grid_phonon_flow(
                 Path("**", "wfc*.*"),
                 Path("**", "paw.txt.*"),
             ]
-        return ph_recover_job(prev_dirs)
+        return ph_recover_job(copy_files=prev_dirs)
 
     @subflow
     def _grid_phonon_subflow(
@@ -415,7 +463,8 @@ def grid_phonon_flow(
                 ph_input_data["inputph"]["start_irr"] = representation[0]
                 ph_input_data["inputph"]["last_irr"] = representation[-1]
                 ph_job_results = ph_job(
-                    deepcopy(files_to_copy), input_data=deepcopy(ph_input_data)
+                    copy_files=deepcopy(files_to_copy),
+                    input_data=deepcopy(ph_input_data),
                 )
                 grid_results.append(ph_job_results)
 
@@ -423,12 +472,6 @@ def grid_phonon_flow(
 
     job_params = job_params or {}
     default_job_params = {
-        "relax_job": {
-            "input_data": {
-                "control": {"forc_conv_thr": 5.0e-5},
-                "electrons": {"conv_thr": 1e-12},
-            }
-        },
         "ph_init_job": recursive_dict_merge(
             {"input_data": {"inputph": {"lqdir": True, "only_init": True}}},
             job_params.get("ph_job"),
@@ -443,18 +486,15 @@ def grid_phonon_flow(
             job_params.get("ph_job"),
         ),
     }
-    pw_job, ph_init_job, ph_job, ph_recover_job = customize_funcs(
-        ["relax_job", "ph_init_job", "ph_job", "ph_recover_job"],
-        [relax_job, phonon_job, phonon_job, phonon_job],
+    ph_init_job, ph_job, ph_recover_job = customize_funcs(
+        ["ph_init_job", "ph_job", "ph_recover_job"],
+        [phonon_job, phonon_job, phonon_job],
         param_defaults=default_job_params,
         param_swaps=job_params,
         decorators=job_decorators,
     )
 
-    pw_job_results = pw_job(atoms)
-
-    ph_init_job_results = ph_init_job(prev_outdir=pw_job_results["dir_name"])
-
+    ph_init_job_results = ph_init_job(copy_files=copy_files, prev_outdir=prev_outdir)
     grid_results = _grid_phonon_subflow(
         job_params["ph_job"]["input_data"], ph_init_job_results, ph_job, nblocks=nblocks
     )
@@ -471,6 +511,7 @@ def dvscf_q2r_job(
         | None
     ) = None,
     prev_outdir: SourceDirectory | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -516,6 +557,8 @@ def dvscf_q2r_job(
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
         to manually copy files. The directory will be ungzipped if necessary.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -531,7 +574,7 @@ def dvscf_q2r_job(
         template=EspressoTemplate("dvscf_q2r", outdir=prev_outdir),
         calc_defaults={},
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "dvscf_q2r Phonon"},
+        additional_fields={"name": "dvscf_q2r Phonon"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -545,6 +588,7 @@ def postahc_job(
         | None
     ) = None,
     prev_outdir: SourceDirectory | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -575,6 +619,8 @@ def postahc_job(
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
         to manually copy files. The directory will be ungzipped if necessary.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -590,6 +636,6 @@ def postahc_job(
         template=EspressoTemplate("postahc", outdir=prev_outdir),
         calc_defaults={},
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "postahc Phonon"},
+        additional_fields={"name": "postahc Phonon"} | (additional_fields or {}),
         copy_files=copy_files,
     )

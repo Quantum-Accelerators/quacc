@@ -15,6 +15,8 @@ from quacc.runners.ase import Runner
 from quacc.schemas.ase import Summarize, VibSummarize
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase.atoms import Atoms
 
     from quacc.types import (
@@ -32,6 +34,7 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -57,7 +60,9 @@ def static_job(
     calc = LennardJones(**calc_kwargs)
     final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
 
-    return Summarize(additional_fields={"name": "LJ Static"}).run(final_atoms, atoms)
+    return Summarize(
+        additional_fields={"name": "LJ Static"} | (additional_fields or {})
+    ).run(final_atoms, atoms)
 
 
 @job
@@ -65,6 +70,7 @@ def relax_job(
     atoms: Atoms,
     opt_params: OptParams | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
     """
@@ -79,6 +85,8 @@ def relax_job(
         of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the LJ calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -95,7 +103,9 @@ def relax_job(
     calc = LennardJones(**calc_kwargs)
     dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_params)
 
-    return Summarize(additional_fields={"name": "LJ Relax"}).opt(dyn)
+    return Summarize(
+        additional_fields={"name": "LJ Relax"} | (additional_fields or {})
+    ).opt(dyn)
 
 
 @job
@@ -106,6 +116,7 @@ def freq_job(
     pressure: float = 1.0,
     vib_kwargs: VibKwargs | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VibThermoSchema:
     """
@@ -125,6 +136,8 @@ def freq_job(
         Dictionary of kwargs for the [ase.vibrations.Vibrations][] class.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Dictionary of custom kwargs for the LJ calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -141,7 +154,9 @@ def freq_job(
     vib = Runner(atoms, calc, copy_files=copy_files).run_vib(vib_kwargs=vib_kwargs)
 
     return VibSummarize(
-        vib, additional_fields={"name": "LJ Frequency and Thermo"}
+        vib,
+        additional_fields={"name": "LJ Frequency and Thermo"}
+        | (additional_fields or {}),
     ).vib_and_thermo(
         "ideal_gas", energy=energy, temperature=temperature, pressure=pressure
     )
