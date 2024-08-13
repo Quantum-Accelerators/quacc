@@ -54,15 +54,19 @@ def test_vanilla_vasp():
     calc = Vasp(atoms, encut=None, incar_copilot=False)
     assert calc.asdict() == Vasp_().asdict()
 
-@pytest.mark.parametrize("preset", [
-    "BulkSet",
-    "BulkSet.yaml",
-    Path(presets.__file__).parent / "BulkSet",
-    Path(presets.__file__).parent / "BulkSet.yaml",
-    str(Path(presets.__file__).parent / "BulkSet")
-])
+
+@pytest.mark.parametrize(
+    "preset",
+    [
+        "BulkSet",
+        "BulkSet.yaml",
+        Path(presets.__file__).parent / "BulkSet",
+        Path(presets.__file__).parent / "BulkSet.yaml",
+        str(Path(presets.__file__).parent / "BulkSet"),
+    ],
+)
 def test_presets_basic():
-    default_calcs_dir = Path(presets.__file__).parent
+    Path(presets.__file__).parent
 
     atoms = bulk("Co") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
@@ -83,6 +87,7 @@ def test_presets2():
     assert calc.string_params["algo"] == "fast"
     assert calc.exp_params["ediff"] == 1e-5
     assert calc.float_params["encut"] == 450
+
 
 def test_presets_mp():
     atoms = bulk("Co") * (2, 2, 1)
