@@ -734,7 +734,7 @@ graph LR
 
     # Fetch the results
     results = [future.result() for future in futures]
-    print(result)
+    print(results)
     ```
 
     !!! Tip "Selectively Modifying Job Decorators in a Pre-Made Flow"
