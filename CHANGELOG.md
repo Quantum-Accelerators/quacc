@@ -6,12 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.11.1]
 
+### Added
+
+- Added an `additional_fields` keyword argument to all recipes
+
 ### Changed
 
 - Gaussian and ORCA schemas have been updated to reflect the removal of cclib
 
 ### Fixed
 
+- Fixed support for Prefect 3
 - Fixed support for ORCA 6.0.0
 
 ### Removed

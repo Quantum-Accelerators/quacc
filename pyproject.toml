@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "quacc"
 description="A platform to enable high-throughput, database-driven quantum chemistry and computational materials science"
-version = "0.11.1"
+version = "0.11.2"
 readme = "README.md"
 license = { text = "BSD-3" }
 authors = [{ name = "Andrew S. Rosen", email = "asrosen@princeton.edu" }]
@@ -51,7 +51,7 @@ mp = ["atomate2>=0.0.14"]
 newtonnet = ["newtonnet>=1.1"]
 parsl = ["parsl[monitoring]>=2024.5.27; platform_system!='Windows'"]
 phonons = ["phonopy>=2.20.0", "seekpath>=2.1.0"]
-prefect = ["prefect[dask]>=2.19.0,<3.0", "dask-jobqueue>=0.8.2"]
+prefect = ["prefect[dask]>=2.19.0", "dask-jobqueue>=0.8.2"]
 redun = ["redun>=0.16.2"]
 sella = ["sella>=2.3.4"]
 tblite = ["tblite>=0.3.0; platform_system=='Linux'"]
