@@ -4,7 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.2]
+
+### Added
+
+- Added supprot for `preset: Path` type in the `Vasp` calculator
+
 ## [0.11.1]
+
+### Added
+
+- Added an `additional_fields` keyword argument to all recipes
 
 ### Changed
 
@@ -12,6 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
+- Fixed support for Prefect 3
 - Fixed support for ORCA 6.0.0
 
 ### Removed
