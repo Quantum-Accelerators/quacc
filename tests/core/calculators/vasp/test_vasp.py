@@ -65,7 +65,7 @@ def test_vanilla_vasp():
         str(Path(presets.__file__).parent / "BulkSet"),
     ],
 )
-def test_presets_basic():
+def test_presets_basic(preset):
     atoms = bulk("Co") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
 
