@@ -75,6 +75,7 @@ dmypy.json
 
 # Editors ignores
 .vscode*
+.idea/
 
 # Environments
 .env

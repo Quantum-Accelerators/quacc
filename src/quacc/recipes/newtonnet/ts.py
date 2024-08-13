@@ -53,6 +53,7 @@ def ts_job(
     run_freq: bool = True,
     freq_job_kwargs: dict[str, Any] | None = None,
     opt_params: OptParams | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> NewtonNetTSSchema:
     """
@@ -71,6 +72,8 @@ def ts_job(
     opt_params
         Dictionary of custom kwargs for the optimization process. For a list
         of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Dictionary of custom kwargs for the NewtonNet calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -81,6 +84,7 @@ def ts_job(
     TSSchema
         Dictionary of results. See the type-hint for the data structure.
     """
+    additional_fields = additional_fields or {}
     freq_job_kwargs = freq_job_kwargs or {}
     settings = get_settings()
 
@@ -131,6 +135,7 @@ def irc_job(
     run_freq: bool = True,
     freq_job_kwargs: dict[str, Any] | None = None,
     opt_params: OptParams | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> NewtonNetIRCSchema:
     """
@@ -149,6 +154,8 @@ def irc_job(
     opt_params
         Dictionary of custom kwargs for the optimization process. For a list
         of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the NewtonNet calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -183,9 +190,10 @@ def irc_job(
     with change_settings({"CHECK_CONVERGENCE": False}):
         dyn = Runner(atoms, calc).run_opt(**opt_flags)
         opt_irc_summary = _add_stdev_and_hess(
-            Summarize(additional_fields={"name": f"NewtonNet IRC: {direction}"}).opt(
-                dyn
-            )
+            Summarize(
+                additional_fields={"name": f"NewtonNet IRC: {direction}"}
+                | (additional_fields or {})
+            ).opt(dyn)
         )
 
     # Run frequency job

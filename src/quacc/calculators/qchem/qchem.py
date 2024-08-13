@@ -163,10 +163,41 @@ class QChem(FileIOCalculator):
             single state, each 2-tuple represents the charge and spin
             multiplicity of a single fragment.
             e.g. almo=[[(1, 2), (0, 1)], [(0, 1), (1, 2)]]
-        svp
-            TODO.
-        pcm_nonels
-            TODO.
+        svp: Settings for the ISOSVP solvent model, corresponding to the $svp section
+            of the Q-Chem input file, which is formatted as a FORTRAN namelist. Note that in pymatgen, these
+            parameters are typically not set by the user, but rather are populated automatically by an InputSet.
+
+            An example for water may look like:
+                {
+                    "RHOISO": "0.001",
+                    "DIELST": "78.36",
+                    "NPTLEB": "1202",
+                    "ITRNGR": "2",
+                    "IROTGR": "2",
+                    "IPNRF": "1",
+                    "IDEFESR": "1",
+                }
+
+            See https://manual.q-chem.com/6.0/subsec_SS(V)PE.html in the Q-Chem manual for more
+            details.
+        pcm_nonels: Settings for the non-electrostatic part of the CMIRS solvation
+            model, corresponding to the $pcm_nonels section of the Q-Chem input file/ Note that in pymatgen,
+            these parameters are typically not set by the user, but rather are populated automatically by an
+            InputSet.
+
+            An example for water may look like:
+                {
+                    "a": "-0.006496",
+                    "b": "0.050833",
+                    "c": "-566.7",
+                    "d": "-30.503",
+                    "gamma": "3.2",
+                    "solvrho": "0.05",
+                    "delta": 7,
+                    "gaulag_n": 40,
+                }
+
+            See https://manual.q-chem.com/6.0/example_CMIRS-water.html in the Q-Chem manual for more details.
         qchem_dict_set_params
             Keyword arguments to be passed to `pymatgen.io.qchem.sets.QChemDictSet`,
             which will generate a `QCInput`. If `qchem_dict_set_params` is specified,

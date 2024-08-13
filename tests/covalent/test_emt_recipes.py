@@ -44,6 +44,7 @@ def test_copy_files(tmp_path, monkeypatch):
 
 def test_phonon_flow(tmp_path, monkeypatch):
     pytest.importorskip("phonopy")
+    pytest.importorskip("seekpath")
     from quacc.recipes.emt.phonons import phonon_flow
 
     monkeypatch.chdir(tmp_path)

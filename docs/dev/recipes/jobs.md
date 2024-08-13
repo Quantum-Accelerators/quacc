@@ -8,7 +8,7 @@ Individual compute tasks are called jobs. You can think of these as distinct cal
 
 For an example job using an ASE optimizer, refer to [quacc.recipes.tblite.core.relax_job][].
 
-For a representative job involving a code that uses an internal geometry optimizer and an external parsing library (i.e. cclib), refer to [quacc.recipes.gaussian.core.relax_job][].
+For a representative job involving a code that uses an internal geometry optimizer, refer to [quacc.recipes.vasp.core.relax_job][].
 
 ## Requirements and Recommendations
 

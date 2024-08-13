@@ -5,6 +5,7 @@ import pytest
 torch = pytest.importorskip("torch")
 pytest.importorskip("matgl")
 pytest.importorskip("phonopy")
+pytest.importorskip("seekpath")
 from ase.build import bulk
 
 from quacc.recipes.mlp.phonons import phonon_flow

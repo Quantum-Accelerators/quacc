@@ -128,8 +128,6 @@ class Runner(BaseRunner):
         # and output properties (e.g. final magnetic moments).
         if geom_file:
             atoms_new = read(zpath(str(self.tmpdir / geom_file)))
-            if isinstance(atoms_new, list):
-                atoms_new = atoms_new[-1]
 
             # Make sure the atom indices didn't get updated somehow (sanity check).
             # If this happens, there is a serious problem.
@@ -204,8 +202,6 @@ class Runner(BaseRunner):
             },
             optimizer_kwargs,
         )
-        if merged_optimizer_kwargs is None:
-            merged_optimizer_kwargs = {}
         run_kwargs = run_kwargs or {}
         traj_filename = "opt.traj"
 

@@ -198,7 +198,7 @@ graph LR
     print(result)  # 9
     ```
 
-    1. The `#!Python @job` decorator will be transformed into a Prefect `#!Python @task`.
+    1. The `#!Python @job` decorator will be transformed into a Prefect `#!Python @task`. It will also be launched via `.submit()` if `SETTINGS.PREFECT_AUTO_SUBMIT` is `True`.
 
     2. The `#!Python @flow` decorator will be transformed into a Prefect `#!Python @flow`.
 

@@ -484,7 +484,7 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
 
         @flow
         def add_distributed(vals, c):
-            return [add(val, c) for val in vals]
+            return [add.submit(val, c) for val in vals]
 
 
         @flow

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "quacc"
 description="A platform to enable high-throughput, database-driven quantum chemistry and computational materials science"
-version = "0.11.0"
+version = "0.11.3"
 readme = "README.md"
 license = { text = "BSD-3" }
 authors = [{ name = "Andrew S. Rosen", email = "asrosen@princeton.edu" }]
@@ -28,7 +28,6 @@ classifiers = [
 requires-python = ">=3.9"
 dependencies = [
     "ase>=3.23.0", # for Atoms object and calculators
-    "cclib>=1.8", # for I/O parsing of molecular DFT codes
     "custodian>=2024.3.12", # for automated error corrections
     "emmet-core>=0.80.0", # for pre-made schemas
     "maggma>=0.64.0", # for database handling
@@ -52,7 +51,7 @@ mp = ["atomate2>=0.0.14"]
 newtonnet = ["newtonnet>=1.1"]
 parsl = ["parsl[monitoring]>=2024.5.27; platform_system!='Windows'"]
 phonons = ["phonopy>=2.20.0", "seekpath>=2.1.0"]
-prefect = ["prefect[dask]>=2.19.0,<3.0", "dask-jobqueue>=0.8.2"]
+prefect = ["prefect[dask]>=2.19.0", "dask-jobqueue>=0.8.2"]
 redun = ["redun>=0.16.2"]
 sella = ["sella>=2.3.4"]
 tblite = ["tblite>=0.3.0; platform_system=='Linux'"]
@@ -120,6 +119,7 @@ lint.select = [
   "A",      # flake8-builtins
   "ARG",    # flake8-unused-arguments
   "ASYNC",  # flake8-async
+  "ASYNC1", # flake8-async1
   "B",      # flake8-bugbear
   "C4",     # flake8-comprehensions
   "DTZ",    # flake8-datetimez
@@ -150,7 +150,6 @@ lint.select = [
   "T20",    # flake8-print
   "TCH",    # flake8-type-checking
   "TID",    # flake8-tidy-imports
-  "TRIO",   # flake8-trio
   "UP",     # pyupgrade
   "W",      # pycodestyle warning
   "YTT",    # flake8-2020
