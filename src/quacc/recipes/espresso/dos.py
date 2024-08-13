@@ -206,8 +206,9 @@ def dos_flow(
     )
 
     static_results = static_job_(atoms)
-    non_scf_results = non_scf_job_(atoms, prev_outdir=static_results["dir_name"])
-    dos_results = dos_job_(prev_outdir=static_results["dir_name"])
+    static_results_dir = static_results["dir_name"]
+    non_scf_results = non_scf_job_(atoms, prev_outdir=static_results_dir)
+    dos_results = dos_job_(prev_outdir=static_results_dir)
 
     return {
         "static_job": static_results,
@@ -282,8 +283,9 @@ def projwfc_flow(
     )
 
     static_results = static_job_(atoms)
-    non_scf_results = non_scf_job_(atoms, prev_outdir=static_results["dir_name"])
-    projwfc_results = projwfc_job_(prev_outdir=static_results["dir_name"])
+    static_results_dir = static_results["dir_name"]
+    non_scf_results = non_scf_job_(atoms, prev_outdir=static_results_dir)
+    projwfc_results = projwfc_job_(prev_outdir=static_results_dir)
 
     return {
         "static_job": static_results,

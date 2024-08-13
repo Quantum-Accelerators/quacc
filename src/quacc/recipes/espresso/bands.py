@@ -315,13 +315,14 @@ def bands_flow(
         force_gamma=force_gamma,
     )
     results = {"bands_pw": bands_results}
+    bands_results_dir = bands_results["dir_name"]
 
     if run_bands_pp:
-        bands_pp_results = bands_pp_job_(prev_outdir=bands_results["dir_name"])
+        bands_pp_results = bands_pp_job_(prev_outdir=bands_results_dir)
         results["bands_pp"] = bands_pp_results
 
     if run_fermi_surface:
-        fermi_results = fermi_surface_job_(prev_outdir=bands_results["dir_name"])
+        fermi_results = fermi_surface_job_(prev_outdir=bands_results_dir)
         results["fermi_surface"] = fermi_results
 
     return results
