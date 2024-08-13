@@ -86,6 +86,7 @@ def test_presets2():
     assert calc.exp_params["ediff"] == 1e-5
     assert calc.float_params["encut"] == 450
 
+
 def test_presets_mp():
     atoms = bulk("Co") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
