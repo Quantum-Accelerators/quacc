@@ -39,6 +39,7 @@ def bands_pw_job(
     line_density: float = 20,
     force_gamma: bool = True,
     test_run: bool = False,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -78,6 +79,8 @@ def bands_pw_job(
     test_run
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -108,7 +111,7 @@ def bands_pw_job(
         template=EspressoTemplate("pw", test_run=test_run, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "pw.x bands"},
+        additional_fields={"name": "pw.x bands"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -123,6 +126,7 @@ def bands_pp_job(
     ) = None,
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -148,6 +152,8 @@ def bands_pp_job(
     test_run
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -163,7 +169,8 @@ def bands_pp_job(
         template=EspressoTemplate("bands", test_run=test_run, outdir=prev_outdir),
         calc_defaults={},
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "bands.x post-processing"},
+        additional_fields={"name": "bands.x post-processing"}
+        | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -178,6 +185,7 @@ def fermi_surface_job(
     ) = None,
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -202,6 +210,8 @@ def fermi_surface_job(
     test_run
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -217,7 +227,7 @@ def fermi_surface_job(
         template=EspressoTemplate("fs", test_run=test_run, outdir=prev_outdir),
         calc_defaults={},
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "fs.x fermi_surface"},
+        additional_fields={"name": "fs.x fermi_surface"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -305,13 +315,14 @@ def bands_flow(
         force_gamma=force_gamma,
     )
     results = {"bands_pw": bands_results}
+    bands_results_dir = bands_results["dir_name"]
 
     if run_bands_pp:
-        bands_pp_results = bands_pp_job_(prev_outdir=bands_results["dir_name"])
+        bands_pp_results = bands_pp_job_(prev_outdir=bands_results_dir)
         results["bands_pp"] = bands_pp_results
 
     if run_fermi_surface:
-        fermi_results = fermi_surface_job_(prev_outdir=bands_results["dir_name"])
+        fermi_results = fermi_surface_job_(prev_outdir=bands_results_dir)
         results["fermi_surface"] = fermi_results
 
     return results

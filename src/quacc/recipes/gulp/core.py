@@ -8,6 +8,8 @@ from quacc import job
 from quacc.recipes.gulp._base import run_and_summarize
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase.atoms import Atoms
 
     from quacc.types import Filenames, RunSchema, SourceDirectory
@@ -21,6 +23,7 @@ def static_job(
     options: list[str] | None = None,
     library: str | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -43,6 +46,8 @@ def static_job(
         Filename of the potential library file, if required.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
 
     Returns
     -------
@@ -60,7 +65,7 @@ def static_job(
         option_defaults=option_defaults,
         keyword_swaps=keywords,
         option_swaps=options,
-        additional_fields={"name": "GULP Static"},
+        additional_fields={"name": "GULP Static"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -74,6 +79,7 @@ def relax_job(
     options: list[str] | None = None,
     library: str | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
 ) -> RunSchema:
     """
     Carry out a structure relaxation.
@@ -98,6 +104,8 @@ def relax_job(
         Filename of the potential library file, if required.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
 
     Returns
     -------
@@ -118,6 +126,6 @@ def relax_job(
         option_defaults=option_defaults,
         keyword_swaps=keywords,
         option_swaps=options,
-        additional_fields={"name": "GULP Relax"},
+        additional_fields={"name": "GULP Relax"} | (additional_fields or {}),
         copy_files=copy_files,
     )
