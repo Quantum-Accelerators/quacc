@@ -71,7 +71,7 @@ class QuaccSettings(BaseSettings):
 
     WORKFLOW_ENGINE: Optional[
         Literal["covalent", "dask", "parsl", "prefect", "redun", "jobflow"]
-    ] = Field(None, description=("The workflow manager to use, if any."))
+    ] = Field("covalent", description=("The workflow manager to use, if any."))
 
     # ---------------------------
     # General Settings
@@ -485,14 +485,6 @@ class QuaccSettings(BaseSettings):
         if parsl_mpi_prefix:
             v = (parsl_mpi_prefix, v[1])
 
-        return v
-
-    @field_validator("WORKFLOW_ENGINE")
-    @classmethod
-    def import_covalent(cls, v):
-        """Make directories."""
-        if v == "covalent":
-            pass
         return v
 
     @staticmethod
