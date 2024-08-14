@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 
 from monty.shutil import gzip_dir
 
-from quacc import get_settings
+from quacc import JobFailure, get_settings
 from quacc.utils.files import copy_decompress_files, make_unique_dir
 
 if TYPE_CHECKING:
@@ -155,8 +155,9 @@ def terminate(tmpdir: Path | str, exception: Exception) -> None:
 
     Raises
     -------
-    Exception
-        The exception that caused the calculation to fail.
+    JobFailure
+        The exception that caused the calculation to fail plus additional
+        metadata.
     """
     tmpdir = Path(tmpdir)
     settings = get_settings()
@@ -172,4 +173,4 @@ def terminate(tmpdir: Path | str, exception: Exception) -> None:
         old_symlink_path.unlink(missing_ok=True)
         symlink_path.symlink_to(job_failed_dir, target_is_directory=True)
 
-    raise exception
+    raise JobFailure(job_failed_dir, message=msg, parent_error=exception) from exception
