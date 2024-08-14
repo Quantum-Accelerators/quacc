@@ -487,6 +487,14 @@ class QuaccSettings(BaseSettings):
 
         return v
 
+    @field_validator("WORKFLOW_ENGINE")
+    @classmethod
+    def import_covalent(cls, v):
+        """Make directories."""
+        if v == "covalent":
+            import covalent
+        return v
+    
     @staticmethod
     def _use_custom_config_settings(settings: dict[str, Any]) -> dict[str, Any]:
         """Parse user settings from a custom YAML.
