@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+from importlib import util
 from contextlib import contextmanager
 from functools import wraps
 from pathlib import Path
@@ -21,6 +22,14 @@ if TYPE_CHECKING:
 _DEFAULT_CONFIG_FILE_PATH = Path("~", ".quacc.yaml").expanduser().resolve()
 
 
+installed_engine = next(
+    (
+        wflow_engine
+        for wflow_engine in ["parsl", "covalent", "prefect", "dask", "redun", "jobflow"]
+        if util.find_spec(wflow_engine)
+    ),
+    None,
+)
 class QuaccSettings(BaseSettings):
     """
     Settings for quacc.
@@ -60,7 +69,7 @@ class QuaccSettings(BaseSettings):
 
     WORKFLOW_ENGINE: Optional[
         Literal["covalent", "dask", "parsl", "prefect", "redun", "jobflow"]
-    ] = Field(None, description=("The workflow manager to use, if any."))
+    ] = Field(installed_engine, description=("The workflow manager to use, if any."))
 
     # ---------------------------
     # General Settings
