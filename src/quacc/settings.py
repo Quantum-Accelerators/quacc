@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import os
-from importlib import util
 from contextlib import contextmanager
 from functools import wraps
+from importlib import util
 from pathlib import Path
 from shutil import which
 from typing import TYPE_CHECKING, Literal, Optional, Union
@@ -30,6 +30,8 @@ installed_engine = next(
     ),
     None,
 )
+
+
 class QuaccSettings(BaseSettings):
     """
     Settings for quacc.
