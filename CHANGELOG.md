@@ -4,11 +4,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.3]
+
+### Added
+
+- Added support for `preset: Path` type in the `Espresso` calculator
+
+### Fixed
+
+- Fixed miscellaneous inconsistencies with `preset` handling
+
 ## [0.11.2]
 
 ### Added
 
-- Added supprot for `preset: Path` type in the `Vasp` calculator
+- Added support for `preset: Path` type in the `Vasp` calculator
 
 ## [0.11.1]
 
