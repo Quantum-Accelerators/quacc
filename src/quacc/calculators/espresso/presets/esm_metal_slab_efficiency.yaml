@@ -12,4 +12,4 @@ input_data:
     mixing_mode: local-TF
     mixing_beta: 0.35
 
-parent_pseudopotentials: sssp_1.3.0_pbe_efficiency.yaml
+parent_pseudopotentials: sssp_1.3.0_pbe_efficiency
