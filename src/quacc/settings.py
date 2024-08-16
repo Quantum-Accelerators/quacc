@@ -467,12 +467,9 @@ class QuaccSettings(BaseSettings):
         cls, v: Union[str, tuple[str, str]]
     ) -> tuple[str, str]:
         """Clean up Espresso parallel command."""
-        parsl_mpi_prefix = os.environ.get("PARSL_MPI_PREFIX")
 
         if isinstance(v, str):
             v = (v, "")
-        if parsl_mpi_prefix:
-            v = (parsl_mpi_prefix, v[1])
 
         return v
 

@@ -17,5 +17,5 @@ inputs:
   sigma: 0.01
   symprec: 1.0e-8
   xc: pbe
-parent_magmoms: magmoms_qmof.yaml
-parent_setups: setups_qmof.yaml
+parent_magmoms: magmoms_qmof
+parent_setups: setups_qmof

@@ -190,7 +190,8 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
     Loads a YAML file containing calculator settings. This YAML loader looks for a
     special flag "parent" in the YAML file. If this flag is present, the YAML file
     specified in the "parent" flag is loaded and its contents are inherited by the child
-    YAML file.
+    YAML file. It is assumed that the parent YAML file is in the same directory as the
+    child YAML file if only the filename is specified.
 
     Parameters
     ----------
@@ -204,9 +205,6 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
     """
     yaml_path = Path(yaml_path).expanduser()
 
-    if yaml_path.suffix != ".yaml":
-        yaml_path = yaml_path.with_suffix(f"{yaml_path.suffix}.yaml")
-
     if not yaml_path.exists():
         msg = f"Cannot find {yaml_path}"
         raise FileNotFoundError(msg)
@@ -218,7 +216,10 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
     # the child file.
     for config_arg in deepcopy(config):
         if "parent" in config_arg.lower():
-            yaml_parent_path = Path(yaml_path).parent / Path(config[config_arg])
+            if Path(config[config_arg]).suffix in (".yml", ".yaml"):
+                yaml_parent_path = config[config_arg]
+            else:
+                yaml_parent_path = yaml_path.parent / f"{config[config_arg]}.yaml"
             parent_config = load_yaml_calc(yaml_parent_path)
 
             for k, v in parent_config.items():

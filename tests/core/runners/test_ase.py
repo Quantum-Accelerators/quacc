@@ -25,7 +25,7 @@ from ase.mep.neb import NEBOptimizer
 from ase.optimize import BFGS, BFGSLineSearch
 from ase.optimize.sciopt import SciPyFminBFGS
 
-from quacc import change_settings, get_settings
+from quacc import JobFailure, change_settings, get_settings
 from quacc.runners._base import BaseRunner
 from quacc.runners.ase import Runner, run_neb
 from quacc.schemas.ase import summarize_neb_run
@@ -343,5 +343,7 @@ def test_fn_hook(tmp_path, monkeypatch):
         if dyn.atoms:
             raise ValueError("Test error")
 
-    with pytest.raises(ValueError, match="Test error"):
+    with pytest.raises(JobFailure, match="Calculation failed!") as err:
         Runner(bulk("Cu"), EMT()).run_opt(fn_hook=fn_hook)
+    with pytest.raises(ValueError, match="Test error"):
+        raise err.value.parent_error

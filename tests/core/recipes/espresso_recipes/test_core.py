@@ -21,6 +21,7 @@ from ase.optimize import BFGS
 from monty.io import zopen
 from numpy.testing import assert_allclose, assert_array_equal
 
+from quacc import JobFailure
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.recipes.espresso.core import (
     ase_relax_job,
@@ -220,13 +221,15 @@ def test_static_job_test_run(tmp_path, monkeypatch):
 
     assert Path("test.EXIT").exists()
 
-    with pytest.raises(CalledProcessError):
+    with pytest.raises(JobFailure, match="Calculation failed!") as err:
         static_job(
             atoms,
             pseudopotentials=pseudopotentials,
             input_data={"pseudo_dir": tmp_path},
             test_run=True,
         )
+    with pytest.raises(CalledProcessError):
+        raise err.value.parent_error
 
 
 def test_relax_job(tmp_path, monkeypatch):
