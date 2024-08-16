@@ -125,7 +125,7 @@ def test_espresso_presets():
 
 
 def test_espresso_presets_gamma():
-    preset = "molecule_efficiency.yaml"
+    preset = "molecule_efficiency"
 
     calc = Espresso(preset=preset)
 
