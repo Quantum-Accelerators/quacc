@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
+- Fixed Parsl MPI support for Espresso recipes
 - Fixed miscellaneous inconsistencies with `preset` handling
 
 ## [0.11.2]
