@@ -216,10 +216,10 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
     # the child file.
     for config_arg in deepcopy(config):
         if "parent" in config_arg.lower():
-            if Path(config[config_arg]).suffix not in (".yml", ".yaml"):
-                yaml_parent_path = yaml_path.parent / f"{config[config_arg]}.yaml"
+            if Path(config[config_arg]).suffix in (".yml", ".yaml"):
+                yaml_parent_path = config[config_arg]
             else:
-                yaml_parent_path = Path(config[config_arg])
+                yaml_parent_path = yaml_path.parent / f"{config[config_arg]}.yaml"
             parent_config = load_yaml_calc(yaml_parent_path)
 
             for k, v in parent_config.items():
