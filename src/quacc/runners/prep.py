@@ -179,6 +179,7 @@ def terminate(tmpdir: Path | str, exception: Exception) -> None:
 def rmtree(*args, max_retries=3, retry_wait=10, **kwargs):
     """
     rmtree that will retry if we get common NFS errors (files still being deleted, etc)
+    Adapted from https://github.com/teojgo/reframe/blob/master/reframe/utility/osext.py
     """
     if 'onerror' in kwargs and kwargs['onerror'] is not None:
         shutil.rmtree(*args, **kwargs)
