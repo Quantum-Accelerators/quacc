@@ -32,9 +32,7 @@ def load_vasp_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
     Parameters
     ----------
     yaml_path
-        Path to the YAML file. This function will look in the `VASP_PRESET_DIR`
-        (default: quacc/calculators/presets/vasp) for the file, thereby assuming
-        that `yaml_path` is a relative path within that folder.
+        Path to the YAML file.
 
     Returns
     -------
