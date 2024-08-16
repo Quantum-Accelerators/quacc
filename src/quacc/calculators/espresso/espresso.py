@@ -455,7 +455,7 @@ class Espresso(GenericFileIOCalculator):
             preset_path = (
                 self.preset
                 if Path(self.preset).suffix in (".yaml", ".yml")
-                else self._settings.VASP_PRESET_DIR / f"{self.preset}.yaml"
+                else self._settings.ESPRESSO_PRESET_DIR / f"{self.preset}.yaml"
             )
             calc_preset = load_yaml_calc(preset_path)
             calc_preset["input_data"] = Namelist(calc_preset.get("input_data"))
