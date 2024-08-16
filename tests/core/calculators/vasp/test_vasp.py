@@ -59,10 +59,8 @@ def test_vanilla_vasp():
     "preset",
     [
         "BulkSet",
-        "BulkSet.yaml",
-        Path(presets.__file__).parent / "BulkSet",
         Path(presets.__file__).parent / "BulkSet.yaml",
-        str(Path(presets.__file__).parent / "BulkSet"),
+        str(Path(presets.__file__).parent / "BulkSet.yaml"),
     ],
 )
 def test_presets_basic(preset):

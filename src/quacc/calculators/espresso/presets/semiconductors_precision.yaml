@@ -12,4 +12,4 @@ input_data:
 
 kspacing: 0.03
 
-parent_pseudopotentials: sssp_1.3.0_pbe_precision.yaml
+parent_pseudopotentials: sssp_1.3.0_pbe_precision
