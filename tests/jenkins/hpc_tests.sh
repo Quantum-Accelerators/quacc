@@ -6,7 +6,7 @@ set -e
 # Define path to software
 export SOFTWARE=/scratch/network/ROSENGROUP/software
 
-# Ensure results are written to a purged directory
+# Ensure results are written to a temporary directory
 export QUACC_RESULTS_DIR=$SCRATCH/jenkins
 
 # GULP
