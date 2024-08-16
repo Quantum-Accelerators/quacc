@@ -190,7 +190,8 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
     Loads a YAML file containing calculator settings. This YAML loader looks for a
     special flag "parent" in the YAML file. If this flag is present, the YAML file
     specified in the "parent" flag is loaded and its contents are inherited by the child
-    YAML file.
+    YAML file. It is assumed that the parent YAML file is in the same directory as the
+    child YAML file if only the filename is specified.
 
     Parameters
     ----------
