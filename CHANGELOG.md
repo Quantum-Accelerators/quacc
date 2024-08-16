@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - Added support for `preset: Path` type in the `Espresso` calculator
+- Raise a custom `JobFailure` error when a calculation fails, which stores the directory where the files remain as well as the parent error
 
 ### Fixed
 
