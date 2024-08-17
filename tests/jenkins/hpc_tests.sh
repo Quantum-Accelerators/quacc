@@ -7,7 +7,7 @@ set -e
 export SCRATCH=/scratch/network/ROSENGROUP
 export SOFTWARE=$SCRATCH/software
 
-# Ensure results are written to a temporary directory
+# Ensure results are written to a scratch directory
 export QUACC_RESULTS_DIR=$SCRATCH/jenkins
 
 # GULP
