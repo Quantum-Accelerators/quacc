@@ -3,8 +3,9 @@
 # Fail fast
 set -e
 
-# Define path to software
-export SOFTWARE=/scratch/network/ROSENGROUP/software
+# Define path to software on Adroit
+export SCRATCH=/scratch/network/ROSENGROUP
+export SOFTWARE=$SCRATCH/software
 
 # Ensure results are written to a temporary directory
 export QUACC_RESULTS_DIR=$SCRATCH/jenkins
