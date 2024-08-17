@@ -3,7 +3,7 @@
 # Fail fast
 set -e
 
-# Define path to software on Adroit
+# Define path to directories on Adroit
 export SCRATCH=/scratch/network/ROSENGROUP
 export SOFTWARE=$SCRATCH/software
 
