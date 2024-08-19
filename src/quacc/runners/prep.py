@@ -86,6 +86,7 @@ def calc_setup(
 
     return tmpdir, job_results_dir
 
+
 def calc_cleanup(
     atoms: Atoms | None, tmpdir: Path | str, job_results_dir: Path | str
 ) -> None:
@@ -177,12 +178,13 @@ def terminate(tmpdir: Path | str, exception: Exception) -> None:
 
     raise JobFailure(job_failed_dir, message=msg, parent_error=exception) from exception
 
+
 def rmtree(*args, max_retries=3, retry_wait=10, **kwargs):
     """
     rmtree that will retry if we get common NFS errors (files still being deleted, etc)
     Adapted from https://github.com/teojgo/reframe/blob/master/reframe/utility/osext.py
     """
-    if 'onerror' in kwargs and kwargs['onerror'] is not None:
+    if "onerror" in kwargs and kwargs["onerror"] is not None:
         shutil.rmtree(*args, **kwargs)
         return
 
@@ -195,6 +197,5 @@ def rmtree(*args, max_retries=3, retry_wait=10, **kwargs):
                 raise
             elif e.errno in {errno.ENOTEMPTY, errno.EBUSY}:
                 time.sleep(retry_wait)
-                pass
             else:
                 raise
