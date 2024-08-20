@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-import logging
-from logging import getLogger
+from logging import WARNNG, getLogger
 
 import pytest
 
@@ -74,7 +73,7 @@ def test_recursive_dict_merge2():
 def test_recursive_dict_merge_verbose(caplog):
     defaults = {"a": 1, "b": {"a": 1, "b": 2}}
     calc_swaps = {"a": Remove, "b": {"b": 3, "d": 1}}
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(WARNING):
         recursive_dict_merge(defaults, calc_swaps, verbose=True)
         assert "Overwriting key 'a'" in caplog.text
         assert "Overwriting key 'b' to: '3'" in caplog.text

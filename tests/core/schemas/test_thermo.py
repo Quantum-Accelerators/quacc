@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-import logging
-from logging import getLogger
+from logging import INFO, getLogger
 from pathlib import Path
 
 import numpy as np
@@ -14,7 +13,7 @@ from monty.serialization import loadfn
 
 from quacc.schemas.thermo import ThermoSummarize
 
-LOGGER = getLogger.getLogger(__name__)
+LOGGER = getLogger(__name__)
 LOGGER.propagate = True
 
 
@@ -97,7 +96,7 @@ def test_summarize_ideal_gas_thermo4(tmp_path, caplog):
         (0.38803854931751625 + 0j),
         (0.3880868821616261 + 0j),
     ]
-    with caplog.at_level(logging.INFO):
+    with caplog.at_level(INFO):
         results = ThermoSummarize(
             atoms, np.array(vib_energies) / invcm, energy=-10.0, directory=tmp_path
         ).ideal_gas(temperature=1000.0, pressure=20.0)

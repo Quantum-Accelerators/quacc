@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import logging
 import os
 from copy import deepcopy
-from logging import getLogger
+from logging import INFO, getLogger
 from pathlib import Path
 from shutil import which
 
@@ -824,7 +823,7 @@ def test_preset_override():
 
 def test_logging(caplog):
     atoms = bulk("Cu")
-    with caplog.at_level(logging.INFO):
+    with caplog.at_level(INFO):
         Vasp(atoms, nsw=0, kpts=(3, 3, 3))
     assert "Recommending LMAXMIX = 4" in caplog.text
     assert "Recommending ISMEAR = -5" in caplog.text
@@ -833,7 +832,7 @@ def test_logging(caplog):
         in caplog.text
     )
 
-    with caplog.at_level(logging.INFO):
+    with caplog.at_level(INFO):
         Vasp(atoms, nsw=0, kpts=(2, 2, 1), ismear=0)
     assert "Recommending LMAXMIX = 4" in caplog.text
     assert "Recommending ISMEAR = -5" in caplog.text

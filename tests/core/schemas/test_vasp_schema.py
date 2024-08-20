@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-import logging
 import os
-from logging import getLogger
+from logging import WARNING, getLogger
 from pathlib import Path
 from shutil import copytree, move
 
@@ -218,7 +217,7 @@ def test_summarize_mp_bad(monkeypatch, run1, tmp_path, caplog):
     p = tmp_path / "vasp_run"
     copytree(run1, p)
     atoms = read(p / "OUTCAR.gz")
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(WARNING):
         VaspSummarize(directory=p, report_mp_corrections=True).run(atoms)
     assert "invalid run type" in caplog.text
 
@@ -228,7 +227,7 @@ def test_no_bader(tmp_path, monkeypatch, run1, caplog):
     p = tmp_path / "vasp_run"
     copytree(run1, p)
     atoms = read(p / "OUTCAR.gz")
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(WARNING):
         VaspSummarize(directory=p, run_bader=True, run_chargemol=False).run(atoms)
     assert "Bader analysis could not be performed." in caplog.text
 
@@ -238,6 +237,6 @@ def test_no_chargemol(tmp_path, monkeypatch, run1, caplog):
     p = tmp_path / "vasp_run"
     copytree(run1, p)
     atoms = read(p / "OUTCAR.gz")
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(WARNING):
         VaspSummarize(directory=p, run_bader=False, run_chargemol=True).run(atoms)
     assert "Chargemol analysis could not be performed." in caplog.text

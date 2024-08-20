@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 import gzip
-import logging
 import os
 import time
-from logging import getLogger
+from logging import WARNING, getLogger
 from pathlib import Path
 
 import pytest
@@ -120,7 +119,7 @@ def test_copy_decompress_files_v4(tmp_path):
 
 
 def test_copy_decompress_files_from_dir_warning(caplog):
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(WARNING):
         copy_decompress_files("fake", "file", "test")
     assert "Cannot find file" in caplog.text
 

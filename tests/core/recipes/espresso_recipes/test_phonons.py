@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-import logging
-from logging import getLogger
+from logging import WARNING, getLogger
 from shutil import which
 
 import pytest
@@ -416,7 +415,7 @@ def test_phonon_calculation_si_spin_orbit(tmp_path, monkeypatch, caplog):
             "kpts": (2, 2, 2),
         }
 
-        with caplog.at_level(logging.WARNING):
+        with caplog.at_level(WARNING):
             si_relax_results = relax_job(si_atoms, **si_relax_params)
 
             assert "The occupations are set to 'fixed'" in caplog.text
@@ -500,7 +499,7 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, caplog):
             }
         }
 
-        with caplog.at_level(logging.WARNING):
+        with caplog.at_level(WARNING):
             c_ph_results = phonon_job(c_scf_results["dir_name"], **c_ph_params)
             assert "Overwriting key 'fildyn'" in caplog.text
 
@@ -527,7 +526,7 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, caplog):
             }
         }
 
-        with caplog.at_level(logging.WARNING):
+        with caplog.at_level(WARNING):
             dvscf_q2r_results = dvscf_q2r_job(
                 c_ph_results["dir_name"], **dvscf_q2r_params
             )

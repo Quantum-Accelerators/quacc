@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import glob
-import logging
 import os
-from logging import getLogger
+from logging import WARNING, getLogger
 from pathlib import Path
 from shutil import rmtree
 
@@ -197,12 +196,12 @@ def test_bad_runs(tmp_path, monkeypatch, caplog):
     atoms = bulk("Cu")
 
     # No file
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(WARNING):
         Runner(atoms, EMT(), copy_files={Path(): "test_file.txt"}).run_calc()
     assert "Cannot find file" in caplog.text
 
     # No file again
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(WARNING):
         Runner(atoms, EMT(), copy_files={Path(): "test_file.txt"}).run_opt()
     assert "Cannot find file" in caplog.text
 
