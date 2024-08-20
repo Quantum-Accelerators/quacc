@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-import sys
 from importlib.util import find_spec
 from shutil import copy, copytree
 from typing import TYPE_CHECKING, Callable
@@ -24,7 +23,6 @@ from ase.vibrations import Vibrations
 from monty.dev import requires
 from monty.os.path import zpath
 
-from quacc import get_settings
 from quacc.atoms.core import copy_atoms
 from quacc.runners._base import BaseRunner
 from quacc.runners.prep import terminate
