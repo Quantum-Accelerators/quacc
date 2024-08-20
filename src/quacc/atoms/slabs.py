@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from quacc.types import AdsSiteFinderKwargs, FindAdsSitesKwargs
 
 
-logger = getLogger(__name__)
+LOGGER = getLogger(__name__)
 
 
 def flip_atoms(

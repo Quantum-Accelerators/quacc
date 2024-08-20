@@ -242,7 +242,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
-- Fixed user setting of logger level
+- Fixed user setting of LOGGER level
 - Fixed a glob-based issue with `copy_decompress_files`
 
 ## [0.7.1]
@@ -457,7 +457,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- Raised the default logger level from `WARNING` to `INFO`
+- Raised the default LOGGER level from `WARNING` to `INFO`
 
 ### Fixed
 

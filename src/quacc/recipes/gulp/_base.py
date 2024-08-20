@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
     from quacc.types import Filenames, RunSchema, SourceDirectory
 
-logger = getLogger(__name__)
+LOGGER = getLogger(__name__)
 
 GEOM_FILE_PBC = "gulp.cif"
 GEOM_FILE_NOPBC = "gulp.xyz"

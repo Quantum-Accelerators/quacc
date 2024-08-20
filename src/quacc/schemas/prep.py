@@ -12,7 +12,7 @@ from quacc.atoms.core import copy_atoms, get_atoms_id
 if TYPE_CHECKING:
     from ase.atoms import Atoms
 
-logger = getLogger(__name__)
+LOGGER = getLogger(__name__)
 
 
 def prep_next_run(atoms: Atoms, move_magmoms: bool = False) -> Atoms:

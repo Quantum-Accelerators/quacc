@@ -38,7 +38,7 @@ if TYPE_CHECKING:
     )
 
 
-logger = getLogger(__name__)
+LOGGER = getLogger(__name__)
 
 
 class VaspSummarize:
@@ -145,7 +145,7 @@ class VaspSummarize:
                 )
                 vasp_task_model.entry = corrected_entry
             except CompatibilityError as err:
-                logger.warning(err)
+                LOGGER.warning(err)
 
         # Convert the VASP task model to a dictionary
         vasp_task_doc = vasp_task_model.model_dump()
@@ -180,7 +180,7 @@ class VaspSummarize:
                 bader_results = bader_runner(directory)
             except Exception:
                 bader_results = None
-                logger.warning("Bader analysis could not be performed.", exc_info=True)
+                LOGGER.warning("Bader analysis could not be performed.", exc_info=True)
 
             if bader_results:
                 vasp_task_doc["bader"] = bader_results
@@ -191,7 +191,7 @@ class VaspSummarize:
                 chargemol_results = chargemol_runner(directory)
             except Exception:
                 chargemol_results = None
-                logger.warning(
+                LOGGER.warning(
                     "Chargemol analysis could not be performed.", exc_info=True
                 )
 
