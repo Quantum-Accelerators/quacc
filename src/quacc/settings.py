@@ -409,7 +409,7 @@ class QuaccSettings(BaseSettings):
     # Logger Settings
     # ---------------------------
     LOG_FILENAME: Optional[Path] = Field(
-        Path.cwd() / "quacc.log", description="Path to store the log file."
+        None, description="Path to store the log file."
     )
     LOG_LEVEL: Optional[Literal["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"]] = (
         Field("INFO", description=("Logger level."))
