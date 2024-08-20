@@ -94,7 +94,10 @@ _settings = get_settings()
 QuaccDefault = DefaultSetting()
 
 # Set logging info
-logging.basicConfig(level=logging.DEBUG if _settings.DEBUG else logging.INFO)
+logging.basicConfig(
+    filename=_settings.LOG_FILENAME,
+    level=logging.getLevelNamesMapping()[_settings.LOG_LEVEL],
+)
 
 
 # Custom exceptions

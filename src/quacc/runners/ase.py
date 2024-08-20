@@ -189,12 +189,8 @@ class Runner(BaseRunner):
             The ASE Dynamics object following an optimization.
         """
         # Set defaults
-        settings = get_settings()
         merged_optimizer_kwargs = recursive_dict_merge(
-            {
-                "logfile": "-" if settings.DEBUG else self.tmpdir / "opt.log",
-                "restart": self.tmpdir / "opt.json",
-            },
+            {"logfile": self.tmpdir / "opt.log", "restart": self.tmpdir / "opt.json"},
             optimizer_kwargs,
         )
         run_kwargs = run_kwargs or {}
@@ -278,7 +274,6 @@ class Runner(BaseRunner):
         """
         # Set defaults
         vib_kwargs = vib_kwargs or {}
-        settings = get_settings()
 
         # Run calculation
         vib = Vibrations(self.atoms, name=str(self.tmpdir / "vib"), **vib_kwargs)
@@ -288,9 +283,7 @@ class Runner(BaseRunner):
             terminate(self.tmpdir, exception)
 
         # Summarize run
-        vib.summary(
-            log=sys.stdout if settings.DEBUG else str(self.tmpdir / "vib_summary.log")
-        )
+        vib.summary(log=str(self.tmpdir / "vib_summary.log"))
 
         # Perform cleanup operations
         self.cleanup()
@@ -339,8 +332,7 @@ class Runner(BaseRunner):
         # Set defaults
         dynamics_kwargs = dynamics_kwargs or {}
         maxwell_boltzmann_kwargs = maxwell_boltzmann_kwargs or {}
-        settings = get_settings()
-        dynamics_kwargs["logfile"] = "-" if settings.DEBUG else self.tmpdir / "md.log"
+        dynamics_kwargs["logfile"] = self.tmpdir / "md.log"
 
         if maxwell_boltzmann_kwargs:
             MaxwellBoltzmannDistribution(self.atoms, **maxwell_boltzmann_kwargs)
