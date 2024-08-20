@@ -8,7 +8,6 @@ from shutil import copy, copytree
 from typing import TYPE_CHECKING, Callable
 
 import numpy as np
-from ase.calculators import calculator
 from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read
 from ase.md.md import MolecularDynamics
