@@ -8,7 +8,7 @@ DFTBPLUS_EXISTS = bool(which("dftb+"))
 
 pytestmark = pytest.mark.skipif(not DFTBPLUS_EXISTS, reason="Needs DFTB+")
 import os
-from logging import getLogger
+from logging import INFO, getLogger
 
 import numpy as np
 from ase.build import bulk, molecule
@@ -173,10 +173,7 @@ def test_relax_job_cu_supercell_errors(tmp_path, monkeypatch):
 def test_child_errors(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
-    with (
-        caplog.at_level(LOGGER.INFO),
-        change_settings({"SCRATCH_DIR": tmp_path / "scratch"}),
-    ):
+    with caplog.at_level(INFO), change_settings({"SCRATCH_DIR": tmp_path / "scratch"}):
         with pytest.raises(JobFailure, match="Calculation failed!") as err:
             static_job(atoms)
         with pytest.raises(RuntimeError, match="failed with command"):
@@ -189,10 +186,7 @@ def test_child_errors(tmp_path, monkeypatch, caplog):
 def test_child_errors2(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
-    with (
-        caplog.at_level(LOGGER.INFO),
-        change_settings({"SCRATCH_DIR": tmp_path / "scratch"}),
-    ):
+    with caplog.at_level(INFO), change_settings({"SCRATCH_DIR": tmp_path / "scratch"}):
         with pytest.raises(JobFailure, match="Calculation failed!") as err:
             relax_job(atoms)
         with pytest.raises(RuntimeError, match="failed with command"):
