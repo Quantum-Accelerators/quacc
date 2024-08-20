@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from logging import WARNNG, getLogger
+from logging import WARNING, getLogger
 
 import pytest
 
