@@ -406,16 +406,13 @@ class QuaccSettings(BaseSettings):
     )
 
     # ---------------------------
-    # Debug Settings
+    # Logger Settings
     # ---------------------------
-    DEBUG: bool = Field(
-        False,
-        description=(
-            """
-            Whether to run in debug mode. This will set the logging level to DEBUG,
-            ASE logs (e.g. optimizations, vibrations, thermo) are printed to stdout.
-            """
-        ),
+    LOG_FILENAME: Optional[Path] = Field(
+        Path.cwd() / "quacc.log", description="Path to store the log file."
+    )
+    LOG_LEVEL: Optional[Literal["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"]] = (
+        Field("INFO", description=("Logger level."))
     )
 
     # --8<-- [end:settings]
