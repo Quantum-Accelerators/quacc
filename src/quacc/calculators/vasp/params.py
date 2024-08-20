@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import logging
 from importlib.util import find_spec
+from logging import getLogger
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -28,7 +28,7 @@ if TYPE_CHECKING:
     if has_atomate2:
         from atomate2.vasp.jobs.base import BaseVaspMaker
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 def get_param_swaps(

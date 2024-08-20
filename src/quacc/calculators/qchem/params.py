@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import logging
+from logging import getLogger
 from typing import TYPE_CHECKING
 
 from pymatgen.io.ase import AseAtomsAdaptor
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
     from quacc.calculators.qchem.qchem import QChem
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 def make_qc_input(qchem: QChem, atoms: Atoms) -> QCInput:

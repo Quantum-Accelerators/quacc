@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import logging
 from importlib.util import find_spec
+from logging import getLogger
 from shutil import copy, copytree
 from typing import TYPE_CHECKING, Callable
 
@@ -28,7 +28,7 @@ from quacc.runners._base import BaseRunner
 from quacc.runners.prep import terminate
 from quacc.utils.dicts import recursive_dict_merge
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 
 has_sella = bool(find_spec("sella"))
 

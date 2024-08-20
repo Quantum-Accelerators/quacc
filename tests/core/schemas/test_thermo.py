@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from logging import getLogger
 from pathlib import Path
 
 import numpy as np
@@ -13,7 +13,7 @@ from monty.serialization import loadfn
 
 from quacc.schemas.thermo import ThermoSummarize
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = getLogger.getLogger(__name__)
 LOGGER.propagate = True
 
 

@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import logging
 from functools import lru_cache
+from logging import getLogger
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
     from ase.calculators.calculator import Calculator
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 @lru_cache

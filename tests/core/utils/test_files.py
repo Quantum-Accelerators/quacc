@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import gzip
-import logging
 import os
 import time
+from logging import getLogger
 from pathlib import Path
 
 import pytest
@@ -15,7 +15,7 @@ from quacc.utils.files import (
     make_unique_dir,
 )
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 LOGGER.propagate = True
 
 

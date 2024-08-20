@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import glob
-import logging
 import os
+from logging import getLogger
 from pathlib import Path
 from shutil import rmtree
 
@@ -19,7 +19,7 @@ from quacc import JobFailure, change_settings, get_settings
 from quacc.runners._base import BaseRunner
 from quacc.runners.ase import Runner
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 LOGGER.propagate = True
 
 

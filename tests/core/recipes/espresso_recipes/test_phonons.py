@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from logging import getLogger
 from shutil import which
 
 import pytest
@@ -36,7 +36,7 @@ from quacc.utils.files import copy_decompress_files
 
 DATA_DIR = Path(__file__).parent / "data"
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 LOGGER.propagate = True
 
 

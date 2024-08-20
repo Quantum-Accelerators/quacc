@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import logging
 import os
+from logging import getLogger
 from pathlib import Path
 from shutil import copytree, move
 
@@ -13,7 +13,7 @@ from monty.json import MontyDecoder, jsanitize
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.vasp import VaspSummarize
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 LOGGER.propagate = True
 
 

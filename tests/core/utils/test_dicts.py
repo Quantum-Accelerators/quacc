@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-import logging
+from logging import getLogger
 
 import pytest
 
 from quacc import Remove
 from quacc.utils.dicts import finalize_dict, recursive_dict_merge, remove_dict_entries
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 LOGGER.propagate = True
 
 

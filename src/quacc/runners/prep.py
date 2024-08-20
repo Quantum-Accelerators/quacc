@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import logging
 import os
+from logging import getLogger
 from pathlib import Path
 from shutil import move, rmtree
 from typing import TYPE_CHECKING
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
     from quacc.types import Filenames, SourceDirectory
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 def calc_setup(
@@ -165,7 +165,7 @@ def terminate(tmpdir: Path | str, exception: Exception) -> None:
     tmpdir.rename(job_failed_dir)
 
     msg = f"Calculation failed! Files stored at {job_failed_dir}"
-    logging.info(msg)
+    logger.info(msg)
 
     if os.name != "nt" and settings.SCRATCH_DIR:
         old_symlink_path = settings.RESULTS_DIR / f"symlink-{tmpdir.name}"

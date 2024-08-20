@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import logging
 import os
+from logging import getLogger
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -38,7 +38,7 @@ if TYPE_CHECKING:
     )
 
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class VaspSummarize:

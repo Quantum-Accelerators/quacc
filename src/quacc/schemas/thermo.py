@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import logging
+from logging import getLogger
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 
     from quacc.types import DefaultSetting, ThermoSchema
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 
 
 class ThermoSummarize:

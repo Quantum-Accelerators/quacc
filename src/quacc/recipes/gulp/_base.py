@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import logging
 import os
+from logging import getLogger
 from typing import TYPE_CHECKING
 
 from ase.calculators.gulp import GULP
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
     from quacc.types import Filenames, RunSchema, SourceDirectory
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 GEOM_FILE_PBC = "gulp.cif"
 GEOM_FILE_NOPBC = "gulp.xyz"

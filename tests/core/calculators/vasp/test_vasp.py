@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import logging
 import os
 from copy import deepcopy
+from logging import getLogger
 from pathlib import Path
 from shutil import which
 
@@ -22,7 +22,7 @@ from quacc.schemas.prep import prep_next_run
 
 FILE_DIR = Path(__file__).parent
 PSEUDO_DIR = FILE_DIR / "fake_pseudos"
-LOGGER = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 LOGGER.propagate = True
 
 

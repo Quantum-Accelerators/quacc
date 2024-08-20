@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-import logging
 import threading
 from importlib.metadata import version
+from logging import basicConfig, getLevelNamesMapping
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -94,9 +94,8 @@ _settings = get_settings()
 QuaccDefault = DefaultSetting()
 
 # Set logging info
-logging.basicConfig(
-    filename=_settings.LOG_FILENAME,
-    level=logging.getLevelNamesMapping()[_settings.LOG_LEVEL],
+basicConfig(
+    filename=_settings.LOG_FILENAME, level=getLevelNamesMapping()[_settings.LOG_LEVEL]
 )
 
 
