@@ -180,7 +180,7 @@ class VaspSummarize:
                 bader_results = bader_runner(directory)
             except Exception:
                 bader_results = None
-                logging.warning("Bader analysis could not be performed.", exc_info=True)
+                logger.warning("Bader analysis could not be performed.", exc_info=True)
 
             if bader_results:
                 vasp_task_doc["bader"] = bader_results
@@ -191,7 +191,7 @@ class VaspSummarize:
                 chargemol_results = chargemol_runner(directory)
             except Exception:
                 chargemol_results = None
-                logging.warning(
+                logger.warning(
                     "Chargemol analysis could not be performed.", exc_info=True
                 )
 

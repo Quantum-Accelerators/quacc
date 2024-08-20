@@ -174,7 +174,7 @@ def test_child_errors(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
     with (
-        caplog.at_level(logging.INFO),
+        caplog.at_level(LOGGER.INFO),
         change_settings({"SCRATCH_DIR": tmp_path / "scratch"}),
     ):
         with pytest.raises(JobFailure, match="Calculation failed!") as err:
@@ -190,7 +190,7 @@ def test_child_errors2(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
     with (
-        caplog.at_level(logging.INFO),
+        caplog.at_level(LOGGER.INFO),
         change_settings({"SCRATCH_DIR": tmp_path / "scratch"}),
     ):
         with pytest.raises(JobFailure, match="Calculation failed!") as err:

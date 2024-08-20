@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from logging import getLogger
 
 import pytest
