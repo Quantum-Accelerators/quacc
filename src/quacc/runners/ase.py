@@ -25,6 +25,7 @@ from ase.vibrations import Vibrations
 from monty.dev import requires
 from monty.os.path import zpath
 
+from quacc import get_settings
 from quacc.atoms.core import copy_atoms
 from quacc.runners._base import BaseRunner
 from quacc.runners.prep import calc_cleanup, calc_setup, terminate
