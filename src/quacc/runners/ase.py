@@ -25,7 +25,6 @@ from ase.vibrations import Vibrations
 from monty.dev import requires
 from monty.os.path import zpath
 
-from quacc import get_settings
 from quacc.atoms.core import copy_atoms
 from quacc.runners._base import BaseRunner
 from quacc.runners.prep import calc_cleanup, calc_setup, terminate
@@ -454,7 +453,6 @@ def run_neb(
 
     # Copy atoms so we don't modify it in-place
     images = copy_atoms(images)
-    settings = get_settings()
 
     neb_kwargs = neb_kwargs or {}
 
@@ -470,7 +468,7 @@ def run_neb(
     # Set defaults
     optimizer_kwargs = recursive_dict_merge(
         {
-            "logfile": "-" if settings.DEBUG else dir_lists[0][1] / "opt.log",
+            "logfile": dir_lists[0][1] / "opt.log",
             "restart": dir_lists[0][1] / "opt.json",
         },
         optimizer_kwargs,
