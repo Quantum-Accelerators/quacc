@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import glob
-import logging
 import os
 from importlib.util import find_spec
+from logging import WARNING, getLogger
 from pathlib import Path
 from shutil import rmtree
 
@@ -32,7 +32,7 @@ from quacc.schemas.ase import summarize_neb_run
 
 has_geodesic_interpolate = bool(find_spec("geodesic_interpolate"))
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 LOGGER.propagate = True
 
 
@@ -294,12 +294,12 @@ def test_bad_runs(tmp_path, monkeypatch, caplog):
     atoms = bulk("Cu")
 
     # No file
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(WARNING):
         Runner(atoms, EMT(), copy_files={Path(): "test_file.txt"}).run_calc()
     assert "Cannot find file" in caplog.text
 
     # No file again
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(WARNING):
         Runner(atoms, EMT(), copy_files={Path(): "test_file.txt"}).run_opt()
     assert "Cannot find file" in caplog.text
 

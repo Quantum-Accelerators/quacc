@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-import logging
-import sys
 from importlib.util import find_spec
+from logging import getLogger
 from shutil import copy, copytree
 from typing import TYPE_CHECKING, Any, Callable
 
@@ -26,13 +25,12 @@ from ase.vibrations import Vibrations
 from monty.dev import requires
 from monty.os.path import zpath
 
-from quacc import get_settings
 from quacc.atoms.core import copy_atoms
 from quacc.runners._base import BaseRunner
 from quacc.runners.prep import calc_cleanup, calc_setup, terminate
 from quacc.utils.dicts import recursive_dict_merge
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 
 has_sella = bool(find_spec("sella"))
 has_geodesic_interpolate = bool(find_spec("geodesic_interpolate"))
@@ -194,12 +192,8 @@ class Runner(BaseRunner):
             The ASE Dynamics object following an optimization.
         """
         # Set defaults
-        settings = get_settings()
         merged_optimizer_kwargs = recursive_dict_merge(
-            {
-                "logfile": "-" if settings.DEBUG else self.tmpdir / "opt.log",
-                "restart": self.tmpdir / "opt.json",
-            },
+            {"logfile": self.tmpdir / "opt.log", "restart": self.tmpdir / "opt.json"},
             optimizer_kwargs,
         )
         run_kwargs = run_kwargs or {}
@@ -283,7 +277,6 @@ class Runner(BaseRunner):
         """
         # Set defaults
         vib_kwargs = vib_kwargs or {}
-        settings = get_settings()
 
         # Run calculation
         vib = Vibrations(self.atoms, name=str(self.tmpdir / "vib"), **vib_kwargs)
@@ -293,9 +286,7 @@ class Runner(BaseRunner):
             terminate(self.tmpdir, exception)
 
         # Summarize run
-        vib.summary(
-            log=sys.stdout if settings.DEBUG else str(self.tmpdir / "vib_summary.log")
-        )
+        vib.summary(log=str(self.tmpdir / "vib_summary.log"))
 
         # Perform cleanup operations
         self.cleanup()
@@ -344,8 +335,7 @@ class Runner(BaseRunner):
         # Set defaults
         dynamics_kwargs = dynamics_kwargs or {}
         maxwell_boltzmann_kwargs = maxwell_boltzmann_kwargs or {}
-        settings = get_settings()
-        dynamics_kwargs["logfile"] = "-" if settings.DEBUG else self.tmpdir / "md.log"
+        dynamics_kwargs["logfile"] = self.tmpdir / "md.log"
 
         if maxwell_boltzmann_kwargs:
             MaxwellBoltzmannDistribution(self.atoms, **maxwell_boltzmann_kwargs)

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import logging
+from logging import getLogger
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 
     from quacc.types import DefaultSetting, ThermoSchema
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 
 
 class ThermoSummarize:
@@ -140,13 +140,9 @@ class ThermoSummarize:
         results = {
             "results": {
                 "energy": igt.potentialenergy,
-                "enthalpy": igt.get_enthalpy(temperature, verbose=self._settings.DEBUG),
-                "entropy": igt.get_entropy(
-                    temperature, pressure * 10**5, verbose=self._settings.DEBUG
-                ),
-                "gibbs_energy": igt.get_gibbs_energy(
-                    temperature, pressure * 10**5, verbose=self._settings.DEBUG
-                ),
+                "enthalpy": igt.get_enthalpy(temperature),
+                "entropy": igt.get_entropy(temperature, pressure * 10**5),
+                "gibbs_energy": igt.get_gibbs_energy(temperature, pressure * 10**5),
                 "zpe": igt.get_ZPE_correction(),
             }
         }
@@ -213,15 +209,9 @@ class ThermoSummarize:
         results = {
             "results": {
                 "energy": harmonic_thermo.potentialenergy,
-                "helmholtz_energy": harmonic_thermo.get_helmholtz_energy(
-                    temperature, verbose=self._settings.DEBUG
-                ),
-                "internal_energy": harmonic_thermo.get_internal_energy(
-                    temperature, verbose=self._settings.DEBUG
-                ),
-                "entropy": harmonic_thermo.get_entropy(
-                    temperature, verbose=self._settings.DEBUG
-                ),
+                "helmholtz_energy": harmonic_thermo.get_helmholtz_energy(temperature),
+                "internal_energy": harmonic_thermo.get_internal_energy(temperature),
+                "entropy": harmonic_thermo.get_entropy(temperature),
                 "zpe": harmonic_thermo.get_ZPE_correction(),
             }
         }

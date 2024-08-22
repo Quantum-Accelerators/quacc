@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import logging
 import os
+from logging import getLogger
 from pathlib import Path
 from shutil import move, rmtree
 from typing import TYPE_CHECKING
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
     from quacc.types import Filenames, SourceDirectory
 
-logger = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 
 
 def calc_setup(
@@ -56,7 +56,7 @@ def calc_setup(
     settings = get_settings()
     tmpdir_base = settings.SCRATCH_DIR or settings.RESULTS_DIR
     tmpdir = make_unique_dir(base_path=tmpdir_base, prefix="tmp-quacc-")
-    logger.info(f"Calculation will run at {tmpdir}")
+    LOGGER.info(f"Calculation will run at {tmpdir}")
 
     # Set the calculator's directory
     if atoms is not None:
@@ -130,7 +130,7 @@ def calc_cleanup(
         for file_name in os.listdir(tmpdir):
             move(tmpdir / file_name, job_results_dir / file_name)
         rmtree(tmpdir)
-    logger.info(f"Calculation results stored at {job_results_dir}")
+    LOGGER.info(f"Calculation results stored at {job_results_dir}")
 
     # Remove symlink to tmpdir
     if os.name != "nt" and settings.SCRATCH_DIR:
@@ -165,7 +165,7 @@ def terminate(tmpdir: Path | str, exception: Exception) -> None:
     tmpdir.rename(job_failed_dir)
 
     msg = f"Calculation failed! Files stored at {job_failed_dir}"
-    logging.info(msg)
+    LOGGER.info(msg)
 
     if os.name != "nt" and settings.SCRATCH_DIR:
         old_symlink_path = settings.RESULTS_DIR / f"symlink-{tmpdir.name}"
