@@ -165,3 +165,8 @@ def kwarg_map(
         func(**{k: v[i] for k, v in iter(mapped_kwargs.items())}, **unmapped_kwargs)
         for i in range(n_elements)
     ]
+
+
+@job
+def unpartition(lists_to_combine: list[list[Any]]):
+    return list(itertools.chain(*lists_to_combine))
