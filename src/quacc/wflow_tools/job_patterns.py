@@ -168,5 +168,19 @@ def kwarg_map(
 
 
 @job
-def unpartition(lists_to_combine: list[list[Any]]):
+def unpartition(lists_to_combine: list[list[Any]]) -> list[Any]:
+    """
+    Given a partitioned list (list of lists), recombine
+    it to a single list
+
+    Parameters
+    ----------
+    lists_to_combine
+        the list of lists to recombine
+
+    Returns
+    -------
+    list[Any]
+        a single recombined list
+    """
     return list(itertools.chain(*lists_to_combine))
