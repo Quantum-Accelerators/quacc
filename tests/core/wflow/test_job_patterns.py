@@ -9,6 +9,7 @@ from quacc.wflow_tools.job_patterns import (
     map_partition,
     map_partitioned_lists,
     partition,
+    unpartition
 )
 
 
