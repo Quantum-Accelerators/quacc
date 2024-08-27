@@ -33,7 +33,6 @@ def test_unpartition():
     np.testing.assert_allclose(partitioned_list[0], list(range(10)))
 
 
-
 def test_kwarg_map():
     def test_fun(a, b):
         return {"a": a, "b": b}
