@@ -28,9 +28,9 @@ def test_unpartition():
     def simple_list():
         return list(range(10))
 
-    partitioned_list = unpartition(partition(simple_list(), 3))
-    assert len(partitioned_list) == 10
-    np.testing.assert_allclose(partitioned_list[0], list(range(10)))
+    unpartitioned_list = unpartition(partition(simple_list(), 3))
+    assert len(unpartitioned_list) == 10
+    np.testing.assert_allclose(partitioned_list, list(range(10)))
 
 
 def test_kwarg_map():
