@@ -467,11 +467,7 @@ def run_neb(
 
     # Set defaults
     optimizer_kwargs = recursive_dict_merge(
-        {
-            "logfile": "opt.log",
-            "restart": "opt.json",
-        },
-        optimizer_kwargs,
+        {"logfile": "opt.log", "restart": "opt.json"}, optimizer_kwargs
     )
     run_kwargs = run_kwargs or {}
     traj_filename = "opt.traj"
