@@ -21,7 +21,7 @@ from quacc.atoms.core import (
 FILE_DIR = Path(__file__).parent
 
 
-@pytest.fixture()
+@pytest.fixture
 def os_atoms():
     return read(FILE_DIR / "OS_test.xyz")
 
