@@ -39,7 +39,7 @@ def callback(value: bool) -> None:
 
 @app.callback()
 def main(
-    version: Optional[bool] = Option(  # noqa: ARG001, UP007
+    version: Optional[bool] = Option(  # noqa: UP007
         None,
         "--version",
         "-v",

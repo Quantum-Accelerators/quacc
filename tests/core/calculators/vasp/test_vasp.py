@@ -26,17 +26,17 @@ LOGGER = getLogger(__name__)
 LOGGER.propagate = True
 
 
-@pytest.fixture()
+@pytest.fixture
 def atoms_mag():
     return read(FILE_DIR / "OUTCAR_mag.gz")
 
 
-@pytest.fixture()
+@pytest.fixture
 def atoms_nomag():
     return read(FILE_DIR / "OUTCAR_nomag.gz")
 
 
-@pytest.fixture()
+@pytest.fixture
 def atoms_nospin():
     return read(FILE_DIR / "OUTCAR_nospin.gz")
 
