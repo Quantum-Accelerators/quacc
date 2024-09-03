@@ -1,4 +1,5 @@
 # QMOF Database settings
+# All d-block metals get 5; all f-block metals get 7
 # Last modified: 08-01-2023
 inputs:
   elemental_magmoms:

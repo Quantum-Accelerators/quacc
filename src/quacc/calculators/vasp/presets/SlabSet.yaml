@@ -6,4 +6,4 @@ inputs:
   encut: 450
   ivdw: 0
   xc: rpbe
-parent: BulkSet.yaml
+parent: BulkSet

@@ -66,21 +66,23 @@ class Vasp(Vasp_):
         input_atoms
             The input Atoms object to be used for the calculation.
         preset
-            The name or path of a YAML file containing a list of INCAR parameters
-            to use as a "preset" for the calculator. If `preset` is a path to
-            a pre-existing file, that is what will be used. Otherwise, quacc will
-            automatically look in the `VASP_PRESET_DIR` (default: quacc/calculators/vasp/presets)
-            for the file, such that preset="BulkSet" is supported, for instance. The .yaml
-            extension is optional. Any user-supplied calculator **kwargs will
+            A YAML file containing a list of INCAR parameters to use as a "preset"
+            for the calculator. If `preset` has a .yml or .yaml file extension, the
+            path to this file will be used directly. If `preset` is a string without
+            an extension, the corresponding YAML file will be assumed to be in the
+            `VASP_PRESET_DIR`. Any user-supplied calculator **kwargs will
             override any corresponding preset values.
         use_custodian
             Whether to use Custodian to run VASP. Default is True in settings.
         incar_copilot
             Controls VASP co-pilot mode for automated INCAR parameter handling.
+
             Options include:
-            off: Do not use co-pilot mode. INCAR parameters will be unmodified.
-            on: Use co-pilot mode. This will only modify INCAR flags not already set by the user.
-            aggressive: Use co-pilot mode in aggressive mode. This will modify INCAR flags even if they are already set by the user.
+                off: Do not use co-pilot mode. INCAR parameters will be unmodified.
+                on: Use co-pilot mode. This will only modify INCAR flags not already set
+                    by the user.
+                aggressive: Use co-pilot mode in aggressive mode. This will modify INCAR
+                    flags even if they are already set by the user.
         copy_magmoms
             If True, any pre-existing `atoms.get_magnetic_moments()` will be set in
             `atoms.set_initial_magnetic_moments()`. Set this to False if you want to
@@ -214,13 +216,12 @@ class Vasp(Vasp_):
 
         # Get user-defined preset parameters for the calculator
         if self.preset:
-            try:
-                calc_preset = load_vasp_yaml_calc(self.preset)
-            except FileNotFoundError:
-                calc_preset = load_vasp_yaml_calc(
-                    self._settings.VASP_PRESET_DIR / self.preset
-                )
-            calc_preset_inputs = calc_preset["inputs"]
+            preset_path = (
+                self.preset
+                if Path(self.preset).suffix in (".yaml", ".yml")
+                else self._settings.VASP_PRESET_DIR / f"{self.preset}.yaml"
+            )
+            calc_preset_inputs = load_vasp_yaml_calc(preset_path)["inputs"]
         else:
             calc_preset_inputs = {}
 

@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-import logging
 import threading
 from importlib.metadata import version
+from logging import basicConfig, getLevelName
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ase.atoms import Atoms
@@ -33,6 +34,7 @@ __all__ = [
     "Remove",
     "get_settings",
     "QuaccDefault",
+    "JobFailure",
 ]
 
 
@@ -92,7 +94,48 @@ _settings = get_settings()
 QuaccDefault = DefaultSetting()
 
 # Set logging info
-logging.basicConfig(level=logging.DEBUG if _settings.DEBUG else logging.INFO)
+basicConfig(filename=_settings.LOG_FILENAME, level=getLevelName(_settings.LOG_LEVEL))
+
+
+# Custom exceptions
+class JobFailure(Exception):
+    """
+    A custom exception for handling/catching job failures.
+
+    Attributes
+    ----------
+    directory
+        The directory where the calculations can be found.
+    parent_error
+        The Exception that caused the job to fail.
+    """
+
+    def __init__(
+        self,
+        directory: Path | str,
+        parent_error: Exception | None = None,
+        message: str = "Calculation failed!",
+    ) -> None:
+        """
+        Initialize the JobFailure exception.
+
+        Parameters
+        ----------
+        directory
+            The directory where the calculations can be found.
+        parent_error
+            The Exception that caused the job to fail.
+        message
+            The message to display when the exception is raised.
+
+        Returns
+        -------
+        None
+        """
+        self.directory = Path(directory)
+        self.parent_error = parent_error
+        super().__init__(message)
+
 
 # Monkeypatching for Prefect
 if _settings.WORKFLOW_ENGINE == "prefect":
