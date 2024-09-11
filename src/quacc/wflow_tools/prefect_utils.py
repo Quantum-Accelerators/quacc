@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import partial
-from typing import TYPE_CHECKING, Any, Union
+from typing import TYPE_CHECKING, Any
 
 from prefect.futures import PrefectFuture
 from prefect.utilities.annotations import quote
@@ -31,7 +31,7 @@ def resolve_futures_to_data(expr: PrefectFuture | Any) -> State | Any:
     def _collect_futures(futures, expr, context):
         # Expressions inside quotes should not be traversed
         if isinstance(context.get("annotation"), quote):
-            raise StopVisiting()
+            raise StopVisiting
 
         if isinstance(expr, PrefectFuture):
             futures.add(expr)
@@ -57,7 +57,7 @@ def resolve_futures_to_data(expr: PrefectFuture | Any) -> State | Any:
     def replace_futures_with_states(expr, context):
         # Expressions inside quotes should not be modified
         if isinstance(context.get("annotation"), quote):
-            raise StopVisiting()
+            raise StopVisiting
 
         if isinstance(expr, PrefectFuture):
             return states_by_future[expr]
