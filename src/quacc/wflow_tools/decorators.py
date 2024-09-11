@@ -349,11 +349,11 @@ def flow(_func: Callable[..., Any] | None = None, **kwargs) -> Flow:
     elif settings.WORKFLOW_ENGINE == "prefect":
         from prefect import flow as prefect_flow
 
-        from quacc.wflow_tools.prefect_utils import resolve_futures_to_data
+        from quacc.wflow_tools.prefect_utils import resolve_futures_to_results
 
         @wraps(_func)
         def wrapper(*f_args, **f_kwargs):
-            return resolve_futures_to_data(_func(*f_args, **f_kwargs))
+            return resolve_futures_to_results(_func(*f_args, **f_kwargs))
 
         return prefect_flow(wrapper, validate_parameters=False, **kwargs)
     else:
@@ -586,11 +586,11 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
     elif settings.WORKFLOW_ENGINE == "prefect":
         from prefect import flow as prefect_flow
 
-        from quacc.wflow_tools.prefect_utils import resolve_futures_to_data
+        from quacc.wflow_tools.prefect_utils import resolve_futures_to_results
 
         @wraps(_func)
         def wrapper(*f_args, **f_kwargs):
-            return resolve_futures_to_data(_func(*f_args, **f_kwargs))
+            return resolve_futures_to_results(_func(*f_args, **f_kwargs))
 
         return prefect_flow(wrapper, validate_parameters=False, **kwargs)
     elif settings.WORKFLOW_ENGINE == "redun":

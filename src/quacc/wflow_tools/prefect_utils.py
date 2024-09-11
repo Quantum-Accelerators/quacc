@@ -15,7 +15,7 @@ F = TypeVar("F")
 R = TypeVar("R")
 
 
-def resolve_futures_to_data(expr: PrefectFuture | Any) -> State | Any:
+def resolve_futures_to_results(expr: PrefectFuture | Any) -> State | Any:
     """
     Given a Python built-in collection, recursively find `PrefectFutures` and build a
     new collection with the same structure with futures resolved to their final result.
