@@ -4,6 +4,7 @@ from functools import partial
 from typing import TYPE_CHECKING, Any
 
 from prefect.futures import PrefectFuture
+from prefect.results import BaseResult
 from prefect.utilities.annotations import quote
 from prefect.utilities.collections import StopVisiting, visit_collection
 from typing_extensions import TypeVar
@@ -50,7 +51,10 @@ def resolve_futures_to_results(expr: PrefectFuture | Any) -> State | Any:
     results = []
     for future in futures:
         future.wait()
-        results.append(future.state.result().get())
+        result = future.state.result()
+        if isinstance(result, BaseResult):
+            result = result.get()
+        results.append(result)
 
     states_by_future = dict(zip(futures, results))
 
