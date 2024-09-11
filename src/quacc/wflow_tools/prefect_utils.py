@@ -18,10 +18,13 @@ R = TypeVar("R")
 def resolve_futures_to_data(expr: PrefectFuture | Any) -> State | Any:
     """
     Given a Python built-in collection, recursively find `PrefectFutures` and build a
-    new collection with the same structure with futures resolved to their final states.
-    Resolving futures to their final states may wait for execution to complete.
+    new collection with the same structure with futures resolved to their final result.
+    Resolving futures to their final result may wait for execution to complete.
 
     Unsupported object types will be returned without modification.
+
+    This function is a trivial change from resolve_futures_to_states here:
+    https://github.com/PrefectHQ/prefect/blob/main/src/prefect/futures.py
     """
     futures: set[PrefectFuture] = set()
 
