@@ -22,10 +22,8 @@ def test_tutorial1a(tmp_path, monkeypatch):
         return relax_job(atoms)  # (1)!
 
     # Dispatch the workflow
-    future = workflow(atoms)  # (2)!
+    result = workflow(atoms)  # (2)!
 
-    # Fetch the result
-    result = future.result()  # (3)!
     assert "atoms" in result
 
 
@@ -36,10 +34,9 @@ def test_tutorial1b(tmp_path, monkeypatch):
     atoms = bulk("Cu")
 
     # Dispatch the workflow
-    futures = bulk_to_slabs_flow(atoms)  # (1)!
+    results = bulk_to_slabs_flow(atoms)  # (1)!
 
     # Print the results
-    results = [future.result() for future in futures]
     for result in results:
         assert "atoms" in result
 
@@ -60,7 +57,7 @@ def test_tutorial2a(tmp_path, monkeypatch):
     atoms = bulk("Cu")
 
     # Run the workflow with Prefect tracking
-    result = workflow(atoms).result()
+    result = workflow(atoms)
     assert "atoms" in result
 
 
@@ -84,8 +81,8 @@ def test_tutorial2b(tmp_path, monkeypatch):
     futures = workflow(atoms1, atoms2)
 
     # Fetch the results
-    result1 = futures["result1"].result()
-    result2 = futures["result2"].result()
+    result1 = futures["result1"]
+    result2 = futures["result2"]
     assert "atoms" in result1
     assert "atoms" in result2
 
@@ -103,8 +100,7 @@ def test_tutorial2c(tmp_path, monkeypatch):
     atoms = bulk("Cu")
 
     # Dispatch the workflow and retrieve result
-    futures = workflow(atoms)
-    results = [future.result() for future in futures]
+    results = workflow(atoms)
     assert len(results) == 4
     for result in results:
         assert "atoms" in result
