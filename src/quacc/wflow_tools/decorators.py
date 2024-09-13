@@ -347,13 +347,19 @@ def flow(_func: Callable[..., Any] | None = None, **kwargs) -> Flow:
 
         return task(_func, namespace=_func.__module__, **kwargs)
     elif settings.WORKFLOW_ENGINE == "prefect":
+        import inspect
+
         from prefect import flow as prefect_flow
+        from prefect.utilities.asyncutils import run_coro_as_sync
 
         from quacc.wflow_tools.prefect_utils import resolve_futures_to_results
 
         @wraps(_func)
         def wrapper(*f_args, **f_kwargs):
-            return resolve_futures_to_results(_func(*f_args, **f_kwargs))
+            result = _func(*f_args, **f_kwargs)
+            if inspect.isawaitable(result):
+                result = run_coro_as_sync(result)
+            return resolve_futures_to_results(result)
 
         return prefect_flow(wrapper, validate_parameters=False, **kwargs)
     else:
@@ -584,13 +590,19 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
 
         return join_app(wrapped_fn, **kwargs)
     elif settings.WORKFLOW_ENGINE == "prefect":
+        import inspect
+
         from prefect import flow as prefect_flow
+        from prefect.utilities.asyncutils import run_coro_as_sync
 
         from quacc.wflow_tools.prefect_utils import resolve_futures_to_results
 
         @wraps(_func)
         def wrapper(*f_args, **f_kwargs):
-            return resolve_futures_to_results(_func(*f_args, **f_kwargs))
+            result = _func(*f_args, **f_kwargs)
+            if inspect.isawaitable(result):
+                result = run_coro_as_sync(result)
+            return resolve_futures_to_results(result)
 
         return prefect_flow(wrapper, validate_parameters=False, **kwargs)
     elif settings.WORKFLOW_ENGINE == "redun":
