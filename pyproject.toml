@@ -84,6 +84,7 @@ include = ["quacc"]
 exclude = ["**/__pycache__"]
 
 [tool.pytest.ini_options]
+asyncio_mode = "auto"
 minversion = "6.0"
 addopts = ["-p no:warnings", "--import-mode=importlib"]
 xfail_strict = true
