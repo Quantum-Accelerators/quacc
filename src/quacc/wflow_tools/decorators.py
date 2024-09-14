@@ -350,14 +350,18 @@ def flow(_func: Callable[..., Any] | None = None, **kwargs) -> Flow:
         from prefect import flow as prefect_flow
         from prefect.utilities.asyncutils import is_async_fn
 
-        from quacc.wflow_tools.prefect_utils import resolve_futures_to_results
+        from quacc.wflow_tools.prefect_utils import (
+            resolve_futures_to_results,
+            resolve_futures_to_results_async,
+        )
 
         if is_async_fn(_func):
 
             @wraps(_func)
             async def async_wrapper(*f_args, **f_kwargs):
                 result = await _func(*f_args, **f_kwargs)
-                return resolve_futures_to_results(result)
+
+                return resolve_futures_to_results_async(result)
 
             return prefect_flow(async_wrapper, validate_parameters=False, **kwargs)
         else:
@@ -600,14 +604,18 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
         from prefect import flow as prefect_flow
         from prefect.utilities.asyncutils import is_async_fn
 
-        from quacc.wflow_tools.prefect_utils import resolve_futures_to_results
+        from quacc.wflow_tools.prefect_utils import (
+            resolve_futures_to_results,
+            resolve_futures_to_results_async,
+        )
 
         if is_async_fn(_func):
 
             @wraps(_func)
             async def async_wrapper(*f_args, **f_kwargs):
                 result = await _func(*f_args, **f_kwargs)
-                return resolve_futures_to_results(result)
+
+                return resolve_futures_to_results_async(result)
 
             return prefect_flow(async_wrapper, validate_parameters=False, **kwargs)
         else:

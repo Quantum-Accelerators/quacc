@@ -271,7 +271,7 @@ async def test_prefect_decorators_async(tmp_path, monkeypatch):
 
     @flow
     async def add_flow(a, b):
-        return await add(a, b)
+        return add(a, b)
 
     assert (await add_flow(1, 2)) == 3
 
@@ -289,12 +289,12 @@ async def test_prefect_decorators3_async(tmp_path, monkeypatch):
 
     @subflow
     async def add_distributed(vals, c):
-        return [await add(val, c) for val in vals]
+        return [add(val, c) for val in vals]
 
     @flow
     async def dynamic_workflow(a, b, c):
-        result1 = await add(a, b)
-        result2 = await make_more(result1)
+        result1 = add(a, b)
+        result2 = make_more(result1)
         return await add_distributed(result2, c)
 
     assert (await dynamic_workflow(1, 2, 3)) == [6, 6, 6]
