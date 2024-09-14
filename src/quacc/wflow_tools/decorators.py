@@ -598,14 +598,26 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
         return join_app(wrapped_fn, **kwargs)
     elif settings.WORKFLOW_ENGINE == "prefect":
         from prefect import flow as prefect_flow
+        from prefect.utilities.asyncutils import is_async_fn
 
         from quacc.wflow_tools.prefect_utils import resolve_futures_to_results
 
-        @wraps(_func)
-        def wrapper(*f_args, **f_kwargs):
-            return resolve_futures_to_results(_func(*f_args, **f_kwargs))
+        if is_async_fn(_func):
 
-        return prefect_flow(wrapper, validate_parameters=False, **kwargs)
+            @wraps(_func)
+            async def async_wrapper(*f_args, **f_kwargs):
+                result = await _func(*f_args, **f_kwargs)
+                return resolve_futures_to_results(result)
+
+            return prefect_flow(async_wrapper, validate_parameters=False, **kwargs)
+        else:
+
+            @wraps(_func)
+            def sync_wrapper(*f_args, **f_kwargs):
+                result = _func(*f_args, **f_kwargs)
+                return resolve_futures_to_results(result)
+
+            return prefect_flow(sync_wrapper, validate_parameters=False, **kwargs)
     elif settings.WORKFLOW_ENGINE == "redun":
         from redun import task
 
