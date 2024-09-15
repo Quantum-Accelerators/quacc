@@ -51,10 +51,13 @@ def resolve_futures_to_results(expr: PrefectFuture | Any) -> State | Any:
     results = []
     for future in futures:
         future.wait()
-        result = future.state.result()
-        if isinstance(result, BaseResult):
-            result = result.get()
-        results.append(result)
+        if future.state.is_completed():
+            result = future.state.result()
+            if isinstance(result, BaseResult):
+                result = result.get()
+            results.append(result)
+        else:
+            raise BaseException("At least one result did not complete successfully")
 
     states_by_future = dict(zip(futures, results))
 
@@ -108,10 +111,13 @@ async def resolve_futures_to_results_async(expr: PrefectFuture | Any) -> State |
     results = []
     for future in futures:
         future.wait()
-        result = future.state.result()
-        if isinstance(result, BaseResult):
-            result = await result.get()
-        results.append(result)
+        if future.state.is_completed():
+            result = future.state.result()
+            if isinstance(result, BaseResult):
+                result = await result.get()
+            results.append(result)
+        else:
+            raise BaseException("At least one result did not complete successfully")
 
     states_by_future = dict(zip(futures, results))
 
