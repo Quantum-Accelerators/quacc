@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import logging
 import os
 from importlib import util
+from logging import WARNING, getLogger
 from pathlib import Path
 from shutil import copytree, move
 
@@ -14,19 +14,19 @@ from monty.json import MontyDecoder, jsanitize
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.vasp import VaspSummarize
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 LOGGER.propagate = True
 has_pmg_validation = util.find_spec("pymatgen.io.validation") is not None
 
 
-@pytest.fixture()
+@pytest.fixture
 def run1():
     FILE_DIR = Path(__file__).parent
 
     return FILE_DIR / "test_files" / "vasp_run1"
 
 
-@pytest.fixture()
+@pytest.fixture
 def mp_run1():
     FILE_DIR = Path(__file__).parent
 
@@ -227,7 +227,7 @@ def test_no_bader(tmp_path, monkeypatch, run1, caplog):
     p = tmp_path / "vasp_run"
     copytree(run1, p)
     atoms = read(p / "OUTCAR.gz")
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(WARNING):
         VaspSummarize(directory=p, run_bader=True, run_chargemol=False).run(atoms)
     assert "Bader analysis could not be performed." in caplog.text
 
@@ -237,6 +237,6 @@ def test_no_chargemol(tmp_path, monkeypatch, run1, caplog):
     p = tmp_path / "vasp_run"
     copytree(run1, p)
     atoms = read(p / "OUTCAR.gz")
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(WARNING):
         VaspSummarize(directory=p, run_bader=False, run_chargemol=True).run(atoms)
     assert "Chargemol analysis could not be performed." in caplog.text

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import glob
-import logging
 import os
+from logging import WARNING, getLogger
 from pathlib import Path
 from shutil import rmtree
 
@@ -15,11 +15,11 @@ from ase.io import read
 from ase.optimize import BFGS, BFGSLineSearch
 from ase.optimize.sciopt import SciPyFminBFGS
 
-from quacc import change_settings, get_settings
+from quacc import JobFailure, change_settings, get_settings
 from quacc.runners._base import BaseRunner
 from quacc.runners.ase import Runner
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 LOGGER.propagate = True
 
 
@@ -196,12 +196,12 @@ def test_bad_runs(tmp_path, monkeypatch, caplog):
     atoms = bulk("Cu")
 
     # No file
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(WARNING):
         Runner(atoms, EMT(), copy_files={Path(): "test_file.txt"}).run_calc()
     assert "Cannot find file" in caplog.text
 
     # No file again
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(WARNING):
         Runner(atoms, EMT(), copy_files={Path(): "test_file.txt"}).run_opt()
     assert "Cannot find file" in caplog.text
 
@@ -245,5 +245,7 @@ def test_fn_hook(tmp_path, monkeypatch):
         if dyn.atoms:
             raise ValueError("Test error")
 
-    with pytest.raises(ValueError, match="Test error"):
+    with pytest.raises(JobFailure, match="Calculation failed!") as err:
         Runner(bulk("Cu"), EMT()).run_opt(fn_hook=fn_hook)
+    with pytest.raises(ValueError, match="Test error"):
+        raise err.value.parent_error

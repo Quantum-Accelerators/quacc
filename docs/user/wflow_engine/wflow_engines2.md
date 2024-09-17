@@ -236,7 +236,7 @@ graph LR
     atoms = bulk("Cu")
 
     # Run the workflow with Prefect tracking
-    result = workflow(atoms).result()
+    result = workflow(atoms)
     print(result)
     ```
 
@@ -486,11 +486,11 @@ graph LR
     atoms2 = molecule("N2")
 
     # Dispatch the workflow
-    futures = workflow(atoms1, atoms2)
+    results = workflow(atoms1, atoms2)
 
     # Fetch the results
-    result1 = futures["result1"].result()
-    result2 = futures["result2"].result()
+    result1 = results["result1"]
+    result2 = results["result2"]
     print(result1, result2)
     ```
 
@@ -730,11 +730,10 @@ graph LR
     atoms = bulk("Cu")
 
     # Dispatch the workflow
-    futures = workflow(atoms)
+    results = workflow(atoms)
 
-    # Fetch the results
-    results = [future.result() for future in futures]
-    print(result)
+    # print the results
+    print(results)
     ```
 
     !!! Tip "Selectively Modifying Job Decorators in a Pre-Made Flow"

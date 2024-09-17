@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import hashlib
-import logging
 from copy import deepcopy
+from logging import getLogger
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from ase.optimize.optimize import Dynamics
     from numpy.typing import NDArray
 
-logger = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 
 
 def get_atoms_id(atoms: Atoms) -> str:
@@ -213,7 +213,7 @@ def check_charge_and_spin(
             f"Charge of {mol.charge} and spin multiplicity of {mol.spin_multiplicity} is"
             " not possible for this molecule."
         )
-    logger.debug(
+    LOGGER.debug(
         f"Setting charge to {mol.charge} and spin multiplicity to {mol.spin_multiplicity}"
     )
 

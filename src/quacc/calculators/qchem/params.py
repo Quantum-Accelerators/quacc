@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import logging
+from logging import getLogger
 from typing import TYPE_CHECKING
 
 from pymatgen.io.ase import AseAtomsAdaptor
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
     from quacc.calculators.qchem.qchem import QChem
 
-logger = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 
 
 def make_qc_input(qchem: QChem, atoms: Atoms) -> QCInput:
@@ -154,11 +154,11 @@ def get_rem_swaps(rem: dict[str, Any], restart: bool = False) -> dict[str, Any]:
         rem dictionary with swaps
     """
     if restart and "scf_guess" not in rem:
-        logger.info("Copilot: Setting scf_guess in `rem` to 'read'")
+        LOGGER.info("Copilot: Setting scf_guess in `rem` to 'read'")
         rem["scf_guess"] = "read"
     if "max_scf_cycles" not in rem:
         rem["max_scf_cycles"] = 200 if rem.get("scf_algorithm") == "gdm" else 100
-        logger.info(
+        LOGGER.info(
             f"Copilot: Setting max_scf_cycles in `rem` to {rem['max_scf_cycles']}"
         )
 

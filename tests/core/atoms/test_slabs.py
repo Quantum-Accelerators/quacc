@@ -18,7 +18,7 @@ from quacc.atoms.slabs import (
 FILE_DIR = Path(__file__).parent
 
 
-@pytest.fixture()
+@pytest.fixture
 def atoms_mag():
     FILE_DIR = Path(__file__).parent
 

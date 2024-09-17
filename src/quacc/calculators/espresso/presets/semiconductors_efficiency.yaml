@@ -12,4 +12,4 @@ input_data:
 
 kspacing: 0.045
 
-parent_pseudopotentials: sssp_1.3.0_pbe_efficiency.yaml
+parent_pseudopotentials: sssp_1.3.0_pbe_efficiency

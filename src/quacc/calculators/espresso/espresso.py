@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-import logging
 import os
 import re
+from logging import getLogger
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -34,7 +34,7 @@ from quacc.utils.files import load_yaml_calc, safe_decompress_dir
 if TYPE_CHECKING:
     from typing import Any
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 
 
 class EspressoTemplate(EspressoTemplate_):
@@ -358,7 +358,7 @@ class Espresso(GenericFileIOCalculator):
     def __init__(
         self,
         input_atoms: Atoms | None = None,
-        preset: str | None = None,
+        preset: str | Path | None = None,
         template: EspressoTemplate | None = None,
         **kwargs,
     ) -> None:
@@ -370,11 +370,12 @@ class Espresso(GenericFileIOCalculator):
         input_atoms
             The input Atoms object to be used for the calculation.
         preset
-            The name of a YAML file containing a list of parameters to use as
-            a "preset" for the calculator. quacc will automatically look in the
-            `ESPRESSO_PRESET_DIR` (default: quacc/calculators/espresso/presets),
-            The .yaml extension is not necessary. Any user-supplied calculator
-            **kwargs will override any corresponding preset values.
+            A YAML file containing a list of INCAR parameters to use as a "preset"
+            for the calculator. If `preset` has a .yml or .yaml file extension, the
+            path to this file will be used directly. If `preset` is a string without
+            an extension, the corresponding YAML file will be assumed to be in the
+            `ESPRESSO_PRESET_DIR`. Any user-supplied calculator **kwargs will
+            override any corresponding preset values.
         template
             ASE calculator templace which can be used to specify which espresso
             binary will be used in the calculation. This is taken care of by recipe
@@ -407,7 +408,7 @@ class Espresso(GenericFileIOCalculator):
             self._cleanup_params()
         else:
             LOGGER.warning(
-                f"the binary you requested, `{self._binary}`, is not supported by ASE. This means that presets and usual checks will not be carried out, your `input_data` must be provided in nested format."
+                f"The binary you requested, `{self._binary}`, is not supported by ASE. This means that presets and usual checks will not be carried out, your `input_data` must be provided in nested format."
             )
 
             self.kwargs["input_data"] = Namelist(self.kwargs.get("input_data"))
@@ -419,9 +420,13 @@ class Espresso(GenericFileIOCalculator):
             .get("pseudo_dir", str(self._settings.ESPRESSO_PSEUDO))
         )
 
+        cmd_prefix = os.environ.get(
+            "PARSL_MPI_PREFIX", self._settings.ESPRESSO_PARALLEL_CMD[0]
+        )
+        cmd_suffix = self._settings.ESPRESSO_PARALLEL_CMD[1]
+
         profile = EspressoProfile(
-            f"{self._settings.ESPRESSO_PARALLEL_CMD[0]} {self._bin_path} {self._settings.ESPRESSO_PARALLEL_CMD[1]}",
-            self._pseudo_path,
+            f"{cmd_prefix} {self._bin_path} {cmd_suffix}", self._pseudo_path
         )
 
         super().__init__(
@@ -447,9 +452,12 @@ class Espresso(GenericFileIOCalculator):
         self.kwargs["input_data"].to_nested(binary=self._binary, **self.kwargs)
 
         if self.preset:
-            calc_preset = load_yaml_calc(
-                self._settings.ESPRESSO_PRESET_DIR / f"{self.preset}"
+            preset_path = (
+                self.preset
+                if Path(self.preset).suffix in (".yaml", ".yml")
+                else self._settings.ESPRESSO_PRESET_DIR / f"{self.preset}.yaml"
             )
+            calc_preset = load_yaml_calc(preset_path)
             calc_preset["input_data"] = Namelist(calc_preset.get("input_data"))
             calc_preset["input_data"].to_nested(binary=self._binary, **calc_preset)
             if "pseudopotentials" in calc_preset:

@@ -21,10 +21,9 @@ def test_functools(tmp_path, monkeypatch, job_decorators):
         job_params={"relax_job": {"opt_params": {"fmax": 0.1}}},
         job_decorators=job_decorators,
     )
-    result = [future.result() for future in output]
-    assert len(result) == 4
-    assert "atoms" in result[-1]
-    assert result[-1]["parameters_opt"]["fmax"] == 0.1
+    assert len(output) == 4
+    assert "atoms" in output[-1]
+    assert output[-1]["parameters_opt"]["fmax"] == 0.1
 
 
 def test_copy_files(tmp_path, monkeypatch):
@@ -36,7 +35,7 @@ def test_copy_files(tmp_path, monkeypatch):
         result1 = relax_job(atoms)
         return relax_job(result1["atoms"], copy_files={result1["dir_name"]: "opt.*"})
 
-    assert "atoms" in myflow(atoms).result()
+    assert "atoms" in myflow(atoms)
 
 
 def test_phonon_flow(tmp_path, monkeypatch):
@@ -47,6 +46,4 @@ def test_phonon_flow(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
     output = phonon_flow(atoms)
-    assert output.result()["results"]["thermal_properties"]["temperatures"].shape == (
-        101,
-    )
+    assert output["results"]["thermal_properties"]["temperatures"].shape == (101,)

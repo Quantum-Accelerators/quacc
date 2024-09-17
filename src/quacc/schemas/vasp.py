@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import logging
 import os
+from logging import getLogger
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -39,7 +39,7 @@ if TYPE_CHECKING:
         VaspSchema,
     )
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 
 
 class VaspSummarize:
@@ -178,7 +178,7 @@ class VaspSummarize:
                 bader_results = bader_runner(directory)
             except Exception:
                 bader_results = None
-                logging.warning("Bader analysis could not be performed.", exc_info=True)
+                LOGGER.warning("Bader analysis could not be performed.", exc_info=True)
 
             if bader_results:
                 vasp_task_doc["bader"] = bader_results
@@ -189,7 +189,7 @@ class VaspSummarize:
                 chargemol_results = chargemol_runner(directory)
             except Exception:
                 chargemol_results = None
-                logging.warning(
+                LOGGER.warning(
                     "Chargemol analysis could not be performed.", exc_info=True
                 )
 
