@@ -9,7 +9,8 @@ from typing import TYPE_CHECKING, Literal
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
-    from typing import Any, Callable
+    from collections.abc import Callable
+    from typing import Any
 
 
 def strip_decorator(func: Callable) -> Callable:
@@ -66,7 +67,7 @@ def strip_decorator(func: Callable) -> Callable:
         from prefect import Flow as PrefectFlow
         from prefect import Task
 
-        if isinstance(func, (Task, PrefectFlow)):
+        if isinstance(func, Task | PrefectFlow):
             func = func.fn
         elif hasattr(func, "__wrapped__"):
             func = func.__wrapped__
@@ -182,9 +183,9 @@ def customize_funcs(
     decorators = decorators or {}
     updated_funcs = []
 
-    if not isinstance(names, (list, tuple)):
+    if not isinstance(names, list | tuple):
         names = [names]
-    if not isinstance(funcs, (list, tuple)):
+    if not isinstance(funcs, list | tuple):
         funcs = [funcs]
 
     if "all" in names:
