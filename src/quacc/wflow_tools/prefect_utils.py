@@ -59,7 +59,7 @@ def resolve_futures_to_results(expr: PrefectFuture | Any) -> State | Any:
         else:
             raise BaseException("At least one result did not complete successfully")
 
-    states_by_future = dict(zip(futures, results))
+    states_by_future = dict(zip(futures, results, strict=False))
 
     def replace_futures_with_states(expr, context):
         # Expressions inside quotes should not be modified
