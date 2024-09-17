@@ -61,7 +61,7 @@ def teardown_function():
             os.remove(os.path.join(results_dir, f))
 
 
-@pytest.fixture()
+@pytest.fixture
 def setup_test_environment(tmp_path):
     reactant = Atoms(
         symbols="CCHHCHH",

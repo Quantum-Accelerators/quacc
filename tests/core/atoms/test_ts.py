@@ -19,7 +19,7 @@ from quacc.atoms.ts import geodesic_interpolate_wrapper
 has_geodesic_interpolate = bool(find_spec("geodesic_interpolate"))
 
 
-@pytest.fixture()
+@pytest.fixture
 def setup_test_environment(tmp_path):
     reactant = Atoms(
         symbols="CCHHCHH",

@@ -297,7 +297,7 @@ def test_quasi_irc_job_with_custom_irc_swaps(tmp_path, monkeypatch):
     assert output["freq_job"]["results"]["energy"] == pytest.approx(-9.517354965639784)
 
 
-@pytest.fixture()
+@pytest.fixture
 def setup_test_environment():
     reactant = Atoms(
         symbols="CCHHCHH",
