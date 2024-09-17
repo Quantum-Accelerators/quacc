@@ -7,6 +7,6 @@ numpy==1.26.4
 psutil==5.9.8
 pydantic==2.9.1
 pydantic-settings==2.5.2
-pymatgen==2024.7.18
+pymatgen==2024.9.17
 ruamel.yaml==0.18.6
 typer==0.12.5
