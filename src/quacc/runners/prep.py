@@ -3,11 +3,9 @@
 from __future__ import annotations
 
 import errno
-import logging
 import os
 import shutil
 import time
-import os
 from logging import getLogger
 from pathlib import Path
 from shutil import move
@@ -197,7 +195,7 @@ def rmtree(*args, max_retries=3, retry_wait=10, **kwargs):
         except OSError as e:
             if i == max_retries:
                 raise
-            elif e.errno in {errno.ENOTEMPTY, errno.EBUSY}:
+            if e.errno in {errno.ENOTEMPTY, errno.EBUSY}:
                 time.sleep(retry_wait)
             else:
                 raise
