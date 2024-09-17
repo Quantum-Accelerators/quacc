@@ -77,7 +77,7 @@ def calc_setup(
 
     # Copy files to tmpdir and decompress them if needed
     if copy_files:
-        if isinstance(copy_files, (str, Path)):
+        if isinstance(copy_files, str | Path):
             copy_files = {copy_files: "*"}
 
         for source_directory, filenames in copy_files.items():

@@ -56,7 +56,7 @@ def resolve_futures_to_results(expr: PrefectFuture | Any) -> State | Any:
             result = result.get()
         results.append(result)
 
-    states_by_future = dict(zip(futures, results))
+    states_by_future = dict(zip(futures, results, strict=False))
 
     def replace_futures_with_states(expr, context):
         # Expressions inside quotes should not be modified
