@@ -42,8 +42,8 @@ if TYPE_CHECKING:
 
     # ----------- File handling -----------
 
-    Filenames = Union[str, Path, list[str | Path]]
-    SourceDirectory = Union[str, Path]
+    Filenames = str | Path | list[str | Path]
+    SourceDirectory = str | Path
 
     # ----------- k-point handling -----------
 
