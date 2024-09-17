@@ -21,7 +21,7 @@ def test_partition():
     def test_flow():
         return partition(simple_list(), 3)
 
-    partitioned_list = test_flow().result()
+    partitioned_list = test_flow()
     assert len(partitioned_list) == 3
     np.testing.assert_allclose(partitioned_list[0], [0, 1, 2, 3])
 
@@ -60,15 +60,21 @@ def test_map_partitioned_lists():
         )
 
     num_partitions = 4
-    assert test_flow(testfun, num_partitions)[0].result() == [0, 2, 4]
-    assert test_flow(testfun, num_partitions, unmapped_kwargs={"const": 3})[
-        0
-    ].result() == [0, 3, 6]
+    assert test_flow(testfun, num_partitions)[0] == [0, 2, 4]
+    assert test_flow(testfun, num_partitions, unmapped_kwargs={"const": 3})[0] == [
+        0,
+        3,
+        6,
+    ]
     num_partitions = 2
-    assert test_flow(testfun, num_partitions)[0].result() == [0, 2, 4, 6, 8]
-    assert test_flow(testfun, num_partitions, unmapped_kwargs={"const": 3})[
-        1
-    ].result() == [15, 18, 21, 24, 27]
+    assert test_flow(testfun, num_partitions)[0] == [0, 2, 4, 6, 8]
+    assert test_flow(testfun, num_partitions, unmapped_kwargs={"const": 3})[1] == [
+        15,
+        18,
+        21,
+        24,
+        27,
+    ]
 
 
 def test_map_partition():
@@ -79,10 +85,10 @@ def test_map_partition():
     def test_flow1():
         return map_partition(test_fun, a=[1, 2], b=["c", "d"])
 
-    assert test_flow1().result() == [{"a": 1, "b": "c"}, {"a": 2, "b": "d"}]
+    assert test_flow1() == [{"a": 1, "b": "c"}, {"a": 2, "b": "d"}]
 
     @flow
     def test_flow2():
         return map_partition(test_fun, unmapped_kwargs={"b": 1}, a=[1, 2])
 
-    assert test_flow2().result() == [{"a": 1, "b": 1}, {"a": 2, "b": 1}]
+    assert test_flow2() == [{"a": 1, "b": 1}, {"a": 2, "b": 1}]
