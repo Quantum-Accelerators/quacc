@@ -5,7 +5,7 @@ from __future__ import annotations
 from importlib.util import find_spec
 from logging import getLogger
 from shutil import copy, copytree
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 import numpy as np
 from ase.calculators import calculator
@@ -34,6 +34,7 @@ has_sella = bool(find_spec("sella"))
 
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from pathlib import Path
     from typing import Any
 
@@ -201,7 +202,7 @@ class Runner(BaseRunner):
 
         # Handle optimizer kwargs
         if (
-            issubclass(optimizer, (SciPyOptimizer, MolecularDynamics))
+            issubclass(optimizer, SciPyOptimizer | MolecularDynamics)
             or optimizer.__name__ == "IRC"
         ):
             # https://gitlab.com/ase/ase/-/issues/1476
@@ -225,7 +226,7 @@ class Runner(BaseRunner):
             full_run_kwargs.pop("fmax")
         try:
             with traj, optimizer(self.atoms, **merged_optimizer_kwargs) as dyn:
-                if issubclass(optimizer, (SciPyOptimizer, MolecularDynamics)):
+                if issubclass(optimizer, SciPyOptimizer | MolecularDynamics):
                     # https://gitlab.coms/ase/ase/-/issues/1475
                     # https://gitlab.com/ase/ase/-/issues/1497
                     dyn.run(**full_run_kwargs)

@@ -21,7 +21,8 @@ if has_pmg_defects:
 
 
 if TYPE_CHECKING:
-    from typing import Any, Callable
+    from collections.abc import Callable
+    from typing import Any
 
     from ase.atoms import Atoms
 
