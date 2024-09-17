@@ -34,8 +34,17 @@ from quacc.calculators.vasp.params import MPtoASEParams
 from quacc.recipes.vasp._base import run_and_summarize
 from quacc.wflow_tools.customizers import customize_funcs
 
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from ase.atoms import Atoms
+
+    from quacc.types import MPRelaxFlowSchema, SourceDirectory, VaspSchema
+
 has_atomate2 = bool(find_spec("atomate2"))
 if has_atomate2:
+    from typing import Any, Literal
+
     from atomate2.vasp.jobs.mp import (
         MPGGARelaxMaker,
         MPGGAStaticMaker,
@@ -52,13 +61,6 @@ if has_atomate2:
         MP24MetaGGAStaticMaker,
     )
 
-    from typing import Any, Literal
-    from collections.abc import Callable
-    from typing import Any
-
-    from ase.atoms import Atoms
-
-    from quacc.types import MPRelaxFlowSchema, SourceDirectory, VaspSchema
 
 _MP_SETTINGS = {"VASP_INCAR_COPILOT": "off", "VASP_USE_CUSTODIAN": True}
 
