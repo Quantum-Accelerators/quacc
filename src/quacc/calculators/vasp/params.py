@@ -449,7 +449,11 @@ class MPtoASEParams:
         )
         self.incar_dict = input_set.incar
         self.pmg_kpts = input_set.kpoints
-        self.potcar_symbols = input_set.potcar
+        self.potcar_symbols = (
+            input_set.potcar.split("\n")
+            if isinstance(input_set.potcar, str)
+            else input_set.potcar
+        )
         self.potcar_functional = input_set_generator.potcar_functional
         self.poscar = input_set.poscar
         return self._convert()
