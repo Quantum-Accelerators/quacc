@@ -53,7 +53,7 @@ def mock_metallic_taskdoc(dir_name, *args, **kwargs):
     return MOCK_METALLIC_TASKDOC
 
 
-@pytest.fixture()
+@pytest.fixture
 def patch_metallic_taskdoc(monkeypatch):
     monkeypatch.setattr(
         "quacc.schemas.vasp.TaskDoc.from_directory", mock_metallic_taskdoc
@@ -80,7 +80,7 @@ def mock_nonmetallic_taskdoc(dir_name, *args, **kwargs):
     return MOCK_NONMETALLIC_TASKDOC
 
 
-@pytest.fixture()
+@pytest.fixture
 def patch_nonmetallic_taskdoc(monkeypatch):
     monkeypatch.setattr(
         "quacc.schemas.vasp.TaskDoc.from_directory", mock_nonmetallic_taskdoc

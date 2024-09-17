@@ -49,7 +49,7 @@ def test_change_settings_redecorate_job(tmp_path_factory):
     def my_flow():
         return write_file_job()
 
-    my_flow().result()
+    my_flow()
     assert Path(tmp_dir1 / "job.txt").exists()
 
 
@@ -71,7 +71,7 @@ def test_change_settings_redecorate_flow(tmp_path_factory):
     # Test with redecorating a job in a flow
     write_file_flow(
         job_decorators={"write_file_job": job(settings_swap={"RESULTS_DIR": tmp_dir2})}
-    ).result()
+    )
     assert Path(tmp_dir2 / "flow.txt").exists()
 
 
@@ -95,6 +95,6 @@ def test_double_change_settings_redecorate_job(tmp_path_factory):
     def my_flow():
         return write_file_job()
 
-    my_flow().result()
+    my_flow()
     assert not Path(tmp_dir1 / "job.txt").exists()
     assert Path(tmp_dir2 / "job.txt").exists()

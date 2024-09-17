@@ -17,14 +17,14 @@ LOGGER = getLogger(__name__)
 LOGGER.propagate = True
 
 
-@pytest.fixture()
+@pytest.fixture
 def run1():
     FILE_DIR = Path(__file__).parent
 
     return FILE_DIR / "test_files" / "vasp_run1"
 
 
-@pytest.fixture()
+@pytest.fixture
 def mp_run1():
     FILE_DIR = Path(__file__).parent
 

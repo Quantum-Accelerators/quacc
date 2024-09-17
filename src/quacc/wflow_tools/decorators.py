@@ -349,7 +349,13 @@ def flow(_func: Callable[..., Any] | None = None, **kwargs) -> Flow:
     elif settings.WORKFLOW_ENGINE == "prefect":
         from prefect import flow as prefect_flow
 
-        return prefect_flow(_func, validate_parameters=False, **kwargs)
+        from quacc.wflow_tools.prefect_utils import resolve_futures_to_results
+
+        @wraps(_func)
+        def wrapper(*f_args, **f_kwargs):
+            return resolve_futures_to_results(_func(*f_args, **f_kwargs))
+
+        return prefect_flow(wrapper, validate_parameters=False, **kwargs)
     else:
         return _func
 
@@ -559,7 +565,7 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
 
         return ct.electron(ct.lattice(_func), **kwargs)
     elif settings.WORKFLOW_ENGINE == "dask":
-        from dask import delayed
+        from dask.delayed import delayed
         from dask.distributed import worker_client
 
         # See https://github.com/dask/dask/issues/10733
@@ -580,7 +586,13 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
     elif settings.WORKFLOW_ENGINE == "prefect":
         from prefect import flow as prefect_flow
 
-        return prefect_flow(_func, validate_parameters=False, **kwargs)
+        from quacc.wflow_tools.prefect_utils import resolve_futures_to_results
+
+        @wraps(_func)
+        def wrapper(*f_args, **f_kwargs):
+            return resolve_futures_to_results(_func(*f_args, **f_kwargs))
+
+        return prefect_flow(wrapper, validate_parameters=False, **kwargs)
     elif settings.WORKFLOW_ENGINE == "redun":
         from redun import task
 

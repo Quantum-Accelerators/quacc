@@ -6,7 +6,7 @@ redun = pytest.importorskip("redun")
 from ase.build import bulk
 
 
-@pytest.fixture()
+@pytest.fixture
 def scheduler():
     return redun.Scheduler()
 

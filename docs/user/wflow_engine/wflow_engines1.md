@@ -159,18 +159,14 @@ graph LR
 
 
     # Dispatch the workflow
-    future = workflow(atoms)  # (2)!
+    result = workflow(atoms)  # (2)!
 
-    # Fetch the result
-    result = future.result()  # (3)!
     print(result)
     ```
 
     1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
 
-    2. The workflow has been dispatched to the Prefect server at this point.
-
-    3. Finally, we fetch the result of the completed workflow.
+    2. The workflow has been dispatched to the Prefect server at this point and the result returned.
 
 === "Redun"
 
@@ -308,11 +304,11 @@ graph LR
     # Define the Atoms object
     atoms = bulk("Cu")
 
-    # Dispatch the workflow
-    futures = bulk_to_slabs_flow(atoms)
+    # Dispatch the workflow and get results
+    results = bulk_to_slabs_flow(atoms)
 
     # Print the results
-    results = [future.result() for future in futures]
+    print(results)
     ```
 
 === "Redun"

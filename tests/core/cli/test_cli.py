@@ -14,7 +14,7 @@ FILE_PATH = Path(__file__).parent
 TEST_YAML = FILE_PATH / "test_quacc.yaml"
 
 
-@pytest.fixture()
+@pytest.fixture
 def runner():
     return CliRunner()
 
