@@ -10,7 +10,8 @@ from quacc.recipes.emt.core import static_job
 from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:
-    from typing import Any, Callable
+    from collections.abc import Callable
+    from typing import Any
 
     from ase.atoms import Atoms
 
