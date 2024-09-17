@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 import contextlib
-import logging
 import os
 import socket
 from copy import deepcopy
 from datetime import datetime, timezone
+from logging import getLogger
 from pathlib import Path
 from random import randint
 from shutil import copy
@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from quacc.types import Filenames, SourceDirectory
 
 
-logger = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 
 
 def check_logfile(logfile: str | Path, check_str: str) -> bool:
@@ -139,7 +139,7 @@ def copy_decompress_files(
     for f in filenames:
         globs_found = list(source_directory.glob(str(f)))
         if not globs_found:
-            logger.warning(f"Cannot find file {f} in {source_directory}")
+            LOGGER.warning(f"Cannot find file {f} in {source_directory}")
         for source_filepath in globs_found:
             destination_filepath = destination_directory / source_filepath.relative_to(
                 source_directory
@@ -313,4 +313,4 @@ def safe_decompress_dir(path: str | Path) -> None:
             try:
                 decompress_file(Path(parent, f))
             except FileNotFoundError:
-                logger.debug(f"Cannot find {f} in {parent}. Skipping.")
+                LOGGER.debug(f"Cannot find {f} in {parent}. Skipping.")

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import logging
 import os
 from copy import deepcopy
+from logging import INFO, getLogger
 from pathlib import Path
 from shutil import which
 
@@ -22,21 +22,21 @@ from quacc.schemas.prep import prep_next_run
 
 FILE_DIR = Path(__file__).parent
 PSEUDO_DIR = FILE_DIR / "fake_pseudos"
-LOGGER = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 LOGGER.propagate = True
 
 
-@pytest.fixture()
+@pytest.fixture
 def atoms_mag():
     return read(FILE_DIR / "OUTCAR_mag.gz")
 
 
-@pytest.fixture()
+@pytest.fixture
 def atoms_nomag():
     return read(FILE_DIR / "OUTCAR_nomag.gz")
 
 
-@pytest.fixture()
+@pytest.fixture
 def atoms_nospin():
     return read(FILE_DIR / "OUTCAR_nospin.gz")
 
@@ -823,7 +823,7 @@ def test_preset_override():
 
 def test_logging(caplog):
     atoms = bulk("Cu")
-    with caplog.at_level(logging.INFO):
+    with caplog.at_level(INFO):
         Vasp(atoms, nsw=0, kpts=(3, 3, 3))
     assert "Recommending LMAXMIX = 4" in caplog.text
     assert "Recommending ISMEAR = -5" in caplog.text
@@ -832,7 +832,7 @@ def test_logging(caplog):
         in caplog.text
     )
 
-    with caplog.at_level(logging.INFO):
+    with caplog.at_level(INFO):
         Vasp(atoms, nsw=0, kpts=(2, 2, 1), ismear=0)
     assert "Recommending LMAXMIX = 4" in caplog.text
     assert "Recommending ISMEAR = -5" in caplog.text

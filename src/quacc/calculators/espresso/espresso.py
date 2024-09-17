@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-import logging
 import os
 import re
+from logging import getLogger
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -34,7 +34,7 @@ from quacc.utils.files import load_yaml_calc, safe_decompress_dir
 if TYPE_CHECKING:
     from typing import Any
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 
 
 class EspressoTemplate(EspressoTemplate_):

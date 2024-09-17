@@ -33,17 +33,17 @@ def teardown_module():
     _internally_set_settings(reset=True)
 
 
-@pytest.fixture()
+@pytest.fixture
 def test_atoms():
     return read(FILE_DIR / "xyz" / "test.xyz")
 
 
-@pytest.fixture()
+@pytest.fixture
 def test_qirc_atoms():
     return read(FILE_DIR / "xyz" / "ts_test.xyz")
 
 
-@pytest.fixture()
+@pytest.fixture
 def os_atoms():
     return read(FILE_DIR / "xyz" / "OS_test.xyz")
 
