@@ -52,8 +52,9 @@ if has_atomate2:
         MP24MetaGGAStaticMaker,
     )
 
-if TYPE_CHECKING:
-    from typing import Any, Callable, Literal
+    from typing import Any, Literal
+    from collections.abc import Callable
+    from typing import Any
 
     from ase.atoms import Atoms
 

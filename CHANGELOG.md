@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.5]
+
+### Added
+
+- Added support for atomate2>=0.0.15
+
+### Changed
+
+- The minimum supported Python version is now 3.10 in alignment with Pymatgen
+
+## [0.11.4]
+
+### Changed
+
+- Put a `<=` version pin on Atomate2 to resolve upstream breaking change
+
 ## [0.11.3]
 
 ### Added
