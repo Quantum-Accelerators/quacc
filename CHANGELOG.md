@@ -4,6 +4,43 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.3]
+
+### Added
+
+- Added support for `preset: Path` type in the `Espresso` calculator
+- Raise a custom `JobFailure` error when a calculation fails, which stores the directory where the files remain as well as the parent error
+
+### Fixed
+
+- Fixed Parsl MPI support for Espresso recipes
+- Fixed miscellaneous inconsistencies with `preset` handling
+
+## [0.11.2]
+
+### Added
+
+- Added support for `preset: Path` type in the `Vasp` calculator
+
+## [0.11.1]
+
+### Added
+
+- Added an `additional_fields` keyword argument to all recipes
+
+### Changed
+
+- Gaussian and ORCA schemas have been updated to reflect the removal of cclib
+
+### Fixed
+
+- Fixed support for Prefect 3
+- Fixed support for ORCA 6.0.0
+
+### Removed
+
+- Removed cclib-based schemas due to fragility and replaced them with the standard ASE schemas
+
 ## [0.11.0]
 
 ### Added
@@ -15,10 +52,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Overhauled schemas throughout quacc to improve maintainability. They are now classes (mostly) instead of functions.
 - Changed the thermo runner to a schema
+- Renamed the Q-Chem perturb IRC job to `quasi_irc_job` for internal consistency
+- Removed the preliminary relaxation steps from all phonon workflows for greater composability
 
 ### Fixed
 
 - Fixed a crash when Espresso checked kpts and kspacing usage
+
+### Removed
+
+- Removed the Q-Chem quasi-IRC job since it was redundant with the perturb IRC job
 
 ## [0.10.1]
 
@@ -199,7 +242,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
-- Fixed user setting of logger level
+- Fixed user setting of LOGGER level
 - Fixed a glob-based issue with `copy_decompress_files`
 
 ## [0.7.1]
@@ -414,7 +457,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- Raised the default logger level from `WARNING` to `INFO`
+- Raised the default LOGGER level from `WARNING` to `INFO`
 
 ### Fixed
 

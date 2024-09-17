@@ -7,7 +7,7 @@ redun = pytest.importorskip("redun")
 from quacc import flow, job, subflow
 
 
-@pytest.fixture()
+@pytest.fixture
 def scheduler():
     return redun.Scheduler()
 

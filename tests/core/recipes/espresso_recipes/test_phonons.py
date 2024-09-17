@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from logging import WARNING, getLogger
 from shutil import which
 
 import pytest
@@ -36,7 +36,7 @@ from quacc.utils.files import copy_decompress_files
 
 DATA_DIR = Path(__file__).parent / "data"
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 LOGGER.propagate = True
 
 
@@ -314,10 +314,9 @@ def test_phonon_dos_flow(tmp_path, monkeypatch):
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
     with change_settings({"ESPRESSO_PSEUDO": tmp_path}):
-        atoms = bulk("Li")
-
         copy_decompress_files(DATA_DIR, ["Li.upf.gz"], tmp_path)
 
+        atoms = bulk("Li")
         input_data = {
             "control": {"calculation": "scf"},
             "system": {"occupations": "smearing", "smearing": "cold", "degauss": 0.02},
@@ -326,15 +325,13 @@ def test_phonon_dos_flow(tmp_path, monkeypatch):
 
         pseudopotentials = {"Li": "Li.upf"}
 
-        job_params = {
-            "relax_job": {
-                "pseudopotentials": pseudopotentials,
-                "input_data": input_data,
-                "kspacing": 1.0,
-            }
-        }
-
-        assert phonon_dos_flow(atoms, job_params=job_params)
+        relax_output = relax_job(
+            atoms,
+            input_data=input_data,
+            pseudopotentials=pseudopotentials,
+            kspacing=1.0,
+        )
+        assert phonon_dos_flow(prev_outdir=relax_output["dir_name"])
 
 
 def test_phonon_calculation_spin_orbit_example_06(tmp_path, monkeypatch):
@@ -418,7 +415,7 @@ def test_phonon_calculation_si_spin_orbit(tmp_path, monkeypatch, caplog):
             "kpts": (2, 2, 2),
         }
 
-        with caplog.at_level(logging.WARNING):
+        with caplog.at_level(WARNING):
             si_relax_results = relax_job(si_atoms, **si_relax_params)
 
             assert "The occupations are set to 'fixed'" in caplog.text
@@ -502,7 +499,7 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, caplog):
             }
         }
 
-        with caplog.at_level(logging.WARNING):
+        with caplog.at_level(WARNING):
             c_ph_results = phonon_job(c_scf_results["dir_name"], **c_ph_params)
             assert "Overwriting key 'fildyn'" in caplog.text
 
@@ -529,7 +526,7 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, caplog):
             }
         }
 
-        with caplog.at_level(logging.WARNING):
+        with caplog.at_level(WARNING):
             dvscf_q2r_results = dvscf_q2r_job(
                 c_ph_results["dir_name"], **dvscf_q2r_params
             )

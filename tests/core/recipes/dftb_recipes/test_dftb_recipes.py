@@ -7,16 +7,16 @@ import pytest
 DFTBPLUS_EXISTS = bool(which("dftb+"))
 
 pytestmark = pytest.mark.skipif(not DFTBPLUS_EXISTS, reason="Needs DFTB+")
-import logging
 import os
+from logging import INFO, getLogger
 
 import numpy as np
 from ase.build import bulk, molecule
 
-from quacc import change_settings
+from quacc import JobFailure, change_settings
 from quacc.recipes.dftb.core import relax_job, static_job
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 LOGGER.propagate = True
 
 
@@ -87,8 +87,10 @@ def test_static_job_cu_kpts(tmp_path, monkeypatch):
 def test_static_errors(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     atoms = molecule("H2O")
-    with pytest.raises(RuntimeError, match="failed with command"):
+    with pytest.raises(JobFailure, match="Calculation failed!") as err:
         static_job(atoms, Hamiltonian_MaxSccIterations=1)
+    with pytest.raises(RuntimeError, match="failed with command"):
+        raise err.value.parent_error
 
 
 def test_relax_job_water(tmp_path, monkeypatch):
@@ -161,20 +163,21 @@ def test_relax_job_cu_supercell_errors(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.5
-    with pytest.raises(RuntimeError, match="failed with command"):
+    with pytest.raises(JobFailure, match="Calculation failed!") as err:
         relax_job(atoms, kpts=(3, 3, 3), MaxSteps=1, Hamiltonian_MaxSccIterations=100)
+    with pytest.raises(RuntimeError, match="failed with command"):
+        raise err.value.parent_error
 
 
 @pytest.mark.skipif(os.name == "nt", reason="symlinking not possible on Windows")
 def test_child_errors(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
-    with (
-        caplog.at_level(logging.INFO),
-        change_settings({"SCRATCH_DIR": tmp_path / "scratch"}),
-    ):
-        with pytest.raises(RuntimeError, match="failed with command"):
+    with caplog.at_level(INFO), change_settings({"SCRATCH_DIR": tmp_path / "scratch"}):
+        with pytest.raises(JobFailure, match="Calculation failed!") as err:
             static_job(atoms)
+        with pytest.raises(RuntimeError, match="failed with command"):
+            raise err.value.parent_error
         assert "Calculation failed" in caplog.text
         assert "failed-quacc-" in " ".join(os.listdir(tmp_path / "scratch"))
 
@@ -183,11 +186,10 @@ def test_child_errors(tmp_path, monkeypatch, caplog):
 def test_child_errors2(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
-    with (
-        caplog.at_level(logging.INFO),
-        change_settings({"SCRATCH_DIR": tmp_path / "scratch"}),
-    ):
-        with pytest.raises(RuntimeError, match="failed with command"):
+    with caplog.at_level(INFO), change_settings({"SCRATCH_DIR": tmp_path / "scratch"}):
+        with pytest.raises(JobFailure, match="Calculation failed!") as err:
             relax_job(atoms)
+        with pytest.raises(RuntimeError, match="failed with command"):
+            raise err.value.parent_error
         assert "Calculation failed" in caplog.text
         assert "failed-quacc-" in " ".join(os.listdir(tmp_path / "scratch"))

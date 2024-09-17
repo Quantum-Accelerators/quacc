@@ -9,6 +9,7 @@ from quacc.wflow_tools.job_patterns import (
     map_partition,
     map_partitioned_lists,
     partition,
+    unpartition,
 )
 
 
@@ -20,6 +21,16 @@ def test_partition():
     partitioned_list = partition(simple_list(), 3)
     assert len(partitioned_list) == 3
     np.testing.assert_allclose(partitioned_list[0], [0, 1, 2, 3])
+
+
+def test_unpartition():
+    @job
+    def simple_list():
+        return list(range(10))
+
+    unpartitioned_list = unpartition(partition(simple_list(), 3))
+    assert len(unpartitioned_list) == 10
+    np.testing.assert_allclose(unpartitioned_list, list(range(10)))
 
 
 def test_kwarg_map():
