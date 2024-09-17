@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
     from datetime import datetime
     from pathlib import Path
-    from typing import Any, Literal, Union
+    from typing import Any, Literal
 
     from ase.atoms import Atoms
     from ase.md.md import MolecularDynamics
