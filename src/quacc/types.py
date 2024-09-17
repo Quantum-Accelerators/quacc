@@ -16,9 +16,10 @@ class DefaultSetting(BaseSettings):
 
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from datetime import datetime
     from pathlib import Path
-    from typing import Any, Callable, Literal, Union
+    from typing import Any, Literal, Union
 
     from ase.atoms import Atoms
     from ase.md.md import MolecularDynamics
@@ -41,7 +42,7 @@ if TYPE_CHECKING:
 
     # ----------- File handling -----------
 
-    Filenames = Union[str, Path, list[Union[str, Path]]]
+    Filenames = Union[str, Path, list[str | Path]]
     SourceDirectory = Union[str, Path]
 
     # ----------- k-point handling -----------

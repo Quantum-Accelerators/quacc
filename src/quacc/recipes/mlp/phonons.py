@@ -16,7 +16,8 @@ has_phonopy = bool(find_spec("phonopy"))
 has_seekpath = bool(find_spec("seekpath"))
 
 if TYPE_CHECKING:
-    from typing import Any, Callable, Literal
+    from collections.abc import Callable
+    from typing import Any, Literal
 
     from ase.atoms import Atoms
 
