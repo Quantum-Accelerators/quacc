@@ -39,6 +39,7 @@ if has_geodesic_interpolate:
     pass
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from pathlib import Path
     from typing import Any
 
@@ -206,7 +207,7 @@ class Runner(BaseRunner):
 
         # Handle optimizer kwargs
         if (
-            issubclass(optimizer, (SciPyOptimizer, MolecularDynamics))
+            issubclass(optimizer, SciPyOptimizer | MolecularDynamics)
             or optimizer.__name__ == "IRC"
         ):
             # https://gitlab.com/ase/ase/-/issues/1476
@@ -230,7 +231,7 @@ class Runner(BaseRunner):
             full_run_kwargs.pop("fmax")
         try:
             with traj, optimizer(self.atoms, **merged_optimizer_kwargs) as dyn:
-                if issubclass(optimizer, (SciPyOptimizer, MolecularDynamics)):
+                if issubclass(optimizer, SciPyOptimizer | MolecularDynamics):
                     # https://gitlab.coms/ase/ase/-/issues/1475
                     # https://gitlab.com/ase/ase/-/issues/1497
                     dyn.run(**full_run_kwargs)

@@ -232,7 +232,7 @@ class Vasp(Vasp_):
         # Allow the user to use setups='mysetups.yaml' to load in a custom
         # setups from a YAML file
         if (
-            isinstance(self.user_calc_params.get("setups"), (str, Path))
+            isinstance(self.user_calc_params.get("setups"), str | Path)
             and self.user_calc_params["setups"] not in ase_setups.setups_defaults
         ):
             self.user_calc_params["setups"] = load_vasp_yaml_calc(
