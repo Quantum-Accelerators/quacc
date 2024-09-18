@@ -29,12 +29,6 @@
 - 🧠 [User Guide](https://quantum-accelerators.github.io/quacc/user/recipes/recipes_intro.html)
 - 🤝 [Developer Guide](https://quantum-accelerators.github.io/quacc/dev/contributing.html)
 
-## Visual Example ✨
-
-🚀 Representative `quacc` workflow using [Covalent](https://github.com/AgnostiqHQ/covalent) as one of the several supported workflow managers.
-
-![](https://github.com/Quantum-Accelerators/quacc/blob/main/docs/images/start/start.gif)
-
 ## Citation 📝
 
 If you use `quacc` in your work, please cite it as follows:
