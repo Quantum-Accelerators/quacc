@@ -36,9 +36,6 @@ LOGGER = getLogger(__name__)
 has_sella = bool(find_spec("sella"))
 has_geodesic_interpolate = bool(find_spec("geodesic_interpolate"))
 
-if has_geodesic_interpolate:
-    pass
-
 if TYPE_CHECKING:
     from collections.abc import Callable
     from pathlib import Path
