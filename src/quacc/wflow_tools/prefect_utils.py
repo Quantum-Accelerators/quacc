@@ -25,7 +25,10 @@ def resolve_futures_to_results(expr: PrefectFuture | Any) -> State | Any:
     Unsupported object types will be returned without modification.
 
     This function is a trivial change from resolve_futures_to_states here:
-    https://github.com/PrefectHQ/prefect/blob/main/src/prefect/futures.py
+    https://github.com/PrefectHQ/prefect/blob/main/src/prefect/futures.py.
+
+    The upstream Prefect code is licensed under Apache 2.0:
+    https://github.com/PrefectHQ/prefect/blob/main/LICENSE
     """
     futures: set[PrefectFuture] = set()
 
@@ -86,6 +89,9 @@ async def resolve_futures_to_results_async(expr: PrefectFuture | Any) -> State |
 
     This function is a trivial change from resolve_futures_to_states here:
     https://github.com/PrefectHQ/prefect/blob/main/src/prefect/futures.py
+
+    The upstream Prefect code is licensed under Apache 2.0:
+    https://github.com/PrefectHQ/prefect/blob/main/LICENSE
     """
     futures: set[PrefectFuture] = set()
 
