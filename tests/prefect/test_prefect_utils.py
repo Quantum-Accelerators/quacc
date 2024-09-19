@@ -36,7 +36,7 @@ def test_resolve_futures_to_results_taskfail():
         nested_future = {"nest": future}
         return resolve_futures_to_results(nested_future)
 
-    with pytest.raises(BaseException):  # noqa: B017
+    with pytest.raises(BaseException):  # noqa: B017, PT011
         test_flow()
 
 
