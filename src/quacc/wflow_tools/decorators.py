@@ -4,9 +4,12 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from functools import partial, wraps
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 from quacc.settings import change_settings_wrap
+
+if TYPE_CHECKING:
+    from quacc.settings import QuaccSettings
 
 Job = Callable[..., Any]
 Flow = Callable[..., Any]
@@ -627,7 +630,7 @@ def _get_parsl_wrapped_func(
     return wrapper
 
 
-def _get_prefect_wrapped_flow(_func, settings, **kwargs):
+def _get_prefect_wrapped_flow(_func: Callable, settings: QuaccSettings, **kwargs) -> Callable:
     from prefect import flow as prefect_flow
     from prefect.utilities.asyncutils import is_async_fn
 
