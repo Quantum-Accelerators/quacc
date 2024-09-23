@@ -1,6 +1,6 @@
 ase==3.23.0
 custodian==2024.6.24
-emmet-core==0.83.6
+emmet-core==0.84.2
 maggma==0.69.3
 monty==2024.7.30
 numpy==1.26.4
