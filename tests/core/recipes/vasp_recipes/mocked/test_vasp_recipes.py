@@ -807,7 +807,7 @@ def test_mp_gga_relax_flow(tmp_path, patch_nonmetallic_taskdoc):
             "gamma": True,
             "ismear": -5,
             "ispin": 2,
-            "kpts": (5, 11, 11),
+            "kpts": (6, 13, 13),
             "lasph": True,
             "lcharg": True,
             "ldau": True,
