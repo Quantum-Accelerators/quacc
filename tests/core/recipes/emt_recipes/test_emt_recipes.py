@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from logging import getLogger
 from pathlib import Path
 
 import numpy as np
@@ -15,7 +15,7 @@ from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.md import md_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 LOGGER.propagate = True
 
 

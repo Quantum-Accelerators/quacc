@@ -193,18 +193,15 @@ graph LR
         return output2
 
 
-    future = workflow(1, 2, 3)  #  (3)!
-    result = future.result()  #  (4)!
+    result = workflow(1, 2, 3)  #  (3)!
     print(result)  # 9
     ```
 
-    1. The `#!Python @job` decorator will be transformed into a Prefect `#!Python @task`.
+    1. The `#!Python @job` decorator will be transformed into a Prefect `#!Python @task`. It will also be launched via `.submit()` if `SETTINGS.PREFECT_AUTO_SUBMIT` is `True`.
 
     2. The `#!Python @flow` decorator will be transformed into a Prefect `#!Python @flow`.
 
-    3. This will create and run the `Flow`. At this point, the workflow has been dispatched, but only a reference is returned.
-
-    4. Calling `.result()` will return the result of the workflow.
+    3. This will create and run the `Flow`. At this point, the workflow has been dispatched and the final results are returned.
 
 === "Redun"
 

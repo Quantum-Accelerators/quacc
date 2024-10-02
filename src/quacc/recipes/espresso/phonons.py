@@ -23,7 +23,8 @@ from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:
     from collections import UserDict
-    from typing import Any, Callable
+    from collections.abc import Callable
+    from typing import Any
 
     from quacc.types import (
         EspressoPhononDosSchema,
@@ -44,6 +45,7 @@ def phonon_job(
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
     use_phcg: bool = False,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -85,6 +87,8 @@ def phonon_job(
         If True, the calculation is performed using the `phcg.x` code which uses a faster algorithm.
         It can be used only if you sample the Brillouin Zone at Gamma and you only need the phonon
         modes at Gamma (molecules typically). It cannot be used with spin-polarization, USPP and PAW.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -96,6 +100,7 @@ def phonon_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
+    binary = "phcg" if use_phcg else "ph"
     calc_defaults = {
         "input_data": {
             "inputph": {"tr2_ph": 1e-12, "alpha_mix(1)": 0.1, "verbosity": "high"}
@@ -103,13 +108,11 @@ def phonon_job(
         "qpts": (0, 0, 0),
     }
 
-    binary = "phcg" if use_phcg else "ph"
-
     return run_and_summarize(
         template=EspressoTemplate(binary, test_run=test_run, outdir=prev_outdir),
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": f"{binary}.x Phonon"},
+        additional_fields={"name": f"{binary}.x Phonon"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -119,6 +122,7 @@ def q2r_job(
     copy_files: (
         SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
     ),
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -137,6 +141,8 @@ def q2r_job(
         which files have to be copied over by looking at the binary and `input_data`.
         If a dict is provided, the mode is manual, keys are source directories and values
         are relative path to files or directories to copy. Glob patterns are supported.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -152,7 +158,7 @@ def q2r_job(
         template=EspressoTemplate("q2r"),
         calc_defaults={},
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "q2r.x Phonon"},
+        additional_fields={"name": "q2r.x Phonon"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -162,6 +168,7 @@ def matdyn_job(
     copy_files: (
         SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
     ),
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -181,6 +188,8 @@ def matdyn_job(
         which files have to be copied over by looking at the binary and `input_data`.
         If a dict is provided, the mode is manual, keys are source directories and values
         are relative path to files or directories to copy. Glob patterns are supported.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -196,7 +205,7 @@ def matdyn_job(
         template=EspressoTemplate("matdyn"),
         calc_defaults={},
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "matdyn Phonon"},
+        additional_fields={"name": "matdyn.x Phonon"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -503,6 +512,7 @@ def dvscf_q2r_job(
         | None
     ) = None,
     prev_outdir: SourceDirectory | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -548,6 +558,8 @@ def dvscf_q2r_job(
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
         to manually copy files. The directory will be ungzipped if necessary.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -563,7 +575,7 @@ def dvscf_q2r_job(
         template=EspressoTemplate("dvscf_q2r", outdir=prev_outdir),
         calc_defaults={},
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "dvscf_q2r Phonon"},
+        additional_fields={"name": "dvscf_q2r Phonon"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -577,6 +589,7 @@ def postahc_job(
         | None
     ) = None,
     prev_outdir: SourceDirectory | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -607,6 +620,8 @@ def postahc_job(
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
         to manually copy files. The directory will be ungzipped if necessary.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Additional keyword arguments to pass to the Espresso calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. See the docstring of
@@ -622,6 +637,6 @@ def postahc_job(
         template=EspressoTemplate("postahc", outdir=prev_outdir),
         calc_defaults={},
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "postahc Phonon"},
+        additional_fields={"name": "postahc Phonon"} | (additional_fields or {}),
         copy_files=copy_files,
     )

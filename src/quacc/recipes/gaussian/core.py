@@ -10,6 +10,8 @@ from quacc import job
 from quacc.recipes.gaussian._base import run_and_summarize
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase.atoms import Atoms
 
     from quacc.types import Filenames, RunSchema, SourceDirectory
@@ -23,6 +25,7 @@ def static_job(
     xc: str = "wb97xd",
     basis: str = "def2tzvp",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -42,6 +45,8 @@ def static_job(
         Basis set
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the Gaussian calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -74,7 +79,7 @@ def static_job(
         spin_multiplicity=spin_multiplicity,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "Gaussian Static"},
+        additional_fields={"name": "Gaussian Static"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -88,6 +93,7 @@ def relax_job(
     basis: str = "def2tzvp",
     freq: bool = False,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -109,6 +115,8 @@ def relax_job(
         If a frequency calculation should be carried out.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results
     **calc_kwargs
         Custom kwargs for the Gaussian calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -143,6 +151,6 @@ def relax_job(
         spin_multiplicity=spin_multiplicity,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "Gaussian Relax"},
+        additional_fields={"name": "Gaussian Relax"} | (additional_fields or {}),
         copy_files=copy_files,
     )

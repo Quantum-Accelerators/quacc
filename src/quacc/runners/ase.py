@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
-import logging
-import sys
 from importlib.util import find_spec
+from logging import getLogger
 from shutil import copy, copytree
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 import numpy as np
 from ase.calculators import calculator
@@ -24,18 +23,18 @@ from ase.vibrations import Vibrations
 from monty.dev import requires
 from monty.os.path import zpath
 
-from quacc import get_settings
 from quacc.atoms.core import copy_atoms
 from quacc.runners._base import BaseRunner
 from quacc.runners.prep import terminate
 from quacc.utils.dicts import recursive_dict_merge
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 
 has_sella = bool(find_spec("sella"))
 
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from pathlib import Path
     from typing import Any
 
@@ -123,8 +122,6 @@ class Runner(BaseRunner):
         # and output properties (e.g. final magnetic moments).
         if geom_file:
             atoms_new = read(zpath(str(self.tmpdir / geom_file)))
-            if isinstance(atoms_new, list):
-                atoms_new = atoms_new[-1]
 
             # Make sure the atom indices didn't get updated somehow (sanity check).
             # If this happens, there is a serious problem.
@@ -191,16 +188,10 @@ class Runner(BaseRunner):
             The ASE Dynamics object following an optimization.
         """
         # Set defaults
-        settings = get_settings()
         merged_optimizer_kwargs = recursive_dict_merge(
-            {
-                "logfile": "-" if settings.DEBUG else self.tmpdir / "opt.log",
-                "restart": self.tmpdir / "opt.json",
-            },
+            {"logfile": self.tmpdir / "opt.log", "restart": self.tmpdir / "opt.json"},
             optimizer_kwargs,
         )
-        if merged_optimizer_kwargs is None:
-            merged_optimizer_kwargs = {}
         run_kwargs = run_kwargs or {}
         traj_filename = "opt.traj"
 
@@ -211,7 +202,7 @@ class Runner(BaseRunner):
 
         # Handle optimizer kwargs
         if (
-            issubclass(optimizer, (SciPyOptimizer, MolecularDynamics))
+            issubclass(optimizer, SciPyOptimizer | MolecularDynamics)
             or optimizer.__name__ == "IRC"
         ):
             # https://gitlab.com/ase/ase/-/issues/1476
@@ -235,7 +226,7 @@ class Runner(BaseRunner):
             full_run_kwargs.pop("fmax")
         try:
             with traj, optimizer(self.atoms, **merged_optimizer_kwargs) as dyn:
-                if issubclass(optimizer, (SciPyOptimizer, MolecularDynamics)):
+                if issubclass(optimizer, SciPyOptimizer | MolecularDynamics):
                     # https://gitlab.coms/ase/ase/-/issues/1475
                     # https://gitlab.com/ase/ase/-/issues/1497
                     dyn.run(**full_run_kwargs)
@@ -282,7 +273,6 @@ class Runner(BaseRunner):
         """
         # Set defaults
         vib_kwargs = vib_kwargs or {}
-        settings = get_settings()
 
         # Run calculation
         vib = Vibrations(self.atoms, name=str(self.tmpdir / "vib"), **vib_kwargs)
@@ -292,9 +282,7 @@ class Runner(BaseRunner):
             terminate(self.tmpdir, exception)
 
         # Summarize run
-        vib.summary(
-            log=sys.stdout if settings.DEBUG else str(self.tmpdir / "vib_summary.log")
-        )
+        vib.summary(log=str(self.tmpdir / "vib_summary.log"))
 
         # Perform cleanup operations
         self.cleanup()
@@ -343,8 +331,7 @@ class Runner(BaseRunner):
         # Set defaults
         dynamics_kwargs = dynamics_kwargs or {}
         maxwell_boltzmann_kwargs = maxwell_boltzmann_kwargs or {}
-        settings = get_settings()
-        dynamics_kwargs["logfile"] = "-" if settings.DEBUG else self.tmpdir / "md.log"
+        dynamics_kwargs["logfile"] = self.tmpdir / "md.log"
 
         if maxwell_boltzmann_kwargs:
             MaxwellBoltzmannDistribution(self.atoms, **maxwell_boltzmann_kwargs)

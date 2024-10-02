@@ -18,7 +18,7 @@ if has_sella:
     from sella import IRC, Sella
 
 if TYPE_CHECKING:
-    from typing import Literal
+    from typing import Any, Literal
 
     from ase.atoms import Atoms
     from numpy.typing import NDArray
@@ -36,6 +36,7 @@ def ts_job(
     basis: str = "def2-svpd",
     opt_params: OptParams | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
     """
@@ -86,7 +87,7 @@ def ts_job(
         calc_swaps=calc_kwargs,
         opt_defaults=opt_defaults,
         opt_params=opt_params,
-        additional_fields={"name": "Q-Chem TS"},
+        additional_fields={"name": "Q-Chem TS"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -102,6 +103,7 @@ def irc_job(
     basis: str = "def2-svpd",
     opt_params: OptParams | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
     """
@@ -127,6 +129,8 @@ def irc_job(
         of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
         a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
@@ -156,7 +160,7 @@ def irc_job(
         calc_swaps=calc_kwargs,
         opt_defaults=opt_defaults,
         opt_params=opt_params,
-        additional_fields={"name": "Q-Chem IRC"},
+        additional_fields={"name": "Q-Chem IRC"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
@@ -174,6 +178,7 @@ def quasi_irc_job(
     basis: str = "def2-svpd",
     opt_params: OptParams | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
     """
@@ -207,6 +212,8 @@ def quasi_irc_job(
         of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the calculator. Set a value to `quacc.Remove` to remove
         a pre-existing key entirely. See [quacc.calculators.qchem.qchem.QChem][] for more
@@ -218,7 +225,6 @@ def quasi_irc_job(
     OptSchema
         Dictionary of results from [quacc.schemas.ase.Summarize.opt][]
     """
-
     calc_defaults = recursive_dict_merge(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
@@ -234,6 +240,6 @@ def quasi_irc_job(
         calc_swaps=calc_kwargs,
         opt_defaults=opt_defaults,
         opt_params=opt_params,
-        additional_fields={"name": "Q-Chem Quasi-IRC perturbed optimization"},
+        additional_fields={"name": "Q-Chem Quasi-IRC"} | (additional_fields or {}),
         copy_files=copy_files,
     )

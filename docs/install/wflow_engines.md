@@ -144,7 +144,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     export JOBFLOW_CONFIG_FILE="/path/to/my/jobflow.yaml"
     ```
 
-    **FireWorks DB Setup**
+    **FireWorks Setup**
 
     If you plan to use FireWorks to dispatch your Jobflow workflows, you will also need to make a few configuration files: `FW_config.yaml`, `my_fworker.yaml`, `my_launchpad.yaml`, and `my_qadapter.yaml`. To begin, make a directory called `fw_config` where you will store the four files described in greater detail below. The directory structure will look like the following:
 
@@ -240,3 +240,11 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
         Running `lpad reset` will clear your FireWorks launchpad, so only use this command if you are a new user.
 
     To check that FireWorks can connect to your database, run `lpad reset` if this is your first time using FireWorks.
+
+    **Quacc Settings**
+
+    Finally, since FireWorks will create unique folders of its own for each job, you can disable quacc's handling of directory management as follows:
+
+    ```bash
+    quacc set CREATE_UNIQUE_DIR False
+    ```

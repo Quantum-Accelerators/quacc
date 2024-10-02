@@ -6,7 +6,7 @@ redun = pytest.importorskip("redun")
 from ase.build import bulk
 
 
-@pytest.fixture()
+@pytest.fixture
 def scheduler():
     return redun.Scheduler()
 
@@ -47,6 +47,7 @@ def test_copy_files(tmp_path, monkeypatch, scheduler):
 
 def test_phonon_flow(tmp_path, monkeypatch, scheduler):
     pytest.importorskip("phonopy")
+    pytest.importorskip("seekpath")
     from quacc.recipes.emt.phonons import phonon_flow
 
     monkeypatch.chdir(tmp_path)

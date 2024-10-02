@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "quacc"
 description="A platform to enable high-throughput, database-driven quantum chemistry and computational materials science"
-version = "0.11.1"
+version = "0.11.7"
 readme = "README.md"
 license = { text = "BSD-3" }
 authors = [{ name = "Andrew S. Rosen", email = "asrosen@princeton.edu" }]
@@ -15,7 +15,6 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -25,7 +24,7 @@ classifiers = [
     "Operating System :: Unix",
     "Operating System :: MacOS",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "ase>=3.23.0", # for Atoms object and calculators
     "custodian>=2024.3.12", # for automated error corrections
@@ -46,12 +45,12 @@ covalent = ["covalent>=0.234.1-rc.0; platform_system!='Windows'", "covalent-clou
 dask = ["dask[distributed]>=2023.12.1", "dask-jobqueue>=0.8.2"]
 defects = ["pymatgen-analysis-defects>=2023.8.22", "shakenbreak>=3.2.0"]
 jobflow = ["jobflow[fireworks]>=0.1.14", "jobflow-remote>=0.1.0"]
-mlp = ["matgl>=1.1.2", "chgnet>=0.3.3", "mace-torch>=0.3.3", "torch-dftd>=0.4.0", "torchdata<0.8.0"]
+mlp = ["matgl>=1.1.2", "chgnet>=0.3.3", "mace-torch>=0.3.3", "torch-dftd>=0.4.0"]
 mp = ["atomate2>=0.0.14"]
 newtonnet = ["newtonnet>=1.1"]
 parsl = ["parsl[monitoring]>=2024.5.27; platform_system!='Windows'"]
 phonons = ["phonopy>=2.20.0", "seekpath>=2.1.0"]
-prefect = ["prefect[dask]>=2.19.0,<3.0", "dask-jobqueue>=0.8.2"]
+prefect = ["prefect[dask]>=2.19.0", "dask-jobqueue>=0.8.2"]
 redun = ["redun>=0.16.2"]
 sella = ["sella>=2.3.4"]
 tblite = ["tblite>=0.3.0; platform_system=='Linux'"]
@@ -84,6 +83,7 @@ include = ["quacc"]
 exclude = ["**/__pycache__"]
 
 [tool.pytest.ini_options]
+asyncio_mode = "auto"
 minversion = "6.0"
 addopts = ["-p no:warnings", "--import-mode=importlib"]
 xfail_strict = true

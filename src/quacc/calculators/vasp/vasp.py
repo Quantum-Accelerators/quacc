@@ -42,7 +42,7 @@ class Vasp(Vasp_):
     def __init__(
         self,
         input_atoms: Atoms,
-        preset: None | str = None,
+        preset: None | str | Path = None,
         use_custodian: bool | DefaultSetting = QuaccDefault,
         incar_copilot: Literal["off", "on", "aggressive"]
         | DefaultSetting = QuaccDefault,
@@ -66,20 +66,23 @@ class Vasp(Vasp_):
         input_atoms
             The input Atoms object to be used for the calculation.
         preset
-            The name of a YAML file containing a list of INCAR parameters to use as
-            a "preset" for the calculator. quacc will automatically look in the
-            `VASP_PRESET_DIR` (default: quacc/calculators/vasp/presets) for the
-            file, such that preset="BulkSet" is supported, for instance. The .yaml
-            extension is not necessary. Any user-supplied calculator **kwargs will
+            A YAML file containing a list of INCAR parameters to use as a "preset"
+            for the calculator. If `preset` has a .yml or .yaml file extension, the
+            path to this file will be used directly. If `preset` is a string without
+            an extension, the corresponding YAML file will be assumed to be in the
+            `VASP_PRESET_DIR`. Any user-supplied calculator **kwargs will
             override any corresponding preset values.
         use_custodian
             Whether to use Custodian to run VASP. Default is True in settings.
         incar_copilot
             Controls VASP co-pilot mode for automated INCAR parameter handling.
+
             Options include:
-            off: Do not use co-pilot mode. INCAR parameters will be unmodified.
-            on: Use co-pilot mode. This will only modify INCAR flags not already set by the user.
-            aggressive: Use co-pilot mode in aggressive mode. This will modify INCAR flags even if they are already set by the user.
+                off: Do not use co-pilot mode. INCAR parameters will be unmodified.
+                on: Use co-pilot mode. This will only modify INCAR flags not already set
+                    by the user.
+                aggressive: Use co-pilot mode in aggressive mode. This will modify INCAR
+                    flags even if they are already set by the user.
         copy_magmoms
             If True, any pre-existing `atoms.get_magnetic_moments()` will be set in
             `atoms.set_initial_magnetic_moments()`. Set this to False if you want to
@@ -213,20 +216,23 @@ class Vasp(Vasp_):
 
         # Get user-defined preset parameters for the calculator
         if self.preset:
-            calc_preset = load_vasp_yaml_calc(
-                self._settings.VASP_PRESET_DIR / self.preset
-            )["inputs"]
+            preset_path = (
+                self.preset
+                if Path(self.preset).suffix in (".yaml", ".yml")
+                else self._settings.VASP_PRESET_DIR / f"{self.preset}.yaml"
+            )
+            calc_preset_inputs = load_vasp_yaml_calc(preset_path)["inputs"]
         else:
-            calc_preset = {}
+            calc_preset_inputs = {}
 
         # Collect all the calculator parameters and prioritize the kwargs in the
         # case of duplicates.
-        self.user_calc_params = calc_preset | self.kwargs
+        self.user_calc_params = calc_preset_inputs | self.kwargs
 
         # Allow the user to use setups='mysetups.yaml' to load in a custom
         # setups from a YAML file
         if (
-            isinstance(self.user_calc_params.get("setups"), (str, Path))
+            isinstance(self.user_calc_params.get("setups"), str | Path)
             and self.user_calc_params["setups"] not in ase_setups.setups_defaults
         ):
             self.user_calc_params["setups"] = load_vasp_yaml_calc(

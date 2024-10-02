@@ -83,6 +83,7 @@ def test_settings_swap_all(tmp_path_factory):
 
 def test_phonon_flow(tmp_path, monkeypatch):
     pytest.importorskip("phonopy")
+    pytest.importorskip("seekpath")
     from quacc.recipes.emt.phonons import phonon_flow
 
     monkeypatch.chdir(tmp_path)
@@ -95,6 +96,7 @@ def test_phonon_flow(tmp_path, monkeypatch):
 
 def test_phonon_flow_multistep(tmp_path, monkeypatch):
     pytest.importorskip("phonopy")
+    pytest.importorskip("seekpath")
     from quacc.recipes.emt.phonons import phonon_flow
 
     monkeypatch.chdir(tmp_path)

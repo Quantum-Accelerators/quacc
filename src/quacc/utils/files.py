@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 import contextlib
-import logging
 import os
 import socket
 from copy import deepcopy
 from datetime import datetime, timezone
+from logging import getLogger
 from pathlib import Path
 from random import randint
 from shutil import copy
@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from quacc.types import Filenames, SourceDirectory
 
 
-logger = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 
 
 def check_logfile(logfile: str | Path, check_str: str) -> bool:
@@ -139,7 +139,7 @@ def copy_decompress_files(
     for f in filenames:
         globs_found = list(source_directory.glob(str(f)))
         if not globs_found:
-            logger.warning(f"Cannot find file {f} in {source_directory}")
+            LOGGER.warning(f"Cannot find file {f} in {source_directory}")
         for source_filepath in globs_found:
             destination_filepath = destination_directory / source_filepath.relative_to(
                 source_directory
@@ -190,7 +190,8 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
     Loads a YAML file containing calculator settings. This YAML loader looks for a
     special flag "parent" in the YAML file. If this flag is present, the YAML file
     specified in the "parent" flag is loaded and its contents are inherited by the child
-    YAML file.
+    YAML file. It is assumed that the parent YAML file is in the same directory as the
+    child YAML file if only the filename is specified.
 
     Parameters
     ----------
@@ -204,9 +205,6 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
     """
     yaml_path = Path(yaml_path).expanduser()
 
-    if yaml_path.suffix != ".yaml":
-        yaml_path = yaml_path.with_suffix(f"{yaml_path.suffix}.yaml")
-
     if not yaml_path.exists():
         msg = f"Cannot find {yaml_path}"
         raise FileNotFoundError(msg)
@@ -218,7 +216,10 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
     # the child file.
     for config_arg in deepcopy(config):
         if "parent" in config_arg.lower():
-            yaml_parent_path = Path(yaml_path).parent / Path(config[config_arg])
+            if Path(config[config_arg]).suffix in (".yml", ".yaml"):
+                yaml_parent_path = config[config_arg]
+            else:
+                yaml_parent_path = yaml_path.parent / f"{config[config_arg]}.yaml"
             parent_config = load_yaml_calc(yaml_parent_path)
 
             for k, v in parent_config.items():
@@ -235,7 +236,9 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
     return config
 
 
-def find_recent_logfile(directory: Path | str, logfile_extensions: str | list[str]):
+def find_recent_logfile(
+    directory: Path | str, logfile_extensions: str | list[str]
+) -> Path:
     """
     Find the most recent logfile in a given directory.
 
@@ -245,7 +248,11 @@ def find_recent_logfile(directory: Path | str, logfile_extensions: str | list[st
         The path to the directory to search
     logfile_extensions
         The extension (or list of possible extensions) of the logfile to search
-        for. For an exact match only, put in the full file name.
+        for. For an exact match only, put in the full file name. Note that it is
+        recommended that the extension starts with a period so that it is bound
+        by the start of the extension (e.g. for extensions `.log` versus
+        `.mylog`, you would expect `logfile_extensions=".log"` to match only
+        the former and `logfile_extensions="log"` to match both).
 
     Returns
     -------
@@ -259,7 +266,7 @@ def find_recent_logfile(directory: Path | str, logfile_extensions: str | list[st
     for f in Path(directory).expanduser().iterdir():
         f_path = Path(directory, f)
         for ext in logfile_extensions:
-            if ext in str(f) and f_path.stat().st_mtime > mod_time:
+            if ext in "".join(f.suffixes) and f_path.stat().st_mtime > mod_time:
                 mod_time = f_path.stat().st_mtime
                 logfile = f_path.resolve()
     return logfile
@@ -306,4 +313,4 @@ def safe_decompress_dir(path: str | Path) -> None:
             try:
                 decompress_file(Path(parent, f))
             except FileNotFoundError:
-                logger.debug(f"Cannot find {f} in {parent}. Skipping.")
+                LOGGER.debug(f"Cannot find {f} in {parent}. Skipping.")
