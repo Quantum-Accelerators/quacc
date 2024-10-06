@@ -85,3 +85,5 @@ env/
 ENV/
 env.bak/
 venv.bak/
+tests/core/atoms/func_tester.ipynb
+tests/core/atoms/test_skzcam_input.py

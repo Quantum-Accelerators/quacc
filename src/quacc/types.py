@@ -263,6 +263,27 @@ if TYPE_CHECKING:
         ri_scf_basis: str
         ri_cwft_basis: str
 
+    class SKZCAMInfo(TypedDict):
+        max_cluster_num: int
+        element_frozencore: Literal['valence', 'semicore'] | dict[ElementStr, int] 
+        element_basis: Literal['DZ','TZ','QZ','5Z','6Z'] | dict[ElementStr, str]
+        code: Literal["mrcc", "orca"]
+        nprocs: int | None
+        max_memory: int | None
+        element_ecp: dict[ElementStr, str] | None
+        multiplicities: MultiplicityDict | None
+        orca_method_block: dict[str, str] | None
+        orca_scf_block: dict[str, str] | None
+        orca_cation_cap_ecp: dict[ElementStr, str] | None
+        mrcc_calc_inputs: dict[str, str] | None
+
+    class ElementInfo(TypedDict):
+        core: int
+        basis: str
+        ecp: str
+        ri_scf_basis: str
+        ri_cwft_basis: str
+
     class BlockInfo(TypedDict):
         adsorbate_slab: str
         adsorbate: str

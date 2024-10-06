@@ -41,7 +41,7 @@ def static_job(
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
-        Custom kwargs for the Gaussian calculator. Set a value to
+        Custom kwargs for the MRCC calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely.
 
     Returns

@@ -2,16 +2,19 @@ from __future__ import annotations
 
 from importlib.util import find_spec
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 import numpy as np
 from ase.atoms import Atoms
 from ase.data import atomic_numbers
 from ase.io import read, write
+from ase.io.orca import write_orca
 from ase.units import Bohr
 from monty.dev import requires
 from monty.io import zopen
 from monty.os.path import zpath
+
+from quacc.calculators.mrcc.io import write_mrcc
 
 if TYPE_CHECKING:
     from ase.atom import Atom
@@ -23,11 +26,451 @@ if TYPE_CHECKING:
         ElementStr,
         MRCCInputDict,
         MultiplicityDict,
+        SKZCAMInfo,
         SKZCAMOutput,
+        semicore_frozen_core_dict,
+        valence_frozen_core_dict,
     )
 
 
+element_from_atomic_num_dict = {v: k for k, v in atomic_numbers.items()}
+
+semicore_frozen_core_dict = {
+    element_from_atomic_num_dict[x]: (
+        0 if x <= 4 else 
+        2 if x <= 12 else 
+        10 if x <= 30 else 
+        18 if x <= 38 else 
+        28 if x <= 48 else 
+        36 if x <= 71 else 
+        46 if x <= 80 else 
+        68 if x <= 103 else 
+        None  # You can choose a default value or None for x > 103
+    )
+    for x in range(1, 104)  # Adjust the range to include up to 103
+    if x in element_from_atomic_num_dict  # Ensure the atomic number exists in the dictionary
+}
+
+valence_frozen_core_dict = {
+    element_from_atomic_num_dict[x]: (
+        0 if x <= 2 else 
+        2 if x <= 10 else 
+        10 if x <= 18 else 
+        18 if x <= 30 else 
+        28 if x <= 36 else 
+        36 if x <= 48 else 
+        46 if x <= 54 else 
+        54 if x <= 70 else 
+        68 if x <= 80 else 
+        78 if x <= 86 else 
+        86 if x <= 102 else
+        100 if x <= 103 else
+        None  # You can choose a default value or None for x > 103
+    )
+    for x in range(1, 104)  # Adjust the range to include up to 103
+    if x in element_from_atomic_num_dict  # Ensure the atomic number exists in the dictionary
+}
+
+skzcam_cation_cap_ecp = {
+    'Ti': """NewECP
+N_core 0
+  lmax f
+  s 2
+   1      0.860000       9.191690  2
+   2      0.172000       0.008301  2
+  p 2
+   1      0.860000      17.997720  2
+   2      0.172000      -0.032600  2
+  d 2
+   1      1.600000      -9.504310  2
+   2      0.320000      -0.151370  2
+  f 1
+   1      1.000000000    0.000000000 2
+end""",
+    'Mg': """NewECP
+N_core 0
+lmax f
+s 1
+1      1.732000000   14.676000000 2
+p 1
+1      1.115000000    5.175700000 2
+d 1
+1      1.203000000   -1.816000000 2
+f 1
+1      1.000000000    0.000000000 2
+end"""
+}
+
 has_chemshell = find_spec("chemsh") is not None
+
+class SKZCAMInputSet:
+    """
+    A class to generate the complete set of SKZCAM inputs for performing direct MRCC and/or ORCA calculations. We define different ONIOM """
+
+    def __init__(
+            self,
+            adsorbate_slab_embedded_cluster: Atoms,
+            quantum_cluster_indices_set: list[list[int]],
+            ecp_region_indices_set: list[list[int]],
+            mp2_oniom1_ll: SKZCAMInfo | None = None,
+            mp2_oniom1_hl: SKZCAMInfo | None = None,
+            mp2_oniom2_hl: SKZCAMInfo | None = None,
+            mp2_oniom3_hl: SKZCAMInfo | None = None,
+            mp2_oniom4_hl: SKZCAMInfo | None = None,
+            deltaCC: SKZCAMInfo | None = None 
+    ):
+        """
+        Parameters
+        ----------
+        adsorbate_slab_embedded_cluster
+            The ASE Atoms object containing the atomic coordinates and atomic charges from the .pun file, as well as the atom type. This object is created by the [quacc.atoms.skzcam.CreateSKZCAMClusters][] class.
+        quantum_cluster_indices_set
+            A list of lists containing the indices of the atoms of a set of quantum clusters. These indices are provided by the [quacc.atoms.skzcam.CreateSKZCAMClusters][] class.
+        ecp_region_indices_set
+            A list of lists containing the indices of the atoms in the ECP region of a set of quantum clusters. These indices are provided by the [quacc.atoms.skzcam.CreateSKZCAMClusters][] class.
+        mp2_oniom1_ll
+            A dictionary containing the information for the "low-level" MP2 treatment of ONIOM layer 1.
+        mp2_oniom1_hl
+            A dictionary containing the information for the "high-level" MP2 treatment of ONIOM layer 1.
+        mp2_oniom2_hl
+            A dictionary containing the information for the "high-level" MP2 treatment of ONIOM layer 2.
+        mp2_oniom3_hl
+            A dictionary containing the information for the "high-level" MP2 treatment of ONIOM layer 3.
+        mp2_oniom4_hl
+            A dictionary containing the information for the "high-level" MP2 treatment of ONIOM layer 4.
+        deltaCC
+            A dictionary containing the information for the deltaCC calculation.
+
+        Returns
+        -------
+        None
+        """
+
+        def _format_oniom_dict(
+                oniom_dict: SKZCAMInfo
+        ) -> SKZCAMInfo:
+            """
+            Format the oniom dictionary to include the default values for the SKZCAM calculations if the user hasn't specified it themselves.
+
+            Parameters
+            ----------
+            oniom_dict
+                The dictionary containing the information for the SKZCAM calculation.
+
+            Returns
+            -------
+            SKZCAMInfo
+                The formatted dictionary containing the information for the SKZCAM calculation.
+            
+            """
+
+            # Raise error if the code is not MRCC or ORCA
+            if oniom_dict['code'] not in ['mrcc', 'orca']:
+                raise ValueError("The code must be either 'mrcc' or 'orca'.")
+            
+            if 'multiplicities' not in oniom_dict or oniom_dict['multiplicities'] is None:
+                oniom_dict['multiplicities'] = {"adsorbate_slab": 1, "adsorbate": 1, "slab": 1}
+            if 'ecp' not in oniom_dict or oniom_dict['ecp'] is None:
+                oniom_dict['ecp'] = {}
+            if 'ri_scf_basis' not in oniom_dict:
+                oniom_dict['ri_scf_basis'] = None
+            if 'ri_cwft_basis' not in oniom_dict:
+                oniom_dict['ri_cwft_basis'] = None
+            if 'nprocs' not in oniom_dict or oniom_dict['nprocs'] is None:
+                oniom_dict['nprocs'] = 1
+            if 'max_memory' not in oniom_dict or oniom_dict['max_memory'] is None:
+                oniom_dict['max_memory'] = 1000
+            if 'mrcc_calc_inputs' not in oniom_dict or oniom_dict['mrcc_calc_inputs'] is None:
+                oniom_dict['mrcc_calc_inputs'] = {}
+
+            if oniom_dict['code'] == 'orca':
+                if 'orca_method_block' not in oniom_dict or oniom_dict['orca_method_block'] is None:
+                    oniom_dict['orca_method_block'] = {"RI": "on",
+                                                       "RunTyp": "Energy"}
+                if 'orca_scf_block' not in oniom_dict or oniom_dict['orca_scf_block'] is None:
+                    oniom_dict['orca_scf_block'] = {"HFTyp": "rhf",
+                                                    "Guess": "PAtom",
+                                                    "SCFMode": "Direct",
+                                                    "sthresh": "1e-6",
+                                                    "AutoTRAHIter": "60",
+                                                    "MaxIter": "1000"}
+            if 'orca_cation_cap_ecp' not in oniom_dict or oniom_dict['orca_cation_cap_ecp'] is None:
+                oniom_dict['orca_cation_cap_ecp'] = skzcam_cation_cap_ecp
+            return oniom_dict
+                
+        self.adsorbate_slab_embedded_cluster = adsorbate_slab_embedded_cluster
+        self.quantum_cluster_indices_set = quantum_cluster_indices_set
+        self.ecp_region_indices_set = ecp_region_indices_set
+        self.skzcam_input_sets = {}
+        if mp2_oniom1_ll:
+            self.mp2_oniom1_ll = mp2_oniom1_ll
+            self.skzcam_input_sets["mp2_oniom1_ll"] = _format_oniom_dict(mp2_oniom1_ll)
+        if mp2_oniom1_hl:
+            self.mp2_oniom1_hl = mp2_oniom1_hl
+            self.skzcam_input_sets["mp2_oniom1_hl"] = _format_oniom_dict(mp2_oniom1_hl)
+        if mp2_oniom2_hl:
+            self.mp2_oniom2_hl = mp2_oniom2_hl
+            self.skzcam_input_sets["mp2_oniom2_hl"] = _format_oniom_dict(mp2_oniom2_hl)
+        if mp2_oniom3_hl:
+            self.mp2_oniom3_hl = mp2_oniom3_hl
+            self.skzcam_input_sets["mp2_oniom3_hl"] = _format_oniom_dict(mp2_oniom3_hl)
+        if mp2_oniom4_hl:
+            self.mp2_oniom4_hl = mp2_oniom4_hl
+            self.skzcam_input_sets["mp2_oniom4_hl"] = _format_oniom_dict(mp2_oniom4_hl)
+        if deltaCC:
+            self.deltaCC = deltaCC
+            self.skzcam_input_sets["deltaCC"] = deltaCC
+
+
+    def create_element_info(
+            self,
+            frozencore: Literal['valence', 'semicore'] | dict[ElementStr, int],
+            basis : Literal['DZ', 'TZ', 'QZ', '5Z'] | dict[ElementStr, str],
+            code: Literal['mrcc', 'orca'],
+            ecp: dict[ElementStr, str] | None = None,
+            ri_scf_basis: dict[ElementStr, str] | None = None,
+            ri_cwft_basis: dict[ElementStr, str] | None = None
+    ):
+        """
+        Creates the element info dictionary for the SKZCAM input across each oniom layer.
+
+        Parameters
+        ----------
+        basis
+            The basis set to use for the quantum cluster. This could be either double-zeta, triple-zeta, quadruple-zeta, quintuple-zeta, denoted as 'DZ', 'TZ',' QZ' and '5Z' respectively.
+        frozencore
+            The frozen core to use for the quantum cluster. This could be specified as a string being either 'semicore' or 'valence'
+        code
+            The code to use for the quantum cluster. This could be either mrcc or orca.
+        ecp
+            The effective core potential to use for each element within the quantum cluster.
+
+        Returns
+        -------
+        dict[ElementStr, ElementInfo]
+            A dictionary with elements as keys which gives the (1) number of core electrons as 'core', (2) basis set as 'basis', (3) effective core potential as 'ecp', (4) resolution-of-identity/density-fitting auxiliary basis set for DFT/HF calculations as 'ri_scf_basis' and (5) resolution-of-identity/density-fitting for correlated wave-function methods as 'ri_cwft_basis'.
+        """
+
+        # Create an adsorbate_slab_quantum_cluster object for the first SKZCAM cluster
+        adsorbate_slab_quantum_cluster = self.adsorbate_slab_embedded_cluster[self.quantum_cluster_indices_set[0]]
+        
+        # Define set of elements
+        set_of_elements = list(set(adsorbate_slab_quantum_cluster.get_chemical_symbols()))
+
+        # Choose whether to provide preset values for the element info dictionary based on the SKZCAM paper:
+        # Preset values are used if basis is not a dictionary or frozencore is not a dictionary
+        use_presets = False
+        if isinstance(basis, str) and isinstance(frozencore, str):
+            if basis in ['DZ','TZ','QZ','5Z'] and frozencore in ['valence','semicore']:
+                use_presets = True
+
+        element_info_dict = {}
+        # If use_presets is True, use some preset inputs based on basis set and frozen core
+        if use_presets:
+            for atom_idx, atom in enumerate(adsorbate_slab_quantum_cluster):
+                if atom.symbol in element_info_dict:
+                    continue
+                if adsorbate_slab_quantum_cluster.get_array("atom_type")[atom_idx] in ['adsorbate','anion']:
+                    element_info_dict[atom.symbol] =  {
+                        'core' : valence_frozen_core_dict[atom.symbol],
+                        'basis' : f'aug-cc-pV{basis}',
+                        'ecp': ecp[atom.symbol] if atom.symbol in ecp else 'none',
+                        'ri_scf_basis': 'def2-QZVPP-RI-JK' if code == 'mrcc' else 'def2/J',
+                        'ri_cwft_basis': f'aug-cc-pV{basis}-RI' if code == 'mrcc' else f'aug-cc-pV{basis}/C'
+                    }
+                elif adsorbate_slab_quantum_cluster.get_array("atom_type")[atom_idx] == 'cation' and frozencore == 'valence':
+                    element_info_dict[atom.symbol] =  {
+                        'core' : valence_frozen_core_dict[atom.symbol],
+                        'basis' : f'cc-pV{basis}',
+                        'ecp': ecp[atom.symbol] if atom.symbol in ecp else 'none',
+                        'ri_scf_basis': 'def2-QZVPP-RI-JK' if code == 'mrcc' else 'def2/J',
+                        'ri_cwft_basis': f'cc-pV{basis}-RI' if code == 'mrcc' else f'cc-pV{basis}/C'
+                    }
+                elif adsorbate_slab_quantum_cluster.get_array("atom_type")[atom_idx] == 'cation' and frozencore == 'semicore':
+                    element_info_dict[atom.symbol] =  {
+                        'core' : semicore_frozen_core_dict[atom.symbol],
+                        'basis' : f'cc-pwCV{basis}',
+                        'ecp': ecp[atom.symbol] if atom.symbol in ecp else 'none',
+                        'ri_scf_basis': 'def2-QZVPP-RI-JK' if code == 'mrcc' else 'def2/J',
+                        'ri_cwft_basis': f'AutoAux' if code == 'mrcc' else f'cc-pwCV{basis}/C'
+                    }
+        # Use custom values for the element info dictionary
+        else:
+            # First generate list of elements
+            for atom_idx, atom in enumerate(adsorbate_slab_quantum_cluster):
+                if atom.symbol in element_info_dict:
+                    continue
+                element_info_dict[atom.symbol] =  {}
+                # Update the element info dictionary with the custom values
+
+                # Firstly for frozen core
+                if isinstance(frozencore, dict):
+                    # Raise error if frozencore is not provided for all elements
+                    if not all([element in frozencore for element in set_of_elements]):
+                        raise ValueError("frozencore must be provided for all elements in the quantum cluster when provided as a dictionary.")
+                    element_info_dict[atom.symbol]['core'] = frozencore[atom.symbol]
+                elif isinstance(frozencore, str):
+                    if frozencore not in ['valence','semicore']:
+                        raise ValueError("frozencore must be provided as either 'valence' or 'semicore' if provided as a string.")
+                    if frozencore == 'valence':
+                        element_info_dict[atom.symbol]['core'] = valence_frozen_core_dict[atom.symbol]
+                    elif frozencore == 'semicore':
+                        element_info_dict[atom.symbol]['core'] = semicore_frozen_core_dict[atom.symbol]
+                else:
+                    raise ValueError("frozencore must be provided as a string or as a dictionary.")
+                
+                # Next for basis
+                if isinstance(basis, dict):
+                    # Raise error if basis is not provided for all elements
+                    if not all([element in basis for element in set_of_elements]):
+                        raise ValueError("basis must be provided for all elements in the quantum cluster when provided as a dictionary.")
+                    element_info_dict[atom.symbol]['basis'] = basis[atom.symbol]
+                elif isinstance(basis, str):
+                    element_info_dict[atom.symbol]['basis'] = basis
+                else:
+                    raise ValueError("basis must be provided as a string or dictionary of elements.")
+                
+                # Next for ecp
+                if atom.symbol in ecp:
+                    element_info_dict[atom.symbol]['ecp'] = ecp[atom.symbol]
+                else:
+                    element_info_dict[atom.symbol]['ecp'] = 'none'
+
+
+                # Next for ri_scf_basis
+                if ri_scf_basis is None:
+                    element_info_dict[atom.symbol]['ri_scf_basis'] = 'def2-QZVPP-RI-JK' if code == 'mrcc' else 'def2/J'
+                elif isinstance(ri_scf_basis, dict):
+                    # Raise error if ri_scf_basis is not provided for all elements
+                    if not all([element in ri_scf_basis for element in set_of_elements]):
+                        raise ValueError("ri_scf_basis must be provided for all elements in the quantum cluster when provided as a dictionary.")
+                    element_info_dict[atom.symbol]['ri_scf_basis'] = ri_scf_basis[atom.symbol]
+                elif isinstance(ri_scf_basis, str):
+                    element_info_dict[atom.symbol]['ri_scf_basis'] = ri_scf_basis
+                else:
+                    raise ValueError("ri_scf_basis must be provided as a string or dictionary of elements.")
+
+
+                # Next for ri_cwft_basis
+                if ri_cwft_basis is None:
+                    element_info_dict[atom.symbol]['ri_cwft_basis'] = element_info_dict[atom.symbol]['basis'] + '-RI' if code == 'mrcc' else element_info_dict[atom.symbol]['basis'] + '/C' 
+                elif isinstance(ri_cwft_basis, dict):
+                    # Raise error if ri_cwft_basis is not provided for all elements
+                    if not all([element in ri_cwft_basis for element in set_of_elements]):
+                        raise ValueError("ri_cwft_basis must be provided for all elements in the quantum cluster when provided as a dictionary.")
+                    element_info_dict[atom.symbol]['ri_cwft_basis'] = ri_cwft_basis[atom.symbol]
+                elif isinstance(ri_cwft_basis, str):
+                    element_info_dict[atom.symbol]['ri_cwft_basis'] = ri_cwft_basis
+                else:
+                    raise ValueError("ri_cwft_basis must be provided as a string or dictionary of elements.")
+
+        return element_info_dict
+    
+    def generate_input(
+            self,
+            input_dir: str | Path,
+    ):
+        """
+        Generates the SKZCAM input for the MRCC and ORCA ASE calculators.
+        
+        Parameters
+        ----------
+        input_dir
+            The directory where the input files will be written.
+            
+        Returns
+        -------
+        None
+        """
+
+        # Start by writing the input files for the MP2 calculations
+        for oniom_method, oniom_parameters in self.skzcam_input_sets.items():
+            for cluster_num in range(1,oniom_parameters["max_cluster_num"]+1):
+                if isinstance(oniom_parameters['basis'], dict):
+                    # Get a list of basis sets for the oniom_method. This would just be the single basis set specified if there is no CBS(../..) specified, otherwise, it would be a list of two basis sets.
+                    if all(['CBS(/)' == basis.split('/')[0][:4] + '/' + basis.split('/')[-1][-1:] for basis in oniom_parameters['basis'].values()]):                     
+                        basis_sets = [{element: basis[4:-1].split('/')[0] for element, basis in oniom_parameters['basis'].items()}, {element: basis[4:-1].split('/')[1] for element, basis in oniom_parameters['basis'].items()}]
+                    else:
+                        basis_sets = [oniom_parameters["basis"]]
+                elif isinstance(oniom_parameters['basis'], str):
+                    if 'CBS(/)' == oniom_parameters['basis'].split('/')[0][:4] + '/' + oniom_parameters['basis'].split('/')[-1][-1:] :
+                        basis_sets = [oniom_parameters['basis'][4:-1].split('/')[0], oniom_parameters['basis'][4:-1].split('/')[1]]
+                    else:
+                        basis_sets = [oniom_parameters["basis"]]
+                else:
+                    raise ValueError("basis must be given as a string or a dictionary.")
+                
+                for basis_set in basis_sets:
+                    if isinstance(basis_set, dict):
+                        ordered_basis_set = dict(sorted(basis_set.items()))
+                        basis_name = '_'.join([key + '-' +  value for key, value in ordered_basis_set.items()])
+                    elif isinstance(basis_set, str):
+                        if isinstance(oniom_parameters['frozencore'], str):
+                            if oniom_parameters['frozencore'] == 'valence':
+                                basis_name = 'aV' + basis_set
+                            elif oniom_parameters['frozencore'] == 'semicore':
+                                basis_name = 'awCV' + basis_set
+                        else:
+                            basis_name = basis_set
+                    if oniom_parameters["code"] == 'mrcc':
+                        element_info = self.create_element_info(
+                            basis=basis_set,
+                            frozencore=oniom_parameters["frozencore"],
+                            code=oniom_parameters["code"],
+                            ecp=oniom_parameters["ecp"],
+                            ri_scf_basis=oniom_parameters["ri_scf_basis"],
+                            ri_cwft_basis=oniom_parameters["ri_cwft_basis"]
+                        )
+                        mrcc_block_inputs = MRCCInputGenerator(
+                                    adsorbate_slab_embedded_cluster=self.adsorbate_slab_embedded_cluster,
+                                    quantum_cluster_indices=self.quantum_cluster_indices_set[cluster_num-1],
+                                    ecp_region_indices=self.ecp_region_indices_set[cluster_num-1],
+                                    element_info=element_info,
+                                    include_cp=True,
+                                    multiplicities={"adsorbate_slab": 1, "adsorbate": 1, "slab": 1},
+                                ).generate_input()
+                        
+                        mrcc_default_calc_inputs = {'calc': 'DF-MP2', 'scftype': 'rhf', 'verbosity': 3, 'mem': f"{oniom_parameters['max_memory']}MB", 'symm': 'off', 'unit': 'angs', 'scfiguess': 'small', 'scfmaxit': 1000, 'scfalg': 'locfit1'}
+
+                        mrcc_calc_inputs = {**mrcc_default_calc_inputs,**oniom_parameters['mrcc_calc_inputs']}
+
+                        mrcc_inputs = {structure: {**mrcc_calc_inputs, **mrcc_block_inputs[structure]}  for structure in mrcc_block_inputs}
+
+                        write_mrcc(Path(input_dir,f'MRCC_MINP_MP2_cluster_{cluster_num}_{basis_name}_adsorbate_slab'),self.adsorbate_slab_embedded_cluster,mrcc_inputs['adsorbate_slab'])
+                        write_mrcc(Path(input_dir,f'MRCC_MINP_MP2_cluster_{cluster_num}_{basis_name}_slab'),self.adsorbate_slab_embedded_cluster,mrcc_inputs['slab'])
+                        write_mrcc(Path(input_dir,f'MRCC_MINP_MP2_cluster_{cluster_num}_{basis_name}_adsorbate'),self.adsorbate_slab_embedded_cluster,mrcc_inputs['adsorbate'])
+                    elif oniom_parameters["code"] == 'orca':
+                        element_info = self.create_element_info(
+                            basis=oniom_parameters["basis"],
+                            frozencore=oniom_parameters["frozencore"],
+                            code=oniom_parameters["code"],
+                            ecp=oniom_parameters["ecp"],
+                            ri_scf_basis=oniom_parameters["ri_scf_basis"],
+                            ri_cwft_basis=oniom_parameters["ri_cwft_basis"]
+                        )
+
+                        orca_input_generator = ORCAInputGenerator(
+                            adsorbate_slab_embedded_cluster=self.adsorbate_slab_embedded_cluster,
+                            quantum_cluster_indices=self.quantum_cluster_indices_set[cluster_num-1],
+                            ecp_region_indices=self.ecp_region_indices_set[cluster_num-1],
+                            element_info=element_info,
+                            include_cp=True,
+                            multiplicities={"adsorbate_slab": 1, "adsorbate": 1, "slab": 1},
+                            pal_nprocs_block={"nprocs": int(oniom_parameters["nprocs"]), "maxcore": int(float(oniom_parameters["max_memory"])/int(oniom_parameters["nprocs"]))},
+                            method_block=oniom_parameters["orca_method_block"],
+                            scf_block=oniom_parameters["orca_scf_block"],
+                            ecp_info=oniom_parameters["orca_cation_cap_ecp"]
+                        )
+                        orca_blocks = orca_input_generator.generate_input()
+
+                        orca_inputs = {structure: {'orcasimpleinput': 'TightSCF RI-MP2 RIJCOSX SlowConv DIIS', 'orcablocks': orca_blocks[structure]}for structure in orca_blocks}
+
+                        write_orca(Path(input_dir,f'ORCA_MP2_cluster_{cluster_num}_{basis_name}_adsorbate.inp'),self.adsorbate_slab_embedded_cluster,orca_inputs['adsorbate'])
+                        write_orca(Path(input_dir,f'ORCA_MP2_cluster_{cluster_num}_{basis_name}_slab.inp'),self.adsorbate_slab_embedded_cluster,orca_inputs['slab'])
+                        write_orca(Path(input_dir,f'ORCA_MP2_cluster_{cluster_num}_{basis_name}_adsorbate_slab.inp'),self.adsorbate_slab_embedded_cluster,orca_inputs['adsorbate_slab'])
+                        orca_input_generator.create_point_charge_file(Path(input_dir,f'ORCA_MP2_cluster_{cluster_num}_{basis_name}.pc'))
+
+            
 
 
 class MRCCInputGenerator:
@@ -228,6 +671,15 @@ class MRCCInputGenerator:
 
         # Helper to generate basis strings for MRCC
         def _create_basis_block(quantum_region, ecp_region=None):
+
+            atomtype_ecp = 'ecp=atomtype\n'
+            for atom in quantum_region:
+                atomtype_ecp += f"{self.element_info[atom.symbol]['ecp']}\n"
+            if ecp_region is not None:
+                atomtype_ecp += "capECP\n" * len(ecp_region)
+
+            atomtype_ecp += '\n'
+
             return f"""
 basis_sm=atomtype
 {self._create_atomtype_basis(quantum_region=quantum_region, ecp_region=ecp_region, element_basis_info={element: 'def2-SVP' for element in self.element_info})}
@@ -240,7 +692,8 @@ dfbasis_scf=atomtype
 
 dfbasis_cor=atomtype
 {self._create_atomtype_basis(quantum_region=quantum_region, ecp_region=ecp_region, element_basis_info={element: self.element_info[element]['ri_cwft_basis'] for element in self.element_info})}
-"""
+
+""" + atomtype_ecp
 
         if self.include_cp:
             self.skzcam_input_str["adsorbate_slab"] += _create_basis_block(
@@ -846,7 +1299,7 @@ coords
 
         # Add preamble_input to the orcablocks for the adsorbate-slab complex, adsorbate, and slab
         self.orcablocks["adsorbate_slab"] += preamble_input
-        self.orcablocks["adsorbate"] += preamble_input
+        self.orcablocks["adsorbate"] += "\n".join([line for line in preamble_input.splitlines() if "orca.pc" not in line])
         self.orcablocks["slab"] += preamble_input
 
 
@@ -1082,7 +1535,8 @@ class CreateSKZCAMClusters:
 
         Returns
         -------
-        None
+        dict[str, Atoms]
+            A dictionary containing the embedded cluster Atoms object of the adsorbate-slab complex, accessed by the key 'adsorbate_slab_embedded_cluster', and the indices of the atoms in the quantum clusters and the ECP region, accessed by the keys 'quantum_cluster_indices_set' and 'ecp_region_indices_set' respectively.
         """
 
         # Read the .pun file and create the embedded_cluster Atoms object
