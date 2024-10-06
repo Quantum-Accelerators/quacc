@@ -138,6 +138,10 @@ class QuaccSettings(BaseSettings):
     PREFECT_AUTO_SUBMIT: bool = Field(
         True, description="Whether to auto-submit tasks to the task runner."
     )
+    PREFECT_RESOLVE_FLOW_RESULTS: bool = Field(
+        True,
+        description="Whether to resolve all futures in flow results to data and fail if not possible",
+    )
 
     # ---------------------------
     # ORCA Settings
