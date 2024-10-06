@@ -16,6 +16,7 @@ from quacc.atoms.phonons import (
 )
 from quacc.runners.phonons import PhonopyRunner
 from quacc.schemas.phonons import summarize_phonopy
+from quacc.utils.dicts import recursive_dict_merge
 
 has_phonopy = bool(find_spec("phonopy"))
 has_seekpath = bool(find_spec("seekpath"))
@@ -47,12 +48,7 @@ def phonon_subflow(
     additional_fields: dict[str, Any] | None = None,
 ) -> PhononSchema:
     """
-    Calculate phonon properties.
-
-    In Quacc the ASE constraints can be used to fix atoms. These atoms will
-    not be displaced during the phonon calculation. This will greatly reduce
-    the computational cost of the calculation. However, this is an important
-    approximation and should be used with caution.
+    Calculate phonon properties using the Phonopy package.
 
     Parameters
     ----------
@@ -91,8 +87,6 @@ def phonon_subflow(
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][]
     """
 
-    non_displaced_atoms = non_displaced_atoms or Atoms()
-
     phonopy = get_phonopy(
         displaced_atoms,
         min_lengths=min_lengths,
@@ -103,12 +97,14 @@ def phonon_subflow(
     )
 
     if non_displaced_atoms:
-        non_displaced_atoms = get_atoms_supercell_by_phonopy(
+        non_displaced_atoms_supercell = get_atoms_supercell_by_phonopy(
             non_displaced_atoms, phonopy.supercell_matrix
         )
+    else:
+        non_displaced_atoms_supercell = Atoms()
 
     supercells = [
-        phonopy_atoms_to_ase_atoms(s) + non_displaced_atoms
+        phonopy_atoms_to_ase_atoms(s) + non_displaced_atoms_supercell
         for s in phonopy.supercells_with_displacements
     ]
 
@@ -123,10 +119,10 @@ def phonon_subflow(
         atoms: Atoms,
         phonopy,
         force_job_results: list[dict],
-        t_step,
-        t_min,
-        t_max,
-        additional_fields,
+        t_step: float,
+        t_min: float,
+        t_max: float,
+        additional_fields: dict[str, Any] | None,
     ) -> PhononSchema:
         parameters = force_job_results[-1].get("parameters")
         forces = [
@@ -148,6 +144,11 @@ def phonon_subflow(
             phonopy_results.directory,
             parameters=parameters,
             additional_fields=additional_fields,
+        )
+
+    if non_displaced_atoms:
+        additional_fields = recursive_dict_merge(
+            additional_fields, {"non_displaced_atoms": non_displaced_atoms}
         )
 
     force_job_results = _get_forces_subflow(supercells)

@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 @requires(has_phonopy, "Phonopy not installed.")
 def get_phonopy(
     atoms: Atoms,
-    min_lengths: float | tuple[float, float, float] | None = 20.0,
+    min_lengths: float | tuple[float, float, float] | None = None,
     supercell_matrix: (
         NDArray
         | tuple[tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]]
@@ -111,8 +111,8 @@ def get_atoms_supercell_by_phonopy(
     atoms
         ASE atoms object.
     supercell_matrix
-        The supercell matrix to use. If specified, it will override any
-        value specified by `min_lengths`.
+        The supercell matrix to use.
+
     Returns
     -------
     Atoms
