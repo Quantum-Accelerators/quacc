@@ -164,38 +164,40 @@ class SKZCAMInputSet:
             
             """
 
-            # Raise error if the code is not MRCC or ORCA
+            # Raise error if the code is not provided or not specified as 'mrcc' or 'orca'.
+            if 'code' not in oniom_dict:
+                raise ValueError("The code must be specified.")
             if oniom_dict['code'] not in ['mrcc', 'orca']:
                 raise ValueError("The code must be either 'mrcc' or 'orca'.")
             
-            if 'multiplicities' not in oniom_dict or oniom_dict['multiplicities'] is None:
+            if 'multiplicities' not in oniom_dict:
                 oniom_dict['multiplicities'] = {"adsorbate_slab": 1, "adsorbate": 1, "slab": 1}
-            if 'ecp' not in oniom_dict or oniom_dict['ecp'] is None:
+            if 'ecp' not in oniom_dict:
                 oniom_dict['ecp'] = {}
             if 'ri_scf_basis' not in oniom_dict:
                 oniom_dict['ri_scf_basis'] = None
             if 'ri_cwft_basis' not in oniom_dict:
                 oniom_dict['ri_cwft_basis'] = None
-            if 'nprocs' not in oniom_dict or oniom_dict['nprocs'] is None:
+            if 'nprocs' not in oniom_dict:
                 oniom_dict['nprocs'] = 1
-            if 'max_memory' not in oniom_dict or oniom_dict['max_memory'] is None:
+            if 'max_memory' not in oniom_dict:
                 oniom_dict['max_memory'] = 1000
-            if 'mrcc_calc_inputs' not in oniom_dict or oniom_dict['mrcc_calc_inputs'] is None:
+            if oniom_dict['code'] == 'mrcc' and 'mrcc_calc_inputs' not in oniom_dict:
                 oniom_dict['mrcc_calc_inputs'] = {}
 
             if oniom_dict['code'] == 'orca':
-                if 'orca_method_block' not in oniom_dict or oniom_dict['orca_method_block'] is None:
+                if 'orca_method_block' not in oniom_dict:
                     oniom_dict['orca_method_block'] = {"RI": "on",
                                                        "RunTyp": "Energy"}
-                if 'orca_scf_block' not in oniom_dict or oniom_dict['orca_scf_block'] is None:
+                if 'orca_scf_block' not in oniom_dict:
                     oniom_dict['orca_scf_block'] = {"HFTyp": "rhf",
                                                     "Guess": "PAtom",
                                                     "SCFMode": "Direct",
                                                     "sthresh": "1e-6",
                                                     "AutoTRAHIter": "60",
                                                     "MaxIter": "1000"}
-            if 'orca_cation_cap_ecp' not in oniom_dict or oniom_dict['orca_cation_cap_ecp'] is None:
-                oniom_dict['orca_cation_cap_ecp'] = skzcam_cation_cap_ecp
+                if 'orca_cation_cap_ecp' not in oniom_dict:
+                    oniom_dict['orca_cation_cap_ecp'] = skzcam_cation_cap_ecp
             return oniom_dict
                 
         self.adsorbate_slab_embedded_cluster = adsorbate_slab_embedded_cluster
@@ -206,21 +208,43 @@ class SKZCAMInputSet:
             self.mp2_oniom1_ll = mp2_oniom1_ll
             self.skzcam_input_sets["mp2_oniom1_ll"] = _format_oniom_dict(mp2_oniom1_ll)
         if mp2_oniom1_hl:
+            if mp2_oniom1_ll is None:
+                raise ValueError("The low-level ONIOM1 MP2 calculation must be provided if the high-level ONIOM1 is to be used.")
             self.mp2_oniom1_hl = mp2_oniom1_hl
             self.skzcam_input_sets["mp2_oniom1_hl"] = _format_oniom_dict(mp2_oniom1_hl)
         if mp2_oniom2_hl:
+            if mp2_oniom1_hl is None:
+                raise ValueError("The high-level ONIOM1 MP2 calculation must be provided if the high-level ONIOM2 is to be used.")
             self.mp2_oniom2_hl = mp2_oniom2_hl
             self.skzcam_input_sets["mp2_oniom2_hl"] = _format_oniom_dict(mp2_oniom2_hl)
         if mp2_oniom3_hl:
+            if mp2_oniom2_hl is None:
+                raise ValueError("The high-level ONIOM2 MP2 calculation must be provided if the high-level ONIOM3 is to be used.")
             self.mp2_oniom3_hl = mp2_oniom3_hl
             self.skzcam_input_sets["mp2_oniom3_hl"] = _format_oniom_dict(mp2_oniom3_hl)
         if mp2_oniom4_hl:
+            if mp2_oniom3_hl is None:
+                raise ValueError("The high-level ONIOM3 MP2 calculation must be provided if the high-level ONIOM4 is to be used.")
             self.mp2_oniom4_hl = mp2_oniom4_hl
             self.skzcam_input_sets["mp2_oniom4_hl"] = _format_oniom_dict(mp2_oniom4_hl)
         if deltaCC:
             self.deltaCC = deltaCC
             self.skzcam_input_sets["deltaCC"] = deltaCC
 
+        # Check that the quantum_cluster_indices_set and ecp_region_indices_set are the same length
+        if len(self.quantum_cluster_indices_set) != len(self.ecp_region_indices_set):
+            raise ValueError("The quantum_cluster_indices_set and ecp_region_indices_set must be the same length.")
+        
+        # Check that the maximum cluster number is below the number of quantum clusters for all ONIOM levels
+        for oniom_method, oniom_parameters in self.skzcam_input_sets.items():
+            if 'max_cluster_num' not in oniom_parameters:
+                raise ValueError("The maximum cluster number must be provided for all ONIOM levels.")
+            if 'basis' not in oniom_parameters:
+                raise ValueError("The basis must be provided for all ONIOM levels.")
+            if 'frozencore' not in oniom_parameters:
+                raise ValueError("The frozencore must be provided for all ONIOM levels.")
+            if oniom_parameters['max_cluster_num'] > len(self.quantum_cluster_indices_set):
+                raise ValueError("The maximum cluster number for all ONIOM levels must be less than or equal to the number of quantum clusters.")
 
     def create_element_info(
             self,

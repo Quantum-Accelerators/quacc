@@ -16,6 +16,7 @@ from quacc.atoms.skzcam import (
     CreateSKZCAMClusters,
     MRCCInputGenerator,
     ORCAInputGenerator,
+    SKZCAMInputSet,
     _get_atom_distances,
     create_atom_coord_string,
 )
@@ -132,6 +133,216 @@ def element_info():
             "ri_cwft_basis": "cc-pVDZ/C",
         },
     }
+
+@pytest.fixture()
+def skzcam_clusters_output(adsorbate_slab_embedded_cluster):
+    return {'adsorbate_slab_embedded_cluster': adsorbate_slab_embedded_cluster,
+        'quantum_cluster_indices_set': [[0, 1, 2, 3, 4, 5, 6, 7],
+  [0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   16,
+   17,
+   18,
+   19,
+   25,
+   26,
+   27,
+   28,
+   29,
+   30,
+   31,
+   32]],
+ 'ecp_region_indices_set': [[8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24],
+  [12,
+   13,
+   14,
+   15,
+   20,
+   21,
+   22,
+   23,
+   24,
+   41,
+   42,
+   43,
+   44,
+   45,
+   46,
+   47,
+   48,
+   49,
+   50,
+   51,
+   52,
+   53,
+   54,
+   55,
+   56,
+   78,
+   79,
+   80,
+   81,
+   82,
+   83,
+   84,
+   85]]}
+
+def test_SKZCAMInputSet_init(skzcam_clusters_output):
+
+    # Try SKZCAMInputSet specifying minimal amount of inputs with MRCC as code
+    skzcam_input_set = SKZCAMInputSet(
+        adsorbate_slab_embedded_cluster=skzcam_clusters_output['adsorbate_slab_embedded_cluster'],
+        quantum_cluster_indices_set=skzcam_clusters_output['quantum_cluster_indices_set'],
+        ecp_region_indices_set = skzcam_clusters_output['ecp_region_indices_set'],
+        mp2_oniom1_ll = {'max_cluster_num': 2, 'frozencore': 'semicore', 'basis': 'def2-SVP','code':'mrcc'})
+    
+    assert skzcam_input_set.skzcam_input_sets == {'mp2_oniom1_ll': {'max_cluster_num': 2, 'frozencore': 'semicore', 'basis': 'def2-SVP', 'code': 'mrcc', 'multiplicities': {'adsorbate_slab': 1, 'adsorbate': 1, 'slab': 1}, 'ecp': {}, 'ri_scf_basis': None, 'ri_cwft_basis': None, 'nprocs': 1, 'max_memory': 1000, 'mrcc_calc_inputs': {}}}
+
+    # Try SKZCAMInputSet by specifying all inputs needed for MRCC as code
+    skzcam_input_set = SKZCAMInputSet(
+        adsorbate_slab_embedded_cluster=skzcam_clusters_output['adsorbate_slab_embedded_cluster'],
+        quantum_cluster_indices_set=skzcam_clusters_output['quantum_cluster_indices_set'],
+        ecp_region_indices_set = skzcam_clusters_output['ecp_region_indices_set'],
+        mp2_oniom1_ll = {'max_cluster_num': 2, 'frozencore': 'semicore', 'basis': 'def2-SVP','code':'mrcc', 'nprocs': 4, 'max_memory': 2000,  'mrcc_calc_inputs': {'calc': 'B2PLYP','symm': 'off'},'ecp': {'C': 'ECP10SDF', 'O': 'ECP10SDF', 'Mg': 'ECP10SDF'}, 'ri_scf_basis': 'def2-SVP-RI-JK', 'ri_cwft_basis': 'def2-SVPD-RI','multiplicities': {'adsorbate_slab': 3, 'adsorbate': 2, 'slab': 1}})
+    
+
+    assert skzcam_input_set.skzcam_input_sets == {'mp2_oniom1_ll': {'max_cluster_num': 2, 'frozencore': 'semicore', 'basis': 'def2-SVP', 'code': 'mrcc', 'nprocs': 4, 'max_memory': 2000, 'mrcc_calc_inputs': {'calc': 'B2PLYP', 'symm': 'off'}, 'ecp': {'C': 'ECP10SDF', 'O': 'ECP10SDF', 'Mg': 'ECP10SDF'}, 'ri_scf_basis': 'def2-SVP-RI-JK', 'ri_cwft_basis': 'def2-SVPD-RI', 'multiplicities': {'adsorbate_slab': 3, 'adsorbate': 2, 'slab': 1}}}
+
+    # Try SKZCAMInputSet specifying minimal amount of inputs with ORCA as code
+    skzcam_input_set = SKZCAMInputSet(
+        adsorbate_slab_embedded_cluster=skzcam_clusters_output['adsorbate_slab_embedded_cluster'],
+        quantum_cluster_indices_set=skzcam_clusters_output['quantum_cluster_indices_set'],
+        ecp_region_indices_set = skzcam_clusters_output['ecp_region_indices_set'],
+        mp2_oniom1_ll = {'max_cluster_num': 2, 'frozencore': 'semicore', 'basis': 'def2-SVP','code':'orca'})
+    
+    assert skzcam_input_set.skzcam_input_sets == {'mp2_oniom1_ll': {'max_cluster_num': 2, 'frozencore': 'semicore', 'basis': 'def2-SVP', 'code': 'orca', 'multiplicities': {'adsorbate_slab': 1, 'adsorbate': 1, 'slab': 1}, 'ecp': {}, 'ri_scf_basis': None, 'ri_cwft_basis': None, 'nprocs': 1, 'max_memory': 1000, 'orca_method_block': {'RI': 'on', 'RunTyp': 'Energy'}, 'orca_scf_block': {'HFTyp': 'rhf', 'Guess': 'PAtom', 'SCFMode': 'Direct', 'sthresh': '1e-6', 'AutoTRAHIter': '60', 'MaxIter': '1000'}, 'orca_cation_cap_ecp': {'Ti': 'NewECP\nN_core 0\n  lmax f\n  s 2\n   1      0.860000       9.191690  2\n   2      0.172000       0.008301  2\n  p 2\n   1      0.860000      17.997720  2\n   2      0.172000      -0.032600  2\n  d 2\n   1      1.600000      -9.504310  2\n   2      0.320000      -0.151370  2\n  f 1\n   1      1.000000000    0.000000000 2\nend', 'Mg': 'NewECP\nN_core 0\nlmax f\ns 1\n1      1.732000000   14.676000000 2\np 1\n1      1.115000000    5.175700000 2\nd 1\n1      1.203000000   -1.816000000 2\nf 1\n1      1.000000000    0.000000000 2\nend'}}}
+
+    # Try SKZCAMInputSet by specifying all inputs needed for ORCA as code
+    skzcam_input_set = SKZCAMInputSet(
+        adsorbate_slab_embedded_cluster=skzcam_clusters_output['adsorbate_slab_embedded_cluster'],
+        quantum_cluster_indices_set=skzcam_clusters_output['quantum_cluster_indices_set'],
+        ecp_region_indices_set = skzcam_clusters_output['ecp_region_indices_set'],
+        mp2_oniom1_ll = {'max_cluster_num': 2, 'frozencore': 'semicore', 'basis': 'def2-SVP','code':'orca', 'nprocs': 4, 'max_memory': 2000,'ecp': {'C': 'ECP10SDF', 'O': 'ECP10SDF', 'Mg': 'ECP10SDF'}, 'ri_scf_basis': 'def2-SVP-RI-JK', 'ri_cwft_basis': 'def2-SVPD-RI','multiplicities': {'adsorbate_slab': 3, 'adsorbate': 2, 'slab': 1},'orca_method_block': {'RI': 'off'}, 'orca_scf_block': {'HFType':'uhf'}, 'orca_cation_cap_ecp': {'Mg': 'NewECP\nECP10SDF\n'}})    
+
+    assert skzcam_input_set.skzcam_input_sets == {'mp2_oniom1_ll': {'max_cluster_num': 2, 'frozencore': 'semicore', 'basis': 'def2-SVP', 'code': 'orca', 'nprocs': 4, 'max_memory': 2000, 'ecp': {'C': 'ECP10SDF', 'O': 'ECP10SDF', 'Mg': 'ECP10SDF'}, 'ri_scf_basis': 'def2-SVP-RI-JK', 'ri_cwft_basis': 'def2-SVPD-RI', 'multiplicities': {'adsorbate_slab': 3, 'adsorbate': 2, 'slab': 1}, 'orca_method_block': {'RI': 'off'}, 'orca_scf_block': {'HFType': 'uhf'}, 'orca_cation_cap_ecp': {'Mg': 'NewECP\nECP10SDF\n'}}}
+
+
+    # Check that all attributes of the SKZCAMInputSet object are correct
+    assert skzcam_input_set.adsorbate_slab_embedded_cluster == skzcam_clusters_output['adsorbate_slab_embedded_cluster']
+    assert skzcam_input_set.quantum_cluster_indices_set == skzcam_clusters_output['quantum_cluster_indices_set']
+    assert skzcam_input_set.ecp_region_indices_set == skzcam_clusters_output['ecp_region_indices_set']
+
+    # Try specifying multiple ONIOM levels
+    skzcam_input_set = SKZCAMInputSet(
+        adsorbate_slab_embedded_cluster=skzcam_clusters_output['adsorbate_slab_embedded_cluster'],
+        quantum_cluster_indices_set=skzcam_clusters_output['quantum_cluster_indices_set'],
+        ecp_region_indices_set = skzcam_clusters_output['ecp_region_indices_set'],
+        mp2_oniom1_ll = {'max_cluster_num': 2, 'frozencore': 'valence', 'basis': 'def2-SVP','code':'mrcc'},
+        mp2_oniom1_hl = {'max_cluster_num': 2, 'frozencore': 'valence', 'basis': 'def2-SVPD','code':'mrcc'},
+        mp2_oniom2_hl = {'max_cluster_num': 2, 'frozencore': 'semicore', 'basis': 'def2-TZVP','code':'orca'},
+        mp2_oniom3_hl = {'max_cluster_num': 1, 'frozencore': 'semicore', 'basis': 'def2-TZVPD','code':'mrcc'},
+        mp2_oniom4_hl = {'max_cluster_num': 1, 'frozencore': 'semicore', 'basis': 'def2-QZVPP','code':'orca'},)
+    
+    assert skzcam_input_set.skzcam_input_sets == {'mp2_oniom1_ll': {'max_cluster_num': 2, 'frozencore': 'valence', 'basis': 'def2-SVP', 'code': 'mrcc', 'multiplicities': {'adsorbate_slab': 1, 'adsorbate': 1, 'slab': 1}, 'ecp': {}, 'ri_scf_basis': None, 'ri_cwft_basis': None, 'nprocs': 1, 'max_memory': 1000, 'mrcc_calc_inputs': {}}, 'mp2_oniom1_hl': {'max_cluster_num': 2, 'frozencore': 'valence', 'basis': 'def2-SVPD', 'code': 'mrcc', 'multiplicities': {'adsorbate_slab': 1, 'adsorbate': 1, 'slab': 1}, 'ecp': {}, 'ri_scf_basis': None, 'ri_cwft_basis': None, 'nprocs': 1, 'max_memory': 1000, 'mrcc_calc_inputs': {}}, 'mp2_oniom2_hl': {'max_cluster_num': 2, 'frozencore': 'semicore', 'basis': 'def2-TZVP', 'code': 'orca', 'multiplicities': {'adsorbate_slab': 1, 'adsorbate': 1, 'slab': 1}, 'ecp': {}, 'ri_scf_basis': None, 'ri_cwft_basis': None, 'nprocs': 1, 'max_memory': 1000, 'orca_method_block': {'RI': 'on', 'RunTyp': 'Energy'}, 'orca_scf_block': {'HFTyp': 'rhf', 'Guess': 'PAtom', 'SCFMode': 'Direct', 'sthresh': '1e-6', 'AutoTRAHIter': '60', 'MaxIter': '1000'}, 'orca_cation_cap_ecp': {'Ti': 'NewECP\nN_core 0\n  lmax f\n  s 2\n   1      0.860000       9.191690  2\n   2      0.172000       0.008301  2\n  p 2\n   1      0.860000      17.997720  2\n   2      0.172000      -0.032600  2\n  d 2\n   1      1.600000      -9.504310  2\n   2      0.320000      -0.151370  2\n  f 1\n   1      1.000000000    0.000000000 2\nend', 'Mg': 'NewECP\nN_core 0\nlmax f\ns 1\n1      1.732000000   14.676000000 2\np 1\n1      1.115000000    5.175700000 2\nd 1\n1      1.203000000   -1.816000000 2\nf 1\n1      1.000000000    0.000000000 2\nend'}}, 'mp2_oniom3_hl': {'max_cluster_num': 1, 'frozencore': 'semicore', 'basis': 'def2-TZVPD', 'code': 'mrcc', 'multiplicities': {'adsorbate_slab': 1, 'adsorbate': 1, 'slab': 1}, 'ecp': {}, 'ri_scf_basis': None, 'ri_cwft_basis': None, 'nprocs': 1, 'max_memory': 1000, 'mrcc_calc_inputs': {}}, 'mp2_oniom4_hl': {'max_cluster_num': 1, 'frozencore': 'semicore', 'basis': 'def2-QZVPP', 'code': 'orca', 'multiplicities': {'adsorbate_slab': 1, 'adsorbate': 1, 'slab': 1}, 'ecp': {}, 'ri_scf_basis': None, 'ri_cwft_basis': None, 'nprocs': 1, 'max_memory': 1000, 'orca_method_block': {'RI': 'on', 'RunTyp': 'Energy'}, 'orca_scf_block': {'HFTyp': 'rhf', 'Guess': 'PAtom', 'SCFMode': 'Direct', 'sthresh': '1e-6', 'AutoTRAHIter': '60', 'MaxIter': '1000'}, 'orca_cation_cap_ecp': {'Ti': 'NewECP\nN_core 0\n  lmax f\n  s 2\n   1      0.860000       9.191690  2\n   2      0.172000       0.008301  2\n  p 2\n   1      0.860000      17.997720  2\n   2      0.172000      -0.032600  2\n  d 2\n   1      1.600000      -9.504310  2\n   2      0.320000      -0.151370  2\n  f 1\n   1      1.000000000    0.000000000 2\nend', 'Mg': 'NewECP\nN_core 0\nlmax f\ns 1\n1      1.732000000   14.676000000 2\np 1\n1      1.115000000    5.175700000 2\nd 1\n1      1.203000000   -1.816000000 2\nf 1\n1      1.000000000    0.000000000 2\nend'}}}
+
+
+    # Check if errors are raised if length of quantum_cluster_indices_set is different from ecp_region_indices_set
+    with pytest.raises(ValueError, match="The quantum_cluster_indices_set and ecp_region_indices_set must be the same length."):
+        skzcam_input_set = SKZCAMInputSet(
+        adsorbate_slab_embedded_cluster=[[0],[0,1,2]],
+        quantum_cluster_indices_set=[[0]],
+        ecp_region_indices_set = skzcam_clusters_output['ecp_region_indices_set'],
+        mp2_oniom1_ll = {'max_cluster_num': 2, 'frozencore': 'semicore', 'basis': 'def2-SVP','code':'orca', 'nprocs': 4, 'max_memory': 2000,'ecp': {'C': 'ECP10SDF', 'O': 'ECP10SDF', 'Mg': 'ECP10SDF'}, 'ri_scf_basis': 'def2-SVP-RI-JK', 'ri_cwft_basis': 'def2-SVPD-RI','multiplicities': {'adsorbate_slab': 3, 'adsorbate': 2, 'slab': 1},'orca_method_block': {'RI': 'off'}, 'orca_scf_block': {'HFType':'uhf'}, 'orca_cation_cap_ecp': {'Mg': 'NewECP\nECP10SDF\n'}})   
+
+    # Check if errors are raised if variables aren't set during initialization
+    with pytest.raises(ValueError, match="The code must be specified."):
+        skzcam_input_set = SKZCAMInputSet(
+        adsorbate_slab_embedded_cluster=skzcam_clusters_output['adsorbate_slab_embedded_cluster'],
+        quantum_cluster_indices_set=skzcam_clusters_output['quantum_cluster_indices_set'],
+        ecp_region_indices_set = skzcam_clusters_output['ecp_region_indices_set'],
+        mp2_oniom1_ll = {'max_cluster_num': 2, 'frozencore': 'semicore', 'basis': 'def2-SVP'})
+
+    with pytest.raises(ValueError, match="The code must be either 'mrcc' or 'orca'."):
+        skzcam_input_set = SKZCAMInputSet(
+        adsorbate_slab_embedded_cluster=skzcam_clusters_output['adsorbate_slab_embedded_cluster'],
+        quantum_cluster_indices_set=skzcam_clusters_output['quantum_cluster_indices_set'],
+        ecp_region_indices_set = skzcam_clusters_output['ecp_region_indices_set'],
+        mp2_oniom1_ll = {'max_cluster_num': 2, 'frozencore': 'semicore', 'basis': 'def2-SVP','code':'asdf'})
+
+    with pytest.raises(ValueError, match="The maximum cluster number must be provided for all ONIOM levels."):
+        skzcam_input_set = SKZCAMInputSet(
+        adsorbate_slab_embedded_cluster=skzcam_clusters_output['adsorbate_slab_embedded_cluster'],
+        quantum_cluster_indices_set=skzcam_clusters_output['quantum_cluster_indices_set'],
+        ecp_region_indices_set = skzcam_clusters_output['ecp_region_indices_set'],
+        mp2_oniom1_ll = {'frozencore': 'semicore', 'basis': 'def2-SVP','code':'mrcc'})
+    
+    with pytest.raises(ValueError, match="The frozencore must be provided for all ONIOM levels."):
+        skzcam_input_set = SKZCAMInputSet(
+        adsorbate_slab_embedded_cluster=skzcam_clusters_output['adsorbate_slab_embedded_cluster'],
+        quantum_cluster_indices_set=skzcam_clusters_output['quantum_cluster_indices_set'],
+        ecp_region_indices_set = skzcam_clusters_output['ecp_region_indices_set'],
+        mp2_oniom1_ll = {'max_cluster_num': 2, 'basis': 'def2-SVP','code':'mrcc'})
+
+    with pytest.raises(ValueError, match="The basis must be provided for all ONIOM levels."):
+        skzcam_input_set = SKZCAMInputSet(
+        adsorbate_slab_embedded_cluster=skzcam_clusters_output['adsorbate_slab_embedded_cluster'],
+        quantum_cluster_indices_set=skzcam_clusters_output['quantum_cluster_indices_set'],
+        ecp_region_indices_set = skzcam_clusters_output['ecp_region_indices_set'],
+        mp2_oniom1_ll = {'max_cluster_num': 2, 'frozencore': 'semicore','code':'mrcc'})
+
+
+    # Check if errors are raise if max_cluster_num is more than length of quantum_cluster_indices_set
+    with pytest.raises(ValueError, match="The maximum cluster number for all ONIOM levels must be less than or equal to the number of quantum clusters."):
+        skzcam_input_set = SKZCAMInputSet(
+        adsorbate_slab_embedded_cluster=skzcam_clusters_output['adsorbate_slab_embedded_cluster'],
+        quantum_cluster_indices_set=skzcam_clusters_output['quantum_cluster_indices_set'],
+        ecp_region_indices_set = skzcam_clusters_output['ecp_region_indices_set'],
+        mp2_oniom1_ll = {'max_cluster_num': 2, 'frozencore': 'semicore', 'basis': 'def2-SVP','code':'mrcc'},
+        mp2_oniom1_hl = {'max_cluster_num': 3, 'frozencore': 'semicore', 'basis': 'def2-SVP','code':'mrcc'})        
+
+    # Check if errors are raised when higher ONIOM levels are specified withou lower ONIOM levels
+    with pytest.raises(ValueError, match="The low-level ONIOM1 MP2 calculation must be provided if the high-level ONIOM1 is to be used."):
+        skzcam_input_set = SKZCAMInputSet(
+        adsorbate_slab_embedded_cluster=skzcam_clusters_output['adsorbate_slab_embedded_cluster'],
+        quantum_cluster_indices_set=skzcam_clusters_output['quantum_cluster_indices_set'],
+        ecp_region_indices_set = skzcam_clusters_output['ecp_region_indices_set'],
+        mp2_oniom1_hl = {'max_cluster_num': 2, 'frozencore': 'semicore', 'basis': 'def2-SVP','code':'mrcc'})  
+
+    with pytest.raises(ValueError, match="The high-level ONIOM1 MP2 calculation must be provided if the high-level ONIOM2 is to be used."):
+        skzcam_input_set = SKZCAMInputSet(
+        adsorbate_slab_embedded_cluster=skzcam_clusters_output['adsorbate_slab_embedded_cluster'],
+        quantum_cluster_indices_set=skzcam_clusters_output['quantum_cluster_indices_set'],
+        ecp_region_indices_set = skzcam_clusters_output['ecp_region_indices_set'],
+        mp2_oniom2_hl = {'max_cluster_num': 2, 'frozencore': 'semicore', 'basis': 'def2-SVP','code':'mrcc'}) 
+
+    with pytest.raises(ValueError, match="The high-level ONIOM2 MP2 calculation must be provided if the high-level ONIOM3 is to be used."):
+        skzcam_input_set = SKZCAMInputSet(
+        adsorbate_slab_embedded_cluster=skzcam_clusters_output['adsorbate_slab_embedded_cluster'],
+        quantum_cluster_indices_set=skzcam_clusters_output['quantum_cluster_indices_set'],
+        ecp_region_indices_set = skzcam_clusters_output['ecp_region_indices_set'],
+        mp2_oniom3_hl = {'max_cluster_num': 2, 'frozencore': 'semicore', 'basis': 'def2-SVP','code':'mrcc'})
+
+    with pytest.raises(ValueError, match="The high-level ONIOM3 MP2 calculation must be provided if the high-level ONIOM4 is to be used."):
+        skzcam_input_set = SKZCAMInputSet(
+        adsorbate_slab_embedded_cluster=skzcam_clusters_output['adsorbate_slab_embedded_cluster'],
+        quantum_cluster_indices_set=skzcam_clusters_output['quantum_cluster_indices_set'],
+        ecp_region_indices_set = skzcam_clusters_output['ecp_region_indices_set'],
+        mp2_oniom4_hl = {'max_cluster_num': 2, 'frozencore': 'semicore', 'basis': 'def2-SVP','code':'mrcc'})
+    # Check that the input_dictionary is correct
+    # assert skzcam_input_set.mp2_oniom1_ll == {'max_cluster_num': 2, 'frozencore': {'C': 0, 'Mg': 0, 'O': 0}, 'basis': {'C': 'def2-SVP', 'Mg': 'def2-SVPD', 'O': 'def2-QZVPPD'}, 'code': 'mrcc', 'ri_scf_basis': 'asdf', 'mrcc_calc_inputs': {'calc': 'B2PLYP'}, 'multiplicities': {'adsorbate_slab': 1, 'adsorbate': 1, 'slab': 1}, 'ecp': {}, 'ri_cwft_basis': None, 'nprocs': 1, 'max_memory': 1000, 'orca_cation_cap_ecp': {'Ti': 'NewECP\nN_core 0\n  lmax f\n  s 2\n   1      0.860000       9.191690  2\n   2      0.172000       0.008301  2\n  p 2\n   1      0.860000      17.997720  2\n   2      0.172000      -0.032600  2\n  d 2\n   1      1.600000      -9.504310  2\n   2      0.320000      -0.151370  2\n  f 1\n   1      1.000000000    0.000000000 2\nend', 'Mg': 'NewECP\nN_core 0\nlmax f\ns 1\n1      1.732000000   14.676000000 2\np 1\n1      1.115000000    5.175700000 2\nd 1\n1      1.203000000   -1.816000000 2\nf 1\n1      1.000000000    0.000000000 2\nend'}}
+
+
+
 
 
 def test_MRCCInputGenerator_init(adsorbate_slab_embedded_cluster, element_info):
