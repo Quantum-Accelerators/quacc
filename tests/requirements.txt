@@ -3,7 +3,7 @@ custodian==2024.6.24
 emmet-core==0.84.2
 maggma==0.69.4
 monty==2024.7.30
-numpy==1.26.4
+numpy==2.1.2
 psutil==5.9.8
 pydantic==2.9.2
 pydantic-settings==2.5.2
