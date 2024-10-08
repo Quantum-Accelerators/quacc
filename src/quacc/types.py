@@ -265,8 +265,8 @@ if TYPE_CHECKING:
 
     class SKZCAMInfo(TypedDict):
         max_cluster_num: int
-        element_frozencore: Literal['valence', 'semicore'] | dict[ElementStr, int] 
-        element_basis: Literal['DZ','TZ','QZ','5Z','6Z'] | dict[ElementStr, str]
+        element_frozencore: Literal["valence", "semicore"] | dict[ElementStr, int]
+        element_basis: Literal["DZ", "TZ", "QZ", "5Z", "6Z"] | dict[ElementStr, str]
         code: Literal["mrcc", "orca"]
         nprocs: int | None
         max_memory: int | None
