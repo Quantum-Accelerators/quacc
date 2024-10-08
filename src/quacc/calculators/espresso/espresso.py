@@ -370,7 +370,7 @@ class Espresso(GenericFileIOCalculator):
         input_atoms
             The input Atoms object to be used for the calculation.
         preset
-            A YAML file containing a list of INCAR parameters to use as a "preset"
+            A YAML file containing a list of parameters to use as a "preset"
             for the calculator. If `preset` has a .yml or .yaml file extension, the
             path to this file will be used directly. If `preset` is a string without
             an extension, the corresponding YAML file will be assumed to be in the
