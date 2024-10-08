@@ -332,9 +332,13 @@ class SKZCAMInputSet:
         # Choose whether to provide preset values for the element info dictionary based on the SKZCAM paper:
         # Preset values are used if basis is not a dictionary or frozencore is not a dictionary
         use_presets = False
-        if isinstance(basis, str) and isinstance(frozencore, str) and basis in ["DZ", "TZ", "QZ", "5Z"] and frozencore in ["valence", "semicore"]:
+        if (
+            isinstance(basis, str)
+            and isinstance(frozencore, str)
+            and basis in ["DZ", "TZ", "QZ", "5Z"]
+            and frozencore in ["valence", "semicore"]
+        ):
             use_presets = True
-
 
         element_info_dict = {}
         # If use_presets is True, use some preset inputs based on basis set and frozen core
