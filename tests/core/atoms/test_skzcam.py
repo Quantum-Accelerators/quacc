@@ -1274,7 +1274,22 @@ def test_SKZCAMInputSet_generate_input(skzcam_clusters_output, tmp_path):
     skzcam_input_set.generate_input(tmp_path)
     tmp_path_files = os.listdir(tmp_path)
     tmp_path_files.sort()
-    assert tmp_path_files == ['MRCC_MINP_MP2_cluster_1_awCVDZ_adsorbate', 'MRCC_MINP_MP2_cluster_1_awCVDZ_adsorbate_slab', 'MRCC_MINP_MP2_cluster_1_awCVDZ_slab', 'MRCC_MINP_MP2_cluster_2_awCVDZ_adsorbate', 'MRCC_MINP_MP2_cluster_2_awCVDZ_adsorbate_slab', 'MRCC_MINP_MP2_cluster_2_awCVDZ_slab', 'ORCA_MP2_cluster_1_aVDZ.pc', 'ORCA_MP2_cluster_1_aVDZ_adsorbate.inp', 'ORCA_MP2_cluster_1_aVDZ_adsorbate_slab.inp', 'ORCA_MP2_cluster_1_aVDZ_slab.inp', 'ORCA_MP2_cluster_1_aVTZ.pc', 'ORCA_MP2_cluster_1_aVTZ_adsorbate.inp', 'ORCA_MP2_cluster_1_aVTZ_adsorbate_slab.inp', 'ORCA_MP2_cluster_1_aVTZ_slab.inp']
+    assert tmp_path_files == [
+        "MRCC_MINP_MP2_cluster_1_awCVDZ_adsorbate",
+        "MRCC_MINP_MP2_cluster_1_awCVDZ_adsorbate_slab",
+        "MRCC_MINP_MP2_cluster_1_awCVDZ_slab",
+        "MRCC_MINP_MP2_cluster_2_awCVDZ_adsorbate",
+        "MRCC_MINP_MP2_cluster_2_awCVDZ_adsorbate_slab",
+        "MRCC_MINP_MP2_cluster_2_awCVDZ_slab",
+        "ORCA_MP2_cluster_1_aVDZ.pc",
+        "ORCA_MP2_cluster_1_aVDZ_adsorbate.inp",
+        "ORCA_MP2_cluster_1_aVDZ_adsorbate_slab.inp",
+        "ORCA_MP2_cluster_1_aVDZ_slab.inp",
+        "ORCA_MP2_cluster_1_aVTZ.pc",
+        "ORCA_MP2_cluster_1_aVTZ_adsorbate.inp",
+        "ORCA_MP2_cluster_1_aVTZ_adsorbate_slab.inp",
+        "ORCA_MP2_cluster_1_aVTZ_slab.inp",
+    ]
 
     # Check that the input files are correct
     with open(Path(tmp_path, "ORCA_MP2_cluster_1_aVDZ_adsorbate_slab.inp")) as f:
