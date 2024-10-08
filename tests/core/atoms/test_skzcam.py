@@ -338,8 +338,222 @@ def test_SKZCAMInputSet_init(skzcam_clusters_output):
         quantum_cluster_indices_set=skzcam_clusters_output['quantum_cluster_indices_set'],
         ecp_region_indices_set = skzcam_clusters_output['ecp_region_indices_set'],
         mp2_oniom4_hl = {'max_cluster_num': 2, 'frozencore': 'semicore', 'basis': 'def2-SVP','code':'mrcc'})
-    # Check that the input_dictionary is correct
-    # assert skzcam_input_set.mp2_oniom1_ll == {'max_cluster_num': 2, 'frozencore': {'C': 0, 'Mg': 0, 'O': 0}, 'basis': {'C': 'def2-SVP', 'Mg': 'def2-SVPD', 'O': 'def2-QZVPPD'}, 'code': 'mrcc', 'ri_scf_basis': 'asdf', 'mrcc_calc_inputs': {'calc': 'B2PLYP'}, 'multiplicities': {'adsorbate_slab': 1, 'adsorbate': 1, 'slab': 1}, 'ecp': {}, 'ri_cwft_basis': None, 'nprocs': 1, 'max_memory': 1000, 'orca_cation_cap_ecp': {'Ti': 'NewECP\nN_core 0\n  lmax f\n  s 2\n   1      0.860000       9.191690  2\n   2      0.172000       0.008301  2\n  p 2\n   1      0.860000      17.997720  2\n   2      0.172000      -0.032600  2\n  d 2\n   1      1.600000      -9.504310  2\n   2      0.320000      -0.151370  2\n  f 1\n   1      1.000000000    0.000000000 2\nend', 'Mg': 'NewECP\nN_core 0\nlmax f\ns 1\n1      1.732000000   14.676000000 2\np 1\n1      1.115000000    5.175700000 2\nd 1\n1      1.203000000   -1.816000000 2\nf 1\n1      1.000000000    0.000000000 2\nend'}}
+
+def test_SKZCAMInputSet_create_element_info(skzcam_clusters_output):
+
+    # Check SKZCAMInputSet when presets are used based on 'basis' in ['DZ', 'TZ', 'QZ'] and 'frozencore' in ['valence', 'semicore']
+    # First for 'DZ' and 'semicore' for MRCC
+    skzcam_input_set = SKZCAMInputSet(
+        adsorbate_slab_embedded_cluster=skzcam_clusters_output['adsorbate_slab_embedded_cluster'],
+        quantum_cluster_indices_set=skzcam_clusters_output['quantum_cluster_indices_set'],
+        ecp_region_indices_set = skzcam_clusters_output['ecp_region_indices_set'],
+        mp2_oniom1_ll = {'max_cluster_num': 2, 'frozencore': 'semicore', 'basis': 'DZ','code':'mrcc'}) 
+    oniom_parameters = skzcam_input_set.skzcam_input_sets['mp2_oniom1_ll']
+
+    element_info = skzcam_input_set.create_element_info(
+                            basis='DZ',
+                            frozencore='semicore',
+                            code='mrcc',
+                            ecp={},
+                            ri_scf_basis=None,
+                            ri_cwft_basis=None
+                        )
+    assert element_info == {'C': {'core': 2, 'basis': 'aug-cc-pVDZ', 'ecp': 'none', 'ri_scf_basis': 'def2-QZVPP-RI-JK', 'ri_cwft_basis': 'aug-cc-pVDZ-RI'}, 'O': {'core': 2, 'basis': 'aug-cc-pVDZ', 'ecp': 'none', 'ri_scf_basis': 'def2-QZVPP-RI-JK', 'ri_cwft_basis': 'aug-cc-pVDZ-RI'}, 'Mg': {'core': 2, 'basis': 'cc-pwCVDZ', 'ecp': 'none', 'ri_scf_basis': 'def2-QZVPP-RI-JK', 'ri_cwft_basis': 'cc-pwCVDZ-RI'}}
+
+    # Then for 'QZ' and 'valence' for ORCA
+    element_info = skzcam_input_set.create_element_info(
+                            basis='QZ',
+                            frozencore='valence',
+                            code='orca',
+                            ecp={},
+                            ri_scf_basis=None,
+                            ri_cwft_basis=None
+                        )
+    
+    assert element_info == {'C': {'core': 2, 'basis': 'aug-cc-pVQZ', 'ecp': 'none', 'ri_scf_basis': 'def2/J', 'ri_cwft_basis': 'aug-cc-pVQZ/C'}, 'O': {'core': 2, 'basis': 'aug-cc-pVQZ', 'ecp': 'none', 'ri_scf_basis': 'def2/J', 'ri_cwft_basis': 'aug-cc-pVQZ/C'}, 'Mg': {'core': 10, 'basis': 'cc-pVQZ', 'ecp': 'none', 'ri_scf_basis': 'def2/J', 'ri_cwft_basis': 'cc-pVQZ/C'}}
+
+    # Specifying ecp for MRCC
+    element_info = skzcam_input_set.create_element_info(
+                            basis='DZ',
+                            frozencore='semicore',
+                            code='mrcc',
+                            ecp={'Mg': 'ECP10SDF'},
+                            ri_scf_basis=None,
+                            ri_cwft_basis=None
+                        )
+    assert element_info == {'C': {'core': 2, 'basis': 'aug-cc-pVDZ', 'ecp': 'none', 'ri_scf_basis': 'def2-QZVPP-RI-JK', 'ri_cwft_basis': 'aug-cc-pVDZ-RI'}, 'O': {'core': 2, 'basis': 'aug-cc-pVDZ', 'ecp': 'none', 'ri_scf_basis': 'def2-QZVPP-RI-JK', 'ri_cwft_basis': 'aug-cc-pVDZ-RI'}, 'Mg': {'core': 2, 'basis': 'cc-pwCVDZ', 'ecp': 'ECP10SDF', 'ri_scf_basis': 'def2-QZVPP-RI-JK', 'ri_cwft_basis': 'cc-pwCVDZ-RI'}}
+
+    # Now testing the custom inputs
+    element_info = skzcam_input_set.create_element_info(
+                            basis='def2-SVP',
+                            frozencore={'C': 1, 'O':2, 'Mg': 6},
+                            code='mrcc',
+                            ecp={},
+                            ri_scf_basis=None,
+                            ri_cwft_basis=None
+                        )
+    assert element_info == {'C': {'core': 1, 'basis': 'def2-SVP', 'ecp': 'none', 'ri_scf_basis': 'def2-QZVPP-RI-JK', 'ri_cwft_basis': 'def2-SVP-RI'}, 'O': {'core': 2, 'basis': 'def2-SVP', 'ecp': 'none', 'ri_scf_basis': 'def2-QZVPP-RI-JK', 'ri_cwft_basis': 'def2-SVP-RI'}, 'Mg': {'core': 6, 'basis': 'def2-SVP', 'ecp': 'none', 'ri_scf_basis': 'def2-QZVPP-RI-JK', 'ri_cwft_basis': 'def2-SVP-RI'}}
+
+    element_info = skzcam_input_set.create_element_info(
+                            basis='def2-SVP',
+                            frozencore='valence',
+                            code='mrcc',
+                            ecp={},
+                            ri_scf_basis=None,
+                            ri_cwft_basis=None
+                        )
+    assert element_info == {'C': {'core': 2, 'basis': 'def2-SVP', 'ecp': 'none', 'ri_scf_basis': 'def2-QZVPP-RI-JK', 'ri_cwft_basis': 'def2-SVP-RI'}, 'O': {'core': 2, 'basis': 'def2-SVP', 'ecp': 'none', 'ri_scf_basis': 'def2-QZVPP-RI-JK', 'ri_cwft_basis': 'def2-SVP-RI'}, 'Mg': {'core': 10, 'basis': 'def2-SVP', 'ecp': 'none', 'ri_scf_basis': 'def2-QZVPP-RI-JK', 'ri_cwft_basis': 'def2-SVP-RI'}}
+
+    element_info = skzcam_input_set.create_element_info(
+                            basis='def2-SVP',
+                            frozencore='semicore',
+                            code='mrcc',
+                            ecp={},
+                            ri_scf_basis=None,
+                            ri_cwft_basis=None
+                        )
+    assert element_info == {'C': {'core': 2, 'basis': 'def2-SVP', 'ecp': 'none', 'ri_scf_basis': 'def2-QZVPP-RI-JK', 'ri_cwft_basis': 'def2-SVP-RI'}, 'O': {'core': 2, 'basis': 'def2-SVP', 'ecp': 'none', 'ri_scf_basis': 'def2-QZVPP-RI-JK', 'ri_cwft_basis': 'def2-SVP-RI'}, 'Mg': {'core': 2, 'basis': 'def2-SVP', 'ecp': 'none', 'ri_scf_basis': 'def2-QZVPP-RI-JK', 'ri_cwft_basis': 'def2-SVP-RI'}}
+
+    # Check if errors are raised when frozencore is not specified correctly
+    with pytest.raises(ValueError, match="frozencore must be provided for all elements in the quantum cluster when provided as a dictionary."):
+        element_info = skzcam_input_set.create_element_info(
+                            basis='def2-SVP',
+                            frozencore={'C':1,'O':5},
+                            code='mrcc',
+                            ecp={},
+                            ri_scf_basis=None,
+                            ri_cwft_basis=None
+                        )
+
+    with pytest.raises(ValueError, match="frozencore must be provided as either 'valence' or 'semicore' if provided as a string."):
+        element_info = skzcam_input_set.create_element_info(
+                            basis='def2-SVP',
+                            frozencore='supercore',
+                            code='mrcc',
+                            ecp={},
+                            ri_scf_basis=None,
+                            ri_cwft_basis=None
+                        )
+  
+    with pytest.raises(ValueError, match="frozencore must be provided as a string or as a dictionary."):
+        element_info = skzcam_input_set.create_element_info(
+                            basis='def2-SVP',
+                            frozencore=[2,2,10],
+                            code='mrcc',
+                            ecp={},
+                            ri_scf_basis=None,
+                            ri_cwft_basis=None
+                        )
+        
+    # Test custom basis set inputs
+    element_info = skzcam_input_set.create_element_info(
+                            basis='ano-SVP',
+                            frozencore='semicore',
+                            code='mrcc',
+                            ecp={},
+                            ri_scf_basis=None,
+                            ri_cwft_basis=None
+                        )
+
+    assert element_info == {'C': {'core': 2, 'basis': 'ano-SVP', 'ecp': 'none', 'ri_scf_basis': 'def2-QZVPP-RI-JK', 'ri_cwft_basis': 'ano-SVP-RI'}, 'O': {'core': 2, 'basis': 'ano-SVP', 'ecp': 'none', 'ri_scf_basis': 'def2-QZVPP-RI-JK', 'ri_cwft_basis': 'ano-SVP-RI'}, 'Mg': {'core': 2, 'basis': 'ano-SVP', 'ecp': 'none', 'ri_scf_basis': 'def2-QZVPP-RI-JK', 'ri_cwft_basis': 'ano-SVP-RI'}}
+
+    element_info = skzcam_input_set.create_element_info(
+                            basis={'C': 'def2-SVP','O': 'def2-SVPD','Mg': 'def2-TZVP'},
+                            frozencore='semicore',
+                            code='mrcc',
+                            ecp={},
+                            ri_scf_basis=None,
+                            ri_cwft_basis=None
+                        )
+
+    assert element_info == {'C': {'core': 2, 'basis': 'def2-SVP', 'ecp': 'none', 'ri_scf_basis': 'def2-QZVPP-RI-JK', 'ri_cwft_basis': 'def2-SVP-RI'}, 'O': {'core': 2, 'basis': 'def2-SVPD', 'ecp': 'none', 'ri_scf_basis': 'def2-QZVPP-RI-JK', 'ri_cwft_basis': 'def2-SVPD-RI'}, 'Mg': {'core': 2, 'basis': 'def2-TZVP', 'ecp': 'none', 'ri_scf_basis': 'def2-QZVPP-RI-JK', 'ri_cwft_basis': 'def2-TZVP-RI'}}
+
+    with pytest.raises(ValueError, match="basis must be provided for all elements in the quantum cluster when provided as a dictionary."):
+        element_info = skzcam_input_set.create_element_info(
+                            basis={'C': 'def2-SVP','O': 'def2-SVPD'},
+                            frozencore='semicore',
+                            code='mrcc',
+                            ecp={},
+                            ri_scf_basis=None,
+                            ri_cwft_basis=None
+                        )
+        
+    element_info = skzcam_input_set.create_element_info(
+                            basis='def2-SVP',
+                            frozencore='semicore',
+                            code='mrcc',
+                            ecp={'Mg':'ECP10SDF'},
+                            ri_scf_basis=None,
+                            ri_cwft_basis=None
+                        )
+    
+    assert element_info == {'C': {'core': 2, 'basis': 'def2-SVP', 'ecp': 'none', 'ri_scf_basis': 'def2-QZVPP-RI-JK', 'ri_cwft_basis': 'def2-SVP-RI'}, 'O': {'core': 2, 'basis': 'def2-SVP', 'ecp': 'none', 'ri_scf_basis': 'def2-QZVPP-RI-JK', 'ri_cwft_basis': 'def2-SVP-RI'}, 'Mg': {'core': 2, 'basis': 'def2-SVP', 'ecp': 'ECP10SDF', 'ri_scf_basis': 'def2-QZVPP-RI-JK', 'ri_cwft_basis': 'def2-SVP-RI'}}
+
+    # Test if ri_scf_basis and ri_cwft_basis are set correctly
+    element_info = skzcam_input_set.create_element_info(
+                            basis='def2-SVP',
+                            frozencore='semicore',
+                            code='mrcc',
+                            ecp = {},
+                            ri_scf_basis='def2-SVP-RI-JK',
+                            ri_cwft_basis='def2-SVP-RI'
+                        )
+
+    assert element_info == {'C': {'core': 2, 'basis': 'def2-SVP', 'ecp': 'none', 'ri_scf_basis': 'def2-SVP-RI-JK', 'ri_cwft_basis': 'def2-SVP-RI'}, 'O': {'core': 2, 'basis': 'def2-SVP', 'ecp': 'none', 'ri_scf_basis': 'def2-SVP-RI-JK', 'ri_cwft_basis': 'def2-SVP-RI'}, 'Mg': {'core': 2, 'basis': 'def2-SVP', 'ecp': 'none', 'ri_scf_basis': 'def2-SVP-RI-JK', 'ri_cwft_basis': 'def2-SVP-RI'}}
+
+    element_info = skzcam_input_set.create_element_info(
+                            basis={'C': 'def2-SVP','O': 'def2-SVPD','Mg': 'def2-TZVP'},
+                            frozencore='semicore',
+                            code='mrcc',
+                            ecp = {},
+                            ri_scf_basis={'C': 'def2-SVP-RI-JK','O': 'def2-SVPD-RI-JK','Mg': 'def2-QZVP-RI-JK'},
+                            ri_cwft_basis={'C': 'def2-TZVP-RI','O': 'def2-QZVP-RI','Mg': 'def2-QZVPP-RI'}
+                        )
+
+    assert element_info == {'C': {'core': 2, 'basis': 'def2-SVP', 'ecp': 'none', 'ri_scf_basis': 'def2-SVP-RI-JK', 'ri_cwft_basis': 'def2-TZVP-RI'}, 'O': {'core': 2, 'basis': 'def2-SVPD', 'ecp': 'none', 'ri_scf_basis': 'def2-SVPD-RI-JK', 'ri_cwft_basis': 'def2-QZVP-RI'}, 'Mg': {'core': 2, 'basis': 'def2-TZVP', 'ecp': 'none', 'ri_scf_basis': 'def2-QZVP-RI-JK', 'ri_cwft_basis': 'def2-QZVPP-RI'}}
+
+    # Test if errors are raised when ri_scf_basis and ri_cwft_basis are not provided correctly
+    with pytest.raises(ValueError, match="ri_scf_basis must be provided for all elements in the quantum cluster when provided as a dictionary."):
+        element_info = skzcam_input_set.create_element_info(
+                            basis={'C': 'def2-SVP','O': 'def2-SVPD','Mg': 'def2-TZVP'},
+                            frozencore='semicore',
+                            code='mrcc',
+                            ecp = {},
+                            ri_scf_basis={'C': 'def2-SVP-RI-JK','O': 'def2-SVPD-RI-JK'},
+                            ri_cwft_basis={'C': 'def2-TZVP-RI','O': 'def2-QZVP-RI','Mg': 'def2-QZVPP-RI'}
+                        )
+    
+    with pytest.raises(ValueError, match="ri_scf_basis must be provided as a string or dictionary of elements."):
+        element_info = skzcam_input_set.create_element_info(
+                            basis={'C': 'def2-SVP','O': 'def2-SVPD','Mg': 'def2-TZVP'},
+                            frozencore='semicore',
+                            code='mrcc',
+                            ecp = {},
+                            ri_scf_basis=['def2-SVP-RI-JK','def2-SVPD-RI-JK'],
+                            ri_cwft_basis={'C': 'def2-TZVP-RI','O': 'def2-QZVP-RI','Mg': 'def2-QZVPP-RI'}
+                        )
+
+    with pytest.raises(ValueError, match="ri_cwft_basis must be provided for all elements in the quantum cluster when provided as a dictionary."):
+        element_info = skzcam_input_set.create_element_info(
+                            basis={'C': 'def2-SVP','O': 'def2-SVPD','Mg': 'def2-TZVP'},
+                            frozencore='semicore',
+                            code='mrcc',
+                            ecp = {},
+                            ri_scf_basis={'C': 'def2-SVP-RI-JK','O': 'def2-SVPD-RI-JK','Mg': 'def2-QZVP-RI-JK'},
+                            ri_cwft_basis={'C': 'def2-TZVP-RI','O': 'def2-QZVP-RI'}
+                        )
+
+    with pytest.raises(ValueError, match="ri_cwft_basis must be provided as a string or dictionary of elements."):
+        element_info = skzcam_input_set.create_element_info(
+                            basis={'C': 'def2-SVP','O': 'def2-SVPD','Mg': 'def2-TZVP'},
+                            frozencore='semicore',
+                            code='mrcc',
+                            ecp = {},
+                            ri_scf_basis={'C': 'def2-SVP-RI-JK','O': 'def2-SVPD-RI-JK','Mg': 'def2-QZVP-RI-JK'},
+                            ri_cwft_basis=['def2-TZVP-RI','def2-QZVP-RI']
+                        )    
+
+
 
 
 

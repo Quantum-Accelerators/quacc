@@ -236,7 +236,7 @@ class SKZCAMInputSet:
             raise ValueError("The quantum_cluster_indices_set and ecp_region_indices_set must be the same length.")
         
         # Check that the maximum cluster number is below the number of quantum clusters for all ONIOM levels
-        for oniom_method, oniom_parameters in self.skzcam_input_sets.items():
+        for _, oniom_parameters in self.skzcam_input_sets.items():
             if 'max_cluster_num' not in oniom_parameters:
                 raise ValueError("The maximum cluster number must be provided for all ONIOM levels.")
             if 'basis' not in oniom_parameters:
@@ -251,7 +251,7 @@ class SKZCAMInputSet:
             frozencore: Literal['valence', 'semicore'] | dict[ElementStr, int],
             basis : Literal['DZ', 'TZ', 'QZ', '5Z'] | dict[ElementStr, str],
             code: Literal['mrcc', 'orca'],
-            ecp: dict[ElementStr, str] | None = None,
+            ecp: dict[ElementStr, str],
             ri_scf_basis: dict[ElementStr, str] | None = None,
             ri_cwft_basis: dict[ElementStr, str] | None = None
     ):
@@ -316,7 +316,7 @@ class SKZCAMInputSet:
                         'basis' : f'cc-pwCV{basis}',
                         'ecp': ecp[atom.symbol] if atom.symbol in ecp else 'none',
                         'ri_scf_basis': 'def2-QZVPP-RI-JK' if code == 'mrcc' else 'def2/J',
-                        'ri_cwft_basis': f'AutoAux' if code == 'mrcc' else f'cc-pwCV{basis}/C'
+                        'ri_cwft_basis': f'cc-pwCV{basis}-RI' if code == 'mrcc' else f'AutoAux'
                     }
         # Use custom values for the element info dictionary
         else:
@@ -408,7 +408,7 @@ class SKZCAMInputSet:
         """
 
         # Start by writing the input files for the MP2 calculations
-        for oniom_method, oniom_parameters in self.skzcam_input_sets.items():
+        for _, oniom_parameters in self.skzcam_input_sets.items():
             for cluster_num in range(1,oniom_parameters["max_cluster_num"]+1):
                 if isinstance(oniom_parameters['basis'], dict):
                     # Get a list of basis sets for the oniom_method. This would just be the single basis set specified if there is no CBS(../..) specified, otherwise, it would be a list of two basis sets.
