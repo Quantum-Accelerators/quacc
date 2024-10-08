@@ -20,13 +20,14 @@ if TYPE_CHECKING:
 
 @flow
 def phonon_flow(
-    atoms: Atoms,
+    displaced_atoms: Atoms,
     symprec: float = 1e-4,
     min_lengths: float | tuple[float, float, float] | None = 20.0,
     supercell_matrix: (
         tuple[tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]] | None
     ) = None,
     displacement: float = 0.01,
+    non_displaced_atoms: Atoms | None = None,
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
@@ -52,7 +53,7 @@ def phonon_flow(
 
     Parameters
     ----------
-    atoms
+    displaced_atoms
         Atoms object
     symprec
         Precision for symmetry detection.
@@ -63,6 +64,11 @@ def phonon_flow(
         value specified by `min_lengths`.
     displacement
         Atomic displacement (A).
+    non_displaced_atoms
+        Additional atoms to add to the supercells i.e. fixed atoms.
+        These atoms will not be displaced during the phonon calculation.
+        Useful for adsorbates on surfaces with weak coupling etc.
+        Important approximation, use with caution.
     t_step
         Temperature step (K).
     t_min
@@ -91,11 +97,12 @@ def phonon_flow(
     )
 
     return phonon_subflow(
-        atoms,
+        displaced_atoms,
         static_job_,
         symprec=symprec,
         min_lengths=min_lengths,
         supercell_matrix=supercell_matrix,
+        non_displaced_atoms=non_displaced_atoms,
         displacement=displacement,
         t_step=t_step,
         t_min=t_min,

@@ -14,6 +14,7 @@ has_phonopy = bool(find_spec("phonopy"))
 
 if has_phonopy:
     from phonopy import Phonopy
+    from phonopy.structure.cells import get_supercell
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
@@ -94,3 +95,32 @@ def phonopy_atoms_to_ase_atoms(phonpy_atoms: PhonopyAtoms) -> Atoms:
     """
     pmg_structure = get_pmg_structure(phonpy_atoms)
     return pmg_structure.to_ase_atoms()
+
+
+def get_atoms_supercell_by_phonopy(
+    atoms: Atoms,
+    supercell_matrix: tuple[
+        tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]
+    ],
+) -> Atoms:
+    """
+    Get the supercell of an ASE atoms object using a supercell matrix.
+
+    Parameters
+    ----------
+    atoms
+        ASE atoms object.
+    supercell_matrix
+        The supercell matrix to use.
+
+    Returns
+    -------
+    Atoms
+        ASE atoms object of the supercell.
+    """
+
+    return phonopy_atoms_to_ase_atoms(
+        get_supercell(
+            get_phonopy_structure(Structure.from_ase_atoms(atoms)), supercell_matrix
+        )
+    )
