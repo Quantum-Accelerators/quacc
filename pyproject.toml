@@ -26,7 +26,7 @@ classifiers = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "ase>=3.23.0", # for Atoms object and calculators
+    "ase @ git+https://gitlab.com/ase/ase.git", # for Atoms object and calculators
     "custodian>=2024.3.12", # for automated error corrections
     "emmet-core>=0.80.0", # for pre-made schemas
     "maggma>=0.64.0", # for database handling
@@ -52,7 +52,7 @@ parsl = ["parsl[monitoring]>=2024.5.27; platform_system!='Windows'"]
 phonons = ["phonopy>=2.20.0", "seekpath>=2.1.0"]
 prefect = ["prefect[dask]>=2.19.0", "dask-jobqueue>=0.8.2"]
 redun = ["redun>=0.16.2"]
-sella = ["sella>=2.3.4"]
+sella = ["sella @ git+https://github.com/zadorlab/sella.git@refs/pull/46/head"]
 tblite = ["tblite>=0.3.0; platform_system=='Linux'"]
 dev = ["pytest>=7.4.0", "pytest-cov>=3.0.0", "ruff>=0.0.285"]
 docs = [
