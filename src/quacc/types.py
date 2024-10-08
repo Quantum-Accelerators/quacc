@@ -277,13 +277,6 @@ if TYPE_CHECKING:
         orca_cation_cap_ecp: dict[ElementStr, str] | None
         mrcc_calc_inputs: dict[str, str] | None
 
-    class ElementInfo(TypedDict):
-        core: int
-        basis: str
-        ecp: str
-        ri_scf_basis: str
-        ri_cwft_basis: str
-
     class BlockInfo(TypedDict):
         adsorbate_slab: str
         adsorbate: str
