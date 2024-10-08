@@ -674,7 +674,10 @@ class MRCCInputGenerator:
 
             atomtype_ecp = 'ecp=atomtype\n'
             for atom in quantum_region:
-                atomtype_ecp += f"{self.element_info[atom.symbol]['ecp']}\n"
+                if 'ecp' in self.element_info[atom.symbol]:
+                    atomtype_ecp += f"{self.element_info[atom.symbol]['ecp']}\n"
+                else:
+                    atomtype_ecp += "none\n"
             if ecp_region is not None:
                 atomtype_ecp += "capECP\n" * len(ecp_region)
 
@@ -1294,12 +1297,12 @@ coords
         if self.scf_block is not None:
             preamble_input += "%scf\n"
             for key in self.scf_block:
-                preamble_input += f"""{key} {self.scf_block[key]}\n"""
+                preamble_input += f"{key} {self.scf_block[key]}\n"
             preamble_input += "end\n"
 
         # Add preamble_input to the orcablocks for the adsorbate-slab complex, adsorbate, and slab
         self.orcablocks["adsorbate_slab"] += preamble_input
-        self.orcablocks["adsorbate"] += "\n".join([line for line in preamble_input.splitlines() if "orca.pc" not in line])
+        self.orcablocks["adsorbate"] += "\n".join([line for line in preamble_input.splitlines() if "orca.pc" not in line]) + "\n"
         self.orcablocks["slab"] += preamble_input
 
 
