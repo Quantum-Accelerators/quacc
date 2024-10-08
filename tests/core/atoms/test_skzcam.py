@@ -553,10 +553,28 @@ def test_SKZCAMInputSet_create_element_info(skzcam_clusters_output):
                             ri_cwft_basis=['def2-TZVP-RI','def2-QZVP-RI']
                         )    
 
+def test_SKZCAMInputSet_generate_input(skzcam_clusters_output,tmp_path):
+    skzcam_input_set = SKZCAMInputSet(
+        adsorbate_slab_embedded_cluster=skzcam_clusters_output['adsorbate_slab_embedded_cluster'],
+        quantum_cluster_indices_set=skzcam_clusters_output['quantum_cluster_indices_set'],
+        ecp_region_indices_set = skzcam_clusters_output['ecp_region_indices_set'],
+        mp2_oniom1_ll = {'max_cluster_num': 2, 'frozencore': 'semicore', 'basis': 'DZ','code':'mrcc'},
+        mp2_oniom1_hl = {'max_cluster_num': 1, 'frozencore': 'valence', 'basis': 'CBS(DZ/TZ)','code':'orca'},) 
+    skzcam_input_set.generate_input(tmp_path)
+    tmp_path_files = os.listdir(tmp_path)
 
+    assert tmp_path_files == ['MRCC_MINP_MP2_cluster_1_awCVDZ_adsorbate', 'MRCC_MINP_MP2_cluster_1_awCVDZ_slab', 'ORCA_MP2_cluster_1_aVTZ_adsorbate.inp', 'ORCA_MP2_cluster_1_aVDZ_slab.inp', 'ORCA_MP2_cluster_1_aVTZ_slab.inp', 'ORCA_MP2_cluster_1_aVDZ.pc', 'ORCA_MP2_cluster_1_aVTZ_adsorbate_slab.inp', 'MRCC_MINP_MP2_cluster_2_awCVDZ_adsorbate_slab', 'ORCA_MP2_cluster_1_aVDZ_adsorbate_slab.inp', 'MRCC_MINP_MP2_cluster_2_awCVDZ_slab', 'MRCC_MINP_MP2_cluster_2_awCVDZ_adsorbate', 'ORCA_MP2_cluster_1_aVTZ.pc', 'ORCA_MP2_cluster_1_aVDZ_adsorbate.inp', 'MRCC_MINP_MP2_cluster_1_awCVDZ_adsorbate_slab']
 
+    # Check that the input files are correct
+    with open(Path(tmp_path, 'ORCA_MP2_cluster_1_aVDZ_adsorbate_slab.inp')) as f:
+        orca_adsorbate_slab_lines = f.readlines()[::10]
 
+    assert orca_adsorbate_slab_lines == ['! TightSCF RI-MP2 RIJCOSX SlowConv DIIS \n', 'end\n', 'sthresh 1e-6\n', 'C                       0.00000000000    0.00000000000    2.00000000000\n', 'N_core 0\n', 'end\n', '1      1.203000000   -1.816000000 2\n', 'p 1\n', 'lmax f\n', 'Mg>    2.00000000000   -2.10705287155    0.00000000000   -2.14155206950\n', 'f 1\n', '1      1.115000000    5.175700000 2\n', 's 1\n', 'NewECP\n', '1      1.000000000    0.000000000 2\n', 'd 1\n', '1      1.732000000   14.676000000 2\n', 'N_core 0\n', 'end\n', '1      1.203000000   -1.816000000 2\n', 'p 1\n']
 
+    with open(Path(tmp_path, 'MRCC_MINP_MP2_cluster_1_awCVDZ_adsorbate')) as f:
+        mrcc_adsorbate_lines = f.readlines()[::2]
+
+    assert mrcc_adsorbate_lines == ['calc=DF-MP2\n', 'verbosity=3\n', 'symm=off\n', 'scfiguess=small\n', 'scfalg=locfit1\n', 'def2-SVP\n', 'def2-SVP\n', 'def2-SVP\n', 'def2-SVP\n', '\n', 'basis=atomtype\n', 'aug-cc-pVDZ\n', 'aug-cc-pVDZ\n', 'aug-cc-pVDZ\n', 'aug-cc-pVDZ\n', '\n', 'def2-QZVPP-RI-JK\n', 'def2-QZVPP-RI-JK\n', 'def2-QZVPP-RI-JK\n', 'def2-QZVPP-RI-JK\n', '\n', 'dfbasis_cor=atomtype\n', 'aug-cc-pVDZ-RI\n', 'aug-cc-pVDZ-RI\n', 'aug-cc-pVDZ-RI\n', 'aug-cc-pVDZ-RI\n', '\n', 'none\n', 'none\n', 'none\n', 'none\n', '\n', 'mult=1\n', 'geom=xyz\n', '\n', 'O                       0.00000000000    0.00000000000    3.12800000000\n', 'O                      -2.12018425659    0.00000000000    0.00567209089\n', 'O                       2.12018425659    0.00000000000    0.00567209089\n', 'O                       0.00000000000    0.00000000000   -2.14129966123\n', 'ghost=serialno\n', '\n']
 
 
 def test_MRCCInputGenerator_init(adsorbate_slab_embedded_cluster, element_info):

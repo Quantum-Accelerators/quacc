@@ -445,6 +445,8 @@ class SKZCAMInputSet:
                             ri_scf_basis=oniom_parameters["ri_scf_basis"],
                             ri_cwft_basis=oniom_parameters["ri_cwft_basis"]
                         )
+
+                        # Use MRCCInputGenerator to generate the necessary blocks for the MRCC ASE calculator
                         mrcc_block_inputs = MRCCInputGenerator(
                                     adsorbate_slab_embedded_cluster=self.adsorbate_slab_embedded_cluster,
                                     quantum_cluster_indices=self.quantum_cluster_indices_set[cluster_num-1],
@@ -456,10 +458,13 @@ class SKZCAMInputSet:
                         
                         mrcc_default_calc_inputs = {'calc': 'DF-MP2', 'scftype': 'rhf', 'verbosity': 3, 'mem': f"{oniom_parameters['max_memory']}MB", 'symm': 'off', 'unit': 'angs', 'scfiguess': 'small', 'scfmaxit': 1000, 'scfalg': 'locfit1'}
 
+                        # Add default values to the mrcc_calc_inputs dictionary
                         mrcc_calc_inputs = {**mrcc_default_calc_inputs,**oniom_parameters['mrcc_calc_inputs']}
 
+                        # Combine with the mrcc_block inputs
                         mrcc_inputs = {structure: {**mrcc_calc_inputs, **mrcc_block_inputs[structure]}  for structure in mrcc_block_inputs}
 
+                        # Write MRCC input files
                         write_mrcc(Path(input_dir,f'MRCC_MINP_MP2_cluster_{cluster_num}_{basis_name}_adsorbate_slab'),self.adsorbate_slab_embedded_cluster,mrcc_inputs['adsorbate_slab'])
                         write_mrcc(Path(input_dir,f'MRCC_MINP_MP2_cluster_{cluster_num}_{basis_name}_slab'),self.adsorbate_slab_embedded_cluster,mrcc_inputs['slab'])
                         write_mrcc(Path(input_dir,f'MRCC_MINP_MP2_cluster_{cluster_num}_{basis_name}_adsorbate'),self.adsorbate_slab_embedded_cluster,mrcc_inputs['adsorbate'])
@@ -472,7 +477,7 @@ class SKZCAMInputSet:
                             ri_scf_basis=oniom_parameters["ri_scf_basis"],
                             ri_cwft_basis=oniom_parameters["ri_cwft_basis"]
                         )
-
+                        # Use ORCAInputGenerator to generate the necessary orca_blocks for the ORCA ASE calculator
                         orca_input_generator = ORCAInputGenerator(
                             adsorbate_slab_embedded_cluster=self.adsorbate_slab_embedded_cluster,
                             quantum_cluster_indices=self.quantum_cluster_indices_set[cluster_num-1],
@@ -487,8 +492,10 @@ class SKZCAMInputSet:
                         )
                         orca_blocks = orca_input_generator.generate_input()
 
+                        # Add simpleinput and blocks to the orca_inputs dictionary
                         orca_inputs = {structure: {'orcasimpleinput': 'TightSCF RI-MP2 RIJCOSX SlowConv DIIS', 'orcablocks': orca_blocks[structure]}for structure in orca_blocks}
 
+                        # Write ORCA input files
                         write_orca(Path(input_dir,f'ORCA_MP2_cluster_{cluster_num}_{basis_name}_adsorbate.inp'),self.adsorbate_slab_embedded_cluster,orca_inputs['adsorbate'])
                         write_orca(Path(input_dir,f'ORCA_MP2_cluster_{cluster_num}_{basis_name}_slab.inp'),self.adsorbate_slab_embedded_cluster,orca_inputs['slab'])
                         write_orca(Path(input_dir,f'ORCA_MP2_cluster_{cluster_num}_{basis_name}_adsorbate_slab.inp'),self.adsorbate_slab_embedded_cluster,orca_inputs['adsorbate_slab'])
