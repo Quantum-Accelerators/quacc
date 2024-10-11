@@ -66,7 +66,7 @@ def phonon_flow(
         Atomic displacement (A).
     fixed_atom_indices
         Indices of fixed atoms. These atoms will not be displaced
-        during the phonon calculation. Useful for adsorbates on 
+        during the phonon calculation. Useful for adsorbates on
         surfaces with weak coupling etc. Important approximation,
         use with caution.
     t_step
