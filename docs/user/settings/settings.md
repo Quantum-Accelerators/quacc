@@ -61,7 +61,7 @@ with change_settings({"GZIP_FILES": False}):
     result = relax_job(atoms)
 ```
 
-!!! Important "Active Workflow Engine"
+!!! Warning "Using a Workflow Engine"
 
     When deploying calculations via a workflow engine, changes to in-memory global variables on the local machine will not be reflected on the remote machine. Instead, this should be done via a custom `settings_swap` keyword argument that is supported by the `@job` decorator.
 
