@@ -9,7 +9,7 @@ import numpy as np
 from ase.build import bulk
 from numpy.testing import assert_almost_equal, assert_array_equal
 
-from quacc.atoms.phonons import get_phonopy
+from quacc.atoms.phonons import get_atoms_supercell_by_phonopy, get_phonopy
 
 
 def test_get_phonopy():
@@ -30,3 +30,13 @@ def test_get_phonopy():
 
     phonopy = get_phonopy(atoms, symprec=1e-8)
     assert phonopy.symmetry.tolerance == 1e-8
+
+
+def test_get_supercell_by_phonopy():
+    atoms = bulk("Cu")
+    get_atoms_supercell_by_phonopy(atoms, np.eye(3) * 2)
+
+    cell = [[-1, 1, 1], [1, -1, 1], [1, 1, -1]]
+
+    supercell = get_atoms_supercell_by_phonopy(atoms, cell)
+    assert_almost_equal(np.diag(np.diag(supercell.cell)), supercell.cell)

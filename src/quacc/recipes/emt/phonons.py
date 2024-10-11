@@ -27,6 +27,7 @@ def phonon_flow(
         tuple[tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]] | None
     ) = None,
     displacement: float = 0.01,
+    fixed_atom_indices: list[int] | None = None,
     t_step: float = 10,
     t_min: float = 0,
     t_max: float = 1000,
@@ -63,6 +64,11 @@ def phonon_flow(
         value specified by `min_lengths`.
     displacement
         Atomic displacement (A).
+    fixed_atom_indices
+        Indices of fixed atoms. These atoms will not be displaced
+        during the phonon calculation. Useful for adsorbates on
+        surfaces with weak coupling etc. Important approximation,
+        use with caution.
     t_step
         Temperature step (K).
     t_min
@@ -96,6 +102,7 @@ def phonon_flow(
         symprec=symprec,
         min_lengths=min_lengths,
         supercell_matrix=supercell_matrix,
+        fixed_atom_indices=fixed_atom_indices,
         displacement=displacement,
         t_step=t_step,
         t_min=t_min,
