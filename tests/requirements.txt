@@ -1,5 +1,5 @@
 ase==3.23.0
-custodian==2024.10.14
+custodian==2024.10.15
 emmet-core==0.84.2
 maggma==0.70.0
 monty==2024.7.30
