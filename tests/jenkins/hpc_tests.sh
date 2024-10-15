@@ -22,9 +22,9 @@ module load gaussian/g16
 pytest tests/core/recipes/gaussian_recipes --noconftest
 
 # ORCA
-export PATH=$SOFTWARE/orca:$PATH
+export PATH=$SOFTWARE/orca_6_0_0_shared_openmpi416:$PATH
 module purge
-module load openmpi/gcc/4.1.2
+module load nvhpc/24.5 openmpi/nvhpc-24.5/4.1.6
 pytest tests/core/recipes/orca_recipes --noconftest
 
 # VASP
