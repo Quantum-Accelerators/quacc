@@ -27,7 +27,7 @@ classifiers = [
 requires-python = ">=3.10"
 dependencies = [
     "ase>=3.23.0", # for Atoms object and calculators
-    "custodian>=2024.10.14", # for automated error corrections
+    "custodian>=2024.10.15", # for automated error corrections
     "emmet-core>=0.80.0", # for pre-made schemas
     "maggma>=0.64.0", # for database handling
     "monty>=2024.5.15", # miscellaneous Python utilities
