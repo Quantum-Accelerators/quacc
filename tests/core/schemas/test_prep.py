@@ -14,19 +14,19 @@ from quacc.atoms.core import get_atoms_id
 from quacc.schemas.prep import prep_next_run
 
 
-@pytest.fixture()
+@pytest.fixture
 def atoms_mag():
     file_dir = Path(__file__).parent
     return read(file_dir / ".." / "calculators" / "vasp" / "OUTCAR_mag.gz")
 
 
-@pytest.fixture()
+@pytest.fixture
 def atoms_nomag():
     file_dir = Path(__file__).parent
     return read(file_dir / ".." / "calculators" / "vasp" / "OUTCAR_nomag.gz")
 
 
-@pytest.fixture()
+@pytest.fixture
 def atoms_nospin():
     file_dir = Path(__file__).parent
     return read(file_dir / ".." / "calculators" / "vasp" / "OUTCAR_nospin.gz")

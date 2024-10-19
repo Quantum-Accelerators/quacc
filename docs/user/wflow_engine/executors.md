@@ -564,8 +564,7 @@ If you haven't done so already:
     from ase.collections import g2
 
     atoms_objects = [g2[name] for name in g2.names[:20]]
-    futures = workflow(atoms_objects)
-    results = [future.result() for future in futures]
+    results = workflow(atoms_objects)
     ```
 
     !!! Tip "One-Time Dask Clusters"
@@ -909,8 +908,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     from ase.build import bulk
 
     list_of_atoms = [bulk("Cu"), bulk("C")]
-    futures = workflow(list_of_atoms)
-    results = [future.result() for future in futures]
+    results = workflow(list_of_atoms)
     ```
 
 === "Jobflow"

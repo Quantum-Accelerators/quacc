@@ -1,4 +1,4 @@
-DEBUG: true
+LOG_LEVEL: DEBUG
 WORKFLOW_ENGINE: null
 STORE:
   MemoryStore:

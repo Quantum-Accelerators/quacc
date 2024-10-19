@@ -16,7 +16,8 @@ from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 if TYPE_CHECKING:
-    from typing import Any, Callable
+    from collections.abc import Callable
+    from typing import Any
 
 _DEFAULT_CONFIG_FILE_PATH = Path("~", ".quacc.yaml").expanduser().resolve()
 
@@ -136,6 +137,10 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     PREFECT_AUTO_SUBMIT: bool = Field(
         True, description="Whether to auto-submit tasks to the task runner."
+    )
+    PREFECT_RESOLVE_FLOW_RESULTS: bool = Field(
+        True,
+        description="Whether to resolve all futures in flow results to data and fail if not possible",
     )
 
     # ---------------------------
@@ -406,16 +411,13 @@ class QuaccSettings(BaseSettings):
     )
 
     # ---------------------------
-    # Debug Settings
+    # Logger Settings
     # ---------------------------
-    DEBUG: bool = Field(
-        False,
-        description=(
-            """
-            Whether to run in debug mode. This will set the logging level to DEBUG,
-            ASE logs (e.g. optimizations, vibrations, thermo) are printed to stdout.
-            """
-        ),
+    LOG_FILENAME: Optional[Path] = Field(
+        None, description="Path to store the log file."
+    )
+    LOG_LEVEL: Optional[Literal["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"]] = (
+        Field("INFO", description=("Logger level."))
     )
 
     # --8<-- [end:settings]

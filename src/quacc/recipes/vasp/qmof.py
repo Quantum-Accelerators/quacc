@@ -7,7 +7,7 @@ Reference: https://doi.org/10.1016/j.matt.2021.02.015
 
 from __future__ import annotations
 
-import logging
+from logging import getLogger
 from typing import TYPE_CHECKING
 
 from ase.optimize import BFGSLineSearch
@@ -26,7 +26,7 @@ if TYPE_CHECKING:
         VaspSchema,
     )
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 
 
 @job

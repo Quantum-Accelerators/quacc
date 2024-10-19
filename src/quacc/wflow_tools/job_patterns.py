@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+import itertools
 from typing import TYPE_CHECKING
 
 from quacc.wflow_tools.customizers import strip_decorator
 from quacc.wflow_tools.decorators import job
 
 if TYPE_CHECKING:
-    from typing import Any, Callable
+    from collections.abc import Callable
+    from typing import Any
 
 
 @job
@@ -165,3 +167,22 @@ def kwarg_map(
         func(**{k: v[i] for k, v in iter(mapped_kwargs.items())}, **unmapped_kwargs)
         for i in range(n_elements)
     ]
+
+
+@job
+def unpartition(lists_to_combine: list[list[Any]]) -> list[Any]:
+    """
+    Given a partitioned list (list of lists), recombine
+    it to a single list
+
+    Parameters
+    ----------
+    lists_to_combine
+        the list of lists to recombine
+
+    Returns
+    -------
+    list[Any]
+        a single recombined list
+    """
+    return list(itertools.chain(*lists_to_combine))

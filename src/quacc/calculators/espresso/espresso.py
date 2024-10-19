@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-import logging
 import os
 import re
+from logging import getLogger
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -34,7 +34,7 @@ from quacc.utils.files import load_yaml_calc, safe_decompress_dir
 if TYPE_CHECKING:
     from typing import Any
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 
 
 class EspressoTemplate(EspressoTemplate_):
@@ -370,7 +370,7 @@ class Espresso(GenericFileIOCalculator):
         input_atoms
             The input Atoms object to be used for the calculation.
         preset
-            A YAML file containing a list of INCAR parameters to use as a "preset"
+            A YAML file containing a list of parameters to use as a "preset"
             for the calculator. If `preset` has a .yml or .yaml file extension, the
             path to this file will be used directly. If `preset` is a string without
             an extension, the corresponding YAML file will be assumed to be in the

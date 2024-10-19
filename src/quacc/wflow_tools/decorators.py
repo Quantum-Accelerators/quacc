@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from functools import partial, wraps
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any
 
 from quacc.settings import change_settings_wrap
+
+if TYPE_CHECKING:
+    from quacc.settings import QuaccSettings
 
 Job = Callable[..., Any]
 Flow = Callable[..., Any]
@@ -347,9 +351,7 @@ def flow(_func: Callable[..., Any] | None = None, **kwargs) -> Flow:
 
         return task(_func, namespace=_func.__module__, **kwargs)
     elif settings.WORKFLOW_ENGINE == "prefect":
-        from prefect import flow as prefect_flow
-
-        return prefect_flow(_func, validate_parameters=False, **kwargs)
+        return _get_prefect_wrapped_flow(_func, settings, **kwargs)
     else:
         return _func
 
@@ -559,7 +561,7 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
 
         return ct.electron(ct.lattice(_func), **kwargs)
     elif settings.WORKFLOW_ENGINE == "dask":
-        from dask import delayed
+        from dask.delayed import delayed
         from dask.distributed import worker_client
 
         # See https://github.com/dask/dask/issues/10733
@@ -578,9 +580,7 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
 
         return join_app(wrapped_fn, **kwargs)
     elif settings.WORKFLOW_ENGINE == "prefect":
-        from prefect import flow as prefect_flow
-
-        return prefect_flow(_func, validate_parameters=False, **kwargs)
+        return _get_prefect_wrapped_flow(_func, settings, **kwargs)
     elif settings.WORKFLOW_ENGINE == "redun":
         from redun import task
 
@@ -628,6 +628,42 @@ def _get_parsl_wrapped_func(
         wrapper._original_func = func._original_func  # type: ignore[attr-defined]
     wrapper.__name__ = func.__name__
     return wrapper
+
+
+def _get_prefect_wrapped_flow(
+    _func: Callable, settings: QuaccSettings, **kwargs
+) -> Callable:
+    from prefect import flow as prefect_flow
+    from prefect.utilities.asyncutils import is_async_fn
+
+    from quacc.wflow_tools.prefect_utils import (
+        resolve_futures_to_results,
+        resolve_futures_to_results_async,
+    )
+
+    if is_async_fn(_func):
+        if settings.PREFECT_RESOLVE_FLOW_RESULTS:
+
+            @wraps(_func)
+            async def async_wrapper(*f_args, **f_kwargs):
+                result = await _func(*f_args, **f_kwargs)
+                return await resolve_futures_to_results_async(result)
+
+            return prefect_flow(async_wrapper, validate_parameters=False, **kwargs)
+
+        else:
+            return prefect_flow(_func, validate_parameters=False, **kwargs)
+    else:
+        if settings.PREFECT_RESOLVE_FLOW_RESULTS:
+
+            @wraps(_func)
+            def sync_wrapper(*f_args, **f_kwargs):
+                result = _func(*f_args, **f_kwargs)
+                return resolve_futures_to_results(result)
+
+            return prefect_flow(sync_wrapper, validate_parameters=False, **kwargs)
+        else:
+            return prefect_flow(_func, validate_parameters=False, **kwargs)
 
 
 class Delayed_:

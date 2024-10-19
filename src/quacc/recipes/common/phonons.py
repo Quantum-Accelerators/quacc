@@ -5,20 +5,25 @@ from __future__ import annotations
 from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
+import numpy as np
+from ase.atoms import Atoms
 from monty.dev import requires
 
 from quacc import job, subflow
-from quacc.atoms.phonons import get_phonopy, phonopy_atoms_to_ase_atoms
+from quacc.atoms.phonons import (
+    get_atoms_supercell_by_phonopy,
+    get_phonopy,
+    phonopy_atoms_to_ase_atoms,
+)
 from quacc.runners.phonons import PhonopyRunner
 from quacc.schemas.phonons import summarize_phonopy
+from quacc.utils.dicts import recursive_dict_merge
 
 has_phonopy = bool(find_spec("phonopy"))
 has_seekpath = bool(find_spec("seekpath"))
 
 if TYPE_CHECKING:
     from typing import Any
-
-    from ase.atoms import Atoms
 
     from quacc import Job
     from quacc.types import PhononSchema
@@ -33,6 +38,7 @@ if TYPE_CHECKING:
 def phonon_subflow(
     atoms: Atoms,
     force_job: Job,
+    fixed_atom_indices: list[int] | None = None,
     symprec: float = 1e-4,
     min_lengths: float | tuple[float, float, float] | None = 20.0,
     supercell_matrix: (
@@ -46,7 +52,7 @@ def phonon_subflow(
     additional_fields: dict[str, Any] | None = None,
 ) -> PhononSchema:
     """
-    Calculate phonon properties.
+    Calculate phonon properties using the Phonopy package.
 
     Parameters
     ----------
@@ -54,6 +60,11 @@ def phonon_subflow(
         Atoms object with calculator attached.
     force_job
         The static job to calculate the forces.
+    fixed_atom_indices
+        Indices of fixed atoms. These atoms will not be displaced
+        during the phonon calculation. Useful for adsorbates on
+        surfaces with weak coupling etc. Important approximation,
+        use with caution.
     symprec
         Precision for symmetry detection.
     min_lengths
@@ -79,6 +90,33 @@ def phonon_subflow(
     PhononSchema
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][]
     """
+    mask_to_fix = np.zeros(len(atoms), dtype=bool)
+
+    if fixed_atom_indices:
+        mask_to_fix[fixed_atom_indices] = True
+
+    displaced_atoms, non_displaced_atoms = atoms[~mask_to_fix], atoms[mask_to_fix]
+
+    phonopy = get_phonopy(
+        displaced_atoms,
+        min_lengths=min_lengths,
+        supercell_matrix=supercell_matrix,
+        symprec=symprec,
+        displacement=displacement,
+        phonopy_kwargs=phonopy_kwargs,
+    )
+
+    if non_displaced_atoms:
+        non_displaced_atoms_supercell = get_atoms_supercell_by_phonopy(
+            non_displaced_atoms, phonopy.supercell_matrix
+        )
+    else:
+        non_displaced_atoms_supercell = Atoms()
+
+    supercells = [
+        phonopy_atoms_to_ase_atoms(s) + non_displaced_atoms_supercell
+        for s in phonopy.supercells_with_displacements
+    ]
 
     @subflow
     def _get_forces_subflow(supercells: list[Atoms]) -> list[dict]:
@@ -97,9 +135,17 @@ def phonon_subflow(
         additional_fields: dict[str, Any] | None,
     ) -> PhononSchema:
         parameters = force_job_results[-1].get("parameters")
-        forces = [output["results"]["forces"] for output in force_job_results]
+        forces = [
+            output["results"]["forces"][: len(phonopy.supercell)]
+            for output in force_job_results
+        ]
         phonopy_results = PhonopyRunner().run_phonopy(
-            phonopy, forces, t_step=t_step, t_min=t_min, t_max=t_max
+            phonopy,
+            forces,
+            symmetrize=bool(non_displaced_atoms),
+            t_step=t_step,
+            t_min=t_min,
+            t_max=t_max,
         )
 
         return summarize_phonopy(
@@ -110,17 +156,15 @@ def phonon_subflow(
             additional_fields=additional_fields,
         )
 
-    phonopy = get_phonopy(
-        atoms,
-        min_lengths=min_lengths,
-        supercell_matrix=supercell_matrix,
-        symprec=symprec,
-        displacement=displacement,
-        phonopy_kwargs=phonopy_kwargs,
-    )
-    supercells = [
-        phonopy_atoms_to_ase_atoms(s) for s in phonopy.supercells_with_displacements
-    ]
+    if non_displaced_atoms:
+        additional_fields = recursive_dict_merge(
+            additional_fields,
+            {
+                "displaced_atoms": displaced_atoms,
+                "non_displaced_atoms": non_displaced_atoms,
+            },
+        )
+
     force_job_results = _get_forces_subflow(supercells)
     return _thermo_job(
         atoms, phonopy, force_job_results, t_step, t_min, t_max, additional_fields
