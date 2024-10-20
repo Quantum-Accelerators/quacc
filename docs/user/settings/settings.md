@@ -28,7 +28,7 @@ WORKFLOW_ENGINE: None # (3)!
 
 !!! Tip "When is This Method Ideal?"
 
-    This approach is ideal when you want to change a setting that applies to most or all of your calculations.
+    This approach is ideal when you want to change a setting that applies to most or all of your calculations. If you wish to have multiple sets of YAML files, you can dynamically change which file to use by setting the `QUACC_CONFIG_FILE` environment variable accordingly.
 
 ## Using Environment Variables
 
