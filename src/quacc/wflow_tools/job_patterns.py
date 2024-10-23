@@ -7,7 +7,8 @@ from quacc.wflow_tools.customizers import strip_decorator
 from quacc.wflow_tools.decorators import job
 
 if TYPE_CHECKING:
-    from typing import Any, Callable
+    from collections.abc import Callable
+    from typing import Any
 
 
 @job
