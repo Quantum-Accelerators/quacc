@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import pytest
+from ase.build import bulk
 from prefect import flow, task
 
+from quacc.recipes.emt.phonons import phonon_flow
 from quacc.wflow_tools.prefect_utils import (
     resolve_futures_to_results,
     resolve_futures_to_results_async,
@@ -53,3 +55,8 @@ async def test_resolve_futures_to_results_async():
 
     result = await test_flow()
     assert result["nest"]["test"] == 5
+
+
+def test_phonon_flow():
+    cu_bulk = bulk("Cu")
+    phonon_flow(cu_bulk)
