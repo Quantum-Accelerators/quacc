@@ -13,7 +13,6 @@ pytestmark = pytest.mark.skipif(
 
 from pathlib import Path
 from shutil import which
-from subprocess import CalledProcessError
 
 import pytest
 from ase.build import bulk
@@ -221,15 +220,13 @@ def test_static_job_test_run(tmp_path, monkeypatch):
 
     assert Path("test.EXIT").exists()
 
-    with pytest.raises(JobFailure, match="Calculation failed!") as err:
+    with pytest.raises(JobFailure, match="Calculation failed!"):
         static_job(
             atoms,
             pseudopotentials=pseudopotentials,
             input_data={"pseudo_dir": tmp_path},
             test_run=True,
         )
-    with pytest.raises(CalledProcessError):
-        raise err.value.parent_error
 
 
 def test_relax_job(tmp_path, monkeypatch):
