@@ -220,7 +220,7 @@ def test_static_job_test_run(tmp_path, monkeypatch):
 
     assert Path("test.EXIT").exists()
 
-    with pytest.raises(JobFailure, match="Calculation failed!") as err:
+    with pytest.raises(JobFailure, match="Calculation failed!"):
         static_job(
             atoms,
             pseudopotentials=pseudopotentials,
