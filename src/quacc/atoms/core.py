@@ -20,10 +20,9 @@ if TYPE_CHECKING:
 LOGGER = getLogger(__name__)
 
 
-def get_atoms_id(atoms: Atoms) -> str:
+def _encode_atoms(atoms: Atoms) -> bytes:
     """
-    Returns a unique ID for the Atoms object. Note: The .info dict and calculator is
-    excluded from the hash generation.
+    Returns a unique bytes for the Atoms object. Note: The .info dict and calculator is excluded from the hash generation.
 
     Parameters
     ----------
@@ -32,8 +31,8 @@ def get_atoms_id(atoms: Atoms) -> str:
 
     Returns
     -------
-    str
-        MD5 hash of the Atoms object
+    bytes
+        bytes representation of the Atoms object
     """
     atoms = copy_atoms(atoms)
     atoms.info = {}
@@ -48,7 +47,15 @@ def get_atoms_id(atoms: Atoms) -> str:
         .replace("float32", "float")
     )
 
-    return hashlib.md5(encoded_atoms.encode("utf-8"), usedforsecurity=False).hexdigest()
+    return encoded_atoms.encode("utf-8")
+
+
+def get_atoms_id(atoms: Atoms) -> str:
+    return hashlib.md5(_encode_atoms(atoms), usedforsecurity=False).hexdigest()
+
+
+def get_atoms_id_parsl(atoms: Atoms, _) -> bytes:
+    return hashlib.md5(_encode_atoms(atoms), usedforsecurity=False).digest()
 
 
 def check_is_metal(atoms: Atoms) -> bool:
