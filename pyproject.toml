@@ -35,7 +35,7 @@ dependencies = [
     "psutil", # for getting compute architecture details
     "pydantic>=2.0.1", # for settings management
     "pydantic-settings>=2.2.0", # for settings management
-    "pymatgen>=2024.5.31", # for structure manipulation
+    "pymatgen>=2024.10.22", # for structure manipulation
     "ruamel.yaml>=0.17.40", # for YAML
     "typer>=0.12.1", # for the CLI
 ]
@@ -43,7 +43,7 @@ dependencies = [
 [project.optional-dependencies]
 covalent = ["covalent>=0.234.1-rc.0; platform_system!='Windows'", "covalent-cloud>=0.39.0; platform_system!='Windows'"]
 dask = ["dask[distributed]>=2023.12.1", "dask-jobqueue>=0.8.2"]
-defects = ["pymatgen-analysis-defects>=2023.8.22", "shakenbreak>=3.2.0"]
+defects = ["pymatgen-analysis-defects>=2024.10.22", "shakenbreak>=3.2.0"]
 jobflow = ["jobflow[fireworks]>=0.1.14", "jobflow-remote>=0.1.0"]
 mlp = ["matgl>=1.1.2", "chgnet>=0.3.3", "mace-torch>=0.3.3", "torch-dftd>=0.4.0"]
 mp = ["atomate2>=0.0.14"]
