@@ -22,7 +22,7 @@ LOGGER = getLogger(__name__)
 
 def _encode_atoms(atoms: Atoms) -> bytes:
     """
-    Returns a unique bytes for the Atoms object. Note: The .info dict and calculator is excluded from the hash generation.
+    Returns a byte encoding for the Atoms object. Note: The .info dict and calculator is excluded.
 
     Parameters
     ----------
@@ -51,10 +51,16 @@ def _encode_atoms(atoms: Atoms) -> bytes:
 
 
 def get_atoms_id(atoms: Atoms) -> str:
+    """
+    Get a unique identifier for an Atoms object.
+    """
     return hashlib.md5(_encode_atoms(atoms), usedforsecurity=False).hexdigest()
 
 
-def get_atoms_id_parsl(atoms: Atoms, _) -> bytes:
+def get_atoms_id_parsl(atoms: Atoms, output_ref: bool = False) -> bytes:
+    """
+    Get a Parsl compatible unique identifier for an Atoms object.
+    """
     return hashlib.md5(_encode_atoms(atoms), usedforsecurity=False).digest()
 
 
