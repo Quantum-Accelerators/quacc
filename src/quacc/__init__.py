@@ -154,6 +154,7 @@ if _settings.WORKFLOW_ENGINE == "prefect":
 
 if _settings.WORKFLOW_ENGINE == "parsl":
     from parsl.dataflow.memoization import id_for_memo
+
     from quacc.atoms.core import get_atoms_id_parsl
 
     id_for_memo.register(Atoms)(get_atoms_id_parsl)

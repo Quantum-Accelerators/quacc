@@ -144,6 +144,13 @@ class QuaccSettings(BaseSettings):
     )
 
     # ---------------------------
+    # Parsl Settings
+    # ---------------------------
+    PARSL_CACHE: bool = Field(
+        True, description="Whether to automatically cache Parsl results in memory."
+    )
+
+    # ---------------------------
     # ORCA Settings
     # ---------------------------
     ORCA_CMD: str = Field(

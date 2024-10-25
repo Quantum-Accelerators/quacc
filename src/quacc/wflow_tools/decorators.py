@@ -171,6 +171,8 @@ def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
 
         wrapped_fn = _get_parsl_wrapped_func(_func, kwargs)
 
+        kwargs.setdefault("cache", settings.PARSL_CACHE)
+
         return python_app(wrapped_fn, **kwargs)
     elif settings.WORKFLOW_ENGINE == "redun":
         from redun import task
