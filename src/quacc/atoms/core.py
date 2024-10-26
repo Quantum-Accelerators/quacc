@@ -53,13 +53,35 @@ def _encode_atoms(atoms: Atoms) -> bytes:
 def get_atoms_id(atoms: Atoms) -> str:
     """
     Get a unique identifier for an Atoms object.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+
+    Returns
+    -------
+    str
+        Unique identifier for the Atoms object in the form of a string
     """
     return hashlib.md5(_encode_atoms(atoms), usedforsecurity=False).hexdigest()
 
 
-def get_atoms_id_parsl(atoms: Atoms, output_ref: bool = False) -> bytes:
+def get_atoms_id_parsl(atoms: Atoms, output_ref: bool = False) -> bytes:  # noqa: ARG001
     """
     Get a Parsl compatible unique identifier for an Atoms object.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+    output_ref
+        Parsl specific parameter, needed for Parsl to work, unused.
+
+    Returns
+    -------
+    bytes
+        Unique identifier for the Atoms object in the form of bytes
     """
     return hashlib.md5(_encode_atoms(atoms), usedforsecurity=False).digest()
 
