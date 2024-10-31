@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import hashlib
 from copy import deepcopy
+from hashlib import md5
 from logging import getLogger
 from typing import TYPE_CHECKING
 
@@ -13,6 +13,8 @@ from ase.io.jsonio import encode
 from pymatgen.io.ase import AseAtomsAdaptor
 
 if TYPE_CHECKING:
+    from hashlib import _Hash
+
     from ase.atoms import Atoms
     from ase.optimize.optimize import Dynamics
     from numpy.typing import NDArray
@@ -20,7 +22,7 @@ if TYPE_CHECKING:
 LOGGER = getLogger(__name__)
 
 
-def _encode_atoms(atoms: Atoms) -> bytes:
+def _encode_atoms(atoms: Atoms) -> _Hash:
     """
     Returns a byte encoding for the Atoms object. Note: The .info dict and calculator is excluded.
 
@@ -31,8 +33,8 @@ def _encode_atoms(atoms: Atoms) -> bytes:
 
     Returns
     -------
-    bytes
-        bytes representation of the Atoms object
+    _Hash
+        Encoded Atoms object
     """
     atoms = copy_atoms(atoms)
     atoms.info = {}
@@ -47,7 +49,7 @@ def _encode_atoms(atoms: Atoms) -> bytes:
         .replace("float32", "float")
     )
 
-    return encoded_atoms.encode("utf-8")
+    return md5(encoded_atoms.encode("utf-8"), usedforsecurity=False)
 
 
 def get_atoms_id(atoms: Atoms) -> str:
@@ -64,7 +66,7 @@ def get_atoms_id(atoms: Atoms) -> str:
     str
         Unique identifier for the Atoms object in the form of a string
     """
-    return hashlib.md5(_encode_atoms(atoms), usedforsecurity=False).hexdigest()
+    return _encode_atoms(atoms).hexdigest()
 
 
 def get_atoms_id_parsl(atoms: Atoms, output_ref: bool = False) -> bytes:  # noqa: ARG001
@@ -83,7 +85,7 @@ def get_atoms_id_parsl(atoms: Atoms, output_ref: bool = False) -> bytes:  # noqa
     bytes
         Unique identifier for the Atoms object in the form of bytes
     """
-    return hashlib.md5(_encode_atoms(atoms), usedforsecurity=False).digest()
+    return _encode_atoms(atoms).digest()
 
 
 def check_is_metal(atoms: Atoms) -> bool:
