@@ -19,7 +19,13 @@ def pytest_sessionstart():
     import os
 
     if parsl:
-        parsl.load(Config(dependency_resolver=DEEP_DEPENDENCY_RESOLVER))
+        parsl.load(
+            Config(
+                dependency_resolver=DEEP_DEPENDENCY_RESOLVER,
+                run_dir=str(TEST_RUNINFO),
+                checkpoint_mode="task_exit",
+            )
+        )
     file_dir = Path(__file__).parent
     os.environ["QUACC_CONFIG_FILE"] = str(file_dir / "quacc.yaml")
     os.environ["QUACC_RESULTS_DIR"] = str(TEST_RESULTS_DIR)
