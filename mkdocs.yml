@@ -33,6 +33,7 @@ nav:
           - user/db/basics.md
       - Miscellaneous:
           - user/misc/file_transfers.md
+          - user/misc/restarts.md
   - Code Documentation 📖: reference/
   - Developer Guide 🤝:
       - dev/contributing.md

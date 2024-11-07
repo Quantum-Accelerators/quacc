@@ -14,6 +14,7 @@ from quacc.atoms.core import (
     check_charge_and_spin,
     check_is_metal,
     get_atoms_id,
+    get_atoms_id_parsl,
     get_spin_multiplicity_attribute,
     perturb,
 )
@@ -45,6 +46,13 @@ def test_get_atoms_id():
     atoms.set_initial_magnetic_moments([1.0])
     md5maghash = "7d456a48c235e05cf17da4abcc433a4f"
     assert get_atoms_id(atoms) == md5maghash
+
+
+def test_get_atoms_id_parsl():
+    atoms = bulk("Cu")
+
+    md5hash = b"\xd4\x85\x92p\xa1\xa6p\x834;\xec\n\xb7\x83\xf7t"
+    assert get_atoms_id_parsl(atoms) == md5hash
 
 
 def test_check_is_metal():
