@@ -64,11 +64,11 @@ def pick_calculator(
         if "default_dtype" not in kwargs:
             kwargs["default_dtype"] = "float64"
         calc = mace_mp(**kwargs)
-    
+
     elif method.lower() == "sevennet":
         from sevenn import __version__
         from sevenn.sevennet_calculator import SevenNetCalculator
-        
+
         if "model" not in kwargs:
             kwargs["model"] = "7net-0"
         if "device" not in kwargs:
