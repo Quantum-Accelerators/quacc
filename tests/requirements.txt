@@ -1,7 +1,8 @@
 ase==3.23.0
 custodian==2024.10.16
 emmet-core==0.84.2
-maggma @ git+https://github.com/Andrew-S-Rosen/monty.git@recursive_msonable2
+maggma==0.70.0
+monty @ git+https://github.com/Andrew-S-Rosen/monty.git@recursive_msonable2
 numpy==1.26.4
 psutil==6.1.0
 pydantic==2.10.1
