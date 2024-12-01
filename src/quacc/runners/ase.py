@@ -412,7 +412,7 @@ def run_neb(
     relax_cell: bool = False,
     fmax: float = 0.01,
     max_steps: int | None = 1000,
-    optimizer: NEBOptimizer | Optimizer = NEBOptimizer,
+    optimizer: Optimizer = NEBOptimizer,
     optimizer_kwargs: dict[str, Any] | None = None,
     neb_kwargs: dict[str, Any] | None = None,
     run_kwargs: dict[str, Any] | None = None,
@@ -447,33 +447,30 @@ def run_neb(
     Dynamics
         The ASE Dynamics object following an optimization.
     """
-    if optimizer == BFGSLineSearch:
-        raise ValueError("BFGSLineSearch is not allowed as optimizer with NEB.")
-
-    # Copy atoms so we don't modify it in-place
-    images = copy_atoms(images)
-
+    run_kwargs = run_kwargs or {}
     neb_kwargs = neb_kwargs or {}
-
-    neb = NEB(images, **neb_kwargs)
-
-    dir_lists = []
-    # Perform staging operations
-    # this calc_setup function is not suited for multiple Atoms objects
-    for image in images:
-        tmpdir_i, job_results_dir_i = calc_setup(image, copy_files=copy_files)
-        dir_lists.append([tmpdir_i, job_results_dir_i])
-
-    # Set defaults
+    traj_filename = "opt.traj"
     optimizer_kwargs = recursive_dict_merge(
         {"logfile": "opt.log", "restart": "opt.json"}, optimizer_kwargs
     )
-    run_kwargs = run_kwargs or {}
-    traj_filename = "opt.traj"
+
     # Check if trajectory kwarg is specified
     if "trajectory" in optimizer_kwargs:
         msg = "Quacc does not support setting the `trajectory` kwarg."
         raise ValueError(msg)
+
+    if optimizer == BFGSLineSearch:
+        raise ValueError("BFGSLineSearch is not allowed as optimizer with NEB.")
+
+    # Copy atoms so we don't modify it in-place
+    images = [copy_atoms(image) for image in images]
+    neb = NEB(images, **neb_kwargs)
+
+    # Perform staging operations
+    dir_lists = []
+    for image in images:
+        tmpdir_i, job_results_dir_i = calc_setup(image, copy_files=copy_files)
+        dir_lists.append([tmpdir_i, job_results_dir_i])
 
     # Define the Trajectory object
     traj_file = dir_lists[0][0] / traj_filename
