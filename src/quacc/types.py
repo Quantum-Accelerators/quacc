@@ -702,7 +702,7 @@ if TYPE_CHECKING:
         relax_reactant: OptSchema
         relax_product: OptSchema
         initial_images: list[Atoms]
-        highest_e_atoms: Atoms
+        ts_atoms: Atoms
 
     class GeodesicTsSchema(TypedDict):
         relax_reactant: OptSchema

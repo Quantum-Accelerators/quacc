@@ -12,7 +12,7 @@ from monty.dev import requires
 from quacc import change_settings, get_settings, job, strip_decorator
 from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
 from quacc.runners.ase import Runner, run_neb
-from quacc.schemas.ase import Summarize, summarize_neb_run
+from quacc.schemas.ase import Summarize
 from quacc.utils.dicts import recursive_dict_merge
 
 has_geodesic_interpolate = bool(find_spec("geodesic_interpolate"))
@@ -315,7 +315,7 @@ def neb_job(
             - 'relax_reactant': Summary of the relaxed reactant structure ([quacc.schemas.ase.Summarize.opt][]).
             - 'relax_product': Summary of the relaxed product structure ([quacc.schemas.ase.Summarize.opt][]).
             - 'initial_images': The interpolated images between reactant and product.
-            - 'neb_results': Summary of the NEB optimization ([quacc.schemas.ase.summarize_neb_run][]).
+            - 'neb_results': Summary of the NEB optimization ([quacc.schemas.ase.Summarize.neb][]).
     """
     relax_job_kwargs = relax_job_kwargs or {}
     neb_kwargs = neb_kwargs or {}
@@ -367,15 +367,13 @@ def neb_job(
         "relax_reactant": relax_summary_r,
         "relax_product": relax_summary_p,
         "initial_images": images,
-        "neb_results": summarize_neb_run(
-            dyn,
-            n_images=len(images),
+        "neb_results": Summarize(
             additional_fields={
                 "neb_flags": neb_flags,
                 "calc_flags": calc_flags,
                 "interpolate_flags": interpolate_flags,
-            },
-        ),
+            }
+        ).neb(dyn, len(images)),
     }
 
 
@@ -419,7 +417,7 @@ def geodesic_job(
             - 'relax_reactant': Summary of the relaxed reactant structure.
             - 'relax_product': Summary of the relaxed product structure.
             - 'initial_images': The interpolated images between reactant and product.
-            - 'highest_e_atoms': ASE atoms object for the highest energy structure for the geodesic path
+            - 'ts_atoms': ASE atoms object for the highest energy structure for the geodesic path
     """
     relax_job_kwargs = relax_job_kwargs or {}
     geodesic_interpolate_kwargs = geodesic_interpolate_kwargs or {}
@@ -459,13 +457,13 @@ def geodesic_job(
         potential_energies.append(image.get_potential_energy())
 
     ts_index = np.argmax(potential_energies)
-    highest_e_atoms = images[ts_index]
+    ts_atoms = images[ts_index]
 
     return {
         "relax_reactant": relax_summary_r,
         "relax_product": relax_summary_p,
         "initial_images": images,
-        "highest_e_atoms": highest_e_atoms,
+        "ts_atoms": ts_atoms,
     }
 
 
