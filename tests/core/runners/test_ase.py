@@ -31,6 +31,7 @@ from quacc.runners.ase import Runner, run_neb
 from quacc.schemas.ase import summarize_neb_run
 
 has_geodesic_interpolate = bool(find_spec("geodesic_interpolate"))
+test_files_path = Path(__file__).parent / "test_files"
 
 LOGGER = getLogger(__name__)
 LOGGER.propagate = True
@@ -91,10 +92,9 @@ def setup_test_environment(tmp_path):
     return reactant, product
 
 
-def test_run_neb(tmp_path):
-    geodesic_path = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "test_files/geodesic_path.xyz"
-    )
+def test_run_neb(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
+    geodesic_path = test_files_path / "geodesic_path.xyz"
     images = read(geodesic_path, index=":")
     for image in images:
         image.calc = EMT()
@@ -111,38 +111,36 @@ def test_run_neb(tmp_path):
     assert ts_atoms.get_potential_energy() == pytest.approx(1.1379006828510447, 1e-4)
 
 
-def test_run_neb2(setup_test_environment, tmp_path):
-    optimizer_class = BFGSLineSearch
-
-    geodesic_path = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "test_files/geodesic_path.xyz"
-    )
+def test_run_neb2():
+    geodesic_path = test_files_path / "geodesic_path.xyz"
 
     images = read(geodesic_path, index=":")
 
     for image in images:
         image.calc = EMT()
 
-    neb_kwargs = {"method": "aseneb", "precon": None}
     with pytest.raises(
         ValueError, match="BFGSLineSearch is not allowed as optimizer with NEB."
     ):
-        run_neb(images, optimizer=optimizer_class, neb_kwargs=neb_kwargs)
+        run_neb(
+            images,
+            optimizer=BFGSLineSearch,
+            neb_kwargs={"method": "aseneb", "precon": None},
+        )
 
 
 def test_run_neb_raises_value_error_for_trajectory_kwarg():
     images = [Atoms("H2", positions=[[0, 0, 0], [0, 0, 0.74]])]
-
     for image in images:
         image.calc = EMT()
-
-    optimizer_kwargs = {"trajectory": "some_traj.traj"}
 
     with pytest.raises(
         ValueError, match="Quacc does not support setting the `trajectory` kwarg."
     ):
         run_neb(
-            images=images, optimizer=NEBOptimizer, optimizer_kwargs=optimizer_kwargs
+            images=images,
+            optimizer=NEBOptimizer,
+            optimizer_kwargs={"trajectory": "some_traj.traj"},
         )
 
 
