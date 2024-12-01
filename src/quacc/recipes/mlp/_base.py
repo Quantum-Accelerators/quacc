@@ -69,10 +69,6 @@ def pick_calculator(
         from sevenn import __version__
         from sevenn.sevennet_calculator import SevenNetCalculator
 
-        if "model" not in kwargs:
-            kwargs["model"] = "7net-0"
-        if "device" not in kwargs:
-            kwargs["device"] = "cpu"
         calc = SevenNetCalculator(**kwargs)
 
     else:
