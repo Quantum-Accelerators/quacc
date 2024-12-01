@@ -28,7 +28,7 @@ WORKFLOW_ENGINE: None # (3)!
 
 !!! Tip "When is This Method Ideal?"
 
-    This approach is ideal when you want to change a setting that applies to most or all of your calculations.
+    This approach is ideal when you want to change a setting that applies to most or all of your calculations. If you wish to have multiple sets of YAML files, you can dynamically change which file to use by setting the `QUACC_CONFIG_FILE` environment variable accordingly.
 
 ## Using Environment Variables
 
@@ -61,9 +61,9 @@ with change_settings({"GZIP_FILES": False}):
     result = relax_job(atoms)
 ```
 
-!!! Warning "Using a Workflow Engine"
+??? Warning "Using a Workflow Engine?"
 
-    When deploying calculations via a workflow engine, changes to in-memory global variables on the local machine will not be reflected on the remote machine. Instead, this should be done via a custom `settings_swap` keyword argument that is supported by the `@job` decorator.
+    When deploying calculations via a workflow engine, changes to in-memory global variables on the local machine will not be reflected on the remote machine. While the YAML file and environment variable approaches are preferred, if you wish to make changes from within your script then this should be done via a custom `settings_swap` keyword argument that is supported by the `@job` decorator.
 
     ```python
     from quacc import job

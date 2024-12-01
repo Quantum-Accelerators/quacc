@@ -547,7 +547,7 @@ def _type_handler(settings: dict[str, Any]) -> dict[str, Any]:
 
 
 @contextmanager
-def change_settings(changes: dict[str, Any] | None):
+def change_settings(changes: dict[str, Any]):
     """
     Temporarily change an attribute of an object.
 
@@ -557,6 +557,11 @@ def change_settings(changes: dict[str, Any] | None):
         Dictionary of changes to make formatted as attribute: value.
     """
     from quacc import _internally_set_settings, get_settings
+
+    if "WORKFLOW_ENGINE" in changes:
+        raise ValueError(
+            "Cannot change the workflow engine in a context manager. Please use environment variables, e.g. `export QUACC_WORKFLOW_ENGINE=jobflow`, if you need to dynamically change the workflow engine."
+        )
 
     settings = get_settings()
     original_values = {attr: getattr(settings, attr) for attr in changes}

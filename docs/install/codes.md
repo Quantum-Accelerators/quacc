@@ -126,7 +126,7 @@ If you plan to use TBLite with quacc, you will need to install the tblite interf
 === "Conda"
 
     ```bash
-    pip install -c conda-forge tblite-python
+    conda install -c conda-forge tblite-python
     ```
 
 === "Pip"

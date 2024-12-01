@@ -26,9 +26,3 @@ For the development version:
 ```bash
 pip install "quacc @ git+https://github.com/quantum-accelerators/quacc.git"
 ```
-
-For a version that is compatible with the development version of ASE:
-
-```bash
-pip install "quacc @ git+https://github.com/quantum-accelerators/quacc.git@asedev"
-```
