@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from typing import Any, Literal
 
     from ase.atoms import Atoms
-    from ase.io.trajectory import Trajectory
+    from ase.io.trajectory import TrajectoryWriter
     from ase.md.md import MolecularDynamics
     from ase.optimize.optimize import Optimizer
     from ase.vibrations import Vibrations
@@ -299,7 +299,7 @@ def summarize_neb_run(
     dyn: Optimizer,
     n_images: int,
     n_iter_return: int = -1,
-    trajectory: Trajectory | list[Atoms] | None = None,
+    trajectory: TrajectoryWriter | list[Atoms] | None = None,
     charge_and_multiplicity: tuple[int, int] | None = None,
     additional_fields: dict[str, Any] | None = None,
     store: Store | None | DefaultSetting = QuaccDefault,
