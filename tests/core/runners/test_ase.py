@@ -109,6 +109,7 @@ def test_run_neb(monkeypatch, tmp_path):
     ts_atoms = neb_summary["highest_e_atoms"]
     ts_atoms.calc = EMT()
     assert ts_atoms.get_potential_energy() == pytest.approx(1.1379006828510447, 1e-4)
+    assert not os.path.exists(tmp_path / "opt.log")
 
 
 def test_run_neb2():

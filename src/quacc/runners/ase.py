@@ -487,7 +487,8 @@ def run_neb(
     dyn.run(fmax, max_steps)
     traj.close()
 
-    # Perform cleanup operations first images's results directory contains traj file.
+    # Perform cleanup operations
+    # The first images's results directory contains traj file.
     for i, image in enumerate(images):
         calc_cleanup(image, dir_lists[i][0], dir_lists[i][1])
 
