@@ -16,7 +16,7 @@ LOGGER = getLogger(__name__)
 
 @lru_cache
 def pick_calculator(
-    method: Literal["mace-mp-0", "m3gnet", "chgnet"], **kwargs
+    method: Literal["mace-mp-0", "m3gnet", "chgnet", "sevennet"], **kwargs
 ) -> Calculator:
     """
     Adapted from `matcalc.util.get_universal_calculator`.
@@ -29,7 +29,8 @@ def pick_calculator(
         Custom kwargs for the underlying calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `mace.calculators.mace_mp`, `chgnet.model.dynamics.CHGNetCalculator`,
-        or `matgl.ext.ase.M3GNetCalculator` calculators.
+        `matgl.ext.ase.M3GNetCalculator`, or `sevenn.sevennet_calculator.SevenNetCalculator`
+        calculators.
 
     Returns
     -------
@@ -63,6 +64,12 @@ def pick_calculator(
         if "default_dtype" not in kwargs:
             kwargs["default_dtype"] = "float64"
         calc = mace_mp(**kwargs)
+
+    elif method.lower() == "sevennet":
+        from sevenn import __version__
+        from sevenn.sevennet_calculator import SevenNetCalculator
+
+        calc = SevenNetCalculator(**kwargs)
 
     else:
         raise ValueError(f"Unrecognized {method=}.")
