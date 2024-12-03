@@ -22,19 +22,19 @@ if TYPE_CHECKING:
 
 
 __all__ = [
-    "flow",
-    "job",
-    "subflow",
     "Flow",
     "Job",
-    "Subflow",
-    "redecorate",
-    "change_settings",
-    "strip_decorator",
-    "Remove",
-    "get_settings",
-    "QuaccDefault",
     "JobFailure",
+    "QuaccDefault",
+    "Remove",
+    "Subflow",
+    "change_settings",
+    "flow",
+    "get_settings",
+    "job",
+    "redecorate",
+    "strip_decorator",
+    "subflow",
 ]
 
 
