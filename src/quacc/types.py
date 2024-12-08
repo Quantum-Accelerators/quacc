@@ -685,6 +685,31 @@ if TYPE_CHECKING:
         irc_job: NewtonNetIRCSchema
         freq_job: VibThermoSchema | None
 
+    class NebSchema(TypedDict):
+        relax_reactant: OptSchema
+        relax_product: OptSchema
+        initial_images: list[Atoms]
+        neb_results: dict
+
+    class NebTsSchema(TypedDict):
+        relax_reactant: OptSchema
+        relax_product: OptSchema
+        initial_images: list[Atoms]
+        neb_results: dict
+        ts_results: OptSchema
+
+    class GeodesicSchema(TypedDict):
+        relax_reactant: OptSchema
+        relax_product: OptSchema
+        initial_images: list[Atoms]
+        ts_atoms: Atoms
+
+    class GeodesicTsSchema(TypedDict):
+        relax_reactant: OptSchema
+        relax_product: OptSchema
+        initial_images: list[Atoms]
+        ts_results: NewtonNetTSSchema
+
     # ----------- Recipe (Q-Chem) type hints -----------
 
     class QchemQuasiIRCSchema(OptSchema):

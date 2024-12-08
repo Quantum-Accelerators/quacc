@@ -8,6 +8,7 @@ import pytest
 from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.io import read
+from ase.mep import NEB
 from ase.optimize import BFGS
 from ase.vibrations import Vibrations
 from maggma.stores import MemoryStore
@@ -429,3 +430,26 @@ def test_errors(tmp_path, monkeypatch):
     vib.run()
     with pytest.raises(ValueError, match="Unsupported thermo_method"):
         VibSummarize(vib, directory=tmp_path).vib_and_thermo("bad")
+
+
+def test_summarize_neb(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
+
+    # Read initial and final states:
+    images = read(FILE_DIR / "test_files" / "geodesic_path.xyz", index=":")
+    neb = NEB(images)
+    for image in images:
+        image.calc = EMT()
+    optimizer = BFGS(neb, trajectory="opt.traj")
+    optimizer.run(fmax=0.05)
+
+    neb_summary = Summarize().neb(
+        optimizer, len(images), n_iter_return=10, trajectory=read("opt.traj", index=":")
+    )
+    assert neb_summary["trajectory_results"][-2]["energy"] == pytest.approx(
+        1.0875330074934446, abs=1e-4
+    )
+
+    ts_atoms = neb_summary["ts_atoms"]
+    ts_atoms.calc = EMT()
+    assert ts_atoms.get_potential_energy() == pytest.approx(1.1603536513693768, 1e-4)
