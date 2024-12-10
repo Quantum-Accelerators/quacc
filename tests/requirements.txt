@@ -1,11 +1,11 @@
 ase==3.23.0
 custodian==2024.10.16
-emmet-core==0.84.2
+emmet-core==0.84.3rc6
 maggma==0.70.0
 monty==2024.12.10
 numpy==1.26.4
 psutil==6.1.0
-pydantic==2.10.1
+pydantic==2.10.3
 pydantic-settings==2.6.1
 pymatgen==2024.11.13
 ruamel.yaml==0.18.6
