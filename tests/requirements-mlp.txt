@@ -2,3 +2,4 @@ chgnet==0.4.0
 mace-torch==0.3.8
 torch-dftd==0.5.1
 sevenn==0.10.1
+orb-models=4.1.0

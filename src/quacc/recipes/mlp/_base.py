@@ -16,7 +16,7 @@ LOGGER = getLogger(__name__)
 
 @lru_cache
 def pick_calculator(
-    method: Literal["mace-mp-0", "m3gnet", "chgnet", "sevennet"], **kwargs
+    method: Literal["mace-mp-0", "m3gnet", "chgnet", "sevennet", "orb-models"], **kwargs
 ) -> Calculator:
     """
     Adapted from `matcalc.util.get_universal_calculator`.
@@ -29,8 +29,8 @@ def pick_calculator(
         Custom kwargs for the underlying calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `mace.calculators.mace_mp`, `chgnet.model.dynamics.CHGNetCalculator`,
-        `matgl.ext.ase.M3GNetCalculator`, or `sevenn.sevennet_calculator.SevenNetCalculator`
-        calculators.
+        `matgl.ext.ase.M3GNetCalculator`, `sevenn.sevennet_calculator.SevenNetCalculator`, or
+        `orb_models.forcefield.calculator.ORBCalculator` calculators.
 
     Returns
     -------
@@ -70,6 +70,15 @@ def pick_calculator(
         from sevenn.sevennet_calculator import SevenNetCalculator
 
         calc = SevenNetCalculator(**kwargs)
+
+    elif method.lower() == "orb-models":
+        from orb_models import __version__
+        from orb_models.forcefield import pretrained
+        from orb_models.forcefield.calculator import ORBCalculator
+
+        orb_model = kwargs.pop("model", "orb_v2")
+        orbff = getattr(pretrained, orb_model)()
+        calc = ORBCalculator(model=orbff, **kwargs)
 
     else:
         raise ValueError(f"Unrecognized {method=}.")
