@@ -3,3 +3,4 @@ mace-torch==0.3.9
 torch-dftd==0.5.1
 sevenn==0.10.3
 orb-models==4.1.0
+pynanoflann @ git+https://github.com/dwastberg/pynanoflann#egg=af434039ae14bedcbb838a7808924d6689274168
