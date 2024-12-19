@@ -27,6 +27,7 @@ if has_sevennet := find_spec("sevenn"):
 if has_orb_models := find_spec("orb_models"):
     methods.append("orb-models")
 
+
 @pytest.mark.skipif(has_chgnet is None, reason="chgnet not installed")
 def test_bad_method():
     atoms = bulk("Cu")
