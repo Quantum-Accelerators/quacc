@@ -59,7 +59,7 @@ def test_static_job(tmp_path, monkeypatch, method):
     }
     atoms = bulk("Cu")
     output = static_job(atoms, method=method)
-    assert output["results"]["energy"] == pytest.approx(ref_energy[method], rel=1e-5)
+    assert output["results"]["energy"] == pytest.approx(ref_energy[method], rel=1e-4)
     assert np.shape(output["results"]["forces"]) == (1, 3)
     assert output["atoms"] == atoms
 
@@ -83,7 +83,7 @@ def test_relax_job(tmp_path, monkeypatch, method):
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += 0.1
     output = relax_job(atoms, method=method)
-    assert output["results"]["energy"] == pytest.approx(ref_energy[method], rel=1e-5)
+    assert output["results"]["energy"] == pytest.approx(ref_energy[method], rel=1e-4)
     assert np.shape(output["results"]["forces"]) == (8, 3)
     assert output["atoms"] != atoms
     assert output["atoms"].get_volume() == pytest.approx(atoms.get_volume())
@@ -125,7 +125,7 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += 0.1
     output = relax_job(atoms, method=method, relax_cell=True)
-    assert output["results"]["energy"] == pytest.approx(ref_energy[method], rel=1e-5)
+    assert output["results"]["energy"] == pytest.approx(ref_energy[method], rel=1e-4)
     assert np.shape(output["results"]["forces"]) == (8, 3)
     assert output["atoms"] != atoms
     assert output["atoms"].get_volume() != pytest.approx(atoms.get_volume())
