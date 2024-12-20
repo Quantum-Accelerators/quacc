@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 )
 def phonon_flow(
     atoms: Atoms,
-    method: Literal["mace-mp-0", "m3gnet", "chgnet", "sevennet", "orb-models"],
+    method: Literal["mace-mp-0", "m3gnet", "chgnet", "sevennet", "orb"],
     symprec: float = 1e-4,
     min_lengths: float | tuple[float, float, float] | None = 20.0,
     supercell_matrix: (
