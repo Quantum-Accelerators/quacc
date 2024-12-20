@@ -24,8 +24,8 @@ if has_chgnet := find_spec("chgnet"):
 if has_sevennet := find_spec("sevenn"):
     methods.append("sevennet")
 
-if has_orb_models := find_spec("orb_models"):
-    methods.append("orb-models")
+if has_orb := find_spec("orb_models"):
+    methods.append("orb")
 
 
 @pytest.mark.skipif(has_chgnet is None, reason="chgnet not installed")
@@ -55,7 +55,7 @@ def test_static_job(tmp_path, monkeypatch, method):
         "m3gnet": -4.0938973,
         "mace-mp-0": -4.083906650543213,
         "sevennet": -4.096191883087158,
-        "orb-models": -4.093477725982666,
+        "orb": -4.093477725982666,
     }
     atoms = bulk("Cu")
     output = static_job(atoms, method=method)
@@ -77,7 +77,7 @@ def test_relax_job(tmp_path, monkeypatch, method):
         "m3gnet": -32.75003433227539,
         "mace-mp-0": -32.6711566550002,
         "sevennet": -32.76924133300781,
-        "orb-models": -32.7361946105957,
+        "orb": -32.7361946105957,
     }
 
     atoms = bulk("Cu") * (2, 2, 2)
@@ -119,7 +119,7 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
         "m3gnet": -32.750858306884766,
         "mace-mp-0": -32.67840391814377,
         "sevennet": -32.76963806152344,
-        "orb-models": -32.73428726196289,
+        "orb": -32.73428726196289,
     }
 
     atoms = bulk("Cu") * (2, 2, 2)

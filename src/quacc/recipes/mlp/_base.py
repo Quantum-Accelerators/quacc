@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from functools import lru_cache
+from importlib.util import find_spec
 from logging import getLogger
 from typing import TYPE_CHECKING
 
@@ -16,15 +17,20 @@ LOGGER = getLogger(__name__)
 
 @lru_cache
 def pick_calculator(
-    method: Literal["mace-mp-0", "m3gnet", "chgnet", "sevennet", "orb-models"], **kwargs
+    method: Literal["mace-mp-0", "m3gnet", "chgnet", "sevennet", "orb"], **kwargs
 ) -> Calculator:
     """
     Adapted from `matcalc.util.get_universal_calculator`.
 
+    !!! Note
+
+        To use `orb` method, `pynanoflann` must be installed. To install `pynanoflann`,
+        run `pip install git+https://github.com/u1234x1234/pynanoflann.git`.
+
     Parameters
     ----------
     method
-        Name of the calculator to use
+        Name of the calculator to use.
     **kwargs
         Custom kwargs for the underlying calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -71,12 +77,18 @@ def pick_calculator(
 
         calc = SevenNetCalculator(**kwargs)
 
-    elif method.lower() == "orb-models":
+    elif method.lower() == "orb":
+        if not find_spec("pynanoflann"):
+            raise ImportError(
+                """orb-models requires pynanoflann.
+                Install pynanoflann with `pip install git+https://github.com/u1234x1234/pynanoflann.git`.
+                """
+            )
         from orb_models import __version__
         from orb_models.forcefield import pretrained
         from orb_models.forcefield.calculator import ORBCalculator
 
-        orb_model = kwargs.pop("model", "orb_v2")
+        orb_model = kwargs.get("model", "orb_v2")
         orbff = getattr(pretrained, orb_model)()
         calc = ORBCalculator(model=orbff, **kwargs)
 
