@@ -1,12 +1,12 @@
 ase @ git+https://gitlab.com/ase/ase.git
 custodian==2024.10.16
-emmet-core==0.84.3rc6
+emmet-core==0.84.4
 maggma==0.70.0
 monty==2024.12.10
 numpy==1.26.4
 psutil==6.1.0
 pydantic==2.10.3
-pydantic-settings==2.6.1
+pydantic-settings==2.7.0
 pymatgen==2024.11.13
 ruamel.yaml==0.18.6
 typer==0.13.1
