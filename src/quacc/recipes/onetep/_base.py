@@ -124,7 +124,6 @@ def prep_calculator(
     settings = get_settings()
 
     return Onetep(
-        profile=OnetepProfile(command=f"{settings.ONETEP_CMD}"),
-        pseudo_path=str(settings.ONETEP_PP_PATH),
+        profile=OnetepProfile(f"{settings.ONETEP_CMD}", str(settings.ONETEP_PP_PATH)),
         **calc_flags,
     )
