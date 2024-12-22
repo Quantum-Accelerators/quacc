@@ -25,7 +25,7 @@ def pick_calculator(
     !!! Note
 
         To use `orb` method, `pynanoflann` must be installed. To install `pynanoflann`,
-        run `pip install git+https://github.com/u1234x1234/pynanoflann.git`.
+        run `pip install "pynanoflann@git+https://github.com/dwastberg/pynanoflann"`.
 
     Parameters
     ----------
