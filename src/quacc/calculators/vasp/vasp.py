@@ -318,11 +318,14 @@ class Vasp(Vasp_):
             run_custodian(directory=directory)
             return 0, ""
 
-        result = subprocess.run(command,
-                                shell=True,
-                                cwd=directory,
-                                capture_output=True,
-                                text=True)
+        result = subprocess.run(
+            command,
+            shell=True,
+            cwd=directory,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
         if out is not None:
             out.write(result.stdout)
         return result.returncode, result.stderr
