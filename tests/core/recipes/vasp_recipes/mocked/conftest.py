@@ -23,6 +23,7 @@ def mock_run(self, *args, **kwargs):
     from ase.io import write
 
     write(Path(self.directory, "CONTCAR"), self.atoms)
+    return None, None
 
 
 @pytest.fixture(autouse=True)
