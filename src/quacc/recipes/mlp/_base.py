@@ -81,7 +81,7 @@ def pick_calculator(
         if not find_spec("pynanoflann"):
             raise ImportError(
                 """orb-models requires pynanoflann.
-                Install pynanoflann with `pip install git+https://github.com/u1234x1234/pynanoflann.git`.
+                Install pynanoflann with `pip install "pynanoflann@git+https://github.com/dwastberg/pynanoflann"`.
                 """
             )
         from orb_models import __version__

@@ -64,6 +64,21 @@ def test_static_job(tmp_path, monkeypatch, method):
     assert output["atoms"] == atoms
 
 
+def test_relax_job_missing_pynanoflann(monkeypatch):
+    def mock_find_spec(name):
+        if name == "pynanoflann":
+            return None
+        return find_spec(name)
+
+    import quacc.recipes.mlp._base
+
+    quacc.recipes.mlp._base.pick_calculator.cache_clear()
+    monkeypatch.setattr("importlib.util.find_spec", mock_find_spec)
+    monkeypatch.setattr("quacc.recipes.mlp._base.find_spec", mock_find_spec)
+    with pytest.raises(ImportError, match=r"orb-models requires pynanoflann"):
+        relax_job(bulk("Cu"), method="orb")
+
+
 @pytest.mark.parametrize("method", methods)
 def test_relax_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
