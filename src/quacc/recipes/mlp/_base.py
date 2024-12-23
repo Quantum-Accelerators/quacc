@@ -26,6 +26,8 @@ def pick_calculator(
 
         To use `orb` method, `pynanoflann` must be installed. To install `pynanoflann`,
         run `pip install "pynanoflann@git+https://github.com/dwastberg/pynanoflann"`.
+        The `orb_models` are licensed under the APACHE license as found at the following
+        link: https://github.com/orbital-materials/orb-models
 
     Parameters
     ----------
