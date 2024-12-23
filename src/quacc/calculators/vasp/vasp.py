@@ -316,7 +316,7 @@ class Vasp(Vasp_):
 
         if self.use_custodian:
             run_custodian(directory=directory)
-            return 0, ""
+            return 0, None
 
         result = subprocess.run(
             command,
