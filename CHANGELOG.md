@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.8]
+
+### Added
+
+- Support for SevenNet and Orb models as MLPs
+
+## [0.11.7]
+
+### Added
+
+- New phonopy routines to handle fixed atoms
+
+## [0.11.6]
+
+### Fixed
+
+- Fixed handling of async prefect tasks
+
 ## [0.11.5]
 
 ### Added
@@ -12,6 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- Overhauled handling of Prefect futures/states. Refer to the documentation for more details.
 - The minimum supported Python version is now 3.10 in alignment with Pymatgen
 
 ## [0.11.4]

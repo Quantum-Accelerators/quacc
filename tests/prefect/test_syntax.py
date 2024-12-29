@@ -260,3 +260,41 @@ def test_concurrency():
     t1 = time.time()
     dt = t1 - t0
     assert dt < 10
+
+
+async def test_prefect_decorators_async(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    @job
+    async def add(a, b):
+        return a + b
+
+    @flow
+    async def add_flow(a, b):
+        return add(a, b)
+
+    assert (await add_flow(1, 2)) == 3
+
+
+async def test_prefect_decorators3_async(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    @job
+    async def add(a, b):
+        return a + b
+
+    @job
+    async def make_more(val):
+        return [val] * 3
+
+    @subflow
+    async def add_distributed(vals, c):
+        return [add(val, c) for val in vals]
+
+    @flow
+    async def dynamic_workflow(a, b, c):
+        result1 = add(a, b)
+        result2 = make_more(result1)
+        return await add_distributed(result2, c)
+
+    assert (await dynamic_workflow(1, 2, 3)) == [6, 6, 6]

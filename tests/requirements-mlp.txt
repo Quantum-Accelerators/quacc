@@ -1,3 +1,6 @@
-chgnet==0.3.8
-mace-torch==0.3.6
-torch-dftd==0.4.0
+chgnet==0.4.0
+mace-torch==0.3.9
+torch-dftd==0.5.1
+sevenn==0.10.3
+orb-models==4.1.0
+pynanoflann@git+https://github.com/dwastberg/pynanoflann
