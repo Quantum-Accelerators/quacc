@@ -8,6 +8,7 @@ from shutil import which
 
 import numpy as np
 import pytest
+from ase.atoms import Atoms
 from ase.build import bulk
 from ase.calculators.singlepoint import SinglePointDFTCalculator
 from ase.calculators.vasp import Vasp as Vasp_
@@ -907,6 +908,19 @@ def test_pmg_input_set2():
         "gamma": True,
         "setups": {"Fe": "_pv", "O": ""},
     }
+
+
+def test_ldau_mp():
+    atoms = Atoms("HOHMn")
+    atoms.center(vacuum=10)
+    atoms.pbc = True
+    atoms[0].position += 0.1
+    atoms[1].position -= 0.1
+    parameters = MPtoASEConverter(atoms=atoms).convert_dict_set(MPRelaxSet)
+    assert len(parameters["ldauu"]) == 3
+    assert parameters["ldauu"] == [0, 0, 3.9]
+    assert len(parameters["magmom"]) == 4
+    assert parameters["magmom"] == [0.6, 0.6, 0.6, 5.0]
 
 
 @pytest.mark.skipif(which(get_settings().VASP_CMD), reason="VASP is installed")
