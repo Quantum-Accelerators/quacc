@@ -26,7 +26,7 @@ classifiers = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "ase @ git+https://gitlab.com/ase/ase.git", # for Atoms object and calculators
+    "ase>=3.24.0", # for Atoms object and calculators
     "custodian>=2024.10.15", # for automated error corrections
     "emmet-core>=0.84.3rc6", # for pre-made schemas
     "maggma>=0.64.0", # for database handling
