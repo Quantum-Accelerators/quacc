@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.11.9]
 
+### Changed
+
+- ASE>=3.24.0 is required due to upstream breaking changes
+
 ### Fixed
 
 - Fixed a bug where DFT+U parameters might not be set appropriately if the `Atoms` object is sorted when using MP input sets
