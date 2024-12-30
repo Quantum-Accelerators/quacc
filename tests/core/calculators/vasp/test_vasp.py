@@ -210,7 +210,7 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
     calc = Vasp(atoms, **parameters)
     atoms.calc = calc
     assert atoms.get_chemical_symbols() == ["Cu", "Cu", "Cu", "Fe"]
-    assert calc.parameters["magmom"] == [0.6, 0.6, 0.6, 5.0]
+    assert atoms.get_initial_magnetic_moments().tolist() == [0.6, 0.6, 0.6, 5.0]
 
     atoms = bulk("Cu") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
@@ -848,6 +848,7 @@ def test_pmg_input_set():
     atoms = bulk("Cu")
     parameters = MPtoASEConverter(atoms=atoms).convert_dict_set(MPRelaxSet)
     calc = Vasp(atoms, incar_copilot="off", **parameters)
+    assert atoms.get_initial_magnetic_moments().tolist() == [0.6]
     assert calc.parameters == {
         "algo": "fast",
         "ediff": 5e-05,
@@ -865,7 +866,6 @@ def test_pmg_input_set():
         "pp": "pbe",
         "prec": "accurate",
         "sigma": 0.05,
-        "magmom": [0.6],
         "lmaxmix": 4,
         "kpts": (11, 11, 11),
         "gamma": True,
@@ -878,6 +878,7 @@ def test_pmg_input_set2():
     atoms[0].symbol = "O"
     parameters = MPtoASEConverter(atoms=atoms).convert_dict_set(MPRelaxSet)
     calc = Vasp(atoms, incar_copilot="off", **parameters)
+    assert atoms.get_initial_magnetic_moments().tolist() == [2.3, 2.3]
     assert calc.parameters == {
         "algo": "fast",
         "ediff": 0.0001,
@@ -901,7 +902,6 @@ def test_pmg_input_set2():
         "pp": "pbe",
         "prec": "accurate",
         "sigma": 0.05,
-        "magmom": [2.3, 2.3],
         "lmaxmix": 4,
         "kpts": (5, 11, 11),
         "gamma": True,

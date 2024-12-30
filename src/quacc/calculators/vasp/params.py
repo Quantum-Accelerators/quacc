@@ -395,11 +395,14 @@ class MPtoASEConverter:
         -------
         None
         """
-        if atoms is None and prev_dir is None:
-            raise ValueError("Either atoms or prev_dir must be provided.")
         self.atoms = atoms
         self.structure = AseAtomsAdaptor.get_structure(atoms) if self.atoms else None
         self.prev_dir = prev_dir
+        if self.atoms is None and prev_dir is None:
+            raise ValueError("Either atoms or prev_dir must be provided.")
+        if self.atoms:
+            self.ase_sort, self.ase_resort = Vasp_()._make_sort(self.atoms)
+            self.structure = AseAtomsAdaptor.get_structure(self.atoms[self.ase_sort])
 
     def convert_dict_set(self, dict_set: DictSet) -> dict:
         """
@@ -483,4 +486,10 @@ class MPtoASEConverter:
                 "gamma": kpts_dict["generation_style"].lower() == "gamma",
             }
 
+        # Set initial magnetic moments rather than relying on magmom
+        if magmom := full_input_params.pop("magmom"):
+            unsorted_magmoms = [magmom[i] for i in self.ase_resort]
+            self.atoms.set_initial_magnetic_moments(unsorted_magmoms)
+
+        # Resort the atoms back to the original order
         return full_input_params
