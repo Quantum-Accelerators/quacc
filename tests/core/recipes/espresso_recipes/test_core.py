@@ -324,6 +324,7 @@ def test_ase_relax_cell_job(tmp_path, monkeypatch):
             opt_params={"max_steps": 2, "fmax": 1.0e-1, "optimizer": BFGS},
         )
 
+
 @pytest.mark.skip(reason="ASE 3.24.0 broke parsing with alat")
 def test_relax_job_cell(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
