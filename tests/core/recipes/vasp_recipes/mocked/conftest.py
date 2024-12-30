@@ -20,8 +20,9 @@ with warnings.catch_warnings():
 
 
 def mock_run(self, *args, **kwargs):
+    from ase.io import write
     self.write_input(self.atoms)
-
+    write(Path(self.directory, "CONTCAR"), self.atoms)
 
 @pytest.fixture(autouse=True)
 def patch_run(monkeypatch):
