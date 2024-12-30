@@ -455,6 +455,7 @@ def test_qmof(patch_nonmetallic_taskdoc):
 def test_mp_metagga_prerelax_job_metallic(patch_metallic_taskdoc):
     atoms = bulk("Al")
     output = mp_metagga_prerelax_job(atoms)
+    assert output["atoms"].get_initial_magnetic_moments().tolist() == [0.6]
     assert output["nsites"] == len(atoms)
     assert output["parameters"] == {
         "algo": "all",
@@ -466,7 +467,6 @@ def test_mp_metagga_prerelax_job_metallic(patch_metallic_taskdoc):
         "ibrion": 2,
         "isif": 3,
         "ismear": 0,
-        "ispin": 2,
         "kspacing": 0.22,
         "laechg": True,
         "lasph": True,
@@ -477,7 +477,6 @@ def test_mp_metagga_prerelax_job_metallic(patch_metallic_taskdoc):
         "lreal": "auto",
         "lvtot": True,
         "lwave": True,
-        "magmom": [0.6],
         "nelm": 200,
         "nsw": 99,
         "prec": "accurate",
@@ -525,7 +524,6 @@ def test_mp_metagga_relax_job_metallic(patch_metallic_taskdoc):
         "ibrion": 2,
         "isif": 3,
         "ismear": 0,
-        "ispin": 2,
         "kspacing": 0.22,
         "laechg": True,
         "lasph": True,
@@ -545,12 +543,11 @@ def test_mp_metagga_relax_job_metallic(patch_metallic_taskdoc):
         "pp": "pbe",
         "setups": {"Al": ""},
     }
-    ref_parameters2 = ref_parameters.copy()
-    ref_parameters2["magmom"] = [0.0]
 
     output = mp_metagga_relax_job(atoms)
     assert output["parameters"] == ref_parameters
     assert output["nsites"] == len(atoms)
+    assert output["atoms"].get_initial_magnetic_moments().tolist() == [0.6]
 
     output = mp_metagga_relax_job(atoms, prev_dir=MOCKED_DIR / "metallic")
     assert output["nsites"] == len(atoms)
@@ -561,6 +558,7 @@ def test_mp_metagga_relax_job_metallic(patch_metallic_taskdoc):
     assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["sigma"] == 0.05
     assert output["parameters"]["pp"] == "pbe"
+    assert output["atoms"].get_initial_magnetic_moments().tolist() == [0.0]
 
 
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
@@ -696,7 +694,6 @@ def test_mp_gga_relax_job(patch_nonmetallic_taskdoc):
         "ibrion": 2,
         "isif": 3,
         "ismear": -5,
-        "ispin": 2,
         "kpts": (5, 11, 11),
         "lasph": True,
         "ldau": True,
@@ -709,7 +706,6 @@ def test_mp_gga_relax_job(patch_nonmetallic_taskdoc):
         "lorbit": 11,
         "lreal": "auto",
         "lwave": False,
-        "magmom": [0.6, 5.0],
         "nelm": 100,
         "nsw": 99,
         "prec": "accurate",
@@ -718,6 +714,7 @@ def test_mp_gga_relax_job(patch_nonmetallic_taskdoc):
         "setups": {"O": "", "Ni": "_pv"},
     }
     assert output["atoms"].get_chemical_symbols() == ["O", "Ni"]
+    assert output["atoms"].get_initial_magnetic_moments().tolist() == [0.6, 5.0]
 
 
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
@@ -733,7 +730,6 @@ def test_mp_gga_static_job(patch_nonmetallic_taskdoc):
         "encut": 520,
         "gamma": True,
         "ismear": -5,
-        "ispin": 2,
         "kpts": (6, 13, 13),
         "lasph": True,
         "lcharg": True,
@@ -747,7 +743,6 @@ def test_mp_gga_static_job(patch_nonmetallic_taskdoc):
         "lorbit": 11,
         "lreal": False,
         "lwave": False,
-        "magmom": [0.6, 5],
         "nelm": 100,
         "nsw": 0,
         "prec": "accurate",
@@ -755,6 +750,7 @@ def test_mp_gga_static_job(patch_nonmetallic_taskdoc):
         "pp": "pbe",
         "setups": {"Ni": "_pv", "O": ""},
     }
+    assert output["atoms"].get_initial_magnetic_moments().tolist() == [0.6, 0.5]
 
 
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
@@ -774,7 +770,6 @@ def test_mp_gga_relax_flow(tmp_path, patch_nonmetallic_taskdoc):
             "ibrion": 2,
             "isif": 3,
             "ismear": -5,
-            "ispin": 2,
             "kpts": (5, 11, 11),
             "lasph": True,
             "ldau": True,
@@ -787,7 +782,6 @@ def test_mp_gga_relax_flow(tmp_path, patch_nonmetallic_taskdoc):
             "lorbit": 11,
             "lreal": "auto",
             "lwave": False,
-            "magmom": [0.6, 5],
             "nelm": 100,
             "nsw": 99,
             "prec": "accurate",
@@ -795,18 +789,17 @@ def test_mp_gga_relax_flow(tmp_path, patch_nonmetallic_taskdoc):
             "pp": "pbe",
             "setups": {"O": "", "Ni": "_pv"},
         }
-        relax2_params = relax_params.copy()
-        relax2_params["magmom"] = [0.0, 0.0]
 
         assert output["relax1"]["parameters"] == relax_params
-        assert output["relax2"]["parameters"] == relax2_params
+        assert output["atoms"].get_initial_magnetic_moments().tolist() == [0.6, 0.5]
+
+        assert output["relax2"]["parameters"] == relax_params
         assert output["static"]["parameters"] == {
             "algo": "fast",
             "ediff": 0.0001,
             "encut": 520,
             "gamma": True,
             "ismear": -5,
-            "ispin": 2,
             "kpts": (6, 13, 13),
             "lasph": True,
             "lcharg": True,
@@ -828,6 +821,7 @@ def test_mp_gga_relax_flow(tmp_path, patch_nonmetallic_taskdoc):
             "pp": "pbe",
             "setups": {"Ni": "_pv", "O": ""},
         }
+        assert output["atoms"].get_initial_magnetic_moments().tolist() == [0.0, 0.0]
 
 
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")

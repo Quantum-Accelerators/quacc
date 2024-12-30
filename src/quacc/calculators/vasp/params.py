@@ -485,8 +485,9 @@ class MPtoASEConverter:
                 "gamma": kpts_dict["generation_style"].lower() == "gamma",
             }
 
-        # Set initial magnetic moments rather than relying on magmom
+        # Set Atoms.set_initial_magnetic_moments() rather than relying on magmom
         if magmom := full_input_params.pop("magmom"):
+            full_input_params.pop("ispin", None)
             unsorted_magmoms = [magmom[i] for i in self.ase_resort]
             self.atoms.set_initial_magnetic_moments(unsorted_magmoms)
 
