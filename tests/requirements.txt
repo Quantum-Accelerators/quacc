@@ -1,7 +1,7 @@
 ase==3.24.0
 custodian==2024.10.16
 emmet-core==0.84.5
-maggma==0.71.0
+maggma==0.71.1
 monty==2024.12.10
 numpy==1.26.4
 psutil==6.1.1
