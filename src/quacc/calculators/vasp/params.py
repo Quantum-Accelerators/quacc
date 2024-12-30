@@ -398,8 +398,10 @@ class MPtoASEConverter:
         if atoms is None and prev_dir is None:
             raise ValueError("Either atoms or prev_dir must be provided.")
         self.atoms = atoms
-        self.structure = AseAtomsAdaptor.get_structure(atoms) if self.atoms else None
         self.prev_dir = prev_dir
+        if self.atoms:
+            self.ase_sort, self.ase_resort = Vasp_()._make_sort(self.atoms)
+            self.structure = AseAtomsAdaptor.get_structure(self.atoms[self.ase_sort])
 
     def convert_dict_set(self, dict_set: DictSet) -> dict:
         """
